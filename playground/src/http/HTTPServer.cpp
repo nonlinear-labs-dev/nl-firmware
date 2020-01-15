@@ -6,12 +6,12 @@
 #include "xml/XmlWriter.h"
 #include "ServedFile.h"
 #include "ServedJournal.h"
-#include "AvahiService.h"
 #include <memory>
 #include "device-settings/DebugLevel.h"
 #include "SoupOutStream.h"
 #include <parameters/MacroControlParameter.h>
 #include <nltools/threading/Throttler.h>
+#include <giomm.h>
 
 #ifdef _DEVELOPMENT_PC
 static const guint port = 8080;
@@ -21,7 +21,6 @@ static const guint port = 80;
 
 HTTPServer::HTTPServer()
     : m_contentManager()
-    , m_avahi(new AvahiService())
 {
   startServer();
 }

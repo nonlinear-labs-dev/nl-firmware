@@ -3,6 +3,7 @@
 #include "playground.h"
 #include "parameters/ValueRange.h"
 #include <map>
+#include <memory>
 
 class QuantizedValue;
 

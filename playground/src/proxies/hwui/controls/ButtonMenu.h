@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ControlWithChildren.h"
+#include <proxies/hwui/Font.h>
 
 class Application;
 

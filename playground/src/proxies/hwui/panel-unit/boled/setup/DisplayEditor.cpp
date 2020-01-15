@@ -1,9 +1,11 @@
 #include "DisplayEditor.h"
+#include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/controls/LeftAlignedLabel.h>
 
 DisplayEditor::DisplayEditor()
     : ControlWithChildren(Rect(0, 0, 0, 0))
     , SetupEditor()
-    , m_entrys{}
+    , m_entrys {}
 {
 }
 
@@ -37,7 +39,7 @@ void DisplayEditor::doLayout()
 
 void DisplayEditor::drawBackground(FrameBuffer& fb)
 {
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
   fb.fillRect(getPosition());
   ControlWithChildren::drawBackground(fb);
 }

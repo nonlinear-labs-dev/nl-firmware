@@ -1,8 +1,10 @@
 #include "OverlayParameterLabel.h"
+#include <parameters/Parameter.h>
+#include <sigc++/sigc++.h>
 
 OverlayParameterLabel::OverlayParameterLabel(const Rect &r, const Parameter *parameter)
     : Label(r)
-    , m_parameter{ parameter }
+    , m_parameter { parameter }
 {
   if(parameter)
   {
@@ -10,7 +12,7 @@ OverlayParameterLabel::OverlayParameterLabel(const Rect &r, const Parameter *par
         = parameter->onParameterChanged(sigc::hide(sigc::mem_fun(this, &OverlayParameterLabel::updateText)));
   }
 
-  setFontColor(FrameBuffer::C179);
+  setFontColor(FrameBufferColors::C179);
 }
 
 void OverlayParameterLabel::updateText()

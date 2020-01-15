@@ -4,6 +4,7 @@
 #include "SetupEditor.h"
 #include <Application.h>
 #include <device-settings/Settings.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 template <typename tSetting> class NumericSettingEditor : public SetupLabel, public SetupEditor
 {
@@ -30,7 +31,7 @@ template <typename tSetting> class NumericSettingEditor : public SetupLabel, pub
  private:
   void setBackgroundColor(FrameBuffer &fb) const override
   {
-    fb.setColor(FrameBuffer::C103);
+    fb.setColor(FrameBufferColors::C103);
   }
 
   Font::Justification getJustification() const override
@@ -42,13 +43,13 @@ template <typename tSetting> class NumericSettingEditor : public SetupLabel, pub
   {
     SetupLabel::redraw(fb);
 
-    fb.setColor(FrameBuffer::C179);
+    fb.setColor(FrameBufferColors::C179);
     fb.drawRect(getPosition());
     return true;
   }
 
   void setFontColor(FrameBuffer &fb) const override
   {
-    fb.setColor(FrameBuffer::C255);
+    fb.setColor(FrameBufferColors::C255);
   }
 };

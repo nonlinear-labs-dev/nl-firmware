@@ -2,7 +2,7 @@
 #include "WifiSetting.h"
 #include "DebugLevel.h"
 
-WifiSetting::WifiSetting(Settings& settings)
+WifiSetting::WifiSetting(UpdateDocumentContributor& settings)
     : BooleanSetting(settings, WifiSetting::pollAccessPointRunning())
     , m_bgThread([&]() {
 #ifdef _DEVELOPMENT_PC

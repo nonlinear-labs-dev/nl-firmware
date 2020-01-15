@@ -3,6 +3,7 @@
 #include "parameters/Parameter.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
+#include <sigc++/sigc++.h>
 
 SelectedParameterBarSlider::SelectedParameterBarSlider(const Rect &rect)
     : super(rect)

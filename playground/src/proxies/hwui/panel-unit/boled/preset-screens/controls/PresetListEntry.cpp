@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNumberLabel.h>
 #include <functional>
 #include "PresetTypeLabel.h"
+#include <glibmm/main.h>
 
 const float c_numAnimationSteps = 15;
 const float c_animationLength = 500;  // ms
@@ -67,9 +68,9 @@ bool PresetListEntry::redraw(FrameBuffer &fb)
   if(m_selected)
   {
     if(isHighlight())
-      fb.setColor(FrameBuffer::Colors::C179);
+      fb.setColor(FrameBufferColors::C179);
     else
-      fb.setColor(FrameBuffer::Colors::C103);
+      fb.setColor(FrameBufferColors::C103);
 
     const Rect &r = getPosition();
     fb.drawRect(r.getLeft() + 1, r.getTop(), r.getWidth() - 2, r.getHeight());
@@ -84,7 +85,7 @@ bool PresetListEntry::redraw(FrameBuffer &fb)
     else
       r.setLeft(r.getLeft() + r.getWidth() * 2 * (m_animationProgress - 50) / 100.0f);
 
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
     fb.fillRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
   }
 

@@ -3,7 +3,7 @@
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include "proxies/hwui/Oleds.h"
-
+#include <proxies/hwui/FrameBuffer.h>
 #include <glib/gprintf.h>
 
 PresetNumberLabel::PresetNumberLabel(const Rect &pos)
@@ -20,9 +20,9 @@ void PresetNumberLabel::drawBackground(FrameBuffer &fb)
   super::drawBackground(fb);
 
   if(showsLoadedPreset())
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
   else
-    fb.setColor(FrameBuffer::Colors::C43);
+    fb.setColor(FrameBufferColors::C43);
 
   int xinset = showsSelectedPreset() ? 3 : 1;
   int yinset = showsSelectedPreset() ? 2 : 1;

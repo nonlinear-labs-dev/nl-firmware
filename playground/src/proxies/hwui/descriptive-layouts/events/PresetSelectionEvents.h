@@ -10,7 +10,7 @@ namespace DescriptiveLayouts
   class PresetSelectionEvents : public EventProvider
   {
    public:
-    PresetSelectionEvents(const PresetManagerCursor::Matcher& filter);
+    PresetSelectionEvents(const PresetManagerCursor::Matcher &filter);
     ~PresetSelectionEvents() override;
 
     sigc::connection connect(EventSources source, const Callback &cb) override;
@@ -26,7 +26,7 @@ namespace DescriptiveLayouts
    private:
     PresetManagerCursor m_cursor;
     std::list<sigc::connection> connections;
-    UpdateDocumentContributor::tUpdateID lastSeenPresetManagerRevision = -1;
+    int lastSeenPresetManagerRevision = -1;
 
     std::map<EventSources, std::unique_ptr<EventSourceBase>> eventSources;
   };

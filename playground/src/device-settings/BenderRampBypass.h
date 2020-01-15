@@ -1,4 +1,5 @@
 #pragma once
+
 #include <device-settings/BooleanSetting.h>
 
 class BenderRampBypass : public BooleanSetting

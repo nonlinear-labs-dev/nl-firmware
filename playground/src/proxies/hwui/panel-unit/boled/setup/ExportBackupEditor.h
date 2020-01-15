@@ -5,6 +5,8 @@
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/controls/Button.h>
 
+class OutStream;
+
 class ExportBackupEditor : public ControlWithChildren, public SetupEditor
 {
  public:

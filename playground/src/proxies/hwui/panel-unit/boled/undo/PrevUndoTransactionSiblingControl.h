@@ -9,8 +9,6 @@ class PrevUndoTransactionSiblingControl : public UndoEntryLabel
 
  public:
   PrevUndoTransactionSiblingControl(const Rect &r);
-  virtual ~PrevUndoTransactionSiblingControl();
-
   virtual void assignTransaction(UNDO::Transaction *transaction, bool selected, bool current) override;
 
   std::shared_ptr<Font> getFont() const override;

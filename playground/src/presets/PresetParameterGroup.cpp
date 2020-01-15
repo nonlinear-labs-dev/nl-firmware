@@ -6,6 +6,7 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <xml/Attribute.h>
 
 PresetParameterGroup::PresetParameterGroup(VoiceGroup vg)
     : m_voiceGroup { vg }
@@ -82,3 +83,4 @@ void PresetParameterGroup::writeDocument(Writer &writer) const
     param->writeDocument(writer);
   }
 }
+

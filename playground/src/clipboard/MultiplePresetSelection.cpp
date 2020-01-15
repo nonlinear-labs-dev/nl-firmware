@@ -2,6 +2,7 @@
 #include <libundo/undo/Transaction.h>
 #include <Application.h>
 #include "MultiplePresetSelection.h"
+#include <presets/Preset.h>
 
 MultiplePresetSelection::MultiplePresetSelection(UpdateDocumentContributor *parent)
     : UpdateDocumentContributor(parent)

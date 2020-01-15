@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <tools/TimeTools.h>
+#include <glibmm/main.h>
 
 DateTimeInfo::DateTimeInfo(DeviceInformation *parent)
     : DeviceInformationItem(parent)

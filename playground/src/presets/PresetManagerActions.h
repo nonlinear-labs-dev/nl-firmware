@@ -2,8 +2,11 @@
 
 #include "http/RPCActionManager.h"
 #include <libsoup/soup-message-body.h>
-#include <libundo/undo/Scope.h>
-#include <libundo/undo/Transaction.h>
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class PresetManager;
 class Preset;
@@ -17,7 +20,6 @@ class PresetManagerActions : public RPCActionManager
 
  public:
   PresetManagerActions(PresetManager& presetManager);
-  virtual ~PresetManagerActions();
 
   bool handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request) override;
 

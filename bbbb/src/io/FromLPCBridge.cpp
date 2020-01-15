@@ -21,7 +21,7 @@ void FromLPCBridge::sendRibbonPosition(bool m_upperRibon, double value)
   transmit(Glib::Bytes::create(data, 8));
 }
 
-void FromLPCBridge::transmit(Receiver::tMessage i)
+void FromLPCBridge::transmit(const Receiver::tMessage &i)
 {
   nltools::msg::LPCMessage msg;
   msg.message = i;

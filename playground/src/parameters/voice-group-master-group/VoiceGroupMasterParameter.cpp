@@ -1,8 +1,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
-
 #include <utility>
 #include "VoiceGroupMasterParameter.h"
+#include <groups/ParameterGroup.h>
 
 VoiceGroupMasterParameter::VoiceGroupMasterParameter(ParameterGroup *group, const ParameterId &id,
                                                      const ScaleConverter *scaling, tControlPositionValue def,
@@ -10,9 +10,9 @@ VoiceGroupMasterParameter::VoiceGroupMasterParameter(ParameterGroup *group, cons
                                                      tControlPositionValue fineDenominator, std::string shortName,
                                                      std::string longName, VoiceGroup vg)
     : ModulateableParameter(group, id, scaling, def, coarseDenominator, fineDenominator)
-    , m_longname{ std::move(longName) }
-    , m_shortname{ std::move(shortName) }
-    , m_vg{ vg }
+    , m_shortname { std::move(shortName) }
+    , m_longname { std::move(longName) }
+    , m_vg { vg }
 {
 }
 

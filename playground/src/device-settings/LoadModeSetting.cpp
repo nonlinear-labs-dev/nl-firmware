@@ -3,26 +3,43 @@
 #include <device-settings/EnumSetting.h>
 #include <device-settings/Settings.h>
 #include <presets/PresetManager.h>
+#include <libundo/undo/StringTools.h>
 
 LoadModeSetting::LoadModeSetting(Settings &settings)
     : super(settings, LoadMode::Select)
 {
 }
 
-const std::vector<ustring> &LoadModeSetting::enumToString() const
+const std::vector<Glib::ustring> &LoadModeSetting::enumToString() const
 {
-  static auto ret = std::vector<Glib::ustring>{ "loadtopart", "select", "directload" };
+  static auto strs = getAllStrings<LoadMode>();
+  static auto ret = std::vector<Glib::ustring>(strs.begin(), strs.end());
   return ret;
 }
 
-const std::vector<ustring> &LoadModeSetting::enumToDisplayString() const
+const std::vector<Glib::ustring> &LoadModeSetting::enumToDisplayString() const
 {
-  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select only", "Direct Load" };
+  static auto ret = std::vector<Glib::ustring> { "Select Part", "Select only", "Direct Load" };
+  return ret;
+}
+
+bool LoadModeSetting::set(tEnum m)
+{
+  bool ret = super::set(m);
+
+  auto settings = static_cast<Settings *>(getParent());
+  if(m == LoadMode::DirectLoad && !settings->isLoading() && !m_inToggle)
+  {
+    Application::get().getPresetManager()->doAutoLoadSelectedPreset();
+  }
+
   return ret;
 }
 
 void LoadModeSetting::cycleForSoundType(SoundType type)
 {
+  m_inToggle = true;
+
   if(type == SoundType::Single)
   {
     switch(get())
@@ -51,6 +68,8 @@ void LoadModeSetting::cycleForSoundType(SoundType type)
         break;
     }
   }
+
+  m_inToggle = false;
 }
 
 Glib::ustring LoadModeSetting::getDisplayStringForVoiceGroup(VoiceGroup vg) const

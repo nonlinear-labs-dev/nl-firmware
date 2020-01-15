@@ -12,6 +12,7 @@
 #include <parameters/PitchbendParameter.h>
 #include <parameters/RibbonParameter.h>
 #include <parameters/ScaleParameter.h>
+#include <parameters/SplitPointParameter.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include <groups/HardwareSourcesGroup.h>
@@ -20,6 +21,7 @@
 #include <groups/MonoGroup.h>
 #include <groups/UnisonGroup.h>
 #include <groups/ScaleGroup.h>
+#include <device-settings/Settings.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -110,7 +112,7 @@ void forEachParameterInGroup(EditBuffer *eb, const GroupId &group, tParameterArr
 
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage()
 {
-  nltools::msg::SinglePresetMessage msg{};
+  nltools::msg::SinglePresetMessage msg {};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
 
@@ -274,7 +276,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, EditBuffer *editBuffer)
 
 nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage()
 {
-  nltools::msg::SplitPresetMessage msg{};
+  nltools::msg::SplitPresetMessage msg {};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
 
@@ -309,7 +311,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 
 nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage()
 {
-  nltools::msg::LayerPresetMessage msg{};
+  nltools::msg::LayerPresetMessage msg {};
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   fillMessageWithGlobalParams(msg, editBuffer);
   fillDualMessage(msg, editBuffer);

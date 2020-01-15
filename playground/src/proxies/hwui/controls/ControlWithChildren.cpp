@@ -1,5 +1,6 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include "ControlWithChildren.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 ControlWithChildren::ControlWithChildren(const Rect &pos)
     : super(pos)

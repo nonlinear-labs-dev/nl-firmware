@@ -3,10 +3,12 @@
 #include "RecallParameterGroups.h"
 #include "parameters/Parameter.h"
 #include "xml/Writer.h"
+#include <xml/Attribute.h>
+#include <glib.h>
 
 RecallParameter::RecallParameter(RecallParameterGroups *parent, ParameterId id)
     : UpdateDocumentContributor(parent)
-    , m_id{ id }
+    , m_id { id }
 {
 }
 
@@ -36,9 +38,9 @@ void RecallParameter::writeDocument(Writer &writer, UpdateDocumentContributor::t
   if(getUpdateIDOfLastChange() > knownRevision)
   {
     writer.writeTag("param",
-                    { Attribute{ "id", m_id.toString() }, Attribute{ "value", to_string(m_recallValue) },
-                      Attribute{ "mod-src", to_string(static_cast<int>(m_recallModSource)) },
-                      Attribute{ "mod-amt", to_string(m_recallModAmount) } },
+                    { Attribute { "id", m_id.toString() }, Attribute { "value", to_string(m_recallValue) },
+                      Attribute { "mod-src", to_string(static_cast<int>(m_recallModSource)) },
+                      Attribute { "mod-amt", to_string(m_recallModAmount) } },
                     []() {});
   }
 }

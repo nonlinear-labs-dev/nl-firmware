@@ -1,5 +1,6 @@
 #include "Control.h"
 #include "proxies/hwui/Oleds.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 Control::Control(const Rect &pos)
     : m_rect(pos)
@@ -63,7 +64,7 @@ bool Control::redraw(FrameBuffer &fb)
 
 void Control::setBackgroundColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
 }
 
 void Control::drawBackground(FrameBuffer &fb)

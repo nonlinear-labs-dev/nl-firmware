@@ -6,6 +6,8 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/scale-converters/LinearBipolar100PercentScaleConverter.h"
+#include <sigc++/sigc++.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 MCAmountLabel::MCAmountLabel(const Rect &rect)
     : super(rect)
@@ -54,7 +56,7 @@ void MCAmountLabel::update(const Parameter *parameter)
 
 void MCAmountLabel::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void MCAmountLabel::onModifiersChanged()

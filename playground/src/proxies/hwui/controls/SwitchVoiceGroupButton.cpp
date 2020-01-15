@@ -5,11 +5,13 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
-#include <groups/MonoGroup.h>
 #include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
+#include <parameters/SplitPointParameter.h>
+#include <groups/MonoGroup.h>
 #include <proxies/hwui/HWUI.h>
 #include <groups/UnisonGroup.h>
 #include <nltools/Types.h>
+#include <libundo/undo/Scope.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)

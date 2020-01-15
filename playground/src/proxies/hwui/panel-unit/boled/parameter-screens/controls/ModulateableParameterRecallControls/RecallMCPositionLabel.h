@@ -1,4 +1,5 @@
 #pragma once
+
 #include <proxies/hwui/controls/Label.h>
 
 class RecallMCPositionLabel : public Label

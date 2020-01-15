@@ -1,7 +1,9 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoList.h>
 #include <Application.h>
 #include <http/UndoScope.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include "UndoListEntry.h"
+#include <libundo/undo/Transaction.h>
 
 UndoList::UndoList(const Rect &pos)
     : super(pos)
@@ -10,10 +12,6 @@ UndoList::UndoList(const Rect &pos)
   {
     addControl(new UndoListEntry(Rect(0, i * 16, pos.getWidth(), 16)));
   }
-}
-
-UndoList::~UndoList()
-{
 }
 
 void UndoList::assignTransactions(UNDO::Transaction *tip)
@@ -51,7 +49,7 @@ bool UndoList::redraw(FrameBuffer &fb)
 {
   super::redraw(fb);
 
-  fb.setColor(FrameBuffer::Colors::C128);
+  fb.setColor(FrameBufferColors::C128);
   const Rect &r = getPosition();
   fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 

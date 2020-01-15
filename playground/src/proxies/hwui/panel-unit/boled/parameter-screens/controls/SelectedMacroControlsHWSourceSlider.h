@@ -11,16 +11,12 @@ class SelectedMacroControlsHWSourceSlider : public DotSlider
 
  public:
   SelectedMacroControlsHWSourceSlider(const Rect& rect);
-  virtual ~SelectedMacroControlsHWSourceSlider();
 
  protected:
   virtual void onParamValueChanged(const Parameter* param) override;
   virtual void drawSliderBackground(FrameBuffer& fb) override;
 
  private:
-  SelectedMacroControlsHWSourceSlider(const SelectedMacroControlsHWSourceSlider& other);
-  SelectedMacroControlsHWSourceSlider& operator=(const SelectedMacroControlsHWSourceSlider&);
-
   void onParameterSelected(Parameter* newOne);
   void onMCChanged(const Parameter* param);
 

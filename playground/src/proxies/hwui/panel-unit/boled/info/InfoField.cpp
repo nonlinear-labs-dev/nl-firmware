@@ -11,7 +11,7 @@ InfoField::InfoField(SingleLineInfoContent* l, Control* c)
 {
 }
 
-void InfoField::setInfo(const Glib::ustring& text, FrameBuffer::Colors c)
+void InfoField::setInfo(const Glib::ustring& text, FrameBufferColors c)
 {
   if(auto label = dynamic_cast<SingleLineInfoContent*>(m_content))
   {
@@ -30,7 +30,7 @@ void InfoField::setInfo(const Glib::ustring& text, FrameBuffer::Colors c)
 
 void InfoField::setInfo(const Glib::ustring& text)
 {
-  setInfo(text, FrameBuffer::Colors::C128);
+  setInfo(text, FrameBufferColors::C128);
 }
 
 int InfoField::format(int y)

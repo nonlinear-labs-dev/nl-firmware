@@ -15,7 +15,7 @@ class AftertouchCurve : public EnumSetting<AftertouchCurves>
   typedef EnumSetting<AftertouchCurves> super;
 
  public:
-  AftertouchCurve(Settings &settings);
+  AftertouchCurve(UpdateDocumentContributor &settings);
   virtual ~AftertouchCurve();
 
   void sendToLPC() const override;

@@ -9,11 +9,6 @@ class VerticalLine : public Control
 
  public:
   VerticalLine(const Rect& rect);
-  virtual ~VerticalLine();
 
   bool redraw(FrameBuffer& fb);
-
- private:
-  VerticalLine(const VerticalLine& other);
-  VerticalLine& operator=(const VerticalLine&);
 };

@@ -10,7 +10,6 @@ class DotSlider : public Slider
  public:
   DotSlider(Parameter *param, const Rect &rect);
   DotSlider(const Rect &rect);
-  virtual ~DotSlider();
 
   bool redraw(FrameBuffer &fb);
 

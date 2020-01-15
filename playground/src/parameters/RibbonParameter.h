@@ -1,10 +1,7 @@
 #pragma once
 
-#include "../http/UpdateDocumentContributor.h"
-#include "../libundo/undo/Scope.h"
-#include "../playground.h"
-#include "../proxies/hwui/HWUIEnums.h"
-#include "../xml/Writer.h"
+#include <playground.h>
+#include <proxies/hwui/HWUIEnums.h>
 #include "PhysicalControlParameter.h"
 
 class RibbonParameter : public PhysicalControlParameter

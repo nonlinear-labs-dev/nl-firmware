@@ -35,7 +35,7 @@ bool PresetListBase::redraw(FrameBuffer &fb)
   super::redraw(fb);
 
   const Rect &r = getPosition();
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
   fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 
   return true;

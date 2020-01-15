@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glibmm.h>
-#include <giomm.h>
+#include <nltools/GlibFwd.h>
 #include <thread>
 
 class CommandLineInterface

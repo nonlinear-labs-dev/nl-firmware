@@ -7,6 +7,7 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/InvertedLabel.h>
 #include "UndoMenu.h"
 #include "PositionInTreeLabel.h"
+#include <libundo/undo/Transaction.h>
 
 UndoLayout::UndoLayout()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())

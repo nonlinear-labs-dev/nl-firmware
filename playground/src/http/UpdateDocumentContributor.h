@@ -1,9 +1,7 @@
 #pragma once
 
 #include "playground.h"
-#include <memory>
 #include "tools/IntrusiveList.h"
-#include <libundo/undo/SwapData.h>
 
 namespace UNDO
 {

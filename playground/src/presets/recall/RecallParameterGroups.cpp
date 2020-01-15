@@ -6,10 +6,12 @@
 #include "xml/Writer.h"
 #include "RecallParameter.h"
 #include "presets/PresetParameter.h"
+#include <groups/ParameterGroup.h>
+#include <xml/Attribute.h>
 
 RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)
-    , m_editBuffer{ editBuffer }
+    , m_editBuffer { editBuffer }
 {
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
@@ -35,15 +37,13 @@ const RecallParameterGroups::tParameterMap &RecallParameterGroups::getParameters
 
 RecallParameter *RecallParameterGroups::findParameterByID(const ParameterId &id) const
 {
-  try
-  {
-    return m_parameters.at(id).get();
-  }
-  catch(...)
-  {
-    nltools::Log::error("Could not find Recall Parameter with id", id.toString());
-    return nullptr;
-  }
+  auto it = m_parameters.find(id);
+
+  if(it != m_parameters.end())
+    return it->second.get();
+
+  nltools::Log::error("Could not find Recall Parameter with id", id.toString());
+  return nullptr;
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
@@ -64,7 +64,7 @@ void RecallParameterGroups::writeDocument(Writer &writer, UpdateDocumentContribu
   auto changed = getUpdateIDOfLastChange() > knownRevision;
   if(changed)
   {
-    writer.writeTag("recall-data", Attribute{ "changed", changed }, [this, &writer, knownRevision] {
+    writer.writeTag("recall-data", Attribute { "changed", changed }, [this, &writer, knownRevision] {
       for(auto &parameterpair : getParameters())
         parameterpair.second->writeDocument(writer, knownRevision);
     });

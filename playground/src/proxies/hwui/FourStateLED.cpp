@@ -9,8 +9,6 @@ FourStateLED::FourStateLED()
   m_state = -1;
 }
 
-FourStateLED::~FourStateLED() = default;
-
 void FourStateLED::setState(char state)
 {
   if(m_state != state)

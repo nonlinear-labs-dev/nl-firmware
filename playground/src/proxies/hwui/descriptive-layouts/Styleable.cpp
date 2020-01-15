@@ -70,4 +70,14 @@ namespace DescriptiveLayouts
     }
     return getDefaultStyleValueForKey(s);
   }
+
+  void Styleable::setHighlight(bool b)
+  {
+    m_highlight = b;
+  }
+
+  bool Styleable::isHighlight() const
+  {
+    return m_highlight;
+  }
 }

@@ -5,6 +5,7 @@
 #include <functional>
 #include <thread>
 #include <memory>
+#include <alsa/asoundlib.h>
 
 class AudioWriterBase;
 class HighPriorityTask;

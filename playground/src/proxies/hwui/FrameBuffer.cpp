@@ -106,7 +106,7 @@ inline void FrameBuffer::setOffsetPixel(tCoordinate x, tCoordinate y)
 inline void FrameBuffer::setRawPixel(tCoordinate x, tCoordinate y)
 {
   const long index = getIndex(x, y);
-  m_backBuffer[index] = m_currentColor;
+  m_backBuffer[index] = static_cast<tPixel>(m_currentColor);
 }
 
 inline long FrameBuffer::getIndex(tCoordinate x, tCoordinate y) const
@@ -149,7 +149,7 @@ void FrameBuffer::fillRect(const Rect &rect)
 {
   Rect fill = rect.getMovedBy(m_offsets.top()).getIntersection(m_clips.top());
 
-  if(!fill.isEmpty() && m_currentColor != Transparent)
+  if(!fill.isEmpty() && m_currentColor != Colors::Transparent)
   {
     auto left = fill.getLeft();
     auto width = fill.getWidth();
@@ -162,7 +162,7 @@ void FrameBuffer::fillRect(const Rect &rect)
 
 void FrameBuffer::fillCircle(const Point &center, int radius)
 {
-  if(radius % 2 == 0 && m_currentColor != Transparent)
+  if(radius % 2 == 0 && m_currentColor != Colors::Transparent)
   {
     auto middleX = center.getX() - 0.5;
     auto middleY = center.getY() - 0.5;
@@ -182,25 +182,25 @@ void FrameBuffer::fillCircle(const Point &center, int radius)
 
 inline void FrameBuffer::drawRawHorizontalLine(tCoordinate x, tCoordinate y, tCoordinate length)
 {
-  if(m_currentColor != Transparent)
+  if(m_currentColor != Colors::Transparent)
   {
     auto fromIdx = getIndex(x, y);
     auto data = m_backBuffer.data() + fromIdx;
 
     for(long i = 0; i < length; i++)
-      data[i] = m_currentColor;
+      data[i] = static_cast<tPixel>(m_currentColor);
   }
 }
 
 void FrameBuffer::drawRect(tCoordinate x, tCoordinate y, tCoordinate width, tCoordinate height)
 {
-  if(m_currentColor != Transparent)
+  if(m_currentColor != Colors::Transparent)
     drawRect(Rect(x, y, width, height));
 }
 
 void FrameBuffer::drawRect(const Rect &rect)
 {
-  if(!rect.isEmpty() && m_currentColor != Transparent)
+  if(!rect.isEmpty() && m_currentColor != Colors::Transparent)
   {
     drawHorizontalLine(rect.getLeft(), rect.getTop(), rect.getWidth());
     drawHorizontalLine(rect.getLeft(), rect.getBottom(), rect.getWidth());
@@ -211,7 +211,7 @@ void FrameBuffer::drawRect(const Rect &rect)
 
 void FrameBuffer::drawHorizontalLine(tCoordinate x, tCoordinate y, tCoordinate length)
 {
-  if(m_currentColor != Transparent)
+  if(m_currentColor != Colors::Transparent)
   {
     auto &clip = m_clips.top();
     auto &offset = m_offsets.top();
@@ -230,7 +230,7 @@ void FrameBuffer::drawHorizontalLine(tCoordinate x, tCoordinate y, tCoordinate l
 
 void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate length)
 {
-  if(m_currentColor != Transparent)
+  if(m_currentColor != Colors::Transparent)
   {
     auto &clip = m_clips.top();
     auto &offset = m_offsets.top();
@@ -252,6 +252,7 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
 void FrameBuffer::swapBuffers()
 {
   using namespace nltools::msg;
+
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
   {
     SetTimestampedOledMessage msg{};
@@ -270,7 +271,8 @@ void FrameBuffer::swapBuffers()
 
 bool FrameBuffer::isValidColor(Colors c) const
 {
-  return c == C43 || c == C77 || c == C103 || c == C128 || c == C179 || c == C204 || c == C255 || c == Transparent;
+  return c == Colors::C43 || c == Colors::C77 || c == Colors::C103 || c == Colors::C128 || c == Colors::C179
+      || c == Colors::C204 || c == Colors::C255 || c == Colors::Transparent;
 }
 
 FrameBuffer::Clip FrameBuffer::clip(const Rect &rect)

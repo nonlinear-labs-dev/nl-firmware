@@ -2,11 +2,11 @@
 
 #include "nltools/Assert.h"
 #include <memory>
-#include <giomm.h>
-#include <sigc++/sigc++.h>
-#include <cstring>
+#include <chrono>
+#include <sigc++/connection.h>
 #include <nltools/logging/Log.h>
 #include <nltools/enums/EnumTools.h>
+#include <glibmm/bytes.h>
 
 namespace nltools
 {

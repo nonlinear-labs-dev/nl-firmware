@@ -1,5 +1,6 @@
 #include "RenameLetter.h"
 #include <proxies/hwui/TextEditUsageMode.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 RenameLetter::RenameLetter(std::shared_ptr<TextEditUsageMode> mode, Buttons buttonID, const Rect &pos)
     : super(pos)
@@ -19,7 +20,7 @@ bool RenameLetter::redraw(FrameBuffer &fb)
 
   if(highlightLetter())
   {
-    fb.setColor(FrameBuffer::Colors::C77);
+    fb.setColor(FrameBufferColors::C77);
     fb.fillRect(r.getLeft() + 1, r.getTop(), r.getWidth() - 2, r.getHeight() - 1);
   }
 

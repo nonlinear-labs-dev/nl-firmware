@@ -1,3 +1,5 @@
+#pragma once
+
 #include <proxies/hwui/controls/Label.h>
 
 class UndoIndicator : public Label

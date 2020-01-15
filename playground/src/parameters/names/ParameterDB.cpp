@@ -3,7 +3,6 @@
 #include <boost/tokenizer.hpp>
 #include <parameters/names/ParameterDB.h>
 #include <tools/StringTools.h>
-#include "RowStream.h"
 #include <parameters/Parameter.h>
 #include <parameter-db/generated/parameter_list.h>
 #include <assert.h>
@@ -81,7 +80,7 @@ bool ParameterDB::isActive(const Parameter *p) const
   return diff > std::numeric_limits<tControlPositionValue>::epsilon();
 }
 
-Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(ustring name, VoiceGroup originGroup) const
+Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const
 {
   if(name.find("@VG") != Glib::ustring::npos)
   {

@@ -1,4 +1,6 @@
 #include "DotSlider.h"
+#include <proxies/hwui/FrameBuffer.h>
+#include <math.h>
 
 static const int c_borderLeft = 1;
 static const int c_borderRight = 1;
@@ -15,10 +17,6 @@ DotSlider::DotSlider(const Rect &rect)
 {
 }
 
-DotSlider::~DotSlider()
-{
-}
-
 bool DotSlider::redraw(FrameBuffer &fb)
 {
   drawSliderBackground(fb);
@@ -32,7 +30,7 @@ bool DotSlider::redraw(FrameBuffer &fb)
 void DotSlider::drawSliderBackground(FrameBuffer &fb)
 {
   const Rect &r = getPosition();
-  fb.setColor(FrameBuffer::Colors::C128);
+  fb.setColor(FrameBufferColors::C128);
   fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 }
 
@@ -46,13 +44,13 @@ void DotSlider::drawHandle(FrameBuffer &fb)
 
   if(!isHighlight())
   {
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
     fb.fillRect(x - halfHandle, r.getTop(), c_handleWidth, handleHeight);
-    fb.setColor(FrameBuffer::Colors::C179);
+    fb.setColor(FrameBufferColors::C179);
   }
   else
   {
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   }
 
   if(hasBorder())

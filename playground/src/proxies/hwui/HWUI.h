@@ -1,6 +1,5 @@
 #pragma once
 
-#include <libundo/undo/Scope.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnit.h>
 #include <proxies/hwui/buttons.h>
@@ -11,10 +10,15 @@
 #include <tools/Signal.h>
 #include <array>
 #include <memory>
-#include <giomm.h>
+#include <glibmm/refptr.h>
 
 class Application;
 class UsageMode;
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 namespace nltools
 {

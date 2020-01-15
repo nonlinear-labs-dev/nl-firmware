@@ -4,6 +4,7 @@
 #include "presets/PresetManager.h"
 #include "presets/Preset.h"
 #include "presets/Bank.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 GenericPresetList::GenericPresetList(const Point &p)
     : ControlWithChildren({ p.getX(), p.getY(), 128, 50 })
@@ -89,7 +90,7 @@ bool GenericPresetList::redraw(FrameBuffer &fb)
 {
 
   const Rect &r = getPosition();
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
   fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 
   if(!sanitizePresetPtr())
@@ -115,7 +116,7 @@ void GenericPresetList::drawPresets(FrameBuffer &fb, Preset *middle)
 {
   if(middle == nullptr)
   {
-    fb.setColor(FrameBuffer::C43);
+    fb.setColor(FrameBufferColors::C43);
     fb.fillRect(getPosition());
     return;
   }
@@ -129,14 +130,14 @@ void GenericPresetList::drawPresets(FrameBuffer &fb, Preset *middle)
 
   auto createAndDrawControl = [&](Preset *p, int index, bool hightlight) {
     auto basePos = getPosition();
-    auto numPos = Rect{ basePos.getLeft() + 5, basePos.getTop() + index * third + 1, 15, third - 1 };
+    auto numPos = Rect { basePos.getLeft() + 5, basePos.getTop() + index * third + 1, 15, third - 1 };
     auto namePos
-        = Rect{ basePos.getLeft() + 20, basePos.getTop() + index * third + 1, basePos.getWidth() - 21, third - 1 };
+        = Rect { basePos.getLeft() + 20, basePos.getTop() + index * third + 1, basePos.getWidth() - 21, third - 1 };
 
     if(p == nullptr)
     {
 
-      fb.setColor(FrameBuffer::C43);
+      fb.setColor(FrameBufferColors::C43);
       fb.fillRect(numPos);
       fb.fillRect(namePos);
       return;
@@ -148,7 +149,7 @@ void GenericPresetList::drawPresets(FrameBuffer &fb, Preset *middle)
     auto number = addControl(new LeftAlignedLabel({ std::to_string(presetNum), 0 }, numPos));
     auto name = addControl(new LeftAlignedLabel({ p->getName(), 0 }, namePos));
 
-    fb.setColor(FrameBuffer::C43);
+    fb.setColor(FrameBufferColors::C43);
     fb.fillRect(numPos);
     fb.fillRect(namePos);
 
@@ -158,17 +159,17 @@ void GenericPresetList::drawPresets(FrameBuffer &fb, Preset *middle)
       rect.setTop(rect.getTop() + index * third);
       rect.setHeight(third);
       rect.addMargin(2, 2, 2, 2);
-      fb.setColor(FrameBuffer::C103);
+      fb.setColor(FrameBufferColors::C103);
       fb.fillRect(rect);
 
-      fb.setColor(FrameBuffer::C204);
+      fb.setColor(FrameBufferColors::C204);
       fb.drawRect({ getPosition().getLeft(), basePos.getTop() + index * third, basePos.getWidth(), third });
     }
 
-    number->setFontColor(hightlight ? FrameBuffer::C255 : FrameBuffer::C179);
+    number->setFontColor(hightlight ? FrameBufferColors::C255 : FrameBufferColors::C179);
     number->redraw(fb);
 
-    name->setFontColor(hightlight ? FrameBuffer::C255 : FrameBuffer::C179);
+    name->setFontColor(hightlight ? FrameBufferColors::C255 : FrameBufferColors::C179);
     name->redraw(fb);
 
     remove(number);

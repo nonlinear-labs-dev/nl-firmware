@@ -1,11 +1,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterDotSlider.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 MiniParameterDotSlider::MiniParameterDotSlider(Parameter *param, const Rect &rect)
     : super(param, rect)
-{
-}
-
-MiniParameterDotSlider::~MiniParameterDotSlider()
 {
 }
 
@@ -19,9 +16,9 @@ bool MiniParameterDotSlider::redraw(FrameBuffer &fb)
   Rect r = getPosition();
 
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
   else
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
 
   fb.fillRect(r.getX(), r.getTop(), r.getWidth(), r.getHeight());
   super::redraw(fb);

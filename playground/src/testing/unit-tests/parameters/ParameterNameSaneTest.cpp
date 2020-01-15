@@ -1,6 +1,7 @@
 #include "testing/TestHelper.h"
 #include "third-party/include/catch.hpp"
 #include "presets/EditBuffer.h"
+#include <groups/ParameterGroup.h>
 
 TEST_CASE("No Parameter Name Contains '@VG' placeholder")
 {

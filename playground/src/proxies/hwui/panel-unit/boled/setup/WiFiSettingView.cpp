@@ -1,6 +1,7 @@
 #include <device-settings/WifiSetting.h>
 #include <Application.h>
 #include "WiFiSettingView.h"
+#include <device-settings/Settings.h>
 
 WiFiSettingView::WiFiSettingView()
     : base_type("", Rect(0, 0, 0, 0))

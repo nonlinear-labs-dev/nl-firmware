@@ -1,6 +1,7 @@
 #include "Styles.h"
 #include "Styleable.h"
 #include <proxies/hwui/HWUI.h>
+#include <device-settings/DebugLevel.h>
 
 namespace DescriptiveLayouts
 {

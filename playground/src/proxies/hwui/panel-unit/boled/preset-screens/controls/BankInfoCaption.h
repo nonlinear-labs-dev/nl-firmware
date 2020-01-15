@@ -1,7 +1,7 @@
 #pragma once
 
 #include <proxies/hwui/controls/Label.h>
-#include <presets/PresetManager.h>
+#include <sigc++/connection.h>
 
 class FrameBuffer;
 class Uuid;

@@ -15,6 +15,7 @@
 #include "device-settings/DebugLevel.h"
 #include "device-info/DeviceInformation.h"
 #include <clipboard/Clipboard.h>
+#include <giomm.h>
 
 ContentManager::WebsocketConnection::WebsocketConnection(SoupWebsocketConnection *c)
 {

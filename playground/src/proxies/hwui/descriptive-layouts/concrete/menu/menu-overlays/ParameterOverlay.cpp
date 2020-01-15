@@ -3,10 +3,12 @@
 #include "presets/EditBuffer.h"
 #include "presets/PresetManager.h"
 #include "ParameterOverlay.h"
+#include <libundo/undo/Scope.h>
+#include <parameters/Parameter.h>
 
 ParameterOverlay::ParameterOverlay(const Rect& rect, Parameter* const parameter)
     : ArrowIncrementDecrementOverlay(rect)
-    , m_parameter{ parameter }
+    , m_parameter { parameter }
 {
   auto labelWidth = rect.getWidth() - 20;
   m_label = addControl(new ParameterValueLabel(parameter, { 11, -1, labelWidth, 13 }));

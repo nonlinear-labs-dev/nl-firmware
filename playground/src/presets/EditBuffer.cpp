@@ -22,6 +22,7 @@
 #include <parameters/PedalParameter.h>
 #include <parameters/RibbonParameter.h>
 #include <parameters/PitchbendParameter.h>
+#include <parameters/SplitPointParameter.h>
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
@@ -33,7 +34,7 @@
 #include <groups/UnisonGroup.h>
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
-
+#include <device-settings/Settings.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -49,7 +50,6 @@ EditBuffer::EditBuffer(PresetManager *parent)
 EditBuffer::~EditBuffer()
 {
   m_voiceGroupConnection.disconnect();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void EditBuffer::initRecallValues(UNDO::Transaction *transaction)
@@ -130,32 +130,32 @@ bool EditBuffer::isModified() const
   return m_isModified;
 }
 
-connection EditBuffer::onModificationStateChanged(const sigc::slot<void, bool> &s)
+sigc::connection EditBuffer::onModificationStateChanged(const sigc::slot<void, bool> &s)
 {
   return m_signalModificationState.connectAndInit(s, m_isModified);
 }
 
-connection EditBuffer::onChange(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onChange(const sigc::slot<void> &s)
 {
   return m_signalChange.connectAndInit(s);
 }
 
-connection EditBuffer::onPresetLoaded(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onPresetLoaded(const sigc::slot<void> &s)
 {
   return m_signalPresetLoaded.connect(s);
 }
 
-connection EditBuffer::onLocksChanged(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onLocksChanged(const sigc::slot<void> &s)
 {
   return m_signalLocksChanged.connectAndInit(s);
 }
 
-connection EditBuffer::onRecallValuesChanged(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onRecallValuesChanged(const sigc::slot<void> &s)
 {
   return m_recallSet.m_signalRecallValues.connect(s);
 }
 
-connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
+sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
 {
   return m_signalTypeChanged.connect(s);
 }
@@ -844,6 +844,11 @@ void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
     setVoiceGroupName(transaction, "Init", vg);
 
   m_recallSet.copyFromEditBuffer(transaction, this, vg);
+}
+
+void EditBuffer::TEST_doDeferredJobs()
+{
+  doDeferedJobs();
 }
 
 void EditBuffer::initToFX(UNDO::Transaction *transaction)

@@ -5,12 +5,12 @@
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
-#include <parameters/SplitPointParameter.h>
 
 class Application;
 class Writer;
 class PresetManager;
 class HWUI;
+class SplitPointParameter;
 
 class EditBuffer : public ParameterDualGroupSet
 {
@@ -102,9 +102,12 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group);
 
+  void TEST_doDeferredJobs();
+
  private:
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;
+
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
   UNDO::Scope &getUndoScope() override;
   void setParameter(ParameterId id, double cpValue);
@@ -127,8 +130,6 @@ class EditBuffer : public ParameterDualGroupSet
 
   sigc::connection m_voiceGroupConnection;
 
-  ParameterId m_lastSelectedParameter;
-
   friend class EditBufferSerializer;
   friend class RecallEditBufferSerializer;
   friend class RecallEditBufferSerializer2;
@@ -143,11 +144,12 @@ class EditBuffer : public ParameterDualGroupSet
   DelayedJob m_deferredJobs;
 
   bool m_isModified;
+  RecallParameterGroups m_recallSet;
   SoundType m_type;
+  ParameterId m_lastSelectedParameter;
   size_t m_hashOnStore;
 
   mutable Preset *m_originCache { nullptr };
-  RecallParameterGroups m_recallSet;
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;

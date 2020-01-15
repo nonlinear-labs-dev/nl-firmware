@@ -1,9 +1,9 @@
 #pragma once
+
 #include <playground.h>
 #include <experimental/any>
-#include <parameters/ValueRange.h>
-#include <map>
-#include "proxies/hwui/descriptive-layouts/TemplateEnums.h"
+#include <sigc++/connection.h>
+#include <tools/Signal.h>
 
 namespace DescriptiveLayouts
 {
@@ -11,6 +11,8 @@ namespace DescriptiveLayouts
   class EventSourceBase : public sigc::trackable
   {
    public:
+    virtual ~EventSourceBase() = default;
+
     using Callback = std::function<void(std::experimental::any)>;
     sigc::connection connect(const Callback &cb);
 

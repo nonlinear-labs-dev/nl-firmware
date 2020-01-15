@@ -5,6 +5,7 @@
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
+#include <parameters/ModulateableParameter.h>
 
 TEST_CASE("HWUI Voice Group Selection")
 {

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "playground.h"
-#include "proxies/hwui/Oleds.h"
 #include <nltools/Uncopyable.h>
 #include <proxies/hwui/controls/Rect.h>
+#include <memory>
 
 class Application;
 class Layout;

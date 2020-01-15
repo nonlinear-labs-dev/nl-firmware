@@ -4,6 +4,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 Slider::Slider(Parameter *param, const Rect &rect)
     : super(rect)
@@ -15,10 +16,6 @@ Slider::Slider(Parameter *param, const Rect &rect)
 
 Slider::Slider(const Rect &rect)
     : Slider(nullptr, rect)
-{
-}
-
-Slider::~Slider()
 {
 }
 
@@ -67,9 +64,9 @@ tDisplayValue Slider::getValue() const
 void Slider::setSliderColor(FrameBuffer &fb)
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
 }
 
 bool Slider::hasBorder() const

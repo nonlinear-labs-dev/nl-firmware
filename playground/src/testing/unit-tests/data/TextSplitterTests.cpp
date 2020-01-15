@@ -1,5 +1,7 @@
 #include "third-party/include/catch.hpp"
 #include "tools/TextSplitter.h"
+#include <glib.h>
+#include <sstream>
 
 TEST_CASE("Text Splitter concat utf8")
 {

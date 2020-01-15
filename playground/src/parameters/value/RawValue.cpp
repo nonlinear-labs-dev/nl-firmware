@@ -1,4 +1,5 @@
 #include "RawValue.h"
+#include <parameters/scale-converters/ScaleConverter.h>
 #include <cmath>
 
 RawValue::RawValue(const ScaleConverter *scale, tValueType def)

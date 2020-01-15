@@ -3,8 +3,7 @@
 #include "playground.h"
 #include "Rect.h"
 #include <nltools/Uncopyable.h>
-#include <proxies/hwui/Font.h>
-#include <proxies/hwui/FrameBuffer.h>
+#include <sigc++/trackable.h>
 
 class Font;
 class FrameBuffer;

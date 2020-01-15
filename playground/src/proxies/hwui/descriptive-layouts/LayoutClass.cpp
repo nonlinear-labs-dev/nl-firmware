@@ -1,6 +1,7 @@
 #include "LayoutClass.h"
 #include "ControlInstance.h"
 #include "GenericLayout.h"
+#include <device-settings/DebugLevel.h>
 
 namespace DescriptiveLayouts
 {
@@ -83,7 +84,7 @@ namespace DescriptiveLayouts
 
   std::pair<long, long> LayoutClass::getWeight() const
   {
-    return {selectors.size(), conditions.size()};
+    return { selectors.size(), conditions.size() };
   }
 
   const std::string LayoutClass::getName() const

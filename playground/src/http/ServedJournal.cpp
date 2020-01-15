@@ -1,9 +1,9 @@
 #include <Application.h>
-#include <gio/gio.h>
 #include <http/HTTPRequest.h>
 #include <http/ServedJournal.h>
 #include <device-settings/DebugLevel.h>
 #include <memory>
+#include <giomm.h>
 
 ServedJournal::ServedJournal(HTTPServer &server, std::shared_ptr<HTTPRequest> request)
     : ServedStream(server, request)

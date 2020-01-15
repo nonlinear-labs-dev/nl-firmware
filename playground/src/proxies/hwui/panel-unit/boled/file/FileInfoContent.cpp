@@ -5,6 +5,7 @@
 #include <utility>
 #include <tools/FileTools.h>
 #include <proxies/hwui/panel-unit/boled/info/MultiLineInfoContent.h>
+#include <proxies/hwui/panel-unit/boled/info/InfoField.h>
 
 FileInfoContent::FileInfoContent(std::experimental::filesystem::directory_entry file)
     : m_file(std::move(file))

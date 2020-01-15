@@ -2,11 +2,11 @@
 
 #include <proxies/hwui/DFBLayout.h>
 #include <proxies/hwui/HWUIEnums.h>
-#include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 
 class SingleSoundEditMenuLegacy;
 class SingleSoundMenu;
 class Button;
+class AnyParameterLockedIndicator;
 
 class SingleSoundLayout : public DFBLayout
 {

@@ -5,6 +5,9 @@
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MonoUnisonModuleCaption.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 Carousel *UnmodulateableUnisonParameterLayout::createCarousel(const Rect &rect)
 {

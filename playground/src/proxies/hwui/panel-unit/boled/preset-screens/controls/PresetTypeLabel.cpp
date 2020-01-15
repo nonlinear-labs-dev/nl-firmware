@@ -1,4 +1,5 @@
 #include "PresetTypeLabel.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 PresetTypeLabel::PresetTypeLabel(const Rect &pos)
     : PresetLabel(pos)
@@ -24,9 +25,9 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
   const Rect &r = getPosition();
 
   if(showsLoadedPreset())
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
   else
-    fb.setColor(FrameBuffer::Colors::C43);
+    fb.setColor(FrameBufferColors::C43);
 
   int xinset = showsSelectedPreset() ? 3 : 1;
   int yinset = showsSelectedPreset() ? 2 : 1;

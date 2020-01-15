@@ -21,6 +21,8 @@
 #include <nltools/Assert.h>
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <presets/recall/RecallParameter.h>
+#include <xml/Attribute.h>
+#include <http/UndoScope.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -30,7 +32,7 @@ Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
-    , m_voiceGroup{ group->getVoiceGroup() }
+    , m_voiceGroup { group->getVoiceGroup() }
 {
 }
 
@@ -133,7 +135,7 @@ void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPos
 
 void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
-  if(value != m_value.getRawValue())
+  if(differs(value, m_value.getRawValue()))
   {
     auto swapData = UNDO::createSwapData(value);
 

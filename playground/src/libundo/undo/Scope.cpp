@@ -106,7 +106,7 @@ namespace UNDO
     m_cuckooTransaction.reset();
   }
 
-  Scope::tTransactionScopePtr Scope::startContinuousTransaction(void *id, steady_clock::duration timeout,
+  Scope::tTransactionScopePtr Scope::startContinuousTransaction(void *id, std::chrono::milliseconds timeout,
                                                                 const Glib::ustring &name)
   {
     nltools_assertAlways(m_undoPosition == nullptr || m_undoPosition->isClosed());

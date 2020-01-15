@@ -1,6 +1,7 @@
 #pragma once
 
 #include <io/files/FileIOReceiver.h>
+#include <memory>
 
 class MessageParser;
 

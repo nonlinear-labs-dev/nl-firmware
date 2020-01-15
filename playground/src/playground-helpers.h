@@ -1,15 +1,6 @@
 #pragma once
 
-#include "Application.h"
-#include "testing/TestDriver.h"
-#include <cstdlib>
-#include <execinfo.h>
-#include <iostream>
-#include <chrono>
-#include "device-settings/DebugLevel.h"
-#include "profiling/Profiler.h"
-#include "Options.h"
-#include <nltools/StringTools.h>
+#include <string>
 
 namespace Environment
 {
@@ -17,3 +8,6 @@ namespace Environment
   std::string getStackTrace(const std::string& prefix);
   void setupLocale();
 }
+
+std::ostream& wirteIntToStream(std::ostream& stream, int i);
+std::string to_string(double d);

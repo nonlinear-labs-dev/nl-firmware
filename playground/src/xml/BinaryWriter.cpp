@@ -1,4 +1,5 @@
 #include <xml/BinaryWriter.h>
+#include <xml/Attribute.h>
 
 BinaryWriter::BinaryWriter(std::shared_ptr<OutStream> out)
     : Writer(out)

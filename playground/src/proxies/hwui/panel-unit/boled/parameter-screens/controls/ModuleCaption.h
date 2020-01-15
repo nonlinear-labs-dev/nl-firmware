@@ -1,12 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
-#include <Application.h>
-#include <presets/PresetManager.h>
-#include <presets/EditBuffer.h>
-#include <groups/MasterGroup.h>
-#include <groups/ScaleGroup.h>
-#include <groups/UnisonGroup.h>
+#include <nltools/Types.h>
 
 class Application;
 class Parameter;
@@ -31,7 +26,7 @@ class ModuleCaption : public Label
 
   StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font, const StringAndSuffix &text) const override;
 
-private:
+ private:
   void onParameterSelected(Parameter *newOne);
   void onSelectionChanged(VoiceGroup v);
   void onSoundTypeChanged();

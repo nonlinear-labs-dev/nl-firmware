@@ -4,6 +4,7 @@
 #include "Styles.h"
 #include <tuple>
 #include <tools/json.h>
+#include <device-settings/DebugLevel.h>
 
 using json = nlohmann::json;
 
@@ -41,7 +42,7 @@ namespace DescriptiveLayouts
 
   StyleMap parseStylePairs(json styles)
   {
-    StyleMap theStyles{};
+    StyleMap theStyles {};
     for(json::iterator style = styles.begin(); style != styles.end(); ++style)
     {
       auto styleKey = to<StyleKey>(style.key());

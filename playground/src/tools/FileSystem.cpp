@@ -1,4 +1,5 @@
 #include <tools/FileSystem.h>
+#include <giomm.h>
 
 void FileSystem::deleteFolder(Glib::RefPtr<Gio::File> folder)
 {

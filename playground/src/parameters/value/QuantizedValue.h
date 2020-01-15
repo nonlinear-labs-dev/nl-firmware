@@ -2,6 +2,7 @@
 
 #include "ClippedValue.h"
 #include "proxies/hwui/HWUIEnums.h"
+#include <memory>
 
 class Parameter;
 

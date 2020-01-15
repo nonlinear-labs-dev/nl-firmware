@@ -1,7 +1,10 @@
 #pragma once
+
 #include <proxies/hwui/DFBLayout.h>
 #include <nltools/Types.h>
-#include "PresetManagerLayout.h"
+
+class PresetManagerLayout;
+class Button;
 
 class SelectVoiceGroupLayout : public DFBLayout
 {

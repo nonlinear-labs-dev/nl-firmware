@@ -1,9 +1,11 @@
 #pragma once
-#include <gio/gio.h>
-#include <map>
-#include <giomm/file.h>
-#include <giomm/init.h>
-#include <iostream>
+
+#include <list>
+#include <vector>
+#include <functional>
+#include <sigc++/trackable.h>
+#include <glibmm/refptr.h>
+#include <nltools/GlibFwd.h>
 
 namespace FileTools
 {
@@ -11,7 +13,7 @@ namespace FileTools
   {
    protected:
     using tFile = Glib::RefPtr<Gio::File>;
-    using tCallBack = std::function<void(const tFile&, const tFile&, Gio::FileMonitorEvent)>;
+    using tCallBack = std::function<void(const tFile&, const tFile&, int)>;
     using tFileCallBack = std::function<void(const tFile&)>;
     using tFileList = std::list<tFile>;
     using tMonitor = Glib::RefPtr<Gio::FileMonitor>;
@@ -24,7 +26,7 @@ namespace FileTools
     RecursiveDirectoryMonitor(const tFile& rootFolder, tCallBack callback);
     void rebuildDirectoryList();
     void addMonitor(const tFile& file);
-    void onFileChanged(const tFile& oldFile, const tFile& newFile, Gio::FileMonitorEvent monitorEvent);
+    void onFileChanged(const tFile& oldFile, const tFile& newFile, int monitorEvent);
     void recurseDirectory(const tFile& start, tFileCallBack filter);
     tFileList getAllDirectorysInDirectory(const tFile& folder);
     tFileList getAllFilesInFolder(const tFile& folder);

@@ -1,5 +1,7 @@
 #pragma once
+
 #include "../base/EventSource.h"
+#include <presets/PresetManager.h>
 
 namespace DescriptiveLayouts
 {
@@ -11,14 +13,10 @@ namespace DescriptiveLayouts
      public:
       PresetListBase()
       {
-        /* m_layoutConnection
-            = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstantiated(
-                sigc::mem_fun(this, &PresetListBase::onLayoutChanged));*/
       }
 
       ~PresetListBase()
       {
-        m_layoutConnection.disconnect();
         m_presetListConnection.disconnect();
       }
 
@@ -38,7 +36,6 @@ namespace DescriptiveLayouts
         }
       }
 
-      sigc::connection m_layoutConnection;
       sigc::connection m_presetListConnection;
     };
 

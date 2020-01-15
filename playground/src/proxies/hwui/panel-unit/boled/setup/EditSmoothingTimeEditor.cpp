@@ -3,6 +3,7 @@
 #include <device-settings/EditSmoothingTime.h>
 #include <proxies/hwui/panel-unit/boled/setup/EditSmoothingTimeEditor.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include "SetupLabel.h"
 
 EditSmoothingTimeEditor::EditSmoothingTimeEditor()
@@ -20,14 +21,14 @@ bool EditSmoothingTimeEditor::redraw(FrameBuffer &fb)
 {
   super::redraw(fb);
 
-  fb.setColor(FrameBuffer::C179);
+  fb.setColor(FrameBufferColors::C179);
   fb.drawRect(getPosition());
   return true;
 }
 
 void EditSmoothingTimeEditor::setBackgroundColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 Font::Justification EditSmoothingTimeEditor::getJustification() const
@@ -37,7 +38,7 @@ Font::Justification EditSmoothingTimeEditor::getJustification() const
 
 void EditSmoothingTimeEditor::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C255);
+  fb.setColor(FrameBufferColors::C255);
 }
 
 void EditSmoothingTimeEditor::onSettingChanged(const Setting *s)

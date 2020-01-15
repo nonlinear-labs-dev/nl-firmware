@@ -1,44 +1,25 @@
 #include <Application.h>
 #include <device-settings/DebugLevel.h>
 #include <groups/MacroControlMappingGroup.h>
-#include <groups/MacroControlsGroup.h>
 #include <groups/ScaleGroup.h>
-#include <http/UndoScope.h>
-#include <libundo/undo/Transaction.h>
-#include <libundo/undo/TransactionCreationScope.h>
 #include <parameters/MacroControlParameter.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameters/ModulationRoutingParameter.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/ScaleParameter.h>
-#include <playground.h>
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
-#include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
-#include <proxies/hwui/panel-unit/EditPanel.h>
-#include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
-#include <device-settings/Settings.h>
-#include <device-settings/Setting.h>
 #include <proxies/hwui/TwoStateLED.h>
-#include <tools/StateMachine.h>
-#include <proxies/hwui/HWUIEnums.h>
-#include <algorithm>
-#include <functional>
-#include <iterator>
-#include <memory>
-#include <device-settings/DebugLevel.h>
-#include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
-#include <parameters/names/ParameterDB.h>
 #include "PanelUnitParameterEditMode.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
-#include <parameters/PedalParameter.h>
+#include <sigc++/sigc++.h>
+#include <glibmm/main.h>
 
 class ParameterInfoLayout;
 
@@ -86,7 +67,7 @@ static EditPanel &getEditPanel()
 void PanelUnitParameterEditMode::setup()
 {
   m_mappings.forEachButton([=](Buttons buttonID, std::list<int> parameterIDs) {
-    std::vector<int> para{ parameterIDs.begin(), parameterIDs.end() };
+    std::vector<int> para { parameterIDs.begin(), parameterIDs.end() };
 
     if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
        && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
@@ -524,7 +505,7 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterI
   auto button = m_mappings.findButton(selectedParameterID.getNumber());
 
   if(button != Buttons::INVALID)
-    states[(int) button] = true;
+    states[static_cast<size_t>(button)] = true;
 }
 
 const BOLED &PanelUnitParameterEditMode::getBoled() const

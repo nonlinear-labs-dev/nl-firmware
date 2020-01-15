@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
 #include "presets/Bank.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 BankXOfYLabel::BankXOfYLabel(const Rect &pos)
     : super(pos)
@@ -28,12 +29,12 @@ void BankXOfYLabel::onBankSelectionChanged(const Uuid &selectedBank)
 
 void BankXOfYLabel::setBackgroundColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C43);
+  fb.setColor(FrameBufferColors::C43);
 }
 
 void BankXOfYLabel::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C179);
+  fb.setColor(FrameBufferColors::C179);
 }
 
 Font::Justification BankXOfYLabel::getJustification() const

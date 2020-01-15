@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Application.h>
 #include "BasicItem.h"
 
 class GenericItem : public BasicItem
@@ -9,7 +8,7 @@ class GenericItem : public BasicItem
   template <class T, class tCB>
   GenericItem(const T& caption, const Rect& r, tCB cb)
       : BasicItem(caption, r)
-      , m_cb{ cb }
+      , m_cb { cb }
   {
   }
 

@@ -15,7 +15,7 @@ SOLED::SOLED()
     : OLEDProxy(Rect(0, 64, 128, 32))
 {
   Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
-      mem_fun(this, &SOLED::onBaseUnitUIModeChange));
+      sigc::mem_fun(this, &SOLED::onBaseUnitUIModeChange));
 }
 
 SOLED::~SOLED()

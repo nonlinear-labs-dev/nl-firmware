@@ -5,7 +5,7 @@
 class SignalFlowIndicationSetting : public BooleanSetting
 {
  public:
-  explicit SignalFlowIndicationSetting(Settings& settings);
+  explicit SignalFlowIndicationSetting(UpdateDocumentContributor& settings);
   virtual ~SignalFlowIndicationSetting() = default;
   SignalFlowIndicationSetting(const SignalFlowIndicationSetting& other) = delete;
   SignalFlowIndicationSetting& operator=(const SignalFlowIndicationSetting&) = delete;

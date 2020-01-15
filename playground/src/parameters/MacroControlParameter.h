@@ -53,6 +53,7 @@ class MacroControlParameter : public Parameter
 
   void applyAbsoluteLpcPhysicalControl(tControlPositionValue v);
   void applyLpcPhysicalControl(tControlPositionValue diff);
+
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
   void setUiSelectedHardwareSource(ParameterId paramNumber);
   void toggleUiSelectedHardwareSource(int inc);
@@ -72,7 +73,7 @@ class MacroControlParameter : public Parameter
                                    tControlPositionValue newValue) override;
 
   tTargets m_targets;
-  ParameterId m_UiSelectedHardwareSourceParameterID{ 254, VoiceGroup::Global };
+  ParameterId m_UiSelectedHardwareSourceParameterID { 254, VoiceGroup::Global };
   Glib::ustring m_givenName;
   Glib::ustring m_info;
   Glib::ustring m_lastMCViewUuid;

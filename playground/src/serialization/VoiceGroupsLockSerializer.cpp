@@ -1,4 +1,6 @@
 #include "VoiceGroupsLockSerializer.h"
+#include <groups/ParameterGroup.h>
+#include <presets/EditBuffer.h>
 
 namespace Detail
 {
@@ -7,7 +9,7 @@ namespace Detail
    public:
     explicit VoiceGroupLockSerializer(EditBuffer *eb)
         : Serializer(getTag())
-        , m_editBuffer{ eb }
+        , m_editBuffer { eb }
     {
     }
 
@@ -65,6 +67,6 @@ std::string VoiceGroupsLockSerializer::getTagName()
 
 VoiceGroupsLockSerializer::VoiceGroupsLockSerializer(EditBuffer *eb)
     : Serializer(getTagName())
-    , m_editBuffer{ eb }
+    , m_editBuffer { eb }
 {
 }

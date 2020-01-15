@@ -1,5 +1,6 @@
 #include "XmlWriter.h"
 #include <libsoup/soup.h>
+#include <glibmm.h>
 
 XmlWriter::XmlWriter(std::shared_ptr<OutStream> out)
     : super(out)

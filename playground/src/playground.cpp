@@ -4,6 +4,7 @@
 #include "device-settings/DebugLevel.h"
 #include "Options.h"
 #include "playground-helpers.h"
+#include <giomm.h>
 
 int main(int numArgs, char **argv)
 {

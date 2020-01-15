@@ -1,4 +1,5 @@
 #include "MenuOverlay.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 MenuOverlay::MenuOverlay(const Rect& r)
     : ControlWithChildren(r)
@@ -8,7 +9,7 @@ MenuOverlay::MenuOverlay(const Rect& r)
 bool MenuOverlay::redraw(FrameBuffer& fb)
 {
   auto ret = ControlWithChildren::redraw(fb);
-  fb.setColor(FrameBuffer::C204);
+  fb.setColor(FrameBufferColors::C204);
   auto pos = getPosition();
   pos.setHeight(pos.getHeight() + 2);
   pos.setTop(pos.getTop() - 1);

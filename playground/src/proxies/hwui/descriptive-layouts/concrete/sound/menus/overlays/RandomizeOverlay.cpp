@@ -4,6 +4,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/descriptive-layouts/concrete/menu/SettingLabel.h>
+#include <libundo/undo/Scope.h>
 
 RandomizeOverlay::RandomizeOverlay(const Rect& r)
     : ChangeSettingWithCommitOverlay<RandomizeAmount>(r, [] {

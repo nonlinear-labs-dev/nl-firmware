@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ActionCommand.h"
+#include <libundo/undo/SwapData.h>
 #include <http/UpdateDocumentContributor.h>
 #include <memory>
 #include <list>

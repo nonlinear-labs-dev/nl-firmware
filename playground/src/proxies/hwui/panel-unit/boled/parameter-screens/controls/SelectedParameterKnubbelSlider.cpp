@@ -1,4 +1,5 @@
 #include "SelectedParameterKnubbelSlider.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 static const int c_borderLeft = 1;
 static const int c_borderRight = 1;
@@ -6,10 +7,6 @@ static const int c_handleWidth = 4;
 
 SelectedParameterKnubbelSlider::SelectedParameterKnubbelSlider(const Rect &rect)
     : super(rect)
-{
-}
-
-SelectedParameterKnubbelSlider::~SelectedParameterKnubbelSlider()
 {
 }
 
@@ -23,13 +20,13 @@ void SelectedParameterKnubbelSlider::drawHandle(FrameBuffer &fb)
 
   if(!isHighlight())
   {
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
     fb.fillRect(x - halfHandle, r.getTop(), c_handleWidth, handleHeight);
-    fb.setColor(FrameBuffer::Colors::C179);
+    fb.setColor(FrameBufferColors::C179);
   }
   else
   {
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   }
 
   fb.fillRect(x + 1 - halfHandle, r.getTop(), c_handleWidth - 2, handleHeight);

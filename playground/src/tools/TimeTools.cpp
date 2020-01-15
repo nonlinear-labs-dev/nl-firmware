@@ -5,7 +5,10 @@
 #include <memory>
 #include <sstream>
 
+#include <device-settings/DateTimeAdjustment.h>
 #include <device-settings/DebugLevel.h>
+#include <device-settings/Settings.h>
+#include <Application.h>
 
 time_t TimeTools::getRealTimestamp()
 {

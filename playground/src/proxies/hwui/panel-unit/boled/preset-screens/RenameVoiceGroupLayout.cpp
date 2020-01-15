@@ -3,6 +3,7 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include "RenameVoiceGroupLayout.h"
+#include <libundo/undo/Scope.h>
 
 inline EditBuffer* getEditBuffer()
 {
@@ -10,7 +11,7 @@ inline EditBuffer* getEditBuffer()
 }
 
 RenameVoiceGroupLayout::RenameVoiceGroupLayout(VoiceGroup vg)
-    : m_targetGroup{ vg }
+    : m_targetGroup { vg }
 {
 }
 

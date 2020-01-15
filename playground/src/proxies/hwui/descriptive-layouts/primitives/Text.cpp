@@ -2,6 +2,7 @@
 #include <tools/ExceptionTools.h>
 #include "Text.h"
 #include "proxies/hwui/descriptive-layouts/PrimitiveInstance.h"
+#include <proxies/hwui/Oleds.h>
 
 namespace DescriptiveLayouts
 {
@@ -21,7 +22,7 @@ namespace DescriptiveLayouts
       auto bg = Control::isHighlight() ? (FrameBuffer::Colors) getStyleValue(StyleKey::HighlightBackgroundColor)
                                        : (FrameBuffer::Colors) getStyleValue(StyleKey::BackgroundColor);
 
-      if(bg != FrameBuffer::Colors::Transparent)
+      if(bg != FrameBufferColors::Transparent)
       {
         fb.setColor(bg);
         fb.fillRect(getPosition());
@@ -29,7 +30,7 @@ namespace DescriptiveLayouts
     }
     else
     {
-      fb.setColor(FrameBuffer::Colors::C43);
+      fb.setColor(FrameBufferColors::C43);
       fb.fillRect(getPosition());
     }
   }

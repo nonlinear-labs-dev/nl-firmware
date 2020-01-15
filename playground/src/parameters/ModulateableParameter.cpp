@@ -20,6 +20,9 @@
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <presets/recall/RecallParameter.h>
 #include <proxies/hwui/HWUI.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <http/UndoScope.h>
 
 ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                              tDisplayValue def, tControlPositionValue coarseDenominator,
@@ -394,7 +397,7 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
   auto displayValue = scaleConverter->controlPositionToDisplay(clipped);
   auto ret = scaleConverter->getDimension().stringize(displayValue);
 
-  if(clipped != v)
+  if(differs(clipped, v))
     ret = "! " + ret;
 
   return ret;

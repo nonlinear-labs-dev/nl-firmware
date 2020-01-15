@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glibmm/ustring.h>
 #include <vector>
 #include <libundo/undo/StringTools.h>
 

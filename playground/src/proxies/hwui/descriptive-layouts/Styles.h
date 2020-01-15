@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TemplateEnums.h"
-#include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/HWUIEnums.h>
 
 namespace DescriptiveLayouts
 {
@@ -21,7 +21,7 @@ namespace DescriptiveLayouts
     {
       template <typename... tArgs> StyleSelector(tArgs... args)
       {
-        (void) std::initializer_list<bool>{ (setupSelector(args), false)... };
+        (void) std::initializer_list<bool> { (setupSelector(args), false)... };
       }
 
       void setupSelector(UIFocus v)
@@ -85,13 +85,8 @@ namespace DescriptiveLayouts
 
   inline void merge(StyleMap &target, const StyleMap &s)
   {
-    DebugLevel::gassy("Style", s.name, "matches!");
-
     for(auto &a : s.map)
-    {
-      DebugLevel::gassy("set", toString(a.first), "=", to_string(a.second));
       target.map[a.first] = a.second;
-    }
   }
 
   template <typename tLast> struct SubTree<tLast> : public std::map<tLast, StyleMap>

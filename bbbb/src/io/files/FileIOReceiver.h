@@ -1,6 +1,7 @@
 #pragma once
 
 #include <io/Receiver.h>
+#include <glibmm/iochannel.h>
 
 class FileIOReceiver : public Receiver
 {

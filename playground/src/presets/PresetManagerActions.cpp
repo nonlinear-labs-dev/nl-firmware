@@ -1,24 +1,16 @@
-#include <Application.h>
+#include <presets/PresetManagerActions.h>
 #include <http/HTTPRequest.h>
 #include <presets/EditBuffer.h>
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
-#include <presets/PresetManagerActions.h>
 #include <proxies/hwui/HWUI.h>
-#include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
-#include <proxies/hwui/panel-unit/EditPanel.h>
-#include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
-#include <serialization/EditBufferSerializer.h>
-#include <tools/Uuid.h>
 #include <xml/MemoryInStream.h>
 #include <xml/OutStream.h>
 #include <xml/VersionAttribute.h>
-#include <xml/XmlReader.h>
-#include <xml/XmlWriter.h>
 #include <boost/algorithm/string.hpp>
 #include <tools/StringTools.h>
 #include <device-settings/Settings.h>
@@ -29,6 +21,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
+#include <Application.h>
 
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     : RPCActionManager("/presets/")
@@ -206,10 +199,6 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       }
     }
   });
-}
-
-PresetManagerActions::~PresetManagerActions()
-{
 }
 
 void PresetManagerActions::handleImportBackupFile(UNDO::Transaction *transaction, SoupBuffer *buffer,

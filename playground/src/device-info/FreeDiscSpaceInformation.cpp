@@ -15,7 +15,7 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation *parent)
 
   using namespace std::chrono;
   constexpr minutes timeout(5);
-  Glib::MainContext::get_default()->signal_timeout().connect(mem_fun(this, &FreeDiscSpaceInformation::refresh),
+  Glib::MainContext::get_default()->signal_timeout().connect(sigc::mem_fun(this, &FreeDiscSpaceInformation::refresh),
                                                              duration_cast<milliseconds>(timeout).count());
 }
 

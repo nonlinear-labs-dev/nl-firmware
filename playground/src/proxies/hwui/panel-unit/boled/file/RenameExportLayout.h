@@ -1,7 +1,8 @@
 #pragma once
 
 #include <proxies/hwui/panel-unit/boled/preset-screens/RenameLayout.h>
-#include <presets/Bank.h>
+
+class Bank;
 
 class RenameExportLayout : public RenameLayout
 {

@@ -1,11 +1,11 @@
 #include "SplitPointParameter.h"
-
 #include <parameters/scale-converters/SplitPointScaleConverter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
 #include "proxies/hwui/HWUI.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <parameters/scale-converters/dimension/SplitPointDimension.h>
+#include <Application.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, const ParameterId &id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
@@ -27,7 +27,7 @@ DFBLayout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
   }
 }
 
-std::string SplitPointParameter::getDisplayValue(VoiceGroup vg) const
+Glib::ustring SplitPointParameter::getDisplayValue(VoiceGroup vg) const
 {
   return SplitPointDimension::stringizeSplitPointDisplay(getValue().getRawValue(), vg);
 }
@@ -42,7 +42,7 @@ Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionVal
   return std::to_string(static_cast<int>(60 * amount)) + " st";
 }
 
-ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
+Glib::ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
 {
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   return SplitPointDimension::get().stringizeSplitPointDisplay(v, vg);

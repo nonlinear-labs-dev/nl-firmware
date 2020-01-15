@@ -2,7 +2,7 @@
 
 #include "playground.h"
 #include "Ribbon.h"
-#include "parameters/Parameter.h"
+#include <sigc++/connection.h>
 
 class Application;
 class Parameter;

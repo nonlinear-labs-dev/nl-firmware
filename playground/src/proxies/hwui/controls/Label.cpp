@@ -1,5 +1,6 @@
 #include "Label.h"
 #include "proxies/hwui/Oleds.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 Label::Label(const StringAndSuffix &text, const Rect &pos)
     : super(pos)
@@ -16,24 +17,24 @@ Label::~Label()
 {
 }
 
-void Label::setFontColor(FrameBuffer::Colors color)
+void Label::setFontColor(FrameBufferColors color)
 {
   m_fontColor = color;
 }
 
 void Label::setFontColor(FrameBuffer &fb) const
 {
-  if(m_fontColor != FrameBuffer::Colors::Undefined)
+  if(m_fontColor != FrameBufferColors::Undefined)
   {
     fb.setColor(m_fontColor);
   }
   else if(isHighlight())
   {
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   }
   else
   {
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
   }
 }
 

@@ -4,6 +4,8 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/MacroControlParameter.h"
+#include <proxies/hwui/FrameBuffer.h>
+#include <sigc++/sigc++.h>
 
 SelectedMacroControlsHWSourceValue::SelectedMacroControlsHWSourceValue(const Rect &rect)
     : super(rect)
@@ -72,7 +74,7 @@ void SelectedMacroControlsHWSourceValue::updateText(const Parameter *param)
 
 void SelectedMacroControlsHWSourceValue::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void SelectedMacroControlsHWSourceValue::onModifiersChanged()

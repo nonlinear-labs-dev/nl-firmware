@@ -1,12 +1,16 @@
 #pragma once
 
 #include "proxies/hwui/controls/ButtonMenu.h"
-#include "device-settings/PresetStoreModeSetting.h"
-#include <libundo/undo/Scope.h>
+#include <device-settings/PresetStoreModeSetting.h>
 
 class PresetManagerLayout;
 class Preset;
 class Bank;
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class AppendOverwriteInsertButtonMenu : public ButtonMenu
 {

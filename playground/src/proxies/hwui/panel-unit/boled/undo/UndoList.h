@@ -1,7 +1,11 @@
 #pragma once
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
-#include <libundo/undo/Transaction.h>
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class UndoList : public ControlWithChildren
 {
@@ -10,7 +14,6 @@ class UndoList : public ControlWithChildren
 
  public:
   UndoList(const Rect &pos);
-  virtual ~UndoList();
 
   void assignTransactions(UNDO::Transaction *tip);
   bool redraw(FrameBuffer &fb) override;

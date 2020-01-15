@@ -1,8 +1,6 @@
 #pragma once
 
 #include <io/Bridge.h>
-#include <nltools/threading/Throttler.h>
-#include <list>
 
 class FromEncoderBridge : public Bridge
 {
@@ -11,5 +9,5 @@ class FromEncoderBridge : public Bridge
   void sendRotary(int8_t inc);
 
  private:
-  void transmit(Receiver::tMessage msg) override;
+  void transmit(const Receiver::tMessage &msg) override;
 };

@@ -1,11 +1,8 @@
 #include <proxies/hwui/panel-unit/boled/setup/SetupSelectionEntry.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 SetupSelectionEntry::SetupSelectionEntry(int i, const Rect &pos)
     : super(pos)
-{
-}
-
-SetupSelectionEntry::~SetupSelectionEntry()
 {
 }
 
@@ -23,7 +20,7 @@ bool SetupSelectionEntry::redraw(FrameBuffer &fb)
 
   if(isHighlight() && !m_selectMode)
   {
-    fb.setColor(FrameBuffer::C179);
+    fb.setColor(FrameBufferColors::C179);
     fb.drawRect(getPosition());
   }
   return true;
@@ -32,7 +29,7 @@ bool SetupSelectionEntry::redraw(FrameBuffer &fb)
 void SetupSelectionEntry::setBackgroundColor(FrameBuffer &fb) const
 {
   if(isHighlight() && m_selectMode)
-    fb.setColor(FrameBuffer::C103);
+    fb.setColor(FrameBufferColors::C103);
   else
     super::setBackgroundColor(fb);
 }

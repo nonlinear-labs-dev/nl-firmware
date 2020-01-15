@@ -8,7 +8,6 @@ class SetupSelectionEntry : public ControlWithChildren
 
  public:
   SetupSelectionEntry(int i, const Rect &pos);
-  virtual ~SetupSelectionEntry();
 
   void assign(Control *s, bool selectMode);
   bool redraw(FrameBuffer &fb) override;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <io/Sender.h>
+#include <glibmm/refptr.h>
 
 class FileIOSender : public Sender
 {

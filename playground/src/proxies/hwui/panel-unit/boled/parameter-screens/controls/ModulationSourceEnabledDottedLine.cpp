@@ -3,6 +3,7 @@
 #include "parameters/ModulateableParameter.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
+#include <sigc++/sigc++.h>
 
 ModulationSourceEnabledDottedLine::ModulationSourceEnabledDottedLine(const Rect &rect)
     : super(rect)

@@ -1,7 +1,13 @@
 #pragma once
 
 #include "playground.h"
-#include <libundo/undo/Scope.h>
+#include <sigc++/trackable.h>
+#include <vector>
+
+namespace UNDO
+{
+  class Transaction;
+};
 
 class EditBuffer;
 class Parameter;
@@ -22,7 +28,7 @@ class EditBufferSnapshotMaker : public sigc::trackable
     tControlPositionValue snapshotValue;
   };
 
-  using tParams = std::list<Record>;
+  using tParams = std::vector<Record>;
 
   tParams collectDirtyParameters(EditBuffer *editBuffer);
   void addSnapshot(UNDO::Transaction *transaction, tParams &&params);

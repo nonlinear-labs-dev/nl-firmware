@@ -2,9 +2,9 @@
 
 #include <playground.h>
 #include <experimental/any>
-#include <parameters/ValueRange.h>
 #include <map>
 #include "proxies/hwui/descriptive-layouts/TemplateEnums.h"
+#include <sigc++/connection.h>
 
 namespace DescriptiveLayouts
 {

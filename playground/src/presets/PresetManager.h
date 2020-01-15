@@ -6,18 +6,21 @@
 #include <vector>
 #include <string>
 
-#include <http/UpdateDocumentContributor.h>
-#include <serialization/PresetManagerSerializer.h>
 #include <tools/ScopedGuard.h>
 #include <nltools/threading/Throttler.h>
 #include <tools/Uuid.h>
 #include <presets/SearchQuery.h>
 #include <tools/RecursionGuard.h>
+#include <http/ContentSection.h>
+#include <tools/Signal.h>
 
 class Bank;
 class Preset;
 class EditBuffer;
 class Parameter;
+class PresetManagerSerializer;
+class RPCActionManager;
+class NetworkRequest;
 
 class PresetManager : public ContentSection
 {

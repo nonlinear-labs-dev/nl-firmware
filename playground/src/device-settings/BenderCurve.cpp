@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "proxies/lpc/LPCProxy.h"
 
-BenderCurve::BenderCurve(Settings &settings)
+BenderCurve::BenderCurve(UpdateDocumentContributor &settings)
     : super(settings, BenderCurves::Soft)
 {
 }

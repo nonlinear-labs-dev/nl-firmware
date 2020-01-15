@@ -18,10 +18,6 @@ class ButtonMenuButton : public Label
   Font::Justification getJustification() const override;
 
  private:
-  // private methods
-  ButtonMenuButton(const ButtonMenuButton &other);
-  ButtonMenuButton &operator=(const ButtonMenuButton &);
-
   bool m_isFirst;
   bool m_isLast;
   Font::Justification m_justification;

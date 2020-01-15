@@ -3,41 +3,42 @@
 #include <glibmm/optiongroup.h>
 #include "device-settings/DebugLevel.h"
 #include "Application.h"
+#include <giomm.h>
 
 Options::Options(int &argc, char **&argv)
 {
   setDefaults();
 
-  OptionGroup mainGroup("common", "common options");
-  OptionContext ctx;
+  Glib::OptionGroup mainGroup("common", "common options");
+  Glib::OptionContext ctx;
 
-  OptionEntry pmPath;
-  pmPath.set_flags(OptionEntry::FLAG_FILENAME);
+  Glib::OptionEntry pmPath;
+  pmPath.set_flags(Glib::OptionEntry::FLAG_FILENAME);
   pmPath.set_long_name("pm-path");
   pmPath.set_short_name('p');
   pmPath.set_description("Name of the folder that stores preset-managers banks as XML files");
   mainGroup.add_entry_filename(pmPath, sigc::mem_fun(this, &Options::setPMPathName));
 
-  OptionEntry layoutPath;
-  layoutPath.set_flags(OptionEntry::FLAG_FILENAME);
+  Glib::OptionEntry layoutPath;
+  layoutPath.set_flags(Glib::OptionEntry::FLAG_FILENAME);
   layoutPath.set_long_name("layouts");
   layoutPath.set_short_name('l');
   layoutPath.set_description("name of the folder containing the styles, controls and layouts");
   mainGroup.add_entry_filename(layoutPath, sigc::mem_fun(this, &Options::setLayoutFolder));
 
-  OptionEntry bbbb;
+  Glib::OptionEntry bbbb;
   bbbb.set_long_name("bbbb-host");
   bbbb.set_short_name('b');
   bbbb.set_description("Where to find the bbbb");
   mainGroup.add_entry(bbbb, m_bbbb);
 
-  OptionEntry ae;
+  Glib::OptionEntry ae;
   ae.set_long_name("audio-engine-host");
   ae.set_short_name('a');
   ae.set_description("Where to find the audio-engine");
   mainGroup.add_entry(ae, m_audioEngineHost);
 
-  OptionEntry turn;
+  Glib::OptionEntry turn;
   turn.set_long_name("bbbb-turnaround-times");
   turn.set_short_name('t');
   turn.set_arg_description("measure turn around times for knob to BOLED messages");

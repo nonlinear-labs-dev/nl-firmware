@@ -11,6 +11,8 @@
 #include <memory>
 #include "PanelUnitPresetMode.h"
 #include <device-settings/HighlightChangedParametersSetting.h>
+#include <sigc++/sigc++.h>
+#include <device-settings/Settings.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
@@ -153,36 +155,36 @@ std::pair<bool, bool> PanelUnitPresetMode::trySpecialCaseParameter(const Paramet
       case 8:
       {
         auto splitLevel = eb->findParameterByID({ 332, selParam->getVoiceGroup() });
-        return {true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0};
+        return { true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0 };
       }
       case 27:
       {
         auto splitLevel = eb->findParameterByID({ 338, selParam->getVoiceGroup() });
-        return {true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0};
+        return { true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0 };
       }
         //Flanger Mix
       case 223:
       {
         auto tremolo = eb->findParameterByID({ 389, selParam->getVoiceGroup() });
-        return {true, tremolo->getControlPositionValue() > 0 || selParam->getControlPositionValue() != 0};
+        return { true, tremolo->getControlPositionValue() > 0 || selParam->getControlPositionValue() != 0 };
       }
         //Echo Mix
       case 233:
       {
         auto echoSend = eb->findParameterByID({ 342, selParam->getVoiceGroup() });
-        return {true, echoSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0};
+        return { true, echoSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0 };
       }
         //Reverb Mix
       case 241:
       {
         auto reverbSend = eb->findParameterByID({ 344, selParam->getVoiceGroup() });
-        return {true, reverbSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0};
+        return { true, reverbSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0 };
       }
       default:
-        return {false, false};
+        return { false, false };
     }
   }
-  return {false, false};
+  return { false, false };
 }
 
 PanelUnitSoundMode::PanelUnitSoundMode()

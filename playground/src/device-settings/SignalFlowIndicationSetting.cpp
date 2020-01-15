@@ -1,6 +1,6 @@
 #include <device-settings/SignalFlowIndicationSetting.h>
 
-SignalFlowIndicationSetting::SignalFlowIndicationSetting(Settings& settings)
+SignalFlowIndicationSetting::SignalFlowIndicationSetting(UpdateDocumentContributor& settings)
     : BooleanSetting(settings, true)
 {
 }

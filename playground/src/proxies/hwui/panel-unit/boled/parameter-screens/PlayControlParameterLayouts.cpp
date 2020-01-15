@@ -19,6 +19,7 @@
 #include <device-settings/RibbonRelativeFactor.h>
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
+#include <libundo/undo/Scope.h>
 
 uint8_t PlayControlParameterLayout2::s_mode = PlayControlParameterLayout2::Mode::ValueEdit;
 int PlayControlParameterLayout2::s_instanceCount = 0;

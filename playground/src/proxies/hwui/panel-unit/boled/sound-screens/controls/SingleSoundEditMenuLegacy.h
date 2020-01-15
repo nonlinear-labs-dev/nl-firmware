@@ -1,9 +1,6 @@
 #pragma once
 
 #include "proxies/hwui/controls/ButtonMenu.h"
-#include "device-settings/PresetStoreModeSetting.h"
-#include <libundo/undo/Scope.h>
-#include <proxies/hwui/controls/ButtonMenuButton.h>
 
 class SoundMenu : public ButtonMenu
 {

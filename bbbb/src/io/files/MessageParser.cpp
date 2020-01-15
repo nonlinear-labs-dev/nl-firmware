@@ -1,13 +1,9 @@
 #include "MessageParser.h"
 #include <string.h>
+#include <glibmm/bytes.h>
 
-MessageParser::MessageParser()
-{
-}
-
-MessageParser::~MessageParser()
-{
-}
+MessageParser::MessageParser() = default;
+MessageParser::~MessageParser() = default;
 
 bool MessageParser::hasReadHeader() const
 {

@@ -1,4 +1,5 @@
 #include <io/Receiver.h>
+#include <giomm.h>
 
 Receiver::Receiver()
 {

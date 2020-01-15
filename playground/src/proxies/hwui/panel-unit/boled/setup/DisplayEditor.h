@@ -1,7 +1,8 @@
 #pragma once
 
-#include <proxies/hwui/controls/LeftAlignedLabel.h>
 #include "MenuEditor.h"
+
+class LeftAlignedLabel;
 
 class DisplayEditor : public ControlWithChildren, public SetupEditor
 {

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <proxies/hwui/controls/LabelRegular8.h>
 
 class CurrentVoiceGroupSelectionIndicator : public LabelRegular8

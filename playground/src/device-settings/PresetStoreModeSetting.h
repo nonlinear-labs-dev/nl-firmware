@@ -18,7 +18,7 @@ class PresetStoreModeSetting : public EnumSetting<PresetStoreModeSettings>
   typedef EnumSetting<PresetStoreModeSettings> super;
 
  public:
-  PresetStoreModeSetting(Settings &settings);
+  PresetStoreModeSetting(UpdateDocumentContributor &settings);
   virtual ~PresetStoreModeSetting();
 
  private:

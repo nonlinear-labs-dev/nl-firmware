@@ -3,6 +3,7 @@
 #include <device-settings/EncoderAcceleration.h>
 #include <proxies/hwui/panel-unit/boled/setup/EncoderAccelerationEditor.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
 #include "SetupLabel.h"
 
 EncoderAccelerationEditor::EncoderAccelerationEditor()
@@ -20,14 +21,14 @@ bool EncoderAccelerationEditor::redraw(FrameBuffer &fb)
 {
   super::redraw(fb);
 
-  fb.setColor(FrameBuffer::C179);
+  fb.setColor(FrameBufferColors::C179);
   fb.drawRect(getPosition());
   return true;
 }
 
 void EncoderAccelerationEditor::setBackgroundColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 Font::Justification EncoderAccelerationEditor::getJustification() const
@@ -37,7 +38,7 @@ Font::Justification EncoderAccelerationEditor::getJustification() const
 
 void EncoderAccelerationEditor::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C255);
+  fb.setColor(FrameBufferColors::C255);
 }
 
 void EncoderAccelerationEditor::onSettingChanged(const Setting *s)

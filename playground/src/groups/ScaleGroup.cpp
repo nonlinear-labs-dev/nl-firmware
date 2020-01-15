@@ -33,7 +33,7 @@ void ScaleGroup::init()
 {
   auto baseKeyParam = new ScaleParameter(this, { getScaleBaseParameterNumber(), VoiceGroup::Global },
                                          ScaleConverter::get<BaseKeyScaleConverter>(), 0, 11, 11);
-  baseKeyParam->onParameterChanged(mem_fun(this, &ScaleGroup::onBaseKeyParameterChanged), false);
+  baseKeyParam->onParameterChanged(sigc::mem_fun(this, &ScaleGroup::onBaseKeyParameterChanged), false);
   appendParameter(baseKeyParam);
 
   appendParameter(
@@ -60,7 +60,7 @@ void ScaleGroup::init()
       new ScaleParameter(this, { 323, VoiceGroup::Global }, ScaleConverter::get<KeyScaleConverter>(), 0, 800, 8000));
 }
 
-void ScaleGroup::onBaseKeyParameterChanged(const Parameter* baseKeyParameter)
+void ScaleGroup::onBaseKeyParameterChanged(const Parameter*)
 {
   m_updateNames.doTask([=]() {
     for(auto a : getParameters())

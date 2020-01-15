@@ -1,22 +1,20 @@
 #include "Setting.h"
-#include "Settings.h"
-#include "xml/Writer.h"
+#include <xml/Writer.h>
+#include <xml/Attribute.h>
 
-Setting::Setting(Settings &parent)
+Setting::Setting(UpdateDocumentContributor &parent)
     : super(&parent)
 {
 }
 
-Setting::~Setting()
-{
-}
+Setting::~Setting() = default;
 
 bool Setting::persistent() const
 {
   return true;
 }
 
-connection Setting::onChange(sigc::slot<void, const Setting *> slot)
+sigc::connection Setting::onChange(sigc::slot<void, const Setting *> slot)
 {
   return m_signal.connectAndInit(slot, this);
 }

@@ -5,6 +5,7 @@
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <tools/Signal.h>
+#include <giomm/file.h>
 
 class ParameterDescriptionDatabase::Job
 {
@@ -37,7 +38,7 @@ class ParameterDescriptionDatabase::Job
 
   void loadFromParameter(MacroControlParameter *mc)
   {
-    m_connection = mc->onParameterChanged(mem_fun(this, &Job::onParameterChanged));
+    m_connection = mc->onParameterChanged(sigc::mem_fun(this, &Job::onParameterChanged));
   }
 
   void onParameterChanged(const Parameter *p)
@@ -136,7 +137,7 @@ ParameterDescriptionDatabase::ParameterDescriptionDatabase()
 {
 }
 
-connection ParameterDescriptionDatabase::load(ParameterId paramID, sigc::slot<void, const Glib::ustring &> cb)
+sigc::connection ParameterDescriptionDatabase::load(ParameterId paramID, sigc::slot<void, const Glib::ustring &> cb)
 {
   auto it = m_jobs.find(paramID);
 

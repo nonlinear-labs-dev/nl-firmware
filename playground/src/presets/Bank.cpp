@@ -7,6 +7,9 @@
 #include <tools/TimeTools.h>
 #include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
+#include <glibmm/regex.h>
+#include <giomm/file.h>
+#include <Application.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 
@@ -473,7 +476,7 @@ void Bank::deletePreset(UNDO::Transaction *transaction, const Uuid &uuid)
   updateLastModifiedTimestamp(transaction);
 }
 
-connection Bank::onBankChanged(sigc::slot<void> cb)
+sigc::connection Bank::onBankChanged(sigc::slot<void> cb)
 {
   return m_sigBankChanged.connectAndInit(cb);
 }

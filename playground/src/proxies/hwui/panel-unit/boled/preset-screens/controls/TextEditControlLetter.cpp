@@ -1,5 +1,6 @@
 #include "TextEditControlLetter.h"
 #include <proxies/hwui/TextEditUsageMode.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 TextEditControlLetter::TextEditControlLetter(std::shared_ptr<TextEditUsageMode> textUsageMode, int relativeToCursor,
                                              const Rect &pos)

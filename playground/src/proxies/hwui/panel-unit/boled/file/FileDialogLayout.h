@@ -5,7 +5,6 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/InvertedLabel.h>
 #include <tools/FileTools.h>
 #include <Application.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Label.h>
 #include <experimental/filesystem>
 #include <tools/BackgroundJobs.h>

@@ -13,7 +13,7 @@ class Bridge : public sigc::trackable
   virtual ~Bridge();
 
  protected:
-  virtual void transmit(Receiver::tMessage msg);
+  virtual void transmit(const Receiver::tMessage &msg);
 
   std::unique_ptr<Sender> m_sender;
   std::unique_ptr<Receiver> m_receiver;

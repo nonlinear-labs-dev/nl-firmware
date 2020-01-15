@@ -1,7 +1,11 @@
 #pragma once
 
 #include "RenameLayout.h"
-#include <libundo/undo/Scope.h>
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class Bank;
 

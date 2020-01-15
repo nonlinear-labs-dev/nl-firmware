@@ -1,8 +1,6 @@
 #pragma once
 
 #include "playground.h"
-#include "libundo/undo/Scope.h"
-#include "scale-converters/ScaleConverter.h"
 #include "http/UpdateDocumentContributor.h"
 #include "value/QuantizedValue.h"
 #include <proxies/hwui/HWUIEnums.h>
@@ -10,23 +8,23 @@
 #include <ParameterId.h>
 #include <tools/Signal.h>
 
-class Layout;
 class DFBLayout;
-class Application;
-class ParameterLayout;
-class ParameterInfoLayout;
 class Writer;
-class ParameterDualGroupSet;
 class ParameterGroup;
 class MessageComposer;
-class FrameBuffer;
 class PresetParameter;
 class RecallParameter;
+class ScaleConverter;
 
 enum ParameterFlags
 {
   Loaded = 1
 };
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class Parameter : public UpdateDocumentContributor,
                   public IntrusiveListItem<Parameter *>,

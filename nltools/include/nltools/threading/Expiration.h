@@ -3,7 +3,7 @@
 #include <nltools/Uncopyable.h>
 #include <chrono>
 #include <functional>
-#include <glibmm.h>
+#include <sigc++/connection.h>
 
 class Expiration : public Uncopyable
 {
@@ -11,11 +11,11 @@ class Expiration : public Uncopyable
   using Callback = std::function<void()>;
   using Duration = std::chrono::steady_clock::duration;
 
-  Expiration(Callback cb = Callback(), Duration d = Duration::zero(), int priority = Glib::PRIORITY_DEFAULT);
+  Expiration(Callback cb = Callback(), Duration d = Duration::zero(), int priority = 0);
   ~Expiration();
 
   void setCallback(Callback cb);
-  void refresh(Duration d, int priority = Glib::PRIORITY_DEFAULT);
+  void refresh(Duration d, int priority = 0);
   bool isPending() const;
   void cancel();
 

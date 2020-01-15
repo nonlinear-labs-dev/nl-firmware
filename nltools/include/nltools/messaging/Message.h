@@ -271,20 +271,20 @@ namespace nltools
     {
       struct Parameter
       {
-        uint16_t id{};
+        uint16_t id {};
         double controlPosition = 0;
       };
 
       struct RibbonParameter : Parameter
       {
-        RibbonTouchBehaviour ribbonTouchBehaviour{};
-        RibbonReturnMode ribbonReturnMode{};
+        RibbonTouchBehaviour ribbonTouchBehaviour {};
+        RibbonReturnMode ribbonReturnMode {};
       };
 
       struct PedalParameter : Parameter
       {
-        PedalModes pedalMode{};
-        ReturnMode returnMode{};
+        PedalModes pedalMode {};
+        ReturnMode returnMode {};
       };
 
       struct MacroParameter : Parameter

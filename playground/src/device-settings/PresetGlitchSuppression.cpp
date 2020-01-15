@@ -4,8 +4,8 @@
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-PresetGlitchSuppression::PresetGlitchSuppression(Settings &settings)
-    : super(settings, true)
+PresetGlitchSuppression::PresetGlitchSuppression(UpdateDocumentContributor &settings)
+    : super(settings, false)
 {
 }
 

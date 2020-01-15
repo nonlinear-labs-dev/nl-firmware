@@ -8,6 +8,7 @@
 #include "presets/EditBuffer.h"
 #include <parameters/RibbonParameter.h>
 #include <proxies/hwui/buttons.h>
+#include <http/UndoScope.h>
 
 BaseUnitPlayMode::BaseUnitPlayMode()
     : m_modeButtonHandler(std::bind(&BaseUnitPlayMode::modeButtonShortPress, this),
@@ -37,7 +38,7 @@ void BaseUnitPlayMode::toggleTouchBehaviour()
     auto id = Application::get().getLPCProxy()->getLastTouchedRibbonParameterID();
 
     if(auto ribbonParam
-       = dynamic_cast<RibbonParameter*>(pm->getEditBuffer()->findParameterByID({id, VoiceGroup::Global})))
+       = dynamic_cast<RibbonParameter*>(pm->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global })))
       ribbonParam->undoableIncRibbonTouchBehaviour(trans->getTransaction());
   }
 }

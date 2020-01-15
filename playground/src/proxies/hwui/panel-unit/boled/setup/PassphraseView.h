@@ -2,6 +2,8 @@
 
 #include <proxies/hwui/panel-unit/boled/setup/SetupLabel.h>
 
+class Setting;
+
 class PassphraseView : public SetupLabel
 {
  private:

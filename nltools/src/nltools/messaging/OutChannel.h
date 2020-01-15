@@ -1,12 +1,16 @@
 #pragma once
 
-#include <nltools/messaging/Messaging.h>
 #include <memory>
+#include <chrono>
+#include <functional>
+#include <nltools/GlibFwd.h>
 
 namespace nltools
 {
   namespace msg
   {
+    using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
+
     class OutChannel
     {
      public:
@@ -15,11 +19,8 @@ namespace nltools
       virtual ~OutChannel();
 
       virtual void send(const SerializedMessage &msg) = 0;
-
       virtual bool waitForConnection(std::chrono::milliseconds timeOut) = 0;
-
       virtual void onConnectionEstablished(std::function<void()> cb) = 0;
-
       virtual bool isConnected() const = 0;
     };
   }

@@ -1,12 +1,12 @@
 #include <Application.h>
 #include "HighlightChangedParametersSetting.h"
 
-HighlightChangedParametersSetting::HighlightChangedParametersSetting(Settings& parent)
+HighlightChangedParametersSetting::HighlightChangedParametersSetting(UpdateDocumentContributor& parent)
     : BooleanSetting(parent, true)
 {
 }
 
-ForceHighlightChangedParametersSetting::ForceHighlightChangedParametersSetting(Settings& parent)
+ForceHighlightChangedParametersSetting::ForceHighlightChangedParametersSetting(UpdateDocumentContributor& parent)
     : BooleanSetting(parent, false)
 {
 }

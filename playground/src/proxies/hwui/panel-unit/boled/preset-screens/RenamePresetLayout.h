@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RenameLayout.h"
-#include <libundo/undo/Transaction.h>
 
 class Preset;
 

@@ -1,10 +1,14 @@
 #include "InfoContent.h"
+#include "SingleLineInfoContent.h"
+#include "InfoField.h"
 #include <nltools/Assert.h>
 
 InfoContent::InfoContent()
     : super(Rect(0, 0, 0, 64))
 {
 }
+
+InfoContent::~InfoContent() = default;
 
 void InfoContent::setPosition(const Rect& rect)
 {

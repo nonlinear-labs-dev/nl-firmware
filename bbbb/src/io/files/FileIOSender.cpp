@@ -1,5 +1,7 @@
 #include <io/files/FileIOSender.h>
 #include <nltools/logging/Log.h>
+#include <glibmm/iochannel.h>
+#include <glibmm/bytes.h>
 
 FileIOSender::FileIOSender(const char *path)
     : m_path(path)

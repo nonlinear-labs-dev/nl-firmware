@@ -3,6 +3,7 @@
 #include <Types.h>
 #include <array>
 #include <memory>
+#include <alsa/asoundlib.h>
 
 template <snd_pcm_format_t format> struct AlsaFormatToSample;
 

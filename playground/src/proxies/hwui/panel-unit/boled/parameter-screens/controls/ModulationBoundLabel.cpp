@@ -7,6 +7,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationBoundLabel.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 ModulationBoundLabel::ModulationBoundLabel(const Rect &r)
     : super(r)
@@ -14,7 +15,8 @@ ModulationBoundLabel::ModulationBoundLabel(const Rect &r)
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       mem_fun(this, &ModulationBoundLabel::onParameterSelectionChanged));
 
-  Application::get().getHWUI()->onModifiersChanged(mem_fun(this, &ModulationBoundLabel::onButtonModifiersChanged));
+  Application::get().getHWUI()->onModifiersChanged(
+      sigc::mem_fun(this, &ModulationBoundLabel::onButtonModifiersChanged));
 }
 
 ModulationBoundLabel::~ModulationBoundLabel()
@@ -27,7 +29,8 @@ void ModulationBoundLabel::onParameterSelectionChanged(Parameter *oldParam, Para
 
   if((m_modulatedParam = dynamic_cast<ModulateableParameter *>(newParam)))
   {
-    m_paramConnection = m_modulatedParam->onParameterChanged(mem_fun(this, &ModulationBoundLabel::onParameterChanged));
+    m_paramConnection
+        = m_modulatedParam->onParameterChanged(sigc::mem_fun(this, &ModulationBoundLabel::onParameterChanged));
   }
   else
   {
@@ -49,7 +52,8 @@ void ModulationBoundLabel::onParameterChanged(const Parameter *param)
 
       if((m_mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID))))
       {
-        m_mcConnection = m_mcParam->onParameterChanged(mem_fun(this, &ModulationBoundLabel::onMCParameterChanged));
+        m_mcConnection
+            = m_mcParam->onParameterChanged(sigc::mem_fun(this, &ModulationBoundLabel::onMCParameterChanged));
       }
       else
       {
@@ -84,7 +88,7 @@ ModulateableParameter *ModulationBoundLabel::getModulatedParameter()
 
 void ModulationBoundLabel::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 Label::StringAndSuffix ModulationBoundLabel::shortenStringIfNeccessary(std::shared_ptr<Font> font,

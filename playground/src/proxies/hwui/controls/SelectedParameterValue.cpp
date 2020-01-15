@@ -3,6 +3,8 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/FrameBuffer.h>
+#include <sigc++/sigc++.h>
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)
@@ -58,7 +60,7 @@ bool SelectedParameterValue::redraw(FrameBuffer &fb)
 
 void SelectedParameterValue::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C128);
+  fb.setColor(FrameBufferColors::C128);
 }
 
 void SelectedParameterValue::onVoiceGroupSelectionChanged(VoiceGroup v)

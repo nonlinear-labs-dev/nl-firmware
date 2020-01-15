@@ -1,6 +1,7 @@
 #include "AftertouchParameter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/PlayControlParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
+#include <glib.h>
 
 ReturnMode AftertouchParameter::getReturnMode() const
 {

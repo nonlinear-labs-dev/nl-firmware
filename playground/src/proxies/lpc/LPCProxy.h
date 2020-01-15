@@ -1,11 +1,8 @@
 #pragma once
 
 #include "playground.h"
-#include "tools/RecursionGuard.h"
-#include "libundo/undo/Scope.h"
 #include "MessageParser.h"
 #include "MessageComposer.h"
-#include <parameters/value/RawValue.h>
 #include <parameters/value/QuantizedValue.h>
 #include <memory>
 #include <nltools/threading/Throttler.h>

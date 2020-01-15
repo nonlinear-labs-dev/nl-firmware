@@ -6,6 +6,7 @@
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/controls/ButtonMenuButton.h>
 #include "SingleSoundEditMenuLegacy.h"
+#include <libundo/undo/Scope.h>
 
 SingleSoundEditMenuLegacy::SingleSoundEditMenuLegacy(const Rect &rect)
     : super(rect)

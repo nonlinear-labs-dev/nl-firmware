@@ -1,9 +1,6 @@
 #pragma once
 
 #include <glibmm/ustring.h>
-#include <Application.h>
-#include <device-settings/Settings.h>
-#include <device-settings/DateTimeAdjustment.h>
 #include <chrono>
 
 class TimeTools

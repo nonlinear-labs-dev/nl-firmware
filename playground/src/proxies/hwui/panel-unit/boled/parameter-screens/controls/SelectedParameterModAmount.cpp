@@ -5,6 +5,9 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "groups/MacroControlsGroup.h"
+#include <math.h>
+#include <sigc++/sigc++.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 SelectedParameterModAmount::SelectedParameterModAmount(const Rect &rect)
     : super(rect)
@@ -78,7 +81,7 @@ void SelectedParameterModAmount::onParamValueChanged(const Parameter *param)
 void SelectedParameterModAmount::setSliderColor(FrameBuffer &fb)
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C179);
+    fb.setColor(FrameBufferColors::C179);
 }

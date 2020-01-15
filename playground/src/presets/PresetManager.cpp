@@ -18,6 +18,10 @@
 #include <proxies/hwui/HWUI.h>
 #include <serialization/PresetSerializer.h>
 #include <device-settings/LoadModeSetting.h>
+#include <device-settings/Settings.h>
+#include <groups/ParameterGroup.h>
+#include <glibmm.h>
+#include <giomm/file.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -625,17 +629,17 @@ Glib::ustring PresetManager::getBaseName(const Glib::ustring &basedOn) const
   return basedOn;
 }
 
-connection PresetManager::onBankSelection(sigc::slot<void, Uuid> cb)
+sigc::connection PresetManager::onBankSelection(sigc::slot<void, Uuid> cb)
 {
   return m_sigBankSelection.connectAndInit(cb, m_banks.getSelectedUuid());
 }
 
-connection PresetManager::onNumBanksChanged(sigc::slot<void, size_t> cb)
+sigc::connection PresetManager::onNumBanksChanged(sigc::slot<void, size_t> cb)
 {
   return m_sigNumBanksChanged.connectAndInit(cb, getNumBanks());
 }
 
-connection PresetManager::onRestoreHappened(sigc::slot<void> cb)
+sigc::connection PresetManager::onRestoreHappened(sigc::slot<void> cb)
 {
   return m_sigRestoreHappened.connect(cb);
 }

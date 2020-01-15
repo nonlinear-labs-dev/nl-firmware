@@ -1,5 +1,7 @@
 #include "Options.h"
 #include <glibmm/optiongroup.h>
+#include <glibmm/optionentry.h>
+#include <glibmm/optioncontext.h>
 #include <iostream>
 
 template <typename T>

@@ -4,6 +4,8 @@
 #include "presets/EditBuffer.h"
 #include "parameters/MacroControlParameter.h"
 #include <parameters/PhysicalControlParameter.h>
+#include <sigc++/sigc++.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 SelectedMacroControlsHWSourceSlider::SelectedMacroControlsHWSourceSlider(const Rect &rect)
     : super(rect)
@@ -12,8 +14,6 @@ SelectedMacroControlsHWSourceSlider::SelectedMacroControlsHWSourceSlider(const R
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onParameterSelected)));
 }
-
-SelectedMacroControlsHWSourceSlider::~SelectedMacroControlsHWSourceSlider() = default;
 
 void SelectedMacroControlsHWSourceSlider::onParameterSelected(Parameter *newOne)
 {
@@ -58,12 +58,12 @@ void SelectedMacroControlsHWSourceSlider::drawSliderBackground(FrameBuffer &fb)
     switch(returnMode)
     {
       case ReturnMode::Center:
-        fb.setColor(FrameBuffer::Colors::C128);
+        fb.setColor(FrameBufferColors::C128);
         fb.fillRect(r.getCenter().getX() - centerMarkWidth / 2, r.getTop(), centerMarkWidth, r.getHeight());
         break;
 
       case ReturnMode::Zero:
-        fb.setColor(FrameBuffer::Colors::C128);
+        fb.setColor(FrameBufferColors::C128);
         fb.fillRect(r.getLeft(), r.getTop(), centerMarkWidth, r.getHeight());
         break;
 

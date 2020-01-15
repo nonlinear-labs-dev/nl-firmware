@@ -1,4 +1,5 @@
 #include "ButtonMenuButton.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 ButtonMenuButton::ButtonMenuButton(bool isFirst, bool isLast, const Glib::ustring &text, const Rect &pos)
     : super(text, pos)
@@ -16,7 +17,7 @@ void ButtonMenuButton::drawBackground(FrameBuffer &fb)
 
   if(isHighlight())
   {
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
     fb.fillRect(r.getX() + 1, r.getTop() + 1, r.getWidth() - 2, r.getHeight() - 2);
   }
   else

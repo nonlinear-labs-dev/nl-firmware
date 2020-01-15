@@ -1,7 +1,6 @@
 #pragma once
 
 #include "playground.h"
-#include <giomm.h>
 
 class Options
 {

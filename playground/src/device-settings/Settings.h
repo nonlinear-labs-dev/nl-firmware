@@ -2,12 +2,14 @@
 
 #include "playground.h"
 #include "http/ContentSection.h"
-#include "SettingsActions.h"
 #include <tools/DelayedJob.h>
 #include <tools/ScopedGuard.h>
+#include <utility>
+#include <map>
 
 class Application;
 class Setting;
+class SettingsActions;
 
 class Settings : public ContentSection
 {
@@ -56,7 +58,7 @@ class Settings : public ContentSection
   void load();
   void sanitize();
 
-  SettingsActions m_actions;
+  std::unique_ptr<SettingsActions> m_actions;
   tMap m_settings;
   DelayedJob m_saveJob;
   ScopedGuard m_isLoading;

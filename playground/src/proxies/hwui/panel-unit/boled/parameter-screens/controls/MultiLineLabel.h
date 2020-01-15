@@ -1,8 +1,7 @@
 #pragma once
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
-#include <proxies/hwui/FrameBuffer.h>
-#include <proxies/hwui/Oleds.h>
+#include <proxies/hwui/HWUIEnums.h>
 
 class MultiLineLabel : public ControlWithChildren
 {
@@ -12,9 +11,9 @@ class MultiLineLabel : public ControlWithChildren
  public:
   MultiLineLabel(const Glib::ustring &text);
 
-  bool setText(const Glib::ustring &text, FrameBuffer::Colors c);
+  bool setText(const Glib::ustring &text, FrameBufferColors c);
   const Glib::ustring &getText() const;
-  void setColor(FrameBuffer::Colors c);
+  void setColor(FrameBufferColors c);
 
   void drawBackground(FrameBuffer &fb) override;
   bool redraw(FrameBuffer &fb) override;
@@ -23,12 +22,12 @@ class MultiLineLabel : public ControlWithChildren
   virtual void setPosition(const Rect &rect) override;
 
  protected:
-  virtual Oleds::tFont getFont();
+  virtual std::shared_ptr<Font> getFont();
 
  private:
   bool m_forceUpdateOnSetPos = false;
   void updateLines();
 
-  FrameBuffer::Colors m_color = FrameBuffer::Colors::C103;
+  FrameBufferColors m_color = FrameBufferColors::C103;
   Glib::ustring m_text;
 };

@@ -4,6 +4,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <sigc++/sigc++.h>
 
 ParameterValueLabel::ParameterValueLabel(const Parameter *param, const Rect &pos)
     : Label(pos)

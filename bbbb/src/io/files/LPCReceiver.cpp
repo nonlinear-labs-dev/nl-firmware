@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Options.h"
 #include "MessageParser.h"
+#include <giomm.h>
 
 LPCReceiver::LPCReceiver()
     : super("/dev/lpc_bb_driver", MessageParser::getNumInitialBytesNeeded())

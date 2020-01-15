@@ -1,5 +1,6 @@
 #include <proxies/hwui/controls/ArrowLeft.h>
 #include "EditorItem.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 bool EditorItem::canEnter()
 {
@@ -39,7 +40,7 @@ bool EditorItem::drawHighlightBorder(FrameBuffer &fb)
     return false;
   }
 
-  fb.setColor(FrameBuffer::C103);
+  fb.setColor(FrameBufferColors::C103);
   fb.drawRect(getPosition());
   return true;
 }

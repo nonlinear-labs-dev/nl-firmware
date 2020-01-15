@@ -3,6 +3,7 @@
 #include "playground.h"
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/buttons.h>
+#include <memory>
 
 class UsageMode;
 

@@ -1,11 +1,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterBarSlider.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 MiniParameterBarSlider::MiniParameterBarSlider(Parameter *param, const Rect &rect)
     : super(param, rect)
-{
-}
-
-MiniParameterBarSlider::~MiniParameterBarSlider()
 {
 }
 
@@ -19,9 +16,9 @@ bool MiniParameterBarSlider::redraw(FrameBuffer &fb)
   Rect r = getPosition();
 
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
   else
-    fb.setColor(FrameBuffer::Colors::C77);
+    fb.setColor(FrameBufferColors::C77);
 
   fb.fillRect(r.getX(), r.getTop(), r.getWidth(), r.getHeight());
   super::redraw(fb);

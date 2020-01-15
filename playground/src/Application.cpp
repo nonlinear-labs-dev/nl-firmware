@@ -24,6 +24,7 @@
 #include <nltools/messaging/Messaging.h>
 #include <device-settings/LayoutMode.h>
 #include <presets/EditBuffer.h>
+#include <giomm.h>
 
 Application *Application::theApp = nullptr;
 
@@ -40,14 +41,11 @@ void setupMessaging(const Options *options)
 #else
   conf.offerEndpoints = { EndPoint::Playground };
 #endif
-  conf.useEndpoints = { { EndPoint::Lpc, bbbb },
-                        { EndPoint::Oled, bbbb },
+  conf.useEndpoints = { { EndPoint::Lpc, bbbb },      { EndPoint::Oled, bbbb },
 #ifdef _DEVELOPMENT_PC
-                        { EndPoint::TestEndPoint},
+                        { EndPoint::TestEndPoint },
 #endif
-                        { EndPoint::PanelLed, bbbb },
-                        { EndPoint::RibbonLed, bbbb },
-                        { EndPoint::AudioEngine, ae } };
+                        { EndPoint::PanelLed, bbbb }, { EndPoint::RibbonLed, bbbb }, { EndPoint::AudioEngine, ae } };
   nltools::msg::init(conf);
 }
 
@@ -66,7 +64,7 @@ void quitApp(int sig)
 
 Application::Application(int numArgs, char **argv)
     : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
-    , m_theMainLoop(MainLoop::create())
+    , m_theMainLoop(Glib::MainLoop::create())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
@@ -176,7 +174,7 @@ bool Application::isQuit() const
   return m_isQuit;
 }
 
-RefPtr<MainContext> Application::getMainContext()
+Glib::RefPtr<Glib::MainContext> Application::getMainContext()
 {
   return m_theMainLoop->get_context();
 }

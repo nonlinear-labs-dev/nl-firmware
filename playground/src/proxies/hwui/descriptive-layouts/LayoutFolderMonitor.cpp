@@ -3,6 +3,7 @@
 #include <Application.h>
 #include <Options.h>
 #include <proxies/hwui/debug-oled/DebugLayout.h>
+#include <proxies/hwui/HWUI.h>
 #include <tools/ExceptionTools.h>
 #include <tools/FileTools.h>
 #include "LayoutParser.h"
@@ -12,6 +13,9 @@
 #include "StyleParser.h"
 #include "tools/SpawnCommandLine.h"
 #include "ConsistencyChecker.h"
+
+#include <tools/json.h>
+#include <iostream>
 
 LayoutFolderMonitor& LayoutFolderMonitor::get()
 {
@@ -29,7 +33,7 @@ LayoutFolderMonitor::LayoutFolderMonitor()
 }
 
 void LayoutFolderMonitor::onFileChanged(const Glib::RefPtr<Gio::File>& o, const Glib::RefPtr<Gio::File>& n,
-                                        Gio::FileMonitorEvent e)
+                                        int e)
 {
   bruteForce();
 }

@@ -11,6 +11,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <http/UndoScope.h>
 #include <groups/MacroControlsGroup.h>
+#include <groups/ParameterGroup.h>
 
 int MacroControlEditButtonMenu::s_lastAction = 1;
 

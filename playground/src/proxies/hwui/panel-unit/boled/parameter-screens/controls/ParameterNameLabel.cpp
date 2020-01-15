@@ -6,6 +6,9 @@
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <proxies/hwui/Oleds.h>
+#include <proxies/hwui/FrameBuffer.h>
+#include <sigc++/sigc++.h>
 
 ParameterNameLabel::ParameterNameLabel(const Rect &pos)
     : Label(pos)
@@ -105,9 +108,9 @@ void ParameterNameLabel::onParameterChanged(const Parameter *param)
 void ParameterNameLabel::setFontColor(FrameBuffer &fb) const
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
 }
 
 std::shared_ptr<Font> ParameterNameLabel::getFont() const
@@ -122,7 +125,7 @@ int ParameterNameLabel::getFontHeight() const
 
 void ParameterNameLabel::setSuffixFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::C103);
+  fb.setColor(FrameBufferColors::C103);
 }
 
 void ParameterNameLabel::onPresetLoaded()

@@ -2,13 +2,12 @@
 
 #include "AttributesOwner.h"
 #include "PresetDualParameterGroups.h"
+#include "ParameterId.h"
 #include <memory>
 #include <unordered_map>
 #include <string>
 #include <tools/Uuid.h>
 #include <tools/Signal.h>
-
-#include <giomm.h>
 
 class EditBuffer;
 class Bank;
@@ -35,8 +34,8 @@ class Preset : public PresetDualParameterGroups
 
   // supported interfaces
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  void load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> presetPath);
-  bool save(Glib::RefPtr<Gio::File> bankPath);
+  void load(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &presetPath);
+  bool save(const Glib::RefPtr<Gio::File> &bankPath);
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
   void setAttribute(UNDO::Transaction *transaction, const std::string &key, const Glib::ustring &value) override;
   void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other) override;

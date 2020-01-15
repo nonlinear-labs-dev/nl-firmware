@@ -5,7 +5,7 @@
 #include "xml/Writer.h"
 #include "TuneReference.h"
 
-TuneReference::TuneReference(Settings& parent)
+TuneReference::TuneReference(UpdateDocumentContributor& parent)
     : Setting(parent)
     , m_value(nullptr, ScaleConverter::get<LinearHerzScaleConverter>(), 0.5, 80, 800)
 {
@@ -58,6 +58,11 @@ void TuneReference::writeDocument(Writer& writer, tUpdateID knownRevision) const
 
 void TuneReference::sendToLPC() const
 {
-  nltools::msg::Setting::TuneReference msg{ m_value.getRawValue() };
+  nltools::msg::Setting::TuneReference msg { m_value.getRawValue() };
   Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TuneReference>(msg);
+}
+
+Glib::ustring TuneReference::getName() const
+{
+  return "Tune Reference";
 }

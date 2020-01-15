@@ -4,6 +4,7 @@
 #include "presets/ParameterDualGroupSet.h"
 #include "ParameterGroupsSerializer.h"
 #include "ParameterGroupSerializer.h"
+#include <groups/ParameterGroup.h>
 
 ParameterGroupsSerializer::ParameterGroupsSerializer(ParameterDualGroupSet *paramGroups)
     : Serializer(getTagName())

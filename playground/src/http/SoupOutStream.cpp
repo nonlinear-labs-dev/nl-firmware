@@ -1,4 +1,5 @@
 #include "SoupOutStream.h"
+#include <giomm.h>
 
 constexpr size_t scratchbufferSize = 1024 * 16;
 

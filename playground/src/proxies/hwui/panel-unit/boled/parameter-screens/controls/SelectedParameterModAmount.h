@@ -21,9 +21,6 @@ class SelectedParameterModAmount : public Control
   virtual void setSliderColor(FrameBuffer& fb);
 
  private:
-  SelectedParameterModAmount(const SelectedParameterModAmount& other);
-  SelectedParameterModAmount& operator=(const SelectedParameterModAmount&);
-
   void setRangeOrdered(float from, float to);
   void setParameter(Parameter* param);
   void onParamValueChanged(const Parameter* param);

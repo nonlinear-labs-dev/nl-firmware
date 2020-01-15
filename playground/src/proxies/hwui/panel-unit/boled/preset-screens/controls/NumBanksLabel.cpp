@@ -1,6 +1,7 @@
 #include "NumBanksLabel.h"
 #include "Application.h"
 #include <presets/PresetManager.h>
+#include <libundo/undo/StringTools.h>
 
 NumBanksLabel::NumBanksLabel(const Rect& pos)
     : super(pos)

@@ -2,6 +2,7 @@
 #include <Application.h>
 #include <device-settings/RandomizeAmount.h>
 #include <proxies/hwui/descriptive-layouts/concrete/menu/SettingLabel.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/overlays/RandomizeOverlay.h>
 
 RandomizeItem::RandomizeItem(const Rect& rect)
     : EditorItem("Randomize", rect)

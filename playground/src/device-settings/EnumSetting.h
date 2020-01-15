@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Setting.h"
-#include "Settings.h"
 
 template <typename TEnum> class EnumSetting : public Setting
 {
@@ -11,7 +10,7 @@ template <typename TEnum> class EnumSetting : public Setting
  public:
   typedef TEnum tEnum;
 
-  EnumSetting(Settings &settings, tEnum def)
+  EnumSetting(UpdateDocumentContributor &settings, tEnum def)
       : super(settings)
       , m_mode(def)
   {
@@ -26,11 +25,6 @@ template <typename TEnum> class EnumSetting : public Setting
       return true;
     }
     return false;
-  }
-
-  Settings *getSettings()
-  {
-    return static_cast<Settings *>(getParent());
   }
 
   tEnum get() const

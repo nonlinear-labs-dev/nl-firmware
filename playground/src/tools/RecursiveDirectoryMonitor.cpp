@@ -1,8 +1,8 @@
 #include <utility>
 #include <nltools/logging/Log.h>
 #include <nltools/ExceptionTools.h>
-
 #include "RecursiveDirectoryMonitor.h"
+#include <giomm.h>
 
 namespace FileTools
 {
@@ -32,8 +32,7 @@ namespace FileTools
     m_monitors.emplace_back(std::move(monitor));
   }
 
-  void RecursiveDirectoryMonitor::onFileChanged(const tFile& oldFile, const tFile& newFile,
-                                                Gio::FileMonitorEvent monitorEvent)
+  void RecursiveDirectoryMonitor::onFileChanged(const tFile& oldFile, const tFile& newFile, int monitorEvent)
   {
     m_callBack(oldFile, newFile, monitorEvent);
     rebuildDirectoryList();

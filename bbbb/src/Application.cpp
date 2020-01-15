@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <nltools/messaging/Messaging.h>
+#include <giomm.h>
 
 #ifdef _DEVELOPMENT_PC
 #include <ui/Window.h>

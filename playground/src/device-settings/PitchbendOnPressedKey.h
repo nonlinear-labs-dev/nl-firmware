@@ -8,7 +8,7 @@ class PitchbendOnPressedKey : public BooleanSetting
   typedef BooleanSetting super;
 
  public:
-  PitchbendOnPressedKey(Settings &settings);
+  PitchbendOnPressedKey(UpdateDocumentContributor &settings);
   virtual ~PitchbendOnPressedKey();
 
  private:

@@ -8,5 +8,5 @@ class FromButtonsBridge : public Bridge
   FromButtonsBridge();
   void sendKey(int8_t key, bool down);
 
-  void transmit(Receiver::tMessage msg) override;
+  void transmit(const Receiver::tMessage &msg) override;
 };

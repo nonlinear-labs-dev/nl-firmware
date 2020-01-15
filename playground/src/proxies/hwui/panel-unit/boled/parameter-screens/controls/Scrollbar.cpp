@@ -1,5 +1,6 @@
 #include "Scrollbar.h"
 #include "Scrollable.h"
+#include <proxies/hwui/FrameBuffer.h>
 
 Scrollbar::Scrollbar(Scrollable *content, const Rect &pos)
     : super(pos)
@@ -25,7 +26,7 @@ bool Scrollbar::redraw(FrameBuffer &fb)
     pos = 0;
 
   Rect r = getPosition();
-  fb.setColor(FrameBuffer::Colors::C128);
+  fb.setColor(FrameBufferColors::C128);
   fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 
   if(contentHeight <= availHeight)

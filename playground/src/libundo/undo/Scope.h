@@ -9,8 +9,6 @@
 
 namespace UNDO
 {
-  using std::chrono::steady_clock;
-
   class TransactionCreationScope;
   class Transaction;
 
@@ -19,7 +17,7 @@ namespace UNDO
    public:
     using tTransactionScopePtr = std::unique_ptr<TransactionCreationScope>;
 
-    constexpr static steady_clock::duration getStandardContinuousTransactionTimeout()
+    constexpr static std::chrono::milliseconds getStandardContinuousTransactionTimeout()
     {
       return std::chrono::seconds(2);
     }
@@ -36,7 +34,8 @@ namespace UNDO
     }
 
     template <typename... tArgs>
-    tTransactionScopePtr startContinuousTransaction(void *id, steady_clock::duration timeout,
+
+    tTransactionScopePtr startContinuousTransaction(void *id, std::chrono::milliseconds timeout,
                                                     const Glib::ustring &format, const tArgs &... args)
     {
       return startContinuousTransaction(id, timeout, StringTools::formatString(format, args...));
@@ -49,7 +48,7 @@ namespace UNDO
                                         StringTools::formatString(format, args...));
     }
 
-    tTransactionScopePtr startContinuousTransaction(void *id, steady_clock::duration timeout,
+    tTransactionScopePtr startContinuousTransaction(void *id, std::chrono::milliseconds timeout,
                                                     const Glib::ustring &name);
 
     tTransactionScopePtr startTransaction(const Glib::ustring &name);

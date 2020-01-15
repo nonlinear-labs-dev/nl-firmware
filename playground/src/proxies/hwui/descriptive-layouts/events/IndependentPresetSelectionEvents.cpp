@@ -8,6 +8,7 @@
 #include "event-sources/base/EventSource.h"
 #include "GlobalEventSinkBroker.h"
 #include "GlobalEventSourceBroker.h"
+#include <proxies/hwui/HWUI.h>
 
 namespace DescriptiveLayouts
 {

@@ -8,6 +8,7 @@
 #include "GlobalEventSinkBroker.h"
 #include "GlobalEventSourceBroker.h"
 #include "presets/EditBuffer.h"
+#include <proxies/hwui/HWUI.h>
 
 namespace DescriptiveLayouts
 {

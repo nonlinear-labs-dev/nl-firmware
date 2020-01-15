@@ -81,6 +81,8 @@ namespace NavTree
     {
     }
 
+    virtual ~Node() = default;
+
     virtual Control *createSelectionControl()
     {
       return new SetupSelectionLabel(name);
@@ -779,7 +781,7 @@ class Breadcrumb : public Control
 
   bool redraw(FrameBuffer &fb)
   {
-    fb.setColor(FrameBuffer::C103);
+    fb.setColor(FrameBufferColors::C103);
     fb.fillRect(getPosition());
     drawNodeRecursivly(fb, m_node);
     return true;
@@ -795,11 +797,11 @@ class Breadcrumb : public Control
 
       if(isTip)
       {
-        fb.setColor(FrameBuffer::C255);
+        fb.setColor(FrameBufferColors::C255);
       }
       else
       {
-        fb.setColor(FrameBuffer::C179);
+        fb.setColor(FrameBufferColors::C179);
         title = title + " > ";
       }
 
@@ -1061,7 +1063,7 @@ bool SetupLayout::redraw(FrameBuffer &fb)
 
   if(m_focusAndMode.mode == UIMode::Select)
   {
-    fb.setColor(FrameBuffer::C179);
+    fb.setColor(FrameBufferColors::C179);
     fb.drawRect(Rect(0, 28, 256, 12));
   }
   return true;

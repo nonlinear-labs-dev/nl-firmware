@@ -1,13 +1,17 @@
 #pragma once
 
 #include "playground.h"
-#include "groups/ParameterGroup.h"
 #include <presets/AttributesOwner.h>
-#include <vector>
 #include "tools/IntrusiveList.h"
+#include "GroupId.h"
+#include "ParameterId.h"
+#include "groups/ParameterGroup.h"
+#include <vector>
+#include <array>
 
 class Parameter;
 class Preset;
+class ParameterGroup;
 
 class ParameterDualGroupSet : public AttributesOwner
 {
@@ -26,16 +30,14 @@ class ParameterDualGroupSet : public AttributesOwner
   virtual std::map<int, Parameter *> getParametersSortedByNumber(VoiceGroup vg) const;
   virtual Parameter *findParameterByID(const ParameterId &id) const;
 
-
-  template<VoiceGroup VG>
-  void forEachParameter(const std::function<void(Parameter *)>& cb)
+  template <VoiceGroup VG> void forEachParameter(const std::function<void(Parameter *)> &cb)
   {
-    for(auto g: getParameterGroups(VG))
-      for(auto p: g->getParameters())
+    for(auto g : getParameterGroups(VG))
+      for(auto p : g->getParameters())
         cb(p);
   }
 
-  void forEachParameter(VoiceGroup vg, const std::function<void(Parameter*)>& cb);
+  void forEachParameter(VoiceGroup vg, const std::function<void(Parameter *)> &cb);
   void forEachParameter(const std::function<void(Parameter *)> &cb);
   void forEachParameter(const std::function<void(const Parameter *)> &cb) const;
 

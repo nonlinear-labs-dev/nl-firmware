@@ -3,6 +3,7 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListBase.h>
 #include <tools/Uuid.h>
+#include <sigc++/connection.h>
 
 class Preset;
 

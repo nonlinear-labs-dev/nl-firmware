@@ -1,6 +1,7 @@
 #include "ScrollArea.h"
 #include "Scrollbar.h"
 #include "Scrollable.h"
+#include <sigc++/sigc++.h>
 
 static const int c_scrollbarWidth = 5;
 
@@ -16,7 +17,7 @@ ScrollArea::ScrollArea(Scrollable *content, const Rect &position)
 
   scroll(0);
 
-  content->onDirtyStateChanged(hide<0>(mem_fun(this, &ScrollArea::setDirty)));
+  content->onDirtyStateChanged(sigc::hide(sigc::mem_fun(this, &ScrollArea::setDirty)));
 }
 
 void ScrollArea::scroll(int diff)

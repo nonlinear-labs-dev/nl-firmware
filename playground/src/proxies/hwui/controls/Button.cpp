@@ -32,9 +32,9 @@ void Button::blind(bool b)
 void Button::setFontColor(FrameBuffer &fb) const
 {
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C255);
+    fb.setColor(FrameBufferColors::C255);
   else
-    fb.setColor(FrameBuffer::Colors::C204);
+    fb.setColor(FrameBufferColors::C204);
 }
 
 bool Button::redraw(FrameBuffer &fb)
@@ -42,16 +42,16 @@ bool Button::redraw(FrameBuffer &fb)
   auto r = getPosition();
 
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C128);
+    fb.setColor(FrameBufferColors::C128);
   else
-    fb.setColor(FrameBuffer::Colors::C77);
+    fb.setColor(FrameBufferColors::C77);
 
   fb.fillRect(r.getMargined(2, 2));
 
   if(isHighlight())
-    fb.setColor(FrameBuffer::Colors::C179);
+    fb.setColor(FrameBufferColors::C179);
   else
-    fb.setColor(FrameBuffer::Colors::C103);
+    fb.setColor(FrameBufferColors::C103);
 
   fb.drawHorizontalLine(r.getLeft() + 1, r.getTop(), r.getWidth() - 2);
   fb.drawVerticalLine(r.getLeft(), r.getTop() + 1, r.getHeight() - 2);

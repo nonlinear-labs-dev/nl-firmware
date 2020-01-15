@@ -7,6 +7,7 @@
 #include "tools/IntrusiveList.h"
 
 class PresetParameterGroup;
+class ParameterDualGroupSet;
 
 class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListItem<ParameterGroup *>
 {

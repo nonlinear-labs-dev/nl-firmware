@@ -3,6 +3,8 @@
 #include "http/UpdateDocumentMaster.h"
 #include "Application.h"
 #include "proxies/lpc/LPCProxy.h"
+#include <iostream>
+#include <sys/time.h>
 
 DebugLevel::DebugLevel(Settings &settings)
     : super(settings, DebugLevels::DEBUG_LEVEL_WARNING)
@@ -50,4 +52,22 @@ const std::vector<Glib::ustring> &DebugLevel::enumToDisplayString() const
 {
   static std::vector<Glib::ustring> s_modeNames = { "Silent", "Error", "Warning", "Info", "Debug", "Gassy" };
   return s_modeNames;
+}
+
+void DebugLevel::printError(const std::string &str)
+{
+  std::cerr << getTimestamp() << ": " << str << std::endl;
+}
+
+uint64_t DebugLevel::getTimestamp()
+{
+  static uint64_t epoch = getCurrentMilliseconds();
+  return getCurrentMilliseconds() - epoch;
+}
+
+uint64_t DebugLevel::getCurrentMilliseconds()
+{
+  struct timeval spec;
+  gettimeofday(&spec, nullptr);
+  return spec.tv_sec * 1000 + spec.tv_usec / 1000;
 }

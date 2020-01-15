@@ -4,6 +4,8 @@
 #include "PresetDualParameterGroups.h"
 #include "PresetManager.h"
 #include "Preset.h"
+#include <groups/ParameterGroup.h>
+#include <presets/PresetParameterGroup.h>
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent)
     : AttributesOwner(parent)
@@ -26,6 +28,8 @@ PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *
     for(auto &g : editbuffer.getParameterGroups(vg))
       m_parameterGroups[static_cast<size_t>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
 }
+
+PresetDualParameterGroups::~PresetDualParameterGroups() = default;
 
 void PresetDualParameterGroups::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {

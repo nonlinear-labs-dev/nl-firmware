@@ -1,8 +1,10 @@
 #pragma once
 
 #include "MidiInput.h"
-#include <giomm.h>
+#include <nltools/GlibFwd.h>
 #include <memory>
+#include <alsa/asoundlib.h>
+#include <glibmm/refptr.h>
 
 class HighPriorityTask;
 

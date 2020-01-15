@@ -2,14 +2,9 @@
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/Scrollable.h>
-#include <proxies/hwui/controls/Label.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MultiLineLabel.h>
-#include <proxies/hwui/controls/LeftAlignedLabel.h>
-#include <cassert>
+#include <map>
 
-#include "SingleLineInfoContent.h"
-#include "MultiLineInfoContent.h"
-#include "InfoField.h"
+class InfoField;
 
 class InfoContent : public Scrollable, public ControlWithChildren
 {
@@ -18,6 +13,7 @@ class InfoContent : public Scrollable, public ControlWithChildren
 
  public:
   InfoContent();
+  ~InfoContent();
 
   void setPosition(const Rect& rect) override;
   const Rect& getPosition() const override;

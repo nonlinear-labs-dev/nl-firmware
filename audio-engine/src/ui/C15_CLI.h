@@ -1,6 +1,8 @@
-#include "CommandLineInterface.h"
-
 #pragma once
+
+#include "CommandLineInterface.h"
+#include <unordered_map>
+#include <functional>
 
 class C15Synth;
 

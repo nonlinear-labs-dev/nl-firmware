@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Control.h"
+#include <proxies/hwui/HWUIEnums.h>
+#include <proxies/hwui/Font.h>
 #include <memory>
 
 class Label : public Control
@@ -61,7 +63,7 @@ class Label : public Control
   virtual StringAndSuffix getText() const;
 
   virtual std::shared_ptr<Font> getFont() const;
-  void setFontColor(FrameBuffer::Colors fontColor);
+  void setFontColor(FrameBufferColors fontColor);
 
  protected:
   virtual Font::Justification getJustification() const;
@@ -83,5 +85,5 @@ class Label : public Control
   Label &operator=(const Label &);
 
   StringAndSuffix m_text;
-  FrameBuffer::Colors m_fontColor = FrameBuffer::Colors::Undefined;
+  FrameBufferColors m_fontColor = FrameBufferColors::Undefined;
 };

@@ -9,7 +9,6 @@ class MiniParameterDotSlider : public DotSlider
 
  public:
   MiniParameterDotSlider(Parameter *param, const Rect &rect);
-  virtual ~MiniParameterDotSlider();
 
   bool redraw(FrameBuffer &fb) override;
 

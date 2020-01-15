@@ -8,6 +8,7 @@
 #include <parameters/ModulationRoutingParameter.h>
 #include <parameters/MacroControlParameter.h>
 #include <libundo/undo/Transaction.h>
+#include <groups/ParameterGroup.h>
 
 EditBufferSnapshotMaker &EditBufferSnapshotMaker::get()
 {
@@ -55,7 +56,7 @@ auto EditBufferSnapshotMaker::collectDirtyParameters(EditBuffer *editBuffer) -> 
             auto snValue = param->expropriateSnapshotValue();
             auto curValue = param->getControlPositionValue();
 
-            if(snValue != curValue)
+            if(differs(snValue, curValue))
             {
               ret.push_back({ param, param->expropriateSnapshotValue() });
             }
@@ -65,7 +66,7 @@ auto EditBufferSnapshotMaker::collectDirtyParameters(EditBuffer *editBuffer) -> 
     }
   }
 
-  return std::move(ret);
+  return ret;
 }
 
 void EditBufferSnapshotMaker::addSnapshot(UNDO::Transaction *transaction, tParams &&params)

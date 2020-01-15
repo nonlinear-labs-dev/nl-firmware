@@ -1,4 +1,7 @@
 #include "SoundConditions.h"
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 DescriptiveLayouts::SoundConditions::EditBufferCondition::EditBufferCondition()
 {

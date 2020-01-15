@@ -1,8 +1,15 @@
 #pragma once
 
-#include <libundo/undo/Scope.h>
-#include <presets/Preset.h>
-#include <presets/Bank.h>
+#include <http/UpdateDocumentContributor.h>
+#include <memory>
+#include <list>
+
+class Preset;
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class MultiplePresetSelection : public UpdateDocumentContributor
 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include <memory>
 #include <glibmm/refptr.h>
 
 class DeviceInformation;

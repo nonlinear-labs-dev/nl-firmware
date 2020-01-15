@@ -10,6 +10,8 @@
 #include <iomanip>
 #include <sstream>
 #include <tools/TimeTools.h>
+#include <proxies/hwui/panel-unit/boled/info/MultiLineInfoContent.h>
+#include <proxies/hwui/panel-unit/boled/info/InfoField.h>
 
 PresetInfoContent::PresetInfoContent()
 {
@@ -76,9 +78,9 @@ void PresetInfoContent::fillContents()
 
 void PresetInfoContent::fillFromPreset(const Preset *preset)
 {
-  infoFields["name"]->setInfo(preset->getName(), FrameBuffer::Colors::C128);
-  infoFields["type"]->setInfo(toString(preset->getType()), FrameBuffer::Colors::C128);
-  infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBuffer::Colors::C128);
+  infoFields["name"]->setInfo(preset->getName(), FrameBufferColors::C128);
+  infoFields["type"]->setInfo(toString(preset->getType()), FrameBufferColors::C128);
+  infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBufferColors::C128);
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
   infoFields["devicename"]->setInfo(preset->getAttribute("DeviceName", "---"));
   infoFields["uiversion"]->setInfo(preset->getAttribute("SoftwareVersion", "---"));
@@ -86,9 +88,9 @@ void PresetInfoContent::fillFromPreset(const Preset *preset)
 
 bool PresetInfoContent::fillDefaults()
 {
-  infoFields["name"]->setInfo("---", FrameBuffer::Colors::C128);
-  infoFields["type"]->setInfo("---", FrameBuffer::Colors::C128);
-  infoFields["comment"]->setInfo("---", FrameBuffer::Colors::C128);
+  infoFields["name"]->setInfo("---", FrameBufferColors::C128);
+  infoFields["type"]->setInfo("---", FrameBufferColors::C128);
+  infoFields["comment"]->setInfo("---", FrameBufferColors::C128);
   infoFields["lastchange"]->setInfo("---");
   infoFields["devicename"]->setInfo("---");
   infoFields["uiversion"]->setInfo("---");

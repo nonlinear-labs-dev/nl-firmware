@@ -4,7 +4,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/SetupEditor.h>
 #include <experimental/filesystem>
 #include <xml/XmlReader.h>
-#include <xml/VersionAttribute.h>
 
 class ImportBackupEditor : public ControlWithChildren, public SetupEditor
 {

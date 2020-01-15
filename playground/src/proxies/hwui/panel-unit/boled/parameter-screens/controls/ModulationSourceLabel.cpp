@@ -6,6 +6,7 @@
 #include "presets/EditBuffer.h"
 #include "groups/MacroControlsGroup.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include <sigc++/sigc++.h>
 
 ModulationSourceLabel::ModulationSourceLabel(const Rect &r, Font::Justification justification)
     : super(r)

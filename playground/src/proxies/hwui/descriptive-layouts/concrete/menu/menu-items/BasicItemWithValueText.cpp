@@ -1,4 +1,6 @@
 #include "BasicItemWithValueText.h"
+#include "controls/CaptionLabel.h"
+#include "proxies/hwui/controls/LeftAlignedLabel.h"
 
 BasicItemWithValueText::BasicItemWithValueText(const Glib::ustring &label, const Glib::ustring &value, const Rect &r)
     : BasicItem(label, r)

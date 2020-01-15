@@ -1,28 +1,20 @@
 #pragma once
 
 #include "playground.h"
-#include "ParameterId.h"
-#include <glibmm.h>
-#include <sstream>
+
+class ParameterId;
+class GroupId;
 
 namespace attribute_detail
 {
   template <typename tValue> inline Glib::ustring toString(const tValue &v)
   {
-    std::stringstream str;
-    str << v;
-    return str.str();
+    return std::to_string(v);
   }
 
-  template <> inline Glib::ustring toString(const ParameterId &v)
-  {
-    return v.toString();
-  }
-
-  template <> inline Glib::ustring toString(const Glib::ustring &v)
-  {
-    return v;
-  }
+  Glib::ustring toString(const ParameterId &v);
+  Glib::ustring toString(const GroupId &v);
+  Glib::ustring toString(const Glib::ustring &v);
 }
 
 class Attribute
@@ -36,20 +28,9 @@ class Attribute
 
   virtual ~Attribute();
 
-  Glib::ustring toXmlString() const
-  {
-    return Glib::Markup::escape_text(m_name) + "=\"" + Glib::Markup::escape_text(m_value) + "\"";
-  }
-
-  const Glib::ustring &getName() const
-  {
-    return m_name;
-  }
-
-  const Glib::ustring &getValue() const
-  {
-    return m_value;
-  }
+  Glib::ustring toXmlString() const;
+  const Glib::ustring &getName() const;
+  const Glib::ustring &getValue() const;
 
  private:
   Glib::ustring m_name;

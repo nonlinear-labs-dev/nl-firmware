@@ -1,12 +1,10 @@
 #include <proxies/hwui/panel-unit/boled/undo/PrevUndoTransactionSiblingControl.h>
 #include <proxies/hwui/Oleds.h>
+#include <proxies/hwui/FrameBuffer.h>
+#include <libundo/undo/Transaction.h>
 
 PrevUndoTransactionSiblingControl::PrevUndoTransactionSiblingControl(const Rect &r)
     : super(r)
-{
-}
-
-PrevUndoTransactionSiblingControl::~PrevUndoTransactionSiblingControl()
 {
 }
 
@@ -49,5 +47,5 @@ std::shared_ptr<Font> PrevUndoTransactionSiblingControl::getFont() const
 
 void PrevUndoTransactionSiblingControl::setFontColor(FrameBuffer &fb) const
 {
-  fb.setColor(FrameBuffer::Colors::C255);
+  fb.setColor(FrameBufferColors::C255);
 }
