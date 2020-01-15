@@ -13,7 +13,7 @@ ENUM(RibbonReturnMode, int8_t, STAY = 0, RETURN = 1, NUM_RETURN_MODES = 2);
 ENUM(PedalModes, int8_t, STAY = 0, RETURN_TO_ZERO = 1, RETURN_TO_CENTER = 2, NUM_PEDAL_MODES = 3);
 ENUM(ReturnMode, int8_t, None, Center, Zero);
 
-template <typename T> inline std::enable_if_t<std::is_floating_point_v<T>, bool> differs(T a, T b)
+template <typename T> inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type differs(T a, T b)
 {
   return std::abs(a - b) > std::numeric_limits<T>::epsilon();
 }

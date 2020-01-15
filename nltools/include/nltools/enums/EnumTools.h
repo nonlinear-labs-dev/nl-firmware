@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <assert.h>
+#include <vector>
 #include <nltools/ExceptionTools.h>
 
 namespace EnumTools

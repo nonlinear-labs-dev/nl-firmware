@@ -10,7 +10,7 @@ namespace nltools
     template <typename... Args> std::string concat(Args... args)
     {
       std::stringstream s;
-      (s << ... << args);
+      std::initializer_list<bool>{ (s << args, false)... };
       return s.str();
     }
 
@@ -18,7 +18,7 @@ namespace nltools
     {
       std::stringstream s;
       auto printWithDelim = [&](auto a) { s << a << delim; };
-      (..., printWithDelim(args));
+      std::initializer_list<bool>{ (printWithDelim(args), false)... };
       return s.str();
     }
 
