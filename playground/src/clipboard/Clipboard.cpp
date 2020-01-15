@@ -9,6 +9,7 @@
 #include <tools/StringTools.h>
 #include <device-settings/DebugLevel.h>
 #include <http/NetworkRequest.h>
+#include <giomm/file.h>
 
 Clipboard::Clipboard(UpdateDocumentContributor *parent)
     : ContentSection(parent)

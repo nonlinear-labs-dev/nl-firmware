@@ -93,6 +93,7 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
       if(shouldCrashOnError())
         std::rethrow_exception(std::current_exception());
     }
+    return nullptr;
   }
 
   Element *first() const

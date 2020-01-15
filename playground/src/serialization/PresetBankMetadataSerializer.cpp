@@ -3,6 +3,7 @@
 #include "AttributesOwnerSerializer.h"
 #include <presets/Bank.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <giomm/file.h>
 
 PresetBankMetadataSerializer::PresetBankMetadataSerializer(Bank *bank, bool ignoreUUIDs)
     : Serializer(getTagName())
@@ -37,7 +38,7 @@ void PresetBankMetadataSerializer::writeTagContent(Writer &writer) const
 
 void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("name", [&](const Glib::ustring &text, const Attributes &attr) {
+  reader.onTextElement("name", [&](const Glib::ustring &text, const Attributes &) {
     m_bank->setName(reader.getTransaction(), text);
 
     if(text.find("<untitled bank>") == Glib::ustring::npos)
@@ -46,34 +47,33 @@ void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
 
   if(!m_ignoreUUIDs)
   {
-    reader.onTextElement("uuid", [&](const Glib::ustring &text, const Attributes &attr) {
-      m_bank->setUuid(reader.getTransaction(), text);
-    });
+    reader.onTextElement(
+        "uuid", [&](const Glib::ustring &text, const Attributes &) { m_bank->setUuid(reader.getTransaction(), text); });
   }
 
   reader.onTextElement(
-      "x", [&](const Glib::ustring &text, const Attributes &attr) { m_bank->setX(reader.getTransaction(), text); });
+      "x", [&](const Glib::ustring &text, const Attributes &) { m_bank->setX(reader.getTransaction(), text); });
 
   reader.onTextElement(
-      "y", [&](const Glib::ustring &text, const Attributes &attr) { m_bank->setY(reader.getTransaction(), text); });
+      "y", [&](const Glib::ustring &text, const Attributes &) { m_bank->setY(reader.getTransaction(), text); });
 
-  reader.onTextElement("selected-preset", [&](const Glib::ustring &text, const Attributes &attr) {
+  reader.onTextElement("selected-preset", [&](const Glib::ustring &text, const Attributes &) {
     m_bank->selectPreset(reader.getTransaction(), text);
   });
 
-  reader.onTextElement("attached-to-bank", [&](const Glib::ustring &text, const Attributes &attr) {
+  reader.onTextElement("attached-to-bank", [&](const Glib::ustring &text, const Attributes &) {
     m_bank->setAttachedToBank(reader.getTransaction(), text);
   });
 
-  reader.onTextElement("attach-direction", [&](const Glib::ustring &text, const Attributes &attr) {
+  reader.onTextElement("attach-direction", [&](const Glib::ustring &text, const Attributes &) {
     m_bank->setAttachedDirection(reader.getTransaction(), text);
   });
 
   reader.onTag(PresetOrderSerializer::getTagName(),
-               [&](const Attributes &attributes) mutable { return new PresetOrderSerializer(m_bank, m_ignoreUUIDs); });
+               [&](const Attributes &) mutable { return new PresetOrderSerializer(m_bank, m_ignoreUUIDs); });
 
   reader.onTag(AttributesOwnerSerializer::getTagName(),
-               [&](const Attributes &attr) mutable { return new AttributesOwnerSerializer(m_bank); });
+               [&](const Attributes &) mutable { return new AttributesOwnerSerializer(m_bank); });
 
   reader.onTextElement("last-changed-timestamp", [&](auto text, auto) {
     reader.getTransaction()->addPostfixCommand(

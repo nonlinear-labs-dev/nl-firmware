@@ -133,7 +133,7 @@ void PresetManagerLayout::setupBankStore()
 {
   if(getStoreModeData() == nullptr)
   {
-    setStoreModeData(std::move(std::make_unique<StoreModeData>()));
+    setStoreModeData(std::make_unique<StoreModeData>());
   }
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
@@ -212,7 +212,7 @@ void PresetManagerLayout::setupPresetStore()
 {
   if(getStoreModeData() == nullptr)
   {
-    setStoreModeData(std::move(std::make_unique<StoreModeData>()));
+    setStoreModeData(std::make_unique<StoreModeData>());
   }
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
@@ -316,10 +316,9 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
     }
   }
 
-  return false;
-
 #warning "Adlerauge Hotfix NAMM"
-  return super::onButton(i, down, modifiers);
+  return false;
+  //  return super::onButton(i, down, modifiers);
 }
 
 bool PresetManagerLayout::onRotary(int inc, ButtonModifiers modifiers)
