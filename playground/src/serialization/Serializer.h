@@ -6,6 +6,7 @@
 #include "xml/XmlReader.h"
 #include "xml/XmlWriter.h"
 #include "xml/FileInStream.h"
+#include <giomm/file.h>
 
 class Writer;
 class Reader;
