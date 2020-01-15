@@ -25,13 +25,13 @@ jobs:
       run: mkdir -p /home/runner/work/ && cd /home/runner/work/ && wget http://hoegelow.com/nl/nonlinux-prebuilt.img
 
     - name: Create overlayfs folders
-      run: cd /home/runner/work && mkdir nonlinux nonlinux-squash nonlinux-overlay
+      run: cd /home/runner/work && mkdir nonlinux nonlinux-squash nonlinux-overlay nonlinux-workdir
 
     - name: Setup squashfs
       run: cd /home/runner/work && squashfuse nonlinux-prebuilt.img ./nonlinux-squash
 
     - name: Setup overlayfs
-      run: cd /home/runner/work && sudo unionfs-fuse -o cow ./nonlinux-overlay=RW:./nonlinux-squash=RO ./nonlinux
+      run: cd /home/runner/work && sudo mount -t overlay -o lowerdir=./nonlinux-squash,upperdir=./nonlinux-overlay,workdir=./nonlinux-workdir none ./nonlinux
 
     - name: build
       run: cd /home/runner/work/nonlinux && make
