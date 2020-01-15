@@ -37,10 +37,11 @@ public class SplitSoundLayout extends SoundLayout {
 			double margin = Millimeter.toPixels(2);
 			double parts = 20;
 			double unit = (w - 2 * margin) / parts;
-			double splitPointHeight = Math.min(h, Millimeter.toPixels(20));
+			double splitPointHeight = Math.min(h, Millimeter.toPixels(30));
+			double splitPointWidth = Math.min(3*unit, Millimeter.toPixels(40));
 			getChildren().get(0).doLayout(0 * unit, margin, 8 * unit, h - 2 * margin);
-			getChildren().get(1).doLayout(9 * unit, (h - splitPointHeight) / 2, 2 * unit, splitPointHeight);
-			getChildren().get(2).doLayout(12 * unit, margin, 8 * unit, h - 2 * margin);
+			getChildren().get(1).doLayout(9 * unit, (h - splitPointHeight) / 2, splitPointWidth, splitPointHeight);
+			getChildren().get(2).doLayout(10 * unit + splitPointWidth, margin, 8 * unit, h - 2 * margin);
 		}
 	}
 
@@ -48,18 +49,16 @@ public class SplitSoundLayout extends SoundLayout {
 
 		public SplitPoint(OverlayLayout parent) {
 			super(parent);
-
-			addChild(new SplitPointLabel(this, "Split-"));
-			addChild(new SplitPointLabel(this, "Point"));
+			addChild(new SplitPointLabel(this, "Split Point"));
 			addChild(new SplitPointValue(this));
 		}
 
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
-			getChildren().get(0).doLayout(0, 0, w, h / 4);
-			getChildren().get(1).doLayout(0, 1 * h / 4, w, h / 4);
-			getChildren().get(2).doLayout(0, 3 * h / 4, w, h / 4);
+			double quarterHeight = h / 4;
+			getChildren().get(0).doLayout(0, 0, w, quarterHeight * 2);
+			getChildren().get(1).doLayout(0, quarterHeight * 2, w, quarterHeight * 1.1);
 		}
 
 		private class SplitPointLabel extends Label {
@@ -93,10 +92,10 @@ public class SplitSoundLayout extends SoundLayout {
 			group = g;
 			addChild(new VoiceGroupLabel(this));
 			addChild(new PresetName(this));
-			addChild(new TuneLabel(this));
-			addChild(new TuneReference(this));
 			addChild(new VolumeLabel(this));
 			addChild(new Volume(this));
+			addChild(new TuneLabel(this));
+			addChild(new TuneReference(this));
 		}
 
 		@Override
@@ -107,7 +106,9 @@ public class SplitSoundLayout extends SoundLayout {
 			double xunit = (w - 2 * margin) / parts;
 			double yunit = (h - 2 * margin) / parts;
 
-			getChildren().get(0).doLayout(margin + 0 * xunit, margin, 2 * xunit, 5 * yunit);
+			double middleLine = h / 2;
+
+			getChildren().get(0).doLayout(margin, middleLine - 3 * yunit, 2 * xunit, 5 * yunit);
 			getChildren().get(1).doLayout(margin + 4 * xunit, margin, 16 * xunit, 5 * yunit);
 			getChildren().get(2).doLayout(margin + 4 * xunit, margin + 8 * yunit, 6 * xunit, 5 * yunit);
 			getChildren().get(3).doLayout(margin + 10 * xunit, margin + 8 * yunit, 10 * xunit, 5 * yunit);
