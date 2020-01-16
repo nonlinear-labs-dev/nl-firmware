@@ -15,13 +15,13 @@ jobs:
     
     - name: Cache NonLinux-Prebuilt
       uses: actions/cache@v1
-      id: nonlinux-prebuilt-img
+      id: nonlinux-prebuilt
       with:
         path: /home/runner/work/nonlinux-prebuilt
         key: nonlinux-prebuilt-img
 
     - name: Download Nonlinux Prebuilt
-      if: steps.nonlinux-prebuilt-img.outputs.cache-hit != 'true'
+      if: steps.nonlinux-prebuilt.outputs.cache-hit != 'true'
       run: mkdir -p /home/runner/work/ && cd /home/runner/work/ && wget http://hoegelow.com/nl/nonlinux-prebuilt.img
 
     - name: Create overlayfs folders
@@ -32,6 +32,9 @@ jobs:
 
     - name: Setup overlayfs
       run: cd /home/runner/work && unionfs-fuse -o cow ./nonlinux-overlay=rw:./nonlinux-squash ./nonlinux
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v1
 
     - name: build
       run: cd /home/runner/work/nonlinux && make
