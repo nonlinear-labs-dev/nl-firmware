@@ -24,5 +24,18 @@ jobs:
       if: steps.nonlinux-prebuilt.outputs.cache-hit != 'true'
       run: mkdir -p /home/runner/work/dl && cd /home/runner/work/dl && wget http://hoegelow.com/nl/nonlinux-prebuilt.img
 
-   
+    - name: Create overlayfs folders
+      run: cd /home/runner/work && mkdir nonlinux nonlinux-squash nonlinux-overlay nonlinux-workdir
+
+    - name: Setup squashfs
+      run: cd /home/runner/work && squashfuse dl/nonlinux-prebuilt.img ./nonlinux-squash
+
+    - name: Setup overlayfs
+      run: cd /home/runner/work && unionfs-fuse -o cow ./nonlinux-overlay=rw:./nonlinux-squash ./nonlinux
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v1
+
+    - name: build
+      run: cd /home/runner/work/nonlinux && make
 
