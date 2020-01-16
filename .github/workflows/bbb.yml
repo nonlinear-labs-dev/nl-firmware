@@ -3,7 +3,7 @@ name: cross building for beagle bone
 on:
   push:
     branches:
-      - master
+      - master-disabled
 
 jobs:
   build:
