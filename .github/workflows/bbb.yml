@@ -33,9 +33,5 @@ jobs:
     - name: Setup overlayfs
       run: cd /home/runner/work && unionfs-fuse -o cow ./nonlinux-overlay=rw:./nonlinux-squash ./nonlinux
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v1
-
-    - name: build
-      run: cd /home/runner/work/nonlinux && make
+   
 
