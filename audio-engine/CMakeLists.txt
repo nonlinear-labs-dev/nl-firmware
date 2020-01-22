@@ -39,7 +39,7 @@ ENDIF(DEV_PC)
 target_link_libraries(audio-engine pthread)
 target_link_libraries(audio-engine nltools)
 
-include_directories(audio-engine ${CMAKE_SOURCE_DIR}/nltools/include/)
+include_directories(audio-engine ${CMAKE_SOURCE_DIR}/projects/nltools/include/)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})
