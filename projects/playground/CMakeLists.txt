@@ -95,8 +95,8 @@ target_link_libraries(playground-lib pthread)
 target_link_libraries(playground-lib stdc++fs)
 target_link_libraries(playground-lib nltools)
 
-include_directories(playground-lib ${CMAKE_SOURCE_DIR}/nltools/include/)
-include_directories(playground-lib ${CMAKE_SOURCE_DIR}/playground/src)
+include_directories(playground-lib ${CMAKE_SOURCE_DIR}/projects/nltools/include/)
+include_directories(playground-lib ${CMAKE_SOURCE_DIR}/projects/playground/src)
 
 function(linkLib name)
   pkg_check_modules(${name} REQUIRED ${name})
