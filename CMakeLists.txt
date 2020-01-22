@@ -74,5 +74,6 @@ IF(BUILD_ONLINEHELP)
     add_subdirectory(online-help)
 ENDIF(BUILD_ONLINEHELP)
 
+add_subdirectory(build-tools)
 add_subdirectory(scripts)
 
