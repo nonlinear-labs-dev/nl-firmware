@@ -33,7 +33,10 @@ add_custom_command(
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/build-toolchain.sh 
     "docker run -u ${USER_ID}:${DOCKER_GROUP_ID} \
-        --rm -v ${CMAKE_CURRENT_BINARY_DIR}:/workdir ${DOCKERNAME} \
+        --rm \
+        -v ${CMAKE_CURRENT_BINARY_DIR}:/workdir \
+        -v ${CMAKE_SOURCE_DIR}:/sources \
+        ${DOCKERNAME} \
         bash -c '\
             export HOME=/workdir/ccache && \
             cd /workdir/nonlinux && \
@@ -50,7 +53,10 @@ add_custom_command(
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/build-c15.sh 
     "docker run -u ${USER_ID}:${DOCKER_GROUP_ID} \
-        --rm -v ${CMAKE_CURRENT_BINARY_DIR}:/workdir ${DOCKERNAME} \
+        --rm \
+        -v ${CMAKE_CURRENT_BINARY_DIR}:/workdir \
+        -v ${CMAKE_SOURCE_DIR}:/sources \
+        ${DOCKERNAME} \
         bash -c '\
             export HOME=/workdir/ccache && \
             cd /workdir/nonlinux && \
@@ -67,7 +73,10 @@ add_custom_command(
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/build-rootfs.sh 
     "docker run -u ${USER_ID}:${DOCKER_GROUP_ID} \
-        --rm -v ${CMAKE_CURRENT_BINARY_DIR}:/workdir ${DOCKERNAME} \
+        --rm \
+        -v ${CMAKE_CURRENT_BINARY_DIR}:/workdir \
+        -v ${CMAKE_SOURCE_DIR}:/sources \
+        ${DOCKERNAME} \
         bash -c '\
             export HOME=/workdir/ccache && \
             cd /workdir/nonlinux && \
