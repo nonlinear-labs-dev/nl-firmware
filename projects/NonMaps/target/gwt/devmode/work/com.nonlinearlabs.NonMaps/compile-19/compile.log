@@ -1,0 +1,14 @@
+binding: locale=default
+binding: user.agent=safari
+Compiling module com.nonlinearlabs.NonMaps
+   Unification traversed 764 fields and methods and 371 types. 2 are considered part of the current module and 10 had all of their fields and methods traversed.
+   Compiling 1 permutation
+      Compiling permutation 0...
+      Linking per-type JS with 2 new/changed types.
+      Source Maps Enabled
+   Compile of permutations succeeded
+   Compilation succeeded -- 0.649s
+Linking into /home/hhoegelo/dev/nl/C15/C15/NonMaps/target/gwt/devmode/work/com.nonlinearlabs.NonMaps/compile-19/war/nonmaps; Writing extras to /home/hhoegelo/dev/nl/C15/C15/NonMaps/target/gwt/devmode/work/com.nonlinearlabs.NonMaps/compile-19/extras/nonmaps
+   Link succeeded
+   Linking succeeded -- 0.049s
+0.759s total -- Compile completed
