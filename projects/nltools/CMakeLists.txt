@@ -13,7 +13,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 find_package(PkgConfig REQUIRED)
 
 foreach(lib ${LIBS})
-    pkg_check_modules(${lib} REQUIRED ${name})
+    pkg_check_modules(${lib} REQUIRED ${lib})
     target_include_directories(${PROJECT_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARIES})
     target_link_directories(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARY_DIRS})
