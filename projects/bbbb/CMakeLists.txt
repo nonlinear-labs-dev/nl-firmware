@@ -1,14 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(bbbb)
 
-set(LIBS
-  glibmm-2.4
-  giomm-2.4
-  glib-2.0
-  gio-2.0
-  gio-unix-2.0
-  libsoup-2.4
-)
+set(LIBS giomm-2.4 libsoup-2.4)
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 
@@ -17,18 +10,17 @@ IF(NOT DEV_PC)
     list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UI_SOURCES})
 ENDIF(NOT DEV_PC)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-
 IF(CONTROLS)
     ADD_DEFINITIONS(-D_WINDOW_CONTROLS)
 ENDIF(CONTROLS)
 
 IF(DEV_PC)
-message("I am a dev pc")
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
   set(LIBS ${LIBS} gtkmm-3.0 gdkmm-3.0 libpng)
 ENDIF(DEV_PC)
+
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
@@ -37,8 +29,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 
 function(addLib name)
   pkg_check_modules(REQUIRED ${name})
-  target_include_directories(${PROJECT_NAME} INTERFACE ${${name}_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} ${${name}_LIBRARIES})
+  target_include_directories(${PROJECT_NAME} PUBLIC ${${name}_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${${name}_LIBRARIES})
   target_link_directories(${PROJECT_NAME} PUBLIC ${${name}_LIBRARY_DIRS})
 endfunction(addLib)
 
@@ -46,8 +38,8 @@ foreach(lib ${LIBS})
   addLib(${lib})
 endforeach(lib)
 
-target_link_libraries(${PROJECT_NAME} pthread)
-target_link_libraries(${PROJECT_NAME} nltools)
+target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
+target_link_libraries(${PROJECT_NAME} PUBLIC nltools)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../nltools/include/)
 
