@@ -17,6 +17,7 @@ Application *Application::theApp = nullptr;
 char *Application::initStatic(Application *app, char *argv)
 {
   using namespace nltools::msg;
+
   theApp = app;
   Configuration conf;
   conf.offerEndpoints = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed };
