@@ -25,12 +25,11 @@ elseif (NOT SYSTEMD_FOUND AND SYSTEMD_SERVICES_INSTALL_DIR)
 endif()
 
 if (SYSTEMD_FOUND)
-    set(WITH_SYSTEMD "ON")
     set(SYSTEMD_SERVICES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}${SYSTEMD_SERVICES_INSTALL_DIR})
     message(STATUS "systemd services install dir: ${SYSTEMD_SERVICES_INSTALL_DIR}")
 else()
-    set(WITH_SYSTEMD "OFF")
     message(STATUS "systemd not found.")
+    set(SYSTEMD_SERVICES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib/systemd/system)
 endif (SYSTEMD_FOUND)
 
 find_program(CCACHE_PROGRAM ccache)
