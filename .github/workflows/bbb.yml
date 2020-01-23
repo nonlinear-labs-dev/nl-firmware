@@ -1,12 +1,17 @@
 name: bbb-Build
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-18.04
 
     steps:
+    - uses: actions/checkout@v2
+
     - name: Install Packages
       run: sudo apt-get install zip unzip
 
