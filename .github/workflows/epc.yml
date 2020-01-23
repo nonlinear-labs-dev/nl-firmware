@@ -1,0 +1,25 @@
+name: epc-Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Install Packages
+      run: sudo apt-get install ccache
+
+    - name: Configure
+      run: |
+        mkdir -p /home/runner/work/build
+        cd /home/runner/work/build
+        cmake /home/runner/work/C15/C15 -DBUILD_EPC=On
+
+    - name: Make
+      run: |
+        cd /home/runner/work/build
+        echo "here we would have to call 'make epc-update'"

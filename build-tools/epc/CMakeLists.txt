@@ -14,10 +14,9 @@ add_custom_command(
 add_custom_command(
     COMMENT "Mount APLinux"
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
-    OUTPUT .ap-linux-mounted
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-mnt/arch/boot/memtest
     COMMAND mkdir -p AP-Linux-mnt
     COMMAND fuseiso ./AP-Linux-V.4.0.iso ./AP-Linux-mnt
-    COMMAND touch .ap-linux-mounted
 )
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/clean-temps.sh
@@ -29,7 +28,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/clean-temps.sh
     rm -rf .ap-linux-copied
     rm -rf .ap-linux-unsquashed
     rm -rf .ap-linux-pimped
-    rm -rf .ap-linux-copy-pimped
+    rm -rf .ap-linux-resquashed
     ")
 
 add_custom_command(
@@ -40,7 +39,7 @@ add_custom_command(
 
 add_custom_command(
     COMMENT "Copy APLinux"
-    DEPENDS .ap-linux-mounted
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-mnt/arch/boot/memtest
     DEPENDS .clean-up
     OUTPUT .ap-linux-copied
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy
@@ -75,37 +74,68 @@ add_custom_command(
 )
 
 add_custom_command(
-    COMMENT "Pack NonLinuxAP"
+    COMMENT "Re-Squash NonLinuxAP"
     DEPENDS .ap-linux-pimped
-    OUTPUT .ap-linux-copy-pimped
+    OUTPUT .ap-linux-resquashed
     COMMAND rm ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.sfs
     COMMAND mksquashfs ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.sfs
     COMMAND md5sum ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.sfs > ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.md5
-    COMMAND touch .ap-linux-copy-pimped
+    COMMAND touch .ap-linux-resquashed
 )
 
 add_custom_command(
     COMMENT "Create ISO image of NonLinuxAP"
-    DEPENDS .ap-linux-copy-pimped
+    DEPENDS .ap-linux-resquashed
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy
     COMMAND genisoimage -l -r -J -V "ARCH_201704" -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso ./
     COMMAND isohybrid ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
 )
 
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/start-nonlinux-ap.sh
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/create-install-medium.sh
     "
-    qemu-img create -f qcow2 ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.raw 64G
-    echo '1' | qemu-system-x86_64 -cdrom ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso -m 2048 -hda ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.raw -serial stdio -nographic
+    error() {
+        echo \"COULD NOT CREATE INSTALL MEDIUM:\"
+        echo $1
+        exit 1
+    }
+
+    TARGET=\"$1\"
+    PARTITION=\"$TARGET\"1
+
+    [ ! -z \"$TARGET\" ] || error \"You have to specifiy the target device like this: \\\"EPC_INSTALL_MEDIUM=/dev/sdX make epc-install-medium\\\"\"
+    (lsblk -o PATH,RM | grep \"$TARGET \" | grep \" 1\") || error \"Sepcified device seems NOT to be removeable\"
+    which fatlabel || error \"The binary \'fatlabel\' has to be installed on the dev pc\"
+
+    sudo umount ${CMAKE_CURRENT_BINARY_DIR}/NonLinux-mnt
+    sudo umount ${CMAKE_CURRENT_BINARY_DIR}/InstallMedium-mnt
+
+    CMD=\"label: dos
+
+label-id: 0x16ed9305
+device: $TARGET
+unit: sectors
+
+$PARTITION : start= 2048, size= 7687424, type=ef, bootable
+\"
+    (echo \"$CMD\" | sudo sfdisk $TARGET) || error \"Could not parition target device\"
+    sudo mkfs.msdos $PARTITION || error \"Could not mk filesystem on target device\"
+
+    mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/NonLinux-mnt
+    mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/InstallMedium-mnt
+    sudo mount -o loop ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso ${CMAKE_CURRENT_BINARY_DIR}/NonLinux-mnt || error \"Could not mount source ISO image\"
+    sudo mount $PARTITION ${CMAKE_CURRENT_BINARY_DIR}/InstallMedium-mnt || error \"Could not mount target device: $TARGET\"
+    sudo cp -a ${CMAKE_CURRENT_BINARY_DIR}/NonLinux-mnt/* ${CMAKE_CURRENT_BINARY_DIR}/InstallMedium-mnt || error \"Could not copy content to target device\"
+    sudo umount ${CMAKE_CURRENT_BINARY_DIR}/InstallMedium-mnt || error \"Problems unmounting the target device\"
+    sudo fatlabel $PARTITION ARCH_201704 || error \"Could not label the partition correctly, stick will most likely not boot\"
     ")
 
-
 add_custom_command(
-    COMMENT "Create RAW image of NonLinuxAP"
-    OUTPUT .nonlinux-raw
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/start-nonlinux-ap.sh
+    COMMENT "Build install medium (to be run with prefix EPC_INSTALL_MEDIUM=/dev/sdX)"
+    OUTPUT .nonlinux-install-medium
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
-    COMMAND /bin/sh ${CMAKE_CURRENT_BINARY_DIR}/start-nonlinux-ap.sh
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/create-install-medium.sh
+    COMMAND /bin/sh ${CMAKE_CURRENT_BINARY_DIR}/create-install-medium.sh \${EPC_INSTALL_MEDIUM}
 )
 
-add_custom_target(epc-rootfs DEPENDS .nonlinux-raw)
+add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)

@@ -1,0 +1,45 @@
+name: bbb-Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Install Packages
+      run: sudo apt-get install zip unzip
+
+    - name: Cache nonlinux
+      uses: actions/cache@v1
+      id: cache-nonlinux
+      with:
+        path: /home/runner/work/cache
+        key: cache-nonlinux
+
+    - name: Configure
+      run: |
+        mkdir -p /home/runner/work/build
+        cd /home/runner/work/build
+        cmake /home/runner/work/C15/C15 -DBUILD_BBB=On
+
+    - name: Unpack nonlinux cache
+      if: steps.cache-nonlinux.outputs.cache-hit = 'true'
+      run: |
+        mkdir -p /home/runner/work/build/build-tools/bbb
+        cd /home/runner/work/build/build-tools/bbb && unzip /home/runner/work/cache/nonlinux.zip
+
+    - name: Build BBB
+      run: cd /home/runner/work/build && make bbb-rootfs
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: bbb-build
+        path: /home/runner/work/build/build-tools/bbb/nonlinux/output/images
+
+    - name: Pack build folder
+      run: |
+        mkdir -p /home/runner/work/cache
+        cd /home/runner/work/build/build-tools/bbb
+        zip -r /home/runner/work/cache/nonlinux.zip ./nonlinux
