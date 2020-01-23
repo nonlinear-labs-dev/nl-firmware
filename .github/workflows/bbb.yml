@@ -26,7 +26,7 @@ jobs:
       run: |
         mkdir -p /home/runner/work/build
         cd /home/runner/work/build
-        cmake /home/runner/work/C15/C15 -DBUILD_BBB=On
+        cmake /home/runner/work/C15/C15 -DBUILD_BBBB=On -DBUILD_EPC=Off -DBUILD_AUDIOENGINE=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TESTING=Off
 
     - name: Unpack nonlinux cache
       if: steps.cache-nonlinux.outputs.cache-hit == 'true'
