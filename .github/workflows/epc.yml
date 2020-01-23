@@ -17,6 +17,11 @@ jobs:
       run: |
         mkdir -p /home/runner/work/build
         cd /home/runner/work/build
+        ls -lah /home/runner/work
+        echo "AAAA"
+        ls -lah /home/runner/work/C15
+        echo "BBBB"
+        ls -lah /home/runner/work/C15/C15
         cmake /home/runner/work/C15/C15 -DBUILD_EPC=On
 
     - name: Make

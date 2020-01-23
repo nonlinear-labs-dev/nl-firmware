@@ -1,6 +1,9 @@
 name: x86-Build
 
-on: [push]
+on:
+  push:
+    branches:
+      - master-disabled
 
 jobs:
   build:
