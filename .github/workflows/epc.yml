@@ -3,7 +3,7 @@ name: epc-Build
 on:
   push:
     branches:
-      - master
+      - master-disabled
 
 jobs:
   build:
@@ -19,12 +19,7 @@ jobs:
       run: |
         mkdir -p /home/runner/work/build
         cd /home/runner/work/build
-        ls -lah /home/runner/work
-        echo "AAAA"
-        ls -lah /home/runner/work/C15
-        echo "BBBB"
-        ls -lah /home/runner/work/C15/C15
-        cmake /home/runner/work/C15/C15 -DBUILD_EPC=On
+        cmake /home/runner/work/C15/C15 -DBUILD_EPC=On -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TESTING=Off
 
     - name: Make
       run: |
