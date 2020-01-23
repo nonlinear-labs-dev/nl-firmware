@@ -24,7 +24,7 @@ jobs:
         cmake /home/runner/work/C15/C15 -DBUILD_BBB=On
 
     - name: Unpack nonlinux cache
-      if: steps.cache-nonlinux.outputs.cache-hit = 'true'
+      if: steps.cache-nonlinux.outputs.cache-hit == 'true'
       run: |
         mkdir -p /home/runner/work/build/build-tools/bbb
         cd /home/runner/work/build/build-tools/bbb && unzip /home/runner/work/cache/nonlinux.zip
