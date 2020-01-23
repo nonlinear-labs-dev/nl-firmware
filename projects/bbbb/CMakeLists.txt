@@ -31,7 +31,7 @@ function(addLib name)
   pkg_check_modules(REQUIRED ${name})
   target_include_directories(${PROJECT_NAME} PUBLIC ${${name}_INCLUDE_DIRS})
   target_link_libraries(${PROJECT_NAME} PUBLIC ${${name}_LIBRARIES})
-  target_link_directories(${PROJECT_NAME} PUBLIC ${${name}_LIBRARY_DIRS})
+  link_directories(${${name}_LIBRARY_DIRS})
 endfunction(addLib)
 
 foreach(lib ${LIBS})

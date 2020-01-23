@@ -80,6 +80,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/build-rootfs.sh
         bash -c '\
             export HOME=/workdir/ccache && \
             cd /workdir/nonlinux && \
+            make C15-dirclean && \
             make'")
 
 add_custom_command(

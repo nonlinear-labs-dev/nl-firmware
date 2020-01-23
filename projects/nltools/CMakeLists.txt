@@ -16,7 +16,7 @@ foreach(lib ${LIBS})
     pkg_check_modules(${lib} REQUIRED ${lib})
     target_include_directories(${PROJECT_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARIES})
-    target_link_directories(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARY_DIRS})
+    link_directories(${${lib}_LIBRARY_DIRS})
 endforeach(lib)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
