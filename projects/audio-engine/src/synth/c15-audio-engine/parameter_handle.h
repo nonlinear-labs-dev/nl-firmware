@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "parameter_storage.h"
-#include "parameter-db/generated/parameter_list.h"
+#include <parameter_list.h>
 
 namespace Engine
 {

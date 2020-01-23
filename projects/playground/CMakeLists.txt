@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.5)
+
 project(playground)
-project(playground-tests)
+
+# PRECONDITIONS
+find_package(PkgConfig REQUIRED)
+find_package(Threads REQUIRED)
+find_package(Freetype REQUIRED)
+
+# VARS
+SET(BINARY_NAME ${PROJECT_NAME})
+SET(LIB_NAME ${PROJECT_NAME}-lib)
+SET(TEST_BINARY_NAME ${PROJECT_NAME}-test)
 
 execute_process(COMMAND "git" "rev-parse" "--abbrev-ref" "HEAD"
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -21,15 +31,9 @@ string(STRIP ${COMMIT_COUNT} COMMIT_COUNT)
 string(STRIP ${HEAD_REF} HEAD_REF)
 string(STRIP ${BRANCH_NAME} BRANCH_NAME)
 
-set(LIBS
-    glibmm-2.4
-    gio-unix-2.0
-    giomm-2.4
-    uuid
-    libsoup-2.4
-    freetype2
-)
+set(LIBS gio-unix-2.0 giomm-2.4 uuid libsoup-2.4 freetype2)
 
+# OPTIONS
 OPTION(DEV_PC "Enable some tests and tools not suitable for embedded device" OFF)
 OPTION(PROFILING "Enable built in profiler" OFF)
 OPTION(DSL_LAYOUTS "Enable experimental and not yet working DSL for HWUI layouts" OFF)
@@ -49,33 +53,16 @@ IF(DSL_LAYOUTS)
   ADD_DEFINITIONS(-D_DSL_LAYOUTS)
 ENDIF(DSL_LAYOUTS)
 
-function(addLib name)
-  pkg_check_modules(${name} REQUIRED ${name})
-  include_directories(${${name}_INCLUDE_DIRS})
-  link_directories(${${name}_LIBRARY_DIRS})
-endfunction(addLib)
-
-find_package(PkgConfig REQUIRED)
-find_package(Threads REQUIRED)
-find_package(Freetype REQUIRED)
-
-foreach(lib ${LIBS})
-  addLib(${lib})
-endforeach(lib)
-
-include_directories(src)
-include_directories(${PROJECT_BINARY_DIR}/src)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -Wno-deprecated-declarations")
-
+# CONFIGURED FILES
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
 
-SET(GENERATED_SOURCES
-    ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp
-    ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
-
+# SOURCE FILE COLLECTIONS
+SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
+file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
+file(GLOB VERSION_INFOS resources/version-infos/*)
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
 
@@ -85,50 +72,46 @@ ENDIF()
 
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/playground.cpp)
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/testing/unit-tests/playground-tests.cpp)
-
 file(GLOB_RECURSE UNIT_TEST_FILES src/testing/unit-tests/*.cpp)
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UNIT_TEST_FILES})
+set(${BINARY_NAME}_SOURCES "src/playground.cpp")
+set(${TEST_BINARY_NAME}_SOURCES ${UNIT_TEST_FILES})
 
-add_library(playground-lib STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
-
-target_link_libraries(playground-lib pthread)
-target_link_libraries(playground-lib stdc++fs)
-target_link_libraries(playground-lib nltools)
-
-include_directories(playground-lib ${CMAKE_SOURCE_DIR}/projects/nltools/include/)
-include_directories(playground-lib ${CMAKE_SOURCE_DIR}/projects/playground/src)
-
-function(linkLib name)
-  pkg_check_modules(${name} REQUIRED ${name})
-  target_link_libraries(playground-lib ${${name}_LIBRARIES})
-endfunction(linkLib)
+# TARGETS
+## LIB
+add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 
 foreach(lib ${LIBS})
-  linkLib(${lib})
+    pkg_check_modules(${lib} REQUIRED ${lib})
+    target_include_directories(${LIB_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
+    target_link_directories(${LIB_NAME} PUBLIC ${${lib}_LIBRARY_DIRS})
+    target_link_libraries(${LIB_NAME} PUBLIC ${${lib}_LIBRARIES})
 endforeach(lib)
 
-set(PLAYGROUND_SOURCES "src/playground.cpp")
-set(PLAYGROUND_TEST_SOURCES ${UNIT_TEST_FILES})
+target_include_directories(${LIB_NAME} PUBLIC src)
+target_include_directories(${LIB_NAME} PUBLIC ${PROJECT_BINARY_DIR}/src)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/nltools/include/)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/parameter-db/generated/)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/playground/src)
+target_link_libraries(${LIB_NAME} PUBLIC pthread stdc++fs nltools)
 
-add_executable(playground ${PLAYGROUND_SOURCES})
-add_executable(playground-test ${PLAYGROUND_TEST_SOURCES})
+## BINARY
+add_executable(${BINARY_NAME} ${${BINARY_NAME}_SOURCES})
+target_link_libraries(${BINARY_NAME} PRIVATE ${LIB_NAME})
 
-target_link_libraries(playground PRIVATE playground-lib)
-target_link_libraries(playground-test PRIVATE playground-lib)
+## TEST BINARY
+add_executable(${TEST_BINARY_NAME} ${${TEST_BINARY_NAME}_SOURCES})
+target_link_libraries(${TEST_BINARY_NAME} PRIVATE ${LIB_NAME})
 
-configure_file(${PROJECT_SOURCE_DIR}/systemd/playground.service.in ${PROJECT_BINARY_DIR}/systemd/playground.service @ONLY)
+# TESTS
+add_test(NAME ${PROJECT_NAME} COMMAND ${TEST_BINARY_NAME})
 
-file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
-file(GLOB VERSION_INFOS resources/version-infos/*)
-
-add_test(NAME playground COMMAND playground-test)
-
-install(FILES ${PROJECT_BINARY_DIR}/systemd/playground.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+# INSTALLATION
+install(FILES ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PARAMETER_DESCRIPTIONS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/parameter-descriptions)
 install(FILES ${VERSION_INFOS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/version-infos)
 install(DIRECTORY resources USE_SOURCE_PERMISSIONS DESTINATION ${C15_INSTALL_PATH}/playground)
-install(TARGETS playground DESTINATION ${C15_INSTALL_PATH}/playground)
+install(TARGETS ${BINARY_NAME} DESTINATION ${C15_INSTALL_PATH}/${BINARY_NAME})
 
+# AUTO GLOB INVALIDATION
 ADD_CUSTOM_TARGET(touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
-
-

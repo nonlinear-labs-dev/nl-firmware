@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 project(audio-engine)
 
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
 set(LIBS alsa)
 
 find_package(OpenMP)
@@ -11,48 +14,31 @@ IF(OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 ENDIF()
 
-function(addLib name)
-  pkg_check_modules(${name} REQUIRED ${name})
-  include_directories(${${name}_INCLUDE_DIRS})
-  link_directories(${${name}_LIBRARY_DIRS})
-endfunction(addLib)
-
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
 foreach(lib ${LIBS})
-  addLib(${lib})
+    pkg_check_modules(${lib} REQUIRED ${lib})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
+    target_link_directories(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARY_DIRS})
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARIES})
 endforeach(lib)
 
 include_directories(src)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -march=native")
 
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
-
-add_executable(audio-engine ${SOURCE_FILES})
-
 IF(DEV_PC)
     TARGET_COMPILE_DEFINITIONS(audio-engine PRIVATE test_inputModeFlag=1)
 ENDIF(DEV_PC)
 
-target_link_libraries(audio-engine pthread)
-target_link_libraries(audio-engine nltools)
+target_link_libraries(${PROJECT_NAME} PUBLIC pthread nltools)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/nltools/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/parameter-db/generated)
 
-include_directories(audio-engine ${CMAKE_SOURCE_DIR}/projects/nltools/include/)
+install(TARGETS ${PROJECT_NAME} DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
 
-function(linkLib name)
-  pkg_check_modules(${name} REQUIRED ${name})
-  target_link_libraries(audio-engine ${${name}_LIBRARIES})
-endfunction(linkLib)
+ADD_CUSTOM_TARGET(${PROJECT_NAME}-touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 
-foreach(lib ${LIBS})
-  linkLib(${lib})
-endforeach(lib)
-
-install(TARGETS audio-engine DESTINATION ${C15_INSTALL_PATH}/audio-engine)
-
-ADD_CUSTOM_TARGET(audio-engine-touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
-
-configure_file(${PROJECT_SOURCE_DIR}/systemd/audio-engine.service.in ${PROJECT_BINARY_DIR}/systemd/audio-engine.service @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/systemd/audio-engine.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/${PROJECT_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)

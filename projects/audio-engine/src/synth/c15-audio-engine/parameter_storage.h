@@ -10,8 +10,8 @@
     @todo
 *******************************************************************************/
 
-#include "parameter-db/generated/c15_config.h"
-#include "parameter-db/generated/parameter_info.h"
+#include <c15_config.h>
+#include <parameter_info.h>
 #include "macro_assignment.h"
 
 // first run - prototypical stuff

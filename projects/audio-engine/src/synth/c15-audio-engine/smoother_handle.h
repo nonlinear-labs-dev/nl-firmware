@@ -12,7 +12,7 @@
     @todo
 *******************************************************************************/
 
-#include "parameter-db/generated/c15_config.h"
+#include <c15_config.h>
 
 // basic smoothing unit
 class ProtoSmoother

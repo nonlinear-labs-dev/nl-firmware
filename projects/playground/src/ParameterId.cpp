@@ -1,6 +1,6 @@
 #include "ParameterId.h"
 #include <utility>
-#include <parameter-db/generated/parameter_list.h>
+#include <parameter_list.h>
 #include <glibmm/ustring.h>
 
 static int parseNumber(const std::string &in)

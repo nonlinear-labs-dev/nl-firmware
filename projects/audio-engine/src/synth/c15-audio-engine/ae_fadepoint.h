@@ -9,7 +9,7 @@
     @todo
 *******************************************************************************/
 
-#include "parameter-db/generated/c15_config.h"
+#include <c15_config.h>
 #include <vector>
 
 enum class FadeEvent

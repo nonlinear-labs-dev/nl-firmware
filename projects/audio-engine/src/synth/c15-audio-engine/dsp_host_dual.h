@@ -9,8 +9,8 @@
     @todo
 *******************************************************************************/
 
-#include "parameter-db/generated/c15_config.h"
-#include "parameter-db/generated/parameter_list.h"
+#include <c15_config.h>
+#include <parameter_list.h>
 #include <nltools/messaging/Message.h>
 
 #include "parameter_handle.h"
