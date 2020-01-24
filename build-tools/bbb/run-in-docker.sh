@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set +x
+
 BINARY_DIR=$1
 shift
 SOURCE_DIR=$1

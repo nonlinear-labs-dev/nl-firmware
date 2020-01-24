@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install Packages
-      run: sudo apt-get install zip unzip
+      run: sudo apt-get install squashfs-tools squashfuse
 
     - name: Cache nonlinux
       uses: actions/cache@v1
@@ -31,8 +31,10 @@ jobs:
     - name: Unpack nonlinux cache
       if: steps.cache-nonlinux.outputs.cache-hit == 'true'
       run: |
-        mkdir -p /home/runner/work/build/build-tools/bbb
-        cd /home/runner/work/build/build-tools/bbb && unzip /home/runner/work/cache/nonlinux.zip
+        mkdir -p /home/runner/work/build/build-tools/bbb/nonlinux
+        mkdir /home/runner/work/mnt-cache
+        squashfuse /home/runner/work/cache/nonlinux-squashed.img /home/runner/work/mnt-cache
+        rsync -a --delete /home/runner/work/mnt-cache/ /home/runner/work/build/build-tools/bbb/nonlinux
 
     - name: Build BBB
       run: cd /home/runner/work/build && make bbb-rootfs
@@ -46,5 +48,5 @@ jobs:
     - name: Pack build folder
       run: |
         mkdir -p /home/runner/work/cache
-        cd /home/runner/work/build/build-tools/bbb
-        zip -r /home/runner/work/cache/nonlinux.zip ./nonlinux
+        rm -rf /home/runner/work/build/build-tools/bbb/nonlinux/dl/*
+        mksquashfs /home/runner/work/build/build-tools/bbb/nonlinux /home/runner/work/cache/nonlinux-squashed.img
