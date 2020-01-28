@@ -40,7 +40,9 @@ jobs:
         rsync -a --delete /home/runner/work/mnt-cache/ /home/runner/work/build/build-tools/bbb/nonlinux
 
     - name: Build BBB
-      run: cd /home/runner/work/build && make bbb-rootfs
+      run: |
+        make -C /home/runner/work/build bbb-rootfs
+        rm /home/runner/work/build/build-tools/bbb/nonlinux/output/images/rootfs.tar.gz
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
