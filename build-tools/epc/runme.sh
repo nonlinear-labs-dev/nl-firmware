@@ -117,3 +117,5 @@ arch-chroot /mnt /bin/bash -c "systemctl mask systemd-tmpfiles-setup-dev"
 
 arch-chroot /mnt /bin/bash -c "rm /etc/profile.d/runme.sh"
 arch-chroot /mnt /bin/bash -c "rm -rf /Audiophile2NonLinux"
+
+shutdown -P now

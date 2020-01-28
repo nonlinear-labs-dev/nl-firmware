@@ -1,3 +1,20 @@
+SET(USER $ENV{USER})
+SET(DOCKERNAME nl-epc-build-environment-${USER})
+
+file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
+
+EXECUTE_PROCESS(OUTPUT_VARIABLE DOCKER_GROUP_ID COMMAND sh -c "getent group docker | cut -d: -f3")
+EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
+string(STRIP ${DOCKER_GROUP_ID} DOCKER_GROUP_ID)
+string(STRIP ${USER_ID} USER_ID)
+
+add_custom_command(
+    COMMENT "Create Docker Container for the current User ${USER}"
+    OUTPUT .docker-container-created
+    COMMAND docker build --build-arg user=${USER} --build-arg user_id=${USER_ID} --build-arg docker_group_id=${DOCKER_GROUP_ID} -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile
+    COMMAND touch .docker-container-created
+)
 
 add_custom_command(
     COMMENT "Download APLinux image to ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso"
@@ -9,87 +26,6 @@ add_custom_command(
     COMMENT "Download update packages"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
     COMMAND wget https://github.com/nonlinear-labs-dev/Audiophile2NonLinux/releases/download/1.0/NonLinux.pkg.tar.gz
-)
-
-add_custom_command(
-    COMMENT "Mount APLinux"
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-mnt/arch/boot/memtest
-    COMMAND mkdir -p AP-Linux-mnt
-    COMMAND fuseiso ./AP-Linux-V.4.0.iso ./AP-Linux-mnt
-)
-
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/clean-temps.sh
-    "
-    chmod -R 777 ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root
-    chmod -R 777 ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy
-    rm -rf ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy
-    rm -rf ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root
-    rm -rf .ap-linux-copied
-    rm -rf .ap-linux-unsquashed
-    rm -rf .ap-linux-pimped
-    rm -rf .ap-linux-resquashed
-    ")
-
-add_custom_command(
-    COMMENT "Clean up temps"
-    OUTPUT .clean-up
-    COMMAND /bin/sh ${CMAKE_CURRENT_BINARY_DIR}/clean-temps.sh
-)
-
-add_custom_command(
-    COMMENT "Copy APLinux"
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-mnt/arch/boot/memtest
-    DEPENDS .clean-up
-    OUTPUT .ap-linux-copied
-    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy
-    COMMAND cp -R ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-mnt/* ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/
-    COMMAND chmod 777 ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy
-)
-
-add_custom_command(
-    COMMENT "Unsquash rootfs"
-    DEPENDS .ap-linux-copied
-    OUTPUT .ap-linux-unsquashed
-    COMMAND unsquashfs -no-xattrs ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.sfs
-)
-
-add_custom_command(
-    COMMENT "Inject transforming scripts into APLinux"
-    DEPENDS .ap-linux-unsquashed
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
-    OUTPUT .ap-linux-pimped
-    COMMAND mkdir ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root/Audiophile2NonLinux
-    COMMAND chmod 777 ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root/Audiophile2NonLinux
-    COMMAND cp -a
-        ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
-        ${CMAKE_CURRENT_SOURCE_DIR}/hook
-        ${CMAKE_CURRENT_SOURCE_DIR}/install
-        ${CMAKE_CURRENT_SOURCE_DIR}/buildNonlinearLabsBinaries.sh
-        ${CMAKE_CURRENT_SOURCE_DIR}/sda.sfdisk
-        ${CMAKE_CURRENT_SOURCE_DIR}/createUpdateFromRunningOS.sh
-        ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root/Audiophile2NonLinux
-    COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/runme.sh ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root/etc/profile.d/
-    COMMAND touch .ap-linux-pimped
-)
-
-add_custom_command(
-    COMMENT "Re-Squash NonLinuxAP"
-    DEPENDS .ap-linux-pimped
-    OUTPUT .ap-linux-resquashed
-    COMMAND rm ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.sfs
-    COMMAND mksquashfs ${CMAKE_CURRENT_BINARY_DIR}/squashfs-root ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.sfs
-    COMMAND md5sum ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.sfs > ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy/arch/x86_64/airootfs.md5
-    COMMAND touch .ap-linux-resquashed
-)
-
-add_custom_command(
-    COMMENT "Create ISO image of NonLinuxAP"
-    DEPENDS .ap-linux-resquashed
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-copy
-    COMMAND genisoimage -l -r -J -V "ARCH_201704" -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso ./
-    COMMAND isohybrid ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
 )
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/create-install-medium.sh
@@ -131,6 +67,49 @@ $PARTITION : start= 2048, size= 7687424, type=ef, bootable
     ")
 
 add_custom_command(
+    COMMENT "Create ISO image of NonLinuxAP"
+    DEPENDS .docker-container-created
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        "mkdir -p /internal/AP-Linux-mnt"
+        "mount -o loop /workdir/AP-Linux-V.4.0.iso /internal/AP-Linux-mnt"
+        "mkdir -p /internal/AP-Linux-copy"
+        "cp -R /internal/AP-Linux-mnt/* /internal/AP-Linux-copy/"
+        "chmod 777 /internal/AP-Linux-copy"
+        "unsquashfs -no-xattrs /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs"
+        "mkdir ./squashfs-root/Audiophile2NonLinux"
+        "chmod 777 ./squashfs-root/Audiophile2NonLinux"
+        "cp -a /workdir/NonLinux.pkg.tar.gz /sources/hook /sources/install /sources/buildNonlinearLabsBinaries.sh /sources/sda.sfdisk /sources/createUpdateFromRunningOS.sh ./squashfs-root/Audiophile2NonLinux"
+        "cp -a /sources/runme.sh ./squashfs-root/etc/profile.d/"
+        "rm /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs"
+        "mksquashfs ./squashfs-root /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs"
+        'md5sum /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs > /internal/AP-Linux-copy/arch/x86_64/airootfs.md5'
+        "genisoimage -l -r -J -V \"ARCH_201704\" -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o /internal/NonLinuxAP.iso /internal/AP-Linux-copy/"
+        "isohybrid /internal/NonLinuxAP.iso"
+        "mv /internal/NonLinuxAP.iso /workdir/NonLinuxAP.iso"
+        "chown ${USER} /workdir/NonLinuxAP.iso"
+)
+
+add_custom_command(
+    COMMENT "Create ePC update"
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        "mkdir -p /internal"
+        "qemu-img create -f vmdk /internal/disk.vmdk 64G"
+        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -nographic -cdrom /workdir/NonLinuxAP.iso -m 2048 -hda /internal/disk.vmdk'
+        "bash"
+)
+
+
+
+add_custom_command(
     COMMENT "Build install medium (to be run with prefix EPC_INSTALL_MEDIUM=/dev/sdX)"
     OUTPUT .nonlinux-install-medium
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
@@ -139,3 +118,4 @@ add_custom_command(
 )
 
 add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
+add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar)
