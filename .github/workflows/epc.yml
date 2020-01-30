@@ -16,7 +16,7 @@ jobs:
       run: |
         mkdir -p /home/runner/work/build
         cd /home/runner/work/build
-        cmake -DBUILD_EPC=On /home/runner/work/C15/C15
+        cmake -DBUILD_EPC=On -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off /home/runner/work/C15/C15
 
     - name: Make
       run: make -C /home/runner/work/build epc-create-update
