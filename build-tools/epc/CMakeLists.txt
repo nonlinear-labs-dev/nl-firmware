@@ -72,7 +72,7 @@ add_custom_command(
     DEPENDS .docker-container-created
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
-    # DEPENDS ${EPC_SCRIPTS}
+    DEPENDS ${EPC_SCRIPTS}
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -98,7 +98,7 @@ add_custom_command(
 
 add_custom_command(
     COMMENT "Install system on virtual machine"
-    # DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -120,7 +120,7 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/build-c15-in-nonlinux-ap.sh
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip
-    # DEPENDS ${ALL_FILES_IN_PROJECT}
+    DEPENDS ${ALL_FILES_IN_PROJECT}
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build-c15-in-nonlinux-ap.sh ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
