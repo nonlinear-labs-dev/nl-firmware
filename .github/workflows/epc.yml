@@ -3,7 +3,7 @@ name: epc-Build
 on:
   push:
     branches:
-      - master-disabled
+      - master
 
 jobs:
   build:
@@ -12,16 +12,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Packages
-      run: sudo apt-get install ccache
-
     - name: Configure
       run: |
         mkdir -p /home/runner/work/build
         cd /home/runner/work/build
-        cmake /home/runner/work/C15/C15 -DBUILD_EPC=On -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TESTING=Off
+        cmake -DBUILD_EPC=On /home/runner/work/C15/C15
 
     - name: Make
-      run: |
-        cd /home/runner/work/build
-        echo "here we would have to call 'make epc-update'"
+      run: make -C /home/runner/work/build epc-create-update
