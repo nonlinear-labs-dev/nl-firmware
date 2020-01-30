@@ -2,6 +2,9 @@ SET(USER $ENV{USER})
 SET(DOCKERNAME nl-epc-build-environment-${USER})
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
+file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/NonMaps/target/*)
+list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET_FILES})
+list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX CMakeLists.txt)
 
 EXECUTE_PROCESS(OUTPUT_VARIABLE DOCKER_GROUP_ID COMMAND sh -c "getent group docker | cut -d: -f3")
 EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
@@ -99,15 +102,15 @@ add_custom_command(
 add_custom_command(
     COMMENT "Install system on virtual machine"
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/disk.raw
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        "qemu-img create -f vmdk /workdir/disk.vmdk 32G"
+        "qemu-img create -f raw /workdir/disk.raw 32G"
         "touch serial.log"
         'tail -f serial.log &'
-        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -display none -smp 4 -m 4G -hda /workdir/disk.vmdk -cdrom /workdir/NonLinuxAP.iso'
-        "chown ${USER} /workdir/disk.vmdk"
+        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -enable-kvm -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -display none -smp 8 -m 8G -hda /workdir/disk.raw -cdrom /workdir/NonLinuxAP.iso'
+        "chown ${USER} /workdir/disk.raw"
 )
 
 add_custom_command(
@@ -117,7 +120,7 @@ add_custom_command(
 
 add_custom_command(
     COMMENT "Create ePC update"
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/build-c15-in-nonlinux-ap.sh
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip
     DEPENDS ${ALL_FILES_IN_PROJECT}

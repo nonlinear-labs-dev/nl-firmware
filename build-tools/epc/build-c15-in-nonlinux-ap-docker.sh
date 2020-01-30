@@ -4,7 +4,7 @@ executeInNonlinuxAp() {
 }
 
 touch serial.log
-qemu-system-x86_64 -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -display none -nic user,hostfwd=tcp::5022-:22 -smp 4 -m 4G -hda /workdir/disk.vmdk -drive if=pflash,format=raw,readonly,file=/usr/share/OVMF/OVMF_CODE.fd&
+qemu-system-x86_64 -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -display none -nic user,hostfwd=tcp::5022-:22 -smp 8 -m 8G -hda /workdir/disk.raw -drive if=pflash,format=raw,readonly,file=/usr/share/OVMF/OVMF_CODE.fd&
 tail -f serial.log &
 
 while ! executeInNonlinuxAp "echo"; do sleep 1; echo "Waiting for ssh server..." && date; done

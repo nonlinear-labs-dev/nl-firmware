@@ -19,4 +19,4 @@ DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3)
 DOCKERNAME="nl-epc-build-environment-$USER"
 
 modprobe fuse
-docker run --rm -v /tmp:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash /script/tmpscript.sh
+docker run --privileged --rm -v /tmp:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash /script/tmpscript.sh
