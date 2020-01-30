@@ -14,8 +14,6 @@ do
     echo "$var" >> /tmp/tmpscript.sh
 done
 
-cat /tmp/tmpscript.sh
-
 USER_ID=$(id -u $USER)
 DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3)
 DOCKERNAME="nl-epc-build-environment-$USER"

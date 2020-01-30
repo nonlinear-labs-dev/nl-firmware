@@ -95,19 +95,27 @@ add_custom_command(
 )
 
 add_custom_command(
-    COMMENT "Create ePC update"
+    COMMENT "Install system on virtual machine"
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        "qemu-img create -f vmdk /workdir/disk.vmdk 32G"
+        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -smp 4 -enable-kvm -m 2G -nographic -curses -hda /workdir/disk.vmdk -cdrom /workdir/NonLinuxAP.iso'
+        "chown ${USER} /workdir/disk.vmdk"
+)
+
+add_custom_command(
+    COMMENT "Create ePC update"
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        "mkdir -p /internal"
-        "qemu-img create -f vmdk /internal/disk.vmdk 64G"
-        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -nographic -cdrom /workdir/NonLinuxAP.iso -m 2048 -hda /internal/disk.vmdk'
-        "bash"
+        "qemu-system-x86_64 -smp 4 -enable-kvm -m 2G -curses -hda /workdir/disk.vmdk  -drive if=pflash,format=raw,readonly,file=/usr/share/OVMF/OVMF_CODE.fd"
+        "qemu-img create -f vmdk /workdir/c15.vmdk 32G"
 )
-
-
 
 add_custom_command(
     COMMENT "Build install medium (to be run with prefix EPC_INSTALL_MEDIUM=/dev/sdX)"

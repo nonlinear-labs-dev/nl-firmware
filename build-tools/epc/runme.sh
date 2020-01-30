@@ -61,6 +61,7 @@ arch-chroot /mnt /bin/bash -c "cd /etc/apl-files && ./runme.sh"
 echo "Install grub:"
 arch-chroot /mnt /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck"
 arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
+arch-chroot /mnt /bin/bash -c "mkdir /boot/EFI/BOOT && cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI"
 
 echo "Configure autologin:"
 arch-chroot /mnt /bin/bash -c "cd /etc/apl-files && ./autologin.sh"
