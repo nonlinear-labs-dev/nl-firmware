@@ -27,7 +27,7 @@ check_out() {
 
 build(){
     callChecked "Building project" "mkdir build && cd build &&
-    cmake -D CMAKE_BUILD_TYPE=Release -D JARSDIR=/gwt-2.8.2  -D BUILD_BBBB=$BBBB_BUILD_SWITCH -D BUILD_AUDIOENGINE=$AE_BUILD_SWITCH -D BUILD_PLAYGROUND=$PG_BUILD_SWITCH ../C15 && 
+    cmake -D CMAKE_BUILD_TYPE=Release -D -D BUILD_BBBB=$BBBB_BUILD_SWITCH -D BUILD_AUDIOENGINE=$AE_BUILD_SWITCH -D BUILD_PLAYGROUND=$PG_BUILD_SWITCH ../C15 && 
     make install && systemctl enable /usr/local/etc/systemd/system/audio-engine.service"
 
     return $?

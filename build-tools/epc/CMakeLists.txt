@@ -7,6 +7,7 @@ EXECUTE_PROCESS(OUTPUT_VARIABLE DOCKER_GROUP_ID COMMAND sh -c "getent group dock
 EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
 string(STRIP ${DOCKER_GROUP_ID} DOCKER_GROUP_ID)
 string(STRIP ${USER_ID} USER_ID)
+file(GLOB_RECURSE EPC_SCRIPTS ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 add_custom_command(
     COMMENT "Create Docker Container for the current User ${USER}"
@@ -71,6 +72,7 @@ add_custom_command(
     DEPENDS .docker-container-created
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
+    # DEPENDS ${EPC_SCRIPTS}
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -96,26 +98,31 @@ add_custom_command(
 
 add_custom_command(
     COMMENT "Install system on virtual machine"
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
+    # DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         "qemu-img create -f vmdk /workdir/disk.vmdk 32G"
-        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -smp 4 -enable-kvm -m 2G -nographic -curses -hda /workdir/disk.vmdk -cdrom /workdir/NonLinuxAP.iso'
+        "touch serial.log"
+        'tail -f serial.log &'
+        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -display none -smp 4 -m 4G -hda /workdir/disk.vmdk -cdrom /workdir/NonLinuxAP.iso'
         "chown ${USER} /workdir/disk.vmdk"
 )
 
 add_custom_command(
+  COMMENT "Download gwt"
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip
+  COMMAND wget https://goo.gl/pZZPXS -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip)
+
+add_custom_command(
     COMMENT "Create ePC update"
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.vmdk
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/build-c15-in-nonlinux-ap.sh
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip
+    # DEPENDS ${ALL_FILES_IN_PROJECT}
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
-        ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        "qemu-system-x86_64 -smp 4 -enable-kvm -m 2G -curses -hda /workdir/disk.vmdk  -drive if=pflash,format=raw,readonly,file=/usr/share/OVMF/OVMF_CODE.fd"
-        "qemu-img create -f vmdk /workdir/c15.vmdk 32G"
-)
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build-c15-in-nonlinux-ap.sh ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
 add_custom_command(
     COMMENT "Build install medium (to be run with prefix EPC_INSTALL_MEDIUM=/dev/sdX)"
@@ -127,3 +134,4 @@ add_custom_command(
 
 add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
 add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar)
+add_custom_target(epc-docker-container DEPENDS .docker-container-created)

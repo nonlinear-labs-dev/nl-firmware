@@ -38,7 +38,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Configure
-      run: mkdir -p /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DJARSDIR=/home/runner/work/gwt/gwt-2.8.2 -DBUILD_BBB=On -DCMAKE_INSTALL_PREFIX=/home/runner/work/out
+      run: mkdir -p /home/runner/work/build && cd /home/runner/work/build && cmake /home/runner/work/C15/C15 -DBUILD_BBB=On -DCMAKE_INSTALL_PREFIX=/home/runner/work/out
 
     - name: Make
       run: cd /home/runner/work/build && make -j4 install
