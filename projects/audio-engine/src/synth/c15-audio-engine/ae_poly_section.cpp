@@ -169,6 +169,8 @@ bool PolySection::keyDown(PolyKeyEvent *_event)
   m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
   m_key_tune[_event->m_voiceId] = _event->m_tune;
   m_key_position[_event->m_voiceId] = _event->m_position;
+  m_comb_gate[_event->m_voiceId] = 1.0f;
+#warning "check with mse"
   if(_event->m_unisonIndex == 0)
   {
     if(_event->m_trigger_glide)
@@ -205,6 +207,7 @@ void PolySection::keyUp(PolyKeyEvent *_event)
   m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
   m_key_tune[_event->m_voiceId] = _event->m_tune;
   m_key_position[_event->m_voiceId] = _event->m_position;
+  m_comb_gate[_event->m_voiceId] = 0.0f;
   if(_event->m_unisonIndex == 0)
   {
     if(_event->m_trigger_glide)
