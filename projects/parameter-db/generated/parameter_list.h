@@ -2140,14 +2140,19 @@ namespace C15
       0.0f,
       { Smoothers::Mono_Fast::Flanger_Tremolo, Signals::Mono_Signals::Flanger_Tremolo,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, 100, 1000, "0", "Flanger", "Flanger", "Tremolo", "Tremolo",
         "Determines the amount of amplitude modulation by the Flanger’s stereo LFO. It is applied after the Mix stage "
         "of the Flanger. The Rate and Phase parameters control the frequency and stereo spreading of this effect." } },
+=======
+      { "0", "Flanger", "Flanger", "Tremolo", "Tremolo", "" } },
+>>>>>>> wip: established 3 new parameters (scale: offset_0, osc a/b: phase reset):parameter-db/generated/parameter_list.h
     { None },
     { Parameters::Global_Unmodulateables::Scale_Offset_0,
       391,
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_0, Signals::Global_Signals::Scale_Offset_0,
+<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
       { 800, 8000, None, None, "", "Scale", "Scale", "Offset +0", "Offset +0",
         "Offset of the base key [in cents]. At zero, the interval to the base key would be perfect identity." } },
@@ -2168,6 +2173,25 @@ namespace C15
       { 1, 1, None, None, "", "Oscillator B", "Oscillator B", "Reset", "Reset",
         "If enabled, every pressed key will cause the Oscillator to reset it’s phase (for the corresponding voice). If "
         "disabled, the Oscillator is in free-running mode." } },
+=======
+        Properties::SmootherScale::Linear, 8.0f, 0.0f, false },
+      { "", "Scale", "Scale", "Offset +0", "Offset +0",
+        "Offset of the base key [in cents]. At zero, the interval to the base key would be the minor second of the "
+        "equally tempered scale." } },
+    { None },
+    { Parameters::Local_Unmodulateables::Osc_A_Reset,
+      393,
+      0.0f,
+      { Smoothers::Poly_Sync::Osc_A_Reset, Signals::Quasipoly_Signals::Osc_A_Reset, Properties::SmootherScale::Linear,
+        1.0f, 0.0f, false },
+      { "", "Oscillator A", "Oscillator A", "Reset", "Reset", "" } },
+    { Parameters::Local_Unmodulateables::Osc_B_Reset,
+      394,
+      0.0f,
+      { Smoothers::Poly_Sync::Osc_B_Reset, Signals::Quasipoly_Signals::Osc_B_Reset, Properties::SmootherScale::Linear,
+        1.0f, 0.0f, false },
+      { "", "Oscillator B", "Oscillator B", "Reset", "Reset", "" } },
+>>>>>>> wip: established 3 new parameters (scale: offset_0, osc a/b: phase reset):parameter-db/generated/parameter_list.h
     { None },
     { None },
     { None },
