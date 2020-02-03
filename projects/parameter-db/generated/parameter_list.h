@@ -1828,10 +1828,14 @@ namespace C15
       332,
       0.0f,
       { Smoothers::Poly_Fast::Env_A_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
+<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Envelope A", "Envelope A", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
         "slider’s edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
+=======
+      { "", "Envelope A", "Envelope A", "Elevate T - A", "Elevate", "" } },
+>>>>>>> wip: renamed 'Split Lvls' to 'Elevate T-A' (#1443):parameter-db/generated/parameter_list.h
     { None },
     { Parameters::Local_Unmodulateables::Env_B_Dec_1_Vel,
       334,
@@ -1853,10 +1857,14 @@ namespace C15
       338,
       0.0f,
       { Smoothers::Poly_Fast::Env_B_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
+<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Envelope B", "Envelope B", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
         "slider’s edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
+=======
+      { "", "Envelope B", "Envelope B", "Elevate T - A", "Elevate", "" } },
+>>>>>>> wip: renamed 'Split Lvls' to 'Elevate T-A' (#1443):parameter-db/generated/parameter_list.h
     { None },
     { Parameters::Local_Unmodulateables::Env_C_Retr_H,
       340,
