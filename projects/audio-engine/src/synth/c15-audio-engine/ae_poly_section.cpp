@@ -183,7 +183,6 @@ bool PolySection::keyDown(PolyKeyEvent *_event)
       m_mono_glide.sync(1.0f);
     }
     postProcess_mono_slow();
-#warning "check with mse"
   }
   if(_event->m_stolen)
   {
