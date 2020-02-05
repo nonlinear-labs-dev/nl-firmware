@@ -1689,7 +1689,11 @@ namespace C15
       312,
       0.0f,
       { Smoothers::Global_Slow::Scale_Base_Key, None, Properties::SmootherScale::Linear, 11.0f, 0.0f, false },
+<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 12, 12, None, None, "", "Scale", "Scale", "Base Key", "Base Key",
+=======
+      { "", "Scale", "Scale", "Base Key", "Base Key",
+>>>>>>> wip: tidy up ParameterList, implemented smoothing Scale BaseKey:parameter-db/generated/parameter_list.h
         "Sets the base key for the custom scale. The scale is defined for the eleven keys above the base key and will "
         "be applied to all octaves accordingly." } },
     { Parameters::Global_Unmodulateables::Scale_Offset_1,
@@ -2161,6 +2165,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_0, Signals::Global_Signals::Scale_Offset_0,
 <<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
+<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
       { 800, 8000, None, None, "", "Scale", "Scale", "Offset +0", "Offset +0",
         "Offset of the base key [in cents]. At zero, the interval to the base key would be perfect identity." } },
@@ -2183,6 +2188,9 @@ namespace C15
         "disabled, the Oscillator is in free-running mode." } },
 =======
         Properties::SmootherScale::Linear, 8.0f, 0.0f, false },
+=======
+        Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
+>>>>>>> wip: tidy up ParameterList, implemented smoothing Scale BaseKey:parameter-db/generated/parameter_list.h
       { "", "Scale", "Scale", "Offset +0", "Offset +0",
         "Offset of the base key [in cents]. At zero, the interval to the base key would be the minor second of the "
         "equally tempered scale." } },

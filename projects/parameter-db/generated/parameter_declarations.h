@@ -429,9 +429,13 @@ namespace C15
     {
       Master_Tune,
 <<<<<<< HEAD:projects/parameter-db/generated/parameter_declarations.h
+<<<<<<< HEAD:projects/parameter-db/generated/parameter_declarations.h
       Scale_Base_Key,
 =======
 >>>>>>> wip: established 3 new parameters (scale: offset_0, osc a/b: phase reset):parameter-db/generated/parameter_declarations.h
+=======
+      Scale_Base_Key,
+>>>>>>> wip: tidy up ParameterList, implemented smoothing Scale BaseKey:parameter-db/generated/parameter_declarations.h
       Scale_Offset_0,
       Scale_Offset_1,
       Scale_Offset_2,
