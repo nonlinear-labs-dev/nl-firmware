@@ -1788,6 +1788,7 @@ void dsp_host_dual::evalFadePoint()
         m_output_mute.pick(2);
         m_fade.enable(FadeEvent::Unmute, 1);
         break;
+
       case FadeEvent::Unmute:
         m_fade.stop();
         m_output_mute.stop();
