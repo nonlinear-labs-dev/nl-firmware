@@ -19,7 +19,7 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_voiceGroupLabels { { "", "" } }
+    , m_voiceGroupLabels{ { "", "" } }
 {
 }
 
@@ -27,7 +27,7 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_voiceGroupLabels { other.m_voiceGroupLabels }
+    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
 {
 }
 
@@ -214,6 +214,8 @@ void Preset::copyFrom(UNDO::Transaction *transaction, const Preset *other, bool 
     setUuid(transaction, other->getUuid());
 
   setName(transaction, other->getName());
+  undoableSetVoiceGroupName(transaction, VoiceGroup::I, other->getVoiceGroupName(VoiceGroup::I));
+  undoableSetVoiceGroupName(transaction, VoiceGroup::II, other->getVoiceGroupName(VoiceGroup::II));
 
   setType(transaction, other->getType());
 
@@ -229,6 +231,8 @@ void Preset::copyFrom(UNDO::Transaction *transaction, EditBuffer *edit)
 {
   super::copyFrom(transaction, edit);
   setName(transaction, edit->getName());
+  undoableSetVoiceGroupName(transaction, VoiceGroup::I, edit->getVoiceGroupName(VoiceGroup::I));
+  undoableSetVoiceGroupName(transaction, VoiceGroup::II, edit->getVoiceGroupName(VoiceGroup::II));
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto g : edit->getParameterGroups(vg))
