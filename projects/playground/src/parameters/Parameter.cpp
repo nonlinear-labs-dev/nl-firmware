@@ -32,7 +32,7 @@ Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
-    , m_voiceGroup{ group->getVoiceGroup() }
+    , m_voiceGroup { group->getVoiceGroup() }
 {
 }
 
@@ -361,7 +361,6 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
     writer.writeTextElement("info-text", getInfoText());
     writer.writeTextElement("coarse-denominator", to_string(m_value.getCoarseDenominator()));
     writer.writeTextElement("fine-denominator", to_string(m_value.getFineDenominator()));
-    writer.writeTextElement("info-text", ParameterDB::get().getDescription(getID()));
   }
 }
 
