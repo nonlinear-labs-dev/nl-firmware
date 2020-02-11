@@ -102,7 +102,7 @@ void PresetManagerLayout::setupBankEdit()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
 
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
@@ -120,7 +120,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
 
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
@@ -138,7 +138,7 @@ void PresetManagerLayout::setupBankStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
 
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
@@ -177,7 +177,7 @@ void PresetManagerLayout::setupPresetEdit()
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
 
   if(selectedBank && !selectedBank->empty())
   {
@@ -214,7 +214,7 @@ void PresetManagerLayout::setupPresetStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new UndoIndicator(Rect{ 5, 14, 15, 5 }));
 
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
