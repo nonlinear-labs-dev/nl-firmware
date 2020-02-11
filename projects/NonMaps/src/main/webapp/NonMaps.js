@@ -29,11 +29,11 @@ function formatPriority(cp) {
 
 function formatPriority(cp) {
   switch (Number(cp)) {
-    case 1:
+    case 0:
       return "Lowest";
-    case 2:
+    case 1:
       return "Latest";
-    case 3:
+    case 2:
       return "Highest";
   }
 }
