@@ -42,9 +42,9 @@ public class EditBufferUseCases {
 
 			if(m.isReturning()) {
 				if (setAnimationTimeout)
-				animationManager.startDelayedAnimation(m, 2000);
-			else
-				animationManager.cancelAnimation(m);
+					animationManager.startDelayedAnimation(m, 2000);
+				else
+					animationManager.cancelAnimation(m);
 			}
 		}
 
