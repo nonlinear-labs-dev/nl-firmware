@@ -70,10 +70,3 @@ IF(BUILD_TEXT2SOLED)
 ENDIF(BUILD_TEXT2SOLED)
 
 add_subdirectory(scripts)
-
-
-add_custom_target(InstallPath DEPENDS getInstallPath)
-add_custom_command(OUTPUT getInstallPath COMMENT "INSTALL_PATH: ${C15_INSTALL_PATH}")
-
-add_custom_target(ServiceFileInstallPath DEPENDS getServicePath)
-add_custom_command(OUTPUT getServicePath COMMENT "SERVICE_INSTALL_PATH: ${SYSTEMD_SERVICES_INSTALL_DIR}")

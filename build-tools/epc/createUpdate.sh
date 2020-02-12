@@ -70,9 +70,8 @@ fuse-overlayfs -o lowerdir=/internal/built -o upperdir=/internal/os -o workdir=/
 /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
 cd /build
 make install
-installPath=`make ServiceFileInstallPath | grep 'SERVICE_INSTALL_PATH' | awk '{split($0,a," "); print a[2]}'`
-systemctl enable $installPath/playground.service
-systemctl enable $installPath/audio-engine.service
+systemctl enable /usr/local/lib/systemd/system/playground.service
+systemctl enable /usr/local/lib/systemd/system/audio-engine.service
 "
 echo "make install done"
 create_update
