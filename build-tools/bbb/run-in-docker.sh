@@ -20,4 +20,4 @@ USER_ID=$(id -u $USER)
 DOCKER_GROUP_ID=$(getent group docker | cut -d: -f3)
 DOCKERNAME="nl-cross-build-environment-$USER"
 
-docker run -u $USER_ID:$DOCKER_GROUP_ID --rm -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash -c "$SCRIPT"
+docker run --privileged -u $USER_ID:$DOCKER_GROUP_ID --rm -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash -c "$SCRIPT"
