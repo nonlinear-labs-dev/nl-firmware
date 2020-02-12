@@ -18,20 +18,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -Wno-depre
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SYSTEMD "systemd")
 
-if (SYSTEMD_FOUND AND "${SYSTEMD_SERVICES_INSTALL_DIR}" STREQUAL "")
+if (SYSTEMD_FOUND)
     execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=systemdsystemunitdir systemd OUTPUT_VARIABLE SYSTEMD_SERVICES_INSTALL_DIR)
     string(REGEX REPLACE "[ \t\n]+" "" SYSTEMD_SERVICES_INSTALL_DIR "${SYSTEMD_SERVICES_INSTALL_DIR}")
-elseif (NOT SYSTEMD_FOUND AND SYSTEMD_SERVICES_INSTALL_DIR)
-    message (FATAL_ERROR "Variable SYSTEMD_SERVICES_INSTALL_DIR is defined, but we can't find systemd using pkg-config")
-endif()
-
-if (SYSTEMD_FOUND)
-    set(SYSTEMD_SERVICES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}${SYSTEMD_SERVICES_INSTALL_DIR})
-    message(STATUS "systemd services install dir: ${SYSTEMD_SERVICES_INSTALL_DIR}")
-else()
-    message(STATUS "systemd not found.")
+else ()  
     set(SYSTEMD_SERVICES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib/systemd/system)
 endif (SYSTEMD_FOUND)
+
+message("SystemD service files will be installed to ${SYSTEMD_SERVICES_INSTALL_DIR}")
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
