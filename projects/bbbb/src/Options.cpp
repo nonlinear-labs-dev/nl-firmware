@@ -1,6 +1,7 @@
 #include "Options.h"
 #include <glibmm/optiongroup.h>
 #include <glibmm/optioncontext.h>
+#include <nltools/logging/Log.h>
 
 namespace OptionDetail
 {
@@ -46,7 +47,14 @@ Options::Options(int &argc, char **&argv)
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
-  ctx.parse(argc, argv);
+  try {
+    ctx.parse(argc, argv);
+  } catch(...) {
+    std::stringstream ss;
+    for(auto i = 0; i < argc; i++)
+      ss << argv[i] << " ";
+    nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
+  }
 }
 
 Glib::ustring Options::getPlaygroundHost() const
