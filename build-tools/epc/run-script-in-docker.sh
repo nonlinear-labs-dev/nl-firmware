@@ -15,5 +15,5 @@ DOCKERNAME="nl-epc-build-environment-$USER"
 
 cp $SCRIPT $TMPSCRIPT
 
-docker run -e TARGETUSER=$USER -ti --privileged --rm -v $TMPDIRNAME:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources \
+docker run -e TARGETUSER=$USER --privileged --rm -v $TMPDIRNAME:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources \
 $DOCKERNAME bash /script/$TMPSCRIPTBASE

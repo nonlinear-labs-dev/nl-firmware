@@ -35,7 +35,7 @@ endif()
 
 message("building C15 firmware version: ${C15_VERSION}")
 
-SET(C15_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${C15_VERSION})
+SET(C15_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/C15)
 
 message("Installing into: ${C15_INSTALL_PATH}")
 
