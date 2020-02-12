@@ -57,7 +57,7 @@ mount --bind /workdir/epc-nl-build /workdir/overlay-fs/build
 
 /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
 cd /build
-cmake /sources -DBUILD_AUDIOENGINE=On -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off
+cmake /sources -DCMAKE_BUILD_TYPE=Release -DBUILD_AUDIOENGINE=On -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off
 make -j8
 "
 

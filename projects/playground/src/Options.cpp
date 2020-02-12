@@ -47,7 +47,17 @@ Options::Options(int &argc, char **&argv)
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
-  ctx.parse(argc, argv);
+  try
+  {
+    ctx.parse(argc, argv);
+  }
+  catch(...)
+  {
+    std::stringstream ss;
+    for(auto i = 0; i < argc; i++)
+      ss << argv[i] << " ";
+    nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
+  }
 }
 
 void Options::setDefaults()
