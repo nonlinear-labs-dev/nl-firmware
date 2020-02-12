@@ -3,6 +3,7 @@
 #include <glibmm/optionentry.h>
 #include <glibmm/optioncontext.h>
 #include <iostream>
+#include <nltools/logging/Log.h>
 
 template <typename T>
 void add(Glib::OptionGroup &mainGroup, T &ref, const std::string &longName, const char shortName,
@@ -39,8 +40,17 @@ Options::Options(int &argc, char **&argv)
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
-  if(!ctx.parse(argc, argv))
-    std::cerr << ctx.get_summary();
+  try
+  {
+    ctx.parse(argc, argv);
+  }
+  catch(...)
+  {
+    std::stringstream ss;
+    for(auto i = 0; i < argc; i++)
+      ss << argv[i] << " ";
+    nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
+  }
 
   if(!additionalMidiDelayString.empty())
     m_additionalMidiDelay = std::chrono::nanoseconds(std::stoi(additionalMidiDelayString));
