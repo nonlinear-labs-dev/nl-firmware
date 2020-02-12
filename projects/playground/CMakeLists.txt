@@ -84,7 +84,7 @@ add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 foreach(lib ${LIBS})
     pkg_check_modules(${lib} REQUIRED ${lib})
     target_include_directories(${LIB_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
-    target_link_directories(${LIB_NAME} PUBLIC ${${lib}_LIBRARY_DIRS})
+    link_directories(${${lib}_LIBRARY_DIRS})
     target_link_libraries(${LIB_NAME} PUBLIC ${${lib}_LIBRARIES})
 endforeach(lib)
 
