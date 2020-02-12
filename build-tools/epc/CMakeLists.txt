@@ -70,33 +70,18 @@ $PARTITION : start= 2048, size= 7687424, type=ef, bootable
     sudo fatlabel $PARTITION ARCH_201704 || error \"Could not label the partition correctly, stick will most likely not boot\"
     ")
 
+
 add_custom_command(
-    COMMENT "Create ISO image of NonLinuxAP"
+    COMMENT "Create NonLinux ISO Image"
     DEPENDS .docker-container-created
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
     DEPENDS ${EPC_SCRIPTS}
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-script-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        "mkdir -p /internal/AP-Linux-mnt"
-        "mount -o loop /workdir/AP-Linux-V.4.0.iso /internal/AP-Linux-mnt"
-        "mkdir -p /internal/AP-Linux-copy"
-        "cp -R /internal/AP-Linux-mnt/* /internal/AP-Linux-copy/"
-        "chmod 777 /internal/AP-Linux-copy"
-        "unsquashfs -no-xattrs /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs"
-        "mkdir ./squashfs-root/Audiophile2NonLinux"
-        "chmod 777 ./squashfs-root/Audiophile2NonLinux"
-        "cp -a /workdir/NonLinux.pkg.tar.gz /sources/hook /sources/install /sources/buildNonlinearLabsBinaries.sh /sources/sda.sfdisk /sources/createUpdateFromRunningOS.sh ./squashfs-root/Audiophile2NonLinux"
-        "cp -a /sources/runme.sh ./squashfs-root/etc/profile.d/"
-        "rm /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs"
-        "mksquashfs ./squashfs-root /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs"
-        'md5sum /internal/AP-Linux-copy/arch/x86_64/airootfs.sfs > /internal/AP-Linux-copy/arch/x86_64/airootfs.md5'
-        "genisoimage -l -r -J -V \"ARCH_201704\" -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o /internal/NonLinuxAP.iso /internal/AP-Linux-copy/"
-        "isohybrid /internal/NonLinuxAP.iso"
-        "mv /internal/NonLinuxAP.iso /workdir/NonLinuxAP.iso"
-        "chown ${USER} /workdir/NonLinuxAP.iso"
+        ${CMAKE_CURRENT_SOURCE_DIR}/createNonlinuxISO.sh
 )
 
 add_custom_command(
@@ -106,11 +91,11 @@ add_custom_command(
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-in-docker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        "qemu-img create -f raw /workdir/disk.raw 32G"
+        "qemu-img create -f vmdk /workdir/disk.vmdk 32G"
         "touch serial.log"
         'tail -f serial.log &'
-        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -enable-kvm -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -display none -smp 8 -m 8G -hda /workdir/disk.raw -cdrom /workdir/NonLinuxAP.iso'
-        "chown ${USER} /workdir/disk.raw"
+        '(sleep 5 && echo \"1\") | qemu-system-x86_64 -enable-kvm -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -display none -smp 8 -m 8G -hda /workdir/disk.vmdk -cdrom /workdir/NonLinuxAP.iso'
+        "chown ${USER} /workdir/disk.vmdk"
 )
 
 add_custom_command(
@@ -119,13 +104,27 @@ add_custom_command(
   COMMAND wget https://goo.gl/pZZPXS -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip)
 
 add_custom_command(
+    COMMENT "Create local rootfs"
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
+    DEPENDS .docker-container-created
+    OUTPUT .nonlinux-local-rootfs
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-script-in-docker.sh
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/createLocalRootFS.sh
+    COMMAND touch .nonlinux-local-rootfs
+)
+
+add_custom_command(
     COMMENT "Create ePC update"
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/build-c15-in-nonlinux-ap.sh
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip
+    DEPENDS .nonlinux-local-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build-c15-in-nonlinux-ap.sh ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/run-script-in-docker.sh
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh
+)
 
 add_custom_command(
     COMMENT "Build install medium (to be run with prefix EPC_INSTALL_MEDIUM=/dev/sdX)"
@@ -136,5 +135,11 @@ add_custom_command(
 )
 
 add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
+add_custom_target(epc-local-rootfs DEPENDS .nonlinux-local-rootfs)
 add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/epc-update.tar)
 add_custom_target(epc-docker-container DEPENDS .docker-container-created)
+add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
+add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
+
+
+
