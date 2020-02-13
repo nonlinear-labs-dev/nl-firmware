@@ -12,18 +12,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Configure
-      run: |
-        mkdir -p /home/runner/work/build
-        cd /home/runner/work/build
-        cmake -DBUILD_EPC=On -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off /home/runner/work/C15/C15
-
     - name: Cache APLinux
       uses: actions/cache@v1
       id: cache-ap-linux
       with:
         path: /home/runner/work/cache/ap-linux
-        key: cache-ap-linux
+        key: ${{ runner.os }}-ap-linux-cache
 
     - name: Download APLinux
       if: steps.cache-ap-linux.outputs.cache-hit != 'true'
@@ -36,7 +30,7 @@ jobs:
       id: cache-non-linux
       with:
         path: /home/runner/work/cache/non-linux
-        key: cache-non-linux
+        key: ${{ runner.os }}-non-linux-cache
 
     - name: Download NonLinux Update Packages
       if: steps.cache-non-linux.outputs.cache-hit != 'true'
