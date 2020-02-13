@@ -71,16 +71,5 @@ add_custom_command(
     COMMAND echo "The final rootfs is located at ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz"
 )
 
-add_custom_command(
-    COMMENT "Build BBB update"
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/nonlinear-c15-update.tar
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
-        ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_SOURCE_DIR}
-        "echo still todo"
-    COMMAND echo "The nonlinear-c15-update.tar is located at ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/nonlinear-c15-update.tar"
-)
-
 add_custom_target(bbb-rootfs DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz)
 add_custom_target(bbb-prepare-build-dir DEPENDS .nonlinux-setup)
