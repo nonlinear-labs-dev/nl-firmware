@@ -27,15 +27,11 @@ find_package(Threads REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wdouble-promotion")
 
-function(addLib name)
-  pkg_check_modules(REQUIRED ${name})
-  target_include_directories(${PROJECT_NAME} PUBLIC ${${name}_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} PUBLIC ${${name}_LIBRARIES})
-  link_directories(${${name}_LIBRARY_DIRS})
-endfunction(addLib)
-
 foreach(lib ${LIBS})
-  addLib(${lib})
+    pkg_check_modules(THE_LIB REQUIRED ${lib})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${THE_LIB_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${THE_LIB_LIBRARIES})
+    link_directories(${THE_LIB_LIBRARY_DIRS})
 endforeach(lib)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC pthread)

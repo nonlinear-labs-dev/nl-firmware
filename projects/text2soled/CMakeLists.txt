@@ -18,15 +18,16 @@ file(GLOB RESOURCES resources/*)
 # TARGETS
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
+
 # LIBS
 foreach(lib ${LIBS})
-    pkg_check_modules(${lib} REQUIRED ${lib})
-    target_include_directories(${PROJECT_NAME} PRIVATE ${${lib}_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} ${${lib}_LIBRARIES})
-    link_directories(${${lib}_LIBRARY_DIRS})
-endforeach(lib)
+  pkg_check_modules(THE_LIB REQUIRED ${lib})
+  target_include_directories(${PROJECT_NAME} PUBLIC ${THE_LIB_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${THE_LIB_LIBRARIES})
+  link_directories(${THE_LIB_LIBRARY_DIRS})
+endforeach()
 
-target_link_libraries(${PROJECT_NAME} pthread)
+target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
 
 include_directories(src)
 

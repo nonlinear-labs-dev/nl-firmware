@@ -18,11 +18,11 @@ find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
 foreach(lib ${LIBS})
-    pkg_check_modules(${lib} REQUIRED ${lib})
-    target_include_directories(${PROJECT_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
-    link_directories(${${lib}_LIBRARY_DIRS})
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARIES})
-endforeach(lib)
+  pkg_check_modules(THE_LIB REQUIRED ${lib})
+  target_include_directories(${PROJECT_NAME} PUBLIC ${THE_LIB_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${THE_LIB_LIBRARIES})
+  link_directories(${THE_LIB_LIBRARY_DIRS})
+endforeach()
 
 include_directories(src)
 
