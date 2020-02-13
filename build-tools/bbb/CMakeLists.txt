@@ -83,3 +83,4 @@ add_custom_command(
 )
 
 add_custom_target(bbb-rootfs DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz)
+add_custom_target(bbb-prepare-build-dir DEPENDS .nonlinux-setup)
