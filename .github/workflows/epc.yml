@@ -43,5 +43,3 @@ jobs:
       run: |
         mkdir -p /home/runner/work/cache/non-linux
         wget http://hoegelow.com/nl/NonLinux.pkg.tar.gz -O /home/runner/work/cache/non-linux/NonLinux.pkg.tar.gz
-
-
