@@ -2,6 +2,12 @@
 
 ## How to build
 
+Preconditions: 
+- git, cmake, docker have to be installed, docker has to be enabled/started
+- current user has to be in group 'docker' (pitfall: one has to logout/login after adding user to group)
+- at least one target expects a qemu installation
+
+Then:
 - checkout the repository, for example git clone https://github.com/nonlinear-labs-dev/C15.git ~/C15
 - create a build folder, for example ~/builds/C15
 - change into that folder and type 
