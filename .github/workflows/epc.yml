@@ -26,7 +26,7 @@ jobs:
         key: cache-ap-linux
 
     - name: UnpackAPLinux
-      if: steps.cache-ap-linux.outputs.cache-hit == 'false'
+      if: steps.cache-ap-linux.outputs.cache-hit != 'true'
       run: |
         mkdir -p /home/runner/work/cache/ap-linux
         wget http://hoegelow.com/nl/AP-Linux-V.4.0.iso -O /home/runner/work/cache/ap-linux/AP-Linux-V.4.0.iso
@@ -39,7 +39,7 @@ jobs:
         key: cache-non-linux
 
     - name: UnpackNonLinux
-      if: steps.cache-non-linux.outputs.cache-hit == 'false'
+      if: steps.cache-non-linux.outputs.cache-hit != 'true'
       run: |
         mkdir -p /home/runner/work/cache/non-linux
         wget http://hoegelow.com/nl/NonLinux.pkg.tar.gz -O /home/runner/work/cache/non-linux/NonLinux.pkg.tar.gz
