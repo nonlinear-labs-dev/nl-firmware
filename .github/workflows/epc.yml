@@ -18,5 +18,30 @@ jobs:
         cd /home/runner/work/build
         cmake -DBUILD_EPC=On -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off /home/runner/work/C15/C15
 
-    - name: Make
-      run: make -C /home/runner/work/build epc-create-update
+    - name: Cache APLinux
+      uses: actions/cache@v1
+      id: cache-ap-linux
+      with:
+        path: /home/runner/work/cache/ap-linux
+        key: cache-ap-linux
+
+    - name: UnpackAPLinux
+      if: steps.cache-ap-linux.outputs.cache-hit == 'false'
+      run: |
+        mkdir -p /home/runner/work/cache/ap-linux
+        wget http://hoegelow.com/nl/AP-Linux-V.4.0.iso -O /home/runner/work/cache/ap-linux/AP-Linux-V.4.0.iso
+
+    - name: Cache NonLinux-Updates
+      uses: actions/cache@v1
+      id: cache-non-linux
+      with:
+        path: /home/runner/work/cache/non-linux
+        key: cache-non-linux
+
+    - name: UnpackNonLinux
+      if: steps.cache-non-linux.outputs.cache-hit == 'false'
+      run: |
+        mkdir -p /home/runner/work/cache/non-linux
+        wget http://hoegelow.com/nl/NonLinux.pkg.tar.gz -O /home/runner/work/cache/non-linux/NonLinux.pkg.tar.gz
+
+

@@ -33,11 +33,6 @@ cp /Audiophile2NonLinux/install/nlhook /lib/initcpio/install/nlhook
 cp /Audiophile2NonLinux/install/oroot /lib/initcpio/install/oroot
 cp /Audiophile2NonLinux/hook/nlhook /lib/initcpio/hooks/nlhook
 cp /Audiophile2NonLinux/hook/oroot /lib/initcpio/hooks/oroot
-cp /Audiophile2NonLinux/createUpdateFromRunningOS.sh /createUpdateFromRunningOS.sh
-cp /Audiophile2NonLinux/buildNonlinearLabsBinaries.sh /buildNonlinearLabsBinaries.sh
-
-chmod +x /createUpdateFromRunningOS.sh
-chmod +x /buildNonlinearLabsBinaries.sh
 
 sed -i 's/read.*username/username=sscl/' /etc/apl-files/runme.sh
 sed -i 's/read.*password/password=sscl/' /etc/apl-files/runme.sh

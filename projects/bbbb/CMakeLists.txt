@@ -25,7 +25,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wdouble-promotion")
 
 function(addLib name)
   pkg_check_modules(REQUIRED ${name})

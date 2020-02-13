@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -x
-
 BINARY_DIR=$1
 SOURCE_DIR=$2
 SCRIPT=$3
