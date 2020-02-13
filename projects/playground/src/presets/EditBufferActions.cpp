@@ -14,6 +14,7 @@
 #include <boost/algorithm/string.hpp>
 #include <presets/PresetManager.h>
 #include <http/UndoScope.h>
+#include <parameters/names/ParameterDB.h>
 
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);

@@ -7,4 +7,3 @@ include( CTest )
 add_subdirectory(projects)
 add_subdirectory(build-tools)
 
-
