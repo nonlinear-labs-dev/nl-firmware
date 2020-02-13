@@ -7,8 +7,8 @@
 
 LoadModeSetting::LoadModeSetting(Settings &settings)
     : super(settings, LoadMode::Select)
-    , m_dualSoundOrder{ LoadMode::LoadToPart, LoadMode::Select, LoadMode::DirectLoad }
-    , m_singleSoundOrder{ LoadMode::Select, LoadMode::DirectLoad }
+    , m_singleSoundOrder { LoadMode::Select, LoadMode::DirectLoad }
+    , m_dualSoundOrder { LoadMode::LoadToPart, LoadMode::Select, LoadMode::DirectLoad }
 {
 }
 
@@ -21,41 +21,42 @@ const std::vector<Glib::ustring> &LoadModeSetting::enumToString() const
 
 const std::vector<Glib::ustring> &LoadModeSetting::enumToDisplayString() const
 {
-  static auto ret = std::vector<Glib::ustring>{ "Select Part", "Select only", "Direct Load" };
+  static auto ret = std::vector<Glib::ustring> { "Select Part", "Select only", "Direct Load" };
   return ret;
 }
 
 void LoadModeSetting::cycleForSoundType(SoundType type)
 {
-  auto current = static_cast<int>(get());
-  current++;
-
   if(type == SoundType::Single)
-    updateLoadMode(current, m_singleSoundOrder);
+    updateLoadMode(get(), 1, m_singleSoundOrder);
   else
-    updateLoadMode(current, m_dualSoundOrder);
+    updateLoadMode(get(), 1, m_dualSoundOrder);
 }
 
 void LoadModeSetting::antiCycleForSoundType(SoundType type)
 {
-  auto current = static_cast<int>(get());
-  
-
   if(type == SoundType::Single)
-    updateLoadMode(current, m_singleSoundOrder);
+    updateLoadMode(get(), -1, m_singleSoundOrder);
   else
-    updateLoadMode(current, m_dualSoundOrder);
+    updateLoadMode(get(), -1, m_dualSoundOrder);
 }
 
-template <typename T> void LoadModeSetting::updateLoadMode(int current, const T &loadModeOrder)
+template <typename T> void LoadModeSetting::updateLoadMode(LoadMode current, int dir, const T &loadModeOrder)
 {
-  if(current == loadModeOrder.size())
-    current = 0;
+  auto currentIt = std::find(loadModeOrder.begin(), loadModeOrder.end(), current);
 
-  if(current <= 0)
-    current = loadModeOrder.size();
+  if(currentIt == loadModeOrder.end())
+    currentIt = loadModeOrder.begin();
 
-  set(loadModeOrder[current]);
+  auto idx = std::distance(loadModeOrder.begin(), currentIt);
+  auto targetIdx = idx + dir;
+
+  if(size_t(targetIdx) == loadModeOrder.size())
+    targetIdx = 0;
+  else if(targetIdx < 0)
+    targetIdx = ssize_t(loadModeOrder.size() - 1);
+
+  set(loadModeOrder[size_t(targetIdx)]);
 }
 
 Glib::ustring LoadModeSetting::getDisplayStringForVoiceGroup(VoiceGroup vg) const

@@ -29,5 +29,5 @@ class LoadModeSetting : public EnumSetting<LoadMode>
  private:
   std::array<LoadMode, 2> m_singleSoundOrder;
   std::array<LoadMode, 3> m_dualSoundOrder;
-  template <typename T> void updateLoadMode(int current, const T& loadModeOrder);
+  template <typename T> void updateLoadMode(LoadMode current, int dir, const T& loadModeOrder);
 };
