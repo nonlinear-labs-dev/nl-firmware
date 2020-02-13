@@ -1,7 +1,8 @@
 #pragma once
+
 #include <proxies/hwui/controls/ButtonMenu.h>
 #include <nltools/Types.h>
-#include <device-settings/LoadModeSetting.h>
+#include <sigc++/connection.h>
 
 class LoadModeMenu : public ControlWithChildren
 {

@@ -2,13 +2,14 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
 #include "VoiceGroupMasterParameterWithUnusualModUnit.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
+#include <groups/ParameterGroup.h>
 
 VoiceGroupMasterParameterWithUnusualModUnit::VoiceGroupMasterParameterWithUnusualModUnit(
     ParameterGroup* group, const ParameterId& id, const ScaleConverter* scale, const ScaleConverter* modScale,
     tControlPositionValue def, int coarse, int fine, Glib::ustring longName, Glib::ustring shortName)
     : ModulateableParameterWithUnusualModUnit(group, id, scale, modScale, def, coarse, fine)
-    , m_shortname{ shortName }
-    , m_longname{ longName }
+    , m_shortname { shortName }
+    , m_longname { longName }
 {
 }
 

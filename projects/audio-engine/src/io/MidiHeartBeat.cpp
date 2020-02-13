@@ -1,5 +1,6 @@
 #include "MidiHeartBeat.h"
 #include <nltools/logging/Log.h>
+#include <glibmm/main.h>
 
 MidiHeartBeat::MidiHeartBeat(const std::string &device)
 {

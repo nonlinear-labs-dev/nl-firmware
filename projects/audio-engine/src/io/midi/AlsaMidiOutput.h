@@ -1,8 +1,7 @@
 #pragma once
 
 #include "MidiOutput.h"
-#include <giomm.h>
-#include <memory>
+#include <alsa/asoundlib.h>
 
 class AlsaMidiOutput : public MidiOutput
 {

@@ -4,6 +4,7 @@
 #include "presets/Preset.h"
 #include "presets/PresetParameter.h"
 #include "parameters/MacroControlParameter.h"
+#include "parameters/ModulateableParameter.h"
 
 TEST_CASE("Load Single Preset Without MacroControl E and F defaults MC E and F")
 {

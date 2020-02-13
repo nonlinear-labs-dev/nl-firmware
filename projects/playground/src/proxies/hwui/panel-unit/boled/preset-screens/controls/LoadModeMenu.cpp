@@ -5,6 +5,10 @@
 #include <device-settings/LoadModeSetting.h>
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/HWUI.h>
+#include <device-settings/Settings.h>
+#include <device-settings/LoadModeSetting.h>
+#include <sigc++/sigc++.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 auto getSetting()
 {

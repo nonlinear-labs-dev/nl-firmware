@@ -2,6 +2,7 @@
 
 #include "midi/AlsaMidiOutput.h"
 #include <memory>
+#include <sigc++/connection.h>
 
 class MidiHeartBeat
 {
