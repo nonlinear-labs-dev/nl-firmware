@@ -29,7 +29,6 @@ add_custom_command(
     WORKING_DIRECTORY nonlinux
     COMMAND git checkout nonlinear_2020.01
     COMMAND git pull origin nonlinear_2020.01
-    COMMAND touch ../.nonlinux-pulled
 )
 
 add_custom_command(
