@@ -4,6 +4,7 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <functional>
 #include <presets/StoreModeData.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadModeMenu.h>
 
 class BankAndPresetNumberLabel;
 
@@ -37,7 +38,6 @@ class PresetManagerLayout : public DFBLayout
   std::unique_ptr<StoreModeData> &getStoreModePtr();
 
  private:
-  void updateAutoLoadButton(const Setting *setting);
   void setup();
   PresetManager *getPresetManager() const;
 
@@ -50,8 +50,8 @@ class PresetManagerLayout : public DFBLayout
   void setupBankSelect();
   void setupBankStore();
 
+  LoadModeMenu *m_loadMode = nullptr;
   ButtonMenu *m_menu = nullptr;
-  Button *m_autoLoad = nullptr;
   PresetListBase *m_presets = nullptr;
   FocusAndMode m_focusAndMode;
   StoreModeData *getStoreModeData();

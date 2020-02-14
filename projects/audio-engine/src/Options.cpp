@@ -3,6 +3,7 @@
 #include <glibmm/optionentry.h>
 #include <glibmm/optioncontext.h>
 #include <iostream>
+#include <nltools/logging/Log.h>
 
 template <typename T>
 void add(Glib::OptionGroup &mainGroup, T &ref, const std::string &longName, const char shortName,
@@ -27,6 +28,8 @@ Options::Options(int &argc, char **&argv)
   add(mainGroup, m_rate, "sample-rate", 'r', "Audio samplerate");
   add(mainGroup, m_polyphony, "polyphony", 'p', "Number of voices");
   add(mainGroup, m_midiInputDeviceName, "midi-in", 'm', "Name of the alsa midi input device");
+  add(mainGroup, m_heartBeatDeviceName, "heartbeat", 'h',
+      "Name of the alsa midi output device used to send heartbeats");
   add(mainGroup, m_audioOutputDeviceName, "audio-out", 'a', "Name of the alsa audio output device");
   add(mainGroup, m_fatalXRuns, "fatal-xruns", 'f', "Terminate program in case of alsa underrun or overrun");
   add(mainGroup, m_measurePerformance, "measure-performance", 'e', "Measure audio-engine realtime performance ");
@@ -34,13 +37,22 @@ Options::Options(int &argc, char **&argv)
   add(mainGroup, m_framesPerPeriod, "frames-per-period", 's', "alsa audio input frames per period");
   add(mainGroup, m_numPeriods, "num-periods", 'n', "alsa audio input number of periods");
   add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "alsa audio input ring buffer size");
-  add(mainGroup, m_playgroundHost, "playground-host", 'h', "Where to find the playground");
+  add(mainGroup, m_playgroundHost, "playground-host", 'x', "Where to find the playground");
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
-  if(!ctx.parse(argc, argv))
-    std::cerr << ctx.get_summary();
+  try
+  {
+    ctx.parse(argc, argv);
+  }
+  catch(...)
+  {
+    std::stringstream ss;
+    for(auto i = 0; i < argc; i++)
+      ss << argv[i] << " ";
+    nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
+  }
 
   if(!additionalMidiDelayString.empty())
     m_additionalMidiDelay = std::chrono::nanoseconds(std::stoi(additionalMidiDelayString));
@@ -59,6 +71,11 @@ std::string Options::getMidiInputDeviceName() const
 std::chrono::nanoseconds Options::getAdditionalMidiDelay() const
 {
   return m_additionalMidiDelay;
+}
+
+std::string Options::getHeartBeatDeviceName() const
+{
+  return m_heartBeatDeviceName;
 }
 
 std::string Options::getAudioOutputDeviceName() const

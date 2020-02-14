@@ -29,4 +29,22 @@ SCENARIO("'toggle' Load Mode Setting")
     setting->cycleForSoundType(SoundType::Layer);
     REQUIRE(getValue() == LoadMode::DirectLoad);
   }
+
+  WHEN("Sound type Single (anit)")
+  {
+    setting->antiCycleForSoundType(SoundType::Single);
+    REQUIRE(getValue() == LoadMode::Select);
+    setting->antiCycleForSoundType(SoundType::Single);
+    REQUIRE(getValue() == LoadMode::DirectLoad);
+  }
+
+  WHEN("Sound type Dual (anit)")
+  {
+    setting->antiCycleForSoundType(SoundType::Layer);
+    REQUIRE(getValue() == LoadMode::Select);
+    setting->antiCycleForSoundType(SoundType::Layer);
+    REQUIRE(getValue() == LoadMode::LoadToPart);
+    setting->antiCycleForSoundType(SoundType::Layer);
+    REQUIRE(getValue() == LoadMode::DirectLoad);
+  }
 }

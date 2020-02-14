@@ -15,6 +15,7 @@ class LoadModeSetting : public EnumSetting<LoadMode>
   explicit LoadModeSetting(Settings& settings);
 
   Glib::ustring getDisplayStringForVoiceGroup(VoiceGroup vg) const;
+  Glib::ustring getDisplayStringForVoiceGroup(VoiceGroup vg, LoadMode setting) const;
 
   LoadModeSetting(const LoadModeSetting& other) = delete;
   LoadModeSetting& operator=(const LoadModeSetting&) = delete;
@@ -23,4 +24,10 @@ class LoadModeSetting : public EnumSetting<LoadMode>
   const std::vector<Glib::ustring>& enumToDisplayString() const override;
 
   void cycleForSoundType(SoundType type);
+  void antiCycleForSoundType(SoundType type);
+
+ private:
+  std::array<LoadMode, 2> m_singleSoundOrder;
+  std::array<LoadMode, 3> m_dualSoundOrder;
+  template <typename T> void updateLoadMode(LoadMode current, int dir, const T& loadModeOrder);
 };

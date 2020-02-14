@@ -18,10 +18,10 @@ find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
 foreach(lib ${LIBS})
-    pkg_check_modules(${lib} REQUIRED ${lib})
-    target_include_directories(${PROJECT_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
-    target_link_directories(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARY_DIRS})
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARIES})
+  pkg_check_modules(${lib} REQUIRED ${lib})
+  target_include_directories(${PROJECT_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARIES})
+  link_directories(${${lib}_LIBRARY_DIRS})
 endforeach(lib)
 
 include_directories(src)
@@ -37,8 +37,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/n
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/parameter-db/generated)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
-
-ADD_CUSTOM_TARGET(${PROJECT_NAME}-touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})
 
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${PROJECT_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)

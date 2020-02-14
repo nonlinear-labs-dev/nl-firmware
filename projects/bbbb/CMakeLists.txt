@@ -25,17 +25,13 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
-
-function(addLib name)
-  pkg_check_modules(REQUIRED ${name})
-  target_include_directories(${PROJECT_NAME} PUBLIC ${${name}_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} PUBLIC ${${name}_LIBRARIES})
-  link_directories(${${name}_LIBRARY_DIRS})
-endfunction(addLib)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wdouble-promotion")
 
 foreach(lib ${LIBS})
-  addLib(${lib})
+  pkg_check_modules(${lib} REQUIRED ${lib})
+  target_include_directories(${PROJECT_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${${lib}_LIBRARIES})
+  link_directories(${${lib}_LIBRARY_DIRS})
 endforeach(lib)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC pthread)

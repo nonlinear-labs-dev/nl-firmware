@@ -82,10 +82,10 @@ set(${TEST_BINARY_NAME}_SOURCES ${UNIT_TEST_FILES})
 add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 
 foreach(lib ${LIBS})
-    pkg_check_modules(${lib} REQUIRED ${lib})
-    target_include_directories(${LIB_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
-    target_link_directories(${LIB_NAME} PUBLIC ${${lib}_LIBRARY_DIRS})
-    target_link_libraries(${LIB_NAME} PUBLIC ${${lib}_LIBRARIES})
+  pkg_check_modules(${lib} REQUIRED ${lib})
+  target_include_directories(${LIB_NAME} PUBLIC ${${lib}_INCLUDE_DIRS})
+  target_link_libraries(${LIB_NAME} PUBLIC ${${lib}_LIBRARIES})
+  link_directories(${${lib}_LIBRARY_DIRS})
 endforeach(lib)
 
 target_include_directories(${LIB_NAME} PUBLIC src)
@@ -112,6 +112,3 @@ install(FILES ${PARAMETER_DESCRIPTIONS} DESTINATION ${C15_INSTALL_PATH}/playgrou
 install(FILES ${VERSION_INFOS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/version-infos)
 install(DIRECTORY resources USE_SOURCE_PERMISSIONS DESTINATION ${C15_INSTALL_PATH}/playground)
 install(TARGETS ${BINARY_NAME} DESTINATION ${C15_INSTALL_PATH}/${BINARY_NAME})
-
-# AUTO GLOB INVALIDATION
-ADD_CUSTOM_TARGET(touch-cmakelists ALL COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_LIST_FILE})

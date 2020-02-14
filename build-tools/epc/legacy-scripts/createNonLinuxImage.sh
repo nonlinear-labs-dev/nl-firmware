@@ -59,7 +59,7 @@ modify_copy() {
     echo $FUNCNAME
     sudo mkdir $STAGING_DIR/squashfs-root/Audiophile2NonLinux
     sudo chmod 777 $STAGING_DIR/squashfs-root/Audiophile2NonLinux
-    cp -a ./hook ./install ./buildNonlinearLabsBinaries.sh ./NonLinux.pkg.tar.gz ./sda.sfdisk ./createUpdateFromRunningOS.sh $STAGING_DIR/squashfs-root/Audiophile2NonLinux
+    cp -a ./hook ./install ./NonLinux.pkg.tar.gz ./sda.sfdisk $STAGING_DIR/squashfs-root/Audiophile2NonLinux
     sudo cp -a ./runme.sh $STAGING_DIR/squashfs-root/etc/profile.d/
 }
 
