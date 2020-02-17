@@ -3,7 +3,8 @@
 #include "Scrollable.h"
 #include <sigc++/sigc++.h>
 
-static const int c_scrollbarWidth = 5;
+static const int c_scrollbarDrawWidth = 4;
+static const int c_scrollbarWidth = c_scrollbarDrawWidth + 1;
 
 ScrollArea::ScrollArea(Scrollable *content, const Rect &position)
     : super(position)
@@ -13,7 +14,7 @@ ScrollArea::ScrollArea(Scrollable *content, const Rect &position)
   content->setPosition(Rect(2, 0, position.getWidth() - c_scrollbarWidth, content->getPosition().getHeight()));
   addControl(dynamic_cast<Control *>(content));
   addControl(
-      new Scrollbar(content, Rect(position.getWidth() - c_scrollbarWidth, 0, c_scrollbarWidth, position.getHeight())));
+      new Scrollbar(content, Rect(position.getWidth() - c_scrollbarDrawWidth, 0, c_scrollbarDrawWidth, position.getHeight())));
 
   scroll(0);
 
