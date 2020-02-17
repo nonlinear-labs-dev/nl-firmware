@@ -116,7 +116,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual void onSelected();
 
   virtual VisualizationStyle getVisualizationStyle() const;
-
+  virtual bool lockingEnabled() const;
   // CALLBACKS
   sigc::connection onParameterChanged(sigc::slot<void, const Parameter *> slot, bool doInitCall = true) const;
 

@@ -25,7 +25,7 @@ class PhysicalControlParameter : public Parameter
 
   virtual ReturnMode getReturnMode() const = 0;
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
-
+  bool lockingEnabled() const override;
   void setUiSelectedModulationRouter(const ParameterId& paramNumber);
   void toggleUiSelectedModulationRouter(int inc);
   ParameterId getUiSelectedModulationRouter() const;

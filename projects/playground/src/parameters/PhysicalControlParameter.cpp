@@ -235,3 +235,8 @@ void PhysicalControlParameter::sendParameterMessage() const
 {
   Application::get().getAudioEngineProxy()->createAndSendParameterMessage<PhysicalControlParameter>(this);
 }
+
+bool PhysicalControlParameter::lockingEnabled() const
+{
+  return false;
+}
