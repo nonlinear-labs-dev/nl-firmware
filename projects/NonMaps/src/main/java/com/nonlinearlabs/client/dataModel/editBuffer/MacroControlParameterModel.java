@@ -6,7 +6,6 @@ import com.nonlinearlabs.client.dataModel.Updater;
 
 public class MacroControlParameterModel extends BasicParameterModel {
 	public StringDataModelEntity givenName = new StringDataModelEntity();
-	public StringDataModelEntity info = new StringDataModelEntity();
 
 	public MacroControlParameterModel(ParameterId id) {
 		super(id);
