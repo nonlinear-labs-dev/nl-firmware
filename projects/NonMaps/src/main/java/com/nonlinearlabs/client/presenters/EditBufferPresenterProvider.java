@@ -116,8 +116,14 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     }
 
     private boolean isAnyParameterChanged() {
-        return false;
+        for (VoiceGroup g : VoiceGroup.values()) {
+            for (BasicParameterModel param : EditBufferModel.get().byVoiceGroup[g.ordinal()].parameters.values()) {
+                if(param.originalValue.getValue() != param.value.getClippedValue())
+                    return true;
+            }
+        }
 
+        return false;
     }
 
     private void monitorSelectedParameter() {
