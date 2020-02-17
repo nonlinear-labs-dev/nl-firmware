@@ -10,14 +10,16 @@
         "isSingleSound"
       ],
       "Controls": {
-        "Border": {
-          "Class": "SoundEditBorder",
+        "Header": {
+          "Class": "FullWidthInvertedLabel",
           "Position": "0, 0",
-          "Events": "SoundEditHeading => Text[Text]"
+          "Init": {
+            "Text[Text]": "Single Edit"
+          }
         },
         "Content": {
           "Class": "SingleSoundEditMenu",
-          "Position": "1, 11"
+          "Position": "0, 11"
         }
       }
     }

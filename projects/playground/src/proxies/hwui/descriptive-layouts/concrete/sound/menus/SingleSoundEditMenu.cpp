@@ -13,7 +13,7 @@ SingleSoundEditMenu::SingleSoundEditMenu(const Rect &r)
 
 void SingleSoundEditMenu::init()
 {
-  auto fullWidth = Rect{ 0, 0, 254, 13 };
+  auto fullWidth = Rect{ 0, 0, 256, 13 };
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Split);
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Layer);
   addItem<RandomizeItem>(fullWidth);

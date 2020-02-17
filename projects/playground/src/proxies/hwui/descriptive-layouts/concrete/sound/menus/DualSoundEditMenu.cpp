@@ -15,7 +15,7 @@ DualSoundEditMenu::DualSoundEditMenu(const Rect &r)
 
 void DualSoundEditMenu::init()
 {
-  auto fullWidth = Rect{ 0, 0, 254, 13 };
+  auto fullWidth = Rect{ 0, 0, 256, 13 };
   addItem<PartLabelItem>(fullWidth);
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Single);
   addItem<InitPart>(fullWidth);

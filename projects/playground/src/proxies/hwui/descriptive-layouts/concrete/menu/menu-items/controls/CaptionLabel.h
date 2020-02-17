@@ -5,7 +5,7 @@
 class CaptionLabelBase
 {
  public:
-  CaptionLabelBase(bool changeHighlight);
+  CaptionLabelBase(bool changeHighlight, bool changeBackground);
   virtual ~CaptionLabelBase();
 
  protected:
@@ -14,14 +14,15 @@ class CaptionLabelBase
   void setBackgroundColor(FrameBuffer& fb) const;
 
   bool m_changeHighlight;
+  bool m_changeHighlightBackground;
 };
 
 template <typename tLabelType> class CaptionLabel : public tLabelType, public CaptionLabelBase
 {
  public:
-  CaptionLabel(const Glib::ustring& caption, const Rect& rect, bool changeHighlight)
+  CaptionLabel(const Glib::ustring& caption, const Rect& rect, bool changeHighlight, bool changeBackground)
       : tLabelType(caption, rect)
-      , CaptionLabelBase(changeHighlight)
+      , CaptionLabelBase(changeHighlight, changeBackground)
   {
   }
 
@@ -33,11 +34,13 @@ template <typename tLabelType> class CaptionLabel : public tLabelType, public Ca
 
   void setFontColor(FrameBuffer& fb) const override
   {
+    tLabelType::setFontColor(fb);
     CaptionLabelBase::setFontColor(fb);
   }
 
   void setBackgroundColor(FrameBuffer& fb) const override
   {
+    tLabelType::setBackgroundColor(fb);
     CaptionLabelBase::setBackgroundColor(fb);
   }
 };

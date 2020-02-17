@@ -11,6 +11,12 @@
         "Class": "Text",
         "Rect": "0, 0, 128, 13"
       }
+    },
+    "FullWidthInvertedLabel": {
+      "Text": {
+        "Class": "Text",
+        "Rect": "0, 0, 265, 11"
+      }
     }
   },
   "styles": {
@@ -32,6 +38,20 @@
       "selector": {
         "PrimitiveClass": "Text",
         "ControlClasses": "WideInvertedLabel"
+      },
+      "styles": {
+        "BackgroundColor": "C128",
+        "SuffixColor": "C43",
+        "Color": "C43",
+        "HighlightColor": "C43",
+        "FontSize": 8,
+        "TextAlign": "Center"
+      }
+    },
+    "MaxInverted-Label": {
+      "selector": {
+        "PrimitiveClass": "Text",
+        "ControlClasses": "FullWidthInvertedLabel"
       },
       "styles": {
         "BackgroundColor": "C128",
