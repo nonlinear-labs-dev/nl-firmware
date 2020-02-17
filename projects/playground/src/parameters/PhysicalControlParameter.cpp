@@ -212,6 +212,11 @@ ParameterId PhysicalControlParameter::getUiSelectedModulationRouter() const
   return mcm->getModulationRoutingParametersFor(this).front()->getID();
 }
 
+bool PhysicalControlParameter::isLocked() const
+{
+  return false;
+}
+
 bool PhysicalControlParameter::hasBehavior() const
 {
   return false;

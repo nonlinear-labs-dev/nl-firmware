@@ -40,6 +40,7 @@ class PhysicalControlParameter : public Parameter
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
 
   virtual size_t getHash() const override;
+  bool isLocked() const override;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;

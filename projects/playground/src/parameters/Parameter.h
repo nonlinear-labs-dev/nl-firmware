@@ -82,7 +82,7 @@ class Parameter : public UpdateDocumentContributor,
 
   void undoableLock(UNDO::Transaction *transaction);
   void undoableUnlock(UNDO::Transaction *transaction);
-  bool isLocked() const;
+  virtual bool isLocked() const;
 
   virtual void exportReaktorParameter(std::stringstream &target) const;
 

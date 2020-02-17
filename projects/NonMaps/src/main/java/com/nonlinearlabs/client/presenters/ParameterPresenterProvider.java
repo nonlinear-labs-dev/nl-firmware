@@ -86,6 +86,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.shortName = e.shortName.getValue();
 		presenter.longName = e.longName.getValue();
 		presenter.parameterInfo = e.info.getValue();
+		presenter.locked = e.locked.getBool();
 
 		presenter.valueChanged = isValueChanged(e);
 
