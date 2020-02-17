@@ -36,7 +36,7 @@ void BasicItem::init()
 
     std::shared_ptr<Font> getFont() const override
     {
-      return Oleds::get().getFont("Emphase_9_Regular", 9);
+      return Oleds::get().getFont("Emphase-9-Regular", 9);
     }
 
    protected:

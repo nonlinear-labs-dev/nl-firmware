@@ -14,7 +14,7 @@ PresetNameHeadlineLabel::PresetNameHeadlineLabel(const Rect &pos)
 
 std::shared_ptr<Font> PresetNameHeadlineLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
+  return Oleds::get().getFont("Emphase-9-Bold", getFontHeight());
 }
 
 int PresetNameHeadlineLabel::getFontHeight() const

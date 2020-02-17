@@ -11,7 +11,7 @@ static TestDriver<TextCropper> tests;
 void TextCropper::registerTests()
 {
   g_test_add_func("/TextCropper/shortenStringIfNeccessary", []() {
-    auto pathToFont = getResourcesDir() + "/Emphase_9_Regular.ttf";
+    auto pathToFont = getResourcesDir() + "/Emphase-9-Regular.ttf";
     auto font = std::make_shared<Font>(pathToFont, 9);
 
     auto testShortenStringIfNeccessary = [font](std::string in, int len, std::string expected) {
@@ -30,12 +30,12 @@ void TextCropper::registerTests()
     testShortenStringIfNeccessary("Foooo 2", 20, "F..2");
     testShortenStringIfNeccessary("Foooo2", 20, "F..2");
     testShortenStringIfNeccessary("ANANAS SANANA", 20, "A..A");
-    testShortenStringIfNeccessary("ANANAS SANANA", 40, "AN..NA");
+    testShortenStringIfNeccessary("ANANAS SANANA", 40, "ANA..ANA");
     testShortenStringIfNeccessary("ANANAS SANANA 4", 40, "ANAN..4");
     testShortenStringIfNeccessary("ANANAS SANANA 4 5", 40, "ANAN..5");
-    testShortenStringIfNeccessary("ANANASSANANA 2", 60, "ANANASS..2");
+    testShortenStringIfNeccessary("ANANASSANANA 2", 60, "ANANASSA..2");
     testShortenStringIfNeccessary("HALLOHALLOHALLOHALLOHALLO 78", 128, "HALLOHALLOHALLOHAL..78");
-    testShortenStringIfNeccessary("HALLO HALLO HALLO HALLO HALLO 78", 128, "HALLO HALLO HALLO H..78");
+    testShortenStringIfNeccessary("HALLO HALLO HALLO HALLO HALLO 78", 128, "HALLO HALLO HALLO HA..78");
   });
 };
 

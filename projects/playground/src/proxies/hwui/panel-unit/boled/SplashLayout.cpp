@@ -21,7 +21,7 @@ namespace DETAIL
 
     std::shared_ptr<Font> getFont() const override
     {
-      return Oleds::get().getFont("Emphase_9_Bold", getFontHeight());
+      return Oleds::get().getFont("Emphase-9-Bold", getFontHeight());
     }
 
     int getFontHeight() const override
@@ -66,7 +66,7 @@ namespace DETAIL
    protected:
     virtual Oleds::tFont getFont() override
     {
-      return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
+      return Oleds::get().getFont("Emphase-8-TXT-Regular", 8);
     }
 
    private:

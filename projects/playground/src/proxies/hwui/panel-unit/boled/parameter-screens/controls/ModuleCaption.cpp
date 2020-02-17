@@ -98,7 +98,7 @@ void ModuleCaption::setFontColor(FrameBuffer &fb) const
 
 std::shared_ptr<Font> ModuleCaption::getFont() const
 {
-  return Oleds::get().getFont("Emphase_8_Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int ModuleCaption::getFontHeight() const
