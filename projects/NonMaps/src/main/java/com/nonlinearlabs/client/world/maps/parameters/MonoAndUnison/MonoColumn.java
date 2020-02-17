@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters.MonoAndUnison;
 
+import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.BooleanControlSmall;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
@@ -16,6 +17,11 @@ public class MonoColumn extends ParameterColumn {
             super(parent, 364);
             addChild(new UnModulateableParameterName(this));
             addChild(new BooleanControlSmall(this, getParameterNumber()));
+        }
+        
+        @Override
+        protected int getBackgroundRoundings() {
+            return Rect.ROUNDING_NONE;
         }
     }
 

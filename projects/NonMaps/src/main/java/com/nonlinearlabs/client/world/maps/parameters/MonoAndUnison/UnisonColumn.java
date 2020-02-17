@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters.MonoAndUnison;
 
+import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceLabel;
@@ -18,6 +19,11 @@ public class UnisonColumn extends ParameterColumn {
             super(parent, 249);
             addChild(new UnModulateableParameterName(this));
             addChild(new NumericalControlSmall(this, getParameterNumber()));
+        }
+
+        @Override
+        protected int getBackgroundRoundings() {
+            return Rect.ROUNDING_NONE;
         }
     }
 

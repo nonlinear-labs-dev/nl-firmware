@@ -2,12 +2,17 @@ package com.nonlinearlabs.client.world.maps.parameters.MonoAndUnison;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.ColorTable;
+import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.NonRect;
 
 public class UnisonAndMono extends LayoutResizingVertical {
+
+	private NonRect m_viewportPosAtClick;
 
 	public UnisonAndMono(MapsLayout parent) {
 		super(parent);
@@ -75,5 +80,19 @@ public class UnisonAndMono extends LayoutResizingVertical {
 		super.draw(ctx, invalidationMask);
 		getPixRect().drawRoundedRect(ctx, Rect.ROUNDING_ALL, toXPixels(6), toXPixels(2), null,
 				getColorModuleHeaderBackground());
+	}
+
+	@Override
+	public Control doubleClick() {
+		NonRect viewportPosAtClick = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();
+
+		if (zoomTo(this)) {
+			m_viewportPosAtClick = viewportPosAtClick;
+		} else if (m_viewportPosAtClick != null) {
+			NonMaps.theMaps.getNonLinearWorld().animateViewport(m_viewportPosAtClick, true);
+			m_viewportPosAtClick = null;
+		}
+		getNonMaps().getNonLinearWorld().getPresetManager().resetStoredViewportPosition();
+		return this;
 	}
 }
