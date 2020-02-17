@@ -28,12 +28,12 @@
 
 static ParameterId lastSelectedMacroControl = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
 
-MacroControlParameter::MacroControlParameter(ParameterGroup *group, ParameterId id)
+MacroControlParameter::MacroControlParameter(ParameterGroup *group, const ParameterId &id)
     : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID().getNumber(),
                                             id.getVoiceGroup())
-    , m_lastMCViewUuid { "NONE" }
-    , mcviewThrottler { Expiration::Duration(5) }
+    , m_lastMCViewUuid{ "NONE" }
+    , mcviewThrottler{ Expiration::Duration(5) }
 {
 }
 

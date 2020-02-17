@@ -122,3 +122,9 @@ bool MacroControlsGroup::isMacroTime(const ParameterId &id)
 {
   return (id.getNumber() >= 324 && id.getNumber() <= 327) || (id.getNumber() == 370 || id.getNumber() == 372);
 }
+
+bool MacroControlsGroup::isMacroControl(const int paramNumber)
+{
+  return paramNumber == 243 || paramNumber == 244 || paramNumber == 245 || paramNumber == 246 || paramNumber == 369
+      || paramNumber == 371;
+}

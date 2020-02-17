@@ -90,7 +90,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.valueChanged = isValueChanged(e);
 
 		presenter.showContextMenu = false;
-
+		presenter.isMacroControl = false;
+ 
 		if (e instanceof ModulateableParameterModel)
 			updatePresenter((ModulateableParameterModel) e);
 
@@ -327,7 +328,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private void updatePresenter(MacroControlParameterModel p) {
 		presenter.userGivenName = p.givenName.getValue();
 		presenter.showContextMenu = true;
-		presenter.isMacroControl = false;
+		presenter.isMacroControl = true;
 	}
 
 	@Override

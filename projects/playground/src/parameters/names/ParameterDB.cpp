@@ -7,6 +7,10 @@
 #include <parameter_list.h>
 #include <assert.h>
 #include <nltools/logging/Log.h>
+#include <groups/MacroControlsGroup.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <parameters/MacroControlParameter.h>
 
 ParameterDB &ParameterDB::get()
 {
@@ -73,6 +77,15 @@ Glib::ustring ParameterDB::getDescription(const int num) const
 {
   assert(num >= 0);
   assert(num < C15::Config::tcd_elements);
+
+  if(MacroControlsGroup::isMacroControl(num))
+  {
+    auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ num, VoiceGroup::Global });
+    if(auto mcParam = dynamic_cast<const MacroControlParameter *>(param))
+    {
+      return mcParam->getInfo();
+    }
+  }
 
   auto d = C15::ParameterList[num];
   if(!d.m_pg.m_param_info)

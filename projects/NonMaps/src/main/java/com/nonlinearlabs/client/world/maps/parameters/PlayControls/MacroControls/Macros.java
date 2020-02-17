@@ -70,6 +70,24 @@ public class Macros extends ParameterGroup {
 			}
 			return ModSource.None;
 		}
+
+		public static String fromParameterID(int mcNum) {
+			switch(mcNum) {
+				case 243:
+					return ModSource.A.toString();
+				case 244:
+					return ModSource.B.toString();
+				case 245:
+					return ModSource.C.toString();
+				case 246:
+					return ModSource.D.toString();
+				case 369:
+					return ModSource.E.toString();
+				case 371:
+					return ModSource.F.toString();
+			}
+			return ModSource.None.toString();
+		}
 	}
 
 	private MacrosControls controls;

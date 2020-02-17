@@ -24,8 +24,10 @@ class ParameterInfoText : public MultiLineLabel, public Scrollable
   std::shared_ptr<Font> getFont() override;
 
  private:
-  void loadInfoText(Parameter *oldParam, Parameter *newParam);
+  void onParameterChanged(const Parameter *newParameter);
+  void onParameterSelected(Parameter *oldParam, Parameter *newParam);
   void onTextLoaded(const Glib::ustring &text);
 
   ControlOwner *m_parent;
+  sigc::connection m_currentParameterConnection;
 };

@@ -13,7 +13,7 @@ public class MacroControlParameterModelUpdater extends BasicParameterModelUpdate
         super.doUpdate();
 
         MacroControlParameterModel m = (MacroControlParameterModel)target;
-        m.givenName.setValue(getChildText(root, "name"));
+        m.givenName.setValue(getChildText(root, "givenName"));
         m.info.setValue(getChildText(root, "info"));
     }
 

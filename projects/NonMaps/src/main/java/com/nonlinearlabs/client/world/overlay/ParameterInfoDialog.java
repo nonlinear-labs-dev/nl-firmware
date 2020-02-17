@@ -27,6 +27,7 @@ import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
+import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 
 public class ParameterInfoDialog extends GWTDialog {
 
@@ -206,7 +207,9 @@ public class ParameterInfoDialog extends GWTDialog {
 		}
 
 		if (isMC) {
-			paramNameEditView.setText(presenter.fullNameWithGroup);
+			int mcNum = presenter.id.getNumber();
+			String mcLabel = MacroControls.fromParameterID(mcNum);
+			paramNameEditView.setText("Macro Controls   \u2013   " + mcLabel);
 
 			if (focusOwner != paramNameEditEditor)
 				paramNameEditEditor.setText(presenter.userGivenName);
@@ -228,21 +231,6 @@ public class ParameterInfoDialog extends GWTDialog {
 
 	@Override
 	public String getTitle() {
-		// Parameter p = param;
-
-		// if (p != null) {
-		// MapsControl parent = p.getParent();
-
-		// while (parent != null) {
-		// if (parent instanceof ParameterGroupIface) {
-		// ParameterGroupIface group = (ParameterGroupIface) parent;
-		// String longText = group.getName().getLongName() + " \u2013 " +
-		// p.getName().getLongName();
-		// return longText;
-		// }
-		// parent = parent.getParent();
-		// }
-		// }
 		return "";
 	}
 
