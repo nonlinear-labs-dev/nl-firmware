@@ -215,10 +215,8 @@ public class ParameterInfoDialog extends GWTDialog {
 				paramNameEditEditor.setText(presenter.userGivenName);
 
 			String info = presenter.parameterInfo;
-			if (!info.isEmpty()) {
-				setDescription(info);
-				return;
-			}
+			setDescription(info);
+			return;
 		}
 
 		parameterNameView.setText(selectedParameter.fullNameWithGroup);
