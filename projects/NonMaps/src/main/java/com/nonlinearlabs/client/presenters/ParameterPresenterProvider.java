@@ -122,7 +122,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			notifyChanges();
 	}
 
-	private boolean isValueChanged(BasicParameterModel e) {
+	static public boolean isValueChanged(BasicParameterModel e) {
 		int denominator = e.value.metaData.fineDenominator.getValue();
 		long rVal = Math.round(e.value.value.getValue() * denominator);
 		long rOgVal = Math.round(e.originalValue.getValue() * denominator);
