@@ -57,10 +57,10 @@
 					</div>
 
 					<div class="eins-he">
-						<div class="w30p">
+						<div class="w25p">
 							<p>Pedal 1</p>
 						</div>
-						<div class="w10p">
+						<div class="w15p">
 							<g:Label ui:field="pedal1DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
@@ -75,10 +75,10 @@
 					</div>
 
 					<div class="eins-he">
-						<div class="w30p">
+						<div class="w25p">
 							<p>Pedal 2</p>
 						</div>
-						<div class="w10p">
+						<div class="w15p">
 							<g:Label ui:field="pedal2DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
@@ -93,10 +93,10 @@
 					</div>
 
 					<div class="eins-he">
-						<div class="w30p">
+						<div class="w25p">
 							<p>Pedal 3</p>
 						</div>
-						<div class="w10p">
+						<div class="w15p">
 							<g:Label ui:field="pedal3DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
@@ -111,10 +111,10 @@
 					</div>
 
 					<div class="eins-he">
-						<div class="w30p">
+						<div class="w25p">
 							<p>Pedal 4</p>
 						</div>
-						<div class="w10p">
+						<div class="w15p">
 							<g:Label ui:field="pedal4DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
