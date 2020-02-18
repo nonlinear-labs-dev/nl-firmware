@@ -22,7 +22,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -208,7 +211,7 @@ public class ParameterInfoDialog extends GWTDialog {
 
 		if (isMC) {
 			int mcNum = presenter.id.getNumber();
-			String mcLabel = MacroControls.fromParameterID(mcNum);
+			String mcLabel = ModulateableParameterModel.ModSource.fromParameterId(new ParameterId(mcNum, VoiceGroup.Global)).toString();
 			paramNameEditView.setText("Macro Controls   \u2013   " + mcLabel);
 
 			if (focusOwner != paramNameEditEditor)
@@ -225,7 +228,7 @@ public class ParameterInfoDialog extends GWTDialog {
 
 	@Override
 	public String getTitle() {
-		return "";
+		return "Parameter Info";
 	}
 
 	@Override
