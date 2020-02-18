@@ -15,4 +15,5 @@ class MacroControlsGroup : public ParameterGroup
   static ParameterId modSrcToParamId(MacroControls src);
   static MacroControls paramIDToModSrc(ParameterId pid);
   static bool isMacroTime(const ParameterId &id);
+  static bool isMacroControl(int paramNumber);
 };

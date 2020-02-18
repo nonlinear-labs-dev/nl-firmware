@@ -12,7 +12,7 @@ class MacroControlParameter : public Parameter
   typedef Parameter super;
 
  public:
-  MacroControlParameter(ParameterGroup *group, ParameterId id);
+  MacroControlParameter(ParameterGroup *group, const ParameterId& id);
   ~MacroControlParameter() override;
 
   typedef std::set<ModulateableParameter *> tTargets;

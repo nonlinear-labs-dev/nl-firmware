@@ -22,11 +22,15 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
+import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 
 public class ParameterInfoDialog extends GWTDialog {
 
@@ -206,44 +210,25 @@ public class ParameterInfoDialog extends GWTDialog {
 		}
 
 		if (isMC) {
-			paramNameEditView.setText(presenter.fullNameWithGroup);
+			int mcNum = presenter.id.getNumber();
+			String mcLabel = ModulateableParameterModel.ModSource.fromParameterId(new ParameterId(mcNum, VoiceGroup.Global)).toString();
+			paramNameEditView.setText("Macro Controls   \u2013   " + mcLabel);
 
 			if (focusOwner != paramNameEditEditor)
 				paramNameEditEditor.setText(presenter.userGivenName);
 
-			String info = presenter.parameterInfo;
-			if (!info.isEmpty()) {
-				setDescription(info);
-				return;
-			}
+			setDescription(presenter.parameterInfo);
+			return;
 		}
 
 		parameterNameView.setText(selectedParameter.fullNameWithGroup);
-		String info = presenter.parameterInfo;
-		if (!info.isEmpty()) {
-			setDescription(info);
-		}
+		setDescription(presenter.parameterInfo);
 		centerIfOutOfView();
 	}
 
 	@Override
 	public String getTitle() {
-		// Parameter p = param;
-
-		// if (p != null) {
-		// MapsControl parent = p.getParent();
-
-		// while (parent != null) {
-		// if (parent instanceof ParameterGroupIface) {
-		// ParameterGroupIface group = (ParameterGroupIface) parent;
-		// String longText = group.getName().getLongName() + " \u2013 " +
-		// p.getName().getLongName();
-		// return longText;
-		// }
-		// parent = parent.getParent();
-		// }
-		// }
-		return "";
+		return "Parameter Info";
 	}
 
 	@Override

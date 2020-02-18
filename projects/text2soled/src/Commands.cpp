@@ -51,7 +51,7 @@ public:
       auto parentPath   = parent->get_path();
       auto resourcePath = parentPath + "/resources/";
 
-      Font f(resourcePath + "Emphase_8_Regular.ttf", 8);
+      Font f(resourcePath + "Emphase-8-Regular.ttf", 8);
       FrameBuffer::get().setColor(FrameBuffer::C255);
       f.draw(argv[0], atoi(argv[1]), atoi(argv[2]));
     }
@@ -151,7 +151,7 @@ public:
     auto parent       = app->get_parent();
     auto parentPath   = parent->get_path();
     auto resourcePath = parentPath + "/resources/";
-    font              = std::make_unique<Font>(resourcePath + "Emphase_8_Regular.ttf", 8);
+    font              = std::make_unique<Font>(resourcePath + "Emphase-8-Regular.ttf", 8);
     FrameBuffer::get().setColor(FrameBuffer::C255);
     FrameBuffer::get().clear();
   }

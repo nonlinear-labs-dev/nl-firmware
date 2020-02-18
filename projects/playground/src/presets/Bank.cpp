@@ -35,12 +35,16 @@ Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuid
     m_attachedToBankWithUuid = other.m_attachedToBankWithUuid;
   }
 
+  {
+    auto scope = UNDO::Scope::startTrashTransaction();
+    AttributesOwner::copyFrom(scope->getTransaction(), &other);
+  }
+
   m_name = other.m_name;
   m_serializationDate = other.m_serializationDate;
   m_x = other.m_x;
   m_y = other.m_y;
   m_attachDirection = other.m_attachDirection;
-  m_attributes = other.m_attributes;
   m_presets = other.m_presets;
 }
 
@@ -516,8 +520,7 @@ void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other, bool igno
   setX(transaction, other->getX());
   setY(transaction, other->getY());
 
-  transaction->addUndoSwap(this, m_attributes, other->m_attributes);
-
+  AttributesOwner::copyFrom(transaction, other);
   other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, p, ignoreUuids)); });
 
   updateLastModifiedTimestamp(transaction);

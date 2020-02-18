@@ -31,20 +31,6 @@ void EditorItem::doAction()
 {
 }
 
-bool EditorItem::drawHighlightBorder(FrameBuffer &fb)
-{
-  auto ret = BasicItem::drawHighlightBorder(fb);
-
-  if(!isHighlight())
-  {
-    return false;
-  }
-
-  fb.setColor(FrameBufferColors::C103);
-  fb.drawRect(getPosition());
-  return true;
-}
-
 bool EditorItem::redraw(FrameBuffer &fb)
 {
   auto ret = BasicItem::redraw(fb);

@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.nonlinearlabs.client.dataModel.Notifier;
@@ -116,8 +117,14 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     }
 
     private boolean isAnyParameterChanged() {
-        return false;
+        for (VoiceGroup g : VoiceGroup.values()) {
+            for (BasicParameterModel param : EditBufferModel.get().byVoiceGroup[g.ordinal()].parameters.values()) {
+                if(ParameterPresenterProvider.isValueChanged(param))
+                    return true;
+            }
+        }
 
+        return false;
     }
 
     private void monitorSelectedParameter() {

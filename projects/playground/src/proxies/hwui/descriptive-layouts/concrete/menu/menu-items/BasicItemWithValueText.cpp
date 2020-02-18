@@ -8,5 +8,5 @@ BasicItemWithValueText::BasicItemWithValueText(const Glib::ustring &label, const
   auto rightHalf = r;
   rightHalf.setWidth(rightHalf.getWidth() / 2);
   rightHalf.setLeft(r.getLeft() + rightHalf.getWidth());
-  addControl(new CaptionLabel<LeftAlignedLabel>(value, rightHalf, true));
+  addControl(new CaptionLabel<LeftAlignedLabel>(value, rightHalf, true, false));
 }

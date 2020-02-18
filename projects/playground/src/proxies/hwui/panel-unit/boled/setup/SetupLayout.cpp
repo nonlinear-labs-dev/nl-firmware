@@ -805,7 +805,7 @@ class Breadcrumb : public Control
         title = title + " > ";
       }
 
-      auto font = Oleds::get().getFont("Emphase_9_Regular", 9);
+      auto font = Oleds::get().getFont("Emphase-9-Regular", 9);
       auto width = font->draw(title, left, getPosition().getBottom() - 1);
       return left + width;
     }

@@ -212,6 +212,11 @@ ParameterId PhysicalControlParameter::getUiSelectedModulationRouter() const
   return mcm->getModulationRoutingParametersFor(this).front()->getID();
 }
 
+bool PhysicalControlParameter::isLocked() const
+{
+  return false;
+}
+
 bool PhysicalControlParameter::hasBehavior() const
 {
   return false;
@@ -234,4 +239,9 @@ void PhysicalControlParameter::undoableRandomize(UNDO::Transaction *transaction,
 void PhysicalControlParameter::sendParameterMessage() const
 {
   Application::get().getAudioEngineProxy()->createAndSendParameterMessage<PhysicalControlParameter>(this);
+}
+
+bool PhysicalControlParameter::lockingEnabled() const
+{
+  return false;
 }

@@ -42,7 +42,7 @@ void PresetListHeader::setupWithArrows(Bank *bank)
   auto isFirst = order == 0;
   auto isLast = order == pm->getNumBanks() - 1;
 
-  addControl(new PresetListHeaderArrow(isFirst ? " " : "e", Rect(0, 0, arrowWidth, 13)));
+  addControl(new PresetListHeaderArrow(isFirst ? " " : "\u25C0", Rect(0, 0, arrowWidth, 13)));
   addControl(new BankNameLabel(Rect(arrowWidth, 0, pos.getWidth() - 2 * arrowWidth, 13)))->updateLabel(bank);
-  addControl(new PresetListHeaderArrow(isLast ? " " : "r", Rect(pos.getWidth() - arrowWidth, 0, arrowWidth, 13)));
+  addControl(new PresetListHeaderArrow(isLast ? " " : "\u25B6", Rect(pos.getWidth() - arrowWidth, 0, arrowWidth, 13)));
 }

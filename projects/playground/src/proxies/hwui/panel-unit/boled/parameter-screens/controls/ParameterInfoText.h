@@ -16,16 +16,18 @@ class ParameterInfoText : public MultiLineLabel, public Scrollable
  public:
   ParameterInfoText(ControlOwner *parent);
 
-  virtual void setPosition(const Rect &rect) override;
-  virtual const Rect &getPosition() const override;
-  virtual void setDirty() override;
+  void setPosition(const Rect &rect) override;
+  const Rect &getPosition() const override;
+  void setDirty() override;
 
  protected:
-  virtual std::shared_ptr<Font> getFont() override;
+  std::shared_ptr<Font> getFont() override;
 
  private:
-  void loadInfoText(Parameter *oldParam, Parameter *newParam);
+  void onParameterChanged(const Parameter *newParameter);
+  void onParameterSelected(Parameter *oldParam, Parameter *newParam);
   void onTextLoaded(const Glib::ustring &text);
 
   ControlOwner *m_parent;
+  sigc::connection m_currentParameterConnection;
 };

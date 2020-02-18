@@ -85,12 +85,13 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		presenter.shortName = e.shortName.getValue();
 		presenter.longName = e.longName.getValue();
-		presenter.parameterInfo = e.info.getValue();
+		presenter.locked = e.locked.getBool();
 
 		presenter.valueChanged = isValueChanged(e);
 
 		presenter.showContextMenu = false;
-
+		presenter.isMacroControl = false;
+ 
 		if (e instanceof ModulateableParameterModel)
 			updatePresenter((ModulateableParameterModel) e);
 
@@ -121,7 +122,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			notifyChanges();
 	}
 
-	private boolean isValueChanged(BasicParameterModel e) {
+	static public boolean isValueChanged(BasicParameterModel e) {
 		int denominator = e.value.metaData.fineDenominator.getValue();
 		long rVal = Math.round(e.value.value.getValue() * denominator);
 		long rOgVal = Math.round(e.originalValue.getValue() * denominator);
@@ -327,7 +328,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private void updatePresenter(MacroControlParameterModel p) {
 		presenter.userGivenName = p.givenName.getValue();
 		presenter.showContextMenu = true;
-		presenter.isMacroControl = false;
+		presenter.isMacroControl = true;
 	}
 
 	@Override

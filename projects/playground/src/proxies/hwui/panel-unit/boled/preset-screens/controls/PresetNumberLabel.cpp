@@ -52,7 +52,7 @@ void PresetNumberLabel::update(int presetNumber, bool selected, bool loaded)
 
 std::shared_ptr<Font> PresetNumberLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase_9_NUM_Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-9-NUM-Regular", getFontHeight());
 }
 
 int PresetNumberLabel::getXOffset() const

@@ -82,7 +82,7 @@ class Parameter : public UpdateDocumentContributor,
 
   void undoableLock(UNDO::Transaction *transaction);
   void undoableUnlock(UNDO::Transaction *transaction);
-  bool isLocked() const;
+  virtual bool isLocked() const;
 
   virtual void exportReaktorParameter(std::stringstream &target) const;
 
@@ -116,7 +116,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual void onSelected();
 
   virtual VisualizationStyle getVisualizationStyle() const;
-
+  virtual bool lockingEnabled() const;
   // CALLBACKS
   sigc::connection onParameterChanged(sigc::slot<void, const Parameter *> slot, bool doInitCall = true) const;
 

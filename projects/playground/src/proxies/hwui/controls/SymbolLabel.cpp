@@ -12,7 +12,8 @@ SymbolLabel::~SymbolLabel()
 
 std::shared_ptr<Font> SymbolLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase_8_Symbol", getFontHeight());
+#warning "Fix me before remove Emphase_X-Symbol"
+  return Oleds::get().getFont("Emphase-8-Symbol", getFontHeight());
 }
 
 int SymbolLabel::getFontHeight() const

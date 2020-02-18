@@ -35,10 +35,10 @@ namespace DescriptiveLayouts
         = [](const Point& position) { return new ConvertSoundMenu(Rect(position.getX(), position.getY(), 58, 26)); };
 
     m_discreteRegistry["SingleSoundEditMenu"] = [](const Point& position) {
-      return new SingleSoundEditMenu(Rect(position.getX(), position.getY(), 254, 52));
+      return new SingleSoundEditMenu(Rect(position.getX(), position.getY(), 256, 52));
     };
     m_discreteRegistry["DualSoundEditMenu"]
-        = [](const Point& position) { return new DualSoundEditMenu(Rect(position.getX(), position.getY(), 254, 52)); };
+        = [](const Point& position) { return new DualSoundEditMenu(Rect(position.getX(), position.getY(), 256, 52)); };
 
     m_discreteRegistry["ParameterCarousel"]
         = [](const Point& position) { return new ParameterCarousel(Rect(position.getX(), position.getY(), 58, 62)); };

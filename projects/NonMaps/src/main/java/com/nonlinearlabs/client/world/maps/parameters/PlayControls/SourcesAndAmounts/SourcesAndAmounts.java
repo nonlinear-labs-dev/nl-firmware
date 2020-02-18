@@ -25,14 +25,6 @@ public class SourcesAndAmounts extends ParameterGroup {
 		public MacroControlMappingsGroupContextMenu(OverlayLayout parent) {
 			super(parent);
 
-			addChild(new ContextMenuItem(this, (isHWLocked() ? "Unlock" : "Lock") + " Hardware Sources") {
-				@Override
-				public Control click(Position eventPoint) {
-					NonMaps.get().getServerProxy().toggleGroupLock("CS");
-					return super.click(eventPoint);
-				}
-			});
-
 			addChild(new ContextMenuItem(this, (isAmountsLocked() ? "Unlock" : "Lock") + " Amounts") {
 				@Override
 				public Control click(Position eventPoint) {

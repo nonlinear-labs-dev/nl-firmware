@@ -64,7 +64,7 @@ void MultiLineLabel::setPosition(const Rect &rect)
 
 std::shared_ptr<Font> MultiLineLabel::getFont()
 {
-  return Oleds::get().getFont("Emphase_8_Regular", 8);
+  return Oleds::get().getFont("Emphase-8-Regular", 8);
 }
 
 void MultiLineLabel::updateLines()

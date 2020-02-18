@@ -5,6 +5,7 @@
 #include <parameters/Parameter.h>
 #include <proxies/hwui/Oleds.h>
 #include <parameters/names/ParameterDB.h>
+#include <parameters/MacroControlParameter.h>
 
 ParameterInfoText::ParameterInfoText(ControlOwner *parent)
     : super("")
@@ -12,17 +13,29 @@ ParameterInfoText::ParameterInfoText(ControlOwner *parent)
 {
   setPosition(Rect(2, 0, 0, 0));
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      mem_fun(this, &ParameterInfoText::loadInfoText));
+      mem_fun(this, &ParameterInfoText::onParameterSelected));
 }
 
-void ParameterInfoText::loadInfoText(Parameter *oldParam, Parameter *newParam)
+void ParameterInfoText::onParameterSelected(Parameter *oldParam, Parameter *newParam)
 {
-  if(newParam)
+  m_currentParameterConnection.disconnect();
+
+  if(auto modParam = dynamic_cast<MacroControlParameter *>(newParam))
   {
-    auto &db = ParameterDB::get();
-    onTextLoaded(db.getDescription(newParam->getID()));
-    scrollTop();
+    m_currentParameterConnection
+        = modParam->onParameterChanged(sigc::mem_fun(this, &ParameterInfoText::onParameterChanged), true);
   }
+  else
+  {
+    onParameterChanged(newParam);
+  }
+}
+
+void ParameterInfoText::onParameterChanged(const Parameter *newParameter)
+{
+  auto &db = ParameterDB::get();
+  onTextLoaded(db.getDescription(newParameter->getID()));
+  scrollTop();
 }
 
 void ParameterInfoText::onTextLoaded(const Glib::ustring &text)
@@ -48,5 +61,5 @@ void ParameterInfoText::setDirty()
 
 std::shared_ptr<Font> ParameterInfoText::getFont()
 {
-  return Oleds::get().getFont("Emphase_8_TXT_Regular", 8);
+  return Oleds::get().getFont("Emphase-8-TXT-Regular", 8);
 }

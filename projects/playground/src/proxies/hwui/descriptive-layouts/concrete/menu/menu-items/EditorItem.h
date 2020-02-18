@@ -22,6 +22,5 @@ class EditorItem : public BasicItem
   void doAction() override;
 
  protected:
-  bool drawHighlightBorder(FrameBuffer& fb) override;
   bool redrawEnterIndication(FrameBuffer& buffer);
 };

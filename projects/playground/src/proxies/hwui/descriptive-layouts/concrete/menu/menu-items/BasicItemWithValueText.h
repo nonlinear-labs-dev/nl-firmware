@@ -3,7 +3,6 @@
 
 class BasicItemWithValueText : public BasicItem
 {
-public:
+ public:
   BasicItemWithValueText(const Glib::ustring& label, const Glib::ustring& value, const Rect& r);
-
 };

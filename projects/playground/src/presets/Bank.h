@@ -138,7 +138,6 @@ class Bank : public AttributesOwner
   std::string m_x;
   std::string m_y;
   std::string m_attachDirection;
-  std::map<std::string, std::string> m_attributes;
 
   UndoableVector<Bank, Preset> m_presets;
 

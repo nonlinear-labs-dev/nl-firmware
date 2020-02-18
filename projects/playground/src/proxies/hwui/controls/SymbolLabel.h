@@ -8,7 +8,6 @@ class SymbolLabel : public Label
   typedef Label super;
 
  public:
-  // public methods
   SymbolLabel(const Glib::ustring& text, const Rect& pos);
   virtual ~SymbolLabel();
 
@@ -17,7 +16,6 @@ class SymbolLabel : public Label
   virtual int getFontHeight() const override;
 
  private:
-  // private methods
   SymbolLabel(const SymbolLabel& other);
   SymbolLabel& operator=(const SymbolLabel&);
 };
