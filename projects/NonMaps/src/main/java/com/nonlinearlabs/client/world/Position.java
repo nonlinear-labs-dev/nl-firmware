@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world;
 
 import com.google.gwt.dom.client.Touch;
+import com.google.gwt.event.dom.client.HumanInputEvent;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.EventHandler;
 import com.nonlinearlabs.client.NonMaps;
