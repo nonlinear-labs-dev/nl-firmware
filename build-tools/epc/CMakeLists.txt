@@ -65,6 +65,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Create local rootfs"
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
     DEPENDS .docker-container-created
     OUTPUT .nonlinux-local-rootfs
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
