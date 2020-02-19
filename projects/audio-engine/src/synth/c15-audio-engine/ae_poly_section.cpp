@@ -169,8 +169,6 @@ bool PolySection::keyDown(PolyKeyEvent *_event)
   m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
   m_key_tune[_event->m_voiceId] = _event->m_tune;
   m_key_position[_event->m_voiceId] = _event->m_position;
-  m_comb_gate[_event->m_voiceId] = 1.0f;
-#warning "check with mse"
   if(_event->m_unisonIndex == 0)
   {
     if(_event->m_trigger_glide)
@@ -372,10 +370,12 @@ void PolySection::postProcess_poly_audio(const uint32_t _voiceId, const float _m
   tmp_env = m_convert->eval_lin_pitch(
       69.0f - (tmp_amt * m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId)));
   m_signals.set(C15::Signals::Truepoly_Signals::Comb_Flt_Freq_Env_C, _voiceId, tmp_env);
-  tmp_env = m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig,_voiceId);  // application of gate signal (with 10ms release)
+  tmp_env = m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig,
+                          _voiceId);  // application of gate signal (with 10ms release)
   tmp_amt = NlToolbox::Crossfades::unipolarCrossFade(m_comb_decay_times[0][_voiceId], m_comb_decay_times[1][_voiceId],
                                                      tmp_env);
-  m_signals.set(C15::Signals::Truepoly_Signals::Comb_Flt_Decay, _voiceId,tmp_amt);  // decay now fully formed as min/max
+  m_signals.set(C15::Signals::Truepoly_Signals::Comb_Flt_Decay, _voiceId,
+                tmp_amt);  // decay now fully formed as min/max
   // unison (phase)
   const float phase = m_smoothers.get(C15::Smoothers::Poly_Audio::Unison_Phase)
       * m_spread.m_phase[m_uVoice][m_unison_index[_voiceId]];
@@ -477,23 +477,12 @@ void PolySection::postProcess_poly_slow(const uint32_t _voiceId)
   envMod = 1.0f - m_comb_decayCurve.applyCurve(m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay_Gate));
   unitMod = std::abs(m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay));
   unitPitch = (-0.5f * notePitch * keyTracking);
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-=======
->>>>>>> wip: reworked Comb Filter Decay application:audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
   unitValue
       = m_signals.get(C15::Signals::Truepoly_Signals::Comb_Flt_Freq)[_voiceId];  // decay now fully formed as min/max
   m_comb_decay_times[0][_voiceId]
       = m_combfilter.calcDecayGain(m_convert->eval_level(unitPitch + (unitMod * envMod)) * unitSign, unitValue);
   m_comb_decay_times[1][_voiceId]
       = m_combfilter.calcDecayGain(m_convert->eval_level(unitPitch + unitMod) * unitSign, unitValue);
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-=======
-  m_comb_decay_times[0][_voiceId] = m_convert->eval_level(unitPitch + (unitMod * envMod)) * unitSign;
-  m_comb_decay_times[1][_voiceId] = m_convert->eval_level(unitPitch + unitMod) * unitSign;
->>>>>>> wip: resolve Comb Filter Decay KT glitch:audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-=======
->>>>>>> wip: reworked Comb Filter Decay application:audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_AP_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_AP_Tune);
   envMod = m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId)
@@ -590,23 +579,12 @@ void PolySection::postProcess_poly_key(const uint32_t _voiceId)
   envMod = 1.0f - m_comb_decayCurve.applyCurve(m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay_Gate));
   unitMod = std::abs(m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay));
   unitPitch = (-0.5f * notePitch * keyTracking);
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-=======
->>>>>>> wip: reworked Comb Filter Decay application:audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
   unitValue
       = m_signals.get(C15::Signals::Truepoly_Signals::Comb_Flt_Freq)[_voiceId];  // decay now fully formed as min/max
   m_comb_decay_times[0][_voiceId]
       = m_combfilter.calcDecayGain(m_convert->eval_level(unitPitch + (unitMod * envMod)) * unitSign, unitValue);
   m_comb_decay_times[1][_voiceId]
       = m_combfilter.calcDecayGain(m_convert->eval_level(unitPitch + unitMod) * unitSign, unitValue);
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-=======
-  m_comb_decay_times[0][_voiceId] = m_convert->eval_level(unitPitch + (unitMod * envMod)) * unitSign;
-  m_comb_decay_times[1][_voiceId] = m_convert->eval_level(unitPitch + unitMod) * unitSign;
->>>>>>> wip: resolve Comb Filter Decay KT glitch:audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
-=======
->>>>>>> wip: reworked Comb Filter Decay application:audio-engine/src/synth/c15-audio-engine/ae_poly_section.cpp
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_AP_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_AP_Tune);
   envMod = m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId)

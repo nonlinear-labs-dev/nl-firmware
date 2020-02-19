@@ -594,16 +594,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           }
           else
           {
-#warning "should have no diff to master"
             // split[I] poly keyDown
-            //_keyState->m_voiceId = m_local[0].keyDown();
-            firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-            // clear stolen key first (all associated voices will be lost)
-            if(m_voiceState[firstVoice].m_active)
-            {
-              keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-            }
             //_keyState->m_voiceId = m_local[0].keyDown();
             firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
             m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
@@ -635,8 +626,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           else
           {
             // split[II] poly keyDown
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/voice_allocation.h
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/voice_allocation.h
             //_keyState->m_voiceId = m_local[1].keyDown();
             firstVoice = LocalVoices + _keyState->setVoiceId(m_local[1].keyDown(), unisonVoices);
             m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
@@ -645,20 +634,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
             {
               keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
             }
-=======
-            _keyState->m_voiceId = m_local[1].keyDown();
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
->>>>>>> wip: reworked osc a/b phase reset (now linked to new parameters):audio-engine/src/synth/c15-audio-engine/voice_allocation.h
-=======
-            //_keyState->m_voiceId = m_local[1].keyDown();
-            firstVoice = LocalVoices + _keyState->setVoiceId(m_local[1].keyDown(), unisonVoices);
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-            // clear stolen key first (all associated voices will be lost)
-            if(m_voiceState[firstVoice].m_active)
-            {
-              keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-            }
->>>>>>> wip: resolved voice steal mono/poly conflict:audio-engine/src/synth/c15-audio-engine/voice_allocation.h
           }
           // common split[II] keyDown
           //firstVoice = LocalVoices + (_keyState->m_voiceId * unisonVoices);
@@ -682,8 +657,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         else
         {
           // layer[I&II] poly keyDown
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/voice_allocation.h
-<<<<<<< HEAD:projects/audio-engine/src/synth/c15-audio-engine/voice_allocation.h
           //_keyState->m_voiceId = m_local[0].keyDown();
           firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
           m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
@@ -692,20 +665,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           {
             keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
           }
-=======
-          _keyState->m_voiceId = m_local[0].keyDown();
-          m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
->>>>>>> wip: reworked osc a/b phase reset (now linked to new parameters):audio-engine/src/synth/c15-audio-engine/voice_allocation.h
-=======
-          //_keyState->m_voiceId = m_local[0].keyDown();
-          firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
-          m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-          // clear stolen key first (all associated voices will be lost)
-          if(m_voiceState[firstVoice].m_active)
-          {
-            keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-          }
->>>>>>> wip: resolved voice steal mono/poly conflict:audio-engine/src/synth/c15-audio-engine/voice_allocation.h
         }
         // common layer[I&II] keyDown
         //firstVoice = _keyState->m_voiceId * unisonVoices;
