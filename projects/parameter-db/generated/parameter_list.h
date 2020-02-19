@@ -385,11 +385,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Shp_A_Asym, Signals::Quasipoly_Signals::Shp_A_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Shaper A", "Shaper A", "Asymmetry", "Asymmetry",
-=======
-      { "", "Shaper A", "Shaper A", "Asymmetry", "Asymmetry",
->>>>>>> ParameterList: all Asym params - Label and Info text corrections:parameter-db/generated/parameter_list.h
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Shp_A_Mix,
@@ -550,11 +546,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Shp_B_Asym, Signals::Quasipoly_Signals::Shp_B_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Shaper B", "Shaper B", "Asymmetry", "Asymmetry",
-=======
-      { "", "Shaper B", "Shaper B", "Asymmetry", "Asymmetry",
->>>>>>> ParameterList: all Asym params - Label and Info text corrections:parameter-db/generated/parameter_list.h
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Shp_B_Mix,
@@ -865,11 +857,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Asym, Signals::Quasipoly_Signals::FB_Mix_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Feedback Mixer", "FB Mixer", "Asymmetry", "Asymmetry",
-=======
-      { "", "Feedback Mixer", "FB Mixer", "Asymmetry", "Asymmetry",
->>>>>>> ParameterList: all Asym params - Label and Info text corrections:parameter-db/generated/parameter_list.h
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values, it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Unmodulateables::FB_Mix_Lvl_KT,
@@ -954,11 +942,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_Asym, Signals::Quasipoly_Signals::Out_Mix_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Output Mixer", "Output Mixer", "Asymmetry", "Asymmetry",
-=======
-      { "", "Output Mixer", "Output Mixer", "Asymmetry", "Asymmetry",
->>>>>>> ParameterList: all Asym params - Label and Info text corrections:parameter-db/generated/parameter_list.h
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values, it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Out_Mix_Lvl,
@@ -1000,11 +984,7 @@ namespace C15
       0.25f,
       { Smoothers::Mono_Slow::Cabinet_Asym, Signals::Mono_Signals::Cabinet_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Cabinet", "Cabinet", "Asymmetry", "Asmymetry",
-=======
-      { "", "Cabinet", "Cabinet", "Asymmetry", "Asmymetry",
->>>>>>> ParameterList: all Asym params - Label and Info text corrections:parameter-db/generated/parameter_list.h
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values, it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Cabinet_Tilt,
@@ -1709,11 +1689,7 @@ namespace C15
       312,
       0.0f,
       { Smoothers::Global_Slow::Scale_Base_Key, None, Properties::SmootherScale::Linear, 11.0f, 0.0f, false },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 12, 12, None, None, "", "Scale", "Scale", "Base Key", "Base Key",
-=======
-      { "", "Scale", "Scale", "Base Key", "Base Key",
->>>>>>> wip: tidy up ParameterList, implemented smoothing Scale BaseKey:parameter-db/generated/parameter_list.h
         "Sets the base key for the custom scale. The scale is defined for the eleven keys above the base key and will "
         "be applied to all octaves accordingly." } },
     { Parameters::Global_Unmodulateables::Scale_Offset_1,
@@ -1852,14 +1828,10 @@ namespace C15
       332,
       0.0f,
       { Smoothers::Poly_Fast::Env_A_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Envelope A", "Envelope A", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
         "slider’s edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
-=======
-      { "", "Envelope A", "Envelope A", "Elevate T - A", "Elevate", "" } },
->>>>>>> wip: renamed 'Split Lvls' to 'Elevate T-A' (#1443):parameter-db/generated/parameter_list.h
     { None },
     { Parameters::Local_Unmodulateables::Env_B_Dec_1_Vel,
       334,
@@ -1881,14 +1853,10 @@ namespace C15
       338,
       0.0f,
       { Smoothers::Poly_Fast::Env_B_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, None, None, "", "Envelope B", "Envelope B", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
         "slider’s edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
-=======
-      { "", "Envelope B", "Envelope B", "Elevate T - A", "Elevate", "" } },
->>>>>>> wip: renamed 'Split Lvls' to 'Elevate T-A' (#1443):parameter-db/generated/parameter_list.h
     { None },
     { Parameters::Local_Unmodulateables::Env_C_Retr_H,
       340,
@@ -2172,20 +2140,14 @@ namespace C15
       0.0f,
       { Smoothers::Mono_Fast::Flanger_Tremolo, Signals::Mono_Signals::Flanger_Tremolo,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
       { 100, 1000, 100, 1000, "0", "Flanger", "Flanger", "Tremolo", "Tremolo",
         "Determines the amount of amplitude modulation by the Flanger’s stereo LFO. It is applied after the Mix stage "
         "of the Flanger. The Rate and Phase parameters control the frequency and stereo spreading of this effect." } },
-=======
-      { "0", "Flanger", "Flanger", "Tremolo", "Tremolo", "" } },
->>>>>>> wip: established 3 new parameters (scale: offset_0, osc a/b: phase reset):parameter-db/generated/parameter_list.h
     { None },
     { Parameters::Global_Unmodulateables::Scale_Offset_0,
       391,
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_0, Signals::Global_Signals::Scale_Offset_0,
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
-<<<<<<< HEAD:projects/parameter-db/generated/parameter_list.h
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
       { 800, 8000, None, None, "", "Scale", "Scale", "Offset +0", "Offset +0",
         "Offset of the base key [in cents]. At zero, the interval to the base key would be perfect identity." } },
@@ -2206,28 +2168,6 @@ namespace C15
       { 1, 1, None, None, "", "Oscillator B", "Oscillator B", "Reset", "Reset",
         "If enabled, every pressed key will cause the Oscillator to reset it’s phase (for the corresponding voice). If "
         "disabled, the Oscillator is in free-running mode." } },
-=======
-        Properties::SmootherScale::Linear, 8.0f, 0.0f, false },
-=======
-        Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
->>>>>>> wip: tidy up ParameterList, implemented smoothing Scale BaseKey:parameter-db/generated/parameter_list.h
-      { "", "Scale", "Scale", "Offset +0", "Offset +0",
-        "Offset of the base key [in cents]. At zero, the interval to the base key would be the minor second of the "
-        "equally tempered scale." } },
-    { None },
-    { Parameters::Local_Unmodulateables::Osc_A_Reset,
-      393,
-      1.0f,
-      { Smoothers::Poly_Sync::Osc_A_Reset, Signals::Quasipoly_Signals::Osc_A_Reset, Properties::SmootherScale::Linear,
-        1.0f, 0.0f, false },
-      { "", "Oscillator A", "Oscillator A", "Reset", "Reset", "" } },
-    { Parameters::Local_Unmodulateables::Osc_B_Reset,
-      394,
-      1.0f,
-      { Smoothers::Poly_Sync::Osc_B_Reset, Signals::Quasipoly_Signals::Osc_B_Reset, Properties::SmootherScale::Linear,
-        1.0f, 0.0f, false },
-      { "", "Oscillator B", "Oscillator B", "Reset", "Reset", "" } },
->>>>>>> wip: established 3 new parameters (scale: offset_0, osc a/b: phase reset):parameter-db/generated/parameter_list.h
     { None },
     { None },
     { None },
