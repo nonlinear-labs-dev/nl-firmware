@@ -9,6 +9,7 @@
 #include <bitset>
 #include <iomanip>
 #include <iterator>
+#include <iostream>
 
 LPCReceiver::LPCReceiver()
     : super("/dev/lpc_bb_driver", MessageParser::getNumInitialBytesNeeded())

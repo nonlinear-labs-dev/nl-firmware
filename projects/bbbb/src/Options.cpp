@@ -17,47 +17,28 @@ namespace OptionDetail
   }
 }
 
-Options::Options(int &argc, char **&argv)
+Options::Options(int& argc, char**& argv)
 {
   Glib::OptionGroup mainGroup("common", "common options");
   Glib::OptionContext ctx;
 
-  auto timeStamps = OptionDetail::createOption(
-      mainGroup, "timestamps", 't', "measure turn around time encoder -> playground -> oled", m_doTimeStamps);
+  OptionDetail::createOption(mainGroup, "timestamps", 't', "measure turn around time encoder -> playground -> oled",
+                             m_doTimeStamps);
+  OptionDetail::createOption(mainGroup, "playground-host", 'p', "where to find the playground", m_playgroundHost);
+  OptionDetail::createOption(mainGroup, "audioengine-host", 'a', "where to find the audio engine", m_audioengineHost);
 
-  auto pgHost
-      = OptionDetail::createOption(mainGroup, "playground-host", 'p', "where to find the playground", m_playgroundHost);
-
-  auto aeHost = OptionDetail::createOption(mainGroup, "audioengine-host", 'a', "where to find the audio engine",
-                                           m_audioengineHost);
-
-  Glib::OptionEntry pg;
-  pg.set_long_name("playground-host");
-  pg.set_short_name('p');
-  pg.set_description("Where to find the playground");
-  mainGroup.add_entry(pg, m_playgroundHost);
-
-  Glib::OptionEntry ae;
-  pg.set_long_name("audioengine-host");
-  pg.set_short_name('p');
-  pg.set_description("Where to find the audioengine");
-  mainGroup.add_entry(ae, m_audioengineHost);
-
-  auto heartBeatLog
-      = OptionDetail::createOption(mainGroup, "log-heart-beat", 'h', "log lpc heart beat to console", m_logHeartBeat);
-  auto rawLpcLog
-      = OptionDetail::createOption(mainGroup, "log-lpc-raw", 'l', "log raw lpc messages to console", m_logLpcRaw);
-  auto pgHost
-      = OptionDetail::createOption(mainGroup, "playground-host", 'p', "where to find the playground", m_playgroundHost);
-  auto aeHost = OptionDetail::createOption(mainGroup, "audioengine-host", 'a', "where to find the audio engine",
-                                           m_audioengineHost);
+  OptionDetail::createOption(mainGroup, "log-heart-beat", 'h', "log lpc heart beat to console", m_logHeartBeat);
+  OptionDetail::createOption(mainGroup, "log-lpc-raw", 'l', "log raw lpc messages to console", m_logLpcRaw);
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
 
-  try {
+  try
+  {
     ctx.parse(argc, argv);
-  } catch(...) {
+  }
+  catch(...)
+  {
     std::stringstream ss;
     for(auto i = 0; i < argc; i++)
       ss << argv[i] << " ";
@@ -78,4 +59,14 @@ Glib::ustring Options::getAudioEngineHost() const
 bool Options::doTimeStamps() const
 {
   return m_doTimeStamps;
+}
+
+bool Options::logLPCRaw() const
+{
+  return m_logLpcRaw;
+}
+
+bool Options::logHeartBeat() const
+{
+  return m_logHeartBeat;
 }

@@ -12,9 +12,6 @@ class Options
   Glib::ustring getAudioEngineHost() const;
 
   bool doTimeStamps() const;
-
- private:
-  bool m_doTimeStamps = false;
   bool logLPCRaw() const;
   bool logHeartBeat() const;
 
