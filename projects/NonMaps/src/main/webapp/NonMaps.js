@@ -27,17 +27,6 @@ function formatPriority(cp) {
   }
 }
 
-function formatPriority(cp) {
-  switch (Number(cp)) {
-    case 0:
-      return "Lowest";
-    case 1:
-      return "Latest";
-    case 2:
-      return "Highest";
-  }
-}
-
 function formatDimensionRounded(value, unit, withUnit, roundTo) {
   if (value === Number.POSITIVE_INFINITY)
     return "inf";
