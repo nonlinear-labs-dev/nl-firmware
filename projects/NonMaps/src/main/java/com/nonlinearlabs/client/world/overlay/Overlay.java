@@ -5,14 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
-import com.nonlinearlabs.client.presenters.DeviceSettingsProvider;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenter;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
@@ -139,7 +137,7 @@ public class Overlay extends OverlayLayout {
 
 		compareDialogs = new ArrayList<CompareDialog>();
 	}
-
+	
 	public void refreshGlobalMenu() {
 		globalMenu.refresh();
 	}
