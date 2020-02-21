@@ -12,6 +12,7 @@ BBB_UPDATE=$2
 CURRENT_DIR=$("pwd")
 
 fail_and_exit() {
+    clean_up
     echo "Failed to created an update!"
     exit 1
 }
@@ -40,7 +41,9 @@ create_update_file_structure() {
 deploy_updates() {
     echo "Deploying updates..."
     if cp $EPC_UPDATE $CURRENT_DIR/nonlinear-c15-update/EPC/update.tar \
-        && cp $BBB_UPDATE $CURRENT_DIR/nonlinear-c15-update/BBB; then
+        && chmod 666 $CURRENT_DIR/nonlinear-c15-update/EPC/update.tar \
+        && cp $BBB_UPDATE $CURRENT_DIR/nonlinear-c15-update/BBB/rootfs.tar \
+        && chmod 666 $CURRENT_DIR/nonlinear-c15-update/BBB/rootfs.tar; then
         echo "Deploying updates done."
         return 0
      fi
@@ -51,8 +54,11 @@ deploy_updates() {
 deploy_scripts() {
     echo "Deploying update scripts..."
     if cp $CURRENT_DIR/update_scripts/{run.sh,run_v3.sh} $CURRENT_DIR/nonlinear-c15-update/ \
+        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/{run.sh,run_v3.sh} \
         && cp $CURRENT_DIR/update_scripts/bbb_update.sh $CURRENT_DIR/nonlinear-c15-update/BBB/ \
-        && cp $CURRENT_DIR/update_scripts/epc_update.sh $CURRENT_DIR/nonlinear-c15-update/EPC/; then
+        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/BBB/bbb_update.sh \
+        && cp $CURRENT_DIR/update_scripts/epc_update.sh $CURRENT_DIR/nonlinear-c15-update/EPC/ \
+        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/EPC/epc_update.sh; then
         echo "Deploying update scripts done."
         return 0
      fi
@@ -64,13 +70,13 @@ get_tools_from_rootfs() {
     echo "Getting tools from rootfs..."
     mkdir -p $CURRENT_DIR/rootfs && tar -xf $BBB_UPDATE -C $CURRENT_DIR/rootfs
 
-    tools=(sshpass text2soled netcat rsync)
+    tools=(sshpass text2soled netcat rsync socat tinyhttpd lighttpd thttpd)
     for i in "${tools[@]}"; do
         cp $(find $CURRENT_DIR/rootfs/usr -type f -name "$i") $CURRENT_DIR/nonlinear-c15-update/utilities/
     done
 
     if [ $? -eq 0 ]; then
-        echo "Getting tools from rootfs done." && rm -rf $CURRENT_DIR/rootfs
+        echo "Getting tools from rootfs done."
         return 0
     fi
     echo "Getting tools from rootfs failed."
@@ -102,7 +108,7 @@ calc_checksum() {
 
 clean_up() {
     echo "Cleaning up..."
-    if rm -rf $CURRENT_DIR/nonlinear-c15-update/; then
+    if rm -rf $CURRENT_DIR/nonlinear-c15-update/ && rm -rf $CURRENT_DIR/rootfs/; then
         echo "Cleaning up done."
         return 0
     fi
