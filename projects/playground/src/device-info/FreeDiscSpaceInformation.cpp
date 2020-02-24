@@ -7,7 +7,7 @@
 #include <xml/Writer.h>
 #include <chrono>
 
-FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation *parent)
+FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
     : DeviceInformationItem(parent)
     , m_value("N/A")
 {
@@ -21,21 +21,30 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation *parent)
 
 bool FreeDiscSpaceInformation::refresh()
 {
-  SpawnCommandLine cmd(
-      "sh -c \"df -h | grep '/persistent' | cut -d ' ' -f15\" ");
+  SpawnCommandLine cmd("sh -c \"df -h | grep '/persistent' | awk '{print $4}'\"");
 
   Glib::ustring newValue = cmd.getStdOutputOrFallback("N/A");
 
-  if(m_value != newValue)
+  auto trimmed = [](const auto& str) {
+    auto ret = std::string {};
+    for(const auto& c : str)
+    {
+      if(std::isalnum(c))
+        ret += c;
+    }
+    return ret;
+  }(newValue);
+
+  if(m_value != trimmed)
   {
-    m_value = newValue;
+    m_value = trimmed;
     onChange();
   }
 
   return true;
 }
 
-void FreeDiscSpaceInformation::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+void FreeDiscSpaceInformation::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   writer.writeTextElement("free-disc-space", m_value);
 }
