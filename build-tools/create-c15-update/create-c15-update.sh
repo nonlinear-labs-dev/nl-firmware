@@ -1,4 +1,4 @@
-# /bin/sh
+#!/bin/sh
 #
 # Author:       Anton Scmied
 # Date:         12.02.2020

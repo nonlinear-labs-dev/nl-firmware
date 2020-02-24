@@ -36,6 +36,123 @@ namespace nltools
       };
     }
 
+    namespace WiFi
+    {
+
+      namespace Helper
+      {
+        template <size_t tSize> struct StringWrapper
+        {
+          StringWrapper()
+          {
+            std::memset(data, '\0', tSize);
+          }
+
+          void set(const std::string &s)
+          {
+            assert(s.size() <= tSize);
+
+            auto i = 0;
+            for(const auto &c : s)
+            {
+              data[i] = c;
+              i++;
+            }
+            data[i] = '\0';
+          }
+
+          std::string get() const
+          {
+            auto ret = std::string {};
+
+            for(auto i = 0; data[i] != '\0'; i++)
+            {
+              ret += data[i];
+            }
+            return ret;
+          }
+
+          char data[tSize + 1];
+        };
+      }
+
+      struct SetWiFiSSIDMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WiFiSetSSID;
+        }
+
+        SetWiFiSSIDMessage()
+        {
+        }
+
+        template <typename T> SetWiFiSSIDMessage(const T &ssid)
+        {
+          m_ssid.set(ssid);
+        }
+
+        Helper::StringWrapper<128> m_ssid;
+      };
+
+      struct SetWiFiPasswordMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WiFiSetPassword;
+        }
+
+        SetWiFiPasswordMessage()
+        {
+        }
+
+        template <typename T> SetWiFiPasswordMessage(const T &password)
+        {
+          m_password.set(password);
+        }
+
+        Helper::StringWrapper<8> m_password;
+      };
+
+      struct WiFiPasswordChangedMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WiFiGetPassword;
+        }
+
+        WiFiPasswordChangedMessage()
+        {
+        }
+
+        template <typename T> WiFiPasswordChangedMessage(const T &password)
+        {
+          m_password.set(password);
+        }
+
+        Helper::StringWrapper<8> m_password;
+      };
+
+      struct WiFiSSIDChangedMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WiFiGetSSID;
+        }
+
+        WiFiSSIDChangedMessage()
+        {
+        }
+
+        template <typename T> WiFiSSIDChangedMessage(const T &ssid)
+        {
+          m_ssid.set(ssid);
+        }
+
+        Helper::StringWrapper<128> m_ssid;
+      };
+    }
+
     namespace Setting
     {
       struct NoteShiftMessage
