@@ -22,7 +22,7 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation *parent)
 bool FreeDiscSpaceInformation::refresh()
 {
   SpawnCommandLine cmd(
-      "sh -c \"df -h | grep '/dev/root' | sed 's/^\\S*\\s*\\S*\\s*\\S*\\s*\\(\\S*\\)\\s*.*/\\1/' | tr '\\n'  ' ' \" ");
+      "sh -c \"df -h | grep '/persistent' | cut -d ' ' -f15\" ");
 
   Glib::ustring newValue = cmd.getStdOutputOrFallback("N/A");
 
