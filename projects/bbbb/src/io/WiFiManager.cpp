@@ -28,20 +28,18 @@ void WiFiManager::readConfig()
   {
     auto line = std::string {};
     bool changed = false;
-    const auto oldSSID = m_lastSeenSSID;
-    const auto oldPW = m_lastSeenPassword;
 
     while(std::getline(stream, line))
     {
       if(line.find(c_ssidPattern) == 0)
       {
         auto ssidOnDisk = line.substr(line.find_first_of('=') + 1);
-        changed |= std::exchange(m_lastSeenSSID, ssidOnDisk) != oldSSID;
+        changed |= std::exchange(m_lastSeenSSID, ssidOnDisk) != ssidOnDisk;
       }
       else if(line.find(c_pwPattern) == 0)
       {
         auto pwOnDisk = line.substr(line.find_first_of('=') + 1);
-        changed |= std::exchange(m_lastSeenPassword, pwOnDisk) != oldPW;
+        changed |= std::exchange(m_lastSeenPassword, pwOnDisk) != pwOnDisk;
       }
     }
 
