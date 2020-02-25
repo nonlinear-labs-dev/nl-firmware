@@ -42,7 +42,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -229,7 +229,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -515,6 +515,16 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
       group->undoableRandomize(transaction, initiator, amount);
 }
 
+void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup vg, Initiator initiator)
+{
+  transaction->addPostfixCommand([this](auto) -> void { this->sendToAudioEngine(); });
+
+  auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
+
+  for(auto &g : getParameterGroups(vg))
+    g->undoableRandomize(transaction, initiator, amount);
+}
+
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
   transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
@@ -673,6 +683,9 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   undoableSetType(transaction, type);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
+
+  initSplitPoint(transaction);
+
   initRecallValues(transaction);
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
@@ -687,7 +700,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Volume and Tune
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
     auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -869,7 +882,7 @@ void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *t
 {
   auto part = getParameterGroupByID({ "Part", copyTo });
 
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto p = part->findParameterByID({ ids.first, part->getVoiceGroup() });
     auto pGlobal = preset->findParameterByID({ ids.second, VoiceGroup::Global });
@@ -899,4 +912,10 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
 
   partVolume->setCPFromHwui(transaction, newVolumeCP);
   partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() + presetPartTune->getValue());
+}
+
+void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
+{
+  auto splitPoint = findParameterByID({ 356, VoiceGroup::Global });
+  splitPoint->setDefaultFromHwui(transaction);
 }
