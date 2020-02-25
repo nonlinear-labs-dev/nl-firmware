@@ -6,16 +6,6 @@
         "Rect": "0, 0, 64, 13"
       }
     },
-    "InvertedLabelLeftAlign": {
-      "Spacer": {
-        "Class": "Bar",
-        "Rect": "0, 0, 4, 12"
-      },
-      "Text": {
-        "Class": "Text",
-        "Rect": "4, 0, 60, 12"
-      }
-    },
     "WideInvertedLabel": {
       "Text": {
         "Class": "Text",
@@ -70,20 +60,6 @@
         "HighlightColor": "C43",
         "FontSize": 8,
         "TextAlign": "Center"
-      }
-    },
-    "InvertedLabelLeftAlign": {
-      "selector": {
-        "ControlClasses": "InvertedLabelLeftAlign",
-        "PrimitiveClasses": "Text"
-      },
-      "styles": {
-        "BackgroundColor": "C128",
-        "Color": "C43",
-        "SuffixColor": "C43",
-        "HighlightColor": "C43",
-        "FontSize": 8,
-        "TextAlign": "Left"
       }
     }
   }
