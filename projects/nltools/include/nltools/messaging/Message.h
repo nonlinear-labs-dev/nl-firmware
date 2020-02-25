@@ -45,31 +45,18 @@ namespace nltools
         {
           StringWrapper()
           {
-            std::memset(data, '\0', tSize);
+            std::memset(data, '\0', tSize + 1);
           }
 
           void set(const std::string &s)
           {
             assert(s.size() <= tSize);
-
-            auto i = 0;
-            for(const auto &c : s)
-            {
-              data[i] = c;
-              i++;
-            }
-            data[i] = '\0';
+            std::copy(s.begin(), s.end() + 1, data);
           }
 
           std::string get() const
           {
-            auto ret = std::string {};
-
-            for(auto i = 0; data[i] != '\0'; i++)
-            {
-              ret += data[i];
-            }
-            return ret;
+            return data;
           }
 
           char data[tSize + 1];
@@ -118,7 +105,7 @@ namespace nltools
       {
         constexpr static MessageType getType()
         {
-          return MessageType::WiFiGetPassword;
+          return MessageType::WiFiPasswordChanged;
         }
 
         WiFiPasswordChangedMessage()
@@ -137,7 +124,7 @@ namespace nltools
       {
         constexpr static MessageType getType()
         {
-          return MessageType::WiFiGetSSID;
+          return MessageType::WiFiSSIDChanged;
         }
 
         WiFiSSIDChangedMessage()

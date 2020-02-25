@@ -33,7 +33,7 @@ namespace nltools
 
          NoteDown, NoteUp,
 
-         WiFiGetSSID, WiFiGetPassword, WiFiSetSSID, WiFiSetPassword);
+         WiFiPasswordChanged, WiFiSSIDChanged, WiFiSetSSID, WiFiSetPassword);
 
     namespace detail
     {
