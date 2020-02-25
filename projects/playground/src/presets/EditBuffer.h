@@ -46,6 +46,7 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
   void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator);
+  void undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup currentVoiceGroup, Initiator initiator);
   void undoableInitSound(UNDO::Transaction *transaction);
   void undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *values);
   void undoableLockAllGroups(UNDO::Transaction *transaction);
@@ -160,7 +161,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   void loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset, VoiceGroup copyTo);
 
-  void
-  copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
-                                              VoiceGroup copyFrom, VoiceGroup copyTo);
+  void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
+                                                   VoiceGroup copyFrom, VoiceGroup copyTo);
+  void initSplitPoint(UNDO::Transaction *transaction);
 };

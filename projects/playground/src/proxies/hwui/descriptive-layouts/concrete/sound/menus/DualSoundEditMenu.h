@@ -9,5 +9,8 @@ class DualSoundEditMenu : public ScrollMenu
   void init() override;
 
  protected:
+
+  void initSplit();
+  void initLayer();
   int getDefaultItemHeight() const override;
 };
