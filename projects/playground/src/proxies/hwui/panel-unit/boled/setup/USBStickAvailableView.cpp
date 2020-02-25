@@ -36,6 +36,6 @@ bool USBStickAvailableView::usbIsReady()
 #ifdef _DEVELOPMENT_PC
   return true;
 #endif
-  SpawnCommandLine cmd("lsblk");
+  SpawnCommandLine cmd("ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'lsblk'");
   return cmd.getStdOutput().find("/mnt/usb-stick") != std::string::npos;
 }
