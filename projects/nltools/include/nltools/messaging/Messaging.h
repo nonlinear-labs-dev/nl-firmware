@@ -16,7 +16,7 @@ namespace nltools
     // Types:
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 
-    ENUM(EndPoint, uint16_t, None, Lpc, Oled, PanelLed, RibbonLed, AudioEngine, Playground, TestEndPoint);
+    ENUM(EndPoint, uint16_t, None, Lpc, Oled, PanelLed, RibbonLed, AudioEngine, Playground, WiFiManager, TestEndPoint);
 
     uint getPortFor(EndPoint p);
 
@@ -31,7 +31,9 @@ namespace nltools
 
          NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,
 
-         NoteDown, NoteUp);
+         NoteDown, NoteUp,
+
+         WiFiPasswordChanged, WiFiSSIDChanged, WiFiSetSSID, WiFiSetPassword);
 
     namespace detail
     {

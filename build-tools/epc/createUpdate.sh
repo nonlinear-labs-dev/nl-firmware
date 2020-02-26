@@ -108,6 +108,7 @@ install_update() {
         cd /build
         make install
         systemctl enable /usr/local/lib/systemd/system/playground.service
+        systemctl enable /usr/local/lib/systemd/system/persistent.mount
         systemctl enable /usr/local/lib/systemd/system/audio-engine.service"
 }
 

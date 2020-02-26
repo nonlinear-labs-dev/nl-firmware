@@ -41,11 +41,12 @@ void setupMessaging(const Options *options)
 #else
   conf.offerEndpoints = { EndPoint::Playground };
 #endif
-  conf.useEndpoints = { { EndPoint::Lpc, bbbb },      { EndPoint::Oled, bbbb },
+  conf.useEndpoints = { { EndPoint::Lpc, bbbb },       { EndPoint::Oled, bbbb },
 #ifdef _DEVELOPMENT_PC
                         { EndPoint::TestEndPoint },
 #endif
-                        { EndPoint::PanelLed, bbbb }, { EndPoint::RibbonLed, bbbb }, { EndPoint::AudioEngine, ae } };
+                        { EndPoint::PanelLed, bbbb },  { EndPoint::RibbonLed, bbbb },
+                        { EndPoint::AudioEngine, ae }, { EndPoint::WiFiManager, bbbb } };
   nltools::msg::init(conf);
 }
 

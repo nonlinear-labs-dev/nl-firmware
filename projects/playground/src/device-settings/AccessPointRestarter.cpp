@@ -61,6 +61,6 @@ void AccessPointRestarter::restartAP()
 #if _DEVELOPMENT_PC
   std::this_thread::sleep_for(std::chrono::seconds(3));
 #else
-  SpawnCommandLine cmd("systemctl restart accesspoint");
+  SpawnCommandLine cmd(R"(ssh -o "StrictHostKeyChecking=no" root@192.168.10.11 'systemctl restart accesspoint')");
 #endif
 }
