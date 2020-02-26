@@ -145,8 +145,10 @@ Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) 
       case 5:
         return HardwareSourcesGroup::getAftertouchParameterID();
       case 6:
+      case 284:
         return HardwareSourcesGroup::getUpperRibbonParameterID();
       case 7:
+      case 289:
         return HardwareSourcesGroup::getLowerRibbonParameterID();
       default:
         return ParameterId::invalid();
