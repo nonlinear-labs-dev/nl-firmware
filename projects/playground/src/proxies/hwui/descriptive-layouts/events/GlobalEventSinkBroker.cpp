@@ -271,6 +271,38 @@ namespace DescriptiveLayouts
         p->stepCPFromHwui(scope->getTransaction(), -1, hwui->getButtonModifiers());
       }
     });
+
+    registerEvent(EventSinks::LayerMuteInc, [hwui, eb]() {
+      auto muteI = eb->findParameterByID({ 395, VoiceGroup::I });
+      auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
+      if(!muteI->getControlPositionValue() && !muteII->getControlPositionValue())
+      {
+        auto scope = eb->getParent()->getUndoScope().startTransaction("Mute Part");
+        muteI->setCPFromHwui(scope->getTransaction(), 1);
+      }
+      else if(muteII->getControlPositionValue())
+      {
+        auto scope = eb->getParent()->getUndoScope().startTransaction("Mute Part");
+        muteI->setCPFromHwui(scope->getTransaction(), 0);
+        muteII->setCPFromHwui(scope->getTransaction(), 0);
+      }
+    });
+
+    registerEvent(EventSinks::LayerMuteDec, [hwui, eb]() {
+      auto muteI = eb->findParameterByID({ 395, VoiceGroup::I });
+      auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
+      if(!muteI->getControlPositionValue() && !muteII->getControlPositionValue())
+      {
+        auto scope = eb->getParent()->getUndoScope().startTransaction("Mute Part");
+        muteII->setCPFromHwui(scope->getTransaction(), 1);
+      }
+      else if(muteI->getControlPositionValue())
+      {
+        auto scope = eb->getParent()->getUndoScope().startTransaction("Mute Part");
+        muteI->setCPFromHwui(scope->getTransaction(), 0);
+        muteII->setCPFromHwui(scope->getTransaction(), 0);
+      }
+    });
   }
 
   void GlobalEventSinkBroker::registerEvent(EventSinks sink, tAction action)
