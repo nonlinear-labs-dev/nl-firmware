@@ -1845,3 +1845,6 @@ button {
 	padding: 0.25em;
 }
 
+.dialogcontainer button.randomize-button {
+  min-width: unset;
+}
