@@ -28,22 +28,22 @@ namespace DescriptiveLayouts
     auto eb = Application::get().getPresetManager()->getEditBuffer();
     auto hwui = Application::get().getHWUI();
 
-    /*
-       * Basic Parameter Events
-       */
     registerEvent(EventSinks::IncParam, [eb, hwui]() {
       if(auto p = eb->getSelected())
-        p->getValue().inc(Initiator::EXPLICIT_HWUI, hwui->getButtonModifiers());
+      {
+        auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+        p->stepCPFromHwui(scope->getTransaction(), 1, hwui->getButtonModifiers());
+      }
     });
 
     registerEvent(EventSinks::DecParam, [eb, hwui]() {
       if(auto p = eb->getSelected())
-        p->getValue().dec(Initiator::EXPLICIT_HWUI, hwui->getButtonModifiers());
+      {
+        auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+        p->stepCPFromHwui(scope->getTransaction(), -1, hwui->getButtonModifiers());
+      }
     });
 
-    /*
-       * Modulation Events
-       */
     registerEvent(EventSinks::IncMCSel, [eb]() {
       if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected()))
         modParam->undoableIncrementMCSelect(1);
@@ -254,6 +254,22 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::OpenUnisonParameter, [hwui, eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       eb->undoableSelectParameter({ 249, vg });
+    });
+
+    registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {
+      if(auto p = eb->findParameterByID({ 356, VoiceGroup::Global }))
+      {
+        auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+        p->stepCPFromHwui(scope->getTransaction(), 1, hwui->getButtonModifiers());
+      }
+    });
+
+    registerEvent(EventSinks::DecSplitPoint, [hwui, eb]() {
+      if(auto p = eb->findParameterByID({ 356, VoiceGroup::Global }))
+      {
+        auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+        p->stepCPFromHwui(scope->getTransaction(), -1, hwui->getButtonModifiers());
+      }
     });
   }
 
