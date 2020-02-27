@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-02-27, 13:21
+    @date       2020-02-27, 14:31
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1671,7 +1671,7 @@ namespace C15
       308,
       0.0f,
       { Smoothers::Mono_Slow::Flanger_AP_Mod, None, Properties::SmootherScale::Linear, 70.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Flanger", "Flanger", "Allpass Mod", "AP Mod",
+      { 100, 1000, 100, 1000, "", "Flanger", "Flanger", "Allpass Mod", "AP Mod",
         "Relative amount of the modulation of the allpass center frequencies by the LFO and/or the envelope. The "
         "allpass creates the effect of a phaser." } },
     { None },
