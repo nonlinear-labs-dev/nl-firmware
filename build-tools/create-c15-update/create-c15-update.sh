@@ -69,6 +69,11 @@ deploy_scripts() {
         && chmod 777 $CURRENT_DIR/nonlinear-c15-update/LPC/lpc_update.sh; then
         echo "Deploying update scripts done."
 
+        echo "Creating links to run.sh..."
+        ln -nfs $CURRENT_DIR/nonlinear-c15-update/run.sh $CURRENT_DIR/nonlinear-c15-update/run_v2.sh
+        ln -nfs $CURRENT_DIR/nonlinear-c15-update/run.sh $CURRENT_DIR/nonlinear-c15-update/run_v3.sh
+        echo "Creating links to run.sh done"
+
         return 0
      fi
      echo echo "Deploying update scripts failed."
