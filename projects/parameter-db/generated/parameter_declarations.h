@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2020-02-12, 18:42
+    @date       2020-02-27, 13:21
     @version	1.7B-4
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -307,6 +307,7 @@ namespace C15
       Unison_Voices,
       Unison_Phase,
       Unison_Pan,
+      Voice_Grp_Mute,
       Mono_Grp_Enable,
       Mono_Grp_Prio,
       Mono_Grp_Legato,
@@ -487,6 +488,7 @@ namespace C15
     {
       Unison_Pan,
       Voice_Grp_Volume,
+      Voice_Grp_Mute,
       Env_A_BP,
       Env_A_Sus,
       Env_A_Gain,

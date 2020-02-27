@@ -113,7 +113,8 @@ void PolySection::render_audio(const float _mute)
   float send = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX);
   m_send_self_l = m_outputmixer.m_out_l * send;
   m_send_self_r = m_outputmixer.m_out_r * send;
-  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX);
+  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX)
+      * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
   m_send_other_l = m_outputmixer.m_out_l * send;
   m_send_other_r = m_outputmixer.m_out_r * send;
 }
@@ -250,7 +251,8 @@ void PolySection::resetDSP()
 
 float PolySection::getVoiceGroupVolume()
 {
-  return m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Volume);
+  return m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Volume)
+      * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
 }
 
 float PolySection::evalNyquist(const float _value)
