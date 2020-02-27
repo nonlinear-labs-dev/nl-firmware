@@ -40,10 +40,9 @@ wait4response() {
 
 
 check_preconditions(){
-    echo "$EPC_IP"
-    [ -z "$EPC_IP" ] && report_and_quit "E43 ePC update: Usage: $EPC_IP <IP-of-ePC> wrong ..." "43"
-    ping -c1 $EPC_IP 1>&2 > /dev/null || report_and_quit "E41 ePC update: Can't ping ePC on $EPC_IP ..." "41"
-    executeAsRoot "exit" || report_and_quit "E41 ePC update: Can't logon to ePC OS" "44"
+    [ -z "$EPC_IP" ] && report_and_quit "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "81"
+    ping -c1 $EPC_IP 1>&2 > /dev/null || report_and_quit "E82: Can't ping ePC on $EPC_IP ..." "82"
+    executeAsRoot "exit" || report_and_quit "E83: Can't logon to ePC OS ..." "83"
 }
 
 update(){
@@ -67,6 +66,8 @@ update(){
 main () {
     check_preconditions
     update
+
+    return 0
 }
 
 main
