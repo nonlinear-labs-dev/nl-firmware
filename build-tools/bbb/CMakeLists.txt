@@ -81,7 +81,7 @@ add_custom_command(
         ${CMAKE_SOURCE_DIR}
         ${USER_ID}
         ${DOCKER_GROUP_ID}
-        "export HOME=rworkdir/ccache"
+        "export HOME=/workdir/ccache"
         "cd /workdir/nonlinux"
         'rm -rf /workdir/nonlinux/output/target/usr/C15'
         'rm -rf /workdir/nonlinux/output/target/usr/C15-\*'
