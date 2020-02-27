@@ -2,8 +2,9 @@
 #
 #
 # Name:         Anton Schmied
-# Date:         21.02.2020
+# Date:         2020.02.27
 # Version:      2.0
+# TODO:         Trouble Shooting if one of the updates does not work?
 
 # ePC IP
 EPC_IP=192.168.10.10
@@ -12,17 +13,20 @@ BBB_IP=192.168.10.11
 # general Messages
 MSG_DO_NOT_SWITCH_OFF="DO NOT SWITCH OFF C15!"
 MSG_REBOOT="PLEASE RESTART C15 NOW"
-MSG_CREATING_BACKUP="creating backup "
-MSG_UNINSTALLING="uninstalling "
-MSG_SAVING_PRESETS="saving presets..."
-MSG_RESTORING_PRESETS="restoring presets..."
-MSG_UPDATING_RT_FIRMWARE="updating RT firmware..."
+MSG_UPDATING_RT_FIRMWARE_1="updating RT-system 1 ..."
+MSG_UPDATING_RT_FIRMWARE_2="updating RT-system 2 ..."
 MSG_UPDATING_EPC="updating ePC..."
-MSG_UPDATING_SYSTEM_FILES="updating system files..."
 MSG_UPDATING_BBB="updating BBB..."
 MSG_DONE="DONE."
 MSG_DONE_WITH_WARNING_CODE="OK. Warning: "
 MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code: "
+
+# OBSOLETE??
+#MSG_UPDATING_SYSTEM_FILES="updating system files..."
+#MSG_CREATING_BACKUP="creating backup "
+#MSG_UNINSTALLING="uninstalling "
+#MSG_SAVING_PRESETS="saving presets..."
+#MSG_RESTORING_PRESETS="restoring presets..."
 
 t2s() {
     /update/utilities/text2soled multitext "$1" "$2" "$3" "$4" "$5" "$6"
@@ -42,7 +46,7 @@ pretty() {
 report_and_quit() {
     pretty "$1" "$2" "$3" "$4" "$5" "$6"
     echo "$2 $3" | systemd-cat -t "C15_Update"
-    exit 1
+#    exit 1
 }
 
 epc_update() {
@@ -65,8 +69,8 @@ epc_update() {
 
 bbb_update() {
     pretty "" "$MSG_UPDATING_BBB" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_BBB" "$MSG_DO_NOT_SWITCH_OFF"
-    chmod +x /update/EPC/epc_update.sh
-    /bin/sh /update/EPC/epc_update.sh $EPC_IP $BBB_IP
+    chmod +x /update/BBB/bbb_update.sh
+    /bin/sh /update/BBB/bbb_update.sh $EPC_IP $BBB_IP
 
     # error codes 50...59
     return_code=$?
@@ -115,19 +119,22 @@ lpc_update() {
     return 0
 }
 
-
-# TODO: Fehlerbehandlung
 main() {
     rm -f /update/errors.log
-    LOG_FILE=/mnt/usb-stick/nonlinear-c15-update.log.txt
-    rm -f $LOG_FILE
-#    check_preconditions
-#    systemctl stop playground          # nur bei 1.5
-#    systemctl stop bbbb
+    touch /update/errors.log
+
+    systemctl status playground
+    if [ $? -eq 0 ]; then systemctl stop playground; fi
+    systemctl status bbbb
+    if [ $? -eq 0 ]; then systemctl stop bbbb; fi
 
     epc_update
     bbb_update
     lpc_update
+
+    [ -s /update/errors.log ]
+    if [ $? -ne 0 ]; then cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt; fi
+
 }
 
 main

@@ -27,32 +27,43 @@ executeAsRoot() {
 check_preconditions(){
     [ -z "$EPC_IP" ] && report_and_quit "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "81"
     ping -c1 $EPC_IP 1>&2 > /dev/null || report_and_quit "E82: Can't ping ePC on $EPC_IP ..." "82"
-    executeAsRoot "exit" || report_and_quit "E83: Can't logon to ePC OS" "83"
-    executeAsRoot "mountpoint -q /persistent" || report_and_quit "E54 BBB update: user partition not mounted" "54"
+    executeAsRoot "exit" || report_and_quit "E83: Can't logon to ePC OS ..." "83"
+    executeAsRoot "mountpoint -q /persistent" || report_and_quit "E54 BBB update: User partition not mounted om ePC ..." "54"
 
-    #TODO: check if we need to move any files and set boolean for move files
-    executeAsRoot "ls -A /persistent/preset-manager/"
-    executeAsRoot "[ -e /settings.xml ]"
+    # check if we need to move any files and set boolean for move files??
+#    executeAsRoot "ls -A /persistent/preset-manager/"
+#    executeAsRoot "[ -e /settings.xml ]"
 }
 
 move_files(){
     if [ -d /internalstorage/preset-manager ] && [ "$(ls -A /internalstorage/preset-manager/)" ]; then
-        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/preset-manager/ /persistent/preset-manager"
-        rm -rf /internalstorage/preset-manager/*
-        rm -rf /internalstorage/preset-manager
+        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/preset-manager/ /persistent/preset-manager" \
+        && rm -rf /internalstorage/preset-manager/* \
+        && rm -rf /internalstorage/preset-manager
+        if [ $? -ne 0 ]; then report_and_quit "E55 BBB update: Moving presets to ePC failed ..." "55"; fi
     fi
 
     if [ -e /settings.xml ]; then
-        executeAsRoot "scp root@$BBB_IP:/settings.xml /persistent/settings.xml"
-        rm /settings.xml
+        executeAsRoot "scp root@$BBB_IP:/settings.xml /persistent/settings.xml" \
+        && rm /settings.xml
+        if [ $? -ne 0 ]; then report_and_quit "E56 BBB update: Moving Settings to ePC failed ..." "56"; fi
+    fi
+
+    if [ -d /internalstorage/calibration ] && [ "$(ls -A /internalstorage/calibration/)" ]; then
+        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/calibration/ /persistent/calibration" \
+        && rm -rf /internalstorage/calibration/* \
+        && rm -rf /internalstorage/calibration
+        if [ $? -ne 0 ]; then report_and_quit "E57 BBB update: Moving calibration settings to ePC failed ..." "57"; fi
     fi
 }
 
 update(){
-#   unpack rootfs
-    mkdir /update/BBB/rootfs
-    tar -C /update/BBB/rootfs -xvf rootfs.tar
-    update/utilities/rsync -cv --exclude '/update/' /update/BBB/rootfs/ / # not quite!
+    mkdir /update/BBB/rootfs \
+    && tar -C /update/BBB/rootfs -xvzf rootfs.tar.gz \
+    && /update/utilities/rsync -cvax --exclude 'etc/hostapd.conf' -f 'P update/' --delete /update/BBB/rootfs/ /
+    if [ $? -ne 0 ]; then report_and_quit "E58 BBB update: Syncing rootfs failed ..." "58"; fi
+    rm -rf /update/BBB/rootfs/*
+    rm -rf /update/BBB/rootfs
 }
 
 
@@ -64,6 +75,7 @@ main() {
     move_files
     update
 
+    return 0
 }
 
 
