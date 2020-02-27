@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
@@ -984,6 +983,24 @@ public class ServerProxy {
 	public void loadPresetIntoPart(String uuid, VoiceGroup loadTo) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-into-editbuffer-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("load-to", loadTo.toString()), new StaticURI.KeyValue("uuid", uuid));
+		queueJob(uri, false);
+	}
+
+	public void initPart(VoiceGroup part) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "init-part");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()));
+		queueJob(uri, false);
+	}
+
+	public void renamePart(VoiceGroup part, String newName) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-part");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()), new StaticURI.KeyValue("name", newName));
+		queueJob(uri, false);
+	}
+
+	public void randomizePart(VoiceGroup part) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "randomize-part");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()));
 		queueJob(uri, false);
 	}
 }

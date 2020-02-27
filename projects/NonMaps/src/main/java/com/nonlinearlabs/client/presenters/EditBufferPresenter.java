@@ -19,4 +19,6 @@ public class EditBufferPresenter {
     public RGB voiceGroupII_ForegroundColor = RGBA.transparent();
     public RGB voiceGroupI_BackgroundColor = RGBA.transparent();
     public RGB voiceGroupII_BackgroundColor = RGBA.transparent();
+
+    public String currentPartName;
 }
