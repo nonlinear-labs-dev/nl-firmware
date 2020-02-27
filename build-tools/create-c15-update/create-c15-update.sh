@@ -7,7 +7,8 @@
 # vom Cmake übergebene Pfade zu den .tarS
 EPC_UPDATE=$1
 BBB_UPDATE=$2
-#LPC_UPDATE=$3
+#LPC_CORE_0=$3
+#LPC_CORE_1=$4
 
 CURRENT_DIR=$("pwd")
 
@@ -20,7 +21,8 @@ fail_and_exit() {
 check_preconditions () {
     if [ -z "$EPC_UPDATE" ]; then echo "ePC update missing..." && return 1; fi
     if [ -z "$BBB_UPDATE" ]; then echo "BBB update missing..." && return 1; fi
-#    if [ -z "$LPC_UPDATE" ]; then echo "LPC update missing..." && return 1; fi
+#    if [ -z "$LPC_CORE_0" ]; then echo "LPC update missing..." && return 1; fi
+#    if [ -z "$LPC_CORE_1" ]; then echo "LPC update missing..." && return 1; fi
     return 0
 }
 
@@ -42,8 +44,12 @@ deploy_updates() {
     echo "Deploying updates..."
     if cp $EPC_UPDATE $CURRENT_DIR/nonlinear-c15-update/EPC/update.tar \
         && chmod 666 $CURRENT_DIR/nonlinear-c15-update/EPC/update.tar \
-        && cp $BBB_UPDATE $CURRENT_DIR/nonlinear-c15-update/BBB/rootfs.tar \
-        && chmod 666 $CURRENT_DIR/nonlinear-c15-update/BBB/rootfs.tar; then
+#        && cp $LPC_CORE_0 $CURRENT_DIR/nonlinear-c15-update/LPC/ \
+#        && chmod 666 $CURRENT_DIR/nonlinear-c15-update/LPC/M0_project.bin\
+#        && cp $LPC_CORE_1 $CURRENT_DIR/nonlinear-c15-update/LPC/ \
+#        && chmod 666 $CURRENT_DIR/nonlinear-c15-update/LPC/M4_project.bin\
+        && cp $BBB_UPDATE $CURRENT_DIR/nonlinear-c15-update/BBB/ \
+        && chmod 666 $CURRENT_DIR/nonlinear-c15-update/BBB/rootfs.tar.gz; then
         echo "Deploying updates done."
         return 0
      fi
@@ -53,13 +59,16 @@ deploy_updates() {
 
 deploy_scripts() {
     echo "Deploying update scripts..."
-    if cp $CURRENT_DIR/update_scripts/{run.sh,run_v3.sh} $CURRENT_DIR/nonlinear-c15-update/ \
-        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/{run.sh,run_v3.sh} \
+    if cp $CURRENT_DIR/update_scripts/run.sh $CURRENT_DIR/nonlinear-c15-update/ \
+        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/run.sh \
         && cp $CURRENT_DIR/update_scripts/bbb_update.sh $CURRENT_DIR/nonlinear-c15-update/BBB/ \
         && chmod 777 $CURRENT_DIR/nonlinear-c15-update/BBB/bbb_update.sh \
         && cp $CURRENT_DIR/update_scripts/epc_update.sh $CURRENT_DIR/nonlinear-c15-update/EPC/ \
-        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/EPC/epc_update.sh; then
+        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/EPC/epc_update.sh \
+        && cp $CURRENT_DIR/update_scripts/lpc_update.sh $CURRENT_DIR/nonlinear-c15-update/LPC/ \
+        && chmod 777 $CURRENT_DIR/nonlinear-c15-update/LPC/lpc_update.sh; then
         echo "Deploying update scripts done."
+
         return 0
      fi
      echo echo "Deploying update scripts failed."
