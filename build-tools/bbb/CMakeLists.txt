@@ -53,6 +53,7 @@ add_custom_command(
         ${DOCKER_GROUP_ID}
         "export HOME=/workdir/ccache"
         "cd /workdir/nonlinux"
+        "git pull origin nonlinear_2020.01"
         "make nonlinear_defconfig"
     COMMAND touch .nonlinux-setup
 )
@@ -80,8 +81,10 @@ add_custom_command(
         ${CMAKE_SOURCE_DIR}
         ${USER_ID}
         ${DOCKER_GROUP_ID}
-        "export HOME=rworkdir/ccache"
+        "export HOME=/workdir/ccache"
         "cd /workdir/nonlinux"
+        'rm -rf /workdir/nonlinux/output/target/usr/C15'
+        'rm -rf /workdir/nonlinux/output/target/usr/C15-\*'
         "make C15-rebuild"
         "make"
     COMMAND echo "The final rootfs is located at ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz"
