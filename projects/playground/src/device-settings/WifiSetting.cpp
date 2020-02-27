@@ -11,7 +11,7 @@ bool WifiSetting::set(tEnum m)
 {
   auto ret = super::set(m);
 
-#ifdef _DEVELOPMENT_PC
+#ifndef _DEVELOPMENT_PC
   if(get())
   {
     SpawnCommandLine cmd("ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'systemctl enable accesspoint && "\
