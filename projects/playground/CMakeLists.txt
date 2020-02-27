@@ -58,6 +58,7 @@ configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/fix-overlay-order.service.in ${PROJECT_BINARY_DIR}/systemd/fix-overlay-order.service @ONLY)
 
 # SOURCE FILE COLLECTIONS
 SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
@@ -109,7 +110,7 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${TEST_BINARY_NAME})
 # INSTALLATION
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_SOURCE_DIR}/systemd/persistent.mount DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
-install(FILES ${PROJECT_SOURCE_DIR}/systemd/fix-overlay-order.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/fix-overlay-order.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(FILES ${PARAMETER_DESCRIPTIONS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/parameter-descriptions)
 install(FILES ${VERSION_INFOS} DESTINATION ${C15_INSTALL_PATH}/playground/resources/version-infos)

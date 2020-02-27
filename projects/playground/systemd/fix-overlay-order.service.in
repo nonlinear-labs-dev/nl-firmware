@@ -1,6 +1,6 @@
 [Unit]
 Description=Fixes bug in initramfs
-After=syslog.target  persistent.mount
+After=syslog.target persistent.mount
 
 [Service]
 ExecStart=@C15_INSTALL_PATH@/scripts/fixOverlayOrder.sh
