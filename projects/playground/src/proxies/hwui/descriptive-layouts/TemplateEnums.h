@@ -58,7 +58,7 @@ namespace DescriptiveLayouts
        ToggleVoiceGroupWithParameterSelection, CommitPresetForButtonMenu, ToggleDirectLoad,
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
        DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter, SwitchToVoicesDetail,
-       OpenMonoParameterScreen, OpenPartScreen, InitSound, IncSplitPoint, DecSplitPoint,
+       OpenMonoParameterScreen, OpenPartScreen, InitSound, IncSplitPoint, DecSplitPoint, LayerMuteInc, LayerMuteDec,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Left, Right, Up, Down, IncParam, DecParam, Commit);

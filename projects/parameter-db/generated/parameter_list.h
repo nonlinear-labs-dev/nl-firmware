@@ -2171,14 +2171,9 @@ namespace C15
     { Parameters::Local_Unmodulateables::Voice_Grp_Mute,
       395,
       0.0f,
-<<<<<<< HEAD
       { Smoothers::Poly_Fast::Voice_Grp_Mute, None, Properties::SmootherScale::Linear, -1.0f, 1.0f, false },
       { 1, 1, None, None, "", "Voices", "Voices", "Part Mute", "Part Mute",
         "Part mute, available when usig Split or Layer mode. When enabled, the corresponding Part will be muted." } },
-=======
-      { Smoothers::Poly_Sync::Voice_Grp_Mute, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 1, 1, None, None, "", "Voices", "Voices", "Part Mute", "Part Mute", "Part mute (0 or 1)" } },
->>>>>>> implemented most of #1495
     { None },
     { None },
     { None },
