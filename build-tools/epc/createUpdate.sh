@@ -112,9 +112,15 @@ install_update() {
         systemctl enable /usr/local/lib/systemd/system/audio-engine.service"
 }
 
+update_fstab() {
+  /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
+    echo 'root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0' >> /etc/fstab"
+}
+
 setup_build_overlay
 build_update
 setup_install_overlay
 install_update
+update_fstab
 create_update
 deploy_update
