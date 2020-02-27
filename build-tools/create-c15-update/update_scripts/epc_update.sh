@@ -6,11 +6,13 @@
 #
 # ----------- install a ePC Updates from USB-Stick ---------
 #
-# This scripts will serve the epc-update.tar via thttpd on the BBB and
+# This scripts will serve the update.tar via thttpd on the BBB and
 # restart the ePC, which will evoke the Update
 
+# timeout is so long because the initramFS will potentialy be rebuild which takes quite a while
+
 EPC_IP=$1
-TIMEOUT=60
+TIMEOUT=300
 
 report_and_quit(){
     printf "$1" >> /update/errors.log
@@ -18,18 +20,19 @@ report_and_quit(){
 }
 
 executeAsRoot() {
+    rm /root/.ssh/known_hosts
     echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP \
         "sudo -S /bin/bash -c '$1' " # 1>&2 > /dev/null"
     return $?
 }
 
-wait4response() {
+wait4playground() {
     COUNTER=1
     while [[ ! $COUNTER -gt $TIMEOUT ]]; do
         echo "awaiting reboot ... $COUNTER/$TIMEOUT"
         sleep 1
 
-        rm /root/.ssh/known_hosts 1>&2 > /dev/null; executeAsRoot "exit"
+        rm /root/.ssh/known_hosts 1>&2 > /dev/null; executeAsRoot "systemctl status playground"
         [ $? -eq 0 ] && break
 
         ((COUNTER = COUNTER + 1))
@@ -51,8 +54,9 @@ update(){
     if [ $? -ne 0 ]; then report_and_quit "E46 ePC update: Could not start server on BBB..." "46"; fi
     SERVER_PID=$(pidof 'thttpd')
 
+    echo "restarting epc"
     rm /root/.ssh/known_hosts && executeAsRoot "sudo reboot"
-    wait4response
+    wait4playground
     if [ $? -ne 0 ]; then kill $SERVER_PID; report_and_quit "E45 ePC update: Reboot taking too long... timed out" "45"; fi
 
     kill $SERVER_PID

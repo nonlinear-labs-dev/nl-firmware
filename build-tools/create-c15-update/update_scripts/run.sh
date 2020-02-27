@@ -1,10 +1,10 @@
-# !/bin/sh
+#!/bin/sh
 #
 #
 # Name:         Anton Schmied
 # Date:         2020.02.27
 # Version:      2.0
-# TODO:         Trouble Shooting if one of the updates does not work?
+# TODO:         Trouble Shooting if one of the updates does not work?,  @anton extract font for text2soled
 
 # ePC IP
 EPC_IP=192.168.10.10
