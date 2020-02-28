@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-02-27, 14:31
+    @date       2020-02-28, 17:46
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -2174,8 +2174,16 @@ namespace C15
       { Smoothers::Poly_Fast::Voice_Grp_Mute, None, Properties::SmootherScale::Linear, -1.0f, 1.0f, false },
       { 1, 1, None, None, "", "Voices", "Voices", "Part Mute", "Part Mute",
         "Part mute, available when usig Split or Layer mode. When enabled, the corresponding Part will be muted." } },
-    { None },
-    { None },
+    { Parameters::Local_Unmodulateables::Voice_Grp_Fade_From,
+      396,
+      0.0f,
+      { Smoothers::Poly_Sync::Voice_Grp_Fade_From, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
+      { 59, 59, None, None, "", "Voices", "Voices", "Fade From", "Fade From", "" } },
+    { Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range,
+      397,
+      0.0f,
+      { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
+      { 59, 59, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
     { None },
     { None }
   };
