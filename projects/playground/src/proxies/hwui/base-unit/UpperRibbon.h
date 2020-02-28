@@ -14,7 +14,6 @@ class UpperRibbon : public Ribbon
 
  public:
   UpperRibbon();
-  static void registerTests();
 
  private:
   void onParamSelectionChanged(Parameter* oldOne, Parameter* newOne);
