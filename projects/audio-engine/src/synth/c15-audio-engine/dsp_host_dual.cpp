@@ -216,7 +216,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     }
   }
   // temporary: load initials in order to have valid osc reset params
-  onSettingInitialSinglePreset();
+  //onSettingInitialSinglePreset();
   if(LOG_INIT)
   {
     nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
@@ -831,6 +831,11 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
       break;
     case C15::Parameters::Local_Unmodulateables::Mono_Grp_Legato:
       m_alloc.setMonoLegato(layerId, param->m_scaled);
+      break;
+    // TODO: implement Key Fade evaluation of individual levels (by layerId)
+    case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From:
+      break;
+    case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range:
       break;
     default:
       break;
@@ -1810,6 +1815,7 @@ void dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
 
 void dsp_host_dual::recallSingle()
 {
+  // TODO: implement Key Fade reset levels (both parts)
   if(LOG_RECALL)
   {
     nltools::Log::info("recallSingle(@", m_clock.m_index, ")");
@@ -1950,6 +1956,7 @@ void dsp_host_dual::recallSingle()
 
 void dsp_host_dual::recallSplit()
 {
+  // TODO: implement Key Fade reset levels (both parts)
   if(LOG_RECALL)
   {
     nltools::Log::info("recallSplit(@", m_clock.m_index, ")");
@@ -2096,6 +2103,7 @@ void dsp_host_dual::recallSplit()
 
 void dsp_host_dual::recallLayer()
 {
+  // TODO: implement Key Fade evaluation of individual levels (both parts)
   if(LOG_RECALL)
   {
     nltools::Log::info("recallLayer(@", m_clock.m_index, ")");

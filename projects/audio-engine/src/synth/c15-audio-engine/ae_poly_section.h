@@ -25,6 +25,7 @@ class PolySection
 {
  public:
   PolySignals m_signals;
+  float m_key_levels[C15::Config::key_count] = {};
   float *m_reference;
   float m_send_self_l = 0.0f, m_send_self_r = 0.0f, m_send_other_l = 0.0f, m_send_other_r = 0.0f, m_note_shift = 0.0f,
         m_millisecond = 0.0f;
@@ -72,7 +73,7 @@ class PolySection
   NlToolbox::Curves::Shaper_1_BP m_comb_decayCurve, m_svf_LBH1Curve, m_svf_LBH2Curve;
   NlToolbox::Curves::Shaper_2_BP m_svf_resCurve;
   ProtoSmoother m_mono_glide;
-  PolyValue m_comb_decay_times[2] = {};
+  PolyValue m_comb_decay_times[2] = {}, m_voice_level = {};
   const float m_svf_resFactor = 1.0f / 60.0f;
   float m_note_pitch[C15::Config::local_polyphony] = {}, m_base_pitch[C15::Config::local_polyphony] = {},
         m_shift[C15::Config::local_polyphony] = {}, m_key_tune[C15::Config::local_polyphony] = {},

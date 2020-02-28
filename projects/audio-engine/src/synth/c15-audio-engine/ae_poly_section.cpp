@@ -39,6 +39,11 @@ void PolySection::init(GlobalSignals *_globalsignals, exponentiator *_convert, E
   m_svfilter.init(_samplerate);
   m_feedbackmixer.init(_samplerate);
   m_outputmixer.init(_samplerate, C15::Config::local_polyphony);
+  //
+  for(uint32_t i = 0; i < C15::Config::key_count; i++)
+  {
+    m_key_levels[i] = 1.0f;
+  }
 }
 
 void PolySection::add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId)
@@ -101,8 +106,8 @@ void PolySection::render_audio(const float _mute)
   m_soundgenerator.generate(m_signals, m_feedbackmixer.m_out);
   m_combfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B);
   m_svfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out);
-  m_outputmixer.combine(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out,
-                        m_svfilter.m_out);
+  m_outputmixer.combine(m_signals, m_voice_level, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B,
+                        m_combfilter.m_out, m_svfilter.m_out);
   m_outputmixer.filter_level(m_signals);
   // capture z samples
   m_z_self->m_osc_a = m_soundgenerator.m_out_A;
@@ -165,6 +170,7 @@ bool PolySection::keyDown(PolyKeyEvent *_event)
   const bool retrigger_mono = (m_key_active == 0),
              rstA = static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Reset)),
              rstB = static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Reset));
+  m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
   m_shift[_event->m_voiceId] = m_note_shift;
   m_unison_index[_event->m_voiceId] = _event->m_unisonIndex;
   m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
@@ -453,7 +459,7 @@ void PolySection::postProcess_poly_slow(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // osc b
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch);
@@ -466,7 +472,7 @@ void PolySection::postProcess_poly_slow(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // comb filter
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Pitch_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Pitch);
@@ -555,7 +561,7 @@ void PolySection::postProcess_poly_key(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // osc b
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch);
@@ -568,7 +574,7 @@ void PolySection::postProcess_poly_key(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // comb filter
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Pitch_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Pitch);
