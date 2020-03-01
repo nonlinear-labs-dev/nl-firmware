@@ -68,7 +68,7 @@ add_custom_command(
         ${CMAKE_SOURCE_DIR}
         ${USER_ID}
         ${DOCKER_GROUP_ID}
-        "rsync -a --delete /sources/projects /workdir/nonlinux/output/build/C15-master"
+        "rsync -av --delete /sources/projects /workdir/nonlinux/output/build/C15-master"
     COMMAND touch .nonlinux-update
 )
 

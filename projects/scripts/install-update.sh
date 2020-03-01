@@ -1,6 +1,7 @@
 #!/bin/sh
 
-mkdir /update
+rm -rf /update
+mkdir -p /update
 
 if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]
 then
