@@ -135,6 +135,7 @@ main() {
     [ -s /update/errors.log ]
     if [ $? -ne 0 ]; then cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt; fi
 
+    reboot
 }
 
 main

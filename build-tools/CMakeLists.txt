@@ -20,6 +20,8 @@ if(BUILD_BBB AND BUILD_EPC)
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/create-c15-update/create-c15-update.sh
             ${CMAKE_CURRENT_BINARY_DIR}/epc/update.tar
             ${CMAKE_CURRENT_BINARY_DIR}/bbb/nonlinux/output/images/rootfs.tar.gz
+            ${CMAKE_CURRENT_BINARY_DIR}/M0_project.bin
+            ${CMAKE_CURRENT_BINARY_DIR}/M4_project.bin
             ${CMAKE_CURRENT_BINARY_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
