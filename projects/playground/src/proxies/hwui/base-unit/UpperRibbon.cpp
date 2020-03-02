@@ -17,10 +17,16 @@ UpperRibbon::UpperRibbon()
 {
   initLEDs();
 
-  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+  m_parameterSelectionChangedSignal = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &UpperRibbon::onParamSelectionChanged));
-  Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
+  m_settingChangedSignal = Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
       sigc::mem_fun(this, &UpperRibbon::onSettingChanged));
+}
+
+UpperRibbon::~UpperRibbon()
+{
+  m_parameterSelectionChangedSignal.disconnect();
+  m_settingChangedSignal.disconnect();
 }
 
 void UpperRibbon::onParamSelectionChanged(Parameter* oldOne, Parameter* newOne)
