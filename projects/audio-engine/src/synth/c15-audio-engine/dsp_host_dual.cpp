@@ -43,9 +43,19 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.update_tone_amplitude(-6.0f);
   m_global.update_tone_frequency(m_reference.m_scaled);
   m_global.update_tone_mode(0);
+
+  // voice fade stuff I (currently explicit)
+  m_poly[0].m_fadeStart = 0;
+  m_poly[0].m_fadeEnd = C15::Config::key_count - 1;
+  m_poly[0].m_fadeIncrement = 1;
   // init poly dsp: exponentiator, feedback pointers
   m_poly[0].init(&m_global.m_signals, &m_convert, &m_time, &m_z_layers[0], &m_reference.m_scaled, m_time.m_millisecond,
                  env_init_gateRelease, samplerate);
+  // voice fade stuff II (currently explicit)
+  m_poly[1].m_fadeStart = C15::Config::key_count - 1;
+  m_poly[1].m_fadeEnd = 0;
+  m_poly[1].m_fadeIncrement = -1;
+  // init poly dsp: exponentiator, feedback pointers
   m_poly[1].init(&m_global.m_signals, &m_convert, &m_time, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond,
                  env_init_gateRelease, samplerate);
   // init mono dsp
@@ -222,6 +232,9 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
     nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
   }
+  // testing voice fading
+  //m_poly[0].evalVoiceFade(30.f, 11.f);
+  //m_poly[1].evalVoiceFade(42.f, 11.f);
 }
 
 C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
@@ -834,8 +847,10 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
       break;
     // TODO: implement Key Fade evaluation of individual levels (by layerId)
     case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From:
+      evalVoiceFadeChg(layerId);
       break;
     case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range:
+      evalVoiceFadeChg(layerId);
       break;
     default:
       break;
@@ -1813,9 +1828,19 @@ void dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
   m_layer_changed |= mono_enable->update_position(static_cast<float>(_monoEnable.controlPosition));
 }
 
+void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
+{
+  m_poly[_layer].evalVoiceFade(
+      m_params
+          .get_local_direct(_layer, static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From))
+          ->m_scaled,
+      m_params
+          .get_local_direct(_layer, static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range))
+          ->m_scaled);
+}
+
 void dsp_host_dual::recallSingle()
 {
-  // TODO: implement Key Fade reset levels (both parts)
   if(LOG_RECALL)
   {
     nltools::Log::info("recallSingle(@", m_clock.m_index, ")");
@@ -1840,11 +1865,14 @@ void dsp_host_dual::recallSingle()
       m_poly[layerId].m_key_active = 0;
     }
   }
-  // reset macro assignments
+  // reset
   m_params.m_global.m_assignment.reset();
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
+    // macro assignments
     m_params.m_layer[layerId].m_assignment.reset();
+    // voice fade
+    m_poly[layerId].resetVoiceFade();
   }
   // global updates: hw sources
   if(LOG_RECALL)
@@ -1956,7 +1984,6 @@ void dsp_host_dual::recallSingle()
 
 void dsp_host_dual::recallSplit()
 {
-  // TODO: implement Key Fade reset levels (both parts)
   if(LOG_RECALL)
   {
     nltools::Log::info("recallSplit(@", m_clock.m_index, ")");
@@ -1985,6 +2012,8 @@ void dsp_host_dual::recallSplit()
     }
     // reset macro assignments
     m_params.m_layer[layerId].m_assignment.reset();
+    // reset voice fade
+    m_poly[layerId].resetVoiceFade();
   }
   m_params.m_global.m_assignment.reset();
   // global updates: hw sources

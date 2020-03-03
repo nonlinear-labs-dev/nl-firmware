@@ -20,16 +20,17 @@
 #include "ae_poly_svf.h"
 #include "ae_poly_fb_mix.h"
 #include "ae_poly_out_mix.h"
+#include "nltoolbox.h"
 
 class PolySection
 {
  public:
   PolySignals m_signals;
-  float m_key_levels[C15::Config::key_count] = {};
   float *m_reference;
   float m_send_self_l = 0.0f, m_send_self_r = 0.0f, m_send_other_l = 0.0f, m_send_other_r = 0.0f, m_note_shift = 0.0f,
         m_millisecond = 0.0f;
   uint32_t m_uVoice = 0, m_key_active = 0;
+  int32_t m_fadeStart = 0, m_fadeEnd = 0, m_fadeIncrement = 0;
   PolySection();
   void init(GlobalSignals *_globalsignals, exponentiator *_convert, Engine::Handle::Time_Handle *_time,
             LayerSignalCollection *_z_self, float *_reference, const float _ms, const float _gateRelease,
@@ -52,8 +53,11 @@ class PolySection
   void flushDSP();
   void resetDSP();
   float getVoiceGroupVolume();
+  void evalVoiceFade(const float _from, const float _range);
+  void resetVoiceFade();
 
  private:
+  float m_key_levels[C15::Config::key_count] = {};
   SmootherHandle<C15::Smoothers::Poly_Sync, C15::Smoothers::Poly_Audio, C15::Smoothers::Poly_Fast,
                  C15::Smoothers::Poly_Slow>
       m_smoothers;

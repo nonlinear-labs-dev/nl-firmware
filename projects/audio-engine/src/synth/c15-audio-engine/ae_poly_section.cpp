@@ -9,6 +9,8 @@
     @todo
 *******************************************************************************/
 
+#include "nltools/logging/Log.h"
+
 PolySection::PolySection()
 {
 }
@@ -40,10 +42,7 @@ void PolySection::init(GlobalSignals *_globalsignals, exponentiator *_convert, E
   m_feedbackmixer.init(_samplerate);
   m_outputmixer.init(_samplerate, C15::Config::local_polyphony);
   //
-  for(uint32_t i = 0; i < C15::Config::key_count; i++)
-  {
-    m_key_levels[i] = 1.0f;
-  }
+  resetVoiceFade();
 }
 
 void PolySection::add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId)
@@ -259,6 +258,60 @@ float PolySection::getVoiceGroupVolume()
 {
   return m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Volume)
       * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
+}
+
+void PolySection::evalVoiceFade(const float _from, const float _range)
+{
+  const int32_t start = m_fadeStart;
+  const int32_t fadeStart
+      = start + (m_fadeIncrement * (1 + (m_fadeStart + (m_fadeIncrement * static_cast<int32_t>(_from)))));
+  const int32_t fadeEnd = fadeStart + (m_fadeIncrement * static_cast<int32_t>(_range));
+  const float slope = 1.0f / (_range + 1.0f);
+  float fade = 1.0f, fadeValue;
+  // phase 1: 100%
+  for(int32_t i = start; i != fadeStart; i += m_fadeIncrement)
+  {
+    nltools::Log::info("fade [", i, "] -->", 1.0f);
+    m_key_levels[i] = 1.0f;
+  }
+  // phase 2: fade out
+
+  for(int32_t i = fadeStart; i != fadeEnd; i += m_fadeIncrement)
+  {
+    fade -= slope;
+    // linear implementation (not smooth enough):
+    //fadeValue = fade;
+
+    // sine implementation (keep for further testing):
+    //fadeValue = 0.5f - (0.5f * NlToolbox::Math::sinP3_wrap(0.5f * (fade - 0.5f)));
+
+    // parabolic implementation (currently favourite):
+    fadeValue = fade * fade;
+    if(fade < 0.5f)
+    {
+      fadeValue = 2.0f * fadeValue;
+    }
+    else
+    {
+      fadeValue = (-2.0f * fadeValue) + (4.0f * fade) - 1.0f;
+    }
+    nltools::Log::info("fade [", i, "] -->", fadeValue);
+    m_key_levels[i] = fadeValue;
+  }
+  // phase 3: 0%
+  for(int32_t i = fadeEnd; i != m_fadeEnd + m_fadeIncrement; i += m_fadeIncrement)
+  {
+    nltools::Log::info("fade [", i, "] -->", 0.0f);
+    m_key_levels[i] = 0.0f;
+  }
+}
+
+void PolySection::resetVoiceFade()
+{
+  for(uint32_t i = 0; i < C15::Config::key_count; i++)
+  {
+    m_key_levels[i] = 1.0f;
+  }
 }
 
 float PolySection::evalNyquist(const float _value)

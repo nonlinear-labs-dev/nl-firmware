@@ -149,6 +149,7 @@ class dsp_host_dual
   void evalPolyChg(const C15::Properties::LayerId _layerId,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter &_monoEnable);
+  void evalVoiceFadeChg(const uint32_t _layer);
   void recallSingle();
   void recallSplit();
   void recallLayer();
