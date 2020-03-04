@@ -18,10 +18,6 @@
 #include "key_event.h"
 #include "mappable_list.h"
 
-// temporary:
-inline constexpr bool ENABLE_MONO = true;         // enable/disable mono mode completely
-inline constexpr bool ENABLE_MONO_LEGATO = true;  // enable/disable mono legato
-
 // Descriptors
 
 using LayerMode = C15::Properties::LayerMode;
@@ -479,17 +475,17 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       case LayerMode::Single:
         clear_keyState(AllocatorId::Global);
         m_global_mono.reset();
-        m_global_mono.m_enabled = static_cast<bool>(_value) && ENABLE_MONO;
+        m_global_mono.m_enabled = static_cast<bool>(_value);
         break;
       case LayerMode::Split:
         clear_keyState(m_layerId[_layerId]);
         m_local_mono[_layerId].reset();
-        m_local_mono[_layerId].m_enabled = static_cast<bool>(_value) && ENABLE_MONO;
+        m_local_mono[_layerId].m_enabled = static_cast<bool>(_value);
         break;
       case LayerMode::Layer:
         clear_keyState(AllocatorId::Dual);
         m_local_mono[0].reset();
-        m_local_mono[0].m_enabled = static_cast<bool>(_value) && ENABLE_MONO;
+        m_local_mono[0].m_enabled = static_cast<bool>(_value);
         break;
     }
   }
@@ -513,13 +509,13 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     switch(*m_current)
     {
       case LayerMode::Single:
-        m_global_mono.m_legato = static_cast<bool>(_value) && ENABLE_MONO_LEGATO;
+        m_global_mono.m_legato = static_cast<bool>(_value);
         break;
       case LayerMode::Split:
-        m_local_mono[_layerId].m_legato = static_cast<bool>(_value) && ENABLE_MONO_LEGATO;
+        m_local_mono[_layerId].m_legato = static_cast<bool>(_value);
         break;
       case LayerMode::Layer:
-        m_local_mono[0].m_legato = static_cast<bool>(_value) && ENABLE_MONO_LEGATO;
+        m_local_mono[0].m_legato = static_cast<bool>(_value);
         break;
     }
   }
