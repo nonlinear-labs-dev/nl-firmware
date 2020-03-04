@@ -4,7 +4,10 @@
 # Name:         Anton Schmied
 # Date:         2020.02.27
 # Version:      2.0
-# TODO:         Trouble Shooting if one of the updates does not work?,  @anton extract font for text2soled
+# TODO:         Trouble Shooting if one of the updates does not work?
+#               Save to journalctl
+#               Where to save the update log, if update is not from USB-Stick?
+#               -> under /persistent/ ?? or is bbb journalctl enough?
 
 # ePC IP
 EPC_IP=192.168.10.10
@@ -12,16 +15,18 @@ BBB_IP=192.168.10.11
 
 # general Messages
 MSG_DO_NOT_SWITCH_OFF="DO NOT SWITCH OFF C15!"
-MSG_REBOOT="PLEASE RESTART C15 NOW"
-MSG_UPDATING_RT_FIRMWARE_1="updating RT-system 1 ..."
-MSG_UPDATING_RT_FIRMWARE_2="updating RT-system 2 ..."
+MSG_UPDATING_C15="updateing C15..."
+MSG_UPDATING_RT_FIRMWARE_1="updating RT-System 1..."
+MSG_UPDATING_RT_FIRMWARE_2="updating RT-System 2..."
 MSG_UPDATING_EPC="updating ePC..."
 MSG_UPDATING_BBB="updating BBB..."
-MSG_DONE="DONE."
-MSG_DONE_WITH_WARNING_CODE="OK. Warning: "
+MSG_DONE="DONE"
+MSG_FAILED="FAILED"
 MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code: "
 
 # OBSOLETE??
+MSG_DONE_WITH_WARNING_CODE="OK. Warning: "
+#MSG_REBOOT="PLEASE RESTART C15 NOW"
 #MSG_UPDATING_SYSTEM_FILES="updating system files..."
 #MSG_CREATING_BACKUP="creating backup "
 #MSG_UNINSTALLING="uninstalling "
@@ -37,10 +42,10 @@ pretty() {
     HEADLINE="$1"
     BOLED_LINE_1="$2"
     BOLED_LINE_2="$3"
-    SOLED_LINE_1="$4"
-    SOLED_LINE_2="$5"
+    SOLED_LINE_2="$4"
+    SOLED_LINE_3="$5"
 
-    t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_1}@s0c" "${SOLED_LINE_2}@s1c"
+    t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
 }
 
 report_and_quit() {
@@ -132,9 +137,19 @@ main() {
     bbb_update
     lpc_update
 
-    [ -s /update/errors.log ]
-    if [ $? -ne 0 ]; then cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt; fi
+    if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
+        cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
+        pretty "" "$MSG_UPDATING_C15" "$MSG_FAILED" "$MSG_UPDATING_C15" "$MSG_FAILED"
+        sleep 2
+        pretty "" "Check Update Log..." "" "Check Update Log..." ""
+        sleep 2
+    else
+        pretty "" "$MSG_UPDATING_C15" "$MSG_DONE" "$MSG_UPDATING_C15" "$MSG_DONE"
+        sleep 2
+    fi
 
+    pretty "" "Rebooting System..." "" "Rebooting System..." ""
+    sleep 2
     reboot
 }
 

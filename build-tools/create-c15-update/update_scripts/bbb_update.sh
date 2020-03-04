@@ -37,7 +37,7 @@ check_preconditions(){
 
 move_files(){
     if [ -d /internalstorage/preset-manager ] && [ "$(ls -A /internalstorage/preset-manager/)" ]; then
-        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/preset-manager/ /persistent/preset-manager" \
+        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/preset-manager/ /persistent" \
         && rm -rf /internalstorage/preset-manager/* \
         && rm -rf /internalstorage/preset-manager
         if [ $? -ne 0 ]; then report_and_quit "E55 BBB update: Moving presets to ePC failed ..." "55"; fi
@@ -66,10 +66,6 @@ update(){
     rm -rf /update/BBB/rootfs
 }
 
-
-
-
-
 main() {
     check_preconditions
     move_files
@@ -77,7 +73,6 @@ main() {
 
     return 0
 }
-
 
 main
 
