@@ -235,6 +235,20 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   // testing voice fading
   //m_poly[0].evalVoiceFade(30.f, 11.f);
   //m_poly[1].evalVoiceFade(42.f, 11.f);
+  /*
+  nltools::Log::info("fades I:");
+  m_poly[0].evalVoiceFade(0.f, 0.f);
+  m_poly[0].evalVoiceFade(60.f, 0.f);
+  m_poly[0].evalVoiceFade(0.f, 59.f);
+  m_poly[0].evalVoiceFade(0.f, 60.f);
+  m_poly[0].evalVoiceFade(30.f, 60.f);
+  nltools::Log::info("fades II:");
+  m_poly[1].evalVoiceFade(60.f, 0.f);
+  m_poly[1].evalVoiceFade(0.f, 0.f);
+  m_poly[1].evalVoiceFade(60.f, 59.f);
+  m_poly[1].evalVoiceFade(60.f, 60.f);
+  m_poly[1].evalVoiceFade(30.f, 60.f);
+  */
 }
 
 C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)

@@ -9,6 +9,8 @@
     @todo
 *******************************************************************************/
 
+//#include "nltools/logging/Log.h"
+
 PolySection::PolySection()
 {
 }
@@ -266,15 +268,21 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
   const int32_t fadeEnd = fadeStart + (m_fadeIncrement * static_cast<int32_t>(_range));
   const float slope = 1.0f / (_range + 1.0f);
   float fade = 1.0f, fadeValue;
+  //nltools::Log::info("(from:", _from, ", range:", _range, ")");
   // phase 1: 100%
   for(int32_t i = start; i != fadeStart; i += m_fadeIncrement)
   {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+    //nltools::Log::info("[", i, "]:", 1.0f);
     m_key_levels[i] = 1.0f;
   }
   // phase 2: fade out
 
   for(int32_t i = fadeStart; i != fadeEnd; i += m_fadeIncrement)
   {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
     fade -= slope;
     // linear implementation (not smooth enough):
     //fadeValue = fade;
@@ -292,11 +300,15 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
     {
       fadeValue = (-2.0f * fadeValue) + (4.0f * fade) - 1.0f;
     }
+    //nltools::Log::info("[", i, "]:", fadeValue);
     m_key_levels[i] = fadeValue;
   }
   // phase 3: 0%
   for(int32_t i = fadeEnd; i != m_fadeEnd + m_fadeIncrement; i += m_fadeIncrement)
   {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+    //nltools::Log::info("[", i, "]:", 0.0f);
     m_key_levels[i] = 0.0f;
   }
 }
