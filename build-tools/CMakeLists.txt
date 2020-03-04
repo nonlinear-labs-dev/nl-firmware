@@ -19,7 +19,7 @@ if(BUILD_BBB AND BUILD_EPC AND BUILD_LPC)
 
     add_custom_command(
         COMMENT "Build C15 update"
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/c15-update.tar
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nonlinear-c15-update.tar
         DEPENDS epc-create-update
         DEPENDS bbb-rootfs
         DEPENDS lpc-blobs
@@ -32,6 +32,13 @@ if(BUILD_BBB AND BUILD_EPC AND BUILD_LPC)
             ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
-    add_custom_target(c15-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/c15-update.tar)
+    add_custom_target(c15-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nonlinear-c15-update.tar)
+    add_custom_target(c15-ota-update 
+        DEPENDS c15-update
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/c15-ota-update.sh
+            ${CMAKE_CURRENT_BINARY_DIR}/nonlinear-c15-update.tar
+            \${UNIT_NAME}
+            \${UNIT_PASSWORD}
+        )
 
 ENDIF()

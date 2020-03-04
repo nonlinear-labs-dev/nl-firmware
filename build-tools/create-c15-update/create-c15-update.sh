@@ -84,7 +84,6 @@ deploy_scripts() {
 
 get_tools_from_rootfs() {
     echo "Getting tools from rootfs..."
-    set -x
     mkdir -p $BINARY_DIR/rootfs && tar -xf $BBB_UPDATE -C $BINARY_DIR/rootfs
 
     for i in sshpass text2soled rsync socat thttpd; do
@@ -110,7 +109,7 @@ get_tools_from_rootfs() {
 
 create_update_tar () {
     echo "Creating nonlinear-c15-update.tar..."
-    rm $OUT_DIRECTORY/nonlinear-c15-update.tar
+    rm -rf $OUT_DIRECTORY/../nonlinear-c15-update.tar
     if cd $OUT_DIRECTORY/ && tar -cf ../nonlinear-c15-update.tar * ; then
         echo "Creating nonlinear-c15-update.tar done."
         return 0
