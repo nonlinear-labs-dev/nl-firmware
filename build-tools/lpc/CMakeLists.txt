@@ -25,7 +25,7 @@ add_custom_command(
         ${USER_ID}
         ${GROUP_ID}
         "cd /workdir"
-        "cmake -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off -DBUILD_HOST_LPC=On /sources"
+        "cmake -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off -DBUILD_REALTIME_SYSTEM=On /sources"
         "make c15_lpc_m0.bin"
         "make c15_lpc_m4.bin"
 )
