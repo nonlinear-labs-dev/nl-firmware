@@ -10,7 +10,7 @@
 #include "cmsis/lpc_types.h"
 #include "sys/nl_coos.h"
 
-void sendAssertionToBB(const char *ptr)
+void doppelt_sendAssertionToBB(const char *ptr)
 {
   int len = strlen(ptr);
   len     = MIN(len, 500);
