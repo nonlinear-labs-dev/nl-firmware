@@ -71,10 +71,16 @@ deploy_scripts() {
         && chmod 777 $OUT_DIRECTORY/LPC/lpc_update.sh; then
         echo "Deploying update scripts done."
 
-        echo "Creating links to run.sh..."
-        ln -nfs $OUT_DIRECTORY/run.sh $OUT_DIRECTORY/run_v2.sh
-        ln -nfs $OUT_DIRECTORY/run.sh $OUT_DIRECTORY/run_v3.sh
-        echo "Creating links to run.sh done"
+        echo "Creating run.sh dummys..."
+        if [ -e $OUT_DIRECTORY/run_v2.sh ] && [ -L $OUT_DIRECTORY/run_v2.sh ]; then
+            rm -f $OUT_DIRECTORY/run_v2.sh
+        fi
+        if [ -e $OUT_DIRECTORY/run_v3.sh ] && [ -L $OUT_DIRECTORY/run_v3.sh ]; then
+            rm -f $OUT_DIRECTORY/run_v3.sh
+        fi
+        touch $OUT_DIRECTORY/run_v2.sh && chmod 777 $OUT_DIRECTORY/run_v2.sh
+        touch $OUT_DIRECTORY/run_v3.sh && chmod 777 $OUT_DIRECTORY/run_v3.sh
+        echo "Creating run.sh dummys done"
 
         return 0
      fi
