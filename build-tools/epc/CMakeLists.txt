@@ -81,7 +81,7 @@ add_custom_command(
     DEPENDS ${ALL_FILES_IN_PROJECT}
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
-        ${CMAKE_CURRENT_BINARY_DIR}EPC_INSTALL_MEDIUM
+        ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh
 )
