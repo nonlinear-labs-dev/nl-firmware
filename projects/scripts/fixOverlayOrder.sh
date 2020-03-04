@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -x
-
 if mount | grep "/lroot:/nloverlay/os-overlay"; then
     mkdir /tmp/sda2
     mount /dev/sda2 /tmp/sda2

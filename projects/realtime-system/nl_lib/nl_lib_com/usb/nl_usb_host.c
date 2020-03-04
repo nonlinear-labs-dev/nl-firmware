@@ -217,7 +217,7 @@ void USB_Host_Task(void)
 /******************************************************************************/
 /** @brief		USB Interrupt Service Routine
 *******************************************************************************/
-void USB0_IRQHandler(void)
+void Doppelt_USB0_IRQHandler(void)
 {
   uint32_t hisr;
 

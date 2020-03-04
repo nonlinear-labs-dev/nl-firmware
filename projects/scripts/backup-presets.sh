@@ -8,9 +8,6 @@
 #
 #
 
-set -x
-
-
 # Backup Presets
 if [ -d /internalstorage/preset-manager ] ; then # nominal location "/internalstorage/preset-manager", either a dir or mounted flash
 	PRESET_SOURCE_DIR=/internalstorage/preset-manager
