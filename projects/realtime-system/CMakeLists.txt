@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.13)
+
 project (realtime-system NONE)
 
 set(CMAKE_SYSTEM_NAME Generic)
@@ -18,6 +20,7 @@ execute_process(
 )
 
 get_filename_component(ARM_TOOLCHAIN_DIR ${BINUTILS_PATH} DIRECTORY)
+
 # Without that flag CMake is not able to pass test compilation check
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
@@ -34,9 +37,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 include_directories ("./nl_lib/nl_lib_com")
-
-set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
-set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" )
 
 add_subdirectory (M0_project)
 add_subdirectory (M4_project)

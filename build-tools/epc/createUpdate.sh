@@ -91,7 +91,7 @@ build_update() {
     download_packages
     /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
         cd /build
-        cmake /sources -DCMAKE_BUILD_TYPE=Release -DBUILD_AUDIOENGINE=On -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off
+        cmake /sources -DCMAKE_BUILD_TYPE=Release -DBUILD_AUDIOENGINE=On -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off -DBUILD_LPC=Off
         make -j8"
 }
 

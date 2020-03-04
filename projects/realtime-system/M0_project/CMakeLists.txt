@@ -16,7 +16,14 @@ file(GLOB_RECURSE SOURCES ./src/*.c ../nl_lib/nl_lib_com/*.c ../nl_lib/nl_lib_m0
 include_directories ("../nl_lib/nl_lib_m0/src")
 
 add_executable(${BLOBNAME} ${SOURCES})
+
 target_link_options(${BLOBNAME} PUBLIC -specs=nano.specs -specs=nosys.specs)
 target_link_directories(${BLOBNAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ld)
+
 set_target_properties(${BLOBNAME} PROPERTIES LINK_FLAGS "-TLPC4337_M0.ld")
 set_target_properties(${BLOBNAME} PROPERTIES COMPILE_FLAGS "${CMAKE_C_FLAGS}")
+
+add_custom_target(${BLOBNAME}.bin 
+    COMMENT "Create ${BLOBNAME}.bin" 
+    DEPENDS ${BLOBNAME} 
+    COMMAND arm-none-eabi-objcopy -Obinary ${BLOBNAME} ${BLOBNAME}.bin)
