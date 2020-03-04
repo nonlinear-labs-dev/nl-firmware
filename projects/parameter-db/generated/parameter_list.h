@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-02-28, 17:46
+    @date       2020-03-04, 18:24
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1974,8 +1974,8 @@ namespace C15
     { Parameters::Local_Unmodulateables::Mono_Grp_Legato,
       366,
       0.0f,
-      { None, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 1, 1, None, None, "0", "Mono", "Mono", "Legato", "Legato",
+      { None, None, Properties::SmootherScale::Linear, 3.0f, 0.0f, false },
+      { 3, 3, None, None, "0", "Mono", "Mono", "Legato", "Legato",
         "When a new key matches the Priority, it will take over. When the priorized key is released the second "
         "priorized key takes over. The Envelopes will not be affected by this change." } },
     { Parameters::Local_Modulateables::Mono_Grp_Glide,
@@ -2178,12 +2178,12 @@ namespace C15
       396,
       0.0f,
       { Smoothers::Poly_Sync::Voice_Grp_Fade_From, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
-      { 59, 59, None, None, "", "Voices", "Voices", "Fade From", "Fade From", "" } },
+      { 60, 60, None, None, "", "Voices", "Voices", "Fade From", "Fade From", "" } },
     { Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range,
       397,
       0.0f,
       { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
-      { 59, 59, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
+      { 60, 60, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
     { None },
     { None }
   };
