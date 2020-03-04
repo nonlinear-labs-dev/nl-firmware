@@ -22,6 +22,14 @@
 
 using LayerMode = C15::Properties::LayerMode;
 
+enum class LegatoMode
+{
+  None,
+  Env_Only,
+  Glide_Only,
+  Env_And_Glide
+};
+
 enum class AllocatorId
 {
   None,
@@ -73,12 +81,15 @@ template <uint32_t Keys> class MonoVoiceAllocator
   // public member variables provide key event information and allocator settings
   MonoPriority m_priority = MonoPriority::Latest;
   uint32_t m_key_position = 0;
-  bool m_state = false, m_enabled = false, m_legato = false, m_retrigger_env = false, m_retrigger_glide = false;
+  bool m_state = false, m_enabled = false, m_legato = false, m_retrigger_env = false,
+       m_retrigger_glide = false;  // TODO: delete m_legato
+  LegatoMode m_legato_mode = LegatoMode::None;
   inline MonoVoiceAllocator()
   {
   }
   inline void keyDown(const uint32_t _keyPosition)
   {
+    // TODO: integrate new legato modes and get rid of redundant stuff
     // prior states
     const bool priorKeysPressed = (m_latest.m_assigned > 0);
     m_state = true;
@@ -160,6 +171,7 @@ template <uint32_t Keys> class MonoVoiceAllocator
   }
   inline void keyUp(const uint32_t _keyPosition)
   {
+    // TODO: integrate new legato modes and get rid of redundant stuff
     // prior states
     const bool keyIsLatest = m_latest.isLastElement(_keyPosition), keyIsHighest = m_highest.isLastElement(_keyPosition),
                keyIsLowest = m_highest.isFirstElement(_keyPosition);
@@ -509,13 +521,16 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     switch(*m_current)
     {
       case LayerMode::Single:
-        m_global_mono.m_legato = static_cast<bool>(_value);
+        m_global_mono.m_legato = static_cast<bool>(_value);  // TODO: delete this
+        m_global_mono.m_legato_mode = static_cast<LegatoMode>(_value);
         break;
       case LayerMode::Split:
-        m_local_mono[_layerId].m_legato = static_cast<bool>(_value);
+        m_local_mono[_layerId].m_legato = static_cast<bool>(_value);  // TODO: delete this
+        m_local_mono[_layerId].m_legato_mode = static_cast<LegatoMode>(_value);
         break;
       case LayerMode::Layer:
-        m_local_mono[0].m_legato = static_cast<bool>(_value);
+        m_local_mono[0].m_legato = static_cast<bool>(_value);  // TODO: delete this
+        m_local_mono[_layerId].m_legato_mode = static_cast<LegatoMode>(_value);
         break;
     }
   }
