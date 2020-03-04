@@ -9,8 +9,6 @@
     @todo
 *******************************************************************************/
 
-#include "nltools/logging/Log.h"
-
 PolySection::PolySection()
 {
 }
@@ -271,7 +269,6 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
   // phase 1: 100%
   for(int32_t i = start; i != fadeStart; i += m_fadeIncrement)
   {
-    nltools::Log::info("fade [", i, "] -->", 1.0f);
     m_key_levels[i] = 1.0f;
   }
   // phase 2: fade out
@@ -295,13 +292,11 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
     {
       fadeValue = (-2.0f * fadeValue) + (4.0f * fade) - 1.0f;
     }
-    nltools::Log::info("fade [", i, "] -->", fadeValue);
     m_key_levels[i] = fadeValue;
   }
   // phase 3: 0%
   for(int32_t i = fadeEnd; i != m_fadeEnd + m_fadeIncrement; i += m_fadeIncrement)
   {
-    nltools::Log::info("fade [", i, "] -->", 0.0f);
     m_key_levels[i] = 0.0f;
   }
 }
