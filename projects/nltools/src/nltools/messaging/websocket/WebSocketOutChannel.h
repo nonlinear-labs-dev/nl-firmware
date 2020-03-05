@@ -23,7 +23,7 @@ namespace nltools
 
         ~WebSocketOutChannel() override;
 
-        void send(const SerializedMessage &msg) override;
+        bool send(const SerializedMessage &msg) override;
         bool waitForConnection(std::chrono::milliseconds timeOut) override;
         void onConnectionEstablished(std::function<void()> cb) override;
         bool isConnected() const override;

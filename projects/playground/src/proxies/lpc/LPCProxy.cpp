@@ -20,6 +20,7 @@
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
 #include <nltools/messaging/Message.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 LPCProxy::LPCProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -94,6 +95,27 @@ void LPCProxy::onMessageReceived(const MessageParser::NLMessage &msg)
   {
     onNotificationMessageReceived(msg);
   }
+  else if(msg.type == MessageParser::HEARTBEAT)
+  {
+    onHeartbeatReceived(msg);
+  }
+}
+
+void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
+{
+  uint64_t heartbeat = *(reinterpret_cast<const uint64_t *>(msg.params.data()));
+
+  DebugLevel::info("LPC Heartbeat", heartbeat);
+
+  if(heartbeat < m_lastReceivedHeartbeat)
+  {
+    DebugLevel::warning("LPCProxy had to re-send the edit buffer, as the heartbeat stumbled from",
+                        m_lastReceivedHeartbeat, "to", heartbeat);
+
+    Application::get().getAudioEngineProxy()->sendEditBuffer();
+  }
+
+  m_lastReceivedHeartbeat = heartbeat;
 }
 
 void LPCProxy::onAssertionMessageReceived(const MessageParser::NLMessage &msg)

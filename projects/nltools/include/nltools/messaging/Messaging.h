@@ -58,7 +58,7 @@ namespace nltools
       }
 
       // send raw bytes to receiver
-      void send(EndPoint receiver, const SerializedMessage &msg);
+      bool send(EndPoint receiver, const SerializedMessage &msg);
 
       template <typename Msg>
       sigc::connection receive(MessageType type, EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)
@@ -98,9 +98,9 @@ namespace nltools
     bool waitForConnection(EndPoint receiver, std::chrono::milliseconds timeOut = std::chrono::seconds(10));
 
     // Send msg to receiver. If there is no receiver, does nothing.
-    template <typename Msg> void send(EndPoint receiver, const Msg &msg)
+    template <typename Msg> bool send(EndPoint receiver, const Msg &msg)
     {
-      detail::send(receiver, detail::serialize<Msg>(msg));
+      return detail::send(receiver, detail::serialize<Msg>(msg));
     }
 
     template <typename Msg> sigc::connection receive(EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)

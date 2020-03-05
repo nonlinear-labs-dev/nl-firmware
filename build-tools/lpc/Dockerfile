@@ -6,4 +6,4 @@ ARG user_id
 
 RUN groupadd -g $group_id $user 
 RUN useradd -l -u $user_id -g $user $user
-RUN apt-get update -y && apt-get install -y gcc-arm-none-eabi cmake build-essential crossbuild-essential-armhf crossbuild-essential-armel pkg-config
+RUN apt-get update -y && apt-get install -y git gcc-arm-none-eabi cmake build-essential crossbuild-essential-armhf crossbuild-essential-armel pkg-config

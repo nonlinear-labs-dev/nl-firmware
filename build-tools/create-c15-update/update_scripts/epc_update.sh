@@ -20,7 +20,7 @@ report_and_quit(){
 }
 
 executeAsRoot() {
-    rm /root/.ssh/known_hosts
+    rm -f /root/.ssh/known_hosts
     echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP \
         "sudo -S /bin/bash -c '$1' " # 1>&2 > /dev/null"
     return $?
@@ -32,7 +32,7 @@ wait4playground() {
         echo "awaiting reboot ... $COUNTER/$TIMEOUT"
         sleep 1
 
-        rm /root/.ssh/known_hosts 1>&2 > /dev/null; executeAsRoot "systemctl status playground"
+        rm -f /root/.ssh/known_hosts > /dev/null; executeAsRoot "systemctl status playground"
         [ $? -eq 0 ] && break
 
         ((COUNTER = COUNTER + 1))
@@ -50,27 +50,42 @@ check_preconditions(){
 
 update(){
     kill $(pidof 'thttpd')       # safe???
-    /update/utilities/thttpd -p 8000 -d /update/EPC/ -l /update/EPC/server.log
-    if [ $? -ne 0 ]; then report_and_quit "E46 ePC update: Could not start server on BBB..." "46"; fi
+
+    if ! /update/utilities/thttpd -p 8000 -d /update/EPC/ -l /update/EPC/server.log; then
+        report_and_quit "E46 ePC update: Could not start server on BBB..." "46";
+    fi
+
     SERVER_PID=$(pidof 'thttpd')
 
-    echo "restarting epc"
-    rm /root/.ssh/known_hosts && executeAsRoot "sudo reboot"
-    wait4playground
-    if [ $? -ne 0 ]; then kill $SERVER_PID; report_and_quit "E45 ePC update: Reboot taking too long... timed out" "45"; fi
+    RETRYCOUNTER=1
+    while [[ ! $RETRYCOUNTER -gt 5 ]]; do
+        echo "restarting epc (try $RETRYCOUNTER)"
+
+        rm -f /root/.ssh/known_hosts
+        executeAsRoot "sudo reboot"
+
+        if ! wait4playground; then
+            kill $SERVER_PID
+            report_and_quit "E45 ePC update: Reboot taking too long... timed out" "45"
+        fi
+
+        if cat /update/EPC/server.log | grep '"GET /update.tar HTTP/1.1" 200'; then
+            rm /update/EPC/server.log
+            kill $SERVER_PID
+            return 0;
+        fi
+        ((RETRYCOUNTER = RETRYCOUNTER + 1))
+    done
 
     kill $SERVER_PID
-    cat /update/EPC/server.log | grep '"GET /update.tar HTTP/1.1" 200'
-    if [ $? -ne 0 ]; then rm /update/EPC/server.log; report_and_quit "E47 ePC update: deploying update failed ..." "47"; fi
-
     rm /update/EPC/server.log
-    return 0
+    report_and_quit "E47 ePC update: deploying update failed ..." "47"
 }
 
 main () {
+    set -x
     check_preconditions
     update
-
     return 0
 }
 
