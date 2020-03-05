@@ -1,0 +1,4 @@
+#!/bin/sh
+
+@C15_INSTALL_PATH@/text2soled/text2soled clear
+@C15_INSTALL_PATH@/text2soled/text2soled "initializing..." 5 85

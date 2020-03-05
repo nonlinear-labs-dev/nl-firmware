@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 
 file(GLOB_RECURSE SCRIPTS ${CMAKE_CURRENT_SOURCE_DIR}/*.sh)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/soled-boot-message.sh.in ${CMAKE_CURRENT_BINARY_DIR}/soled-boot-message.sh @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/soled-boot-message.sh DESTINATION ${C15_INSTALL_PATH}/scripts)
+
 install(FILES ${SCRIPTS} DESTINATION ${C15_INSTALL_PATH}/scripts
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                 GROUP_READ GROUP_WRITE GROUP_EXECUTE

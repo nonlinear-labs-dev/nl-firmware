@@ -73,9 +73,29 @@ add_custom_command(
 )
 
 add_custom_command(
+    COMMENT "Enable services"
+    OUTPUT .nonlinux-with-services
+    DEPENDS .nonlinux-update
+    DEPENDS ${ALL_FILES_IN_PROJECT}
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}
+        ${USER_ID}
+        ${DOCKER_GROUP_ID}
+        "set -x"
+        "rm -f /workdir/nonlinux/output/target/usr/lib/systemd/system/multi-user.target.wants/bbbb.service"
+        "rm -f /workdir/nonlinux/output/target/lib/systemd/system/sysinit.target.wants/splash-screen.service"
+        "rm -f /workdir/nonlinux/output/target/usr/lib/systemd/system/multi-user.target.wants/install-update-from-usb.service"
+        "ln -s /usr/lib/systemd/system/bbbb.service /workdir/nonlinux/output/target/usr/lib/systemd/system/multi-user.target.wants/bbbb.service"
+        "ln -s /usr/lib/systemd/system/splash-screen.service /workdir/nonlinux/output/target/lib/systemd/system/sysinit.target.wants/splash-screen.service"
+        "ln -s /usr/lib/systemd/system/install-update-from-usb.service /workdir/nonlinux/output/target/usr/lib/systemd/system/multi-user.target.wants/install-update-from-usb.service"
+    COMMAND touch .nonlinux-with-services
+)
+
+add_custom_command(
     COMMENT "Build BBB rootfs"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz
-    DEPENDS .nonlinux-update
+    DEPENDS .nonlinux-with-services
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
