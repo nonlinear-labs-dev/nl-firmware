@@ -31,7 +31,7 @@ namespace nltools
           std::this_thread::sleep_for(10ms);
         }
 
-        if(m_messageLoop)
+        if(m_messageLoop && m_messageLoop->is_running())
           m_messageLoop->quit();
 
         if(m_contextThread.joinable())

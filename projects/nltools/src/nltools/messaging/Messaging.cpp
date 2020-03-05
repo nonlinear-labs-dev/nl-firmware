@@ -111,11 +111,11 @@ namespace nltools
 
     Configuration swapConfig(const Configuration& conf)
     {
-      Configuration cfg;
-      cfg.offerEndpoints = detail::inChannelConfig;
-      cfg.useEndpoints = detail::outChannelConfig;
+      Configuration oldConfig;
+      oldConfig.offerEndpoints = detail::inChannelConfig;
+      oldConfig.useEndpoints = detail::outChannelConfig;
       init(conf);
-      return cfg;
+      return oldConfig;
     }
 
     void deInit()

@@ -81,12 +81,23 @@ namespace nltools
       ChannelConfiguration(EndPoint p, const std::string &hostName);
       EndPoint peer;
       std::string uri;
+
+      friend bool operator==(const ChannelConfiguration &l, const ChannelConfiguration &r)
+      {
+        auto ret = l.peer == r.peer;
+        return ret && l.uri == r.uri;
+      }
     };
 
     struct Configuration
     {
       std::vector<ChannelConfiguration> offerEndpoints;
       std::vector<ChannelConfiguration> useEndpoints;
+
+      friend bool operator==(const Configuration &l, const Configuration &r)
+      {
+        return l.offerEndpoints == r.offerEndpoints && l.useEndpoints == r.useEndpoints;
+      }
     };
 
     void init(const Configuration &conf);
