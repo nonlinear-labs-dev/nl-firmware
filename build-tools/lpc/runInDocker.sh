@@ -18,4 +18,4 @@ done
 
 SCRIPT="$SCRIPT && echo \"Script done.\""
 DOCKERNAME="nl-lpc-cross-build-environment-$USER"
-docker run -ti --privileged -u $USER_ID:$GROUP_ID --rm -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash -c "$SCRIPT"
+docker run --privileged -u $USER_ID:$GROUP_ID --rm -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash -c "$SCRIPT"
