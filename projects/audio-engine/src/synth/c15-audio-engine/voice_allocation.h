@@ -14,21 +14,13 @@
     @todo
 *******************************************************************************/
 
-#include <parameter_info.h>
+#include "../../parameter-db/generated/parameter_info.h"
 #include "key_event.h"
 #include "mappable_list.h"
 
 // Descriptors
 
 using LayerMode = C15::Properties::LayerMode;
-
-enum class LegatoMode
-{
-  None,
-  Env_Only,
-  Glide_Only,
-  Env_And_Glide
-};
 
 enum class AllocatorId
 {
@@ -81,9 +73,9 @@ template <uint32_t Keys> class MonoVoiceAllocator
   // public member variables provide key event information and allocator settings
   MonoPriority m_priority = MonoPriority::Latest;
   uint32_t m_key_position = 0;
-  bool m_state = false, m_enabled = false, m_legato = false, m_retrigger_env = false,
-       m_retrigger_glide = false;  // TODO: delete m_legato
-  LegatoMode m_legato_mode = LegatoMode::None;
+  bool m_state = false, m_enabled = false, m_legato = false, m_legato_on_env = false, m_legato_on_glide = false,
+       m_suppress_first_glide = false, m_retrigger_env = false,
+       m_retrigger_glide = false;  // TODO: delete m_legato, m_state?
   inline MonoVoiceAllocator()
   {
   }
@@ -173,8 +165,9 @@ template <uint32_t Keys> class MonoVoiceAllocator
   {
     // TODO: integrate new legato modes and get rid of redundant stuff
     // prior states
-    const bool keyIsLatest = m_latest.isLastElement(_keyPosition), keyIsHighest = m_highest.isLastElement(_keyPosition),
-               keyIsLowest = m_highest.isFirstElement(_keyPosition);
+    const bool keyWasLatest = m_latest.isLastElement(_keyPosition),
+               keyWasHighest = m_highest.isLastElement(_keyPosition),
+               keyWasLowest = m_highest.isFirstElement(_keyPosition);
     // update sorted lists
     m_latest.removeElement(_keyPosition);
     m_highest.removeElement(_keyPosition);
@@ -186,7 +179,7 @@ template <uint32_t Keys> class MonoVoiceAllocator
       {
         case MonoPriority::Lowest:
           // if priority is lowest:
-          if(keyIsLowest)
+          if(keyWasLowest)
           {
             // if key is lowest:
             if(m_legato && stillKeysPressed)
@@ -215,7 +208,7 @@ template <uint32_t Keys> class MonoVoiceAllocator
           break;
         case MonoPriority::Latest:
           // if priority is latest:
-          if(keyIsLatest)
+          if(keyWasLatest)
           {
             // if key is latest:
             if(m_legato && stillKeysPressed)
@@ -244,7 +237,7 @@ template <uint32_t Keys> class MonoVoiceAllocator
           break;
         case MonoPriority::Highest:
           // if priority is highest:
-          if(keyIsHighest)
+          if(keyWasHighest)
           {
             // if key is highest:
             if(m_legato && stillKeysPressed)
@@ -482,55 +475,61 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   }
   inline void setMonoEnable(const uint32_t _layerId, const float _value)
   {
+    const bool mono = static_cast<bool>(_value);
     switch(*m_current)
     {
       case LayerMode::Single:
         clear_keyState(AllocatorId::Global);
         m_global_mono.reset();
-        m_global_mono.m_enabled = static_cast<bool>(_value);
+        m_global_mono.m_enabled = m_global_mono.m_suppress_first_glide = mono;
         break;
       case LayerMode::Split:
         clear_keyState(m_layerId[_layerId]);
         m_local_mono[_layerId].reset();
-        m_local_mono[_layerId].m_enabled = static_cast<bool>(_value);
+        m_local_mono[_layerId].m_enabled = m_local_mono[_layerId].m_suppress_first_glide = mono;
         break;
       case LayerMode::Layer:
         clear_keyState(AllocatorId::Dual);
         m_local_mono[0].reset();
-        m_local_mono[0].m_enabled = static_cast<bool>(_value);
+        m_local_mono[0].m_enabled = m_local_mono[0].m_suppress_first_glide = mono;
         break;
     }
   }
   inline void setMonoPriority(const uint32_t _layerId, const float _value)
   {
+    const MonoPriority prio = static_cast<MonoPriority>(_value);
     switch(*m_current)
     {
       case LayerMode::Single:
-        m_global_mono.m_priority = static_cast<MonoPriority>(_value);
+        m_global_mono.m_priority = prio;
         break;
       case LayerMode::Split:
-        m_local_mono[_layerId].m_priority = static_cast<MonoPriority>(_value);
+        m_local_mono[_layerId].m_priority = prio;
         break;
       case LayerMode::Layer:
-        m_local_mono[0].m_priority = static_cast<MonoPriority>(_value);
+        m_local_mono[0].m_priority = prio;
         break;
     }
   }
   inline void setMonoLegato(const uint32_t _layerId, const float _value)
   {
+    const uint32_t mode = static_cast<uint32_t>(_value);
     switch(*m_current)
     {
       case LayerMode::Single:
         m_global_mono.m_legato = static_cast<bool>(_value);  // TODO: delete this
-        m_global_mono.m_legato_mode = static_cast<LegatoMode>(_value);
+        m_global_mono.m_legato_on_env = mode & 1;
+        m_global_mono.m_legato_on_glide = mode & 2;
         break;
       case LayerMode::Split:
         m_local_mono[_layerId].m_legato = static_cast<bool>(_value);  // TODO: delete this
-        m_local_mono[_layerId].m_legato_mode = static_cast<LegatoMode>(_value);
+        m_local_mono[_layerId].m_legato_on_env = mode & 1;
+        m_local_mono[_layerId].m_legato_on_glide = mode & 2;
         break;
       case LayerMode::Layer:
         m_local_mono[0].m_legato = static_cast<bool>(_value);  // TODO: delete this
-        m_local_mono[_layerId].m_legato_mode = static_cast<LegatoMode>(_value);
+        m_local_mono[0].m_legato_on_env = mode & 1;
+        m_local_mono[0].m_legato_on_glide = mode & 2;
         break;
     }
   }
