@@ -106,11 +106,7 @@ install_update() {
     install_packages
     /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
         cd /build
-        make install
-        systemctl enable /usr/local/lib/systemd/system/playground.service
-        systemctl enable /usr/local/lib/systemd/system/persistent.mount
-        systemctl enable /usr/local/lib/systemd/system/fix-overlay-order.service
-        systemctl enable /usr/local/lib/systemd/system/audio-engine.path"
+        make install"
 }
 
 update_fstab() {
