@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-03-04, 18:24
+    @date       2020-03-05, 13:20
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1973,7 +1973,7 @@ namespace C15
         "The key matching the priority determines the pitch of the Mono voice." } },
     { Parameters::Local_Unmodulateables::Mono_Grp_Legato,
       366,
-      0.0f,
+      1.0f,
       { None, None, Properties::SmootherScale::Linear, 3.0f, 0.0f, false },
       { 3, 3, None, None, "0", "Mono", "Mono", "Legato", "Legato",
         "When a new key matches the Priority, it will take over. When the priorized key is released the second "
@@ -2177,12 +2177,12 @@ namespace C15
     { Parameters::Local_Unmodulateables::Voice_Grp_Fade_From,
       396,
       0.0f,
-      { Smoothers::Poly_Sync::Voice_Grp_Fade_From, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
+      { Smoothers::Poly_Sync::Voice_Grp_Fade_From, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
       { 60, 60, None, None, "", "Voices", "Voices", "Fade From", "Fade From", "" } },
     { Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range,
       397,
       0.0f,
-      { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
+      { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
       { 60, 60, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
     { None },
     { None }
