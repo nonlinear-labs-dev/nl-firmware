@@ -79,9 +79,53 @@ template <uint32_t Keys> class MonoVoiceAllocator
   inline MonoVoiceAllocator()
   {
   }
+  // TODO: integrate new legato modes and get rid of redundant stuff
+  inline void newKeyDown(const uint32_t _keyPosition)
+  {
+    //
+    const bool priorKeysPressed = (m_latest.m_assigned > 0);
+    //
+    m_latest.appendElement(_keyPosition);
+    m_highest.insertElement(_keyPosition);
+    //
+    switch(m_priority)
+    {
+      case MonoPriority::Lowest:
+        break;
+      case MonoPriority::Latest:
+        break;
+      case MonoPriority::Highest:
+        break;
+    }
+    //
+    if(m_suppress_first_glide)
+    {
+      m_suppress_first_glide = false;
+    }
+  }
+  // TODO: integrate new legato modes and get rid of redundant stuff
+  inline void newKeyUp(const uint32_t _keyPosition)
+  {
+    //
+    m_latest.removeElement(_keyPosition);
+    m_highest.removeElement(_keyPosition);
+    //
+    const bool stillKeysPressed = (m_latest.m_assigned > 0);
+    //
+    m_retrigger_env = stillKeysPressed;
+    //
+    switch(m_priority)
+    {
+      case MonoPriority::Lowest:
+        break;
+      case MonoPriority::Latest:
+        break;
+      case MonoPriority::Highest:
+        break;
+    }
+  }
   inline void keyDown(const uint32_t _keyPosition)
   {
-    // TODO: integrate new legato modes and get rid of redundant stuff
     // prior states
     const bool priorKeysPressed = (m_latest.m_assigned > 0);
     m_state = true;
@@ -163,7 +207,6 @@ template <uint32_t Keys> class MonoVoiceAllocator
   }
   inline void keyUp(const uint32_t _keyPosition)
   {
-    // TODO: integrate new legato modes and get rid of redundant stuff
     // prior states
     const bool keyWasLatest = m_latest.isLastElement(_keyPosition),
                keyWasHighest = m_highest.isLastElement(_keyPosition),
