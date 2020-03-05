@@ -54,23 +54,34 @@ report_and_quit() {
 #    exit 1
 }
 
+epc_push_update() {
+    chmod +x /update/EPC/epc_push_update.sh
+    /bin/sh /update/EPC/epc_push_update.sh $EPC_IP
+    return $?
+}
+
+epc_pull_update() {
+    chmod +x /update/EPC/epc_pull_update.sh
+    /bin/sh /update/EPC/epc_pull_update.sh $EPC_IP
+    return $?
+}
+
 epc_update() {
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF"
-    chmod +x /update/EPC/epc_update.sh
-    /bin/sh /update/EPC/epc_update.sh $EPC_IP
 
-    # error codes 40...49
-    return_code=$?
-    if [ $return_code -ne 0 ]; then
-        pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
-        sleep 2
-        return 1;
+    if ! epc_push_update; then
+        if ! epc_pull_update; then
+            pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
+            sleep 2
+            return 1
+        fi
     fi
 
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
     sleep 2
     return 0
 }
+
 
 bbb_update() {
     pretty "" "$MSG_UPDATING_BBB" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_BBB" "$MSG_DO_NOT_SWITCH_OFF"
@@ -124,14 +135,33 @@ lpc_update() {
     return 0
 }
 
+configure_ssh() {
+    echo "Host 192.168.10.10
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null
+            " > ~/.ssh/config
+    chmod 400 ~/.ssh/config
+}
+
+stop_services() {
+    systemctl stop playground > /dev/null
+    systemctl stop bbbb > /dev/null
+}
+
+rebootEPC() {
+    echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP "sudo reboot"
+}
+
+rebootBBB() {
+    reboot
+}
+
 main() {
     rm -f /update/errors.log
     touch /update/errors.log
 
-    systemctl status playground
-    if [ $? -eq 0 ]; then systemctl stop playground; fi
-    systemctl status bbbb
-    if [ $? -eq 0 ]; then systemctl stop bbbb; fi
+    configure_ssh
+    stop_services
 
     epc_update
     bbb_update
@@ -150,7 +180,9 @@ main() {
 
     pretty "" "Rebooting System..." "" "Rebooting System..." ""
     sleep 2
-    reboot
+
+    rebootEPC
+    rebootBBB
 }
 
 main

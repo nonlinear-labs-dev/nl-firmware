@@ -65,8 +65,10 @@ deploy_scripts() {
         && chmod 777 $OUT_DIRECTORY/run.sh \
         && cp $SOURCE_DIR/update_scripts/bbb_update.sh $OUT_DIRECTORY/BBB/ \
         && chmod 777 $OUT_DIRECTORY/BBB/bbb_update.sh \
-        && cp $SOURCE_DIR/update_scripts/epc_update.sh $OUT_DIRECTORY/EPC/ \
-        && chmod 777 $OUT_DIRECTORY/EPC/epc_update.sh \
+        && cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ \
+        && chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh \
+        && cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ \
+        && chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh \
         && cp $SOURCE_DIR/update_scripts/lpc_update.sh $OUT_DIRECTORY/LPC/ \
         && chmod 777 $OUT_DIRECTORY/LPC/lpc_update.sh; then
         echo "Deploying update scripts done."

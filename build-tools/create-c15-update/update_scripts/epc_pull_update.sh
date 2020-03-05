@@ -20,25 +20,17 @@ report_and_quit(){
 }
 
 executeAsRoot() {
-    rm -f /root/.ssh/known_hosts
-    echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP \
-        "sudo -S /bin/bash -c '$1' " # 1>&2 > /dev/null"
+    echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP "sudo -S /bin/bash -c '$1' "
     return $?
 }
 
 wait4playground() {
-    COUNTER=1
-    while [[ ! $COUNTER -gt $TIMEOUT ]]; do
+    for COUNTER in $(seq 1 $TIMEOUT); do
         echo "awaiting reboot ... $COUNTER/$TIMEOUT"
         sleep 1
-
-        rm -f /root/.ssh/known_hosts > /dev/null; executeAsRoot "systemctl status playground"
-        [ $? -eq 0 ] && break
-
-        ((COUNTER = COUNTER + 1))
+        executeAsRoot "systemctl status playground" && return 0
     done
-    if [ $(( COUNTER - 1)) -eq $TIMEOUT ]; then return 1; fi
-    return 0
+    return 1
 }
 
 
@@ -49,19 +41,14 @@ check_preconditions(){
 }
 
 update(){
-    kill $(pidof 'thttpd')       # safe???
+    killall thttpd
 
     if ! /update/utilities/thttpd -p 8000 -d /update/EPC/ -l /update/EPC/server.log; then
-        report_and_quit "E46 ePC update: Could not start server on BBB..." "46";
+        report_and_quit "E46 ePC update: Could not start http server on BBB..." "46";
     fi
 
-    SERVER_PID=$(pidof 'thttpd')
-
-    RETRYCOUNTER=1
-    while [[ ! $RETRYCOUNTER -gt 5 ]]; do
+    for RETRYCOUNTER in {1..5}; do
         echo "restarting epc (try $RETRYCOUNTER)"
-
-        rm -f /root/.ssh/known_hosts
         executeAsRoot "sudo reboot"
 
         if ! wait4playground; then
@@ -71,19 +58,17 @@ update(){
 
         if cat /update/EPC/server.log | grep '"GET /update.tar HTTP/1.1" 200'; then
             rm /update/EPC/server.log
-            kill $SERVER_PID
-            return 0;
+            killall thttpd
+            return 0
         fi
-        ((RETRYCOUNTER = RETRYCOUNTER + 1))
     done
 
-    kill $SERVER_PID
+    killall thttpd
     rm /update/EPC/server.log
     report_and_quit "E47 ePC update: deploying update failed ..." "47"
 }
 
 main () {
-    set -x
     check_preconditions
     update
     return 0
