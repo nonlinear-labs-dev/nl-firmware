@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       voice_allocation.h
     @date
-    @version    1.7-3
+    @version    1.7-4
     @author     M. Seeber
     @brief      based on former LPC implementation (nl_tcd_valloc.c)
                 - two abstractional layers facilitating different tasks:
@@ -11,6 +11,8 @@
                   2) Allocation: providing global and local allocators, perform
                   Unison, Steal, Split etc.
                 - safe against invalid arguments
+                - providing Poly and Mono modes
+                - compatible with Single/Split/Layer modes
     @todo
 *******************************************************************************/
 
@@ -73,62 +75,15 @@ template <uint32_t Keys> class MonoVoiceAllocator
   // public member variables provide key event information and allocator settings
   MonoPriority m_priority = MonoPriority::Latest;
   uint32_t m_key_position = 0;
-  bool m_state = false, m_enabled = false, m_legato = false, m_legato_on_env = false, m_legato_on_glide = false,
-       m_suppress_first_glide = false, m_retrigger_env = false,
-       m_retrigger_glide = false;  // TODO: delete m_legato, m_state?
+  bool m_enabled = false, m_legato_on_env = false, m_legato_on_glide = false, m_suppress_first_glide = false,
+       m_retrigger_env = false, m_retrigger_glide = false;
   inline MonoVoiceAllocator()
   {
-  }
-  // TODO: integrate new legato modes and get rid of redundant stuff
-  inline void newKeyDown(const uint32_t _keyPosition)
-  {
-    //
-    const bool priorKeysPressed = (m_latest.m_assigned > 0);
-    //
-    m_latest.appendElement(_keyPosition);
-    m_highest.insertElement(_keyPosition);
-    //
-    switch(m_priority)
-    {
-      case MonoPriority::Lowest:
-        break;
-      case MonoPriority::Latest:
-        break;
-      case MonoPriority::Highest:
-        break;
-    }
-    //
-    if(m_suppress_first_glide)
-    {
-      m_suppress_first_glide = false;
-    }
-  }
-  // TODO: integrate new legato modes and get rid of redundant stuff
-  inline void newKeyUp(const uint32_t _keyPosition)
-  {
-    //
-    m_latest.removeElement(_keyPosition);
-    m_highest.removeElement(_keyPosition);
-    //
-    const bool stillKeysPressed = (m_latest.m_assigned > 0);
-    //
-    m_retrigger_env = stillKeysPressed;
-    //
-    switch(m_priority)
-    {
-      case MonoPriority::Lowest:
-        break;
-      case MonoPriority::Latest:
-        break;
-      case MonoPriority::Highest:
-        break;
-    }
   }
   inline void keyDown(const uint32_t _keyPosition)
   {
     // prior states
     const bool priorKeysPressed = (m_latest.m_assigned > 0);
-    m_state = true;
     // update sorted lists
     m_latest.appendElement(_keyPosition);
     m_highest.insertElement(_keyPosition);
@@ -141,41 +96,20 @@ template <uint32_t Keys> class MonoVoiceAllocator
         if(m_highest.isFirstElement(_keyPosition))
         {
           // if key is lowest:
-          if(m_legato && priorKeysPressed)
-          {
-            // if legato is enabled and and keys already were pressed:
-            m_retrigger_env = false;   // envelope does not restart
-            m_retrigger_glide = true;  // glide does start
-          }
-          else
-          {
-            // if legato is disabled or no keys were pressed:
-            m_retrigger_env = true;     // envelope does restart
-            m_retrigger_glide = false;  // glide does not start
-          }
+          m_retrigger_env = priorKeysPressed ? (!m_legato_on_env) : true;
+          m_retrigger_glide = m_suppress_first_glide ? false : (m_legato_on_glide ? priorKeysPressed : true);
         }
         else
         {
-          // if key is not lowest
-          m_retrigger_env = false;    // envelope does not restart
-          m_retrigger_glide = false;  // glide does not start
+          // if key is not lowest:
+          m_retrigger_env = m_retrigger_glide = false;
         }
         break;
       case MonoPriority::Latest:
-        // if priority is latest:
-        m_key_position = m_latest.getLastElement();
-        if(m_legato && priorKeysPressed)
-        {
-          // if legato is enabled and keys already were pressed:
-          m_retrigger_env = false;   // envelope does not restart
-          m_retrigger_glide = true;  // glide does start
-        }
-        else
-        {
-          // if legato is disabled or no keys were pressed:
-          m_retrigger_env = true;     // envelope does restart
-          m_retrigger_glide = false;  // glide does not start
-        }
+        // if priority is latest: (key is always latest)
+        m_key_position = _keyPosition;
+        m_retrigger_env = priorKeysPressed ? (!m_legato_on_env) : true;
+        m_retrigger_glide = m_suppress_first_glide ? false : (m_legato_on_glide ? priorKeysPressed : true);
         break;
       case MonoPriority::Highest:
         // if priority is highest:
@@ -183,135 +117,44 @@ template <uint32_t Keys> class MonoVoiceAllocator
         if(m_highest.isLastElement(_keyPosition))
         {
           // if key is highest:
-          if(m_legato && priorKeysPressed)
-          {
-            // if legato is enabled and and keys already were pressed:
-            m_retrigger_env = false;   // envelope does not restart
-            m_retrigger_glide = true;  // glide does start
-          }
-          else
-          {
-            // if legato is disabled or no keys were pressed:
-            m_retrigger_env = true;     // envelope does restart
-            m_retrigger_glide = false;  // glide does not start
-          }
+          m_retrigger_env = priorKeysPressed ? (!m_legato_on_env) : true;
+          m_retrigger_glide = m_suppress_first_glide ? false : (m_legato_on_glide ? priorKeysPressed : true);
         }
         else
         {
-          // if key is not lowest
-          m_retrigger_env = false;    // envelope does not restart
-          m_retrigger_glide = false;  // glide does not start
+          // if key is not lowest:
+          m_retrigger_env = m_retrigger_glide = false;
         }
         break;
+    }
+    // clear first glide suppression
+    if(m_suppress_first_glide)
+    {
+      m_suppress_first_glide = false;
     }
   }
   inline void keyUp(const uint32_t _keyPosition)
   {
-    // prior states
-    const bool keyWasLatest = m_latest.isLastElement(_keyPosition),
-               keyWasHighest = m_highest.isLastElement(_keyPosition),
-               keyWasLowest = m_highest.isFirstElement(_keyPosition);
     // update sorted lists
     m_latest.removeElement(_keyPosition);
     m_highest.removeElement(_keyPosition);
+    // subsequent states
     const bool stillKeysPressed = (m_latest.m_assigned > 0);
+    // trigger conditions
+    m_retrigger_env = !stillKeysPressed;
+    m_retrigger_glide = m_legato_on_glide ? stillKeysPressed : true;
     // resolve priority and legato conditions
-    if(m_state)
+    switch(m_priority)
     {
-      switch(m_priority)
-      {
-        case MonoPriority::Lowest:
-          // if priority is lowest:
-          if(keyWasLowest)
-          {
-            // if key is lowest:
-            if(m_legato && stillKeysPressed)
-            {
-              // if legato is enabled and keys are still pressed:
-              m_key_position = m_highest.getFirstElement();  // prior lowest pos
-              m_retrigger_env = false;                       // envelopes keep running
-              m_retrigger_glide = true;                      // glide does start
-            }
-            else
-            {
-              // if legato is disabled or no more keys are pressed:
-              m_key_position = _keyPosition;  // final pos
-              m_retrigger_env = true;         // envelopes stop running
-              m_retrigger_glide = false;      // glide does not start
-              m_state = false;                // subsequent keys will be ignored
-            }
-          }
-          else
-          {
-            // if key is not lowest:
-            m_key_position = m_highest.getFirstElement();  // hold lowest pos
-            m_retrigger_env = false;                       // envelopes keep running
-            m_retrigger_glide = false;                     // glide does not start
-          }
-          break;
-        case MonoPriority::Latest:
-          // if priority is latest:
-          if(keyWasLatest)
-          {
-            // if key is latest:
-            if(m_legato && stillKeysPressed)
-            {
-              // if legato is enabled and keys are still pressed:
-              m_key_position = m_latest.getLastElement();  // prior latest pos
-              m_retrigger_env = false;                     // envelopes keep running
-              m_retrigger_glide = true;                    // glide does start
-            }
-            else
-            {
-              // if legato is disabled or no more keys are pressed:
-              m_key_position = _keyPosition;  // final pos
-              m_retrigger_env = true;         // envelopes stop running
-              m_retrigger_glide = false;      // glide does not start
-              m_state = false;                // subsequent keys will be ignored
-            }
-          }
-          else
-          {
-            // if key is not latest:
-            m_key_position = m_latest.getLastElement();  // hold latest pos
-            m_retrigger_env = false;                     // envelopes keep running
-            m_retrigger_glide = false;                   // glide does not start
-          }
-          break;
-        case MonoPriority::Highest:
-          // if priority is highest:
-          if(keyWasHighest)
-          {
-            // if key is highest:
-            if(m_legato && stillKeysPressed)
-            {
-              // if legato is enabled and keys are still pressed:
-              m_key_position = m_highest.getLastElement();  // prior highest pos
-              m_retrigger_env = false;                      // envelopes keep running
-              m_retrigger_glide = true;                     // glide does start
-            }
-            else
-            {
-              // if legato is disabled or no more keys are pressed:
-              m_key_position = _keyPosition;  // final pos
-              m_retrigger_env = true;         // envelopes stop running
-              m_retrigger_glide = false;      // glide does not start
-              m_state = false;                // subsequent keys will be ignored
-            }
-          }
-          else
-          {
-            // if key is not highest:
-            m_key_position = m_highest.getLastElement();  // hold highest pos
-            m_retrigger_env = false;                      // envelopes keep running
-            m_retrigger_glide = false;                    // glide does not start
-          }
-          break;
-      }
-    }
-    else
-    {
-      m_retrigger_env = false;  // should ignore remaining keys (when prioritized key was released and legato off)
+      case MonoPriority::Lowest:
+        m_key_position = stillKeysPressed ? m_highest.getFirstElement() : _keyPosition;
+        break;
+      case MonoPriority::Latest:
+        m_key_position = stillKeysPressed ? m_latest.getLastElement() : _keyPosition;
+        break;
+      case MonoPriority::Highest:
+        m_key_position = stillKeysPressed ? m_highest.getLastElement() : _keyPosition;
+        break;
     }
   }
   inline void reset()
@@ -560,17 +403,14 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     switch(*m_current)
     {
       case LayerMode::Single:
-        m_global_mono.m_legato = static_cast<bool>(_value);  // TODO: delete this
         m_global_mono.m_legato_on_env = mode & 1;
         m_global_mono.m_legato_on_glide = mode & 2;
         break;
       case LayerMode::Split:
-        m_local_mono[_layerId].m_legato = static_cast<bool>(_value);  // TODO: delete this
         m_local_mono[_layerId].m_legato_on_env = mode & 1;
         m_local_mono[_layerId].m_legato_on_glide = mode & 2;
         break;
       case LayerMode::Layer:
-        m_local_mono[0].m_legato = static_cast<bool>(_value);  // TODO: delete this
         m_local_mono[0].m_legato_on_env = mode & 1;
         m_local_mono[0].m_legato_on_glide = mode & 2;
         break;
@@ -606,7 +446,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         {
           // single mono keyDown
           m_global_mono.keyDown(_keyState->m_key);
-          //_keyState->m_voiceId = 0;
           firstVoice = _keyState->setVoiceId(0, unisonVoices);
           _keyState->m_position = m_global_mono.m_key_position;
           m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_global_mono.m_retrigger_env,
@@ -615,7 +454,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         else
         {
           // single poly keyDown
-          //_keyState->m_voiceId = m_global.keyDown();
           firstVoice = _keyState->setVoiceId(m_global.keyDown(), unisonVoices);
           m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
           //clear stolen key first(all associated voices will be lost)
@@ -624,8 +462,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
             keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
           }
         }
-        // common single keyDown
-        //firstVoice = _keyState->m_voiceId * unisonVoices;
         // unison loop
         keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         break;
@@ -639,7 +475,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           {
             // split[I] mono keyDown
             m_local_mono[0].keyDown(_keyState->m_key);
-            //_keyState->m_voiceId = 0;
             firstVoice = _keyState->setVoiceId(0, unisonVoices);
             _keyState->m_position = m_local_mono[0].m_key_position;
             m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[0].m_retrigger_env,
@@ -648,7 +483,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           else
           {
             // split[I] poly keyDown
-            //_keyState->m_voiceId = m_local[0].keyDown();
             firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
             m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
             // clear stolen key first (all associated voices will be lost)
@@ -657,8 +491,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
               keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
             }
           }
-          // common split[I] keyDown
-          //firstVoice = _keyState->m_voiceId * unisonVoices;
           // unison loop
           keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         }
@@ -670,7 +502,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           {
             // split[II] mono keyDown
             m_local_mono[1].keyDown(_keyState->m_key);
-            //_keyState->m_voiceId = 0;
             firstVoice = LocalVoices + _keyState->setVoiceId(0, unisonVoices);
             _keyState->m_position = m_local_mono[1].m_key_position;
             m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[1].m_retrigger_env,
@@ -679,7 +510,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           else
           {
             // split[II] poly keyDown
-            //_keyState->m_voiceId = m_local[1].keyDown();
             firstVoice = LocalVoices + _keyState->setVoiceId(m_local[1].keyDown(), unisonVoices);
             m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
             // clear stolen key first (all associated voices will be lost)
@@ -688,8 +518,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
               keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
             }
           }
-          // common split[II] keyDown
-          //firstVoice = LocalVoices + (_keyState->m_voiceId * unisonVoices);
           // unison loop
           keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         }
@@ -701,7 +529,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         {
           // layer[I&II] mono keyDown
           m_local_mono[0].keyDown(_keyState->m_key);
-          //_keyState->m_voiceId = 0;
           firstVoice = _keyState->setVoiceId(0, unisonVoices);
           _keyState->m_position = m_local_mono[0].m_key_position;
           m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[0].m_retrigger_env,
@@ -710,7 +537,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         else
         {
           // layer[I&II] poly keyDown
-          //_keyState->m_voiceId = m_local[0].keyDown();
           firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
           m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
           // clear stolen key first (all associated voices will be lost)
@@ -719,8 +545,6 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
             keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
           }
         }
-        // common layer[I&II] keyDown
-        //firstVoice = _keyState->m_voiceId * unisonVoices;
         // unison loop
         keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         keyDown_unisonLoop(_keyState->m_position, LocalVoices + firstVoice, unisonVoices);
