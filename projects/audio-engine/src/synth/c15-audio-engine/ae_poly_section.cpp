@@ -724,12 +724,19 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   float time, timeKT, dest, levelVel, attackVel, decay1Vel, decay2Vel, levelKT, peak, unclipped;
   // env a
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Time_KT) * _pitch;
-  levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_Vel);
+  levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Vel) * _vel;
   decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_1_Vel) * _vel;
   decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_KT) * _pitch;
-  peak = std::min(m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT), env_clip_peak);
+  if(levelVel < 0.0f)
+  {
+    peak = std::min(m_convert->eval_level((_vel * levelVel) + levelKT), env_clip_peak);
+  }
+  else
+  {
+    peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
+  }
   m_env_a.m_levelFactor[_voiceId] = peak;
   m_env_a.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
@@ -750,12 +757,19 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   m_env_a.setSegmentDest(_voiceId, 3, true, peak);
   // env b
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Time_KT) * _pitch;
-  levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_Vel);
+  levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Vel) * _vel;
   decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_1_Vel) * _vel;
   decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_KT) * _pitch;
-  peak = std::min(m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT), env_clip_peak);
+  if(levelVel < 0.0f)
+  {
+    peak = std::min(m_convert->eval_level((_vel * levelVel) + levelKT), env_clip_peak);
+  }
+  else
+  {
+    peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
+  }
   m_env_b.m_levelFactor[_voiceId] = peak;
   m_env_b.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
@@ -776,10 +790,17 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   m_env_b.setSegmentDest(_voiceId, 3, true, peak);
   // env c
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
-  levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
+  levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_KT) * _pitch;
-  unclipped = m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT);
+  if(levelVel < 0.0f)
+  {
+    unclipped = m_convert->eval_level((_vel * levelVel) + levelKT);
+  }
+  else
+  {
+    unclipped = m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT);
+  }
   peak = std::min(unclipped, env_clip_peak);
   m_env_c.m_clipFactor[_voiceId] = unclipped / peak;
   m_env_c.m_levelFactor[_voiceId] = peak;
