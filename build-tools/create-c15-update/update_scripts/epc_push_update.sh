@@ -31,9 +31,10 @@ check_preconditions(){
 update(){
     /update/utilities/sshpass -p 'sscl' scp /update/EPC/update.tar sscl@$EPC_IP:/tmp
 
-    if executeAsRoot "systemctl stop audio-engine; systemctl stop playground" &&
-       executeAsRoot "mkdir -p /tmp/sda3; mount /dev/sda3 /tmp/sda3" &&
-       executeAsRoot "rm -rf /tmp/sda3/os-overlay/*" &&
+    executeAsRoot "systemctl stop audio-engine; systemctl stop playground"
+    executeAsRoot "mkdir -p /tmp/sda3; mount /dev/sda3 /tmp/sda3"
+    
+    if executeAsRoot "rm -rf /tmp/sda3/os-overlay/*" &&
        executeAsRoot "rm -rf /tmp/sda3/update-scratch/*" &&
        executeAsRoot "tar -x -C /tmp/sda3/update-scratch -f /tmp/update.tar" &&
        executeAsRoot "tar -x -C /tmp/sda3/os-overlay -f /tmp/sda3/update-scratch/update/NonLinuxOverlay.tar.gz" &&
