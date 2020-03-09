@@ -37,7 +37,7 @@ check_preconditions(){
 
 move_files(){
     if [ -d /internalstorage/preset-manager ] && [ "$(ls -A /internalstorage/preset-manager/)" ]; then
-        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/preset-manager/ /persistent/preset-manager" \
+        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/preset-manager/ /persistent" \
         && rm -rf /internalstorage/preset-manager/* \
         && rm -rf /internalstorage/preset-manager
         if [ $? -ne 0 ]; then report_and_quit "E55 BBB update: Moving presets to ePC failed ..." "55"; fi
@@ -59,16 +59,12 @@ move_files(){
 
 update(){
     mkdir /update/BBB/rootfs \
-    && gzip -dc /update/BBB/rootfs.tar.gz | tar -C /update/BBB/rootfs -xvf - \
-    &&  LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cvax --exclude 'etc/hostapd.conf' -f 'P update/' --delete /update/BBB/rootfs/ /
+    && gzip -dc /update/BBB/rootfs.tar.gz | tar -C /update/BBB/rootfs -xf - \
+    &&  LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude 'etc/hostapd.conf' -f 'P update/' --delete /update/BBB/rootfs/ /
     if [ $? -ne 0 ]; then report_and_quit "E58 BBB update: Syncing rootfs failed ..." "58"; fi
     rm -rf /update/BBB/rootfs/*
     rm -rf /update/BBB/rootfs
 }
-
-
-
-
 
 main() {
     check_preconditions
@@ -77,7 +73,6 @@ main() {
 
     return 0
 }
-
 
 main
 

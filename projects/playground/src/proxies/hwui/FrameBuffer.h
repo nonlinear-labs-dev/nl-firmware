@@ -85,7 +85,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   Clip clipRespectingOffset(const Rect &rect);
   Offset offset(const Point &offset);
 
-  void swapBuffers();
+  bool swapBuffers();
   bool isValidColor(Colors c) const;
 
  private:

@@ -68,7 +68,7 @@ add_custom_command(
         ${CMAKE_SOURCE_DIR}
         ${USER_ID}
         ${DOCKER_GROUP_ID}
-        "rsync -a --delete /sources/projects /workdir/nonlinux/output/build/C15-master"
+        "rsync -av --delete /sources/projects /workdir/nonlinux/output/build/C15-master"
     COMMAND touch .nonlinux-update
 )
 
@@ -85,6 +85,7 @@ add_custom_command(
         "cd /workdir/nonlinux"
         'rm -rf /workdir/nonlinux/output/target/usr/C15'
         'rm -rf /workdir/nonlinux/output/target/usr/C15-\*'
+        "make C15-clean-for-reconfigure"
         "make C15-rebuild"
         "make"
     COMMAND echo "The final rootfs is located at ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz"

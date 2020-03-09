@@ -7,15 +7,13 @@
 # vom Cmake übergebene Pfade zu den .tarS
 EPC_UPDATE=$1
 BBB_UPDATE=$2
-
-BINARY_DIR=$3
-
-SOURCE_DIR=$4/create-c15-update
-
+LPC_CORE_0=$3
+LPC_CORE_1=$4
+BINARY_DIR=$5
+SOURCE_DIR=$6/create-c15-update
 OUT_DIRECTORY=$BINARY_DIR/nonlinear-c15-update
 
-#LPC_CORE_0=$3
-#LPC_CORE_1=$4
+
 
 fail_and_exit() {
     echo "Failed to created an update!"
@@ -25,8 +23,8 @@ fail_and_exit() {
 check_preconditions () {
     if [ -z "$EPC_UPDATE" ]; then echo "ePC update missing..." && return 1; fi
     if [ -z "$BBB_UPDATE" ]; then echo "BBB update missing..." && return 1; fi
-#    if [ -z "$LPC_CORE_0" ]; then echo "LPC update missing..." && return 1; fi
-#    if [ -z "$LPC_CORE_1" ]; then echo "LPC update missing..." && return 1; fi
+    if [ -z "$LPC_CORE_0" ]; then echo "LPC update missing..." && return 1; fi
+    if [ -z "$LPC_CORE_1" ]; then echo "LPC update missing..." && return 1; fi
     return 0
 }
 
@@ -49,7 +47,11 @@ deploy_updates() {
     if cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update.tar \
         && chmod 666 $OUT_DIRECTORY/EPC/update.tar \
         && cp $BBB_UPDATE $OUT_DIRECTORY/BBB/ \
-        && chmod 666 $OUT_DIRECTORY/BBB/rootfs.tar.gz; then
+        && chmod 666 $OUT_DIRECTORY/BBB/rootfs.tar.gz \
+        && cp $LPC_CORE_0 $OUT_DIRECTORY/LPC/M0_project.bin \
+        && chmod 666 $OUT_DIRECTORY/LPC/M0_project.bin \
+        && cp $LPC_CORE_1 $OUT_DIRECTORY/LPC/M4_project.bin \
+        && chmod 666 $OUT_DIRECTORY/LPC/M4_project.bin; then
         echo "Deploying updates done."
         return 0
      fi
@@ -63,16 +65,24 @@ deploy_scripts() {
         && chmod 777 $OUT_DIRECTORY/run.sh \
         && cp $SOURCE_DIR/update_scripts/bbb_update.sh $OUT_DIRECTORY/BBB/ \
         && chmod 777 $OUT_DIRECTORY/BBB/bbb_update.sh \
-        && cp $SOURCE_DIR/update_scripts/epc_update.sh $OUT_DIRECTORY/EPC/ \
-        && chmod 777 $OUT_DIRECTORY/EPC/epc_update.sh \
+        && cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ \
+        && chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh \
+        && cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ \
+        && chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh \
         && cp $SOURCE_DIR/update_scripts/lpc_update.sh $OUT_DIRECTORY/LPC/ \
         && chmod 777 $OUT_DIRECTORY/LPC/lpc_update.sh; then
         echo "Deploying update scripts done."
 
-        echo "Creating links to run.sh..."
-        ln -nfs $OUT_DIRECTORY/run.sh $OUT_DIRECTORY/run_v2.sh
-        ln -nfs $OUT_DIRECTORY/run.sh $OUT_DIRECTORY/run_v3.sh
-        echo "Creating links to run.sh done"
+        echo "Creating run.sh dummys..."
+        if [ -e $OUT_DIRECTORY/run_v2.sh ] && [ -L $OUT_DIRECTORY/run_v2.sh ]; then
+            rm -f $OUT_DIRECTORY/run_v2.sh
+        fi
+        if [ -e $OUT_DIRECTORY/run_v3.sh ] && [ -L $OUT_DIRECTORY/run_v3.sh ]; then
+            rm -f $OUT_DIRECTORY/run_v3.sh
+        fi
+        touch $OUT_DIRECTORY/run_v2.sh && chmod 777 $OUT_DIRECTORY/run_v2.sh
+        touch $OUT_DIRECTORY/run_v3.sh && chmod 777 $OUT_DIRECTORY/run_v3.sh
+        echo "Creating run.sh dummys done"
 
         return 0
      fi
@@ -83,8 +93,6 @@ deploy_scripts() {
 get_tools_from_rootfs() {
     echo "Getting tools from rootfs..."
     mkdir -p $BINARY_DIR/rootfs && tar -xf $BBB_UPDATE -C $BINARY_DIR/rootfs
-
-    set -x
 
     for i in sshpass text2soled rsync socat thttpd; do
         if ! cp $(find $BINARY_DIR/rootfs/usr -type f -name "$i") $OUT_DIRECTORY/utilities/; then
@@ -100,6 +108,8 @@ get_tools_from_rootfs() {
         fi
     done
 
+    cp -R $BINARY_DIR/rootfs/usr/C15/text2soled/resources $OUT_DIRECTORY/utilities/
+
     echo "Getting tools from rootfs done."
     return 0
 }
@@ -107,7 +117,8 @@ get_tools_from_rootfs() {
 
 create_update_tar () {
     echo "Creating nonlinear-c15-update.tar..."
-    if cd $OUT_DIRECTORY/ && tar -cf nonlinear-c15-update.tar * ; then
+    rm -rf $OUT_DIRECTORY/../nonlinear-c15-update.tar
+    if cd $OUT_DIRECTORY/ && tar -cf ../nonlinear-c15-update.tar * ; then
         echo "Creating nonlinear-c15-update.tar done."
         return 0
     fi

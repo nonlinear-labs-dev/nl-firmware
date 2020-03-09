@@ -7,6 +7,7 @@ OPTION(BUILD_PLAYGROUND "Enable building of the Playground and NonMaps sub proje
 OPTION(BUILD_ONLINEHELP "Enable building and installing of the C15 online help" Off)
 OPTION(BUILD_TEXT2SOLED "Enable building and installing of the text2soled utility" Off)
 OPTION(BUILD_TESTING "Enable tests" On)
+OPTION(BUILD_REALTIME_SYSTEM "Enable building of the LPC realtime system" Off)
 
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"%aI--%h\" -n 1" OUTPUT_VARIABLE LAST_COMMIT_STAMP)
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse --abbrev-ref HEAD" OUTPUT_VARIABLE BRANCH_NAME)
@@ -68,5 +69,9 @@ ENDIF(BUILD_ONLINEHELP)
 IF(BUILD_TEXT2SOLED)
     add_subdirectory(text2soled)
 ENDIF(BUILD_TEXT2SOLED)
+
+IF(BUILD_REALTIME_SYSTEM)
+    add_subdirectory(realtime-system)
+ENDIF(BUILD_REALTIME_SYSTEM)
 
 add_subdirectory(scripts)
