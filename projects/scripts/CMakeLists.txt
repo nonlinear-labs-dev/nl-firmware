@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
 project(C15-scripts)
 
-file(GLOB_RECURSE SCRIPTS ${CMAKE_CURRENT_SOURCE_DIR}/*.sh)
-install(FILES ${SCRIPTS} DESTINATION ${C15_INSTALL_PATH}/scripts
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                GROUP_READ GROUP_WRITE GROUP_EXECUTE
-                WORLD_READ WORLD_WRITE WORLD_EXECUTE)
+OPTION(BUILD_BBB_SCRIPTS "Copy BeagleBone script files" Off)
+OPTION(BUILD_EPC_SCRIPTS "Copy ePC script files" Off)
 
+if(BUILD_BBB_SCRIPTS)
+    add_subdirectory(bbb)
+endif()
+
+if(BUILD_EPC_SCRIPTS)
+    add_subdirectory(epc)
+endif()

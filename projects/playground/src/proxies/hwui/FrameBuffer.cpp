@@ -70,7 +70,10 @@ FrameBuffer::FrameBuffer()
   openAndMap();
   clear();
 
-  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Lpc, sigc::mem_fun(this, &FrameBuffer::swapBuffers));
+  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Oled, [this] {
+    if(!swapBuffers())
+      nltools::Log::warning("Could not send new framebuffer to BBBB");
+  });
 }
 
 void FrameBuffer::initStacks()
@@ -249,23 +252,23 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
   }
 }
 
-void FrameBuffer::swapBuffers()
+bool FrameBuffer::swapBuffers()
 {
   using namespace nltools::msg;
 
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
   {
-    SetTimestampedOledMessage msg{};
+    SetTimestampedOledMessage msg {};
     msg.m_timestamp
         = Application::get().getHWUI()->getPanelUnit().getEditPanel().getKnob().resetOldestPendingTimestamp();
     memcpy(msg.m_oledMessage.pixels, m_backBuffer.data(), m_backBuffer.size());
-    send(EndPoint::Oled, msg);
+    return send(EndPoint::Oled, msg);
   }
   else
   {
-    SetOLEDMessage msg{};
+    SetOLEDMessage msg {};
     memcpy(msg.pixels, m_backBuffer.data(), m_backBuffer.size());
-    send(EndPoint::Oled, msg);
+    return send(EndPoint::Oled, msg);
   }
 }
 

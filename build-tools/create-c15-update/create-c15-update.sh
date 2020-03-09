@@ -65,16 +65,24 @@ deploy_scripts() {
         && chmod 777 $OUT_DIRECTORY/run.sh \
         && cp $SOURCE_DIR/update_scripts/bbb_update.sh $OUT_DIRECTORY/BBB/ \
         && chmod 777 $OUT_DIRECTORY/BBB/bbb_update.sh \
-        && cp $SOURCE_DIR/update_scripts/epc_update.sh $OUT_DIRECTORY/EPC/ \
-        && chmod 777 $OUT_DIRECTORY/EPC/epc_update.sh \
+        && cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ \
+        && chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh \
+        && cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ \
+        && chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh \
         && cp $SOURCE_DIR/update_scripts/lpc_update.sh $OUT_DIRECTORY/LPC/ \
         && chmod 777 $OUT_DIRECTORY/LPC/lpc_update.sh; then
         echo "Deploying update scripts done."
 
-        echo "Creating links to run.sh..."
-        ln -nfs $OUT_DIRECTORY/run.sh $OUT_DIRECTORY/run_v2.sh
-        ln -nfs $OUT_DIRECTORY/run.sh $OUT_DIRECTORY/run_v3.sh
-        echo "Creating links to run.sh done"
+        echo "Creating run.sh dummys..."
+        if [ -e $OUT_DIRECTORY/run_v2.sh ] && [ -L $OUT_DIRECTORY/run_v2.sh ]; then
+            rm -f $OUT_DIRECTORY/run_v2.sh
+        fi
+        if [ -e $OUT_DIRECTORY/run_v3.sh ] && [ -L $OUT_DIRECTORY/run_v3.sh ]; then
+            rm -f $OUT_DIRECTORY/run_v3.sh
+        fi
+        touch $OUT_DIRECTORY/run_v2.sh && chmod 777 $OUT_DIRECTORY/run_v2.sh
+        touch $OUT_DIRECTORY/run_v3.sh && chmod 777 $OUT_DIRECTORY/run_v3.sh
+        echo "Creating run.sh dummys done"
 
         return 0
      fi
@@ -84,7 +92,6 @@ deploy_scripts() {
 
 get_tools_from_rootfs() {
     echo "Getting tools from rootfs..."
-    set -x
     mkdir -p $BINARY_DIR/rootfs && tar -xf $BBB_UPDATE -C $BINARY_DIR/rootfs
 
     for i in sshpass text2soled rsync socat thttpd; do
@@ -110,7 +117,7 @@ get_tools_from_rootfs() {
 
 create_update_tar () {
     echo "Creating nonlinear-c15-update.tar..."
-    rm $OUT_DIRECTORY/nonlinear-c15-update.tar
+    rm -rf $OUT_DIRECTORY/../nonlinear-c15-update.tar
     if cd $OUT_DIRECTORY/ && tar -cf ../nonlinear-c15-update.tar * ; then
         echo "Creating nonlinear-c15-update.tar done."
         return 0

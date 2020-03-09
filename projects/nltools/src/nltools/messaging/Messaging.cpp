@@ -69,12 +69,16 @@ namespace nltools
         return ret;
       }
 
-      void send(nltools::msg::EndPoint receiver, const SerializedMessage &msg)
+      bool send(nltools::msg::EndPoint receiver, const SerializedMessage &msg)
       {
-        try {
-          outChannels.at(receiver)->send(msg);
-        } catch(...) {
+        try
+        {
+          return outChannels.at(receiver)->send(msg);
+        }
+        catch(...)
+        {
           nltools::Log::error("no such receiver:", toString(receiver));
+          return false;
         }
       }
 
