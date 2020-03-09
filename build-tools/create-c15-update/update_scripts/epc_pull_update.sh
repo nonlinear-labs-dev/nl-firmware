@@ -52,7 +52,6 @@ update(){
         executeAsRoot "sudo reboot"
 
         if ! wait4playground; then
-            kill $SERVER_PID
             report_and_quit "E45 ePC update: Reboot taking too long... timed out" "45"
         fi
 
