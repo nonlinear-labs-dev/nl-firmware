@@ -50,7 +50,7 @@ move_files(){
     fi
 
     if [ -d /internalstorage/calibration ] && [ "$(ls -A /internalstorage/calibration/)" ]; then
-        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/calibration/ /persistent/calibration" \
+        executeAsRoot "scp -r root@$BBB_IP:/internalstorage/calibration/ /persistent" \
         && rm -rf /internalstorage/calibration/* \
         && rm -rf /internalstorage/calibration
         if [ $? -ne 0 ]; then report_and_quit "E57 BBB update: Moving calibration settings to ePC failed ..." "57"; fi
