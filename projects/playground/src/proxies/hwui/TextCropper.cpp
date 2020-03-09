@@ -1,4 +1,3 @@
-#include <testing/TestDriver.h>
 #include "TextCropper.h"
 
 Glib::ustring TextCropper::shortenStringIfNeccessary(std::shared_ptr<Font> font, const Glib::ustring &text,

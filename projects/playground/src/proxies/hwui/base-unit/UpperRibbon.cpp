@@ -6,12 +6,7 @@
 #include "presets/PresetManager.h"
 #include "device-settings/BaseUnitUIMode.h"
 #include "device-settings/Settings.h"
-#include "device-settings/DebugLevel.h"
 #include "groups/HardwareSourcesGroup.h"
-#include <glib.h>
-#include <math.h>
-
-// static TestDriver<UpperRibbon> tests;
 
 UpperRibbon::UpperRibbon()
 {
