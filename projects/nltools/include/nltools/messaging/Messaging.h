@@ -101,7 +101,6 @@ namespace nltools
     };
 
     void init(const Configuration &conf);
-    Configuration swapConfig(const Configuration &conf);
     void deInit();
 
     // wait at most timeOut for the sigc::connection to be established

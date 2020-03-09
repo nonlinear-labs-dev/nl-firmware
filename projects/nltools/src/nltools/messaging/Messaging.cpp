@@ -109,15 +109,6 @@ namespace nltools
       detail::createOutChannels(conf);
     }
 
-    Configuration swapConfig(const Configuration& conf)
-    {
-      Configuration oldConfig;
-      oldConfig.offerEndpoints = detail::inChannelConfig;
-      oldConfig.useEndpoints = detail::outChannelConfig;
-      init(conf);
-      return oldConfig;
-    }
-
     void deInit()
     {
       detail::outChannels.clear();
