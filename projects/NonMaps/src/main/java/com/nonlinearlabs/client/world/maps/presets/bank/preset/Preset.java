@@ -156,10 +156,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		String name = preset.getAttributes().getNamedItem("name").getNodeValue();
 		this.number.setText(NumberFormat.getFormat("#000").format(i));
 		this.name.setText(name);
-		this.typeLabel.updateType(this.type);
 
 		String typeStr = preset.getAttributes().getNamedItem("type").getNodeValue();
 		this.type = SoundType.valueOf(typeStr);
+		this.typeLabel.updateType(this.type);
+
 		updateAttributes(preset);
 
 		if (isSelected() && getParent().isSelected() && PresetInfoDialog.isShown())
