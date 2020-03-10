@@ -10,7 +10,6 @@ ButtonRepeat::ButtonRepeat(Callback cb)
 
 ButtonRepeat::~ButtonRepeat()
 {
-  nltools::Log::warning("ButtonRepeat destroyed");
 }
 
 void ButtonRepeat::installRepeat(Callback cb, uint ms)
@@ -23,7 +22,6 @@ void ButtonRepeat::installRepeat(Callback cb, uint ms)
 
 bool ButtonRepeat::onTimeoutElapsed(Callback cb)
 {
-  nltools::Log::warning("ButtonRepeat elapsed");
   installRepeat(cb, 120);
   return false;
 }

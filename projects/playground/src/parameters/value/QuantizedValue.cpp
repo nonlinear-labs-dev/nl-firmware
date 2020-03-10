@@ -99,7 +99,9 @@ tDisplayValue QuantizedValue::getDisplayValue() const
 
 Glib::ustring QuantizedValue::getDisplayString() const
 {
-  return getScaleConverter()->getDimension().stringize(getDisplayValue());
+  auto* conv = getScaleConverter();
+  auto& dim = conv->getDimension();
+  return dim.stringize(getDisplayValue());
 }
 
 tControlPositionValue QuantizedValue::getNextStepValue(int incs, ButtonModifiers modifiers) const
