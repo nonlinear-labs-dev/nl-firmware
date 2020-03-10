@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2020-02-27, 14:31
+    @date       2020-03-06, 16:21
     @version	1.7B-4
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -308,6 +308,8 @@ namespace C15
       Unison_Phase,
       Unison_Pan,
       Voice_Grp_Mute,
+      Voice_Grp_Fade_From,
+      Voice_Grp_Fade_Range,
       Mono_Grp_Enable,
       Mono_Grp_Prio,
       Mono_Grp_Legato,
@@ -448,6 +450,8 @@ namespace C15
     enum class Poly_Sync
     {
       Split_Split_Point,
+      Voice_Grp_Fade_From,
+      Voice_Grp_Fade_Range,
       Env_A_Lvl_Vel,
       Env_A_Att_Vel,
       Env_A_Dec_1_Vel,

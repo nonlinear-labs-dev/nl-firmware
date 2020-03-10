@@ -9,6 +9,8 @@
     @todo
 *******************************************************************************/
 
+//#include "nltools/logging/Log.h"
+
 PolySection::PolySection()
 {
 }
@@ -39,6 +41,8 @@ void PolySection::init(GlobalSignals *_globalsignals, exponentiator *_convert, E
   m_svfilter.init(_samplerate);
   m_feedbackmixer.init(_samplerate);
   m_outputmixer.init(_samplerate, C15::Config::local_polyphony);
+  //
+  resetVoiceFade();
 }
 
 void PolySection::add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId)
@@ -101,8 +105,8 @@ void PolySection::render_audio(const float _mute)
   m_soundgenerator.generate(m_signals, m_feedbackmixer.m_out);
   m_combfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B);
   m_svfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out);
-  m_outputmixer.combine(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out,
-                        m_svfilter.m_out);
+  m_outputmixer.combine(m_signals, m_voice_level, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B,
+                        m_combfilter.m_out, m_svfilter.m_out);
   m_outputmixer.filter_level(m_signals);
   // capture z samples
   m_z_self->m_osc_a = m_soundgenerator.m_out_A;
@@ -162,9 +166,11 @@ void PolySection::render_slow()
 
 bool PolySection::keyDown(PolyKeyEvent *_event)
 {
-  const bool retrigger_mono = (m_key_active == 0),
-             rstA = static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Reset)),
-             rstB = static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Reset));
+  const bool retrigger_mono
+      = (m_key_active == 0),
+      rstA = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Reset)),
+      rstB = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Reset));
+  m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
   m_shift[_event->m_voiceId] = m_note_shift;
   m_unison_index[_event->m_voiceId] = _event->m_unisonIndex;
   m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
@@ -191,9 +197,9 @@ bool PolySection::keyDown(PolyKeyEvent *_event)
   updateNotePitch(_event->m_voiceId);
   postProcess_poly_key(_event->m_voiceId);
   setSlowFilterCoefs(_event->m_voiceId);
-  m_combfilter.setDelaySmoother(_event->m_voiceId);
   if(_event->m_trigger_env)
   {
+    m_combfilter.setDelaySmoother(_event->m_voiceId);
     startEnvelopes(_event->m_voiceId, m_note_pitch[_event->m_voiceId], _event->m_velocity);
   }
   m_key_active++;
@@ -253,6 +259,68 @@ float PolySection::getVoiceGroupVolume()
 {
   return m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Volume)
       * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
+}
+
+void PolySection::evalVoiceFade(const float _from, const float _range)
+{
+  const int32_t start = m_fadeStart;
+  const int32_t fadeStart
+      = start + (m_fadeIncrement * (1 + (m_fadeStart + (m_fadeIncrement * static_cast<int32_t>(_from)))));
+  const int32_t fadeEnd = fadeStart + (m_fadeIncrement * static_cast<int32_t>(_range));
+  const float slope = 1.0f / (_range + 1.0f);
+  float fade = 1.0f;
+
+  //nltools::Log::info("(from:", _from, ", range:", _range, ")");
+  // phase 1: 100%
+  for(int32_t i = start; i != fadeStart; i += m_fadeIncrement)
+  {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+    //nltools::Log::info("[", i, "]:", 1.0f);
+    m_key_levels[i] = 1.0f;
+  }
+  // phase 2: fade out
+
+  for(int32_t i = fadeStart; i != fadeEnd; i += m_fadeIncrement)
+  {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+    fade -= slope;
+    // linear implementation (not smooth enough):
+    //fadeValue = fade;
+
+    // sine implementation (keep for further testing):
+    //fadeValue = 0.5f - (0.5f * NlToolbox::Math::sinP3_wrap(0.5f * (fade - 0.5f)));
+
+    // parabolic implementation (currently favourite):
+    auto fadeValue = fade * fade;
+    if(fade < 0.5f)
+    {
+      fadeValue = 2.0f * fadeValue;
+    }
+    else
+    {
+      fadeValue = (-2.0f * fadeValue) + (4.0f * fade) - 1.0f;
+    }
+    //nltools::Log::info("[", i, "]:", fadeValue);
+    m_key_levels[i] = fadeValue;
+  }
+  // phase 3: 0%
+  for(int32_t i = fadeEnd; i != m_fadeEnd + m_fadeIncrement; i += m_fadeIncrement)
+  {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+    //nltools::Log::info("[", i, "]:", 0.0f);
+    m_key_levels[i] = 0.0f;
+  }
+}
+
+void PolySection::resetVoiceFade()
+{
+  for(uint32_t i = 0; i < C15::Config::key_count; i++)
+  {
+    m_key_levels[i] = 1.0f;
+  }
 }
 
 float PolySection::evalNyquist(const float _value)
@@ -657,12 +725,19 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   float time, timeKT, dest, levelVel, attackVel, decay1Vel, decay2Vel, levelKT, peak, unclipped;
   // env a
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Time_KT) * _pitch;
-  levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_Vel);
+  levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Vel) * _vel;
   decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_1_Vel) * _vel;
   decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_KT) * _pitch;
-  peak = std::min(m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT), env_clip_peak);
+  if(levelVel < 0.0f)
+  {
+    peak = std::min(m_convert->eval_level((_vel * levelVel) + levelKT), env_clip_peak);
+  }
+  else
+  {
+    peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
+  }
   m_env_a.m_levelFactor[_voiceId] = peak;
   m_env_a.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
@@ -683,12 +758,19 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   m_env_a.setSegmentDest(_voiceId, 3, true, peak);
   // env b
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Time_KT) * _pitch;
-  levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_Vel);
+  levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Vel) * _vel;
   decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_1_Vel) * _vel;
   decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_KT) * _pitch;
-  peak = std::min(m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT), env_clip_peak);
+  if(levelVel < 0.0f)
+  {
+    peak = std::min(m_convert->eval_level((_vel * levelVel) + levelKT), env_clip_peak);
+  }
+  else
+  {
+    peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
+  }
   m_env_b.m_levelFactor[_voiceId] = peak;
   m_env_b.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
@@ -709,10 +791,17 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   m_env_b.setSegmentDest(_voiceId, 3, true, peak);
   // env c
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
-  levelVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
+  levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
   attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_KT) * _pitch;
-  unclipped = m_convert->eval_level(((1.0f - _vel) * levelVel) + levelKT);
+  if(levelVel < 0.0f)
+  {
+    unclipped = m_convert->eval_level((_vel * levelVel) + levelKT);
+  }
+  else
+  {
+    unclipped = m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT);
+  }
   peak = std::min(unclipped, env_clip_peak);
   m_env_c.m_clipFactor[_voiceId] = unclipped / peak;
   m_env_c.m_levelFactor[_voiceId] = peak;

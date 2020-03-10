@@ -5,6 +5,9 @@
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/LinearBipolar96StScaleConverter.h>
 #include <parameters/scale-converters/OnOffScaleConverter.h>
+#include <parameters/scale-converters/SplitPointScaleConverter.h>
+#include <parameters/scale-converters/dimension/UnitlessDimension.h>
+#include <parameters/scale-converters/Linear60KeyScaleConverter.h>
 #include "VoiceGroupMasterGroup.h"
 
 VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
@@ -23,4 +26,10 @@ void VoiceGroupMasterGroup::init()
       ScaleConverter::get<LinearBipolar96StScaleConverter>(), 0, 48, 4800, "Part Tune", "Tune"));
 
   appendParameter(new Parameter(this, { 395, getVoiceGroup() }, ScaleConverter::get<OnOffScaleConverter>(), 0.0, 1, 1));
+
+  appendParameter(
+      new Parameter(this, { 396, getVoiceGroup() }, ScaleConverter::get<Linear60KeyScaleConverter>(), 0.5, 60, 60));
+
+  appendParameter(new Parameter(this, { 397, getVoiceGroup() },
+                                ScaleConverter::get<LinearCountScaleConverter<60, UnitlessDimension>>(), 0.0, 59, 59));
 }

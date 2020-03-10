@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-02-27, 14:31
+    @date       2020-03-06, 16:21
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1973,11 +1973,12 @@ namespace C15
         "The key matching the priority determines the pitch of the Mono voice." } },
     { Parameters::Local_Unmodulateables::Mono_Grp_Legato,
       366,
-      0.0f,
-      { None, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 1, 1, None, None, "0", "Mono", "Mono", "Legato", "Legato",
+      1.0f,
+      { None, None, Properties::SmootherScale::Linear, 3.0f, 0.0f, false },
+      { 3, 3, None, None, "0", "Mono", "Mono", "Legato", "Legato",
         "When a new key matches the Priority, it will take over. When the priorized key is released the second "
-        "priorized key takes over. The Envelopes will not be affected by this change." } },
+        "priorized key takes over. Envelopes will start if the state of this parameter allows for it. Glide will be "
+        "applied if the state of this parameter allows for it." } },
     { Parameters::Local_Modulateables::Mono_Grp_Glide,
       367,
       0.0f,
@@ -2158,8 +2159,8 @@ namespace C15
       { Smoothers::Poly_Sync::Osc_A_Reset, Signals::Quasipoly_Signals::Osc_A_Reset, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
       { 1, 1, None, None, "", "Oscillator A", "Oscillator A", "Reset", "Reset",
-        "If enabled, every pressed key will cause the Oscillator to reset its phase (for the corresponding voice). If "
-        "disabled, the Oscillator is in free-running mode." } },
+        "If enabled, the Oscillator will reset its phase everytime the envelopes start (in the corresponding voice). "
+        "If disabled, the Oscillator is in free-running mode." } },
     { Parameters::Local_Unmodulateables::Osc_B_Reset,
       394,
       1.0f,
@@ -2174,8 +2175,16 @@ namespace C15
       { Smoothers::Poly_Fast::Voice_Grp_Mute, None, Properties::SmootherScale::Linear, -1.0f, 1.0f, false },
       { 1, 1, None, None, "", "Voices", "Voices", "Part Mute", "Part Mute",
         "Part mute, available when usig Split or Layer mode. When enabled, the corresponding Part will be muted." } },
-    { None },
-    { None },
+    { Parameters::Local_Unmodulateables::Voice_Grp_Fade_From,
+      396,
+      0.0f,
+      { Smoothers::Poly_Sync::Voice_Grp_Fade_From, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
+      { 60, 60, None, None, "", "Voices", "Voices", "Fade From", "Fade From", "" } },
+    { Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range,
+      397,
+      0.0f,
+      { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
+      { 60, 60, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
     { None },
     { None }
   };
