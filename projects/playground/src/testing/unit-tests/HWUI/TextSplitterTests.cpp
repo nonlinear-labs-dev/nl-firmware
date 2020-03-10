@@ -3,7 +3,7 @@
 #include <glib.h>
 #include <sstream>
 
-TEST_CASE("Text Splitter concat utf8")
+TEST_CASE("Text Splitter concat utf8", "[HWUI][Text]")
 {
   Glib::ustring in("\u24b6\u24b7\u24b8\u24b9");
   REQUIRE(in.length() == 4);
@@ -13,7 +13,7 @@ TEST_CASE("Text Splitter concat utf8")
   REQUIRE(out.length() == 4);
 }
 
-TEST_CASE("Text Splitter iterate utf8")
+TEST_CASE("Text Splitter iterate utf8", "[HWUI][Text]")
 {
   Glib::ustring in("\u24b6\u24b7\u24b8\u24b9");
   REQUIRE(in.length() == 4);
