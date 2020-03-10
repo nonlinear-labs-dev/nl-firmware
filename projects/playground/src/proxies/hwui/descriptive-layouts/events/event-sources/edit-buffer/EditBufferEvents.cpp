@@ -164,3 +164,15 @@ void DescriptiveLayouts::CurrentVoiceGroupText::onChange(VoiceGroup newSelection
 {
   setValue({ toString(newSelection), 0 });
 }
+
+void DescriptiveLayouts::VGIMuted::onChange(const EditBuffer *eb)
+{
+  auto muteI = eb->findParameterByID({ 395, VoiceGroup::I })->getControlPositionValue() != 0;
+  setValue({ muteI ? "\uE0BA" : "", 0 });
+}
+
+void DescriptiveLayouts::VGIIMuted::onChange(const EditBuffer *eb)
+{
+  auto muteII = eb->findParameterByID({ 395, VoiceGroup::II })->getControlPositionValue() != 0;
+  setValue({ muteII ? "\uE0BA" : "", 0 });
+}
