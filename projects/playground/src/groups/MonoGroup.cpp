@@ -4,7 +4,6 @@
 #include <parameters/scale-converters/MonoPriorityScaleConverter.h>
 #include <parameters/scale-converters/OnOffScaleConverter.h>
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
-#include <parameters/scale-converters/dimension/LegatoDimension.h>
 #include <parameters/scale-converters/LegatoScaleConverter.h>
 #include "MonoGroup.h"
 

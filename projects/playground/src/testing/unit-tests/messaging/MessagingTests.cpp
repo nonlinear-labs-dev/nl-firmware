@@ -21,7 +21,7 @@ namespace test_detail
     while((exp.isPending() && !test()) || min.isPending())
       g_main_context_iteration(nullptr, TRUE);
 
-    nltools_assertInTest(test());
+    CHECK(test());
   }
 
 }
@@ -29,11 +29,19 @@ namespace test_detail
 using namespace nltools::msg;
 using namespace std::chrono_literals;
 
+TEST_CASE("Notify on discovery", "[Messaging][nltools]")
+{
+  bool received = false;
+  auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
+  test_detail::doMainLoop(1s, 1s, [&] { return received; });
+  c.disconnect();
+}
+
 TEST_CASE("Send Receive", "[Messaging][nltools]")
 {
   int numMessages = 0;
   UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, VoiceGroup::I };
-  nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
+  CHECK(waitForConnection(EndPoint::TestEndPoint));
   auto c
       = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
   send(EndPoint::TestEndPoint, msgToSend);
@@ -47,7 +55,7 @@ TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
   int numSendMessages = 1000;
 
   UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, VoiceGroup::I };
-  nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
+  CHECK(waitForConnection(EndPoint::TestEndPoint));
   auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint,
                                                           [&](const auto &msg) { numRecMessages++; });
 
@@ -58,13 +66,13 @@ TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
   c.disconnect();
 }
 
-TEST_CASE("No packet doubles")
+TEST_CASE("No packet doubles", "[Messaging][nltools]")
 {
   int numRecMessages = 0;
   int numSendMessages = 100;
 
   UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, VoiceGroup::I };
-  nltools_assertInTest(waitForConnection(EndPoint::TestEndPoint));
+  CHECK(waitForConnection(EndPoint::TestEndPoint));
   auto c = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint,
                                                           [&](const auto &msg) { numRecMessages++; });
 
@@ -72,13 +80,5 @@ TEST_CASE("No packet doubles")
     send(EndPoint::TestEndPoint, msgToSend);
 
   test_detail::doMainLoop(1s, 1s, [&] { return numRecMessages <= numSendMessages; });
-  c.disconnect();
-}
-
-TEST_CASE("Notify on discovery", "[Messaging][nltools]")
-{
-  bool received = false;
-  auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
-  test_detail::doMainLoop(1s, 1s, [&] { return received; });
   c.disconnect();
 }

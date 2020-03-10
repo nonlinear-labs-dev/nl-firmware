@@ -3,16 +3,14 @@
 #include <nltools/logging/Log.h>
 #include <glibmm/main.h>
 
-ButtonRepeat::ButtonRepeat(Callback cb)
+ButtonRepeat::ButtonRepeat(const Callback& cb)
 {
   installRepeat(cb, 500);
 }
 
-ButtonRepeat::~ButtonRepeat()
-{
-}
+ButtonRepeat::~ButtonRepeat() = default;
 
-void ButtonRepeat::installRepeat(Callback cb, uint ms)
+void ButtonRepeat::installRepeat(const Callback& cb, uint ms)
 {
   cb();
   m_buttonRepeat.disconnect();
@@ -20,7 +18,7 @@ void ButtonRepeat::installRepeat(Callback cb, uint ms)
       sigc::bind(sigc::mem_fun(this, &ButtonRepeat::onTimeoutElapsed), cb), ms);
 }
 
-bool ButtonRepeat::onTimeoutElapsed(Callback cb)
+bool ButtonRepeat::onTimeoutElapsed(const Callback& cb)
 {
   installRepeat(cb, 120);
   return false;

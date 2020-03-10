@@ -1,11 +1,9 @@
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
-#include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/LinearBipolar96StScaleConverter.h>
 #include <parameters/scale-converters/OnOffScaleConverter.h>
-#include <parameters/scale-converters/SplitPointScaleConverter.h>
 #include <parameters/scale-converters/dimension/UnitlessDimension.h>
 #include <parameters/scale-converters/Linear60KeyScaleConverter.h>
 #include "VoiceGroupMasterGroup.h"

@@ -32,8 +32,8 @@ void setupMessaging(const Options *options)
 {
   using namespace nltools::msg;
 
-  auto bbbb = options->getBBBB();
-  auto ae = options->getAudioEngineHost();
+  const auto &bbbb = options->getBBBB();
+  const auto &ae = options->getAudioEngineHost();
 
   Configuration conf;
 #ifdef _DEVELOPMENT_PC
