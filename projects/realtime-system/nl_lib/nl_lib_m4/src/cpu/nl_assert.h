@@ -1,7 +1,7 @@
 #ifndef NL_ASSERT_H
 #define NL_ASSERT_H
 
-void sendAssertionToBB(const char *ptr);
+void doppelt_sendAssertionToBB(const char *ptr);
 
 #define STR_HELPER(x) #x
 #define STR(x)        STR_HELPER(x)
@@ -9,14 +9,14 @@ void sendAssertionToBB(const char *ptr);
 #ifdef DEBUG
 #define NL_ASSERT(cond) \
   if (!(cond))          \
-  sendAssertionToBB(__func__)
-#define NL_ASSERT_RETURN_VOID(cond) \
-  if (!(cond))                      \
-    sendAssertionToBB(__func__);    \
+  doppelt_sendAssertionToBB(__func__)
+#define NL_ASSERT_RETURN_VOID(cond)      \
+  if (!(cond))                           \
+    doppelt_sendAssertionToBB(__func__); \
   return
-#define NL_ASSERT_RETURN_VAL(cond, val) \
-  if (!(cond))                          \
-    sendAssertionToBB(__func__);        \
+#define NL_ASSERT_RETURN_VAL(cond, val)  \
+  if (!(cond))                           \
+    doppelt_sendAssertionToBB(__func__); \
   return val
 #else
 #define NL_ASSERT(cond)

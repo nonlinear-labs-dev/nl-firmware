@@ -31,17 +31,17 @@ namespace nltools
           std::this_thread::sleep_for(10ms);
         }
 
-        if(m_messageLoop)
+        if(m_messageLoop && m_messageLoop->is_running())
           m_messageLoop->quit();
 
         if(m_contextThread.joinable())
           m_contextThread.join();
       }
 
-      void WebSocketOutChannel::send(const SerializedMessage &msg)
+      bool WebSocketOutChannel::send(const SerializedMessage &msg)
       {
         if(!m_connection)
-          return;
+          return false;
 
         m_backgroundContextQueue->pushMessage([=]() {
           if(m_connection)
@@ -61,6 +61,7 @@ namespace nltools
             }
           }
         });
+        return true;
       }
 
       bool WebSocketOutChannel::waitForConnection(std::chrono::milliseconds timeOut)

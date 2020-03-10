@@ -69,12 +69,16 @@ namespace nltools
         return ret;
       }
 
-      void send(nltools::msg::EndPoint receiver, const SerializedMessage &msg)
+      bool send(nltools::msg::EndPoint receiver, const SerializedMessage &msg)
       {
-        try {
-          outChannels.at(receiver)->send(msg);
-        } catch(...) {
+        try
+        {
+          return outChannels.at(receiver)->send(msg);
+        }
+        catch(...)
+        {
           nltools::Log::error("no such receiver:", toString(receiver));
+          return false;
         }
       }
 
@@ -107,15 +111,6 @@ namespace nltools
       deInit();
       detail::createInChannels(conf);
       detail::createOutChannels(conf);
-    }
-
-    Configuration swapConfig(const Configuration& conf)
-    {
-      Configuration cfg;
-      cfg.offerEndpoints = detail::inChannelConfig;
-      cfg.useEndpoints = detail::outChannelConfig;
-      init(conf);
-      return cfg;
     }
 
     void deInit()

@@ -1,4 +1,3 @@
-#include <testing/TestDriver.h>
 #include <cmath>
 #include "SplitPointDimension.h"
 

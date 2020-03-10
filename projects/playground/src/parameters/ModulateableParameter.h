@@ -53,8 +53,6 @@ class ModulateableParameter : public Parameter
   virtual double getModulationAmountCoarseDenominator() const;
   virtual std::pair<Glib::ustring, Glib::ustring> getModRangeAsDisplayValues() const;
 
-  static void registerTests();
-
   virtual DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
   void *getAmountCookie();
 

@@ -14,6 +14,8 @@ class Ribbon
 
   void syncBBBB();
 
+  [[nodiscard]] const FourStateLED* getLED(int ledPos) const;
+
  protected:
   void initLEDs();
   void setLEDState(int ledPos, char state);

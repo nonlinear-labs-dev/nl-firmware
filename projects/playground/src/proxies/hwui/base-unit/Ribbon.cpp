@@ -147,3 +147,8 @@ void Ribbon::setLEDsForValueBiPolar(tDisplayValue paramValue)
 
   // debugTrace();
 }
+
+const FourStateLED* Ribbon::getLED(int ledPos) const
+{
+  return &m_leds[ledPos];
+}
