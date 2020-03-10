@@ -6,18 +6,23 @@ Glib::ustring LegatoDimension::stringize(const tDisplayValue& displayValue) cons
   {
     default:
     case 0:
-      return "No Effect";
+      return "None";
     case 1:
-      return "On Envelopes";
+      return "Envelopes";
     case 2:
       return "Glide";
     case 3:
-      return "On Env & Glide";
+      return "Env & Glide";
   }
 }
 
-LegatoDimension LegatoDimension::get()
+const LegatoDimension& LegatoDimension::get()
 {
   static LegatoDimension ret;
   return ret;
+}
+
+Glib::ustring LegatoDimension::getStingizerJS() const
+{
+  return "stringizeLegato(cpValue)";
 }
