@@ -676,6 +676,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
 {
+  const auto oldType = m_type;
+
   if(m_type == type)
     return;
 
@@ -685,7 +687,10 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   initToFX(transaction);
 
   undoableSetType(transaction, type);
-  copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+  
+  if(oldType == SoundType::Single)
+    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
 
   initSplitPoint(transaction);
