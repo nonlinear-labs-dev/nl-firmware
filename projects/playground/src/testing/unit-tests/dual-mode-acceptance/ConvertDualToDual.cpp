@@ -45,3 +45,32 @@ TEST_CASE("Convert Layer to Split works for parameter Groups", "[EditBuffer][Con
     }
   }
 }
+
+TEST_CASE("Converting Layer to Split/Single resets Mute Parameter", "[EditBuffer][Convert]")
+{
+  auto eb = TestHelper::getEditBuffer();
+  auto muteI = eb->findParameterByID({ 395, VoiceGroup::I });
+  auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
+
+  WHEN("Mute is enabled in Layer")
+  {
+    TestHelper::initDualEditBuffer<SoundType::Layer>();
+    auto scope = TestHelper::createTestScope();
+    muteI->setCPFromHwui(scope->getTransaction(), 1);
+    muteII->setCPFromHwui(scope->getTransaction(), 1);
+
+    CHECK_PARAMETER_CP_EQUALS_FICTION(muteI, 1);
+    CHECK_PARAMETER_CP_EQUALS_FICTION(muteII, 1);
+
+    WHEN("Converted to Split")
+    {
+      eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
+
+      THEN("Mute is disabled!")
+      {
+        CHECK_PARAMETER_CP_EQUALS_FICTION(muteI, 0);
+        CHECK_PARAMETER_CP_EQUALS_FICTION(muteII, 0);
+      }
+    }
+  }
+}
