@@ -4,8 +4,8 @@
 #include <parameters/voice-group-master-group/VoiceGroupMasterModulateableParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/LinearBipolar96StScaleConverter.h>
 #include <parameters/scale-converters/OnOffScaleConverter.h>
-#include <parameters/scale-converters/dimension/UnitlessDimension.h>
 #include <parameters/scale-converters/Linear60KeyScaleConverter.h>
+#include <parameters/scale-converters/dimension/PitchDimension.h>
 #include "VoiceGroupMasterGroup.h"
 
 VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
@@ -23,12 +23,12 @@ void VoiceGroupMasterGroup::init()
       ScaleConverter::get<LinearBipolar96StScaleConverter>(), 0, 48, 4800));
 
   appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { 395, getVoiceGroup() },
-                                                ScaleConverter::get<OnOffScaleConverter>(), 0.0, 1, 1));
+                                                              ScaleConverter::get<OnOffScaleConverter>(), 0.0, 1, 1));
 
-  appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { 396, getVoiceGroup() },
-                                                ScaleConverter::get<Linear60KeyScaleConverter>(), 0.5, 60, 60));
+  appendParameter(new VoiceGroupMasterUnmodulateableParameter(
+      this, { 396, getVoiceGroup() }, ScaleConverter::get<Linear60KeyScaleConverter>(), 0.5, 60, 60));
 
-  appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { 397, getVoiceGroup() },
-                                                ScaleConverter::get<LinearCountScaleConverter<60, UnitlessDimension>>(),
-                                                0.0, 59, 59));
+  appendParameter(new VoiceGroupMasterUnmodulateableParameter(
+      this, { 397, getVoiceGroup() }, ScaleConverter::get<LinearCountScaleConverter<60, PitchDimension>>(), 0.0, 60,
+      60));
 }

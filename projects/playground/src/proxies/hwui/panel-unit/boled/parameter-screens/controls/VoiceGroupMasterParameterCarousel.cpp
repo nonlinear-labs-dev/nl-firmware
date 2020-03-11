@@ -40,7 +40,7 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
       setupMasterParameters({ { 358, vg }, { 360, vg }, { 356, VoiceGroup::Global } });
       break;
     case SoundType::Layer:
-      setupMasterParameters({ { 358, vg }, { 360, vg }, { 395, vg } });
+      setupMasterParameters({ { 358, vg }, { 360, vg }, { 396, vg }, { 397, vg } });
       break;
   }
 
