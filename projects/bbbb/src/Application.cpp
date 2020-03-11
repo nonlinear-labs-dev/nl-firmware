@@ -8,6 +8,7 @@
 #include <nltools/messaging/Messaging.h>
 #include <giomm.h>
 #include <io/WiFiManager.h>
+#include <io/USBManager.h>
 
 #ifdef _DEVELOPMENT_PC
 #include <ui/Window.h>
@@ -21,7 +22,8 @@ char *Application::initStatic(Application *app, char *argv)
 
   theApp = app;
   Configuration conf;
-  conf.offerEndpoints = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed, EndPoint::WiFiManager };
+  conf.offerEndpoints
+      = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed, EndPoint::WiFiManager };
   conf.useEndpoints = { { EndPoint::Playground, app->getOptions()->getPlaygroundHost() },
                         { EndPoint::AudioEngine, app->getOptions()->getAudioEngineHost() } };
   nltools::msg::init(conf);
@@ -33,6 +35,7 @@ Application::Application(int numArgs, char **argv)
     , m_selfPath(initStatic(this, argv[0]))
     , m_bridges(std::make_unique<Bridges>())
     , m_wifiManager(std::make_unique<WiFiManager>())
+    , m_usbManager(std::make_unique<USBManager>())
 {
 }
 

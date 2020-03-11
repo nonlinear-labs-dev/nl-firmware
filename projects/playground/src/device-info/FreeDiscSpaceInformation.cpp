@@ -2,7 +2,7 @@
 #include <glibmm/main.h>
 #include <glibmm/ustring.h>
 #include <sigc++/functors/mem_fun.h>
-#include <tools/SpawnCommandLine.h>
+#include <nltools/system/SpawnCommandLine.h>
 #include <xml/Writer.h>
 #include <chrono>
 
