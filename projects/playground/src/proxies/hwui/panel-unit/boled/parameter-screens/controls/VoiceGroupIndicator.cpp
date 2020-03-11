@@ -33,9 +33,9 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 {
   auto absPos = getPosition();
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 9, 4));
+  fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 10, 5));
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::II ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  fb.fillRect(Rect(absPos.getLeft(), absPos.getTop() + 5, 9, 4));
+  fb.fillRect(Rect(absPos.getLeft(), absPos.getTop() + 6, 10, 5));
   return true;
 }
 
@@ -43,9 +43,9 @@ bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
 {
   auto absPos = getPosition();
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 5, 9));
+  fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 5, 10));
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::II ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  fb.fillRect(Rect(absPos.getLeft() + 5, absPos.getTop(), 5, 9));
+  fb.fillRect(Rect(absPos.getLeft() + 6, absPos.getTop(), 5, 10));
   return true;
 }
 

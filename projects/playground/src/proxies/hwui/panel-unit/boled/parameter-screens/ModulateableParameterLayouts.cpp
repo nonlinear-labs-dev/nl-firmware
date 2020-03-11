@@ -395,7 +395,7 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
     case Mode::ParameterValue:
       addModAmountSliders(m_modeOverlay);
       m_modeOverlay->addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
-      m_modeOverlay->addControl(new ModulationSourceLabel(Rect(0, 21, 55, 12), Font::Justification::Right));
+      m_modeOverlay->addControl(new ModulationSourceLabel(Rect(42, 21, 13, 12), Font::Justification::Right));
       m_modeOverlay->addControl(new ModulationSourceEnabledDottedLine(Rect(57, 27, 17, 1)));
 
       setCarousel(createCarousel(Rect(195, 0, 58, 62)));
