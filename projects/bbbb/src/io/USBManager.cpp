@@ -4,14 +4,17 @@
 
 USBManager::USBManager()
     : m_backgroundThread { [this] {
+
       while(m_running)
       {
+        std::unique_lock<std::mutex> lock(cv_m);
+
         nltools::msg::USB::USBStatusMessage msg {};
         msg.m_usbAvailable = usbAvailable();
         msg.m_updateAvailable = updateAvailable();
         nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
 
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        m_condition.wait_for(lock, std::chrono::seconds(5));
       }
     } }
 {
@@ -20,6 +23,7 @@ USBManager::USBManager()
 USBManager::~USBManager()
 {
   m_running = false;
+  m_condition.notify_all();
 
   if(m_backgroundThread.joinable())
     m_backgroundThread.join();
