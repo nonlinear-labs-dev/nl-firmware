@@ -40,7 +40,7 @@ namespace nltools
 
       bool WebSocketOutChannel::send(const SerializedMessage &msg)
       {
-        if(!m_connection)
+        if(!m_connection || m_flushing)
           return false;
 
         m_backgroundContextQueue->pushMessage([=]() {
@@ -62,6 +62,26 @@ namespace nltools
           }
         });
         return true;
+      }
+
+      void WebSocketOutChannel::flush(std::chrono::milliseconds timeout)
+      {
+        if(!m_connection)
+          return;
+
+        m_flushing = true;
+
+        auto start = std::chrono::steady_clock::now();
+
+        while(m_backgroundContextQueue->isPending())
+        {
+          auto now = std::chrono::steady_clock::now();
+          auto elapsed = now - start;
+          if(elapsed > timeout)
+            return;
+        }
+
+        m_flushing = false;
       }
 
       bool WebSocketOutChannel::waitForConnection(std::chrono::milliseconds timeOut)

@@ -19,6 +19,7 @@ namespace nltools
       virtual ~OutChannel();
 
       virtual bool send(const SerializedMessage &msg) = 0;
+      virtual void flush(const std::chrono::milliseconds timeout) = 0;
       virtual bool waitForConnection(std::chrono::milliseconds timeOut) = 0;
       virtual void onConnectionEstablished(std::function<void()> cb) = 0;
       virtual bool isConnected() const = 0;

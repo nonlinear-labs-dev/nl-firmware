@@ -135,5 +135,11 @@ namespace nltools
 
       return ret;
     }
+
+    void flush(EndPoint receiver, const std::chrono::milliseconds timeout)
+    {
+      detail::outChannels.at(receiver)->flush(timeout);
+    }
+
   }
 }

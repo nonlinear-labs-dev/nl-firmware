@@ -102,6 +102,8 @@ namespace nltools
       return detail::send(receiver, detail::serialize<Msg>(msg));
     }
 
+    void flush(EndPoint receiver, const std::chrono::milliseconds timeout);
+
     template <typename Msg> sigc::connection receive(EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)
     {
       return detail::receive<Msg>(Msg::getType(), receivingEndPoint, [=](const auto &s) { cb(s); });
