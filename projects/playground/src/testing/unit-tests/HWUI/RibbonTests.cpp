@@ -27,7 +27,7 @@ TEST_CASE("Upper Ribbon", "[HWUI][Ribbon]")
       Ribbon::setLEDsForValueBiPolar(val);
     }
 
-    void setLEDState(int ledPos, char state)
+    void setLEDState(int ledPos, FourStateLED::State state)
     {
       Ribbon::setLEDState(ledPos, state);
     }

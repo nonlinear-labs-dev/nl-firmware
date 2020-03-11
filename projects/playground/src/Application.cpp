@@ -26,6 +26,8 @@
 #include <presets/EditBuffer.h>
 #include <giomm.h>
 
+using namespace std::chrono_literals;
+
 Application *Application::theApp = nullptr;
 
 void setupMessaging(const Options *options)
@@ -111,6 +113,11 @@ Application::~Application()
   m_hwui.reset();
   m_undoScope.reset();
   m_presetManager.reset();
+
+  nltools::msg::flush(nltools::msg::EndPoint::PanelLed, 1s);
+  nltools::msg::flush(nltools::msg::EndPoint::RibbonLed, 1s);
+  nltools::msg::flush(nltools::msg::EndPoint::Oled, 1s);
+
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
 #ifdef _PROFILING

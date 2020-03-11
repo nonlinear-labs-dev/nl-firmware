@@ -18,7 +18,7 @@ class Ribbon
 
  protected:
   void initLEDs();
-  void setLEDState(int ledPos, char state);
+  void setLEDState(int ledPos, FourStateLED::State state);
   void resetLEDs();
   void setLEDsForValueUniPolar(tDisplayValue paramVal);
   void setLEDsUniPolar(int paramValIdx);
@@ -29,7 +29,7 @@ class Ribbon
   void debugTrace();
 
  private:
-  char getLEDStateForBipolarValue(int led, tDisplayValue v) const;
+  FourStateLED::State getLEDStateForBipolarValue(int led, tDisplayValue v) const;
   char handleCenter(tDisplayValue v) const;
 
   FourStateLED m_leds[NUM_LEDS_PER_RIBBON];
