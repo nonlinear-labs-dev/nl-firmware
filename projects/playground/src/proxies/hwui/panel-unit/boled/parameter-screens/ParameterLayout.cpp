@@ -129,7 +129,7 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 
 void ParameterLayout2::handlePresetValueRecall()
 {
-  if(getCurrentParameter()->getParentGroup()->getLongName() == "Part"
+  if(getCurrentParameter()->getParentGroup()->getID().getName() == "Part"
      && Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Layer)
     getOLEDProxy().setOverlay(new PartMasterRecallLayout2());
   else if(getCurrentEditParameter()->isChangedFromLoaded())
