@@ -7,9 +7,11 @@ IP=192.168.8.2
 
 echo "Trying to update $UNIT with update found in $UPDATE."
 
-if ! sudo nmcli device wifi connect $UNIT password $PASSWORD; then
-    echo "could not connect to unit $UNIT"
-    exit 1
+if ! nmcli device wifi connect $UNIT password $PASSWORD; then
+    if ! sudo nmcli device wifi connect $UNIT password $PASSWORD; then
+        echo "could not connect to unit $UNIT"
+        exit 1
+    fi
 fi
 
 if ! ping $IP -c 1 > /dev/null; then
