@@ -1,8 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/UpdateAvailableView.h>
 #include <glibmm/main.h>
-#include <tools/SpawnCommandLine.h>
 
-static const auto c_updateFileName = "/mnt/usb-stick/nonlinear-c15-update.tar";
+bool UpdateAvailableView::m_updateAvailable = false;
 
 UpdateAvailableView::UpdateAvailableView()
     : super("", Rect(0, 0, 0, 0))
@@ -11,9 +10,7 @@ UpdateAvailableView::UpdateAvailableView()
   Glib::MainContext::get_default()->signal_timeout().connect_seconds(mem_fun(this, &UpdateAvailableView::poll), 5);
 }
 
-UpdateAvailableView::~UpdateAvailableView()
-{
-}
+UpdateAvailableView::~UpdateAvailableView() = default;
 
 bool UpdateAvailableView::poll()
 {
@@ -30,10 +27,10 @@ bool UpdateAvailableView::poll()
 
 bool UpdateAvailableView::updateExists()
 {
-#ifdef _DEVELOPMENT_PC
-  return false;
-#endif
-  SpawnCommandLine cmd(
-      "ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'ls /mnt/usb-stick/nonlinear-c15-update.tar'");
-  return cmd.getExitStatus() == 0;
+  return m_updateAvailable;
+}
+
+void UpdateAvailableView::setUpdateAvailable(bool updateAvailable)
+{
+  m_updateAvailable = updateAvailable;
 }

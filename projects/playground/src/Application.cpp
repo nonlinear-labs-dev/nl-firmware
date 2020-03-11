@@ -9,22 +9,19 @@
 #include "Options.h"
 #include "presets/PresetManager.h"
 #include "profiling/Profiler.h"
-#include "proxies/hwui/debug-oled/DebugOLED.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/lpc/LPCProxy.h"
 #include "proxies/audio-engine/AudioEngineProxy.h"
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
-#include <assert.h>
+#include <cassert>
 #include <proxies/hwui/debug-oled/DebugLayout.h>
 #include <tools/ExceptionTools.h>
 #include <nltools/messaging/Messaging.h>
-#include <device-settings/LayoutMode.h>
 #include <presets/EditBuffer.h>
 #include <giomm.h>
+#include <proxies/usb/USBChangeListener.h>
 
 Application *Application::theApp = nullptr;
 
@@ -79,6 +76,7 @@ Application::Application(int numArgs, char **argv)
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_heartbeatState(false)
     , m_isQuit(false)
+    , m_usbChangeListener(std::make_unique<USBChangeListener>())
 {
 #ifdef _PROFILING
   Profiler::get().enable(true);

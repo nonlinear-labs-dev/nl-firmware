@@ -36,6 +36,20 @@ namespace nltools
       };
     }
 
+    namespace USB
+    {
+      struct USBStatusMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::USBStatusMessage;
+        }
+
+        bool m_usbAvailable;
+        bool m_updateAvailable;
+      };
+    }
+
     namespace WiFi
     {
 

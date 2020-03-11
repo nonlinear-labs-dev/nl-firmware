@@ -1,6 +1,6 @@
 #include "AccessPointRestarter.h"
 #include "DebugLevel.h"
-#include "tools/SpawnCommandLine.h"
+#include <nltools/system/SpawnCommandLine.h>
 
 AccessPointRestarter &AccessPointRestarter::get()
 {
@@ -10,7 +10,7 @@ AccessPointRestarter &AccessPointRestarter::get()
 
 AccessPointRestarter::AccessPointRestarter()
     : m_throttler(std::chrono::seconds(1))
-    , m_done{ false }
+    , m_done { false }
 {
 }
 
