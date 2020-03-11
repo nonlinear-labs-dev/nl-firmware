@@ -5,7 +5,6 @@
 #include <presets/EditBuffer.h>
 #include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
-#include <parameters/AftertouchParameter.h>
 #include <parameters/MacroControlParameter.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameters/PedalParameter.h>
@@ -14,7 +13,6 @@
 #include <parameters/ScaleParameter.h>
 #include <parameters/SplitPointParameter.h>
 #include <parameters/PhysicalControlParameter.h>
-#include <parameters/voice-group-master-group/VoiceGroupMasterParameter.h>
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlsGroup.h>
 #include <groups/MasterGroup.h>
@@ -342,19 +340,4 @@ void AudioEngineProxy::sendEditBuffer()
   }
 
   Application::get().getSettings()->sendToLPC();
-}
-
-template <> nltools::msg::SinglePresetMessage AudioEngineProxy::createMessage<nltools::msg::SinglePresetMessage>()
-{
-  return AudioEngineProxy::createSingleEditBufferMessage();
-}
-
-template <> nltools::msg::SplitPresetMessage AudioEngineProxy::createMessage<nltools::msg::SplitPresetMessage>()
-{
-  return AudioEngineProxy::createSplitEditBufferMessage();
-}
-
-template <> nltools::msg::LayerPresetMessage AudioEngineProxy::createMessage<nltools::msg::LayerPresetMessage>()
-{
-  return AudioEngineProxy::createLayerEditBufferMessage();
 }

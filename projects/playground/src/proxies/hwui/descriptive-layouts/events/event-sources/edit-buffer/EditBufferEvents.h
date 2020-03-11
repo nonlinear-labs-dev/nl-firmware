@@ -34,6 +34,18 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override;
   };
 
+  class VGIMuted : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class VGIIMuted : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
   class CurrentVoiceGroupText : public VoiceGroupSelectedEvent<DisplayString>
   {
    public:

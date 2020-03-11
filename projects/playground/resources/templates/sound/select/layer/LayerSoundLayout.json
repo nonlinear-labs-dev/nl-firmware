@@ -52,7 +52,7 @@
           "Init": {
             "VoiceGroupIdentifier[Text]": "I"
           },
-          "Events": "isCurrentVGI => ANY[Highlight], VGIMasterTuneText => Unison[Text], VGIMasterVolumeText => Master[Text]"
+          "Events": "isCurrentVGI => ANY[Highlight], VGIMasterTuneText => Unison[Text], VGIMasterVolumeText => Master[Text], VGIMuted => MuteIndication[Text]"
         },
         "Lower": {
           "Class": "LayerVoiceGroupII",
@@ -62,7 +62,7 @@
             "Unison[Text]": "",
             "Master[Text]": ""
           },
-          "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text]"
+          "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text], VGIIMuted => MuteIndication[Text]"
         }
       },
       "EventSinks": {
