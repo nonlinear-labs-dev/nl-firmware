@@ -1,7 +1,7 @@
-#include <device-settings/DebugLevel.h>
 #include <glibmm/error.h>
 #include <glibmm/spawn.h>
-#include <tools/SpawnCommandLine.h>
+#include <nltools/system/SpawnCommandLine.h>
+#include <nltools/logging/Log.h>
 
 SpawnCommandLine::SpawnCommandLine(const std::string &cmd)
 {
@@ -11,7 +11,7 @@ SpawnCommandLine::SpawnCommandLine(const std::string &cmd)
   }
   catch(Glib::Error &error)
   {
-    DebugLevel::warning(error.what());
+    nltools::Log::warning(error.what());
   }
 }
 
@@ -30,7 +30,7 @@ const std::string &SpawnCommandLine::getStdError() const
   return m_stdError;
 }
 
-const int SpawnCommandLine::getExitStatus() const
+int SpawnCommandLine::getExitStatus() const
 {
   return m_exitStatus;
 }

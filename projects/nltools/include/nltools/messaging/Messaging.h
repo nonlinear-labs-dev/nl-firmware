@@ -33,6 +33,8 @@ namespace nltools
 
          NoteDown, NoteUp,
 
+         USBStatusMessage,
+
          WiFiPasswordChanged, WiFiSSIDChanged, WiFiSetSSID, WiFiSetPassword);
 
     namespace detail
