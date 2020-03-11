@@ -70,6 +70,20 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
 {
   auto ebParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(parameterID);
 
+  if(!ebParam)
+  {
+    nltools::Log::warning("Could not create diff for parameter", parameterID,
+                          ", because the paremeter does not exist anymore.");
+    return;
+  }
+
+  if(!other)
+  {
+    nltools::Log::warning("Could not create diff for parameter", parameterID,
+                          ", because the paremeter does not exist in the preset.");
+    return;
+  }
+
   writer.writeTag("parameter", Attribute("name", ebParam->getLongName()), [&] {
     auto sc = ebParam->getValue().getScaleConverter();
     auto myString = sc->getDimension().stringize(sc->controlPositionToDisplay(m_value));
