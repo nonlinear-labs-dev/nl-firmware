@@ -16,4 +16,4 @@ ConditionKernelCommandLine=|rd.modules-load
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=@C15_INSTALL_PATH@/scripts/soled-boot-message.sh
+ExecStart=@C15_INSTALL_PATH@/text2soled/text2soled multitext "initializing...@SC1" "initializing...@BC3"
