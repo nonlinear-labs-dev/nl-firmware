@@ -541,12 +541,13 @@ public class ServerProxy {
 		downloadFile("/presets/find-unique-preset-name?based-on=" + URL.encodeQueryString(currentName), handler);
 	}
 
-	public void getDiff(Preset presetA, Preset presetB, DownloadHandler handler) {
+	public void getDiff(Preset presetA, VoiceGroup vgOfPreset1, Preset presetB, VoiceGroup vgOfPreset2,
+			DownloadHandler handler) {
 		String aUUID = presetA != null ? presetA.getUUID() : "";
 		String bUUID = presetB != null ? presetB.getUUID() : "";
 
-		downloadFile("/presets/get-diff?p1=" + URL.encodeQueryString(aUUID) + "&p2=" + URL.encodeQueryString(bUUID),
-				handler);
+		downloadFile("/presets/get-diff?p1=" + URL.encodeQueryString(aUUID) + "&p2=" + URL.encodeQueryString(bUUID)
+				+ "&vg1=" + vgOfPreset1 + "&vg2=" + vgOfPreset2, handler);
 	}
 
 	public void dropPresetOnBank(IPreset p, Bank b) {
@@ -982,7 +983,8 @@ public class ServerProxy {
 
 	public void loadPresetIntoPart(String uuid, VoiceGroup loadTo) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-into-editbuffer-part");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("load-to", loadTo.toString()), new StaticURI.KeyValue("uuid", uuid));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("load-to", loadTo.toString()),
+				new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
 	}
 
@@ -994,7 +996,8 @@ public class ServerProxy {
 
 	public void renamePart(VoiceGroup part, String newName) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-part");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()), new StaticURI.KeyValue("name", newName));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()),
+				new StaticURI.KeyValue("name", newName));
 		queueJob(uri, false);
 	}
 

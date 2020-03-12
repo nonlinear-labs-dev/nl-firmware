@@ -324,7 +324,7 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
                   });
 }
 
-void Preset::writeDiff(Writer &writer, const Preset *other) const
+void Preset::writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const
 {
   auto pm = Application::get().getPresetManager();
 
@@ -373,15 +373,14 @@ void Preset::writeDiff(Writer &writer, const Preset *other) const
 
     super::writeDiff(writer, other);
 
-    writeGroups(writer, other);
+    writeGroups(writer, other, vgOfThis, vgOfOther);
   });
 }
 
-void Preset::writeGroups(Writer &writer, const Preset *other) const
+void Preset::writeGroups(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const
 {
-  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
-    for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
-      g.second->writeDiff(writer, g.first, other->findParameterGroup(g.first));
+  for(auto &g : m_parameterGroups[static_cast<size_t>(vgOfThis)])
+    g.second->writeDiff(writer, g.first, other->findParameterGroup({ g.first.getName(), vgOfOther }));
 }
 
 PresetParameterGroup *Preset::findOrCreateParameterGroup(const GroupId &id)
