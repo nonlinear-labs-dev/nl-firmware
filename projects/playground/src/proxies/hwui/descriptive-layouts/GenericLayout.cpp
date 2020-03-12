@@ -11,6 +11,7 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/controls/ControlAdapters.h"
 #include "EventProvider.h"
+#include "ConditionRegistry.h"
 
 namespace DescriptiveLayouts
 {
@@ -20,11 +21,17 @@ namespace DescriptiveLayouts
   {
   }
 
+  GenericLayout::~GenericLayout()
+  {
+    m_onConditionsChanged.disconnect();
+  }
+
   void GenericLayout::init()
   {
     m_eventProvider = EventProvider::instantiate(m_prototype.eventProvider);
     super::init();
     createControls();
+    connectConditions();
   }
 
   void GenericLayout::createControls()
@@ -39,6 +46,14 @@ namespace DescriptiveLayouts
       }
       addControl(control);
     }
+  }
+
+  void GenericLayout::connectConditions()
+  {
+    m_onConditionsChanged = ConditionRegistry::get().onChange([this]() {
+      if(!m_prototype.meetsConditions())
+        Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().bruteForce();
+    });
   }
 
   template <class CB> bool traverse(Control *c, CB cb)
