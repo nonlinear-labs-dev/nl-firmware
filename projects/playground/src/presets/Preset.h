@@ -50,6 +50,8 @@ class Preset : public PresetDualParameterGroups
   // accessors
   const Uuid &getUuid() const;
   Glib::ustring getName() const;
+  Glib::ustring getDisplayNameWithSuffixes() const;
+
   PresetParameter *findParameterByID(ParameterId id) const;
   PresetParameterGroup *findParameterGroup(const GroupId &id) const;
 
@@ -107,4 +109,6 @@ class Preset : public PresetDualParameterGroups
   friend class RecallParameterGroups;
 
   PresetParameterGroup *findOrCreateParameterGroup(const GroupId &id);
+  bool isMonoActive() const;
+  bool isUnisonActive() const;
 };

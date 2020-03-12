@@ -50,7 +50,7 @@ void PresetListEntry::onPresetChanged(const Preset *preset)
     {
       auto num = bank->getPresetPosition(preset->getUuid());
       m_number->update(num, m_selected, isLoaded);
-      m_name->update(preset->getName(), m_selected, isLoaded);
+      m_name->update(preset->getDisplayNameWithSuffixes(), m_selected, isLoaded);
       m_type->update(preset->getType(), m_selected, isLoaded);
       return;
     }

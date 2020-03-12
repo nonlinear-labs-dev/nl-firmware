@@ -401,7 +401,9 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
   auto bank = origin ? dynamic_cast<const Bank *>(origin->getParent()) : nullptr;
   auto bankName = bank ? bank->getName(true) : "";
   auto vgIName = getVoiceGroupName(VoiceGroup::I);
+  auto vgINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::I);
   auto vgIIName = getVoiceGroupName(VoiceGroup::II);
+  auto vgIINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::II);
 
   writer.writeTag(
       "edit-buffer",
@@ -409,7 +411,9 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("loaded-preset", getUUIDOfLastLoadedPreset().raw()), Attribute("loaded-presets-name", getName()),
         Attribute("loaded-presets-bank-name", bankName), Attribute("preset-is-zombie", zombie),
         Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed),
-        Attribute("vg-I-name", vgIName), Attribute("vg-II-name", vgIIName) },
+        Attribute("vg-I-name", vgIName), Attribute("vg-II-name", vgIIName),
+        Attribute("vg-I-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::I)),
+        Attribute("vg-II-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::II))},
       [&]() {
         if(changed)
           super::writeDocument(writer, knownRevision);
@@ -784,6 +788,13 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 {
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
   return m_voiceGroupLabels[static_cast<size_t>(vg)];
+}
+
+Glib::ustring EditBuffer::getVoiceGroupNameWithSuffix(VoiceGroup vg) const
+{
+  auto mono = findParameterByID({ 364, vg })->getControlPositionValue() > 0;
+  auto unison = findParameterByID({ 249, vg })->getControlPositionValue() > 0;
+  return getVoiceGroupName(vg) + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
 }
 
 void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo)
