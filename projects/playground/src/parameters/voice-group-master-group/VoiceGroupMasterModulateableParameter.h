@@ -11,7 +11,7 @@ class VoiceGroupMasterModulateableParameter : public ModulateableParameter
                                         tControlPositionValue def, tControlPositionValue coarseDenominator,
                                         tControlPositionValue fineDenominator);
 
-  DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+  Layout *createLayout(FocusAndMode focusAndMode) const override;
 };
 
 class VoiceGroupMasterUnmodulateableParameter : public Parameter
@@ -19,5 +19,5 @@ class VoiceGroupMasterUnmodulateableParameter : public Parameter
  public:
   using Parameter::Parameter;
 
-  DFBLayout *createLayout(FocusAndMode focusAndMode) const override;
+  Layout *createLayout(FocusAndMode focusAndMode) const override;
 };

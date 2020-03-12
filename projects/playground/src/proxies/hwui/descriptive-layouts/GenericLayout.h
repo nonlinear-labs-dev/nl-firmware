@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/DFBLayout.h>
+#include <proxies/hwui/Layout.h>
 #include <nltools/threading/Throttler.h>
 #include "LayoutClass.h"
 
@@ -9,9 +9,9 @@ namespace DescriptiveLayouts
   class PropertyOwner;
   class EventProvider;
 
-  class GenericLayout : public DFBLayout
+  class GenericLayout : public Layout
   {
-    using super = DFBLayout;
+    using super = Layout;
 
    public:
     explicit GenericLayout(LayoutClass prototype);

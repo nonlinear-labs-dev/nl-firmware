@@ -146,7 +146,7 @@ void BOLED::setupBankScreen(FocusAndMode focusAndMode)
 
 bool BOLED::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state)
 {
-  if(auto l = std::dynamic_pointer_cast<DFBLayout>(getLayout()))
+  if(auto l = std::dynamic_pointer_cast<Layout>(getLayout()))
     if(l->onButton(buttonID, state, modifiers))
       return true;
 
@@ -155,7 +155,7 @@ bool BOLED::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool st
 
 void BOLED::onRotary(signed char i)
 {
-  if(auto l = std::dynamic_pointer_cast<DFBLayout>(getLayout()))
+  if(auto l = std::dynamic_pointer_cast<Layout>(getLayout()))
     l->onRotary(i, Application::get().getHWUI()->getButtonModifiers());
 }
 

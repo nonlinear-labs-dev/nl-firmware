@@ -11,7 +11,7 @@ ModulateableMonoParameter::ModulateableMonoParameter(ParameterGroup *group, cons
 {
 }
 
-DFBLayout *ModulateableMonoParameter::createLayout(FocusAndMode focusAndMode) const
+Layout *ModulateableMonoParameter::createLayout(FocusAndMode focusAndMode) const
 {
   switch(focusAndMode.mode)
   {

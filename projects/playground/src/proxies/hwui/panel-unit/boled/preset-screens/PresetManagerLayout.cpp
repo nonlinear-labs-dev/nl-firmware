@@ -310,7 +310,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
 bool PresetManagerLayout::onRotary(int inc, ButtonModifiers modifiers)
 {
   m_presets->onRotary(inc, modifiers);
-  return DFBLayout::onRotary(inc, modifiers);
+  return Layout::onRotary(inc, modifiers);
 }
 
 bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/DFBLayout.h>
+#include <proxies/hwui/Layout.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <functional>
 #include <presets/StoreModeData.h>
@@ -17,10 +17,10 @@ class LoadModeSetting;
 class ButtonMenu;
 class Button;
 
-class PresetManagerLayout : public DFBLayout
+class PresetManagerLayout : public Layout
 {
  private:
-  typedef DFBLayout super;
+  typedef Layout super;
 
  public:
   PresetManagerLayout(FocusAndMode focusAndMode);
