@@ -272,7 +272,7 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::LayerMuteDec, [eb]() {
+    registerEvent(EventSinks::LayerMuteInc, [eb]() {
       auto muteI = eb->findParameterByID({ 395, VoiceGroup::I });
       auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
@@ -291,7 +291,7 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::LayerMuteInc, [eb]() {
+    registerEvent(EventSinks::LayerMuteDec, [eb]() {
       auto muteI = eb->findParameterByID({ 395, VoiceGroup::I });
       auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
