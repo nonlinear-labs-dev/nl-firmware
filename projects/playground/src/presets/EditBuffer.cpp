@@ -687,12 +687,14 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   initToFX(transaction);
 
   undoableSetType(transaction, type);
-  
+
   if(oldType == SoundType::Single)
     copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
 
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
 
+  if(type == SoundType::Layer)
+    initFadeFrom(transaction);
   initSplitPoint(transaction);
   initRecallValues(transaction);
 
@@ -933,4 +935,10 @@ void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
 {
   auto splitPoint = findParameterByID({ 356, VoiceGroup::Global });
   splitPoint->setDefaultFromHwui(transaction);
+}
+
+void EditBuffer::initFadeFrom(UNDO::Transaction *transaction)
+{
+  findParameterByID({ 396, VoiceGroup::I })->setDefaultFromHwui(transaction);
+  findParameterByID({ 396, VoiceGroup::II })->setDefaultFromHwui(transaction);
 }
