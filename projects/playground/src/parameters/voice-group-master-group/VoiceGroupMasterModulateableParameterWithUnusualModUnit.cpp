@@ -11,7 +11,7 @@ VoiceGroupMasterModulateableParameterWithUnusualModUnit::VoiceGroupMasterModulat
 {
 }
 
-DFBLayout* VoiceGroupMasterModulateableParameterWithUnusualModUnit::createLayout(FocusAndMode focusAndMode) const
+Layout* VoiceGroupMasterModulateableParameterWithUnusualModUnit::createLayout(FocusAndMode focusAndMode) const
 {
   switch(focusAndMode.mode)
   {

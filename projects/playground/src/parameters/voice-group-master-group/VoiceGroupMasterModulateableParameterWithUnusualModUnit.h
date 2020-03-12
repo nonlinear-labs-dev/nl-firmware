@@ -7,5 +7,5 @@ class VoiceGroupMasterModulateableParameterWithUnusualModUnit : public Modulatea
   VoiceGroupMasterModulateableParameterWithUnusualModUnit(ParameterGroup* group, const ParameterId& id, const ScaleConverter* scale,
                                               const ScaleConverter* modScale, tControlPositionValue def, int coarse,
                                               int fine);
-  DFBLayout* createLayout(FocusAndMode focusAndMode) const override;
+  Layout* createLayout(FocusAndMode focusAndMode) const override;
 };

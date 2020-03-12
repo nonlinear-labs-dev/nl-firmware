@@ -11,7 +11,7 @@ VoiceGroupMasterModulateableParameter::VoiceGroupMasterModulateableParameter(
 {
 }
 
-DFBLayout *VoiceGroupMasterModulateableParameter::createLayout(FocusAndMode focusAndMode) const
+Layout *VoiceGroupMasterModulateableParameter::createLayout(FocusAndMode focusAndMode) const
 {
   switch(focusAndMode.mode)
   {
@@ -25,7 +25,7 @@ DFBLayout *VoiceGroupMasterModulateableParameter::createLayout(FocusAndMode focu
   }
 }
 
-DFBLayout *VoiceGroupMasterUnmodulateableParameter::createLayout(FocusAndMode focusAndMode) const
+Layout *VoiceGroupMasterUnmodulateableParameter::createLayout(FocusAndMode focusAndMode) const
 {
   switch(focusAndMode.mode)
   {

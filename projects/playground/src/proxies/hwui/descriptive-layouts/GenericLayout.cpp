@@ -16,7 +16,7 @@
 namespace DescriptiveLayouts
 {
   GenericLayout::GenericLayout(LayoutClass prototype)
-      : DFBLayout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
+      : Layout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
       , m_prototype(std::move(prototype))
   {
   }

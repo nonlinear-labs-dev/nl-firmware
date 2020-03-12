@@ -1,6 +1,6 @@
 #pragma once
 
-#include <proxies/hwui/DFBLayout.h>
+#include <proxies/hwui/Layout.h>
 #include <sigc++/connection.h>
 
 class Overlay;
@@ -13,10 +13,10 @@ class Label;
 class Button;
 class ModuleCaption;
 
-class ParameterLayout2 : public DFBLayout
+class ParameterLayout2 : public Layout
 {
  public:
-  typedef DFBLayout super;
+  typedef Layout super;
   typedef ParameterLayout2 virtual_base;
   ParameterLayout2();
 
