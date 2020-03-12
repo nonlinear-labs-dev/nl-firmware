@@ -753,12 +753,15 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
     case C15::Parameters::Local_Unmodulateables::Mono_Grp_Legato:
         m_alloc.setMonoLegato(layerId, param->m_scaled);
         break;
-    // TODO: implement Key Fade evaluation of individual levels (by layerId)
     case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From:
-        evalVoiceFadeChg(layerId);
+        if (m_layer_mode == LayerMode::Layer) {
+            evalVoiceFadeChg(layerId);
+        }
         break;
     case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range:
-        evalVoiceFadeChg(layerId);
+        if (m_layer_mode == LayerMode::Layer) {
+            evalVoiceFadeChg(layerId);
+        }
         break;
     default:
         break;
@@ -1855,7 +1858,6 @@ void dsp_host_dual::recallSplit()
 
 void dsp_host_dual::recallLayer()
 {
-    // TODO: implement Key Fade evaluation of individual levels (both parts)
     if (LOG_RECALL) {
         nltools::Log::info("recallLayer(@", m_clock.m_index, ")");
     }
@@ -1923,6 +1925,7 @@ void dsp_host_dual::recallLayer()
         for (uint32_t i = 0; i < msg->unmodulateables[layerId].size(); i++) {
             localParRcl(layerId, msg->unmodulateables[layerId][i]);
         }
+        evalVoiceFadeChg(layerId);
         // local updates: modulateables
         if (LOG_RECALL) {
             nltools::Log::info("recall: local modulateables:");
