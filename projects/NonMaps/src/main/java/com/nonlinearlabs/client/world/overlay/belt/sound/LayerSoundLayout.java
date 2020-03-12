@@ -126,7 +126,7 @@ public class LayerSoundLayout extends SoundLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return EditBufferModel.get().getPresetNameOfVoiceGroup(group);
+				return EditBufferModel.get().getPresetNameOfVoiceGroupWithSuffix(group);
 			}
 
 			@Override

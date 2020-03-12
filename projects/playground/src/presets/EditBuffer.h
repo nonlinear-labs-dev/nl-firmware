@@ -23,6 +23,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   Glib::ustring getName() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
+  Glib::ustring getVoiceGroupNameWithSuffix(VoiceGroup vg) const;
   size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected() const;

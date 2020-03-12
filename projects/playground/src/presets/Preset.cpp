@@ -19,7 +19,7 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_voiceGroupLabels{ { "", "" } }
+    , m_voiceGroupLabels { { "", "" } }
 {
 }
 
@@ -27,7 +27,7 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
+    , m_voiceGroupLabels { other.m_voiceGroupLabels }
 {
 }
 
@@ -136,6 +136,13 @@ void Preset::undoableSetVoiceGroupName(UNDO::Transaction *transaction, VoiceGrou
 const Uuid &Preset::getUuid() const
 {
   return m_uuid;
+}
+
+Glib::ustring Preset::getDisplayNameWithSuffixes() const
+{
+  auto mono = isMonoActive();
+  auto unison = isUnisonActive();
+  return getName() + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
 }
 
 Glib::ustring Preset::getName() const
@@ -314,7 +321,8 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("preset",
-                  { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("changed", changed),
+                  { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
+                    Attribute("name-suffixed", getDisplayNameWithSuffixes()), Attribute("changed", changed),
                     Attribute("type", toString(m_type)) },
                   [&]() {
                     if(changed)
@@ -395,4 +403,44 @@ PresetParameterGroup *Preset::findOrCreateParameterGroup(const GroupId &id)
     vgMap[id] = std::make_unique<PresetParameterGroup>(id.getVoiceGroup());
     return findParameterGroup(id);
   }
+}
+
+bool Preset::isMonoActive() const
+{
+  auto monoEnabledI = findParameterByID({ 364, VoiceGroup::I });
+  auto monoEnabledII = findParameterByID({ 364, VoiceGroup::II });
+
+  if(monoEnabledI && monoEnabledII)
+  {
+    if(getType() == SoundType::Split)
+    {
+      return monoEnabledI->getValue() > 0 || monoEnabledII->getValue() > 0;
+    }
+    else
+    {
+      return monoEnabledI->getValue() > 0;
+    }
+  }
+
+  return false;
+}
+
+bool Preset::isUnisonActive() const
+{
+  auto unisonVoicesI = findParameterByID({ 249, VoiceGroup::I });
+  auto unisonVoicesII = findParameterByID({ 249, VoiceGroup::II });
+
+  if(unisonVoicesI && unisonVoicesII)
+  {
+    if(getType() == SoundType::Split)
+    {
+      return unisonVoicesI->getValue() > 0 || unisonVoicesII->getValue() > 0;
+    }
+    else
+    {
+      return unisonVoicesI->getValue() > 0;
+    }
+  }
+
+  return false;
 }

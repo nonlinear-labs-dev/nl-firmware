@@ -41,6 +41,7 @@ import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDial
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 	private String uuid = null;
+	private String realName = "";
 	private ColorTag tag = null;
 	private TypeLabel typeLabel = null;
 	private Name name = null;
@@ -153,9 +154,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public void update(int i, Node preset) {
 		this.uuid = preset.getAttributes().getNamedItem("uuid").getNodeValue();
-		String name = preset.getAttributes().getNamedItem("name").getNodeValue();
+		this.realName = preset.getAttributes().getNamedItem("name").getNodeValue();
+		String suffixedName = preset.getAttributes().getNamedItem("name-suffixed").getNodeValue();
 		this.number.setText(NumberFormat.getFormat("#000").format(i));
-		this.name.setText(name);
+		this.name.setText(suffixedName);
 
 		String typeStr = preset.getAttributes().getNamedItem("type").getNodeValue();
 		this.type = SoundType.valueOf(typeStr);
@@ -165,6 +167,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (isSelected() && getParent().isSelected() && PresetInfoDialog.isShown())
 			PresetInfoDialog.update(this);
+	}
+
+	public String getDisplayNameWithSuffix() {
+		return this.name.getText();
 	}
 
 	public int getNumber() {
@@ -432,7 +438,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public String getCurrentName() {
-		return name.getText();
+		return realName;
 	}
 
 	@Override
