@@ -36,6 +36,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include "ModulateableParameterLayouts.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
@@ -374,6 +375,11 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
   m_modeOverlay->clear();
   m_mcAmtButton->setVisible(true);
   m_mcSelButton->setVisible(true);
+
+  if(auto indication = findControlOfType<VoiceGroupIndicator>())
+  {
+    indication->setVisible(desiredMode == Mode::ParameterValue);
+  }
 
   handleSelectPartButton();
 
