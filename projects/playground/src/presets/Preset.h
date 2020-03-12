@@ -52,7 +52,7 @@ class Preset : public PresetDualParameterGroups
   Glib::ustring getName() const;
   Glib::ustring getDisplayNameWithSuffixes() const;
 
-  PresetParameter *findParameterByID(ParameterId id) const;
+  PresetParameter *findParameterByID(ParameterId id, bool throwIfMissing) const;
   PresetParameterGroup *findParameterGroup(const GroupId &id) const;
 
   template <VoiceGroup VG> void forEachParameter(const std::function<void(PresetParameter *)> &cb)

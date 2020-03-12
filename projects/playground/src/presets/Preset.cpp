@@ -19,7 +19,7 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_voiceGroupLabels { { "", "" } }
+    , m_voiceGroupLabels{ { "", "" } }
 {
 }
 
@@ -27,7 +27,7 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_voiceGroupLabels { other.m_voiceGroupLabels }
+    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
 {
 }
 
@@ -178,13 +178,16 @@ void Preset::guessName(UNDO::Transaction *transaction)
   setName(transaction, Application::get().getPresetManager()->createPresetNameBasedOn(currentName));
 }
 
-PresetParameter *Preset::findParameterByID(ParameterId id) const
+PresetParameter *Preset::findParameterByID(ParameterId id, bool throwIfMissing) const
 {
   for(auto &g : m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())])
     if(auto p = g.second->findParameterByID(id))
       return p;
 
-  throw std::runtime_error("no such parameter in " + toString(id.getVoiceGroup()));
+  if(throwIfMissing)
+    throw std::runtime_error("no such parameter" + id.toString() + " in " + toString(id.getVoiceGroup()));
+
+  return nullptr;
 }
 
 PresetParameterGroup *Preset::findParameterGroup(const GroupId &id) const
@@ -407,8 +410,8 @@ PresetParameterGroup *Preset::findOrCreateParameterGroup(const GroupId &id)
 
 bool Preset::isMonoActive() const
 {
-  auto monoEnabledI = findParameterByID({ 364, VoiceGroup::I });
-  auto monoEnabledII = findParameterByID({ 364, VoiceGroup::II });
+  auto monoEnabledI = findParameterByID({ 364, VoiceGroup::I }, false);
+  auto monoEnabledII = findParameterByID({ 364, VoiceGroup::II }, false);
 
   if(monoEnabledI && monoEnabledII)
   {
@@ -427,8 +430,8 @@ bool Preset::isMonoActive() const
 
 bool Preset::isUnisonActive() const
 {
-  auto unisonVoicesI = findParameterByID({ 249, VoiceGroup::I });
-  auto unisonVoicesII = findParameterByID({ 249, VoiceGroup::II });
+  auto unisonVoicesI = findParameterByID({ 249, VoiceGroup::I }, false);
+  auto unisonVoicesII = findParameterByID({ 249, VoiceGroup::II }, false);
 
   if(unisonVoicesI && unisonVoicesII)
   {

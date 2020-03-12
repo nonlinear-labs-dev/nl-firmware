@@ -24,7 +24,7 @@ PresetInfoContent::PresetInfoContent()
 
 PresetInfoContent::~PresetInfoContent() = default;
 
-void PresetInfoContent::onBankChanged(const Uuid &selectedBank)
+void PresetInfoContent::onBankChanged(const Uuid &)
 {
   m_bankConnection.disconnect();
 
@@ -94,18 +94,18 @@ bool PresetInfoContent::fillDefaults()
 
 Glib::ustring PresetInfoContent::createPresetTypeString(const Preset *preset)
 {
-  auto type = toString(preset->getType());
+  Glib::ustring type = toString(preset->getType());
 
-  auto monoI = preset->findParameterByID({ 364, VoiceGroup::I });
-  auto monoII = preset->findParameterByID({ 364, VoiceGroup::II });
-  auto unisonI = preset->findParameterByID({ 249, VoiceGroup::I });
-  auto unisonII = preset->findParameterByID({ 249, VoiceGroup::II });
+  auto monoI = preset->findParameterByID({ 364, VoiceGroup::I }, false);
+  auto monoII = preset->findParameterByID({ 364, VoiceGroup::II }, false);
+  auto unisonI = preset->findParameterByID({ 249, VoiceGroup::I }, true);
+  auto unisonII = preset->findParameterByID({ 249, VoiceGroup::II }, true);
 
-  const auto monoIEnabled = monoI->getValue() != 0;
-  const auto monoIIEnabled = monoII->getValue() != 0;
+  const auto monoIEnabled = monoI ? differs(monoI->getValue(), 0.0) : false;
+  const auto monoIIEnabled = monoII ? differs(monoII->getValue(), 0.0) : false;
 
-  const auto unisonIEnabled = unisonI->getValue() != 0;
-  const auto unisonIIEnabled = unisonII->getValue() != 0;
+  const auto unisonIEnabled = differs(unisonI->getValue(), 0.0);
+  const auto unisonIIEnabled = differs(unisonII->getValue(), 0.0);
 
   auto createSuffixedString = [&](const std::string &prefix, auto I, auto II) -> std::string {
     if(I && II)

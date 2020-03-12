@@ -42,7 +42,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter { 0, VoiceGroup::I }
+    , m_lastSelectedParameter{ 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -229,7 +229,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name {};
+    Glib::ustring name{};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -413,7 +413,7 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed),
         Attribute("vg-I-name", vgIName), Attribute("vg-II-name", vgIIName),
         Attribute("vg-I-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::I)),
-        Attribute("vg-II-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::II))},
+        Attribute("vg-II-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::II)) },
       [&]() {
         if(changed)
           super::writeDocument(writer, knownRevision);
@@ -675,7 +675,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initRecallValues(transaction);
   undoableSetType(transaction, SoundType::Single);
 
-  transaction->addPostfixCommand([this](auto state) { this->sendToAudioEngine(); });
+  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
@@ -711,7 +711,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
 
-  transaction->addPostfixCommand([this](auto state) { this->sendToAudioEngine(); });
+  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transaction *transaction)
@@ -721,7 +721,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Volume and Tune
-  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
     auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -910,22 +910,21 @@ void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *t
 {
   auto part = getParameterGroupByID({ "Part", copyTo });
 
-  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
   {
     auto p = part->findParameterByID({ ids.first, part->getVoiceGroup() });
-    auto pGlobal = preset->findParameterByID({ ids.second, VoiceGroup::Global });
-
-    p->copyFrom(transaction, pGlobal);
+    if(auto pGlobal = preset->findParameterByID({ ids.second, VoiceGroup::Global }, false))
+      p->copyFrom(transaction, pGlobal);
   }
 }
 
 void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                              VoiceGroup copyFrom, VoiceGroup copyTo)
 {
-  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global });
-  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global });
-  auto presetPartVolume = preset->findParameterByID({ 358, copyFrom });
-  auto presetPartTune = preset->findParameterByID({ 360, copyFrom });
+  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global }, true);
+  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global }, true);
+  auto presetPartVolume = preset->findParameterByID({ 358, copyFrom }, false);
+  auto presetPartTune = preset->findParameterByID({ 360, copyFrom }, false);
 
   auto partVolume = findParameterByID({ 358, copyTo });
   auto partTune = findParameterByID({ 360, copyTo });
@@ -933,13 +932,15 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto volumeScaleConverter
       = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
   auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
-  auto partVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetPartVolume->getValue());
+  auto partVolumeDV
+      = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : 1.0);
 
   auto newVolumeDV = globalVolumeDV + partVolumeDV;
   auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
 
   partVolume->setCPFromHwui(transaction, newVolumeCP);
-  partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() + presetPartTune->getValue());
+  partTune->setCPFromHwui(transaction,
+                          presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : 0));
 }
 
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)

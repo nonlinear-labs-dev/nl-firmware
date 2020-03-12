@@ -9,14 +9,14 @@ namespace detail
   template <VoiceGroup vg> void enableMono(Preset* preset)
   {
     auto scope = TestHelper::createTestScope();
-    auto mono = preset->findParameterByID({ 364, vg });
+    auto mono = preset->findParameterByID({ 364, vg }, true);
     mono->setValue(scope->getTransaction(), 1);
   }
 
   template <VoiceGroup vg> void enableUnison(Preset* preset)
   {
     auto scope = TestHelper::createTestScope();
-    auto unison = preset->findParameterByID({ 249, vg });
+    auto unison = preset->findParameterByID({ 249, vg }, true);
     unison->setValue(scope->getTransaction(), 1);
   }
 };
