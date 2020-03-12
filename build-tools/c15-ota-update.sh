@@ -14,7 +14,7 @@ if ! nmcli device wifi connect $UNIT password $PASSWORD; then
     fi
 fi
 
-if ! ping $IP -c 1 > /dev/null; then
+if ! ping $IP -c 10 > /dev/null; then
     echo "could not ping unit $UNIT"
     exit 1
 fi

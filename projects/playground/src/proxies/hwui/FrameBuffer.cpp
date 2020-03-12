@@ -110,6 +110,12 @@ inline void FrameBuffer::setRawPixel(tCoordinate x, tCoordinate y)
 {
   const long index = getIndex(x, y);
   m_backBuffer[index] = static_cast<tPixel>(m_currentColor);
+
+  if(m_perPixelDebug)
+  {
+    swapBuffers();
+    nltools::msg::flush(nltools::msg::EndPoint::Oled, std::chrono::seconds(1));
+  }
 }
 
 inline long FrameBuffer::getIndex(tCoordinate x, tCoordinate y) const
@@ -124,6 +130,17 @@ void FrameBuffer::unmapAndClose()
 void FrameBuffer::clear()
 {
   std::fill(m_backBuffer.begin(), m_backBuffer.end(), 0);
+
+  if(m_perPixelDebug)
+  {
+    swapBuffers();
+    nltools::msg::flush(nltools::msg::EndPoint::Oled, std::chrono::seconds(1));
+  }
+}
+
+void FrameBuffer::setPerPixelDebug(bool onOff)
+{
+  m_perPixelDebug = onOff;
 }
 
 void FrameBuffer::setColor(const Colors &c)
@@ -192,6 +209,12 @@ inline void FrameBuffer::drawRawHorizontalLine(tCoordinate x, tCoordinate y, tCo
 
     for(long i = 0; i < length; i++)
       data[i] = static_cast<tPixel>(m_currentColor);
+
+    if(m_perPixelDebug)
+    {
+      swapBuffers();
+      nltools::msg::flush(nltools::msg::EndPoint::Oled, std::chrono::seconds(1));
+    }
   }
 }
 
@@ -258,7 +281,7 @@ bool FrameBuffer::swapBuffers()
 
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
   {
-    SetTimestampedOledMessage msg {};
+    SetTimestampedOledMessage msg{};
     msg.m_timestamp
         = Application::get().getHWUI()->getPanelUnit().getEditPanel().getKnob().resetOldestPendingTimestamp();
     memcpy(msg.m_oledMessage.pixels, m_backBuffer.data(), m_backBuffer.size());
@@ -266,7 +289,7 @@ bool FrameBuffer::swapBuffers()
   }
   else
   {
-    SetOLEDMessage msg {};
+    SetOLEDMessage msg{};
     memcpy(msg.pixels, m_backBuffer.data(), m_backBuffer.size());
     return send(EndPoint::Oled, msg);
   }
