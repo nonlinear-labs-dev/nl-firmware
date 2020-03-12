@@ -6,6 +6,7 @@
 #include <parameters/scale-converters/OnOffScaleConverter.h>
 #include <parameters/scale-converters/Linear60KeyScaleConverter.h>
 #include <parameters/scale-converters/dimension/PitchDimension.h>
+#include <parameters/scale-converters/Linear60StScaleConverter.h>
 #include "VoiceGroupMasterGroup.h"
 
 VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
@@ -25,10 +26,11 @@ void VoiceGroupMasterGroup::init()
   appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { 395, getVoiceGroup() },
                                                               ScaleConverter::get<OnOffScaleConverter>(), 0.0, 1, 1));
 
-  appendParameter(new VoiceGroupMasterUnmodulateableParameter(
-      this, { 396, getVoiceGroup() }, ScaleConverter::get<Linear60KeyScaleConverter>(), 0.5, 60, 60));
+  auto fadeFromInitial = getVoiceGroup() == VoiceGroup::I ? 1 : 0;
 
   appendParameter(new VoiceGroupMasterUnmodulateableParameter(
-      this, { 397, getVoiceGroup() }, ScaleConverter::get<LinearCountScaleConverter<60, PitchDimension>>(), 0.0, 60,
-      60));
+      this, { 396, getVoiceGroup() }, ScaleConverter::get<Linear60KeyScaleConverter>(), fadeFromInitial, 60, 60));
+
+  appendParameter(new VoiceGroupMasterUnmodulateableParameter(
+      this, { 397, getVoiceGroup() }, ScaleConverter::get<Linear60StScaleConverter>(), 0.0, 60, 60));
 }
