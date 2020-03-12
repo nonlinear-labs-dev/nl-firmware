@@ -744,15 +744,6 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
         }
     }
     switch (static_cast<C15::Parameters::Local_Unmodulateables>(_id)) {
-    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable:
-        m_alloc.setMonoEnable(layerId, param->m_scaled);
-        break;
-    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Prio:
-        m_alloc.setMonoPriority(layerId, param->m_scaled);
-        break;
-    case C15::Parameters::Local_Unmodulateables::Mono_Grp_Legato:
-        m_alloc.setMonoLegato(layerId, param->m_scaled);
-        break;
     case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From:
         if (m_layer_mode == LayerMode::Layer) {
             evalVoiceFadeChg(layerId);
