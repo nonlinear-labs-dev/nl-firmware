@@ -76,7 +76,7 @@ class Preset : public PresetDualParameterGroups
   Glib::ustring buildUndoTransactionTitle(const Glib::ustring &prefix) const;
   bool matchesQuery(const SearchQuery &query) const;
 
-  void writeDiff(Writer &writer, const Preset *other) const;
+  void writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
 
   // signals
   sigc::connection onChanged(sigc::slot<void> cb);
@@ -89,7 +89,7 @@ class Preset : public PresetDualParameterGroups
   size_t getHash() const = delete;
   void updateBanksLastModifiedTimestamp(UNDO::Transaction *transaction);
 
-  void writeGroups(Writer &w, const Preset *preset) const;
+  void writeGroups(Writer &w, const Preset *preset, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
   Uuid m_uuid;
   Glib::ustring m_name;
   std::array<Glib::ustring, 2> m_voiceGroupLabels;

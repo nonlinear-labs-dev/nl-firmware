@@ -1848,3 +1848,7 @@ button {
 .dialogcontainer button.randomize-button {
   min-width: unset;
 }
+
+.voicegroup-menu {
+  min-width: 7em;
+}
