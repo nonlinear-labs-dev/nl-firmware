@@ -51,6 +51,8 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   void setPixel(tCoordinate x, tCoordinate y);
   void clear();
 
+  void setPerPixelDebug(bool onOff);
+
   struct StackScopeGuard
   {
     FrameBuffer *m_fb;
@@ -105,4 +107,5 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   std::vector<tPixel> m_backBuffer;
   std::stack<Rect> m_clips;
   std::stack<Point> m_offsets;
+  bool m_perPixelDebug = false;
 };
