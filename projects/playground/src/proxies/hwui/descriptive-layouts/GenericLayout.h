@@ -15,7 +15,7 @@ namespace DescriptiveLayouts
 
    public:
     explicit GenericLayout(LayoutClass prototype);
-    ~GenericLayout() override = default;
+    ~GenericLayout() override;
 
     void init() override;
     bool onButton(Buttons i, bool down, ::ButtonModifiers modifiers) override;
@@ -25,7 +25,7 @@ namespace DescriptiveLayouts
    private:
     bool handleEventSink(EventSinks s);
     void createControls();
-
+    void connectConditions();
     bool handleDefaults(Buttons buttons, bool down, ::ButtonModifiers modifiers);
     void togglePresetMode();
     void toggleSoundMode();
@@ -36,6 +36,6 @@ namespace DescriptiveLayouts
 
     LayoutClass m_prototype;
     std::unique_ptr<EventProvider> m_eventProvider;
-
+    sigc::connection m_onConditionsChanged;
   };
 }
