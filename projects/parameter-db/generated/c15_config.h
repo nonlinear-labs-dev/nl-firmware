@@ -11,9 +11,11 @@
 
 #include <stdint.h>
 
-namespace C15 {
+namespace C15
+{
 
-namespace Config {
+  namespace Config
+  {
 
     const char milestone[7] = "1.7B-4";
     const uint32_t total_polyphony = 24;
@@ -27,6 +29,6 @@ namespace Config {
     const uint32_t key_from = 36;
     const uint32_t key_to = 96;
 
-} // namespace C15::Config
+  }  // namespace C15::Config
 
-} // namespace C15
+}  // namespace C15
