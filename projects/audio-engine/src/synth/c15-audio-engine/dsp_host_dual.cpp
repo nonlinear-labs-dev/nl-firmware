@@ -1922,9 +1922,9 @@ void dsp_host_dual::recallSingle()
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
-  for(uint32_t i = 0; i < msg->globalparams.size(); i++)
+  for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
-    globalParRcl(msg->globalparams[i]);
+    globalParRcl(msg->scale[i]);
   }
 
   // TODO: new recall of Master Modulateables
@@ -2052,10 +2052,11 @@ void dsp_host_dual::recallSplit()
     globalParRcl(msg->hwamounts[i]);
   }
   // global updates: macros
-  if(LOG_RECALL)
+  if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: macros:");
   }
+
   for(uint32_t i = 0; i < msg->macros.size(); i++)
   {
     globalParRcl(msg->macros[i]);
@@ -2065,18 +2066,20 @@ void dsp_host_dual::recallSplit()
     globalTimeRcl(msg->macrotimes[i]);
   }
   // global updates: parameters
-  if(LOG_RECALL)
+  if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (modulateables):");
   }
   globalParRcl(msg->splitpoint);
-  if(LOG_RECALL)
+  if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
-  for(uint32_t i = 0; i < msg->globalparams.size(); i++)
+
+  for(auto i :
+      msg->scale)  // @Matthias wie findest du diese art der for schleife? https://en.cppreference.com/w/cpp/language/range-for
   {
-    globalParRcl(msg->globalparams[i]);
+    globalParRcl(i);
   }
 
   // TODO: new recall of Master Modulateables
@@ -2185,7 +2188,7 @@ void dsp_host_dual::recallLayer()
     m_params.m_layer[layerId].m_assignment.reset();
   }
   // global updates: hw sources
-  if(LOG_RECALL)
+  if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: hw sources:");
   }
@@ -2194,7 +2197,7 @@ void dsp_host_dual::recallLayer()
     globalParRcl(msg->hwsources[i]);
   }
   // global updates: hw amounts
-  if(LOG_RECALL)
+  if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: hw amounts:");
   }
@@ -2203,10 +2206,11 @@ void dsp_host_dual::recallLayer()
     globalParRcl(msg->hwamounts[i]);
   }
   // global updates: macros
-  if(LOG_RECALL)
+  if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: macros:");
   }
+
   for(uint32_t i = 0; i < msg->macros.size(); i++)
   {
     globalParRcl(msg->macros[i]);
@@ -2216,13 +2220,13 @@ void dsp_host_dual::recallLayer()
     globalTimeRcl(msg->macrotimes[i]);
   }
   // global updates: parameters
-  if(LOG_RECALL)
+  if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
-  for(uint32_t i = 0; i < msg->globalparams.size(); i++)
+  for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
-    globalParRcl(msg->globalparams[i]);
+    globalParRcl(msg->scale[i]);
   }
 
   // TODO: new recall of Master Modulateables

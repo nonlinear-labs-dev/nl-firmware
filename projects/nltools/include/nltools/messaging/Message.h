@@ -519,16 +519,16 @@ namespace nltools
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
 
-      ParameterGroups::MasterGroup master;  // TODO: relocate Master Volume (247) & Tune (248) from globalparams
+      ParameterGroups::MasterGroup master;
 
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
     };
 
     inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.scale == rhs.scale;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;
@@ -552,7 +552,7 @@ namespace nltools
       std::array<ParameterGroups::UnisonGroup, 2> unison;
       std::array<ParameterGroups::MonoGroup, 2> mono;
 
-      ParameterGroups::MasterGroup master;  // TODO: relocate Master Volume (247) & Tune (248) from globalparams
+      ParameterGroups::MasterGroup master;
 
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
@@ -560,7 +560,7 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
       ParameterGroups::SplitPoint splitpoint;
     };
 
@@ -568,7 +568,7 @@ namespace nltools
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.scale == rhs.scale;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;
@@ -599,16 +599,16 @@ namespace nltools
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
 
-      ParameterGroups::MasterGroup master;  // TODO: relocate Master Volume (247) & Tune (248) from globalparams
+      ParameterGroups::MasterGroup master;
 
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
     };
 
     inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.scale == rhs.scale;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;

@@ -1,3 +1,4 @@
+#include <parameters/ModulateableParameter.h>
 #include "MasterGroup.h"
 #include "parameters/Parameter.h"
 
@@ -15,10 +16,10 @@ MasterGroup::~MasterGroup()
 
 void MasterGroup::init()
 {
-  appendParameter(new Parameter(this, { 247, VoiceGroup::Global }, ScaleConverter::get<ParabolicGainDbScaleConverter>(),
+  appendParameter(new ModulateableParameter(this, { 247, VoiceGroup::Global }, ScaleConverter::get<ParabolicGainDbScaleConverter>(),
                                 0.5, 100, 1000));
 
-  appendParameter(new Parameter(this, { 248, VoiceGroup::Global },
+  appendParameter(new ModulateableParameter(this, { 248, VoiceGroup::Global },
                                 ScaleConverter::get<LinearBipolar48StScaleConverter>(), 0, 48, 4800));
 }
 
