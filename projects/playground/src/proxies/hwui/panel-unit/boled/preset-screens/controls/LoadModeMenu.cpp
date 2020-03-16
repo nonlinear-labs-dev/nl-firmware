@@ -2,17 +2,29 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/HWUI.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <sigc++/sigc++.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/controls/Button.h>
+#include <device-settings/LoadToPartSetting.h>
 
-auto getSetting()
+auto getDirectLoadSetting()
 {
-  return Application::get().getSettings()->getSetting<LoadModeSetting>();
+  return Application::get().getSettings()->getSetting<DirectLoadSetting>();
+}
+
+auto getLoadToPartSetting()
+{
+  return Application::get().getSettings()->getSetting<LoadToPartSetting>();
+}
+
+bool LoadModeMenu::redraw(FrameBuffer& fb)
+{
+  return ControlWithChildren::redraw(fb);
 }
 
 LoadModeMenu::LoadModeMenu(const Rect& rect)
@@ -21,80 +33,74 @@ LoadModeMenu::LoadModeMenu(const Rect& rect)
   m_soundTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::mem_fun(this, &LoadModeMenu::bruteForce));
 
-  m_settingConnection = getSetting()->onChange(sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
+  m_directLoadSettingConnection
+      = getDirectLoadSetting()->onChange(sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
+  m_loadToPartSettingConnection
+      = getLoadToPartSetting()->onChange(sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
 }
 
 LoadModeMenu::~LoadModeMenu()
 {
   m_soundTypeConnection.disconnect();
-  m_settingConnection.disconnect();
+  m_directLoadSettingConnection.disconnect();
+  m_loadToPartSettingConnection.disconnect();
 }
-
-class EntryLabel : public Label
-{
- public:
-  using Label::Label;
-
-  void drawBackground(FrameBuffer& fb) override
-  {
-    const Rect& r = getPosition();
-
-    if(isHighlight())
-    {
-      fb.setColor(FrameBuffer::Colors::C128);
-      fb.fillRect(r.getX() + 1, r.getTop() + 1, r.getWidth() - 2, r.getHeight() - 2);
-    }
-    else
-    {
-      Label::drawBackground(fb);
-    }
-  }
-};
 
 void LoadModeMenu::bruteForce()
 {
   clear();
 
-  std::vector<LoadMode> entries;
-
-  if(getSoundType() != SoundType::Single)
-    entries = { LoadMode::LoadToPart, LoadMode::Select, LoadMode::DirectLoad };
-  else
-    entries = { LoadMode::Select, LoadMode::DirectLoad };
-
-  const auto numItems = entries.size();
-  const auto buttonHeight = 13;
-  auto y = getPosition().getBottom() - numItems * (buttonHeight - 1) - 2;
-
-  const auto& loadModeSetting = getSetting();
-  const auto& loadModeDisplayStrings = loadModeSetting->enumToDisplayString();
-
-  const auto& currentMode = loadModeSetting->get();
-  const auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
-
-  for(const auto& entry : entries)
+  switch(getSoundType())
   {
-    const auto text = loadModeSetting->getDisplayStringForVoiceGroup(currentVoiceGroup, entry);
-    auto newControl = addControl(new EntryLabel({ text, 0 }, Rect(0, y, getWidth(), buttonHeight)));
-
-    if(entry == currentMode)
-      newControl->setHighlight(true);
-
-    y += (buttonHeight - 1);
+    default:
+    case SoundType::Single:
+      installSingle();
+      break;
+    case SoundType::Layer:
+    case SoundType::Split:
+      installDual();
+      break;
   }
 }
 
-void LoadModeMenu::turn()
+void LoadModeMenu::installSingle()
 {
-  getSetting()->cycleForSoundType(getSoundType());
+  m_buttonDHandler = std::make_unique<ShortVsLongPress>([this] { getDirectLoadSetting()->toggle(); },
+                                                        [this] { getDirectLoadSetting()->toggle(); });
+
+  auto directLoadButton = addControl(new Button("Direct Load", { 0, 50, 58, 11 }));
+  directLoadButton->setHighlight(isDirectLoadEnabled());
 }
 
-void LoadModeMenu::antiTurn()
+void LoadModeMenu::installDual()
 {
-  getSetting()->antiCycleForSoundType(getSoundType());
+  m_buttonDHandler = std::make_unique<ShortVsLongPress>([this] { getLoadToPartSetting()->toggle(); },
+                                                        [this] { getDirectLoadSetting()->toggle(); });
+
+  auto loadToPartButton = addControl(new Button("To Part", {0, 50, 58, 11}));
+  loadToPartButton->setHighlight(isLoadToPartEnabled());
+
+  auto directLoadButton = addControl(new Button("Direct Ld", {4, 38, 50, 11}));
+  directLoadButton->setHighlight(isDirectLoadEnabled());
 }
 
 SoundType LoadModeMenu::getSoundType()
 {
   return Application::get().getPresetManager()->getEditBuffer()->getType();
+}
+
+bool LoadModeMenu::isDirectLoadEnabled()
+{
+  return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+}
+
+bool LoadModeMenu::isLoadToPartEnabled()
+{
+  return Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
+}
+
+bool LoadModeMenu::onButton(Buttons button, bool down, ButtonModifiers modifiers)
+{
+  if(m_buttonDHandler && button == Buttons::BUTTON_D)
+    m_buttonDHandler->onButtonEvent(down);
 }

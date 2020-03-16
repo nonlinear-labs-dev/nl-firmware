@@ -418,7 +418,7 @@ public class EditBufferUseCases {
 
 	public void setLoadMode(LoadMode l) {
 		SetupModel.get().systemSettings.loadMode.setValue(l);
-		NonMaps.theMaps.getServerProxy().setSetting("LoadMode", l.toString());
+		NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", l.toString());
 	}
 
 	public void loadPreset(String uuid) {

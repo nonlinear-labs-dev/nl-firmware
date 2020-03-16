@@ -26,7 +26,7 @@
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
 #include <groups/GlobalParameterGroups.h>
@@ -42,7 +42,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
-    , m_lastSelectedParameter{ 0, VoiceGroup::I }
+    , m_lastSelectedParameter { 0, VoiceGroup::I }
 {
   m_hashOnStore = getHash();
 }
@@ -229,7 +229,7 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   if(auto p = findParameterByID(id))
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name{};
+    Glib::ustring name {};
     if(m_type == SoundType::Single)
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
@@ -428,16 +428,13 @@ void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
+      auto setting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
 
-      if(setting->get() == LoadMode::LoadToPart && preset->getType() == SoundType::Single)
-      {
-        undoableLoadPresetIntoDualSound(preset, loadInto);
-      }
-      else if(setting->get() != LoadMode::LoadToPart)
-      {
-        undoableLoad(preset);
-      }
+      auto directLoadEnabled = false;
+      auto loadToPartEnabled = false;
+#warning TODO preset loading
+//        undoableLoadPresetIntoDualSound(preset, loadInto);
+  //      undoableLoad(preset);
     }
   }
 }
@@ -721,7 +718,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Volume and Tune
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
     auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -746,10 +743,6 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
   transaction->addSimpleCommand([=](auto state) {
     swap->swapWith(m_type);
     m_signalTypeChanged.send();
-
-    auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
-    if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
-      setting->cycleForSoundType(SoundType::Single);
     onChange();
   });
 }
@@ -910,7 +903,7 @@ void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *t
 {
   auto part = getParameterGroupByID({ "Part", copyTo });
 
-  for(auto &ids : std::vector<std::pair<int, int>>{ { 358, 247 }, { 360, 248 } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { 358, 247 }, { 360, 248 } })
   {
     auto p = part->findParameterByID({ ids.first, part->getVoiceGroup() });
     if(auto pGlobal = preset->findParameterByID({ ids.second, VoiceGroup::Global }, false))

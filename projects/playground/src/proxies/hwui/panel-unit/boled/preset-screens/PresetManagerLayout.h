@@ -13,9 +13,10 @@ class NumPresetsInBankLabel;
 class PresetManager;
 class PresetListBase;
 class Setting;
-class LoadModeSetting;
+class DirectLoadSetting;
 class ButtonMenu;
 class Button;
+class BankButton;
 
 class PresetManagerLayout : public Layout
 {
@@ -51,6 +52,7 @@ class PresetManagerLayout : public Layout
   void setupBankStore();
 
   LoadModeMenu *m_loadMode = nullptr;
+  BankButton* m_bankButton = nullptr;
   ButtonMenu *m_menu = nullptr;
   PresetListBase *m_presets = nullptr;
   FocusAndMode m_focusAndMode;

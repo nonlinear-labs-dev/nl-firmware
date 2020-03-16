@@ -1,7 +1,7 @@
 #include <utility>
 
 #include <Application.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <device-settings/Settings.h>
 #include <presets/EditBuffer.h>
 #include <presets/Bank.h>
@@ -26,6 +26,10 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadModeMenu.h>
+#include <device-settings/LoadToPartSetting.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankButton.h>
 #include "presets/Preset.h"
 #include "SelectVoiceGroupLayout.h"
 
@@ -55,6 +59,7 @@ void PresetManagerLayout::setup()
   m_menu = nullptr;
   m_presets = nullptr;
   m_loadMode = nullptr;
+  m_bankButton = nullptr;
 
   clear();
 
@@ -75,7 +80,7 @@ PresetManager *PresetManagerLayout::getPresetManager() const
 
 void PresetManagerLayout::setupBankFocus()
 {
-  addControl(new Button("Bank", Buttons::BUTTON_A))->setHighlight(true);
+  m_bankButton = addControl(new BankButton({ 3, 39, 58, 57 }, true));
 
   switch(m_focusAndMode.mode)
   {
@@ -120,7 +125,9 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
+  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
+  addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
@@ -147,7 +154,7 @@ void PresetManagerLayout::setupBankStore()
 
 void PresetManagerLayout::setupPresetFocus()
 {
-  addControl(new Button("Bank", Buttons::BUTTON_A));
+  m_bankButton = addControl(new BankButton({ 3, 39, 58, 57 }, false));
 
   switch(m_focusAndMode.mode)
   {
@@ -201,7 +208,9 @@ void PresetManagerLayout::setupPresetSelect()
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
+  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
+  addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 }
 
 void PresetManagerLayout::setupPresetStore()
@@ -222,6 +231,13 @@ void PresetManagerLayout::setupPresetStore()
 
 bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(m_loadMode)
+    m_loadMode->onButton(i, down, modifiers);
+
+  if(m_bankButton)
+    if(m_bankButton->onButton(i, down, modifiers))
+      return true;
+
   if(!down)
   {
     removeButtonRepeat();
@@ -261,10 +277,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
         }
         else if(m_loadMode)
         {
-          if(modifiers[SHIFT] == 1)
-            m_loadMode->antiTurn();
-          else
-            m_loadMode->turn();
+#warning TODO preset load
         }
 
         return true;
@@ -320,9 +333,10 @@ bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
 
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
-  auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
+  auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+  auto loadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>();
 
-  if(setting->get() == LoadMode::LoadToPart)
+  if(loadToPart->get())
     m_presets->animateSelectedPreset(std::move(cb));
   else
     cb();
@@ -363,7 +377,8 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
   {
     if(auto selPreset = bank->getSelectedPreset())
     {
-      auto loadSetting = Application::get().getSettings()->getSetting<LoadModeSetting>();
+      auto directLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+      auto loadToPartSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
 
       switch(selPreset->getType())
       {
@@ -373,7 +388,7 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
           break;
         case SoundType::Layer:
         case SoundType::Split:
-          if(loadSetting->get() == LoadMode::LoadToPart)
+          if(loadToPartSetting->get())
             openPartChooser();
           else
           {

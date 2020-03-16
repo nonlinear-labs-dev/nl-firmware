@@ -1,5 +1,5 @@
 #include <Application.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <device-settings/BaseUnitUIMode.h>
 #include <device-settings/DebugLevel.h>
 #include <device-settings/DeviceName.h>
@@ -45,13 +45,15 @@
 #include "CrashOnError.h"
 #include "LayoutMode.h"
 #include "TuneReference.h"
+#include "LoadToPartSetting.h"
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
     , m_actions(std::make_unique<SettingsActions>(*this))
     , m_saveJob(5000, std::bind(&Settings::save, this))
 {
-  addSetting("LoadMode", new LoadModeSetting(*this));
+  addSetting("DirectLoad", new DirectLoadSetting(*this));
+  addSetting("LoadToPart", new LoadToPartSetting(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsLPCWriteFallback(*this));
   addSetting("PresetStoreModeSetting", new PresetStoreModeSetting(*this));
   addSetting("BaseUnitUIMode", new BaseUnitUIMode(*this));

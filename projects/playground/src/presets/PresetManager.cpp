@@ -17,7 +17,7 @@
 #include <xml/VersionAttribute.h>
 #include <proxies/hwui/HWUI.h>
 #include <serialization/PresetSerializer.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <device-settings/Settings.h>
 #include <groups/ParameterGroup.h>
 #include <glibmm.h>
@@ -533,7 +533,7 @@ void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void PresetManager::onPresetSelectionChanged()
 {
-  if(Application::get().getSettings()->getSetting<LoadModeSetting>()->get() == LoadMode::DirectLoad)
+  if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
     doAutoLoadSelectedPreset();
 }
 
@@ -752,7 +752,7 @@ void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
   {
     m_editBuffer->undoableSelectParameter(trans, param);
   }
-  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers{});
+  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers {});
 }
 
 void PresetManager::stressAllParams(int numParamChangedForEachParameter)
@@ -831,7 +831,7 @@ void PresetManager::incAllParamsFine()
         for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
           for(auto &group : m_editBuffer->getParameterGroups(vg))
             for(auto &param : group->getParameters())
-              param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
+              param->stepCPFromHwui(trans, 1, ButtonModifiers { ButtonModifier::FINE });
       },
       20);
 }
