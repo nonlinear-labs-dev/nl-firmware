@@ -32,20 +32,40 @@ TEST_CASE("Test Previous Boled Focus on Button")
 
   CHECK(isParameterLayout(getLayout()));
 
-  SECTION("Parameter to Preset and Back") {
+  SECTION("Parameter to Preset and Back")
+  {
     auto oldFocus = getFocusAndMode();
     pressButton(Buttons::BUTTON_PRESET);
     CHECK(isPresetLayout(getLayout()));
     pressButton(Buttons::BUTTON_PRESET);
-    CHECK(getFocusAndMode() == oldFocus);
+    auto newFocus = getFocusAndMode();
+    CHECK(newFocus == oldFocus);
   }
 
-  SECTION("Parameter to Store and Back") {
+  SECTION("Parameter to Store and Back")
+  {
     auto oldFocus = getFocusAndMode();
     pressButton(Buttons::BUTTON_STORE);
     CHECK(isPresetLayout(getLayout()));
     pressButton(Buttons::BUTTON_STORE);
     auto newFocus = getFocusAndMode();
     CHECK(newFocus == oldFocus);
+  }
+
+  SECTION("Parameter to Store to Preset")
+  {
+    pressButton(Buttons::BUTTON_STORE);
+    CHECK(isPresetLayout(getLayout()));
+    pressButton(Buttons::BUTTON_PRESET);
+    CHECK(isPresetLayout(getLayout()));
+    CHECK(getFocusAndMode().mode == UIMode::Select);
+  }
+
+  SECTION("Parameter to Preset to Store") {
+    pressButton(Buttons::BUTTON_PRESET);
+    CHECK(isPresetLayout(getLayout()));
+    pressButton(Buttons::BUTTON_STORE);
+    CHECK(isPresetLayout(getLayout()));
+    CHECK(getFocusAndMode().mode == UIMode::Store);
   }
 }
