@@ -35,6 +35,7 @@
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
 #include <device-settings/Settings.h>
+#include <device-settings/LoadToPartSetting.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -428,13 +429,22 @@ void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      auto setting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+      auto loadToPartSetting = Application::get().getSettings()->getSetting<LoadToPartSetting>();
+      auto loadToPartEnabled = loadToPartSetting->get();
+      auto isCurrentlyDualSound = getType() != SoundType::Single;
+      auto presetToLoadIsDual = preset->getType() != SoundType::Single;
 
-      auto directLoadEnabled = false;
-      auto loadToPartEnabled = false;
-#warning TODO preset loading
-//        undoableLoadPresetIntoDualSound(preset, loadInto);
-  //      undoableLoad(preset);
+      if(loadToPartEnabled && isCurrentlyDualSound)
+      {
+        if(!presetToLoadIsDual)
+          undoableLoadPresetIntoDualSound(preset, loadInto);
+        else
+          nltools::Log::error("dual preset was not loaded!");
+      }
+      else
+      {
+        undoableLoad(preset);
+      }
     }
   }
 }
@@ -749,7 +759,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 
 void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg)
 {
-  auto scope = getUndoScope().startTransaction("Load Preset into Voicegroup");
+  auto scope = getUndoScope().startTransaction("Load Preset into Part " + toString(vg));
   auto transaction = scope->getTransaction();
   undoableLoadPresetIntoDualSound(transaction, preset, vg);
 }
