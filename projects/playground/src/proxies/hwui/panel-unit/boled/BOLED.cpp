@@ -121,10 +121,7 @@ void BOLED::setupPresetScreen(FocusAndMode focusAndMode)
       break;
 
     default:
-      if(auto e = std::dynamic_pointer_cast<PresetManagerLayout>(getLayout()))
-        e->setFocusAndMode(focusAndMode);
-      else
-        reset(new PresetManagerLayout(focusAndMode));
+      reset(new PresetManagerLayout(focusAndMode, Application::get().getHWUI()->getOldFocusAndMode()));
   }
 }
 
@@ -140,7 +137,7 @@ void BOLED::setupBankScreen(FocusAndMode focusAndMode)
       if(auto e = std::dynamic_pointer_cast<PresetManagerLayout>(getLayout()))
         e->setFocusAndMode(focusAndMode);
       else
-        reset(new PresetManagerLayout(focusAndMode));
+        reset(new PresetManagerLayout(focusAndMode, Application::get().getHWUI()->getFocusAndMode()));
   }
 }
 
