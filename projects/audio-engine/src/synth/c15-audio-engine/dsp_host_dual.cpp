@@ -214,7 +214,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         }
     }
     // temporary: load initials in order to have valid osc reset params
-    //onSettingInitialSinglePreset();
+    onSettingInitialSinglePreset(); // TODO: disable when PG sends apprpriate Master Volume/Tune
 
     // testing voice fading
     //m_poly[0].evalVoiceFade(30.f, 11.f);
@@ -1675,6 +1675,11 @@ void dsp_host_dual::recallSingle()
     for (uint32_t i = 0; i < msg->globalparams.size(); i++) {
         globalParRcl(msg->globalparams[i]);
     }
+
+    // TODO: new recall of Master Modulateables
+    //    globalParRcl(msg->master.volume);
+    //    globalParRcl(msg->master.tune);
+
     // local updates: unison, mono
     localPolyRcl(0, msg->unison, msg->mono);
     // local updates: unmodulateables
@@ -1793,6 +1798,11 @@ void dsp_host_dual::recallSplit()
     for (uint32_t i = 0; i < msg->globalparams.size(); i++) {
         globalParRcl(msg->globalparams[i]);
     }
+
+    // TODO: new recall of Master Modulateables
+    //    globalParRcl(msg->master.volume);
+    //    globalParRcl(msg->master.tune);
+
     // local updates (each layer)
     for (uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++) {
         // local updates: unison, mono
@@ -1905,6 +1915,11 @@ void dsp_host_dual::recallLayer()
     for (uint32_t i = 0; i < msg->globalparams.size(); i++) {
         globalParRcl(msg->globalparams[i]);
     }
+
+    // TODO: new recall of Master Modulateables
+    //    globalParRcl(msg->master.volume);
+    //    globalParRcl(msg->master.tune);
+
     // local updates: unison, mono
     localPolyRcl(0, msg->unison, msg->mono);
     // local updates (each layer)
