@@ -226,25 +226,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     }
   }
   // temporary: load initials in order to have valid osc reset params
-  onSettingInitialSinglePreset();  // TODO: disable when PG sends apprpriate Master Volume/Tune
-
-  // testing voice fading
-  //m_poly[0].evalVoiceFade(30.f, 11.f);
-  //m_poly[1].evalVoiceFade(42.f, 11.f);
-  /*
-    nltools::Log::info("fades I:");
-    m_poly[0].evalVoiceFade(0.f, 0.f);
-    m_poly[0].evalVoiceFade(60.f, 0.f);
-    m_poly[0].evalVoiceFade(0.f, 59.f);
-    m_poly[0].evalVoiceFade(0.f, 60.f);
-    m_poly[0].evalVoiceFade(30.f, 60.f);
-    nltools::Log::info("fades II:");
-    m_poly[1].evalVoiceFade(60.f, 0.f);
-    m_poly[1].evalVoiceFade(0.f, 0.f);
-    m_poly[1].evalVoiceFade(60.f, 59.f);
-    m_poly[1].evalVoiceFade(60.f, 60.f);
-    m_poly[1].evalVoiceFade(30.f, 60.f);
-    */
+  //onSettingInitialSinglePreset();
 
   if(LOG_INIT)
   {
@@ -1920,17 +1902,14 @@ void dsp_host_dual::recallSingle()
   // global updates: parameters
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: global params (unmodulateables):");
+    nltools::Log::info("recall: global params:");
   }
+  globalParRcl(msg->master.volume);
+  globalParRcl(msg->master.tune);
   for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
     globalParRcl(msg->scale[i]);
   }
-
-  // TODO: new recall of Master Modulateables
-  //    globalParRcl(msg->master.volume);
-  //    globalParRcl(msg->master.tune);
-
   // local updates: unison, mono
   localPolyRcl(0, msg->unison, msg->mono);
   // local updates: unmodulateables
@@ -2070,22 +2049,17 @@ void dsp_host_dual::recallSplit()
   {
     nltools::Log::info("recall: global params (modulateables):");
   }
+  globalParRcl(msg->master.volume);
+  globalParRcl(msg->master.tune);
   globalParRcl(msg->splitpoint);
   if constexpr(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
-
-  for(auto i :
-      msg->scale)  // @Matthias wie findest du diese art der for schleife? https://en.cppreference.com/w/cpp/language/range-for
+  for(auto i : msg->scale)
   {
     globalParRcl(i);
   }
-
-  // TODO: new recall of Master Modulateables
-  //    globalParRcl(msg->master.volume);
-  //    globalParRcl(msg->master.tune);
-
   // local updates (each layer)
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
@@ -2222,17 +2196,18 @@ void dsp_host_dual::recallLayer()
   // global updates: parameters
   if constexpr(LOG_RECALL)
   {
+    nltools::Log::info("recall: global params (modulateables):");
+  }
+  globalParRcl(msg->master.volume);
+  globalParRcl(msg->master.tune);
+  if constexpr(LOG_RECALL)
+  {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
   for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
     globalParRcl(msg->scale[i]);
   }
-
-  // TODO: new recall of Master Modulateables
-  //    globalParRcl(msg->master.volume);
-  //    globalParRcl(msg->master.tune);
-
   // local updates: unison, mono
   localPolyRcl(0, msg->unison, msg->mono);
   // local updates (each layer)
