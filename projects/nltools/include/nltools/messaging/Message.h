@@ -1,600 +1,577 @@
 #pragma once
 
 #include "Messaging.h"
-#include <nltools/Types.h>
-#include <nltools/Testing.h>
 #include <cstring>
+#include <nltools/Testing.h>
+#include <nltools/Types.h>
 
-namespace nltools
-{
-  namespace msg
-  {
+namespace nltools {
+namespace msg {
 
     using tID = int;
     using tControlPosition = double;
 
-    namespace Keyboard
-    {
-      struct NoteDown
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::NoteDown;
-        }
+    namespace Keyboard {
+        struct NoteDown {
+            constexpr static MessageType getType()
+            {
+                return MessageType::NoteDown;
+            }
 
-        int m_keyPos;
-      };
-
-      struct NoteUp
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::NoteUp;
-        }
-
-        int m_keyPos;
-      };
-    }
-
-    namespace USB
-    {
-      struct USBStatusMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::USBStatusMessage;
-        }
-
-        bool m_usbAvailable;
-        bool m_updateAvailable;
-      };
-    }
-
-    namespace WiFi
-    {
-
-      namespace Helper
-      {
-        template <size_t tSize> struct StringWrapper
-        {
-          StringWrapper()
-          {
-            std::memset(data, '\0', tSize + 1);
-          }
-
-          void set(const std::string &s)
-          {
-            assert(s.size() <= tSize);
-            std::copy(s.begin(), s.end() + 1, data);
-          }
-
-          std::string get() const
-          {
-            return data;
-          }
-
-          char data[tSize + 1];
+            int m_keyPos;
         };
-      }
 
-      struct SetWiFiSSIDMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::WiFiSetSSID;
-        }
+        struct NoteUp {
+            constexpr static MessageType getType()
+            {
+                return MessageType::NoteUp;
+            }
 
-        SetWiFiSSIDMessage()
-        {
-        }
-
-        template <typename T> SetWiFiSSIDMessage(const T &ssid)
-        {
-          m_ssid.set(ssid);
-        }
-
-        Helper::StringWrapper<128> m_ssid;
-      };
-
-      struct SetWiFiPasswordMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::WiFiSetPassword;
-        }
-
-        SetWiFiPasswordMessage()
-        {
-        }
-
-        template <typename T> SetWiFiPasswordMessage(const T &password)
-        {
-          m_password.set(password);
-        }
-
-        Helper::StringWrapper<8> m_password;
-      };
-
-      struct WiFiPasswordChangedMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::WiFiPasswordChanged;
-        }
-
-        WiFiPasswordChangedMessage()
-        {
-        }
-
-        template <typename T> WiFiPasswordChangedMessage(const T &password)
-        {
-          m_password.set(password);
-        }
-
-        Helper::StringWrapper<8> m_password;
-      };
-
-      struct WiFiSSIDChangedMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::WiFiSSIDChanged;
-        }
-
-        WiFiSSIDChangedMessage()
-        {
-        }
-
-        template <typename T> WiFiSSIDChangedMessage(const T &ssid)
-        {
-          m_ssid.set(ssid);
-        }
-
-        Helper::StringWrapper<128> m_ssid;
-      };
+            int m_keyPos;
+        };
     }
 
-    namespace Setting
-    {
-      struct NoteShiftMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::NoteShiftSetting;
-        }
+    namespace USB {
+        struct USBStatusMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::USBStatusMessage;
+            }
 
-        int m_shift;
-      };
-
-      struct PresetGlitchMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::PresetGlitchSetting;
-        }
-
-        bool m_enabled;
-      };
-
-      struct TuneReference
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::TuneReference;
-        }
-
-        double m_tuneReference;
-      };
-
-      struct TransitionTimeMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::TransitionTimeSetting;
-        }
-
-        float m_value;
-      };
-
-      struct EditSmoothingTimeMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::EditSmoothingTimeSetting;
-        }
-
-        float m_time;
-      };
+            bool m_usbAvailable;
+            bool m_updateAvailable;
+        };
     }
 
-    struct HWSourceChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::HWSourceParameter;
-      }
+    namespace WiFi {
 
-      tID parameterId;
-      tControlPosition controlPosition;
-      ReturnMode returnMode;
+        namespace Helper {
+            template <size_t tSize>
+            struct StringWrapper {
+                StringWrapper()
+                {
+                    std::memset(data, '\0', tSize + 1);
+                }
+
+                void set(const std::string& s)
+                {
+                    assert(s.size() <= tSize);
+                    std::copy(s.begin(), s.end() + 1, data);
+                }
+
+                std::string get() const
+                {
+                    return data;
+                }
+
+                char data[tSize + 1];
+            };
+        }
+
+        struct SetWiFiSSIDMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::WiFiSetSSID;
+            }
+
+            SetWiFiSSIDMessage()
+            {
+            }
+
+            template <typename T>
+            SetWiFiSSIDMessage(const T& ssid)
+            {
+                m_ssid.set(ssid);
+            }
+
+            Helper::StringWrapper<128> m_ssid;
+        };
+
+        struct SetWiFiPasswordMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::WiFiSetPassword;
+            }
+
+            SetWiFiPasswordMessage()
+            {
+            }
+
+            template <typename T>
+            SetWiFiPasswordMessage(const T& password)
+            {
+                m_password.set(password);
+            }
+
+            Helper::StringWrapper<8> m_password;
+        };
+
+        struct WiFiPasswordChangedMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::WiFiPasswordChanged;
+            }
+
+            WiFiPasswordChangedMessage()
+            {
+            }
+
+            template <typename T>
+            WiFiPasswordChangedMessage(const T& password)
+            {
+                m_password.set(password);
+            }
+
+            Helper::StringWrapper<8> m_password;
+        };
+
+        struct WiFiSSIDChangedMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::WiFiSSIDChanged;
+            }
+
+            WiFiSSIDChangedMessage()
+            {
+            }
+
+            template <typename T>
+            WiFiSSIDChangedMessage(const T& ssid)
+            {
+                m_ssid.set(ssid);
+            }
+
+            Helper::StringWrapper<128> m_ssid;
+        };
+    }
+
+    namespace Setting {
+        struct NoteShiftMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::NoteShiftSetting;
+            }
+
+            int m_shift;
+        };
+
+        struct PresetGlitchMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::PresetGlitchSetting;
+            }
+
+            bool m_enabled;
+        };
+
+        struct TuneReference {
+            constexpr static MessageType getType()
+            {
+                return MessageType::TuneReference;
+            }
+
+            double m_tuneReference;
+        };
+
+        struct TransitionTimeMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::TransitionTimeSetting;
+            }
+
+            float m_value;
+        };
+
+        struct EditSmoothingTimeMessage {
+            constexpr static MessageType getType()
+            {
+                return MessageType::EditSmoothingTimeSetting;
+            }
+
+            float m_time;
+        };
+    }
+
+    struct HWSourceChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::HWSourceParameter;
+        }
+
+        tID parameterId;
+        tControlPosition controlPosition;
+        ReturnMode returnMode;
     };
 
-    struct HWAmountChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::HWAmountParameter;
-      }
+    struct HWAmountChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::HWAmountParameter;
+        }
 
-      tID parameterId;
-      tControlPosition controlPosition;
+        tID parameterId;
+        tControlPosition controlPosition;
     };
 
-    struct MacroControlChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::MacroControlParameter;
-      }
+    struct MacroControlChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::MacroControlParameter;
+        }
 
-      tID parameterId;
-      tControlPosition controlPosition;
+        tID parameterId;
+        tControlPosition controlPosition;
     };
 
-    struct UnmodulateableParameterChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::UnmodulateableParameter;
-      }
+    struct UnmodulateableParameterChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::UnmodulateableParameter;
+        }
 
-      tID parameterId;
-      tControlPosition controlPosition;
-      VoiceGroup voiceGroup;
+        tID parameterId;
+        tControlPosition controlPosition;
+        VoiceGroup voiceGroup;
     };
 
-    struct ModulateableParameterChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::ModulateableParameter;
-      }
+    struct ModulateableParameterChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::ModulateableParameter;
+        }
 
-      tID parameterId;
-      tControlPosition controlPosition;
-      MacroControls sourceMacro;
-      tControlPosition mcAmount;
-      tControlPosition mcUpper;
-      tControlPosition mcLower;
-      VoiceGroup voiceGroup;
+        tID parameterId;
+        tControlPosition controlPosition;
+        MacroControls sourceMacro;
+        tControlPosition mcAmount;
+        tControlPosition mcUpper;
+        tControlPosition mcLower;
+        VoiceGroup voiceGroup;
     };
 
-    struct RotaryChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::RotaryChanged;
-      }
+    struct RotaryChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::RotaryChanged;
+        }
 
-      int8_t increment;
+        int8_t increment;
     };
 
-    struct TimestampedRotaryChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::TimestampedRotaryChanged;
-      }
+    struct TimestampedRotaryChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::TimestampedRotaryChanged;
+        }
 
-      int8_t increment;
-      uint64_t timestamp;
+        int8_t increment;
+        uint64_t timestamp;
     };
 
-    struct ButtonChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::ButtonChanged;
-      }
+    struct ButtonChangedMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::ButtonChanged;
+        }
 
-      int8_t buttonId;
-      bool pressed;
+        int8_t buttonId;
+        bool pressed;
     };
 
-    struct SetRibbonLEDMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SetRibbonLED;
-      }
+    struct SetRibbonLEDMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::SetRibbonLED;
+        }
 
-      uint8_t id;
-      uint8_t brightness;
+        uint8_t id;
+        uint8_t brightness;
     };
 
-    struct SetPanelLEDMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SetPanelLED;
-      }
+    struct SetPanelLEDMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::SetPanelLED;
+        }
 
-      uint8_t id;
-      bool on;
+        uint8_t id;
+        bool on;
     };
 
-    struct SetOLEDMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SetOLED;
-      }
+    struct SetOLEDMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::SetOLED;
+        }
 
-      uint8_t pixels[256][96];
+        uint8_t pixels[256][96];
     };
 
-    struct SetTimestampedOledMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SetOLEDTimestamped;
-      }
+    struct SetTimestampedOledMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::SetOLEDTimestamped;
+        }
 
-      SetOLEDMessage m_oledMessage;
-      int64_t m_timestamp;
+        SetOLEDMessage m_oledMessage;
+        int64_t m_timestamp;
     };
 
-    struct LPCMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::LPC;
-      }
+    struct LPCMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::LPC;
+        }
 
-      Glib::RefPtr<Glib::Bytes> message;
+        Glib::RefPtr<Glib::Bytes> message;
     };
 
-    struct PingMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::Ping;
-      }
+    struct PingMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::Ping;
+        }
     };
 
-    namespace detail
+    namespace detail {
+        template <>
+        inline LPCMessage deserialize<LPCMessage>(const SerializedMessage& s)
+        {
+            LPCMessage ret;
+            gsize numBytes = 0;
+            auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
+            ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
+            return ret;
+        }
+
+        template <>
+        inline SerializedMessage serialize<LPCMessage>(const LPCMessage& msg)
+        {
+            gsize numBytes = 0;
+            auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
+            auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
+            scratch[0] = static_cast<uint16_t>(MessageType::LPC);
+            std::memcpy(&scratch[1], data, numBytes);
+            auto bytes = g_bytes_new_take(scratch, numBytes + 2);
+            return Glib::wrap(bytes);
+        }
+    }
+
+    namespace ParameterGroups {
+        struct Parameter {
+            uint16_t id{};
+            double controlPosition = 0;
+        };
+
+        struct RibbonParameter : Parameter {
+            RibbonTouchBehaviour ribbonTouchBehaviour{};
+            RibbonReturnMode ribbonReturnMode{};
+        };
+
+        struct PedalParameter : Parameter {
+            PedalModes pedalMode{};
+            ReturnMode returnMode{};
+        };
+
+        struct MacroParameter : Parameter {
+        };
+
+        struct ModulateableParameter : Parameter {
+            MacroControls mc = MacroControls::NONE;
+            double modulationAmount = 0;
+        };
+
+        struct UnmodulateableParameter : Parameter {
+        };
+
+        struct GlobalParameter : Parameter {
+        };
+
+        struct HardwareSourceParameter : Parameter {
+            ReturnMode returnMode = ReturnMode::None;
+        };
+
+        struct HardwareAmountParameter : Parameter {
+        };
+
+        struct SplitPoint : ModulateableParameter {
+        };
+
+        struct UnisonGroup {
+            ParameterGroups::UnmodulateableParameter unisonVoices;
+            ParameterGroups::ModulateableParameter detune;
+            ParameterGroups::UnmodulateableParameter phase;
+            ParameterGroups::UnmodulateableParameter pan;
+        };
+
+        struct MonoGroup {
+            ParameterGroups::UnmodulateableParameter monoEnable;
+            ParameterGroups::UnmodulateableParameter legato;
+            ParameterGroups::UnmodulateableParameter priority;
+            ParameterGroups::ModulateableParameter glide;
+        };
+
+        struct MasterGroup {
+            ParameterGroups::ModulateableParameter volume;
+            ParameterGroups::ModulateableParameter tune;
+        };
+
+        inline bool operator==(const Parameter& lhs, const Parameter& rhs)
+        {
+            auto ret = lhs.id == rhs.id;
+            ret &= lhs.controlPosition == rhs.controlPosition;
+            return ret;
+        }
+
+        inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
+        {
+            auto ret = lhs.id == rhs.id;
+            ret &= lhs.controlPosition == rhs.controlPosition;
+            ret &= lhs.modulationAmount == rhs.modulationAmount;
+            ret &= lhs.mc == rhs.mc;
+            return ret;
+        }
+
+        inline bool operator==(const MonoGroup& lhs, const MonoGroup& rhs)
+        {
+            auto ret = lhs.glide == rhs.glide;
+            ret &= lhs.monoEnable == rhs.monoEnable;
+            ret &= lhs.priority == rhs.priority;
+            ret &= lhs.legato == rhs.legato;
+            return ret;
+        }
+
+        inline bool operator==(const UnisonGroup& lhs, const UnisonGroup& rhs)
+        {
+            auto ret = lhs.unisonVoices == rhs.unisonVoices;
+            ret &= lhs.detune == rhs.detune;
+            ret &= lhs.pan == rhs.pan;
+            ret &= lhs.phase == rhs.phase;
+            return ret;
+        }
+
+        inline bool operator==(const MasterGroup& lhs, const MasterGroup& rhs)
+        {
+            auto ret = lhs.volume == rhs.volume;
+            ret &= lhs.tune == rhs.tune;
+            return ret;
+        }
+    }
+
+    struct SinglePresetMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::SinglePreset;
+        }
+
+        std::array<ParameterGroups::MacroParameter, 6> macros;
+        std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+
+        std::array<ParameterGroups::ModulateableParameter, 101> modulateables;
+        std::array<ParameterGroups::UnmodulateableParameter, 94> unmodulateables;
+
+        std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+        std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+
+        ParameterGroups::UnisonGroup unison;
+        ParameterGroups::MonoGroup mono;
+
+        ParameterGroups::MasterGroup master; // TODO: relocate Master Volume (247) & Tune (248) from globalparams
+
+        std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+    };
+
+    inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
     {
-      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage &s)
-      {
-        LPCMessage ret;
-        gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(s->get_data(numBytes));
-        ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
+        auto ret = lhs.unmodulateables == rhs.unmodulateables;
+        ret &= lhs.modulateables == rhs.modulateables;
+        ret &= lhs.globalparams == rhs.globalparams;
+        ret &= lhs.mono == rhs.mono;
+        ret &= lhs.unison == rhs.unison;
+        ret &= lhs.master == rhs.master;
+        ret &= lhs.hwamounts == rhs.hwamounts;
+        ret &= lhs.hwsources == rhs.hwsources;
+        ret &= lhs.macros == rhs.macros;
+        ret &= lhs.macrotimes == rhs.macrotimes;
         return ret;
-      }
-
-      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage &msg)
-      {
-        gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(msg.message->get_data(numBytes));
-        auto scratch = reinterpret_cast<uint16_t *>(g_malloc(numBytes + 2));
-        scratch[0] = static_cast<uint16_t>(MessageType::LPC);
-        std::memcpy(&scratch[1], data, numBytes);
-        auto bytes = g_bytes_new_take(scratch, numBytes + 2);
-        return Glib::wrap(bytes);
-      }
     }
 
-    namespace ParameterGroups
-    {
-      struct Parameter
-      {
-        uint16_t id {};
-        double controlPosition = 0;
-      };
+    struct SplitPresetMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::SplitPreset;
+        }
 
-      struct RibbonParameter : Parameter
-      {
-        RibbonTouchBehaviour ribbonTouchBehaviour {};
-        RibbonReturnMode ribbonReturnMode {};
-      };
+        std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
+        std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
 
-      struct PedalParameter : Parameter
-      {
-        PedalModes pedalMode {};
-        ReturnMode returnMode {};
-      };
+        std::array<ParameterGroups::UnisonGroup, 2> unison;
+        std::array<ParameterGroups::MonoGroup, 2> mono;
 
-      struct MacroParameter : Parameter
-      {
-      };
+        ParameterGroups::MasterGroup master; // TODO: relocate Master Volume (247) & Tune (248) from globalparams
 
-      struct ModulateableParameter : Parameter
-      {
-        MacroControls mc = MacroControls::NONE;
-        double modulationAmount = 0;
-      };
+        std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+        std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
 
-      struct UnmodulateableParameter : Parameter
-      {
-      };
+        std::array<ParameterGroups::MacroParameter, 6> macros;
+        std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      struct GlobalParameter : Parameter
-      {
-      };
-
-      struct HardwareSourceParameter : Parameter
-      {
-        ReturnMode returnMode = ReturnMode::None;
-      };
-
-      struct HardwareAmountParameter : Parameter
-      {
-      };
-
-      struct SplitPoint : ModulateableParameter
-      {
-      };
-
-      struct UnisonGroup
-      {
-        ParameterGroups::UnmodulateableParameter unisonVoices;
-        ParameterGroups::ModulateableParameter detune;
-        ParameterGroups::UnmodulateableParameter phase;
-        ParameterGroups::UnmodulateableParameter pan;
-      };
-
-      struct MonoGroup
-      {
-        ParameterGroups::UnmodulateableParameter monoEnable;
-        ParameterGroups::UnmodulateableParameter legato;
-        ParameterGroups::UnmodulateableParameter priority;
-        ParameterGroups::ModulateableParameter glide;
-      };
-
-      inline bool operator==(const Parameter &lhs, const Parameter &rhs)
-      {
-        auto ret = lhs.id == rhs.id;
-        ret &= lhs.controlPosition == rhs.controlPosition;
-        return ret;
-      }
-
-      inline bool operator==(const ModulateableParameter &lhs, const ModulateableParameter &rhs)
-      {
-        auto ret = lhs.id == rhs.id;
-        ret &= lhs.controlPosition == rhs.controlPosition;
-        ret &= lhs.modulationAmount == rhs.modulationAmount;
-        ret &= lhs.mc == rhs.mc;
-        return ret;
-      }
-
-      inline bool operator==(const MonoGroup &lhs, const MonoGroup &rhs)
-      {
-        auto ret = lhs.glide == rhs.glide;
-        ret &= lhs.monoEnable == rhs.monoEnable;
-        ret &= lhs.priority == rhs.priority;
-        ret &= lhs.legato == rhs.legato;
-        return ret;
-      }
-
-      inline bool operator==(const UnisonGroup &lhs, const UnisonGroup &rhs)
-      {
-        auto ret = lhs.unisonVoices == rhs.unisonVoices;
-        ret &= lhs.detune == rhs.detune;
-        ret &= lhs.pan == rhs.pan;
-        ret &= lhs.phase == rhs.phase;
-        return ret;
-      }
-    }
-
-    struct SinglePresetMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SinglePreset;
-      }
-
-      std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
-
-      std::array<ParameterGroups::ModulateableParameter, 101> modulateables;
-      std::array<ParameterGroups::UnmodulateableParameter, 94> unmodulateables;
-
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
-
-      ParameterGroups::UnisonGroup unison;
-      ParameterGroups::MonoGroup mono;
-
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+        std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+        ParameterGroups::SplitPoint splitpoint;
     };
 
-    inline bool operator==(const SinglePresetMessage &lhs, const SinglePresetMessage &rhs)
+    inline bool operator==(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
     {
-      auto ret = lhs.unmodulateables == rhs.unmodulateables;
-      ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
-      ret &= lhs.mono == rhs.mono;
-      ret &= lhs.unison == rhs.unison;
-      ret &= lhs.hwamounts == rhs.hwamounts;
-      ret &= lhs.hwsources == rhs.hwsources;
-      ret &= lhs.macros == rhs.macros;
-      ret &= lhs.macrotimes == rhs.macrotimes;
-      return ret;
+        auto ret = lhs.unmodulateables == rhs.unmodulateables;
+        ret &= lhs.modulateables == rhs.modulateables;
+        ret &= lhs.globalparams == rhs.globalparams;
+        ret &= lhs.mono == rhs.mono;
+        ret &= lhs.unison == rhs.unison;
+        ret &= lhs.master == rhs.master;
+        ret &= lhs.hwamounts == rhs.hwamounts;
+        ret &= lhs.hwsources == rhs.hwsources;
+        ret &= lhs.macros == rhs.macros;
+        ret &= lhs.macrotimes == rhs.macrotimes;
+        ret &= lhs.splitpoint == rhs.splitpoint;
+        return ret;
     }
 
-    struct SplitPresetMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SplitPreset;
-      }
+    struct LayerPresetMessage {
+        constexpr static MessageType getType()
+        {
+            return MessageType::LayerPreset;
+        }
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
+        std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+        std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
 
-      std::array<ParameterGroups::UnisonGroup, 2> unison;
-      std::array<ParameterGroups::MonoGroup, 2> mono;
+        std::array<ParameterGroups::MacroParameter, 6> macros;
+        std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+        std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
+        std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
 
-      std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+        ParameterGroups::UnisonGroup unison;
+        ParameterGroups::MonoGroup mono;
 
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
-      ParameterGroups::SplitPoint splitpoint;
+        ParameterGroups::MasterGroup master; // TODO: relocate Master Volume (247) & Tune (248) from globalparams
+
+        std::array<ParameterGroups::GlobalParameter, 15> globalparams;
     };
 
-    inline bool operator==(const SplitPresetMessage &lhs, const SplitPresetMessage &rhs)
+    inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
     {
-      auto ret = lhs.unmodulateables == rhs.unmodulateables;
-      ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
-      ret &= lhs.mono == rhs.mono;
-      ret &= lhs.unison == rhs.unison;
-      ret &= lhs.hwamounts == rhs.hwamounts;
-      ret &= lhs.hwsources == rhs.hwsources;
-      ret &= lhs.macros == rhs.macros;
-      ret &= lhs.macrotimes == rhs.macrotimes;
-      ret &= lhs.splitpoint == rhs.splitpoint;
-      return ret;
+        auto ret = lhs.unmodulateables == rhs.unmodulateables;
+        ret &= lhs.modulateables == rhs.modulateables;
+        ret &= lhs.globalparams == rhs.globalparams;
+        ret &= lhs.mono == rhs.mono;
+        ret &= lhs.unison == rhs.unison;
+        ret &= lhs.master == rhs.master;
+        ret &= lhs.hwamounts == rhs.hwamounts;
+        ret &= lhs.hwsources == rhs.hwsources;
+        ret &= lhs.macros == rhs.macros;
+        ret &= lhs.macrotimes == rhs.macrotimes;
+        return ret;
     }
-
-    struct LayerPresetMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::LayerPreset;
-      }
-
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
-
-      std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
-
-      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
-
-      ParameterGroups::UnisonGroup unison;
-      ParameterGroups::MonoGroup mono;
-
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
-    };
-
-    inline bool operator==(const LayerPresetMessage &lhs, const LayerPresetMessage &rhs)
-    {
-      auto ret = lhs.unmodulateables == rhs.unmodulateables;
-      ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
-      ret &= lhs.mono == rhs.mono;
-      ret &= lhs.unison == rhs.unison;
-      ret &= lhs.hwamounts == rhs.hwamounts;
-      ret &= lhs.hwsources == rhs.hwsources;
-      ret &= lhs.macros == rhs.macros;
-      ret &= lhs.macrotimes == rhs.macrotimes;
-      return ret;
-    }
-  }
+}
 }
