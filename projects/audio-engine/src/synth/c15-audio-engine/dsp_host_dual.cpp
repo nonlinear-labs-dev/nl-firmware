@@ -2146,7 +2146,7 @@ void dsp_host_dual::debugLevels()
 {
     nltools::Log::info(
         "MasterLevel:",
-        m_params.get_global_direct(static_cast<uint32_t>(C15::Parameters::Global_Unmodulateables::Master_Volume))
+        m_params.get_global_direct(static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Master_Volume))
             ->m_scaled);
     nltools::Log::info(
         "VoiceGroupLevel[I]:",

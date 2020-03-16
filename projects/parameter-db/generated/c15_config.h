@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       c15_config.h
-    @date       2020-03-06, 16:21
+    @date       2020-03-16, 14:07
     @version	1.7B-4
     @author     M. Seeber
     @brief      crucial information about the audio engine
@@ -11,11 +11,9 @@
 
 #include <stdint.h>
 
-namespace C15
-{
+namespace C15 {
 
-  namespace Config
-  {
+namespace Config {
 
     const char milestone[7] = "1.7B-4";
     const uint32_t total_polyphony = 24;
@@ -29,6 +27,6 @@ namespace C15
     const uint32_t key_from = 36;
     const uint32_t key_to = 96;
 
-  }  // namespace C15::Config
+} // namespace C15::Config
 
-}  // namespace C15
+} // namespace C15
