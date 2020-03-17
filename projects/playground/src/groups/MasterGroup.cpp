@@ -1,6 +1,6 @@
 #include <parameters/ModulateableParameter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
-#include <parameters/scale-converters/LinearBipolar96StScaleConverter.h>
+#include <parameters/scale-converters/LinearBipolar96StScaleConverterFine.h>
 #include "MasterGroup.h"
 #include "parameters/Parameter.h"
 
@@ -23,7 +23,7 @@ void MasterGroup::init()
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { 248, VoiceGroup::Global }, ScaleConverter::get<LinearBipolar48StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar96StScaleConverter>(), 0, 48, 4800));
+      ScaleConverter::get<LinearBipolar96StScaleConverterFine>(), 0, 48, 4800));
 }
 
 void MasterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
