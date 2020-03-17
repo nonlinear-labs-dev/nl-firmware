@@ -2031,7 +2031,7 @@ void dsp_host_dual::recallSplit()
     globalParRcl(msg->hwamounts[i]);
   }
   // global updates: macros
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: macros:");
   }
@@ -2045,20 +2045,20 @@ void dsp_host_dual::recallSplit()
     globalTimeRcl(msg->macrotimes[i]);
   }
   // global updates: parameters
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (modulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
   globalParRcl(msg->splitpoint);
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
-  for(auto i : msg->scale)
+  for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
-    globalParRcl(i);
+    globalParRcl(msg->scale[i]);
   }
   // local updates (each layer)
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
@@ -2162,7 +2162,7 @@ void dsp_host_dual::recallLayer()
     m_params.m_layer[layerId].m_assignment.reset();
   }
   // global updates: hw sources
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: hw sources:");
   }
@@ -2171,7 +2171,7 @@ void dsp_host_dual::recallLayer()
     globalParRcl(msg->hwsources[i]);
   }
   // global updates: hw amounts
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: hw amounts:");
   }
@@ -2180,7 +2180,7 @@ void dsp_host_dual::recallLayer()
     globalParRcl(msg->hwamounts[i]);
   }
   // global updates: macros
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: macros:");
   }
@@ -2194,13 +2194,13 @@ void dsp_host_dual::recallLayer()
     globalTimeRcl(msg->macrotimes[i]);
   }
   // global updates: parameters
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (modulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
-  if constexpr(LOG_RECALL)
+  if(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
