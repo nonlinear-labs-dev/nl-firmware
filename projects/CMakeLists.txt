@@ -9,10 +9,9 @@ OPTION(BUILD_TEXT2SOLED "Enable building and installing of the text2soled utilit
 OPTION(BUILD_TESTING "Enable tests" On)
 OPTION(BUILD_REALTIME_SYSTEM "Enable building of the LPC realtime system" Off)
 
-EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log --format=\"%aI--%h\" -n 1" OUTPUT_VARIABLE LAST_COMMIT_STAMP)
+EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log -n 1 --pretty='format:%cd' --date=format:'%Y-%m-%d %H:%M:%S'" OUTPUT_VARIABLE LAST_COMMIT_STAMP)
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse --abbrev-ref HEAD" OUTPUT_VARIABLE BRANCH_NAME)
-SET(C15_VERSION "C15--${BRANCH_NAME}--${LAST_COMMIT_STAMP}")
-string(REGEX REPLACE "\:" "-" C15_VERSION ${C15_VERSION})
+SET(C15_VERSION "${LAST_COMMIT_STAMP}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -Wno-deprecated-declarations")
 
