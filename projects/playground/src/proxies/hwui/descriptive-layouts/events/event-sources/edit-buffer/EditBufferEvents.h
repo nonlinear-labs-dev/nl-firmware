@@ -46,6 +46,24 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override;
   };
 
+  class IsSingleSound : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class IsLayerSound : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class IsSplitSound : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
   class CurrentVoiceGroupText : public VoiceGroupSelectedEvent<DisplayString>
   {
    public:

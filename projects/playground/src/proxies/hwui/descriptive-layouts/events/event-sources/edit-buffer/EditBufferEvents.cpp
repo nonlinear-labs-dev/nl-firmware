@@ -176,3 +176,18 @@ void DescriptiveLayouts::VGIIMuted::onChange(const EditBuffer *eb)
   auto muteII = eb->findParameterByID({ 395, VoiceGroup::II })->getControlPositionValue() != 0;
   setValue({ muteII ? "\uE0BA" : "", 0 });
 }
+
+void DescriptiveLayouts::IsSingleSound::onChange(const EditBuffer *eb)
+{
+  setValue(eb->getType() == SoundType::Single);
+}
+
+void DescriptiveLayouts::IsLayerSound::onChange(const EditBuffer *eb)
+{
+  setValue(eb->getType() == SoundType::Layer);
+}
+
+void DescriptiveLayouts::IsSplitSound::onChange(const EditBuffer *eb)
+{
+  setValue(eb->getType() == SoundType::Split);
+}

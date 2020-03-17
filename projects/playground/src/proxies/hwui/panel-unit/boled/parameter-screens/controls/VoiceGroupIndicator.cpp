@@ -74,5 +74,6 @@ void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, cons
   m_shouldDraw
       = SwitchVoiceGroupButton::allowToggling(newParam, Application::get().getPresetManager()->getEditBuffer());
   m_shouldDraw |= newParam->getParentGroup()->getID().getName() == "MCs";
+  m_shouldDraw |= newParam->getParentGroup()->getID().getName() == "Split";
   setDirty();
 }

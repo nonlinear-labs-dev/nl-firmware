@@ -51,6 +51,10 @@ namespace DescriptiveLayouts
     m_map[EventSources::EditBufferMasterVolume] = std::make_unique<ParameterValue<247, VoiceGroup::Global>>();
     m_map[EventSources::EditBufferMasterTune] = std::make_unique<ParameterValue<248, VoiceGroup::Global>>();
 
+    m_map[EventSources::IsSingleSound] = std::make_unique<IsSingleSound>();
+    m_map[EventSources::IsSplitSound] = std::make_unique<IsSplitSound>();
+    m_map[EventSources::IsLayerSound] = std::make_unique<IsLayerSound>();
+
     m_map[EventSources::VGIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::I>>();
     m_map[EventSources::VGIIMasterTuneText] = std::make_unique<ParameterValue<360, VoiceGroup::II>>();
     m_map[EventSources::VGIMasterVolumeText] = std::make_unique<ParameterValue<358, VoiceGroup::I>>();
@@ -98,7 +102,6 @@ namespace DescriptiveLayouts
     m_map[EventSources::UnisonPhaseText] = std::make_unique<ParameterValueCurrentVG<252>>();
     m_map[EventSources::UnisonPanText] = std::make_unique<ParameterValueCurrentVG<253>>();
 
-    m_map[EventSources::VoicesParameterHeader] = std::make_unique<VoicesParameterHeader>();
     m_map[EventSources::UnisonEnabled] = std::make_unique<UnisonEnabledBool>();
 
     m_map[EventSources::CurrentVoiceGroupLabel] = std::make_unique<CurrentVoiceGroupLabel>();
