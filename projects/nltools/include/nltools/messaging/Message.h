@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Messaging.h"
-#include <nltools/Types.h>
-#include <nltools/Testing.h>
 #include <cstring>
+#include <nltools/Testing.h>
+#include <nltools/Types.h>
 
 namespace nltools
 {
@@ -62,7 +62,7 @@ namespace nltools
             std::memset(data, '\0', tSize + 1);
           }
 
-          void set(const std::string &s)
+          void set(const std::string& s)
           {
             assert(s.size() <= tSize);
             std::copy(s.begin(), s.end() + 1, data);
@@ -88,7 +88,7 @@ namespace nltools
         {
         }
 
-        template <typename T> SetWiFiSSIDMessage(const T &ssid)
+        template <typename T> SetWiFiSSIDMessage(const T& ssid)
         {
           m_ssid.set(ssid);
         }
@@ -107,7 +107,7 @@ namespace nltools
         {
         }
 
-        template <typename T> SetWiFiPasswordMessage(const T &password)
+        template <typename T> SetWiFiPasswordMessage(const T& password)
         {
           m_password.set(password);
         }
@@ -126,7 +126,7 @@ namespace nltools
         {
         }
 
-        template <typename T> WiFiPasswordChangedMessage(const T &password)
+        template <typename T> WiFiPasswordChangedMessage(const T& password)
         {
           m_password.set(password);
         }
@@ -145,7 +145,7 @@ namespace nltools
         {
         }
 
-        template <typename T> WiFiSSIDChangedMessage(const T &ssid)
+        template <typename T> WiFiSSIDChangedMessage(const T& ssid)
         {
           m_ssid.set(ssid);
         }
@@ -364,20 +364,20 @@ namespace nltools
 
     namespace detail
     {
-      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage &s)
+      template <> inline LPCMessage deserialize<LPCMessage>(const SerializedMessage& s)
       {
         LPCMessage ret;
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(s->get_data(numBytes));
+        auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
         ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
         return ret;
       }
 
-      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage &msg)
+      template <> inline SerializedMessage serialize<LPCMessage>(const LPCMessage& msg)
       {
         gsize numBytes = 0;
-        auto data = reinterpret_cast<const uint8_t *>(msg.message->get_data(numBytes));
-        auto scratch = reinterpret_cast<uint16_t *>(g_malloc(numBytes + 2));
+        auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
+        auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
         scratch[0] = static_cast<uint16_t>(MessageType::LPC);
         std::memcpy(&scratch[1], data, numBytes);
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
@@ -452,14 +452,20 @@ namespace nltools
         ParameterGroups::ModulateableParameter glide;
       };
 
-      inline bool operator==(const Parameter &lhs, const Parameter &rhs)
+      struct MasterGroup
+      {
+        ParameterGroups::ModulateableParameter volume;
+        ParameterGroups::ModulateableParameter tune;
+      };
+
+      inline bool operator==(const Parameter& lhs, const Parameter& rhs)
       {
         auto ret = lhs.id == rhs.id;
         ret &= lhs.controlPosition == rhs.controlPosition;
         return ret;
       }
 
-      inline bool operator==(const ModulateableParameter &lhs, const ModulateableParameter &rhs)
+      inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
       {
         auto ret = lhs.id == rhs.id;
         ret &= lhs.controlPosition == rhs.controlPosition;
@@ -468,7 +474,7 @@ namespace nltools
         return ret;
       }
 
-      inline bool operator==(const MonoGroup &lhs, const MonoGroup &rhs)
+      inline bool operator==(const MonoGroup& lhs, const MonoGroup& rhs)
       {
         auto ret = lhs.glide == rhs.glide;
         ret &= lhs.monoEnable == rhs.monoEnable;
@@ -477,12 +483,19 @@ namespace nltools
         return ret;
       }
 
-      inline bool operator==(const UnisonGroup &lhs, const UnisonGroup &rhs)
+      inline bool operator==(const UnisonGroup& lhs, const UnisonGroup& rhs)
       {
         auto ret = lhs.unisonVoices == rhs.unisonVoices;
         ret &= lhs.detune == rhs.detune;
         ret &= lhs.pan == rhs.pan;
         ret &= lhs.phase == rhs.phase;
+        return ret;
+      }
+
+      inline bool operator==(const MasterGroup& lhs, const MasterGroup& rhs)
+      {
+        auto ret = lhs.volume == rhs.volume;
+        ret &= lhs.tune == rhs.tune;
         return ret;
       }
     }
@@ -506,16 +519,19 @@ namespace nltools
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
 
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+      ParameterGroups::MasterGroup master;
+
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
     };
 
-    inline bool operator==(const SinglePresetMessage &lhs, const SinglePresetMessage &rhs)
+    inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.scale == rhs.scale;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
+      ret &= lhs.master == rhs.master;
       ret &= lhs.hwamounts == rhs.hwamounts;
       ret &= lhs.hwsources == rhs.hwsources;
       ret &= lhs.macros == rhs.macros;
@@ -536,23 +552,26 @@ namespace nltools
       std::array<ParameterGroups::UnisonGroup, 2> unison;
       std::array<ParameterGroups::MonoGroup, 2> mono;
 
+      ParameterGroups::MasterGroup master;
+
       std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
 
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
       ParameterGroups::SplitPoint splitpoint;
     };
 
-    inline bool operator==(const SplitPresetMessage &lhs, const SplitPresetMessage &rhs)
+    inline bool operator==(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.scale == rhs.scale;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
+      ret &= lhs.master == rhs.master;
       ret &= lhs.hwamounts == rhs.hwamounts;
       ret &= lhs.hwsources == rhs.hwsources;
       ret &= lhs.macros == rhs.macros;
@@ -580,16 +599,19 @@ namespace nltools
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
 
-      std::array<ParameterGroups::GlobalParameter, 15> globalparams;
+      ParameterGroups::MasterGroup master;
+
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
     };
 
-    inline bool operator==(const LayerPresetMessage &lhs, const LayerPresetMessage &rhs)
+    inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.globalparams == rhs.globalparams;
+      ret &= lhs.scale == rhs.scale;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
+      ret &= lhs.master == rhs.master;
       ret &= lhs.hwamounts == rhs.hwamounts;
       ret &= lhs.hwsources == rhs.hwsources;
       ret &= lhs.macros == rhs.macros;
