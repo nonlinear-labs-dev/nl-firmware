@@ -26,9 +26,8 @@ int main(int numArgs, char **argv)
   app.stopWatchDog();
 
   std::vector<const char *> args;
-  args.emplace_back(argv[0]);
-  //args.emplace_back("-s");  //this line enables showing of passed tests
+  for(auto i = 0; i < numArgs; i++)
+    args.emplace_back(argv[i]);
 
-  int result = Catch::Session().run(args.size(), args.data());
-  return result;
+  return Catch::Session().run(args.size(), args.data());
 }

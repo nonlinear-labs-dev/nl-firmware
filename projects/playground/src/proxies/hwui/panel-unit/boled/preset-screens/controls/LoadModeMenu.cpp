@@ -77,10 +77,10 @@ void LoadModeMenu::installDual()
   m_buttonDHandler = std::make_unique<ShortVsLongPress>([this] { getLoadToPartSetting()->toggle(); },
                                                         [this] { getDirectLoadSetting()->toggle(); });
 
-  auto loadToPartButton = addControl(new Button("To Part", {0, 50, 58, 11}));
+  auto loadToPartButton = addControl(new Button("To Part", { 0, 50, 58, 11 }));
   loadToPartButton->setHighlight(isLoadToPartEnabled());
 
-  auto directLoadButton = addControl(new Button("Direct Ld", {4, 38, 50, 11}));
+  auto directLoadButton = addControl(new Button("Direct Ld", { 4, 38, 50, 11 }));
   directLoadButton->setHighlight(isDirectLoadEnabled());
 }
 
@@ -102,5 +102,10 @@ bool LoadModeMenu::isLoadToPartEnabled()
 bool LoadModeMenu::onButton(Buttons button, bool down, ButtonModifiers modifiers)
 {
   if(m_buttonDHandler && button == Buttons::BUTTON_D)
+  {
     m_buttonDHandler->onButtonEvent(down);
+    return true;
+  }
+
+  return false;
 }

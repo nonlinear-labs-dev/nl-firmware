@@ -73,6 +73,10 @@ Preset *MockPresetStorage::createLayerPreset(UNDO::Transaction *transaction)
   return preset;
 }
 
+Bank* MockPresetStorage::getBank() {
+  return m_bank;
+}
+
 Bank *MockPresetStorage::createBank(UNDO::Transaction *transaction)
 {
   auto eb = getEditBuffer();

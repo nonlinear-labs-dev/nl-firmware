@@ -275,10 +275,6 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
             m_menu->toggle();
           }
         }
-        else if(m_loadMode)
-        {
-#warning TODO preset load
-        }
 
         return true;
 
@@ -333,7 +329,6 @@ bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
 
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
-  auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>();
   auto loadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>();
 
   if(loadToPart->get())

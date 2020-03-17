@@ -114,6 +114,10 @@ class PresetManager : public ContentSection
 
   const Preset *getSelectedPreset() const;
 
+  //Test Helper
+  void forceScheduledAutoLoad();
+  bool isAutoLoadScheduled() const;
+
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
@@ -150,6 +154,8 @@ class PresetManager : public ContentSection
   SignalWithCache<void, size_t> m_sigNumBanksChanged;
   Signal<void> m_sigRestoreHappened;
 
+  std::atomic_bool m_autoLoadScheduled { false };
+  
   Throttler m_autoLoadThrottler;
 
   Expiration m_saveJob;

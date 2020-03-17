@@ -22,6 +22,8 @@
 #include <groups/ParameterGroup.h>
 #include <glibmm.h>
 #include <giomm/file.h>
+#include <device-settings/LoadToPartSetting.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/SelectVoiceGroupLayout.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -241,12 +243,28 @@ void PresetManager::doAutoLoadSelectedPreset()
   }
 }
 
+auto isAboutToAutoLoadWithLoadToPart(const Preset *toLoad)
+{
+  auto loadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
+  auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+  auto isDualPreset = toLoad->getType() != SoundType::Single;
+  auto isDualEb = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
+
+  return loadToPart && directLoad && isDualEb && isDualPreset;
+}
+
 void PresetManager::scheduleAutoLoadSelectedPreset()
 {
+  if(isAboutToAutoLoadWithLoadToPart(getSelectedPreset()))
+  {
+    Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new SelectVoiceGroupLayout());
+  }
+
+  m_autoLoadScheduled = true;
   m_autoLoadThrottler.doTask([=]() {
     if(auto b = getSelectedBank())
     {
-      auto presetUUID = b->getSelectedPresetUuid();
+      const auto &presetUUID = b->getSelectedPresetUuid();
       auto eb = getEditBuffer();
       bool shouldLoad = eb->getUUIDOfLastLoadedPreset() != presetUUID || eb->isModified();
 
@@ -259,11 +277,13 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
             if(!currentUndo->isClosed())
             {
               eb->undoableLoad(currentUndo, p);
+              m_autoLoadScheduled = false;
             }
             else
             {
               currentUndo->reopen();
               eb->undoableLoad(currentUndo, p);
+              m_autoLoadScheduled = false;
               currentUndo->close();
             }
             return;
@@ -271,10 +291,21 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
 
           auto scope = getUndoScope().startTransaction(p->buildUndoTransactionTitle("Load"));
           eb->undoableLoad(scope->getTransaction(), p);
+          m_autoLoadScheduled = false;
         }
       }
     }
   });
+}
+
+void PresetManager::forceScheduledAutoLoad()
+{
+  m_autoLoadThrottler.doActionSync();
+}
+
+bool PresetManager::isAutoLoadScheduled() const
+{
+  return m_autoLoadScheduled;
 }
 
 bool PresetManager::isLoading() const
