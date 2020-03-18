@@ -218,14 +218,14 @@ namespace Engine
     {
       float m_convert[4] = {}, m_dx_audio = 0.0f, m_dx_fast = 0.0f, m_dx_slow = 0.0f, m_millisecond = 0.0f,
             m_sample_inc = 0.0f;
-      inline void init(const uint32_t _samplerate)
+      inline void init(const uint32_t _upsampleIndex)
       {
-        float rate = static_cast<float>(_samplerate);
+        float rate = static_cast<float>(C15::Config::clock_rates[_upsampleIndex][0]);
         m_millisecond = 1e-3f * rate;
         m_sample_inc = 1.0f / rate;
         m_convert[1] = 1.0f;
-        m_convert[2] = rate / static_cast<float>(C15::Config::clock_rates[0][1]);
-        m_convert[3] = rate / static_cast<float>(C15::Config::clock_rates[0][2]);
+        m_convert[2] = rate / static_cast<float>(C15::Config::clock_rates[_upsampleIndex][1]);
+        m_convert[3] = rate / static_cast<float>(C15::Config::clock_rates[_upsampleIndex][2]);
       }
       inline float clip(const float _value)
       {

@@ -34,7 +34,7 @@ class PolySection
   PolySection();
   void init(GlobalSignals *_globalsignals, exponentiator *_convert, Engine::Handle::Time_Handle *_time,
             LayerSignalCollection *_z_self, float *_reference, const float _ms, const float _gateRelease,
-            const float _samplerate);
+            const float _samplerate, const uint32_t _upsampleFactor);
   void add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_fast_id(const uint32_t _smootherId, const uint32_t _signalId);

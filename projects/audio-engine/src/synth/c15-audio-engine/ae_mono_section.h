@@ -27,7 +27,8 @@ class MonoSection
   MonoSignals m_signals;
   float m_out_l = 0.0f, m_out_r = 0.0f, m_dry = 0.0f, m_wet = 0.0f;
   MonoSection();
-  void init(exponentiator *_convert, LayerSignalCollection *_z_self, const float _ms, const float _samplerate);
+  void init(exponentiator *_convert, LayerSignalCollection *_z_self, const float _ms, const float _samplerate,
+            const uint32_t _upsampleFactor);
   void add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_audio_id(const uint32_t _smootherId, const uint32_t _signalId);
   void add_copy_fast_id(const uint32_t _smootherId, const uint32_t _signalId);
