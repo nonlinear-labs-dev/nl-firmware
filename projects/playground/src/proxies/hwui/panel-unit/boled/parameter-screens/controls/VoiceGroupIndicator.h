@@ -7,19 +7,18 @@ class VoiceGroupIndicator : public Control
   explicit VoiceGroupIndicator(const Rect& r);
   ~VoiceGroupIndicator() override;
   bool redraw(FrameBuffer& fb) override;
+
  private:
   void onSoundTypeChanged();
-  void onVoiceGroupChanged(VoiceGroup newVoiceGroup);
 
-  void onParameterSelectionChanged(const Parameter* oldParam, const Parameter* newParam);
+  void onParameterChanged(const Parameter* parameter);
 
   bool drawSplit(FrameBuffer& fb);
   bool drawLayer(FrameBuffer& fb);
 
-  VoiceGroup m_selectedVoiceGroup{};
-  SoundType m_currentSoundType{};
+  VoiceGroup m_selectedVoiceGroup {};
+  SoundType m_currentSoundType {};
 
-  sigc::connection m_voiceGroupChanged;
   sigc::connection m_soundTypeChanged;
   sigc::connection m_parameterSelectionChanged;
 
