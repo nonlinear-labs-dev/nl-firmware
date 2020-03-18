@@ -2,11 +2,11 @@
 #include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterModulateableParameter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterModulateableParameterWithUnusualModUnit.h>
-#include <parameters/scale-converters/LinearBipolar96StScaleConverter.h>
 #include <parameters/scale-converters/OnOffScaleConverter.h>
 #include <parameters/scale-converters/Linear60KeyScaleConverter.h>
 #include <parameters/scale-converters/dimension/PitchDimension.h>
 #include <parameters/scale-converters/Linear60StScaleConverter.h>
+#include <parameters/scale-converters/LinearBipolar96StScaleConverterFine.h>
 #include "VoiceGroupMasterGroup.h"
 
 VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
@@ -21,7 +21,7 @@ void VoiceGroupMasterGroup::init()
 
   appendParameter(new VoiceGroupMasterModulateableParameterWithUnusualModUnit(
       this, { 360, getVoiceGroup() }, ScaleConverter::get<LinearBipolar48StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar96StScaleConverter>(), 0, 48, 4800));
+      ScaleConverter::get<LinearBipolar96StScaleConverterFine>(), 0, 48, 4800));
 
   appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { 395, getVoiceGroup() },
                                                               ScaleConverter::get<OnOffScaleConverter>(), 0.0, 1, 1));
