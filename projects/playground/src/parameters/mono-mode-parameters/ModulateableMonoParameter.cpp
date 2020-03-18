@@ -1,4 +1,4 @@
-#include <proxies/hwui/panel-unit/boled/parameter-screens/MonoModeParameterLayout.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/MonoModeParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include "ModulateableMonoParameter.h"

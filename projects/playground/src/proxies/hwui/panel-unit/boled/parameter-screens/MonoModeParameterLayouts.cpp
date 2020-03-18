@@ -1,10 +1,9 @@
+#include "MonoModeParameterLayouts.h"
 #include <Application.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MonoParameterCarousel.h>
-#include "MonoModeParameterLayout.h"
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MonoUnisonModuleCaption.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 
@@ -12,11 +11,6 @@ Parameter *MonoModeParameterLayout::getCurrentParameter() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   return eb->getSelected();
-}
-
-ModuleCaption *MonoModeParameterLayout::createModuleCaption() const
-{
-  return new MonoUnisonModuleCaption(Rect(0, 0, 64, 13));
 }
 
 MonoModeParameterLayout::MonoModeParameterLayout()
@@ -83,9 +77,4 @@ bool MonoModeModulateableParameterLayout::onButton(Buttons i, bool down, ButtonM
   }
 
   return ModulateableParameterSelectLayout2::onButton(i, down, modifiers);
-}
-
-ModuleCaption *MonoModeModulateableParameterLayout::createModuleCaption() const
-{
-  return new MonoUnisonModuleCaption(Rect(0, 0, 64, 13));
 }
