@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2020-03-06, 16:21
+    @date       2020-03-16, 14:07
     @version	1.7B-4
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -171,13 +171,13 @@ namespace C15
     enum class Global_Modulateables
     {
       Split_Split_Point,
+      Master_Volume,
+      Master_Tune,
       _LENGTH_
     };
 
     enum class Global_Unmodulateables
     {
-      Master_Volume,
-      Master_Tune,
       Scale_Base_Key,
       Scale_Offset_0,
       Scale_Offset_1,

@@ -11,16 +11,15 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
 {
   m_soundTypeChanged = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::mem_fun(this, &VoiceGroupIndicator::onSoundTypeChanged));
-  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupChanged));
-  m_parameterSelectionChanged = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
+
+  auto parameter = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+  m_parameterSelectionChanged
+      = parameter->onParameterChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterChanged));
 }
 
 VoiceGroupIndicator::~VoiceGroupIndicator()
 {
   m_soundTypeChanged.disconnect();
-  m_voiceGroupChanged.disconnect();
   m_parameterSelectionChanged.disconnect();
 }
 
@@ -63,16 +62,14 @@ void VoiceGroupIndicator::onSoundTypeChanged()
   setDirty();
 }
 
-void VoiceGroupIndicator::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
-{
-  m_selectedVoiceGroup = newVoiceGroup;
-  setDirty();
-}
-
-void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, const Parameter* newParam)
+void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
 {
   m_shouldDraw
-      = SwitchVoiceGroupButton::allowToggling(newParam, Application::get().getPresetManager()->getEditBuffer());
-  m_shouldDraw |= newParam->getParentGroup()->getID().getName() == "MCs";
+      = SwitchVoiceGroupButton::allowToggling(parameter, Application::get().getPresetManager()->getEditBuffer());
+  m_shouldDraw |= parameter->getParentGroup()->getID().getName() == "MCs";
+  m_shouldDraw |= parameter->getParentGroup()->getID().getName() == "Split";
+  m_selectedVoiceGroup = parameter->getID().getVoiceGroup();
+
+  onSoundTypeChanged();
   setDirty();
 }

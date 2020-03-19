@@ -24,7 +24,7 @@ class PresetManagerLayout : public Layout
   typedef Layout super;
 
  public:
-  PresetManagerLayout(FocusAndMode focusAndMode);
+  PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode oldFocusAndMode);
   virtual ~PresetManagerLayout();
 
   void setFocusAndMode(FocusAndMode focusAndMode);
@@ -56,6 +56,7 @@ class PresetManagerLayout : public Layout
   ButtonMenu *m_menu = nullptr;
   PresetListBase *m_presets = nullptr;
   FocusAndMode m_focusAndMode;
+  FocusAndMode m_oldFocusAndMode;
   StoreModeData *getStoreModeData();
   void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
 

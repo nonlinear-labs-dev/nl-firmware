@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-03-06, 16:21
+    @date       2020-03-16, 14:07
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1233,18 +1233,18 @@ namespace C15
       0.5f,
       {},
       { 100, 1000, None, None, "", "Macro Control", "Macro Control", "", "", "" } },
-    { Parameters::Global_Unmodulateables::Master_Volume,
+    { Parameters::Global_Modulateables::Master_Volume,
       247,
       0.5f,
       { Smoothers::Global_Fast::Master_Volume, None, Properties::SmootherScale::Parabolic, 4.0f, 0.0f, false },
-      { 100, 1000, None, None, "", "Master", "Master", "Master Volume", "Volume",
+      { 100, 1000, 100, 1000, "", "Master", "Master", "Master Volume", "Volume",
         "Master volume [in dB], applied at the end of the effect chain, before the soft clipper." } },
-    { Parameters::Global_Unmodulateables::Master_Tune,
+    { Parameters::Global_Modulateables::Master_Tune,
       248,
       0.0f,
       { Smoothers::Global_Slow::Master_Tune, Signals::Global_Signals::Master_Tune, Properties::SmootherScale::Linear,
         48.0f, 0.0f, true },
-      { 48, 4800, None, None, "", "Master", "Master", "Master Tune", "Tune",
+      { 48, 4800, 48, 4800, "", "Master", "Master", "Master Tune", "Tune",
         "Global pitch transposition [in semitones]." } },
     { Parameters::Local_Unmodulateables::Unison_Voices,
       249,
