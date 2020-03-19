@@ -46,19 +46,20 @@ void PresetListEntry::onPresetChanged(const Preset *preset)
   {
     bool isLoaded
         = preset->getUuid() == Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset();
+
     if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
     {
       auto num = bank->getPresetPosition(preset->getUuid());
       m_number->update(num, m_selected, isLoaded);
       m_name->update(preset->getDisplayNameWithSuffixes(), m_selected, isLoaded);
-      m_type->update(preset->getType(), m_selected, isLoaded);
+      m_type->update(preset);
       return;
     }
   }
 
   m_number->update(-1, false, false);
   m_name->update("", false, false);
-  m_type->update(SoundType::Invalid, false, false);
+  m_type->update(nullptr);
 }
 
 bool PresetListEntry::redraw(FrameBuffer &fb)

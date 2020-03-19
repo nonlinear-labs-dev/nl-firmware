@@ -30,6 +30,6 @@ class PresetList : public PresetListBase
 
   void selectFirstOrLastBank(int inc, PresetManager* pm, const UNDO::Scope::tTransactionScopePtr& scope) const;
   void stepBankSelection(int inc, PresetManager* pm, const UNDO::Scope::tTransactionScopePtr& scope) const;
-  void stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const;
+  virtual void stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const;
   void stepBankSelection(int inc, const ButtonModifiers& modifiers, PresetManager* pm) const;
 };
