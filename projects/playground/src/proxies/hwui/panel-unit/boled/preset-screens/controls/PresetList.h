@@ -4,8 +4,12 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListBase.h>
 #include <tools/Uuid.h>
 #include <sigc++/connection.h>
+#include <libundo/undo/TransactionCreationScope.h>
+#include <libundo/undo/Scope.h>
 
 class Preset;
+class PresetManager;
+class Bank;
 
 class PresetList : public PresetListBase
 {
@@ -28,6 +32,7 @@ class PresetList : public PresetListBase
   sigc::connection m_bankChangedConnection;
   Uuid m_uuidOfLastLoadedPreset;
 
+ protected:
   void selectFirstOrLastBank(int inc, PresetManager* pm, const UNDO::Scope::tTransactionScopePtr& scope) const;
   void stepBankSelection(int inc, PresetManager* pm, const UNDO::Scope::tTransactionScopePtr& scope) const;
   virtual void stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const;

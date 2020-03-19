@@ -58,6 +58,10 @@ class PresetManagerLayout : public Layout
   FocusAndMode m_focusAndMode;
   FocusAndMode m_oldFocusAndMode;
   StoreModeData *getStoreModeData();
+
+  sigc::connection m_dlSettingConnection;
+  sigc::connection m_loadToPartConnection;
+
   void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
 
   void loadSelectedPresetAccordingToLoadType();

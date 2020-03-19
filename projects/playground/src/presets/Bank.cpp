@@ -680,3 +680,26 @@ bool Bank::resolveCyclicAttachments(UNDO::Transaction *transaction, std::vector<
   stackedBanks.pop_back();
   return true;
 }
+const Preset *Bank::getNextPreset() const
+{
+  try
+  {
+    return getPresetAt(getNextPresetPosition());
+  }
+  catch(...)
+  {
+    return nullptr;
+  }
+}
+
+const Preset *Bank::getPreviousPreset() const
+{
+  try
+  {
+    return getPresetAt(getPreviousPresetPosition());
+  }
+  catch(...)
+  {
+    return nullptr;
+  }
+}

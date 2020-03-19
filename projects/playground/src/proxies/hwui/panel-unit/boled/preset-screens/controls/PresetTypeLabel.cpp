@@ -7,6 +7,7 @@
 #include <device-settings/LoadToPartSetting.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <proxies/hwui/HWUI.h>
+#include <memory>
 
 PresetTypeLabel::PresetTypeLabel(const Rect &pos)
     : Control(pos)
@@ -40,18 +41,16 @@ void PresetTypeLabel::update(const Preset *newSelection)
 
   if(isDirectLoad && isLoadToPart && isDualEditBuffer)
   {
-    m_currentControl.reset(new DualPresetTypeLabel(getPosition()));
+    m_currentControl = std::make_unique<DualPresetTypeLabel>(getPosition());
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
-    dualLabel->
+    dualLabel->update(newSelection);
   }
   else
   {
-    m_currentControl.reset(new SinglePresetTypeLabel(getPosition()));
+    m_currentControl = std::make_unique<SinglePresetTypeLabel>(getPosition());
     auto singleLabel = dynamic_cast<SinglePresetTypeLabel *>(m_currentControl.get());
-    singleLabel->update(type, selected, loaded);
+    singleLabel->update(newSelection);
   }
-
-  m_currentControl->
 }
 
 std::string typeToString(const SoundType &type)
@@ -74,15 +73,15 @@ SinglePresetTypeLabel::SinglePresetTypeLabel(const Rect &r)
 {
 }
 
-void SinglePresetTypeLabel::update(const SoundType &type, bool selected, bool loaded)
+void SinglePresetTypeLabel::update(const Preset *newPreset)
 {
-  if(type != SoundType::Invalid)
+  if(newPreset)
   {
-    setText(typeToString(type), selected, loaded);
-  }
-  else
-  {
-    setText("", selected, loaded);
+    auto type = newPreset->getType();
+    auto loaded
+        = Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset() == newPreset->getUuid();
+
+    setText(typeToString(type), true, loaded);
   }
 }
 
@@ -93,9 +92,7 @@ DualPresetTypeLabel::DualPresetTypeLabel(const Rect &r)
 
 bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
 {
-  auto type = Application::get().getPresetManager()->getEditBuffer()->getType();
-
-  switch(type)
+  switch(m_presetType)
   {
     case SoundType::Single:
     case SoundType::Invalid:
@@ -105,27 +102,41 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
     case SoundType::Split:
       return drawSplit(fb);
   }
+
+  return false;
 }
 
 bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 {
-  auto loadIntoVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-  auto pm = Application::get().getPresetManager();
-  auto eb = pm->getEditBuffer();
-  auto loadedPresetUUID = eb->getUUIDOfLastLoadedPreset();
+  buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX(), getPosition().getY() + 2, 11, 5);
+  buffer.setColor(!m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX(), getPosition().getY() + 9, 11, 5);
 
-  return false;
+  return true;
 }
 
 bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 {
-  return false;
+  buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX(), getPosition().getY() + 2, 5, 12);
+  buffer.setColor(!m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX() + 6, getPosition().getY() + 2, 5, 12);
+
+  return true;
 }
 
 void DualPresetTypeLabel::update(const Preset *selected)
 {
   if(selected)
   {
-    
+    auto loadedPresetPart = Application::get().getPresetManager()->getEditBuffer()->getLoadedPartOfPreset(selected);
+    m_anyLoaded = loadedPresetPart.has_value();
+    m_presetType = selected->getType();
+    if(m_anyLoaded)
+    {
+      m_inidicateI = loadedPresetPart.value() == VoiceGroup::I;
+    }
+    setDirty();
   }
 }

@@ -115,6 +115,9 @@ class Bank : public AttributesOwner
   // signals
   sigc::connection onBankChanged(sigc::slot<void> cb);
 
+  const Preset *getNextPreset() const;
+  const Preset *getPreviousPreset() const;
+
  private:
   using Attributes = std::map<std::string, std::string>;
 

@@ -255,11 +255,6 @@ auto isAboutToAutoLoadWithLoadToPart(const Preset *toLoad)
 
 void PresetManager::scheduleAutoLoadSelectedPreset()
 {
-  if(isAboutToAutoLoadWithLoadToPart(getSelectedPreset()))
-  {
-    Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new SelectVoiceGroupLayout());
-  }
-
   m_autoLoadScheduled = true;
   m_autoLoadThrottler.doTask([=]() {
     if(auto b = getSelectedBank())

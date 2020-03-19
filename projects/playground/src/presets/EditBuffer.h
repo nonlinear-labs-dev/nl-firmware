@@ -106,6 +106,8 @@ class EditBuffer : public ParameterDualGroupSet
 
   void TEST_doDeferredJobs();
 
+  std::optional<VoiceGroup> getLoadedPartOfPreset(const Preset *preset);
+
  private:
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;

@@ -40,11 +40,18 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
     , m_oldFocusAndMode(oldFocusAndMode)
 {
   setup();
+
+  m_loadToPartConnection = Application::get().getSettings()->getSetting<LoadToPartSetting>()->onChange(
+      sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
+  m_dlSettingConnection = Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
+      sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 }
 
 PresetManagerLayout::~PresetManagerLayout()
 {
   m_focusAndMode.mode = UIMode::Edit;
+  m_dlSettingConnection.disconnect();
+  m_loadToPartConnection.disconnect();
 }
 
 void PresetManagerLayout::setFocusAndMode(FocusAndMode focusAndMode)

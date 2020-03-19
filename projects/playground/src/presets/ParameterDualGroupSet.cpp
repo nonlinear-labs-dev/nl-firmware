@@ -208,4 +208,9 @@ void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, P
   for(auto &g : getParameterGroups(target))
     if(auto c = p->findParameterGroup({ g->getID().getName(), VoiceGroup::I }))
       g->copyFrom(transaction, c);
+
+  if(target == VoiceGroup::I)
+    setAttribute(transaction, "Part-I-Origin", p->getUuid().raw());
+  else if(target == VoiceGroup::II)
+    setAttribute(transaction, "Part-II-Origin", p->getUuid().raw());
 }

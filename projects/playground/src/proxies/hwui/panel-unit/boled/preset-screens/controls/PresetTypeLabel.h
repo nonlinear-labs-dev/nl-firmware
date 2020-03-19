@@ -10,7 +10,7 @@ class SinglePresetTypeLabel : public PresetLabel
   explicit SinglePresetTypeLabel(const Rect& r);
   void drawBackground(FrameBuffer& fb) override;
 
-  void update(const SoundType& type, bool selected, bool loaded);
+  void update(const Preset* newPreset);
 };
 
 class DualPresetTypeLabel : public Control
@@ -23,7 +23,9 @@ class DualPresetTypeLabel : public Control
   void update(const Preset* selected);
 
  private:
-  bool m_inidcateI = true;
+  bool m_anyLoaded = false;
+  bool m_inidicateI = true;
+  SoundType m_presetType = SoundType::Single;
 };
 
 class PresetTypeLabel : public Control
@@ -31,8 +33,6 @@ class PresetTypeLabel : public Control
  public:
   explicit PresetTypeLabel(const Rect& pos);
   void update(const Preset* newSelection);
-
-  void drawBackground(FrameBuffer& fb) override;
 
   bool redraw(FrameBuffer& fb) override;
 

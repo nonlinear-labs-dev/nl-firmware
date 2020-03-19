@@ -957,3 +957,21 @@ void EditBuffer::initFadeFrom(UNDO::Transaction *transaction)
   findParameterByID({ 396, VoiceGroup::I })->setDefaultFromHwui(transaction);
   findParameterByID({ 396, VoiceGroup::II })->setDefaultFromHwui(transaction);
 }
+
+std::optional<VoiceGroup> EditBuffer::getLoadedPartOfPreset(const Preset *preset)
+{
+  const auto &uuid = preset->getUuid();
+  try
+  {
+    auto uuidI = getAttribute("Part-I-Origin", "");
+    auto uuidII = getAttribute("Part-II-Origin", "");
+    if(!uuidI.empty() && uuid == uuidI)
+      return VoiceGroup::I;
+    else if(!uuidII.empty() && uuid == uuidII)
+      return VoiceGroup::II;
+  }
+  catch(...)
+  {
+  }
+  return std::nullopt;
+}
