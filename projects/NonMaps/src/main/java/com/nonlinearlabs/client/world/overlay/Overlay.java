@@ -128,7 +128,12 @@ public class Overlay extends OverlayLayout {
 			VoiceGroup g = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
 			 BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, g));
 			boolean muted = param.value.getQuantizedAndClipped(true) > 0.5;
-			return muted ? "M" : "";
+			return muted ? "\uE0BA" : "";
+		}
+
+		@Override
+		public RGB getColorFont() {
+			return EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor;
 		}
 	}
 
@@ -319,7 +324,7 @@ public class Overlay extends OverlayLayout {
 		layerDisplay.doLayout((w - layerDisplayWidth) / 2, 0, layerDisplayWidth, layerDisplayHeight);
 
 		Rect layerDisplayPos = layerDisplay.getRelativePosition();
-		partMuteDisplay.doLayout(layerDisplayPos.getRight(), layerDisplayPos.getTop(), layerDisplayPos.getWidth(), layerDisplayPos.getHeight());
+		partMuteDisplay.doLayout(layerDisplayPos.getRight(), layerDisplayPos.getTop() + Millimeter.toPixels(0.5), layerDisplayPos.getWidth(), layerDisplayPos.getHeight());
 
 		double beltHeight = Millimeter.toPixels(40);
 		belt.doLayout(0, h - beltHeight, w, beltHeight);

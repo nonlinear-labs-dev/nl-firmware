@@ -15,6 +15,7 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
+import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class LayerSoundLayout extends SoundLayout {
@@ -122,16 +123,16 @@ public class LayerSoundLayout extends SoundLayout {
 
 		}
 
-		private class PartMute extends Label {
+		private class PartMute extends SVGImage {
 
 			PartMute(VoiceGroupSoundSettings parent) {
-				super(parent);
+				super(parent, "Mute_Disabled_A.svg", "Mute_Active_A.svg");
 			}
 
 			@Override
-			public String getDrawText(Context2d ctx) {
-				return "M";
-			}
+			public int getSelectedPhase() {
+				return isMuted() ? 1 : 0;
+			} 
 
 			boolean isMuted() {
 				BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, group));
@@ -160,28 +161,6 @@ public class LayerSoundLayout extends SoundLayout {
 				}
 				return this;
 			}
-
-			@Override
-			protected double getFontHeight(Rect pixRect) {
-				return pixRect.getHeight() / 2;
-			}
-
-			@Override
-			public void draw(Context2d ctx, int invalidationMask) {
-				super.draw(ctx, invalidationMask);
-				getPixRect().stroke(ctx, 2, getColorFont());
-			}
-
-			@Override
-			protected String crop(Context2d ctx, Rect pixRect, String text) {
-				return text;
-			}
-
-			@Override
-			public RGB getColorFont() {
-				return isMuted() ? RGB.red() : RGB.black();
-			}
-
 		}
 
 		private class PresetName extends Label {
