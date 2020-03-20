@@ -351,3 +351,37 @@ template <typename T, size_t size> inline T sumUp(const ParallelData<T, size> &i
 
   return ret;
 }
+
+template <typename T, size_t size>
+inline ParallelData<int32_t, size> phaseIsEdge(const ParallelData<T, size> &absolute_phase_difference)
+{
+  ParallelData<int32_t, size> ret;
+
+  for(size_t i = 0; i < size; i++)
+  {
+    if(absolute_phase_difference[i] > 0.5f)
+    {
+      ret[i] = 1;
+    }
+    else
+    {
+      ret[i] = 0;
+    }
+  }
+
+  return ret;
+}
+
+// TODO: make this happen (how?)
+// raised error: ISO C++ forbids declaration of 'poly_cast' with no type [-fpermissive]
+//template <typename TOut, typename T, size_t size> poly_cast(const ParallelData<T, size> &in)
+//{
+//  ParallelData<TOut, size> ret;
+
+//  for(size_t i = 0; i < size; i++)
+//  {
+//    ret[i] = static_cast<TOut>(in[i]);
+//  }
+
+//  return ret;
+//}
