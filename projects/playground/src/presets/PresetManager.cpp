@@ -323,7 +323,9 @@ void PresetManager::scheduleAutoLoadSelectedPresetPart()
       else
       {
         auto scope = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load Preset Part of"));
-        eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, currentVG);
+        eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset,
+                                           currentLoadedPartIsBeforePresetToLoad() ? VoiceGroup::I : VoiceGroup::II,
+                                           currentVG);
       }
     }
   });
@@ -906,4 +908,33 @@ const Preset *PresetManager::getSelectedPreset() const
   }
 
   return nullptr;
+}
+
+bool PresetManager::currentLoadedPartIsBeforePresetToLoad() const
+{
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto og = getEditBuffer()->getPartOrigin(currentVG);
+
+  if(auto selectedBank = getSelectedBank())
+  {
+    if(auto selectedPreset = selectedBank->getSelectedPreset())
+    {
+      if(auto currentOGBank = findBankWithPreset(og.presetUUID))
+      {
+        if(currentOGBank == selectedBank)
+        {
+          if(auto currentOGPreset = currentOGBank->findPreset(og.presetUUID))
+          {
+            return currentOGBank->getPresetPosition(currentOGPreset) < currentOGBank->getPresetPosition(selectedPreset);
+          }
+        }
+        else
+        {
+          return getBankPosition(currentOGBank->getUuid()) < getBankPosition(selectedBank->getUuid());
+        }
+      }
+    }
+  }
+
+  return false;
 }

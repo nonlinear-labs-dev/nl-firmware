@@ -40,7 +40,9 @@ class PresetTypeLabel : public Control
 
  protected:
   void onEditBufferChanged();
+  void onVoiceGroupChanged(const VoiceGroup& vg);
   sigc::connection m_editbufferConnection;
+  sigc::connection m_voiceGroupChanged;
   std::unique_ptr<Control> m_currentControl;
   const Preset* selectedPreset;
 };

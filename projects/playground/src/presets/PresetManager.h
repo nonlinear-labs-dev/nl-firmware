@@ -118,6 +118,8 @@ class PresetManager : public ContentSection
   void forceScheduledAutoLoad();
   bool isAutoLoadScheduled() const;
 
+  bool currentLoadedPartIsBeforePresetToLoad() const;
+
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);

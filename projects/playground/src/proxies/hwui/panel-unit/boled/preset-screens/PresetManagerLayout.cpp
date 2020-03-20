@@ -256,7 +256,8 @@ void PresetManagerLayout::setupPresetStore()
 bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(m_loadMode)
-    m_loadMode->onButton(i, down, modifiers);
+    if(m_loadMode->onButton(i, down, modifiers))
+      return true;
 
   if(m_bankButton)
     if(m_bankButton->onButton(i, down, modifiers))
@@ -408,7 +409,11 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
         case SoundType::Layer:
         case SoundType::Split:
           if(loadToPartSetting->get())
-            openPartChooser();
+          {
+            getPresetManager()->doAutoLoadSelectedPreset();
+            if(getPresetManager()->isAutoLoadScheduled())
+              getPresetManager()->forceScheduledAutoLoad();
+          }
           else
           {
             eb->undoableLoadSelectedPreset(currentVoiceGroup);
@@ -418,10 +423,4 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
       }
     }
   }
-}
-
-void PresetManagerLayout::openPartChooser()
-{
-  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-  boled.setOverlay(new SelectVoiceGroupLayout(this));
 }

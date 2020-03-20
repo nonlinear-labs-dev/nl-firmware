@@ -15,12 +15,22 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
   auto parameter = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   m_parameterSelectionChanged
       = parameter->onParameterChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterChanged));
+
+  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupChanged));
 }
 
 VoiceGroupIndicator::~VoiceGroupIndicator()
 {
   m_soundTypeChanged.disconnect();
   m_parameterSelectionChanged.disconnect();
+  m_voiceGroupChanged.disconnect();
+}
+
+void VoiceGroupIndicator::onVoiceGroupChanged(const VoiceGroup& newVoiceGroup)
+{
+  m_selectedVoiceGroup = newVoiceGroup;
+  setDirty();
 }
 
 bool VoiceGroupIndicator::redraw(FrameBuffer& fb)

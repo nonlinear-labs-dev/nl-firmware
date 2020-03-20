@@ -66,5 +66,4 @@ class PresetManagerLayout : public Layout
 
   void loadSelectedPresetAccordingToLoadType();
 
-  void openPartChooser();
-};
+  };

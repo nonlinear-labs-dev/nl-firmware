@@ -14,14 +14,23 @@ PresetTypeLabel::PresetTypeLabel(const Rect &pos)
 {
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &PresetTypeLabel::onEditBufferChanged));
+
+  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &PresetTypeLabel::onVoiceGroupChanged));
 }
 
 PresetTypeLabel::~PresetTypeLabel()
 {
   m_editbufferConnection.disconnect();
+  m_voiceGroupChanged.disconnect();
 }
 
 void PresetTypeLabel::onEditBufferChanged()
+{
+  update(selectedPreset);
+}
+
+void PresetTypeLabel::onVoiceGroupChanged(const VoiceGroup &vg)
 {
   update(selectedPreset);
 }
@@ -49,7 +58,6 @@ void SinglePresetTypeLabel::drawBackground(FrameBuffer &fb)
 void PresetTypeLabel::update(const Preset *newSelection)
 {
   selectedPreset = newSelection;
-  auto isDirectLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
   auto isLoadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
