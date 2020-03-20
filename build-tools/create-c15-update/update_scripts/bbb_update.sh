@@ -60,7 +60,8 @@ move_files(){
 update(){
     mkdir /update/BBB/rootfs \
     && gzip -dc /update/BBB/rootfs.tar.gz | tar -C /update/BBB/rootfs -xf - \
-    &&  LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude 'etc/hostapd.conf' -f 'P update/' --delete /update/BBB/rootfs/ /
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude 'etc/hostapd.conf' -f 'P update/' --delete /update/BBB/rootfs/ /
+    && chown -R root.root /update
     if [ $? -ne 0 ]; then report_and_quit "E58 BBB update: Syncing rootfs failed ..." "58"; fi
     rm -rf /update/BBB/rootfs/*
     rm -rf /update/BBB/rootfs
