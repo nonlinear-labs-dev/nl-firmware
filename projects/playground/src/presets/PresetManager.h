@@ -125,6 +125,7 @@ class PresetManager : public ContentSection
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
   Glib::ustring getBaseName(const Glib::ustring &basedOn) const;
   void scheduleAutoLoadSelectedPreset();
+  void scheduleAutoLoadSelectedPresetPart();
 
   std::list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
   SaveResult saveMetadata(Glib::RefPtr<Gio::File> pmFolder);
@@ -155,7 +156,7 @@ class PresetManager : public ContentSection
   Signal<void> m_sigRestoreHappened;
 
   std::atomic_bool m_autoLoadScheduled { false };
-  
+
   Throttler m_autoLoadThrottler;
 
   Expiration m_saveJob;

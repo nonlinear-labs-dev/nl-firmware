@@ -5,6 +5,8 @@
 #include <device-settings/LoadToPartSetting.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
+#include <proxies/hwui/buttons.h>
+#include <proxies/hwui/HWUI.h>
 
 namespace detail
 {
@@ -17,6 +19,13 @@ namespace detail
   {
     return Application::get().getSettings()->getSetting<DirectLoadSetting>();
   }
+
+  auto pressButton(Buttons b)
+  {
+    auto hwui = Application::get().getHWUI();
+    hwui->getPanelUnit().getEditPanel().onButtonPressed(b, {}, true);
+    hwui->getPanelUnit().getEditPanel().onButtonPressed(b, {}, false);
+  }
 }
 
 TEST_CASE("Part Origin Attribute")
@@ -25,8 +34,8 @@ TEST_CASE("Part Origin Attribute")
 
   MockPresetStorage presets;
 
-  auto dlScope = detail::getDirectLoad()->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  auto lpScope = detail::getLoadToPart()->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
+  detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
+  detail::getLoadToPart()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
 
   SECTION("Load Single Full")
   {
@@ -101,5 +110,114 @@ TEST_CASE("Part Origin Attribute")
     auto originII = eb->getPartOrigin(VoiceGroup::II);
     CHECK(originII.presetUUID == presets.getSplitPreset()->getUuid());
     CHECK(originII.sourceGroup == VoiceGroup::II);
+  }
+}
+
+auto getOrigins()
+{
+  auto eb = TestHelper::getEditBuffer();
+  return std::pair { eb->getPartOrigin(VoiceGroup::I), eb->getPartOrigin(VoiceGroup::II) };
+};
+
+auto forceAutoLoadIfPending()
+{
+  auto pm = Application::get().getPresetManager();
+
+  if(pm->isAutoLoadScheduled())
+    pm->forceScheduledAutoLoad();
+}
+
+TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
+{
+  DualPresetBank presets;
+  auto bank = presets.getBank();
+
+  TestHelper::initDualEditBuffer<SoundType::Layer>();
+
+  auto eb = TestHelper::getEditBuffer();
+  auto pm = Application::get().getPresetManager();
+
+  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+  CHECK(currentVG == VoiceGroup::I);
+
+  auto [ogI, ogII] = getOrigins();
+
+  CHECK(eb->getOrigin() == nullptr);
+  CHECK(ogI.presetUUID == "");
+  CHECK(ogII.presetUUID == "");
+  CHECK(eb->getUUIDOfLastLoadedPreset() == Uuid::init());
+
+  SECTION("Select First Preset in Bank")
+  {
+
+    detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
+    detail::getLoadToPart()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
+
+    {
+      auto scope = TestHelper::createTestScope();
+      auto transaction = scope->getTransaction();
+      pm->selectBank(transaction, bank->getUuid());
+      bank->selectPreset(transaction, 0, true);
+
+      Application::get().getHWUI()->undoableSetFocusAndMode(transaction,
+                                                            { UIFocus::Presets, UIMode::Select, UIDetail::Init });
+    }
+
+    forceAutoLoadIfPending();
+
+    auto uuid = eb->getUUIDOfLastLoadedPreset();
+    CHECK(uuid == bank->getPresetAt(0)->getUuid());
+
+    detail::getLoadToPart()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
+
+    detail::pressButton(Buttons::BUTTON_INC);
+    forceAutoLoadIfPending();
+    {
+      auto [ogI, ogII] = getOrigins();
+      CHECK(ogI.presetUUID == bank->getPresetAt(0)->getUuid());
+      CHECK(ogI.sourceGroup == VoiceGroup::II);
+    }
+
+    detail::pressButton(Buttons::BUTTON_INC);
+    forceAutoLoadIfPending();
+    {
+      auto [ogI, ogII] = getOrigins();
+      CHECK(ogI.presetUUID == bank->getPresetAt(1)->getUuid());
+      CHECK(ogI.sourceGroup == VoiceGroup::I);
+    }
+
+    detail::pressButton(Buttons::BUTTON_INC);
+    forceAutoLoadIfPending();
+    {
+      auto [ogI, ogII] = getOrigins();
+      CHECK(ogI.presetUUID == bank->getPresetAt(1)->getUuid());
+      CHECK(ogI.sourceGroup == VoiceGroup::II);
+    }
+
+    detail::pressButton(Buttons::BUTTON_DEC);
+    forceAutoLoadIfPending();
+    {
+      auto [ogI, ogII] = getOrigins();
+      CHECK(ogI.presetUUID == bank->getPresetAt(1)->getUuid());
+      CHECK(ogI.sourceGroup == VoiceGroup::I);
+    }
+
+    detail::pressButton(Buttons::BUTTON_DEC);
+    forceAutoLoadIfPending();
+    {
+      auto [ogI, ogII] = getOrigins();
+      CHECK(ogI.presetUUID == bank->getPresetAt(0)->getUuid());
+      CHECK(ogI.sourceGroup == VoiceGroup::II);
+    }
+
+    detail::pressButton(Buttons::BUTTON_DEC);
+    forceAutoLoadIfPending();
+    {
+      auto [ogI, ogII] = getOrigins();
+      CHECK(ogI.presetUUID == bank->getPresetAt(0)->getUuid());
+      CHECK(ogI.sourceGroup == VoiceGroup::I);
+    }
   }
 }

@@ -457,13 +457,20 @@ void EditBuffer::undoableLoad(Preset *preset)
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
+  if(Application::get().getSettings()->getSetting<LoadToPartSetting>()->get())
+  {
+    nltools::Log::error("not possible!");
+  }
+
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
   auto ae = Application::get().getAudioEngineProxy();
   ae->toggleSuppressParameterChanges(transaction);
 
   setAttribute(transaction, "origin-I", preset->getUuid().raw());
+  setAttribute(transaction, "origin-I-vg", toString(VoiceGroup::I));
   setAttribute(transaction, "origin-II", preset->getUuid().raw());
+  setAttribute(transaction, "origin-II-vg", toString(VoiceGroup::II));
 
   copyFrom(transaction, preset);
   undoableSetLoadedPresetInfo(transaction, preset);
@@ -471,7 +478,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
     auto pm = static_cast<PresetManager *>(getParent());
-    bank->selectPreset(transaction, preset->getUuid());
+    bank->selectPreset(transaction, preset->getUuid(), false);
     pm->selectBank(transaction, bank->getUuid());
   }
 

@@ -23,7 +23,7 @@ class DualPresetTypeLabel : public Control
   void update(const Preset* selected);
 
  private:
-  bool m_anyLoaded = false;
+  bool m_presetLoaded = false;
   bool m_inidicateI = false;
   bool m_inidicateII = false;
   SoundType m_presetType = SoundType::Single;
@@ -33,9 +33,14 @@ class PresetTypeLabel : public Control
 {
  public:
   explicit PresetTypeLabel(const Rect& pos);
+  ~PresetTypeLabel();
   void update(const Preset* newSelection);
 
   bool redraw(FrameBuffer& fb) override;
 
+ protected:
+  void onEditBufferChanged();
+  sigc::connection m_editbufferConnection;
   std::unique_ptr<Control> m_currentControl;
+  const Preset* selectedPreset;
 };

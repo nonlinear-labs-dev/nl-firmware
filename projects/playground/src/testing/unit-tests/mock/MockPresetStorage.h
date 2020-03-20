@@ -31,3 +31,15 @@ class MockPresetStorage
   void removeBankOfPreset(UNDO::Transaction* transaction, Preset* presetToDelete);
   Bank* createBank(UNDO::Transaction* transaction);
 };
+
+class DualPresetBank
+{
+ public:
+  DualPresetBank();
+  ~DualPresetBank();
+
+  Bank* getBank();
+
+ private:
+  Bank* m_bank;
+};

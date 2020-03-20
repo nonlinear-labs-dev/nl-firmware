@@ -350,7 +350,7 @@ void Clipboard::pastePresetOnPreset(const Uuid &presetUuid)
       auto source = dynamic_cast<const Preset *>(m_content.get());
       auto newPreset = std::make_unique<Preset>(targetBank, *source, true);
       auto newPresetPtr = targetBank->insertPreset(transaction, insertPos, std::move(newPreset));
-      targetBank->selectPreset(transaction, newPresetPtr->getUuid());
+      targetBank->selectPreset(transaction, newPresetPtr->getUuid(),false);
       doCut(transaction);
     }
   }

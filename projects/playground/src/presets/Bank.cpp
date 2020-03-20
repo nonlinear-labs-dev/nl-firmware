@@ -10,6 +10,9 @@
 #include <glibmm/regex.h>
 #include <giomm/file.h>
 #include <Application.h>
+#include <device-settings/Settings.h>
+#include <device-settings/LoadToPartSetting.h>
+#include <proxies/hwui/HWUI.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 
@@ -300,10 +303,10 @@ void Bank::selectPreviousPreset(UNDO::Transaction *transaction)
   selectPreset(transaction, getPreviousPresetPosition());
 }
 
-void Bank::selectPreset(UNDO::Transaction *transaction, size_t pos)
+void Bank::selectPreset(UNDO::Transaction *transaction, size_t pos, bool forceChange)
 {
   if(pos < getNumPresets())
-    selectPreset(transaction, getPresetAt(pos)->getUuid());
+    selectPreset(transaction, getPresetAt(pos)->getUuid(), forceChange);
 }
 
 void Bank::selectPreset(size_t pos)
@@ -359,9 +362,9 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
   updateLastModifiedTimestamp(transaction);
 }
 
-void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
+void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid, bool forceChanged)
 {
-  if(m_presets.select(transaction, uuid))
+  if(m_presets.select(transaction, uuid) || forceChanged)
     static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
 }
 
@@ -724,5 +727,65 @@ const Preset *Bank::getLastPreset() const
   catch(...)
   {
     return nullptr;
+  }
+}
+
+auto isLoadToPartActive()
+{
+  return Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
+}
+
+auto currentVG()
+{
+  return Application::get().getHWUI()->getCurrentVoiceGroup();
+}
+
+void Bank::selectPreviousPresetPart(UNDO::Transaction *transaction)
+{
+  auto selectedPreset = getSelectedPreset();
+  if(isLoadToPartActive() && selectedPreset)
+  {
+    const auto origin = getEditBuffer()->getPartOrigin(currentVG());
+    const auto isPartlyLoaded = origin.presetUUID == selectedPreset->getUuid();
+    const auto isILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::I;
+    const auto isIILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::II;
+
+    if(isIILoaded)
+    {
+      selectPreset(transaction, selectedPreset->getUuid(), true);
+    }
+    else if(isILoaded)
+    {
+      selectPreset(transaction, getPresetPosition(selectedPreset) - 1, true);
+    }
+  }
+  else
+  {
+    selectPreviousPreset(transaction);
+  }
+}
+
+void Bank::selectNextPresetPart(UNDO::Transaction *transaction)
+{
+  auto selectedPreset = getSelectedPreset();
+  if(isLoadToPartActive() && selectedPreset)
+  {
+    const auto origin = getEditBuffer()->getPartOrigin(currentVG());
+    const auto isPartlyLoaded = origin.presetUUID == selectedPreset->getUuid();
+    const auto isILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::I;
+    const auto isIILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::II;
+
+    if(isIILoaded)
+    {
+      selectPreset(transaction, getPresetPosition(selectedPreset) + 1, true);
+    }
+    else
+    {
+      selectPreset(transaction, selectedPreset->getUuid(), true);
+    }
+  }
+  else
+  {
+    selectNextPreset(transaction);
   }
 }

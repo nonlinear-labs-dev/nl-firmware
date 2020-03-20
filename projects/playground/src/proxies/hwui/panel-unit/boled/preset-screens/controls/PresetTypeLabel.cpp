@@ -12,7 +12,20 @@
 PresetTypeLabel::PresetTypeLabel(const Rect &pos)
     : Control(pos)
 {
+  m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
+      sigc::mem_fun(this, &PresetTypeLabel::onEditBufferChanged));
 }
+
+PresetTypeLabel::~PresetTypeLabel()
+{
+  m_editbufferConnection.disconnect();
+}
+
+void PresetTypeLabel::onEditBufferChanged()
+{
+  update(selectedPreset);
+}
+
 bool PresetTypeLabel::redraw(FrameBuffer &fb)
 {
   if(m_currentControl)
@@ -35,6 +48,7 @@ void SinglePresetTypeLabel::drawBackground(FrameBuffer &fb)
 
 void PresetTypeLabel::update(const Preset *newSelection)
 {
+  selectedPreset = newSelection;
   auto isDirectLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
   auto isLoadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
@@ -137,9 +151,9 @@ void DualPresetTypeLabel::update(const Preset *selected)
 
     m_presetType = selected->getType();
 
-    m_anyLoaded = origin.presetUUID == presetUUID;
-    m_inidicateI = origin.sourceGroup == VoiceGroup::I;
-    m_inidicateII = origin.sourceGroup == VoiceGroup::II;
+    m_presetLoaded = origin.presetUUID == presetUUID;
+    m_inidicateI = m_presetLoaded && origin.sourceGroup == VoiceGroup::I;
+    m_inidicateII = m_presetLoaded && origin.sourceGroup == VoiceGroup::II;
 
     setDirty();
   }

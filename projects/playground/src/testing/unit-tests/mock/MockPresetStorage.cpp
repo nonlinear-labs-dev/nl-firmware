@@ -73,7 +73,8 @@ Preset *MockPresetStorage::createLayerPreset(UNDO::Transaction *transaction)
   return preset;
 }
 
-Bank* MockPresetStorage::getBank() {
+Bank *MockPresetStorage::getBank()
+{
   return m_bank;
 }
 
@@ -82,4 +83,32 @@ Bank *MockPresetStorage::createBank(UNDO::Transaction *transaction)
   auto eb = getEditBuffer();
   auto pm = eb->getParent();
   return pm->addBank(transaction);
+}
+
+DualPresetBank::DualPresetBank()
+{
+  auto pm = Application::get().getPresetManager();
+  auto scope = TestHelper::createTestScope();
+  m_bank = pm->addBank(scope->getTransaction());
+
+  auto editBuffer = getEditBuffer();
+  editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+  for(int i = 0; i < 5; i++)
+  {
+    auto preset = m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *editBuffer));
+    preset->setName(scope->getTransaction(), "Layer Preset");
+    nltools_assertOnDevPC(preset->getType() == SoundType::Layer);
+  }
+}
+
+DualPresetBank::~DualPresetBank()
+{
+  auto pm = Application::get().getPresetManager();
+  auto scope = TestHelper::createTestScope();
+  pm->deleteBank(scope->getTransaction(), m_bank->getUuid());
+}
+
+Bank *DualPresetBank::getBank()
+{
+  return m_bank;
 }

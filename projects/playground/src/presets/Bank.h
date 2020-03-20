@@ -79,8 +79,8 @@ class Bank : public AttributesOwner
   void copyFrom(UNDO::Transaction *transaction, const Bank *other, bool ignoreUuids);
   void setName(UNDO::Transaction *transaction, const std::string &name);
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
-  void selectPreset(UNDO::Transaction *transaction, const Uuid &uuid);
-  void selectPreset(UNDO::Transaction *transaction, size_t pos);
+  void selectPreset(UNDO::Transaction *transaction, const Uuid &uuid, bool forceChanged = false);
+  void selectPreset(UNDO::Transaction *transaction, size_t pos, bool forceChange = false);
   void selectNextPreset(UNDO::Transaction *transaction);
   void selectPreviousPreset(UNDO::Transaction *transaction);
   void ensurePresetSelection(UNDO::Transaction *transaction);
@@ -120,6 +120,9 @@ class Bank : public AttributesOwner
 
   const Preset *getFirstPreset() const;
   const Preset *getLastPreset() const;
+
+  void selectPreviousPresetPart(UNDO::Transaction *transaction);
+  void selectNextPresetPart(UNDO::Transaction *transaction);
 
  private:
   using Attributes = std::map<std::string, std::string>;

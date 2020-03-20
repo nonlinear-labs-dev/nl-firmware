@@ -98,7 +98,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto transaction = scope->getTransaction();
         auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 0);
         srcBank->movePresetBetweenBanks(transaction, toMove, tgtBank, anchor);
-        tgtBank->selectPreset(transaction, presetToMoveUuid);
+        tgtBank->selectPreset(transaction, presetToMoveUuid, false);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
     }
@@ -118,7 +118,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto transaction = scope->getTransaction();
         auto anchor = tgtBank->findPresetNear(presetAnchorUuid, 1);
         srcBank->movePresetBetweenBanks(transaction, toMove, tgtBank, anchor);
-        tgtBank->selectPreset(transaction, presetToMoveUuid);
+        tgtBank->selectPreset(transaction, presetToMoveUuid, false);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
     }
@@ -143,7 +143,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto anchor = tgtBank->findPresetNear(presetToOverwrite, 0);
         tgtBank->movePresetBetweenBanks(transaction, srcPreset, tgtBank, anchor);
         srcBank->deletePreset(transaction, presetToOverwrite);
-        tgtBank->selectPreset(transaction, srcPreset->getUuid());
+        tgtBank->selectPreset(transaction, srcPreset->getUuid(), false);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
     }
@@ -169,7 +169,7 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         nltools_assertAlways(selectedBank->getNumPresets() == 0);
         auto p = selectedBank->appendPreset(transaction);
-        selectedBank->selectPreset(transaction, p->getUuid());
+        selectedBank->selectPreset(transaction, p->getUuid(), false);
       }
 
       if(presetToOverwrite.empty())
@@ -182,7 +182,7 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         tgtPreset->copyFrom(transaction, m_presetManager.getEditBuffer());
         auto bank = dynamic_cast<Bank *>(tgtPreset->getParent());
-        bank->selectPreset(transaction, tgtPreset->getUuid());
+        bank->selectPreset(transaction, tgtPreset->getUuid(), false);
         m_presetManager.selectBank(transaction, bank->getUuid());
       }
     }
@@ -195,7 +195,7 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         tgtPreset->copyFrom(transaction, srcPreset, true);
         auto bank = dynamic_cast<Bank *>(tgtPreset->getParent());
-        bank->selectPreset(transaction, tgtPreset->getUuid());
+        bank->selectPreset(transaction, tgtPreset->getUuid(), false);
         m_presetManager.selectBank(transaction, bank->getUuid());
       }
     }
@@ -218,7 +218,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto transaction = scope->getTransaction();
       auto newPreset = std::make_unique<Preset>(tgtBank, *srcPreset, true);
       auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
-      tgtBank->selectPreset(transaction, tgtPreset->getUuid());
+      tgtBank->selectPreset(transaction, tgtPreset->getUuid(), false);
       m_presetManager.selectBank(transaction, tgtBank->getUuid());
     }
   });
@@ -240,7 +240,7 @@ BankActions::BankActions(PresetManager &presetManager)
       auto transaction = scope->getTransaction();
       auto newPreset = std::make_unique<Preset>(tgtBank, *srcPreset, true);
       auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
-      tgtBank->selectPreset(transaction, tgtPreset->getUuid());
+      tgtBank->selectPreset(transaction, tgtPreset->getUuid(), false);
       m_presetManager.selectBank(transaction, tgtBank->getUuid());
     }
   });
@@ -263,7 +263,7 @@ BankActions::BankActions(PresetManager &presetManager)
       if(!uuid.empty())
         tgtPreset->setUuid(transaction, uuid);
 
-      tgtBank->selectPreset(transaction, tgtPreset->getUuid());
+      tgtBank->selectPreset(transaction, tgtPreset->getUuid(), false);
       m_presetManager.selectBank(transaction, tgtBank->getUuid());
     }
   });
@@ -286,7 +286,7 @@ BankActions::BankActions(PresetManager &presetManager)
       if(!uuid.empty())
         tgtPreset->setUuid(transaction, uuid);
 
-      tgtBank->selectPreset(transaction, tgtPreset->getUuid());
+      tgtBank->selectPreset(transaction, tgtPreset->getUuid(), false);
       m_presetManager.selectBank(transaction, tgtBank->getUuid());
     }
   });
@@ -308,7 +308,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto transaction = scope->getTransaction();
         tgtPreset->copyFrom(transaction, m_presetManager.getEditBuffer());
         tgtPreset->setName(transaction, name);
-        tgtBank->selectPreset(transaction, tgtPreset->getUuid());
+        tgtBank->selectPreset(transaction, tgtPreset->getUuid(), false);
         m_presetManager.selectBank(transaction, tgtBank->getUuid());
       }
     }
@@ -334,7 +334,7 @@ BankActions::BankActions(PresetManager &presetManager)
       if(!uuid.empty())
         tgtPreset->setUuid(transaction, uuid);
 
-      bank->selectPreset(transaction, tgtPreset->getUuid());
+      bank->selectPreset(transaction, tgtPreset->getUuid(), false);
       m_presetManager.selectBank(transaction, bank->getUuid());
     }
   });
@@ -354,7 +354,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto newPreset = std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer());
         auto tgtPreset = bank->appendAndLoadPreset(transaction, std::move(newPreset));
 
-        bank->selectPreset(transaction, tgtPreset->getUuid());
+        bank->selectPreset(transaction, tgtPreset->getUuid(), false);
         m_presetManager.selectBank(transaction, bank->getUuid());
       }
     }
@@ -388,7 +388,7 @@ BankActions::BankActions(PresetManager &presetManager)
         newPreset->setUuid(transaction, uuid);
 
       newPreset->setName(transaction, newName);
-      bank->selectPreset(transaction, newPreset->getUuid());
+      bank->selectPreset(transaction, newPreset->getUuid(), false);
       m_presetManager.selectBank(transaction, bank->getUuid());
     }
   });
@@ -412,7 +412,7 @@ BankActions::BankActions(PresetManager &presetManager)
 
         auto transaction = scope->getTransaction();
         m_presetManager.selectBank(transaction, bank->getUuid());
-        bank->selectPreset(transaction, presetUUID);
+        bank->selectPreset(transaction, presetUUID, false);
       }
     }
   });
@@ -478,7 +478,7 @@ BankActions::BankActions(PresetManager &presetManager)
         auto scope = m_presetManager.getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
         auto transaction = scope->getTransaction();
         m_presetManager.getEditBuffer()->undoableLoad(transaction, preset);
-        bank->selectPreset(transaction, preset->getUuid());
+        bank->selectPreset(transaction, preset->getUuid(), false);
       }
     }
   });
@@ -517,7 +517,7 @@ BankActions::BankActions(PresetManager &presetManager)
         newBank->setY(transaction, y);
         auto newPreset = newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *p, true));
         newBank->setName(transaction, "New Bank");
-        newBank->selectPreset(transaction, newPreset->getUuid());
+        newBank->selectPreset(transaction, newPreset->getUuid(), false);
         m_presetManager.selectBank(transaction, newBank->getUuid());
       }
     }
@@ -544,7 +544,7 @@ BankActions::BankActions(PresetManager &presetManager)
         newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *src, true));
 
     if(newBank->getNumPresets() > 0)
-      newBank->selectPreset(transaction, newBank->getPresetAt(0)->getUuid());
+      newBank->selectPreset(transaction, newBank->getPresetAt(0)->getUuid(), false);
 
     m_presetManager.selectBank(transaction, newBank->getUuid());
   });

@@ -235,22 +235,19 @@ void PresetManager::doAutoLoadSelectedPreset()
     bool isPresetManagerActive = (focusAndMode.focus == UIFocus::Banks || focusAndMode.focus == UIFocus::Presets);
     bool isStoring = (focusAndMode.mode == UIMode::Store);
     bool isStoringPreset = isPresetManagerActive && isStoring;
+    bool isLoadToPartActive = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
+
+    if(isLoadToPartActive)
+    {
+      scheduleAutoLoadSelectedPresetPart();
+      return;
+    }
 
     if(!isStoringPreset)
     {
       scheduleAutoLoadSelectedPreset();
     }
   }
-}
-
-auto isAboutToAutoLoadWithLoadToPart(const Preset *toLoad)
-{
-  auto loadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
-  auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
-  auto isDualPreset = toLoad->getType() != SoundType::Single;
-  auto isDualEb = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
-
-  return loadToPart && directLoad && isDualEb && isDualPreset;
 }
 
 void PresetManager::scheduleAutoLoadSelectedPreset()
@@ -288,6 +285,45 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
           eb->undoableLoad(scope->getTransaction(), p);
           m_autoLoadScheduled = false;
         }
+      }
+    }
+  });
+}
+
+void PresetManager::scheduleAutoLoadSelectedPresetPart()
+{
+  m_autoLoadScheduled = true;
+  m_autoLoadThrottler.doTask([=]() {
+    if(auto b = getSelectedBank())
+    {
+      const auto &presetUUID = b->getSelectedPresetUuid();
+      auto preset = b->getSelectedPreset();
+      nltools_assertOnDevPC(preset->getUuid() == presetUUID);
+
+      auto eb = getEditBuffer();
+      auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto origin = eb->getPartOrigin(currentVG);
+      bool shouldLoad = eb->getUUIDOfLastLoadedPreset() != presetUUID || eb->isModified();
+      auto isPresetPartylLoaded = origin.presetUUID == presetUUID;
+      auto isILoaded = isPresetPartylLoaded && origin.sourceGroup == VoiceGroup::I;
+      auto isIILoaded = isPresetPartylLoaded && origin.sourceGroup == VoiceGroup::II;
+
+      if(isILoaded)
+      {
+        auto scope = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load Preset Part of"));
+        eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::II, currentVG);
+        return;
+      }
+      else if(isIILoaded)
+      {
+        auto scope = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load Preset Part of"));
+        eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, currentVG);
+        return;
+      }
+      else
+      {
+        auto scope = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load Preset Part of"));
+        eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, currentVG);
       }
     }
   });
