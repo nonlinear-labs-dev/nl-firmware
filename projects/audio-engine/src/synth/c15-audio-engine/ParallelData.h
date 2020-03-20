@@ -372,16 +372,14 @@ inline ParallelData<int32_t, size> phaseIsEdge(const ParallelData<T, size> &abso
   return ret;
 }
 
-// TODO: make this happen (how?)
-// raised error: ISO C++ forbids declaration of 'poly_cast' with no type [-fpermissive]
-//template <typename TOut, typename T, size_t size> poly_cast(const ParallelData<T, size> &in)
-//{
-//  ParallelData<TOut, size> ret;
+template <typename T, size_t size> ParallelData<float, size> poly_cast(const ParallelData<T, size> &in)
+{
+  ParallelData<float, size> ret;
 
-//  for(size_t i = 0; i < size; i++)
-//  {
-//    ret[i] = static_cast<TOut>(in[i]);
-//  }
+  for(size_t i = 0; i < size; i++)
+  {
+    ret[i] = static_cast<float>(in[i]);
+  }
 
-//  return ret;
-//}
+  return ret;
+}

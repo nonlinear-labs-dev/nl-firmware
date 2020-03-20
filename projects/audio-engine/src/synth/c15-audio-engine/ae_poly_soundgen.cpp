@@ -60,8 +60,8 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue
   // edge detection, fluctuation a
   const auto edgeA = phaseIsEdge(std::abs(m_oscA_phase_stateVar - oscSampleA));
   m_OscA_randVal_int = (edgeA * ((m_OscA_randVal_int * 1103515245) + 12345)) + ((1 - edgeA) * m_OscA_randVal_int);
-  // m_OscA_randVal_float = poly_cast<float>(m_OscA_randVal_int) * 4.5657e-10f;   // TODO: make this happen (how?)
-  m_OscA_randVal_float = std::round<float>(m_OscA_randVal_int) * 4.5657e-10f;  // temporary: workaround
+  m_OscA_randVal_float = poly_cast(m_OscA_randVal_int);
+  m_OscA_randVal_float *= 4.5657e-10f;
   auto osc_freq = _signals.get(C15::Signals::Truepoly_Signals::Osc_A_Freq);
   m_oscA_phaseInc
       = ((m_OscA_randVal_float * _signals.get(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C) * osc_freq) + osc_freq)
@@ -88,8 +88,8 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue
   // edge detection, fluctuation b
   const auto edgeB = phaseIsEdge(std::abs(m_oscB_phase_stateVar - oscSampleB));
   m_OscB_randVal_int = (edgeB * ((m_OscB_randVal_int * 1103515245) + 12345)) + ((1 - edgeB) * m_OscB_randVal_int);
-  // m_OscB_randVal_float = poly_cast<float>(m_OscB_randVal_int) * 4.5657e-10f;   // TODO: make this happen (how?)
-  m_OscB_randVal_float = std::round<float>(m_OscB_randVal_int) * 4.5657e-10f;  // temporary: workaround
+  m_OscB_randVal_float = poly_cast(m_OscB_randVal_int);
+  m_OscB_randVal_float *= 4.5657e-10f;
   osc_freq = _signals.get(C15::Signals::Truepoly_Signals::Osc_B_Freq);
   m_oscB_phaseInc
       = ((m_OscB_randVal_float * _signals.get(C15::Signals::Truepoly_Signals::Osc_B_Fluct_Env_C) * osc_freq) + osc_freq)
