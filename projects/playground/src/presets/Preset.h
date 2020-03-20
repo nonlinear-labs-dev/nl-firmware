@@ -51,6 +51,7 @@ class Preset : public PresetDualParameterGroups
   const Uuid &getUuid() const;
   Glib::ustring getName() const;
   Glib::ustring getDisplayNameWithSuffixes() const;
+  bool isDual() const;
 
   PresetParameter *findParameterByID(ParameterId id, bool throwIfMissing) const;
   PresetParameterGroup *findParameterGroup(const GroupId &id) const;

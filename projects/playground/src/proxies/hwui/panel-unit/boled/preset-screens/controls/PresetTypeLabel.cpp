@@ -39,7 +39,7 @@ void PresetTypeLabel::update(const Preset *newSelection)
   auto isLoadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(isDirectLoad && isLoadToPart && isDualEditBuffer)
+  if(isLoadToPart && isDualEditBuffer)
   {
     m_currentControl = std::make_unique<DualPresetTypeLabel>(getPosition());
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
@@ -110,7 +110,7 @@ bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 {
   buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
   buffer.fillRect(getPosition().getX(), getPosition().getY() + 2, 11, 5);
-  buffer.setColor(!m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  buffer.setColor(m_inidicateII ? FrameBufferColors::C255 : FrameBufferColors::C128);
   buffer.fillRect(getPosition().getX(), getPosition().getY() + 9, 11, 5);
 
   return true;
@@ -120,7 +120,7 @@ bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 {
   buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
   buffer.fillRect(getPosition().getX(), getPosition().getY() + 2, 5, 12);
-  buffer.setColor(!m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  buffer.setColor(m_inidicateII ? FrameBufferColors::C255 : FrameBufferColors::C128);
   buffer.fillRect(getPosition().getX() + 6, getPosition().getY() + 2, 5, 12);
 
   return true;
@@ -130,13 +130,17 @@ void DualPresetTypeLabel::update(const Preset *selected)
 {
   if(selected)
   {
-    auto loadedPresetPart = Application::get().getPresetManager()->getEditBuffer()->getLoadedPartOfPreset(selected);
-    m_anyLoaded = loadedPresetPart.has_value();
+    auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
+    const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(currentVGFocus);
+
+    const auto &presetUUID = selected->getUuid();
+
     m_presetType = selected->getType();
-    if(m_anyLoaded)
-    {
-      m_inidicateI = loadedPresetPart.value() == VoiceGroup::I;
-    }
+
+    m_anyLoaded = origin.presetUUID == presetUUID;
+    m_inidicateI = origin.sourceGroup == VoiceGroup::I;
+    m_inidicateII = origin.sourceGroup == VoiceGroup::II;
+
     setDirty();
   }
 }

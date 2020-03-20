@@ -106,7 +106,25 @@ class EditBuffer : public ParameterDualGroupSet
 
   void TEST_doDeferredJobs();
 
-  std::optional<VoiceGroup> getLoadedPartOfPreset(const Preset *preset);
+  struct PartOrigin
+  {
+    PartOrigin(Uuid preset, VoiceGroup vg)
+        : presetUUID { preset }
+        , sourceGroup { sourceGroup }
+    {
+    }
+
+    PartOrigin()
+        : presetUUID { Uuid::none() }
+        , sourceGroup { VoiceGroup::Global }
+    {
+    }
+
+    Uuid presetUUID;
+    VoiceGroup sourceGroup;
+  };
+
+  PartOrigin getPartOrigin(VoiceGroup vg) const;
 
  private:
   Glib::ustring getEditBufferName() const;

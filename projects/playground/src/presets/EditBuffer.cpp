@@ -462,6 +462,9 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   auto ae = Application::get().getAudioEngineProxy();
   ae->toggleSuppressParameterChanges(transaction);
 
+  setAttribute(transaction, "origin-I", preset->getUuid().raw());
+  setAttribute(transaction, "origin-II", preset->getUuid().raw());
+
   copyFrom(transaction, preset);
   undoableSetLoadedPresetInfo(transaction, preset);
 
@@ -553,6 +556,10 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
   resetModifiedIndicator(transaction);
 
   setName(transaction, "Init Sound");
+  setAttribute(transaction, "origin-I", "");
+  setAttribute(transaction, "origin-II", "");
+  setAttribute(transaction, "origin-I-vg", "");
+  setAttribute(transaction, "origin-II-vg", "");
 
   m_recallSet.copyFromEditBuffer(transaction, this);
 }
@@ -882,7 +889,11 @@ void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
     group->undoableClear(transaction);
 
   if(vg != VoiceGroup::Global)
+  {
     setVoiceGroupName(transaction, "Init", vg);
+    setAttribute(transaction, vg == VoiceGroup::I ? "origin-I" : "origin-II", "");
+    setAttribute(transaction, vg == VoiceGroup::I ? "origin-I-vg" : "origin-II-vg", "");
+  }
 
   m_recallSet.copyFromEditBuffer(transaction, this, vg);
 }
@@ -961,20 +972,20 @@ void EditBuffer::initFadeFrom(UNDO::Transaction *transaction)
   findParameterByID({ 396, VoiceGroup::II })->setDefaultFromHwui(transaction);
 }
 
-std::optional<VoiceGroup> EditBuffer::getLoadedPartOfPreset(const Preset *preset)
+EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
 {
-  const auto &uuid = preset->getUuid();
-  try
+  PartOrigin ret;
+
+  if(vg == VoiceGroup::I)
   {
-    auto uuidI = getAttribute("Part-I-Origin", "");
-    auto uuidII = getAttribute("Part-II-Origin", "");
-    if(!uuidI.empty() && uuid == uuidI)
-      return VoiceGroup::I;
-    else if(!uuidII.empty() && uuid == uuidII)
-      return VoiceGroup::II;
+    ret.presetUUID = getAttribute("origin-I", "");
+    ret.sourceGroup = to<VoiceGroup>(getAttribute("origin-I-vg", "Global"));
   }
-  catch(...)
+  else if(vg == VoiceGroup::II)
   {
+    ret.presetUUID = getAttribute("origin-II", "");
+    ret.sourceGroup = to<VoiceGroup>(getAttribute("origin-II-vg", "Global"));
   }
-  return std::nullopt;
+
+  return ret;
 }

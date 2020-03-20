@@ -24,7 +24,8 @@ class DualPresetTypeLabel : public Control
 
  private:
   bool m_anyLoaded = false;
-  bool m_inidicateI = true;
+  bool m_inidicateI = false;
+  bool m_inidicateII = false;
   SoundType m_presetType = SoundType::Single;
 };
 

@@ -61,7 +61,7 @@ void LoadToPartPresetList::onStepPresetSelectionLoadToPart(const Preset* newSele
 {
   if(!newSelection)
     return;
-
+  /*
   auto isDual = newSelection->getType() != SoundType::Single;
   if(isDual)
   {
@@ -83,7 +83,7 @@ void LoadToPartPresetList::onStepPresetSelectionLoadToPart(const Preset* newSele
   else
   {
     onSinglePresetSelecton(newSelection, pm, bank);
-  }
+  }*/
 }
 
 auto getEditBuffer()
@@ -93,7 +93,7 @@ auto getEditBuffer()
 
 LoadToPartPresetList::DualPresetSelection LoadToPartPresetList::getToLoad(int inc, Bank* bank, PresetManager* pm) const
 {
-  auto selectNext = inc > 0;
+  /*auto selectNext = inc > 0;
   DualPresetSelection ret {};
   Preset* currentSelectedPreset = nullptr;
 
@@ -156,7 +156,7 @@ LoadToPartPresetList::DualPresetSelection LoadToPartPresetList::getToLoad(int in
   {
   }
 
-  return LoadToPartPresetList::DualPresetSelection();
+  return LoadToPartPresetList::DualPresetSelection();*/
 }
 
 void LoadToPartPresetList::onSinglePresetSelecton(const Preset* preset, PresetManager* pm, Bank* bank) const
