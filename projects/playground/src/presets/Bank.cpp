@@ -703,3 +703,26 @@ const Preset *Bank::getPreviousPreset() const
     return nullptr;
   }
 }
+const Preset *Bank::getFirstPreset() const
+{
+  try
+  {
+    return m_presets.at(0);
+  }
+  catch(...)
+  {
+    return nullptr;
+  }
+}
+
+const Preset *Bank::getLastPreset() const
+{
+  try
+  {
+    return m_presets.at(getNumPresets() - 1);
+  }
+  catch(...)
+  {
+    return nullptr;
+  }
+}

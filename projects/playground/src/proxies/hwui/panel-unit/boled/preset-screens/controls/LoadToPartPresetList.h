@@ -13,7 +13,6 @@ class LoadToPartPresetList : public PresetList
  protected:
   void stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const override;
 
-  static bool shouldLoadPartDirect();
   void stepPresetSelectionAndLoadPartOfNewPreset(int inc, PresetManager* pm, Bank* bank) const;
   void stepPresetSelectionLoadToPart(int inc, PresetManager* pm, Bank* bank) const;
   void onStepPresetSelectionLoadToPart(const Preset* newSelection, Bank* bank, PresetManager* pm,
@@ -21,4 +20,20 @@ class LoadToPartPresetList : public PresetList
 
   void onSinglePresetSelecton(const Preset* preset, PresetManager* pm, Bank* bank) const;
   void onDualPresetSelection(const Preset* preset, VoiceGroup loadPart, Bank* bank, PresetManager* pm) const;
+
+  struct DualPresetSelection
+  {
+    DualPresetSelection(Preset* p, VoiceGroup v)
+        : preset { p }
+        , voiceGroup { v }
+    {
+    }
+    Preset* preset;
+    VoiceGroup voiceGroup;
+  };
+
+  DualPresetSelection getToLoad(int inc, Bank* bank, PresetManager* pm) const;
+
+  static bool isDirectLoadActive();
+  static bool isLoadToPartActive();
 };

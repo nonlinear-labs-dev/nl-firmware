@@ -27,7 +27,8 @@ int main(int numArgs, char **argv)
 
   std::vector<const char *> args;
   for(auto i = 0; i < numArgs; i++)
-    args.emplace_back(argv[i]);
+    if(argv[i] && std::string(argv[i]).find('=') == std::string::npos)
+      args.emplace_back(argv[i]);
 
   return Catch::Session().run(args.size(), args.data());
 }

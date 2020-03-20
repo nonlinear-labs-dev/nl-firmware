@@ -118,6 +118,9 @@ class Bank : public AttributesOwner
   const Preset *getNextPreset() const;
   const Preset *getPreviousPreset() const;
 
+  const Preset *getFirstPreset() const;
+  const Preset *getLastPreset() const;
+
  private:
   using Attributes = std::map<std::string, std::string>;
 

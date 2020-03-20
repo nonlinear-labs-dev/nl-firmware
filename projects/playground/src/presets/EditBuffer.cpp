@@ -924,26 +924,29 @@ void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *t
 void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                              VoiceGroup copyFrom, VoiceGroup copyTo)
 {
-  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global }, true);
-  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global }, true);
+  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global }, false);
+  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global }, false);
+
   auto presetPartVolume = preset->findParameterByID({ 358, copyFrom }, false);
   auto presetPartTune = preset->findParameterByID({ 360, copyFrom }, false);
 
   auto partVolume = findParameterByID({ 358, copyTo });
   auto partTune = findParameterByID({ 360, copyTo });
 
-  auto volumeScaleConverter
-      = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
-  auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
-  auto partVolumeDV
-      = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : 1.0);
+  if(presetGlobalVolume && presetGlobalTune && partVolume && partTune)
+  {
+    auto volumeScaleConverter
+        = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
+    auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+    auto partVolumeDV
+        = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : 1.0);
 
-  auto newVolumeDV = globalVolumeDV + partVolumeDV;
-  auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
-
-  partVolume->setCPFromHwui(transaction, newVolumeCP);
-  partTune->setCPFromHwui(transaction,
-                          presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : 0));
+    auto newVolumeDV = globalVolumeDV + partVolumeDV;
+    auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
+    partVolume->setCPFromHwui(transaction, newVolumeCP);
+    partTune->setCPFromHwui(transaction,
+                            presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : 0));
+  }
 }
 
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)

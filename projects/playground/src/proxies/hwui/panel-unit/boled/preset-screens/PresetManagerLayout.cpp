@@ -142,10 +142,9 @@ void PresetManagerLayout::setupBankSelect()
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
 
   auto isLoadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
-  auto isDirectLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(isDualEB && isDirectLoad && isLoadToPart)
+  if(isDualEB && isLoadToPart)
     m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
@@ -225,11 +224,10 @@ void PresetManagerLayout::setupPresetSelect()
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
 
-  auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>();
   auto loadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>();
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(directLoad->get() && loadToPart->get() && isDualEditBuffer)
+  if(loadToPart->get() && isDualEditBuffer)
     m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));

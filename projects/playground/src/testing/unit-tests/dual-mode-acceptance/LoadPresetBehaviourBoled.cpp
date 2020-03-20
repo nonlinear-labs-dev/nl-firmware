@@ -161,17 +161,22 @@ TEST_CASE("StepPresetList")
 
     SECTION("w/ load to part and direct load in dual sound")
     {
-      TestHelper::initDualEditBuffer<SoundType::Split>();
+      CHECK_NOTHROW(TestHelper::initDualEditBuffer<SoundType::Split>());
       detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
       detail::getLoadToPart()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
 
       CHECK(eb->getType() == SoundType::Split);
 
       CHECK(assertIsPMLayout());
+      detail::pressButton(Buttons::BUTTON_ENTER);
+
+      CHECK(eb->getUUIDOfLastLoadedPreset() == bank->getPresetAt(0)->getUuid());
+      CHECK_NOTHROW(eb->getLoadedPartOfPreset(bank->getPresetAt(0)).value() == VoiceGroup::I);
 
       detail::pressButton(Buttons::BUTTON_INC);
 
-      CHECK(assertInPartSelectOverlay());
+      CHECK(eb->getLoadedPartOfPreset(bank->getPresetAt(0)).has_value());
+      CHECK_NOTHROW(eb->getLoadedPartOfPreset(bank->getPresetAt(0)).value() == VoiceGroup::II);
     }
   }
 }
