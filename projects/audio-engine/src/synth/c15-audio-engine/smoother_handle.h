@@ -15,11 +15,23 @@
 #include <c15_config.h>
 
 // basic smoothing unit
+// - proposal: state-less, no transfer function normalization, event-based application of difference (inside start)
+// - performance gain: currently unknown
+// - current implementation: state-based, transfer function normalization (x: 0...1), sample-based application of difference (inside render)
+// !!! important dependancies:
+// - Global_Slow::Scale_Base_Key (expects normalized x, may be the reason for first tests to fail producing proper scaling)
+// - Poly_Slow::Mono_Grp_Glide (glide time update on dx)
+#define ProtoSmoothingImplementation 0
+// 0 - current implementation                                   : working, but cpu-intensive
+// 1 - proposal - variation 1 (double conditional, explicit)    : untested
+// 2 - proposal - variation 2 (single conditional, index-based) : untested
+
+#if ProtoSmoothingImplementation == 0
 class ProtoSmoother
 {
  public:
   // smoothed value
-  float m_value = 0.0f, m_start = 0.0f, m_x = 0.0f, m_dx = 0.0f;
+  float m_value = 0.0f, m_start = 0.0f, m_x = 0.0f;
   // constructor
   inline ProtoSmoother()
   {
@@ -40,6 +52,10 @@ class ProtoSmoother
   {
     m_state = false;
     m_value = _dest;
+  }
+  inline void timeUpdate(const float _dx)
+  {
+    m_dx = _dx;
   }
   // rendering
   inline void render()
@@ -64,9 +80,13 @@ class ProtoSmoother
 
  private:
   // segment-specific private variables
-  float m_diff;
+  float m_diff, m_dx = 0.0f;
   bool m_state = false;
 };
+#elif ProtoSmoothingImplementation == 1
+
+#elif ProtoSmoothingImplementation == 2
+#endif
 
 // smoother copy handle (for parameter smoothers that directly translate to signals)
 template <uint32_t Length> struct SmootherCopyHandle
