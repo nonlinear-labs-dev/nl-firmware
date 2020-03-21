@@ -372,13 +372,13 @@ inline ParallelData<int32_t, size> phaseIsEdge(const ParallelData<T, size> &abso
   return ret;
 }
 
-template <typename T, size_t size> ParallelData<float, size> poly_cast(const ParallelData<T, size> &in)
+template <typename TOut, typename T, size_t size> ParallelData<TOut, size> poly_cast(const ParallelData<T, size> &in)
 {
-  ParallelData<float, size> ret;
+  ParallelData<TOut, size> ret;
 
   for(size_t i = 0; i < size; i++)
   {
-    ret[i] = static_cast<float>(in[i]);
+    ret[i] = static_cast<TOut>(in[i]);
   }
 
   return ret;
