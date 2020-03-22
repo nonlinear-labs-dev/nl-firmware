@@ -148,7 +148,7 @@ void PolySection::render_slow()
 {
   m_smoothers.render_slow();
   // update glide time and render glide smoother
-  m_mono_glide.m_dx = m_time->eval_ms(3, m_smoothers.get(C15::Smoothers::Poly_Slow::Mono_Grp_Glide));
+  m_mono_glide.timeUpdate(m_time->eval_ms(3, m_smoothers.get(C15::Smoothers::Poly_Slow::Mono_Grp_Glide)));
   m_mono_glide.render();
   auto traversal = &m_smoothers.m_copy_slow;
   for(uint32_t i = 0; i < traversal->m_length; i++)

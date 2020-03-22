@@ -67,7 +67,7 @@ void GlobalSection::start_base_key(const float _dx, const float _dest)
 {
   auto baseKey = m_smoothers.get_smoother(C15::Smoothers::Global_Slow::Scale_Base_Key);
   // apply transition and update baseKey-related signals (start, dest, pos)
-  m_signals.set(C15::Signals::Global_Signals::Scale_Base_Key_Start, baseKey->m_start);
+  m_signals.set(C15::Signals::Global_Signals::Scale_Base_Key_Start, baseKey->m_value);
   m_signals.set(C15::Signals::Global_Signals::Scale_Base_Key_Dest, _dest);
   baseKey->start(_dx, _dest);
   m_signals.set(C15::Signals::Global_Signals::Scale_Base_Key_Pos, baseKey->m_x);
