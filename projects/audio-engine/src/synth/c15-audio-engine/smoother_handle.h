@@ -31,7 +31,7 @@ class ProtoSmoother
 {
  public:
   // smoothed value
-  float m_value = 0.0f, m_start = 0.0f, m_x = 0.0f;
+  float m_value = 0.0f;
   // constructor
   inline ProtoSmoother()
   {
@@ -80,7 +80,7 @@ class ProtoSmoother
 
  private:
   // segment-specific private variables
-  float m_diff, m_dx = 0.0f;
+  float m_start = 0.0f, m_diff = 0.0f, m_x = 0.0f, m_dx = 0.0f;
   bool m_state = false;
 };
 #elif ProtoSmoothingImplementation == 1
