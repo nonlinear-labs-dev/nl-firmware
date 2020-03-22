@@ -19,17 +19,17 @@
 // - performance gain: currently unknown
 // - current implementation has no more dependancies, only the value remains (reduced x, dx in outer components)
 
-#define ProtoSmoothingImplementation 3
+#define ProtoSmoothingImplementation 4
 // up to now
 // 0 - current implementation                          : working, but cpu-intensive
-// proposal 1: causes trouble, segments race indefinetely (reason currently unknown - concept was tested in js)
-// 1 - proposal 1a - (double conditional, explicit)    : trouble
-// 2 - proposal 1b - (single conditional, index-based) : untested
+// proposal 1: don't use, causes trouble, segments race indefinetely (reason currently unknown - concept was tested in js)
+// 1 - proposal 1a - (double conditional, explicit)    : trouble !!!
+// 2 - proposal 1b - (single conditional, index-based) : untested ???
 // proposal 2: keep normalization, but still state-less
 // 3 - proposal 2                                      : working
-// proposal 3: track difference (invert proposal 1 mechanism)
-// 4 - proposal 3a - (double conditional, explicit)    : untested
-// 5 - proposal 3b - (single conditional, index-based) : untested
+// proposal 3: track difference (invert proposal 1 mechanism) - preferred
+// 4 - proposal 3a - (double conditional, explicit)    : working
+// 5 - proposal 3b - (single conditional, index-based) : working
 
 #if ProtoSmoothingImplementation == 0
 // - state-based -> cpu-consumption varies permanently (depending on incoming modulation/edit/recall events)
@@ -107,10 +107,13 @@ class ProtoSmoother
   // starting a segment (_dx: converted time, _dest: destination)
   inline void start(const float _dx, const float _dest)
   {
-    m_dest = _dest;
-    m_diff = _dest - m_value;
-    timeUpdate(_dx);
-    m_x = m_value + m_dx;
+    if(_dest != m_value)
+    {
+      m_dest = _dest;
+      m_diff = _dest - m_value;
+      timeUpdate(_dx);
+      m_x = m_value + m_dx;
+    }
   }
   // syncing
   inline void sync(const float _dest)
@@ -147,9 +150,9 @@ class ProtoSmoother
  private:
   // segment-specific private variables
 #if ProtoSmoothingImplementation == 2
-  static float s_zero = 0.0f;
+  float m_zero = 0.0f;
   float* m_transfer_value[2] = { &m_x, &m_dest };
-  float* m_transfer_dx[2] = { &m_dx, &s_zero };
+  float* m_transfer_dx[2] = { &m_dx, &m_zero };
 #endif
   float m_diff = 0.0f, m_dest = 0.0f, m_x = 0.0f, m_dx = 0.0f;
 };
@@ -260,9 +263,9 @@ class ProtoSmoother
  private:
   // segment-specific private variables
 #if ProtoSmoothingImplementation == 5
-  static float s_zero = 0.0f;
+  float m_zero = 0.0f;
   float* m_transfer_value[2] = { &m_x, &m_dest };
-  float* m_transfer_dx[2] = { &m_dx, &s_zero };
+  float* m_transfer_dx[2] = { &m_dx, &m_zero };
 #endif
   float m_start = 0.0f, m_dest = 0.0f, m_diff = 0.0f, m_diff_abs = 0.0f, m_x = 0.0f, m_dx = 0.0f;
 };
