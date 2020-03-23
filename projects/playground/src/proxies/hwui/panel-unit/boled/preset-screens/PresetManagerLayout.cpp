@@ -26,11 +26,11 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadModeMenu.h>
-#include <device-settings/LoadToPartSetting.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankButton.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadToPartPresetList.h>
+#include <proxies/hwui/HWUIHelper.h>
 #include "presets/Preset.h"
 #include "SelectVoiceGroupLayout.h"
 
@@ -41,8 +41,6 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
 {
   setup();
 
-  m_loadToPartConnection = Application::get().getSettings()->getSetting<LoadToPartSetting>()->onChange(
-      sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
   m_dlSettingConnection = Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 }
@@ -51,7 +49,6 @@ PresetManagerLayout::~PresetManagerLayout()
 {
   m_focusAndMode.mode = UIMode::Edit;
   m_dlSettingConnection.disconnect();
-  m_loadToPartConnection.disconnect();
 }
 
 void PresetManagerLayout::setFocusAndMode(FocusAndMode focusAndMode)
@@ -141,10 +138,9 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
 
-  auto isLoadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(isDualEB && isLoadToPart)
+  if(isDualEB && HWUIHelper::isLoadToPartActive())
     m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
@@ -224,10 +220,9 @@ void PresetManagerLayout::setupPresetSelect()
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
 
-  auto loadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>();
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(loadToPart->get() && isDualEditBuffer)
+  if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
     m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
@@ -354,9 +349,7 @@ bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
 
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
-  auto loadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>();
-
-  if(loadToPart->get())
+  if(HWUIHelper::isLoadToPartActive())
     m_presets->animateSelectedPreset(std::move(cb));
   else
     cb();

@@ -5,22 +5,22 @@
 #include <libundo/undo/TransactionCreationScope.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
-#include <device-settings/LoadToPartSetting.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <device-settings/Settings.h>
 #include <presets/Bank.h>
 #include <presets/Preset.h>
+#include <proxies/hwui/HWUIHelper.h>
 
 LoadToPartPresetList::LoadToPartPresetList(const Rect& pos, bool showBankArrows)
     : PresetList(pos, showBankArrows)
 {
 }
+
 LoadToPartPresetList::~LoadToPartPresetList() = default;
 
 void LoadToPartPresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const
 {
-
-  if(!isLoadToPartActive())
+  if(!HWUIHelper::isLoadToPartActive())
     PresetList::stepPresetSelection(inc, pm, bank);
   else
     stepPresetSelectionAndLoadPartOfNewPreset(inc, pm, bank);
@@ -45,14 +45,4 @@ void LoadToPartPresetList::stepPresetSelectionAndLoadPartOfNewPreset(int inc, Pr
 auto getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
-}
-
-bool LoadToPartPresetList::isDirectLoadActive()
-{
-  return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
-}
-
-bool LoadToPartPresetList::isLoadToPartActive()
-{
-  return Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
 }

@@ -11,8 +11,8 @@
 #include <giomm/file.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadToPartSetting.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/HWUIHelper.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 
@@ -730,11 +730,6 @@ const Preset *Bank::getLastPreset() const
   }
 }
 
-auto isLoadToPartActive()
-{
-  return Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
-}
-
 auto currentVG()
 {
   return Application::get().getHWUI()->getCurrentVoiceGroup();
@@ -743,7 +738,7 @@ auto currentVG()
 void Bank::selectPreviousPresetPart(UNDO::Transaction *transaction)
 {
   auto selectedPreset = getSelectedPreset();
-  if(isLoadToPartActive() && selectedPreset)
+  if(HWUIHelper::isLoadToPartActive() && selectedPreset)
   {
     const auto origin = getEditBuffer()->getPartOrigin(currentVG());
     const auto isPartlyLoaded = origin.presetUUID == selectedPreset->getUuid();
@@ -768,7 +763,7 @@ void Bank::selectPreviousPresetPart(UNDO::Transaction *transaction)
 void Bank::selectNextPresetPart(UNDO::Transaction *transaction)
 {
   auto selectedPreset = getSelectedPreset();
-  if(isLoadToPartActive() && selectedPreset)
+  if(HWUIHelper::isLoadToPartActive() && selectedPreset)
   {
     const auto origin = getEditBuffer()->getPartOrigin(currentVG());
     const auto isPartlyLoaded = origin.presetUUID == selectedPreset->getUuid();

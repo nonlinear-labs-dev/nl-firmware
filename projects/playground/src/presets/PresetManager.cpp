@@ -22,8 +22,8 @@
 #include <groups/ParameterGroup.h>
 #include <glibmm.h>
 #include <giomm/file.h>
-#include <device-settings/LoadToPartSetting.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/SelectVoiceGroupLayout.h>
+#include <proxies/hwui/HWUIHelper.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -235,9 +235,8 @@ void PresetManager::doAutoLoadSelectedPreset()
     bool isPresetManagerActive = (focusAndMode.focus == UIFocus::Banks || focusAndMode.focus == UIFocus::Presets);
     bool isStoring = (focusAndMode.mode == UIMode::Store);
     bool isStoringPreset = isPresetManagerActive && isStoring;
-    bool isLoadToPartActive = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
 
-    if(isLoadToPartActive)
+    if(HWUIHelper::isLoadToPartActive())
     {
       scheduleAutoLoadSelectedPresetPart();
       return;

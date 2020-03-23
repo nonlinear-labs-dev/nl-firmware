@@ -35,7 +35,6 @@
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadToPartSetting.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -423,18 +422,22 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
       });
 }
 
+bool isLoadToPartActive()
+{
+  auto hwui = Application::get().getHWUI();
+  return hwui->getFocusAndMode().detail == UIDetail::LoadToPart;
+}
+
 void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
 {
   if(auto bank = getParent()->getSelectedBank())
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      auto loadToPartSetting = Application::get().getSettings()->getSetting<LoadToPartSetting>();
-      auto loadToPartEnabled = loadToPartSetting->get();
       auto isCurrentlyDualSound = getType() != SoundType::Single;
       auto presetToLoadIsDual = preset->getType() != SoundType::Single;
 
-      if(loadToPartEnabled && isCurrentlyDualSound)
+      if(isLoadToPartActive() && isCurrentlyDualSound)
       {
         if(!presetToLoadIsDual)
           undoableLoadPresetIntoDualSound(preset, loadInto);
@@ -457,9 +460,9 @@ void EditBuffer::undoableLoad(Preset *preset)
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
-  if(Application::get().getSettings()->getSetting<LoadToPartSetting>()->get())
+  if(isLoadToPartActive())
   {
-    nltools::Log::error("not possible!");
+    nltools::Log::error("Hey not okay!");
   }
 
   PerformanceTimer timer(__PRETTY_FUNCTION__);

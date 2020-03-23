@@ -14,7 +14,4 @@ class LoadToPartPresetList : public PresetList
   void stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const override;
 
   void stepPresetSelectionAndLoadPartOfNewPreset(int inc, PresetManager* pm, Bank* bank) const;
-
-  static bool isDirectLoadActive();
-  static bool isLoadToPartActive();
 };

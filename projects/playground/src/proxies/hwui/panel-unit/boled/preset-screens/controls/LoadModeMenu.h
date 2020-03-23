@@ -22,7 +22,6 @@ class LoadModeMenu : public ControlWithChildren
 
   sigc::connection m_soundTypeConnection;
   sigc::connection m_directLoadSettingConnection;
-  sigc::connection m_loadToPartSettingConnection;
 
   std::unique_ptr<ShortVsLongPress> m_buttonDHandler;
 

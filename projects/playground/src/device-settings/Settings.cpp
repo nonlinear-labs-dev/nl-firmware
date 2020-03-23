@@ -45,7 +45,6 @@
 #include "CrashOnError.h"
 #include "LayoutMode.h"
 #include "TuneReference.h"
-#include "LoadToPartSetting.h"
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -53,7 +52,6 @@ Settings::Settings(UpdateDocumentMaster *master)
     , m_saveJob(5000, std::bind(&Settings::save, this))
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
-  addSetting("LoadToPart", new LoadToPartSetting(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsLPCWriteFallback(*this));
   addSetting("PresetStoreModeSetting", new PresetStoreModeSetting(*this));
   addSetting("BaseUnitUIMode", new BaseUnitUIMode(*this));

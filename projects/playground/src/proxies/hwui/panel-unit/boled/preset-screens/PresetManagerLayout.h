@@ -52,7 +52,7 @@ class PresetManagerLayout : public Layout
   void setupBankStore();
 
   LoadModeMenu *m_loadMode = nullptr;
-  BankButton* m_bankButton = nullptr;
+  BankButton *m_bankButton = nullptr;
   ButtonMenu *m_menu = nullptr;
   PresetListBase *m_presets = nullptr;
   FocusAndMode m_focusAndMode;
@@ -60,10 +60,8 @@ class PresetManagerLayout : public Layout
   StoreModeData *getStoreModeData();
 
   sigc::connection m_dlSettingConnection;
-  sigc::connection m_loadToPartConnection;
 
   void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
 
   void loadSelectedPresetAccordingToLoadType();
-
-  };
+};

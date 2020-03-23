@@ -2,7 +2,6 @@
 #include <Application.h>
 #include <presets/Preset.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadToPartSetting.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/hwui/buttons.h>
@@ -10,11 +9,6 @@
 
 namespace detail
 {
-  auto getLoadToPart()
-  {
-    return Application::get().getSettings()->getSetting<LoadToPartSetting>();
-  }
-
   auto getDirectLoad()
   {
     return Application::get().getSettings()->getSetting<DirectLoadSetting>();
@@ -31,11 +25,12 @@ namespace detail
 TEST_CASE("Part Origin Attribute")
 {
   auto eb = TestHelper::getEditBuffer();
+  auto hwui = Application::get().getHWUI();
 
   MockPresetStorage presets;
 
   detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  detail::getLoadToPart()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
+  hwui->setFocusAndMode(UIDetail::Init);
 
   SECTION("Load Single Full")
   {
@@ -131,6 +126,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
 {
   DualPresetBank presets;
   auto bank = presets.getBank();
+  auto hwui = Application::get().getHWUI();
 
   TestHelper::initDualEditBuffer<SoundType::Layer>();
 
@@ -153,7 +149,6 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   {
 
     detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-    detail::getLoadToPart()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
 
     {
       auto scope = TestHelper::createTestScope();
@@ -169,8 +164,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
 
     auto uuid = eb->getUUIDOfLastLoadedPreset();
     CHECK(uuid == bank->getPresetAt(0)->getUuid());
-
-    detail::getLoadToPart()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
+    hwui->setFocusAndMode(UIDetail::LoadToPart);
 
     detail::pressButton(Buttons::BUTTON_INC);
     forceAutoLoadIfPending();

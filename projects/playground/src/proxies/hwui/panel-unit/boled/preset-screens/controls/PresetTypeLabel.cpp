@@ -4,10 +4,10 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadToPartSetting.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <proxies/hwui/HWUI.h>
 #include <memory>
+#include <proxies/hwui/HWUIHelper.h>
 
 PresetTypeLabel::PresetTypeLabel(const Rect &pos)
     : Control(pos)
@@ -58,10 +58,9 @@ void SinglePresetTypeLabel::drawBackground(FrameBuffer &fb)
 void PresetTypeLabel::update(const Preset *newSelection)
 {
   selectedPreset = newSelection;
-  auto isLoadToPart = Application::get().getSettings()->getSetting<LoadToPartSetting>()->get();
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(isLoadToPart && isDualEditBuffer)
+  if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
   {
     m_currentControl = std::make_unique<DualPresetTypeLabel>(getPosition());
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
