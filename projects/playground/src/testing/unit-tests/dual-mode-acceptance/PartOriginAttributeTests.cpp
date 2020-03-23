@@ -154,7 +154,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
       auto scope = TestHelper::createTestScope();
       auto transaction = scope->getTransaction();
       pm->selectBank(transaction, bank->getUuid());
-      bank->selectPreset(transaction, 0, true);
+      bank->selectPreset(transaction, 0);
 
       Application::get().getHWUI()->undoableSetFocusAndMode(transaction,
                                                             { UIFocus::Presets, UIMode::Select, UIDetail::Init });

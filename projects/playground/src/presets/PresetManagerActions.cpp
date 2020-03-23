@@ -51,7 +51,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     bank->setY(transaction, y);
     auto preset
         = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *presetManager.getEditBuffer()));
-    bank->selectPreset(transaction, preset->getUuid(),false);
+    bank->selectPreset(transaction, preset->getUuid());
     presetManager.selectBank(transaction, bank->getUuid());
   });
 

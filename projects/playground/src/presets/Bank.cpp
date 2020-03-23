@@ -303,10 +303,10 @@ void Bank::selectPreviousPreset(UNDO::Transaction *transaction)
   selectPreset(transaction, getPreviousPresetPosition());
 }
 
-void Bank::selectPreset(UNDO::Transaction *transaction, size_t pos, bool forceChange)
+void Bank::selectPreset(UNDO::Transaction *transaction, size_t pos)
 {
   if(pos < getNumPresets())
-    selectPreset(transaction, getPresetAt(pos)->getUuid(), forceChange);
+    selectPreset(transaction, getPresetAt(pos)->getUuid());
 }
 
 void Bank::selectPreset(size_t pos)
@@ -362,9 +362,9 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
   updateLastModifiedTimestamp(transaction);
 }
 
-void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid, bool forceChanged)
+void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  if(m_presets.select(transaction, uuid) || forceChanged)
+  if(m_presets.select(transaction, uuid))
     static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
 }
 
@@ -747,11 +747,11 @@ void Bank::selectPreviousPresetPart(UNDO::Transaction *transaction)
 
     if(isIILoaded)
     {
-      selectPreset(transaction, selectedPreset->getUuid(), true);
+      selectPreset(transaction, selectedPreset->getUuid());
     }
     else if(isILoaded)
     {
-      selectPreset(transaction, getPresetPosition(selectedPreset) - 1, true);
+      selectPreset(transaction, getPresetPosition(selectedPreset) - 1);
     }
   }
   else
@@ -772,11 +772,11 @@ void Bank::selectNextPresetPart(UNDO::Transaction *transaction)
 
     if(isIILoaded)
     {
-      selectPreset(transaction, getPresetPosition(selectedPreset) + 1, true);
+      selectPreset(transaction, getPresetPosition(selectedPreset) + 1);
     }
     else
     {
-      selectPreset(transaction, selectedPreset->getUuid(), true);
+      selectPreset(transaction, selectedPreset->getUuid());
     }
   }
   else

@@ -13,6 +13,7 @@
 #include <tools/RecursionGuard.h>
 #include <http/ContentSection.h>
 #include <tools/Signal.h>
+#include <nltools/Types.h>
 
 class Bank;
 class Preset;
@@ -120,6 +121,8 @@ class PresetManager : public ContentSection
 
   bool currentLoadedPartIsBeforePresetToLoad() const;
 
+  void scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo);
+
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
@@ -127,7 +130,6 @@ class PresetManager : public ContentSection
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
   Glib::ustring getBaseName(const Glib::ustring &basedOn) const;
   void scheduleAutoLoadSelectedPreset();
-  void scheduleAutoLoadSelectedPresetPart();
 
   std::list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
   SaveResult saveMetadata(Glib::RefPtr<Gio::File> pmFolder);

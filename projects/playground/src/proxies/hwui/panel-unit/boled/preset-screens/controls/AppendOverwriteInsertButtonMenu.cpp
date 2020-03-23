@@ -107,7 +107,7 @@ void AppendOverwriteInsertButtonMenu::createBankAndStore()
   auto transaction = transactionScope->getTransaction();
   auto bank = pm->addBank(transaction);
   auto preset = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
-  bank->selectPreset(transaction, preset->getUuid(),false);
+  bank->selectPreset(transaction, preset->getUuid());
   pm->selectBank(transaction, bank->getUuid());
   Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
 }
@@ -193,7 +193,7 @@ Preset* AppendOverwriteInsertButtonMenu::overwritePreset(UNDO::Transaction* tran
   if(auto bank = dynamic_cast<Bank*>(preset->getParent()))
   {
     preset->copyFrom(transaction, pm->getEditBuffer());
-    bank->selectPreset(transaction, preset->getUuid(),false);
+    bank->selectPreset(transaction, preset->getUuid());
     pm->selectBank(transaction, bank->getUuid());
   }
   return preset;
@@ -210,7 +210,7 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
   if(modified)
     preset->guessName(transaction);
 
-  bank->selectPreset(scope->getTransaction(), preset->getUuid(),false);
+  bank->selectPreset(scope->getTransaction(), preset->getUuid());
   pm->selectBank(transaction, bank->getUuid());
 }
 

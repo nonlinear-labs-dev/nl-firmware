@@ -300,6 +300,11 @@ void EditBuffer::resetOriginIf(const Preset *p)
     m_originCache = nullptr;
 }
 
+bool EditBuffer::isDual() const
+{
+  return getType() != SoundType::Single;
+}
+
 void EditBuffer::undoableSelectParameter(Parameter *p)
 {
   if(p->getID() != m_lastSelectedParameter)
@@ -481,7 +486,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
     auto pm = static_cast<PresetManager *>(getParent());
-    bank->selectPreset(transaction, preset->getUuid(), false);
+    bank->selectPreset(transaction, preset->getUuid());
     pm->selectBank(transaction, bank->getUuid());
   }
 

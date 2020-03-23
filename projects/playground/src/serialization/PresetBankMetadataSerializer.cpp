@@ -58,7 +58,7 @@ void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
       "y", [&](const Glib::ustring &text, const Attributes &) { m_bank->setY(reader.getTransaction(), text); });
 
   reader.onTextElement("selected-preset", [&](const Glib::ustring &text, const Attributes &) {
-    m_bank->selectPreset(reader.getTransaction(), text,false);
+    m_bank->selectPreset(reader.getTransaction(), text);
   });
 
   reader.onTextElement("attached-to-bank", [&](const Glib::ustring &text, const Attributes &) {

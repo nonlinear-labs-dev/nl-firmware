@@ -141,7 +141,9 @@ void PresetManagerLayout::setupBankSelect()
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
   if(isDualEB && HWUIHelper::isLoadToPartActive())
-    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true));
+    m_presets
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I).get(),
+                                              getPresetPartSelection(VoiceGroup::II).get()));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
 
@@ -223,7 +225,9 @@ void PresetManagerLayout::setupPresetSelect()
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
   if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
-    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true));
+    m_presets
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I).get(),
+                                              getPresetPartSelection(VoiceGroup::II).get()));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
@@ -326,6 +330,10 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
       case Buttons::BUTTON_ENTER:
         if(m_menu)
           m_menu->doAction();
+        else if(m_focusAndMode.detail == UIDetail::LoadToPart)
+        {
+          return m_presets->onButton(i, down, modifiers);
+        }
         else if(m_focusAndMode.mode == UIMode::Select)
         {
           loadSelectedPresetAccordingToLoadType();
@@ -367,6 +375,14 @@ std::unique_ptr<StoreModeData> &PresetManagerLayout::getStoreModePtr()
 {
   static std::unique_ptr<StoreModeData> s_storeModeData;
   return s_storeModeData;
+}
+
+std::unique_ptr<PresetPartSelection> &PresetManagerLayout::getPresetPartSelection(VoiceGroup vg)
+{
+  static std::array<std::unique_ptr<PresetPartSelection>, 2> s_partLoad {
+    std::make_unique<PresetPartSelection>(VoiceGroup::I), std::make_unique<PresetPartSelection>(VoiceGroup::II)
+  };
+  return s_partLoad[static_cast<int>(vg)];
 }
 
 StoreModeData *PresetManagerLayout::getStoreModeData()

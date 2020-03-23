@@ -72,6 +72,7 @@ class EditBuffer : public ParameterDualGroupSet
   bool hasLocks(VoiceGroup vg) const;
   bool findAnyParameterChanged() const;
   void resetOriginIf(const Preset *p);
+  bool isDual() const;
 
   // CALLBACKS
   sigc::connection onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s);

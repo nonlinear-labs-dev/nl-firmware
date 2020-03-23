@@ -92,7 +92,7 @@ namespace DescriptiveLayouts
         if(currentPreset != newPreset && newPreset)
         {
           auto transaction = Application::get().getUndoScope()->startTransaction("Select Preset");
-          currentBank->selectPreset(transaction->getTransaction(), newPreset->getUuid(),false);
+          currentBank->selectPreset(transaction->getTransaction(), newPreset->getUuid());
         }
       }
     }

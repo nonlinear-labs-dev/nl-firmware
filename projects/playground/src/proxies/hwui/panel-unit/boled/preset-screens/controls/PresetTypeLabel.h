@@ -23,10 +23,17 @@ class DualPresetTypeLabel : public Control
   void update(const Preset* selected);
 
  private:
+  bool m_anySelected = false;
+  bool m_selectedI = false;
+  bool m_selectedII = false;
   bool m_presetLoaded = false;
   bool m_inidicateI = false;
   bool m_inidicateII = false;
+
+  bool hasPreset = false;
+
   SoundType m_presetType = SoundType::Single;
+  bool drawSingle(FrameBuffer& buffer);
 };
 
 class PresetTypeLabel : public Control
@@ -44,5 +51,5 @@ class PresetTypeLabel : public Control
   sigc::connection m_editbufferConnection;
   sigc::connection m_voiceGroupChanged;
   std::unique_ptr<Control> m_currentControl;
-  const Preset* selectedPreset;
+  const Preset* selectedPreset { nullptr };
 };
