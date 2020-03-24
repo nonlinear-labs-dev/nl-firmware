@@ -70,9 +70,15 @@ class LoadPreset extends SVGImage {
 	}
 
 	protected boolean isSelectedPresetLoaded() {
+		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
+		boolean isLoadToPartActive = pm.isInLoadToPartMode();
+
+		if(isLoadToPartActive) {
+			return false;
+		}
+
 		String loadedPresetUUID = EditBufferModel.get().loadedPreset.getValue();
 
-		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 		String b = pm.getSelectedBank();
 		if (b != null) {
 			Bank bank = pm.findBank(b);

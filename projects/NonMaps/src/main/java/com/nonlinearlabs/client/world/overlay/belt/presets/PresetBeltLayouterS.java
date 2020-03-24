@@ -1,6 +1,4 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
-
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 
 public class PresetBeltLayouterS extends PresetBeltLayouter {
@@ -18,7 +16,6 @@ public class PresetBeltLayouterS extends PresetBeltLayouter {
 		double left = margin;
 		double right = w - margin;
 		double autoLoadWidth = Millimeter.toPixels(25);
-		GWT.log("auto load width" + autoLoadWidth);
 
 		layout.store.doLayout(left, 0, h);
 		left += layout.store.getRelativePosition().getWidth();

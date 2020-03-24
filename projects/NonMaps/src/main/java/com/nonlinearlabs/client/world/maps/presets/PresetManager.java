@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Node;
@@ -809,6 +810,7 @@ public class PresetManager extends MapsLayout {
 
 	public void loadSelectedPresetPart() {
 		if(isInLoadToPartMode()) {
+			GWT.log("TODo add Load part To part");
 			//TODO implement load preset part from load to part value
 		}
 	}
