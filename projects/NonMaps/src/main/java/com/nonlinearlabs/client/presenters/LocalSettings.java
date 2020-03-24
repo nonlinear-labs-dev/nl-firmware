@@ -1,8 +1,13 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 
 public class LocalSettings {
+
+	public LocalSettings() {
+		loadToPart.setValue(false);
+	}
 
 	static public class SelectionAutoScroll {
 		static public String[] options = { "Off", "Parameter", "Preset", "Parameter and Preset" };
@@ -61,4 +66,5 @@ public class LocalSettings {
 	public StripeBrightness stripeBrightness = new StripeBrightness();
 	public BitmapCache bitmapCache = new BitmapCache();
 	public ShowDeveloperOptions showDeveloperOptions = new ShowDeveloperOptions();
+	public BooleanDataModelEntity loadToPart = new BooleanDataModelEntity();
 }

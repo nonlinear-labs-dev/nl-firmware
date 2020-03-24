@@ -1,5 +1,8 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
+import com.google.gwt.core.client.GWT;
+import com.nonlinearlabs.client.Millimeter;
+
 public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 
 	public PresetBeltLayouterXXL(BeltPresetLayout layout) {
@@ -11,7 +14,8 @@ public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 		double margin = getDefaultMargin();
 		double left = margin;
 		double right = w - margin;
-		double autoLoadWidth = layout.autoLoad.getSelectedImage().getImgWidth();
+		double autoLoadWidth = Millimeter.toPixels(25);
+		GWT.log("auto load width" + autoLoadWidth);
 		double currentPresetWidth = layout.currentPreset.getDesiredWidth();
 		double currentPresetHeight = layout.currentPreset.getDesiredHeight();
 

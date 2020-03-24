@@ -16,8 +16,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.LoadMode;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -123,6 +123,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (loadActive) {
 			load();
 		}
+	}
+
+	public boolean isDual() {
+		return getType() != SoundType.Single;
 	}
 
 	@Override
@@ -475,8 +479,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void load() {
-		LoadMode loadMode = SetupModel.get().systemSettings.loadMode.getValue();
-		if (loadMode == LoadMode.loadtopart) {
+		boolean loadToPart = LocalSettingsProvider.get().getSettings().loadToPart.getBool();
+		if (loadToPart) {
 			if (type != SoundType.Single) {
 				ChoosePresetPartDialog d = new ChoosePresetPartDialog();
 				d.show();

@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
@@ -49,6 +50,7 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 	private StoreSelectMode m_storeSelectMode = null;
+	private LoadToPartMode m_loadToPartMode = null;
 	private Tape attachingTapes[] = new Tape[2];
 
 	private static NonRect oldView = null;
@@ -137,6 +139,31 @@ public class PresetManager extends MapsLayout {
 		if (m_storeSelectMode != null) {
 			StoreSelectMode tmp = m_storeSelectMode;
 			m_storeSelectMode = null;
+			tmp.updateUI();
+		}
+	}
+
+	public LoadToPartMode getLoadToPartMode() {
+		return m_loadToPartMode;
+	}
+
+	public boolean isInLoadToPartMode() {
+		return m_loadToPartMode != null;
+	}
+
+	public void startLoadToPartMode() {
+		if(m_loadToPartMode == null) {
+			if(!isEmpty()) {
+				m_loadToPartMode = new LoadToPartMode(this);
+				m_loadToPartMode.updateUI();
+			}
+		}
+	}
+	
+	public void endLoadToPartMode() {
+		if(m_loadToPartMode != null) {
+			LoadToPartMode tmp = m_loadToPartMode;
+			m_loadToPartMode = null;
 			tmp.updateUI();
 		}
 	}

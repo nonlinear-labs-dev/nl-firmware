@@ -1,92 +1,138 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.LoadMode;
-import com.nonlinearlabs.client.presenters.EditBufferPresenter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
-import com.nonlinearlabs.client.presenters.PresetManagerPresenter;
+import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
-public class LoadModeMenu extends SVGImage {
+public class LoadModeMenu extends OverlayLayout {
 
-    LoadModeMenu(OverlayLayout parent) {
-        super(parent, "Menu_Dir-Load_Disabled.svg", "Menu_Load-I_Enabled.svg", "Menu_Load-II_Enabled.svg", "Menu_Select_Enabled.svg", "Menu_Dir-Load_Enabled.svg");
+    private class DirectLoadButton extends SVGImage {
+        DirectLoadButton(OverlayLayout parent) {
+            super(parent, "Link_Enabled.svg", "Link_Active.svg");
 
-        SetupModel.get().systemSettings.loadMode.onChange((LoadMode mode) -> {
-            requestLayout();
-            return true;
-        });
+            SetupModel.get().systemSettings.directLoad.onChange((v) -> {
+                requestLayout();
+                return true;
+            });
+        }
 
-        EditBufferModel.get().voiceGroup.onChange((VoiceGroup v) -> {
-            requestLayout();
-            return true;
-        });
+        private boolean isDirectLoadActive() {
+            return SetupModel.get().systemSettings.directLoad.getBool();
+        }
+
+        @Override
+        public int getSelectedPhase() {
+            return isDirectLoadActive() ? 1 : 0;
+        }
+        
+        @Override
+        public Control click(Position eventPoint) {
+            if(isDirectLoadActive()) {
+                SetupModel.get().systemSettings.directLoad.setValue(false);
+            } else {
+                SetupModel.get().systemSettings.directLoad.setValue(true);
+            }
+            return this;
+        }
     }
 
-    public boolean isInStoreSelectMode() {
-        return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
+    private class LoadToPartButton extends SVGImage {
+        LoadToPartButton(OverlayLayout parent) {
+            super(parent, "Load_Disabled.svg", "Load_Enabled.svg", "Load_Active.svg");
+
+            LocalSettingsProvider.get().getSettings().loadToPart.onChange((v) -> {
+                requestLayout();
+                return true;
+            });
+        }
+
+        @Override
+        public int getSelectedPhase() {
+            if(!isDualEditBuffer()) {
+                return 0;
+            } else {
+                if(isLoadToPartActive()) {
+                    return 2;
+                } else {
+                    return 1;
+                }
+            }
+        }
+
+        private boolean isDualEditBuffer() {
+            return EditBufferPresenterProvider.getPresenter().soundType != SoundType.Single;
+        }
+
+        private boolean isLoadToPartActive() {
+            return LocalSettingsProvider.get().getSettings().loadToPart.getBool();
+        }
+
+        @Override
+        public Control click(Position eventPosition) {
+            if(isDualEditBuffer()) {
+                if(isLoadToPartActive()) {
+                    LocalSettingsProvider.get().getSettings().loadToPart.setValue(false);
+                } else {
+                    LocalSettingsProvider.get().getSettings().loadToPart.setValue(true);
+                }
+                return this;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private DirectLoadButton loadButton;
+    private LoadToPartButton partButton;
+
+    LoadModeMenu(OverlayLayout parent) {
+        super(parent);
+
+        SetupModel.get().systemSettings.directLoad.onChange((d) -> {
+            requestLayout();
+            return true;
+        });
+
+        LocalSettingsProvider.get().getSettings().loadToPart.onChange((v) -> {
+            requestLayout();
+            return true;
+        });
+
+        addChild(loadButton = new DirectLoadButton(this));
+        addChild(partButton = new LoadToPartButton(this));
+    }
+
+    @Override
+    public void draw(Context2d ctx, int invalidationMask) {
+        super.draw(ctx, invalidationMask);
+        getPixRect().drawDebug(ctx);
     }
 
     @Override
     public void doLayout(double x, double y, double w, double h) {
-        double imgHeight = getSelectedImage().getImgHeight();
-        y = (h - imgHeight) / 2;
-        y += Millimeter.toPixels(3);
-        h = imgHeight;
+        double width = getSmallButtonWidth();
+        double margin = Millimeter.toPixels(1);
+
+        loadButton.doLayout(0, 0, width, width);
+        partButton.doLayout(width + margin, 0, width, width);
+
         super.doLayout(x, y, w, h);
     }
 
-    @Override
-    public int getSelectedPhase() {
-        PresetManagerPresenter p = PresetManagerPresenterProvider.get().getPresenter();
-        EditBufferPresenter eb = EditBufferPresenterProvider.getPresenter();
-
-        if (isInStoreSelectMode())
-            return 0;
-        else if (p.loadToPartActive)
-            if(eb.voiceGroupEnum == VoiceGroup.I)
-                return 1;
-            else
-                return 2;
-        else if (!p.directLoadActive)
-            return 3;
-        else if (p.directLoadActive)
-            return 4;
-
-        return 0;
+    public double getDesiredWidth() {
+        return getSmallButtonWidth() + Millimeter.toPixels(1) + getSmallButtonWidth();
     }
 
-    @Override
-    public Control mouseDown(Position pos) {
-        return openContextMenu(pos);
+    public double getSmallButtonWidth() {
+        return Millimeter.toPixels(11);
     }
-
-    @Override
-    public Control onContextMenu(Position pos) {
-        return openContextMenu(pos);
-    }
-
-    private Control openContextMenu(Position pos) {
-        Overlay o = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay();
-
-        if (o.getContextMenu() instanceof LoadModeContextMenu) {
-            o.removeExistingContextMenus();
-            return this;
-        }
-
-        pos = getPixRect().getLeftTop();
-        LoadModeContextMenu m = new LoadModeContextMenu(o);
-        pos.moveBy(0, -m.getDesiredHeight() - 2);
-        return o.setContextMenu(pos, m);
-    }
-
 }

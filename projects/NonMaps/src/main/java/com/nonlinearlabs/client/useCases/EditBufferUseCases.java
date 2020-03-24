@@ -14,7 +14,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.LoadMode;
 import com.nonlinearlabs.client.tools.NLMath;
 
 public class EditBufferUseCases {
@@ -394,31 +393,10 @@ public class EditBufferUseCases {
 	}
 
 	public void toggleDirectLoad() {
-		LoadMode l = SetupModel.get().systemSettings.loadMode.getValue();
-		SoundType s = EditBufferModel.get().soundType.getValue();
-
-		if (s == SoundType.Single) {
-			if (l != LoadMode.directload) {
-				l = LoadMode.directload;
-			} else {
-				l = LoadMode.select;
-			}
-		} else {
-			if (l == LoadMode.directload) {
-				l = LoadMode.loadtopart;
-			} else if (l == LoadMode.loadtopart) {
-				l = LoadMode.select;
-			} else {
-				l = LoadMode.select;
-			}
-		}
-
-		setLoadMode(l);
-	}
-
-	public void setLoadMode(LoadMode l) {
-		SetupModel.get().systemSettings.loadMode.setValue(l);
-		NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", l.toString());
+		if(SetupModel.get().systemSettings.directLoad.getBool())
+			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "false");
+		else
+			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "true");
 	}
 
 	public void loadPreset(String uuid) {
