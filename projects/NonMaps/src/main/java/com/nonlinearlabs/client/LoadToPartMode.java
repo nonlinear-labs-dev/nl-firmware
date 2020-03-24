@@ -90,14 +90,14 @@ public class LoadToPartMode {
 		return false;
 	}
 
-	public void selecteNextBank() {
+	public void selectNextBank() {
 		if (canSelectNextBank()) {
 			int orderNumber = selectedBank.getOrderNumber();
 			selectBankWithOrderNumber(orderNumber + 1);
 		}
 	}
 
-	public void selectePreviousBank() {
+	public void selectPreviousBank() {
 		if (canSelectPreviousBank()) {
 			int orderNumber = selectedBank.getOrderNumber();
 			selectBankWithOrderNumber(orderNumber - 1);

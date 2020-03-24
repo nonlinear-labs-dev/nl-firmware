@@ -391,6 +391,9 @@ public class PresetManager extends MapsLayout {
 		if (isInStoreSelectMode())
 			return getStoreSelectMode().getSelectedBank().getUUID();
 
+		if (isInLoadToPartMode())
+			return getLoadToPartMode().getSelectedBank().getUUID();
+
 		return selectedBank;
 	}
 
@@ -414,6 +417,11 @@ public class PresetManager extends MapsLayout {
 	public void selectBank(String bankUUID, boolean userInteraction) {
 		if (isInStoreSelectMode()) {
 			getStoreSelectMode().setSelectedBank(findBank(bankUUID));
+			return;
+		}
+
+		if(isInLoadToPartMode()) {
+			getLoadToPartMode().setSelectedBank(findBank(bankUUID));
 			return;
 		}
 
@@ -559,6 +567,9 @@ public class PresetManager extends MapsLayout {
 		if (isInStoreSelectMode())
 			return m_storeSelectMode.canNext();
 
+		if(isInLoadToPartMode())
+			return m_loadToPartMode.canNext();
+
 		Preset p = findSelectedPreset();
 		if (p != null) {
 			Bank b = p.getParent();
@@ -571,6 +582,9 @@ public class PresetManager extends MapsLayout {
 	public boolean canPrev() {
 		if (isInStoreSelectMode())
 			return m_storeSelectMode.canPrev();
+
+		if (isInLoadToPartMode())
+			return m_loadToPartMode.canPrev();
 
 		Preset p = findSelectedPreset();
 		if (p != null) {
@@ -668,6 +682,11 @@ public class PresetManager extends MapsLayout {
 			return;
 		}
 
+		if (isInLoadToPartMode()) {
+			getLoadToPartMode().selectPreviousPreset();
+			return;
+		}
+
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
 			b.getPresetList().selectPrev();
@@ -676,6 +695,11 @@ public class PresetManager extends MapsLayout {
 	public void selectNextPreset() {
 		if (isInStoreSelectMode()) {
 			getStoreSelectMode().selectNextPreset();
+			return;
+		}
+
+		if (isInLoadToPartMode()) {
+			getLoadToPartMode().selectNextPreset();
 			return;
 		}
 
@@ -699,14 +723,18 @@ public class PresetManager extends MapsLayout {
 
 	public void selectPreviousBank(boolean userInteraction) {
 		if (isInStoreSelectMode())
-			getStoreSelectMode().selectePreviousBank();
+			getStoreSelectMode().selectPreviousBank();
+		else if(isInLoadToPartMode())
+			getLoadToPartMode().selectPreviousBank();
 		else
 			selectBankWithOrdernumberOffset(-1);
 	}
 
 	public void selectNextBank(boolean userInteraction) {
 		if (isInStoreSelectMode())
-			getStoreSelectMode().selecteNextBank();
+			getStoreSelectMode().selectNextBank();
+		else if(isInLoadToPartMode())
+			getLoadToPartMode().selectNextBank();
 		else
 			selectBankWithOrdernumberOffset(1);
 	}
@@ -714,6 +742,9 @@ public class PresetManager extends MapsLayout {
 	public boolean canSelectPreviousBank() {
 		if (isInStoreSelectMode())
 			return getStoreSelectMode().canSelectPreviousBank();
+
+		if (isInLoadToPartMode())
+			return getLoadToPartMode().canSelectPreviousBank();
 
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
@@ -723,6 +754,9 @@ public class PresetManager extends MapsLayout {
 	public boolean canSelectNextBank() {
 		if (isInStoreSelectMode())
 			return getStoreSelectMode().canSelectNextBank();
+
+		if (isInLoadToPartMode())
+			return getLoadToPartMode().canSelectNextBank();
 
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
@@ -771,6 +805,12 @@ public class PresetManager extends MapsLayout {
 
 		if (p != null)
 			p.load();
+	}
+
+	public void loadSelectedPresetPart() {
+		if(isInLoadToPartMode()) {
+			//TODO implement load preset part from load to part value
+		}
 	}
 
 	public Preset findSelectedPreset() {

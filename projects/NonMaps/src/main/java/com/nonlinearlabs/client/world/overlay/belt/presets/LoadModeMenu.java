@@ -38,8 +38,10 @@ public class LoadModeMenu extends OverlayLayout {
         public Control click(Position eventPoint) {
             if(isDirectLoadActive()) {
                 SetupModel.get().systemSettings.directLoad.setValue(false);
+                NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "off", false);
             } else {
                 SetupModel.get().systemSettings.directLoad.setValue(true);
+                NonMaps.get().getServerProxy().setSetting("DirectLoad", "on", false);
             }
             return this;
         }
@@ -48,11 +50,6 @@ public class LoadModeMenu extends OverlayLayout {
     private class LoadToPartButton extends SVGImage {
         LoadToPartButton(OverlayLayout parent) {
             super(parent, "Load_Disabled.svg", "Load_Enabled.svg", "Load_Active.svg");
-
-            LocalSettingsProvider.get().getSettings().loadToPart.onChange((v) -> {
-                requestLayout();
-                return true;
-            });
         }
 
         @Override
@@ -73,16 +70,16 @@ public class LoadModeMenu extends OverlayLayout {
         }
 
         private boolean isLoadToPartActive() {
-            return LocalSettingsProvider.get().getSettings().loadToPart.getBool();
+            return NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode();
         }
 
         @Override
         public Control click(Position eventPosition) {
             if(isDualEditBuffer()) {
                 if(isLoadToPartActive()) {
-                    LocalSettingsProvider.get().getSettings().loadToPart.setValue(false);
+                    NonMaps.get().getNonLinearWorld().getPresetManager().endLoadToPartMode();
                 } else {
-                    LocalSettingsProvider.get().getSettings().loadToPart.setValue(true);
+                    NonMaps.get().getNonLinearWorld().getPresetManager().startLoadToPartMode();
                 }
                 return this;
             } else {
@@ -102,19 +99,8 @@ public class LoadModeMenu extends OverlayLayout {
             return true;
         });
 
-        LocalSettingsProvider.get().getSettings().loadToPart.onChange((v) -> {
-            requestLayout();
-            return true;
-        });
-
         addChild(loadButton = new DirectLoadButton(this));
         addChild(partButton = new LoadToPartButton(this));
-    }
-
-    @Override
-    public void draw(Context2d ctx, int invalidationMask) {
-        super.draw(ctx, invalidationMask);
-        getPixRect().drawDebug(ctx);
     }
 
     @Override
@@ -122,8 +108,10 @@ public class LoadModeMenu extends OverlayLayout {
         double width = getSmallButtonWidth();
         double margin = Millimeter.toPixels(1);
 
-        loadButton.doLayout(0, 0, width, width);
-        partButton.doLayout(width + margin, 0, width, width);
+        double yPos = (h / 2) - (width / 2);
+
+        loadButton.doLayout(0, yPos, width, width);
+        partButton.doLayout(width + margin, yPos, width, width);
 
         super.doLayout(x, y, w, h);
     }

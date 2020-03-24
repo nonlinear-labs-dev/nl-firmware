@@ -483,6 +483,11 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 		if (isInStoreSelectMode()) {
 			return getParent().getStoreSelectMode().getSelectedBank() == this;
 		}
+
+		if(getParent().isInLoadToPartMode()) {
+			return getParent().getLoadToPartMode().getSelectedBank() == this;
+		}
+
 		return uuid.equals(getParent().getSelectedBank());
 	}
 

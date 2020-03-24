@@ -6,6 +6,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
@@ -287,6 +288,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (sm != null)
 			return sm.getSelectedPreset() == this;
 
+		LoadToPartMode lp = NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
+		if(lp != null)
+			return lp.getSelectedPreset() == this;
+
 		if (PresetDeleter.instance != null)
 			if (PresetDeleter.instance.isPresetInSelection(this))
 				return true;
@@ -309,6 +314,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public boolean isLoaded() {
 		if (getParent().isInStoreSelectMode()) {
 			return this == getParent().getParent().getStoreSelectMode().getOriginalPreset();
+		}
+
+		if(getParent().getParent().isInLoadToPartMode()) {
+			return this == getParent().getParent().getLoadToPartMode().getOriginalPreset();
 		}
 
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
@@ -371,8 +380,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public void selectPreset() {
 		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreSelectMode();
+		LoadToPartMode loadPartMode = getNonMaps().getNonLinearWorld().getPresetManager().getLoadToPartMode();
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
+		} else if(loadPartMode != null) {
+			loadPartMode.setSelectedPreset(this);
 		} else {
 			getParent().getPresetList().selectPreset(getUUID(), true);
 
@@ -479,7 +491,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void load() {
-		boolean loadToPart = LocalSettingsProvider.get().getSettings().loadToPart.getBool();
+		boolean loadToPart = getParent().getParent().isInLoadToPartMode();
 		if (loadToPart) {
 			if (type != SoundType.Single) {
 				ChoosePresetPartDialog d = new ChoosePresetPartDialog();

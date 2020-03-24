@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.StoreSelectMode;
@@ -82,22 +83,34 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().getStoreSelectMode();
 	}
 
+	private boolean isInLoadPartMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode();
+	}
+
+	private LoadToPartMode getLoadPartMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
+	}
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean loaded = mapsPreset.isLoaded() && !mapsPreset.isInStoreSelectMode();
 		boolean selected = mapsPreset.isSelected() || mapsPreset.isContextMenuActiveOnMe();
-		boolean isOrignalPreset = false;
+		boolean isOriginalPreset = false;
 
 		if (isInStoreMode()) {
-			isOrignalPreset = getStoreMode().isOriginalPreset(mapsPreset);
+			isOriginalPreset = getStoreMode().isOriginalPreset(mapsPreset);
+		}
+
+		if(isInLoadPartMode()) {
+			isOriginalPreset = getLoadPartMode().isOriginalPreset(mapsPreset);
 		}
 
 		RGB colorFill = new RGB(25, 25, 25);
 
-		if (selected && !isOrignalPreset)
+		if (selected && !isOriginalPreset)
 			colorFill = new RGB(77, 77, 77);
 
-		if (loaded || isOrignalPreset)
+		if (loaded || isOriginalPreset)
 			colorFill = RGB.blue();
 
 		getPixRect().fill(ctx, colorFill);
@@ -115,6 +128,11 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreSelectMode();
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(mapsPreset);
+			return this;
+		}
+
+		if(isInLoadPartMode()) {
+			getLoadPartMode().setSelectedPreset(mapsPreset);
 			return this;
 		}
 
