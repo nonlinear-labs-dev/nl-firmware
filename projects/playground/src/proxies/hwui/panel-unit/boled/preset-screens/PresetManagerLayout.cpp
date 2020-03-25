@@ -141,9 +141,8 @@ void PresetManagerLayout::setupBankSelect()
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
   if(isDualEB && HWUIHelper::isLoadToPartActive())
-    m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I).get(),
-                                              getPresetPartSelection(VoiceGroup::II).get()));
+    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
+                                                    getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
 
@@ -225,9 +224,8 @@ void PresetManagerLayout::setupPresetSelect()
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
   if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
-    m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I).get(),
-                                              getPresetPartSelection(VoiceGroup::II).get()));
+    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
+                                                    getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
@@ -377,12 +375,12 @@ std::unique_ptr<StoreModeData> &PresetManagerLayout::getStoreModePtr()
   return s_storeModeData;
 }
 
-std::unique_ptr<PresetPartSelection> &PresetManagerLayout::getPresetPartSelection(VoiceGroup vg)
+PresetPartSelection *PresetManagerLayout::getPresetPartSelection(VoiceGroup vg)
 {
   static std::array<std::unique_ptr<PresetPartSelection>, 2> s_partLoad {
     std::make_unique<PresetPartSelection>(VoiceGroup::I), std::make_unique<PresetPartSelection>(VoiceGroup::II)
   };
-  return s_partLoad[static_cast<int>(vg)];
+  return s_partLoad[static_cast<int>(vg)].get();
 }
 
 StoreModeData *PresetManagerLayout::getStoreModeData()

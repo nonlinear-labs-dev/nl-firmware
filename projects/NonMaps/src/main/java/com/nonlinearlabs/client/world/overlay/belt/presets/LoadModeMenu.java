@@ -6,6 +6,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -34,13 +35,7 @@ public class LoadModeMenu extends OverlayLayout {
         
         @Override
         public Control click(Position eventPoint) {
-            if(isDirectLoadActive()) {
-                SetupModel.get().systemSettings.directLoad.setValue(false);
-                NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "off", false);
-            } else {
-                SetupModel.get().systemSettings.directLoad.setValue(true);
-                NonMaps.get().getServerProxy().setSetting("DirectLoad", "on", false);
-            }
+            EditBufferUseCases.get().toggleDirectLoad();
             return this;
         }
     }

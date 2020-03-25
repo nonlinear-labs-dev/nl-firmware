@@ -245,9 +245,16 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto loadTo = to<VoiceGroup>(request->get("editbuffer-part"));
     auto presetUUID = request->get("preset-uuid");
     auto pm = Application::get().getPresetManager();
-    auto scope = pm->getUndoScope().startTransaction("Load Part %s of Preset %s into Part %s", toString(presetPart),
-                                                     pm->findPreset(presetUUID)->getName(), toString(loadTo));
-    editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), pm->findPreset(presetUUID), presetPart, loadTo);
+
+    if(auto presetToLoad = pm->findPreset(presetUUID))
+    {
+      std::stringstream ss;
+      ss << "Load Part " << toString(presetPart) << " of Preset \"" << presetToLoad->getName() << "\" into Part "
+         << toString(loadTo);
+
+      auto scope = pm->getUndoScope().startTransaction(ss.str());
+      editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), presetToLoad, presetPart, loadTo);
+    }
   });
 
   addAction("load-preset-into-editbuffer-part", [=](auto request) {

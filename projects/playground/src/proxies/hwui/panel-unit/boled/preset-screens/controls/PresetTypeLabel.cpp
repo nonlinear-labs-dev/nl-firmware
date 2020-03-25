@@ -204,7 +204,7 @@ void DualPresetTypeLabel::update(const Preset *selected)
     auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
     auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout);
 
-    auto &selection = presetManagerLayout->getPresetPartSelection(currentVGFocus);
+    auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus);
 
     const auto &presetUUID = selected->getUuid();
 

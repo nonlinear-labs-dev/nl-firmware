@@ -14,17 +14,17 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 public class LoadToPartMode {
 
 	private class LoadToPartModeData {
-		public Preset selectedPreset;
-		public Bank selectedBank;
-		public VoiceGroup selectedVoiceGroup;
+		public Preset m_selectedPreset;
+		public Bank m_selectedBank;
+		public VoiceGroup m_selectedVoiceGroup;
 	};
 
 	private PresetManager m_parent;
 
-	private final Preset originPreset;
+	private final Preset m_originPreset;
 	
-	private LoadToPartModeData currentData;
-	private LoadToPartModeData otherData;
+	private LoadToPartModeData m_currentData;
+	private LoadToPartModeData m_otherData;
 
 	private LoadToPartModeNotifier m_notifier;
 
@@ -33,17 +33,17 @@ public class LoadToPartMode {
 
 		m_notifier = new LoadToPartModeNotifier();
 
-		currentData = new LoadToPartModeData();
-		otherData = new LoadToPartModeData();
+		m_currentData = new LoadToPartModeData();
+		m_otherData = new LoadToPartModeData();
 
-		originPreset = parent.findLoadedPreset();
+		m_originPreset = m_parent.findLoadedPreset();
 
-		currentData.selectedPreset = m_parent.getSelectedPreset();
-        currentData.selectedBank = m_parent.findBank(m_parent.getSelectedBank());
+		m_currentData.m_selectedPreset = m_parent.getSelectedPreset();
+        m_currentData.m_selectedBank = m_parent.findBank(m_parent.getSelectedBank());
 		
-		otherData.selectedBank = currentData.selectedBank;
-		otherData.selectedPreset = currentData.selectedPreset;
-		otherData.selectedVoiceGroup = currentData.selectedVoiceGroup;
+		m_otherData.m_selectedBank = m_currentData.m_selectedBank;
+		m_otherData.m_selectedPreset = m_currentData.m_selectedPreset;
+		m_otherData.m_selectedVoiceGroup = m_currentData.m_selectedVoiceGroup;
 
 		EditBufferModel.get().voiceGroup.onChange((vg) -> {
 			swapSelection();
@@ -52,15 +52,15 @@ public class LoadToPartMode {
     }
 
 	private void swapSelection() {
-		LoadToPartModeData tmp = currentData;
-		currentData = otherData;
-		otherData = tmp;
+		LoadToPartModeData tmp = m_currentData;
+		m_currentData = m_otherData;
+		m_otherData = tmp;
 		updateUI();
 	}
 
 	public void setSelectedPreset(Preset p) {
-		currentData.selectedPreset = p;
-		currentData.selectedBank = p != null ? p.getParent() : null;
+		m_currentData.m_selectedPreset = p;
+		m_currentData.m_selectedBank = p != null ? p.getParent() : null;
 		updateUI();
 
 		if(SetupModel.get().systemSettings.directLoad.getBool()) {
@@ -69,25 +69,25 @@ public class LoadToPartMode {
 	}
 
 	public void setSelectedBank(Bank b) {
-		currentData.selectedBank = b;
+		m_currentData.m_selectedBank = b;
 		setSelectedPreset(b.getPresetList().findPreset(b.getPresetList().getSelectedPreset()));
 		updateUI();
 	}
 
 	public Preset getSelectedPreset() {
-		return currentData.selectedPreset;
+		return m_currentData.m_selectedPreset;
 	}
 
 	public VoiceGroup getSelectedPart() {
-		return currentData.selectedVoiceGroup;
+		return m_currentData.m_selectedVoiceGroup;
 	}
 
 	public boolean canNext() {
-		if (currentData.selectedPreset != null) {
-			boolean isLastPreset = currentData.selectedPreset.getNumber() < currentData.selectedPreset.getParent().getPresetList().getPresetCount();
+		if (m_currentData.m_selectedPreset != null) {
+			boolean isLastPreset = m_currentData.m_selectedPreset.getNumber() < m_currentData.m_selectedPreset.getParent().getPresetList().getPresetCount();
 
-			if(currentData.selectedPreset.isDual()) {
-				if(currentData.selectedVoiceGroup == VoiceGroup.I)
+			if(m_currentData.m_selectedPreset.isDual()) {
+				if(m_currentData.m_selectedVoiceGroup == VoiceGroup.I)
 					return true;
 				else
 					return isLastPreset;
@@ -101,11 +101,11 @@ public class LoadToPartMode {
 
 	public boolean canPrev() {
 
-		if (currentData.selectedPreset != null) {
-			boolean isFirstPreset = currentData.selectedPreset.getNumber() > 1;
+		if (m_currentData.m_selectedPreset != null) {
+			boolean isFirstPreset = m_currentData.m_selectedPreset.getNumber() > 1;
 
-			if(currentData.selectedPreset.isDual()) {
-				if(currentData.selectedVoiceGroup == VoiceGroup.II)
+			if(m_currentData.m_selectedPreset.isDual()) {
+				if(m_currentData.m_selectedVoiceGroup == VoiceGroup.II)
 					return true;
 				return isFirstPreset;
 			} else {
@@ -120,18 +120,18 @@ public class LoadToPartMode {
 		if (canNext()) {
 			boolean selectionChanged = false;
 
-			if(currentData.selectedPreset.isDual() && currentData.selectedVoiceGroup == VoiceGroup.I) {
-				currentData.selectedVoiceGroup = VoiceGroup.II;
+			if(m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.I) {
+				m_currentData.m_selectedVoiceGroup = VoiceGroup.II;
 				selectionChanged = true;
 			}
 
-			Preset next = currentData.selectedPreset;
+			Preset next = m_currentData.m_selectedPreset;
 
 			if(!selectionChanged) {
-				Bank b = currentData.selectedPreset.getParent();
-				int idx = currentData.selectedPreset.getNumber() - 1;
+				Bank b = m_currentData.m_selectedPreset.getParent();
+				int idx = m_currentData.m_selectedPreset.getNumber() - 1;
 				next = b.getPreset(idx + 1);	
-				currentData.selectedVoiceGroup = VoiceGroup.I;
+				m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
 			}
 			
 			setSelectedPreset(next);
@@ -142,22 +142,22 @@ public class LoadToPartMode {
 		if (canPrev()) {
 			boolean selectionChanged = false;
 
-			if(currentData.selectedPreset.isDual() && currentData.selectedVoiceGroup == VoiceGroup.II) {
-				currentData.selectedVoiceGroup = VoiceGroup.I;
+			if(m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.II) {
+				m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
 				selectionChanged = true;
 			}
 
-			Preset next = currentData.selectedPreset;
+			Preset next = m_currentData.m_selectedPreset;
 
 			if(!selectionChanged) {
-				Bank b = currentData.selectedPreset.getParent();
-				int idx = currentData.selectedPreset.getNumber() - 1;
+				Bank b = m_currentData.m_selectedPreset.getParent();
+				int idx = m_currentData.m_selectedPreset.getNumber() - 1;
 				next = b.getPreset(idx - 1);
 			
 				if(next.isDual()) {
-					currentData.selectedVoiceGroup = VoiceGroup.II;
+					m_currentData.m_selectedVoiceGroup = VoiceGroup.II;
 				} else {
-					currentData.selectedVoiceGroup = VoiceGroup.I;
+					m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
 				}
 			}
 			
@@ -166,35 +166,35 @@ public class LoadToPartMode {
 	}
 
 	public boolean canSelectPreviousBank() {
-		if (currentData.selectedBank != null) {
-			return currentData.selectedBank.getParent().canSelectBankWithOrdernumberOffset(currentData.selectedBank, -1);
+		if (m_currentData.m_selectedBank != null) {
+			return m_currentData.m_selectedBank.getParent().canSelectBankWithOrdernumberOffset(m_currentData.m_selectedBank, -1);
 		}
 		return false;
 	}
 
 	public boolean canSelectNextBank() {
-		if (currentData.selectedBank != null) {
-			return currentData.selectedBank.getParent().canSelectBankWithOrdernumberOffset(currentData.selectedBank, 1);
+		if (m_currentData.m_selectedBank != null) {
+			return m_currentData.m_selectedBank.getParent().canSelectBankWithOrdernumberOffset(m_currentData.m_selectedBank, 1);
 		}
 		return false;
 	}
 
 	public void selectNextBank() {
 		if (canSelectNextBank()) {
-			int orderNumber = currentData.selectedBank.getOrderNumber();
+			int orderNumber = m_currentData.m_selectedBank.getOrderNumber();
 			selectBankWithOrderNumber(orderNumber + 1);
 		}
 	}
 
 	public void selectPreviousBank() {
 		if (canSelectPreviousBank()) {
-			int orderNumber = currentData.selectedBank.getOrderNumber();
+			int orderNumber = m_currentData.m_selectedBank.getOrderNumber();
 			selectBankWithOrderNumber(orderNumber - 1);
 		}
 	}
 
 	private void selectBankWithOrderNumber(int i) {
-		for (MapsControl c : currentData.selectedBank.getParent().getChildren()) {
+		for (MapsControl c : m_currentData.m_selectedBank.getParent().getChildren()) {
 			if (c instanceof Bank) {
 				Bank b = (Bank) c;
 				if (b.getOrderNumber() == i) {
@@ -206,11 +206,11 @@ public class LoadToPartMode {
 	}
 
 	public Preset getOriginalPreset() {
-		return originPreset;
+		return m_originPreset;
 	}
 
 	public Bank getSelectedBank() {
-		return currentData.selectedBank;
+		return m_currentData.m_selectedBank;
 	}
 
 	public void onChange(Function<Void, Boolean> cb) {
@@ -226,6 +226,6 @@ public class LoadToPartMode {
 	}
 
 	public boolean isOriginalPreset(Preset mapsPreset) {
-		return mapsPreset == originPreset;
+		return mapsPreset == m_originPreset;
 	}
 }

@@ -394,9 +394,9 @@ public class EditBufferUseCases {
 
 	public void toggleDirectLoad() {
 		if(SetupModel.get().systemSettings.directLoad.getBool())
-			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "false");
+			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "off");
 		else
-			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "true");
+			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "on");
 	}
 
 	public void loadPreset(String uuid) {

@@ -38,7 +38,7 @@ class PresetManagerLayout : public Layout
 
   std::pair<size_t, size_t> getSelectedPosition() const;
   std::unique_ptr<StoreModeData> &getStoreModePtr();
-  std::unique_ptr<PresetPartSelection> &getPresetPartSelection(VoiceGroup);
+  PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
 
  private:
   void setup();

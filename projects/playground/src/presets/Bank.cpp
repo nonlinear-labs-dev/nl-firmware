@@ -683,104 +683,15 @@ bool Bank::resolveCyclicAttachments(UNDO::Transaction *transaction, std::vector<
   stackedBanks.pop_back();
   return true;
 }
-const Preset *Bank::getNextPreset() const
-{
-  try
-  {
-    return getPresetAt(getNextPresetPosition());
-  }
-  catch(...)
-  {
-    return nullptr;
-  }
-}
 
-const Preset *Bank::getPreviousPreset() const
-{
-  try
-  {
-    return getPresetAt(getPreviousPresetPosition());
-  }
-  catch(...)
-  {
-    return nullptr;
-  }
-}
 const Preset *Bank::getFirstPreset() const
 {
-  try
-  {
-    return m_presets.at(0);
-  }
-  catch(...)
-  {
+  if(m_presets.empty())
     return nullptr;
-  }
-}
-
-const Preset *Bank::getLastPreset() const
-{
-  try
-  {
-    return m_presets.at(getNumPresets() - 1);
-  }
-  catch(...)
-  {
-    return nullptr;
-  }
+  return m_presets.at(0);
 }
 
 auto currentVG()
 {
   return Application::get().getHWUI()->getCurrentVoiceGroup();
-}
-
-void Bank::selectPreviousPresetPart(UNDO::Transaction *transaction)
-{
-  auto selectedPreset = getSelectedPreset();
-  if(HWUIHelper::isLoadToPartActive() && selectedPreset)
-  {
-    const auto origin = getEditBuffer()->getPartOrigin(currentVG());
-    const auto isPartlyLoaded = origin.presetUUID == selectedPreset->getUuid();
-    const auto isILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::I;
-    const auto isIILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::II;
-
-    if(isIILoaded)
-    {
-      selectPreset(transaction, selectedPreset->getUuid());
-    }
-    else if(isILoaded)
-    {
-      selectPreset(transaction, getPresetPosition(selectedPreset) - 1);
-    }
-  }
-  else
-  {
-    selectPreviousPreset(transaction);
-  }
-}
-
-void Bank::selectNextPresetPart(UNDO::Transaction *transaction)
-{
-  auto selectedPreset = getSelectedPreset();
-  if(HWUIHelper::isLoadToPartActive() && selectedPreset)
-  {
-    const auto origin = getEditBuffer()->getPartOrigin(currentVG());
-    const auto isPartlyLoaded = origin.presetUUID == selectedPreset->getUuid();
-    const auto isILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::I;
-    const auto isIILoaded = isPartlyLoaded && origin.sourceGroup == VoiceGroup::II;
-
-    if(isIILoaded)
-    {
-      selectPreset(transaction, getPresetPosition(selectedPreset) + 1);
-    }
-    else
-    {
-      selectPreset(transaction, selectedPreset->getUuid());
-    }
-  }
-  else
-  {
-    selectNextPreset(transaction);
-  }
 }

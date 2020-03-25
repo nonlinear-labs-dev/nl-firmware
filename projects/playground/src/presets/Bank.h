@@ -115,16 +115,9 @@ class Bank : public AttributesOwner
   // signals
   sigc::connection onBankChanged(sigc::slot<void> cb);
 
-  const Preset *getNextPreset() const;
-  const Preset *getPreviousPreset() const;
-
   const Preset *getFirstPreset() const;
-  const Preset *getLastPreset() const;
 
-  void selectPreviousPresetPart(UNDO::Transaction *transaction);
-  void selectNextPresetPart(UNDO::Transaction *transaction);
-
- private:
+  private:
   using Attributes = std::map<std::string, std::string>;
 
   uint64_t loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder);
