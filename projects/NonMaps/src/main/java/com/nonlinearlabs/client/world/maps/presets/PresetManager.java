@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -11,6 +12,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.LoadToPartMode;
+import com.nonlinearlabs.client.LoadToPartModeNotifier;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
@@ -52,6 +54,7 @@ public class PresetManager extends MapsLayout {
 	private MoveSomeBanksLayer moveSomeBanks;
 	private StoreSelectMode m_storeSelectMode = null;
 	private LoadToPartMode m_loadToPartMode = null;
+	private LoadToPartModeNotifier m_loadToPartNotifier = null;
 	private Tape attachingTapes[] = new Tape[2];
 
 	private static NonRect oldView = null;
@@ -117,6 +120,8 @@ public class PresetManager extends MapsLayout {
 			zoomToAllFilterMatches();
 			return true;
 		});
+
+		m_loadToPartNotifier = new LoadToPartModeNotifier();
 	}
 
 	public StoreSelectMode getStoreSelectMode() {
@@ -152,11 +157,16 @@ public class PresetManager extends MapsLayout {
 		return m_loadToPartMode != null;
 	}
 
+	public void onLoadToPartModeToggled(Function<Void, Boolean> cb) {
+		m_loadToPartNotifier.onChange(cb);
+	}
+
 	public void startLoadToPartMode() {
 		if(m_loadToPartMode == null) {
 			if(!isEmpty()) {
 				m_loadToPartMode = new LoadToPartMode(this);
 				m_loadToPartMode.updateUI();
+				m_loadToPartNotifier.notifyChanges();
 			}
 		}
 	}
@@ -166,6 +176,7 @@ public class PresetManager extends MapsLayout {
 			LoadToPartMode tmp = m_loadToPartMode;
 			m_loadToPartMode = null;
 			tmp.updateUI();
+			m_loadToPartNotifier.notifyChanges();
 		}
 	}
 

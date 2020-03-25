@@ -125,6 +125,11 @@ public class TypeLabel extends OverlayLayout {
 	public TypeLabel(BeltPreset parent) {
 		super(parent);
 		bruteForce();
+
+		NonMaps.get().getNonLinearWorld().getPresetManager().onLoadToPartModeToggled((v) -> {
+			bruteForce();
+			return true;
+		});
     }
 
 	private boolean isLoadToPartEnabled() {

@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client;
 
+import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.MapsControl;
@@ -8,6 +9,14 @@ import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
 public class LoadToPartMode {
+
+	public class LoadToPartModeNotifier extends Notifier<Void> {
+		@Override
+		public Void getValue() {
+			return null;
+		}
+	}
+
 	private PresetManager m_parent;
 	private Preset selectedPreset;
 	private Bank selectedBank;
