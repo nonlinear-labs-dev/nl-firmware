@@ -191,7 +191,7 @@ template <class Sync, class Audio, class Fast, class Slow> class SmootherHandle
   ProtoSmoother<static_cast<size_t>(Audio::_LENGTH_)> m_audio;
   ProtoSmoother<static_cast<size_t>(Fast::_LENGTH_)> m_fast;
   ProtoSmoother<static_cast<size_t>(Slow::_LENGTH_)> m_slow;
-  float m_sync[static_cast<uint32_t>(Sync::_LENGTH_)] = {};
+  ParallelData<float, static_cast<uint32_t>(Sync::_LENGTH_)> m_sync {};
 };
 
 namespace Engine
