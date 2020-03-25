@@ -418,7 +418,10 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed),
         Attribute("vg-I-name", vgIName), Attribute("vg-II-name", vgIIName),
         Attribute("vg-I-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::I)),
-        Attribute("vg-II-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::II)) },
+        Attribute("vg-II-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::II)),
+        Attribute("origin-I", getAttribute("origin-I", "")), Attribute("origin-II", getAttribute("origin-II", "")),
+        Attribute("origin-I-vg", getAttribute("origin-I-vg", "")),
+        Attribute("origin-II-vg", getAttribute("origin-II-vg", "")) },
       [&]() {
         if(changed)
           super::writeDocument(writer, knownRevision);

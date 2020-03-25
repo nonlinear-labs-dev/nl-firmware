@@ -50,7 +50,7 @@ class LoadPreset extends SVGImage {
 		if (NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode())
 			return this;
 
-		if(NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode()) {
+		if(isEnabled() && NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode()) {
 			loadPart();
 			return this;
 		}

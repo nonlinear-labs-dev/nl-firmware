@@ -1,7 +1,9 @@
 package com.nonlinearlabs.client;
 
-import com.nonlinearlabs.client.dataModel.Notifier;
+import java.util.function.Function;
+
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
@@ -10,42 +12,54 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
 public class LoadToPartMode {
 
-	public class LoadToPartModeNotifier extends Notifier<Void> {
-		@Override
-		public Void getValue() {
-			return null;
-		}
-	}
-
 	private PresetManager m_parent;
 	private Preset selectedPreset;
 	private Bank selectedBank;
     private final Preset originPreset;
     private VoiceGroup selectedVoiceGroup;
 
+	private LoadToPartModeNotifier m_notifier;
+
 	public LoadToPartMode(PresetManager parent) {
 		m_parent = parent;
+
+		m_notifier = new LoadToPartModeNotifier();
 
 		originPreset = parent.findLoadedPreset();
 		selectedPreset = m_parent.getSelectedPreset();
         selectedBank = m_parent.findBank(m_parent.getSelectedBank());
         
         if(originPreset.isDual()) {
-
+			//todo add get loaded voice group
+			selectedVoiceGroup = VoiceGroup.I;
         } else {
             selectedVoiceGroup = VoiceGroup.I;
         }
     }
 
 	public void setSelectedPreset(Preset p) {
-		selectedPreset = p;
-		selectedBank = p != null ? p.getParent() : null;
-		updateUI();
+		boolean isNewPreset = p != selectedPreset;
+		
+		if(p.isDual() && isNewPreset) {
+			selectedVoiceGroup = selectedVoiceGroup == VoiceGroup.I ? VoiceGroup.I : VoiceGroup.II;
+		} else {
+			selectedVoiceGroup = VoiceGroup.I;
+		}
+
+		if(isNewPreset) {
+			selectedPreset = p;
+			selectedBank = p != null ? p.getParent() : null;
+			updateUI();
+		}
+
+		if(SetupModel.get().systemSettings.directLoad.getBool()) {
+			NonMaps.get().getNonLinearWorld().getPresetManager().loadSelectedPresetPart();
+		}
 	}
 
 	public void setSelectedBank(Bank b) {
 		selectedBank = b;
-		selectedPreset = b.getPresetList().findPreset(b.getPresetList().getSelectedPreset());
+		setSelectedPreset(b.getPresetList().findPreset(b.getPresetList().getSelectedPreset()));
 		updateUI();
 	}
 
@@ -137,10 +151,16 @@ public class LoadToPartMode {
 		return selectedBank;
 	}
 
+	public void onChange(Function<Void, Boolean> cb) {
+		m_notifier.onChange(cb);
+	}
+
 	public void updateUI() {
 		NonMaps.get().getNonLinearWorld().invalidate(NonLinearWorld.INVALIDATION_FLAG_UI_CHANGED);
 		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl()
 				.update();
+				
+		m_notifier.notifyChanges();
 	}
 
 	public boolean isOriginalPreset(Preset mapsPreset) {

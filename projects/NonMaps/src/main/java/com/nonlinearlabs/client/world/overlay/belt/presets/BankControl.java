@@ -117,7 +117,7 @@ public class BankControl extends OverlayLayout implements IBank {
 
 	public void update(Node pmNode) {
 		if (pmNode != null) {
-			if (ServerProxy.didChange(pmNode)) {
+			if (ServerProxy.didChange(pmNode) || NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode()) {
 				Bank b = getBankInCharge();
 				if (b != null)
 					showEmptyLabel(b.getPresetList().getPresetCount() == 0);

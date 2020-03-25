@@ -13,6 +13,7 @@
 #include <groups/ParameterGroup.h>
 #include <boost/algorithm/string.hpp>
 #include <presets/PresetManager.h>
+#include <presets/Preset.h>
 #include <http/UndoScope.h>
 #include <parameters/names/ParameterDB.h>
 
@@ -233,10 +234,20 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
   });
 
-  addAction("load-preset-part-into-editbuffer-part", [=](auto request) {
+  addAction("load-selected-preset-part-into-editbuffer-part", [=](auto request) {
     auto presetPart = to<VoiceGroup>(request->get("preset-part"));
     auto editbufferPartPart = to<VoiceGroup>(request->get("editbuffer-part"));
     editBuffer->undoableLoadSelectedPresetPartIntoPart(presetPart, editbufferPartPart);
+  });
+
+  addAction("load-preset-part-into-editbuffer-part", [=](auto request) {
+    auto presetPart = to<VoiceGroup>(request->get("preset-part"));
+    auto loadTo = to<VoiceGroup>(request->get("editbuffer-part"));
+    auto presetUUID = request->get("preset-uuid");
+    auto pm = Application::get().getPresetManager();
+    auto scope = pm->getUndoScope().startTransaction("Load Part %s of Preset %s into Part %s", toString(presetPart),
+                                                     pm->findPreset(presetUUID)->getName(), toString(loadTo));
+    editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), pm->findPreset(presetUUID), presetPart, loadTo);
   });
 
   addAction("load-preset-into-editbuffer-part", [=](auto request) {

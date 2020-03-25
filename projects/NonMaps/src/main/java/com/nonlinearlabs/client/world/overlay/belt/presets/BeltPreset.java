@@ -33,7 +33,6 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	protected BeltPreset(PresetList parent, Preset mapsPreset) {
 		super(parent);
-		setOrigin(mapsPreset);
 
 		color = addChild(new PresetColorTag(this));
 		number = addChild(new PresetNumber(this));
@@ -41,6 +40,8 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		type = addChild(new TypeLabel(this));
 		name.setFontHeightInMM(4.5);
 		number.setFontHeightInMM(4.5);
+
+		setOrigin(mapsPreset);
 	}
 
 	@Override

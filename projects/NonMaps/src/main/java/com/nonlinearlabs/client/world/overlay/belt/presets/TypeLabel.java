@@ -15,7 +15,6 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class TypeLabel extends OverlayLayout {
 
-
 	private class SingleTypeLabel extends Label {
 
 		public SingleTypeLabel(TypeLabel parent) {
@@ -43,7 +42,7 @@ public class TypeLabel extends OverlayLayout {
 		protected TextAlign getAlignment() {
 			return TextAlign.LEFT;
 		}
-	
+
 		@Override
 		protected Rect getTextRect() {
 			Rect r = super.getTextRect().copy();
@@ -60,62 +59,130 @@ public class TypeLabel extends OverlayLayout {
 		}
 
 		private TypeLabel getTypeLabel() {
-			return (TypeLabel)super.getParent();
+			return (TypeLabel) super.getParent();
 		}
 
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
-			switch(getTypeLabel().getParent().getMapsPreset().getType()) {
+			LoadToPartMode mode = getLoadToPart();
+
+			switch (getTypeLabel().getParent().getMapsPreset().getType()) {
 				case Single:
 				default:
-				drawSingle(ctx);
+					drawSingle(ctx, mode);
 					break;
 				case Layer:
-				drawLayer(ctx);
+					drawLayer(ctx, mode);
 					break;
 				case Split:
-				drawSplit(ctx);
+					drawSplit(ctx, mode);
 					break;
 			}
-
-			getPixRect().drawDebug(ctx);
-		}
-		
-		VoiceGroup getCurrentVG() {
-			return EditBufferModel.get().voiceGroup.getValue();
 		}
 
 		LoadToPartMode getLoadToPart() {
 			return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
 		}
 
-		private void drawLayer(Context2d ctx) {
-			VoiceGroup currentVG = getCurrentVG();
+		private void drawLayer(Context2d ctx, LoadToPartMode mode) {
+			if (mode != null) {
+				EditBufferModel ebm = EditBufferModel.get();
+				VoiceGroup currentVG = ebm.voiceGroup.getValue();
+				Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
+				String currentOriginUUID = currentVG == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
+				VoiceGroup currentOriginVG = currentVG == VoiceGroup.I ? ebm.sourceVGI.getValue() : ebm.sourceVGII.getValue();
 
-			LoadToPartMode mode = getLoadToPart();
-			if(mode != null) {
+				boolean isLoaded = thisPreset.getUUID() == currentOriginUUID;
+				boolean iLoaded = isLoaded && currentOriginVG == VoiceGroup.I;
+				boolean iiLoaded = isLoaded && currentOriginVG == VoiceGroup.II;
+
 				boolean isPresetSelected = mode.getSelectedPreset() == getTypeLabel().getParent().getMapsPreset();
 				boolean iSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.I;
 				boolean iiSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.II;
 
-				Rect pix = getPixRect().copy();
-				double height = getRelativePosition().getHeight() / 2;
-				double width = getRelativePosition().getWidth();
+				Rect pix = getParent().getPixRect().copy();
+				double height = pix.getHeight() / 2;
+				double width = pix.getWidth();
 
-				ctx.setFillStyle(iSelected ? "green" : "gray");
-				ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
+				if(iLoaded) {
+					ctx.setFillStyle("green");
+					ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
+				} else if(iiLoaded) {	
+					ctx.setFillStyle("green");
+					ctx.fillRect(pix.getLeft(), pix.getTop() + height, width, height);
+				}
 
-				ctx.setFillStyle(iiSelected ? "green" : "gray");
-				ctx.fillRect(pix.getLeft(), pix.getTop() + height, width, height);
+				if(iSelected) {
+					ctx.setStrokeStyle("white");
+					ctx.strokeRect(pix.getLeft(), pix.getTop(), width, height);
+				} else if(iiSelected) {
+					ctx.setStrokeStyle("white");
+					ctx.strokeRect(pix.getLeft(), pix.getTop() + height, width, height);
+				}
 			}
 		}
 
-		private void drawSingle(Context2d ctx) {
+		private void drawSingle(Context2d ctx, LoadToPartMode mode) {
+			if (mode != null) {
+				Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
+				EditBufferModel ebm = EditBufferModel.get();
+				VoiceGroup currentVoiceGroup = ebm.voiceGroup.getValue();
+				String currentOriginUUID = currentVoiceGroup == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
 
+				boolean isLoaded = currentOriginUUID == thisPreset.getUUID();
+				boolean isPresetSelected = mode.getSelectedPreset() == thisPreset;
+
+				Rect pix = getParent().getPixRect().copy();
+
+				if(isLoaded) {
+					ctx.setFillStyle("green");
+					ctx.fillRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
+				}
+
+				if(isPresetSelected) {
+					ctx.setStrokeStyle("white");
+					ctx.setLineWidth(2);
+					ctx.strokeRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
+				}
+			}
 		}
 
-		private void drawSplit(Context2d ctx) {
+		private void drawSplit(Context2d ctx, LoadToPartMode mode) {
+			if (mode != null) {
+				EditBufferModel ebm = EditBufferModel.get();
+				VoiceGroup currentVG = ebm.voiceGroup.getValue();
+				Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
+				String currentOriginUUID = currentVG == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
+				VoiceGroup currentOriginVG = currentVG == VoiceGroup.I ? ebm.sourceVGI.getValue() : ebm.sourceVGII.getValue();
 
+				boolean isLoaded = thisPreset.getUUID() == currentOriginUUID;
+				boolean iLoaded = isLoaded && currentOriginVG == VoiceGroup.I;
+				boolean iiLoaded = isLoaded && currentOriginVG == VoiceGroup.II;
+
+				boolean isPresetSelected = mode.getSelectedPreset() == getTypeLabel().getParent().getMapsPreset();
+				boolean iSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.I;
+				boolean iiSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.II;
+
+				Rect pix = getParent().getPixRect().copy();
+				double height = pix.getHeight();
+				double width = pix.getWidth() / 2;
+
+				if(iLoaded) {
+					ctx.setFillStyle("green");
+					ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
+				} else if(iiLoaded) {	
+					ctx.setFillStyle("green");
+					ctx.fillRect(pix.getLeft() + width, pix.getTop(), width, height);
+				}
+
+				if(iSelected) {
+					ctx.setStrokeStyle("white");
+					ctx.strokeRect(pix.getLeft(), pix.getTop(), width, height);
+				} else if(iiSelected) {
+					ctx.setStrokeStyle("white");
+					ctx.strokeRect(pix.getLeft() + width, pix.getTop(), width, height);
+				}
+			}
 		}
 	}
 
@@ -130,7 +197,7 @@ public class TypeLabel extends OverlayLayout {
 			bruteForce();
 			return true;
 		});
-    }
+	}
 
 	private boolean isLoadToPartEnabled() {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode();
@@ -138,10 +205,10 @@ public class TypeLabel extends OverlayLayout {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		if(dualControl != null)
+		if (dualControl != null)
 			dualControl.draw(ctx, invalidationMask);
-		
-		if(singleControl != null)
+
+		if (singleControl != null)
 			singleControl.draw(ctx, invalidationMask);
 	}
 
@@ -150,7 +217,7 @@ public class TypeLabel extends OverlayLayout {
 		dualControl = null;
 		singleControl = null;
 
-		if(isLoadToPartEnabled()) {
+		if (isLoadToPartEnabled()) {
 			addChild(dualControl = new DualTypeLabel(this));
 		} else {
 			addChild(singleControl = new SingleTypeLabel(this));
@@ -160,5 +227,16 @@ public class TypeLabel extends OverlayLayout {
 	@Override
 	public BeltPreset getParent() {
 		return (BeltPreset) super.getParent();
+	}
+
+	@Override
+	public void doLayout(double x, double y, double w, double h) {
+		super.doLayout(x, y, w, h);
+
+		if(dualControl != null)
+			dualControl.doLayout(0, 0, w, h);
+
+		if(singleControl != null)
+			singleControl.doLayout(0, 0, w, h);
 	}
 }

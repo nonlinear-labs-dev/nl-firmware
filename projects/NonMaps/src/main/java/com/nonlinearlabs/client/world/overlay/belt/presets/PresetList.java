@@ -212,7 +212,7 @@ public class PresetList extends OverlayLayout {
 	}
 
 	private void scrollTo(BeltPreset p) {
-		if (currentScrollPreset == p || scrollRequest == ScrollRequest.None)
+		if (scrollRequest == ScrollRequest.None)
 			return;
 
 		currentScrollPreset = p;
