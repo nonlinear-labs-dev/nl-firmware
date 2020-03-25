@@ -76,7 +76,8 @@ void GlobalSection::start_base_key(const float _dx, const float _dest)
   m_smoothers.sync(C15::Smoothers::Global_Slow::Scale_Base_Key, 0.0f);
   m_smoothers.start(C15::Smoothers::Global_Slow::Scale_Base_Key, _dx, 1.0f);
 
-  m_signals.set(C15::Signals::Global_Signals::Scale_Base_Key_Pos, baseKeyValue);
+  m_signals.set(C15::Signals::Global_Signals::Scale_Base_Key_Pos,
+                m_smoothers.get(C15::Smoothers::Global_Slow::Scale_Base_Key));
 }
 
 void GlobalSection::render_audio(const float _left, const float _right)
