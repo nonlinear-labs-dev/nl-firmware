@@ -13,151 +13,10 @@
 *******************************************************************************/
 
 #include <c15_config.h>
+#include <algorithm>
 
 // basic smoothing unit
-// - optimization proposal: state-less, no transfer function normalization, event-based application of difference (inside start)
-// - performance gain: currently unknown
-// - current implementation has no more dependancies, only the value remains (reduced x, dx in outer components)
-
-#define ProtoSmoothingImplementation 4
-// up to now
-// 0 - current implementation                          : working, but cpu-intensive
-// proposal 1: don't use, causes trouble, segments race indefinetely (reason currently unknown - concept was tested in js)
-// 1 - proposal 1a - (double conditional, explicit)    : trouble !!!
-// 2 - proposal 1b - (single conditional, index-based) : untested ???
-// proposal 2: keep normalization, but still state-less
-// 3 - proposal 2                                      : working
-// proposal 3: track difference (invert proposal 1 mechanism) - preferred
-// 4 - proposal 3a - (double conditional, explicit)    : working
-// 5 - proposal 3b - (single conditional, index-based) : working
-
-#if ProtoSmoothingImplementation == 0
-// - state-based -> cpu-consumption varies permanently (depending on incoming modulation/edit/recall events)
-// - transfer function normalization (x: 0...1) -> sample-based application of difference (inside render)
-class ProtoSmoother
-{
- public:
-  // smoothed value
-  float m_value = 0.0f;
-  // constructor
-  inline ProtoSmoother()
-  {
-  }
-  // starting a segment (_dx: converted time, _dest: destination)
-  inline void start(const float _dx, const float _dest)
-  {
-    if(_dest != m_value)
-    {
-      m_state = true;
-      m_start = m_value;
-      m_diff = _dest - m_start;
-      m_x = m_dx = _dx;
-    }
-  }
-  // syncing
-  inline void sync(const float _dest)
-  {
-    m_state = false;
-    m_value = _dest;
-  }
-  inline void timeUpdate(const float _dx)
-  {
-    m_dx = _dx;
-  }
-  // rendering
-  inline void render()
-  {
-    if(m_state)
-    {
-      if(m_x >= 1.0f)
-      {
-        m_state = false;
-        m_x = 1.0f;
-      }
-      m_value = m_start + (m_x * m_diff);
-      m_x += m_dx;
-    }
-  }
-  // reset (if needed)
-  inline void reset()
-  {
-    m_state = false;
-    m_value = 0.0f;
-  }
-
- private:
-  // segment-specific private variables
-  float m_start = 0.0f, m_diff = 0.0f, m_x = 0.0f, m_dx = 0.0f;
-  bool m_state = false;
-};
-#elif ProtoSmoothingImplementation < 3
-// - state-less -> cpu-consumption should be static (but may raise by considerable amount...)
-// - no-normalization -> difference is applied once (start, timeUpdate)
-#include <cmath>
-#include "pe_defines_config.h"
-class ProtoSmoother
-{
- public:
-  // smoothed value
-  float m_value = 0.0f;
-  // constructor
-  inline ProtoSmoother()
-  {
-  }
-  // starting a segment (_dx: converted time, _dest: destination)
-  inline void start(const float _dx, const float _dest)
-  {
-    if(_dest != m_value)
-    {
-      m_dest = _dest;
-      m_diff = _dest - m_value;
-      timeUpdate(_dx);
-      m_x = m_value + m_dx;
-    }
-  }
-  // syncing
-  inline void sync(const float _dest)
-  {
-    m_x = m_dest = m_value = _dest;
-    m_dx = m_diff = 0.0f;
-  }
-  inline void timeUpdate(const float _dx)
-  {
-    m_dx = m_diff * _dx;
-  }
-  // rendering
-  inline void render()
-  {
-    const float abs = std::abs(m_x - m_dest);  // tricky part: we now have to pay attention to the current direction ...
-    const bool condition = abs < 1e-9f;        // ... and decide if value is close enough to segment destination
-#if ProtoSmoothingImplementation == 1
-    // variation 1a: evaluate condition twice
-    m_value = condition ? m_dest : m_x;  // value is destination when segment is finished
-    m_x += condition ? 0.0f : m_dx;  // x gets constant when segment is finished (to prevent m_x raising indefinetely)
-#elif ProtoSmoothingImplementation == 2
-    // variation 1b: evaluate condition once for index
-    const uint32_t index = condition ? 1 : 0;
-    m_value = *(m_transfer_value[index]);
-    m_x += *(m_transfer_dx[index]);
-#endif
-  }
-  // reset (if needed)
-  inline void reset()
-  {
-    sync(0.0f);
-  }
-
- private:
-  // segment-specific private variables
-#if ProtoSmoothingImplementation == 2
-  float m_zero = 0.0f;
-  float* m_transfer_value[2] = { &m_x, &m_dest };
-  float* m_transfer_dx[2] = { &m_dx, &m_zero };
-#endif
-  float m_diff = 0.0f, m_dest = 0.0f, m_x = 0.0f, m_dx = 0.0f;
-};
-#elif ProtoSmoothingImplementation == 3
-// state-less, but normalized
+// - state-less, but normalized
 class ProtoSmoother
 {
  public:
@@ -190,7 +49,7 @@ class ProtoSmoother
   // rendering
   inline void render()
   {
-    m_x = m_x < 1.0f ? m_x : 1.0f;
+    m_x = std::min(m_x, 1.0f);
     m_value = m_start + (m_x * m_diff);
     m_x += m_dx;  // x should stay bound (x > 1 && x < 2)
   }
@@ -204,72 +63,6 @@ class ProtoSmoother
   // segment-specific private variables
   float m_start = 0.0f, m_diff = 0.0f, m_x = 0.0f, m_dx = 0.0f;
 };
-#elif ProtoSmoothingImplementation > 3
-// state-less, not normalized, tracking (growing) difference - requires std::abs again
-#include <cmath>
-class ProtoSmoother
-{
- public:
-  // smoothed value
-  float m_value = 0.0f;
-  inline ProtoSmoother()
-  {
-  }
-  // starting a segment (_dx: converted time, _dest: destination)
-  inline void start(const float _dx, const float _dest)
-  {
-    if(_dest != m_value)
-    {
-      m_start = m_value;
-      m_dest = _dest;
-      m_diff = m_dest - m_start;
-      m_diff_abs = std::abs(m_diff);
-      timeUpdate(_dx);
-      m_x = m_value + m_dx;
-    }
-  }
-  // syncing
-  inline void sync(const float _dest)
-  {
-    m_start = m_dest = m_x = m_value = _dest;
-    m_x = m_dx = m_diff = m_diff_abs = 0.0f;
-  }
-  inline void timeUpdate(const float _dx)
-  {
-    m_dx = m_diff * _dx;
-  }
-  // rendering
-  inline void render()
-  {
-    const float abs = std::abs(m_x - m_start);  // tricky part: cover transition direction ...
-    const bool condition = abs > m_diff_abs;    // ... and decide if value crossed boundary
-#if ProtoSmoothingImplementation == 4
-    // variation 3a: evaluate condition twice
-    m_value = condition ? m_dest : m_x;  // value is destination when segment is finished
-    m_x += condition ? 0.0f : m_dx;  // x gets constant when segment is finished (to prevent m_x raising indefinetely)
-#elif ProtoSmoothingImplementation == 5
-    // variation 3b: evaluate condition once for index
-    const uint32_t index = condition ? 1 : 0;
-    m_value = *(m_transfer_value[index]);
-    m_x += *(m_transfer_dx[index]);
-#endif
-  }
-  // reset (if needed)
-  inline void reset()
-  {
-    sync(0.0f);
-  }
-
- private:
-  // segment-specific private variables
-#if ProtoSmoothingImplementation == 5
-  float m_zero = 0.0f;
-  float* m_transfer_value[2] = { &m_x, &m_dest };
-  float* m_transfer_dx[2] = { &m_dx, &m_zero };
-#endif
-  float m_start = 0.0f, m_dest = 0.0f, m_diff = 0.0f, m_diff_abs = 0.0f, m_x = 0.0f, m_dx = 0.0f;
-};
-#endif
 
 // smoother copy handle (for parameter smoothers that directly translate to signals)
 template <uint32_t Length> struct SmootherCopyHandle
