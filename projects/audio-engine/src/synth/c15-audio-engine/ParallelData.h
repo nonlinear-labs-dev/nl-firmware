@@ -355,31 +355,7 @@ template <typename T, size_t size> inline T sumUp(const ParallelData<T, size> &i
 template <typename T, size_t size>
 inline ParallelData<int32_t, size> phaseIsEdge(const ParallelData<T, size> &absolute_phase_difference)
 {
-  ParallelData<int32_t, size> ret;
+  const auto ret = (absolute_phase_difference > 0.5f) * static_cast<uint32_t>(-1);
 
-  for(size_t i = 0; i < size; i++)
-  {
-    if(absolute_phase_difference[i] > 0.5f)
-    {
-      ret[i] = 1;
-    }
-    else
-    {
-      ret[i] = 0;
-    }
-  }
-
-  return ret;
-}
-
-template <typename TOut, typename T, size_t size> ParallelData<TOut, size> poly_cast(const ParallelData<T, size> &in)
-{
-  ParallelData<TOut, size> ret;
-
-  for(size_t i = 0; i < size; i++)
-  {
-    ret[i] = static_cast<TOut>(in[i]);
-  }
-
-  return ret;
+  return static_cast<ParallelData<int32_t, size>>(ret);
 }
