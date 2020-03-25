@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.overlay.belt.presets;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -98,6 +99,11 @@ public class LoadModeMenu extends OverlayLayout {
             requestLayout();
             return true;
         });
+
+        EditBufferModel.get().voiceGroup.onChange((vg) -> {
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return true;
+		});
 
         addChild(loadButton = new DirectLoadButton(this));
         addChild(partButton = new LoadToPartButton(this));

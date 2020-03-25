@@ -17,6 +17,8 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
@@ -53,8 +55,8 @@ public class PresetManager extends MapsLayout {
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
 	private StoreSelectMode m_storeSelectMode = null;
-	private LoadToPartMode m_loadToPartMode = null;
-	private LoadToPartModeNotifier m_loadToPartNotifier = null;
+	private LoadToPartMode m_loadToPartMode[] = null;
+	private LoadToPartModeNotifier m_loadToPartNotifier[] = null;
 	private Tape attachingTapes[] = new Tape[2];
 
 	private static NonRect oldView = null;
@@ -121,7 +123,13 @@ public class PresetManager extends MapsLayout {
 			return true;
 		});
 
-		m_loadToPartNotifier = new LoadToPartModeNotifier();
+		m_loadToPartMode = new LoadToPartMode[2];
+		m_loadToPartMode[0] = null;
+		m_loadToPartMode[1] = null;
+
+		m_loadToPartNotifier = new LoadToPartModeNotifier[2];
+		m_loadToPartNotifier[0] = new LoadToPartModeNotifier();
+		m_loadToPartNotifier[1] = new LoadToPartModeNotifier();
 	}
 
 	public StoreSelectMode getStoreSelectMode() {
@@ -150,33 +158,38 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public LoadToPartMode getLoadToPartMode() {
-		return m_loadToPartMode;
+		VoiceGroup current = EditBufferModel.get().voiceGroup.getValue();
+		return m_loadToPartMode[current.ordinal()];
 	}
 
 	public boolean isInLoadToPartMode() {
-		return m_loadToPartMode != null;
+		VoiceGroup current = EditBufferModel.get().voiceGroup.getValue();
+		return m_loadToPartMode[current.ordinal()] != null;
 	}
 
 	public void onLoadToPartModeToggled(Function<Void, Boolean> cb) {
-		m_loadToPartNotifier.onChange(cb);
+		VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+		m_loadToPartNotifier[vg.ordinal()].onChange(cb);
 	}
 
 	public void startLoadToPartMode() {
-		if(m_loadToPartMode == null) {
+		if(isInLoadToPartMode()) {
 			if(!isEmpty()) {
-				m_loadToPartMode = new LoadToPartMode(this);
-				m_loadToPartMode.updateUI();
-				m_loadToPartNotifier.notifyChanges();
+				VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+				m_loadToPartMode[vg.ordinal()] = new LoadToPartMode(this);
+				m_loadToPartMode[vg.ordinal()].updateUI();
+				m_loadToPartNotifier[vg.ordinal()].notifyChanges();
 			}
 		}
 	}
 	
 	public void endLoadToPartMode() {
 		if(m_loadToPartMode != null) {
-			LoadToPartMode tmp = m_loadToPartMode;
-			m_loadToPartMode = null;
+			VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+			LoadToPartMode tmp = m_loadToPartMode[vg.ordinal()];
+			m_loadToPartMode[vg.ordinal()] = null;
 			tmp.updateUI();
-			m_loadToPartNotifier.notifyChanges();
+			m_loadToPartNotifier[vg.ordinal()].notifyChanges();
 		}
 	}
 
@@ -580,7 +593,7 @@ public class PresetManager extends MapsLayout {
 			return m_storeSelectMode.canNext();
 
 		if(isInLoadToPartMode())
-			return m_loadToPartMode.canNext();
+			return getLoadToPartMode().canNext();
 
 		Preset p = findSelectedPreset();
 		if (p != null) {
@@ -596,7 +609,7 @@ public class PresetManager extends MapsLayout {
 			return m_storeSelectMode.canPrev();
 
 		if (isInLoadToPartMode())
-			return m_loadToPartMode.canPrev();
+			return getLoadToPartMode().canPrev();
 
 		Preset p = findSelectedPreset();
 		if (p != null) {
