@@ -54,12 +54,6 @@ template <size_t Size> class ProtoSmoother
     m_x += m_dx;  // x should stay bound (x > 1 && x < 2)
   }
 
-  // reset (if needed)
-  inline void reset(int idx)
-  {
-    sync(idx, 0.0f);
-  }
-
  private:
   // segment-specific private variables
   ParallelData<float, Size> m_start { 0.0f };
@@ -166,14 +160,6 @@ template <class Sync, class Audio, class Fast, class Slow> class SmootherHandle
   inline float get(const Slow _id)
   {
     return m_slow.m_value[static_cast<uint32_t>(_id)];
-  }
-  // reset method (if needed)
-  inline void reset()
-  {
-    m_sync = 0.0f;
-    m_audio.reset();
-    m_fast.reset();
-    m_slow.reset();
   }
 
   inline void sync(Slow id, float v)
