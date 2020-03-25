@@ -56,6 +56,8 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		if (this.mapsPreset != mapsPreset) {
 			this.mapsPreset = mapsPreset;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			if(type != null)
+				type.bruteForce();
 		}
 	}
 
@@ -91,10 +93,22 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
 	}
 
+	private boolean isSelected() {
+		if(isInLoadPartMode())
+			return getLoadPartMode().getSelectedPreset() == mapsPreset;
+		return mapsPreset.isSelected();
+	}
+
+	private boolean isLoaded() {
+		if(isInLoadPartMode())
+			return false;
+		return mapsPreset.isLoaded();
+	}
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		boolean loaded = mapsPreset.isLoaded() && !mapsPreset.isInStoreSelectMode();
-		boolean selected = mapsPreset.isSelected() || mapsPreset.isContextMenuActiveOnMe();
+		boolean loaded = isLoaded() && !mapsPreset.isInStoreSelectMode();
+		boolean selected = isSelected() || mapsPreset.isContextMenuActiveOnMe();
 		boolean isOriginalPreset = false;
 
 		if (isInStoreMode()) {

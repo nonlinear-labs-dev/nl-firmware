@@ -816,6 +816,11 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public Preset findSelectedPreset() {
+
+		if(isInLoadToPartMode()) {
+			return getLoadToPartMode().getSelectedPreset();
+		}
+
 		Bank b = findBank(getSelectedBank());
 		if (b != null)
 			return b.getPresetList().findPreset(b.getPresetList().getSelectedPreset());

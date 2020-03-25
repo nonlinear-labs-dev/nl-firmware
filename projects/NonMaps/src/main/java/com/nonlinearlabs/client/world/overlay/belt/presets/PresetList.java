@@ -4,8 +4,10 @@ import java.util.Iterator;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Animator;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ClipContext;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
@@ -272,9 +274,22 @@ public class PresetList extends OverlayLayout {
 		scrollRequest = ScrollRequest.None;
 	}
 
+	private boolean isInLoadToPartMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode();
+	}
+
+	private LoadToPartMode getLoadToPartMode() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
+	}
+
 	private BeltPreset findSelectedPreset() {
 		for (OverlayControl c : getChildren()) {
 			BeltPreset p = (BeltPreset) c;
+
+			if(isInLoadToPartMode())
+				if(getLoadToPartMode().getSelectedPreset() == p.getMapsPreset())
+					return p;
+
 			if (p.getMapsPreset().isSelected())
 				return p;
 		}

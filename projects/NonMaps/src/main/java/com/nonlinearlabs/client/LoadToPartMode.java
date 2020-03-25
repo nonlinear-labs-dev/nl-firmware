@@ -44,6 +44,10 @@ public class LoadToPartMode {
 		return selectedPreset;
 	}
 
+	public VoiceGroup getSelectedPart() {
+		return selectedVoiceGroup;
+	}
+
 	public boolean canNext() {
 		if (selectedPreset != null)
 			return selectedPreset.getNumber() < selectedPreset.getParent().getPresetList().getPresetCount();
