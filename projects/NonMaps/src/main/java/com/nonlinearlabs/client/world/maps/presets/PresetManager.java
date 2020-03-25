@@ -46,10 +46,6 @@ import com.nonlinearlabs.client.world.overlay.belt.EditBufferDraggingButton;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
-import com.nonlinearlabs.client.presenters.EditBufferPresenter;
-import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
-
-
 public class PresetManager extends MapsLayout {
 
 	private String selectedBank;
@@ -58,9 +54,9 @@ public class PresetManager extends MapsLayout {
 	private MultiplePresetSelection multiSelection;
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
-	private StoreSelectMode m_storeSelectMode = null;
-	private LoadToPartMode m_loadToPartMode = null;
-	private LoadToPartModeNotifier m_loadToPartNotifier = null;
+	private StoreSelectMode storeSelectMode = null;
+	private LoadToPartMode loadToPartMode = null;
+	private LoadToPartModeNotifier loadToPartNotifier = null;
 	private Tape attachingTapes[] = new Tape[2];
 
 	private static NonRect oldView = null;
@@ -127,60 +123,60 @@ public class PresetManager extends MapsLayout {
 			return true;
 		});
 
-		m_loadToPartMode = null;
-		m_loadToPartNotifier = new LoadToPartModeNotifier();
+		loadToPartMode = null;
+		loadToPartNotifier = new LoadToPartModeNotifier();
 	}
 
 	public StoreSelectMode getStoreSelectMode() {
-		return m_storeSelectMode;
+		return storeSelectMode;
 	}
 
 	public boolean isInStoreSelectMode() {
-		return m_storeSelectMode != null;
+		return storeSelectMode != null;
 	}
 
 	public void startStoreSelectMode() {
-		if (m_storeSelectMode == null) {
+		if (storeSelectMode == null) {
 			if (isEmpty() == false) {
-				m_storeSelectMode = new StoreSelectMode(this);
-				m_storeSelectMode.updateUI();
+				storeSelectMode = new StoreSelectMode(this);
+				storeSelectMode.updateUI();
 			}
 		}
 	}
 
 	public void endStoreSelectMode() {
-		if (m_storeSelectMode != null) {
-			StoreSelectMode tmp = m_storeSelectMode;
-			m_storeSelectMode = null;
+		if (storeSelectMode != null) {
+			StoreSelectMode tmp = storeSelectMode;
+			storeSelectMode = null;
 			tmp.updateUI();
 		}
 	}
 
 	public LoadToPartMode getLoadToPartMode() {
-		return m_loadToPartMode;
+		return loadToPartMode;
 	}
 
 	public boolean isInLoadToPartMode() {
-		return m_loadToPartMode != null;
+		return loadToPartMode != null;
 	}
 
 	public void onLoadToPartModeToggled(Function<Void, Boolean> cb) {
-		m_loadToPartNotifier.onChange(cb);
+		loadToPartNotifier.onChange(cb);
 	}
 
 	public void startLoadToPartMode() {
 		if(!isEmpty()) {
-			m_loadToPartMode = new LoadToPartMode(this);
-			m_loadToPartNotifier.notifyChanges();
-			m_loadToPartMode.updateUI();
+			loadToPartMode = new LoadToPartMode(this);
+			loadToPartNotifier.notifyChanges();
+			loadToPartMode.updateUI();
 		}
 	}
 	
 	public void endLoadToPartMode() {
-		if(m_loadToPartMode != null) {
-			LoadToPartMode tmp = m_loadToPartMode;
-			m_loadToPartMode = null;
-			m_loadToPartNotifier.notifyChanges();
+		if(loadToPartMode != null) {
+			LoadToPartMode tmp = loadToPartMode;
+			loadToPartMode = null;
+			loadToPartNotifier.notifyChanges();
 			tmp.updateUI();
 		}
 	}
@@ -582,7 +578,7 @@ public class PresetManager extends MapsLayout {
 
 	public boolean canNext() {
 		if (isInStoreSelectMode())
-			return m_storeSelectMode.canNext();
+			return storeSelectMode.canNext();
 
 		if(isInLoadToPartMode())
 			return getLoadToPartMode().canNext();
@@ -598,7 +594,7 @@ public class PresetManager extends MapsLayout {
 
 	public boolean canPrev() {
 		if (isInStoreSelectMode())
-			return m_storeSelectMode.canPrev();
+			return storeSelectMode.canPrev();
 
 		if (isInLoadToPartMode())
 			return getLoadToPartMode().canPrev();
