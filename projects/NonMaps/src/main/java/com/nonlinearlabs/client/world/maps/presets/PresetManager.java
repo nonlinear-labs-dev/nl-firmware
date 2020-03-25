@@ -828,7 +828,7 @@ public class PresetManager extends MapsLayout {
 		if(isInLoadToPartMode()) {
 			LoadToPartMode selection = getLoadToPartMode();
 			VoiceGroup currentVoiceGroup = EditBufferModel.get().voiceGroup.getValue();
-			NonMaps.get().getServerProxy().loadPresetPartIntoPart(selection.getSelectedPreset().getUUID(), selection.getSelectedPart(), currentVoiceGroup);
+			EditBufferUseCases.get().loadPresetPartIntoPart(selection.getSelectedPreset().getUUID(), selection.getSelectedPart(), currentVoiceGroup);
 		}
 	}
 

@@ -411,6 +411,10 @@ public class EditBufferUseCases {
 		NonMaps.theMaps.getServerProxy().loadPresetIntoPart(uuid, loadTo);
 	}
 
+	public void loadPresetPartIntoPart(String uuid, VoiceGroup from, VoiceGroup to) {
+		NonMaps.get().getServerProxy().loadPresetPartIntoPart(uuid, from, to);
+	}
+
 	public void initializePart() {
 		NonMaps.get().getServerProxy().initPart(EditBufferModel.get().voiceGroup.getValue());
 	}

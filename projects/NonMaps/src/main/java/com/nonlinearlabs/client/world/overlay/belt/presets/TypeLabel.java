@@ -104,13 +104,11 @@ public class TypeLabel extends OverlayLayout {
 				double height = pix.getHeight() / 2;
 				double width = pix.getWidth();
 
-				if(iLoaded) {
-					ctx.setFillStyle("green");
-					ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
-				} else if(iiLoaded) {	
-					ctx.setFillStyle("green");
-					ctx.fillRect(pix.getLeft(), pix.getTop() + height, width, height);
-				}
+				ctx.setFillStyle(iLoaded ? "green" : "gray");
+				ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
+
+				ctx.setFillStyle(iiLoaded ? "green" : "gray");
+				ctx.fillRect(pix.getLeft(), pix.getTop() + height, width, height);
 
 				if(iSelected) {
 					ctx.setStrokeStyle("white");
@@ -134,10 +132,8 @@ public class TypeLabel extends OverlayLayout {
 
 				Rect pix = getParent().getPixRect().copy();
 
-				if(isLoaded) {
-					ctx.setFillStyle("green");
-					ctx.fillRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
-				}
+				ctx.setFillStyle(isLoaded ? "green" : "gray");
+				ctx.fillRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
 
 				if(isPresetSelected) {
 					ctx.setStrokeStyle("white");
@@ -167,13 +163,11 @@ public class TypeLabel extends OverlayLayout {
 				double height = pix.getHeight();
 				double width = pix.getWidth() / 2;
 
-				if(iLoaded) {
-					ctx.setFillStyle("green");
-					ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
-				} else if(iiLoaded) {	
-					ctx.setFillStyle("green");
-					ctx.fillRect(pix.getLeft() + width, pix.getTop(), width, height);
-				}
+				ctx.setFillStyle(iLoaded ? "green" : "gray");
+				ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
+
+				ctx.setFillStyle(iiLoaded ? "green" : "gray");
+				ctx.fillRect(pix.getLeft() + width, pix.getTop(), width, height);
 
 				if(iSelected) {
 					ctx.setStrokeStyle("white");

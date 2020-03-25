@@ -481,13 +481,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void load() {
-		boolean loadToPart = getParent().getParent().isInLoadToPartMode();
-		if (loadToPart) {
+		VoiceGroup vg = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
+		LoadToPartMode loadToPart = getParent().getParent().getLoadToPartMode();
+		if (loadToPart != null) {
 			if (type != SoundType.Single) {
-				ChoosePresetPartDialog d = new ChoosePresetPartDialog();
-				d.show();
+				EditBufferUseCases.get().loadPresetPartIntoPart(loadToPart.getSelectedPreset().getUUID(), loadToPart.getSelectedPart(), vg);
 			} else {
-				VoiceGroup vg = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
 				EditBufferUseCases.get().loadSinglePresetIntoPart(getUUID(), vg);
 			}
 		} else {
