@@ -138,7 +138,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
 
-  auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
+  auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
   if(isDualEB && HWUIHelper::isLoadToPartActive())
     m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),

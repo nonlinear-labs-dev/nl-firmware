@@ -37,7 +37,6 @@ void BankButton::bruteForce()
 {
   clear();
 
-  auto type = getSoundType();
   auto mode = Application::get().getHWUI()->getFocusAndMode().mode;
 
   switch(getSoundType())
@@ -57,8 +56,9 @@ void BankButton::bruteForce()
 
 void BankButton::installSingle()
 {
+  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
   auto bankbutton = addControl(new Button("Bank", { 0, 12, 58, 11 }));
-  bankbutton->setHighlight(m_bankFocus);
+  bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
   auto toggleBankFocus = [this] {
     if(m_bankFocus)
@@ -72,8 +72,9 @@ void BankButton::installSingle()
 
 void BankButton::installDual()
 {
+  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
   auto bankbutton = addControl(new Button("Bank", { 4, 0, 50, 11 }));
-  bankbutton->setHighlight(m_bankFocus);
+  bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
   addControl(new Button("I / II", { 0, 12, 58, 11 }));
 
@@ -85,5 +86,6 @@ void BankButton::installDual()
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(
-      [this] { Application::get().getHWUI()->toggleCurrentVoiceGroup(); }, toggleBankFocus);
+      [this] { Application::get().getHWUI()->toggleCurrentVoiceGroup(); },
+      toggleBankFocus);
 }
