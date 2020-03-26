@@ -393,10 +393,15 @@ public class EditBufferUseCases {
 	}
 
 	public void toggleDirectLoad() {
-		if(SetupModel.get().systemSettings.directLoad.getBool())
+		if(SetupModel.get().systemSettings.directLoad.getBool()) {
+			SetupModel.get().systemSettings.directLoad.setValue(false);
 			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "off");
-		else
+
+		}
+		else {
+			SetupModel.get().systemSettings.directLoad.setValue(true);
 			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "on");
+		}
 	}
 
 	public void loadPreset(String uuid) {
