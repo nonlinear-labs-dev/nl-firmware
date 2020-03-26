@@ -4,7 +4,9 @@
 #include "io/RingBuffer.h"
 
 #include <memory>
+#include <vector>
 #include <chrono>
+#include <tuple>
 
 class MidiInput;
 class AudioOutput;
@@ -21,7 +23,9 @@ class Synth
 
   const AudioOutput *getAudioOut() const;
 
-  virtual double measurePerformance(std::chrono::seconds time);
+  using AudioBlock = std::vector<SampleFrame>;
+  using RealtimeFactor = double;
+  std::tuple<AudioBlock, RealtimeFactor> measurePerformance(std::chrono::seconds time);
   void resetPerformance();
 
   void checkFiniteness(SampleFrame *target, size_t numFrames);

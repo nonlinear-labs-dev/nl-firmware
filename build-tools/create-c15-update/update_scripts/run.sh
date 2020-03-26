@@ -164,8 +164,8 @@ main() {
     stop_services
 
     epc_update
-    bbb_update
-    lpc_update
+    //bbb_update
+    //lpc_update
 
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt

@@ -9,6 +9,7 @@
 #include <presets/EditBuffer.h>
 #include <giomm.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
+#include <fstream>
 
 class UpdateDocumentMasterMock : public UpdateDocumentMaster
 {
@@ -30,7 +31,7 @@ SCENARIO("CPU Usage is constant")
   UpdateDocumentMasterMock updateDocMaster;
   UNDO::Scope undoScope(&updateDocMaster);
 
-  auto presetData = getSourceDir() + "/projects/acceptance-tests/test-data/performance-test.binary";
+  auto presetData = getSourceDir() + "/projects/acceptance-tests/test-data";
   auto file = Gio::File::create_for_path(presetData);
   auto transactionScope = undoScope.startTransaction("load");
   auto transaction = transactionScope->getTransaction();
@@ -38,6 +39,7 @@ SCENARIO("CPU Usage is constant")
   PresetManager pm(&updateDocMaster, true);
   EditBuffer editBuffer(&pm);
   Preset preset(&pm);
+  preset.setUuid(transaction, "3c830098-c38b-461c-aa55-2548960c9064");
   preset.load(transaction, file);
   editBuffer.copyFrom(transaction, &preset);
 
@@ -54,31 +56,37 @@ SCENARIO("CPU Usage is constant")
     case SoundType::Layer:
       synth->onLayerPresetMessage(AudioEngineProxy::createLayerEditBufferMessage(editBuffer));
       break;
+
+    default:
+      break;
   }
 
-  auto perfWithoutNote = synth->measurePerformance(1s);
+  auto dump = [](auto &data, auto fileName) {
+    std::ofstream file(fileName);
+    auto &audioBlock = std::get<0>(data);
+    file.write(reinterpret_cast<const char *>(audioBlock.data()),
+               static_cast<std::streamsize>(audioBlock.size() * sizeof(SampleFrame)));
+  };
+
+  auto withoutNote = synth->measurePerformance(1s);
+  dump(withoutNote, "/tmp/withoutNote.raw");
 
   GIVEN("notes are played")
   {
-    constexpr auto numNotes = 20;
-    for(int i = 0; i < numNotes; i++)
-      synth->simulateKeyDown(50 + i);
-
-    auto perfWithNote = synth->measurePerformance(1s);
+    synth->simulateKeyDown(50);
+    auto withNote = synth->measurePerformance(4s);
+    dump(withNote, "/tmp/withNote.raw");
 
     WHEN("audio decays")
     {
-      constexpr auto numNotes = 20;
-      for(int i = 0; i < numNotes; i++)
-        synth->simulateKeyUp(50 + i);
+      synth->simulateKeyUp(50);
 
-      auto perfInReleasePhase = synth->measurePerformance(1s);
-
-      THEN("CPU usage is still the same after 10 sec")
+      THEN("CPU usage is still the same after some sec")
       {
-        synth->measurePerformance(60s);
-        auto perfAfterReleasePhase = synth->measurePerformance(1s);
-        nltools::Log::notify(perfWithoutNote, perfWithNote, perfInReleasePhase, perfAfterReleasePhase);
+        synth->measurePerformance(30s);
+        auto longAfterRelease = synth->measurePerformance(1s);
+        dump(longAfterRelease, "/tmp/afterRelease.raw");
+        nltools::Log::notify(std::get<1>(withoutNote), std::get<1>(longAfterRelease));
         nltools::Log::notify("samples rendered:", synth->getRenderedSamples());
       }
     }

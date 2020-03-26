@@ -60,7 +60,7 @@ int main(int args, char *argv[])
   {
     auto synth = std::make_unique<C15Synth>(theOptions.get());
     synth->measurePerformance(std::chrono::seconds(5));  // warm up
-    auto result = synth->measurePerformance(std::chrono::seconds(5));
+    auto result = std::get<1>(synth->measurePerformance(std::chrono::seconds(5)));
     nltools::Log::info("Audio engine performs at", result, "x realtime.");
     return EXIT_SUCCESS;
   }

@@ -46,14 +46,15 @@ const AudioOutput *Synth::getAudioOut() const
   return m_out.get();
 }
 
-double Synth::measurePerformance(std::chrono::seconds time)
+std::tuple<Synth::AudioBlock, Synth::RealtimeFactor> Synth::measurePerformance(std::chrono::seconds time)
 {
   auto start = std::chrono::high_resolution_clock::now();
-  auto numSamples = static_cast<size_t>(time.count() * getOptions()->getSampleRate());
-  std::vector<SampleFrame> samples(numSamples);
-  doAudio(samples.data(), numSamples);
+  auto todo = static_cast<size_t>(time.count() * getOptions()->getSampleRate());
+  std::vector<SampleFrame> samples(todo);
+  doAudio(samples.data(), todo);
+
   auto timeUsed = std::chrono::high_resolution_clock::now() - start;
-  return 1.0 * time / timeUsed;
+  return { std::move(samples), 1.0 * time / timeUsed };
 }
 
 void Synth::resetPerformance()
