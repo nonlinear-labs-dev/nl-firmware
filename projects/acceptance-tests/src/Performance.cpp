@@ -79,6 +79,7 @@ SCENARIO("CPU Usage is constant")
         synth->measurePerformance(60s);
         auto perfAfterReleasePhase = synth->measurePerformance(1s);
         nltools::Log::notify(perfWithoutNote, perfWithNote, perfInReleasePhase, perfAfterReleasePhase);
+        nltools::Log::notify("samples rendered:", synth->getRenderedSamples());
       }
     }
   }

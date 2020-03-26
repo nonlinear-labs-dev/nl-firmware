@@ -1133,6 +1133,7 @@ void dsp_host_dual::render()
   // - final: main out, output mute
   m_mainOut_L = m_global.m_out_l * mute;
   m_mainOut_R = m_global.m_out_r * mute;
+  m_sample_counter += SAMPLE_COUNT;
 }
 
 void dsp_host_dual::reset()
