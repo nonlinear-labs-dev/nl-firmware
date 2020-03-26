@@ -52,6 +52,7 @@ class C15Synth : public Synth, public sigc::trackable
 
   void simulateKeyDown(int key);
   void simulateKeyUp(int key);
+  unsigned int getRenderedSamples();
 
  private:
   std::unique_ptr<dsp_host_dual> m_dsp;

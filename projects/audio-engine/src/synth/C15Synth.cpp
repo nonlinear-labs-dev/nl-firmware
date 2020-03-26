@@ -58,12 +58,21 @@ void C15Synth::doMidi(const MidiEvent& event)
 
 void C15Synth::simulateKeyDown(int key)
 {
-  m_dsp->onRawMidiMessage(1 << 4, static_cast<uint32_t>(key), 100);
+  //  m_dsp->onRawMidiMessage(1 << 4, static_cast<uint32_t>(key), 100);
+  m_dsp->onMidiMessage(0xED, 0, static_cast<uint32_t>(key));  // LPC keyPos
+  m_dsp->onMidiMessage(0xEE, 127, 127);                       // LPC keyDown (vel: 100%)
 }
 
 void C15Synth::simulateKeyUp(int key)
 {
-  m_dsp->onRawMidiMessage(0, static_cast<uint32_t>(key), 0);
+  //  m_dsp->onRawMidiMessage(0, static_cast<uint32_t>(key), 0);
+  m_dsp->onMidiMessage(0xED, 0, static_cast<uint32_t>(key));  // LPC keyPos
+  m_dsp->onMidiMessage(0xEF, 127, 127);                       // LPC keyUp (vel: 100%)
+}
+
+unsigned int C15Synth::getRenderedSamples()
+{
+  return m_dsp->m_sample_counter;
 }
 
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)
