@@ -10,6 +10,8 @@ namespace UNDO
   class Transaction;
 }
 
+class EditBuffer;
+
 class AudioEngineProxy
 {
  public:
@@ -39,9 +41,9 @@ class AudioEngineProxy
 
   void toggleSuppressParameterChanges(UNDO::Transaction* transaction);
 
-  static nltools::msg::LayerPresetMessage createLayerEditBufferMessage();
-  static nltools::msg::SplitPresetMessage createSplitEditBufferMessage();
-  static nltools::msg::SinglePresetMessage createSingleEditBufferMessage();
+  static nltools::msg::LayerPresetMessage createLayerEditBufferMessage(const EditBuffer& eb);
+  static nltools::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);
+  static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
   bool m_suppressParamChanges = false;

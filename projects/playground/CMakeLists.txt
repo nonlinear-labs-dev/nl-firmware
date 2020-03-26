@@ -41,7 +41,6 @@ OPTION(DSL_LAYOUTS "Enable experimental and not yet working DSL for HWUI layouts
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
-  add_subdirectory(src/third-party)
 ENDIF(DEV_PC)
 
 IF(PROFILING)
@@ -102,6 +101,7 @@ target_link_libraries(${BINARY_NAME} PRIVATE ${LIB_NAME})
 
 ## TEST BINARY
 add_executable(${TEST_BINARY_NAME} ${${TEST_BINARY_NAME}_SOURCES})
+target_include_directories(${TEST_BINARY_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/third-party/include)
 target_link_libraries(${TEST_BINARY_NAME} PRIVATE ${LIB_NAME})
 
 # TESTS

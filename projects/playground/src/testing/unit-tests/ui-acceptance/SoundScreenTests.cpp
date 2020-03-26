@@ -1,4 +1,4 @@
-#include <third-party/include/catch.hpp>
+#include <catch.hpp>
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>

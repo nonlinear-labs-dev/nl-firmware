@@ -8,11 +8,12 @@
 
 class MidiInput;
 class AudioOutput;
+class AudioEngineOptions;
 
 class Synth
 {
  public:
-  Synth();
+  Synth(const AudioEngineOptions *options);
   virtual ~Synth();
 
   void start();
@@ -24,6 +25,7 @@ class Synth
   void resetPerformance();
 
   void checkFiniteness(SampleFrame *target, size_t numFrames);
+  const AudioEngineOptions *getOptions() const;
 
  protected:
   virtual void doMidi(const MidiEvent &event) = 0;
@@ -40,4 +42,5 @@ class Synth
   std::unique_ptr<MidiInput> m_in;
   std::unique_ptr<AudioOutput> m_out;
   RingBuffer<MidiEvent, 2048> m_midiRingBuffer;
+  const AudioEngineOptions *m_options;
 };

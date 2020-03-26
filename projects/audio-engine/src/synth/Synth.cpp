@@ -4,23 +4,22 @@
 #include "io/midi/AlsaMidiInput.h"
 #include "io/midi/MidiInputMock.h"
 #include <nltools/logging/Log.h>
-#include "Options.h"
-#include "main.h"
-
+#include "AudioEngineOptions.h"
 #include <iostream>
 #include <chrono>
 #include <cmath>
 
-Synth::Synth()
+Synth::Synth(const AudioEngineOptions *options)
+    : m_options(options)
 {
-  auto options = getOptions();
   auto inDeviceName = options->getMidiInputDeviceName();
   auto outDeviceName = options->getAudioOutputDeviceName();
 
   if(outDeviceName.empty())
     m_out = std::make_unique<AudioOutputMock>();
   else
-    m_out = std::make_unique<AlsaAudioOutput>(outDeviceName, [=](auto buf, auto length) { process(buf, length); });
+    m_out = std::make_unique<AlsaAudioOutput>(options, outDeviceName,
+                                              [=](auto buf, auto length) { process(buf, length); });
 
   if(inDeviceName.empty())
     m_in = std::make_unique<MidiInputMock>([=](auto) {});
@@ -92,6 +91,11 @@ void Synth::checkFiniteness(SampleFrame *target, size_t numFrames)
       resetDSP();
     }
   }
+}
+
+const AudioEngineOptions *Synth::getOptions() const
+{
+  return m_options;
 }
 
 void Synth::processAudioWithoutTimestampedMidi(SampleFrame *target, size_t numFrames)
