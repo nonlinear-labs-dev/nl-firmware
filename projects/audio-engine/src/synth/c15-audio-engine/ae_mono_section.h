@@ -60,7 +60,8 @@ class MonoSection
   NlToolbox::Curves::Shaper_1_BP m_reverb_color_curve_1, m_reverb_color_curve_2;
   stereo_lfo m_flanger_lfo;
   const float m_flanger_norm_phase = 1.0f / 360.0f, m_cabinet_tilt_floor = 2.e-20f, m_delay_norm_stereo = 1.0f / 99.0f;
-  float m_samplerate, m_reciprocal_samplerate, m_nyquist, m_millisecond, m_flanger_rate_to_decay = 0.55f;
+  float m_samplerate = 0.0f, m_reciprocal_samplerate = 0.0f, m_nyquist = 0.0f, m_millisecond = 0.0f,
+        m_flanger_rate_to_decay = 0.55f;
   float evalNyquist(const float _value);
   void postProcess_audio();
   void postProcess_fast();
