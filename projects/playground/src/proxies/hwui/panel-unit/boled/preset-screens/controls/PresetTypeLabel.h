@@ -8,7 +8,6 @@ class SinglePresetTypeLabel : public PresetLabel
 {
  public:
   explicit SinglePresetTypeLabel(const Rect& r);
-  void drawBackground(FrameBuffer& fb) override;
 
   void update(const Preset* newPreset);
 };
@@ -42,8 +41,8 @@ class PresetTypeLabel : public Control
   explicit PresetTypeLabel(const Rect& pos);
   ~PresetTypeLabel();
   void update(const Preset* newSelection);
-
   bool redraw(FrameBuffer& fb) override;
+  void drawBackground(FrameBuffer& fb) override;
 
  protected:
   void onEditBufferChanged();

@@ -40,40 +40,77 @@ void PresetTypeLabel::onVoiceGroupChanged(const VoiceGroup &vg)
 
 bool PresetTypeLabel::redraw(FrameBuffer &fb)
 {
+
+  drawBackground(fb);
+
   if(m_currentControl)
-    return m_currentControl->redraw(fb);
-  return false;
-}
-
-void SinglePresetTypeLabel::drawBackground(FrameBuffer &fb)
-{
-  const Rect &r = getPosition();
-
-  if(showsLoadedPreset())
   {
-    fb.setColor(FrameBufferColors::C103);
-    int yinset = showsSelectedPreset() ? 2 : 1;
-    int xinset = 2;
-    fb.fillRect(r.getX(), r.getY() + yinset, r.getWidth() - xinset, r.getHeight() - 2 * yinset);
+    return m_currentControl->redraw(fb);
   }
+  return false;
 }
 
 void PresetTypeLabel::update(const Preset *newSelection)
 {
+  auto position = getPosition();
   selectedPreset = newSelection;
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
   if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
   {
-    m_currentControl = std::make_unique<DualPresetTypeLabel>(getPosition());
+    m_currentControl = std::make_unique<DualPresetTypeLabel>(
+        Rect { position.getLeft(), position.getTop() + 1, position.getWidth(), position.getHeight() - 1 });
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
     dualLabel->update(newSelection);
   }
   else
   {
-    m_currentControl = std::make_unique<SinglePresetTypeLabel>(getPosition());
+    m_currentControl = std::make_unique<SinglePresetTypeLabel>(position);
     auto singleLabel = dynamic_cast<SinglePresetTypeLabel *>(m_currentControl.get());
     singleLabel->update(newSelection);
+  }
+}
+
+void PresetTypeLabel::drawBackground(FrameBuffer &fb)
+{
+
+  if(selectedPreset
+     && Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset()
+         == selectedPreset->getUuid())
+  {
+    fb.setColor(FrameBufferColors::C103);
+    auto pos = getPosition();
+
+    bool selected = false;
+
+    if(HWUIHelper::isLoadToPartActive())
+    {
+      auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
+      if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout))
+      {
+        if(auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus))
+        {
+          selected = selection->m_preset == selectedPreset;
+        }
+      }
+    }
+    else
+    {
+      selected = Application::get().getPresetManager()->getSelectedPreset() == selectedPreset;
+    }
+
+    if(selected)
+    {
+      pos.setTop(pos.getTop() + 2);
+      pos.setHeight(pos.getHeight() - 4);
+    }
+    else
+    {
+      pos.setTop(pos.getTop() + 1);
+      pos.setHeight(pos.getHeight() - 2);
+    }
+    fb.fillRect(pos);
   }
 }
 
@@ -105,7 +142,9 @@ void SinglePresetTypeLabel::update(const Preset *newPreset)
     auto loaded
         = Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset() == newPreset->getUuid();
 
-    setText(typeToString(type), true, loaded);
+    auto selected = Application::get().getPresetManager()->getSelectedPreset() == newPreset;
+
+    setText(typeToString(type), selected, loaded);
   }
 }
 
@@ -136,45 +175,57 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
         return false;
     }
   }
+  return false;
 }
 
 bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 {
+  auto bgRect = getPosition();
+  bgRect.setWidth(15);
+  bgRect.setHeight(15);
+  buffer.setColor(FrameBufferColors::C43);
+  buffer.fillRect(bgRect);
+
   buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX(), getPosition().getY() + 2, 11, 5);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 5);
   if(m_selectedI)
   {
     buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX(), getPosition().getY() + 2, 11, 5);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 5);
   }
 
   buffer.setColor(m_inidicateII ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX(), getPosition().getY() + 9, 11, 5);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 8, 11, 5);
   if(m_selectedII)
   {
     buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX(), getPosition().getY() + 9, 11, 5);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 8, 11, 5);
   }
   return true;
 }
 
 bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 {
+  auto bgRect = getPosition();
+  bgRect.setWidth(16);
+  bgRect.setHeight(15);
+  buffer.setColor(FrameBufferColors::C43);
+  buffer.fillRect(bgRect);
 
   buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX(), getPosition().getY() + 2, 5, 12);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 2, 5, 11);
   if(m_selectedI)
   {
     buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX(), getPosition().getY() + 2, 5, 12);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 2, 5, 11);
   }
 
   buffer.setColor(m_inidicateII ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX() + 6, getPosition().getY() + 2, 5, 12);
+  buffer.fillRect(getPosition().getX() + 8, getPosition().getY() + 2, 5, 11);
   if(m_selectedII)
   {
     buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX() + 6, getPosition().getY() + 2, 5, 12);
+    buffer.drawRect(getPosition().getX() + 8, getPosition().getY() + 2, 5, 11);
   }
   return true;
 }
@@ -182,11 +233,11 @@ bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 bool DualPresetTypeLabel::drawSingle(FrameBuffer &buffer)
 {
   buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX(), getPosition().getY() + 2, 12, 12);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 11);
   if(m_selectedI)
   {
     buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX(), getPosition().getY() + 2, 12, 12);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 11);
   }
 
   return true;
