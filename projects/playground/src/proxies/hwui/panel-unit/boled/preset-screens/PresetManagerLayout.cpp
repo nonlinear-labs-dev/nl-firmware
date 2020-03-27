@@ -86,7 +86,7 @@ PresetManager *PresetManagerLayout::getPresetManager() const
 
 void PresetManagerLayout::setupBankFocus()
 {
-  m_bankButton = addControl(new BankButton({ 3, 39, 58, 57 }, true));
+  m_bankButton = addControl(new BankButton({ 3, 36, 58, 57 }, true));
 
   switch(m_focusAndMode.mode)
   {
@@ -168,7 +168,7 @@ void PresetManagerLayout::setupBankStore()
 
 void PresetManagerLayout::setupPresetFocus()
 {
-  m_bankButton = addControl(new BankButton({ 3, 39, 58, 57 }, false));
+  m_bankButton = addControl(new BankButton({ 3, 36, 58, 57 }, false));
 
   switch(m_focusAndMode.mode)
   {

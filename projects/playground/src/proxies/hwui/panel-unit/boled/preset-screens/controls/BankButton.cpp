@@ -76,7 +76,7 @@ void BankButton::installDual()
   auto bankbutton = addControl(new Button("Bank", { 4, 0, 50, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
-  addControl(new Button("I / II", { 0, 12, 58, 11 }));
+  addControl(new Button("I / II", { 0, 15, 58, 11 }));
 
   auto toggleBankFocus = [this] {
     if(m_bankFocus)

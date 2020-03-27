@@ -86,7 +86,7 @@ void LoadModeMenu::installDual()
   auto loadToPartButton = addControl(new Button("To Part", { 0, 50, 58, 11 }));
   loadToPartButton->setHighlight(isLoadToPartEnabled());
 
-  auto directLoadButton = addControl(new Button("Direct Ld", { 4, 38, 50, 11 }));
+  auto directLoadButton = addControl(new Button("Direct Ld", { 4, 35, 50, 11 }));
   directLoadButton->setHighlight(isDirectLoadEnabled());
 }
 
