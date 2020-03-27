@@ -39,7 +39,7 @@ bool LoadToPartPresetList::onButton(Buttons i, bool down, ButtonModifiers modifi
     switch(i)
     {
       case Buttons::BUTTON_B:
-        if(focusAndMode.focus == UIFocus::Banks)
+        if(focusAndMode.focus == UIFocus::Presets)
         {
           selectPreviousBank(pm);
         }
@@ -51,7 +51,7 @@ bool LoadToPartPresetList::onButton(Buttons i, bool down, ButtonModifiers modifi
         return true;
 
       case Buttons::BUTTON_C:
-        if(focusAndMode.focus == UIFocus::Banks)
+        if(focusAndMode.focus == UIFocus::Presets)
         {
           selectNextBank(pm);
         }
@@ -153,14 +153,8 @@ void LoadToPartPresetList::selectPreviousBank(PresetManager* pm)
 {
   if(auto selection = getCurrentSelection())
   {
-    auto bankPos = pm->getBankPosition(selection->m_bank->getUuid());
-    if(auto newBank = pm->getBankAt(bankPos - 1))
-    {
-      selection->m_bank = newBank;
-      selection->m_preset = newBank->getFirstPreset();
-      selection->m_voiceGroup = VoiceGroup::I;
-      update(Application::get().getPresetManager());
-    }
+    selection->selectPreviousBank();
+    update(Application::get().getPresetManager());
   }
 }
 
@@ -168,14 +162,8 @@ void LoadToPartPresetList::selectNextBank(PresetManager* pm)
 {
   if(auto selection = getCurrentSelection())
   {
-    auto bankPos = pm->getBankPosition(selection->m_bank->getUuid());
-    if(auto newBank = pm->getBankAt(bankPos + 1))
-    {
-      selection->m_bank = newBank;
-      selection->m_preset = newBank->getFirstPreset();
-      selection->m_voiceGroup = VoiceGroup::I;
-      update(Application::get().getPresetManager());
-    }
+    selection->selectNextBank();
+    update(Application::get().getPresetManager());
   }
 }
 

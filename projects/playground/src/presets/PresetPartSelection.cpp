@@ -28,6 +28,34 @@ PresetPartSelection::PresetPartSelection(VoiceGroup focus)
   }
 }
 
+void PresetPartSelection::selectNextBank()
+{
+  auto pm = Application::get().getPresetManager();
+  if(m_bank)
+  {
+    if(auto newBank = pm->getBankAt(pm->getBankPosition(m_bank->getUuid()) + 1))
+    {
+      m_bank = newBank;
+      m_preset = m_bank->getPresetAt(0);
+      m_voiceGroup = VoiceGroup::I;
+    }
+  }
+}
+
+void PresetPartSelection::selectPreviousBank()
+{
+  auto pm = Application::get().getPresetManager();
+  if(m_bank)
+  {
+    if(auto newBank = pm->getBankAt(pm->getBankPosition(m_bank->getUuid()) - 1))
+    {
+      m_bank = newBank;
+      m_preset = m_bank->getPresetAt(0);
+      m_voiceGroup = VoiceGroup::I;
+    }
+  }
+}
+
 void PresetPartSelection::selectNextPresetPart()
 {
   if(m_bank)

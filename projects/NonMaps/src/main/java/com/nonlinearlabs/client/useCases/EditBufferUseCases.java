@@ -396,7 +396,6 @@ public class EditBufferUseCases {
 		if(SetupModel.get().systemSettings.directLoad.getBool()) {
 			SetupModel.get().systemSettings.directLoad.setValue(false);
 			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "off");
-
 		}
 		else {
 			SetupModel.get().systemSettings.directLoad.setValue(true);

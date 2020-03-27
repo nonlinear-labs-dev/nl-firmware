@@ -62,9 +62,9 @@ void BankButton::installSingle()
 
   auto toggleBankFocus = [this] {
     if(m_bankFocus)
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets });
+      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
     else
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Banks });
+      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(toggleBankFocus, toggleBankFocus);
@@ -80,12 +80,11 @@ void BankButton::installDual()
 
   auto toggleBankFocus = [this] {
     if(m_bankFocus)
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets });
+      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
     else
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Banks });
+      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(
-      [this] { Application::get().getHWUI()->toggleCurrentVoiceGroup(); },
-      toggleBankFocus);
+      [this] { Application::get().getHWUI()->toggleCurrentVoiceGroup(); }, toggleBankFocus);
 }

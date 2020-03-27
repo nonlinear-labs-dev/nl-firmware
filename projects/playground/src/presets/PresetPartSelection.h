@@ -9,6 +9,9 @@ class PresetPartSelection
  public:
   explicit PresetPartSelection(VoiceGroup focus);
 
+  void selectNextBank();
+  void selectPreviousBank();
+
   void selectNextPresetPart();
   void selectPreviousPresetPart();
 
