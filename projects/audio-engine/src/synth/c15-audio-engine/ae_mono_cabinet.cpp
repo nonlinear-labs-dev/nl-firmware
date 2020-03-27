@@ -19,7 +19,7 @@ void Engine::MonoCabinet::init(const float _samplerate)
   m_out_L = 0.0f;
   m_out_R = 0.0f;
   // prewarp
-  m_warpConst_2PI = NlToolbox::Constants::twopi / _samplerate;
+  m_warpConst_2PI = NlToolbox::Constants::twopi / _samplerate;  // 0.0001309 (48kHz), 0.00006545 (96kHz)
   m_freqClip_max = _samplerate / 2.125f;
   m_freqClip_min = _samplerate / 24576.0f;
   // biquad hp
@@ -61,8 +61,8 @@ void Engine::MonoCabinet::init(const float _samplerate)
   m_lp2_stateVar_L4 = 0.0f;
   m_lp2_stateVar_R4 = 0.0f;
   // tilt low shelves
-  m_tiltOmegaSin = NlToolbox::Math::sin(1200.0f * m_warpConst_2PI);
-  m_tiltOmegaCos = NlToolbox::Math::cos(1200.0f * m_warpConst_2PI);
+  m_tiltOmegaSin = NlToolbox::Math::sin(1200.0f * m_warpConst_2PI);  // 0.002741553 (48 kHz), 0.001370778 (96kHz)
+  m_tiltOmegaCos = NlToolbox::Math::cos(1200.0f * m_warpConst_2PI);  // 0.999996242 (48 kHz), 0,99999906 (96kHz)
   m_ls1_b0 = 0.0f;
   m_ls1_b1 = 0.0f;
   m_ls1_b2 = 0.0f;
@@ -105,74 +105,88 @@ void Engine::MonoCabinet::set(MonoSignals &_signals)
   frequency *= m_warpConst_2PI;
   tmpVar = NlToolbox::Math::cos(frequency);
   m_hp_a1 = tmpVar * -2.0f;
-  m_hp_b0 = (1.0f + tmpVar) / 2.0f;
-  m_hp_b1 = (1.0f + tmpVar) * -1.0f;
+  tmpVar += 1.0f;
+  m_hp_b0 = tmpVar * 0.5f;
+  m_hp_b1 = -tmpVar;
   tmpVar = NlToolbox::Math::sin(frequency) * 0.5f;
   m_hp_a2 = 1.0f - tmpVar;
-  tmpVar = 1.0f + tmpVar;
-  m_hp_a1 = m_hp_a1 / tmpVar * -1.0f;
-  m_hp_a2 = m_hp_a2 / tmpVar * -1.0f;
-  m_hp_b0 = m_hp_b0 / tmpVar;
-  m_hp_b1 = m_hp_b1 / tmpVar;
+  // (1 + tmpVar) at this point should range inbetween [0.5 ... 1.5] - so (1 / tmpVar) should be fine
+  tmpVar = 1.0f / (1.0f + tmpVar);  // divide once for better performance, then multiply
+  m_hp_a1 = m_hp_a1 * -tmpVar;
+  m_hp_a2 = m_hp_a2 * -tmpVar;
+  m_hp_b0 = m_hp_b0 * tmpVar;
+  m_hp_b1 = m_hp_b1 * tmpVar;
   // biquad lp 1
   frequency = _signals.get(C15::Signals::Mono_Signals::Cabinet_LPF);
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
   tmpVar = NlToolbox::Math::cos(frequency);
   m_lp1_a1 = tmpVar * -2.0f;
-  m_lp1_b0 = (1.0f - tmpVar) / 2.0f;
-  m_lp1_b1 = 1.0f - tmpVar;
+  tmpVar = 1.0f - tmpVar;
+  m_lp1_b0 = tmpVar * 0.5f;
+  m_lp1_b1 = tmpVar;
   tmpVar = NlToolbox::Math::sin(frequency) * 0.5f;
   m_lp1_a2 = 1.0f - tmpVar;
-  tmpVar = 1.0f + tmpVar;
-  m_lp1_a1 = m_lp1_a1 / tmpVar * -1.0f;
-  m_lp1_a2 = m_lp1_a2 / tmpVar * -1.0f;
-  m_lp1_b0 = m_lp1_b0 / tmpVar;
-  m_lp1_b1 = m_lp1_b1 / tmpVar;
+  // (1 + tmpVar) at this point should range inbetween [0.5 ... 1.5] - so (1 / tmpVar) should be fine
+  tmpVar = 1.0f / (1.0f + tmpVar);  // divide once for better performance, then multiply
+  m_lp1_a1 = m_lp1_a1 * -tmpVar;
+  m_lp1_a2 = m_lp1_a2 * -tmpVar;
+  m_lp1_b0 = m_lp1_b0 * tmpVar;
+  m_lp1_b1 = m_lp1_b1 * tmpVar;
   // biquad lp 2
   frequency = _signals.get(C15::Signals::Mono_Signals::Cabinet_LPF) * 1.333f;
   frequency = std::clamp(frequency, m_freqClip_min, m_freqClip_max);
   frequency *= m_warpConst_2PI;
   tmpVar = NlToolbox::Math::cos(frequency);
   m_lp2_a1 = tmpVar * -2.0f;
-  m_lp2_b0 = (1.0f - tmpVar) / 2.0f;
-  m_lp2_b1 = 1.0f - tmpVar;
+  tmpVar = 1.0f - tmpVar;
+  m_lp2_b0 = tmpVar * 0.5f;
+  m_lp2_b1 = tmpVar;
   tmpVar = NlToolbox::Math::sin(frequency) * 0.5f;
   m_lp2_a2 = 1.0f - tmpVar;
-  tmpVar = 1.0f + tmpVar;
-  m_lp2_a1 = m_lp2_a1 / tmpVar * -1.0f;
-  m_lp2_a2 = m_lp2_a2 / tmpVar * -1.0f;
-  m_lp2_b0 = m_lp2_b0 / tmpVar;
-  m_lp2_b1 = m_lp2_b1 / tmpVar;
+  // (1 + tmpVar) at this point should range inbetween [0.5 ... 1.5] - so (1 / tmpVar) should be fine
+  tmpVar = 1.0f / (1.0f + tmpVar);  // divide once for better performance, then multiply
+  m_lp2_a1 = m_lp2_a1 * -tmpVar;
+  m_lp2_a2 = m_lp2_a2 * -tmpVar;
+  m_lp2_b0 = m_lp2_b0 * tmpVar;
+  m_lp2_b1 = m_lp2_b1 * tmpVar;
   // tilt low shelves
   float tilt = std::pow(10.0f, _signals.get(C15::Signals::Mono_Signals::Cabinet_Tilt) * 0.025f);
-  tmpVar = tilt + 1.0f / tilt + 2.0f;
+  // tilt should operate in range ( 10 ^ (0.025 * [-100, 100]) ) --> [0.003162278 ... 316.2278], as well as ( 1 / tilt )
+  // accordingly, this should be fine
+  tmpVar = tilt + (1.0f / tilt) + 2.0f;  // expected range: [4 ... 318.230928294]
   tmpVar = std::sqrt(tilt * tmpVar) * m_tiltOmegaSin;
-  float coeff = (tilt + 1.0f) + (m_tiltOmegaCos * (tilt - 1.0f)) + tmpVar;
+  // tmpVar = sqrt([1.006334663 ... 100633.466346369]) * 0.002741553 (48 kHz), 0.001370778 (96kHz) --> [0.001375113 ... 0.86969678]
   m_ls1_a1 = ((tilt - 1.0f) + (m_tiltOmegaCos * (tilt + 1.0f))) * -2.0f;
   m_ls1_a2 = (tilt + 1.0f) + (m_tiltOmegaCos * (tilt - 1.0f)) - tmpVar;
   m_ls1_b0 = ((tilt + 1.0f) - (m_tiltOmegaCos * (tilt - 1.0f)) + tmpVar) * tilt;
   m_ls1_b1 = ((tilt - 1.0f) - (m_tiltOmegaCos * (tilt + 1.0f))) * 2.0f * tilt;
   m_ls1_b2 = ((tilt + 1.0f) - (m_tiltOmegaCos * (tilt - 1.0f)) - tmpVar) * tilt;
-  m_ls1_a1 = m_ls1_a1 / coeff * -1.0f;
-  m_ls1_a2 = m_ls1_a2 / coeff * -1.0f;
-  m_ls1_b0 = m_ls1_b0 / coeff;
-  m_ls1_b1 = m_ls1_b1 / coeff;
-  m_ls1_b2 = m_ls1_b2 / coeff;
+  // it seems that (coeff > 1) is always satisfied, so (1 / coeff) should be fine
+  float coeff = 1.0f / ((tilt + 1.0f) + (m_tiltOmegaCos * (tilt - 1.0f)) + tmpVar);
+  // divide once for better performance, then multiply
+  m_ls1_a1 = m_ls1_a1 * -coeff;
+  m_ls1_a2 = m_ls1_a2 * -coeff;
+  m_ls1_b0 = m_ls1_b0 * coeff;
+  m_ls1_b1 = m_ls1_b1 * coeff;
+  m_ls1_b2 = m_ls1_b2 * coeff;
+  // accordingly, no edgy stuff should be expeted here..
   tilt = std::pow(10.0f, _signals.get(C15::Signals::Mono_Signals::Cabinet_Tilt) * -0.025f);
-  tmpVar = tilt + 1.0f / tilt + 2.0f;
+  tmpVar = tilt + (1.0f / tilt) + 2.0f;
   tmpVar = std::sqrt(tilt * tmpVar) * m_tiltOmegaSin;
-  coeff = (tilt + 1.0f) + (m_tiltOmegaCos * (tilt - 1.0f)) + tmpVar;
   m_ls2_a1 = ((tilt - 1.0f) + (m_tiltOmegaCos * (tilt + 1.0f))) * -2.0f;
   m_ls2_a2 = (tilt + 1.0f) + (m_tiltOmegaCos * (tilt - 1.0f)) - tmpVar;
   m_ls2_b0 = ((tilt + 1.0f) - (m_tiltOmegaCos * (tilt - 1.0f)) + tmpVar) * tilt;
   m_ls2_b1 = ((tilt - 1.0f) - (m_tiltOmegaCos * (tilt + 1.0f))) * 2.0f * tilt;
   m_ls2_b2 = ((tilt + 1.0f) - (m_tiltOmegaCos * (tilt - 1.0f)) - tmpVar) * tilt;
-  m_ls2_a1 = m_ls2_a1 / coeff * -1.0f;
-  m_ls2_a2 = m_ls2_a2 / coeff * -1.0f;
-  m_ls2_b0 = m_ls2_b0 / coeff;
-  m_ls2_b1 = m_ls2_b1 / coeff;
-  m_ls2_b2 = m_ls2_b2 / coeff;
+  // it seems that (coeff > 1) is always satisfied, so (1 / coeff) should be fine
+  coeff = 1.0f / ((tilt + 1.0f) + (m_tiltOmegaCos * (tilt - 1.0f)) + tmpVar);
+  // divide once for better performance, then multiply
+  m_ls2_a1 = m_ls2_a1 * -coeff;
+  m_ls2_a2 = m_ls2_a2 * -coeff;
+  m_ls2_b0 = m_ls2_b0 * coeff;
+  m_ls2_b1 = m_ls2_b1 * coeff;
+  m_ls2_b2 = m_ls2_b2 * coeff;
 }
 
 void Engine::MonoCabinet::apply(MonoSignals &_signals, const float _rawSample_L, const float _rawSample_R)

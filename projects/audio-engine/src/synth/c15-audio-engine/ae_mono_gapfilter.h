@@ -26,7 +26,7 @@ namespace Engine
 
    private:
     // prewarp
-    float m_warpConst_2PI = 0.0f;
+    float m_warpConst_2PI = 0.0f, m_freqScale_norm = 0.0f;
     float m_freqClip_max = 0.0f, m_freqClip_min = 0.0f;
     float m_freqScale_max = 0.0f, m_freqScale_min = 0.0f;
     // biquad hp l/r
