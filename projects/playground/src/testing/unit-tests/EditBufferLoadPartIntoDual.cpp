@@ -1,6 +1,6 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include "testing/TestHelper.h"
-#include "third-party/include/catch.hpp"
+#include <catch.hpp>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 

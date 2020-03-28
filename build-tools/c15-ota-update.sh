@@ -19,7 +19,7 @@ if ! ping $IP -c 10 > /dev/null; then
     exit 1
 fi
 
-ssh root@$IP "ssh root@$IP rm -rf /update && mkdir -p /update"
+ssh root@$IP "rm -rf /update && mkdir -p /update"
 scp -C $UPDATE root@$IP:/update
 ssh root@$IP "cd /update/ && tar xf nonlinear-c15-update.tar"
 ssh root@$IP "chmod +x /update/run.sh"

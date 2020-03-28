@@ -1,15 +1,16 @@
 #include "C15Synth.h"
-#include "Options.h"
+#include "AudioEngineOptions.h"
 #include "c15-audio-engine/dsp_host_dual.h"
-#include "main.h"
-
 #include <nltools/logging/Log.h>
 #include <nltools/messaging/Message.h>
 
-C15Synth::C15Synth()
-    : m_dsp(std::make_unique<dsp_host_dual>())
+C15Synth::C15Synth(const AudioEngineOptions* options)
+    : Synth(options)
+    , m_dsp(std::make_unique<dsp_host_dual>())
+    , m_options(options)
 {
-  m_dsp->init(getOptions()->getSampleRate(), getOptions()->getPolyphony());
+
+  m_dsp->init(options->getSampleRate(), options->getPolyphony());
 
   using namespace nltools::msg;
 
@@ -37,19 +38,11 @@ C15Synth::C15Synth()
   receive<Setting::TuneReference>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onTuneReferenceMessage));
 
   receive<Keyboard::NoteUp>(EndPoint::AudioEngine, [this](const Keyboard::NoteUp& noteUp) {
-    MidiEvent keyUp;
-    keyUp.raw[0] = 0;
-    keyUp.raw[1] = noteUp.m_keyPos;
-    keyUp.raw[2] = 0;
-    doMidi(keyUp);
+    m_dsp->onRawMidiMessage(0, static_cast<uint32_t>(noteUp.m_keyPos), 0);
   });
 
   receive<Keyboard::NoteDown>(EndPoint::AudioEngine, [this](const Keyboard::NoteDown& noteDown) {
-    MidiEvent keyDown;
-    keyDown.raw[0] = 1 << 4;
-    keyDown.raw[1] = noteDown.m_keyPos;
-    keyDown.raw[2] = 127;
-    doMidi(keyDown);
+    m_dsp->onRawMidiMessage(100, static_cast<uint32_t>(noteDown.m_keyPos), 0);
   });
 }
 
@@ -64,11 +57,32 @@ void C15Synth::doMidi(const MidiEvent& event)
 #endif
 }
 
+void C15Synth::simulateKeyDown(int key)
+{
+  //  m_dsp->onRawMidiMessage(1 << 4, static_cast<uint32_t>(key), 100);
+  m_dsp->onMidiMessage(0xED, 0, static_cast<uint32_t>(key));  // LPC keyPos
+  m_dsp->onMidiMessage(0xEE, 127, 127);                       // LPC keyDown (vel: 100%)
+}
+
+void C15Synth::simulateKeyUp(int key)
+{
+  //  m_dsp->onRawMidiMessage(0, static_cast<uint32_t>(key), 0);
+  m_dsp->onMidiMessage(0xED, 0, static_cast<uint32_t>(key));  // LPC keyPos
+  m_dsp->onMidiMessage(0xEF, 127, 127);                       // LPC keyUp (vel: 100%)
+}
+
+unsigned int C15Synth::getRenderedSamples()
+{
+  return m_dsp->m_sample_counter;
+}
+
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)
 {
+
   // to avoid denormals, we exploit flush_to_zero within this code-block: every denormal float will be set to zero
   _mm_setcsr(_mm_getcsr() | (1 << 15) | (1 << 6));
   // then, the samples are rendered as before
+
   for(size_t i = 0; i < numFrames; i++)
   {
     m_dsp->render();
@@ -122,18 +136,6 @@ void C15Synth::increase()
 void C15Synth::decrease()
 {
   changeSelectedValueBy(-1);
-}
-
-double C15Synth::measurePerformance(std::chrono::seconds time)
-{
-  for(int i = 0; i < getOptions()->getPolyphony(); i++)
-  {
-    m_dsp->onMidiMessage(1, 0, 53);
-    m_dsp->onMidiMessage(5, 62, 64);
-    m_dsp->onMidiMessage(1, 0, 83);
-    m_dsp->onMidiMessage(5, 62, 64);
-  }
-  return Synth::measurePerformance(time);
 }
 
 void C15Synth::changeSelectedValueBy(int i)

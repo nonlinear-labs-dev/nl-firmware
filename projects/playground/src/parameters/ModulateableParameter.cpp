@@ -14,7 +14,6 @@
 #include <Application.h>
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
-#include <third-party/include/catch.hpp>
 #include <testing/TestRootDocument.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/messaging/ParameterMessageFactory.h>

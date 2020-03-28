@@ -22,6 +22,8 @@
 #include "ae_mono_section.h"
 #include "ae_poly_section.h"
 
+// developer switches
+inline constexpr unsigned int SAMPLE_COUNT = 1;  // 0: normal, 1: acceptance-test: does host really render?
 // basic logging switches
 inline constexpr bool LOG_MISSING = false;
 inline constexpr bool LOG_FAIL = false;

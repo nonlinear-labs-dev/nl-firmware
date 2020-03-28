@@ -5,7 +5,12 @@ static inline std::string getResourcesDir()
   return "@C15_INSTALL_PATH@/playground/resources";
 }
 
-static inline  std::string getInstallDir()
+static inline std::string getInstallDir()
 {
   return "@C15_INSTALL_PATH@";
+}
+
+static inline std::string getSourceDir()
+{
+  return "@C15_SOURCE_DIR@";
 }
