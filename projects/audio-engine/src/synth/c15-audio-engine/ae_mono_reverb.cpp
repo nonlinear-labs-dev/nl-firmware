@@ -277,7 +277,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
     m_hp_a1 = m_hp_omega - 1.0f;
     tmpVar = m_lfo_stateVar_1 + m_lfo_omega_1;
     tmpVar = tmpVar - std::round(tmpVar);
-    m_lfo_stateVar_1 = tmpVar;  // ??? lfo state vars without dnc_constant?
+    m_lfo_stateVar_1 = tmpVar;
 
     tmpVar = (8.0f - std::abs(tmpVar) * 16.0f) * tmpVar;
     tmpVar += 1.0f;
@@ -286,7 +286,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
 
     tmpVar = m_lfo_stateVar_2 + m_lfo_omega_2;
     tmpVar = tmpVar - std::round(tmpVar);
-    m_lfo_stateVar_2 = tmpVar;  // ??? lfo state vars without dnc_constant?
+    m_lfo_stateVar_2 = tmpVar;
 
     tmpVar = (8.0f - std::abs(tmpVar) * 16.0f) * tmpVar;
     tmpVar += 1.0f;
@@ -323,13 +323,15 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   //**************************** Loop Filter L *****************************//
   wetSample_L = (wetSample_L - m_lp_stateVar_L * m_lp_a1) * m_lp_a0;
   tmpVar = m_lp_stateVar_L;
-  m_lp_stateVar_L = wetSample_L;  // ??? lfo state vars without dnc_constant?
+  m_lp_stateVar_L = wetSample_L;
+  // ??? filter state vars without dnc_constant?
 
   wetSample_L = (wetSample_L + tmpVar) * m_lp_omega;
 
   wetSample_L = (wetSample_L - m_hp_stateVar_L * m_hp_a1) * m_hp_a0;
   tmpVar = m_hp_stateVar_L;
-  m_hp_stateVar_L = wetSample_L;  // ??? lfo state vars without dnc_constant?
+  m_hp_stateVar_L = wetSample_L;
+  // ??? filter state vars without dnc_constant?
 
   wetSample_L = wetSample_L - tmpVar;
 
