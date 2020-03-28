@@ -68,7 +68,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   m_apStateVar_1 = tmpOut;
   m_apStateVar_4 = m_apStateVar_3;
   m_apStateVar_3 = m_out;
-  // para d
+  // para d --- unfortunately still scalar, via voice loop (1 / 3)
   for(uint32_t v = 0; v < C15::Config::local_polyphony; v++)
   {
     if(std::abs(m_out[v]) > 0.501187f)
@@ -104,6 +104,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   tmpSmooth += (phaseMod * tmpSmooth);
   // delay
   auto holdsample = m_out;  // for Bypass
+  // delay buffer "write" --- unfortunately still scalar, via voice loop (2 / 3)
   for(uint32_t v = 0; v < C15::Config::local_polyphony; v++)
   {
     m_buffer[m_buffer_indx][v] = m_out[v];
@@ -124,8 +125,10 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   ind_t0 &= m_buffer_sz_m1;
   ind_tp1 &= m_buffer_sz_m1;
   ind_tp2 &= m_buffer_sz_m1;
-  PolyValue fract, sample_tm1, sample_t0, sample_tp1, sample_tp2;
-  fract = tmpSmooth;
+  //  PolyValue fract, sample_tm1, sample_t0, sample_tp1, sample_tp2;
+  PolyValue sample_tm1, sample_t0, sample_tp1, sample_tp2;
+  // fract = tmpSmooth; // unused here
+  //  delay buffer "read" --- unfortunately still scalar, via voice loop (3 / 3)
   for(uint32_t i = 0; i < C15::Config::local_polyphony; i++)
   {
     sample_tm1[i] = m_buffer[ind_tm1[i]][i];
@@ -150,8 +153,9 @@ void Engine::PolyCombFilter::set(PolySignals &_signals, const float _samplerate,
   frequency = std::clamp(frequency, m_freqClip_24576, m_freqClip_2);
   frequency *= m_warpConst_PI;
   frequency = NlToolbox::Math::tan(frequency);
-  m_hpCoeff_a1[_voiceId] = (1.0f - frequency) / (1.0f + frequency);
-  m_hpCoeff_b0[_voiceId] = 1.0f / (1.0f + frequency);
+  float denom = 1.0f / (1.0f + frequency);  // divide once for better performance, then multiply
+  m_hpCoeff_a1[_voiceId] = (1.0f - frequency) * denom;
+  m_hpCoeff_b0[_voiceId] = denom;
   m_hpCoeff_b1[_voiceId] = m_hpCoeff_b0[_voiceId] * -1.0f;
   // lp coeff
   frequency = _signals.get(C15::Signals::Truepoly_Signals::Comb_Flt_LP_Freq)[_voiceId];
@@ -192,8 +196,9 @@ void Engine::PolyCombFilter::set(PolySignals &_signals, const float _samplerate,
   // ap influence
   stateVar_i = NlToolbox::Math::sinP3_wrap(frequency) * -1.0f * m_apCoeff_1[_voiceId];
   stateVar_r = NlToolbox::Math::sinP3_wrap(frequency + 0.25f) * m_apCoeff_1[_voiceId];
-  float stateVar2_i = NlToolbox::Math::sinP3_wrap(frequency + frequency);
-  float stateVar2_r = NlToolbox::Math::sinP3_wrap(frequency + frequency + 0.25f);
+  frequency += frequency;
+  float stateVar2_i = NlToolbox::Math::sinP3_wrap(frequency);
+  float stateVar2_r = NlToolbox::Math::sinP3_wrap(frequency + 0.25f);
   float var1_i = stateVar_i - stateVar2_i;
   float var2_i = (stateVar_i - (m_apCoeff_2[_voiceId] * stateVar2_i)) * -1.0f;
   float var1_r = stateVar_r + stateVar2_r + m_apCoeff_2[_voiceId];
