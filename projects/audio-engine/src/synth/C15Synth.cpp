@@ -9,6 +9,7 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
 {
+
   m_dsp->init(options->getSampleRate(), options->getPolyphony());
 
   using namespace nltools::msg;
@@ -77,6 +78,11 @@ unsigned int C15Synth::getRenderedSamples()
 
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)
 {
+
+  // to avoid denormals, we exploit flush_to_zero within this code-block: every denormal float will be set to zero
+  _mm_setcsr(_mm_getcsr() | (1 << 15) | (1 << 6));
+  // then, the samples are rendered as before
+
   for(size_t i = 0; i < numFrames; i++)
   {
     m_dsp->render();

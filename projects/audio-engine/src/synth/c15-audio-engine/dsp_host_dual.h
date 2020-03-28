@@ -53,8 +53,7 @@ class dsp_host_dual
 {
  public:
   // public members
-  float m_mainOut_R, m_mainOut_L;
-  uint32_t m_sample_counter = 0;
+  float m_mainOut_R = 0.0f, m_mainOut_L = 0.0f;
   // constructor
   dsp_host_dual();
   // public methods
@@ -111,7 +110,7 @@ class dsp_host_dual
   Engine::Handle::Time_Handle m_time;
   // layer handling
   C15::Properties::LayerMode m_layer_mode, m_preloaded_layer_mode;
-  uint32_t m_layer_focus;  // probably obsolete
+  uint32_t m_layer_focus = 0;  // probably obsolete
   // global dsp components
   GlobalSection m_global;
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;

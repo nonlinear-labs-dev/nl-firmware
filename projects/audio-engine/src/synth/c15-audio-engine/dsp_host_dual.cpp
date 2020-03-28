@@ -19,13 +19,20 @@ dsp_host_dual::dsp_host_dual()
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
 {
-  const float samplerate = static_cast<float>(_samplerate);
+  // BEWARE: we still only support TWO integer multiples of 48000 Hz ("SD": 1 x 48k, "HD": 2 x 48k)
+  const uint32_t upsampleFactor = (_samplerate > 96000 ? 96000 : _samplerate) / 48000,
+                 upsampleIndex = upsampleFactor - 1;
+  if(_samplerate != C15::Config::clock_rates[upsampleIndex][0])
+  {
+    nltools::Log::warning("invalid sample rate(", _samplerate, "): only 48000 or 96000 Hz allowed!");
+  }
+  const float samplerate = static_cast<float>(C15::Config::clock_rates[upsampleIndex][0]);
   // init of crucial components: voiceAlloc, conversion, clock, time, ae_fade_table ("fadepoint"), ae_fader ("pickup")
   m_alloc.init(&m_layer_mode, &m_preloaded_layer_mode);
   m_alloc.setSplitPoint(30);  // temporary..?
   m_convert.init();
-  m_clock.init(_samplerate);
-  m_time.init(_samplerate);
+  m_clock.init(upsampleIndex);
+  m_time.init(upsampleIndex);
   m_fade.init(samplerate);
   m_output_mute.init(&m_fade.m_value);
   // proper time init
@@ -50,17 +57,17 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_poly[0].m_fadeIncrement = 1;
   // init poly dsp: exponentiator, feedback pointers
   m_poly[0].init(&m_global.m_signals, &m_convert, &m_time, &m_z_layers[0], &m_reference.m_scaled, m_time.m_millisecond,
-                 env_init_gateRelease, samplerate);
+                 env_init_gateRelease, samplerate, upsampleFactor);
   // voice fade stuff II (currently explicit)
   m_poly[1].m_fadeStart = C15::Config::key_count - 1;
   m_poly[1].m_fadeEnd = 0;
   m_poly[1].m_fadeIncrement = -1;
   // init poly dsp: exponentiator, feedback pointers
   m_poly[1].init(&m_global.m_signals, &m_convert, &m_time, &m_z_layers[1], &m_reference.m_scaled, m_time.m_millisecond,
-                 env_init_gateRelease, samplerate);
+                 env_init_gateRelease, samplerate, upsampleFactor);
   // init mono dsp
-  m_mono[0].init(&m_convert, &m_z_layers[0], m_time.m_millisecond, samplerate);
-  m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate);
+  m_mono[0].init(&m_convert, &m_z_layers[0], m_time.m_millisecond, samplerate, upsampleFactor);
+  m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate, upsampleFactor);
   // init parameters by parameter list
   m_params.init_modMatrix();
   for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
