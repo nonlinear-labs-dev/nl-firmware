@@ -54,6 +54,7 @@ class dsp_host_dual
  public:
   // public members
   float m_mainOut_R = 0.0f, m_mainOut_L = 0.0f;
+  uint32_t m_sample_counter = 0;
   // constructor
   dsp_host_dual();
   // public methods
