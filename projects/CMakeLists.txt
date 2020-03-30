@@ -75,7 +75,8 @@ IF(BUILD_REALTIME_SYSTEM)
     add_subdirectory(realtime-system)
 ENDIF(BUILD_REALTIME_SYSTEM)
 
-add_subdirectory(acceptance-tests)
-
+IF(BUILD_PLAYGROUND AND BUILD_AUDIOENGINE)
+    add_subdirectory(acceptance-tests)
+ENDIF()
 
 add_subdirectory(scripts)
