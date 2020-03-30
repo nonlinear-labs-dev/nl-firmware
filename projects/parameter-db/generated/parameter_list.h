@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-03-16, 14:07
+    @date       2020-03-30, 15:54
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1906,7 +1906,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Comb_Src, Signals::Quasipoly_Signals::FB_Mix_Comb_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG",
+      { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "Comb - From @VG", "From @VG",
         "Crossfades to the Comb Filter signal of the other Part. (Only available when using a Dual mode.)" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_SVF_Src,
@@ -1914,7 +1914,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_SVF_Src, Signals::Quasipoly_Signals::FB_Mix_SVF_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG",
+      { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "SV Filter - From @VG", "From @VG",
         "Crossfades to the State Variable Filter signal of the other Part. (Only available when using a Dual "
         "mode.)" } },
     { None },
@@ -1923,7 +1923,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_FX_Src, Signals::Quasipoly_Signals::FB_Mix_FX_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "From @VG", "From @VG",
+      { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "Effects - From @VG", "From @VG",
         "Crossfades to the Effects signal of the other Part. (Only available when using a Dual mode.)" } },
     { None },
     { Parameters::Global_Modulateables::Split_Split_Point,

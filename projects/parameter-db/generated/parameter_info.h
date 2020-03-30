@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**   @file       parameter_info.h
-      @date       2020-03-16, 14:07
+      @date       2020-03-30, 15:54
       @version    1.7B-4
       @author     M. Seeber
       @brief      parameter-related details outside of the parameter definition
@@ -11,29 +11,34 @@
 
 #include "parameter_declarations.h"
 
-namespace C15 {
+namespace C15
+{
 
-namespace Properties {
+  namespace Properties
+  {
 
-    enum class LayerId {
-        I,
-        II,
-        _LENGTH_
+    enum class LayerId
+    {
+      I,
+      II,
+      _LENGTH_
     };
 
-    enum class LayerMode {
-        Single,
-        Split,
-        Layer
+    enum class LayerMode
+    {
+      Single,
+      Split,
+      Layer
     };
 
     // naming every HW Source return behavior
-    enum class HW_Return_Behavior {
-        Stay,
-        Zero,
-        Center
+    enum class HW_Return_Behavior
+    {
+      Stay,
+      Zero,
+      Center
     };
 
-} // namespace C15::Properties
+  }  // namespace C15::Properties
 
-} // namespace C15
+}  // namespace C15
