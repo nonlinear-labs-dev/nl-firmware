@@ -473,7 +473,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
-  EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
+  EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
 
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
@@ -747,9 +747,12 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
     swap->swapWith(m_type);
     m_signalTypeChanged.send();
 
-    auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
-    if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
-      setting->cycleForSoundType(SoundType::Single);
+    if(Application::exists())
+    {
+      auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
+      if(setting->get() == LoadMode::LoadToPart && getType() == SoundType::Single)
+        setting->cycleForSoundType(SoundType::Single);
+    }
     onChange();
   });
 }

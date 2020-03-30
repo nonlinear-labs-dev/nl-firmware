@@ -261,7 +261,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
 {
  public:
   PolyKeyPacket<GlobalVoices> m_traversal;
-  uint32_t m_unison, m_splitPoint = {};
+  uint32_t m_unison = {}, m_splitPoint = {};
   inline VoiceAllocation()
   {
   }

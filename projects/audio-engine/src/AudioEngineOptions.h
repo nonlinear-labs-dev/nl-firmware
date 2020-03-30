@@ -3,10 +3,10 @@
 #include <chrono>
 #include <glibmm/ustring.h>
 
-class Options
+class AudioEngineOptions
 {
  public:
-  Options(int &argc, char **&argv);
+  AudioEngineOptions(int &argc, char **&argv);
 
   bool areXRunsFatal() const;
   int getSampleRate() const;
