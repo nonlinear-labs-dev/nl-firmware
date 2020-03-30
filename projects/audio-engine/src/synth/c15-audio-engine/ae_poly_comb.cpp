@@ -125,9 +125,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   ind_t0 &= m_buffer_sz_m1;
   ind_tp1 &= m_buffer_sz_m1;
   ind_tp2 &= m_buffer_sz_m1;
-  //  PolyValue fract, sample_tm1, sample_t0, sample_tp1, sample_tp2;
   PolyValue sample_tm1, sample_t0, sample_tp1, sample_tp2;
-  // fract = tmpSmooth; // unused here
   //  delay buffer "read" --- unfortunately still scalar, via voice loop (3 / 3)
   for(uint32_t i = 0; i < C15::Config::local_polyphony; i++)
   {
