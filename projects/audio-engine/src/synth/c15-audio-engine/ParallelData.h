@@ -11,17 +11,13 @@
 template <typename T, size_t size> class ParallelData
 {
  public:
-  inline ParallelData()
-  {
-  }
-
   inline ParallelData(const T *d)
   {
     for(size_t i = 0; i < size; i++)
       m_data[i] = d[i];
   }
 
-  inline ParallelData(T d)
+  inline ParallelData(T d = {})
   {
     for(size_t i = 0; i < size; i++)
       m_data[i] = d;
