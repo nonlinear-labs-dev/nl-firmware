@@ -1,4 +1,4 @@
-#include "Options.h"
+#include "AudioEngineOptions.h"
 #include <glibmm/optiongroup.h>
 #include <glibmm/optionentry.h>
 #include <glibmm/optioncontext.h>
@@ -17,7 +17,7 @@ void add(Glib::OptionGroup &mainGroup, T &ref, const std::string &longName, cons
   mainGroup.add_entry(o, ref);
 }
 
-Options::Options(int &argc, char **&argv)
+AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
 {
 
   Glib::ustring additionalMidiDelayString;
@@ -58,62 +58,62 @@ Options::Options(int &argc, char **&argv)
     m_additionalMidiDelay = std::chrono::nanoseconds(std::stoi(additionalMidiDelayString));
 }
 
-bool Options::areXRunsFatal() const
+bool AudioEngineOptions::areXRunsFatal() const
 {
   return m_fatalXRuns;
 }
 
-std::string Options::getMidiInputDeviceName() const
+std::string AudioEngineOptions::getMidiInputDeviceName() const
 {
   return m_midiInputDeviceName;
 }
 
-std::chrono::nanoseconds Options::getAdditionalMidiDelay() const
+std::chrono::nanoseconds AudioEngineOptions::getAdditionalMidiDelay() const
 {
   return m_additionalMidiDelay;
 }
 
-std::string Options::getHeartBeatDeviceName() const
+std::string AudioEngineOptions::getHeartBeatDeviceName() const
 {
   return m_heartBeatDeviceName;
 }
 
-std::string Options::getAudioOutputDeviceName() const
+std::string AudioEngineOptions::getAudioOutputDeviceName() const
 {
   return m_audioOutputDeviceName;
 }
 
-int Options::getFramesPerPeriod() const
+int AudioEngineOptions::getFramesPerPeriod() const
 {
   return m_framesPerPeriod;
 }
 
-int Options::getNumPeriods() const
+int AudioEngineOptions::getNumPeriods() const
 {
   return m_numPeriods;
 }
 
-int Options::getAlsaRingBufferSize() const
+int AudioEngineOptions::getAlsaRingBufferSize() const
 {
   return m_alsaBufferSize;
 }
 
-std::string Options::getPlaygroundHost() const
+std::string AudioEngineOptions::getPlaygroundHost() const
 {
   return m_playgroundHost;
 }
 
-int Options::getSampleRate() const
+int AudioEngineOptions::getSampleRate() const
 {
   return m_rate;
 }
 
-int Options::getPolyphony() const
+int AudioEngineOptions::getPolyphony() const
 {
   return m_polyphony;
 }
 
-bool Options::doMeasurePerformance()
+bool AudioEngineOptions::doMeasurePerformance()
 {
   return m_measurePerformance;
 }

@@ -15,7 +15,7 @@ BBB_IP=192.168.10.11
 
 # general Messages
 MSG_DO_NOT_SWITCH_OFF="DO NOT SWITCH OFF C15!"
-MSG_UPDATING_C15="updateing C15..."
+MSG_UPDATING_C15="updating C15..."
 MSG_UPDATING_RT_FIRMWARE_1="updating RT-System 1..."
 MSG_UPDATING_RT_FIRMWARE_2="updating RT-System 2..."
 MSG_UPDATING_EPC="updating ePC..."
@@ -25,7 +25,7 @@ MSG_FAILED="FAILED"
 MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code: "
 
 # OBSOLETE??
-MSG_DONE_WITH_WARNING_CODE="OK. Warning: "
+#MSG_DONE_WITH_WARNING_CODE="OK. Warning: "
 #MSG_REBOOT="PLEASE RESTART C15 NOW"
 #MSG_UPDATING_SYSTEM_FILES="updating system files..."
 #MSG_CREATING_BACKUP="creating backup "
@@ -164,8 +164,8 @@ main() {
     stop_services
 
     epc_update
-    bbb_update
-    lpc_update
+    //bbb_update
+    //lpc_update
 
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt

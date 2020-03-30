@@ -23,8 +23,8 @@ void Engine::MonoEcho::init(const float _samplerate, const uint32_t _upsampleFac
   m_freqClip_min = _samplerate / 24576.0f;
   m_freqClip_max = _samplerate / 2.125f;
   // 1p hp
-  float omega = NlToolbox::Math::tan(50.0f * m_warpConst_PI);  // 0.000057116 (48 kHz), 0.000028558 (96 kHz)
-  float denom = 1.0f / (1.0f + omega);                         // divide once for better performance, then multiply
+  float omega = NlToolbox::Math::tan(50.0f * m_warpConst_PI);
+  float denom = 1.0f / (1.0f + omega);
   m_hp_a1 = (1.0f - omega) * denom;
   m_hp_b0 = denom;
   m_hp_b1 = -denom;
@@ -59,10 +59,8 @@ void Engine::MonoEcho::init(const float _samplerate, const uint32_t _upsampleFac
 void Engine::MonoEcho::set(MonoSignals &_signals)
 {
   float omega = std::clamp(_signals.get(C15::Signals::Mono_Signals::Echo_LPF), m_freqClip_min, m_freqClip_max);
-  // omega: clamp([261.625565301 ... 26579.500645116], [1.953125 (48K), 3.90625 (96K)], [22588.235294118 (48K), 45176.470588235 (96K)]
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
-  // tan([0.017123353 ... 1.478396543]) (48K), tan([0.008561677 ... 0.869812125]) (96K) --> always tan(0 < angle < pi/2), should be okay and > 0
-  float denom = 1.0f / (1.0f + omega);  // divide once for better performance, then multiply
+  float denom = 1.0f / (1.0f + omega);
   m_lp_a1 = (1.0f - omega) * denom;
   m_lp_b0 = m_lp_b1 = omega * denom;
 }

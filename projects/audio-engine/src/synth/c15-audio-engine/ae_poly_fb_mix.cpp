@@ -30,7 +30,7 @@ void Engine::PolyFeedbackMixer::set(PolySignals &_signals, const uint32_t _voice
   auto omega
       = std::clamp(_signals.get(C15::Signals::Truepoly_Signals::FB_Mix_HPF)[_voiceId], m_freqClip_min, m_freqClip_max);
   omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
-  float denom = 1.0f / (1.0f + omega);  // divide once for better performance, then multiply
+  float denom = 1.0f / (1.0f + omega);
   m_hp_a1[_voiceId] = (1.0f - omega) * denom;
   m_hp_b0[_voiceId] = denom;
   m_hp_b1[_voiceId] = -denom;

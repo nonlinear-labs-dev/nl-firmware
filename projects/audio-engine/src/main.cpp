@@ -1,4 +1,4 @@
-#include "Options.h"
+#include "AudioEngineOptions.h"
 #include "synth/SimpleSynth.h"
 #include "synth/C15Synth.h"
 #include "ui/CommandlinePerformanceWatch.h"
@@ -14,7 +14,7 @@
 #include "ui/C15_CLI.h"
 
 static Glib::RefPtr<Glib::MainLoop> theMainLoop;
-static std::unique_ptr<Options> theOptions;
+static std::unique_ptr<AudioEngineOptions> theOptions;
 
 void quit(int)
 {
@@ -29,7 +29,7 @@ void connectSignals()
   signal(SIGTERM, quit);
 }
 
-const Options *getOptions()
+const AudioEngineOptions *getOptions()
 {
   return theOptions.get();
 }
@@ -40,7 +40,7 @@ void runMainLoop()
   theMainLoop->run();
 }
 
-void setupMessaging(const Options *o)
+void setupMessaging(const AudioEngineOptions *o)
 {
   using namespace nltools::msg;
   Configuration conf;
@@ -53,20 +53,20 @@ int main(int args, char *argv[])
 {
   Glib::init();
   connectSignals();
-  theOptions = std::make_unique<Options>(args, argv);
+  theOptions = std::make_unique<AudioEngineOptions>(args, argv);
   setupMessaging(theOptions.get());
 
   if(theOptions->doMeasurePerformance())
   {
-    auto synth = std::make_unique<C15Synth>();
+    auto synth = std::make_unique<C15Synth>(theOptions.get());
     synth->measurePerformance(std::chrono::seconds(5));  // warm up
-    auto result = synth->measurePerformance(std::chrono::seconds(5));
+    auto result = std::get<1>(synth->measurePerformance(std::chrono::seconds(5)));
     nltools::Log::info("Audio engine performs at", result, "x realtime.");
     return EXIT_SUCCESS;
   }
 
   //auto synth = std::make_unique<SimpleSynth>();
-  auto synth = std::make_unique<C15Synth>();
+  auto synth = std::make_unique<C15Synth>(theOptions.get());
   C15_CLI commandLineInterface(synth.get());
   CommandlinePerformanceWatch watch(synth->getAudioOut());
   synth->start();

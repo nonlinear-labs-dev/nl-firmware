@@ -281,7 +281,7 @@ bool FrameBuffer::swapBuffers()
 
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
   {
-    SetTimestampedOledMessage msg{};
+    SetTimestampedOledMessage msg {};
     msg.m_timestamp
         = Application::get().getHWUI()->getPanelUnit().getEditPanel().getKnob().resetOldestPendingTimestamp();
     memcpy(msg.m_oledMessage.pixels, m_backBuffer.data(), m_backBuffer.size());
@@ -289,7 +289,7 @@ bool FrameBuffer::swapBuffers()
   }
   else
   {
-    SetOLEDMessage msg{};
+    SetOLEDMessage msg {};
     memcpy(msg.pixels, m_backBuffer.data(), m_backBuffer.size());
     return send(EndPoint::Oled, msg);
   }

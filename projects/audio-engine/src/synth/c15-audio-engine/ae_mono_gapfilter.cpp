@@ -24,7 +24,7 @@ void Engine::MonoGapFilter::init(const float _samplerate)
   m_freqClip_min = _samplerate / 24576.0f;
   m_freqScale_max = _samplerate / 3.0f;
   m_freqScale_min = _samplerate / 2.0f;
-  m_freqScale_norm = 1.0f / (m_freqScale_max - m_freqScale_min);  // divide once for better performance, then multiply
+  m_freqScale_norm = 1.0f / (m_freqScale_max - m_freqScale_min);
   // biquad hp l/r
   m_hp_l1_b0 = 0.0f;
   m_hp_l1_b1 = 0.0f;
@@ -99,14 +99,9 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   // biquad hp l
   float frequency = _signals.get(C15::Signals::Mono_Signals::Gap_Flt_HF_L);
   tmpVar_1 = (frequency - m_freqScale_min) * m_freqScale_norm;
-  // tmpVar_1 = std::clamp(frequency, -1.0f, 1.0f);
-  // ??? this seems weird (other comparable calculations use tmpVar_1 instead of frequency)
-  // - further, it seems unlikely the frequency will ever fall below zero (expected freq range: [11.6 kHz ... nyquist])
-  // - anyway, shouldn't this be:
-  tmpVar_1 = std::clamp(tmpVar_1, -1.0f, 1.0f);  // (no noticeable differences found so far...)
+  tmpVar_1 = std::clamp(tmpVar_1, -1.0f, 1.0f);
   float resonance = _signals.get(C15::Signals::Mono_Signals::Gap_Flt_Res) * tmpVar_1;
   tmpVar_1 = std::clamp(frequency, m_freqClip_min, m_freqClip_max);  // L1
-  // (??? here further indication for weirdness, in terms of frequency range)
   tmpVar_1 *= m_warpConst_2PI;
   tmpVar_2 = NlToolbox::Math::cos(tmpVar_1);
   m_hp_l1_a1 = tmpVar_2 * -2.0f;
@@ -115,7 +110,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_hp_l1_b1 = -tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_hp_l1_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_hp_l1_a1 = m_hp_l1_a1 * -tmpVar_2;
   m_hp_l1_a2 = m_hp_l1_a2 * -tmpVar_2;
   m_hp_l1_b0 = m_hp_l1_b0 * tmpVar_2;
@@ -130,7 +125,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_hp_l2_b1 = -tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_hp_l2_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_hp_l2_a1 = m_hp_l2_a1 * -tmpVar_2;
   m_hp_l2_a2 = m_hp_l2_a2 * -tmpVar_2;
   m_hp_l2_b0 = m_hp_l2_b0 * tmpVar_2;
@@ -138,7 +133,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   // biquad hp r
   frequency = _signals.get(C15::Signals::Mono_Signals::Gap_Flt_HF_R);
   tmpVar_1 = (frequency - m_freqScale_min) * m_freqScale_norm;
-  tmpVar_1 = std::clamp(tmpVar_1, -1.0f, 1.0f);  // (??? seems way more appropriate)
+  tmpVar_1 = std::clamp(tmpVar_1, -1.0f, 1.0f);
   resonance = _signals.get(C15::Signals::Mono_Signals::Gap_Flt_Res) * tmpVar_1;
   tmpVar_1 = std::clamp(frequency, m_freqClip_min, m_freqClip_max);  // R1
   tmpVar_1 *= m_warpConst_2PI;
@@ -149,7 +144,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_hp_r1_b1 = -tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_hp_r1_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_hp_r1_a1 = m_hp_r1_a1 * -tmpVar_2;
   m_hp_r1_a2 = m_hp_r1_a2 * -tmpVar_2;
   m_hp_r1_b0 = m_hp_r1_b0 * tmpVar_2;
@@ -164,7 +159,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_hp_r2_b1 = -tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_hp_r2_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_hp_r2_a1 = m_hp_r2_a1 * -tmpVar_2;
   m_hp_r2_a2 = m_hp_r2_a2 * -tmpVar_2;
   m_hp_r2_b0 = m_hp_r2_b0 * tmpVar_2;
@@ -183,7 +178,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_lp_l1_b1 = tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_lp_l1_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_lp_l1_a1 = m_lp_l1_a1 * -tmpVar_2;
   m_lp_l1_a2 = m_lp_l1_a2 * -tmpVar_2;
   m_lp_l1_b0 = m_lp_l1_b0 * tmpVar_2;
@@ -198,7 +193,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_lp_l2_b1 = tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_lp_l2_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_lp_l2_a1 = m_lp_l2_a1 * -tmpVar_2;
   m_lp_l2_a2 = m_lp_l2_a2 * -tmpVar_2;
   m_lp_l2_b0 = m_lp_l2_b0 * tmpVar_2;
@@ -217,7 +212,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_lp_r1_b1 = tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_lp_r1_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_lp_r1_a1 = m_lp_r1_a1 * -tmpVar_2;
   m_lp_r1_a2 = m_lp_r1_a2 * -tmpVar_2;
   m_lp_r1_b0 = m_lp_r1_b0 * tmpVar_2;
@@ -232,7 +227,7 @@ void Engine::MonoGapFilter::set(MonoSignals &_signals)
   m_lp_r2_b1 = tmpVar_2;
   tmpVar_2 = NlToolbox::Math::sin(tmpVar_1) * (1.0f - resonance);
   m_lp_r2_a2 = 1.0f - tmpVar_2;
-  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);  // divide once for better performance, then multiply
+  tmpVar_2 = 1.0f / (1.0f + tmpVar_2);
   m_lp_r2_a1 = m_lp_r2_a1 * -tmpVar_2;
   m_lp_r2_a2 = m_lp_r2_a2 * -tmpVar_2;
   m_lp_r2_b0 = m_lp_r2_b0 * tmpVar_2;

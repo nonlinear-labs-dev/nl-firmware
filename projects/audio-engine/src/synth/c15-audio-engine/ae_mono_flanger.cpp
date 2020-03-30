@@ -32,8 +32,8 @@ void Engine::MonoFlanger::init(const float _samplerate, const uint32_t _upsample
   m_lp_stateVar_R1 = 0.0f;
   m_lp_stateVar_R2 = 0.0f;
   // 1p hp
-  float omega = NlToolbox::Math::tan(50.0f * m_warpConst_PI);  // 0.000057116 (48 kHz), 0.000028558 (96 kHz)
-  float denom = 1.0f / (1.0f + omega);                         // divide once for better performance, then multiply
+  float omega = NlToolbox::Math::tan(50.0f * m_warpConst_PI);
+  float denom = 1.0f / (1.0f + omega);
   m_hp_a1 = (1.0f - omega) * denom;
   m_hp_b0 = denom;
   m_hp_b1 = -denom;
@@ -82,7 +82,7 @@ void Engine::MonoFlanger::init(const float _samplerate, const uint32_t _upsample
 void Engine::MonoFlanger::set_slow(MonoSignals &_signals)
 {
   float omega = std::clamp(_signals.get(C15::Signals::Mono_Signals::Flanger_LPF), m_freqClip_min, m_freqClip_max);
-  omega = NlToolbox::Math::tan(omega * m_warpConst_PI);  // expected to be tan(0 < angle < pi/2), should be fine
+  omega = NlToolbox::Math::tan(omega * m_warpConst_PI);
   float denom = 1.0f / (1.0f + omega);
   m_lp_a1 = (1.0f - omega) * denom;
   m_lp_b0 = m_lp_b1 = omega * denom;
@@ -95,7 +95,7 @@ void Engine::MonoFlanger::set_fast(MonoSignals &_signals)
   tmpVar = std::clamp(tmpVar, m_freqClip_min, m_freqClip_max);
   tmpVar *= m_warpConst_2PI;
   m_ap_b1_L = NlToolbox::Math::cos(tmpVar) * -2.0f;
-  tmpVar = NlToolbox::Math::sin(tmpVar);  // expected to be sin(0 < angle < pi/2) --> [0 ... 1], shoud be fine
+  tmpVar = NlToolbox::Math::sin(tmpVar);
   m_ap_b0_L = 1.0f - tmpVar;
   tmpVar = 1.0f / (1.0f + tmpVar);
   m_ap_b1_L *= tmpVar;
@@ -105,7 +105,7 @@ void Engine::MonoFlanger::set_fast(MonoSignals &_signals)
   tmpVar = std::clamp(tmpVar, m_freqClip_min, m_freqClip_max);
   tmpVar *= m_warpConst_2PI;
   m_ap_b1_R = NlToolbox::Math::cos(tmpVar) * -2.0f;
-  tmpVar = NlToolbox::Math::sin(tmpVar);  // expected to be sin(0 < angle < pi/2) --> [0 ... 1], shoud be fine
+  tmpVar = NlToolbox::Math::sin(tmpVar);
   m_ap_b0_R = 1.0f - tmpVar;
   tmpVar = 1.0f / (1.0f + tmpVar);
   m_ap_b1_R *= tmpVar;

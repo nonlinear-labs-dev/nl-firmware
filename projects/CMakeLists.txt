@@ -39,6 +39,8 @@ SET(C15_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/C15)
 
 message("Installing into: ${C15_INSTALL_PATH}")
 
+add_subdirectory(third-party)
+
 IF(BUILD_AUDIOENGINE OR BUILD_PLAYGROUND OR BUILD_BBBB)
     add_subdirectory(nltools)
     set(CMAKE_INSTALL_RPATH ${C15_INSTALL_PATH}/nltools)
@@ -72,5 +74,8 @@ ENDIF(BUILD_TEXT2SOLED)
 IF(BUILD_REALTIME_SYSTEM)
     add_subdirectory(realtime-system)
 ENDIF(BUILD_REALTIME_SYSTEM)
+
+add_subdirectory(acceptance-tests)
+
 
 add_subdirectory(scripts)
