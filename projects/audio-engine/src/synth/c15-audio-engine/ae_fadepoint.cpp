@@ -64,10 +64,7 @@ void ae_fade_table::render()
   if(m_trigger)
   {
     m_table_index++;
-    if(m_table_index == m_trigger_index)
-    {
-      m_trigger = false;
-    }
+    m_trigger = m_table_index < m_trigger_index;
   }
 }
 
@@ -75,6 +72,7 @@ void ae_fade_table::stop()
 {
   m_table_index = 0;
   m_event = FadeEvent::None;
+  m_trigger = false;
 }
 
 ae_fader::ae_fader()

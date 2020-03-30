@@ -577,6 +577,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
+    m_fade.stop();
     m_fade.enable(FadeEvent::RecallMute, 0);  // enable fader with event
     m_output_mute.pick(0);                    // pickup fade-out
   }
@@ -599,6 +600,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
   }
   if(m_glitch_suppression)
   {
+    m_fade.stop();
     m_fade.enable(FadeEvent::RecallMute, 0);
     m_output_mute.pick(0);
   }
@@ -620,6 +622,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   }
   if(m_glitch_suppression)
   {
+    m_fade.stop();
     m_fade.enable(FadeEvent::RecallMute, 0);
     m_output_mute.pick(0);
   }
