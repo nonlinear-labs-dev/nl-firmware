@@ -323,15 +323,13 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   //**************************** Loop Filter L *****************************//
   wetSample_L = (wetSample_L - m_lp_stateVar_L * m_lp_a1) * m_lp_a0;
   tmpVar = m_lp_stateVar_L;
-  m_lp_stateVar_L = wetSample_L;
-  // ??? filter state vars without dnc_constant?
+  m_lp_stateVar_L = wetSample_L + NlToolbox::Constants::DNC_const;
 
   wetSample_L = (wetSample_L + tmpVar) * m_lp_omega;
 
   wetSample_L = (wetSample_L - m_hp_stateVar_L * m_hp_a1) * m_hp_a0;
   tmpVar = m_hp_stateVar_L;
-  m_hp_stateVar_L = wetSample_L;
-  // ??? filter state vars without dnc_constant?
+  m_hp_stateVar_L = wetSample_L + NlToolbox::Constants::DNC_const;
 
   wetSample_L = wetSample_L - tmpVar;
 
@@ -366,7 +364,6 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   m_stateVar_L1 = NlToolbox::Math::interpolRT(tmpVar, m_buffer_L1[ind_tm1], m_buffer_L1[ind_t0], m_buffer_L1[ind_tp1],
                                               m_buffer_L1[ind_tp2]);
 
-  // ??? filter state vars without dnc_constant?
   //***************************** Del 1p L2 ******************************//
   tmpVar = m_stateVar_L2 * m_absorb;
   wetSample_L = wetSample_L + (tmpVar * REV_G_2);
@@ -378,7 +375,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_L2;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_L2 = m_buffer_L2[ind_t0];
+  m_stateVar_L2 = m_buffer_L2[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p L3 ******************************//
   tmpVar = m_stateVar_L3 * m_absorb;
@@ -391,7 +388,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_L3;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_L3 = m_buffer_L3[ind_t0];
+  m_stateVar_L3 = m_buffer_L3[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p L4 ******************************//
   tmpVar = m_stateVar_L4 * m_absorb;
@@ -404,7 +401,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_L4;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_L4 = m_buffer_L4[ind_t0];
+  m_stateVar_L4 = m_buffer_L4[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p L5 ******************************//
   tmpVar = m_stateVar_L5 * m_absorb;
@@ -417,7 +414,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_L5;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_L5 = m_buffer_L5[ind_t0];
+  m_stateVar_L5 = m_buffer_L5[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p L6 ******************************//
   tmpVar = m_stateVar_L6 * m_absorb;
@@ -430,7 +427,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_L6;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_L6 = m_buffer_L6[ind_t0];
+  m_stateVar_L6 = m_buffer_L6[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p L7 ******************************//
   tmpVar = m_stateVar_L7 * m_absorb;
@@ -443,7 +440,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_L7;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_L7 = m_buffer_L7[ind_t0];
+  m_stateVar_L7 = m_buffer_L7[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p L8 ******************************//
   tmpVar = m_stateVar_L8 * m_absorb;
@@ -456,7 +453,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_L8;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_L8 = m_buffer_L8[ind_t0];
+  m_stateVar_L8 = m_buffer_L8[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //************************************************************************//
   //*************************** Right Channel ******************************//
@@ -486,13 +483,13 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   //**************************** Loop Filter R *****************************//
   wetSample_R = (wetSample_R - m_lp_stateVar_R * m_lp_a1) * m_lp_a0;
   tmpVar = m_lp_stateVar_R;
-  m_lp_stateVar_R = wetSample_R;
+  m_lp_stateVar_R = wetSample_R + NlToolbox::Constants::DNC_const;
 
   wetSample_R = (wetSample_R + tmpVar) * m_lp_omega;
 
   wetSample_R = (wetSample_R - m_hp_stateVar_R * m_hp_a1) * m_hp_a0;
   tmpVar = m_hp_stateVar_R;
-  m_hp_stateVar_R = wetSample_R;
+  m_hp_stateVar_R = wetSample_R + NlToolbox::Constants::DNC_const;
 
   wetSample_R = wetSample_R - tmpVar;
 
@@ -538,7 +535,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_R2;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_R2 = m_buffer_R2[ind_t0];
+  m_stateVar_R2 = m_buffer_R2[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p R3 ******************************//
   tmpVar = m_stateVar_R3 * m_absorb;
@@ -551,7 +548,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_R3;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_R3 = m_buffer_R3[ind_t0];
+  m_stateVar_R3 = m_buffer_R3[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p R4 ******************************//
   tmpVar = m_stateVar_R4 * m_absorb;
@@ -564,7 +561,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_R4;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_R4 = m_buffer_R4[ind_t0];
+  m_stateVar_R4 = m_buffer_R4[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p R5 ******************************//
   tmpVar = m_stateVar_R5 * m_absorb;
@@ -577,7 +574,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_R5;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_R5 = m_buffer_R5[ind_t0];
+  m_stateVar_R5 = m_buffer_R5[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p R6 ******************************//
   tmpVar = m_stateVar_R6 * m_absorb;
@@ -590,7 +587,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_R6;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_R6 = m_buffer_R6[ind_t0];
+  m_stateVar_R6 = m_buffer_R6[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p R7 ******************************//
   tmpVar = m_stateVar_R7 * m_absorb;
@@ -603,7 +600,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_R7;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_R7 = m_buffer_R7[ind_t0];
+  m_stateVar_R7 = m_buffer_R7[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //***************************** Del 1p R8 ******************************//
   tmpVar = m_stateVar_R8 * m_absorb;
@@ -616,7 +613,7 @@ void Engine::MonoReverb::apply(MonoSignals &_signals, const float _rawSample_L, 
   ind_t0 = m_buffer_indx - REV_DEL_R8;
   ind_t0 &= m_buffer_sz_m1;
 
-  m_stateVar_R8 = m_buffer_R8[ind_t0];
+  m_stateVar_R8 = m_buffer_R8[ind_t0] + NlToolbox::Constants::DNC_const;
 
   //************************************************************************//
   //*************************** Feedback Delay *****************************//
