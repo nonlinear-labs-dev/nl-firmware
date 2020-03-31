@@ -1,8 +1,13 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
+import javax.naming.directory.InitialDirContext;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Gray;
@@ -34,7 +39,24 @@ public class ParameterValueSlider extends OverlayControl {
 			if (isBiPolar)
 				drawCenterMark(ctx);
 
-			drawIndicator(ctx, value, isBiPolar);
+			boolean fillRight = false;
+			VoiceGroup currentVG = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
+	
+			BasicParameterModel bpm = EditBufferModel.get().getParameter(parameter.id);
+			if(bpm != null) {
+				if(bpm.group.id.getName() == "Split") {
+					fillRight = currentVG == VoiceGroup.II;
+				} else if(bpm.id.getNumber() == 396) { //Fade From
+					fillRight = currentVG == VoiceGroup.II;
+				}
+			}
+
+
+			if(fillRight)
+				drawIndicatorFromRight(ctx, value);
+			else
+				drawIndicator(ctx, value, isBiPolar);
+
 			drawHandle(ctx, value, isBiPolar);
 		} else {
 
@@ -49,6 +71,20 @@ public class ParameterValueSlider extends OverlayControl {
 			drawReturnIndicators(ctx, parameter);
 
 		}
+	}
+
+	protected void drawIndicatorFromRight(Context2d ctx, double value) {
+	
+		Rect indicatorRect = getPixRect().copy();
+
+		double width = indicatorRect.getWidth() - indicatorRect.getWidth() * value; 
+
+		indicatorRect.setLeft(indicatorRect.getRight() - width);
+		indicatorRect.setWidth(width);
+		indicatorRect.reduceHeightBy(2);
+		indicatorRect.reduceWidthBy(2);
+		indicatorRect.fill(ctx, getIndicatorColor());
+		
 	}
 
 	protected void drawReturnIndicators(Context2d ctx, ParameterPresenter parameter) {

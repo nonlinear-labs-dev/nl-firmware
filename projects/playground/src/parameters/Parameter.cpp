@@ -354,6 +354,7 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
 
   if(shouldWriteDocProperties(knownRevision))
   {
+    writer.writeTextElement("can-fill-from-right", to_string(enableDrawRightToLeftForVoiceGroup()));
     writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
     writer.writeTextElement("bipolar", to_string(m_value.isBiPolar()));
     writer.writeTextElement("long-name", getLongName());

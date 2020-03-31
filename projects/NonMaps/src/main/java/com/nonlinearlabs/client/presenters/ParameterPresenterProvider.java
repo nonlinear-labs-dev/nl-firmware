@@ -71,6 +71,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.modulation.upperClipping = false;
 		presenter.controlPosition = e.value.getQuantizedAndClipped(true);
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
+		presenter.fillFromRightEnabled = e.enableFillFromRight.getBool();
+
 
 		if (e.id.getNumber() == 356 && EditBufferModel.get().voiceGroup.getValue() == EditBufferModel.VoiceGroup.II) {
 			double nextValue = e.value.getIncDecValue(false, 1);
