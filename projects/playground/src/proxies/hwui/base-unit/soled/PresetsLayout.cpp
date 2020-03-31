@@ -114,7 +114,7 @@ bool PresetsLayout::updateNameAndNumber()
       auto modified = eb->isModified() && eb->getUUIDOfLastLoadedPreset() == presetUUID;
       auto presetNumberString = formatBankAndPresetNumber(bankNumber, presetPosition, modified);
       m_number->setText(presetNumberString);
-      m_name->setText(preset->getName());
+      m_name->setText(preset->getDisplayNameWithSuffixes());
       return true;
     }
   }
