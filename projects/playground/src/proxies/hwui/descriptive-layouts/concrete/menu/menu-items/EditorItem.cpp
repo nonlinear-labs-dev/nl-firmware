@@ -43,7 +43,7 @@ bool EditorItem::redrawEnterIndication(FrameBuffer &buffer)
   auto leftRect = getPosition();
   leftRect.setWidth(12);
   leftRect.setLeft(getPosition().getRight() - 12);
-  SubmenuIndicator s(leftRect);
+  Label s("...", leftRect);
   s.setHighlight(isHighlight());
   return s.redraw(buffer);
 }
