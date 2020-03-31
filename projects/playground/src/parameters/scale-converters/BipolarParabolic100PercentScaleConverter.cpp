@@ -41,3 +41,8 @@ Glib::ustring BipolarParabolic100PercentScaleConverter::controlPositionToDisplay
     << "\", withUnit);";
   return s.str();
 }
+
+bool BipolarParabolic100PercentScaleConverter::isBoolean() const
+{
+  return false;
+}

@@ -79,12 +79,18 @@ bool RawValue::isBiPolar() const
 
 void RawValue::setIsBoolean(bool v)
 {
-  m_isBoolean = v;
+  if(v)
+    m_isBoolean = std::optional(v);
+  else
+    m_isBoolean = std::nullopt;
 }
 
 bool RawValue::isBoolean() const
 {
-  return m_isBoolean;
+  if(m_isBoolean.has_value())
+    return m_isBoolean.value();
+
+  return m_scaleConverter->isBoolean();
 }
 
 void RawValue::setToDefault(Initiator initiator)

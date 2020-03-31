@@ -50,3 +50,8 @@ bool EnvelopeReleaseTimeMSScaleConverter::isBiPolar() const
 {
   return false;
 }
+
+bool EnvelopeReleaseTimeMSScaleConverter::isBoolean() const
+{
+  return false;
+}

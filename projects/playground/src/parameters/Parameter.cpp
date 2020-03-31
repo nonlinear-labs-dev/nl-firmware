@@ -32,7 +32,7 @@ Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
-    , m_voiceGroup{ group->getVoiceGroup() }
+    , m_voiceGroup { group->getVoiceGroup() }
 {
 }
 
@@ -351,6 +351,7 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
 {
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
+  writer.writeTextElement("boolean", to_string(m_value.isBoolean()));
 
   if(shouldWriteDocProperties(knownRevision))
   {

@@ -30,7 +30,7 @@ tControlPositionValue ParabolicGainDbScaleConverter::displayToControlPosition(co
   if(displayValue == -128)
     return 0;
 
-  auto cp = std::sqrt( std::pow(10, (displayValue / 20)) / 4);
+  auto cp = std::sqrt(std::pow(10, (displayValue / 20)) / 4);
   return getControlPositionRange().clip(cp);
 }
 
@@ -50,4 +50,9 @@ Glib::ustring ParabolicGainDbScaleConverter::controlPositionToDisplayJS() const
   s << "return $wnd.formatDimension(cpValue == 0 ? -128 : (20 * Math.log (4 * cpValue * cpValue) / Math.log(10)), \""
     << getDimension().getStingizerJS() << "\", withUnit);";
   return s.str();
+}
+
+bool ParabolicGainDbScaleConverter::isBoolean() const
+{
+  return false;
 }

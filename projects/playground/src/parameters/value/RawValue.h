@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include <optional>
 
 class ScaleConverter;
 
@@ -41,5 +42,5 @@ class RawValue
   tValueType m_factoryDefaultValue;
 
   const ScaleConverter *m_scaleConverter;
-  bool m_isBoolean = false;
+  std::optional<bool> m_isBoolean = std::nullopt;
 };

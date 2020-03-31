@@ -18,6 +18,11 @@ bool TimeScaleConverter::isBiPolar() const
   return false;
 }
 
+bool TimeScaleConverter::isBoolean() const
+{
+  return false;
+}
+
 tTcdValue TimeScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
 {
   return m_tcdRange.scaleValueToRange(cpValue, getControlPositionRange(), false);

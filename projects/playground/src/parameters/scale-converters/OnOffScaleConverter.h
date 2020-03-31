@@ -9,4 +9,5 @@ class OnOffScaleConverter : public LinearCountScaleConverter<2, OnOffDimension>
   tTcdValue controlPositionToTcd(const tControlPositionValue& cpValue) const override;
   tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
   bool isBiPolar() const override;
+  bool isBoolean() const override;
 };

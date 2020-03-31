@@ -18,6 +18,12 @@ public class ValueUpdater extends Updater {
 		String bipolar = getChildText(root, "bipolar");
 		String scaling = getChildText(root, "scaling");
 		String defaultValue = getChildText(root, "default");
+		String isBoolean = getChildText(root, "boolean");
+
+		if(!isBoolean.isEmpty()) {
+			BooleanDataModelEntity bp = target.metaData.isBoolean;
+			bp.setValue(isBoolean.equals("1")? BooleanValues.on : BooleanValues.off);
+		}
 
 		if (!bipolar.isEmpty()) {
 			BooleanDataModelEntity bp = target.metaData.bipolar;

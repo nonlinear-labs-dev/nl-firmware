@@ -27,6 +27,7 @@ class ScaleConverter
 
   const ScaleConverter::tControlPositionRange getControlPositionRange() const;
   virtual bool isBiPolar() const = 0;
+  virtual bool isBoolean() const = 0;
 
   const Dimension &getDimension() const;
   tTcdRange getTcdRange() const;

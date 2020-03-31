@@ -13,6 +13,7 @@ class CombDecayBipolarMsScaleConverter : public ScaleConverter
   tTcdValue controlPositionToTcd(const tControlPositionValue &cpValue) const override;
   virtual tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
   Glib::ustring controlPositionToDisplayJS() const override;
+  bool isBoolean() const override;
 
  private:
   tDisplayRange m_displayRange;

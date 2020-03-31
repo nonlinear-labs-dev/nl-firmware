@@ -15,6 +15,11 @@ tControlPositionValue OnOffScaleConverter::tcdToControlPosition(tTcdValue v) con
   return v;
 }
 
+bool OnOffScaleConverter::isBoolean() const
+{
+  return true;
+}
+
 bool OnOffScaleConverter::isBiPolar() const
 {
   return false;
