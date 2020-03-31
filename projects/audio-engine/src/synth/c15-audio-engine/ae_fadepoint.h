@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       ae_fadepoint.h
     @date
-    @version    1.7-0
+    @version    1.7-4
     @author     M. Seeber
     @brief      fadepoint generator
     @todo
@@ -11,6 +11,9 @@
 
 #include <c15_config.h>
 #include <vector>
+#include <atomic>
+
+// current FadeTable implementation
 
 enum class FadeEvent
 {
@@ -39,6 +42,37 @@ class ae_fade_table
   uint32_t m_table_index, m_table_offset, m_trigger_index;
   bool m_trigger;
 };
+
+// std::atomic variation of FadeTable
+
+enum MuteTask
+{
+  Trigger_Tone = 1 << 0,
+  Trigger_Unison = 1 << 1,
+  Trigger_Mono = 1 << 2,
+  Recall_Single = 1 << 3,
+  Recall_Split = 1 << 4,
+  Recall_Layer = 1 << 5
+};
+
+class atomic_fade_table
+{
+ public:
+  float m_value = 0.0f;
+  uint32_t m_currentMuteRampIndex = 0;
+  std::atomic<uint32_t> m_muteTasks = 0;
+  atomic_fade_table();
+  void init(const float _samplerate);
+  uint32_t getTargetRampIndex() const;
+  void setTask(const MuteTask _task);
+  void updateValue(const uint32_t _index);
+
+ private:
+  uint32_t m_finalMuteRampIndex = 0;
+  std::vector<float> m_data;
+};
+
+// current Fader implementation
 
 class ae_fader
 {
