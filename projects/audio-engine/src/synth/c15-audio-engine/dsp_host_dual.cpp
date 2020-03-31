@@ -35,6 +35,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_time.init(upsampleIndex);
   m_fade.init(samplerate);
   m_output_mute.init(&m_fade.m_value);
+  m_new_fade.init(samplerate);
   // proper time init
   m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
   m_edit_time.m_scaled = scale(m_edit_time.m_scaling, m_edit_time.m_position);
@@ -1094,8 +1095,9 @@ void dsp_host_dual::onSettingInitialSinglePreset()
 uint32_t dsp_host_dual::onSettingToneToggle()
 {
   m_tone_state = (m_tone_state + 1) % 3;
-  m_fade.enable(FadeEvent::ToneMute, 0);
-  m_output_mute.pick(0);
+  //  m_fade.enable(FadeEvent::ToneMute, 0);
+  //  m_output_mute.pick(0);
+  m_new_fade.setTask(MuteTask_Trigger_Tone);
   return m_tone_state;
 }
 
@@ -1103,7 +1105,27 @@ void dsp_host_dual::render()
 {
   // clock & fadepoint rendering
   m_clock.render();
-  evalFadePoint();
+  //  evalFadePoint();
+  const uint32_t targetRampIndex = m_new_fade.getTargetRampIndex();
+  if(targetRampIndex != m_new_fade.m_currentMuteRampIndex)
+  {
+    if(m_new_fade.m_currentMuteRampIndex > targetRampIndex)
+    {
+      // fade out
+      m_new_fade.m_currentMuteRampIndex--;
+      if(m_new_fade.m_currentMuteRampIndex == targetRampIndex)
+      {
+        // mute tasks
+        evalMuteTasks();
+      }
+    }
+    else
+    {
+      // fade in
+      m_new_fade.m_currentMuteRampIndex++;
+    }
+  }
+  const float mute = m_new_fade.getValue();
   // slow rendering
   if(m_clock.m_slow)
   {
@@ -1125,7 +1147,6 @@ void dsp_host_dual::render()
     m_mono[1].render_fast();
   }
   // audio rendering (always) -- temporary soundgenerator patching
-  const float mute = m_output_mute.get_value();
   // - audio dsp poly - first stage - both layers (up to Output Mixer)
   m_poly[0].render_audio(mute);
   m_poly[1].render_audio(mute);
@@ -1819,6 +1840,15 @@ void dsp_host_dual::evalFadePoint()
         m_output_mute.stop();
         break;
     }
+  }
+}
+
+void dsp_host_dual::evalMuteTasks()
+{
+  auto muteTasks = m_new_fade.m_muteTasks.exchange(0);
+  if(muteTasks & MuteTask_Trigger_Tone)
+  {
+    m_global.update_tone_mode(m_tone_state);
   }
 }
 

@@ -88,7 +88,7 @@ void atomic_fade_table::init(const float _samplerate)
   const float fade_time = 1e-3f * C15::Config::fade_time_ms * _samplerate;
   const float fade_dx = 1.0f / (fade_time - 1.0f);
   const uint32_t data_size = static_cast<uint32_t>(fade_time);
-  m_finalMuteRampIndex = data_size - 1;
+  m_currentMuteRampIndex = m_finalMuteRampIndex = data_size - 1;
   m_data.resize(data_size);
   for(uint32_t i = 0; i < data_size; i++)
   {
@@ -107,9 +107,9 @@ void atomic_fade_table::setTask(const MuteTask _task)
   m_muteTasks |= _task;
 }
 
-void atomic_fade_table::updateValue(const uint32_t _index)
+float atomic_fade_table::getValue()
 {
-  m_value = m_data[_index];
+  return m_data[m_currentMuteRampIndex];
 }
 
 // current Fader implementation

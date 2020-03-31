@@ -47,25 +47,24 @@ class ae_fade_table
 
 enum MuteTask
 {
-  Trigger_Tone = 1 << 0,
-  Trigger_Unison = 1 << 1,
-  Trigger_Mono = 1 << 2,
-  Recall_Single = 1 << 3,
-  Recall_Split = 1 << 4,
-  Recall_Layer = 1 << 5
+  MuteTask_Trigger_Tone = 1 << 0,
+  MuteTask_Trigger_Unison = 1 << 1,
+  MuteTask_Trigger_Mono = 1 << 2,
+  MuteTask_Recall_Single = 1 << 3,
+  MuteTask_Recall_Split = 1 << 4,
+  MuteTask_Recall_Layer = 1 << 5
 };
 
 class atomic_fade_table
 {
  public:
-  float m_value = 0.0f;
   uint32_t m_currentMuteRampIndex = 0;
   std::atomic<uint32_t> m_muteTasks = 0;
   atomic_fade_table();
   void init(const float _samplerate);
   uint32_t getTargetRampIndex() const;
   void setTask(const MuteTask _task);
-  void updateValue(const uint32_t _index);
+  float getValue();
 
  private:
   uint32_t m_finalMuteRampIndex = 0;
