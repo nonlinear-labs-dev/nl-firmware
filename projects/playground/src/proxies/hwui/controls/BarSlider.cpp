@@ -1,6 +1,9 @@
 #include "BarSlider.h"
 #include <proxies/hwui/FrameBuffer.h>
+#include <groups/ParameterGroup.h>
 #include <math.h>
+#include <Application.h>
+#include <proxies/hwui/HWUI.h>
 
 BarSlider::BarSlider(Parameter *param, const Rect &rect)
     : super(param, rect)
@@ -56,7 +59,25 @@ bool BarSlider::redraw(FrameBuffer &fb)
     v = std::max(std::min(v, 1.0f), 0.0f);
     int width = ceil(smaller.getWidth() * v);
     setSliderColor(fb);
-    fb.fillRect(smaller.getLeft(), smaller.getTop(), width, smaller.getHeight());
+
+    if(getParameter()->enableDrawRightToLeftForVoiceGroup())
+    {
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      if(vg == VoiceGroup::I)
+      {
+        fb.fillRect(smaller.getLeft(), smaller.getTop(), width, smaller.getHeight());
+      }
+      else
+      {
+        auto realWidth = smaller.getWidth() - width;
+
+        fb.fillRect(smaller.getRight() - realWidth, smaller.getTop(), realWidth + 1, smaller.getHeight());
+      }
+    }
+    else
+    {
+      fb.fillRect(smaller.getLeft(), smaller.getTop(), width, smaller.getHeight());
+    }
   }
 
   if(hasBorder())

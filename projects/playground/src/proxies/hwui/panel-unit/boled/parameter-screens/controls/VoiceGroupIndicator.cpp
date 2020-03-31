@@ -15,11 +15,15 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
   auto parameter = Application::get().getPresetManager()->getEditBuffer()->getSelected();
   m_parameterSelectionChanged
       = parameter->onParameterChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterChanged));
+
+  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
 }
 
 VoiceGroupIndicator::~VoiceGroupIndicator()
 {
   m_soundTypeChanged.disconnect();
+  m_voiceGroupChanged.disconnect();
   m_parameterSelectionChanged.disconnect();
 }
 
@@ -64,12 +68,24 @@ void VoiceGroupIndicator::onSoundTypeChanged()
 
 void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
 {
+  auto isSplit = parameter->getParentGroup()->getID().getName() == "Split";
+
   m_shouldDraw
       = SwitchVoiceGroupButton::allowToggling(parameter, Application::get().getPresetManager()->getEditBuffer());
   m_shouldDraw |= parameter->getParentGroup()->getID().getName() == "MCs";
-  m_shouldDraw |= parameter->getParentGroup()->getID().getName() == "Split";
-  m_selectedVoiceGroup = parameter->getID().getVoiceGroup();
+  m_shouldDraw |= isSplit;
+
+  if(isSplit)
+    m_selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+  else
+    m_selectedVoiceGroup = parameter->getID().getVoiceGroup();
 
   onSoundTypeChanged();
+  setDirty();
+}
+
+void VoiceGroupIndicator::onVoiceGroupSelectionChanged(VoiceGroup vg)
+{
+  m_selectedVoiceGroup = vg;
   setDirty();
 }

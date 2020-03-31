@@ -32,7 +32,7 @@ Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
-    , m_voiceGroup{ group->getVoiceGroup() }
+    , m_voiceGroup { group->getVoiceGroup() }
 {
 }
 
@@ -472,6 +472,11 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
 bool Parameter::lockingEnabled() const
 {
   return true;
+}
+
+bool Parameter::enableDrawRightToLeftForVoiceGroup() const
+{
+  return false;
 }
 
 void Parameter::undoableLock(UNDO::Transaction *transaction)

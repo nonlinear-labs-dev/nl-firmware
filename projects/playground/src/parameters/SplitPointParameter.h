@@ -10,6 +10,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   Glib::ustring getDisplayString() const override;
   Glib::ustring stringizeModulationAmount(tControlPositionValue amount) const override;
+  bool enableDrawRightToLeftForVoiceGroup() const override;
 
  protected:
   Glib::ustring modulationValueToDisplayString(tControlPositionValue v) const override;

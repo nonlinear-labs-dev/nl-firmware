@@ -117,6 +117,7 @@ class Parameter : public UpdateDocumentContributor,
 
   virtual VisualizationStyle getVisualizationStyle() const;
   virtual bool lockingEnabled() const;
+  virtual bool enableDrawRightToLeftForVoiceGroup() const;
   // CALLBACKS
   sigc::connection onParameterChanged(sigc::slot<void, const Parameter *> slot, bool doInitCall = true) const;
 

@@ -12,6 +12,7 @@ class VoiceGroupIndicator : public Control
   void onSoundTypeChanged();
 
   void onParameterChanged(const Parameter* parameter);
+  void onVoiceGroupSelectionChanged(VoiceGroup vg);
 
   bool drawSplit(FrameBuffer& fb);
   bool drawLayer(FrameBuffer& fb);
@@ -21,6 +22,7 @@ class VoiceGroupIndicator : public Control
 
   sigc::connection m_soundTypeChanged;
   sigc::connection m_parameterSelectionChanged;
+  sigc::connection m_voiceGroupChanged;
 
   bool m_shouldDraw = true;
 };
