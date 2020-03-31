@@ -873,10 +873,11 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
       nltools::Log::info("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
     // application now via fade point
-    m_fade.enable(FadeEvent::UnisonMute, 0);
-    m_output_mute.pick(0);
-    m_output_mute.m_preloaded_layerId = layerId;
-    m_output_mute.m_preloaded_position = param->m_position;
+    //    m_fade.enable(FadeEvent::UnisonMute, 0);
+    //    m_output_mute.pick(0);
+    m_new_fade.setTask(MuteTask_Trigger_Unison);
+    m_preloaded_layerId = layerId;
+    m_preloaded_position = param->m_position;
   }
 }
 
@@ -892,10 +893,11 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
-    m_fade.enable(FadeEvent::MonoMute, 0);
-    m_output_mute.pick(0);
-    m_output_mute.m_preloaded_layerId = layerId;
-    m_output_mute.m_preloaded_position = param->m_scaled;
+    //    m_fade.enable(FadeEvent::MonoMute, 0);
+    //    m_output_mute.pick(0);
+    m_new_fade.setTask(MuteTask_Trigger_Mono);
+    m_preloaded_layerId = layerId;
+    m_preloaded_position = param->m_scaled;
   }
 }
 void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -1848,7 +1850,40 @@ void dsp_host_dual::evalMuteTasks()
   auto muteTasks = m_new_fade.m_muteTasks.exchange(0);
   if(muteTasks & MuteTask_Trigger_Tone)
   {
+    // apply (preloaded) tone state
     m_global.update_tone_mode(m_tone_state);
+  }
+  if(muteTasks & MuteTask_Trigger_Unison)
+  {
+    // apply (preloaded) unison change
+    m_alloc.setUnison(m_preloaded_layerId, m_preloaded_position);
+    // apply reset to affected poly compoments
+    m_poly[m_preloaded_layerId].resetEnvelopes();
+    m_poly[m_preloaded_layerId].m_uVoice = m_alloc.m_unison - 1;
+    m_poly[m_preloaded_layerId].m_key_active = 0;
+    if(m_layer_mode != LayerMode::Split)
+    {
+      // apply reset to other poly components (when not in split mode)
+      const uint32_t layerId = 1 - m_preloaded_layerId;
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
+      m_poly[layerId].m_key_active = 0;
+    }
+  }
+  if(muteTasks & MuteTask_Trigger_Mono)
+  {
+    // apply (preloaded) mono change
+    m_alloc.setMonoEnable(m_preloaded_layerId, m_preloaded_position);
+    // apply reset to affected poly compoments
+    m_poly[m_preloaded_layerId].resetEnvelopes();
+    m_poly[m_preloaded_layerId].m_key_active = 0;
+    if(m_layer_mode != LayerMode::Split)
+    {
+      // apply reset to other poly components (when not in split mode)
+      const uint32_t layerId = 1 - m_preloaded_layerId;
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_key_active = 0;
+    }
   }
 }
 
