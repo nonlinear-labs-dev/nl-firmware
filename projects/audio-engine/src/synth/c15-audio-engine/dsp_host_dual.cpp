@@ -33,8 +33,8 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_convert.init();
   m_clock.init(upsampleIndex);
   m_time.init(upsampleIndex);
-  m_fade.init(samplerate);
-  m_output_mute.init(&m_fade.m_value);
+  //  m_fade.init(samplerate);
+  //  m_output_mute.init(&m_fade.m_value);
   m_new_fade.init(samplerate);
   // proper time init
   m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
@@ -274,8 +274,7 @@ void dsp_host_dual::logStatus()
   {
     nltools::Log::info("engine status:");
     nltools::Log::info("-clock(index:", m_clock.m_index, ", fast:", m_clock.m_fast, ", slow:", m_clock.m_slow, ")");
-    nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_output_mute.get_value(),
-                       ")");
+    nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_new_fade.getValue(), ")");
     nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
   }
   else if(LOG_ENGINE_EDITS)
@@ -578,13 +577,14 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.stop();
-    m_fade.enable(FadeEvent::RecallMute, 0);  // enable fader with event
-    m_output_mute.pick(0);                    // pickup fade-out
+    //    m_fade.stop();
+    //    m_fade.enable(FadeEvent::RecallMute, 0);  // enable fader with event
+    //    m_output_mute.pick(0);                    // pickup fade-out
+    m_new_fade.setTask(MuteTask_Recall_Single);
   }
   else
   {
-    // direct apply: recall single preset buffer
+    // direct apply: recall single preset buffer - no flushing
     m_layer_mode = m_preloaded_layer_mode;
     recallSingle();
   }
@@ -601,12 +601,14 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
   }
   if(m_glitch_suppression)
   {
-    m_fade.stop();
-    m_fade.enable(FadeEvent::RecallMute, 0);
-    m_output_mute.pick(0);
+    //    m_fade.stop();
+    //    m_fade.enable(FadeEvent::RecallMute, 0);
+    //    m_output_mute.pick(0);
+    m_new_fade.setTask(MuteTask_Recall_Split);
   }
   else
   {
+    // direct apply: recall split preset buffer - no flushing
     m_layer_mode = m_preloaded_layer_mode;
     recallSplit();
   }
@@ -623,12 +625,14 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   }
   if(m_glitch_suppression)
   {
-    m_fade.stop();
-    m_fade.enable(FadeEvent::RecallMute, 0);
-    m_output_mute.pick(0);
+    //    m_fade.stop();
+    //    m_fade.enable(FadeEvent::RecallMute, 0);
+    //    m_output_mute.pick(0);
+    m_new_fade.setTask(MuteTask_Recall_Layer);
   }
   else
   {
+    // direct apply: recall layer preset buffer - no flushing
     m_layer_mode = m_preloaded_layer_mode;
     recallLayer();
   }
@@ -1117,7 +1121,7 @@ void dsp_host_dual::render()
       m_new_fade.m_currentMuteRampIndex--;
       if(m_new_fade.m_currentMuteRampIndex == targetRampIndex)
       {
-        // mute tasks
+        // fade out completed -> mute tasks
         evalMuteTasks();
       }
     }
@@ -1757,93 +1761,93 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param* _
   }
 }
 
-void dsp_host_dual::evalFadePoint()
-{
-  m_fade.render();
-  // act when fade process was completed
-  if(m_fade.get_state())
-  {
-    switch(m_fade.m_event)
-    {
-      case FadeEvent::RecallMute:
-        m_layer_mode = m_preloaded_layer_mode;
-        // flush - currently global ... (?)
-        m_poly[0].flushDSP();
-        m_poly[1].flushDSP();
-        m_mono[0].flushDSP();
-        m_mono[1].flushDSP();
-        //load preset
-        switch(m_layer_mode)
-        {
-          case C15::Properties::LayerMode::Single:
-            recallSingle();
-            break;
-          case C15::Properties::LayerMode::Split:
-            recallSplit();
-            break;
-          case C15::Properties::LayerMode::Layer:
-            recallLayer();
-            break;
-        }
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::ToneMute:
-        m_global.update_tone_mode(m_tone_state);
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::UnisonMute:
-        // apply preloaded unison change
-        m_alloc.setUnison(m_output_mute.m_preloaded_layerId, m_output_mute.m_preloaded_position);
-        if(m_layer_mode == LayerMode::Split)
-        {
-          m_poly[m_output_mute.m_preloaded_layerId].resetEnvelopes();
-          m_poly[m_output_mute.m_preloaded_layerId].m_uVoice = m_alloc.m_unison - 1;
-          m_poly[m_output_mute.m_preloaded_layerId].m_key_active = 0;
-        }
-        else
-        {
-          for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-          {
-            m_poly[layerId].resetEnvelopes();
-            m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
-            m_poly[layerId].m_key_active = 0;
-          }
-        }
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::MonoMute:
-        // apply preloaded mono change
-        m_alloc.setMonoEnable(m_output_mute.m_preloaded_layerId, m_output_mute.m_preloaded_position);
-        if(m_layer_mode == LayerMode::Split)
-        {
-          m_poly[m_output_mute.m_preloaded_layerId].resetEnvelopes();
-          m_poly[m_output_mute.m_preloaded_layerId].m_key_active = 0;
-        }
-        else
-        {
-          for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-          {
-            m_poly[layerId].resetEnvelopes();
-            m_poly[layerId].m_key_active = 0;
-          }
-        }
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::Unmute:
-        m_fade.stop();
-        m_output_mute.stop();
-        break;
-    }
-  }
-}
+//void dsp_host_dual::evalFadePoint()
+//{
+//  m_fade.render();
+//  // act when fade process was completed
+//  if(m_fade.get_state())
+//  {
+//    switch(m_fade.m_event)
+//    {
+//      case FadeEvent::RecallMute:
+//        m_layer_mode = m_preloaded_layer_mode;
+//        // flush - currently global ... (?)
+//        m_poly[0].flushDSP();
+//        m_poly[1].flushDSP();
+//        m_mono[0].flushDSP();
+//        m_mono[1].flushDSP();
+//        //load preset
+//        switch(m_layer_mode)
+//        {
+//          case C15::Properties::LayerMode::Single:
+//            recallSingle();
+//            break;
+//          case C15::Properties::LayerMode::Split:
+//            recallSplit();
+//            break;
+//          case C15::Properties::LayerMode::Layer:
+//            recallLayer();
+//            break;
+//        }
+//        m_fade.stop();
+//        m_output_mute.pick(2);
+//        m_fade.enable(FadeEvent::Unmute, 1);
+//        break;
+//      case FadeEvent::ToneMute:
+//        m_global.update_tone_mode(m_tone_state);
+//        m_fade.stop();
+//        m_output_mute.pick(2);
+//        m_fade.enable(FadeEvent::Unmute, 1);
+//        break;
+//      case FadeEvent::UnisonMute:
+//        // apply preloaded unison change
+//        m_alloc.setUnison(m_output_mute.m_preloaded_layerId, m_output_mute.m_preloaded_position);
+//        if(m_layer_mode == LayerMode::Split)
+//        {
+//          m_poly[m_output_mute.m_preloaded_layerId].resetEnvelopes();
+//          m_poly[m_output_mute.m_preloaded_layerId].m_uVoice = m_alloc.m_unison - 1;
+//          m_poly[m_output_mute.m_preloaded_layerId].m_key_active = 0;
+//        }
+//        else
+//        {
+//          for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+//          {
+//            m_poly[layerId].resetEnvelopes();
+//            m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
+//            m_poly[layerId].m_key_active = 0;
+//          }
+//        }
+//        m_fade.stop();
+//        m_output_mute.pick(2);
+//        m_fade.enable(FadeEvent::Unmute, 1);
+//        break;
+//      case FadeEvent::MonoMute:
+//        // apply preloaded mono change
+//        m_alloc.setMonoEnable(m_output_mute.m_preloaded_layerId, m_output_mute.m_preloaded_position);
+//        if(m_layer_mode == LayerMode::Split)
+//        {
+//          m_poly[m_output_mute.m_preloaded_layerId].resetEnvelopes();
+//          m_poly[m_output_mute.m_preloaded_layerId].m_key_active = 0;
+//        }
+//        else
+//        {
+//          for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+//          {
+//            m_poly[layerId].resetEnvelopes();
+//            m_poly[layerId].m_key_active = 0;
+//          }
+//        }
+//        m_fade.stop();
+//        m_output_mute.pick(2);
+//        m_fade.enable(FadeEvent::Unmute, 1);
+//        break;
+//      case FadeEvent::Unmute:
+//        m_fade.stop();
+//        m_output_mute.stop();
+//        break;
+//    }
+//  }
+//}
 
 void dsp_host_dual::evalMuteTasks()
 {
@@ -1884,6 +1888,36 @@ void dsp_host_dual::evalMuteTasks()
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_key_active = 0;
     }
+  }
+  if(muteTasks & MuteTask_Recall_Single)
+  {
+    m_layer_mode = m_preloaded_layer_mode;
+    // global flush
+    m_poly[0].flushDSP();
+    m_poly[1].flushDSP();
+    m_mono[0].flushDSP();
+    m_mono[1].flushDSP();
+    recallSingle();
+  }
+  if(muteTasks & MuteTask_Recall_Split)
+  {
+    m_layer_mode = m_preloaded_layer_mode;
+    // global flush
+    m_poly[0].flushDSP();
+    m_poly[1].flushDSP();
+    m_mono[0].flushDSP();
+    m_mono[1].flushDSP();
+    recallSplit();
+  }
+  if(muteTasks & MuteTask_Recall_Layer)
+  {
+    m_layer_mode = m_preloaded_layer_mode;
+    // global flush
+    m_poly[0].flushDSP();
+    m_poly[1].flushDSP();
+    m_mono[0].flushDSP();
+    m_mono[1].flushDSP();
+    recallLayer();
   }
 }
 
