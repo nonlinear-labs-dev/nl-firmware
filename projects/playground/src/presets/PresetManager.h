@@ -13,6 +13,7 @@
 #include <tools/RecursionGuard.h>
 #include <http/ContentSection.h>
 #include <tools/Signal.h>
+#include <nltools/Types.h>
 
 class Bank;
 class Preset;
@@ -114,6 +115,14 @@ class PresetManager : public ContentSection
 
   const Preset *getSelectedPreset() const;
 
+  //Test Helper
+  void TEST_forceScheduledAutoLoad();
+  bool isAutoLoadScheduled() const;
+
+  bool currentLoadedPartIsBeforePresetToLoad() const;
+
+  void scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo);
+
  private:
   void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
@@ -149,6 +158,8 @@ class PresetManager : public ContentSection
   SignalWithCache<void, Uuid> m_sigBankSelection;
   SignalWithCache<void, size_t> m_sigNumBanksChanged;
   Signal<void> m_sigRestoreHappened;
+
+  std::atomic_bool m_autoLoadScheduled { false };
 
   Throttler m_autoLoadThrottler;
 

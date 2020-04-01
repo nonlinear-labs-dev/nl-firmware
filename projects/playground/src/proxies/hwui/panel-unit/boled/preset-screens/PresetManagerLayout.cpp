@@ -1,7 +1,7 @@
 #include <utility>
 
 #include <Application.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <device-settings/Settings.h>
 #include <presets/EditBuffer.h>
 #include <presets/Bank.h>
@@ -26,6 +26,11 @@
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadModeMenu.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankButton.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadToPartPresetList.h>
+#include <proxies/hwui/HWUIHelper.h>
 #include "presets/Preset.h"
 #include "SelectVoiceGroupLayout.h"
 
@@ -35,11 +40,15 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
     , m_oldFocusAndMode(oldFocusAndMode)
 {
   setup();
+
+  m_dlSettingConnection = Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
+      sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 }
 
 PresetManagerLayout::~PresetManagerLayout()
 {
   m_focusAndMode.mode = UIMode::Edit;
+  m_dlSettingConnection.disconnect();
 }
 
 void PresetManagerLayout::setFocusAndMode(FocusAndMode focusAndMode)
@@ -56,6 +65,7 @@ void PresetManagerLayout::setup()
   m_menu = nullptr;
   m_presets = nullptr;
   m_loadMode = nullptr;
+  m_bankButton = nullptr;
 
   clear();
 
@@ -76,7 +86,7 @@ PresetManager *PresetManagerLayout::getPresetManager() const
 
 void PresetManagerLayout::setupBankFocus()
 {
-  addControl(new Button("Bank", Buttons::BUTTON_A))->setHighlight(true);
+  m_bankButton = addControl(new BankButton({ 3, 36, 58, 57 }, true));
 
   switch(m_focusAndMode.mode)
   {
@@ -121,11 +131,21 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
+  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
+  addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
-  m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
+
+  auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
+
+  if(isDualEB && HWUIHelper::isLoadToPartActive())
+    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
+                                                    getPresetPartSelection(VoiceGroup::II)));
+  else
+    m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
+
   m_presets->setBankFocus();
 }
 
@@ -148,7 +168,7 @@ void PresetManagerLayout::setupBankStore()
 
 void PresetManagerLayout::setupPresetFocus()
 {
-  addControl(new Button("Bank", Buttons::BUTTON_A));
+  m_bankButton = addControl(new BankButton({ 3, 36, 58, 57 }, false));
 
   switch(m_focusAndMode.mode)
   {
@@ -200,9 +220,18 @@ void PresetManagerLayout::setupPresetSelect()
   addControl(new NumPresetsInBankLabel(Rect(192, 1, 64, 14)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
-  m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
+  auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
+
+  if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
+    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
+                                                    getPresetPartSelection(VoiceGroup::II)));
+  else
+    m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
+
+  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
+  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
+  addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 }
 
 void PresetManagerLayout::setupPresetStore()
@@ -223,6 +252,14 @@ void PresetManagerLayout::setupPresetStore()
 
 bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(m_loadMode)
+    if(m_loadMode->onButton(i, down, modifiers))
+      return true;
+
+  if(m_bankButton)
+    if(m_bankButton->onButton(i, down, modifiers))
+      return true;
+
   if(!down)
   {
     removeButtonRepeat();
@@ -260,13 +297,6 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
             m_menu->toggle();
           }
         }
-        else if(m_loadMode)
-        {
-          if(modifiers[SHIFT] == 1)
-            m_loadMode->antiTurn();
-          else
-            m_loadMode->turn();
-        }
 
         return true;
 
@@ -286,7 +316,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
 
       case Buttons::BUTTON_PRESET:
         if(m_focusAndMode.mode == UIMode::Store)
-          hwui->undoableSetFocusAndMode({UIMode::Select});
+          hwui->undoableSetFocusAndMode({ UIMode::Select });
         else
           hwui->undoableSetFocusAndMode(m_oldFocusAndMode);
         break;
@@ -298,6 +328,10 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
       case Buttons::BUTTON_ENTER:
         if(m_menu)
           m_menu->doAction();
+        else if(m_focusAndMode.detail == UIDetail::LoadToPart)
+        {
+          return m_presets->onButton(i, down, modifiers);
+        }
         else if(m_focusAndMode.mode == UIMode::Select)
         {
           loadSelectedPresetAccordingToLoadType();
@@ -321,9 +355,7 @@ bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
 
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
-  auto setting = Application::get().getSettings()->getSetting<LoadModeSetting>();
-
-  if(setting->get() == LoadMode::LoadToPart)
+  if(HWUIHelper::isLoadToPartActive())
     m_presets->animateSelectedPreset(std::move(cb));
   else
     cb();
@@ -341,6 +373,13 @@ std::unique_ptr<StoreModeData> &PresetManagerLayout::getStoreModePtr()
 {
   static std::unique_ptr<StoreModeData> s_storeModeData;
   return s_storeModeData;
+}
+
+PresetPartSelection *PresetManagerLayout::getPresetPartSelection(VoiceGroup vg)
+{
+  static std::array<PresetPartSelection, 2> s_partLoad { PresetPartSelection { VoiceGroup::I },
+                                                         PresetPartSelection { VoiceGroup::II } };
+  return &s_partLoad[static_cast<int>(vg)];
 }
 
 StoreModeData *PresetManagerLayout::getStoreModeData()
@@ -364,7 +403,8 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
   {
     if(auto selPreset = bank->getSelectedPreset())
     {
-      auto loadSetting = Application::get().getSettings()->getSetting<LoadModeSetting>();
+      auto directLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+      auto loadToPartActive = HWUIHelper::isLoadToPartActive();
 
       switch(selPreset->getType())
       {
@@ -374,8 +414,14 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
           break;
         case SoundType::Layer:
         case SoundType::Split:
-          if(loadSetting->get() == LoadMode::LoadToPart)
-            openPartChooser();
+          if(loadToPartActive)
+          {
+            auto load = getPresetPartSelection(currentVoiceGroup);
+            auto scope = getPresetManager()->getUndoScope().startTransaction("Load Preset Part into Part");
+            eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), load->m_preset, load->m_voiceGroup,
+                                               currentVoiceGroup);
+            animateSelectedPresetIfInLoadPartMode([]() {});
+          }
           else
           {
             eb->undoableLoadSelectedPreset(currentVoiceGroup);
@@ -385,10 +431,4 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
       }
     }
   }
-}
-
-void PresetManagerLayout::openPartChooser()
-{
-  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-  boled.setOverlay(new SelectVoiceGroupLayout(this));
 }
