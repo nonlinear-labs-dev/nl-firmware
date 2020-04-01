@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Animator;
-import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ClipContext;
@@ -34,7 +34,6 @@ public class PresetList extends OverlayLayout {
 	private double scrollPosition = 0;
 	private Animator animation;
 	private ScrollRequest scrollRequest = ScrollRequest.None;
-	private BeltPreset currentScrollPreset;
 	private Bank currentBank;
 
 	protected PresetList(BankControl parent) {
@@ -215,7 +214,6 @@ public class PresetList extends OverlayLayout {
 		if (scrollRequest == ScrollRequest.None)
 			return;
 
-		currentScrollPreset = p;
 
 		double target = getChildren().get(0).getRelativePosition().getTop() - p.getRelativePosition().getTop()
 				+ getChildHeight();
@@ -258,7 +256,6 @@ public class PresetList extends OverlayLayout {
 					scrollPosition = v;
 
 					if (v == target) {
-						currentScrollPreset = null;
 						scrollRequest = ScrollRequest.None;
 					}
 					requestLayout();

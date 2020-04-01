@@ -93,15 +93,12 @@ public class ServerProxy {
 	private void applyChanges(String responseText) {
 		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
 			Document xml = XMLParser.parse(responseText);
-			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
 			Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
 			Node settingsNode = xml.getElementsByTagName("settings").item(0);
 			Node undoNode = xml.getElementsByTagName("undo").item(0);
 			Node presetManagerNode = xml.getElementsByTagName("preset-manager").item(0);
 			Node deviceInfo = xml.getElementsByTagName("device-information").item(0);
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
-
-			boolean omitOracles = omitOracles(world);
 
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
 			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
