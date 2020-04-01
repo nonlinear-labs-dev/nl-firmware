@@ -404,7 +404,7 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
     if(auto selPreset = bank->getSelectedPreset())
     {
       auto directLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
-      auto loadToPartSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+      auto loadToPartActive = HWUIHelper::isLoadToPartActive();
 
       switch(selPreset->getType())
       {
@@ -414,11 +414,13 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
           break;
         case SoundType::Layer:
         case SoundType::Split:
-          if(loadToPartSetting->get())
+          if(loadToPartActive)
           {
-            getPresetManager()->doAutoLoadSelectedPreset();
-            if(getPresetManager()->isAutoLoadScheduled())
-              getPresetManager()->TEST_forceScheduledAutoLoad();
+            auto load = getPresetPartSelection(currentVoiceGroup);
+            auto scope = getPresetManager()->getUndoScope().startTransaction("Load Preset Part into Part");
+            eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), load->m_preset, load->m_voiceGroup,
+                                               currentVoiceGroup);
+            animateSelectedPresetIfInLoadPartMode([]() {});
           }
           else
           {

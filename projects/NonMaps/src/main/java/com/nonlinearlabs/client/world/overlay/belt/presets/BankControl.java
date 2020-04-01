@@ -149,7 +149,7 @@ public class BankControl extends OverlayLayout implements IBank {
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
 
-		if (pm.isInStoreSelectMode() || pm.isInLoadToPartMode())
+		if (pm.hasCustomPresetSelection())
 			return this;
 
 		if (amount > 0)
