@@ -116,7 +116,7 @@ class PresetManager : public ContentSection
   const Preset *getSelectedPreset() const;
 
   //Test Helper
-  void forceScheduledAutoLoad();
+  void TEST_forceScheduledAutoLoad();
   bool isAutoLoadScheduled() const;
 
   bool currentLoadedPartIsBeforePresetToLoad() const;

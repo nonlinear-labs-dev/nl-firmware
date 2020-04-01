@@ -119,7 +119,7 @@ auto forceAutoLoadIfPending()
   auto pm = Application::get().getPresetManager();
 
   if(pm->isAutoLoadScheduled())
-    pm->forceScheduledAutoLoad();
+    pm->TEST_forceScheduledAutoLoad();
 }
 
 TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")

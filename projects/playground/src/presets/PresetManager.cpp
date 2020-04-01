@@ -247,6 +247,8 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
 {
   m_autoLoadScheduled = true;
   m_autoLoadThrottler.doTask([=]() {
+    m_autoLoadScheduled = false;
+
     if(auto b = getSelectedBank())
     {
       const auto &presetUUID = b->getSelectedPresetUuid();
@@ -262,13 +264,11 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
             if(!currentUndo->isClosed())
             {
               eb->undoableLoad(currentUndo, p);
-              m_autoLoadScheduled = false;
             }
             else
             {
               currentUndo->reopen();
               eb->undoableLoad(currentUndo, p);
-              m_autoLoadScheduled = false;
               currentUndo->close();
             }
             return;
@@ -276,14 +276,13 @@ void PresetManager::scheduleAutoLoadSelectedPreset()
 
           auto scope = getUndoScope().startTransaction(p->buildUndoTransactionTitle("Load"));
           eb->undoableLoad(scope->getTransaction(), p);
-          m_autoLoadScheduled = false;
         }
       }
     }
   });
 }
 
-void PresetManager::forceScheduledAutoLoad()
+void PresetManager::TEST_forceScheduledAutoLoad()
 {
   m_autoLoadThrottler.doActionSync();
 }

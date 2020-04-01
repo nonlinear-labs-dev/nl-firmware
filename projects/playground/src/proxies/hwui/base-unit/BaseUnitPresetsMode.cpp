@@ -52,6 +52,8 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto eb = app.getPresetManager()->getEditBuffer();
   auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  if(!(app.getSettings()->getSetting<DirectLoadSetting>()->get()) || eb->isModified())
+  const auto directLoadActive = app.getSettings()->getSetting<DirectLoadSetting>()->get();
+  
+  if(!directLoadActive || eb->isModified())
     eb->undoableLoadSelectedPreset(currentVoiceGroup);
 }

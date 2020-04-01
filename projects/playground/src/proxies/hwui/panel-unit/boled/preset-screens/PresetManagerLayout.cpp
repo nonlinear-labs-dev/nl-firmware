@@ -377,10 +377,9 @@ std::unique_ptr<StoreModeData> &PresetManagerLayout::getStoreModePtr()
 
 PresetPartSelection *PresetManagerLayout::getPresetPartSelection(VoiceGroup vg)
 {
-  static std::array<std::unique_ptr<PresetPartSelection>, 2> s_partLoad {
-    std::make_unique<PresetPartSelection>(VoiceGroup::I), std::make_unique<PresetPartSelection>(VoiceGroup::II)
-  };
-  return s_partLoad[static_cast<int>(vg)].get();
+  static std::array<PresetPartSelection, 2> s_partLoad { PresetPartSelection { VoiceGroup::I },
+                                                         PresetPartSelection { VoiceGroup::II } };
+  return &s_partLoad[static_cast<int>(vg)];
 }
 
 StoreModeData *PresetManagerLayout::getStoreModeData()
@@ -419,7 +418,7 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
           {
             getPresetManager()->doAutoLoadSelectedPreset();
             if(getPresetManager()->isAutoLoadScheduled())
-              getPresetManager()->forceScheduledAutoLoad();
+              getPresetManager()->TEST_forceScheduledAutoLoad();
           }
           else
           {

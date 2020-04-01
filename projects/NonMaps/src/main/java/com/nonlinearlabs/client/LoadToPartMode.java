@@ -40,10 +40,11 @@ public class LoadToPartMode implements CustomPresetSelector {
 
 		m_currentData.m_selectedPreset = m_parent.getSelectedPreset();
 		m_currentData.m_selectedBank = m_parent.findBank(m_parent.getSelectedBank());
+		m_currentData.m_selectedVoiceGroup = m_currentData.m_selectedPreset.isDual() ? VoiceGroup.II : VoiceGroup.I;
 
 		m_otherData.m_selectedBank = m_currentData.m_selectedBank;
 		m_otherData.m_selectedPreset = m_currentData.m_selectedPreset;
-		m_otherData.m_selectedVoiceGroup = m_currentData.m_selectedVoiceGroup;
+		m_otherData.m_selectedVoiceGroup = m_currentData.m_selectedPreset.isDual() ? VoiceGroup.I : VoiceGroup.II;
 
 		EditBufferModel.get().voiceGroup.onChange((vg) -> {
 			swapSelection();

@@ -21,7 +21,8 @@ public interface CustomPresetSelector {
     public void selectPreviousPreset();
 
     public void selectNextPreset();
-   public void selectPreviousBank();
+
+    public void selectPreviousBank();
 
     public  void selectNextBank();
 
