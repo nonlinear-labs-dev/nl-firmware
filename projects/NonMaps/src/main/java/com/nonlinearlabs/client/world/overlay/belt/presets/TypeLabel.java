@@ -7,6 +7,7 @@ import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.Label;
@@ -65,17 +66,30 @@ public class TypeLabel extends OverlayLayout {
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
 			LoadToPartMode mode = getLoadToPart();
+			EditBufferModel ebm = EditBufferModel.get();
+			VoiceGroup currentVG = ebm.voiceGroup.getValue();
+			Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
+			String currentOriginUUID = currentVG == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
+			VoiceGroup currentOriginVG = currentVG == VoiceGroup.I ? ebm.sourceVGI.getValue() : ebm.sourceVGII.getValue();
+
+			boolean isLoaded = thisPreset.getUUID() == currentOriginUUID;
+			boolean iLoaded = isLoaded && currentOriginVG == VoiceGroup.I;
+			boolean iiLoaded = isLoaded && currentOriginVG == VoiceGroup.II;
+
+			boolean isPresetSelected = mode.getSelectedPreset() == getTypeLabel().getParent().getMapsPreset();
+			boolean iSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.I;
+			boolean iiSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.II;
 
 			switch (getTypeLabel().getParent().getMapsPreset().getType()) {
 				case Single:
 				default:
-					drawSingle(ctx, mode);
+					drawSingle(ctx, iLoaded, iSelected);
 					break;
 				case Layer:
-					drawLayer(ctx, mode);
+					drawLayer(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
 					break;
 				case Split:
-					drawSplit(ctx, mode);
+					drawSplit(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
 					break;
 			}
 		}
@@ -84,98 +98,77 @@ public class TypeLabel extends OverlayLayout {
 			return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
 		}
 
-		private void drawLayer(Context2d ctx, LoadToPartMode mode) {
-			if (mode != null) {
-				EditBufferModel ebm = EditBufferModel.get();
-				VoiceGroup currentVG = ebm.voiceGroup.getValue();
-				Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
-				String currentOriginUUID = currentVG == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
-				VoiceGroup currentOriginVG = currentVG == VoiceGroup.I ? ebm.sourceVGI.getValue() : ebm.sourceVGII.getValue();
+		private void drawLayer(Context2d ctx, boolean iLoaded, boolean iiLoaded, boolean iSelected, boolean iiSelected) {
+			Rect pix = getParent().getPixRect().copy();
+			double height = pix.getHeight() / 2;
+			double width = pix.getWidth();
 
-				boolean isLoaded = thisPreset.getUUID() == currentOriginUUID;
-				boolean iLoaded = isLoaded && currentOriginVG == VoiceGroup.I;
-				boolean iiLoaded = isLoaded && currentOriginVG == VoiceGroup.II;
+			String loadedColor = getLoadedPresetPartColor().toString();
+			String unloadedColor = getUnloadedPresetPartColor().toString();
+			String selectedColor = getSelectionIndicationColor().toString();
 
-				boolean isPresetSelected = mode.getSelectedPreset() == getTypeLabel().getParent().getMapsPreset();
-				boolean iSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.I;
-				boolean iiSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.II;
+			ctx.setFillStyle(iLoaded ? loadedColor : unloadedColor);
+			ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
 
-				Rect pix = getParent().getPixRect().copy();
-				double height = pix.getHeight() / 2;
-				double width = pix.getWidth();
+			ctx.setFillStyle(iiLoaded ? loadedColor : unloadedColor);
+			ctx.fillRect(pix.getLeft(), pix.getTop() + height, width, height);
 
-				ctx.setFillStyle(iLoaded ? "green" : "gray");
-				ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
-
-				ctx.setFillStyle(iiLoaded ? "green" : "gray");
-				ctx.fillRect(pix.getLeft(), pix.getTop() + height, width, height);
-
-				if(iSelected) {
-					ctx.setStrokeStyle("white");
-					ctx.strokeRect(pix.getLeft(), pix.getTop(), width, height);
-				} else if(iiSelected) {
-					ctx.setStrokeStyle("white");
-					ctx.strokeRect(pix.getLeft(), pix.getTop() + height, width, height);
-				}
+			if(iSelected) {
+				ctx.setStrokeStyle(selectedColor);
+				ctx.strokeRect(pix.getLeft(), pix.getTop(), width, height);
+			} else if(iiSelected) {
+				ctx.setStrokeStyle(selectedColor);
+				ctx.strokeRect(pix.getLeft(), pix.getTop() + height, width, height);
 			}
 		}
 
-		private void drawSingle(Context2d ctx, LoadToPartMode mode) {
-			if (mode != null) {
-				Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
-				EditBufferModel ebm = EditBufferModel.get();
-				VoiceGroup currentVoiceGroup = ebm.voiceGroup.getValue();
-				String currentOriginUUID = currentVoiceGroup == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
+		private RGB getSelectionIndicationColor() {
+			return RGB.white();
+		}
 
-				boolean isLoaded = currentOriginUUID == thisPreset.getUUID();
-				boolean isPresetSelected = mode.getSelectedPreset() == thisPreset;
+		private RGB getLoadedPresetPartColor() {
+			return new RGB(0, 255, 0);
+		}
 
-				Rect pix = getParent().getPixRect().copy();
+		private RGB getUnloadedPresetPartColor() {
+			return RGB.lightGray();
+		}
 
-				ctx.setFillStyle(isLoaded ? "green" : "gray");
-				ctx.fillRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
+		private void drawSingle(Context2d ctx, boolean loaded, boolean selected) {
+			Rect pix = getParent().getPixRect().copy();
 
-				if(isPresetSelected) {
-					ctx.setStrokeStyle("white");
-					ctx.setLineWidth(2);
-					ctx.strokeRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
-				}
+			ctx.setFillStyle(loaded ? getLoadedPresetPartColor().toString() : getUnloadedPresetPartColor().toString());
+			ctx.fillRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
+
+			if(selected) {
+				ctx.setStrokeStyle(getSelectionIndicationColor().toString());
+				ctx.setLineWidth(2);
+				ctx.strokeRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
 			}
 		}
 
-		private void drawSplit(Context2d ctx, LoadToPartMode mode) {
-			if (mode != null) {
-				EditBufferModel ebm = EditBufferModel.get();
-				VoiceGroup currentVG = ebm.voiceGroup.getValue();
-				Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
-				String currentOriginUUID = currentVG == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
-				VoiceGroup currentOriginVG = currentVG == VoiceGroup.I ? ebm.sourceVGI.getValue() : ebm.sourceVGII.getValue();
+		private void drawSplit(Context2d ctx, boolean iLoaded, boolean iiLoaded, boolean iSelected, boolean iiSelected) {
 
-				boolean isLoaded = thisPreset.getUUID() == currentOriginUUID;
-				boolean iLoaded = isLoaded && currentOriginVG == VoiceGroup.I;
-				boolean iiLoaded = isLoaded && currentOriginVG == VoiceGroup.II;
+			String loadedColor = getLoadedPresetPartColor().toString();
+			String unloadedColor = getUnloadedPresetPartColor().toString();
+			String selectedColor = getSelectionIndicationColor().toString();
 
-				boolean isPresetSelected = mode.getSelectedPreset() == getTypeLabel().getParent().getMapsPreset();
-				boolean iSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.I;
-				boolean iiSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.II;
+			Rect pix = getParent().getPixRect().copy();
+			double height = pix.getHeight();
+			double width = pix.getWidth() / 2;
 
-				Rect pix = getParent().getPixRect().copy();
-				double height = pix.getHeight();
-				double width = pix.getWidth() / 2;
+			ctx.setFillStyle(iLoaded ? loadedColor : unloadedColor);
+			ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
 
-				ctx.setFillStyle(iLoaded ? "green" : "gray");
-				ctx.fillRect(pix.getLeft(), pix.getTop(), width, height);
+			ctx.setFillStyle(iiLoaded ? loadedColor : unloadedColor);
+			ctx.fillRect(pix.getLeft() + width, pix.getTop(), width, height);
 
-				ctx.setFillStyle(iiLoaded ? "green" : "gray");
-				ctx.fillRect(pix.getLeft() + width, pix.getTop(), width, height);
-
-				if(iSelected) {
-					ctx.setStrokeStyle("white");
-					ctx.strokeRect(pix.getLeft(), pix.getTop(), width, height);
-				} else if(iiSelected) {
-					ctx.setStrokeStyle("white");
-					ctx.strokeRect(pix.getLeft() + width, pix.getTop(), width, height);
-				}
+			if(iSelected) {
+				ctx.setStrokeStyle(selectedColor);
+				ctx.strokeRect(pix.getLeft(), pix.getTop(), width, height);
+			} else if(iiSelected) {
+				ctx.setStrokeStyle(selectedColor);
+				ctx.strokeRect(pix.getLeft() + width, pix.getTop(), width, height);
 			}
 		}
 	}
