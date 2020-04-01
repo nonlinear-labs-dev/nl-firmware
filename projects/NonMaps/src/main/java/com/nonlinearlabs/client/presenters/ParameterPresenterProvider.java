@@ -60,9 +60,12 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	private boolean isFillFromRightParameter(BasicParameterModel e) {
-		boolean isSplit = e.group.longName.getValue() == "Split";
-		boolean isFadeFrom = e.id.getNumber() == 396 && e.id.getVoiceGroup() == VoiceGroup.II;
-		return isSplit || isFadeFrom;
+		if(e.group != null) {
+			boolean isSplit = e.group.longName.getValue() == "Split";
+			boolean isFadeFrom = e.id.getNumber() == 396 && e.id.getVoiceGroup() == VoiceGroup.II;
+			return isSplit || isFadeFrom;
+		}
+		return false;
 	}
 
 	private void updatePresenter(BasicParameterModel e) {

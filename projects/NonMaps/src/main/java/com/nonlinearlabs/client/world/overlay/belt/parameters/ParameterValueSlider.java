@@ -39,20 +39,7 @@ public class ParameterValueSlider extends OverlayControl {
 			if (isBiPolar)
 				drawCenterMark(ctx);
 
-			boolean fillRight = false;
-			VoiceGroup currentVG = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
-	
-			BasicParameterModel bpm = EditBufferModel.get().getParameter(parameter.id);
-			if(bpm != null) {
-				if(bpm.group.id.getName() == "Split") {
-					fillRight = currentVG == VoiceGroup.II;
-				} else if(bpm.id.getNumber() == 396) { //Fade From
-					fillRight = currentVG == VoiceGroup.II;
-				}
-			}
-
-
-			if(fillRight)
+			if(parameter.fillFromRightEnabled)
 				drawIndicatorFromRight(ctx, value);
 			else
 				drawIndicator(ctx, value, isBiPolar);

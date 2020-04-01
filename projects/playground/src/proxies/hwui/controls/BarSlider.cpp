@@ -76,13 +76,6 @@ bool BarSlider::drawCenterMark() const
   return true;
 }
 
-bool BarSlider::shouldDrawParameterFromRight(Parameter *parameter)
-{
-  auto isSplit = parameter->getParentGroup()->getID().getName() == "Split";
-  auto isFadeFrom = parameter->getID().getNumber() == 396 && parameter->getID().getVoiceGroup() == VoiceGroup::II;
-  return isSplit || isFadeFrom;
-}
-
 void BarSlider::drawParameterSlider(FrameBuffer &fb, double v, const Rect &smaller)
 {
   v = std::max(std::min(v, 1.0), 0.0);
