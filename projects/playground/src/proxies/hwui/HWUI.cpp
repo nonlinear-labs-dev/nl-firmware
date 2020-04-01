@@ -671,14 +671,13 @@ FocusAndMode HWUI::removeEditOnFocusChange(FocusAndMode in) const
   const bool switchFromPresetManagerToParameter = (isCurrentPresetManager && isDesiredParameter);
   const bool switchFromPresetManagerToSound = (isCurrentPresetManager && isDesiredSound);
 
-  const bool switchFromParameterToPresetManager = (isCurrentParameter && isDesiredPresetManager);
   const bool switchFromParameterToSound = (isCurrentParameter && isDesiredSound);
 
   const bool switchFromSoundToPresetManager = (isCurrentSound && isDesiredPresetManager);
   const bool switchFromSoundToParameter = (isCurrentSound && isDesiredParameter);
 
-  if(switchFromPresetManagerToParameter || switchFromParameterToPresetManager || switchFromSoundToPresetManager
-     || switchFromSoundToParameter || switchFromPresetManagerToSound || switchFromParameterToSound)
+  if(switchFromPresetManagerToParameter || switchFromSoundToPresetManager || switchFromSoundToParameter
+     || switchFromPresetManagerToSound || switchFromParameterToSound)
   {
     if(m_focusAndMode.mode == UIMode::Edit)
     {
