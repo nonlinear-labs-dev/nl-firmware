@@ -76,6 +76,11 @@ unsigned int C15Synth::getRenderedSamples()
   return m_dsp->m_sample_counter;
 }
 
+dsp_host_dual* C15Synth::getDsp()
+{
+  return m_dsp.get();
+}
+
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)
 {
   // to avoid denormals, we exploit flush_to_zero within this code-block: every denormal float will be set to zero
