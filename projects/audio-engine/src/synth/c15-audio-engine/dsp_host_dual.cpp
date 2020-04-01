@@ -868,9 +868,9 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
       nltools::Log::info("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
     // application now via fade point
-    m_new_fade.setTask(MuteTask_Trigger_Unison);
     m_preloaded_layerId = layerId;
     m_preloaded_position = param->m_position;
+    m_new_fade.setTask(MuteTask_Trigger_Unison);
   }
 }
 
@@ -886,9 +886,9 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
-    m_new_fade.setTask(MuteTask_Trigger_Mono);
     m_preloaded_layerId = layerId;
     m_preloaded_position = param->m_scaled;
+    m_new_fade.setTask(MuteTask_Trigger_Mono);
   }
 }
 void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -1096,7 +1096,6 @@ void dsp_host_dual::render()
 {
   // clock & fadepoint rendering
   m_clock.render();
-  //  evalFadePoint();
   const uint32_t targetRampIndex = m_new_fade.getTargetRampIndex();
   if(targetRampIndex != m_new_fade.m_currentMuteRampIndex)
   {
