@@ -36,9 +36,12 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
       auto v = std::stod(text);
       auto converted = ParameterImportConversions::get().convert(m_param->m_id.getNumber(), v, reader.getFileVersion());
 
-      auto eb = Application::get().getPresetManager()->getEditBuffer();
-      if(auto param = eb->findParameterByID(m_param->m_id))
-        converted = param->getValue().getQuantizedValue(converted, true);
+      if(Application::exists())
+      {
+        auto eb = Application::get().getPresetManager()->getEditBuffer();
+        if(auto param = eb->findParameterByID(m_param->m_id))
+          converted = param->getValue().getQuantizedValue(converted, true);
+      }
 
       m_param->setValue(reader.getTransaction(), converted);
     });

@@ -406,9 +406,9 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
   auto bank = origin ? dynamic_cast<const Bank *>(origin->getParent()) : nullptr;
   auto bankName = bank ? bank->getName(true) : "";
   auto vgIName = getVoiceGroupName(VoiceGroup::I);
-  auto vgINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::I);
+  auto vgINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::I, true);
   auto vgIIName = getVoiceGroupName(VoiceGroup::II);
-  auto vgIINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::II);
+  auto vgIINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::II, true);
 
   writer.writeTag(
       "edit-buffer",
@@ -417,15 +417,13 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("loaded-presets-bank-name", bankName), Attribute("preset-is-zombie", zombie),
         Attribute("is-modified", m_isModified), Attribute("hash", getHash()), Attribute("changed", changed),
         Attribute("vg-I-name", vgIName), Attribute("vg-II-name", vgIIName),
-        Attribute("vg-I-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::I)),
-        Attribute("vg-II-name-with-suffix", getVoiceGroupNameWithSuffix(VoiceGroup::II)),
+        Attribute("vg-I-name-with-suffix", vgINameWithSuffix), Attribute("vg-II-name-with-suffix", vgIINameWithSuffix),
         Attribute("origin-I", getAttribute("origin-I", "")), Attribute("origin-II", getAttribute("origin-II", "")),
         Attribute("origin-I-vg", getAttribute("origin-I-vg", "")),
         Attribute("origin-II-vg", getAttribute("origin-II-vg", "")) },
       [&]() {
         if(changed)
           super::writeDocument(writer, knownRevision);
-
         m_recallSet.writeDocument(writer, knownRevision);
       });
 }
@@ -501,7 +499,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
-  EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction);
+  EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
 
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
@@ -818,11 +816,11 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
   return m_voiceGroupLabels[static_cast<size_t>(vg)];
 }
 
-Glib::ustring EditBuffer::getVoiceGroupNameWithSuffix(VoiceGroup vg) const
+Glib::ustring EditBuffer::getVoiceGroupNameWithSuffix(VoiceGroup vg, bool addSpace) const
 {
   auto mono = findParameterByID({ 364, vg })->getControlPositionValue() > 0;
   auto unison = findParameterByID({ 249, vg })->getControlPositionValue() > 0;
-  return getVoiceGroupName(vg) + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
+  return getVoiceGroupName(vg) + (addSpace ? "\u202F" : "") + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
 }
 
 void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo)

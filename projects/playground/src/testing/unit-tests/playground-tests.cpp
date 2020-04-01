@@ -1,6 +1,5 @@
 #define CATCH_CONFIG_RUNNER
-
-#include <third-party/include/catch.hpp>
+#include <catch.hpp>
 #include "Application.h"
 #include "device-settings/DebugLevel.h"
 #include "playground-helpers.h"

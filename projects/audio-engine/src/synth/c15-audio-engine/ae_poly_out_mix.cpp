@@ -20,9 +20,10 @@ void Engine::PolyOutputMixer::init(const float _samplerate, const uint32_t _numO
   m_hp30hz_b0 = std::min(m_hp30hz_b0, 0.8f);
   m_hp30hz_stateVar_L = m_hp30hz_stateVar_R = 0.0f;
   float omega = NlToolbox::Math::tan(12.978f * NlToolbox::Constants::pi / static_cast<float>(_samplerate));
-  m_hp_a1 = (1.0f - omega) / (1.0f + omega);
-  m_hp_b0 = 1.0f / (1.0f + omega);
-  m_hp_b1 = (1.0f / (1.0f + omega)) * -1.0f;
+  float denom = 1.0f / (1.0f + omega);
+  m_hp_a1 = (1.0f - omega) * denom;
+  m_hp_b0 = denom;
+  m_hp_b1 = -denom;
   m_hp_stateVar_L1 = m_hp_stateVar_L2 = m_hp_stateVar_R1 = m_hp_stateVar_R2 = 0.0f;
 }
 

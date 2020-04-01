@@ -11,17 +11,13 @@
 template <typename T, size_t size> class ParallelData
 {
  public:
-  inline ParallelData()
-  {
-  }
-
   inline ParallelData(const T *d)
   {
     for(size_t i = 0; i < size; i++)
       m_data[i] = d[i];
   }
 
-  inline ParallelData(T d)
+  inline ParallelData(T d = {})
   {
     for(size_t i = 0; i < size; i++)
       m_data[i] = d;
@@ -124,15 +120,16 @@ using UInt32Vector = ParallelData<uint32_t, dsp_number_of_voices>;
   template <typename T, size_t size>                                                                                   \
   inline ParallelData<uint32_t, size> operator operation(const ParallelData<T, size> &l, T r)                          \
   {                                                                                                                    \
-    constexpr auto iterations = size / 4;                                                                              \
-                                                                                                                       \
+    constexpr auto parallelism = 4;                                                                                    \
+    constexpr auto iterations = size / parallelism;                                                                    \
+    static_assert((size % parallelism) == 0, "Cannot use this operator with this type!");                              \
     ParallelData<uint32_t, size> ret;                                                                                  \
     __m128 b = { r, r, r, r };                                                                                         \
                                                                                                                        \
     for(size_t i = 0; i < iterations; i++)                                                                             \
     {                                                                                                                  \
-      auto a = reinterpret_cast<const __m128 *>(l.getDataPtr() + 4 * i);                                               \
-      auto t = reinterpret_cast<__m128 *>(ret.getDataPtr() + 4 * i);                                                   \
+      auto a = reinterpret_cast<const __m128 *>(l.getDataPtr() + parallelism * i);                                     \
+      auto t = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);                                         \
       *t = _mm_cmp_ps(*a, b, imm);                                                                                     \
     }                                                                                                                  \
                                                                                                                        \

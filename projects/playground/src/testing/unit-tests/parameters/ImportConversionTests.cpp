@@ -1,5 +1,5 @@
 #include <testing/TestHelper.h>
-#include <third-party/include/catch.hpp>
+#include <catch.hpp>
 #include <parameters/scale-converters/Linear70DbScaleConverter.h>
 #include "parameters/ParameterImportConversions.h"
 
