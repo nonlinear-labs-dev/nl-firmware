@@ -18,6 +18,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.ReturnModes;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
@@ -58,6 +59,12 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		}
 	}
 
+	private boolean isFillFromRightParameter(BasicParameterModel e) {
+		boolean isSplit = e.group.longName.getValue() == "Split";
+		boolean isFadeFrom = e.id.getNumber() == 396 && e.id.getVoiceGroup() == VoiceGroup.II;
+		return isSplit || isFadeFrom;
+	}
+
 	private void updatePresenter(BasicParameterModel e) {
 		presenter.parameterInfo = e.info.getValue();
 		presenter.isBoolean = e.value.metaData.isBoolean.getBool();
@@ -71,8 +78,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.modulation.upperClipping = false;
 		presenter.controlPosition = e.value.getQuantizedAndClipped(true);
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
-		presenter.fillFromRightEnabled = e.enableFillFromRight.getBool();
-
+		presenter.fillFromRightEnabled = isFillFromRightParameter(e);
 
 		if (e.id.getNumber() == 356 && EditBufferModel.get().voiceGroup.getValue() == EditBufferModel.VoiceGroup.II) {
 			double nextValue = e.value.getIncDecValue(false, 1);

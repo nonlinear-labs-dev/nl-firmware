@@ -390,10 +390,16 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
 
   if(auto p = getCurrentParameter())
   {
-    if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-      m_modeOverlay->addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-    else
-      m_modeOverlay->addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+    switch(p->getVisualizationStyle())
+    {
+      case Parameter::VisualizationStyle::Bar:
+      case Parameter::VisualizationStyle::BarFromRight:
+        m_modeOverlay->addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+      case Parameter::VisualizationStyle::Dot:
+        m_modeOverlay->addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+    }
   }
 
   switch(m_mode)
@@ -604,10 +610,16 @@ ModulateableParameterEditLayout2::ModulateableParameterEditLayout2()
 
   if(auto p = getCurrentParameter())
   {
-    if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-      addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-    else
-      addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+    switch(p->getVisualizationStyle())
+    {
+      case Parameter::VisualizationStyle::Bar:
+      case Parameter::VisualizationStyle::BarFromRight:
+        addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+      case Parameter::VisualizationStyle::Dot:
+        addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+    }
   }
 
   addModAmountSliders(this);

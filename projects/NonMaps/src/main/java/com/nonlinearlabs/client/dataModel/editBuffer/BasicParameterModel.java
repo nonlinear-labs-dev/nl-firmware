@@ -19,7 +19,6 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 	public DoubleDataModelEntity originalValue = new DoubleDataModelEntity();
 	public BooleanDataModelEntity locked = new BooleanDataModelEntity();
 	public StringDataModelEntity info = new StringDataModelEntity();
-	public BooleanDataModelEntity enableFillFromRight = new BooleanDataModelEntity();
 
 	public BasicParameterModel(ParameterId id) {
 		this.id = id;
@@ -29,7 +28,6 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 		originalValue.onChange(e -> notifyChanges());
 		locked.onChange(e -> notifyChanges());
 		info.onChange(e -> notifyChanges());
-		enableFillFromRight.onChange(e -> notifyChanges());
 	}
 
 	@Override

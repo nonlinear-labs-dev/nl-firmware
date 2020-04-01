@@ -47,8 +47,3 @@ Glib::ustring SplitPointParameter::modulationValueToDisplayString(tControlPositi
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   return SplitPointDimension::get().stringizeSplitPointDisplay(v, vg);
 }
-
-bool SplitPointParameter::enableDrawRightToLeftForVoiceGroup() const
-{
-  return true;
-}

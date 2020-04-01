@@ -23,11 +23,7 @@ class FadeFrom : public VoiceGroupMasterUnmodulateableParameter
   {
   }
 
-  bool enableDrawRightToLeftForVoiceGroup() const override
-  {
-    return true;
-  }
-};
+  };
 
 void VoiceGroupMasterGroup::init()
 {

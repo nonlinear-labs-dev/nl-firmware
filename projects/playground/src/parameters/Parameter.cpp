@@ -23,6 +23,7 @@
 #include <presets/recall/RecallParameter.h>
 #include <xml/Attribute.h>
 #include <http/UndoScope.h>
+#include <proxies/hwui/HWUI.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -354,7 +355,6 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
 
   if(shouldWriteDocProperties(knownRevision))
   {
-    writer.writeTextElement("can-fill-from-right", to_string(enableDrawRightToLeftForVoiceGroup()));
     writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
     writer.writeTextElement("bipolar", to_string(m_value.isBiPolar()));
     writer.writeTextElement("long-name", getLongName());
@@ -466,6 +466,16 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
     case 354:
     case 362:
       return VisualizationStyle::Dot;
+    case 396:  //Fade From II
+      if(getID().getVoiceGroup() == VoiceGroup::II)
+        return VisualizationStyle::BarFromRight;
+      else  //Fade From I
+        return VisualizationStyle::Bar;
+    case 356:  //Split Point
+      if(Application::get().getHWUI()->getCurrentVoiceGroup() == VoiceGroup::II)
+        return VisualizationStyle::BarFromRight;
+      else
+        return VisualizationStyle::Bar;
   }
   return VisualizationStyle::Bar;
 }
@@ -473,11 +483,6 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
 bool Parameter::lockingEnabled() const
 {
   return true;
-}
-
-bool Parameter::enableDrawRightToLeftForVoiceGroup() const
-{
-  return false;
 }
 
 void Parameter::undoableLock(UNDO::Transaction *transaction)

@@ -274,12 +274,21 @@ ParameterRecallLayout2::ParameterRecallLayout2()
     auto originalParam = p->getOriginalParameter();
     auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
 
-    if(p->getVisualizationStyle() == Parameter::VisualizationStyle::Dot)
-      m_slider = addControl(
-          new StaticKnubbelSlider(originalValue, p->isBiPolar(), Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-    else
-      m_slider
-          = addControl(new StaticBarSlider(originalValue, p->isBiPolar(), Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+    switch(p->getVisualizationStyle())
+    {
+      case Parameter::VisualizationStyle::Bar:
+        m_slider = addControl(
+            new StaticBarSlider(originalValue, p->isBiPolar(), Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+      case Parameter::VisualizationStyle::BarFromRight:
+        m_slider
+            = addControl(new StaticDrawFromRightBarSlider(originalValue, Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+      case Parameter::VisualizationStyle::Dot:
+        m_slider = addControl(
+            new StaticKnubbelSlider(originalValue, p->isBiPolar(), Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+    }
 
     m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
 

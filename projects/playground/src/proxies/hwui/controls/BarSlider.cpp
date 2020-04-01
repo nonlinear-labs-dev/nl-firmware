@@ -56,28 +56,10 @@ bool BarSlider::redraw(FrameBuffer &fb)
   }
   else
   {
-    v = std::max(std::min(v, 1.0f), 0.0f);
-    int width = ceil(smaller.getWidth() * v);
-    setSliderColor(fb);
-
-    if(getParameter()->enableDrawRightToLeftForVoiceGroup())
-    {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      if(vg == VoiceGroup::I)
-      {
-        fb.fillRect(smaller.getLeft(), smaller.getTop(), width, smaller.getHeight());
-      }
-      else
-      {
-        auto realWidth = smaller.getWidth() - width;
-
-        fb.fillRect(smaller.getRight() - realWidth, smaller.getTop(), realWidth + 1, smaller.getHeight());
-      }
-    }
-    else
-    {
-      fb.fillRect(smaller.getLeft(), smaller.getTop(), width, smaller.getHeight());
-    }
+    if(getParameter()->getVisualizationStyle() == Parameter::VisualizationStyle::Bar)
+      drawParameterSlider(fb, v, smaller);
+    else if(getParameter()->getVisualizationStyle() == Parameter::VisualizationStyle::BarFromRight)
+      drawParameterSliderFromRight(fb, v, smaller);
   }
 
   if(hasBorder())
@@ -92,4 +74,28 @@ bool BarSlider::redraw(FrameBuffer &fb)
 bool BarSlider::drawCenterMark() const
 {
   return true;
+}
+
+bool BarSlider::shouldDrawParameterFromRight(Parameter *parameter)
+{
+  auto isSplit = parameter->getParentGroup()->getID().getName() == "Split";
+  auto isFadeFrom = parameter->getID().getNumber() == 396 && parameter->getID().getVoiceGroup() == VoiceGroup::II;
+  return isSplit || isFadeFrom;
+}
+
+void BarSlider::drawParameterSlider(FrameBuffer &fb, double v, const Rect &smaller)
+{
+  v = std::max(std::min(v, 1.0), 0.0);
+  int width = ceil(smaller.getWidth() * v);
+  setSliderColor(fb);
+  fb.fillRect(smaller.getLeft(), smaller.getTop(), width, smaller.getHeight());
+}
+
+void BarSlider::drawParameterSliderFromRight(FrameBuffer &fb, double v, const Rect &smaller)
+{
+  v = std::max(std::min(v, 1.0), 0.0);
+  auto width = std::ceil(smaller.getWidth() * v);
+  auto realWidth = smaller.getWidth() - width;
+  setSliderColor(fb);
+  fb.fillRect(smaller.getRight() - realWidth, smaller.getTop(), realWidth + 1, smaller.getHeight());
 }
