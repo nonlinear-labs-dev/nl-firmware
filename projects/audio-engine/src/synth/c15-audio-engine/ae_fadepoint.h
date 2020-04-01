@@ -29,7 +29,7 @@ class atomic_fade_table
   std::atomic<uint32_t> m_muteTasks = 0;
   atomic_fade_table();
   void init(const float _samplerate);
-  bool getTaskStatus();
+  bool evalTaskStatus();
   void setTask(const MuteTask _task);
   float getValue();
 

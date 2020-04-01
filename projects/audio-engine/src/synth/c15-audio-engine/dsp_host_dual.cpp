@@ -1096,7 +1096,7 @@ void dsp_host_dual::render()
 {
   // clock rendering & fadepoint muteTasks
   m_clock.render();
-  if(m_fade.getTaskStatus())
+  if(m_fade.evalTaskStatus())
   {
     evalMuteTasks();
   }

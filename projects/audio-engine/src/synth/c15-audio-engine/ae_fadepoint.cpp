@@ -29,7 +29,7 @@ void atomic_fade_table::init(const float _samplerate)
   }
 }
 
-bool atomic_fade_table::getTaskStatus()
+bool atomic_fade_table::evalTaskStatus()
 {
   const uint32_t targetRampIndex = m_muteTasks ? 0 : m_finalMuteRampIndex;
   if(m_currentMuteRampIndex != targetRampIndex)
