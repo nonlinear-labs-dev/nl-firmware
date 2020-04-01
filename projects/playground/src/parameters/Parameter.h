@@ -40,6 +40,7 @@ class Parameter : public UpdateDocumentContributor,
   enum class VisualizationStyle
   {
     Bar,
+    BarFromRight,
     Dot
   };
 

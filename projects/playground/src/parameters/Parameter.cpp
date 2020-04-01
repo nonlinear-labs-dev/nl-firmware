@@ -23,6 +23,7 @@
 #include <presets/recall/RecallParameter.h>
 #include <xml/Attribute.h>
 #include <http/UndoScope.h>
+#include <proxies/hwui/HWUI.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -465,6 +466,16 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
     case 354:
     case 362:
       return VisualizationStyle::Dot;
+    case 396:  //Fade From II
+      if(getID().getVoiceGroup() == VoiceGroup::II)
+        return VisualizationStyle::BarFromRight;
+      else  //Fade From I
+        return VisualizationStyle::Bar;
+    case 356:  //Split Point
+      if(Application::get().getHWUI()->getCurrentVoiceGroup() == VoiceGroup::II)
+        return VisualizationStyle::BarFromRight;
+      else
+        return VisualizationStyle::Bar;
   }
   return VisualizationStyle::Bar;
 }
