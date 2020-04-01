@@ -141,11 +141,11 @@ const Uuid &Preset::getUuid() const
   return m_uuid;
 }
 
-Glib::ustring Preset::getDisplayNameWithSuffixes() const
+Glib::ustring Preset::getDisplayNameWithSuffixes(bool addSpace) const
 {
   auto mono = isMonoActive();
   auto unison = isUnisonActive();
-  return getName() + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
+  return getName() + (addSpace ? "\u202F" : "") + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
 }
 
 Glib::ustring Preset::getName() const
@@ -332,7 +332,7 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
 
   writer.writeTag("preset",
                   { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                    Attribute("name-suffixed", getDisplayNameWithSuffixes()), Attribute("changed", changed),
+                    Attribute("name-suffixed", getDisplayNameWithSuffixes(true)), Attribute("changed", changed),
                     Attribute("type", toString(m_type)) },
                   [&]() {
                     if(changed)
