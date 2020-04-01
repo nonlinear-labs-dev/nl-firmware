@@ -26,15 +26,14 @@ enum MuteTask
 class atomic_fade_table
 {
  public:
-  uint32_t m_currentMuteRampIndex = 0;
   std::atomic<uint32_t> m_muteTasks = 0;
   atomic_fade_table();
   void init(const float _samplerate);
-  uint32_t getTargetRampIndex() const;
+  bool getTaskStatus();
   void setTask(const MuteTask _task);
   float getValue();
 
  private:
-  uint32_t m_finalMuteRampIndex = 0;
+  uint32_t m_currentMuteRampIndex = 0, m_finalMuteRampIndex = 0;
   std::vector<float> m_data;
 };

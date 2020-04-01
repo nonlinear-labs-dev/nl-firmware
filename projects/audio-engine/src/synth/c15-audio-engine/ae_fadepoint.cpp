@@ -29,9 +29,24 @@ void atomic_fade_table::init(const float _samplerate)
   }
 }
 
-uint32_t atomic_fade_table::getTargetRampIndex() const
+bool atomic_fade_table::getTaskStatus()
 {
-  return m_muteTasks ? 0 : m_finalMuteRampIndex;
+  const uint32_t targetRampIndex = m_muteTasks ? 0 : m_finalMuteRampIndex;
+  if(m_currentMuteRampIndex != targetRampIndex)
+  {
+    if(m_currentMuteRampIndex > targetRampIndex)
+    {
+      // fade out
+      m_currentMuteRampIndex--;
+      return m_currentMuteRampIndex == targetRampIndex;  // return true if fade out completed
+    }
+    else
+    {
+      // fade in
+      m_currentMuteRampIndex++;
+    }
+  }
+  return false;
 }
 
 void atomic_fade_table::setTask(const MuteTask _task)

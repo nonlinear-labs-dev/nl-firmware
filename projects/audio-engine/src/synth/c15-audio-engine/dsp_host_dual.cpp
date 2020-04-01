@@ -1094,26 +1094,11 @@ uint32_t dsp_host_dual::onSettingToneToggle()
 
 void dsp_host_dual::render()
 {
-  // clock & fadepoint rendering
+  // clock rendering & fadepoint muteTasks
   m_clock.render();
-  const uint32_t targetRampIndex = m_fade.getTargetRampIndex();
-  if(targetRampIndex != m_fade.m_currentMuteRampIndex)
+  if(m_fade.getTaskStatus())
   {
-    if(m_fade.m_currentMuteRampIndex > targetRampIndex)
-    {
-      // fade out
-      m_fade.m_currentMuteRampIndex--;
-      if(m_fade.m_currentMuteRampIndex == targetRampIndex)
-      {
-        // fade out completed -> mute tasks
-        evalMuteTasks();
-      }
-    }
-    else
-    {
-      // fade in
-      m_fade.m_currentMuteRampIndex++;
-    }
+    evalMuteTasks();
   }
   // slow rendering
   if(m_clock.m_slow)
