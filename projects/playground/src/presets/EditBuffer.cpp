@@ -466,11 +466,6 @@ void EditBuffer::undoableLoad(Preset *preset)
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
-  if(isLoadToPartActive())
-  {
-    nltools::Log::error("Hey not okay!");
-  }
-
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
   auto ae = Application::get().getAudioEngineProxy();
@@ -763,6 +758,10 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
 
   for(auto &parameter : global->getParameters())
   {
+    if(auto modParam = dynamic_cast<ModulateableParameter *>(parameter))
+    {
+      modParam->undoableDefaultModulationAspects(transaction);
+    }
     parameter->setDefaultFromHwui(transaction);
   }
 }
