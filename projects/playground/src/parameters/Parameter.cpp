@@ -32,7 +32,7 @@ Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
-    , m_voiceGroup{ group->getVoiceGroup() }
+    , m_voiceGroup { group->getVoiceGroup() }
 {
 }
 
