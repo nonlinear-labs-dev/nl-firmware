@@ -115,7 +115,7 @@ class dsp_host_dual
   GlobalSection m_global;
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;
   // dsp components
-  atomic_fade_table m_new_fade;
+  atomic_fade_table m_fade;
   PolySection m_poly[2];
   MonoSection m_mono[2];
   LayerSignalCollection m_z_layers[2];

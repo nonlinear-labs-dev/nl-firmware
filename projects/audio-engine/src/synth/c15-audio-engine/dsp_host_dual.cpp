@@ -33,7 +33,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_convert.init();
   m_clock.init(upsampleIndex);
   m_time.init(upsampleIndex);
-  m_new_fade.init(samplerate);
+  m_fade.init(samplerate);
   // proper time init
   m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
   m_edit_time.m_scaled = scale(m_edit_time.m_scaling, m_edit_time.m_position);
@@ -272,7 +272,7 @@ void dsp_host_dual::logStatus()
   {
     nltools::Log::info("engine status:");
     nltools::Log::info("-clock(index:", m_clock.m_index, ", fast:", m_clock.m_fast, ", slow:", m_clock.m_slow, ")");
-    nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_new_fade.getValue(), ")");
+    nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_fade.getValue(), ")");
     nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
   }
   else if(LOG_ENGINE_EDITS)
@@ -575,7 +575,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_new_fade.setTask(MuteTask_Recall_Single);
+    m_fade.setTask(MuteTask_Recall_Single);
   }
   else
   {
@@ -597,7 +597,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_new_fade.setTask(MuteTask_Recall_Split);
+    m_fade.setTask(MuteTask_Recall_Split);
   }
   else
   {
@@ -619,7 +619,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_new_fade.setTask(MuteTask_Recall_Layer);
+    m_fade.setTask(MuteTask_Recall_Layer);
   }
   else
   {
@@ -870,7 +870,7 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
     // application now via fade point
     m_preloaded_layerId = layerId;
     m_preloaded_position = param->m_position;
-    m_new_fade.setTask(MuteTask_Trigger_Unison);
+    m_fade.setTask(MuteTask_Trigger_Unison);
   }
 }
 
@@ -888,7 +888,7 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
     // application now via fade point
     m_preloaded_layerId = layerId;
     m_preloaded_position = param->m_scaled;
-    m_new_fade.setTask(MuteTask_Trigger_Mono);
+    m_fade.setTask(MuteTask_Trigger_Mono);
   }
 }
 void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -1088,7 +1088,7 @@ void dsp_host_dual::onSettingInitialSinglePreset()
 uint32_t dsp_host_dual::onSettingToneToggle()
 {
   m_tone_state = (m_tone_state + 1) % 3;
-  m_new_fade.setTask(MuteTask_Trigger_Tone);
+  m_fade.setTask(MuteTask_Trigger_Tone);
   return m_tone_state;
 }
 
@@ -1096,14 +1096,14 @@ void dsp_host_dual::render()
 {
   // clock & fadepoint rendering
   m_clock.render();
-  const uint32_t targetRampIndex = m_new_fade.getTargetRampIndex();
-  if(targetRampIndex != m_new_fade.m_currentMuteRampIndex)
+  const uint32_t targetRampIndex = m_fade.getTargetRampIndex();
+  if(targetRampIndex != m_fade.m_currentMuteRampIndex)
   {
-    if(m_new_fade.m_currentMuteRampIndex > targetRampIndex)
+    if(m_fade.m_currentMuteRampIndex > targetRampIndex)
     {
       // fade out
-      m_new_fade.m_currentMuteRampIndex--;
-      if(m_new_fade.m_currentMuteRampIndex == targetRampIndex)
+      m_fade.m_currentMuteRampIndex--;
+      if(m_fade.m_currentMuteRampIndex == targetRampIndex)
       {
         // fade out completed -> mute tasks
         evalMuteTasks();
@@ -1112,7 +1112,7 @@ void dsp_host_dual::render()
     else
     {
       // fade in
-      m_new_fade.m_currentMuteRampIndex++;
+      m_fade.m_currentMuteRampIndex++;
     }
   }
   // slow rendering
@@ -1136,7 +1136,7 @@ void dsp_host_dual::render()
     m_mono[1].render_fast();
   }
   // audio rendering (always) -- temporary soundgenerator patching
-  const float mute = m_new_fade.getValue();
+  const float mute = m_fade.getValue();
   // - audio dsp poly - first stage - both layers (up to Output Mixer)
   m_poly[0].render_audio(mute);
   m_poly[1].render_audio(mute);
@@ -1747,7 +1747,7 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param* _
 
 void dsp_host_dual::evalMuteTasks()
 {
-  auto muteTasks = m_new_fade.m_muteTasks.exchange(0);
+  auto muteTasks = m_fade.m_muteTasks.exchange(0);
   if(muteTasks & MuteTask_Trigger_Tone)
   {
     // apply (preloaded) tone state
