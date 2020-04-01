@@ -13,7 +13,6 @@ class BipolarParabolic100PercentScaleConverter : public ScaleConverter
   tControlPositionValue tcdToControlPosition(tTcdValue v) const;
   tDisplayValue controlPositionToDisplay(const tControlPositionValue &cpValue) const;
   Glib::ustring controlPositionToDisplayJS() const;
-  bool isBoolean() const override;
 
  private:
   tTcdRange m_tcdRange;

@@ -19,6 +19,5 @@ class LinearScaleConverter : public ScaleConverter
 
   Glib::ustring controlPositionToDisplayJS() const override;
   bool isBiPolar() const override;
-  bool isBoolean() const override;
   size_t hash() const override;
 };

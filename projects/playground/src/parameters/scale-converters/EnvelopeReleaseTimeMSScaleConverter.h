@@ -21,5 +21,4 @@ class EnvelopeReleaseTimeMSScaleConverter : public ScaleConverter
   tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
   Glib::ustring controlPositionToDisplayJS() const override;
   bool isBiPolar() const override;
-  bool isBoolean() const override;
 };

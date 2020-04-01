@@ -17,7 +17,6 @@ class TimeScaleConverter : public ScaleConverter
   tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
 
   size_t hash() const override;
-  bool isBoolean() const override;
 
  private:
   tTcdRange m_tcdRange;

@@ -15,5 +15,4 @@ class ParabolicGainDbScaleConverter : public ScaleConverter
   tTcdValue controlPositionToTcd(const tControlPositionValue &cpValue) const override;
   tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
   Glib::ustring controlPositionToDisplayJS() const override;
-  bool isBoolean() const override;
 };

@@ -62,8 +62,3 @@ Glib::ustring CombDecayBipolarMsScaleConverter::controlPositionToDisplayJS() con
   Glib::ustring ret = s.str();
   return ret;
 }
-
-bool CombDecayBipolarMsScaleConverter::isBoolean() const
-{
-  return false;
-}

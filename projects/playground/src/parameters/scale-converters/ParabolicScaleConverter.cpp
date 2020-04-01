@@ -18,11 +18,6 @@ bool ParabolicScaleConverter::isBiPolar() const
   return false;
 }
 
-bool ParabolicScaleConverter::isBoolean() const
-{
-  return false;
-}
-
 tTcdValue ParabolicScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
 {
   return m_tcdRange.scaleValueToRange(cpValue, getControlPositionRange(), false);

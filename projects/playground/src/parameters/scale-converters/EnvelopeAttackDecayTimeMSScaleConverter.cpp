@@ -44,8 +44,3 @@ bool EnvelopeAttackDecayTimeMSScaleConverter::isBiPolar() const
 {
   return false;
 }
-
-bool EnvelopeAttackDecayTimeMSScaleConverter::isBoolean() const
-{
-  return false;
-}

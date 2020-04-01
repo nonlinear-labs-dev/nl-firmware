@@ -14,7 +14,6 @@ class ParabolicScaleConverter : public ScaleConverter
 
   tTcdValue controlPositionToTcd(const tControlPositionValue &cpValue) const override;
   tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
-  bool isBoolean() const override;
 
  private:
   tTcdRange m_tcdRange;

@@ -15,7 +15,6 @@ class EnvelopeAttackDecayTimeMSScaleConverter : public ScaleConverter
   tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
   Glib::ustring controlPositionToDisplayJS() const override;
   bool isBiPolar() const override;
-  bool isBoolean() const override;
 
  private:
   tTcdRange m_tcdRange;

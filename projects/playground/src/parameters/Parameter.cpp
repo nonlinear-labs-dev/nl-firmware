@@ -351,7 +351,6 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
 {
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
-  writer.writeTextElement("boolean", to_string(m_value.isBoolean()));
 
   if(shouldWriteDocProperties(knownRevision))
   {

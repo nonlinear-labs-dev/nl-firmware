@@ -42,5 +42,5 @@ class RawValue
   tValueType m_factoryDefaultValue;
 
   const ScaleConverter *m_scaleConverter;
-  std::optional<bool> m_isBoolean = std::nullopt;
+  bool m_isBoolean = false;
 };

@@ -41,8 +41,3 @@ size_t LinearScaleConverter::hash() const
 {
   return super::hash() ^ m_tcdRange.hash() ^ (m_displayRange.hash() << 1);
 }
-
-bool LinearScaleConverter::isBoolean() const
-{
-  return m_displayRange.isBoolean();
-}

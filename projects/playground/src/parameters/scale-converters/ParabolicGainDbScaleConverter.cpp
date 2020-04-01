@@ -51,8 +51,3 @@ Glib::ustring ParabolicGainDbScaleConverter::controlPositionToDisplayJS() const
     << getDimension().getStingizerJS() << "\", withUnit);";
   return s.str();
 }
-
-bool ParabolicGainDbScaleConverter::isBoolean() const
-{
-  return false;
-}

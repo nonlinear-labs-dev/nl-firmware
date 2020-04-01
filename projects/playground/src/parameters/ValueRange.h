@@ -36,11 +36,6 @@ template <typename tValue> class ValueRange
     return m_min == -m_max;
   }
 
-  bool isBoolean() const
-  {
-    return std::abs(m_min) - std::abs(m_max) == 1;
-  }
-
   template <typename tInValue>
   tValue scaleValueToRange(const tInValue &in, const ValueRange<tInValue> &inRange, bool clip) const
   {
