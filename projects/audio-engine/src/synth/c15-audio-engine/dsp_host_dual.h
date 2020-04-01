@@ -111,20 +111,19 @@ class dsp_host_dual
   Engine::Handle::Time_Handle m_time;
   // layer handling
   C15::Properties::LayerMode m_layer_mode, m_preloaded_layer_mode;
-  uint32_t m_layer_focus = 0;  // probably obsolete
   // global dsp components
   GlobalSection m_global;
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;
   // dsp components
-  ae_fade_table m_fade;
-  ae_fader m_output_mute;
+  atomic_fade_table m_fade;
   PolySection m_poly[2];
   MonoSection m_mono[2];
   LayerSignalCollection m_z_layers[2];
   // helper values
   const float m_format_vel = 16383.0f / 127.0f, m_format_hw = 16000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
               m_norm_vel = 1.0f / 16383.0f, m_norm_hw = 1.0f / 16000.0f;
-  uint32_t m_key_pos = 0, m_tone_state = 0;
+  uint32_t m_key_pos = 0, m_tone_state = 0, m_preloaded_layerId = 0;
+  float m_preloaded_position = 0.0f;
   bool m_key_valid = false, m_layer_changed = false, m_glitch_suppression = false;
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
@@ -148,7 +147,7 @@ class dsp_host_dual
   void globalTransition(const Direct_Param* _param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Direct_Param* _param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Target_Param* _param, const Time_Aspect _time);
-  void evalFadePoint();
+  void evalMuteTasks();
   void evalPolyChg(const C15::Properties::LayerId _layerId,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _monoEnable);
