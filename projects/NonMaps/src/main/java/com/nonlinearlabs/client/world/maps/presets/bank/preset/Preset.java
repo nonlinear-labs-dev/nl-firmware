@@ -6,6 +6,8 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
+import com.nonlinearlabs.client.CustomPresetSelector;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
@@ -16,7 +18,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.LoadMode;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
@@ -125,6 +126,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		}
 	}
 
+	public boolean isDual() {
+		return getType() != SoundType.Single;
+	}
+
 	@Override
 	public RGB getColorFont() {
 		boolean selected = isSelected();
@@ -150,6 +155,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			return new RGB(179, 179, 179);
 
 		return super.getColorFont();
+	}
+
+	public boolean isInStoreSelectMode() {
+		return getParent().getParent().isInStoreSelectMode();
 	}
 
 	public void update(int i, Node preset) {
@@ -279,8 +288,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isSelected() {
-		StoreSelectMode sm = NonMaps.get().getNonLinearWorld().getPresetManager().getStoreSelectMode();
-		if (sm != null)
+		CustomPresetSelector sm = NonMaps.get().getNonLinearWorld().getPresetManager().getCustomPresetSelection();
+		if (sm instanceof StoreSelectMode)
 			return sm.getSelectedPreset() == this;
 
 		if (PresetDeleter.instance != null)
@@ -303,15 +312,16 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public boolean isLoaded() {
-		if (getParent().isInStoreSelectMode()) {
-			return this == getParent().getParent().getStoreSelectMode().getOriginalPreset();
-		}
+		PresetManager pm = getParent().getParent();
+		CustomPresetSelector sel = pm.getCustomPresetSelection();
+		if (sel instanceof StoreSelectMode)
+			return this == sel.getOriginalPreset();
 
 		return uuid.equals(getNonMaps().getNonLinearWorld().getParameterEditor().getLoadedPresetUUID());
 	}
 
-	public boolean isInStoreSelectMode() {
-		return NonMaps.get().getNonLinearWorld().getPresetManager().isInStoreSelectMode();
+	public boolean hasCustomPresetSelection() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().hasCustomPresetSelection();
 	}
 
 	private boolean wasJustSelected = false;
@@ -367,6 +377,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	public void selectPreset() {
 		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreSelectMode();
+
 		if (storeMode != null) {
 			storeMode.setSelectedPreset(this);
 		} else {
@@ -475,13 +486,13 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void load() {
-		LoadMode loadMode = SetupModel.get().systemSettings.loadMode.getValue();
-		if (loadMode == LoadMode.loadtopart) {
+		VoiceGroup vg = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
+		LoadToPartMode loadToPart = getParent().getParent().getLoadToPartMode();
+		if (loadToPart != null) {
 			if (type != SoundType.Single) {
-				ChoosePresetPartDialog d = new ChoosePresetPartDialog();
-				d.show();
+				EditBufferUseCases.get().loadPresetPartIntoPart(loadToPart.getSelectedPreset().getUUID(),
+						loadToPart.getSelectedPart(), vg);
 			} else {
-				VoiceGroup vg = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
 				EditBufferUseCases.get().loadSinglePresetIntoPart(getUUID(), vg);
 			}
 		} else {

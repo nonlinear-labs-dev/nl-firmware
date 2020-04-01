@@ -54,7 +54,7 @@ Preset::~Preset()
 void Preset::load(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &presetPath)
 {
   auto strUUID = getUuid();
-  Serializer::read<PresetSerializer>(transaction, std::move(presetPath), strUUID.raw(), this);
+  Serializer::read<PresetSerializer>(transaction, presetPath, strUUID.raw(), this);
   m_lastSavedUpdateID = getUpdateIDOfLastChange();
 }
 
@@ -64,7 +64,7 @@ bool Preset::save(const Glib::RefPtr<Gio::File> &bankPath)
   {
     PresetSerializer serializer(this);
     auto strUUID = getUuid().raw();
-    serializer.write(std::move(bankPath), strUUID);
+    serializer.write(bankPath, strUUID);
     m_lastSavedUpdateID = getUpdateIDOfLastChange();
     return true;
   }
@@ -453,4 +453,9 @@ bool Preset::isUnisonActive() const
   }
 
   return false;
+}
+
+bool Preset::isDual() const
+{
+  return getType() == SoundType::Split || getType() == SoundType::Layer;
 }

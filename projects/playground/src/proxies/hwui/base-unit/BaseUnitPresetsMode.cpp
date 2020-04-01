@@ -3,7 +3,7 @@
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <playground.h>
 #include <proxies/hwui/base-unit/BaseUnitPresetsMode.h>
 #include <proxies/hwui/buttons.h>
@@ -52,10 +52,8 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto eb = app.getPresetManager()->getEditBuffer();
   auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-
-#warning "TODO fix direct load / select only / Load to I/II"
-  if(!(app.getSettings()->getSetting<LoadModeSetting>()->get() == LoadMode::DirectLoad))
-    eb->undoableLoadSelectedPreset(currentVoiceGroup);
-  else if(eb->isModified())
+  const auto directLoadActive = app.getSettings()->getSetting<DirectLoadSetting>()->get();
+  
+  if(!directLoadActive || eb->isModified())
     eb->undoableLoadSelectedPreset(currentVoiceGroup);
 }
