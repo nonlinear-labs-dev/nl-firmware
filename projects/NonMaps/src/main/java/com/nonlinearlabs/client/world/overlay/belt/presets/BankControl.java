@@ -161,7 +161,8 @@ public class BankControl extends OverlayLayout implements IBank {
 	}
 
 	public boolean isInStoreSelectMode() {
-		return getBankInCharge().isInStoreSelectMode();
+		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
+		return pm.isInStoreSelectMode();
 	}
 
 	public void renameCurrentPreset() {

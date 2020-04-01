@@ -11,7 +11,7 @@ import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
-public class LoadToPartMode {
+public class LoadToPartMode implements CustomPresetSelector {
 
 	private class LoadToPartModeData {
 		public Preset m_selectedPreset;
@@ -22,7 +22,7 @@ public class LoadToPartMode {
 	private PresetManager m_parent;
 
 	private final Preset m_originPreset;
-	
+
 	private LoadToPartModeData m_currentData;
 	private LoadToPartModeData m_otherData;
 
@@ -39,8 +39,8 @@ public class LoadToPartMode {
 		m_originPreset = m_parent.findLoadedPreset();
 
 		m_currentData.m_selectedPreset = m_parent.getSelectedPreset();
-        m_currentData.m_selectedBank = m_parent.findBank(m_parent.getSelectedBank());
-		
+		m_currentData.m_selectedBank = m_parent.findBank(m_parent.getSelectedBank());
+
 		m_otherData.m_selectedBank = m_currentData.m_selectedBank;
 		m_otherData.m_selectedPreset = m_currentData.m_selectedPreset;
 		m_otherData.m_selectedVoiceGroup = m_currentData.m_selectedVoiceGroup;
@@ -49,7 +49,7 @@ public class LoadToPartMode {
 			swapSelection();
 			return true;
 		});
-    }
+	}
 
 	private void swapSelection() {
 		LoadToPartModeData tmp = m_currentData;
@@ -63,7 +63,7 @@ public class LoadToPartMode {
 		m_currentData.m_selectedBank = p != null ? p.getParent() : null;
 		updateUI();
 
-		if(SetupModel.get().systemSettings.directLoad.getBool()) {
+		if (SetupModel.get().systemSettings.directLoad.getBool()) {
 			NonMaps.get().getNonLinearWorld().getPresetManager().loadSelectedPresetPart();
 		}
 	}
@@ -84,10 +84,11 @@ public class LoadToPartMode {
 
 	public boolean canNext() {
 		if (m_currentData.m_selectedPreset != null) {
-			boolean isLastPreset = m_currentData.m_selectedPreset.getNumber() < m_currentData.m_selectedPreset.getParent().getPresetList().getPresetCount();
+			boolean isLastPreset = m_currentData.m_selectedPreset.getNumber() < m_currentData.m_selectedPreset
+					.getParent().getPresetList().getPresetCount();
 
-			if(m_currentData.m_selectedPreset.isDual()) {
-				if(m_currentData.m_selectedVoiceGroup == VoiceGroup.I)
+			if (m_currentData.m_selectedPreset.isDual()) {
+				if (m_currentData.m_selectedVoiceGroup == VoiceGroup.I)
 					return true;
 				else
 					return isLastPreset;
@@ -104,8 +105,8 @@ public class LoadToPartMode {
 		if (m_currentData.m_selectedPreset != null) {
 			boolean isFirstPreset = m_currentData.m_selectedPreset.getNumber() > 1;
 
-			if(m_currentData.m_selectedPreset.isDual()) {
-				if(m_currentData.m_selectedVoiceGroup == VoiceGroup.II)
+			if (m_currentData.m_selectedPreset.isDual()) {
+				if (m_currentData.m_selectedVoiceGroup == VoiceGroup.II)
 					return true;
 				return isFirstPreset;
 			} else {
@@ -120,20 +121,20 @@ public class LoadToPartMode {
 		if (canNext()) {
 			boolean selectionChanged = false;
 
-			if(m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.I) {
+			if (m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.I) {
 				m_currentData.m_selectedVoiceGroup = VoiceGroup.II;
 				selectionChanged = true;
 			}
 
 			Preset next = m_currentData.m_selectedPreset;
 
-			if(!selectionChanged) {
+			if (!selectionChanged) {
 				Bank b = m_currentData.m_selectedPreset.getParent();
 				int idx = m_currentData.m_selectedPreset.getNumber() - 1;
-				next = b.getPreset(idx + 1);	
+				next = b.getPreset(idx + 1);
 				m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
 			}
-			
+
 			setSelectedPreset(next);
 		}
 	}
@@ -142,39 +143,41 @@ public class LoadToPartMode {
 		if (canPrev()) {
 			boolean selectionChanged = false;
 
-			if(m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.II) {
+			if (m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.II) {
 				m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
 				selectionChanged = true;
 			}
 
 			Preset next = m_currentData.m_selectedPreset;
 
-			if(!selectionChanged) {
+			if (!selectionChanged) {
 				Bank b = m_currentData.m_selectedPreset.getParent();
 				int idx = m_currentData.m_selectedPreset.getNumber() - 1;
 				next = b.getPreset(idx - 1);
-			
-				if(next.isDual()) {
+
+				if (next.isDual()) {
 					m_currentData.m_selectedVoiceGroup = VoiceGroup.II;
 				} else {
 					m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
 				}
 			}
-			
+
 			setSelectedPreset(next);
 		}
 	}
 
 	public boolean canSelectPreviousBank() {
 		if (m_currentData.m_selectedBank != null) {
-			return m_currentData.m_selectedBank.getParent().canSelectBankWithOrdernumberOffset(m_currentData.m_selectedBank, -1);
+			return m_currentData.m_selectedBank.getParent()
+					.canSelectBankWithOrdernumberOffset(m_currentData.m_selectedBank, -1);
 		}
 		return false;
 	}
 
 	public boolean canSelectNextBank() {
 		if (m_currentData.m_selectedBank != null) {
-			return m_currentData.m_selectedBank.getParent().canSelectBankWithOrdernumberOffset(m_currentData.m_selectedBank, 1);
+			return m_currentData.m_selectedBank.getParent()
+					.canSelectBankWithOrdernumberOffset(m_currentData.m_selectedBank, 1);
 		}
 		return false;
 	}
@@ -221,7 +224,7 @@ public class LoadToPartMode {
 		NonMaps.get().getNonLinearWorld().invalidate(NonLinearWorld.INVALIDATION_FLAG_UI_CHANGED);
 		NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl()
 				.update();
-				
+
 		m_notifier.notifyChanges();
 	}
 

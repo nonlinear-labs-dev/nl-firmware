@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
+import com.nonlinearlabs.client.CustomPresetSelector;
 import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.LoadToPartModeNotifier;
 import com.nonlinearlabs.client.NonMaps;
@@ -54,8 +54,9 @@ public class PresetManager extends MapsLayout {
 	private MultiplePresetSelection multiSelection;
 	private MoveAllBanksLayer moveAllBanks;
 	private MoveSomeBanksLayer moveSomeBanks;
-	private StoreSelectMode storeSelectMode = null;
-	private LoadToPartMode loadToPartMode = null;
+
+	private CustomPresetSelector customPresetSelector = null;
+
 	private LoadToPartModeNotifier loadToPartNotifier = null;
 	private Tape attachingTapes[] = new Tape[2];
 
@@ -123,41 +124,31 @@ public class PresetManager extends MapsLayout {
 			return true;
 		});
 
-		loadToPartMode = null;
 		loadToPartNotifier = new LoadToPartModeNotifier();
 	}
 
-	public StoreSelectMode getStoreSelectMode() {
-		return storeSelectMode;
-	}
-
-	public boolean isInStoreSelectMode() {
-		return storeSelectMode != null;
+	public boolean hasCustomPresetSelection() {
+		return customPresetSelector != null;
 	}
 
 	public void startStoreSelectMode() {
-		if (storeSelectMode == null) {
+		if (isInLoadToPartMode())
+			customPresetSelector = null;
+
+		if (customPresetSelector == null) {
 			if (isEmpty() == false) {
-				storeSelectMode = new StoreSelectMode(this);
-				storeSelectMode.updateUI();
+				customPresetSelector = new StoreSelectMode(this);
+				customPresetSelector.updateUI();
 			}
 		}
 	}
 
 	public void endStoreSelectMode() {
-		if (storeSelectMode != null) {
-			StoreSelectMode tmp = storeSelectMode;
-			storeSelectMode = null;
+		if (customPresetSelector != null) {
+			CustomPresetSelector tmp = customPresetSelector;
+			customPresetSelector = null;
 			tmp.updateUI();
 		}
-	}
-
-	public LoadToPartMode getLoadToPartMode() {
-		return loadToPartMode;
-	}
-
-	public boolean isInLoadToPartMode() {
-		return loadToPartMode != null;
 	}
 
 	public void onLoadToPartModeToggled(Function<Void, Boolean> cb) {
@@ -165,17 +156,20 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void startLoadToPartMode() {
-		if(!isEmpty()) {
-			loadToPartMode = new LoadToPartMode(this);
+		if (isInStoreSelectMode())
+			customPresetSelector = null;
+
+		if (!isEmpty()) {
+			customPresetSelector = new LoadToPartMode(this);
 			loadToPartNotifier.notifyChanges();
-			loadToPartMode.updateUI();
+			customPresetSelector.updateUI();
 		}
 	}
-	
+
 	public void endLoadToPartMode() {
-		if(loadToPartMode != null) {
-			LoadToPartMode tmp = loadToPartMode;
-			loadToPartMode = null;
+		if (customPresetSelector != null) {
+			CustomPresetSelector tmp = customPresetSelector;
+			customPresetSelector = null;
 			loadToPartNotifier.notifyChanges();
 			tmp.updateUI();
 		}
@@ -401,11 +395,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public String getSelectedBank() {
-		if (isInStoreSelectMode())
-			return getStoreSelectMode().getSelectedBank().getUUID();
-
-		if (isInLoadToPartMode())
-			return getLoadToPartMode().getSelectedBank().getUUID();
+		if (hasCustomPresetSelection())
+			return getCustomPresetSelection().getSelectedBank().getUUID();
 
 		return selectedBank;
 	}
@@ -428,13 +419,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void selectBank(String bankUUID, boolean userInteraction) {
-		if (isInStoreSelectMode()) {
-			getStoreSelectMode().setSelectedBank(findBank(bankUUID));
-			return;
-		}
-
-		if(isInLoadToPartMode()) {
-			getLoadToPartMode().setSelectedBank(findBank(bankUUID));
+		if (hasCustomPresetSelection()) {
+			getCustomPresetSelection().setSelectedBank(findBank(bankUUID));
 			return;
 		}
 
@@ -577,11 +563,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean canNext() {
-		if (isInStoreSelectMode())
-			return storeSelectMode.canNext();
-
-		if(isInLoadToPartMode())
-			return getLoadToPartMode().canNext();
+		if (hasCustomPresetSelection())
+			return getCustomPresetSelection().canNext();
 
 		Preset p = findSelectedPreset();
 		if (p != null) {
@@ -593,11 +576,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean canPrev() {
-		if (isInStoreSelectMode())
-			return storeSelectMode.canPrev();
-
-		if (isInLoadToPartMode())
-			return getLoadToPartMode().canPrev();
+		if (hasCustomPresetSelection())
+			return getCustomPresetSelection().canPrev();
 
 		Preset p = findSelectedPreset();
 		if (p != null) {
@@ -606,6 +586,14 @@ public class PresetManager extends MapsLayout {
 				return !b.getPresetList().isFirst(p);
 		}
 		return false;
+	}
+
+	public LoadToPartMode getLoadToPartMode() {
+		return (LoadToPartMode) customPresetSelector;
+	}
+
+	public boolean isInLoadToPartMode() {
+		return customPresetSelector instanceof LoadToPartMode;
 	}
 
 	public Preset findLoadedPreset() {
@@ -690,13 +678,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void selectPreviousPreset() {
-		if (isInStoreSelectMode()) {
-			getStoreSelectMode().selectPreviousPreset();
-			return;
-		}
-
-		if (isInLoadToPartMode()) {
-			getLoadToPartMode().selectPreviousPreset();
+		if (hasCustomPresetSelection()) {
+			getCustomPresetSelection().selectPreviousPreset();
 			return;
 		}
 
@@ -706,13 +689,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void selectNextPreset() {
-		if (isInStoreSelectMode()) {
-			getStoreSelectMode().selectNextPreset();
-			return;
-		}
-
-		if (isInLoadToPartMode()) {
-			getLoadToPartMode().selectNextPreset();
+		if (hasCustomPresetSelection()) {
+			getCustomPresetSelection().selectNextPreset();
 			return;
 		}
 
@@ -735,29 +713,22 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void selectPreviousBank(boolean userInteraction) {
-		if (isInStoreSelectMode())
-			getStoreSelectMode().selectPreviousBank();
-		else if(isInLoadToPartMode())
-			getLoadToPartMode().selectPreviousBank();
+		if (hasCustomPresetSelection())
+			getCustomPresetSelection().selectPreviousBank();
 		else
 			selectBankWithOrdernumberOffset(-1);
 	}
 
 	public void selectNextBank(boolean userInteraction) {
-		if (isInStoreSelectMode())
-			getStoreSelectMode().selectNextBank();
-		else if(isInLoadToPartMode())
-			getLoadToPartMode().selectNextBank();
+		if (hasCustomPresetSelection())
+			getCustomPresetSelection().selectNextBank();
 		else
 			selectBankWithOrdernumberOffset(1);
 	}
 
 	public boolean canSelectPreviousBank() {
-		if (isInStoreSelectMode())
-			return getStoreSelectMode().canSelectPreviousBank();
-
-		if (isInLoadToPartMode())
-			return getLoadToPartMode().canSelectPreviousBank();
+		if (hasCustomPresetSelection())
+			return getCustomPresetSelection().canSelectPreviousBank();
 
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
@@ -765,11 +736,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public boolean canSelectNextBank() {
-		if (isInStoreSelectMode())
-			return getStoreSelectMode().canSelectNextBank();
-
-		if (isInLoadToPartMode())
-			return getLoadToPartMode().canSelectNextBank();
+		if (hasCustomPresetSelection())
+			return getCustomPresetSelection().canSelectNextBank();
 
 		String sel = getSelectedBank();
 		Bank b = findBank(sel);
@@ -821,16 +789,17 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public void loadSelectedPresetPart() {
-		if(isInLoadToPartMode()) {
+		if (isInLoadToPartMode()) {
 			LoadToPartMode selection = getLoadToPartMode();
 			VoiceGroup currentVoiceGroup = EditBufferModel.get().voiceGroup.getValue();
-			EditBufferUseCases.get().loadPresetPartIntoPart(selection.getSelectedPreset().getUUID(), selection.getSelectedPart(), currentVoiceGroup);
+			EditBufferUseCases.get().loadPresetPartIntoPart(selection.getSelectedPreset().getUUID(),
+					selection.getSelectedPart(), currentVoiceGroup);
 		}
 	}
 
 	public Preset findSelectedPreset() {
 
-		if(isInLoadToPartMode()) {
+		if (isInLoadToPartMode()) {
 			return getLoadToPartMode().getSelectedPreset();
 		}
 
@@ -1047,5 +1016,17 @@ public class PresetManager extends MapsLayout {
 			return false;
 
 		return findSelectedPreset() != loadedPreset;
+	}
+
+	public CustomPresetSelector getCustomPresetSelection() {
+		return customPresetSelector;
+	}
+
+	public boolean isInStoreSelectMode() {
+		return customPresetSelector instanceof StoreSelectMode;
+	}
+
+	public StoreSelectMode getStoreSelectMode() {
+		return (StoreSelectMode) customPresetSelector;
 	}
 };

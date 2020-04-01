@@ -6,7 +6,7 @@ import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
-public class StoreSelectMode {
+public class StoreSelectMode implements CustomPresetSelector {
 	private PresetManager m_parent;
 	private Preset selectedPreset;
 	private Bank selectedBank;
