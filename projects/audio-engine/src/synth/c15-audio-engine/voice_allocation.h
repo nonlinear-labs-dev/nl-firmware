@@ -265,10 +265,8 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   inline VoiceAllocation()
   {
   }
-  inline void init(LayerMode* _current, LayerMode* _next)
+  inline void init()
   {
-    m_current = _current;
-    m_next = _next;
     // prepare lookup tables for local index (I, II) and voices (0 ... LocalVoices -1)
     for(uint32_t v = 0; v < GlobalVoices; v++)
     {
@@ -276,7 +274,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       m_localVoice[v] = v % LocalVoices;
     }
   }
-  inline bool keyDown(const uint32_t _keyPos, const float _vel)
+  inline bool keyDown(const uint32_t _keyPos, const float _vel, LayerMode currentMode)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
@@ -288,7 +286,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       if(validity)
       {
         keyState->setEvent(_keyPos, _vel);
-        keyDown_apply(keyState);
+        keyDown_apply(keyState, currentMode);
         keyDown_confirm(keyState);
       }
     }
@@ -322,11 +320,11 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     }
     return validity;
   }
-  inline bool setUnison(const uint32_t _layer, const float _value)
+  inline bool setUnison(const uint32_t _layer, const float _value, LayerMode oldMode, LayerMode newMode)
   {
     uint32_t voices = 1;
     bool validity = false;
-    switch(*m_current)
+    switch(oldMode)
     {
       case LayerMode::Single:
         clear_keyState(AllocatorId::Global);
@@ -338,7 +336,8 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         clear_keyState(AllocatorId::Dual);
         break;
     }
-    switch(*m_next)
+
+    switch(newMode)
     {
       case LayerMode::Single:
         voices += static_cast<uint32_t>((_value + 0.01f) * (static_cast<float>(GlobalVoices - 1)));
@@ -359,10 +358,10 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     m_unison = voices;
     return validity;
   }
-  inline void setMonoEnable(const uint32_t _layerId, const float _value)
+  inline void setMonoEnable(const uint32_t _layerId, const float _value, LayerMode currentMode)
   {
     const bool mono = static_cast<bool>(_value);
-    switch(*m_current)
+    switch(currentMode)
     {
       case LayerMode::Single:
         clear_keyState(AllocatorId::Global);
@@ -381,10 +380,10 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         break;
     }
   }
-  inline void setMonoPriority(const uint32_t _layerId, const float _value)
+  inline void setMonoPriority(const uint32_t _layerId, const float _value, LayerMode currentMode)
   {
     const MonoPriority prio = static_cast<MonoPriority>(_value);
-    switch(*m_current)
+    switch(currentMode)
     {
       case LayerMode::Single:
         m_global_mono.m_priority = prio;
@@ -397,10 +396,10 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         break;
     }
   }
-  inline void setMonoLegato(const uint32_t _layerId, const float _value)
+  inline void setMonoLegato(const uint32_t _layerId, const float _value, LayerMode currentMode)
   {
     const uint32_t mode = static_cast<uint32_t>(_value);
-    switch(*m_current)
+    switch(currentMode)
     {
       case LayerMode::Single:
         m_global_mono.m_legato_on_env = mode & 1;
@@ -431,13 +430,12 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   VoiceAssignment m_voiceState[GlobalVoices];
   uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {};
   const AllocatorId m_layerId[2] = { AllocatorId::Local_I, AllocatorId::Local_II };
-  LayerMode *m_current, *m_next;
-  inline void keyDown_apply(KeyAssignment* _keyState)
+  inline void keyDown_apply(KeyAssignment* _keyState, LayerMode currentMode)
   {
     m_traversal.init();
     uint32_t firstVoice, unisonVoices;
     // determine associated allocator (by mode)
-    switch(*m_current)
+    switch(currentMode)
     {
       case LayerMode::Single:
         _keyState->m_origin = AllocatorId::Global;

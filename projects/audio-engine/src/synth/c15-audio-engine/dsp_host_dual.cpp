@@ -1,5 +1,7 @@
 #include "dsp_host_dual.h"
 
+using namespace std::chrono_literals;
+
 /******************************************************************************/
 /** @file       dsp_host_dual.cpp
     @date
@@ -9,12 +11,10 @@
     @todo
 *******************************************************************************/
 
-#include <nltools/logging/Log.h>
-
 dsp_host_dual::dsp_host_dual()
 {
   m_mainOut_L = m_mainOut_R = 0.0f;
-  m_layer_mode = m_preloaded_layer_mode = C15::Properties::LayerMode::Single;
+  m_layer_mode = C15::Properties::LayerMode::Single;
 }
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
@@ -28,7 +28,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   }
   const float samplerate = static_cast<float>(C15::Config::clock_rates[upsampleIndex][0]);
   // init of crucial components: voiceAlloc, conversion, clock, time, fadepoint
-  m_alloc.init(&m_layer_mode, &m_preloaded_layer_mode);
+  m_alloc.init();
   m_alloc.setSplitPoint(30);  // temporary..?
   m_convert.init();
   m_clock.init(upsampleIndex);
@@ -564,54 +564,67 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
 
 void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _msg)
 {
-  m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Single;
-  m_preloaded_layer_mode = C15::Properties::LayerMode::Single;
-  m_preloaded_single_data = _msg;
   if(LOG_RECALL)
   {
     // log preset with primitive timestamp (for debugging fade events)
     nltools::Log::info("Received Single Preset Message! (@", m_clock.m_index, ")");
   }
+
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.setTask(MuteTask_Recall_Single);
+    m_fade.muteAndDo([&] {
+      // global flush
+      m_poly[0].flushDSP();
+      m_poly[1].flushDSP();
+      m_mono[0].flushDSP();
+      m_mono[1].flushDSP();
+      recallSingle(_msg);
+    });
+
+    if(LOG_RECALL)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
+    }
   }
   else
   {
-    // direct apply: recall single preset buffer - no flushing
-    m_layer_mode = m_preloaded_layer_mode;
-    recallSingle();
+    recallSingle(_msg);
   }
 }
 
 void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg)
 {
-  m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Split;
-  m_preloaded_layer_mode = C15::Properties::LayerMode::Split;
-  m_preloaded_split_data = _msg;
   if(LOG_RECALL)
   {
     nltools::Log::info("Received Split Preset Message!, (@", m_clock.m_index, ")");
   }
+
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.setTask(MuteTask_Recall_Split);
+    m_fade.muteAndDo([&] {
+      // global flush
+      m_poly[0].flushDSP();
+      m_poly[1].flushDSP();
+      m_mono[0].flushDSP();
+      m_mono[1].flushDSP();
+      recallSplit(_msg);
+    });
+
+    if(LOG_RECALL)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
+    }
   }
   else
   {
-    // direct apply: recall split preset buffer - no flushing
-    m_layer_mode = m_preloaded_layer_mode;
-    recallSplit();
+    recallSplit(_msg);
   }
 }
 
 void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg)
 {
-  m_layer_changed = m_layer_mode != C15::Properties::LayerMode::Layer;
-  m_preloaded_layer_mode = C15::Properties::LayerMode::Layer;
-  m_preloaded_layer_data = _msg;
   if(LOG_RECALL)
   {
     nltools::Log::info("Received Layer Preset Message!, (@", m_clock.m_index, ")");
@@ -619,13 +632,23 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.setTask(MuteTask_Recall_Layer);
+    m_fade.muteAndDo([&] {
+      // global flush
+      m_poly[0].flushDSP();
+      m_poly[1].flushDSP();
+      m_mono[0].flushDSP();
+      m_mono[1].flushDSP();
+      recallLayer(_msg);
+    });
+
+    if(LOG_RECALL)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
+    }
   }
   else
   {
-    // direct apply: recall layer preset buffer - no flushing
-    m_layer_mode = m_preloaded_layer_mode;
-    recallLayer();
+    recallLayer(_msg);
   }
 }
 
@@ -861,16 +884,31 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
 {
   const uint32_t layerId = getLayerId(_msg.voiceGroup);
   auto param = m_params.get_local_unison_voices(getLayer(_msg.voiceGroup));
+
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
     if(LOG_EDITS)
     {
       nltools::Log::info("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
+
     // application now via fade point
-    m_preloaded_layerId = layerId;
-    m_preloaded_position = param->m_position;
-    m_fade.setTask(MuteTask_Trigger_Unison);
+    m_fade.muteAndDo([&] {
+      // apply (preloaded) unison change
+      m_alloc.setUnison(layerId, param->m_position, m_layer_mode, m_layer_mode);
+      // apply reset to affected poly compoments
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
+      m_poly[layerId].m_key_active = 0;
+      if(m_layer_mode != LayerMode::Split)
+      {
+        // apply reset to other poly components (when not in split mode)
+        const uint32_t lId = 1 - layerId;
+        m_poly[lId].resetEnvelopes();
+        m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
+        m_poly[lId].m_key_active = 0;
+      }
+    });
   }
 }
 
@@ -886,11 +924,23 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
-    m_preloaded_layerId = layerId;
-    m_preloaded_position = param->m_scaled;
-    m_fade.setTask(MuteTask_Trigger_Mono);
+    m_fade.muteAndDo([&] {
+      // apply (preloaded) mono change
+      m_alloc.setMonoEnable(layerId, param->m_scaled, m_layer_mode);
+      // apply reset to affected poly compoments
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_key_active = 0;
+      if(m_layer_mode != LayerMode::Split)
+      {
+        // apply reset to other poly components (when not in split mode)
+        const uint32_t lId = 1 - layerId;
+        m_poly[lId].resetEnvelopes();
+        m_poly[lId].m_key_active = 0;
+      }
+    });
   }
 }
+
 void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
 {
   const uint32_t layerId = getLayerId(_msg.voiceGroup);
@@ -902,7 +952,7 @@ void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParam
       nltools::Log::info("mono_priority_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
-    m_alloc.setMonoPriority(layerId, param->m_scaled);
+    m_alloc.setMonoPriority(layerId, param->m_scaled, m_layer_mode);
   }
 }
 void dsp_host_dual::localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -916,7 +966,7 @@ void dsp_host_dual::localMonoLegatoChg(const nltools::msg::UnmodulateableParamet
       nltools::Log::info("mono_leagto_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
-    m_alloc.setMonoLegato(layerId, param->m_scaled);
+    m_alloc.setMonoLegato(layerId, param->m_scaled, m_layer_mode);
   }
 }
 
@@ -991,7 +1041,7 @@ void dsp_host_dual::onSettingInitialSinglePreset()
   {
     nltools::Log::info("recall single voice reset");
   }
-  m_alloc.setUnison(0, unison->m_position);
+  m_alloc.setUnison(0, unison->m_position, m_layer_mode, m_layer_mode);
   m_params.m_global.m_assignment.reset();
   const uint32_t uVoice = m_alloc.m_unison - 1;
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
@@ -1088,18 +1138,24 @@ void dsp_host_dual::onSettingInitialSinglePreset()
 uint32_t dsp_host_dual::onSettingToneToggle()
 {
   m_tone_state = (m_tone_state + 1) % 3;
-  m_fade.setTask(MuteTask_Trigger_Tone);
+  m_fade.muteAndDo([&] { m_global.update_tone_mode(m_tone_state); });
   return m_tone_state;
 }
 
 void dsp_host_dual::render()
 {
-  // clock rendering & fadepoint muteTasks
-  m_clock.render();
-  if(m_fade.evalTaskStatus())
+  m_sample_counter += SAMPLE_COUNT;
+  m_fade.evalTaskStatus();
+
+  if(m_fade.isMuted())
   {
-    evalMuteTasks();
+    m_mainOut_L = m_mainOut_R = 0.0f;
+    m_fade.onMuteSampleRendered();
+    return;
   }
+
+  m_clock.render();
+
   // slow rendering
   if(m_clock.m_slow)
   {
@@ -1243,7 +1299,7 @@ uint32_t dsp_host_dual::getLayerId(const VoiceGroup _vg)
 
 void dsp_host_dual::keyDown(const float _vel)
 {
-  if(m_alloc.keyDown(m_key_pos, _vel))
+  if(m_alloc.keyDown(m_key_pos, _vel, m_layer_mode))
   {
     if(LOG_KEYS)
     {
@@ -1730,87 +1786,16 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param* _
   }
 }
 
-void dsp_host_dual::evalMuteTasks()
-{
-  auto muteTasks = m_fade.m_muteTasks.exchange(0);
-  if(muteTasks & MuteTask_Trigger_Tone)
-  {
-    // apply (preloaded) tone state
-    m_global.update_tone_mode(m_tone_state);
-  }
-  if(muteTasks & MuteTask_Trigger_Unison)
-  {
-    // apply (preloaded) unison change
-    m_alloc.setUnison(m_preloaded_layerId, m_preloaded_position);
-    // apply reset to affected poly compoments
-    m_poly[m_preloaded_layerId].resetEnvelopes();
-    m_poly[m_preloaded_layerId].m_uVoice = m_alloc.m_unison - 1;
-    m_poly[m_preloaded_layerId].m_key_active = 0;
-    if(m_layer_mode != LayerMode::Split)
-    {
-      // apply reset to other poly components (when not in split mode)
-      const uint32_t layerId = 1 - m_preloaded_layerId;
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
-      m_poly[layerId].m_key_active = 0;
-    }
-  }
-  if(muteTasks & MuteTask_Trigger_Mono)
-  {
-    // apply (preloaded) mono change
-    m_alloc.setMonoEnable(m_preloaded_layerId, m_preloaded_position);
-    // apply reset to affected poly compoments
-    m_poly[m_preloaded_layerId].resetEnvelopes();
-    m_poly[m_preloaded_layerId].m_key_active = 0;
-    if(m_layer_mode != LayerMode::Split)
-    {
-      // apply reset to other poly components (when not in split mode)
-      const uint32_t layerId = 1 - m_preloaded_layerId;
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_key_active = 0;
-    }
-  }
-  if(muteTasks & MuteTask_Recall_Single)
-  {
-    m_layer_mode = m_preloaded_layer_mode;
-    // global flush
-    m_poly[0].flushDSP();
-    m_poly[1].flushDSP();
-    m_mono[0].flushDSP();
-    m_mono[1].flushDSP();
-    recallSingle();
-  }
-  if(muteTasks & MuteTask_Recall_Split)
-  {
-    m_layer_mode = m_preloaded_layer_mode;
-    // global flush
-    m_poly[0].flushDSP();
-    m_poly[1].flushDSP();
-    m_mono[0].flushDSP();
-    m_mono[1].flushDSP();
-    recallSplit();
-  }
-  if(muteTasks & MuteTask_Recall_Layer)
-  {
-    m_layer_mode = m_preloaded_layer_mode;
-    // global flush
-    m_poly[0].flushDSP();
-    m_poly[1].flushDSP();
-    m_mono[0].flushDSP();
-    m_mono[1].flushDSP();
-    recallLayer();
-  }
-}
-
-void dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
+bool dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
                                 const nltools::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
                                 const nltools::msg::ParameterGroups::UnmodulateableParameter& _monoEnable)
 {
   const uint32_t layerId = static_cast<uint32_t>(_layerId);
   auto unison_voices = m_params.get_local_unison_voices(_layerId);
-  m_layer_changed |= unison_voices->update_position(static_cast<float>(_unisonVoices.controlPosition));
+  bool unisonChanged = unison_voices->update_position(static_cast<float>(_unisonVoices.controlPosition));
   auto mono_enable = m_params.get_local_mono_enable(_layerId);
-  m_layer_changed |= mono_enable->update_position(static_cast<float>(_monoEnable.controlPosition));
+  bool monoChanged = mono_enable->update_position(static_cast<float>(_monoEnable.controlPosition));
+  return unisonChanged || monoChanged;
 }
 
 void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
@@ -1824,24 +1809,28 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
           ->m_scaled);
 }
 
-void dsp_host_dual::recallSingle()
+void dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage& _msg)
 {
+  auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Single);
+  auto layerChanged = oldLayerMode != m_layer_mode;
+
   if(LOG_RECALL)
   {
     nltools::Log::info("recallSingle(@", m_clock.m_index, ")");
   }
-  auto msg = &m_preloaded_single_data;
+  auto msg = &_msg;
   // update unison and mono groups
-  evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
+  auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  if(m_layer_changed)
+  if(layerChanged || polyChanged)
   {
     if(LOG_RESET)
     {
       nltools::Log::info("recall single voice reset");
     }
-    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position);
-    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position);
+    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
+                      m_layer_mode);
+    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
     {
@@ -1969,29 +1958,33 @@ void dsp_host_dual::recallSingle()
   }
 }
 
-void dsp_host_dual::recallSplit()
+void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
 {
+  auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Split);
+  auto layerChanged = oldLayerMode != m_layer_mode;
+
   if(LOG_RECALL)
   {
     nltools::Log::info("recallSplit(@", m_clock.m_index, ")");
   }
-  const bool layer_changed = m_layer_changed;
-  auto msg = &m_preloaded_split_data;
+
+  auto msg = &_msg;
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
     const C15::Properties::LayerId layer = static_cast<C15::Properties::LayerId>(layerId);
-    m_layer_changed = layer_changed;
+
     // update unison and mono groups
-    evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
+    auto polyChanged = evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
+
     // reset detection
-    if(m_layer_changed)
+    if(layerChanged || polyChanged)
     {
       if(LOG_RESET)
       {
         nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
       }
-      m_alloc.setUnison(layerId, m_params.get_local_unison_voices(layer)->m_position);
-      m_alloc.setMonoEnable(layerId, m_params.get_local_mono_enable(layer)->m_position);
+      m_alloc.setUnison(layerId, m_params.get_local_unison_voices(layer)->m_position, oldLayerMode, m_layer_mode);
+      m_alloc.setMonoEnable(layerId, m_params.get_local_mono_enable(layer)->m_position, m_layer_mode);
       const uint32_t uVoice = m_alloc.m_unison - 1;
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_uVoice = uVoice;
@@ -2120,24 +2113,28 @@ void dsp_host_dual::recallSplit()
   }
 }
 
-void dsp_host_dual::recallLayer()
+void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
 {
+  auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Layer);
+  auto layerChanged = oldLayerMode != m_layer_mode;
+
   if(LOG_RECALL)
   {
     nltools::Log::info("recallLayer(@", m_clock.m_index, ")");
   }
-  auto msg = &m_preloaded_layer_data;
+  auto msg = &_msg;
   // update unison and mono groups
-  evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
+  auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  if(m_layer_changed)
+  if(layerChanged || polyChanged)
   {
     if(LOG_RESET)
     {
       nltools::Log::info("recall layer voice reset");
     }
-    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position);
-    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position);
+    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
+                      m_layer_mode);
+    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
     {
@@ -2482,9 +2479,9 @@ void dsp_host_dual::localPolyRcl(const uint32_t _layerId, const nltools::msg::Pa
   localParRcl(_layerId, _unison.phase);
   localParRcl(_layerId, _mono.priority);
   const C15::Properties::LayerId layerId = static_cast<C15::Properties::LayerId>(_layerId);
-  m_alloc.setMonoPriority(_layerId, m_params.get_local_mono_priority(layerId)->m_scaled);
+  m_alloc.setMonoPriority(_layerId, m_params.get_local_mono_priority(layerId)->m_scaled, m_layer_mode);
   localParRcl(_layerId, _mono.legato);
-  m_alloc.setMonoLegato(_layerId, m_params.get_local_mono_legato(layerId)->m_scaled);
+  m_alloc.setMonoLegato(_layerId, m_params.get_local_mono_legato(layerId)->m_scaled, m_layer_mode);
   localParRcl(_layerId, _mono.glide);
 }
 

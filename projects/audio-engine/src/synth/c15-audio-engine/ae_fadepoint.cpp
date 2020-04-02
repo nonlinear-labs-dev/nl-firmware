@@ -1,4 +1,6 @@
 #include "ae_fadepoint.h"
+#include <nltools/logging/Log.h>
+#include <thread>
 
 /******************************************************************************/
 /** @file       ae_fadepoint.cpp
@@ -29,16 +31,15 @@ void atomic_fade_table::init(const float _samplerate)
   }
 }
 
-bool atomic_fade_table::evalTaskStatus()
+void atomic_fade_table::evalTaskStatus()
 {
-  const uint32_t targetRampIndex = m_muteTasks ? 0 : m_finalMuteRampIndex;
+  const uint32_t targetRampIndex = m_shouldMute ? 0 : m_finalMuteRampIndex;
   if(m_currentMuteRampIndex != targetRampIndex)
   {
     if(m_currentMuteRampIndex > targetRampIndex)
     {
       // fade out
       m_currentMuteRampIndex--;
-      return m_currentMuteRampIndex == targetRampIndex;  // return true if fade out completed
     }
     else
     {
@@ -46,15 +47,30 @@ bool atomic_fade_table::evalTaskStatus()
       m_currentMuteRampIndex++;
     }
   }
-  return false;
-}
-
-void atomic_fade_table::setTask(const MuteTask _task)
-{
-  m_muteTasks |= _task;
 }
 
 float atomic_fade_table::getValue()
 {
   return m_data[m_currentMuteRampIndex];
+}
+
+bool atomic_fade_table::isMuted() const
+{
+  return m_currentMuteRampIndex == 0;
+}
+
+void atomic_fade_table::waitForFadeSpinning() const
+{
+  auto start = std::chrono::high_resolution_clock::now();
+
+  while(m_currentMuteRampIndex)
+  {
+    std::this_thread::yield();
+    auto span = std::chrono::high_resolution_clock::now() - start;
+    if(span > std::chrono::seconds(1))
+    {
+      nltools::Log::warning("Timeout during fade!");
+      break;
+    }
+  }
 }

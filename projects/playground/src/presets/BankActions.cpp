@@ -906,9 +906,15 @@ Bank *BankActions::importBank(InStream &stream, Glib::ustring x, Glib::ustring y
 {
   UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();
+  return importBank(transaction, stream, x, y, fileName);
+}
 
-  auto autoLoadOff = Application::get().getSettings()->getSetting<DirectLoadSetting>()->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
-
+Bank *BankActions::importBank(UNDO::Transaction *transaction, InStream &stream, Glib::ustring x, Glib::ustring y,
+                              const Glib::ustring &fileName)
+{
+  auto autoLoadOff = Application::get().getSettings()->getSetting<DirectLoadSetting>()->scopedOverlay(
+      BooleanSettings::BOOLEAN_SETTING_FALSE);
+  
   auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
 
   XmlReader reader(stream, transaction);

@@ -19,7 +19,8 @@ class AudioEngineProxy
 
   template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
   {
-    sendParameterMessage(createMessage<tParameter>(parameter));
+    if(!m_suppressParamChanges)
+      sendParameterMessage(createMessage<tParameter>(parameter));
   }
 
   template <typename tParameter> auto createMessage(const tParameter* parameter)
@@ -29,7 +30,8 @@ class AudioEngineProxy
 
   template <class tMessage> void sendParameterMessage(const tMessage& msg)
   {
-    send(nltools::msg::EndPoint::AudioEngine, msg);
+    if(!m_suppressParamChanges)
+      send(nltools::msg::EndPoint::AudioEngine, msg);
   }
 
   template <typename tSettingMessage> void sendSettingMessage(const tSettingMessage& msg)

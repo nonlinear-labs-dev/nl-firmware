@@ -165,7 +165,7 @@ const Uuid &Bank::getUuid() const
 
 std::string Bank::getName(bool withFallback) const
 {
-  if(m_name.empty())
+  if(m_name.empty() && withFallback)
     return "<Untitled Bank>";
 
   return m_name;

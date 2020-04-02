@@ -123,13 +123,16 @@ void LoadToPartPresetList::update(const PresetManager* pm)
 {
   if(auto selection = getCurrentSelection())
   {
-    if(auto selectedBank = pm->findBank(selection->m_bank->getUuid()))
+    if(selection->m_bank)
     {
-      if(auto selectedPreset = selection->m_preset)
+      if(auto selectedBank = pm->findBank(selection->m_bank->getUuid()))
       {
-        m_content->setup(selectedBank, selectedBank->getPresetPosition(selectedPreset));
+        if(auto selectedPreset = selection->m_preset)
+        {
+          m_content->setup(selectedBank, selectedBank->getPresetPosition(selectedPreset));
+        }
+        m_header->setup(selectedBank);
       }
-      m_header->setup(selectedBank);
     }
   }
 }
