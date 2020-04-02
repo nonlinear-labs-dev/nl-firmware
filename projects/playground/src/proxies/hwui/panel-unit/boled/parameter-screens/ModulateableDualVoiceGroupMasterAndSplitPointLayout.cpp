@@ -5,25 +5,24 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterValueLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
-#include "DualVoiceGroupMasterAndSplitPointLayout.h"
+#include "ModulateableDualVoiceGroupMasterAndSplitPointLayout.h"
 
-DualVoiceGroupMasterAndSplitPointLayout::DualVoiceGroupMasterAndSplitPointLayout()
-    : ModulateableParameterSelectLayout2()
-{
-}
-
-DualVoiceGroupMasterAndSplitPointLayout::~DualVoiceGroupMasterAndSplitPointLayout()
-{
-  m_connectionEditBuffer.disconnect();
-  m_connectionVoiceGroup.disconnect();
-}
-
-Carousel *DualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
+Carousel *ModulateableDualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
 {
   return new VoiceGroupMasterParameterCarousel(rect);
 }
 
-ModuleCaption *DualVoiceGroupMasterAndSplitPointLayout::createModuleCaption() const
+ModuleCaption *ModulateableDualVoiceGroupMasterAndSplitPointLayout::createModuleCaption() const
+{
+  return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
+}
+
+Carousel *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
+{
+  return new VoiceGroupMasterParameterCarousel(rect);
+}
+
+ModuleCaption *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createModuleCaption() const
 {
   return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
 }
