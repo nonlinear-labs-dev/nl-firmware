@@ -96,10 +96,6 @@ class dsp_host_dual
   void reset();
 
  private:
-  // preloadable preset buffers
-  nltools::msg::SinglePresetMessage m_preloaded_single_data;
-  nltools::msg::SplitPresetMessage m_preloaded_split_data;
-  nltools::msg::LayerPresetMessage m_preloaded_layer_data;
   // parameters
   Engine::Param_Handle m_params;
   Time_Param m_edit_time, m_transition_time;
@@ -110,7 +106,7 @@ class dsp_host_dual
   Engine::Handle::Clock_Handle m_clock;
   Engine::Handle::Time_Handle m_time;
   // layer handling
-  C15::Properties::LayerMode m_layer_mode, m_preloaded_layer_mode;
+  C15::Properties::LayerMode m_layer_mode;
   // global dsp components
   GlobalSection m_global;
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;
@@ -122,9 +118,9 @@ class dsp_host_dual
   // helper values
   const float m_format_vel = 16383.0f / 127.0f, m_format_hw = 16000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
               m_norm_vel = 1.0f / 16383.0f, m_norm_hw = 1.0f / 16000.0f;
-  uint32_t m_key_pos = 0, m_tone_state = 0, m_preloaded_layerId = 0;
-  float m_preloaded_position = 0.0f;
-  bool m_key_valid = false, m_layer_changed = false, m_glitch_suppression = false;
+  uint32_t m_key_pos = 0, m_tone_state = 0;
+  bool m_key_valid = false, m_glitch_suppression = false;
+
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
   C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
@@ -147,14 +143,14 @@ class dsp_host_dual
   void globalTransition(const Direct_Param* _param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Direct_Param* _param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Target_Param* _param, const Time_Aspect _time);
-  void evalMuteTasks();
-  void evalPolyChg(const C15::Properties::LayerId _layerId,
+
+  bool evalPolyChg(const C15::Properties::LayerId _layerId,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _monoEnable);
   void evalVoiceFadeChg(const uint32_t _layer);
-  void recallSingle();
-  void recallSplit();
-  void recallLayer();
+  void recallSingle(const nltools::msg::SinglePresetMessage& _msg);
+  void recallSplit(const nltools::msg::SplitPresetMessage& _msg);
+  void recallLayer(const nltools::msg::LayerPresetMessage& _msg);
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter& _param);

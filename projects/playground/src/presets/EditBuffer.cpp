@@ -769,15 +769,18 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
 
 void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 {
-  auto swap = UNDO::createSwapData(type);
+  if(m_type != type)
+  {
+    auto swap = UNDO::createSwapData(type);
 
-  initUnisonVoices(transaction, type);
+    initUnisonVoices(transaction, type);
 
-  transaction->addSimpleCommand([=](auto state) {
-    swap->swapWith(m_type);
-    m_signalTypeChanged.send();
-    onChange();
-  });
+    transaction->addSimpleCommand([=](auto state) {
+      swap->swapWith(m_type);
+      m_signalTypeChanged.send();
+      onChange();
+    });
+  }
 }
 
 void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg)

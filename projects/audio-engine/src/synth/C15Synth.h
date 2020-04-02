@@ -54,6 +54,8 @@ class C15Synth : public Synth, public sigc::trackable
   void simulateKeyUp(int key);
   unsigned int getRenderedSamples();
 
+  dsp_host_dual* getDsp();
+
  private:
   std::unique_ptr<dsp_host_dual> m_dsp;
   const AudioEngineOptions* m_options;
