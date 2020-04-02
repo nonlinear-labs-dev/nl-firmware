@@ -16,9 +16,9 @@ MockPresetStorage::MockPresetStorage()
 
   m_bank = createBank(transaction);
 
+  m_single = createSinglePreset(transaction);
   m_layer = createLayerPreset(transaction);
   m_split = createSplitPreset(transaction);
-  m_single = createSinglePreset(transaction);
 }
 
 MockPresetStorage::~MockPresetStorage()
