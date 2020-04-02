@@ -13,7 +13,7 @@
 #include "ClusterEnforcement.h"
 #include <xml/MemoryInStream.h>
 #include <xml/XmlReader.h>
-#include <device-settings/LoadModeSetting.h>
+#include <device-settings/DirectLoadSetting.h>
 #include <device-settings/Settings.h>
 #include <device-info/DateTimeInfo.h>
 #include <Application.h>
@@ -402,7 +402,7 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         UNDO::Scope::tTransactionScopePtr scope;
 
-        bool autoLoad = Application::get().getSettings()->getSetting<LoadModeSetting>()->get() == LoadMode::DirectLoad;
+        bool autoLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 
         if(autoLoad)
           scope = m_presetManager.getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
@@ -912,9 +912,9 @@ Bank *BankActions::importBank(InStream &stream, Glib::ustring x, Glib::ustring y
 Bank *BankActions::importBank(UNDO::Transaction *transaction, InStream &stream, Glib::ustring x, Glib::ustring y,
                               const Glib::ustring &fileName)
 {
-  auto autoLoadOff = Application::get().getSettings()->getSetting<DirectLoad>()->scopedOverlay(
+  auto autoLoadOff = Application::get().getSettings()->getSetting<DirectLoadSetting>()->scopedOverlay(
       BooleanSettings::BOOLEAN_SETTING_FALSE);
-
+  
   auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
 
   XmlReader reader(stream, transaction);

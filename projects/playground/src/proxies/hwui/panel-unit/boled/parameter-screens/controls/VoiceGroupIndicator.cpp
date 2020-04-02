@@ -12,15 +12,19 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
   m_soundTypeChanged = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::mem_fun(this, &VoiceGroupIndicator::onSoundTypeChanged));
 
-  auto parameter = Application::get().getPresetManager()->getEditBuffer()->getSelected();
-  m_parameterSelectionChanged
-      = parameter->onParameterChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterChanged));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  m_parameterSelectionChanged = eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
+
+  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
 }
 
 VoiceGroupIndicator::~VoiceGroupIndicator()
 {
   m_soundTypeChanged.disconnect();
-  m_parameterSelectionChanged.disconnect();
+  m_parameterChanged.disconnect();
+  m_voiceGroupChanged.disconnect();
 }
 
 bool VoiceGroupIndicator::redraw(FrameBuffer& fb)
@@ -64,12 +68,33 @@ void VoiceGroupIndicator::onSoundTypeChanged()
 
 void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
 {
+  auto isSplit = parameter->getParentGroup()->getID().getName() == "Split";
+
   m_shouldDraw
       = SwitchVoiceGroupButton::allowToggling(parameter, Application::get().getPresetManager()->getEditBuffer());
   m_shouldDraw |= parameter->getParentGroup()->getID().getName() == "MCs";
-  m_shouldDraw |= parameter->getParentGroup()->getID().getName() == "Split";
-  m_selectedVoiceGroup = parameter->getID().getVoiceGroup();
+  m_shouldDraw |= isSplit;
+
+  if(isSplit)
+    m_selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+  else
+    m_selectedVoiceGroup = parameter->getID().getVoiceGroup();
 
   onSoundTypeChanged();
+  setDirty();
+}
+
+void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, const Parameter* newParam)
+{
+  m_parameterChanged.disconnect();
+  if(newParam)
+  {
+    m_parameterChanged = newParam->onParameterChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterChanged));
+  }
+}
+
+void VoiceGroupIndicator::onVoiceGroupSelectionChanged(VoiceGroup vg)
+{
+  m_selectedVoiceGroup = vg;
   setDirty();
 }

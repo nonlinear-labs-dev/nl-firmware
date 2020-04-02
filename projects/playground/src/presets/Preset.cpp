@@ -54,7 +54,7 @@ Preset::~Preset()
 void Preset::load(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &presetPath)
 {
   auto strUUID = getUuid();
-  Serializer::read<PresetSerializer>(transaction, std::move(presetPath), strUUID.raw(), this);
+  Serializer::read<PresetSerializer>(transaction, presetPath, strUUID.raw(), this);
   m_lastSavedUpdateID = getUpdateIDOfLastChange();
 }
 
@@ -64,7 +64,7 @@ bool Preset::save(const Glib::RefPtr<Gio::File> &bankPath)
   {
     PresetSerializer serializer(this);
     auto strUUID = getUuid().raw();
-    serializer.write(std::move(bankPath), strUUID);
+    serializer.write(bankPath, strUUID);
     m_lastSavedUpdateID = getUpdateIDOfLastChange();
     return true;
   }
@@ -141,11 +141,11 @@ const Uuid &Preset::getUuid() const
   return m_uuid;
 }
 
-Glib::ustring Preset::getDisplayNameWithSuffixes() const
+Glib::ustring Preset::getDisplayNameWithSuffixes(bool addSpace) const
 {
   auto mono = isMonoActive();
   auto unison = isUnisonActive();
-  return getName() + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
+  return getName() + (addSpace ? "\u202F" : "") + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
 }
 
 Glib::ustring Preset::getName() const
@@ -332,7 +332,7 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
 
   writer.writeTag("preset",
                   { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                    Attribute("name-suffixed", getDisplayNameWithSuffixes()), Attribute("changed", changed),
+                    Attribute("name-suffixed", getDisplayNameWithSuffixes(true)), Attribute("changed", changed),
                     Attribute("type", toString(m_type)) },
                   [&]() {
                     if(changed)
@@ -453,4 +453,9 @@ bool Preset::isUnisonActive() const
   }
 
   return false;
+}
+
+bool Preset::isDual() const
+{
+  return getType() == SoundType::Split || getType() == SoundType::Layer;
 }

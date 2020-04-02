@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.useCases;
 
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -14,7 +15,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.LoadMode;
 import com.nonlinearlabs.client.tools.NLMath;
 
 public class EditBufferUseCases {
@@ -311,6 +311,10 @@ public class EditBufferUseCases {
 
 	public IncrementalChanger startEditParameterValue(ParameterId id, double pixelsPerRange) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
+		if(p.value.getValue().metaData.isBoolean.getBool()) {
+			pixelsPerRange = Millimeter.toPixels(10);
+		}
+
 		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> setParameterValue(id, v, true, b), () -> {
 			if (p instanceof PhysicalControlParameterModel) {
 				PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
@@ -394,31 +398,14 @@ public class EditBufferUseCases {
 	}
 
 	public void toggleDirectLoad() {
-		LoadMode l = SetupModel.get().systemSettings.loadMode.getValue();
-		SoundType s = EditBufferModel.get().soundType.getValue();
-
-		if (s == SoundType.Single) {
-			if (l != LoadMode.directload) {
-				l = LoadMode.directload;
-			} else {
-				l = LoadMode.select;
-			}
-		} else {
-			if (l == LoadMode.directload) {
-				l = LoadMode.loadtopart;
-			} else if (l == LoadMode.loadtopart) {
-				l = LoadMode.select;
-			} else {
-				l = LoadMode.select;
-			}
+		if(SetupModel.get().systemSettings.directLoad.getBool()) {
+			SetupModel.get().systemSettings.directLoad.setValue(false);
+			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "off");
 		}
-
-		setLoadMode(l);
-	}
-
-	public void setLoadMode(LoadMode l) {
-		SetupModel.get().systemSettings.loadMode.setValue(l);
-		NonMaps.theMaps.getServerProxy().setSetting("LoadMode", l.toString());
+		else {
+			SetupModel.get().systemSettings.directLoad.setValue(true);
+			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "on");
+		}
 	}
 
 	public void loadPreset(String uuid) {
@@ -431,6 +418,10 @@ public class EditBufferUseCases {
 
 	public void loadSinglePresetIntoPart(String uuid, VoiceGroup loadTo) {
 		NonMaps.theMaps.getServerProxy().loadPresetIntoPart(uuid, loadTo);
+	}
+
+	public void loadPresetPartIntoPart(String uuid, VoiceGroup from, VoiceGroup to) {
+		NonMaps.get().getServerProxy().loadPresetPartIntoPart(uuid, from, to);
 	}
 
 	public void initializePart() {

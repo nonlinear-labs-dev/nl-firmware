@@ -93,15 +93,12 @@ public class ServerProxy {
 	private void applyChanges(String responseText) {
 		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
 			Document xml = XMLParser.parse(responseText);
-			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
 			Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
 			Node settingsNode = xml.getElementsByTagName("settings").item(0);
 			Node undoNode = xml.getElementsByTagName("undo").item(0);
 			Node presetManagerNode = xml.getElementsByTagName("preset-manager").item(0);
 			Node deviceInfo = xml.getElementsByTagName("device-information").item(0);
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
-
-			boolean omitOracles = omitOracles(world);
 
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
 			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
@@ -975,9 +972,15 @@ public class ServerProxy {
 	}
 
 	public void loadPresetPartIntoPart(VoiceGroup presetPart, VoiceGroup editbufferPart) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-part-into-editbuffer-part");
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-selected-preset-part-into-editbuffer-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()),
 				new StaticURI.KeyValue("editbuffer-part", editbufferPart.toString()));
+		queueJob(uri, false);
+	}
+
+	public void loadPresetPartIntoPart(String presetUUID, VoiceGroup presetPart, VoiceGroup loadTo) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-part-into-editbuffer-part");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()), new StaticURI.KeyValue("editbuffer-part", loadTo.toString()), new StaticURI.KeyValue("preset-uuid", presetUUID));
 		queueJob(uri, false);
 	}
 

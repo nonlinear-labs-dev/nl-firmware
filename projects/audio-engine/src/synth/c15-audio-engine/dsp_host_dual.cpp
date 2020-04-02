@@ -27,14 +27,13 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     nltools::Log::warning("invalid sample rate(", _samplerate, "): only 48000 or 96000 Hz allowed!");
   }
   const float samplerate = static_cast<float>(C15::Config::clock_rates[upsampleIndex][0]);
-  // init of crucial components: voiceAlloc, conversion, clock, time, ae_fade_table ("fadepoint"), ae_fader ("pickup")
+  // init of crucial components: voiceAlloc, conversion, clock, time, fadepoint
   m_alloc.init(&m_layer_mode, &m_preloaded_layer_mode);
   m_alloc.setSplitPoint(30);  // temporary..?
   m_convert.init();
   m_clock.init(upsampleIndex);
   m_time.init(upsampleIndex);
   m_fade.init(samplerate);
-  m_output_mute.init(&m_fade.m_value);
   // proper time init
   m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
   m_edit_time.m_scaled = scale(m_edit_time.m_scaling, m_edit_time.m_position);
@@ -273,8 +272,7 @@ void dsp_host_dual::logStatus()
   {
     nltools::Log::info("engine status:");
     nltools::Log::info("-clock(index:", m_clock.m_index, ", fast:", m_clock.m_fast, ", slow:", m_clock.m_slow, ")");
-    nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_output_mute.get_value(),
-                       ")");
+    nltools::Log::info("-output(left:", m_mainOut_L, ", right:", m_mainOut_R, ", mute:", m_fade.getValue(), ")");
     nltools::Log::info("-dsp(dx:", m_time.m_sample_inc, ", ms:", m_time.m_millisecond, ")");
   }
   else if(LOG_ENGINE_EDITS)
@@ -577,12 +575,11 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.enable(FadeEvent::RecallMute, 0);  // enable fader with event
-    m_output_mute.pick(0);                    // pickup fade-out
+    m_fade.setTask(MuteTask_Recall_Single);
   }
   else
   {
-    // direct apply: recall single preset buffer
+    // direct apply: recall single preset buffer - no flushing
     m_layer_mode = m_preloaded_layer_mode;
     recallSingle();
   }
@@ -599,11 +596,12 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
   }
   if(m_glitch_suppression)
   {
-    m_fade.enable(FadeEvent::RecallMute, 0);
-    m_output_mute.pick(0);
+    // glitch suppression: start outputMute fade
+    m_fade.setTask(MuteTask_Recall_Split);
   }
   else
   {
+    // direct apply: recall split preset buffer - no flushing
     m_layer_mode = m_preloaded_layer_mode;
     recallSplit();
   }
@@ -620,11 +618,12 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   }
   if(m_glitch_suppression)
   {
-    m_fade.enable(FadeEvent::RecallMute, 0);
-    m_output_mute.pick(0);
+    // glitch suppression: start outputMute fade
+    m_fade.setTask(MuteTask_Recall_Layer);
   }
   else
   {
+    // direct apply: recall layer preset buffer - no flushing
     m_layer_mode = m_preloaded_layer_mode;
     recallLayer();
   }
@@ -869,10 +868,9 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
       nltools::Log::info("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
     // application now via fade point
-    m_fade.enable(FadeEvent::UnisonMute, 0);
-    m_output_mute.pick(0);
-    m_output_mute.m_preloaded_layerId = layerId;
-    m_output_mute.m_preloaded_position = param->m_position;
+    m_preloaded_layerId = layerId;
+    m_preloaded_position = param->m_position;
+    m_fade.setTask(MuteTask_Trigger_Unison);
   }
 }
 
@@ -888,10 +886,9 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
-    m_fade.enable(FadeEvent::MonoMute, 0);
-    m_output_mute.pick(0);
-    m_output_mute.m_preloaded_layerId = layerId;
-    m_output_mute.m_preloaded_position = param->m_scaled;
+    m_preloaded_layerId = layerId;
+    m_preloaded_position = param->m_scaled;
+    m_fade.setTask(MuteTask_Trigger_Mono);
   }
 }
 void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -1091,16 +1088,18 @@ void dsp_host_dual::onSettingInitialSinglePreset()
 uint32_t dsp_host_dual::onSettingToneToggle()
 {
   m_tone_state = (m_tone_state + 1) % 3;
-  m_fade.enable(FadeEvent::ToneMute, 0);
-  m_output_mute.pick(0);
+  m_fade.setTask(MuteTask_Trigger_Tone);
   return m_tone_state;
 }
 
 void dsp_host_dual::render()
 {
-  // clock & fadepoint rendering
+  // clock rendering & fadepoint muteTasks
   m_clock.render();
-  evalFadePoint();
+  if(m_fade.evalTaskStatus())
+  {
+    evalMuteTasks();
+  }
   // slow rendering
   if(m_clock.m_slow)
   {
@@ -1122,7 +1121,7 @@ void dsp_host_dual::render()
     m_mono[1].render_fast();
   }
   // audio rendering (always) -- temporary soundgenerator patching
-  const float mute = m_output_mute.get_value();
+  const float mute = m_fade.getValue();
   // - audio dsp poly - first stage - both layers (up to Output Mixer)
   m_poly[0].render_audio(mute);
   m_poly[1].render_audio(mute);
@@ -1731,91 +1730,75 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param* _
   }
 }
 
-void dsp_host_dual::evalFadePoint()
+void dsp_host_dual::evalMuteTasks()
 {
-  m_fade.render();
-  // act when fade process was completed
-  if(m_fade.get_state())
+  auto muteTasks = m_fade.m_muteTasks.exchange(0);
+  if(muteTasks & MuteTask_Trigger_Tone)
   {
-    switch(m_fade.m_event)
+    // apply (preloaded) tone state
+    m_global.update_tone_mode(m_tone_state);
+  }
+  if(muteTasks & MuteTask_Trigger_Unison)
+  {
+    // apply (preloaded) unison change
+    m_alloc.setUnison(m_preloaded_layerId, m_preloaded_position);
+    // apply reset to affected poly compoments
+    m_poly[m_preloaded_layerId].resetEnvelopes();
+    m_poly[m_preloaded_layerId].m_uVoice = m_alloc.m_unison - 1;
+    m_poly[m_preloaded_layerId].m_key_active = 0;
+    if(m_layer_mode != LayerMode::Split)
     {
-      case FadeEvent::RecallMute:
-        m_layer_mode = m_preloaded_layer_mode;
-        // flush - currently global ... (?)
-        m_poly[0].flushDSP();
-        m_poly[1].flushDSP();
-        m_mono[0].flushDSP();
-        m_mono[1].flushDSP();
-        //load preset
-        switch(m_layer_mode)
-        {
-          case C15::Properties::LayerMode::Single:
-            recallSingle();
-            break;
-          case C15::Properties::LayerMode::Split:
-            recallSplit();
-            break;
-          case C15::Properties::LayerMode::Layer:
-            recallLayer();
-            break;
-        }
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::ToneMute:
-        m_global.update_tone_mode(m_tone_state);
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::UnisonMute:
-        // apply preloaded unison change
-        m_alloc.setUnison(m_output_mute.m_preloaded_layerId, m_output_mute.m_preloaded_position);
-        if(m_layer_mode == LayerMode::Split)
-        {
-          m_poly[m_output_mute.m_preloaded_layerId].resetEnvelopes();
-          m_poly[m_output_mute.m_preloaded_layerId].m_uVoice = m_alloc.m_unison - 1;
-          m_poly[m_output_mute.m_preloaded_layerId].m_key_active = 0;
-        }
-        else
-        {
-          for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-          {
-            m_poly[layerId].resetEnvelopes();
-            m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
-            m_poly[layerId].m_key_active = 0;
-          }
-        }
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::MonoMute:
-        // apply preloaded mono change
-        m_alloc.setMonoEnable(m_output_mute.m_preloaded_layerId, m_output_mute.m_preloaded_position);
-        if(m_layer_mode == LayerMode::Split)
-        {
-          m_poly[m_output_mute.m_preloaded_layerId].resetEnvelopes();
-          m_poly[m_output_mute.m_preloaded_layerId].m_key_active = 0;
-        }
-        else
-        {
-          for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-          {
-            m_poly[layerId].resetEnvelopes();
-            m_poly[layerId].m_key_active = 0;
-          }
-        }
-        m_fade.stop();
-        m_output_mute.pick(2);
-        m_fade.enable(FadeEvent::Unmute, 1);
-        break;
-      case FadeEvent::Unmute:
-        m_fade.stop();
-        m_output_mute.stop();
-        break;
+      // apply reset to other poly components (when not in split mode)
+      const uint32_t layerId = 1 - m_preloaded_layerId;
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
+      m_poly[layerId].m_key_active = 0;
     }
+  }
+  if(muteTasks & MuteTask_Trigger_Mono)
+  {
+    // apply (preloaded) mono change
+    m_alloc.setMonoEnable(m_preloaded_layerId, m_preloaded_position);
+    // apply reset to affected poly compoments
+    m_poly[m_preloaded_layerId].resetEnvelopes();
+    m_poly[m_preloaded_layerId].m_key_active = 0;
+    if(m_layer_mode != LayerMode::Split)
+    {
+      // apply reset to other poly components (when not in split mode)
+      const uint32_t layerId = 1 - m_preloaded_layerId;
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_key_active = 0;
+    }
+  }
+  if(muteTasks & MuteTask_Recall_Single)
+  {
+    m_layer_mode = m_preloaded_layer_mode;
+    // global flush
+    m_poly[0].flushDSP();
+    m_poly[1].flushDSP();
+    m_mono[0].flushDSP();
+    m_mono[1].flushDSP();
+    recallSingle();
+  }
+  if(muteTasks & MuteTask_Recall_Split)
+  {
+    m_layer_mode = m_preloaded_layer_mode;
+    // global flush
+    m_poly[0].flushDSP();
+    m_poly[1].flushDSP();
+    m_mono[0].flushDSP();
+    m_mono[1].flushDSP();
+    recallSplit();
+  }
+  if(muteTasks & MuteTask_Recall_Layer)
+  {
+    m_layer_mode = m_preloaded_layer_mode;
+    // global flush
+    m_poly[0].flushDSP();
+    m_poly[1].flushDSP();
+    m_mono[0].flushDSP();
+    m_mono[1].flushDSP();
+    recallLayer();
   }
 }
 
