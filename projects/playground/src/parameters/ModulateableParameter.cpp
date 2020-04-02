@@ -96,7 +96,8 @@ void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, 
 
 void ModulateableParameter::sendParameterMessage() const
 {
-  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulateableParameter>(this);
+  if(Application::exists())
+    Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulateableParameter>(this);
 }
 
 MacroControls ModulateableParameter::getModulationSource() const

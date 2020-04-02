@@ -25,7 +25,7 @@ class Synth
 
   using AudioBlock = std::vector<SampleFrame>;
   using RealtimeFactor = double;
-  std::tuple<AudioBlock, RealtimeFactor> measurePerformance(std::chrono::seconds time);
+  std::tuple<AudioBlock, RealtimeFactor> measurePerformance(std::chrono::nanoseconds time);
   void resetPerformance();
 
   void checkFiniteness(SampleFrame *target, size_t numFrames);
