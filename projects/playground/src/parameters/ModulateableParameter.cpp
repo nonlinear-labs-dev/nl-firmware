@@ -508,9 +508,3 @@ void ModulateableParameter::copyFrom(UNDO::Transaction *transaction, const Param
     setModulationAmount(transaction, otherMod->getModulationAmount());
   }
 }
-
-void ModulateableParameter::undoableDefaultModulationAspects(UNDO::Transaction *transaction)
-{
-  undoableSetModAmount(transaction, 0);
-  undoableSelectModSource(transaction, MacroControls::NONE);
-}

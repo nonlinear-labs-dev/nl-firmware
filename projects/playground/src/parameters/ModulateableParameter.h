@@ -24,8 +24,6 @@ class ModulateableParameter : public Parameter
 
   void undoableSetMCAmountToDefault();
 
-  void undoableDefaultModulationAspects(UNDO::Transaction* transaction);
-
   void undoableSelectModSource(UNDO::Transaction *transaction, MacroControls src);
   void undoableSetModAmount(UNDO::Transaction *transaction, double amount);
 

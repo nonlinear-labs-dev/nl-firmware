@@ -758,11 +758,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
 
   for(auto &parameter : global->getParameters())
   {
-    if(auto modParam = dynamic_cast<ModulateableParameter *>(parameter))
-    {
-      modParam->undoableDefaultModulationAspects(transaction);
-    }
-    parameter->setDefaultFromHwui(transaction);
+    parameter->loadDefault(transaction);
   }
 }
 
