@@ -581,6 +581,11 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
       m_mono[1].flushDSP();
       recallSingle(_msg);
     });
+
+    if(LOG_RECALL)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
+    }
   }
   else
   {
@@ -606,6 +611,11 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
       m_mono[1].flushDSP();
       recallSplit(_msg);
     });
+
+    if(LOG_RECALL)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
+    }
   }
   else
   {
@@ -630,6 +640,11 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
       m_mono[1].flushDSP();
       recallLayer(_msg);
     });
+
+    if(LOG_RECALL)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
+    }
   }
   else
   {
@@ -1135,6 +1150,7 @@ void dsp_host_dual::render()
   if(m_fade.isMuted())
   {
     m_mainOut_L = m_mainOut_R = 0.0f;
+    m_fade.onMuteSampleRendered();
     return;
   }
 

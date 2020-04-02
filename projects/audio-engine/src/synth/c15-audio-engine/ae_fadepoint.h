@@ -22,6 +22,7 @@ class atomic_fade_table
   template <typename Callable> void muteAndDo(Callable &&c)
   {
     m_shouldMute = true;
+    m_numMuteSampleRendered = 0;
     waitForFadeSpinning();
     c();
     m_shouldMute = false;
@@ -32,8 +33,19 @@ class atomic_fade_table
 
   void waitForFadeSpinning() const;
 
+  void onMuteSampleRendered()
+  {
+    m_numMuteSampleRendered++;
+  }
+
+  uint32_t getNumMuteSamplesRendered() const
+  {
+    return m_numMuteSampleRendered;
+  }
+
  private:
   uint32_t m_currentMuteRampIndex = 0, m_finalMuteRampIndex = 0;
+  uint32_t m_numMuteSampleRendered = 0;
   std::vector<float> m_data;
   bool m_shouldMute = false;
 };
