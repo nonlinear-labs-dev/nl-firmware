@@ -1779,7 +1779,7 @@ bool dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
   bool unisonChanged = unison_voices->update_position(static_cast<float>(_unisonVoices.controlPosition));
   auto mono_enable = m_params.get_local_mono_enable(_layerId);
   bool monoChanged = mono_enable->update_position(static_cast<float>(_monoEnable.controlPosition));
-  return unisonChanged | monoChanged;
+  return unisonChanged || monoChanged;
 }
 
 void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
