@@ -1129,16 +1129,16 @@ uint32_t dsp_host_dual::onSettingToneToggle()
 
 void dsp_host_dual::render()
 {
-  // clock rendering & fadepoint muteTasks
-  m_clock.render();
+  m_sample_counter += SAMPLE_COUNT;
   m_fade.evalTaskStatus();
 
   if(m_fade.isMuted())
   {
-    m_mainOut_L = m_mainOut_R = 0;
-    m_sample_counter += SAMPLE_COUNT;
+    m_mainOut_L = m_mainOut_R = 0.0f;
     return;
   }
+
+  m_clock.render();
 
   // slow rendering
   if(m_clock.m_slow)
