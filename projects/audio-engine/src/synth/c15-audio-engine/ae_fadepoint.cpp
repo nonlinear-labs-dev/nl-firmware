@@ -67,7 +67,7 @@ void atomic_fade_table::waitForFadeSpinning() const
   {
     std::this_thread::yield();
     auto span = std::chrono::high_resolution_clock::now() - start;
-    if(span > std::chrono::seconds(10))
+    if(span > std::chrono::seconds(1))
     {
       nltools::Log::warning("Timeout during fade!");
       break;

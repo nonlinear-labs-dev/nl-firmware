@@ -869,11 +869,13 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
 {
   const uint32_t layerId = getLayerId(_msg.voiceGroup);
   auto param = m_params.get_local_unison_voices(getLayer(_msg.voiceGroup));
-  auto oldV = param->m_position;
 
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-    nltools::Log::warning("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, " from ", oldV, ")");
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, ")");
+    }
 
     // application now via fade point
     m_fade.muteAndDo([&] {
@@ -901,8 +903,10 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
   auto param = m_params.get_local_mono_enable(getLayer(_msg.voiceGroup));
   if(param->update_position(static_cast<float>(_msg.controlPosition)))
   {
-    nltools::Log::warning("mono_enable_edit(layer:", layerId, ", pos:", param->m_position, " from ",
-                          static_cast<float>(_msg.controlPosition), ")");
+    if(LOG_EDITS)
+    {
+      nltools::Log::info("mono_enable_edit(layer:", layerId, ", pos:", param->m_position, ")");
+    }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
     m_fade.muteAndDo([&] {
