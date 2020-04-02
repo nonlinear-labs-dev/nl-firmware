@@ -15,7 +15,7 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/DualVoiceGroupMasterAndSplitPointLayout.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
