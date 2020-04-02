@@ -903,10 +903,10 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
       if(m_layer_mode != LayerMode::Split)
       {
         // apply reset to other poly components (when not in split mode)
-        const uint32_t layerId = 1 - layerId;
-        m_poly[layerId].resetEnvelopes();
-        m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
-        m_poly[layerId].m_key_active = 0;
+        const uint32_t lId = 1 - layerId;
+        m_poly[lId].resetEnvelopes();
+        m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
+        m_poly[lId].m_key_active = 0;
       }
     });
   }
@@ -933,9 +933,9 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
       if(m_layer_mode != LayerMode::Split)
       {
         // apply reset to other poly components (when not in split mode)
-        const uint32_t layerId = 1 - layerId;
-        m_poly[layerId].resetEnvelopes();
-        m_poly[layerId].m_key_active = 0;
+        const uint32_t lId = 1 - layerId;
+        m_poly[lId].resetEnvelopes();
+        m_poly[lId].m_key_active = 0;
       }
     });
   }
