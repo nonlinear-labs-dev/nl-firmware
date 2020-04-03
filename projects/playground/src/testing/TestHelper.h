@@ -39,13 +39,18 @@ namespace TestHelper
     return std::move(getPresetManager()->getUndoScope().startTestTransaction());
   }
 
+  template <SoundType tType> inline void initDualEditBuffer(UNDO::Transaction* transaction)
+  {
+    auto eb = getEditBuffer();
+    eb->undoableUnlockAllGroups(transaction);
+    eb->undoableConvertToDual(transaction, tType);
+    eb->undoableInitSound(transaction);
+  }
+
   template <SoundType tType> inline void initDualEditBuffer()
   {
     auto scope = UNDO::Scope::startTrashTransaction();
-    auto eb = getEditBuffer();
-    eb->undoableUnlockAllGroups(scope->getTransaction());
-    eb->undoableConvertToDual(scope->getTransaction(), tType);
-    eb->undoableInitSound(scope->getTransaction());
+    initDualEditBuffer<tType>(scope->getTransaction());
   }
 
   inline void initSingleEditBuffer(UNDO::Transaction* transaction)
