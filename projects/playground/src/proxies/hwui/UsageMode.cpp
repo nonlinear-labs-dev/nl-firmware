@@ -12,6 +12,7 @@ UsageMode::UsageMode()
 
 UsageMode::~UsageMode()
 {
+  m_voiceGroupChangedSignal.disconnect();
 }
 
 bool UsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state)
