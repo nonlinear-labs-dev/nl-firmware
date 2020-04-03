@@ -23,7 +23,6 @@ List of current Error Messages
 - 56 :: "E56 BBB update: Moving Settings to ePC failed ..."
 - 57 :: "E57 BBB update: Moving calibration settings to ePC failed ..."
 - 58 :: "E58 BBB update: Syncing rootfs failed ..."
-- 59 :: "E59 BBB update: Could not stop playground on ePC"
 
 8. General
 - 81 :: "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..."

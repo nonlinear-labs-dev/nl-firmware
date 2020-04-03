@@ -29,7 +29,7 @@ check_preconditions(){
     ping -c1 $EPC_IP 1>&2 > /dev/null || report_and_quit "E82: Can't ping ePC on $EPC_IP ..." "82"
     executeAsRoot "exit" || report_and_quit "E83: Can't logon to ePC OS ..." "83"
     executeAsRoot "mountpoint -q /persistent" || report_and_quit "E54 BBB update: User partition not mounted on ePC ..." "54"
-    executeAsRoot "systemctl stop playground" || report_and_quit "E59 BBB update: Could not stop playground on ePC" "59"
+    executeAsRoot "systemctl stop playground"
 }
 
 move_files(){
