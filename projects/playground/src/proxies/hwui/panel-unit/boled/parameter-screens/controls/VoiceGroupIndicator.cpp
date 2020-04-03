@@ -5,6 +5,7 @@
 #include "VoiceGroupIndicator.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
+#include <groups/MacroControlsGroup.h>
 
 VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
     : Control(r)
@@ -14,7 +15,8 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  m_parameterSelectionChanged = eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
+  m_parameterSelectionChanged
+      = eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
 
   m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
@@ -69,13 +71,14 @@ void VoiceGroupIndicator::onSoundTypeChanged()
 void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
 {
   auto isSplit = parameter->getParentGroup()->getID().getName() == "Split";
+  auto isMC = MacroControlsGroup::isMacroControl(parameter->getID().getNumber());
 
   m_shouldDraw
       = SwitchVoiceGroupButton::allowToggling(parameter, Application::get().getPresetManager()->getEditBuffer());
-  m_shouldDraw |= parameter->getParentGroup()->getID().getName() == "MCs";
+  m_shouldDraw |= isMC;
   m_shouldDraw |= isSplit;
 
-  if(isSplit)
+  if(isSplit || isMC)
     m_selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
   else
     m_selectedVoiceGroup = parameter->getID().getVoiceGroup();

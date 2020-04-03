@@ -7,6 +7,7 @@
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/DottedLine.h>
@@ -111,7 +112,10 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
     switch(i)
     {
       case Buttons::BUTTON_A:
-        toggleMode(Mode::PlayControlPosition);
+        if(buttonA->getText().text == "I / II")
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+        else
+          toggleMode(Mode::PlayControlPosition);
         return true;
 
       case Buttons::BUTTON_B:
@@ -165,6 +169,11 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
   if(auto voiceGroupIndication = findControlOfType<VoiceGroupIndicator>())
   {
     voiceGroupIndication->setVisible(desiredMode == Mode::MacroControlValue);
+  }
+
+  if(buttonA)
+  {
+    buttonA->setText(desiredMode == Mode::MacroControlValue ? "I / II" : "HW Pos");
   }
 
   switch(m_mode)
@@ -222,7 +231,7 @@ MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     , super1()
     , super2()
 {
-  addControl(new Button("HW Pos", Buttons::BUTTON_A));
+  buttonA = addControl(new Button("I / II", Buttons::BUTTON_A));
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
   addControl(new Button("HW Amt", Buttons::BUTTON_C));
 }
