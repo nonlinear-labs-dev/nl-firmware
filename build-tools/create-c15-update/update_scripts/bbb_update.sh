@@ -28,11 +28,8 @@ check_preconditions(){
     [ -z "$EPC_IP" ] && report_and_quit "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "81"
     ping -c1 $EPC_IP 1>&2 > /dev/null || report_and_quit "E82: Can't ping ePC on $EPC_IP ..." "82"
     executeAsRoot "exit" || report_and_quit "E83: Can't logon to ePC OS ..." "83"
-    executeAsRoot "mountpoint -q /persistent" || report_and_quit "E54 BBB update: User partition not mounted om ePC ..." "54"
-
-    # check if we need to move any files and set boolean for move files??
-#    executeAsRoot "ls -A /persistent/preset-manager/"
-#    executeAsRoot "[ -e /settings.xml ]"
+    executeAsRoot "mountpoint -q /persistent" || report_and_quit "E54 BBB update: User partition not mounted on ePC ..." "54"
+    executeAsRoot "systemctl stop playground" || report_and_quit "E59 BBB update: Could not stop playground on ePC" "59"
 }
 
 move_files(){
