@@ -134,6 +134,11 @@ SinglePresetTypeLabel::SinglePresetTypeLabel(const Rect &r)
 {
 }
 
+int SinglePresetTypeLabel::getXOffset() const
+{
+  return 4;
+}
+
 void SinglePresetTypeLabel::update(const Preset *newPreset)
 {
   if(newPreset)
@@ -163,6 +168,7 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
   }
   else
   {
+    auto offset = fb.offset(Point { 2, 0 });
     switch(m_presetType)
     {
       case SoundType::Single:
@@ -181,7 +187,7 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
 bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 {
   auto bgRect = getPosition();
-  bgRect.setWidth(15);
+  bgRect.setWidth(14);
   bgRect.setHeight(15);
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
@@ -207,7 +213,7 @@ bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 {
   auto bgRect = getPosition();
-  bgRect.setWidth(16);
+  bgRect.setWidth(15);
   bgRect.setHeight(15);
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
