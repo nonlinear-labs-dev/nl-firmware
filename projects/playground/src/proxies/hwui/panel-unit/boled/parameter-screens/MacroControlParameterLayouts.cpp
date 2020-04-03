@@ -7,6 +7,7 @@
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/DottedLine.h>
@@ -111,7 +112,10 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
     switch(i)
     {
       case Buttons::BUTTON_A:
-        toggleMode(Mode::PlayControlPosition);
+        if(getMode() == Mode::MacroControlValue)
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+        else
+          toggleMode(Mode::PlayControlPosition);
         return true;
 
       case Buttons::BUTTON_B:
@@ -154,6 +158,14 @@ MacroControlParameterLayout2::Mode MacroControlParameterLayout2::getMode() const
   return m_mode;
 }
 
+void MacroControlParameterLayout2::setButtonAText(const std::string &s)
+{
+  if(m_buttonA)
+  {
+    m_buttonA->setText({ s, 0 });
+  }
+}
+
 void MacroControlParameterLayout2::setMode(Mode desiredMode)
 {
   m_mode = desiredMode;
@@ -166,6 +178,8 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
   {
     voiceGroupIndication->setVisible(desiredMode == Mode::MacroControlValue);
   }
+
+  setButtonAText(desiredMode == Mode::MacroControlValue ? "I / II" : "HW Pos");
 
   switch(m_mode)
   {
@@ -222,7 +236,7 @@ MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     , super1()
     , super2()
 {
-  addControl(new Button("HW Pos", Buttons::BUTTON_A));
+  setButtonA(addControl(new Button("I / II", Buttons::BUTTON_A)));
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
   addControl(new Button("HW Amt", Buttons::BUTTON_C));
 }
@@ -255,6 +269,11 @@ bool MacroControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
 void MacroControlParameterSelectLayout2::setMode(Mode desiredMode)
 {
   super2::setMode(desiredMode);
+}
+
+void MacroControlParameterLayout2::setButtonA(Button *button)
+{
+  m_buttonA = button;
 }
 
 MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()

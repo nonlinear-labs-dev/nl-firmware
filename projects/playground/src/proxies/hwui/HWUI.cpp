@@ -30,12 +30,15 @@
 #include <serialization/EditBufferSerializer.h>
 #include <iostream>
 #include <giomm.h>
+#include "UsageMode.h"
 
 HWUI::HWUI()
     : m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
+    , m_voiceGoupSignal {}
+    , m_currentVoiceGroup { VoiceGroup::I }
 {
 #ifdef _DEVELOPMENT_PC
   if(isatty(fileno(stdin)))
