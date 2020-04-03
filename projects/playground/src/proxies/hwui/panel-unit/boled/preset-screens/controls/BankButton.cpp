@@ -57,7 +57,7 @@ void BankButton::bruteForce()
 void BankButton::installSingle()
 {
   auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
-  auto bankbutton = addControl(new Button("Bank", { 0, 12, 58, 11 }));
+  auto bankbutton = addControl(new Button("Bank", { 0, 15, 58, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
   auto toggleBankFocus = [this] {

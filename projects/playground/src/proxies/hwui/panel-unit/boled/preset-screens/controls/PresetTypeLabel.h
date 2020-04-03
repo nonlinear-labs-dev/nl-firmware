@@ -10,6 +10,9 @@ class SinglePresetTypeLabel : public PresetLabel
   explicit SinglePresetTypeLabel(const Rect& r);
 
   void update(const Preset* newPreset);
+
+ protected:
+  int getXOffset() const override;
 };
 
 class DualPresetTypeLabel : public Control

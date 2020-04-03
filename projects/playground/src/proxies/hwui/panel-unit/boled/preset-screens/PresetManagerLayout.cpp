@@ -110,7 +110,7 @@ void PresetManagerLayout::setupBankEdit()
   {
     setStoreModeData(nullptr);
   }
-  addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
+  addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
 
   addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
@@ -128,7 +128,7 @@ void PresetManagerLayout::setupBankSelect()
   {
     setStoreModeData(nullptr);
   }
-  addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
+  addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
   addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
@@ -155,7 +155,7 @@ void PresetManagerLayout::setupBankStore()
   {
     setStoreModeData(std::make_unique<StoreModeData>());
   }
-  addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
+  addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
@@ -193,7 +193,7 @@ void PresetManagerLayout::setupPresetEdit()
     setStoreModeData(nullptr);
   }
   auto selectedBank = Application::get().getPresetManager()->getSelectedBank();
-  addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
+  addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
@@ -216,7 +216,7 @@ void PresetManagerLayout::setupPresetSelect()
   {
     setStoreModeData(nullptr);
   }
-  addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
+  addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumPresetsInBankLabel(Rect(192, 1, 64, 14)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
@@ -240,7 +240,7 @@ void PresetManagerLayout::setupPresetStore()
   {
     setStoreModeData(std::make_unique<StoreModeData>());
   }
-  addControl(new BankAndPresetNumberLabel(Rect(0, 1, 64, 14)));
+  addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
