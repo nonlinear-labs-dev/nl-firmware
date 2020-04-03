@@ -13,7 +13,7 @@ public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 		double margin = getDefaultMargin();
 		double left = margin;
 		double right = w - margin;
-		double autoLoadWidth = Millimeter.toPixels(25);
+		double autoLoadWidth = Millimeter.toPixels(39);
 		double currentPresetWidth = layout.currentPreset.getDesiredWidth();
 		double currentPresetHeight = layout.currentPreset.getDesiredHeight();
 
@@ -24,7 +24,7 @@ public class PresetBeltLayouterXXL extends PresetBeltLayouter {
 		layout.store.doLayout(left, 0, h);
 		left += layout.store.getRelativePosition().getWidth() + margin;
 
-		layout.autoLoad.doLayout(right - autoLoadWidth, 0, autoLoadWidth, h);
+		layout.autoLoad.doLayout(right - autoLoadWidth, 2, autoLoadWidth, h - 2);
 		right -= autoLoadWidth + margin;
 
 		layout.currentPreset.doLayout(right - currentPresetWidth, (h - currentPresetHeight) / 2, currentPresetWidth,
