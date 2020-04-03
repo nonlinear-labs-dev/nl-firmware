@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-04-01, 13:03
+    @date       2020-04-03, 12:42
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -586,7 +586,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Comb_Flt_In_A_B, Signals::Quasipoly_Signals::Comb_Flt_In_A_B,
         Properties::SmootherScale::S_Curve, 1.0f, 0.0f, false },
-      { 100, 1000, 100, 1000, "", "Comb Filter", "Comb Filter", "A - B", "A-B",
+      { 100, 1000, 100, 1000, "", "Comb Filter", "Comb Filter", "A - B", "A - B",
         "The signal for the Comb Filter as a crossfade between the outputs of Oscillator & Shaper A and Oscillator & "
         "Shaper B." } },
     { None },
@@ -694,7 +694,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::Comb_Flt_PM_A_B, Signals::Quasipoly_Signals::Comb_Flt_PM_A_B,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, None, None, "", "Comb Filter", "Comb Filter", "PM - A-B", "A-B",
+      { 100, 1000, None, None, "", "Comb Filter", "Comb Filter", "PM - A-B", "A - B",
         "The (phase) modulation signal for the Comb Filter as a crossfade between the outputs of Oscillator & Shaper A "
         "and Oscillator & Shaper B." } },
     { Parameters::Local_Modulateables::SV_Flt_In_A_B,
@@ -702,7 +702,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::SV_Flt_In_A_B, Signals::Quasipoly_Signals::SV_Flt_In_A_B,
         Properties::SmootherScale::Linear, -1.0f, 1.0f, false },
-      { 100, 1000, 100, 1000, "", "State Variable Filter", "SV Filter", "A - B", "A-B",
+      { 100, 1000, 100, 1000, "", "State Variable Filter", "SV Filter", "A - B", "A - B",
         "The signal for the State Variable Filter as a crossfade between the outputs of Oscillator & Shaper A and "
         "Oscillator & Shaper B." } },
     { None },
@@ -797,7 +797,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::SV_Flt_FM_A_B, Signals::Quasipoly_Signals::SV_Flt_FM_A_B,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, None, None, "", "State Variable Filter", "SV Filter", "FM - A-B", "A-B",
+      { 100, 1000, None, None, "", "State Variable Filter", "SV Filter", "FM - A-B", "A - B",
         "The signal for the FM (cutoff frequency modulation) of the State Variable Filter as a crossfade between the "
         "outputs of Oscillator & Shaper A and Oscillator & Shaper B." } },
     { Parameters::Local_Modulateables::FB_Mix_Comb,
@@ -1074,7 +1074,7 @@ namespace C15
       0.0f,
       { Smoothers::Mono_Fast::Flanger_Time_Mod, Signals::Mono_Signals::Flanger_Time_Mod,
         Properties::SmootherScale::Parabolic, 1.0f, 0.0f, true },
-      { 100, 1000, 100, 1000, "", "Flanger", "Flanger", "Time Mod", "T Mod",
+      { 100, 1000, 100, 1000, "", "Flanger", "Flanger", "Time Mod", "Time Mod",
         "Relative amount of the modulation of the delay times by the LFO and/or the envelope." } },
     { None },
     { Parameters::Local_Unmodulateables::Flanger_Phase,
