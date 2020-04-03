@@ -66,31 +66,33 @@ public class TypeLabel extends OverlayLayout {
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
 			LoadToPartMode mode = getLoadToPart();
-			EditBufferModel ebm = EditBufferModel.get();
-			VoiceGroup currentVG = ebm.voiceGroup.getValue();
-			Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
-			String currentOriginUUID = currentVG == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
-			VoiceGroup currentOriginVG = currentVG == VoiceGroup.I ? ebm.sourceVGI.getValue() : ebm.sourceVGII.getValue();
-
-			boolean isLoaded = thisPreset.getUUID() == currentOriginUUID;
-			boolean iLoaded = isLoaded && currentOriginVG == VoiceGroup.I;
-			boolean iiLoaded = isLoaded && currentOriginVG == VoiceGroup.II;
-
-			boolean isPresetSelected = mode.getSelectedPreset() == getTypeLabel().getParent().getMapsPreset();
-			boolean iSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.I;
-			boolean iiSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.II;
-
-			switch (getTypeLabel().getParent().getMapsPreset().getType()) {
-				case Single:
-				default:
-					drawSingle(ctx, iLoaded, iSelected);
-					break;
-				case Layer:
-					drawLayer(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
-					break;
-				case Split:
-					drawSplit(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
-					break;
+			if(mode != null) {
+				EditBufferModel ebm = EditBufferModel.get();
+				VoiceGroup currentVG = ebm.voiceGroup.getValue();
+				Preset thisPreset = getTypeLabel().getParent().getMapsPreset();
+				String currentOriginUUID = currentVG == VoiceGroup.I ? ebm.sourceUUIDI.getValue() : ebm.sourceUUIDII.getValue();
+				VoiceGroup currentOriginVG = currentVG == VoiceGroup.I ? ebm.sourceVGI.getValue() : ebm.sourceVGII.getValue();
+	
+				boolean isLoaded = thisPreset.getUUID() == currentOriginUUID;
+				boolean iLoaded = isLoaded && currentOriginVG == VoiceGroup.I;
+				boolean iiLoaded = isLoaded && currentOriginVG == VoiceGroup.II;
+	
+				boolean isPresetSelected = mode.getSelectedPreset() == getTypeLabel().getParent().getMapsPreset();
+				boolean iSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.I;
+				boolean iiSelected = isPresetSelected && mode.getSelectedPart() == VoiceGroup.II;
+	
+				switch (getTypeLabel().getParent().getMapsPreset().getType()) {
+					case Single:
+					default:
+						drawSingle(ctx, iLoaded, iSelected);
+						break;
+					case Layer:
+						drawLayer(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
+						break;
+					case Split:
+						drawSplit(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
+						break;
+				}
 			}
 		}
 
