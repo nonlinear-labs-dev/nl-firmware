@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-04-01, 13:03
+    @date       2020-04-02, 22:27
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -2184,7 +2184,7 @@ namespace C15
       397,
       0.0f,
       { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
-      { 60, 60, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
+      { 60, 600, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
     { None },
     { None }
   };
