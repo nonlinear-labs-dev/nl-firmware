@@ -112,7 +112,7 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
     switch(i)
     {
       case Buttons::BUTTON_A:
-        if(buttonA->getText().text == "I / II")
+        if(getMode() == Mode::MacroControlValue)
           Application::get().getHWUI()->toggleCurrentVoiceGroup();
         else
           toggleMode(Mode::PlayControlPosition);
@@ -158,6 +158,14 @@ MacroControlParameterLayout2::Mode MacroControlParameterLayout2::getMode() const
   return m_mode;
 }
 
+void MacroControlParameterLayout2::setButtonAText(const std::string &s)
+{
+  if(m_buttonA)
+  {
+    m_buttonA->setText({ s, 0 });
+  }
+}
+
 void MacroControlParameterLayout2::setMode(Mode desiredMode)
 {
   m_mode = desiredMode;
@@ -171,10 +179,7 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
     voiceGroupIndication->setVisible(desiredMode == Mode::MacroControlValue);
   }
 
-  if(buttonA)
-  {
-    buttonA->setText(desiredMode == Mode::MacroControlValue ? "I / II" : "HW Pos");
-  }
+  setButtonAText(desiredMode == Mode::MacroControlValue ? "I / II" : "HW Pos");
 
   switch(m_mode)
   {
@@ -231,7 +236,7 @@ MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     , super1()
     , super2()
 {
-  buttonA = addControl(new Button("I / II", Buttons::BUTTON_A));
+  setButtonA(addControl(new Button("I / II", Buttons::BUTTON_A)));
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
   addControl(new Button("HW Amt", Buttons::BUTTON_C));
 }
@@ -264,6 +269,11 @@ bool MacroControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
 void MacroControlParameterSelectLayout2::setMode(Mode desiredMode)
 {
   super2::setMode(desiredMode);
+}
+
+void MacroControlParameterLayout2::setButtonA(Button *button)
+{
+  m_buttonA = button;
 }
 
 MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()

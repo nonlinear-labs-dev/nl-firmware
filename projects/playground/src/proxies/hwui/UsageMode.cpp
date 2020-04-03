@@ -8,6 +8,8 @@
 
 UsageMode::UsageMode()
 {
+  m_voiceGroupChangedSignal = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide<0>(sigc::mem_fun(this, &UsageMode::bruteForceUpdateLeds)));
 }
 
 UsageMode::~UsageMode()
@@ -25,13 +27,6 @@ bool UsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, boo
     return it->second(buttonID, modifiers, state);
 
   return false;
-}
-
-void UsageMode::connectToVoiceGroupSignal()
-{
-  m_voiceGroupChangedSignal.disconnect();
-  m_voiceGroupChangedSignal = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &UsageMode::bruteForceUpdateLeds)));
 }
 
 void UsageMode::setupButtonConnection(Buttons buttonID, tAction action)

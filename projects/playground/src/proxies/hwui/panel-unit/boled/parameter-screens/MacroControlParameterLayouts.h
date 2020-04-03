@@ -28,9 +28,11 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   Mode getMode() const;
 
  protected:
-  Button *buttonA = nullptr;
+  void setButtonAText(const std::string &s);
+  void setButtonA(Button *button);
 
  private:
+  Button *m_buttonA = nullptr;
   Parameter *getCurrentRouter() const;
   Parameter *getCurrentPlayControl() const;
 

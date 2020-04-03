@@ -18,8 +18,6 @@ class UsageMode : public Uncopyable
 
   virtual bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state);
 
-  void connectToVoiceGroupSignal();
-
   virtual void setup() = 0;
   virtual void setupFocusAndMode(FocusAndMode focusAndMode);
   virtual void bruteForceUpdateLeds();
@@ -35,9 +33,11 @@ class UsageMode : public Uncopyable
 #endif
 
  private:
+  void connectToVoiceGroupSignal();
+
   static const int num_buttons = 128;
 
   std::map<Buttons, tAction> m_actions;
-  
+
   sigc::connection m_voiceGroupChangedSignal;
 };

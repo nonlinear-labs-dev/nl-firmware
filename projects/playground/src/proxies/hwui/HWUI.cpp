@@ -73,8 +73,6 @@ void HWUI::init()
   m_panelUnit.init();
   m_baseUnit.init();
 
-  m_panelUnit.getUsageMode()->connectToVoiceGroupSignal();
-
   Oleds::get().syncRedraw();
 }
 
