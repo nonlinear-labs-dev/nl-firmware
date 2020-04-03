@@ -2184,7 +2184,7 @@ namespace C15
       397,
       0.0f,
       { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
-      { 60, 600, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
+      { 60, 60, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
     { None },
     { None }
   };

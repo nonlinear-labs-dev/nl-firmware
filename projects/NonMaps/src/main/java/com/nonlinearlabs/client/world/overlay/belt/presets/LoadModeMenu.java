@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -16,7 +17,7 @@ public class LoadModeMenu extends OverlayLayout {
 
     private class DirectLoadButton extends SVGImage {
         DirectLoadButton(OverlayLayout parent) {
-            super(parent, "Link_Enabled.svg", "Link_Active.svg");
+            super(parent, "Dir-Load_Enabled.svg", "Dir-Load_Active.svg");
 
             SetupModel.get().systemSettings.directLoad.onChange((v) -> {
                 requestLayout();
@@ -40,9 +41,14 @@ public class LoadModeMenu extends OverlayLayout {
         }
     }
 
+
+    public static boolean isDualEditBuffer() {
+        return EditBufferPresenterProvider.getPresenter().soundType != SoundType.Single;
+    }
+
     private class LoadToPartButton extends SVGImage {
         LoadToPartButton(OverlayLayout parent) {
-            super(parent, "Load_Disabled.svg", "Load_Enabled.svg", "Load_Active.svg");
+            super(parent, "Load-to-Part_Disabled.svg", "Load-to-Part_Enabled.svg", "Load-to-Part_Active.svg");
         }
 
         @Override
@@ -52,14 +58,12 @@ public class LoadModeMenu extends OverlayLayout {
             } else {
                 if(isLoadToPartActive()) {
                     return 2;
+                } else if(NonMaps.get().getNonLinearWorld().getPresetManager().isEmpty()) {
+                    return 0;
                 } else {
                     return 1;
                 }
             }
-        }
-
-        private boolean isDualEditBuffer() {
-            return EditBufferPresenterProvider.getPresenter().soundType != SoundType.Single;
         }
 
         private boolean isLoadToPartActive() {
@@ -103,15 +107,32 @@ public class LoadModeMenu extends OverlayLayout {
 
     @Override
     public void doLayout(double x, double y, double w, double h) {
-        double width = getSmallButtonWidth();
-        double margin = Millimeter.toPixels(1);
+        if(isDualEditBuffer())
+            doLayoutDual(x, y, w, h);
+        else
+            doLayoutSingle(x, y, w, h);
+    }
 
-        double yPos = (h / 2) - (width / 2);
+    public void doLayoutDual(double x, double y, double w, double h) {
+        double margin = getSmallButtonWidth() / 8;
+        double width = w;
 
-        loadButton.doLayout(0, yPos, width, width);
-        partButton.doLayout(width + margin, yPos, width, width);
-
+        double buttonHeight = getSmallButtonWidth();
         super.doLayout(x, y, w, h);
+
+        loadButton.doLayout(0, h / 2 - buttonHeight, width, buttonHeight);
+        partButton.doLayout(0, h / 2 + margin, width, buttonHeight);
+    }
+
+    public void doLayoutSingle(double x, double y, double w, double h) {
+        double margin = getSmallButtonWidth() / 8;
+
+        double width = w - margin;
+        double buttonHeight = getSmallButtonWidth();
+        
+        super.doLayout(x, y, w, h);
+        loadButton.doLayout(0, h / 2 - buttonHeight / 2, width, buttonHeight);
+        partButton.doLayout(0, 0, 0, 0);
     }
 
     public double getDesiredWidth() {

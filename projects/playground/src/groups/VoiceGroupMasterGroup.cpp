@@ -42,5 +42,5 @@ void VoiceGroupMasterGroup::init()
   appendParameter(new FadeFrom(this, { 396, getVoiceGroup() }, fadeFromInitial));
 
   appendParameter(new VoiceGroupMasterUnmodulateableParameter(
-      this, { 397, getVoiceGroup() }, ScaleConverter::get<Linear60StScaleConverter>(), 0.0, 60, 60));
+      this, { 397, getVoiceGroup() }, ScaleConverter::get<Linear60StScaleConverter>(), 0.0, 60, 600));
 }
