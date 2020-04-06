@@ -139,8 +139,9 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
             return true;
           }
         }
-        else if(getMode() == Mode::MacroControlValue)
+        else if(getMode() != Mode::MacroControlValue)
         {
+          toggleMode(Mode::PlayControlPosition);
           return true;
         }
       }
@@ -218,9 +219,12 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       setButtonAText("HW Pos");
     }
   }
-  else if(getMode() == Mode::MacroControlValue)
+  else
   {
-    setButtonAText("");
+    if(getMode() == Mode::MacroControlValue)
+      setButtonAText("");
+    else
+      setButtonAText("HW Pos");
   }
 
   switch(m_mode)
