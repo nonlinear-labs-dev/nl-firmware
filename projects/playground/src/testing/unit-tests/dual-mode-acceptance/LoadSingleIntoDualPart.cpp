@@ -30,16 +30,8 @@ void LoadSinglePresetWithValueIntoInitDualSound(Preset *preset, tControlPosition
 
     auto invert = [](VoiceGroup v) { return v == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I; };
 
-    auto globalVolume = editBuffer->findParameterByID({ 247, VoiceGroup::Global });
-    auto globalTune = editBuffer->findParameterByID({ 248, VoiceGroup::Global });
-
     auto otherPartVolume = editBuffer->findParameterByID({ 358, invert(tLoadToVoiceGroup) });
-    auto partVolume = editBuffer->findParameterByID({ 358, tLoadToVoiceGroup });
     auto otherPartTune = editBuffer->findParameterByID({ 360, invert(tLoadToVoiceGroup) });
-    auto partTune = editBuffer->findParameterByID({ 360, tLoadToVoiceGroup });
-
-    tControlPositionValue oldPartVolume;
-    tControlPositionValue oldPartTune;
 
     tControlPositionValue oldOtherPartVolume;
     tControlPositionValue oldOtherPartTune;
@@ -55,9 +47,6 @@ void LoadSinglePresetWithValueIntoInitDualSound(Preset *preset, tControlPosition
       oldOtherPartVolume = otherPartVolume->getControlPositionValue();
       oldOtherPartTune = otherPartTune->getControlPositionValue();
 
-      oldPartVolume = partVolume->getControlPositionValue();
-      oldPartTune = partTune->getControlPositionValue();
-
       editBuffer->undoableLoadPresetIntoDualSound(scope->getTransaction(), preset, tLoadToVoiceGroup);
     }
 
@@ -71,6 +60,9 @@ void LoadSinglePresetWithValueIntoInitDualSound(Preset *preset, tControlPosition
 
     THEN(toString(tLoadToVoiceGroup) + " part master got loaded into preset global master")
     {
+      auto partVolume = editBuffer->findParameterByID({ 358, tLoadToVoiceGroup });
+      auto partTune = editBuffer->findParameterByID({ 360, tLoadToVoiceGroup });
+
       CHECK_PARAMETER_CP_EQUALS_FICTION(partVolume, presetMasterVolume->getValue());
       CHECK_PARAMETER_CP_EQUALS_FICTION(partTune, presetMasterTune->getValue());
     }
@@ -88,7 +80,7 @@ TEST_CASE("Load Single into Dual Part", "[EditBuffer][Loading]")
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 
-  for(auto val : std::vector<double> { 0.5 })
+  for(auto val : std::vector<double>{ 0.5 })
   {
     WHEN("Test with value: " + std::to_string(val))
     {
