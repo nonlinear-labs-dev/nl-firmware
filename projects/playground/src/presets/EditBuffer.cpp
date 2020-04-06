@@ -489,7 +489,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+  Application::get().getHWUI()->setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)

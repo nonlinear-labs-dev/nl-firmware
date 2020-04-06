@@ -21,6 +21,9 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 
   Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::rebuild));
 }
 
 void SwitchVoiceGroupButton::rebuild()
@@ -28,7 +31,6 @@ void SwitchVoiceGroupButton::rebuild()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto ebType = eb->getType();
   auto selected = eb->getSelected();
-  auto selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   if(EditBuffer::isDualParameterForSoundType(selected, ebType))
     setText({ "I / II", 0 });
