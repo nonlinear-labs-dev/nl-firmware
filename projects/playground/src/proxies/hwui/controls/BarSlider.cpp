@@ -54,12 +54,16 @@ bool BarSlider::redraw(FrameBuffer &fb)
       fb.fillRect(right - width, smaller.getTop(), width, smaller.getHeight());
     }
   }
+  else if(auto param = getParameter())
+  {
+    if(param->getVisualizationStyle() == Parameter::VisualizationStyle::Bar)
+      drawParameterSlider(fb, v, smaller);
+    else if(param->getVisualizationStyle() == Parameter::VisualizationStyle::BarFromRight)
+      drawParameterSliderFromRight(fb, v, smaller);
+  }
   else
   {
-    if(getParameter()->getVisualizationStyle() == Parameter::VisualizationStyle::Bar)
-      drawParameterSlider(fb, v, smaller);
-    else if(getParameter()->getVisualizationStyle() == Parameter::VisualizationStyle::BarFromRight)
-      drawParameterSliderFromRight(fb, v, smaller);
+    drawParameterSlider(fb, v, smaller);
   }
 
   if(hasBorder())
