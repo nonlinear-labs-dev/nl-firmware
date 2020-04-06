@@ -7,6 +7,7 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
  public:
   typedef ParameterLayout2 super;
   MacroControlParameterLayout2();
+  ~MacroControlParameterLayout2();
 
   virtual void copyFrom(Layout *other) override;
 
@@ -32,9 +33,13 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   void setButtonA(Button *button);
 
  private:
+  void onSoundTypeChanged();
+
   Button *m_buttonA = nullptr;
   Parameter *getCurrentRouter() const;
   Parameter *getCurrentPlayControl() const;
+
+  sigc::connection m_editBufferTypeConnection;
 
   Mode m_mode = Mode::MacroControlValue;
   Overlay *m_modeOverlay = nullptr;
