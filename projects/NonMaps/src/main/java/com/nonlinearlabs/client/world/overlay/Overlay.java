@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ColorTable;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
@@ -34,7 +35,7 @@ import com.nonlinearlabs.client.world.pointer.Gesture;
 
 public class Overlay extends OverlayLayout {
 
-	private class LayerDisplay extends Label {
+	private class LayerDisplay extends OverlayControl {
 
 		public LayerDisplay(OverlayLayout parent) {
 			super(parent);
@@ -43,18 +44,28 @@ public class Overlay extends OverlayLayout {
 				setVisible(v != SoundType.Single);
 				return true;
 			});
+
+			NonMaps.get().getNonLinearWorld().getPresetManager().onLoadToPartModeToggled((x) -> {
+				requestLayout();
+				return true;
+			});
 		}
 
+		/*
 		@Override
 		public String getDrawText(Context2d ctx) {
 			return EditBufferPresenterProvider.getPresenter().voiceGroup;
 		}
-
+		*/
 		public boolean isLoadIntoPartEnabled() {
-			PresetManagerPresenter p = PresetManagerPresenterProvider.get().getPresenter();
-			return p.loadToPartActive;
+			return NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode();
 		}
 
+		public LoadToPartMode getLoadToPartMode() {
+			return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
+		}
+
+		/*
 		@Override
 		protected void drawText(Context2d ctx, String text, Position left) {
 			ctx.setStrokeStyle(RGB.black().toString());
@@ -67,25 +78,167 @@ public class Overlay extends OverlayLayout {
 		protected double getFontHeight(Rect pixRect) {
 			return super.getFontHeight(pixRect) * 2;
 		}
-
+		*/
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
 			RGB c = new RGBA(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor, 0.25);
+			RGB stroke = RGBA.black().withAlpha(0.5);
 			getPixRect().fill(ctx, c);
-			super.draw(ctx, invalidationMask);
 
-			if (isLoadIntoPartEnabled()) {
-				drawLoadToPartIndication(ctx, c, RGBA.black().withAlpha(0.5));
+			switch(EditBufferPresenterProvider.getPresenter().soundType) {
+				case Split:
+					drawSplitIndication(ctx, c, stroke);
+				break;
+				case Layer:
+					drawLayerIndication(ctx, c, stroke);
+				break;
+				default:
+
+				break;
 			}
 		}
 
-		private void drawLoadToPartIndication(Context2d ctx, RGB fillColor, RGB strokeColor) {
-			Rect px = getPixRect();
+		private VoiceGroup getSelectedVoiceGroup() {
+			return EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
+		}
+
+		private void drawSplitIndication(Context2d ctx, RGB fill, RGB stroke) {
+			VoiceGroup selected = getSelectedVoiceGroup();
+			Rect pix = getPixRect().copy();
+
+			final double margin = pix.getWidth() / 5;
+			final double partWidth = pix.getWidth() / 4;
+			final double partHeight = pix.getHeight() / 2;
+			final double yMargin = pix.getHeight() / 4;
+
+			final RGB ogFill = fill;
+			final RGB lighterFill = ogFill.brighter(96);
+
+			if(isLoadIntoPartEnabled()) {
+				if(selected == VoiceGroup.I)
+				fill = lighterFill;
+			}
+
+			Rect box = new Rect(0, pix.getTop() + yMargin, partWidth, partHeight);
+
+			
+			box.setLeft(pix.getLeft() + margin);
+			box.fillAndStroke(ctx, fill, 2, stroke);
+
+			fill = ogFill;
+			
+			if(isLoadIntoPartEnabled()) {
+				if(selected == VoiceGroup.II)
+				fill = lighterFill;
+			}
+
+			box.setLeft(getPixRect().getRight() - margin - partWidth);
+			box.fillAndStroke(ctx, fill, 2, stroke);
+
+			if(isLoadIntoPartEnabled()) {
+				if(selected == VoiceGroup.I) {
+					ctx.beginPath();
+					ctx.moveTo(pix.getLeft() + margin, pix.getBottom());
+					ctx.lineTo(pix.getLeft() + margin + partWidth, pix.getBottom());
+					ctx.lineTo(pix.getLeft() + margin + partWidth / 2, box.getBottom());
+					ctx.closePath();
+
+					ctx.setFillStyle(lighterFill.toString());
+					ctx.setLineWidth(1);
+					ctx.setStrokeStyle(stroke.toString());
+					ctx.fill();
+					ctx.stroke();
+				}
+				else {
+					ctx.beginPath();
+					ctx.moveTo(getPixRect().getRight() - margin - partWidth, pix.getBottom());
+					ctx.lineTo(getPixRect().getRight() - margin - partWidth + partWidth, pix.getBottom());
+					ctx.lineTo(getPixRect().getRight() - margin - partWidth + partWidth / 2, box.getBottom());
+					ctx.closePath();
+
+					ctx.setFillStyle(lighterFill.toString());
+					ctx.setLineWidth(1);
+					ctx.setStrokeStyle(stroke.toString());
+					ctx.fill();
+					ctx.stroke();
+				}
+			}
+		}
+
+		private void drawLayerIndication(Context2d ctx, RGB fill, RGB stroke) {
+			VoiceGroup selected = getSelectedVoiceGroup();
+			Rect pix = getPixRect().copy();
+
+			final double margin = pix.getWidth() / 4;
+			final double partWidth = pix.getWidth() / 2;
+			final double partHeight = pix.getHeight() / 4;
+			final double yMargin = pix.getHeight() / 5;
+
+			final RGB ogFill = fill;
+			final RGB lighterFill = ogFill.brighter(96);
+
+			if(isLoadIntoPartEnabled()) {
+				if(selected == VoiceGroup.I)
+				fill = lighterFill;
+			}
+
+			Rect box = new Rect(pix.getLeft() + margin, pix.getTop() + yMargin, partWidth, partHeight);
+			
+			final double boxIY = pix.getTop() + yMargin;
+			box.setTop(boxIY);
+			box.fillAndStroke(ctx, fill, 2, stroke);
+
+			fill = ogFill;
+			
+			if(isLoadIntoPartEnabled()) {
+				if(selected == VoiceGroup.II)
+				fill = lighterFill;
+			}
+
+			final double boxIIY = pix.getBottom() - yMargin - partHeight;
+			box.setTop(boxIIY);
+			box.fillAndStroke(ctx, fill, 2, stroke);
+
+			if(isLoadIntoPartEnabled()) {
+				if(selected == VoiceGroup.I) {
+					ctx.beginPath();
+					ctx.moveTo(pix.getLeft(), boxIY);
+					ctx.lineTo(pix.getLeft(), boxIY + partHeight);
+					ctx.lineTo(pix.getLeft() + margin, boxIY + partHeight / 2);
+					ctx.closePath();
+
+					ctx.setFillStyle(lighterFill.toString());
+					ctx.setLineWidth(1);
+					ctx.setStrokeStyle(stroke.toString());
+					ctx.fill();
+					ctx.stroke();
+				}
+				else {
+					ctx.beginPath();
+					ctx.moveTo(pix.getLeft(), boxIIY);
+					ctx.lineTo(pix.getLeft(), boxIIY + partHeight);
+					ctx.lineTo(pix.getLeft() + margin, boxIIY + partHeight / 2);
+					ctx.closePath();
+
+					ctx.setFillStyle(lighterFill.toString());
+					ctx.setLineWidth(1);
+					ctx.setStrokeStyle(stroke.toString());
+					ctx.fill();
+					ctx.stroke();
+				}
+			}
+		}
+
+		private void drawTriangleSideways(Context2d ctx, RGB fill, RGB stroke, Position pos) {
+
+		}
+
+		private void drawTriangleUpwards(Context2d ctx, RGB fillColor, RGB strokeColor, Position pos, double width) {
+
 			ctx.beginPath();
-			double width = px.getWidth();
-			ctx.moveTo(px.getLeft() + width / 4, px.getBottom() - 1);
-			ctx.lineTo(px.getRight() - width / 4, px.getBottom() - 1);
-			ctx.lineTo(px.getCenterPoint().getX(), px.getBottom() - px.getHeight() / 4);
+			ctx.moveTo(pos.getX() + width, pos.getY() - 1);
+			ctx.lineTo(pos.getX() - width, pos.getY() - 1);
+			ctx.lineTo(pos.getX(), pos.getY() - width);
 			ctx.closePath();
 			ctx.setFillStyle(fillColor.toString());
 			ctx.setLineWidth(1);
