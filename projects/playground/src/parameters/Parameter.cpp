@@ -352,11 +352,12 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
 {
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
+  writer.writeTextElement("boolean", to_string(m_value.isBoolean()));
 
   if(shouldWriteDocProperties(knownRevision))
   {
-    writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
     writer.writeTextElement("bipolar", to_string(m_value.isBiPolar()));
+    writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
     writer.writeTextElement("long-name", getLongName());
     writer.writeTextElement("short-name", getShortName());
     writer.writeTextElement("info-text", getInfoText());

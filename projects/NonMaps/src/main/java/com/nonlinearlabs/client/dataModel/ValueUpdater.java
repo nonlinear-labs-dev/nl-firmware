@@ -18,6 +18,12 @@ public class ValueUpdater extends Updater {
 		String bipolar = getChildText(root, "bipolar");
 		String scaling = getChildText(root, "scaling");
 		String defaultValue = getChildText(root, "default");
+		String bool = getChildText(root, "boolean");
+
+		if(!bool.isEmpty()) {
+			BooleanDataModelEntity bp = target.metaData.isBoolean;
+			bp.setValue(bool.equals("1") ? BooleanValues.on : BooleanValues.off);
+		}
 
 		if (!bipolar.isEmpty()) {
 			BooleanDataModelEntity bp = target.metaData.bipolar;
@@ -26,12 +32,14 @@ public class ValueUpdater extends Updater {
 
 		if (!coarse.isEmpty()) {
 			target.metaData.coarseDenominator.setValue((int) Double.parseDouble(coarse));
-			target.metaData.isBoolean.setValue(target.metaData.coarseDenominator.getValue() == 1);
+			if(target.metaData.isBoolean.isFalse())
+				target.metaData.isBoolean.setValue(target.metaData.coarseDenominator.getValue() == 1);
 		}
 
 		if (!fine.isEmpty()) {
 			target.metaData.fineDenominator.setValue((int) Double.parseDouble(fine));
-			target.metaData.isBoolean.setValue(target.metaData.fineDenominator.getValue() == 1);
+			if(target.metaData.isBoolean.isFalse())
+				target.metaData.isBoolean.setValue(target.metaData.fineDenominator.getValue() == 1);
 		}
 
 		if (!scaling.isEmpty())
