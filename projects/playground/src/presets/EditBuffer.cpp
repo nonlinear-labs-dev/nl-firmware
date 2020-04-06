@@ -658,13 +658,11 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
   auto masterGroup = getParameterGroupByID({ "Master", VoiceGroup::Global });
 
-  auto originVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyFrom }));
-  auto originTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, copyFrom }));
+  auto originVolume = findParameterByID({ 358, copyFrom });
+  auto originTune = findParameterByID({ 360, copyFrom });
 
-  auto masterVolumeParameter
-      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 247, VoiceGroup::Global }));
-  auto masterTuneParameter
-      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 248, VoiceGroup::Global }));
+  auto masterVolumeParameter = masterGroup->getParameterByID({ 247, VoiceGroup::Global });
+  auto masterTuneParameter = masterGroup->getParameterByID({ 248, VoiceGroup::Global });
 
   // unmute both parts
   findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
@@ -680,12 +678,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
   initToFX(transaction);
 
-  masterVolumeParameter->undoableSelectModSource(transaction, originVolume->getModulationSource());
-  masterVolumeParameter->setModulationAmount(transaction, originVolume->getModulationAmount());
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);
-
-  masterTuneParameter->undoableSelectModSource(transaction, originTune->getModulationSource());
-  masterTuneParameter->setModulationAmount(transaction, originTune->getModulationAmount());
   masterTuneParameter->setCPFromHwui(transaction, newTune);
 
   for(auto v : { VoiceGroup::I, VoiceGroup::II })
@@ -693,8 +686,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
     auto vgVolume = findParameterByID({ 358, v });
     auto vgTune = findParameterByID({ 360, v });
 
-    vgVolume->loadDefault(transaction);
-    vgTune->loadDefault(transaction);
+    vgVolume->setDefaultFromHwui(transaction);
+    vgTune->setDefaultFromHwui(transaction);
   }
 
   if(copyFrom != VoiceGroup::I)
@@ -962,8 +955,6 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto presetPartVolume = preset->findParameterByID({ 358, copyFrom }, false);
   auto presetPartTune = preset->findParameterByID({ 360, copyFrom }, false);
 
-  auto globalTune = findParameterByID({ 248, VoiceGroup::Global });
-
   auto partVolume = findParameterByID({ 358, copyTo });
   auto partTune = findParameterByID({ 360, copyTo });
 
@@ -974,15 +965,12 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
     auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
     auto partVolumeDV
         = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : 1.0);
-    auto presetGlobalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
 
-    auto newVolumeDV = partVolumeDV + presetGlobalVolumeDV - globalVolumeDV;
+    auto newVolumeDV = globalVolumeDV + partVolumeDV;
     auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
     partVolume->setCPFromHwui(transaction, newVolumeCP);
-
-    auto globalTuneCP = globalTune->getControlPositionValue();
-    auto newTuneCP = presetGlobalTune->getValue() + presetPartTune->getValue() - globalTuneCP;
-    partTune->setCPFromHwui(transaction, newTuneCP);
+    partTune->setCPFromHwui(transaction,
+                            presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : 0));
   }
 }
 
