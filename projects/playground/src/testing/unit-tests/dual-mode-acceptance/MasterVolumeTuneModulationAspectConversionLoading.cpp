@@ -3,6 +3,7 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <presets/PresetParameter.h>
 #include <parameters/ModulateableParameter.h>
+#include <parameters/scale-converters/ScaleConverter.h>
 
 namespace detail
 {
@@ -11,9 +12,11 @@ namespace detail
     auto presetMasterVolume = p->findParameterByID({ 247, VoiceGroup::Global }, false);
     auto presetMasterTune = p->findParameterByID({ 248, VoiceGroup::Global }, false);
 
+    presetMasterVolume->setValue(transaction, 0.75);
     presetMasterVolume->setField(transaction, PresetParameter::Fields::ModAmount, "0.5");
     presetMasterVolume->setField(transaction, PresetParameter::Fields::ModSource, "1");
 
+    presetMasterTune->setValue(transaction, 0.75);
     presetMasterTune->setField(transaction, PresetParameter::Fields::ModAmount, "0.5");
     presetMasterTune->setField(transaction, PresetParameter::Fields::ModSource, "1");
   }
@@ -70,12 +73,36 @@ TEST_CASE("Load Single Preset into Part copies Master Mod Aspects to Part")
     CHECK(modIITune->getModulationAmount() == 0);
   }
 
+  auto globalVolume = eb->findParameterByID({ 247, VoiceGroup::Global });
+  auto globalTune = eb->findParameterByID({ 248, VoiceGroup::Global });
+  auto partIVolume = eb->findParameterByID({ 358, VoiceGroup::I });
+  auto partIIVolume = eb->findParameterByID({ 358, VoiceGroup::II });
+  auto partITune = eb->findParameterByID({ 360, VoiceGroup::I });
+  auto partIITune = eb->findParameterByID({ 360, VoiceGroup::II });
+
   THEN("Load Single into I")
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
+    auto oldDisplayGlobalVolume = globalVolume->getDisplayValue();
+    auto oldDisplayGlobalMasterTune = globalTune->getDisplayValue();
+
+    auto presetMasterCPValue = singlePreset->findParameterByID({ 247, VoiceGroup::Global }, false)->getValue();
+    auto presetGlobalVolumeDisplayValue
+        = globalVolume->getValue().getScaleConverter()->controlPositionToDisplay(presetMasterCPValue);
+
+    auto presetTuneCPValue = singlePreset->findParameterByID({ 248, VoiceGroup::Global }, false)->getValue();
+    auto presetGlobalTuneDisplayValue
+        = globalTune->getValue().getScaleConverter()->controlPositionToDisplay(presetTuneCPValue);
+
     eb->undoableLoadPresetIntoDualSound(transaction, singlePreset, VoiceGroup::I);
+
+    auto newVolumeDisplay = presetGlobalVolumeDisplayValue - oldDisplayGlobalVolume;
+    auto newTuneDisplay = presetGlobalTuneDisplayValue - oldDisplayGlobalMasterTune;
+
+    CHECK(partIVolume->getDisplayValue() == newVolumeDisplay);
+    CHECK(partITune->getDisplayValue() == newTuneDisplay);
 
     CHECK(modITune->getModulationSource() == MacroControls::MC1);
     CHECK(modITune->getModulationAmount() == 0.5);
@@ -135,24 +162,43 @@ TEST_CASE("Load Single Preset into Part copies Master Mod Aspects to Part")
 
     eb->undoableLoadPresetPartIntoPart(transaction, presets.getLayerPreset(), VoiceGroup::I, VoiceGroup::I);
 
-    const auto afterGlobalHash = modMasterTune->getParentGroup()->getHash();
-
-    CHECK(globalGroupHash == afterGlobalHash);
+    const auto afterGroupHash = modMasterTune->getParentGroup()->getHash();
+    CHECK(globalGroupHash == afterGroupHash);
   }
 
-  THEN("Convert Dual into Single copies part master aspects to global parameters")
+  THEN("Convert Dual into Single copies part master aspects to global parameters ")
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    eb->undoableLoad(transaction, layerPreset);
+    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
+
+    CHECK(modITune->getModulationSource() != MacroControls::MC1);
+    CHECK(modITune->getModulationAmount() != 0.5);
+    CHECK(modIVolume->getModulationSource() != MacroControls::MC1);
+    CHECK(modIVolume->getModulationAmount() != 0.5);
+
+    modITune->setModulationAmount(transaction, 0.5);
+    modITune->undoableSelectModSource(transaction, MacroControls::MC1);
+
+    modIVolume->setModulationAmount(transaction, 0.5);
+    modIVolume->undoableSelectModSource(transaction, MacroControls::MC1);
+
+    CHECK(modITune->getModulationSource() == MacroControls::MC1);
+    CHECK(modITune->getModulationAmount() == 0.5);
+    CHECK(modIVolume->getModulationSource() == MacroControls::MC1);
+    CHECK(modIVolume->getModulationAmount() == 0.5);
 
     eb->undoableConvertToSingle(transaction, VoiceGroup::I);
 
     CHECK(modMasterTune->getModulationSource() == MacroControls::MC1);
     CHECK(modMasterTune->getModulationAmount() == 0.5);
-
     CHECK(modMasterVolume->getModulationSource() == MacroControls::MC1);
     CHECK(modMasterVolume->getModulationAmount() == 0.5);
+
+    CHECK(modITune->getModulationSource() == MacroControls::NONE);
+    CHECK(modITune->getModulationAmount() == 0);
+    CHECK(modIVolume->getModulationSource() == MacroControls::NONE);
+    CHECK(modIVolume->getModulationAmount() == 0);
   }
 }
