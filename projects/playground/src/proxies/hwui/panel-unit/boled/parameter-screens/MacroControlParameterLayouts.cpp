@@ -126,13 +126,23 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
     {
       case Buttons::BUTTON_A:
       {
-        auto shouldDisplayVGToggle = (getMode() == Mode::MacroControlValue)
-            && Application::get().getPresetManager()->getEditBuffer()->isDual();
-
-        if(shouldDisplayVGToggle)
-          Application::get().getHWUI()->toggleCurrentVoiceGroup();
-        else
-          toggleMode(Mode::PlayControlPosition);
+        if(Application::get().getPresetManager()->getEditBuffer()->isDual())
+        {
+          if(getMode() == Mode::MacroControlValue)
+          {
+            Application::get().getHWUI()->toggleCurrentVoiceGroup();
+            return true;
+          }
+          else
+          {
+            toggleMode(Mode::PlayControlPosition);
+            return true;
+          }
+        }
+        else if(getMode() == Mode::MacroControlValue)
+        {
+          return true;
+        }
       }
         return true;
 
@@ -197,9 +207,21 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
     voiceGroupIndication->setVisible(desiredMode == Mode::MacroControlValue);
   }
 
-  auto shouldDisplayVGToggle
-      = (desiredMode == Mode::MacroControlValue) && Application::get().getPresetManager()->getEditBuffer()->isDual();
-  setButtonAText(shouldDisplayVGToggle ? "I / II" : "HW Pos");
+  if(Application::get().getPresetManager()->getEditBuffer()->isDual())
+  {
+    if(getMode() == Mode::MacroControlValue)
+    {
+      setButtonAText("I / II");
+    }
+    else
+    {
+      setButtonAText("HW Pos");
+    }
+  }
+  else if(getMode() == Mode::MacroControlValue)
+  {
+    setButtonAText("");
+  }
 
   switch(m_mode)
   {
@@ -257,9 +279,22 @@ MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     , super2()
 {
   setButtonA(addControl(new Button("", Buttons::BUTTON_A)));
-  auto shouldDisplayVGToggle
-      = (getMode() == Mode::MacroControlValue) && Application::get().getPresetManager()->getEditBuffer()->isDual();
-  setButtonAText(shouldDisplayVGToggle ? "I / II" : "HW Pos");
+
+  if(Application::get().getPresetManager()->getEditBuffer()->isDual())
+  {
+    if(getMode() == Mode::MacroControlValue)
+    {
+      setButtonAText("I / II");
+    }
+    else
+    {
+      setButtonAText("HW Pos");
+    }
+  }
+  else if(getMode() == Mode::MacroControlValue)
+  {
+    setButtonAText("");
+  }
 
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
   addControl(new Button("HW Amt", Buttons::BUTTON_C));
