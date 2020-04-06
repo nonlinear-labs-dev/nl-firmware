@@ -295,10 +295,6 @@ MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
       setButtonAText("HW Pos");
     }
   }
-  else if(getMode() == Mode::MacroControlValue)
-  {
-    setButtonAText("");
-  }
 
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
   addControl(new Button("HW Amt", Buttons::BUTTON_C));
