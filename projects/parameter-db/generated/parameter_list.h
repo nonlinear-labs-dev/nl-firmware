@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-04-03, 12:42
+    @date       2020-04-07, 11:23
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1279,9 +1279,9 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 1", "Pedal 1",
-        "This control is the parameter representation of the “Pedal 1” Hardware Source. If a pedal is connected, it "
-        "will directly follow the external control. If the source's return behavior is set to “Center”, the parameter "
-        "will be bipolar." } },
+        "This control is the parameter representation of the \"Pedal 1\" Hardware Source. If a pedal is connected, it "
+        "will directly follow the external control. If the source's return behavior is set to \"Center\", the "
+        "parameter will be bipolar." } },
     { Parameters::Hardware_Amounts::Ped_1_to_MC_A,
       255,
       0.0f,
@@ -1319,9 +1319,9 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 2", "Pedal 2",
-        "This control is the parameter representation of the “Pedal 2” Hardware Source. If a pedal is connected, it "
-        "will directly follow the external control. If the source's return behavior is set to “Center”, the parameter "
-        "will be bipolar." } },
+        "This control is the parameter representation of the \"Pedal 2\" Hardware Source. If a pedal is connected, it "
+        "will directly follow the external control. If the source's return behavior is set to \"Center\", the "
+        "parameter will be bipolar." } },
     { Parameters::Hardware_Amounts::Ped_2_to_MC_A,
       260,
       0.0f,
@@ -1359,9 +1359,9 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 3", "Pedal 3",
-        "This control is the parameter representation of the “Pedal 3” Hardware Source. If a pedal is connected, it "
-        "will directly follow the external control. If the source's return behavior is set to “Center”, the parameter "
-        "will be bipolar." } },
+        "This control is the parameter representation of the \"Pedal 3\" Hardware Source. If a pedal is connected, it "
+        "will directly follow the external control. If the source's return behavior is set to \"Center\", the "
+        "parameter will be bipolar." } },
     { Parameters::Hardware_Amounts::Ped_3_to_MC_A,
       265,
       0.0f,
@@ -1399,9 +1399,9 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 4", "Pedal 4",
-        "This control is the parameter representation of the “Pedal 4” Hardware Source. If a pedal is connected, it "
-        "will directly follow the external control. If the source's return behavior is set to “Center”, the parameter "
-        "will be bipolar." } },
+        "This control is the parameter representation of the \"Pedal 4\" Hardware Source. If a pedal is connected, it "
+        "will directly follow the external control. If the source's return behavior is set to \"Center\", the "
+        "parameter will be bipolar." } },
     { Parameters::Hardware_Amounts::Ped_4_to_MC_A,
       270,
       0.0f,
@@ -1439,7 +1439,7 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Bender", "Bender",
-        "This control is the parameter representation of the “Bender” Hardware Source. It will directly follow the "
+        "This control is the parameter representation of the \"Bender\" Hardware Source. It will directly follow the "
         "Bender." } },
     { Parameters::Hardware_Amounts::Bend_to_MC_A,
       275,
@@ -1478,7 +1478,7 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Aftertouch", "Aftertouch",
-        "This control is the parameter representation of the “Aftertouch” Hardware Source. It will directly follow "
+        "This control is the parameter representation of the \"Aftertouch\" Hardware Source. It will directly follow "
         "aftertouch gestures." } },
     { Parameters::Hardware_Amounts::AT_to_MC_A,
       280,
@@ -1513,8 +1513,9 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 1", "Ribbon 1",
-        "This control is the parameter representation of the “Ribbon 1” Hardware Source. It will directly follow the "
-        "Ribbon and vice versa. If the source's return behavior is set to “Center”, the parameter will be bipolar." } },
+        "This control is the parameter representation of the \"Ribbon 1\" Hardware Source. It will directly follow the "
+        "Ribbon and vice versa. If the source's return behavior is set to \"Center\", the parameter will be "
+        "bipolar." } },
     { Parameters::Hardware_Amounts::Rib_1_to_MC_A,
       285,
       0.0f,
@@ -1552,8 +1553,9 @@ namespace C15
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 2", "Ribbon 2",
-        "This control is the parameter representation of the “Ribbon 2” Hardware Source. It will directly follow the "
-        "Ribbon and vice versa. If the source's return behavior is set to “Center”, the parameter will be bipolar." } },
+        "This control is the parameter representation of the \"Ribbon 2\" Hardware Source. It will directly follow the "
+        "Ribbon and vice versa. If the source's return behavior is set to \"Center\", the parameter will be "
+        "bipolar." } },
     { Parameters::Hardware_Amounts::Rib_2_to_MC_A,
       290,
       0.0f,
@@ -2179,12 +2181,24 @@ namespace C15
       396,
       0.0f,
       { Smoothers::Poly_Sync::Voice_Grp_Fade_From, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
-      { 60, 60, None, None, "", "Voices", "Voices", "Fade From", "Fade From", "" } },
+      { 60, 60, None, None, "", "Voices", "Voices", "Fade From", "Fade From",
+        "Available when using Layer mode. For Part I the full level range spans from the lowest key (C1) to the key "
+        "set by this parameter. This key defines the breakpoint where the fade-out begins. The fade-out width is "
+        "adjustable by the \"Fade Range\" parameter. For Part II the full level range spans from the highest key (C6) "
+        "to the key set here. For the keys below this breakpoint the level is faded out.\nBy default this parameter is "
+        "set to the highest key (C6) for Part I and to the lowest key (C1) for Part II, so that both Parts cover the "
+        "whole key range without fading." } },
     { Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range,
       397,
       0.0f,
       { Smoothers::Poly_Sync::Voice_Grp_Fade_Range, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
-      { 60, 60, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range", "" } },
+      { 60, 600, None, None, "", "Voices", "Voices", "Fade Range", "Fade Range",
+        "Available when using Layer mode. This parameter adjusts the width of a key range [in semitones] where the "
+        "level of a Part is faded out. For Part I the fade-out applies to keys above the breakpoint set by \"Fade "
+        "From\". For Part II the fade-out applies to keys below the breakpoint set by \"Fade From\".\nWith a Fade "
+        "Range of zero the Part is muted for all keys beyond the breakpoint, which is the default behavior. Notice "
+        "that the resolution of this parameter is higher than the availbale keys, which allows for a subtle effect of "
+        "fine-tuning the curve of the fade-out." } },
     { None },
     { None }
   };
