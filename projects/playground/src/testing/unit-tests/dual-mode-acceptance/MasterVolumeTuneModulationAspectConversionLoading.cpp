@@ -5,6 +5,7 @@
 #include <parameters/ModulateableParameter.h>
 #include <CompileTimeOptions.h>
 #include <presets/BankActions.h>
+#include <testing/unit-tests/mock/FuxieSwarmsTestBank.h>
 
 namespace detail
 {
@@ -160,21 +161,23 @@ TEST_CASE("Load Single Preset into Part copies Master Mod Aspects to Part")
 
   THEN("Loading bank of Version 5 does not crash")
   {
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
-    auto pm = eb->getParent();
+    FuxieSwarmsTestBank bank;
+    CHECK(bank.getPreset(0) != nullptr);
 
-    auto bankFile = getResourcesDir() + "/unit-test-files/Fuxi_Swarms.xml";
+    auto preset = bank.getPreset(7);
 
-    auto newBank = [&] {
-      FileInStream stream(bankFile, false);
-      auto useCase = pm->findActionManager<BankActions>();
-      return useCase.importBank(transaction, stream, "0", "0", bankFile);
-    }();
+    THEN("Load Single Preset Full") {
+      TestHelper::initDualEditBuffer<SoundType::Layer>();
 
-    CHECK(newBank != nullptr);
-    CHECK(!newBank->empty());
+      CHECK_NOTHROW(eb->undoableLoad(preset));
+      CHECK(eb->getType() == SoundType::Single);
+    }
 
-    pm->deleteBank(transaction, newBank->getUuid());
+    THEN("Load Part") {
+      TestHelper::initDualEditBuffer<SoundType::Layer>();
+
+      CHECK_NOTHROW(eb->undoableLoadSinglePreset(preset, VoiceGroup::I));
+      CHECK(eb->getType() == SoundType::Layer);
+    }
   }
 }
