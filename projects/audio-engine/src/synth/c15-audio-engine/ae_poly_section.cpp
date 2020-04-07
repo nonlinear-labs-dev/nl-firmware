@@ -263,6 +263,10 @@ float PolySection::getVoiceGroupVolume()
 
 void PolySection::evalVoiceFade(const float _from, const float _range)
 {
+  // floating approach: the number of faded keys is ceil(_range), the fade slope is depending on floating range
+  // (previously, faded keys were floor(_range), the fade slope was depending on floor(_range)
+  // potential problem: gain in precision is hardly audible (even with other part muted), so is perceived general improvement
+
   const int32_t start = m_fadeStart;
   const int32_t fadeStart
       = start + (m_fadeIncrement * (1 + (m_fadeStart + (m_fadeIncrement * static_cast<int32_t>(_from)))));
@@ -305,6 +309,78 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
     }
 
     m_key_levels[i] = fadeValue;
+  }
+
+  // phase 3: 0%
+  for(int32_t i = fadeEnd; i != m_fadeEnd + m_fadeIncrement; i += m_fadeIncrement)
+  {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+
+    m_key_levels[i] = 0.0f;
+  }
+}
+
+void PolySection::evalVoiceFadeInterpolated(const float _from, const float _range)
+{
+  // floating and interpolated approach: the number of faded keys is ceil(_range), ...
+  // ... fade slope is now interpolated (determined by _range), using both floor(_range) and ceil(_range) as separate slope ramps for interpolation, ...
+  // ... generating slightly larger fade ramp values when _range has fractional part
+  // (previously, approach was floating only)
+  // potential improvement: gain in precision should be more audible, so should perceived general improvement
+
+  const int32_t start = m_fadeStart,
+                fadeStart = start + (m_fadeIncrement * (1 + start + (m_fadeIncrement * static_cast<int32_t>(_from)))),
+                upperRange = static_cast<int32_t>(std::ceil(_range)),
+                lowerRange = static_cast<int32_t>(std::floor(_range)),
+                fadeEnd = fadeStart + (m_fadeIncrement * upperRange);
+
+  // as described, we now evaluate two separate ramps with different slopes and interpolate by crossfading according to the fractional
+  const float fractional = _range - static_cast<float>(lowerRange),
+              slope[2]
+      = { (1.0f / (static_cast<float>(lowerRange) + 1.0f)), (1.0f / (static_cast<float>(upperRange) + 1.0f)) };
+  float fade[2] = { 1.0f, 1.0f };
+
+  // phase 1: 100%
+  for(int32_t i = start; i != fadeStart; i += m_fadeIncrement)
+  {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+
+    m_key_levels[i] = 1.0f;
+  }
+
+  // phase 2: fade out
+  for(int32_t i = fadeStart; i != fadeEnd; i += m_fadeIncrement)
+  {
+    if((i < 0) || (i >= C15::Config::key_count))
+      break;  // safety mechanism
+
+    fade[0] -= slope[0];
+    fade[1] -= slope[1];
+
+    // linear implementation (not smooth enough):
+    //    float fadeValue[2] = { fade[0], fade[1] };
+
+    // sine implementation (keep for further testing):
+    //    float fadeValue[2] = { (0.5f - (0.5f * NlToolbox::Math::sinP3_wrap(0.5f * (fade[0] - 0.5f)))),
+    //                           (0.5f - (0.5f * NlToolbox::Math::sinP3_wrap(0.5f * (fade[1] - 0.5f)))) };
+
+    // parabolic implementation (currently favourite):
+    float fadeValue[2] = { (fade[0] * fade[0]), (fade[1] * fade[1]) };
+    for(uint32_t fi = 0; fi < 2; fi++)
+    {
+      if(fade[fi] < 0.5f)
+      {
+        fadeValue[fi] = 2.0f * fadeValue[fi];
+      }
+      else
+      {
+        fadeValue[fi] = (-2.0f * fadeValue[fi]) + (4.0f * fade[fi]) - 1.0f;
+      }
+    }
+
+    m_key_levels[i] = ((1.0f - fractional) * fadeValue[0]) + (fractional * fadeValue[1]);  // now interpolated
   }
 
   // phase 3: 0%

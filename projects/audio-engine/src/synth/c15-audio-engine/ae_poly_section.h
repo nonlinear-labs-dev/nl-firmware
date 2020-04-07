@@ -54,6 +54,7 @@ class PolySection
   void resetDSP();
   float getVoiceGroupVolume();
   void evalVoiceFade(const float _from, const float _range);
+  void evalVoiceFadeInterpolated(const float _from, const float _range);
   void resetVoiceFade();
 
  private:
