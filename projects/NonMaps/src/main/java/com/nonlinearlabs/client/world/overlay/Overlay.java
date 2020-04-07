@@ -7,7 +7,6 @@ import java.util.List;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ColorTable;
-import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
@@ -16,8 +15,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
-import com.nonlinearlabs.client.presenters.PresetManagerPresenter;
-import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -51,34 +48,10 @@ public class Overlay extends OverlayLayout {
 			});
 		}
 
-		/*
-		@Override
-		public String getDrawText(Context2d ctx) {
-			return EditBufferPresenterProvider.getPresenter().voiceGroup;
-		}
-		*/
 		public boolean isLoadIntoPartEnabled() {
 			return NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode();
 		}
 
-		public LoadToPartMode getLoadToPartMode() {
-			return NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode();
-		}
-
-		/*
-		@Override
-		protected void drawText(Context2d ctx, String text, Position left) {
-			ctx.setStrokeStyle(RGB.black().toString());
-			ctx.strokeText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
-			ctx.setFillStyle(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor.toString());
-			ctx.fillText(text, left.getX(), left.getY() + getVerticalFontDisplacement());
-		}
-
-		@Override
-		protected double getFontHeight(Rect pixRect) {
-			return super.getFontHeight(pixRect) * 2;
-		}
-		*/
 		@Override
 		public void draw(Context2d ctx, int invalidationMask) {
 			RGB c = new RGBA(EditBufferPresenterProvider.getPresenter().voiceGroupIndicationColor, 0.25);
@@ -93,7 +66,6 @@ public class Overlay extends OverlayLayout {
 					drawLayerIndication(ctx, c, stroke);
 				break;
 				default:
-
 				break;
 			}
 		}
@@ -137,30 +109,10 @@ public class Overlay extends OverlayLayout {
 
 			if(isLoadIntoPartEnabled()) {
 				if(selected == VoiceGroup.I) {
-					ctx.beginPath();
-					ctx.moveTo(pix.getLeft() + margin, pix.getBottom());
-					ctx.lineTo(pix.getLeft() + margin + partWidth, pix.getBottom());
-					ctx.lineTo(pix.getLeft() + margin + partWidth / 2, box.getBottom());
-					ctx.closePath();
-
-					ctx.setFillStyle(lighterFill.toString());
-					ctx.setLineWidth(1);
-					ctx.setStrokeStyle(stroke.toString());
-					ctx.fill();
-					ctx.stroke();
+					drawTriangleUpwards(ctx, lighterFill, stroke, new Position(pix.getLeft() + margin + partWidth / 2, pix.getBottom()), partWidth, Math.abs(pix.getBottom() - box.getBottom()));
 				}
 				else {
-					ctx.beginPath();
-					ctx.moveTo(getPixRect().getRight() - margin - partWidth, pix.getBottom());
-					ctx.lineTo(getPixRect().getRight() - margin - partWidth + partWidth, pix.getBottom());
-					ctx.lineTo(getPixRect().getRight() - margin - partWidth + partWidth / 2, box.getBottom());
-					ctx.closePath();
-
-					ctx.setFillStyle(lighterFill.toString());
-					ctx.setLineWidth(1);
-					ctx.setStrokeStyle(stroke.toString());
-					ctx.fill();
-					ctx.stroke();
+					drawTriangleUpwards(ctx, lighterFill, stroke, new Position(getPixRect().getRight() - margin - partWidth / 2, pix.getBottom()), partWidth, Math.abs(pix.getBottom() - box.getBottom()));
 				}
 			}
 		}
@@ -201,44 +153,32 @@ public class Overlay extends OverlayLayout {
 
 			if(isLoadIntoPartEnabled()) {
 				if(selected == VoiceGroup.I) {
-					ctx.beginPath();
-					ctx.moveTo(pix.getLeft(), boxIY);
-					ctx.lineTo(pix.getLeft(), boxIY + partHeight);
-					ctx.lineTo(pix.getLeft() + margin, boxIY + partHeight / 2);
-					ctx.closePath();
-
-					ctx.setFillStyle(lighterFill.toString());
-					ctx.setLineWidth(1);
-					ctx.setStrokeStyle(stroke.toString());
-					ctx.fill();
-					ctx.stroke();
+					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIY + partHeight / 2), partWidth / 1.5, partHeight);
 				}
 				else {
-					ctx.beginPath();
-					ctx.moveTo(pix.getLeft(), boxIIY);
-					ctx.lineTo(pix.getLeft(), boxIIY + partHeight);
-					ctx.lineTo(pix.getLeft() + margin, boxIIY + partHeight / 2);
-					ctx.closePath();
-
-					ctx.setFillStyle(lighterFill.toString());
-					ctx.setLineWidth(1);
-					ctx.setStrokeStyle(stroke.toString());
-					ctx.fill();
-					ctx.stroke();
+					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIIY + partHeight / 2), partWidth / 1.5, partHeight);
 				}
 			}
 		}
 
-		private void drawTriangleSideways(Context2d ctx, RGB fill, RGB stroke, Position pos) {
-
+		private void drawTriangleSideways(Context2d ctx, RGB fill, RGB stroke, Position pos, double width, double height) {
+			ctx.beginPath();
+			ctx.moveTo(pos.getX(), pos.getY() - width);
+			ctx.lineTo(pos.getX(), pos.getY() + width);
+			ctx.lineTo(pos.getX() + height, pos.getY());
+			ctx.closePath();
+			ctx.setFillStyle(fill.toString());
+			ctx.setLineWidth(1);
+			ctx.setStrokeStyle(stroke.toString());
+			ctx.fill();
+			ctx.stroke();
 		}
 
-		private void drawTriangleUpwards(Context2d ctx, RGB fillColor, RGB strokeColor, Position pos, double width) {
-
+		private void drawTriangleUpwards(Context2d ctx, RGB fillColor, RGB strokeColor, Position pos, double width, double height) {
 			ctx.beginPath();
-			ctx.moveTo(pos.getX() + width, pos.getY() - 1);
-			ctx.lineTo(pos.getX() - width, pos.getY() - 1);
-			ctx.lineTo(pos.getX(), pos.getY() - width);
+			ctx.moveTo(pos.getX() + width, pos.getY());
+			ctx.lineTo(pos.getX() - width, pos.getY());
+			ctx.lineTo(pos.getX(), pos.getY() - height);
 			ctx.closePath();
 			ctx.setFillStyle(fillColor.toString());
 			ctx.setLineWidth(1);
@@ -279,7 +219,7 @@ public class Overlay extends OverlayLayout {
 		@Override
 		public String getDrawText(Context2d ctx) {
 			VoiceGroup g = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
-			 BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, g));
+			BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, g));
 			boolean muted = param.value.getQuantizedAndClipped(true) > 0.5;
 			return muted ? "\uE0BA" : "";
 		}
