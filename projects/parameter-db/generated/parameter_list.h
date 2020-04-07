@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-04-07, 11:23
+    @date       2020-04-07, 12:26
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -2196,9 +2196,8 @@ namespace C15
         "Available when using Layer mode. This parameter adjusts the width of a key range [in semitones] where the "
         "level of a Part is faded out. For Part I the fade-out applies to keys above the breakpoint set by \"Fade "
         "From\". For Part II the fade-out applies to keys below the breakpoint set by \"Fade From\".\nWith a Fade "
-        "Range of zero the Part is muted for all keys beyond the breakpoint, which is the default behavior. Notice "
-        "that the resolution of this parameter is higher than the availbale keys, which allows for a subtle effect of "
-        "fine-tuning the curve of the fade-out." } },
+        "Range of zero the Part is muted for all keys beyond the breakpoint, which is the default behavior. You can "
+        "set this parameter in fractions of semitones to make subtle changes to the curve of the fade-out.." } },
     { None },
     { None }
   };
