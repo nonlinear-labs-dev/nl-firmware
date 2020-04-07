@@ -1800,13 +1800,30 @@ bool dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
 
 void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
 {
-  m_poly[_layer].evalVoiceFade(
-      m_params
-          .get_local_direct(_layer, static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From))
-          ->m_scaled,
-      m_params
-          .get_local_direct(_layer, static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range))
-          ->m_scaled);
+  if(VOICE_FADE_INTERPOLATION)
+  {
+    m_poly[_layer].evalVoiceFadeInterpolated(
+        m_params
+            .get_local_direct(_layer,
+                              static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From))
+            ->m_scaled,
+        m_params
+            .get_local_direct(_layer,
+                              static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range))
+            ->m_scaled);
+  }
+  else
+  {
+    m_poly[_layer].evalVoiceFade(
+        m_params
+            .get_local_direct(_layer,
+                              static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From))
+            ->m_scaled,
+        m_params
+            .get_local_direct(_layer,
+                              static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range))
+            ->m_scaled);
+  }
 }
 
 void dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage& _msg)

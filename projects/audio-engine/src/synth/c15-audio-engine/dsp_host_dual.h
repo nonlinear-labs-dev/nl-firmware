@@ -23,7 +23,11 @@
 #include "ae_poly_section.h"
 
 // developer switches
-inline constexpr unsigned int SAMPLE_COUNT = 1;  // 0: normal, 1: acceptance-test: does host really render?
+inline constexpr unsigned int SAMPLE_COUNT = 0;  // 0: normal, 1: acceptance-test: does host really render?
+
+// addendum - voice fade: enable proposed interpolated approach for generating fade values
+inline constexpr bool VOICE_FADE_INTERPOLATION = true;
+
 // basic logging switches
 inline constexpr bool LOG_MISSING = false;
 inline constexpr bool LOG_FAIL = false;
