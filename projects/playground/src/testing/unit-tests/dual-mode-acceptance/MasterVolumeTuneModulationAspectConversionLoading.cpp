@@ -3,6 +3,8 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <presets/PresetParameter.h>
 #include <parameters/ModulateableParameter.h>
+#include <CompileTimeOptions.h>
+#include <presets/BankActions.h>
 
 namespace detail
 {
@@ -154,5 +156,25 @@ TEST_CASE("Load Single Preset into Part copies Master Mod Aspects to Part")
 
     CHECK(modMasterVolume->getModulationSource() == MacroControls::MC1);
     CHECK(modMasterVolume->getModulationAmount() == 0.5);
+  }
+
+  THEN("Loading bank of Version 5 does not crash")
+  {
+    auto scope = TestHelper::createTestScope();
+    auto transaction = scope->getTransaction();
+    auto pm = eb->getParent();
+
+    auto bankFile = getResourcesDir() + "/unit-test-files/Fuxi_Swarms.xml";
+
+    auto newBank = [&] {
+      FileInStream stream(bankFile, false);
+      auto useCase = pm->findActionManager<BankActions>();
+      return useCase.importBank(transaction, stream, "0", "0", bankFile);
+    }();
+
+    CHECK(newBank != nullptr);
+    CHECK(!newBank->empty());
+
+    pm->deleteBank(transaction, newBank->getUuid());
   }
 }
