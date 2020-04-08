@@ -1,8 +1,8 @@
 #!/bin/sh
 
-BINARY_DIR=$1
+BINARY_DIR=$(realpath $1)
 shift
-SOURCE_DIR=$1
+SOURCE_DIR=$(realpath $1)
 shift
 USER_ID=$1
 shift
@@ -10,8 +10,11 @@ DOCKER_GROUP_ID=$1
 shift
 
 TMPSCRIPT=$(mktemp)
-TMPDIRNAME=$(dirname $TMPSCRIPT)
 TMPSCRIPTBASE=$(basename $TMPSCRIPT)
+TMPDIRNAME="$BINARY_DIR/tmp"
+TMPSCRIPT="$TMPDIRNAME/$TMPSCRIPTBASE"
+mkdir -p $TMPDIRNAME
+
 echo "" > $TMPSCRIPT
 
 for var in "$@"
