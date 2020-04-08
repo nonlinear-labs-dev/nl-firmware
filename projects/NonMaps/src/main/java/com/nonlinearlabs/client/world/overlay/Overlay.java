@@ -43,7 +43,7 @@ public class Overlay extends OverlayLayout {
 			});
 
 			NonMaps.get().getNonLinearWorld().getPresetManager().onLoadToPartModeToggled((x) -> {
-				requestLayout();
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return true;
 			});
 		}
