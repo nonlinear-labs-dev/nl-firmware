@@ -333,7 +333,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	private static ChoosePresetPartDialog choosePresetPart = null;
 
-	private Control clickLoadToPartMouseDown(LoadToPartMode mode) {
+	private Control loadToPartClickBehaviour(LoadToPartMode mode) {
 		if(isDual()) {
 			choosePresetPart = new ChoosePresetPartDialog(this);
 		} else {
@@ -367,7 +367,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		} else if(isInLoadToPartMode()) {
-			clickLoadToPartMouseDown((LoadToPartMode)getCustomPresetSelection());
+			loadToPartClickBehaviour((LoadToPartMode)getCustomPresetSelection());
 		} else if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
 			getParent().getParent().startMultiSelection(this, true);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
