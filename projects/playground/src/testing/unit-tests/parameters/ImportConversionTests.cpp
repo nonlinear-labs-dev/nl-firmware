@@ -13,7 +13,7 @@ TEST_CASE("FB Drive 50db to 70db", "[Parameter][Convert]")
   {
     auto oldCP = testPair.first;
     auto expectedDV = testPair.second;
-    auto newCP = converter.convert(164, oldCP, 5);
+    auto newCP = converter.convert(164, oldCP, 5, SoundType::Invalid);
     CHECK(newDimension->controlPositionToDisplay(newCP) == Approx(expectedDV));
   }
 }

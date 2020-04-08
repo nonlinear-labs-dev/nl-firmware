@@ -768,7 +768,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
   {
     auto swap = UNDO::createSwapData(type);
 
-    initUnisonVoices(transaction, type);
+    initUnisonVoicesScaling(transaction, type);
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
@@ -860,7 +860,7 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   ae->toggleSuppressParameterChanges(transaction);
 }
 
-void EditBuffer::initUnisonVoices(UNDO::Transaction *transaction, SoundType newType)
+void EditBuffer::initUnisonVoicesScaling(UNDO::Transaction *transaction, SoundType newType)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     if(auto unisonParam = dynamic_cast<UnisonVoicesParameter *>(findParameterByID({ 249, vg })))
