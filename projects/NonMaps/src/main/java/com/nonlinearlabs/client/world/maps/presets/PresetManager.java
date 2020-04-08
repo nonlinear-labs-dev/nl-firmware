@@ -1027,6 +1027,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public StoreSelectMode getStoreSelectMode() {
-		return (StoreSelectMode) customPresetSelector;
+		if(isInStoreSelectMode())
+			return (StoreSelectMode)customPresetSelector;
+		return null;
 	}
 };

@@ -399,10 +399,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void selectPreset() {
-		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreSelectMode();
+		CustomPresetSelector selector = getNonMaps().getNonLinearWorld().getPresetManager().getCustomPresetSelection();
 
-		if (storeMode != null) {
-			storeMode.setSelectedPreset(this);
+		if (selector != null) {
+			selector.setSelectedPreset(this);
 		} else {
 			getParent().getPresetList().selectPreset(getUUID(), true);
 
