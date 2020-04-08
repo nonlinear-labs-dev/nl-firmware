@@ -78,10 +78,10 @@ public class Overlay extends OverlayLayout {
 			VoiceGroup selected = getSelectedVoiceGroup();
 			Rect pix = getPixRect().copy();
 
-			final double margin = pix.getWidth() / 5;
-			final double partWidth = pix.getWidth() / 4;
-			final double partHeight = pix.getHeight() / 2;
-			final double yMargin = pix.getHeight() / 4;
+			final double margin = Millimeter.toPixels(1);
+			final double partWidth = Millimeter.toPixels(2);
+			final double partHeight = Millimeter.toPixels(5);
+			final double yMargin = Millimeter.toPixels(2.5);
 
 			final RGB ogFill = fill;
 			final RGB lighterFill = ogFill.brighter(96);
@@ -91,8 +91,7 @@ public class Overlay extends OverlayLayout {
 
 			Rect box = new Rect(0, pix.getTop() + yMargin, partWidth, partHeight);
 
-			
-			box.setLeft(pix.getLeft() + margin);
+			box.setLeft(pix.getCenterPoint().getX() - margin / 2 - partWidth);
 			box.fillAndStroke(ctx, fill, 2, stroke);
 
 			fill = ogFill;
@@ -100,15 +99,15 @@ public class Overlay extends OverlayLayout {
 			if(selected == VoiceGroup.II)
 				fill = lighterFill;
 
-			box.setLeft(getPixRect().getRight() - margin - partWidth);
+			box.setLeft(pix.getCenterPoint().getX() + margin / 2);
 			box.fillAndStroke(ctx, fill, 2, stroke);
 
 			if(isLoadIntoPartEnabled()) {
 				if(selected == VoiceGroup.I) {
-					drawTriangleUpwards(ctx, lighterFill, stroke, new Position(pix.getLeft() + margin + partWidth / 2, pix.getBottom()), partWidth, Math.abs(pix.getBottom() - box.getBottom()));
+					drawTriangleUpwards(ctx, lighterFill, stroke, new Position(pix.getCenterPoint().getX() - margin / 2 - partWidth / 2, pix.getBottom()), partWidth, Math.abs(pix.getBottom() - box.getBottom()));
 				}
 				else {
-					drawTriangleUpwards(ctx, lighterFill, stroke, new Position(getPixRect().getRight() - margin - partWidth / 2, pix.getBottom()), partWidth, Math.abs(pix.getBottom() - box.getBottom()));
+					drawTriangleUpwards(ctx, lighterFill, stroke, new Position(pix.getCenterPoint().getX() + margin / 2 + partWidth / 2, pix.getBottom()), partWidth, Math.abs(pix.getBottom() - box.getBottom()));
 				}
 			}
 		}
@@ -117,10 +116,9 @@ public class Overlay extends OverlayLayout {
 			VoiceGroup selected = getSelectedVoiceGroup();
 			Rect pix = getPixRect().copy();
 
-			final double margin = pix.getWidth() / 4;
-			final double partWidth = pix.getWidth() / 2;
-			final double partHeight = pix.getHeight() / 4;
-			final double yMargin = pix.getHeight() / 5;
+			final double margin = Millimeter.toPixels(1);
+			final double partWidth = Millimeter.toPixels(5);
+			final double partHeight = Millimeter.toPixels(2);
 
 			final RGB ogFill = fill;
 			final RGB lighterFill = ogFill.brighter(96);
@@ -128,9 +126,9 @@ public class Overlay extends OverlayLayout {
 			if(selected == VoiceGroup.I)
 				fill = lighterFill;
 
-			Rect box = new Rect(pix.getLeft() + margin, pix.getTop() + yMargin, partWidth, partHeight);
+			Rect box = new Rect(pix.getCenterPoint().getX() - partWidth / 2, 0, partWidth, partHeight);
 			
-			final double boxIY = pix.getTop() + yMargin;
+			final double boxIY = pix.getCenterPoint().getY() - margin / 2 - partHeight;
 			box.setTop(boxIY);
 			box.fillAndStroke(ctx, fill, 2, stroke);
 
@@ -139,7 +137,7 @@ public class Overlay extends OverlayLayout {
 			if(selected == VoiceGroup.II)
 				fill = lighterFill;
 
-			final double boxIIY = pix.getBottom() - yMargin - partHeight;
+			final double boxIIY = pix.getCenterPoint().getY() + margin / 2;
 			box.setTop(boxIIY);
 			box.fillAndStroke(ctx, fill, 2, stroke);
 
