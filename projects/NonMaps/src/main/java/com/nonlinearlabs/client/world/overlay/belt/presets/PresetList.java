@@ -319,6 +319,7 @@ public class PresetList extends OverlayLayout {
 				Preset sourcePreset = (Preset) sourceCtrl;
 				BeltPreset targetPreset = (BeltPreset) target.next();
 				targetPreset.setOrigin(sourcePreset);
+				targetPreset.invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
 		}
 	}

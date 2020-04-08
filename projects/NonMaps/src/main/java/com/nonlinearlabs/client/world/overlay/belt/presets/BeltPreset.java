@@ -62,6 +62,16 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 			requestLayout();
 		}
+
+		if(hasCustomPresetSelection()) {
+
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+
+			if (type != null) {
+				type.bruteForce();
+				type.invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			}
+		}
 	}
 
 	@Override
