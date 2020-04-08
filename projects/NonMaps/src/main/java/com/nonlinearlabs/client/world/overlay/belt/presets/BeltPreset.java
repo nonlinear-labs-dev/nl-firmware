@@ -114,7 +114,7 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 	private boolean isLoaded() {
 		if (isInLoadPartMode())
-			return getLoadPartMode().getSelectedPreset() == mapsPreset;
+			return false;
 		return mapsPreset.isLoaded();
 	}
 
@@ -156,8 +156,6 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 			}
 			return this;
 		}
-
-
 
 		if (mapsPreset.isSelected())
 			mapsPreset.load();
