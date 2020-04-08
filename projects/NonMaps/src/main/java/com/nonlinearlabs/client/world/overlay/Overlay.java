@@ -145,7 +145,7 @@ public class Overlay extends OverlayLayout {
 	private GlobalMenu globalMenu;
 	private UndoTreeWindow undo;
 	private List<CompareDialog> compareDialogs;
-	private GWTDialog modalDialog;
+	private ModalDialog modalDialog;
 	private LayerDisplay layerDisplay;
 	private PartMuteDisplay partMuteDisplay;
 
@@ -616,12 +616,7 @@ public class Overlay extends OverlayLayout {
 		return compareDialogs;
 	}
 
-	public void setModal(GWTDialog modal) {
-		if(modalDialog == null || modalDialog != modal)
-			modalDialog = modal;
-	}
-
-	public void removeModal(GWTDialog modal) {
+	public void removeModal(ModalDialog modal) {
 		if (modal == modalDialog)
 			modalDialog = null;
 	}

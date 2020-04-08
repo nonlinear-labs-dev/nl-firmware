@@ -89,7 +89,6 @@ public class ChoosePresetPartDialog extends GWTDialog {
     @Override
     protected void commit() {
         hide();
-        NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeModal(this);
         NonMaps.theMaps.captureFocus();
         NonMaps.theMaps.getNonLinearWorld().requestLayout();
 
