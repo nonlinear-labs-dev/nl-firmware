@@ -86,10 +86,8 @@ public class Overlay extends OverlayLayout {
 			final RGB ogFill = fill;
 			final RGB lighterFill = ogFill.brighter(96);
 
-			if(isLoadIntoPartEnabled()) {
-				if(selected == VoiceGroup.I)
+			if(selected == VoiceGroup.I)
 				fill = lighterFill;
-			}
 
 			Rect box = new Rect(0, pix.getTop() + yMargin, partWidth, partHeight);
 
@@ -99,10 +97,8 @@ public class Overlay extends OverlayLayout {
 
 			fill = ogFill;
 			
-			if(isLoadIntoPartEnabled()) {
-				if(selected == VoiceGroup.II)
+			if(selected == VoiceGroup.II)
 				fill = lighterFill;
-			}
 
 			box.setLeft(getPixRect().getRight() - margin - partWidth);
 			box.fillAndStroke(ctx, fill, 2, stroke);
@@ -129,10 +125,8 @@ public class Overlay extends OverlayLayout {
 			final RGB ogFill = fill;
 			final RGB lighterFill = ogFill.brighter(96);
 
-			if(isLoadIntoPartEnabled()) {
-				if(selected == VoiceGroup.I)
+			if(selected == VoiceGroup.I)
 				fill = lighterFill;
-			}
 
 			Rect box = new Rect(pix.getLeft() + margin, pix.getTop() + yMargin, partWidth, partHeight);
 			
@@ -142,10 +136,8 @@ public class Overlay extends OverlayLayout {
 
 			fill = ogFill;
 			
-			if(isLoadIntoPartEnabled()) {
-				if(selected == VoiceGroup.II)
+			if(selected == VoiceGroup.II)
 				fill = lighterFill;
-			}
 
 			final double boxIIY = pix.getBottom() - yMargin - partHeight;
 			box.setTop(boxIIY);
