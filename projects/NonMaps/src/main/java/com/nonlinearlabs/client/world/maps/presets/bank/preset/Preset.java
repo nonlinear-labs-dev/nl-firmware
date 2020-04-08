@@ -331,9 +331,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	private boolean wasJustSelected = false;
 
+	private static ChoosePresetPartDialog choosePresetPart = null;
+
 	private Control clickLoadToPartMouseDown(LoadToPartMode mode) {
 		if(isDual()) {
-			new ChoosePresetPartDialog(this);
+			choosePresetPart = new ChoosePresetPartDialog(this);
 		} else {
 			mode.setSelectedPreset(this);
 		}
