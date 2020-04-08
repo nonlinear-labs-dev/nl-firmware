@@ -126,7 +126,7 @@ public class Overlay extends OverlayLayout {
 		@Override
 		public String getDrawText(Context2d ctx) {
 			VoiceGroup g = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
-			 BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, g));
+			BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, g));
 			boolean muted = param.value.getQuantizedAndClipped(true) > 0.5;
 			return muted ? "\uE0BA" : "";
 		}
@@ -614,6 +614,11 @@ public class Overlay extends OverlayLayout {
 
 	public List<CompareDialog> getCompareDialogs() {
 		return compareDialogs;
+	}
+
+	public void setModal(GWTDialog modal) {
+		if(modalDialog == null || modalDialog != modal)
+			modalDialog = modal;
 	}
 
 	public void removeModal(GWTDialog modal) {

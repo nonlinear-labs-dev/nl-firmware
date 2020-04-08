@@ -15,6 +15,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenter;
+import com.nonlinearlabs.client.presenters.PresetManagerPresenter.Bank.Preset;
 import com.nonlinearlabs.client.tools.NLMath;
 
 public class EditBufferUseCases {
@@ -419,8 +421,8 @@ public class EditBufferUseCases {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
 
-	public void loadPresetPart(VoiceGroup i) {
-		NonMaps.theMaps.getServerProxy().loadPresetPartIntoPart(i, EditBufferModel.get().voiceGroup.getValue());
+	public void loadPresetPart(String uuid, VoiceGroup i) {
+		NonMaps.theMaps.getServerProxy().loadPresetPartIntoPart(uuid, i, EditBufferModel.get().voiceGroup.getValue());
 	}
 
 	public void loadSinglePresetIntoPart(String uuid, VoiceGroup loadTo) {

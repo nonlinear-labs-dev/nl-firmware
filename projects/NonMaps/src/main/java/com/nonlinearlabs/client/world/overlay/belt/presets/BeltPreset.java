@@ -149,9 +149,15 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 	public Control mouseUp(Position eventPoint) {
 
 		if (hasCustomPresetSelection()) {
-			getCustomPresetSelection().setSelectedPreset(mapsPreset);
+			if(getCustomPresetSelection().getSelectedPreset() == mapsPreset) {
+				mapsPreset.load();
+			} else {
+				getCustomPresetSelection().setSelectedPreset(mapsPreset);
+			}
 			return this;
 		}
+
+
 
 		if (mapsPreset.isSelected())
 			mapsPreset.load();
