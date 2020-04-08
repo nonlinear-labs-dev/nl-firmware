@@ -6,7 +6,7 @@ SOURCE_DIR=$(realpath $1)
 shift
 USER_ID=$1
 shift
-DOCKER_GROUP_ID=$1
+GROUP_ID=$1
 shift
 
 TMPSCRIPT=$(mktemp)
@@ -23,4 +23,4 @@ do
 done
 
 DOCKERNAME="nl-cross-build-environment-$USER"
-docker run --privileged -u $USER_ID:$DOCKER_GROUP_ID --rm -v $TMPDIRNAME:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash /script/$TMPSCRIPTBASE
+docker run --privileged -u $USER_ID:$GROUP_ID --rm -v $TMPDIRNAME:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash /script/$TMPSCRIPTBASE

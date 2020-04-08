@@ -1,10 +1,10 @@
 FROM ubuntu:16.04
 
-ARG docker_group_id
+ARG group_id
 ARG user
 ARG user_id
 
-RUN groupadd -g $docker_group_id $user
+RUN groupadd -g $group_id $user
 RUN useradd -l -u $user_id -g $user $user
 
 ENV LANG en_US.UTF-8
