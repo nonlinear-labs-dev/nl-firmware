@@ -129,7 +129,7 @@ public class TypeLabel extends OverlayLayout {
 		}
 
 		private RGB getLoadedPresetPartColor() {
-			return new RGB(0, 255, 0);
+			return RGB.blue().brighter(5);
 		}
 
 		private RGB getUnloadedPresetPartColor() {

@@ -3,6 +3,9 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <presets/PresetParameter.h>
 #include <parameters/ModulateableParameter.h>
+#include <CompileTimeOptions.h>
+#include <presets/BankActions.h>
+#include <testing/unit-tests/mock/FuxieSwarmsTestBank.h>
 
 namespace detail
 {
@@ -154,5 +157,27 @@ TEST_CASE("Load Single Preset into Part copies Master Mod Aspects to Part")
 
     CHECK(modMasterVolume->getModulationSource() == MacroControls::MC1);
     CHECK(modMasterVolume->getModulationAmount() == 0.5);
+  }
+
+  THEN("Loading bank of Version 5 does not crash")
+  {
+    FuxieSwarmsTestBank bank;
+    CHECK(bank.getPreset(0) != nullptr);
+
+    auto preset = bank.getPreset(7);
+
+    THEN("Load Single Preset Full") {
+      TestHelper::initDualEditBuffer<SoundType::Layer>();
+
+      CHECK_NOTHROW(eb->undoableLoad(preset));
+      CHECK(eb->getType() == SoundType::Single);
+    }
+
+    THEN("Load Part") {
+      TestHelper::initDualEditBuffer<SoundType::Layer>();
+
+      CHECK_NOTHROW(eb->undoableLoadSinglePreset(preset, VoiceGroup::I));
+      CHECK(eb->getType() == SoundType::Layer);
+    }
   }
 }

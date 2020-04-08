@@ -89,7 +89,7 @@ class ValueEdit extends Label {
 		if (amount > 0)
 			EditBufferUseCases.get().incParameter(parameter, fine);
 		else if (amount < 0)
-			EditBufferUseCases.get().incParameter(parameter, fine);
+			EditBufferUseCases.get().decParameter(parameter, fine);
 
 		return this;
 	}
