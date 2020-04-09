@@ -6,6 +6,9 @@
 #include <parameters/scale-converters/Linear12CountScaleConverter.h>
 #include <parameters/scale-converters/LinearCountScaleConverter.h>
 #include <parameters/scale-converters/dimension/VoicesDimension.h>
+#include <http/UpdateDocumentMaster.h>
+#include <xml/MemoryInStream.h>
+#include <libundo/undo/Scope.h>
 
 TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
 {
@@ -48,6 +51,128 @@ TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
 
       CHECK(eb->getType() == SoundType::Layer);
       CHECK(voicesI->getDisplayString() == "8 voices");
+    }
+  }
+}
+
+TEST_CASE("UnisonVoices Conversion rules")
+{
+  class UpdateDocumentMasterMock : public UpdateDocumentMaster
+  {
+   public:
+    void writeDocument(Writer&, tUpdateID) const override
+    {
+    }
+  };
+
+  UpdateDocumentMasterMock root;
+  PresetManager pm(&root);
+  Bank bank(&pm);
+
+  auto readXml = [&](auto xml) {
+    MemoryInStream stream(xml, false);
+    UNDO::Scope scope(&root);
+    auto transactionScope = scope.startTransaction("foo");
+    XmlReader reader(stream, transactionScope->getTransaction());
+    reader.read<PresetBankSerializer>(&bank);
+  };
+
+  WHEN("reading version 5")
+  {
+    THEN("minimum is 0 => 1 voice")
+    {
+      readXml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+              "<bank version=\"5\">"
+              "   <preset-order><uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid></preset-order>"
+              "   <preset pos=\"0\">"
+              "       <uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid>"
+              "       <parameter-groups>"
+              "           <parameter-group id=\"Unison\">"
+              "               <parameter id=\"249\"><value>0</value></parameter>"
+              "           </parameter-group>"
+              "       </parameter-groups>"
+              "   </preset>"
+              "</bank>");
+      auto p = bank.findPreset("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")->findParameterByID({ 249, VoiceGroup::I }, true);
+      CHECK(p->getValue() == 0);
+    }
+
+    THEN("maximum is 11/23 => 12 voices")
+    {
+      readXml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+              "<bank version=\"5\">"
+              "   <preset-order><uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid></preset-order>"
+              "   <preset pos=\"0\">"
+              "       <uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid>"
+              "       <parameter-groups>"
+              "           <parameter-group id=\"Unison\">"
+              "               <parameter id=\"249\"><value>1</value></parameter>"
+              "           </parameter-group>"
+              "       </parameter-groups>"
+              "   </preset>"
+              "</bank>");
+      auto p = bank.findPreset("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")->findParameterByID({ 249, VoiceGroup::I }, true);
+      CHECK(p->getValue() == 11 / 23.0);
+    }
+  }
+
+  WHEN("reading version 7")
+  {
+    THEN("maximum for single preset is 23 => 24 voices")
+    {
+      readXml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+              "<bank version=\"7\">"
+              "   <preset-order><uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid></preset-order>"
+              "   <preset pos=\"0\">"
+              "       <uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid>"
+              "       <type>Single</type>"
+              "       <parameter-groups>"
+              "           <parameter-group id=\"I-Unison\">"
+              "               <parameter id=\"I-249\"><value>1</value></parameter>"
+              "           </parameter-group>"
+              "       </parameter-groups>"
+              "   </preset>"
+              "</bank>");
+      auto p = bank.findPreset("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")->findParameterByID({ 249, VoiceGroup::I }, true);
+      CHECK(p->getValue() == 1.0);
+    }
+
+    THEN("maximum for split preset is 11 => 12 voices")
+    {
+      readXml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+              "<bank version=\"7\">"
+              "   <preset-order><uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid></preset-order>"
+              "   <preset pos=\"0\">"
+              "       <uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid>"
+              "       <type>Split</type>"
+              "       <parameter-groups>"
+              "           <parameter-group id=\"I-Unison\">"
+              "               <parameter id=\"I-249\"><value>1</value></parameter>"
+              "           </parameter-group>"
+              "       </parameter-groups>"
+              "   </preset>"
+              "</bank>");
+      auto p = bank.findPreset("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")->findParameterByID({ 249, VoiceGroup::I }, true);
+      CHECK(p->getValue() == 11 / 23.0);
+    }
+
+    THEN("maximum for dual preset is 11 => 12 voices")
+    {
+      readXml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+              "<bank version=\"7\">"
+              "   <preset-order><uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid></preset-order>"
+              "   <preset pos=\"0\">"
+              "       <uuid>aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</uuid>"
+              "       <type>Layer</type>"
+              "       <parameter-groups>"
+              "           <parameter-group id=\"I-Unison\">"
+              "               <parameter id=\"I-249\"><value>1</value></parameter>"
+              "           </parameter-group>"
+              "       </parameter-groups>"
+              "   </preset>"
+              "</bank>");
+      auto p = bank.findPreset("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")->findParameterByID({ 249, VoiceGroup::I }, true);
+      CHECK(p->getValue() == 11 / 23.0);
     }
   }
 }

@@ -9,26 +9,6 @@
  <attach-direction>left</attach-direction>
  <preset-order>
   <uuid>bcfd2342-fba3-426f-9835-0b178105e8d3</uuid>
-  <uuid>35ac4c4a-ec43-475d-9cbd-38f07325b661</uuid>
-  <uuid>68aeabae-ab8a-4c89-ba3b-1f435df3493f</uuid>
-  <uuid>5820b722-8303-4ae6-9099-ef5f8b0195b2</uuid>
-  <uuid>c95ac97e-1d64-4edb-99c2-2f370f2703f4</uuid>
-  <uuid>cdb77fda-930f-4b74-9f3a-28dcb08075a3</uuid>
-  <uuid>9bb5d00a-7430-468e-974e-ce8017e324fd</uuid>
-  <uuid>07981080-00b8-4985-b432-49706761b132</uuid>
-  <uuid>5e0e821d-686f-4904-9295-e4c418be4293</uuid>
-  <uuid>773e3328-74cb-4e13-a636-f57974cce3d4</uuid>
-  <uuid>4e1e447a-ead7-42db-b8d7-3c27cfa5f183</uuid>
-  <uuid>6a102889-54d3-426c-9bc3-faa82f2235ba</uuid>
-  <uuid>458f7d97-4067-4b43-90c8-010561de1b73</uuid>
-  <uuid>a91a5780-5745-43cb-8de4-7b9f8efbf498</uuid>
-  <uuid>2fa6f986-93ff-42e3-aa3d-f89a608a075c</uuid>
-  <uuid>68f8a988-364c-4fc6-bfed-f33dc68261c5</uuid>
-  <uuid>45cbe3a0-365e-4e6d-b171-0a3f83ed7783</uuid>
-  <uuid>e60636be-5968-44d1-946d-3d047747d10a</uuid>
-  <uuid>dc0e9f14-4252-4dcc-b473-fc1ceaed86b2</uuid>
-  <uuid>51160ac6-ea68-4130-a1bd-f0fad1d0a675</uuid>
-  <uuid>6cc889d4-1f2f-440b-84d7-b4259f246220</uuid>
  </preset-order>
  <attributes>
   <attribute name="Comment">Sound design: Matthias Fuchs</attribute>
