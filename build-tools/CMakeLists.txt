@@ -25,14 +25,14 @@ if(BUILD_BBB AND BUILD_EPC AND BUILD_LPC)
         DEPENDS epc-create-update
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/epc/update.tar
         DEPENDS bbb-rootfs
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/bbb/nonlinux/output/images/rootfs.tar.gz
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/bbb/rootfs.tar.gz
         DEPENDS lpc-blobs
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/lpc/projects/realtime-system/M0_project/c15_lpc_m0.bin
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/lpc/projects/realtime-system/M4_project/c15_lpc_m4.bin
         DEPENDS ${SOURCE_FILES}
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/create-c15-update/create-c15-update.sh
             ${CMAKE_CURRENT_BINARY_DIR}/epc/update.tar
-            ${CMAKE_CURRENT_BINARY_DIR}/bbb/nonlinux/output/images/rootfs.tar.gz
+            ${CMAKE_CURRENT_BINARY_DIR}/bbb/rootfs.tar.gz
             ${CMAKE_CURRENT_BINARY_DIR}/lpc/projects/realtime-system/M0_project/c15_lpc_m0.bin
             ${CMAKE_CURRENT_BINARY_DIR}/lpc/projects/realtime-system/M4_project/c15_lpc_m4.bin
             ${CMAKE_CURRENT_BINARY_DIR}
