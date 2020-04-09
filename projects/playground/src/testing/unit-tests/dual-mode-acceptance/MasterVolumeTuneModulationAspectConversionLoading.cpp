@@ -164,16 +164,18 @@ TEST_CASE("Load Single Preset into Part copies Master Mod Aspects to Part")
     FuxieSwarmsTestBank bank;
     CHECK(bank.getPreset(0) != nullptr);
 
-    auto preset = bank.getPreset(7);
+    auto preset = bank.getPreset(0);
 
-    THEN("Load Single Preset Full") {
+    THEN("Load Single Preset Full")
+    {
       TestHelper::initDualEditBuffer<SoundType::Layer>();
 
       CHECK_NOTHROW(eb->undoableLoad(preset));
       CHECK(eb->getType() == SoundType::Single);
     }
 
-    THEN("Load Part") {
+    THEN("Load Part")
+    {
       TestHelper::initDualEditBuffer<SoundType::Layer>();
 
       CHECK_NOTHROW(eb->undoableLoadSinglePreset(preset, VoiceGroup::I));

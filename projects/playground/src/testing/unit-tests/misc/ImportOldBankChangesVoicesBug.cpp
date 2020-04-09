@@ -138,14 +138,14 @@ TEST_CASE("UnisonVoices Conversion rules")
 
     THEN("maximum for split preset is 11 => 12 voices")
     {
-      readXml(createBankXml(8, "Split", "I-Unison", "I-249", 0.47826087));
+      readXml(createBankXml(8, "Split", "I-Unison", "I-249", 11 / 23.0));
       auto p = bank.findPreset("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")->findParameterByID({ 249, VoiceGroup::I }, true);
       CHECK(p->getValue() == Approx(11 / 23.0));
     }
 
     THEN("maximum for dual preset is 11 => 12 voices")
     {
-      readXml(createBankXml(8, "Layer", "I-Unison", "I-249", 0.47826087));
+      readXml(createBankXml(8, "Layer", "I-Unison", "I-249", 11 / 23.0));
       auto p = bank.findPreset("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")->findParameterByID({ 249, VoiceGroup::I }, true);
       CHECK(p->getValue() == Approx(11 / 23.0));
     }
