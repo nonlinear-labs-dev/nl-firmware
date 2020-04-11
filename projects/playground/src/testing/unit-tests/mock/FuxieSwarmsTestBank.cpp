@@ -2,7 +2,7 @@
 
 FuxieSwarmsTestBank::FuxieSwarmsTestBank()
 {
-  const auto bankFile = getResourcesDir() + "/unit-test-files/Fuxi_Swarms.xml";
+  const auto bankFile = getSourceDir() + "/projects/playground/test-resources/Fuxi_Swarms.xml";
   auto scope = TestHelper::createTestScope();
   auto transaction = scope->getTransaction();
   auto eb = TestHelper::getEditBuffer();
@@ -17,7 +17,7 @@ FuxieSwarmsTestBank::FuxieSwarmsTestBank()
 
 FuxieSwarmsTestBank::~FuxieSwarmsTestBank()
 {
-  const auto bankFile = getResourcesDir() + "/unit-test-files/Fuxi_Swarms.xml";
+  const auto bankFile = getSourceDir() + "/projects/playground/test-resources/Fuxi_Swarms.xml";
   auto scope = TestHelper::createTestScope();
   auto transaction = scope->getTransaction();
   auto eb = TestHelper::getEditBuffer();
