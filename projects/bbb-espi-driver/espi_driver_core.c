@@ -7,9 +7,9 @@
 #include <linux/workqueue.h>
 #include <linux/init.h>
 #include <linux/spi/spi.h>
-#include <linux/fs.h>	// Write data to sysfs
+#include <linux/fs.h>       // Write data to sysfs
 #include <linux/of_gpio.h>  // nni: added for device tree
-#include <linux/delay.h>  // nni: added for msleep()
+#include <linux/delay.h>    // nni: added for msleep()
 #include <linux/platform_device.h>
 #include <linux/vmalloc.h>
 
@@ -35,111 +35,117 @@ static struct workqueue_struct *workqueue;
 *******************************************************************************/
 void espi_driver_scs_select(struct espi_driver *spi, s32 port, s32 device)
 {
-	s32 s;
-	u8 i;
+  s32 s;
+  u8  i;
 
-	gpio_set_value(spi->gpio_dmx, spi->espi_gpio_dmx_default);	            // dmxs disable: avoid glitches
+  gpio_set_value(spi->gpio_dmx, spi->espi_gpio_dmx_default);  // dmxs disable: avoid glitches
 
-	if(device == 1 || device == 3)
-		s = 0;
-	else if(device == 2)
-		s = 3;
-	else if (device == 0)                           // device 0: all off
-	{
-		s = 0;
-		device = 3;
-		port = 7;				// disable all - select unused port
-	} else {
-	gpio_set_value(spi->gpio_dmx, !spi->espi_gpio_dmx_default);
-		return;
-	}
+  if (device == 1 || device == 3)
+    s = 0;
+  else if (device == 2)
+    s = 3;
+  else if (device == 0)  // device 0: all off
+  {
+    s      = 0;
+    device = 3;
+    port   = 7;  // disable all - select unused port
+  }
+  else
+  {
+    gpio_set_value(spi->gpio_dmx, !spi->espi_gpio_dmx_default);
+    return;
+  }
 
-	do {
-		for(i=0; i<3; i++) {
-			if(port & (1<<i))
-				gpio_set_value(spi->gpio_scs[i+s], 1);
-			else
-				gpio_set_value(spi->gpio_scs[i+s], 0);
-		}
-		s += 3;
-	} while( (s <= 3) && (device == 3));
+  do
+  {
+    for (i = 0; i < 3; i++)
+    {
+      if (port & (1 << i))
+        gpio_set_value(spi->gpio_scs[i + s], 1);
+      else
+        gpio_set_value(spi->gpio_scs[i + s], 0);
+    }
+    s += 3;
+  } while ((s <= 3) && (device == 3));
 
-	gpio_set_value(spi->gpio_dmx, !spi->espi_gpio_dmx_default);	            // dmxs enable
+  gpio_set_value(spi->gpio_dmx, !spi->espi_gpio_dmx_default);  // dmxs enable
 }
 
 s32 espi_driver_transfer(struct spi_device *dev, struct spi_transfer *xfer)
 {
-	struct spi_message msg;
-	s32 status;
+  struct spi_message msg;
+  s32                status;
 
-	xfer->tx_nbits = xfer->rx_nbits = SPI_NBITS_SINGLE;
+  xfer->tx_nbits = xfer->rx_nbits = SPI_NBITS_SINGLE;
 
-	spi_message_init(&msg);
-	spi_message_add_tail(xfer, &msg);
+  spi_message_init(&msg);
+  spi_message_add_tail(xfer, &msg);
 
-	status = spi_sync(dev, &msg);
+  status = spi_sync(dev, &msg);
 
-	return status;
+  return status;
 }
 
 s32 espi_driver_set_mode(struct spi_device *dev, u16 mode)
 {
-	s32 status;
-	struct spi_transfer xfer;
-	u8 tx = 0;
+  s32                 status;
+  struct spi_transfer xfer;
+  u8                  tx = 0;
 
-	extern int sck_hz;
+  extern int sck_hz;
 
-	xfer.tx_buf = &tx;
-	xfer.rx_buf = NULL;
-	xfer.len = 1;
-	xfer.bits_per_word = 8;
-	xfer.delay_usecs = 0;
-	xfer.speed_hz = sck_hz;
+  xfer.tx_buf        = &tx;
+  xfer.rx_buf        = NULL;
+  xfer.len           = 1;
+  xfer.bits_per_word = 8;
+  xfer.delay_usecs   = 0;
+  xfer.speed_hz      = sck_hz;
 
-	dev->mode = mode;
-	status = spi_setup(dev);
+  dev->mode = mode;
+  status    = spi_setup(dev);
 
-	espi_driver_transfer(dev, &xfer);
-	return status;
+  espi_driver_transfer(dev, &xfer);
+  return status;
 }
 
 static void espi_driver_poll(struct delayed_work *p)
 {
-	queue_delayed_work(workqueue, p, msecs_to_jiffies(8));
+  queue_delayed_work(workqueue, p, msecs_to_jiffies(8));
 
-	switch(((struct espi_driver *)p)->poll_stage)
-	{
-	case 0:
-	case 2:
-	case 4:
-	case 6:
-		espi_driver_pollbuttons((struct espi_driver *)p);
-		espi_driver_encoder_poll((struct espi_driver *)p);
+  switch (((struct espi_driver *) p)->poll_stage)
+  {
+    case 0:
+    case 2:
+    case 4:
+    case 6:
+      espi_driver_pollbuttons((struct espi_driver *) p);
+      espi_driver_encoder_poll((struct espi_driver *) p);
 
-		if (strncmp(((struct espi_driver*)p)->hw_rev_str, "2D", 2) == 0) {
-			espi_driver_epc_status_poll((struct espi_driver *)p);
-		}
-		break;
-	case 1:
-	case 5:
-		espi_driver_leds_poll((struct espi_driver *)p);
-		espi_driver_rb_leds_poll((struct espi_driver *)p);
+      if (strncmp(((struct espi_driver *) p)->hw_rev_str, "2D", 2) == 0)
+      {
+        espi_driver_epc_status_poll((struct espi_driver *) p);
+      }
+      break;
+    case 1:
+    case 5:
+      espi_driver_leds_poll((struct espi_driver *) p);
+      espi_driver_rb_leds_poll((struct espi_driver *) p);
 
-		if (strncmp(((struct espi_driver*)p)->hw_rev_str, "2D", 2) == 0) {
-			espi_driver_epc_control_poll((struct espi_driver *)p);
-			espi_driver_lpc_ctrl_poll((struct espi_driver *)p);
-		}
-		break;
-	case 3:
-		espi_driver_ssd1305_poll((struct espi_driver *)p);
-		break;
-	case 7:
-		espi_driver_ssd1322_poll((struct espi_driver *)p);
-		break;
-	}
+      if (strncmp(((struct espi_driver *) p)->hw_rev_str, "2D", 2) == 0)
+      {
+        espi_driver_epc_control_poll((struct espi_driver *) p);
+        espi_driver_lpc_ctrl_poll((struct espi_driver *) p);
+      }
+      break;
+    case 3:
+      espi_driver_ssd1305_poll((struct espi_driver *) p);
+      break;
+    case 7:
+      espi_driver_ssd1322_poll((struct espi_driver *) p);
+      break;
+  }
 
-	((struct espi_driver *)p)->poll_stage = (((struct espi_driver *)p)->poll_stage + 1)%8;
+  ((struct espi_driver *) p)->poll_stage = (((struct espi_driver *) p)->poll_stage + 1) % 8;
 }
 
 /*******************************************************************************
@@ -147,183 +153,191 @@ static void espi_driver_poll(struct delayed_work *p)
 *******************************************************************************/
 static s32 espi_driver_probe(struct spi_device *dev)
 {
-	s32 nscs, len, i, ret = 0;
-	struct espi_driver *sb;
-	struct device_node *dn = dev->dev.of_node;
+  s32                 nscs, len, i, ret = 0;
+  struct espi_driver *sb;
+  struct device_node *dn = dev->dev.of_node;
 
-	struct property *hw_ref_property;
-	struct device_node *nonlinear_node;
+  struct property *   hw_ref_property;
+  struct device_node *nonlinear_node;
 
-	sb = devm_kzalloc(&dev->dev,sizeof(struct espi_driver), GFP_KERNEL);
-	if (!sb) {
-		dev_err(&dev->dev, "%s: unable to kzalloc for espi_driver\n", __func__);
-		return -ENOMEM;
-	}
+  sb = devm_kzalloc(&dev->dev, sizeof(struct espi_driver), GFP_KERNEL);
+  if (!sb)
+  {
+    dev_err(&dev->dev, "%s: unable to kzalloc for espi_driver\n", __func__);
+    return -ENOMEM;
+  }
 
-	/****************************************** added by nni  { */
+  /****************************************** added by nni  { */
 
-	/** check DT entries */
-	nscs = of_gpio_named_count(dn, "scs-gpios");
-	if( nscs != ESPI_SCS_NUM || nscs == -ENOENT) {
-		dev_err(&dev->dev, "%s: number of scs-gpios in the device tree incorrect\n", __func__);
-		return -ENOENT;
-	}
-	/** fetch gpio numbers */
-	for(i=0; i<ESPI_SCS_NUM; i++) {
-		sb->gpio_scs[i] = of_get_named_gpio(dn, "scs-gpios", i);
-		if (!gpio_is_valid(sb->gpio_scs[i])) {
-			dev_err(&dev->dev, "%s: scs-gpios[%d] in the device tree incorrect\n", __func__, i);
-			return -EINVAL;
-		}
-	}
-	sb->gpio_sap = of_get_named_gpio(dn, "sap-gpio", 0);
-	if (!gpio_is_valid(sb->gpio_sap)) {
-		dev_err(&dev->dev, "%s: sap-gpio in the device tree incorrect\n", __func__);
-		return -EINVAL;
-	}
-	sb->gpio_dmx = of_get_named_gpio(dn, "dmxs-gpio", 0);
-	if (!gpio_is_valid(sb->gpio_dmx)) {
-		dev_err(&dev->dev, "%s: dmxs-gpio in the device tree incorrect\n", __func__);
-		return -EINVAL;
-	}
-	/** request gpios */
-	for(i=0; i<ESPI_SCS_NUM; i++) {
-		ret = devm_gpio_request_one(&dev->dev, sb->gpio_scs[i], GPIOF_OUT_INIT_LOW, "gpio_scs");
-		if(ret) {
-			dev_err(&dev->dev, "%s: failed to request gpio: %d\n", __func__, sb->gpio_scs[i]);
-			return ret;
-		}
-	}
-	ret = devm_gpio_request_one(&dev->dev, sb->gpio_sap, GPIOF_OUT_INIT_HIGH, "gpio_sap");
-	ret = devm_gpio_request_one(&dev->dev, sb->gpio_dmx, GPIOF_OUT_INIT_HIGH, "gpio_dmx");
+  /** check DT entries */
+  nscs = of_gpio_named_count(dn, "scs-gpios");
+  if (nscs != ESPI_SCS_NUM || nscs == -ENOENT)
+  {
+    dev_err(&dev->dev, "%s: number of scs-gpios in the device tree incorrect\n", __func__);
+    return -ENOENT;
+  }
+  /** fetch gpio numbers */
+  for (i = 0; i < ESPI_SCS_NUM; i++)
+  {
+    sb->gpio_scs[i] = of_get_named_gpio(dn, "scs-gpios", i);
+    if (!gpio_is_valid(sb->gpio_scs[i]))
+    {
+      dev_err(&dev->dev, "%s: scs-gpios[%d] in the device tree incorrect\n", __func__, i);
+      return -EINVAL;
+    }
+  }
+  sb->gpio_sap = of_get_named_gpio(dn, "sap-gpio", 0);
+  if (!gpio_is_valid(sb->gpio_sap))
+  {
+    dev_err(&dev->dev, "%s: sap-gpio in the device tree incorrect\n", __func__);
+    return -EINVAL;
+  }
+  sb->gpio_dmx = of_get_named_gpio(dn, "dmxs-gpio", 0);
+  if (!gpio_is_valid(sb->gpio_dmx))
+  {
+    dev_err(&dev->dev, "%s: dmxs-gpio in the device tree incorrect\n", __func__);
+    return -EINVAL;
+  }
+  /** request gpios */
+  for (i = 0; i < ESPI_SCS_NUM; i++)
+  {
+    ret = devm_gpio_request_one(&dev->dev, sb->gpio_scs[i], GPIOF_OUT_INIT_LOW, "gpio_scs");
+    if (ret)
+    {
+      dev_err(&dev->dev, "%s: failed to request gpio: %d\n", __func__, sb->gpio_scs[i]);
+      return ret;
+    }
+  }
+  ret = devm_gpio_request_one(&dev->dev, sb->gpio_sap, GPIOF_OUT_INIT_HIGH, "gpio_sap");
+  ret = devm_gpio_request_one(&dev->dev, sb->gpio_dmx, GPIOF_OUT_INIT_HIGH, "gpio_dmx");
 
-	nonlinear_node = of_find_node_by_path("/nonlinear");
-	if (nonlinear_node)
-		hw_ref_property = of_find_property(nonlinear_node, "hw-rev", &len);
+  nonlinear_node = of_find_node_by_path("/nonlinear");
+  if (nonlinear_node)
+    hw_ref_property = of_find_property(nonlinear_node, "hw-rev", &len);
 
-	if (hw_ref_property) {
-		dev_info(&dev->dev, "Found %s for device: %s\n", hw_ref_property->name, (char *)hw_ref_property->value);
-		strncpy(sb->hw_rev_str, hw_ref_property->value, hw_ref_property->length);
-	} else {
-		dev_info(&dev->dev, "Could not find hw-rev in device tree. Assuming: 2D\n");
-		strncpy(sb->hw_rev_str, "2D", 3);
-	}
+  if (hw_ref_property)
+  {
+    dev_info(&dev->dev, "Found %s for device: %s\n", hw_ref_property->name, (char *) hw_ref_property->value);
+    strncpy(sb->hw_rev_str, hw_ref_property->value, hw_ref_property->length);
+  }
+  else
+  {
+    dev_info(&dev->dev, "Could not find hw-rev in device tree. Assuming: 2D\n");
+    strncpy(sb->hw_rev_str, "2D", 3);
+  }
 
-	/* TODO: This might be better off in dt  */
-	if (strncmp(sb->hw_rev_str, "2D", 2) == 0) {
-		sb->play_buttons_device = 3;
-		sb->ribbon_leds_device = 1;
-		sb->espi_gpio_dmx_default = 0;
-	} else {
-		sb->play_buttons_device = 1;
-		sb->ribbon_leds_device = 3;
-		sb->espi_gpio_dmx_default = 1;
+  /* TODO: This might be better off in dt  */
+  if (strncmp(sb->hw_rev_str, "2D", 2) == 0)
+  {
+    sb->play_buttons_device   = 3;
+    sb->ribbon_leds_device    = 1;
+    sb->espi_gpio_dmx_default = 0;
+  }
+  else
+  {
+    sb->play_buttons_device   = 1;
+    sb->ribbon_leds_device    = 3;
+    sb->espi_gpio_dmx_default = 1;
+  }
 
-	}
+  sb->spidev = dev;
+  sb->dev    = &dev->dev;
+  dev_set_drvdata(&dev->dev, (void *) sb);
+  dev_info(&dev->dev, "spi registered, item=0x%p\n", (void *) sb);
 
-	sb->spidev = dev;
-	sb->dev = &dev->dev;
-	dev_set_drvdata(&dev->dev, (void*)sb);
-	dev_info(&dev->dev, "spi registered, item=0x%p\n", (void *)sb);
+  espi_driver_scs_select(sb, ESPI_PLAY_PANEL_PORT, 0);
+  //espi_driver_set_mode(sb, SPI_MODE_0);
 
+  sb->poll_stage = 0;
 
-	espi_driver_scs_select(sb, ESPI_PLAY_PANEL_PORT, 0);
-	//espi_driver_set_mode(sb, SPI_MODE_0);
+  espi_driver_buttons_setup(sb);
+  espi_driver_leds_setup(sb);
+  espi_driver_rb_leds_setup(sb);
+  espi_driver_oleds_fb_setup(sb);
+  espi_driver_encoder_setup(sb);
 
-	sb->poll_stage = 0;
+  if (strncmp(sb->hw_rev_str, "2D", 2) == 0)
+  {
+    espi_driver_epc_ctrl_setup(sb);
+    espi_driver_lpc_ctrl_setup(sb);
+  }
 
-	espi_driver_buttons_setup(sb);
-	espi_driver_leds_setup(sb);
-	espi_driver_rb_leds_setup(sb);
-	espi_driver_oleds_fb_setup(sb);
-	espi_driver_encoder_setup(sb);
+  INIT_DELAYED_WORK(&(sb->work), (work_func_t) espi_driver_poll);
+  queue_delayed_work(workqueue, &(sb->work), msecs_to_jiffies(8));
 
-	if (strncmp(sb->hw_rev_str, "2D", 2) == 0) {
-		espi_driver_epc_ctrl_setup(sb);
-		espi_driver_lpc_ctrl_setup(sb);
-	}
+  dev_info(&dev->dev, "espi driver: \n");
+  dev_info(&dev->dev, "  sck_hz=%i Hz\n", sck_hz);
+  dev_info(&dev->dev, "  espi_hw_ref=%s\n", sb->hw_rev_str);
+  dev_info(&dev->dev, "  build: %s - %s \n", __DATE__, __TIME__);
 
-	INIT_DELAYED_WORK(&(sb->work), (work_func_t) espi_driver_poll);
-	queue_delayed_work(workqueue, &(sb->work), msecs_to_jiffies(8));
-
-	dev_info(&dev->dev, "espi driver: \n");
-	dev_info(&dev->dev, "  sck_hz=%i Hz\n", sck_hz);
-	dev_info(&dev->dev, "  espi_hw_ref=%s\n", sb->hw_rev_str);
-	dev_info(&dev->dev, "  build: %s - %s \n", __DATE__, __TIME__);
-
-	return ret;
+  return ret;
 }
-
 
 static s32 espi_driver_remove(struct spi_device *spi)
 {
-	struct espi_driver *sb = (struct espi_driver*)dev_get_drvdata(&spi->dev);
+  struct espi_driver *sb = (struct espi_driver *) dev_get_drvdata(&spi->dev);
 
-	printk("espi_driver_remove\n");
+  printk("espi_driver_remove\n");
 
-	cancel_delayed_work(&(sb->work));
+  cancel_delayed_work(&(sb->work));
 
-	if (strncmp(sb->hw_rev_str, "2D", 2) == 0) {
-		espi_driver_lpc_ctrl_cleanup(sb);
-		espi_driver_epc_ctrl_cleanup(sb);
-	}
+  if (strncmp(sb->hw_rev_str, "2D", 2) == 0)
+  {
+    espi_driver_lpc_ctrl_cleanup(sb);
+    espi_driver_epc_ctrl_cleanup(sb);
+  }
 
-	espi_driver_encoder_cleanup(sb);
-	espi_driver_oleds_fb_cleanup(sb);
-	espi_driver_rb_leds_cleanup(sb);
-	espi_driver_leds_cleanup(sb);
-	espi_driver_buttons_cleanup(sb);
+  espi_driver_encoder_cleanup(sb);
+  espi_driver_oleds_fb_cleanup(sb);
+  espi_driver_rb_leds_cleanup(sb);
+  espi_driver_leds_cleanup(sb);
+  espi_driver_buttons_cleanup(sb);
 
-	return 0;
+  return 0;
 }
 
-
 static struct spi_driver espi_driver_driver = {
-		.driver = {
-				.name = "espi_driver",
-				.bus = &spi_bus_type,
-				.owner = THIS_MODULE,
-		},
-		.probe = espi_driver_probe,
-		.remove = espi_driver_remove,
+  .driver = {
+      .name  = "espi_driver",
+      .bus   = &spi_bus_type,
+      .owner = THIS_MODULE,
+  },
+  .probe  = espi_driver_probe,
+  .remove = espi_driver_remove,
 };
 
 module_param(sck_hz, int, 0644);
 MODULE_PARM_DESC(sck_hz, "Speed in Hz of the eSPI bus");
 
-
-static s32 __init espi_driver_init( void )
+static s32 __init espi_driver_init(void)
 {
-	s32 ret;
+  s32 ret;
 
-	workqueue = create_workqueue("espi_driver queue");
-	if (workqueue == NULL) {
-		pr_err("%s: unable to create workqueue\n", __func__);
-		return -1;
-	}
+  workqueue = create_workqueue("espi_driver queue");
+  if (workqueue == NULL)
+  {
+    pr_err("%s: unable to create workqueue\n", __func__);
+    return -1;
+  }
 
-	ret = spi_register_driver(&espi_driver_driver);
-	if (ret)
-		pr_err("%s: problem at spi_register_driver\n", __func__);
+  ret = spi_register_driver(&espi_driver_driver);
+  if (ret)
+    pr_err("%s: problem at spi_register_driver\n", __func__);
 
-	return ret;
+  return ret;
 }
 module_init(espi_driver_init);
 
-
 // **************************************************************************
-static void __exit espi_driver_exit( void )
+static void __exit espi_driver_exit(void)
 {
-	printk("espi_driver_exit --\n");
+  printk("espi_driver_exit --\n");
 
-	spi_unregister_driver(&espi_driver_driver);
+  spi_unregister_driver(&espi_driver_driver);
 }
 module_exit(espi_driver_exit);
-
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Nemanja Nikodijevic");
 MODULE_DESCRIPTION("espi_driver");
 MODULE_VERSION(__DATE__ " " __TIME__ " SHA1=" NL_VERSION);
-
-
