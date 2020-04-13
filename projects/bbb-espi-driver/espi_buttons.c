@@ -1,64 +1,156 @@
+/* 
+   ESPI Driver for Buttons & ID lines on Panel Unit and Play Panel
+   new features :
+     - all physical lines are read out, to allow for readout of 'unused' button lines.
+     - polling added, that is, the driver can be requested to read out a button line and
+       put the result in the output buffer, the button line doesn't have to change physically
+       to generate an event.
+       Purpose, possible use cases : 
+         * Detect if the hardware is present (if detached, all buttons read 'released'),
+           and which version of it (per Version Code read from the ID lines).
+         * Detect if any buttons are stuck, at startup
+         * Allow for specific button press pattern detected at startup, initiating
+           special features or diagnostic functions
+           
+
+Button ID layout (hex)
+
+Panel Unit :
+  Select.Panel #1  |  Select.Panel #2  |     Edit Panel    |  Select.Panel #3  |  Select.Panel #4
+ 00 04 08 0C 10 14 | 18 1C 20 24 28 2C | 60             67 | 30 34 38 3C 40 44 | 48 4C 50 54 58 5C
+ 01 05 09 0D 11 15 | 19 1D 21 25 29 2D | 61 62 63 64 65 66 | 31 35 39 3D 41 45 | 49 4D 51 55 59 5D
+ 02 06 0A 0E 12 16 | 1A 1E 22 26 2A 2E | 68 69   72  6A 6B | 32 36 3A 3E 42 46 | 4A 4E 52 56 5A 5E
+ 03 07 0B 0F 13 17 | 1B 1F 23 27 2B 2F | 6C 6D 6E 6F 70 71 | 33 37 3B 3F 43 47 | 4B 4F 53 57 5B 5F
+Note: Button ID 72 is for the encoder push-button, on the Edit Panel. Only for hardware >=V7.1
+
+Play Panel :
+ 78 79     7A 7B
+
+
+Reading the ID from the driver yields:
+- Button ID        (bit 7 cleared) ==> button released
+- Button ID | 0x80 (bit 7 set)     ==> button pressed
+
+
+Edit Panel Hardware ID / Version Code lines  : 73..77
+ID  detached     < V7.1    >= 7.1
+73  released     released  released
+74  released     released  released
+75  released     released  pressed
+76  released     released  pressed
+77  released     released  pressed
+
+Play Panel Hardware ID / Version Code lines  : 7C..7F
+ID  detached     < V7.1    >= 7.1
+7C  released     released  released
+7D  released     released  released
+7E  released     released  pressed
+7F  released     released  pressed
+==> unfortunately, a detached Panel Unit gives the same readout as a Panel Unit
+    of Hardware Version below 7.1. Detach of a V7.1 Panel is detectable, though.
+
+*/
+
 #include <linux/poll.h>
 #include <linux/of_gpio.h>
 #include "espi_driver.h"
 
-#define ESPI_BUTTON_DEV_MAJOR       302
-#define BUTTON_BYTES_GENERAL_PANELS 12
-#define BUTTON_BYTES_CENTRAL_PANEL  3
-#define BUTTON_BYTES_SOLED_PANEL    1
-#define BUTTON_STATES_SIZE          16
-static u8 *btn_sm1;
-static u8 *btn_st;
+#define ESPI_BUTTON_DEV_MAJOR 302
+
+// button states bit field
+#define BUTTON_BYTES_GENERAL_PANELS (12)  // 4*24 Buttons = 96 Bits needed ==> 12 Bytes
+#define BUTTON_BYTES_CENTRAL_PANEL  (3)   // 18 Buttons + Encoder Button + 5 PCB-ID lines ==> 24 Bits needed ==> 3 Bytes
+#define BUTTON_BYTES_SOLED_PANEL    (1)   // 4 Buttons + 4 PCB-ID lines ==> 1 Byte
+#define BUTTON_STATES_SIZE          (BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL + BUTTON_BYTES_SOLED_PANEL)
+static u8 *button_states;  // bit field holding the current buttons states
+
+// button id output buffer
 #define BUTTON_BUFFER_SIZE 256
 static u8 *button_buff;
 static u32 btn_buff_head, btn_buff_tail;
-static DEFINE_MUTEX(btn_buff_tail_lock);
+static DEFINE_MUTEX(btn_buff_lock);
 static DECLARE_WAIT_QUEUE_HEAD(btn_wqueue);
 
+// button id poll requests buffer
+#define BUTTON_POLL_BUFFER_SIZE 256
+static u8 *button_poll_buff;
+static u32 btn_poll_buff_head, btn_poll_buff_tail;
+static DEFINE_MUTEX(btn_poll_buff_lock);
+
+// ---- read from driver function ----
+// reads the button states on either change event or poll request
 static ssize_t buttons_fops_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
-  ssize_t status = 0;
+  ssize_t status;
   u8      tmp;
 
-  /* If in non-blocking mode and no data to read, return */
+  // if in non-blocking mode and no data to read then return "try again"
   if (filp->f_flags & O_NONBLOCK && btn_buff_head == btn_buff_tail)
     return -EAGAIN;
 
-  /* Sleep until there is data to read */
+  // sleep until there is data to read
   if ((status = wait_event_interruptible(btn_wqueue, btn_buff_head != btn_buff_tail)))
     return status;
 
-  mutex_lock(&btn_buff_tail_lock);
+  mutex_lock(&btn_buff_lock);                         // keep espi_driver_pollbuttons() from interfering
+  tmp           = button_buff[btn_buff_tail] ^ 0x80;  // invert bit 7, so we get 1 on btn down and 0 on btn up
+  btn_buff_tail = (btn_buff_tail + 1) % BUTTON_BUFFER_SIZE;
+  mutex_unlock(&btn_buff_lock);
 
-  // xor 0x80, so we get 1 on btn down and 0 on btn up
-  tmp = button_buff[btn_buff_tail] ^ 0x80;
   if (copy_to_user(buf, &tmp, 1) != 0)
     return -EFAULT;
-
-  btn_buff_tail = (btn_buff_tail + 1) % BUTTON_BUFFER_SIZE;
-  mutex_unlock(&btn_buff_tail_lock);
-
-  return 1;
+  return 1;  // return one button id at a time
 }
 
+// ---- write to driver function ----
+// writes poll request data
+static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
+{
+  u32 i;
+  u8  tmp[count];
+
+  if (copy_from_user(tmp, buf, count))
+    return -EFAULT;
+
+  mutex_lock(&btn_poll_buff_lock);  // keep espi_driver_pollbuttons() from interfering
+  for (i = 0; i < count; i++)
+  {
+    if (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)
+    {  // space in poll request buffer --> write poll request
+      button_poll_buff[btn_poll_buff_head] = tmp[i];
+      btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
+    }
+  }
+  mutex_unlock(&btn_poll_buff_lock);
+
+  return count;
+}
+
+// ---- driver poll function ----
+// checks and returns "read data available" and "write allowed"
 static unsigned int buttons_fops_poll(struct file *filp, poll_table *wait)
 {
 
-  unsigned int mask = 0;
+  unsigned int mask = 0;  // assume nothing first
+
   poll_wait(filp, &btn_wqueue, wait);
 
-  /* If there is data in buffer, reading is allowed
-	 * Writing to buttons never makes sense, so dissallow */
-
+  // if there is data in buffer, reading is allowed
   if (btn_buff_tail != btn_buff_head)
     mask |= POLLIN | POLLRDNORM;
+
+  // if there is space in the poll buffer, writing is allowed
+  if (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)
+    mask |= POLLOUT | POLLWRNORM;
 
   return mask;
 }
 
+// file operation structure
 static const struct file_operations buttons_fops = {
   .owner  = THIS_MODULE,
-  .read   = buttons_fops_read,
+  .read   = buttons_fops_read,   // read button id
+  .write  = buttons_fops_write,  // write button poll request id
   .open   = nonseekable_open,
   .llseek = no_llseek,
   .poll   = buttons_fops_poll,
@@ -66,26 +158,27 @@ static const struct file_operations buttons_fops = {
 
 static struct class *buttons_class;
 
+// ---- driver setup (init) function ----
 s32 espi_driver_buttons_setup(struct espi_driver *sb)
 {
-  s32 i, ret;
+  s32 ret;
 
-  btn_sm1 = kcalloc(BUTTON_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!btn_sm1)
+  // button states bit field, will be initialized with data on first pass of espi_driver_pollbuttons()
+  button_states = kcalloc(BUTTON_STATES_SIZE, sizeof(u8), GFP_KERNEL);
+  if (!button_states)
     return -ENOMEM;
 
-  btn_st = kcalloc(BUTTON_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!btn_st)
-    return -ENOMEM;
-
-  for (i = 0; i < BUTTON_STATES_SIZE; i++)
-    btn_sm1[i] = btn_st[i] = 0xFF;
-
+  // button id output buffer
   button_buff = kcalloc(BUTTON_BUFFER_SIZE, sizeof(u8), GFP_KERNEL);
   if (!button_buff)
     return -ENOMEM;
-
   btn_buff_head = btn_buff_tail = 0;
+
+  // button id poll request input buffer
+  button_poll_buff = kcalloc(BUTTON_POLL_BUFFER_SIZE, sizeof(u8), GFP_KERNEL);
+  if (!button_poll_buff)
+    return -ENOMEM;
+  btn_poll_buff_head = btn_poll_buff_tail = 0;
 
   ret = register_chrdev(ESPI_BUTTON_DEV_MAJOR, "spi", &buttons_fops);
   if (ret < 0)
@@ -100,11 +193,12 @@ s32 espi_driver_buttons_setup(struct espi_driver *sb)
   return 0;
 }
 
+// ---- driver cleanup (de-init) function ----
 s32 espi_driver_buttons_cleanup(struct espi_driver *sb)
 {
-  kfree(btn_sm1);
-  kfree(btn_st);
+  kfree(button_states);
   kfree(button_buff);
+  kfree(button_poll_buff);
 
   device_destroy(buttons_class, MKDEV(ESPI_BUTTON_DEV_MAJOR, 0));
   class_destroy(buttons_class);
@@ -113,13 +207,32 @@ s32 espi_driver_buttons_cleanup(struct espi_driver *sb)
   return 0;
 }
 
+// ---- write a button id to the output (read) buffer ----
+static void write_id_to_outputbuffer(u8 id)
+{
+  mutex_lock(&btn_buff_lock);  // keep buttons_fops_read() from interfering
+  if (((btn_buff_head + 1) % BUTTON_BUFFER_SIZE) != btn_buff_tail)
+  {  // space left in output buffer ==> write id into buffer
+    button_buff[btn_buff_head] = id;
+    btn_buff_head              = (btn_buff_head + 1) % BUTTON_BUFFER_SIZE;
+    wake_up_interruptible(&btn_wqueue);
+  }
+  mutex_unlock(&btn_buff_lock);
+  //printk("button state (via polling) = %x\n", btn_id);
+}
+
+// ---- poll the physical IO lines, and also process poll requests ----
+// generates button events when a physical button line changes
+// but also generates these events when polling a specific button was requested
 void espi_driver_pollbuttons(struct espi_driver *p)
 {
   struct spi_transfer xfer;
-  u8                  rx[BUTTON_STATES_SIZE];
-  u8                  i, j, xor, bit, btn_id;
+  u8                  rx[BUTTON_STATES_SIZE];  // holds the current state of the button lines
+  u8                  i, j, changed_bits, bit_pos, btn_id;
 
   extern int sck_hz;
+
+  static int first_pass = 1;  // flag first pass for initialization instead of change detection
 
   xfer.tx_buf        = NULL;
   xfer.rx_buf        = rx;
@@ -130,66 +243,86 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
   espi_driver_set_mode(((struct espi_driver *) p)->spidev, SPI_MODE_3);
 
-  /** read general panels */
-  espi_driver_scs_select((struct espi_driver *) p, ESPI_SELECTION_PANEL_PORT, ESPI_SELECTION_BUTTONS_DEVICE);
-  gpio_set_value(((struct espi_driver *) p)->gpio_sap, 0);
-  gpio_set_value(((struct espi_driver *) p)->gpio_sap, 1);
-  espi_driver_transfer(((struct espi_driver *) p)->spidev, &xfer);
-  espi_driver_scs_select((struct espi_driver *) p, ESPI_SELECTION_PANEL_PORT, 0);
+  // read general panels ("selection panels")
+  espi_driver_scs_select(p, ESPI_SELECTION_PANEL_PORT, ESPI_SELECTION_BUTTONS_DEVICE);
+  gpio_set_value(p->gpio_sap, 0);
+  gpio_set_value(p->gpio_sap, 1);
+  espi_driver_transfer(p->spidev, &xfer);
+  espi_driver_scs_select(p, ESPI_SELECTION_PANEL_PORT, 0);
 
-  /** read central (big oled) panel */
+  // read central (big oled) panel ("edit panel")
   xfer.tx_buf = NULL;
   xfer.rx_buf = rx + BUTTON_BYTES_GENERAL_PANELS;
   xfer.len    = BUTTON_BYTES_CENTRAL_PANEL;
-  espi_driver_scs_select((struct espi_driver *) p, ESPI_EDIT_PANEL_PORT, ESPI_EDIT_BUTTONS_DEVICE);
-  gpio_set_value(((struct espi_driver *) p)->gpio_sap, 0);
-  gpio_set_value(((struct espi_driver *) p)->gpio_sap, 1);
-  espi_driver_transfer(((struct espi_driver *) p)->spidev, &xfer);
-  espi_driver_scs_select((struct espi_driver *) p, ESPI_EDIT_PANEL_PORT, 0);
+  espi_driver_scs_select(p, ESPI_EDIT_PANEL_PORT, ESPI_EDIT_BUTTONS_DEVICE);
+  gpio_set_value(p->gpio_sap, 0);
+  gpio_set_value(p->gpio_sap, 1);
+  espi_driver_transfer(p->spidev, &xfer);
+  espi_driver_scs_select(p, ESPI_EDIT_PANEL_PORT, 0);
 
-  /** read small oled panel */
+  // read small oled panel ("play panel")
   xfer.tx_buf = NULL;
   xfer.rx_buf = rx + BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL;
   xfer.len    = BUTTON_BYTES_SOLED_PANEL;
-  espi_driver_scs_select((struct espi_driver *) p, ESPI_PLAY_PANEL_PORT, (struct espi_driver *) p->play_buttons_device);
-  gpio_set_value(((struct espi_driver *) p)->gpio_sap, 0);
-  gpio_set_value(((struct espi_driver *) p)->gpio_sap, 1);
-  espi_driver_transfer(((struct espi_driver *) p)->spidev, &xfer);
-  espi_driver_scs_select((struct espi_driver *) p, ESPI_PLAY_PANEL_PORT, 0);
+  espi_driver_scs_select(p, ESPI_PLAY_PANEL_PORT, p->play_buttons_device);
+  gpio_set_value(p->gpio_sap, 0);
+  gpio_set_value(p->gpio_sap, 1);
+  espi_driver_transfer(p->spidev, &xfer);
+  espi_driver_scs_select(p, ESPI_PLAY_PANEL_PORT, 0);
 
-  /***** MASKING ******/
-  //rx[BUTTON_BYTES_GENERAL_PANELS + 1] |= 0x30;
-  rx[BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL] |= 0x0F;
+  // MASKING of unused bits is now removed as we now (for hardware version 7.1)
+  // want to read the 'hidden'/unused button lines as well, for ID purposes */
+  //   rx[BUTTON_BYTES_GENERAL_PANELS + 1] |= 0x30;
+  //   rx[BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL] |= 0x0F;
 
-  /** check read states */
-  for (i = 0; i < BUTTON_STATES_SIZE; i++)
+  //  check read states and generate events on changes
+  if (first_pass)
   {
-    xor = (btn_sm1[i] & rx[i] & (~btn_st[i])) | (~(btn_sm1[i] | rx[i]) & btn_st[i]);
-    if (xor)
+    first_pass = 0;
+    for (i = 0; i < BUTTON_STATES_SIZE; i++)
+      button_states[i] = rx[i];  // save current state of these 8 lines for next compare
+  }
+  else
+  {
+    for (i = 0; i < BUTTON_STATES_SIZE; i++)
     {
-      for (j = 0; j < 8; j++)
+      changed_bits = (rx[i] ^ button_states[i]);
+      if (changed_bits)  // new state is different for at least one line in this byte ?
       {
-        bit = xor&(1 << j);
-        if (bit & btn_st[i])  // change 1->0
-          btn_id = i * 8 + 7 - j;
-        else if (bit)  // change 0->1
-          btn_id = (i * 8 + 7 - j) | (1 << 7);
-        else
-          continue;
-
-        btn_st[i] ^= bit;
-
-        if (((btn_buff_head + 1) % BUTTON_BUFFER_SIZE) != btn_buff_tail)
-        {
-          button_buff[btn_buff_head] = btn_id;
-          btn_buff_head              = (btn_buff_head + 1) % BUTTON_BUFFER_SIZE;
-          wake_up_interruptible(&btn_wqueue);
+        for (j = 0; j < 8; j++)
+        {  // scan through bits
+          bit_pos = 1 << j;
+          if (!(changed_bits & bit_pos))  // this line didn't change ?
+            continue;                     //   yes, next bit
+          btn_id = (i * 8) + (7 - j);     // calculate button number (bits are shifted in from left side)
+          if (rx[i] & bit_pos)            // line reads high currently ?
+            btn_id |= 0x80;               //   then mark this in the id, bit 7
+          write_id_to_outputbuffer(btn_id);
         }
-        //printk("button-change = %x\n", btn_id);
+        button_states[i] = rx[i];  // save current state of these 8 lines for next compare
       }
     }
-    btn_sm1[i] = rx[i];
   }
+
+  // now process any button polling requests
+  mutex_lock(&btn_poll_buff_lock);  // keep buttons_fops_write() from interfering
+  while (btn_poll_buff_tail != btn_poll_buff_head)
+  {  // have more pending poll requests
+    btn_id             = button_poll_buff[btn_poll_buff_tail];
+    btn_poll_buff_tail = (btn_poll_buff_tail + 1) % BUTTON_POLL_BUFFER_SIZE;
+
+    if (btn_id >= (8 * BUTTON_STATES_SIZE))
+      continue;  // discard invalid button id
+
+    // check if button currently reads high, then add in bit 7
+    if (button_states[btn_id / 8] & (1 << (7 - btn_id % 8)))
+      btn_id |= 0x80;
+
+    write_id_to_outputbuffer(btn_id);
+  }
+  mutex_unlock(&btn_poll_buff_lock);
 
   espi_driver_set_mode(((struct espi_driver *) p)->spidev, SPI_MODE_0);
 }
+
+// EOF
