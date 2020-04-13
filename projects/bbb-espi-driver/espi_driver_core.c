@@ -2,6 +2,8 @@
  * espi_driver.c - ESPI kernel module for the Emphase
  */
 
+#pragma GCC diagnostic ignored "-Wdate-time"
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/workqueue.h>
