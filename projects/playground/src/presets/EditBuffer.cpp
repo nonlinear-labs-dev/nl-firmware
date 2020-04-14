@@ -655,14 +655,17 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGr
 void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
   setName(transaction, getVoiceGroupName(copyFrom));
+  undoableSetType(transaction, SoundType::Single);
 
   auto masterGroup = getParameterGroupByID({ "Master", VoiceGroup::Global });
 
-  auto originVolume = findParameterByID({ 358, copyFrom });
-  auto originTune = findParameterByID({ 360, copyFrom });
+  auto originVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyFrom }));
+  auto originTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, copyFrom }));
 
-  auto masterVolumeParameter = masterGroup->getParameterByID({ 247, VoiceGroup::Global });
-  auto masterTuneParameter = masterGroup->getParameterByID({ 248, VoiceGroup::Global });
+  auto masterVolumeParameter
+      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 247, VoiceGroup::Global }));
+  auto masterTuneParameter
+      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 248, VoiceGroup::Global }));
 
   // unmute both parts
   findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
@@ -676,29 +679,36 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
-  initToFX(transaction);
-
-  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
-  masterTuneParameter->setCPFromHwui(transaction, newTune);
-
-  for(auto v : { VoiceGroup::I, VoiceGroup::II })
-  {
-    auto vgVolume = findParameterByID({ 358, v });
-    auto vgTune = findParameterByID({ 360, v });
-
-    vgVolume->setDefaultFromHwui(transaction);
-    vgTune->setDefaultFromHwui(transaction);
-  }
-
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+
+  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
+  masterVolumeParameter->undoableSelectModSource(transaction, originVolume->getModulationSource());
+  masterVolumeParameter->setModulationAmount(transaction, originVolume->getModulationAmount());
+
+  masterTuneParameter->setCPFromHwui(transaction, newTune);
+  masterTuneParameter->undoableSelectModSource(transaction, originTune->getModulationSource());
+  masterTuneParameter->setModulationAmount(transaction, originTune->getModulationAmount());
+
+  initToFX(transaction);
+  initFadeFrom(transaction, SoundType::Single);
+  initSplitPoint(transaction);
+
+  forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction); });
+
+  {
+    auto vgVolume = findParameterByID({ 358, VoiceGroup::I });
+    auto vgTune = findParameterByID({ 360, VoiceGroup::I });
+
+    vgVolume->loadDefault(transaction);
+    vgTune->loadDefault(transaction);
+  }
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
   setVoiceGroupName(transaction, "", VoiceGroup::I);
   setVoiceGroupName(transaction, "", VoiceGroup::II);
 
   initRecallValues(transaction);
-  undoableSetType(transaction, SoundType::Single);
 
   transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 }
@@ -717,13 +727,24 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   undoableSetType(transaction, type);
 
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+
   if(oldType == SoundType::Single)
     copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+  else
+    copyVoiceGroup(transaction, currentVG, invert(currentVG));
 
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
 
-  if(type == SoundType::Layer)
-    initFadeFrom(transaction);
+  if(oldType == SoundType::Split && type == SoundType::Layer)
+  {
+    calculateFadeParamsFromSplitPoint(transaction);
+  }
+  else
+  {
+    initFadeFrom(transaction, type);
+  }
+
   initSplitPoint(transaction);
   initRecallValues(transaction);
 
@@ -732,6 +753,11 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
     // unmute both parts
     findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
     findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
+  }
+  else if(type == SoundType::Layer)
+  {
+    getParameterGroupByID({ "Mono", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
+    getParameterGroupByID({ "Unison", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
   }
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
@@ -983,13 +1009,13 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
 {
   auto splitPoint = findParameterByID({ 356, VoiceGroup::Global });
-  splitPoint->setDefaultFromHwui(transaction);
+  splitPoint->loadDefault(transaction);
 }
 
-void EditBuffer::initFadeFrom(UNDO::Transaction *transaction)
+void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, SoundType newType)
 {
-  findParameterByID({ 396, VoiceGroup::I })->setDefaultFromHwui(transaction);
-  findParameterByID({ 396, VoiceGroup::II })->setDefaultFromHwui(transaction);
+  findParameterByID({ 396, VoiceGroup::I })->loadDefault(transaction);
+  findParameterByID({ 396, VoiceGroup::II })->loadDefault(transaction);
 }
 
 EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
@@ -1008,4 +1034,12 @@ EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
   }
 
   return ret;
+}
+
+void EditBuffer::calculateFadeParamsFromSplitPoint(UNDO::Transaction *transaction)
+{
+  findParameterByID({ 396, VoiceGroup::I })->setCPFromHwui(transaction, getSplitPoint()->getControlPositionValue());
+  findParameterByID({ 396, VoiceGroup::II })->setCPFromHwui(transaction, getSplitPoint()->getControlPositionValue());
+  findParameterByID({ 397, VoiceGroup::I })->loadDefault(transaction);
+  findParameterByID({ 397, VoiceGroup::II })->loadDefault(transaction);
 }

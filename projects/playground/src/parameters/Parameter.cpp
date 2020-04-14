@@ -154,6 +154,11 @@ void Parameter::loadDefault(UNDO::Transaction *transaction)
   loadFromPreset(transaction, getDefaultValue());
 }
 
+bool Parameter::isDefaultLoaded() const
+{
+  return !isValueDifferentFrom(getDefaultValue());
+}
+
 void Parameter::reset(UNDO::Transaction *transaction, Initiator initiator)
 {
   setCpValue(transaction, initiator, getDefaultValue(), true);
@@ -583,5 +588,5 @@ void Parameter::sendParameterMessage() const
 
 bool Parameter::isValueDifferentFrom(double d) const
 {
-  return m_value.differs(d);
+  return m_value.differs(getValue().getQuantizedValue(d, true));
 }

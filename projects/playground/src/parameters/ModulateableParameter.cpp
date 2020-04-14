@@ -509,3 +509,11 @@ void ModulateableParameter::copyFrom(UNDO::Transaction *transaction, const Param
     setModulationAmount(transaction, otherMod->getModulationAmount());
   }
 }
+
+bool ModulateableParameter::isDefaultLoaded() const
+{
+  auto valSame = Parameter::isDefaultLoaded();
+  auto modSrcSame = getModulationSource() == MacroControls::NONE;
+  auto modAmtSame = getModulationAmount() == 0;
+  return valSame && modSrcSame && modAmtSame;
+}
