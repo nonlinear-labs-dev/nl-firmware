@@ -1,9 +1,9 @@
 /* 
    ESPI Driver for Buttons & ID lines on Panel Unit and Play Panel
-   new features :
-     - all physical lines are read out, to allow for readout of 'unused' button lines.
-     - polling added, that is, the driver can be requested to read out a button line and
-       put the result in the output buffer, the button line doesn't have to change physically
+   New features :
+     - All physical lines are read out, to allow for readout of 'unused' button lines.
+     - "Poll Button" function added, that is, the driver can be requested to read out a button line
+       and put the result in the output buffer, the button line doesn't have to change physically
        to generate an event.
        Purpose, possible use cases : 
          * Detect if the hardware is present (if detached, all buttons read 'released'),
@@ -11,6 +11,8 @@
          * Detect if any buttons are stuck, at startup
          * Allow for specific button press pattern detected at startup, initiating
            special features or diagnostic functions
+     - "Emulate Button" function added, press and release events can be generated.
+       Might be usuful for diagnostic or special features.
            
 
 Button ID layout (hex)
@@ -27,12 +29,13 @@ Play Panel :
  78 79     7A 7B
 
 
+-------------------
 Reading the ID from the driver yields:
 - Button ID        (bit 7 cleared) ==> button released
 - Button ID | 0x80 (bit 7 set)     ==> button pressed
 
 
-Edit Panel Hardware ID / Version Code lines  : 73..77
+Edit Panel Hardware IDs / Version Code lines  : 73..77
 ID  detached     < V7.1    >= 7.1
 73  released     released  released
 74  released     released  released
@@ -40,14 +43,30 @@ ID  detached     < V7.1    >= 7.1
 76  released     released  pressed
 77  released     released  pressed
 
-Play Panel Hardware ID / Version Code lines  : 7C..7F
+Play Panel Hardware IDs / Version Code lines  : 7C..7F
 ID  detached     < V7.1    >= 7.1
 7C  released     released  released
 7D  released     released  released
 7E  released     released  pressed
 7F  released     released  pressed
 ==> unfortunately, a detached Panel Unit gives the same readout as a Panel Unit
-    of Hardware Version below 7.1. Detach of a V7.1 Panel is detectable, though.
+    of Hardware Version below 7.1. Detach of a >=V7.1 Panel is detectable, though.
+    
+    
+-------------------
+"Poll Button" Function :
+Write the button ID to the driver and read the returned current state of the button from the driver.
+Bit 7 of the ID must be cleared !
+
+    
+-------------------
+"Emulate Button" Function :
+Two bytes must be written to the driver in one go.
+First, write the button ID to the driver, with bit 7 set. Then write a flag byte, again bit 7 must be set!
+The remaining bits of the flag byte are used to determine whether a "release" event is generated (all bits cleared)
+or a "pressed" event is generated (any bit set).
+Incomplete writes, and writes with the flag byte not having bit 7 set, are discarded.
+This avoids command parsing going out of sync.
 
 */
 
@@ -116,10 +135,31 @@ static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, siz
   mutex_lock(&btn_poll_buff_lock);  // keep espi_driver_pollbuttons() from interfering
   for (i = 0; i < count; i++)
   {
-    if (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)
-    {  // space in poll request buffer --> write poll request
-      button_poll_buff[btn_poll_buff_head] = tmp[i];
-      btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
+    if (tmp[i] & 0x80)  // "emulate button" command (bit 7 is set) ?
+    {
+      if (i + 1 < count)  // second byte available ?
+      {
+        if ((tmp[i + 1] & 0x80)                                                               // if second byte also has bit 7 set
+            && (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)   // AND space for 1st byte
+            && (((btn_poll_buff_head + 2) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail))  // AND space for 2nd byte
+        {                                                                                     //   then put in buffer
+          button_poll_buff[btn_poll_buff_head] = tmp[i];
+          btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
+          button_poll_buff[btn_poll_buff_head] = tmp[i + 1];
+          btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
+        }
+        i++;       // advance input buffer
+        continue;  // and goto next command
+      }
+      break;  // no second byte left, ignore command and quit
+    }
+    else  // "poll button" command (bit 7 is cleared) ?
+    {
+      if (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)
+      {  // space in poll request buffer --> write poll request
+        button_poll_buff[btn_poll_buff_head] = tmp[i];
+        btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
+      }
     }
   }
   mutex_unlock(&btn_poll_buff_lock);
@@ -321,7 +361,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
           else
           {
             // for testing only !! Send an 0xFF during unstable state changes
-            //   write_id_to_outputbuffer(0x7F);  
+            //   write_id_to_outputbuffer(0x7F);
             continue;  // but any other pattern (notably direct alternating) is considered instable, don't update
           }
 
@@ -336,20 +376,27 @@ void espi_driver_pollbuttons(struct espi_driver *p)
     }
   }
 
-  // now process any button polling requests
+  // now process any button polling and emulate requests
   mutex_lock(&btn_poll_buff_lock);  // keep buttons_fops_write() from interfering
   while (btn_poll_buff_tail != btn_poll_buff_head)
-  {  // have more pending poll requests
+  {  // have more pending requests
     btn_id             = button_poll_buff[btn_poll_buff_tail];
     btn_poll_buff_tail = (btn_poll_buff_tail + 1) % BUTTON_POLL_BUFFER_SIZE;
 
-    if (btn_id >= (8 * BUTTON_STATES_SIZE))
-      continue;  // discard invalid button id
-
-    // check if button currently reads high, then add in bit 7
-    if (button_states[btn_id / 8] & (1 << (7 - btn_id % 8)))
-      btn_id |= 0x80;
-
+    if (btn_id & 0x80)  // "emulate button" command (bit 7 is set) ?
+    {                   // btn_id is a "release" ID already
+      if (btn_poll_buff_tail == btn_poll_buff_head)
+        break;                                          // no data byte in buffer, quit
+      if (button_poll_buff[btn_poll_buff_tail] & 0x7F)  // relevant part of data byte != 0 ==> pressed ?
+        btn_id &= 0x7F;                                 //   then clear bit 7 of btn_id ==> "pressed"
+      btn_poll_buff_tail = (btn_poll_buff_tail + 1) % BUTTON_POLL_BUFFER_SIZE;
+    }
+    else  // "poll button" command (bit 7 is cleared) ?
+    {
+      // check if button currently reads high, then add in bit 7
+      if (button_states[btn_id / 8] & (1 << (7 - btn_id % 8)))
+        btn_id |= 0x80;
+    }
     write_id_to_outputbuffer(btn_id);
   }
   mutex_unlock(&btn_poll_buff_lock);
