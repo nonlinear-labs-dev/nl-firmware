@@ -11,6 +11,8 @@ class EditBufferLogicalParts
 
   template <VoiceGroup vg> static Parameter* getMonoEnable();
 
+  static std::vector<Parameter*> getMaster();
+
   template <VoiceGroup vg> static std::vector<Parameter*> getUnison();
 
   template <VoiceGroup vg> static std::vector<Parameter*> getMono();
@@ -222,4 +224,9 @@ template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getPart
   ret.emplace_back(getPartVolume<vg>());
   ret.emplace_back(getPartTune<vg>());
   return ret;
+}
+
+std::vector<Parameter*> EditBufferLogicalParts::getMaster()
+{
+  return { getMasterVolume(), getMasterTune() };
 }

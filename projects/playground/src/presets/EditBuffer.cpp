@@ -986,10 +986,10 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto presetPartVolume = preset->findParameterByID({ 358, copyFrom }, false);
   auto presetPartTune = preset->findParameterByID({ 360, copyFrom }, false);
 
-  auto partVolume = findParameterByID({ 358, copyTo });
-  auto partTune = findParameterByID({ 360, copyTo });
+  auto partVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyTo }));
+  auto partTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, copyTo }));
 
-  if(presetGlobalVolume && presetGlobalTune && partVolume && partTune && presetPartTune && presetPartVolume)
+  if(presetGlobalVolume && presetGlobalTune && partVolume && partTune)
   {
     auto volumeScaleConverter
         = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
@@ -1002,6 +1002,15 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
     partVolume->setCPFromHwui(transaction, newVolumeCP);
     partTune->setCPFromHwui(transaction,
                             presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : 0));
+
+    if(preset->getType() == SoundType::Single)
+    {
+      partTune->setModulationAmount(transaction, presetGlobalTune->getModulationAmount());
+      partTune->setModulationSource(transaction, presetGlobalTune->getModulationSource());
+
+      partVolume->setModulationSource(transaction, presetGlobalVolume->getModulationSource());
+      partVolume->setModulationAmount(transaction, presetGlobalVolume->getModulationAmount());
+    }
   }
   else
   {
