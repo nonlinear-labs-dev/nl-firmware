@@ -19,6 +19,8 @@ class EditBufferLogicalParts
 
   template <VoiceGroup vg> static ModulateableParameter* getPartTune();
 
+  template <VoiceGroup vg> static std::vector<Parameter*> getPartMaster();
+
   template <VoiceGroup vg> static Parameter* getFadeFrom();
 
   template <VoiceGroup vg> static Parameter* getFadeRange();
@@ -212,4 +214,12 @@ template <VoiceGroup vg> Parameter* EditBufferLogicalParts::getMonoEnable()
 Parameter* EditBufferLogicalParts::getParameter(const ParameterId& id)
 {
   return TestHelper::getEditBuffer()->findParameterByID(id);
+}
+
+template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getPartMaster()
+{
+  std::vector<Parameter*> ret {};
+  ret.emplace_back(getPartVolume<vg>());
+  ret.emplace_back(getPartTune<vg>());
+  return ret;
 }

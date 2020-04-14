@@ -717,7 +717,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 {
   const auto oldType = m_type;
 
-  if(m_type == type)
+  if(oldType == type)
     return;
 
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
@@ -729,10 +729,18 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
 
-  if(oldType == SoundType::Single)
-    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
-  else
-    copyVoiceGroup(transaction, currentVG, invert(currentVG));
+  switch(oldType)
+  {
+    case SoundType::Single:
+      copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+      break;
+    case SoundType::Split:
+      copyVoiceGroup(transaction, currentVG, invert(currentVG));
+      break;
+    case SoundType::Layer:
+      copyVoicesGroups(transaction, VoiceGroup::I, VoiceGroup::II);
+      break;
+  }
 
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
 
@@ -748,13 +756,10 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   initSplitPoint(transaction);
   initRecallValues(transaction);
 
-  if(type != SoundType::Layer)
-  {
-    // unmute both parts
-    findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
-    findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
-  }
-  else if(type == SoundType::Layer)
+  findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
+  findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
+
+  if(type == SoundType::Layer)
   {
     getParameterGroupByID({ "Mono", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
     getParameterGroupByID({ "Unison", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
@@ -1042,4 +1047,16 @@ void EditBuffer::calculateFadeParamsFromSplitPoint(UNDO::Transaction *transactio
   findParameterByID({ 396, VoiceGroup::II })->setCPFromHwui(transaction, getSplitPoint()->getControlPositionValue());
   findParameterByID({ 397, VoiceGroup::I })->loadDefault(transaction);
   findParameterByID({ 397, VoiceGroup::II })->loadDefault(transaction);
+}
+
+void EditBuffer::copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
+{
+  for(auto &gid : { "Unison", "Mono" })
+  {
+    for(auto &target : getParameterGroupByID({ gid, to })->getParameters())
+    {
+      auto src = findParameterByID({ target->getID().getNumber(), from });
+      target->copyFrom(transaction, src);
+    }
+  }
 }
