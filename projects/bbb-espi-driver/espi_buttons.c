@@ -62,7 +62,8 @@ ID  detached     < V7.1    >= 7.1
 #define BUTTON_BYTES_CENTRAL_PANEL  (3)   // 18 Buttons + Encoder Button + 5 PCB-ID lines ==> 24 Bits needed ==> 3 Bytes
 #define BUTTON_BYTES_SOLED_PANEL    (1)   // 4 Buttons + 4 PCB-ID lines ==> 1 Byte
 #define BUTTON_STATES_SIZE          (BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL + BUTTON_BYTES_SOLED_PANEL)
-static u8 *button_states;  // bit field holding the current buttons states
+static u8 *button_states;       // bit field holding the last buttons states
+static u8 *prev_button_states;  // bit field holding the previous last buttons states
 
 // button id output buffer
 #define BUTTON_BUFFER_SIZE 256
@@ -163,9 +164,12 @@ s32 espi_driver_buttons_setup(struct espi_driver *sb)
 {
   s32 ret;
 
-  // button states bit field, will be initialized with data on first pass of espi_driver_pollbuttons()
+  // button states bit fields, will be initialized with data on first passes of espi_driver_pollbuttons()
   button_states = kcalloc(BUTTON_STATES_SIZE, sizeof(u8), GFP_KERNEL);
   if (!button_states)
+    return -ENOMEM;
+  prev_button_states = kcalloc(BUTTON_STATES_SIZE, sizeof(u8), GFP_KERNEL);
+  if (!prev_button_states)
     return -ENOMEM;
 
   // button id output buffer
@@ -197,6 +201,7 @@ s32 espi_driver_buttons_setup(struct espi_driver *sb)
 s32 espi_driver_buttons_cleanup(struct espi_driver *sb)
 {
   kfree(button_states);
+  kfree(prev_button_states);
   kfree(button_buff);
   kfree(button_poll_buff);
 
@@ -228,11 +233,12 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 {
   struct spi_transfer xfer;
   u8                  rx[BUTTON_STATES_SIZE];  // holds the current state of the button lines
-  u8                  i, j, changed_bits, bit_pos, btn_id;
+  u8                  i, j, bit_pos, btn_id;
+  u8                  changed_bits, prev_changed_bits, new_state;
 
   extern int sck_hz;
 
-  static int first_pass = 1;  // flag first pass for initialization instead of change detection
+  static int initial_passes = 2;  // flag first two passes for initialization instead of change detection
 
   xfer.tx_buf        = NULL;
   xfer.rx_buf        = rx;
@@ -276,31 +282,57 @@ void espi_driver_pollbuttons(struct espi_driver *p)
   //   rx[BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL] |= 0x0F;
 
   //  check read states and generate events on changes
-  if (first_pass)
+  if (initial_passes)
   {
-    first_pass = 0;
+    initial_passes--;
     for (i = 0; i < BUTTON_STATES_SIZE; i++)
-      button_states[i] = rx[i];  // save current state of these 8 lines for next compare
+    {  // fill last and previous last states with current state
+      prev_button_states[i] = button_states[i];
+      button_states[i]      = rx[i];
+    }
   }
   else
   {
     for (i = 0; i < BUTTON_STATES_SIZE; i++)
     {
-      changed_bits = (rx[i] ^ button_states[i]);
-      if (changed_bits)  // new state is different for at least one line in this byte ?
+      prev_changed_bits = (button_states[i] ^ prev_button_states[i]);
+      changed_bits      = (rx[i] ^ button_states[i]);
+      if (changed_bits || prev_changed_bits)  // new state is different for at least one line in this byte ?
       {
         for (j = 0; j < 8; j++)
         {  // scan through bits
           bit_pos = 1 << j;
-          if (!(changed_bits & bit_pos))  // this line didn't change ?
-            continue;                     //   yes, next bit
-          btn_id = (i * 8) + (7 - j);     // calculate button number (bits are shifted in from left side)
-          if (rx[i] & bit_pos)            // line reads high currently ?
-            btn_id |= 0x80;               //   then mark this in the id, bit 7
+          if (!(changed_bits & bit_pos) && !(prev_changed_bits & bit_pos))  // this line didn't change in the last 2 passes ?
+            continue;                                                       //   yes, next bit
+
+          // A falling ("pressed") edge is submitted immediately, provided that the previous two states have been high ("released"),
+          // whereas a rising ("released") edge is submitted only when the transition to high happened in the previous pass and we
+          // continue to read high in the current pass, that is, the rising edge is submitted with a delay of one pass.
+          // Overall, this provides a 1-cyle debouncing of the "release" action only, to avoid some (not all, though)
+          // false triggers if a button is pressed but has weak (intermittant) contact or is bouncing during intended release.
+          if (!(rx[i] & bit_pos)                       // if bit is low now
+              && (button_states[i] & bit_pos)          // AND was high at last pass
+              && (prev_button_states[i] & bit_pos))    // AND was high at 2nd last pass
+            new_state = 0;                             //   then state to transmit is "low" with immediate action
+          else if (!(prev_button_states[i] & bit_pos)  // else if bit was low at 2nd last pass
+                   && (button_states[i] & bit_pos)     // AND was high at last pass
+                   && (rx[i] & bit_pos))               // AND is high now
+            new_state = 1;                             //   then state to transmit is "high", lagging by one pass
+          else
+          {
+            // for testing only !! Send an 0xFF during unstable state changes
+            //   write_id_to_outputbuffer(0x7F);  
+            continue;  // but any other pattern (notably direct alternating) is considered instable, don't update
+          }
+
+          btn_id = (i * 8) + (7 - j);  // calculate button number (bits are shifted in from left side)
+          if (new_state)               // line reads high currently ?
+            btn_id |= 0x80;            //   then mark this in the id, bit 7
           write_id_to_outputbuffer(btn_id);
         }
-        button_states[i] = rx[i];  // save current state of these 8 lines for next compare
       }
+      prev_button_states[i] = button_states[i];
+      button_states[i]      = rx[i];
     }
   }
 
