@@ -97,6 +97,20 @@ static u8 *button_poll_buff;
 static u32 btn_poll_buff_head, btn_poll_buff_tail;
 static DEFINE_MUTEX(btn_poll_buff_lock);
 
+// ---- write a button id to the output (read) buffer ----
+static void write_id_to_outputbuffer(u8 id)
+{
+  mutex_lock(&btn_buff_lock);  // keep buttons_fops_read() and espi_driver_pollbuttons() from interfering
+  if (((btn_buff_head + 1) % BUTTON_BUFFER_SIZE) != btn_buff_tail)
+  {  // space left in output buffer ==> write id into buffer
+    button_buff[btn_buff_head] = id;
+    btn_buff_head              = (btn_buff_head + 1) % BUTTON_BUFFER_SIZE;
+    wake_up_interruptible(&btn_wqueue);
+  }
+  mutex_unlock(&btn_buff_lock);
+  //printk("button state = %x\n", btn_id);
+}
+
 // ---- read from driver function ----
 // reads the button states on either change event or poll request
 static ssize_t buttons_fops_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
@@ -132,37 +146,34 @@ static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, siz
   if (copy_from_user(tmp, buf, count))
     return -EFAULT;
 
-  mutex_lock(&btn_poll_buff_lock);  // keep espi_driver_pollbuttons() from interfering
   for (i = 0; i < count; i++)
   {
-    if (tmp[i] & 0x80)  // "emulate button" command (bit 7 is set) ?
+    if (!(tmp[i] & 0x80))  // "poll button" command (bit 7 is cleared) ?
     {
-      if (i + 1 < count)  // second byte available ?
-      {
-        if ((tmp[i + 1] & 0x80)                                                               // if second byte also has bit 7 set
-            && (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)   // AND space for 1st byte
-            && (((btn_poll_buff_head + 2) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail))  // AND space for 2nd byte
-        {                                                                                     //   then put in buffer
-          button_poll_buff[btn_poll_buff_head] = tmp[i];
-          btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
-          button_poll_buff[btn_poll_buff_head] = tmp[i + 1];
-          btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
-        }
-        i++;       // advance input buffer
-        continue;  // and goto next command
-      }
-      break;  // no second byte left, ignore command and quit
-    }
-    else  // "poll button" command (bit 7 is cleared) ?
-    {
+      mutex_lock(&btn_poll_buff_lock);  // keep espi_driver_pollbuttons() from interfering
       if (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)
       {  // space in poll request buffer --> write poll request
         button_poll_buff[btn_poll_buff_head] = tmp[i];
         btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
       }
+      mutex_unlock(&btn_poll_buff_lock);
+      continue;
     }
+    // now we have "emulate button" command (bit 7 is set)
+    if (i + 1 < count)  // a second byte is available ?
+    {
+      if (tmp[i + 1] & 0x80)                 // if second byte also has bit 7 set
+      {                                      //   then put ID in output buffer
+        if (tmp[i + 1] & 0x7F)               // emulate a "pressed" button ?
+          write_id_to_outputbuffer(tmp[i]);  //  then set ID with bit 7 high (which it is already)
+        else
+          write_id_to_outputbuffer(tmp[i] & 0x7F);  // else clear bit 7, marking "released")
+      }
+      i++;       // advance input buffer
+      continue;  // and goto next command
+    }
+    break;  // no second byte left, ignore command and quit
   }
-  mutex_unlock(&btn_poll_buff_lock);
 
   return count;
 }
@@ -252,20 +263,6 @@ s32 espi_driver_buttons_cleanup(struct espi_driver *sb)
   return 0;
 }
 
-// ---- write a button id to the output (read) buffer ----
-static void write_id_to_outputbuffer(u8 id)
-{
-  mutex_lock(&btn_buff_lock);  // keep buttons_fops_read() from interfering
-  if (((btn_buff_head + 1) % BUTTON_BUFFER_SIZE) != btn_buff_tail)
-  {  // space left in output buffer ==> write id into buffer
-    button_buff[btn_buff_head] = id;
-    btn_buff_head              = (btn_buff_head + 1) % BUTTON_BUFFER_SIZE;
-    wake_up_interruptible(&btn_wqueue);
-  }
-  mutex_unlock(&btn_buff_lock);
-  //printk("button state (via polling) = %x\n", btn_id);
-}
-
 // ---- poll the physical IO lines, and also process poll requests ----
 // generates button events when a physical button line changes
 // but also generates these events when polling a specific button was requested
@@ -273,8 +270,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 {
   struct spi_transfer xfer;
   u8                  rx[BUTTON_STATES_SIZE];  // holds the current state of the button lines
-  u8                  i, j, bit_pos, btn_id;
-  u8                  changed_bits, prev_changed_bits, new_state;
+  u8                  i, j, changed_bits, bit_pos, btn_id;
 
   extern int sck_hz;
 
@@ -333,42 +329,29 @@ void espi_driver_pollbuttons(struct espi_driver *p)
   }
   else
   {
+    // A falling ("pressed") edge is to be submitted immediately, provided that the previous two states have been high ("released"),
+    // whereas a rising ("released") edge is to be submitted only when the transition to high happened in the previous pass and we
+    // continue to read high in the current pass, that is, the rising edge is submitted with a delay of one pass.
+    // Overall, this provides a 1-cyle debouncing of the "release" action only, to avoid some (not all, though)
+    // false triggers if a button is pressed but has weak (intermittant) contact or is bouncing during intended release.
+    // The bit sequences (leftmost bit is oldest) we are looking for (others are to be ingnored)
+    //   1 1 0 ==> "pressed" transition
+    //   0 1 1 ==> "released" transition
     for (i = 0; i < BUTTON_STATES_SIZE; i++)
     {
-      prev_changed_bits = (button_states[i] ^ prev_button_states[i]);
-      changed_bits      = (rx[i] ^ button_states[i]);
-      if (changed_bits || prev_changed_bits)  // new state is different for at least one line in this byte ?
+      changed_bits = (rx[i] ^ prev_button_states[i]);  // we don't need to check the middle bits, only the edge bits
+      if (changed_bits)                                // new state is different for at least one line in this byte ?
       {
         for (j = 0; j < 8; j++)
         {  // scan through bits
           bit_pos = 1 << j;
-          if (!(changed_bits & bit_pos) && !(prev_changed_bits & bit_pos))  // this line didn't change in the last 2 passes ?
-            continue;                                                       //   yes, next bit
-
-          // A falling ("pressed") edge is submitted immediately, provided that the previous two states have been high ("released"),
-          // whereas a rising ("released") edge is submitted only when the transition to high happened in the previous pass and we
-          // continue to read high in the current pass, that is, the rising edge is submitted with a delay of one pass.
-          // Overall, this provides a 1-cyle debouncing of the "release" action only, to avoid some (not all, though)
-          // false triggers if a button is pressed but has weak (intermittant) contact or is bouncing during intended release.
-          if (!(rx[i] & bit_pos)                       // if bit is low now
-              && (button_states[i] & bit_pos)          // AND was high at last pass
-              && (prev_button_states[i] & bit_pos))    // AND was high at 2nd last pass
-            new_state = 0;                             //   then state to transmit is "low" with immediate action
-          else if (!(prev_button_states[i] & bit_pos)  // else if bit was low at 2nd last pass
-                   && (button_states[i] & bit_pos)     // AND was high at last pass
-                   && (rx[i] & bit_pos))               // AND is high now
-            new_state = 1;                             //   then state to transmit is "high", lagging by one pass
+          if (!(changed_bits & bit_pos)                            // if edge bits are the same state
+              || !(button_states[i] & bit_pos))                    // OR middle bit is low (pressed)
+            continue;                                              //   then it can't be any of the bit sequences we are looking for
+          if (rx[i] & bit_pos)                                     // new bit is high (released) ?
+            write_id_to_outputbuffer(0x80 | ((i * 8) + (7 - j)));  //  then add in bit 7
           else
-          {
-            // for testing only !! Send an 0xFF during unstable state changes
-            //   write_id_to_outputbuffer(0x7F);
-            continue;  // but any other pattern (notably direct alternating) is considered instable, don't update
-          }
-
-          btn_id = (i * 8) + (7 - j);  // calculate button number (bits are shifted in from left side)
-          if (new_state)               // line reads high currently ?
-            btn_id |= 0x80;            //   then mark this in the id, bit 7
-          write_id_to_outputbuffer(btn_id);
+            write_id_to_outputbuffer(0x00 | ((i * 8) + (7 - j)));  //  else leave bit 7 cleared
         }
       }
       prev_button_states[i] = button_states[i];
@@ -376,28 +359,20 @@ void espi_driver_pollbuttons(struct espi_driver *p)
     }
   }
 
-  // now process any button polling and emulate requests
+  // now process any button polling requests
   mutex_lock(&btn_poll_buff_lock);  // keep buttons_fops_write() from interfering
   while (btn_poll_buff_tail != btn_poll_buff_head)
   {  // have more pending requests
     btn_id             = button_poll_buff[btn_poll_buff_tail];
     btn_poll_buff_tail = (btn_poll_buff_tail + 1) % BUTTON_POLL_BUFFER_SIZE;
 
-    if (btn_id & 0x80)  // "emulate button" command (bit 7 is set) ?
-    {                   // btn_id is a "release" ID already
-      if (btn_poll_buff_tail == btn_poll_buff_head)
-        break;                                          // no data byte in buffer, quit
-      if (button_poll_buff[btn_poll_buff_tail] & 0x7F)  // relevant part of data byte != 0 ==> pressed ?
-        btn_id &= 0x7F;                                 //   then clear bit 7 of btn_id ==> "pressed"
-      btn_poll_buff_tail = (btn_poll_buff_tail + 1) % BUTTON_POLL_BUFFER_SIZE;
-    }
-    else  // "poll button" command (bit 7 is cleared) ?
+    if (!(btn_id & 0x80))  // "poll button" command (bit 7 is cleared) ?
     {
       // check if button currently reads high, then add in bit 7
       if (button_states[btn_id / 8] & (1 << (7 - btn_id % 8)))
         btn_id |= 0x80;
+      write_id_to_outputbuffer(btn_id);
     }
-    write_id_to_outputbuffer(btn_id);
   }
   mutex_unlock(&btn_poll_buff_lock);
 
