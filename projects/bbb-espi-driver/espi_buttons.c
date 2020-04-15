@@ -6,7 +6,7 @@
        and put the result in the output buffer, the button line doesn't have to change physically
        to generate an event.
        Purpose, possible use cases : 
-         * Detect if the hardware is present (if detached, all buttons read 'released'),
+         * Detect if the hardware is present (via a special button ID 0x77 for the pulling function),
            and which version of it (per Version Code read from the ID lines).
          * Detect if any buttons are stuck, at startup
          * Allow for specific button press pattern detected at startup, initiating
@@ -35,13 +35,12 @@ Reading the ID from the driver yields:
 - Button ID | 0x80 (bit 7 set)     ==> button pressed
 
 
-Edit Panel Hardware IDs / Version Code lines  : 73..77
+Edit Panel Hardware IDs / Version Code lines  : 73..76
 ID  detached     < V7.1    >= 7.1
 73  released     released  released
 74  released     released  released
 75  released     released  pressed
 76  released     released  pressed
-77  released     released  pressed
 
 Play Panel Hardware IDs / Version Code lines  : 7C..7F
 ID  detached     < V7.1    >= 7.1
@@ -49,8 +48,20 @@ ID  detached     < V7.1    >= 7.1
 7D  released     released  released
 7E  released     released  pressed
 7F  released     released  pressed
-==> unfortunately, a detached Panel Unit gives the same readout as a Panel Unit
-    of Hardware Version below 7.1. Detach of a >=V7.1 Panel is detectable, though.
+Unfortunately, a detached Panel Unit gives the same readout as a Panel Unit
+of Hardware Version below 7.1. Detach of a >=V7.1 Panel is detectable using
+those lines, though.
+
+===>  Therefore there is a special ID 0x77 which can only be accessed by polling,
+and which is discarded in the normal detection process.
+There is NO way to access the physical line associated to ID 77, which is not
+a regular button line anway and hardwired on the PCB (with the same setup as
+used for ID 76, see above).
+
+When polling ID 77 :
+77  released ==> Panel Unit NOT connected
+77  pressed  ==> Panel Unit connected
+The input to this function is generated in the Encoder driver "espi_lpc8xx.c"
     
     
 -------------------
@@ -74,13 +85,20 @@ This avoids command parsing going out of sync.
 #include <linux/of_gpio.h>
 #include "espi_driver.h"
 
-#define ESPI_BUTTON_DEV_MAJOR 302
+#define PANEL_UNIT_CONNECTION_ID (0x77)  // the last bit from edit panel ID bits, which is ignored and only used for panel detection by polling
 
 // button states bit field
-#define BUTTON_BYTES_GENERAL_PANELS (12)  // 4*24 Buttons = 96 Bits needed ==> 12 Bytes
-#define BUTTON_BYTES_CENTRAL_PANEL  (3)   // 18 Buttons + Encoder Button + 5 PCB-ID lines ==> 24 Bits needed ==> 3 Bytes
-#define BUTTON_BYTES_SOLED_PANEL    (1)   // 4 Buttons + 4 PCB-ID lines ==> 1 Byte
-#define BUTTON_STATES_SIZE          (BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL + BUTTON_BYTES_SOLED_PANEL)
+#define NUMBER_OF_BUTTONS_PER_GENERAL_PANEL  (24)
+#define NUMBER_OF_GENERAL_PANELS             (4)
+#define NUMBER_OF_BUTTONS_ALL_GENERAL_PANELS (NUMBER_OF_BUTTONS_PER_GENERAL_PANEL * NUMBER_OF_GENERAL_PANELS)
+#define NUMBER_OF_BUTTONS_CENTRAL_PANEL      (18 + 1 + 5)  // 18 Buttons, 1 Encoder, 5 ID Lines
+#define NUMBER_OF_BUTTONS_SOLED_PANEL        (4 + 4)       // 4 Buttons, 4 ID Lines
+
+#define BUTTON_BYTES_GENERAL_PANELS ((u16)((NUMBER_OF_BUTTONS_ALL_GENERAL_PANELS + 7) / 8))  // number of bytes needed
+#define BUTTON_BYTES_CENTRAL_PANEL  ((u16)((NUMBER_OF_BUTTONS_CENTRAL_PANEL + 7) / 8))       // number of bytes needed
+#define BUTTON_BYTES_SOLED_PANEL    ((u16)((NUMBER_OF_BUTTONS_SOLED_PANEL + 7) / 8))         // number of bytes needed
+
+#define BUTTON_STATES_SIZE (BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL + BUTTON_BYTES_SOLED_PANEL)
 static u8 *button_states;       // bit field holding the last buttons states
 static u8 *prev_button_states;  // bit field holding the previous last buttons states
 
@@ -137,7 +155,7 @@ static ssize_t buttons_fops_read(struct file *filp, char __user *buf, size_t cou
 }
 
 // ---- write to driver function ----
-// writes poll request data
+// writes poll request or button emulation data
 static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
   u32 i;
@@ -340,18 +358,21 @@ void espi_driver_pollbuttons(struct espi_driver *p)
     for (i = 0; i < BUTTON_STATES_SIZE; i++)
     {
       changed_bits = (rx[i] ^ prev_button_states[i]);  // we don't need to check the middle bits, only the edge bits
-      if (changed_bits)                                // new state is different for at least one line in this byte ?
+      if (panel_unit_is_online() && changed_bits)      // new state is different for at least one line in this byte ?
       {
         for (j = 0; j < 8; j++)
         {  // scan through bits
           bit_pos = 1 << j;
-          if (!(changed_bits & bit_pos)                            // if edge bits are the same state
-              || !(button_states[i] & bit_pos))                    // OR middle bit is low (pressed)
-            continue;                                              //   then it can't be any of the bit sequences we are looking for
-          if (rx[i] & bit_pos)                                     // new bit is high (released) ?
-            write_id_to_outputbuffer(0x80 | ((i * 8) + (7 - j)));  //  then add in bit 7
+          if (!(changed_bits & bit_pos)          // if edge bits are the same state
+              || !(button_states[i] & bit_pos))  // OR middle bit is low (pressed)
+            continue;                            //   then it can't be any of the bit sequences we are looking for
+          btn_id = (i * 8) + (7 - j);
+          if (btn_id == PANEL_UNIT_CONNECTION_ID)  // special, discard "return panel_unit_offline"
+            continue;
+          if (rx[i] & bit_pos)                        // new bit is high (released) ?
+            write_id_to_outputbuffer(0x80 | btn_id);  //  then add in bit 7
           else
-            write_id_to_outputbuffer(0x00 | ((i * 8) + (7 - j)));  //  else leave bit 7 cleared
+            write_id_to_outputbuffer(0x00 | btn_id);  //  else leave bit 7 cleared
         }
       }
       prev_button_states[i] = button_states[i];
@@ -368,9 +389,17 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
     if (!(btn_id & 0x80))  // "poll button" command (bit 7 is cleared) ?
     {
-      // check if button currently reads high, then add in bit 7
-      if (button_states[btn_id / 8] & (1 << (7 - btn_id % 8)))
-        btn_id |= 0x80;
+      if (btn_id == PANEL_UNIT_CONNECTION_ID)  // special, return "panel_unit_offline" rather than physical line
+      {
+        if (!panel_unit_is_online())
+          btn_id |= 0x80;
+      }
+      else
+      {
+        // check if button currently reads high, then add in bit 7
+        if (button_states[btn_id / 8] & (1 << (7 - btn_id % 8)))
+          btn_id |= 0x80;
+      }
       write_id_to_outputbuffer(btn_id);
     }
   }
