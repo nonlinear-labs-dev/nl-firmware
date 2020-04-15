@@ -943,7 +943,7 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   }
 
   initFadeParameters(transaction, copyTo);
-  
+
   initRecallValues(transaction);
 
   ae->toggleSuppressParameterChanges(transaction);
@@ -1053,7 +1053,7 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
         = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
     auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
     auto partVolumeDV
-        = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : 1.0);
+        = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : .5);
 
     auto newVolumeDV = globalVolumeDV + partVolumeDV;
     auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
