@@ -5,7 +5,8 @@ class EditBufferLogicalParts
  public:
   template <VoiceGroup vg> static std::vector<Parameter*> getLocalNormal();
 
-  template <VoiceGroup vg> static std::vector<Parameter*> getLocalSpecial();
+  template <VoiceGroup vg> static std::vector<Parameter*> getCrossFB();
+  template <VoiceGroup vg> static std::vector<Parameter*> getToFX();
 
   template <VoiceGroup vg> static Parameter* getUnisonVoice();
 
@@ -38,6 +39,13 @@ class EditBufferLogicalParts
 
   static size_t createHashOfVector(const std::vector<Parameter*>& v);
 
+  static size_t createValueHash(const std::vector<Parameter*>& v);
+  static size_t createValueHash(Parameter* p);
+
+  template <typename... tArgs> static size_t createValueHash(tArgs... args);
+
+  static bool isDefaultLoaded(const std::vector<Parameter*>& v);
+
   static Parameter* getParameter(const ParameterId& id);
 };
 
@@ -55,6 +63,7 @@ namespace detail
 
   constexpr static auto PART_VOLUME = 358;
   constexpr static auto PART_TUNE = 360;
+
   constexpr static auto FADE_FROM = 396;
   constexpr static auto FADE_RANGE = 397;
 
@@ -67,6 +76,7 @@ namespace detail
   constexpr static auto FB_COMB_FROM = 350;
   constexpr static auto FB_SVF_FROM = 352;
   constexpr static auto FB_FX_FROM = 354;
+
   constexpr static auto OUT_TO_FX = 362;
 }
 
@@ -96,25 +106,25 @@ template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getLoca
   return ret;
 }
 
-template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getLocalSpecial()
+template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getToFX()
 {
   using namespace detail;
   auto eb = TestHelper::getEditBuffer();
-  std::vector<Parameter*> ret {};
+  std::vector<Parameter*> ret;
+  ret.emplace_back(eb->findParameterByID({ OUT_TO_FX, vg }));
+  return ret;
+}
 
-  auto ignoreParams = std::vector { FB_OSC, FB_OSC_SRC, FB_COMB_FROM, FB_SVF_FROM, FB_FX_FROM, OUT_TO_FX };
-
-  for(auto& g : eb->getParameterGroups(vg))
-  {
-    for(auto& p : g->getParameters())
-    {
-      if(contains(ignoreParams, p->getID().getNumber()))
-      {
-        ret.emplace_back(p);
-      }
-    }
-  }
-
+template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getCrossFB()
+{
+  using namespace detail;
+  auto eb = TestHelper::getEditBuffer();
+  std::vector<Parameter*> ret;
+  ret.emplace_back(eb->findParameterByID({ FB_COMB_FROM, vg }));
+  ret.emplace_back(eb->findParameterByID({ FB_FX_FROM, vg }));
+  ret.emplace_back(eb->findParameterByID({ FB_OSC, vg }));
+  ret.emplace_back(eb->findParameterByID({ FB_OSC_SRC, vg }));
+  ret.emplace_back(eb->findParameterByID({ FB_SVF_FROM, vg }));
   return ret;
 }
 
@@ -229,4 +239,48 @@ template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getPart
 std::vector<Parameter*> EditBufferLogicalParts::getMaster()
 {
   return { getMasterVolume(), getMasterTune() };
+}
+
+size_t EditBufferLogicalParts::createValueHash(const std::vector<Parameter*>& v)
+{
+  size_t ret {};
+  for(auto& p : v)
+  {
+    hash_combine(ret, createValueHash(p));
+  }
+  return ret;
+}
+
+bool EditBufferLogicalParts::isDefaultLoaded(const std::vector<Parameter*>& v)
+{
+  for(auto& p : v)
+  {
+    if(!p->isDefaultLoaded())
+      return false;
+  }
+  return true;
+}
+
+template <typename... tArgs> size_t EditBufferLogicalParts::createValueHash(tArgs... args)
+{
+  size_t ret;
+
+  for(auto& v : { args... })
+  {
+    hash_combine(ret, createValueHash(v));
+  }
+
+  return ret;
+}
+
+size_t EditBufferLogicalParts::createValueHash(Parameter* p)
+{
+  size_t ret;
+  hash_combine(ret, p->getValue().getQuantizedClippedValue(true));
+  if(auto modP = dynamic_cast<ModulateableParameter*>(p))
+  {
+    hash_combine(ret, modP->getModulationAmount());
+    hash_combine(ret, modP->getModulationSource());
+  }
+  return ret;
 }

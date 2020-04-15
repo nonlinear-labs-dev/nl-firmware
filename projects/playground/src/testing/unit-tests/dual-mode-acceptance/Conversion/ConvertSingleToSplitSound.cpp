@@ -17,15 +17,23 @@ TEST_CASE("Convert Single Sound to Split")
   auto monoI = EBL::getMonoEnable<VoiceGroup::I>();
   auto monoII = EBL::getMonoEnable<VoiceGroup::II>();
 
+  auto globalVolume = EBL::getMasterVolume();
+
   {
     auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-    voicesI->loadDefault(scope->getTransaction());
-    voicesI->stepCPFromHwui(scope->getTransaction(), 12, {});
+    auto transaction = scope->getTransaction();
+
+    TestHelper::initSingleEditBuffer(transaction);
+    voicesI->loadDefault(transaction);
+    voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "13 voices");
 
-    monoI->setCPFromHwui(scope->getTransaction(), 1);
+    monoI->setCPFromHwui(transaction, 1);
     CHECK(monoI->getDisplayString() == "On");
+
+    globalVolume->setModulationAmount(transaction, 0.45);
+    globalVolume->setModulationSource(transaction, MacroControls::MC2);
+    globalVolume->setCPFromHwui(transaction, 0.187);
   }
 
   WHEN("Converted")
@@ -35,6 +43,8 @@ TEST_CASE("Convert Single Sound to Split")
 
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
     const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
+
+    const auto globalMasterHash = EBL::createValueHash(EBL::getMaster());
 
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
@@ -49,10 +59,10 @@ TEST_CASE("Convert Single Sound to Split")
 
     THEN("Special Local Params are default")
     {
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::I>())
-        CHECK(special->isDefaultLoaded());
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::II>())
-        CHECK(special->isDefaultLoaded());
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Local normal I have been copied to II")
@@ -86,6 +96,12 @@ TEST_CASE("Convert Single Sound to Split")
       CHECK(EBL::getMasterTune()->isDefaultLoaded());
     }
 
+    THEN("Part Master have Preset Global Master Values")
+    {
+      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>()) == globalMasterHash);
+      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>()) == globalMasterHash);
+    }
+
     THEN("Macro Mappings are same")
     {
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == mcmHash);
@@ -103,16 +119,23 @@ TEST_CASE("Convert Single Sound to Layer")
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
   auto monoI = EBL::getMonoEnable<VoiceGroup::I>();
+  auto globalVolume = EBL::getMasterVolume();
 
   {
     auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-    voicesI->loadDefault(scope->getTransaction());
-    voicesI->stepCPFromHwui(scope->getTransaction(), 12, {});
+    auto transaction = scope->getTransaction();
+
+    TestHelper::initSingleEditBuffer(transaction);
+    voicesI->loadDefault(transaction);
+    voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "13 voices");
 
-    monoI->setCPFromHwui(scope->getTransaction(), 1);
+    monoI->setCPFromHwui(transaction, 1);
     CHECK(monoI->getDisplayString() == "On");
+
+    globalVolume->setModulationAmount(transaction, 0.45);
+    globalVolume->setModulationSource(transaction, MacroControls::MC2);
+    globalVolume->setCPFromHwui(transaction, 0.187);
   }
 
   WHEN("Converted")
@@ -122,6 +145,8 @@ TEST_CASE("Convert Single Sound to Layer")
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
     const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
 
+    const auto oldMasterHash = EBL::createValueHash(EBL::getMaster());
+
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
@@ -130,15 +155,14 @@ TEST_CASE("Convert Single Sound to Layer")
     THEN("Unison Voices Correct")
     {
       CHECK(voicesI->getDisplayString() == "12 voices");
-      CHECK(voicesII->getDisplayString() == "1 voice (off)");
     }
 
     THEN("Special Local Params are default")
     {
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::I>())
-        CHECK(special->isDefaultLoaded());
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::II>())
-        CHECK(special->isDefaultLoaded());
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Local normal I have been copied to II")
@@ -148,15 +172,8 @@ TEST_CASE("Convert Single Sound to Layer")
 
     THEN("Voice Parameters of II are default")
     {
-      for(auto& p : EBL::getMono<VoiceGroup::II>())
-      {
-        CHECK(p->isDefaultLoaded());
-      }
-
-      for(auto& p : EBL::getUnison<VoiceGroup::II>())
-      {
-        CHECK(p->isDefaultLoaded());
-      }
+      CHECK(EBL::isDefaultLoaded(EBL::getMono<VoiceGroup::II>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getUnison<VoiceGroup::II>()));
     }
 
     THEN("Fade is default")
@@ -167,6 +184,12 @@ TEST_CASE("Convert Single Sound to Layer")
       CHECK(EBL::getFadeRange<VoiceGroup::II>()->isDefaultLoaded());
     }
 
+    THEN("Part Master I/II was Copied from Global Master")
+    {
+      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>()) == oldMasterHash);
+      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>()) == oldMasterHash);
+    }
+
     THEN("Split is default")
     {
       CHECK(EBL::getSplitPoint()->isDefaultLoaded());
@@ -174,8 +197,7 @@ TEST_CASE("Convert Single Sound to Layer")
 
     THEN("Global Master is Default")
     {
-      CHECK(EBL::getMasterVolume()->isDefaultLoaded());
-      CHECK(EBL::getMasterTune()->isDefaultLoaded());
+      CHECK(EBL::isDefaultLoaded(EBL::getMaster()));
     }
 
     THEN("Macro Mappings are same")
@@ -186,6 +208,154 @@ TEST_CASE("Convert Single Sound to Layer")
     THEN("Scale unchanged")
     {
       CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
+    }
+  }
+}
+
+TEST_CASE("Convert Split (II) to Single")
+{
+  auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
+  auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
+  auto monoII = EBL::getMonoEnable<VoiceGroup::II>();
+
+  auto globalVolume = EBL::getMasterVolume();
+  auto globalTune = EBL::getMasterTune();
+
+  auto envAIAttack = EBL::getParameter({ 0, VoiceGroup::I });
+  auto envAIIAttack = EBL::getParameter({ 0, VoiceGroup::II });
+
+  {
+    auto scope = TestHelper::createTestScope();
+    auto transaction = scope->getTransaction();
+    TestHelper::initDualEditBuffer<SoundType::Split>(transaction);
+
+    voicesII->loadDefault(transaction);
+    voicesII->stepCPFromHwui(transaction, 12, {});
+    CHECK(voicesII->getDisplayString() == "12 voices");
+
+    monoII->setCPFromHwui(transaction, 1);
+    CHECK(monoII->getDisplayString() == "On");
+
+    globalVolume->setCPFromHwui(transaction, 0.420);
+    globalVolume->setModulationAmount(transaction, 0.3);
+    globalVolume->undoableSelectModSource(transaction, MacroControls::MC1);
+
+    globalTune->setCPFromHwui(transaction, 0.60);
+    globalTune->setModulationAmount(transaction, 0.5);
+    globalTune->undoableSelectModSource(transaction, MacroControls::MC2);
+
+    EBL::getPartVolume<VoiceGroup::II>()->setCPFromHwui(transaction, 0.75);
+    EBL::getPartVolume<VoiceGroup::II>()->setModulationAmount(transaction, 0.4);
+    EBL::getPartVolume<VoiceGroup::II>()->undoableSelectModSource(transaction, MacroControls::MC3);
+
+    EBL::getPartTune<VoiceGroup::II>()->setCPFromHwui(transaction, 1);
+    EBL::getPartTune<VoiceGroup::II>()->setModulationAmount(transaction, 0.3);
+    EBL::getPartTune<VoiceGroup::II>()->undoableSelectModSource(transaction, MacroControls::MC5);
+
+    CHECK(EBL::getPartTune<VoiceGroup::II>()->getModulationSource() == MacroControls::MC5);
+    CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationSource() == MacroControls::MC3);
+
+    envAIIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
+  }
+  WHEN("Converted")
+  {
+
+    const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
+    const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
+
+    const auto attackIICP = envAIIAttack->getControlPositionValue();
+
+    const auto masterVolumeDisplay = globalVolume->getDisplayValue();
+    const auto masterTuneDisplay = globalTune->getDisplayValue();
+
+    const auto partTuneIIDisplay = EBL::getPartTune<VoiceGroup::II>()->getDisplayValue();
+    const auto oldTuneIIModAmt = EBL::getPartTune<VoiceGroup::II>()->getModulationAmount();
+    const auto oldTuneIIModSrc = EBL::getPartTune<VoiceGroup::II>()->getModulationSource();
+
+    const auto partVolumeIIDisplay = EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue();
+    const auto oldVolumeIIModAmt = EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount();
+    const auto oldVolumeIIModSrc = EBL::getPartVolume<VoiceGroup::II>()->getModulationSource();
+
+    const auto localNormalIIHash = EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::II>());
+
+    auto scope = TestHelper::createTestScope();
+    auto transaction = scope->getTransaction();
+    auto eb = TestHelper::getEditBuffer();
+
+    eb->undoableConvertToSingle(transaction, VoiceGroup::II);
+
+    THEN("Unison Voices Correct")
+    {
+      CHECK(voicesI->getDisplayString() == "12 voices");
+      CHECK(EBL::getMonoEnable<VoiceGroup::I>()->getDisplayString() == "On");
+    }
+
+    THEN("Special Local Params are default")
+    {
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
+    }
+
+    THEN("Local II copied to I")
+    {
+      //Check example Parameter
+      CHECK_PARAMETER_CP_EQUALS_FICTION(envAIAttack, attackIICP);
+      CHECK(localNormalIIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()));
+    }
+
+    THEN("Voices/Mono from II copied to I")
+    {
+      CHECK(EBL::getMonoEnable<VoiceGroup::I>()->getDisplayString() == "On");
+      CHECK(EBL::getUnisonVoice<VoiceGroup::I>()->getDisplayString() == "12 voices");
+    }
+
+    THEN("Local II is default")
+    {
+      CHECK(EBL::isDefaultLoaded(EBL::getLocalNormal<VoiceGroup::II>()));
+    }
+
+    THEN("Voice Parameters of II are default")
+    {
+      CHECK(EBL::isDefaultLoaded(EBL::getMono<VoiceGroup::II>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getUnison<VoiceGroup::II>()));
+    }
+
+    THEN("Fade is default")
+    {
+      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isDefaultLoaded());
+    }
+
+    THEN("Part Master is Default")
+    {
+      CHECK(EBL::isDefaultLoaded({ EBL::getPartTune<VoiceGroup::I>(), EBL::getPartTune<VoiceGroup::II>(),
+                                   EBL::getPartVolume<VoiceGroup::I>(), EBL::getPartVolume<VoiceGroup::II>() }));
+    }
+
+    THEN("Split is default")
+    {
+      CHECK(EBL::getSplitPoint()->isDefaultLoaded());
+    }
+
+    THEN("Global Scale/MCM is unchanged")
+    {
+      CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
+      CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == mcmHash);
+    }
+
+    THEN("Part and Global master have been combined")
+    {
+      CHECK(globalVolume->getDisplayValue() == Approx(masterVolumeDisplay + partVolumeIIDisplay));
+      CHECK(globalVolume->getModulationAmount() == oldVolumeIIModAmt);
+      CHECK(globalVolume->getModulationSource() == oldVolumeIIModSrc);
+
+      CHECK(globalTune->getDisplayValue() == Approx(std::min(masterTuneDisplay + partTuneIIDisplay, 48.0)));
+      CHECK(globalTune->getModulationAmount() == oldTuneIIModAmt);
+      CHECK(globalTune->getModulationSource() == oldTuneIIModSrc);
     }
   }
 }
@@ -222,6 +392,9 @@ TEST_CASE("Convert Split (II) to Layer")
     const auto masterVolumeHash = EBL::getMasterVolume()->getHash();
     const auto masterTuneHash = EBL::getMasterTune()->getHash();
 
+    const auto oldToFxI = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
+    const auto oldToFxII = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
+
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
@@ -233,12 +406,16 @@ TEST_CASE("Convert Split (II) to Layer")
       CHECK(voicesII->getDisplayString() == "1 voice (off)");
     }
 
-    THEN("Special Local Params are default")
+    THEN("Cross FB I/II default")
     {
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::I>())
-        CHECK(special->isDefaultLoaded());
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::II>())
-        CHECK(special->isDefaultLoaded());
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+    }
+
+    THEN("to FX unchanged")
+    {
+      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == oldToFxI);
+      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == oldToFxII);
     }
 
     THEN("Local normal unchanged")
@@ -285,161 +462,6 @@ TEST_CASE("Convert Split (II) to Layer")
       CHECK(EBL::getMasterTune()->getHash() == masterTuneHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == mcmHash);
-    }
-  }
-}
-
-TEST_CASE("Convert Split (II) to Single")
-{
-  auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
-  auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
-  auto monoII = EBL::getMonoEnable<VoiceGroup::II>();
-  auto globalVolume = EBL::getMasterVolume();
-  auto globalTune = EBL::getMasterVolume();
-
-  auto envAIIAttack = EBL::getParameter({ 0, VoiceGroup::II });
-  auto envAIAttack = EBL::getParameter({ 0, VoiceGroup::I });
-
-  {
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Split>(transaction);
-
-    voicesII->loadDefault(transaction);
-    voicesII->stepCPFromHwui(transaction, 12, {});
-    CHECK(voicesII->getDisplayString() == "12 voices");
-
-    monoII->setCPFromHwui(transaction, 1);
-    CHECK(monoII->getDisplayString() == "On");
-
-    globalVolume->setModulationAmount(transaction, 0.5);
-    globalVolume->undoableSelectModSource(transaction, MacroControls::MC1);
-
-    globalTune->setModulationAmount(transaction, 0.5);
-    globalTune->undoableSelectModSource(transaction, MacroControls::MC2);
-
-    EBL::getPartVolume<VoiceGroup::II>()->setModulationAmount(transaction, 0.4);
-    EBL::getPartVolume<VoiceGroup::II>()->undoableSelectModSource(transaction, MacroControls::MC3);
-    EBL::getPartTune<VoiceGroup::II>()->setModulationAmount(transaction, 0.4);
-    EBL::getPartTune<VoiceGroup::II>()->undoableSelectModSource(transaction, MacroControls::MC5);
-
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
-
-    envAIIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
-  }
-
-  WHEN("Converted")
-  {
-    const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
-    const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
-
-    const auto attackIICP = envAIIAttack->getControlPositionValue();
-
-    const auto masterVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
-    const auto masterTuneDisplay = EBL::getMasterVolume()->getDisplayValue();
-
-    const auto partVolumeIIDisplay = EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue();
-    const auto partTuneIIDisplay = EBL::getPartTune<VoiceGroup::II>()->getDisplayValue();
-
-    const auto oldTuneIIModAmt = EBL::getPartTune<VoiceGroup::II>()->getModulationAmount();
-    const auto oldTuneIIModSrc = EBL::getPartTune<VoiceGroup::II>()->getModulationSource();
-
-    const auto oldVolumeIIModAmt = EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount();
-    const auto oldVolumeIIModSrc = EBL::getPartVolume<VoiceGroup::II>()->getModulationSource();
-
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
-    auto eb = TestHelper::getEditBuffer();
-    eb->undoableConvertToSingle(transaction, Application::get().getHWUI()->getCurrentVoiceGroup());
-
-    THEN("Unison Voices Correct")
-    {
-      CHECK(voicesI->getDisplayString() == "12 voices");
-      CHECK(EBL::getMonoEnable<VoiceGroup::I>()->getDisplayString() == "On");
-    }
-
-    THEN("Special Local Params are default")
-    {
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::I>())
-        CHECK(special->isDefaultLoaded());
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::II>())
-        CHECK(special->isDefaultLoaded());
-    }
-
-    THEN("Local II copied to I")
-    {
-      //Check example Parameter
-      CHECK_PARAMETER_CP_EQUALS_FICTION(envAIAttack, attackIICP);
-    }
-
-    THEN("Voices/Mono from II copied to I")
-    {
-      CHECK(EBL::getMonoEnable<VoiceGroup::I>()->getDisplayString() == "On");
-      CHECK(EBL::getUnisonVoice<VoiceGroup::I>()->getDisplayString() == "12 voices");
-    }
-
-    THEN("Local II is default")
-    {
-      for(auto& p : EBL::getLocalNormal<VoiceGroup::II>())
-      {
-        CHECK(p->isDefaultLoaded());
-      }
-
-      for(auto& p : EBL::getLocalSpecial<VoiceGroup::II>())
-      {
-        CHECK(p->isDefaultLoaded());
-      }
-    }
-
-    THEN("Voice Parameters of II are default")
-    {
-      for(auto& p : EBL::getMono<VoiceGroup::II>())
-      {
-        CHECK(p->isDefaultLoaded());
-      }
-
-      for(auto& p : EBL::getUnison<VoiceGroup::II>())
-      {
-        CHECK(p->isDefaultLoaded());
-      }
-    }
-
-    THEN("Fade is default")
-    {
-      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isDefaultLoaded());
-    }
-
-    THEN("Part Master is Default")
-    {
-      CHECK(EBL::getPartTune<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getPartTune<VoiceGroup::II>()->isDefaultLoaded());
-      CHECK(EBL::getPartVolume<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getPartVolume<VoiceGroup::II>()->isDefaultLoaded());
-    }
-
-    THEN("Split is default")
-    {
-      CHECK(EBL::getSplitPoint()->isDefaultLoaded());
-    }
-
-    THEN("Global Scale/MCM is unchanged")
-    {
-      CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
-      CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == mcmHash);
-    }
-
-    THEN("Part and Global master have been combined")
-    {
-      CHECK(EBL::getMasterVolume()->getDisplayValue() == masterVolumeDisplay + partVolumeIIDisplay);
-      CHECK(EBL::getMasterVolume()->getModulationAmount() == oldVolumeIIModAmt);
-      CHECK(EBL::getMasterVolume()->getModulationSource() == oldVolumeIIModSrc);
-
-      CHECK(EBL::getMasterTune()->getDisplayValue() == masterTuneDisplay + partTuneIIDisplay);
-      CHECK(EBL::getMasterTune()->getModulationAmount() == oldTuneIIModAmt);
-      CHECK(EBL::getMasterTune()->getModulationSource() == oldTuneIIModSrc);
     }
   }
 }
@@ -517,10 +539,10 @@ TEST_CASE("Convert Layer to Split")
 
     THEN("Special Local Params are default")
     {
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::I>())
-        CHECK(special->isDefaultLoaded());
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::II>())
-        CHECK(special->isDefaultLoaded());
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Local kept values")
@@ -647,10 +669,10 @@ TEST_CASE("Convert Layer (II) to Single")
 
     THEN("Special Local Params are default")
     {
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::I>())
-        CHECK(special->isDefaultLoaded());
-      for(auto& special : EBL::getLocalSpecial<VoiceGroup::II>())
-        CHECK(special->isDefaultLoaded());
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Local I has Local II and Local II is default")
@@ -658,10 +680,7 @@ TEST_CASE("Convert Layer (II) to Single")
       //check for copy of VG II params to VG I Params
       CHECK_PARAMETER_CP_EQUALS_FICTION(envAIAttack, oldAttackIICP);
 
-      for(auto& p : EBL::getLocalNormal<VoiceGroup::II>())
-      {
-        CHECK(p->isDefaultLoaded());
-      }
+      CHECK(EBL::isDefaultLoaded(EBL::getLocalNormal<VoiceGroup::II>()));
     }
 
     THEN("Fade is default")
@@ -727,8 +746,10 @@ TEST_CASE("Load Single into Split Part II")
 
   WHEN("Load")
   {
-    const auto localSpecialIHash = EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::I>());
-    const auto localSpecialIIHash = EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::II>());
+    const auto localSpecialIHash
+        = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>());
+    const auto localSpecialIIHash
+        = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>());
     const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
 
     const auto oldUnisonIIHash = EBL::createHashOfVector(EBL::getUnison<VoiceGroup::II>());
@@ -756,8 +777,9 @@ TEST_CASE("Load Single into Split Part II")
 
     THEN("Local Special unchanged")
     {
-      CHECK(EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::I>()) == localSpecialIHash);
-      CHECK(EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::II>()) == localSpecialIIHash);
+      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>()) == localSpecialIHash);
+      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>())
+            == localSpecialIIHash);
     }
 
     THEN("Local Normal was copied to current VG")
@@ -846,8 +868,10 @@ TEST_CASE("Load Part I of Split into Split Part II")
 
   WHEN("Load")
   {
-    const auto localSpecialIHash = EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::I>());
-    const auto localSpecialIIHash = EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::II>());
+    const auto localSpecialIHash
+        = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>());
+    const auto localSpecialIIHash
+        = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>());
     const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
 
     const auto oldUnisonIIHash = EBL::createHashOfVector(EBL::getUnison<VoiceGroup::II>());
@@ -878,8 +902,9 @@ TEST_CASE("Load Part I of Split into Split Part II")
 
     THEN("Local Special unchanged")
     {
-      CHECK(EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::I>()) == localSpecialIHash);
-      CHECK(EBL::createHashOfVector(EBL::getLocalSpecial<VoiceGroup::II>()) == localSpecialIIHash);
+      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>()) == localSpecialIHash);
+      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>())
+            == localSpecialIIHash);
     }
 
     THEN("Local Normal was copied to current VG")

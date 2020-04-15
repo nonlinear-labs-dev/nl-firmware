@@ -35,6 +35,7 @@
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
 #include <device-settings/Settings.h>
+#include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -652,11 +653,8 @@ void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGr
     undoableConvertDualToSingle(transaction, copyFrom);
 }
 
-void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+void EditBuffer::combineSplitPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
-  setName(transaction, getVoiceGroupName(copyFrom));
-  undoableSetType(transaction, SoundType::Single);
-
   auto masterGroup = getParameterGroupByID({ "Master", VoiceGroup::Global });
 
   auto originVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyFrom }));
@@ -679,16 +677,64 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
-  if(copyFrom != VoiceGroup::I)
-    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+  masterVolumeParameter->copyFrom(transaction, originVolume);
+  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
+
+  masterTuneParameter->copyFrom(transaction, originTune);
+  masterTuneParameter->setCPFromHwui(transaction, newTune);
+}
+
+void EditBuffer::combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  auto masterGroup = getParameterGroupByID({ "Master", VoiceGroup::Global });
+
+  auto originVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyFrom }));
+  auto originTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, copyFrom }));
+
+  auto masterVolumeParameter
+      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 247, VoiceGroup::Global }));
+  auto masterTuneParameter
+      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 248, VoiceGroup::Global }));
+
+  // unmute both parts
+  findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
+  findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
+
+  ParabolicGainDbScaleConverter dbGainConverter;
+
+  auto vgVolumeDisplay = dbGainConverter.controlPositionToDisplay(originVolume->getControlPositionValue());
+  auto masterVolumeDisplay = dbGainConverter.controlPositionToDisplay(masterVolumeParameter->getControlPositionValue());
+
+  auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
+  auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
   masterVolumeParameter->setCPFromHwui(transaction, newVolume);
-  masterVolumeParameter->undoableSelectModSource(transaction, originVolume->getModulationSource());
+  masterVolumeParameter->setModulationSource(transaction, originVolume->getModulationSource());
   masterVolumeParameter->setModulationAmount(transaction, originVolume->getModulationAmount());
 
   masterTuneParameter->setCPFromHwui(transaction, newTune);
-  masterTuneParameter->undoableSelectModSource(transaction, originTune->getModulationSource());
+  masterTuneParameter->setModulationSource(transaction, originTune->getModulationSource());
   masterTuneParameter->setModulationAmount(transaction, originTune->getModulationAmount());
+}
+
+void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  const auto oldType = getType();
+
+  setName(transaction, getVoiceGroupName(copyFrom));
+  undoableSetType(transaction, SoundType::Single);
+
+  if(oldType == SoundType::Split)
+  {
+    combineSplitPartGlobalMaster(transaction, copyFrom);
+  }
+  else if(oldType == SoundType::Layer)
+  {
+    combineLayerPartGlobalMaster(transaction, copyFrom);
+  }
+
+  if(copyFrom != VoiceGroup::I)
+    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 
   initToFX(transaction);
   initFadeFrom(transaction, SoundType::Single);
@@ -951,7 +997,7 @@ void EditBuffer::TEST_doDeferredJobs()
 void EditBuffer::initToFX(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    findParameterByID({ 362, vg })->setDefaultFromHwui(transaction);
+    findParameterByID({ 362, vg })->loadDefault(transaction);
 }
 
 void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
