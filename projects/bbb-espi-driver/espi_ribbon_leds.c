@@ -19,6 +19,8 @@ Setting up a LED requires 2 bytes written to the driver:
  When writing an odd number of bytes, the last byte will be ignored to avoid going out
  of sync. But when sync is lost for other reasons, no attempt is made to resync !
  
+The LEDs are force-updated in specific time intervals to care for ESD-induced upsets.
+ 
  */
 
 #include <linux/of_gpio.h>
@@ -26,9 +28,12 @@ Setting up a LED requires 2 bytes written to the driver:
 #include <linux/jiffies.h>
 #include "espi_driver.h"
 
-#define ESPI_RIBBON_LED_DEV_MAJOR 303
 #define ESD_INTERVAL              (250)  // force update of LEDs every 250ms, to cater for ESD etc glitches
-#define RIBBON_LED_STATES_SIZE    (17)   // 66 LEDs * 2 bits for states each = 17 Bytes needed
+#define NUMBER_OF_LEDS_PER_RIBBON (33)
+#define NUMBER_OF_BITS_PER_LED    (2)
+#define NUMBER_OF_RIBBONS         (2)
+#define TOTAL_NUMBER_OF_BITS      (NUMBER_OF_LEDS_PER_RIBBON * NUMBER_OF_BITS_PER_LED * NUMBER_OF_RIBBONS)
+#define RIBBON_LED_STATES_SIZE    ((u16)((TOTAL_NUMBER_OF_BITS + 7) / 8))  // number of bytes needed to store the LED bits
 static u8 *rb_led_st;
 static u8 *rb_led_new_st;
 static u64 lastUpdate = 0;
@@ -78,11 +83,9 @@ s32 espi_driver_rb_leds_setup(struct espi_driver *sb)
   s32 i, ret;
 
   // current and new LED states bit fields
-  rb_led_st = kcalloc(RIBBON_LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!rb_led_st)
-    return -ENOMEM;
+  rb_led_st     = kcalloc(RIBBON_LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
   rb_led_new_st = kcalloc(RIBBON_LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!rb_led_new_st)
+  if (!rb_led_st || !rb_led_new_st)
     return -ENOMEM;
 
   for (i = 0; i < RIBBON_LED_STATES_SIZE; i++)
