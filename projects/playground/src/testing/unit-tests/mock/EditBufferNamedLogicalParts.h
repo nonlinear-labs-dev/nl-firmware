@@ -44,6 +44,8 @@ class EditBufferLogicalParts
 
   template <typename... tArgs> static size_t createValueHash(tArgs... args);
 
+  template <typename... tArgs> static bool isDefaultLoaded(tArgs... args);
+
   static bool isDefaultLoaded(const std::vector<Parameter*>& v);
 
   static Parameter* getParameter(const ParameterId& id);
@@ -283,4 +285,14 @@ size_t EditBufferLogicalParts::createValueHash(Parameter* p)
     hash_combine(ret, modP->getModulationSource());
   }
   return ret;
+}
+
+template <typename... tArgs> bool EditBufferLogicalParts::isDefaultLoaded(tArgs... args)
+{
+  for(auto& v : { args... })
+  {
+    if(!isDefaultLoaded(v))
+      return false;
+  }
+  return true;
 }

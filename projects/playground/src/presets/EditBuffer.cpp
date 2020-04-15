@@ -788,7 +788,8 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
       break;
   }
 
-  copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
+  if(!(oldType == SoundType::Layer && type == SoundType::Split))
+    copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
 
   if(oldType == SoundType::Split && type == SoundType::Layer)
   {
@@ -933,6 +934,14 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   super::copyFrom(transaction, preset, from, copyTo);
 
   copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
+
+  if(getType() == SoundType::Layer)
+  {
+    getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction);
+    getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction);
+  }
+
+  initFadeParameters(transaction, copyTo);
 
   ae->toggleSuppressParameterChanges(transaction);
 }
@@ -1114,4 +1123,10 @@ void EditBuffer::copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup fro
       target->copyFrom(transaction, src);
     }
   }
+}
+
+void EditBuffer::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group)
+{
+  findParameterByID({ 396, group })->loadDefault(transaction);
+  findParameterByID({ 397, group })->loadDefault(transaction);
 }
