@@ -1,3 +1,10 @@
+/* 
+   ESPI Driver for the large OLED display on the Panel Unit (Edit Panel)
+
+   The display is re-initialized and force-updated with the current contents
+   of the frame buffer when a previously unplugged Panel Unit is plugged in.
+
+*/
 #include <linux/string.h>
 #include <linux/of_gpio.h>
 #include "espi_driver.h"
@@ -38,6 +45,9 @@
 static u8 *ssd1322_buff;
 static u8 *ssd1322_tmp_buff;
 static DEFINE_MUTEX(ssd1322_tmp_buff_lock);
+
+static u8           force_update = 0;
+struct espi_driver *saved_sb     = NULL;
 
 /*******************************************************************************
     ssd1322 functions (boled)
@@ -82,24 +92,12 @@ static void ssd1322_data(struct espi_driver *sb, u8 *data, u32 len)
   espi_driver_transfer(sb->spidev, &xfer);
 }
 
-s32 ssd1322_fb_init(struct oleds_fb_par *par)
+/** DISPLAY INITIALIZATION *************/
+void ssd1322_display_init(struct espi_driver *sb)
 {
   u8 data[2];
+  saved_sb = sb;
 
-  struct espi_driver *sb = par->espi;
-
-  ssd1322_buff = kcalloc(SSD1322_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!ssd1322_buff)
-    return -ENOMEM;
-
-  ssd1322_tmp_buff = kcalloc(SSD1322_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!ssd1322_tmp_buff)
-    return -ENOMEM;
-
-  memset(ssd1322_buff, 0, SSD1322_BUFF_SIZE);
-  memset(ssd1322_tmp_buff, 0, SSD1322_BUFF_SIZE);
-
-  /** DISPLAY INITIALIZATION *************/
   espi_driver_scs_select(sb, ESPI_EDIT_PANEL_PORT, ESPI_EDIT_BOLED_DEVICE);
 
   data[0] = 0x12;
@@ -159,6 +157,21 @@ s32 ssd1322_fb_init(struct oleds_fb_par *par)
 
   espi_driver_scs_select(sb, ESPI_EDIT_PANEL_PORT, 0);
 
+  force_update = 1;
+}
+
+s32 ssd1322_fb_init(struct oleds_fb_par *par)
+{
+  ssd1322_buff     = kcalloc(SSD1322_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
+  ssd1322_tmp_buff = kcalloc(SSD1322_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
+  if (!ssd1322_buff || !ssd1322_tmp_buff)
+    return -ENOMEM;
+
+  memset(ssd1322_buff, 0, SSD1322_BUFF_SIZE);
+  memset(ssd1322_tmp_buff, 0, SSD1322_BUFF_SIZE);
+
+  ssd1322_display_init(par->espi);
+
   return 0;
 }
 
@@ -184,7 +197,6 @@ void ssd1322_update_display(struct oleds_fb_par *par)
   mutex_lock(&ssd1322_tmp_buff_lock);
   for (i = 0; i < SSD1322_BUFF_SIZE; i++)
   {
-
     ssd1322_tmp_buff[i] = buf[offset++] << 4;
     ssd1322_tmp_buff[i] |= buf[offset++];
   }
@@ -193,19 +205,31 @@ void ssd1322_update_display(struct oleds_fb_par *par)
 
 void espi_driver_ssd1322_poll(struct espi_driver *p)
 {
-  u32 i, update = 0;
+  u32        update;
+  static int last_online = 1;  // assume panel unit was online initially
+  static int now_online;
+
+  now_online = panel_unit_is_online();
+  if (now_online != last_online)
+  {  // transition
+    if (now_online)
+    {  // panel unit went online again, so re-init the display and force update (using current data in the frame-buffer)
+      force_update = 1;
+      if (saved_sb)
+        ssd1322_display_init(saved_sb);
+    }
+  }
+  last_online = now_online;
 
   ssd1322_update_display(p->oleds);
 
   mutex_lock(&ssd1322_tmp_buff_lock);
-  for (i = 0; i < SSD1322_BUFF_SIZE; i++)
-    if (ssd1322_buff[i] != ssd1322_tmp_buff[i])
-    {
-      ssd1322_buff[i] = ssd1322_tmp_buff[i];
-      update          = 1;
-    }
+  if ((update = memcmp(ssd1322_buff, ssd1322_tmp_buff, SSD1322_BUFF_SIZE)))
+    memcpy(ssd1322_buff, ssd1322_tmp_buff, SSD1322_BUFF_SIZE);
   mutex_unlock(&ssd1322_tmp_buff_lock);
 
+  update |= force_update;
+  force_update = 0;
   if (update == 0)
     return;
 
