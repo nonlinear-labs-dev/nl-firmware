@@ -1,5 +1,6 @@
 #include <linux/string.h>
 #include <linux/of_gpio.h>
+#include <linux/string.h>
 #include "espi_driver.h"
 #include "espi_fb.h"
 
@@ -29,6 +30,7 @@
 static u8 *ssd1305_buff;
 static u8 *ssd1305_tmp_buff;
 static DEFINE_MUTEX(ssd1305_tmp_buff_lock);
+static u8 force_update = 0;
 
 /*******************************************************************************
     ssd1305 functions (soled)
@@ -41,11 +43,9 @@ s32 ssd1305_fb_init(struct oleds_fb_par *par)
   struct espi_driver *sb = par->espi;
   extern int          sck_hz;
 
-  ssd1305_buff = kcalloc(SSD1305_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!ssd1305_buff)
-    return -ENOMEM;
+  ssd1305_buff     = kcalloc(SSD1305_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
   ssd1305_tmp_buff = kcalloc(SSD1305_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!ssd1305_tmp_buff)
+  if (!ssd1305_buff || !ssd1305_tmp_buff)
     return -ENOMEM;
 
   /** DISPLAY INITIALIZATION *************/
@@ -104,6 +104,8 @@ s32 ssd1305_fb_init(struct oleds_fb_par *par)
   espi_driver_transfer(sb->spidev, &xfer);
   espi_driver_scs_select(sb, ESPI_PLAY_PANEL_PORT, 0);
 
+  force_update = 1;
+
   return 0;
 }
 
@@ -155,23 +157,18 @@ void ssd1305_update_display(struct oleds_fb_par *par)
 void espi_driver_ssd1305_poll(struct espi_driver *p)
 {
   struct spi_transfer xfer;
-  u32                 i;
-  u8                  update = 0;
+  u8                  update;
   extern int          sck_hz;
 
   ssd1305_update_display(p->oleds);
 
   mutex_lock(&ssd1305_tmp_buff_lock);
-  for (i = 0; i < SSD1305_BUFF_SIZE; i++)
-  {
-    if (ssd1305_buff[i] ^ ssd1305_tmp_buff[i])
-    {
-      ssd1305_buff[i] = ssd1305_tmp_buff[i];
-      update          = 1;
-    }
-  }
+  if ((update = memcmp(ssd1305_buff, ssd1305_tmp_buff, SSD1305_BUFF_SIZE)))
+    memcpy(ssd1305_buff, ssd1305_tmp_buff, SSD1305_BUFF_SIZE);
   mutex_unlock(&ssd1305_tmp_buff_lock);
 
+  update |= force_update;
+  force_update = 0;
   if (update == 0)
     return;
 
