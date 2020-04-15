@@ -14,6 +14,9 @@ Setting up a LED requires 1 byte written to the driver:
 LED ID        (bit 7 cleared) ==> LED off
 LED ID | 0x80 (bit 7 set)     ==> LED on
 
+The LEDs are force-updated in specific time intervals to care for ESD-induced upsets,
+and to show correct display when the Panel Unit is plugged in live.
+
 */
 
 #include <linux/of_gpio.h>
@@ -21,9 +24,11 @@ LED ID | 0x80 (bit 7 set)     ==> LED on
 #include <linux/jiffies.h>
 #include "espi_driver.h"
 
-#define ESPI_LED_DEV_MAJOR 301
-#define ESD_INTERVAL       (250)  // force update of LEDs every 250ms, to cater for ESD etc glitches
-#define LED_STATES_SIZE    (12)   // 96 LEDs need 12 bytes of state bits
+#define ESD_INTERVAL             (250)  // force update of LEDs every 250ms, to cater for ESD etc glitches
+#define NUMBER_OF_LEDS_PER_PANEL (24)
+#define NUMBER_OF_PANELS         (4)
+#define NUMBER_OF_LEDS           (NUMBER_OF_LEDS_PER_PANEL * NUMBER_OF_PANELS)
+#define LED_STATES_SIZE          ((u16)((NUMBER_OF_LEDS + 7) / 8))  // number of bytes to store the LED bits
 static u8 *led_st;
 static u8 *led_new_st;
 static u64 lastUpdate = 0;
@@ -73,11 +78,9 @@ s32 espi_driver_leds_setup(struct espi_driver *sb)
   int i;
 
   // current and new LED states bit fields
-  led_st = kcalloc(LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!led_st)
-    return -ENOMEM;
+  led_st     = kcalloc(LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
   led_new_st = kcalloc(LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!led_new_st)
+  if (!led_st || !led_new_st)
     return -ENOMEM;
 
   for (i = 0; i < LED_STATES_SIZE; i++)
