@@ -4,6 +4,11 @@
 #include <linux/spi/spi.h>
 #include <linux/fb.h>
 
+#define ESPI_LED_DEV_MAJOR        301
+#define ESPI_RIBBON_LED_DEV_MAJOR 303
+#define ESPI_BUTTON_DEV_MAJOR     302
+#define ESPI_ENCODER_DEV_MAJOR    308
+
 #define ESPI_SCS_NUM 6
 
 #define ESPI_EDIT_PANEL_PORT     0
@@ -63,6 +68,8 @@ struct oleds_fb_par
   struct espi_driver *espi;
 };
 
+int panel_unit_is_online(void);
+
 void espi_driver_scs_select(struct espi_driver *spi, s32 port, s32 device);
 s32  espi_driver_transfer(struct spi_device *dev, struct spi_transfer *xfer);
 s32  espi_driver_set_mode(struct spi_device *dev, u16 mode);
@@ -88,14 +95,5 @@ void espi_driver_pollbuttons(struct espi_driver *p);
 s32  espi_driver_leds_setup(struct espi_driver *sb);
 s32  espi_driver_leds_cleanup(struct espi_driver *sb);
 void espi_driver_leds_poll(struct espi_driver *p);
-/*** ePC control and status ***/
-s32  espi_driver_epc_ctrl_setup(struct espi_driver *sb);
-s32  espi_driver_epc_ctrl_cleanup(struct espi_driver *sb);
-void espi_driver_epc_control_poll(struct espi_driver *p);
-void espi_driver_epc_status_poll(struct espi_driver *p);
-/*** main cpu board control ***/
-s32  espi_driver_lpc_ctrl_setup(struct espi_driver *sb);
-s32  espi_driver_lpc_ctrl_cleanup(struct espi_driver *sb);
-void espi_driver_lpc_ctrl_poll(struct espi_driver *p);
 
 #endif
