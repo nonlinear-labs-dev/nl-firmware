@@ -801,7 +801,6 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   }
 
   initSplitPoint(transaction);
-  initRecallValues(transaction);
 
   findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
   findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
@@ -811,6 +810,8 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
     getParameterGroupByID({ "Mono", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
     getParameterGroupByID({ "Unison", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
   }
+
+  initRecallValues(transaction);
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
 
@@ -942,6 +943,8 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   }
 
   initFadeParameters(transaction, copyTo);
+  
+  initRecallValues(transaction);
 
   ae->toggleSuppressParameterChanges(transaction);
 }
@@ -1067,9 +1070,8 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
       partVolume->setModulationAmount(transaction, presetGlobalVolume->getModulationAmount());
     }
   }
-  else
+  else if(partTune && partVolume)
   {
-#warning todo more stuff ? :
     partTune->loadDefault(transaction);
     partVolume->loadDefault(transaction);
   }

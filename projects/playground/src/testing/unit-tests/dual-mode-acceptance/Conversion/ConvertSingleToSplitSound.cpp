@@ -111,6 +111,11 @@ TEST_CASE("Convert Single Sound to Split")
     {
       CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
     }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
+    }
   }
 }
 
@@ -208,6 +213,11 @@ TEST_CASE("Convert Single Sound to Layer")
     THEN("Scale unchanged")
     {
       CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
+    }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
@@ -358,6 +368,11 @@ TEST_CASE("Convert Split (II) to Single")
       CHECK(globalTune->getModulationAmount() == oldTuneIIModAmt);
       CHECK(globalTune->getModulationSource() == oldTuneIIModSrc);
     }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
+    }
   }
 }
 
@@ -463,6 +478,11 @@ TEST_CASE("Convert Split (II) to Layer")
       CHECK(EBL::getMasterTune()->getHash() == masterTuneHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == mcmHash);
+    }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
@@ -598,6 +618,11 @@ TEST_CASE("Convert Layer I to Split")
       CHECK(EBL::getMasterVolume()->getDisplayValue() == masterVolumeDisplay);
       CHECK(EBL::getMasterTune()->getDisplayValue() == masterTuneDisplay);
     }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
+    }
   }
 }
 
@@ -723,6 +748,11 @@ TEST_CASE("Convert Layer (II) to Single")
       CHECK(EBL::createHashOfVector(EBL::getScale()) == scaleHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == mcmHash);
     }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
+    }
   }
 }
 
@@ -840,6 +870,11 @@ TEST_CASE("Load Single into Split Part II")
     THEN("Fade II is default")
     {
       CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
+    }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
@@ -1000,6 +1035,11 @@ TEST_CASE("Load Part I of Split into Split Part II")
     THEN("Fade II Default")
     {
       CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
+    }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
@@ -1174,6 +1214,11 @@ TEST_CASE("Load Part I of Split into Layer Part II")
       CHECK(EBL::getFadeFrom<VoiceGroup::II>()->getHash() + EBL::getFadeRange<VoiceGroup::II>()->getHash()
             == oldFadeIIHash);
     }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
+    }
   }
 }
 
@@ -1340,6 +1385,11 @@ TEST_CASE("Load Part I of Layer into Split Part II")
     {
       CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::I>(), EBL::getFadeRange<VoiceGroup::I>() }));
       CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
+    }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
@@ -1520,6 +1570,11 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
       CHECK(oldFadeHash
             == EBL::createValueHash({ EBL::getFadeFrom<VoiceGroup::I>(), EBL::getFadeFrom<VoiceGroup::II>(),
                                       EBL::getFadeRange<VoiceGroup::I>(), EBL::getFadeRange<VoiceGroup::II>() }));
+    }
+
+    THEN("EB unchanged")
+    {
+      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
