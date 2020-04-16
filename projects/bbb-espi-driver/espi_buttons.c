@@ -58,7 +58,7 @@ There is NO way to access the physical line associated to ID 77, which is not
 a regular button line anway and hardwired on the PCB (with the same setup as
 used for ID 76, see above).
 
-When polling ID 77 :
+When polling ID 0x77 :
 77  released ==> Panel Unit NOT connected
 77  pressed  ==> Panel Unit connected
 The input to this function is generated in the Encoder driver "espi_lpc8xx.c"
@@ -78,6 +78,8 @@ The remaining bits of the flag byte are used to determine whether a "release" ev
 or a "pressed" event is generated (any bit set).
 Incomplete writes, and writes with the flag byte not having bit 7 set, are discarded.
 This avoids command parsing going out of sync.
+
+Using the special ID 0x77 in an "Emulate Button" call will clear all buffers and return without further action.
 
 */
 
@@ -124,17 +126,18 @@ static u8 btn_poll_buff_head, btn_poll_buff_tail;  // ... pointer wrapping, do N
 static DEFINE_MUTEX(btn_poll_buff_lock);
 
 // ---- write a button id to the output (read) buffer ----
-static void write_id_to_outputbuffer(u8 id)
+static int write_id_to_outputbuffer(u8 id)
 {
-  mutex_lock(&btn_buff_lock);  // keep buttons_fops_read() and espi_driver_pollbuttons() from interfering
-  if ((u8)(btn_buff_head + 1) != btn_buff_tail)
-  {  // space left in output buffer ==> write id into buffer
-    button_buff[btn_buff_head] = id;
-    btn_buff_head++;
+  int ret = (u8)(btn_buff_head + 1) != btn_buff_tail;
+  if (ret)
+  {                              // space left in output buffer ==> write id into buffer
+    mutex_lock(&btn_buff_lock);  // keep buttons_fops_read() and espi_driver_pollbuttons() from interfering
+    button_buff[btn_buff_head++] = id;
     wake_up_interruptible(&btn_wqueue);
+    mutex_unlock(&btn_buff_lock);
+    //printk("button state = %x\n", btn_id);
   }
-  mutex_unlock(&btn_buff_lock);
-  //printk("button state = %x\n", btn_id);
+  return ret;
 }
 
 // ---- read from driver function ----
@@ -152,9 +155,8 @@ static ssize_t buttons_fops_read(struct file *filp, char __user *buf, size_t cou
   if ((status = wait_event_interruptible(btn_wqueue, btn_buff_head != btn_buff_tail)))
     return status;
 
-  mutex_lock(&btn_buff_lock);               // keep espi_driver_pollbuttons() from interfering
-  tmp = button_buff[btn_buff_tail] ^ 0x80;  // invert bit 7, so we get 1 on btn down and 0 on btn up
-  btn_buff_tail++;
+  mutex_lock(&btn_buff_lock);                 // keep espi_driver_pollbuttons() from interfering
+  tmp = button_buff[btn_buff_tail++] ^ 0x80;  // invert bit 7, so we get 1 on btn down and 0 on btn up
   mutex_unlock(&btn_buff_lock);
 
   if (copy_to_user(buf, &tmp, 1) != 0)
@@ -168,6 +170,7 @@ static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, siz
 {
   u32 i;
   u8  tmp[count];
+  int ret;
 
   if (copy_from_user(tmp, buf, count))
     return -EFAULT;
@@ -179,21 +182,35 @@ static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, siz
       mutex_lock(&btn_poll_buff_lock);  // keep espi_driver_pollbuttons() from interfering
       if ((u8)(btn_poll_buff_head + 1) != btn_poll_buff_tail)
       {  // space in poll request buffer --> write poll request
-        button_poll_buff[btn_poll_buff_head] = tmp[i];
-        btn_poll_buff_head++;
+        button_poll_buff[btn_poll_buff_head++] = tmp[i];
+        mutex_unlock(&btn_poll_buff_lock);
+        continue;
       }
       mutex_unlock(&btn_poll_buff_lock);
-      continue;
+      return i + 1;  // no space in poll buffer --> return bytes accepted so far
     }
     // now we have "emulate button" command (bit 7 is set)
     if (i + 1 < count)  // a second byte is available ?
     {
-      if (tmp[i + 1] & 0x80)                        // if second byte also has bit 7 set
-      {                                             //   then put ID in output buffer
-        if (tmp[i + 1] & 0x7F)                      // emulate a "pressed" button ?
-          write_id_to_outputbuffer(tmp[i] & 0x7F);  //   then clear bit 7, marking "pressed", bit 7 will be inverted at fops_read()
+      if (tmp[i + 1] & 0x80)  // if second byte also has bit 7 set
+      {
+        if ((tmp[i] & 0x7F) == PANEL_UNIT_CONNECTION_ID)  // special : clear all buffers
+        {
+          mutex_lock(&btn_poll_buff_lock);
+          btn_poll_buff_head = btn_poll_buff_tail = 0;
+          mutex_unlock(&btn_poll_buff_lock);
+          mutex_lock(&btn_buff_lock);
+          btn_buff_head = btn_buff_tail = 0;
+          mutex_unlock(&btn_buff_lock);
+          return count;
+        }
+        //   otherwise put ID in output buffer
+        if (tmp[i + 1] & 0x7F)                            // emulate a "pressed" button ?
+          ret = write_id_to_outputbuffer(tmp[i] & 0x7F);  //   then clear bit 7, marking "pressed", bit 7 will be inverted at fops_read()
         else
-          write_id_to_outputbuffer(tmp[i]);  //          else set ID with bit 7 high (which it is already)
+          ret = write_id_to_outputbuffer(tmp[i]);  //          else set ID with bit 7 high (which it is already)
+        if (!ret)
+          return i + 2;  // no space in output buffer --> return bytes accepted so far
       }
       i++;       // advance input buffer
       continue;  // and goto next command
@@ -361,8 +378,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
   mutex_lock(&btn_poll_buff_lock);  // keep buttons_fops_write() from interfering
   while (btn_poll_buff_tail != btn_poll_buff_head)
   {  // have more pending requests
-    btn_id = button_poll_buff[btn_poll_buff_tail];
-    btn_poll_buff_tail++;
+    btn_id = button_poll_buff[btn_poll_buff_tail++];
 
     if (!(btn_id & 0x80))  // "poll button" command (bit 7 is cleared) ?
     {
