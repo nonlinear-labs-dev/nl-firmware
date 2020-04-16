@@ -25,6 +25,8 @@
 
 #include "espi_driver.h"
 
+#define WORKQUEUE_DELAY_MS 2  // orig. code used 8 ms
+
 int sck_hz = 1000000;
 
 static struct workqueue_struct *workqueue;
@@ -112,7 +114,7 @@ s32 espi_driver_set_mode(struct spi_device *dev, u16 mode)
 
 static void espi_driver_poll(struct delayed_work *p)
 {
-  queue_delayed_work(workqueue, p, msecs_to_jiffies(8));
+  queue_delayed_work(workqueue, p, msecs_to_jiffies(WORKQUEUE_DELAY_MS));
 
   switch (((struct espi_driver *) p)->poll_stage)
   {
@@ -219,7 +221,7 @@ static s32 espi_driver_probe(struct spi_device *dev)
   espi_driver_encoder_setup(sb);
 
   INIT_DELAYED_WORK(&(sb->work), (work_func_t) espi_driver_poll);
-  queue_delayed_work(workqueue, &(sb->work), msecs_to_jiffies(8));
+  queue_delayed_work(workqueue, &(sb->work), msecs_to_jiffies(WORKQUEUE_DELAY_MS));
 
   dev_info(&dev->dev, "espi driver: \n");
   dev_info(&dev->dev, "  sck_hz=%i Hz\n", sck_hz);
