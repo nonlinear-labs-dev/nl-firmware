@@ -351,7 +351,7 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
         {
           if(m_focusAndMode.focus == UIFocus::Setup)
           {
-            undoableSetFocusAndMode(UIFocus::Parameters);
+            undoableSetFocusAndMode(getOldFocusAndMode());
           }
           else
           {
