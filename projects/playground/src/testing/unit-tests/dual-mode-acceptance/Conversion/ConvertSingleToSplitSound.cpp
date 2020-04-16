@@ -35,10 +35,10 @@ namespace detail
   };
 
   auto randomizeFadeParams = [](auto transaction) {
-    EBL::getFadeFrom<VoiceGroup::I>()->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
-    EBL::getFadeFrom<VoiceGroup::II>()->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
-    EBL::getFadeRange<VoiceGroup::I>()->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
-    EBL::getFadeRange<VoiceGroup::II>()->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
+    TestHelper::forceParameterChange(transaction, EBL::getFadeFrom<VoiceGroup::I>());
+    TestHelper::forceParameterChange(transaction, EBL::getFadeFrom<VoiceGroup::II>());
+    TestHelper::forceParameterChange(transaction, EBL::getFadeRange<VoiceGroup::I>());
+    TestHelper::forceParameterChange(transaction, EBL::getFadeRange<VoiceGroup::II>());
   };
 }
 
