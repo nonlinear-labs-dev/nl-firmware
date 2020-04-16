@@ -81,6 +81,7 @@ This avoids command parsing going out of sync.
 
 */
 
+#include <linux/string.h>
 #include <linux/poll.h>
 #include <linux/of_gpio.h>
 #include "espi_driver.h"
@@ -99,30 +100,37 @@ This avoids command parsing going out of sync.
 #define BUTTON_BYTES_SOLED_PANEL    ((u16)((NUMBER_OF_BUTTONS_SOLED_PANEL + 7) / 8))         // number of bytes needed
 
 #define BUTTON_STATES_SIZE (BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL + BUTTON_BYTES_SOLED_PANEL)
-static u8 *button_states;       // bit field holding the last buttons states
-static u8 *prev_button_states;  // bit field holding the previous last buttons states
+// array of bit fields holding the current, last, and previous last buttons states
+// 4 buffers are used to simplify buffer rotation (can use AND instead of MODULO)
+static u8 button_states[4][BUTTON_STATES_SIZE];
+static u8 current_buffer = 0;
+#define NOW    button_states[current_buffer]
+#define LAST   button_states[(current_buffer + 4 - 1) & 3]
+#define BEFORE button_states[(current_buffer + 4 - 2) & 3]
+static inline void buffer_advance(void)
+{
+  current_buffer = (current_buffer + 1) & 3;
+}
 
 // button id output buffer
-#define BUTTON_BUFFER_SIZE 256
-static u8 *button_buff;
-static u32 btn_buff_head, btn_buff_tail;
+static u8 button_buff[256];              // affords modulo 256 buffer ...
+static u8 btn_buff_head, btn_buff_tail;  // ... pointer wrapping, do NOT change
 static DEFINE_MUTEX(btn_buff_lock);
 static DECLARE_WAIT_QUEUE_HEAD(btn_wqueue);
 
 // button id poll requests buffer
-#define BUTTON_POLL_BUFFER_SIZE 256
-static u8 *button_poll_buff;
-static u32 btn_poll_buff_head, btn_poll_buff_tail;
+static u8 button_poll_buff[256];                   // affords modulo 256 buffer ...
+static u8 btn_poll_buff_head, btn_poll_buff_tail;  // ... pointer wrapping, do NOT change
 static DEFINE_MUTEX(btn_poll_buff_lock);
 
 // ---- write a button id to the output (read) buffer ----
 static void write_id_to_outputbuffer(u8 id)
 {
   mutex_lock(&btn_buff_lock);  // keep buttons_fops_read() and espi_driver_pollbuttons() from interfering
-  if (((btn_buff_head + 1) % BUTTON_BUFFER_SIZE) != btn_buff_tail)
+  if (btn_buff_head + 1 != btn_buff_tail)
   {  // space left in output buffer ==> write id into buffer
     button_buff[btn_buff_head] = id;
-    btn_buff_head              = (btn_buff_head + 1) % BUTTON_BUFFER_SIZE;
+    btn_buff_head++;
     wake_up_interruptible(&btn_wqueue);
   }
   mutex_unlock(&btn_buff_lock);
@@ -144,9 +152,9 @@ static ssize_t buttons_fops_read(struct file *filp, char __user *buf, size_t cou
   if ((status = wait_event_interruptible(btn_wqueue, btn_buff_head != btn_buff_tail)))
     return status;
 
-  mutex_lock(&btn_buff_lock);                         // keep espi_driver_pollbuttons() from interfering
-  tmp           = button_buff[btn_buff_tail] ^ 0x80;  // invert bit 7, so we get 1 on btn down and 0 on btn up
-  btn_buff_tail = (btn_buff_tail + 1) % BUTTON_BUFFER_SIZE;
+  mutex_lock(&btn_buff_lock);               // keep espi_driver_pollbuttons() from interfering
+  tmp = button_buff[btn_buff_tail] ^ 0x80;  // invert bit 7, so we get 1 on btn down and 0 on btn up
+  btn_buff_tail++;
   mutex_unlock(&btn_buff_lock);
 
   if (copy_to_user(buf, &tmp, 1) != 0)
@@ -169,10 +177,10 @@ static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, siz
     if (!(tmp[i] & 0x80))  // "poll button" command (bit 7 is cleared) ?
     {
       mutex_lock(&btn_poll_buff_lock);  // keep espi_driver_pollbuttons() from interfering
-      if (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)
+      if (btn_poll_buff_head + 1 != btn_poll_buff_tail)
       {  // space in poll request buffer --> write poll request
         button_poll_buff[btn_poll_buff_head] = tmp[i];
-        btn_poll_buff_head                   = (btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE;
+        btn_poll_buff_head++;
       }
       mutex_unlock(&btn_poll_buff_lock);
       continue;
@@ -210,7 +218,7 @@ static unsigned int buttons_fops_poll(struct file *filp, poll_table *wait)
     mask |= POLLIN | POLLRDNORM;
 
   // if there is space in the poll buffer, writing is allowed
-  if (((btn_poll_buff_head + 1) % BUTTON_POLL_BUFFER_SIZE) != btn_poll_buff_tail)
+  if (btn_poll_buff_head + 1 != btn_poll_buff_tail)
     mask |= POLLOUT | POLLWRNORM;
 
   return mask;
@@ -231,30 +239,10 @@ static struct class *buttons_class;
 // ---- driver setup (init) function ----
 s32 espi_driver_buttons_setup(struct espi_driver *sb)
 {
-  s32 ret;
-
-  // button states bit fields, will be initialized with data on first passes of espi_driver_pollbuttons()
-  button_states = kcalloc(BUTTON_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!button_states)
-    return -ENOMEM;
-  prev_button_states = kcalloc(BUTTON_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!prev_button_states)
-    return -ENOMEM;
-
-  // button id output buffer
-  button_buff = kcalloc(BUTTON_BUFFER_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!button_buff)
-    return -ENOMEM;
   btn_buff_head = btn_buff_tail = 0;
-
-  // button id poll request input buffer
-  button_poll_buff = kcalloc(BUTTON_POLL_BUFFER_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!button_poll_buff)
-    return -ENOMEM;
   btn_poll_buff_head = btn_poll_buff_tail = 0;
 
-  ret = register_chrdev(ESPI_BUTTON_DEV_MAJOR, "spi", &buttons_fops);
-  if (ret < 0)
+  if (register_chrdev(ESPI_BUTTON_DEV_MAJOR, "spi", &buttons_fops) < 0)
     pr_err("%s: problem at register_chrdev\n", __func__);
 
   buttons_class = class_create(THIS_MODULE, "espi-button");
@@ -269,11 +257,6 @@ s32 espi_driver_buttons_setup(struct espi_driver *sb)
 // ---- driver cleanup (de-init) function ----
 s32 espi_driver_buttons_cleanup(struct espi_driver *sb)
 {
-  kfree(button_states);
-  kfree(prev_button_states);
-  kfree(button_buff);
-  kfree(button_poll_buff);
-
   device_destroy(buttons_class, MKDEV(ESPI_BUTTON_DEV_MAJOR, 0));
   class_destroy(buttons_class);
   unregister_chrdev(ESPI_BUTTON_DEV_MAJOR, "spi");
@@ -287,7 +270,6 @@ s32 espi_driver_buttons_cleanup(struct espi_driver *sb)
 void espi_driver_pollbuttons(struct espi_driver *p)
 {
   struct spi_transfer xfer;
-  u8                  rx[BUTTON_STATES_SIZE];  // holds the current state of the button lines
   u8                  i, j, changed_bits, bit_pos, btn_id;
 
   extern int sck_hz;
@@ -295,7 +277,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
   static int initial_passes = 2;  // flag first two passes for initialization instead of change detection
 
   xfer.tx_buf        = NULL;
-  xfer.rx_buf        = rx;
+  xfer.rx_buf        = NOW;
   xfer.len           = BUTTON_BYTES_GENERAL_PANELS;
   xfer.bits_per_word = 8;
   xfer.delay_usecs   = 0;
@@ -312,7 +294,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
   // read central (big oled) panel ("edit panel")
   xfer.tx_buf = NULL;
-  xfer.rx_buf = rx + BUTTON_BYTES_GENERAL_PANELS;
+  xfer.rx_buf = NOW + BUTTON_BYTES_GENERAL_PANELS;
   xfer.len    = BUTTON_BYTES_CENTRAL_PANEL;
   espi_driver_scs_select(p, ESPI_EDIT_PANEL_PORT, ESPI_EDIT_BUTTONS_DEVICE);
   gpio_set_value(p->gpio_sap, 0);
@@ -322,7 +304,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
   // read small oled panel ("play panel")
   xfer.tx_buf = NULL;
-  xfer.rx_buf = rx + BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL;
+  xfer.rx_buf = NOW + BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL;
   xfer.len    = BUTTON_BYTES_SOLED_PANEL;
   espi_driver_scs_select(p, ESPI_PLAY_PANEL_PORT, p->play_buttons_device);
   gpio_set_value(p->gpio_sap, 0);
@@ -339,11 +321,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
   if (initial_passes)
   {
     initial_passes--;
-    for (i = 0; i < BUTTON_STATES_SIZE; i++)
-    {  // fill last and previous last states with current state
-      prev_button_states[i] = button_states[i];
-      button_states[i]      = rx[i];
-    }
+    buffer_advance();
   }
   else
   {
@@ -357,35 +335,34 @@ void espi_driver_pollbuttons(struct espi_driver *p)
     //   0 1 1 ==> "released" transition
     for (i = 0; i < BUTTON_STATES_SIZE; i++)
     {
-      changed_bits = (rx[i] ^ prev_button_states[i]);  // we don't need to check the middle bits, only the edge bits
-      if (panel_unit_is_online() && changed_bits)      // new state is different for at least one line in this byte ?
+      changed_bits = (NOW[i] ^ BEFORE[i]);         // we don't need to check the middle bits, only the edge bits
+      if (panel_unit_is_online() && changed_bits)  // new state is different for at least one line in this byte ?
       {
         for (j = 0; j < 8; j++)
         {  // scan through bits
           bit_pos = 1 << j;
-          if (!(changed_bits & bit_pos)          // if edge bits are the same state
-              || !(button_states[i] & bit_pos))  // OR middle bit is low (pressed)
-            continue;                            //   then it can't be any of the bit sequences we are looking for
+          if (!(changed_bits & bit_pos)  // if edge bits are the same state
+              || !(LAST[i] & bit_pos))   // OR middle bit is low (pressed)
+            continue;                    //   then it can't be any of the bit sequences we are looking for
           btn_id = (i * 8) + (7 - j);
           if (btn_id == PANEL_UNIT_CONNECTION_ID)  // special, discard "return panel_unit_offline"
             continue;
-          if (rx[i] & bit_pos)                        // new bit is high (released) ?
+          if (NOW[i] & bit_pos)                       // new bit is high (released) ?
             write_id_to_outputbuffer(0x80 | btn_id);  //  then add in bit 7
           else
             write_id_to_outputbuffer(0x00 | btn_id);  //  else leave bit 7 cleared
         }
       }
-      prev_button_states[i] = button_states[i];
-      button_states[i]      = rx[i];
     }
+    buffer_advance();
   }
 
   // now process any button polling requests
   mutex_lock(&btn_poll_buff_lock);  // keep buttons_fops_write() from interfering
   while (btn_poll_buff_tail != btn_poll_buff_head)
   {  // have more pending requests
-    btn_id             = button_poll_buff[btn_poll_buff_tail];
-    btn_poll_buff_tail = (btn_poll_buff_tail + 1) % BUTTON_POLL_BUFFER_SIZE;
+    btn_id = button_poll_buff[btn_poll_buff_tail];
+    btn_poll_buff_tail++;
 
     if (!(btn_id & 0x80))  // "poll button" command (bit 7 is cleared) ?
     {
@@ -397,7 +374,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
       else
       {
         // check if button currently reads high, then add in bit 7
-        if (button_states[btn_id / 8] & (1 << (7 - btn_id % 8)))
+        if (NOW[btn_id / 8] & (1 << (7 - btn_id % 8)))
           btn_id |= 0x80;
       }
       write_id_to_outputbuffer(btn_id);
