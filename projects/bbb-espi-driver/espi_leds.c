@@ -19,6 +19,7 @@ and to show correct display when the Panel Unit is plugged in live.
 
 */
 
+#include <linux/string.h>
 #include <linux/of_gpio.h>
 #include <linux/uaccess.h>
 #include <linux/jiffies.h>
@@ -29,16 +30,17 @@ and to show correct display when the Panel Unit is plugged in live.
 #define NUMBER_OF_PANELS         (4)
 #define NUMBER_OF_LEDS           (NUMBER_OF_LEDS_PER_PANEL * NUMBER_OF_PANELS)
 #define LED_STATES_SIZE          ((u16)((NUMBER_OF_LEDS + 7) / 8))  // number of bytes to store the LED bits
-static u8 *led_st;
-static u8 *led_new_st;
+static u8  led_st[LED_STATES_SIZE];
+static u8  led_new_st[LED_STATES_SIZE];
 static u64 lastUpdate = 0;
 static DEFINE_MUTEX(led_state_lock);
+static u8 force_update = 0;
 
 // ---- write to driver function ----
 // writes requested LED states to "new" buffer
 static ssize_t led_fops_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
-  u32 i;
+  u32 i, led_index;
   u8  led_id;
   u8  tmp[count];
 
@@ -50,11 +52,13 @@ static ssize_t led_fops_write(struct file *filp, const char __user *buf, size_t 
   mutex_lock(&led_state_lock);  // keep espi_driver_leds_poll() from interfering
   for (i = 0; i < count; i++)
   {
-    led_id = tmp[i] & 0x7F;
+    led_id    = tmp[i] & 0x7F;
+    led_index = (LED_STATES_SIZE - 1) - led_id / 8;
     if (tmp[i] & 0x80)  // "ON" bit set ?
-      led_new_st[(LED_STATES_SIZE - 1) - led_id / 8] |= 1 << (led_id % 8);
+      led_new_st[led_index] |= 1 << (led_id % 8);
     else
-      led_new_st[(LED_STATES_SIZE - 1) - led_id / 8] &= ~(1 << (led_id % 8));
+      led_new_st[led_index] &= ~(1 << (led_id % 8));
+    force_update |= led_new_st[led_index] ^ led_st[led_index];  // mark any changes for update
   }
   mutex_unlock(&led_state_lock);
 
@@ -74,23 +78,10 @@ static struct class *led_class;
 // ---- driver setup (init) function ----
 s32 espi_driver_leds_setup(struct espi_driver *sb)
 {
-  s32 ret;
-  int i;
+  memset(led_new_st, 0xFF, LED_STATES_SIZE);  // all LEDs ON
+  force_update = 1;
 
-  // current and new LED states bit fields
-  led_st     = kcalloc(LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  led_new_st = kcalloc(LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!led_st || !led_new_st)
-    return -ENOMEM;
-
-  for (i = 0; i < LED_STATES_SIZE; i++)
-  {
-    led_st[i]     = 0x00;  // initial current state is all OFF
-    led_new_st[i] = 0xFF;  // force all LEDs ON initially
-  }
-
-  ret = register_chrdev(ESPI_LED_DEV_MAJOR, "spi", &led_fops);
-  if (ret < 0)
+  if (register_chrdev(ESPI_LED_DEV_MAJOR, "spi", &led_fops) < 0)
     pr_err("%s: problem at register_chrdev\n", __func__);
 
   led_class = class_create(THIS_MODULE, "espi-led");
@@ -105,9 +96,6 @@ s32 espi_driver_leds_setup(struct espi_driver *sb)
 // ---- driver cleanup (de-init) function ----
 s32 espi_driver_leds_cleanup(struct espi_driver *sb)
 {
-  kfree(led_st);
-  kfree(led_new_st);
-
   device_destroy(led_class, MKDEV(ESPI_LED_DEV_MAJOR, 0));
   class_destroy(led_class);
   unregister_chrdev(ESPI_LED_DEV_MAJOR, "spi");
@@ -118,7 +106,7 @@ s32 espi_driver_leds_cleanup(struct espi_driver *sb)
 void espi_driver_leds_poll(struct espi_driver *p)
 {
   struct spi_transfer xfer;
-  u32                 i, update = 0;
+  u8                  update;
 
   u64          now    = get_jiffies_64();
   u64          diff   = now - lastUpdate;
@@ -127,14 +115,11 @@ void espi_driver_leds_poll(struct espi_driver *p)
   extern int sck_hz;
 
   mutex_lock(&led_state_lock);  // keep led_fops_write() from interfering
-  for (i = 0; i < LED_STATES_SIZE; i++)
-  {
-    if (led_st[i] ^ led_new_st[i])
-    {
-      led_st[i] = led_new_st[i];
-      update    = 1;
-    }
-  }
+  if (force_update)
+    memcpy(led_st, led_new_st, LED_STATES_SIZE);
+  force_update |= (diffMS >= ESD_INTERVAL);  // periodic update due ("anti-ESD" update) ?
+  update       = force_update;
+  force_update = 0;
   mutex_unlock(&led_state_lock);
 
   update |= (diffMS >= ESD_INTERVAL);  // periodic update due ("anti-ESD" update) ?

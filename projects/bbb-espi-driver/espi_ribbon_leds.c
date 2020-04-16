@@ -23,6 +23,7 @@ The LEDs are force-updated in specific time intervals to care for ESD-induced up
  
  */
 
+#include <linux/string.h>
 #include <linux/of_gpio.h>
 #include <linux/uaccess.h>
 #include <linux/jiffies.h>
@@ -34,10 +35,11 @@ The LEDs are force-updated in specific time intervals to care for ESD-induced up
 #define NUMBER_OF_RIBBONS         (2)
 #define TOTAL_NUMBER_OF_BITS      (NUMBER_OF_LEDS_PER_RIBBON * NUMBER_OF_BITS_PER_LED * NUMBER_OF_RIBBONS)
 #define RIBBON_LED_STATES_SIZE    ((u16)((TOTAL_NUMBER_OF_BITS + 7) / 8))  // number of bytes needed to store the LED bits
-static u8 *rb_led_st;
-static u8 *rb_led_new_st;
+static u8  rb_led_st[RIBBON_LED_STATES_SIZE];
+static u8  rb_led_new_st[RIBBON_LED_STATES_SIZE];
 static u64 lastUpdate = 0;
 static DEFINE_MUTEX(rbled_state_lock);
+static u8 force_update = 0;
 
 // ---- write to driver function ----
 // writes requested LED states to "new" buffer
@@ -45,7 +47,7 @@ static ssize_t rbled_write(struct file *filp, const char __user *buf_user, size_
 {
   char            buf[count];
   ssize_t         status = 0;
-  u32             i;
+  u32             i, led_index;
   u8              val, led_id;
   static const u8 rot[] = { 0, 2, 1, 3 };  // mapping to the bit weighting the hardware requires
 
@@ -53,13 +55,15 @@ static ssize_t rbled_write(struct file *filp, const char __user *buf_user, size_
     return -EFAULT;
 
   mutex_lock(&rbled_state_lock);  // keep espi_driver_rb_leds_poll() from interfering
+  force_update = 0;
   for (i = 0; (i + 1) < count; i += 2)
   {
-    led_id = buf[i];
-    val    = rot[buf[i + 1] & 0x3];  // get mapped bit weighting
-
-    rb_led_new_st[(RIBBON_LED_STATES_SIZE - 1) - led_id / 4] &= ~(0x3 << ((led_id % 4) * 2));  // clear the 2 bits for the selected LED
-    rb_led_new_st[(RIBBON_LED_STATES_SIZE - 1) - led_id / 4] |= val << ((led_id % 4) * 2);     // add in state bits
+    led_id    = buf[i];
+    val       = rot[buf[i + 1] & 0x3];  // get mapped bit weighting
+    led_index = (RIBBON_LED_STATES_SIZE - 1) - led_id / 4;
+    rb_led_new_st[led_index] &= ~(0x3 << ((led_id % 4) * 2));         // clear the 2 bits for the selected LED
+    rb_led_new_st[led_index] |= val << ((led_id % 4) * 2);            // add in the state bits
+    force_update |= rb_led_new_st[led_index] ^ rb_led_st[led_index];  // mark any changes for update
   }
   mutex_unlock(&rbled_state_lock);
 
@@ -80,22 +84,10 @@ static struct class *rbled_class;
 // ---- driver setup (init) function ----
 s32 espi_driver_rb_leds_setup(struct espi_driver *sb)
 {
-  s32 i, ret;
+  memset(rb_led_new_st, 0xFF, RIBBON_LED_STATES_SIZE);  // all LEDs ON
+  force_update = 1;
 
-  // current and new LED states bit fields
-  rb_led_st     = kcalloc(RIBBON_LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  rb_led_new_st = kcalloc(RIBBON_LED_STATES_SIZE, sizeof(u8), GFP_KERNEL);
-  if (!rb_led_st || !rb_led_new_st)
-    return -ENOMEM;
-
-  for (i = 0; i < RIBBON_LED_STATES_SIZE; i++)
-  {
-    rb_led_st[i]     = 0x00;  // initial current state is all OFF
-    rb_led_new_st[i] = 0xFF;  // force all LEDs ON initially
-  }
-
-  ret = register_chrdev(ESPI_RIBBON_LED_DEV_MAJOR, "spi", &rbled_fops);
-  if (ret < 0)
+  if (register_chrdev(ESPI_RIBBON_LED_DEV_MAJOR, "spi", &rbled_fops) < 0)
     pr_err("%s: problem at register_chrdev\n", __func__);
 
   rbled_class = class_create(THIS_MODULE, "ribbon-led");
@@ -110,9 +102,6 @@ s32 espi_driver_rb_leds_setup(struct espi_driver *sb)
 // ---- driver cleanup (de-init) function ----
 s32 espi_driver_rb_leds_cleanup(struct espi_driver *sb)
 {
-  kfree(rb_led_st);
-  kfree(rb_led_new_st);
-
   device_destroy(rbled_class, MKDEV(ESPI_RIBBON_LED_DEV_MAJOR, 0));
   class_destroy(rbled_class);
   unregister_chrdev(ESPI_RIBBON_LED_DEV_MAJOR, "spi");
@@ -124,7 +113,7 @@ s32 espi_driver_rb_leds_cleanup(struct espi_driver *sb)
 void espi_driver_rb_leds_poll(struct espi_driver *p)
 {
   struct spi_transfer xfer;
-  u32                 i, update = 0;
+  u8                  update;
 
   u64          now    = get_jiffies_64();
   u64          diff   = now - lastUpdate;
@@ -133,17 +122,12 @@ void espi_driver_rb_leds_poll(struct espi_driver *p)
   extern int sck_hz;
 
   mutex_lock(&rbled_state_lock);  // keep rbled_write() from interfering
-  for (i = 0; i < RIBBON_LED_STATES_SIZE; i++)
-  {
-    if (rb_led_st[i] ^ rb_led_new_st[i])
-    {
-      rb_led_st[i] = rb_led_new_st[i];
-      update       = 1;
-    }
-  }
+  if (force_update)
+    memcpy(rb_led_st, rb_led_new_st, RIBBON_LED_STATES_SIZE);
+  force_update |= (diffMS >= ESD_INTERVAL);  // periodic update due ("anti-ESD" update) ?
+  update       = force_update;
+  force_update = 0;
   mutex_unlock(&rbled_state_lock);
-
-  update |= (diffMS >= ESD_INTERVAL);  // periodic update due ("anti-ESD" update) ?
 
   if (update == 0)
     return;
