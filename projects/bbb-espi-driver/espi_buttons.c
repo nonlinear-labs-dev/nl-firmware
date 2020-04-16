@@ -127,7 +127,7 @@ static DEFINE_MUTEX(btn_poll_buff_lock);
 static void write_id_to_outputbuffer(u8 id)
 {
   mutex_lock(&btn_buff_lock);  // keep buttons_fops_read() and espi_driver_pollbuttons() from interfering
-  if (btn_buff_head + 1 != btn_buff_tail)
+  if ((u8)(btn_buff_head + 1) != btn_buff_tail)
   {  // space left in output buffer ==> write id into buffer
     button_buff[btn_buff_head] = id;
     btn_buff_head++;
@@ -177,7 +177,7 @@ static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, siz
     if (!(tmp[i] & 0x80))  // "poll button" command (bit 7 is cleared) ?
     {
       mutex_lock(&btn_poll_buff_lock);  // keep espi_driver_pollbuttons() from interfering
-      if (btn_poll_buff_head + 1 != btn_poll_buff_tail)
+      if ((u8)(btn_poll_buff_head + 1) != btn_poll_buff_tail)
       {  // space in poll request buffer --> write poll request
         button_poll_buff[btn_poll_buff_head] = tmp[i];
         btn_poll_buff_head++;
@@ -188,12 +188,12 @@ static ssize_t buttons_fops_write(struct file *filp, const char __user *buf, siz
     // now we have "emulate button" command (bit 7 is set)
     if (i + 1 < count)  // a second byte is available ?
     {
-      if (tmp[i + 1] & 0x80)                 // if second byte also has bit 7 set
-      {                                      //   then put ID in output buffer
-        if (tmp[i + 1] & 0x7F)               // emulate a "pressed" button ?
-          write_id_to_outputbuffer(tmp[i]);  //  then set ID with bit 7 high (which it is already)
+      if (tmp[i + 1] & 0x80)                        // if second byte also has bit 7 set
+      {                                             //   then put ID in output buffer
+        if (tmp[i + 1] & 0x7F)                      // emulate a "pressed" button ?
+          write_id_to_outputbuffer(tmp[i] & 0x7F);  //   then clear bit 7, marking "pressed", bit 7 will be inverted at fops_read()
         else
-          write_id_to_outputbuffer(tmp[i] & 0x7F);  // else clear bit 7, marking "released")
+          write_id_to_outputbuffer(tmp[i]);  //          else set ID with bit 7 high (which it is already)
       }
       i++;       // advance input buffer
       continue;  // and goto next command
@@ -218,7 +218,7 @@ static unsigned int buttons_fops_poll(struct file *filp, poll_table *wait)
     mask |= POLLIN | POLLRDNORM;
 
   // if there is space in the poll buffer, writing is allowed
-  if (btn_poll_buff_head + 1 != btn_poll_buff_tail)
+  if ((u8)(btn_poll_buff_head + 1) != btn_poll_buff_tail)
     mask |= POLLOUT | POLLWRNORM;
 
   return mask;
