@@ -28,9 +28,9 @@
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
-  addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X, 8, 107, 11)));
+  addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
-  addControl(new LockedIndicator(Rect(66, 1, 10, 11)));
+  addControl(new LockedIndicator(Rect(64, 1, 10, 11)));
   addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
   addControl(new UndoIndicator(Rect(1, 26, 10, 8)));
 }
