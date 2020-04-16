@@ -143,10 +143,10 @@ public class Overlay extends OverlayLayout {
 
 			if(isLoadIntoPartEnabled()) {
 				if(selected == VoiceGroup.I) {
-					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIY + partHeight / 2), partWidth / 1.5, partHeight);
+					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIY + partHeight / 2), partHeight * 1.2, partHeight * 1.2);
 				}
 				else {
-					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIIY + partHeight / 2), partWidth / 1.5, partHeight);
+					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIIY + partHeight / 2), partHeight * 1.2, partHeight * 1.2);
 				}
 			}
 		}
