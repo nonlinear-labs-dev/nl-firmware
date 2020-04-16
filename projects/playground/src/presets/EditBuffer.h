@@ -192,4 +192,5 @@ class EditBuffer : public ParameterDualGroupSet
   void combineSplitPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group);
+  void initCrossFB(UNDO::Transaction* transaction);
 };

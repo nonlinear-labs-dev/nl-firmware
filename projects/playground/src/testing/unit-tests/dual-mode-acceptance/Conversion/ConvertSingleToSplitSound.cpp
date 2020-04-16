@@ -10,6 +10,31 @@
 
 using EBL = EditBufferLogicalParts;
 
+namespace detail
+{
+  auto randomizeCrossFBAndToFX = [](auto transaction) {
+    for(auto p : EBL::getCrossFB<VoiceGroup::I>())
+    {
+      p->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
+    }
+
+    for(auto p : EBL::getToFX<VoiceGroup::I>())
+    {
+      p->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
+    }
+
+    for(auto p : EBL::getCrossFB<VoiceGroup::II>())
+    {
+      p->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
+    }
+
+    for(auto p : EBL::getToFX<VoiceGroup::II>())
+    {
+      p->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 1);
+    }
+  };
+}
+
 TEST_CASE("Convert Single Sound to Split")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
@@ -34,6 +59,8 @@ TEST_CASE("Convert Single Sound to Split")
     globalVolume->setModulationAmount(transaction, 0.45);
     globalVolume->setModulationSource(transaction, MacroControls::MC2);
     globalVolume->setCPFromHwui(transaction, 0.187);
+
+    detail::randomizeCrossFBAndToFX(transaction);
   }
 
   WHEN("Converted")
@@ -141,6 +168,8 @@ TEST_CASE("Convert Single Sound to Layer")
     globalVolume->setModulationAmount(transaction, 0.45);
     globalVolume->setModulationSource(transaction, MacroControls::MC2);
     globalVolume->setCPFromHwui(transaction, 0.187);
+
+    detail::randomizeCrossFBAndToFX(transaction);
   }
 
   WHEN("Converted")
@@ -266,6 +295,8 @@ TEST_CASE("Convert Split (II) to Single")
     CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationSource() == MacroControls::MC3);
 
     envAIIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
+
+    detail::randomizeCrossFBAndToFX(transaction);
   }
 
   WHEN("Converted")
@@ -528,6 +559,8 @@ TEST_CASE("Convert Layer I to Split")
 
     envAIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
     envAIIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
+
+    detail::randomizeCrossFBAndToFX(transaction);
   }
 
   WHEN("Converted")
@@ -550,9 +583,6 @@ TEST_CASE("Convert Layer I to Split")
     const auto partIMasterHash = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>());
     const auto partIIMasterHash = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>());
 
-    const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
-    const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
@@ -567,16 +597,12 @@ TEST_CASE("Convert Layer I to Split")
       CHECK(EBL::getMonoEnable<VoiceGroup::II>()->getDisplayString() == "On");
     }
 
-    THEN("Cross FB Params are default")
+    THEN("Special Local Params are default")
     {
       CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
       CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-    }
-
-    THEN("toFX Params unchanged")
-    {
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == toFXIHash);
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Local kept values")
@@ -666,6 +692,8 @@ TEST_CASE("Convert Layer (II) to Single")
 
     envAIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
     envAIIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
+
+    detail::randomizeCrossFBAndToFX(transaction);
   }
 
   WHEN("Converted")
@@ -1446,8 +1474,7 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
   {
     const auto localSpecialIHash
         = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>());
-    const auto localSpecialIIHash
-        = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>());
+
     const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
 
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();

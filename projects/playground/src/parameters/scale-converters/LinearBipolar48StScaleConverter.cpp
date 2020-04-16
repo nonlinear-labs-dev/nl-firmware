@@ -10,7 +10,3 @@ LinearBipolar48StScaleConverter::~LinearBipolar48StScaleConverter()
 {
 }
 
-tControlPositionValue LinearBipolar48StScaleConverter::displayToControlPosition(const tDisplayValue& displayValue) const
-{
-  return displayValue / getControlPositionRange().getRangeWidth();
-}

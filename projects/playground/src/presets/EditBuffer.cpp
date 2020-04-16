@@ -738,17 +738,15 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
   initToFX(transaction);
   initFadeFrom(transaction, SoundType::Single);
+  initCrossFB(transaction);
   initSplitPoint(transaction);
 
   forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction); });
 
-  {
-    auto vgVolume = findParameterByID({ 358, VoiceGroup::I });
-    auto vgTune = findParameterByID({ 360, VoiceGroup::I });
-
-    vgVolume->loadDefault(transaction);
-    vgTune->loadDefault(transaction);
-  }
+  auto vgVolume = findParameterByID({ 358, VoiceGroup::I });
+  auto vgTune = findParameterByID({ 360, VoiceGroup::I });
+  vgVolume->loadDefault(transaction);
+  vgTune->loadDefault(transaction);
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
   setVoiceGroupName(transaction, "", VoiceGroup::I);
@@ -800,6 +798,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
     initFadeFrom(transaction, type);
   }
 
+  initCrossFB(transaction);
   initSplitPoint(transaction);
 
   findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
@@ -1131,4 +1130,15 @@ void EditBuffer::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup g
 {
   findParameterByID({ 396, group })->loadDefault(transaction);
   findParameterByID({ 397, group })->loadDefault(transaction);
+}
+
+void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    for(auto paramNum : { 346, 348, 350, 352, 354 })
+    {
+      findParameterByID({ paramNum, vg })->loadDefault(transaction);
+    }
+  }
 }
