@@ -440,9 +440,9 @@ bool Preset::isUnisonActive() const
   auto unisonVoicesI = findParameterByID({ 249, VoiceGroup::I }, false);
   auto unisonVoicesII = findParameterByID({ 249, VoiceGroup::II }, false);
 
-  if(unisonVoicesI && unisonVoicesII)
+  if(unisonVoicesI)
   {
-    if(getType() == SoundType::Split)
+    if(getType() == SoundType::Split && unisonVoicesII)
     {
       return unisonVoicesI->getValue() > 0 || unisonVoicesII->getValue() > 0;
     }
