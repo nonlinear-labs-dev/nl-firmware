@@ -1085,7 +1085,9 @@ void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
 void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, SoundType newType)
 {
   findParameterByID({ 396, VoiceGroup::I })->loadDefault(transaction);
+  findParameterByID({ 397, VoiceGroup::I })->loadDefault(transaction);
   findParameterByID({ 396, VoiceGroup::II })->loadDefault(transaction);
+  findParameterByID({ 397, VoiceGroup::II })->loadDefault(transaction);
 }
 
 EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const

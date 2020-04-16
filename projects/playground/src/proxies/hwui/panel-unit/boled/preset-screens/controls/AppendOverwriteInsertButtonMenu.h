@@ -34,7 +34,7 @@ class AppendOverwriteInsertButtonMenu : public ButtonMenu
   void insertPreset(Bank* bank, size_t pos, bool modified);
   void appendPreset(Bank* bank, bool modified);
   void pushRenameScreen();
-  bool animate();
+  static bool animate();
 
   void append(Bank* bank, bool modified);
   void insert(Bank* bank, Preset* tgtPreset, bool modified);
