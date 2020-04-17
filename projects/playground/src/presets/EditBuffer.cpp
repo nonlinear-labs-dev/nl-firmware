@@ -779,7 +779,6 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
     undoableConvertSplitToLayer(transaction);
 
   initCrossFB(transaction);
-  initSplitPoint(transaction);
   undoableUnmuteLayers(transaction);
 
   initRecallValues(transaction);
@@ -1133,6 +1132,7 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
   initFadeFrom(transaction, SoundType::Split);
+  initSplitPoint(transaction);
 }
 
 void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
@@ -1143,6 +1143,7 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
   initFadeFrom(transaction, SoundType::Layer);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
+  initSplitPoint(transaction);
 }
 
 void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
@@ -1159,6 +1160,7 @@ void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   calculateFadeParamsFromSplitPoint(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
+  initSplitPoint(transaction);
 }
 
 void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transaction)

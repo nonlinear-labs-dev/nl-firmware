@@ -605,8 +605,8 @@ TEST_CASE("Convert Layer I to Split")
     envAIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
     envAIIAttack->undoableRandomize(transaction, Initiator::EXPLICIT_OTHER, 0.4);
 
-    EBL::getFadeFrom<VoiceGroup::I>()->setCPFromHwui(transaction, 0.187);
-    EBL::getFadeFrom<VoiceGroup::II>()->setCPFromHwui(transaction, 0.887);
+    EBL::getFadeFrom<VoiceGroup::I>()->setCPFromHwui(transaction, 0.7);
+    EBL::getFadeFrom<VoiceGroup::II>()->setCPFromHwui(transaction, 0.7);
 
     detail::randomizeCrossFBAndToFX(transaction);
   }
