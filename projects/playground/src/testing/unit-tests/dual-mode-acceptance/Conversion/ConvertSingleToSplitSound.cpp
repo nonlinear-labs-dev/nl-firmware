@@ -423,6 +423,9 @@ TEST_CASE("Convert Split (II) to Layer")
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
   auto monoII = EBL::getMonoEnable<VoiceGroup::II>();
 
+  auto attI = EBL::getParameter({ 0, VoiceGroup::I });
+  auto attII = EBL::getParameter({ 0, VoiceGroup::II });
+
   {
     auto scope = TestHelper::createTestScope();
     TestHelper::initDualEditBuffer<SoundType::Split>(scope->getTransaction());
@@ -434,12 +437,21 @@ TEST_CASE("Convert Split (II) to Layer")
     CHECK(monoII->getDisplayString() == "On");
 
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+
+    for(auto p : EBL::getLocalNormal<VoiceGroup::I>())
+      TestHelper::forceParameterChange(scope->getTransaction(), p);
+
+    for(auto p : EBL::getLocalNormal<VoiceGroup::II>())
+      TestHelper::forceParameterChange(scope->getTransaction(), p);
+
+    attI->setCPFromHwui(scope->getTransaction(), 0.187);
+    attII->setCPFromHwui(scope->getTransaction(), 0.287);
   }
 
   WHEN("Converted")
   {
-    const auto localIHash = EBL::createHashOfVector(EBL::getLocalNormal<VoiceGroup::I>());
-    const auto localIIHash = EBL::createHashOfVector(EBL::getLocalNormal<VoiceGroup::II>());
+    const auto localIHash = EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>());
+    const auto localIIHash = EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::II>());
 
     const auto splitCP = EBL::getSplitPoint()->getControlPositionValue();
 
@@ -477,8 +489,10 @@ TEST_CASE("Convert Split (II) to Layer")
 
     THEN("Local normal unchanged")
     {
-      CHECK(EBL::createHashOfVector(EBL::getLocalNormal<VoiceGroup::I>()) == localIHash);
-      CHECK(EBL::createHashOfVector(EBL::getLocalNormal<VoiceGroup::II>()) == localIIHash);
+      CHECK(EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()) == localIHash);
+      CHECK(EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::II>()) == localIIHash);
+      CHECK_PARAMETER_CP_EQUALS_FICTION(attI, 0.187);
+      CHECK_PARAMETER_CP_EQUALS_FICTION(attII, 0.287);
     }
 
     THEN("Voices/Mono from II copied to I")

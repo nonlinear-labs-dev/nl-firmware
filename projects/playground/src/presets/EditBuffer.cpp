@@ -771,50 +771,34 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   undoableSetType(transaction, type);
 
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-
-  switch(oldType)
-  {
-    case SoundType::Single:
-      copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
-      break;
-    case SoundType::Split:
-      copyVoiceGroup(transaction, currentVG, invert(currentVG));
-      break;
-    case SoundType::Layer:
-      copyVoicesGroups(transaction, VoiceGroup::I, VoiceGroup::II);
-      break;
-  }
-
-  if(!(oldType == SoundType::Layer && type == SoundType::Split))
-    copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
-
-  if(oldType == SoundType::Split && type == SoundType::Layer)
-  {
-    calculateFadeParamsFromSplitPoint(transaction);
-  }
-  else
-  {
-    initFadeFrom(transaction, type);
-  }
+  if(oldType == SoundType::Single && type == SoundType::Layer)
+    undoableConvertSingleToLayer(transaction);
+  else if(oldType == SoundType::Single && type == SoundType::Split)
+    undoableConvertSingleToSplit(transaction);
+  else if(oldType == SoundType::Layer && type == SoundType::Split)
+    undoableConvertLayerToSplit(transaction);
+  else if(oldType == SoundType::Split && type == SoundType::Layer)
+    undoableConvertSplitToLayer(transaction);
 
   initCrossFB(transaction);
   initSplitPoint(transaction);
-
-  findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
-  findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
-
-  if(type == SoundType::Layer)
-  {
-    getParameterGroupByID({ "Mono", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
-    getParameterGroupByID({ "Unison", VoiceGroup::II })->forEachParameter([&](auto p) { p->loadDefault(transaction); });
-  }
+  undoableUnmuteLayers(transaction);
 
   initRecallValues(transaction);
-
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
-
   transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+}
+
+void EditBuffer::undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg)
+{
+  getParameterGroupByID({ "Mono", vg })->forEachParameter([&](auto p) -> void { p->loadDefault(transaction); });
+  getParameterGroupByID({ "Unison", vg })->forEachParameter([&](auto p) -> void { p->loadDefault(transaction); });
+}
+
+void EditBuffer::undoableUnmuteLayers(UNDO::Transaction *transaction)
+{
+  findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
+  findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 }
 
 void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transaction *transaction)
@@ -1143,4 +1127,36 @@ void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
       findParameterByID({ paramNum, vg })->loadDefault(transaction);
     }
   }
+}
+
+void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
+{
+  copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+  copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
+  initFadeFrom(transaction, SoundType::Split);
+}
+
+void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
+{
+  copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+  undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
+  copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
+  initFadeFrom(transaction, SoundType::Layer);
+  undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
+}
+
+void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
+{
+  copyVoicesGroups(transaction, VoiceGroup::I, VoiceGroup::II);
+  initFadeFrom(transaction, SoundType::Split);
+}
+
+void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
+{
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  copyVoicesGroups(transaction, currentVG, invert(currentVG));
+  copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
+  undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
+  calculateFadeParamsFromSplitPoint(transaction);
+  undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
 }
