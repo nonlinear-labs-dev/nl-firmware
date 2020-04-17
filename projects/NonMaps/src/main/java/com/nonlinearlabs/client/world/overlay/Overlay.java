@@ -143,10 +143,10 @@ public class Overlay extends OverlayLayout {
 
 			if(isLoadIntoPartEnabled()) {
 				if(selected == VoiceGroup.I) {
-					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIY + partHeight / 2), partWidth / 1.5, partHeight);
+					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIY + partHeight / 2), partHeight * 1.2, partHeight * 1.2);
 				}
 				else {
-					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIIY + partHeight / 2), partWidth / 1.5, partHeight);
+					drawTriangleSideways(ctx, lighterFill, stroke, new Position(pix.getLeft(), boxIIY + partHeight / 2), partHeight * 1.2, partHeight * 1.2);
 				}
 			}
 		}
@@ -298,8 +298,11 @@ public class Overlay extends OverlayLayout {
 
 	private void drawDualSoundIndication(Context2d ctx) {
 		Rect r = getPixRect().copy();
-		r.setBottom(belt.getPixRect().getTop());
-
+		if(belt.isHidden())
+			r.setBottom(belt.getPixRect().getTop() - 1);
+		else
+			r.setBottom(belt.getPixRect().getTop());
+		
 		Rect gbr = buttons.getPixRect();
 		Rect ldr = layerDisplay.getPixRect().copy();
 		ldr.setTop(ldr.getTop() + 1);

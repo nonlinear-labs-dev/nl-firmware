@@ -18,6 +18,7 @@ import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
@@ -121,6 +122,14 @@ public class PresetManager extends MapsLayout {
 
 		PresetSearch.get().results.onChange(b -> {
 			zoomToAllFilterMatches();
+			return true;
+		});
+
+		EditBufferModel.get().soundType.onChange(type -> {
+			if(type == SoundType.Single) {
+				endLoadToPartMode();
+				return true;
+			}
 			return true;
 		});
 
