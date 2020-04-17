@@ -79,7 +79,7 @@ void UnisonVoicesParameter::copyTo(UNDO::Transaction *transaction, PresetParamet
 {
   if(static_cast<EditBuffer *>(getParentGroup()->getParent())->isDual())
   {
-    auto numVoicesIn = other->getValue() * 11.0;
+    auto numVoicesIn = getControlPositionValue() * 11.0;
     auto res = numVoicesIn / 23.0;
     other->setValue(transaction, res);
   }

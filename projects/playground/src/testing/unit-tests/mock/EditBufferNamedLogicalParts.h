@@ -1,61 +1,5 @@
 #pragma once
 
-class EditBufferLogicalParts
-{
- public:
-  template <VoiceGroup vg> static std::vector<Parameter*> getLocalNormal();
-
-  template <VoiceGroup vg> static std::vector<Parameter*> getCrossFB();
-  template <VoiceGroup vg> static std::vector<Parameter*> getToFX();
-
-  template <VoiceGroup vg> static Parameter* getUnisonVoice();
-
-  template <VoiceGroup vg> static Parameter* getMonoEnable();
-
-  static std::vector<Parameter*> getMaster();
-
-  template <VoiceGroup vg> static std::vector<Parameter*> getUnison();
-
-  template <VoiceGroup vg> static std::vector<Parameter*> getMono();
-
-  template <VoiceGroup vg> static ModulateableParameter* getPartVolume();
-
-  template <VoiceGroup vg> static ModulateableParameter* getPartTune();
-
-  template <VoiceGroup vg> static std::vector<Parameter*> getPartMaster();
-
-  template <VoiceGroup vg> static Parameter* getFadeFrom();
-
-  template <VoiceGroup vg> static Parameter* getFadeRange();
-
-  static Parameter* getSplitPoint();
-
-  static ModulateableParameter* getMasterVolume();
-  static ModulateableParameter* getMasterTune();
-
-  static std::vector<Parameter*> getModMatrix();
-
-  static std::vector<Parameter*> getScale();
-
-  static size_t createHashOfVector(const std::vector<Parameter*>& v);
-
-  static size_t createValueHash(const std::vector<Parameter*>& v);
-  static size_t createValueHash(Parameter* p);
-
-  template <typename... tArgs> static size_t createValueHash(tArgs... args);
-
-  template <typename... tArgs> static bool isDefaultLoaded(tArgs... args);
-
-  static bool isDefaultLoaded(const std::vector<Parameter*>& v);
-
-  static Parameter* getParameter(const ParameterId& id);
-};
-
-template <typename tC, typename tT> bool contains(tC c, tT t)
-{
-  return std::find(c.begin(), c.end(), t) != c.end();
-}
-
 namespace detail
 {
   constexpr static auto MONO_ENABLE = 364;
@@ -82,217 +26,227 @@ namespace detail
   constexpr static auto OUT_TO_FX = 362;
 }
 
-template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getLocalNormal()
+class EditBufferLogicalParts
 {
-  using namespace detail;
-  auto eb = TestHelper::getEditBuffer();
-  std::vector<Parameter*> ret {};
-
-  auto ignore = std::vector { "Unison", "Mono", "Part" };
-  auto ignoreParams = std::vector { FB_OSC, FB_OSC_SRC, FB_COMB_FROM, FB_SVF_FROM, FB_FX_FROM, OUT_TO_FX };
-
-  for(auto& g : eb->getParameterGroups(vg))
+ private:
+  template <typename tC, typename tT> static bool contains(tC c, tT t)
   {
-    if(!contains(ignore, g->getLongName()))
+    return std::find(c.begin(), c.end(), t) != c.end();
+  }
+
+ public:
+  template <VoiceGroup vg> static std::vector<Parameter*> getLocalNormal()
+  {
+    using namespace detail;
+    auto eb = TestHelper::getEditBuffer();
+    std::vector<Parameter*> ret {};
+
+    auto ignore = std::vector { "Unison", "Mono", "Part" };
+    auto ignoreParams = std::vector { FB_OSC, FB_OSC_SRC, FB_COMB_FROM, FB_SVF_FROM, FB_FX_FROM, OUT_TO_FX };
+
+    for(auto& g : eb->getParameterGroups(vg))
     {
-      for(auto& p : g->getParameters())
+      if(!contains(ignore, g->getLongName()))
       {
-        if(!contains(ignoreParams, p->getID().getNumber()))
+        for(auto& p : g->getParameters())
         {
-          ret.emplace_back(p);
+          if(!contains(ignoreParams, p->getID().getNumber()))
+          {
+            ret.emplace_back(p);
+          }
         }
       }
     }
+
+    return ret;
   }
 
-  return ret;
-}
-
-template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getToFX()
-{
-  using namespace detail;
-  auto eb = TestHelper::getEditBuffer();
-  std::vector<Parameter*> ret;
-  ret.emplace_back(eb->findParameterByID({ OUT_TO_FX, vg }));
-  return ret;
-}
-
-template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getCrossFB()
-{
-  using namespace detail;
-  auto eb = TestHelper::getEditBuffer();
-  std::vector<Parameter*> ret;
-  ret.emplace_back(eb->findParameterByID({ FB_COMB_FROM, vg }));
-  ret.emplace_back(eb->findParameterByID({ FB_FX_FROM, vg }));
-  ret.emplace_back(eb->findParameterByID({ FB_OSC, vg }));
-  ret.emplace_back(eb->findParameterByID({ FB_OSC_SRC, vg }));
-  ret.emplace_back(eb->findParameterByID({ FB_SVF_FROM, vg }));
-  return ret;
-}
-
-template <VoiceGroup vg> Parameter* EditBufferLogicalParts::getUnisonVoice()
-{
-  return TestHelper::getEditBuffer()->findParameterByID({ detail::UNISON_VOICES, vg });
-}
-
-template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getUnison()
-{
-  std::vector<Parameter*> ret;
-  for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID(GroupId("Unison", vg))->getParameters())
+  template <VoiceGroup vg> static std::vector<Parameter*> getCrossFB()
   {
-    ret.emplace_back(p);
+    using namespace detail;
+    auto eb = TestHelper::getEditBuffer();
+    std::vector<Parameter*> ret;
+    ret.emplace_back(eb->findParameterByID({ FB_COMB_FROM, vg }));
+    ret.emplace_back(eb->findParameterByID({ FB_FX_FROM, vg }));
+    ret.emplace_back(eb->findParameterByID({ FB_OSC, vg }));
+    ret.emplace_back(eb->findParameterByID({ FB_OSC_SRC, vg }));
+    ret.emplace_back(eb->findParameterByID({ FB_SVF_FROM, vg }));
+    return ret;
   }
-  return ret;
-}
 
-template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getMono()
-{
-  std::vector<Parameter*> ret;
-  for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID(GroupId("Mono", vg))->getParameters())
+  template <VoiceGroup vg> static std::vector<Parameter*> getToFX()
   {
-    ret.emplace_back(p);
+    using namespace detail;
+    auto eb = TestHelper::getEditBuffer();
+    std::vector<Parameter*> ret;
+    ret.emplace_back(eb->findParameterByID({ OUT_TO_FX, vg }));
+    return ret;
   }
-  return ret;
-}
 
-template <VoiceGroup vg> ModulateableParameter* EditBufferLogicalParts::getPartVolume()
-{
-  return dynamic_cast<ModulateableParameter*>(
-      TestHelper::getEditBuffer()->findParameterByID({ detail::PART_VOLUME, vg }));
-}
-
-template <VoiceGroup vg> ModulateableParameter* EditBufferLogicalParts::getPartTune()
-{
-  return dynamic_cast<ModulateableParameter*>(
-      TestHelper::getEditBuffer()->findParameterByID({ detail::PART_TUNE, vg }));
-}
-
-template <VoiceGroup vg> Parameter* EditBufferLogicalParts::getFadeFrom()
-{
-  return TestHelper::getEditBuffer()->findParameterByID({ detail::FADE_FROM, vg });
-}
-
-template <VoiceGroup vg> Parameter* EditBufferLogicalParts::getFadeRange()
-{
-  return TestHelper::getEditBuffer()->findParameterByID({ detail::FADE_RANGE, vg });
-}
-
-Parameter* EditBufferLogicalParts::getSplitPoint()
-{
-  return TestHelper::getEditBuffer()->findParameterByID({ detail::SPLIT_POINT, VoiceGroup::Global });
-}
-
-ModulateableParameter* EditBufferLogicalParts::getMasterVolume()
-{
-  return dynamic_cast<ModulateableParameter*>(
-      TestHelper::getEditBuffer()->findParameterByID({ detail::MASTER_VOLUME, VoiceGroup::Global }));
-}
-
-ModulateableParameter* EditBufferLogicalParts::getMasterTune()
-{
-  return dynamic_cast<ModulateableParameter*>(
-      TestHelper::getEditBuffer()->findParameterByID({ detail::MASTER_TUNE, VoiceGroup::Global }));
-}
-
-std::vector<Parameter*> EditBufferLogicalParts::getModMatrix()
-{
-  std::vector<Parameter*> ret {};
-  for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global })->getParameters())
-    ret.emplace_back(p);
-  return ret;
-}
-
-std::vector<Parameter*> EditBufferLogicalParts::getScale()
-{
-  std::vector<Parameter*> ret {};
-  for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID({ "Scale", VoiceGroup::Global })->getParameters())
-    ret.emplace_back(p);
-  return ret;
-}
-
-size_t EditBufferLogicalParts::createHashOfVector(const std::vector<Parameter*>& v)
-{
-  size_t ret {};
-  for(auto& p : v)
+  template <VoiceGroup vg> static Parameter* getUnisonVoice()
   {
-    hash_combine(ret, p->getHash());
-  }
-  return ret;
-}
+    return TestHelper::getEditBuffer()->findParameterByID({ detail::UNISON_VOICES, vg });
+  };
 
-template <VoiceGroup vg> Parameter* EditBufferLogicalParts::getMonoEnable()
-{
-  return TestHelper::getEditBuffer()->findParameterByID({ detail::MONO_ENABLE, vg });
-}
-
-Parameter* EditBufferLogicalParts::getParameter(const ParameterId& id)
-{
-  return TestHelper::getEditBuffer()->findParameterByID(id);
-}
-
-template <VoiceGroup vg> std::vector<Parameter*> EditBufferLogicalParts::getPartMaster()
-{
-  std::vector<Parameter*> ret {};
-  ret.emplace_back(getPartVolume<vg>());
-  ret.emplace_back(getPartTune<vg>());
-  return ret;
-}
-
-std::vector<Parameter*> EditBufferLogicalParts::getMaster()
-{
-  return { getMasterVolume(), getMasterTune() };
-}
-
-size_t EditBufferLogicalParts::createValueHash(const std::vector<Parameter*>& v)
-{
-  size_t ret {};
-  for(auto& p : v)
+  template <VoiceGroup vg> static Parameter* getMonoEnable()
   {
-    hash_combine(ret, createValueHash(p));
+    return TestHelper::getEditBuffer()->findParameterByID({ detail::MONO_ENABLE, vg });
   }
-  return ret;
-}
 
-bool EditBufferLogicalParts::isDefaultLoaded(const std::vector<Parameter*>& v)
-{
-  for(auto& p : v)
+  static std::vector<Parameter*> getMaster()
   {
-    if(!p->isDefaultLoaded())
-      return false;
+    return { getMasterVolume(), getMasterTune() };
   }
-  return true;
-}
 
-template <typename... tArgs> size_t EditBufferLogicalParts::createValueHash(tArgs... args)
-{
-  size_t ret;
-
-  for(auto& v : { args... })
+  template <VoiceGroup vg> static std::vector<Parameter*> getUnison()
   {
-    hash_combine(ret, createValueHash(v));
+    std::vector<Parameter*> ret;
+    for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID(GroupId("Unison", vg))->getParameters())
+    {
+      ret.emplace_back(p);
+    }
+    return ret;
   }
 
-  return ret;
-}
-
-size_t EditBufferLogicalParts::createValueHash(Parameter* p)
-{
-  size_t ret;
-  hash_combine(ret, p->getValue().getQuantizedClippedValue(true));
-  if(auto modP = dynamic_cast<ModulateableParameter*>(p))
+  template <VoiceGroup vg> static std::vector<Parameter*> getMono()
   {
-    hash_combine(ret, modP->getModulationAmount());
-    hash_combine(ret, modP->getModulationSource());
+    std::vector<Parameter*> ret;
+    for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID(GroupId("Mono", vg))->getParameters())
+    {
+      ret.emplace_back(p);
+    }
+    return ret;
   }
-  return ret;
-}
 
-template <typename... tArgs> bool EditBufferLogicalParts::isDefaultLoaded(tArgs... args)
-{
-  for(auto& v : { args... })
+  template <VoiceGroup vg> static ModulateableParameter* getPartVolume()
   {
-    if(!isDefaultLoaded(v))
-      return false;
+    return dynamic_cast<ModulateableParameter*>(
+        TestHelper::getEditBuffer()->findParameterByID({ detail::PART_VOLUME, vg }));
   }
-  return true;
-}
+
+  template <VoiceGroup vg> static ModulateableParameter* getPartTune()
+  {
+    return dynamic_cast<ModulateableParameter*>(
+        TestHelper::getEditBuffer()->findParameterByID({ detail::PART_TUNE, vg }));
+  }
+
+  template <VoiceGroup vg> static std::vector<Parameter*> getPartMaster()
+  {
+    std::vector<Parameter*> ret {};
+    ret.emplace_back(getPartVolume<vg>());
+    ret.emplace_back(getPartTune<vg>());
+    return ret;
+  }
+
+  template <VoiceGroup vg> static Parameter* getFadeFrom()
+  {
+    return TestHelper::getEditBuffer()->findParameterByID({ detail::FADE_FROM, vg });
+  }
+
+  template <VoiceGroup vg> static Parameter* getFadeRange()
+  {
+    return TestHelper::getEditBuffer()->findParameterByID({ detail::FADE_RANGE, vg });
+  }
+
+  static Parameter* getSplitPoint()
+  {
+    return TestHelper::getEditBuffer()->findParameterByID({ detail::SPLIT_POINT, VoiceGroup::Global });
+  }
+
+  static ModulateableParameter* getMasterVolume()
+  {
+    return dynamic_cast<ModulateableParameter*>(
+        TestHelper::getEditBuffer()->findParameterByID({ detail::MASTER_VOLUME, VoiceGroup::Global }));
+  }
+
+  static ModulateableParameter* getMasterTune()
+  {
+    return dynamic_cast<ModulateableParameter*>(
+        TestHelper::getEditBuffer()->findParameterByID({ detail::MASTER_TUNE, VoiceGroup::Global }));
+  }
+
+  static std::vector<Parameter*> getModMatrix()
+  {
+    std::vector<Parameter*> ret {};
+    for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global })->getParameters())
+      ret.emplace_back(p);
+    return ret;
+  }
+
+  static std::vector<Parameter*> getScale()
+  {
+    std::vector<Parameter*> ret {};
+    for(auto& p : TestHelper::getEditBuffer()->getParameterGroupByID({ "Scale", VoiceGroup::Global })->getParameters())
+      ret.emplace_back(p);
+    return ret;
+  }
+
+  static size_t createHashOfVector(const std::vector<Parameter*>& v)
+  {
+    size_t ret {};
+    for(auto& p : v)
+    {
+      hash_combine(ret, p->getHash());
+    }
+    return ret;
+  }
+
+  static size_t createValueHash(const std::vector<Parameter*>& v)
+  {
+    size_t ret {};
+    for(auto& p : v)
+    {
+      hash_combine(ret, createValueHash(p));
+    }
+    return ret;
+  }
+
+  static size_t createValueHash(Parameter* p)
+  {
+    size_t ret;
+    hash_combine(ret, p->getValue().getQuantizedClippedValue(true));
+    if(auto modP = dynamic_cast<ModulateableParameter*>(p))
+    {
+      hash_combine(ret, modP->getModulationAmount());
+      hash_combine(ret, modP->getModulationSource());
+    }
+    return ret;
+  };
+
+  template <typename... tArgs> static size_t createValueHash(tArgs... args)
+  {
+    size_t ret {};
+
+    for(auto& v : { args... })
+    {
+      hash_combine(ret, createValueHash(v));
+    }
+
+    return ret;
+  }
+
+  template <typename... tArgs> static bool isDefaultLoaded(tArgs... args)
+  {
+    for(auto& v : { args... })
+    {
+      if(!isDefaultLoaded(v))
+        return false;
+    }
+    return true;
+  };
+
+  static bool isDefaultLoaded(const std::vector<Parameter*>& v)
+  {
+    for(auto& p : v)
+    {
+      if(!p->isDefaultLoaded())
+        return false;
+    }
+    return true;
+  }
+
+  static Parameter* getParameter(const ParameterId& id)
+  {
+    return TestHelper::getEditBuffer()->findParameterByID(id);
+  }
+};
