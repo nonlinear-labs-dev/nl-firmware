@@ -298,8 +298,11 @@ public class Overlay extends OverlayLayout {
 
 	private void drawDualSoundIndication(Context2d ctx) {
 		Rect r = getPixRect().copy();
-		r.setBottom(belt.getPixRect().getTop());
-
+		if(belt.isHidden())
+			r.setBottom(belt.getPixRect().getTop() - 1);
+		else
+			r.setBottom(belt.getPixRect().getTop());
+		
 		Rect gbr = buttons.getPixRect();
 		Rect ldr = layerDisplay.getPixRect().copy();
 		ldr.setTop(ldr.getTop() + 1);
