@@ -199,4 +199,5 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertSingleToSplit(UNDO::Transaction *transaction);
   void undoableConvertLayerToSplit(UNDO::Transaction* transaction);
   void undoableConvertSplitToLayer(UNDO::Transaction* transaction);
+void calculateSplitPointFromFadeParams(UNDO::Transaction* transaction);
 };

@@ -1148,6 +1148,7 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
 void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
 {
   copyVoicesGroups(transaction, VoiceGroup::I, VoiceGroup::II);
+  calculateSplitPointFromFadeParams(transaction);
   initFadeFrom(transaction, SoundType::Split);
 }
 
@@ -1158,4 +1159,13 @@ void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   calculateFadeParamsFromSplitPoint(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
+}
+
+void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transaction)
+{
+  const auto f1 = findParameterByID({ 396, VoiceGroup::I })->getControlPositionValue();
+  const auto f2 = findParameterByID({ 396, VoiceGroup::II })->getControlPositionValue();
+  const auto meanFadeFrom = (f1 + f2) / 2.0;
+
+  getSplitPoint()->setCPFromHwui(transaction, meanFadeFrom);
 }
