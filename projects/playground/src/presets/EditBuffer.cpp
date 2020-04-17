@@ -767,8 +767,6 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
 
-  initToFX(transaction);
-
   undoableSetType(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
@@ -1131,6 +1129,7 @@ void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
 {
+  initToFX(transaction);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
   initFadeFrom(transaction, SoundType::Split);
@@ -1138,6 +1137,7 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
 {
+  initToFX(transaction);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
@@ -1155,7 +1155,6 @@ void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
 {
   auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   copyVoicesGroups(transaction, currentVG, invert(currentVG));
-  copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   calculateFadeParamsFromSplitPoint(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);

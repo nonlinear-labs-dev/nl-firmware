@@ -444,6 +444,18 @@ TEST_CASE("Convert Split (II) to Layer")
     for(auto p : EBL::getLocalNormal<VoiceGroup::II>())
       TestHelper::forceParameterChange(scope->getTransaction(), p);
 
+    for(auto p : EBL::getPartMaster<VoiceGroup::I>())
+      TestHelper::forceParameterChange(scope->getTransaction(), p);
+
+    for(auto p : EBL::getPartMaster<VoiceGroup::II>())
+      TestHelper::forceParameterChange(scope->getTransaction(), p);
+
+    for(auto p : EBL::getToFX<VoiceGroup::I>())
+      TestHelper::forceParameterChange(scope->getTransaction(), p);
+
+    for(auto p : EBL::getToFX<VoiceGroup::II>())
+      TestHelper::forceParameterChange(scope->getTransaction(), p);
+
     attI->setCPFromHwui(scope->getTransaction(), 0.187);
     attII->setCPFromHwui(scope->getTransaction(), 0.287);
   }
@@ -463,6 +475,9 @@ TEST_CASE("Convert Split (II) to Layer")
 
     const auto oldToFxI = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
     const auto oldToFxII = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
+
+    const auto oldPartMasterHashI = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>());
+    const auto oldPartMasterHashII = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>());
 
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
@@ -501,6 +516,12 @@ TEST_CASE("Convert Split (II) to Layer")
       CHECK(EBL::getUnisonVoice<VoiceGroup::I>()->getDisplayString() == "12 voices");
     }
 
+    THEN("Part Master is Unchanged")
+    {
+      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>()) == oldPartMasterHashI);
+      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>()) == oldPartMasterHashII);
+    }
+
     THEN("Voice Parameters of II are default")
     {
       for(auto& p : EBL::getMono<VoiceGroup::II>())
@@ -514,7 +535,7 @@ TEST_CASE("Convert Split (II) to Layer")
       }
     }
 
-    THEN("Fade is determined from Split")
+    THEN("Fade is determined from Split and Range is Default")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getFadeFrom<VoiceGroup::I>(), splitCP);
       CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getFadeFrom<VoiceGroup::II>(), splitCP);
@@ -607,6 +628,9 @@ TEST_CASE("Convert Layer I to Split")
     const auto partIMasterHash = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>());
     const auto partIIMasterHash = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>());
 
+    const auto oldToFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
+    const auto oldToFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
+
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
@@ -621,12 +645,16 @@ TEST_CASE("Convert Layer I to Split")
       CHECK(EBL::getMonoEnable<VoiceGroup::II>()->getDisplayString() == "On");
     }
 
-    THEN("Special Local Params are default")
+    THEN("CrossFB Params are default")
     {
       CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
       CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
+    }
+
+    THEN("To FX Unchanged")
+    {
+      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == oldToFXIHash);
+      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == oldToFXIIHash);
     }
 
     THEN("Local kept values")
