@@ -2215,6 +2215,11 @@ void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
   }
   // local updates: unison, mono
   localPolyRcl(0, msg->unison, msg->mono);
+  // transfer unison detune, phase, pan and mono glide to other part for proper smoother values
+  localParRcl(1, msg->unison.detune);
+  localParRcl(1, msg->unison.phase);
+  localParRcl(1, msg->unison.pan);
+  localParRcl(1, msg->mono.glide);
   // local updates (each layer)
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
