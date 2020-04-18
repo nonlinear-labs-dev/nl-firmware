@@ -2,6 +2,7 @@
    ESPI Driver for Buttons & ID lines on Panel Unit and Play Panel
    New features :
      - All physical lines are read out, to allow for readout of 'unused' button lines.
+     - Debouncing of "release" action, "press" action is propagated immediately
      - "Poll Button" function added, that is, the driver can be requested to read out a button line
        and put the result in the output buffer, the button line doesn't have to change physically
        to generate an event.
@@ -102,16 +103,34 @@ Using the special ID 0x77 in an "Emulate Button" call will clear all buffers and
 #define BUTTON_BYTES_SOLED_PANEL    ((u16)((NUMBER_OF_BUTTONS_SOLED_PANEL + 7) / 8))         // number of bytes needed
 
 #define BUTTON_STATES_SIZE (BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL + BUTTON_BYTES_SOLED_PANEL)
-// array of bit fields holding the current, last, and previous last buttons states
+// array of bit fields holding the last 4 buttons states
 // 4 buffers are used to simplify buffer rotation (can use AND instead of MODULO)
 static u8 button_states[4][BUTTON_STATES_SIZE];
 static u8 current_buffer = 0;
-#define NOW    button_states[current_buffer]
-#define LAST   button_states[(current_buffer + 4 - 1) & 3]
-#define BEFORE button_states[(current_buffer + 4 - 2) & 3]
-static inline void buffer_advance(void)
+
+static inline u8 *button_states_head(void)
 {
-  current_buffer = (current_buffer + 1) & 3;
+  return button_states[current_buffer];
+}
+
+static inline u8 *button_states_middle1(void)
+{
+  return button_states[(current_buffer + 4 - 1) & 0x03];
+}
+
+static inline u8 *button_states_middle2(void)
+{
+  return button_states[(current_buffer + 4 - 2) & 0x03];
+}
+
+static inline u8 *button_states_tail(void)
+{
+  return button_states[(current_buffer + 4 - 3) & 0x03];
+}
+
+static inline void buffer_rotate(void)
+{
+  current_buffer = (current_buffer + 1) & 0x03;
 }
 
 // button id output buffer
@@ -284,6 +303,8 @@ s32 espi_driver_buttons_cleanup(struct espi_driver *sb)
 // ---- poll the physical IO lines, and also process poll requests ----
 // generates button events when a physical button line changes
 // but also generates these events when polling a specific button was requested
+// Bit 7 of the ID represents the physical state of the line, that is, high when
+// button is in released state (buttons are switches to GND, hooked up with pullups)
 void espi_driver_pollbuttons(struct espi_driver *p)
 {
   struct spi_transfer xfer;
@@ -291,10 +312,10 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
   extern int sck_hz;
 
-  static int initial_passes = 2;  // flag first two passes for initialization instead of change detection
+  static int initial_passes = 3;  // flag first three passes for initialization instead of change detection
 
   xfer.tx_buf        = NULL;
-  xfer.rx_buf        = NOW;
+  xfer.rx_buf        = button_states_head();
   xfer.len           = BUTTON_BYTES_GENERAL_PANELS;
   xfer.bits_per_word = 8;
   xfer.delay_usecs   = 0;
@@ -311,7 +332,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
   // read central (big oled) panel ("edit panel")
   xfer.tx_buf = NULL;
-  xfer.rx_buf = NOW + BUTTON_BYTES_GENERAL_PANELS;
+  xfer.rx_buf = button_states_head() + BUTTON_BYTES_GENERAL_PANELS;
   xfer.len    = BUTTON_BYTES_CENTRAL_PANEL;
   espi_driver_scs_select(p, ESPI_EDIT_PANEL_PORT, ESPI_EDIT_BUTTONS_DEVICE);
   gpio_set_value(p->gpio_sap, 0);
@@ -321,13 +342,15 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
   // read small oled panel ("play panel")
   xfer.tx_buf = NULL;
-  xfer.rx_buf = NOW + BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL;
+  xfer.rx_buf = button_states_head() + BUTTON_BYTES_GENERAL_PANELS + BUTTON_BYTES_CENTRAL_PANEL;
   xfer.len    = BUTTON_BYTES_SOLED_PANEL;
   espi_driver_scs_select(p, ESPI_PLAY_PANEL_PORT, p->play_buttons_device);
   gpio_set_value(p->gpio_sap, 0);
   gpio_set_value(p->gpio_sap, 1);
   espi_driver_transfer(p->spidev, &xfer);
   espi_driver_scs_select(p, ESPI_PLAY_PANEL_PORT, 0);
+
+  espi_driver_set_mode(((struct espi_driver *) p)->spidev, SPI_MODE_0);
 
   // MASKING of unused bits is now removed as we now (for hardware version 7.1)
   // want to read the 'hidden'/unused button lines as well, for ID purposes */
@@ -336,43 +359,41 @@ void espi_driver_pollbuttons(struct espi_driver *p)
 
   //  check read states and generate events on changes
   if (initial_passes)
-  {
+  {  // fill buffers first
     initial_passes--;
-    buffer_advance();
+    buffer_rotate();
+    return;
   }
-  else
+  // A falling ("pressed") edge is to be submitted immediately, whereas a rising ("released") edge is to be submitted
+  // only when it keeps being high for two more cycles.
+  // Overall, this provides a 2-cyle debouncing of the "release" action only, to avoid some (not all, though)
+  // false triggers if a button is pressed but has weak (intermittant) contact or is bouncing during intended release.
+  // The bit sequences (leftmost bit is oldest) we are looking for (others are to be ingnored)
+  //   0 1 1 1 ==> "released" transition, delay of two cycles
+  //   1 1 1 0 ==> "pressed" transition, zero delay
+  for (i = 0; i < BUTTON_STATES_SIZE; i++)
   {
-    // A falling ("pressed") edge is to be submitted immediately, provided that the previous two states have been high ("released"),
-    // whereas a rising ("released") edge is to be submitted only when the transition to high happened in the previous pass and we
-    // continue to read high in the current pass, that is, the rising edge is submitted with a delay of one pass.
-    // Overall, this provides a 1-cyle debouncing of the "release" action only, to avoid some (not all, though)
-    // false triggers if a button is pressed but has weak (intermittant) contact or is bouncing during intended release.
-    // The bit sequences (leftmost bit is oldest) we are looking for (others are to be ingnored)
-    //   1 1 0 ==> "pressed" transition
-    //   0 1 1 ==> "released" transition
-    for (i = 0; i < BUTTON_STATES_SIZE; i++)
-    {
-      changed_bits = (NOW[i] ^ BEFORE[i]);         // we don't need to check the middle bits, only the edge bits
-      if (panel_unit_is_online() && changed_bits)  // new state is different for at least one line in this byte ?
-      {
-        for (j = 0; j < 8; j++)
-        {  // scan through bits
-          bit_pos = 1 << j;
-          if (!(changed_bits & bit_pos)  // if edge bits are the same state
-              || !(LAST[i] & bit_pos))   // OR middle bit is low (pressed)
-            continue;                    //   then it can't be any of the bit sequences we are looking for
-          btn_id = (i * 8) + (7 - j);
-          if (btn_id == PANEL_UNIT_CONNECTION_ID)  // special, discard "return panel_unit_offline"
-            continue;
-          if (NOW[i] & bit_pos)                       // new bit is high (released) ?
-            write_id_to_outputbuffer(0x80 | btn_id);  //  then add in bit 7
-          else
-            write_id_to_outputbuffer(0x00 | btn_id);  //  else leave bit 7 cleared
-        }
+    changed_bits = (button_states_head()[i] ^ button_states_tail()[i]);  // we don't need to check the middle bits, only the edge bits
+    if (panel_unit_is_online() && changed_bits)
+    {  // new state is different for at least one line in this byte
+      for (j = 0; j < 8; j++)
+      {  // scan through bits
+        bit_pos = 1 << j;
+        if (!(changed_bits & bit_pos)                    // if edge bits are the same state
+            || !(button_states_middle1()[i] & bit_pos)   // OR first middle bit is low (pressed)
+            || !(button_states_middle2()[i] & bit_pos))  // OR second middle bit is low (pressed)
+          continue;                                      //   then it can't be any of the bit sequences we are looking for
+        btn_id = (i * 8) + (7 - j);
+        if (btn_id == PANEL_UNIT_CONNECTION_ID)  // special, discard "return panel_unit_offline"
+          continue;
+        if (button_states_head()[i] & bit_pos)      // new bit is high (released) ?
+          write_id_to_outputbuffer(0x80 | btn_id);  //  then add in bit 7
+        else
+          write_id_to_outputbuffer(0x00 | btn_id);  //  else leave bit 7 cleared
       }
     }
-    buffer_advance();
   }
+  buffer_rotate();
 
   // now process any button polling requests
   mutex_lock(&btn_poll_buff_lock);  // keep buttons_fops_write() from interfering
@@ -385,20 +406,18 @@ void espi_driver_pollbuttons(struct espi_driver *p)
       if (btn_id == PANEL_UNIT_CONNECTION_ID)  // special, return "panel_unit_offline" rather than physical line
       {
         if (!panel_unit_is_online())
-          btn_id |= 0x80;
+          btn_id |= 0x80;  // Panel Unit is offline, so mark bit 7 (will be inverted in read())
       }
       else
       {
         // check if button currently reads high, then add in bit 7
-        if (NOW[btn_id / 8] & (1 << (7 - btn_id % 8)))
+        if (button_states_head()[btn_id / 8] & (1 << (7 - btn_id % 8)))
           btn_id |= 0x80;
       }
       write_id_to_outputbuffer(btn_id);
     }
   }
   mutex_unlock(&btn_poll_buff_lock);
-
-  espi_driver_set_mode(((struct espi_driver *) p)->spidev, SPI_MODE_0);
 }
 
 // EOF
