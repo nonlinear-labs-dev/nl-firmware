@@ -114,6 +114,7 @@ update_fstab() {
     echo 'root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0' >> /etc/fstab"
 }
 
+set -x
 setup_build_overlay
 build_update
 setup_install_overlay
