@@ -808,16 +808,35 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
         nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
       }
     }
-    if(m_layer_mode == LayerMode::Single)
+    switch(static_cast<C15::Parameters::Local_Modulateables>(_id))
     {
-      for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
-      {
-        localTransition(lId, param, m_edit_time.m_dx);
-      }
-    }
-    else
-    {
-      localTransition(layerId, param, m_edit_time.m_dx);
+      case C15::Parameters::Local_Modulateables::Unison_Detune:
+      case C15::Parameters::Local_Modulateables::Mono_Grp_Glide:
+        if(m_layer_mode != LayerMode::Split)
+        {
+          for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+          {
+            localTransition(lId, param, m_edit_time.m_dx);
+          }
+        }
+        else
+        {
+          localTransition(layerId, param, m_edit_time.m_dx);
+        }
+        break;
+      default:
+        if(m_layer_mode == LayerMode::Single)
+        {
+          for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+          {
+            localTransition(lId, param, m_edit_time.m_dx);
+          }
+        }
+        else
+        {
+          localTransition(layerId, param, m_edit_time.m_dx);
+        }
+        break;
     }
   }
   else if(aspect_update)
@@ -827,14 +846,6 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
     {
       nltools::Log::info("local_target_edit(layer:", layerId, ", mc:", macroId, ", amt:", param->m_amount, ")");
     }
-  }
-  switch(static_cast<C15::Parameters::Local_Modulateables>(_id))
-  {
-    case C15::Parameters::Local_Modulateables::Mono_Grp_Glide:
-      // ...
-      break;
-    default:
-      break;
   }
 }
 
@@ -850,34 +861,43 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
       nltools::Log::info("local_direct_edit(layer:", layerId, ", pos:", param->m_position, ", val:", param->m_scaled,
                          ")");
     }
-    if(m_layer_mode == LayerMode::Single)
+    switch(static_cast<C15::Parameters::Local_Unmodulateables>(_id))
     {
-      for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
-      {
-        localTransition(lId, param, m_edit_time.m_dx);
-      }
+      case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From:
+      case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range:
+        if(m_layer_mode == LayerMode::Layer)
+        {
+          evalVoiceFadeChg(layerId);
+        }
+        break;
+      case C15::Parameters::Local_Unmodulateables::Unison_Phase:
+      case C15::Parameters::Local_Unmodulateables::Unison_Pan:
+        if(m_layer_mode != LayerMode::Split)
+        {
+          for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+          {
+            localTransition(lId, param, m_edit_time.m_dx);
+          }
+        }
+        else
+        {
+          localTransition(layerId, param, m_edit_time.m_dx);
+        }
+        break;
+      default:
+        if(m_layer_mode == LayerMode::Single)
+        {
+          for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
+          {
+            localTransition(lId, param, m_edit_time.m_dx);
+          }
+        }
+        else
+        {
+          localTransition(layerId, param, m_edit_time.m_dx);
+        }
+        break;
     }
-    else
-    {
-      localTransition(layerId, param, m_edit_time.m_dx);
-    }
-  }
-  switch(static_cast<C15::Parameters::Local_Unmodulateables>(_id))
-  {
-    case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From:
-      if(m_layer_mode == LayerMode::Layer)
-      {
-        evalVoiceFadeChg(layerId);
-      }
-      break;
-    case C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range:
-      if(m_layer_mode == LayerMode::Layer)
-      {
-        evalVoiceFadeChg(layerId);
-      }
-      break;
-    default:
-      break;
   }
 }
 
