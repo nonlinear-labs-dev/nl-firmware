@@ -1577,9 +1577,12 @@ void dsp_host_dual::localModChain(const uint32_t _layer, Macro_Param* _mc)
 void dsp_host_dual::globalTransition(const Target_Param* _param, const Time_Aspect _time)
 {
   float dx = 0.0f, dest = _param->m_scaled;
-  bool valid = true;
+  bool fail = false;
   switch(_param->m_render.m_section)
   {
+    case C15::Descriptors::SmootherSection::None:
+      // no smooother - no transition - no fail
+      break;
     case C15::Descriptors::SmootherSection::Global:
       switch(_param->m_render.m_clock)
       {
@@ -1601,14 +1604,14 @@ void dsp_host_dual::globalTransition(const Target_Param* _param, const Time_Aspe
       }
       break;
     default:
-      valid = false;
+      fail = true;
       break;
   }
-  if(LOG_TRANSITIONS && valid)
+  if(LOG_TRANSITIONS && !fail)
   {
     nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
   }
-  else if(LOG_FAIL && !valid)
+  else if(LOG_FAIL && fail)
   {
     nltools::Log::warning(
         __PRETTY_FUNCTION__, "failed to start global_transition(section:", static_cast<int>(_param->m_render.m_section),
@@ -1619,9 +1622,12 @@ void dsp_host_dual::globalTransition(const Target_Param* _param, const Time_Aspe
 void dsp_host_dual::globalTransition(const Direct_Param* _param, const Time_Aspect _time)
 {
   float dx = 0.0f, dest = _param->m_scaled;
-  bool valid = true;
+  bool fail = false;
   switch(_param->m_render.m_section)
   {
+    case C15::Descriptors::SmootherSection::None:
+      // no smooother - no transition - no fail
+      break;
     case C15::Descriptors::SmootherSection::Global:
       switch(_param->m_render.m_clock)
       {
@@ -1643,14 +1649,14 @@ void dsp_host_dual::globalTransition(const Direct_Param* _param, const Time_Aspe
       }
       break;
     default:
-      valid = false;
+      fail = true;
       break;
   }
-  if(LOG_TRANSITIONS && valid)
+  if(LOG_TRANSITIONS && !fail)
   {
     nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
   }
-  if(LOG_FAIL && !valid)
+  if(LOG_FAIL && fail)
   {
     nltools::Log::warning(
         __PRETTY_FUNCTION__, "failed to start global_transition(section:", static_cast<int>(_param->m_render.m_section),
@@ -1661,9 +1667,12 @@ void dsp_host_dual::globalTransition(const Direct_Param* _param, const Time_Aspe
 void dsp_host_dual::localTransition(const uint32_t _layer, const Direct_Param* _param, const Time_Aspect _time)
 {
   float dx = 0.0f, dest = _param->m_scaled;
-  bool valid = true;
+  bool fail = false;
   switch(_param->m_render.m_section)
   {
+    case C15::Descriptors::SmootherSection::None:
+      // no smooother - no transition - no fail
+      break;
     case C15::Descriptors::SmootherSection::Poly:
       switch(_param->m_render.m_clock)
       {
@@ -1705,27 +1714,31 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Direct_Param* _
       }
       break;
     default:
-      valid = false;
+      fail = true;
       break;
   }
-  if(LOG_TRANSITIONS && valid)
+  if(LOG_TRANSITIONS && !fail)
   {
     nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
                        ", dest:", dest, ")");
   }
-  if(LOG_FAIL && !valid)
+  if(LOG_FAIL && fail)
   {
-    nltools::Log::warning(
-        __PRETTY_FUNCTION__, "failed to start local_transition(section:", static_cast<int>(_param->m_render.m_section),
-        ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock), ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to start local_transition(layer:", _layer,
+                          "section:", static_cast<int>(_param->m_render.m_section),
+                          ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock),
+                          ")");
   }
 }
 void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param* _param, const Time_Aspect _time)
 {
   float dx = 0.0f, dest = _param->m_scaled;
-  bool valid = true;
+  bool fail = false;
   switch(_param->m_render.m_section)
   {
+    case C15::Descriptors::SmootherSection::None:
+      // no smooother - no transition - no fail
+      break;
     case C15::Descriptors::SmootherSection::Poly:
       switch(_param->m_render.m_clock)
       {
@@ -1767,19 +1780,20 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param* _
       }
       break;
     default:
-      valid = false;
+      fail = true;
       break;
   }
-  if(LOG_TRANSITIONS && valid)
+  if(LOG_TRANSITIONS && !fail)
   {
     nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
                        ", dest:", dest, ")");
   }
-  if(LOG_FAIL && !valid)
+  if(LOG_FAIL && fail)
   {
-    nltools::Log::warning(
-        __PRETTY_FUNCTION__, "failed to start local_transition(section:", static_cast<int>(_param->m_render.m_section),
-        ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock), ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to start local_transition(layer:", _layer,
+                          "section:", static_cast<int>(_param->m_render.m_section),
+                          ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock),
+                          ")");
   }
 }
 
@@ -2343,11 +2357,11 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
     const uint32_t macroId = getMacroId(_param.mc);
     m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
-    if(_param.id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
-    {
-      m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
-      nltools::Log::info("recall split:", m_alloc.m_splitPoint);
-    }
+    //    if(_param.id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
+    //    {
+    //      m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
+    //      nltools::Log::info("recall split:", m_alloc.m_splitPoint);
+    //    }
   }
   else if(LOG_FAIL)
   {
