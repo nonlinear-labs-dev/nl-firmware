@@ -1609,7 +1609,9 @@ void dsp_host_dual::globalTransition(const Target_Param* _param, const Time_Aspe
   }
   if(LOG_TRANSITIONS && !fail)
   {
-    nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
+    nltools::Log::info("global_transition(section:", static_cast<int>(_param->m_render.m_section),
+                       ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock),
+                       ", dx:", dx, ", dest:", dest, ")");
   }
   else if(LOG_FAIL && fail)
   {
@@ -1654,7 +1656,9 @@ void dsp_host_dual::globalTransition(const Direct_Param* _param, const Time_Aspe
   }
   if(LOG_TRANSITIONS && !fail)
   {
-    nltools::Log::info("global_transition(index:", _param->m_render.m_index, ", dx:", dx, ", dest:", dest, ")");
+    nltools::Log::info("global_transition(section:", static_cast<int>(_param->m_render.m_section),
+                       ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock),
+                       ", dx:", dx, ", dest:", dest, ")");
   }
   if(LOG_FAIL && fail)
   {
@@ -1719,8 +1723,9 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Direct_Param* _
   }
   if(LOG_TRANSITIONS && !fail)
   {
-    nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
-                       ", dest:", dest, ")");
+    nltools::Log::info("local_transition(layer:", _layer, ", section:", static_cast<int>(_param->m_render.m_section),
+                       ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock),
+                       ", dx:", dx, ", dest:", dest, ")");
   }
   if(LOG_FAIL && fail)
   {
@@ -1785,8 +1790,9 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param* _
   }
   if(LOG_TRANSITIONS && !fail)
   {
-    nltools::Log::info("local_transition(layer:", _layer, "index:", _param->m_render.m_index, ", dx:", dx,
-                       ", dest:", dest, ")");
+    nltools::Log::info("local_transition(layer:", _layer, ", section:", static_cast<int>(_param->m_render.m_section),
+                       ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock),
+                       ", dx:", dx, ", dest:", dest, ")");
   }
   if(LOG_FAIL && fail)
   {
@@ -2343,7 +2349,7 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Modulateable)
   {
-    if(LOG_RECALL_COMPARE_INITIAL)
+    if(LOG_RECALL_DETAILS)
     {
       nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
                          element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
@@ -2357,11 +2363,6 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
     const uint32_t macroId = getMacroId(_param.mc);
     m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
-    //    if(_param.id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
-    //    {
-    //      m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
-    //      nltools::Log::info("recall split:", m_alloc.m_splitPoint);
-    //    }
   }
   else if(LOG_FAIL)
   {
@@ -2374,9 +2375,9 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::SplitPoint
   auto element = getParameter(_param.id);
   if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
   {
-    if(LOG_RECALL_COMPARE_INITIAL)
+    if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
                          element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
                          ", initial:", element.m_initial, ")");
     }
@@ -2401,9 +2402,9 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Unmodulate
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
-    if(LOG_RECALL_COMPARE_INITIAL)
+    if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
                          element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
                          ", initial:", element.m_initial, ")");
     }
@@ -2422,9 +2423,9 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::GlobalPara
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
-    if(LOG_RECALL_COMPARE_INITIAL)
+    if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
                          element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
                          ", initial:", element.m_initial, ")");
     }
@@ -2458,11 +2459,11 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
   {
-    if(LOG_RECALL_COMPARE_INITIAL)
+    if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                         ", initial:", element.m_initial, ")");
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
+                         ", label:", element.m_pg.m_group_label_short, element.m_pg.m_param_label_short,
+                         ", value:", _param.controlPosition, ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
     param->update_source(getMacro(_param.mc));
@@ -2485,11 +2486,11 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Unmodulateable)
   {
-    if(LOG_RECALL_COMPARE_INITIAL)
+    if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info("recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                         ", initial:", element.m_initial, ")");
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
+                         ", label:", element.m_pg.m_group_label_short, element.m_pg.m_param_label_short,
+                         ", value:", _param.controlPosition, ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_direct(_layerId, element.m_param.m_index);
     param->update_position(static_cast<float>(_param.controlPosition));
