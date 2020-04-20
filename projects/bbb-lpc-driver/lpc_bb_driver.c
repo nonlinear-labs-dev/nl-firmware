@@ -1,6 +1,6 @@
 /******************************************************************************/
 /** @file	spi_lpc_bb.c
-    @date	last modified date/name: 2014-12-04 DTZ
+    @date	last modified date/name: 2020-04-20 KSTR
     @brief    	This module takes care about the communication with the LPC via
     SPI.
     @author	Nemanja Nikodijevic [2014-03-02]
@@ -9,13 +9,14 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/workqueue.h>
+#include <linux/poll.h>
 #include <linux/init.h>
 #include <linux/spi/spi.h>
 #include <linux/fs.h>       // Write data to sysfs
 #include <linux/of_gpio.h>  // nni: added for device tree
 #include <linux/platform_device.h>
 #include <linux/delay.h>
-
+#include <linux/string.h>
 #include <linux/uaccess.h>
 
 /* speed can only be f_max/(2^n) -> f_max = 24 MHz */
@@ -38,76 +39,119 @@ struct lpc_bb_driver
   int cs_gpio;
 };
 
-static DEFINE_MUTEX(tx_buff_lock);
-static struct semaphore rx_buff_empty
-    = __SEMAPHORE_INITIALIZER(rx_buff_empty, LPC_BB_DRIVER_RX_BUFF_SIZE);         // SPI_LPC_BB_RX_BUFF_SIZE
-static struct semaphore rx_buff_full = __SEMAPHORE_INITIALIZER(rx_buff_full, 0);  //0
+// writes are performed using switching dual buffers
+static DEFINE_MUTEX(tx_buff_lock);       // buffer protector
+static u8 *     tx_buff;                 // [2][LPC_BB_DRIVER_XFER_SIZE]  current buffer is user write buffer, the other is the SPI xfer buffer
+static u8       tx_write_buffer;         // selected write buffer, 0 or 1
+static unsigned tx_write_buffer_offset;  // current write offset in selected buffer
 
-static u8 *     tx_buff;  //[2][SPI_LPC_BB_XFER_SIZE];
-static u8       tx_write_buffer;
-static unsigned tx_write_buffer_offset;
-static u8 *     rxb;      //[SPI_LPC_BB_XFER_SIZE];
-static u8 *     rx_buff;  //[SPI_LPC_BB_RX_BUFF_SIZE];
-static unsigned rx_bytes_to_read;
+// reads use a ring buffer
+static u8 *rxb;                             // [LPC_BB_DRIVER_XFER_SIZE]   SPI RX buffer
+static DEFINE_MUTEX(rx_buff_lock);          // buffer protector
+static DECLARE_WAIT_QUEUE_HEAD(rx_wqueue);  // wait queue to control buffer dataflow
+static u8 *rx_buff;                         // [LPC_BB_DRIVER_RX_BUFF_SIZE]   user RX ring buffer
+static u16 rx_buff_head;
+static u16 rx_buff_tail;
 
-static volatile size_t rx_buff_head;
-static volatile size_t rx_buff_tail;
-
-static u8  no_hb_count;
-static u8  no_rdy;
-static u8  xfer_repeat;
-static u8 *txb_repeat;
+static u8 no_hb_count;       // number of LPC heartbeats currently missed
+#define MAX_NO_HB_COUNT (5)  // number of missed LPC heartbeats allowed before error / write stall
+static u8  busy;
+static u8  xfer_repeat;  // flag repeat request (when LPC was offline)
+static u8 *txb_repeat;   // saved tx buffer pointer for delayed xfer
 
 static struct workqueue_struct *workqueue;
+#define RESTART_WQUEUE_MS (4)  // restart queue after X milliseconds
 
 // **************************************************************************
+// check if LPC heartbeat pin toggles after 125us max
 static int lpc_bb_driver_check_hb(int hb_gpio)
 {
-  int hb_val, hb_tmp;
+  int hb_val, i;
 
   hb_val = gpio_get_value(hb_gpio);
-  usleep_range(62, 65);
-  hb_tmp = gpio_get_value(hb_gpio);
-
-  if (hb_tmp != hb_val)
-    return 1;
-
-  usleep_range(63, 65);
-  hb_tmp = gpio_get_value(hb_gpio);
-
-  if (hb_tmp != hb_val)
-    return 1;
-
-  return 0;
+  for (i = 0; i < 5; i++)
+  {  // wait for 130us..140us total in 26...28us intervals
+    usleep_range(26, 28);
+    if (gpio_get_value(hb_gpio) != hb_val)
+      return 1;
+  }
+  return 0;  // no change, LPC is busy/dead
 }
 
+// **************************************************************************
+//  3 helper functions for rx buffer access
+static inline u16 bytes_in_rx_buffer(void)
+{
+  return (rx_buff_head - rx_buff_tail) & LPC_BB_DRIVER_RX_BUFF_MASK;
+}
+
+static inline void next(u16 *index, u16 how_much)
+{
+  (*index) += how_much;
+  (*index) &= LPC_BB_DRIVER_RX_BUFF_MASK;
+}
+
+static inline int rx_buff_has_data(void)
+{
+  return rx_buff_head != rx_buff_tail;
+}
+
+// **************************************************************************
+//  parse incoming package and transfer to rx buffer
 static void lpc_bb_driver_package_parse(void)
 {
-  int i = 4;
+  static int      blocked = 0;
+  static unsigned missed  = 0;
+  u16             i;
+  u16             rx_bytes_to_read;
+  u16             first, second;
 
   if ((rxb[0] != 0xFF) || (rxb[3] != 0xFF))
-    return;
-
+    return;  // wrong signature
   rx_bytes_to_read = rxb[1] + (rxb[2] << 8);
 
-  while (rx_bytes_to_read)
-  {
-    if (down_interruptible(&rx_buff_empty) == 0)
-    {
-      rx_buff[rx_buff_head & LPC_BB_DRIVER_RX_BUFF_MASK] = rxb[i++];
-      rx_buff_head++;
+  if (!rx_bytes_to_read || (rx_bytes_to_read > LPC_BB_DRIVER_RX_BUFF_SIZE - 4))
+    return;  // no data, or message can't fit in buffer
 
-      up(&rx_buff_full);
-      rx_bytes_to_read--;
-    }
-    else
+  mutex_lock(&rx_buff_lock);
+  if (rx_bytes_to_read < (LPC_BB_DRIVER_RX_BUFF_SIZE - bytes_in_rx_buffer()))
+  {  // enough free space in buffer
+    if (blocked)
     {
-      printk("missed a packet!\n");
-      return;
+      blocked = 0;
+      printk(KERN_WARNING "%s() : ... missed %u packets. RX buffer now accepting packets again.\n", __func__, missed);
+      missed = 0;
+    }
+    i = 4;
+
+    first  = rx_bytes_to_read;  // assume first chunk will fit ...
+    second = 0;                 // .. and no need for second chunk
+    if (rx_buff_head + rx_bytes_to_read > LPC_BB_DRIVER_RX_BUFF_SIZE)
+    {  // write beyond physical buffer end, so split in two chunks
+      first  = LPC_BB_DRIVER_RX_BUFF_SIZE - rx_buff_head;
+      second = rx_bytes_to_read - first;
+    }
+    memcpy(&rx_buff[rx_buff_head], &rxb[i], first);
+    if (second)
+      memcpy(&rx_buff[0], &rxb[i + first], second);
+    next(&rx_buff_head, rx_bytes_to_read);
+
+    wake_up_interruptible(&rx_wqueue);
+  }
+  else
+  {
+    if (++missed == 0)
+      missed--;  // saturate
+    if (!blocked)
+    {
+      blocked = 1;
+      printk(KERN_WARNING "%s() : RX buffer full, dropping packets...\n", __func__);
     }
   }
+  mutex_unlock(&rx_buff_lock);
 }
 
+// **************************************************************************
 static u8 *lpc_bb_driver_get_txb(void)
 {
   u32 *msg_size;
@@ -152,19 +196,20 @@ static int lpc_bb_driver_transfer(struct spi_device *dev, u8 *txb)
 // **************************************************************************
 static void lpc_bb_driver_poll(struct delayed_work *p)
 {
-  struct lpc_bb_driver *spi = (struct lpc_bb_driver *) p;
-  int                   rdy, prq, txw, hb;
+  static int            lpc_offline = 0;
+  struct lpc_bb_driver *spi         = (struct lpc_bb_driver *) p;
+  int                   ready, poll_request, tx_payload, hb;
   u8 *                  txb;
 
   //printk("Workqueue %i",  ((struct spilpcbb *)p)->counter++);
-  rdy = gpio_get_value(spi->rdy_gpio);
-  prq = gpio_get_value(spi->prq_gpio);
-  hb  = lpc_bb_driver_check_hb(spi->lpc_hb_gpio);
-  txw = tx_write_buffer_offset - 4;
+  ready        = gpio_get_value(spi->rdy_gpio);
+  poll_request = gpio_get_value(spi->prq_gpio);
+  hb           = lpc_bb_driver_check_hb(spi->lpc_hb_gpio);
+  tx_payload   = tx_write_buffer_offset - 4;
 
   if (!hb)
   {
-    if (no_hb_count < 5)
+    if (no_hb_count < MAX_NO_HB_COUNT)
     {
       no_hb_count++;
     }
@@ -174,9 +219,9 @@ static void lpc_bb_driver_poll(struct delayed_work *p)
   if (no_hb_count)
     no_hb_count = 0;
 
-  if (rdy && (prq || txw))
+  if (ready && (poll_request || tx_payload))
   {
-    no_rdy = 0;
+    busy = 0;
 
     if (xfer_repeat)
       txb = txb_repeat;
@@ -201,26 +246,45 @@ static void lpc_bb_driver_poll(struct delayed_work *p)
       txb_repeat  = txb;
     }
   }
-  else if (!rdy)
-    no_rdy = 1;
+  else if (!ready)
+    busy = 1;
 
-exit: /* printk("polling... rx_buff_head = %d\n",rx_buff_head); */
-  queue_delayed_work(workqueue, p, msecs_to_jiffies(10));
+exit:
+  if (no_hb_count >= MAX_NO_HB_COUNT)
+  {
+    if (!lpc_offline)
+    {
+      lpc_offline = 1;
+      printk(KERN_INFO "%s() LPC went offline\n", __func__);
+    }
+  }
+  else
+  {
+    if (lpc_offline)
+    {
+      lpc_offline = 0;
+      printk(KERN_INFO "%s() LPC went online\n", __func__);
+    }
+  }
+
+  queue_delayed_work(workqueue, p, msecs_to_jiffies(RESTART_WQUEUE_MS));
 }
 
+// **************************************************************************
+//  write user data to tx buffer
 static ssize_t lpc_bb_driver_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
   ssize_t status = 0;
   u32 *   msg_size;
 
   /* If the communication is dead, return */
-  if (no_hb_count >= 5)
+  if (no_hb_count >= MAX_NO_HB_COUNT)
     return -EIO;
 
   /* If tx buffer is full, return */
   if ((tx_write_buffer_offset + count) > LPC_BB_DRIVER_XFER_SIZE)
   {
-    if (no_rdy)
+    if (busy)
       return -EBUSY;
     return -EAGAIN;
   }
@@ -243,58 +307,81 @@ static ssize_t lpc_bb_driver_write(struct file *filp, const char __user *buf, si
   return status;
 }
 
+// **************************************************************************
+//  read rx buffer and transfer to user data
 static ssize_t lpc_bb_driver_read(struct file *filp, char __user *buf_user, size_t count, loff_t *f_pos)
 {
-  unsigned i;
+  ssize_t status;
+  u16     xfer, first, second;
 
-  /* If in non-blocking mode and no data to read, return */
-  if (filp->f_flags & O_NONBLOCK && rx_buff_head == rx_buff_tail)
+  // if in non-blocking mode and no data to read, return
+  if ((filp->f_flags & O_NONBLOCK) && !rx_buff_has_data())
     return -EAGAIN;
 
-  for (i = 0; i < count; i++)
+  // sleep until there is data to read
+  if ((status = wait_event_interruptible(rx_wqueue, rx_buff_has_data())))
   {
-    if (down_interruptible(&rx_buff_full))
-    {
-      printk("interrupted during read!\n");
-      return i;
+    if (status == -ERESTARTSYS)
+    {  // clear remaning buffer contents to avoid picking up unsynced messages next time
+      printk(KERN_WARNING "%s() : interrupted during read, clearing remaining buffer\n", __func__);
+      mutex_lock(&rx_buff_lock);
+      rx_buff_tail = rx_buff_head;
+      mutex_unlock(&rx_buff_lock);
     }
-
-    if (copy_to_user(buf_user + i, &rx_buff[rx_buff_tail & LPC_BB_DRIVER_RX_BUFF_MASK], 1) != 0)
-      return -EFAULT;
-    rx_buff_tail++;
-
-    up(&rx_buff_empty);
-
-    if (rx_buff_head == rx_buff_tail)
-      return i + 1;
+    return status;
   }
 
-  return count;
+  mutex_lock(&rx_buff_lock);
+
+  xfer = bytes_in_rx_buffer();
+  if (count > xfer)  // more requested than available ?
+    count = xfer;    //  then shrink to available
+  xfer = count;
+
+  first  = count;  // assume first chunk will fit ...
+  second = 0;      // .. and no need for second chunk
+  if (rx_buff_tail + count > LPC_BB_DRIVER_RX_BUFF_SIZE)
+  {  // read beyond physical buffer end, so split in two chunks
+    first  = LPC_BB_DRIVER_RX_BUFF_SIZE - rx_buff_tail;
+    second = count - first;
+  }
+  if (copy_to_user(buf_user, &rx_buff[rx_buff_tail], first) != 0)
+    status = -EFAULT;
+  else if (second)
+    if (copy_to_user(buf_user + first, &rx_buff[0], second) != 0)
+      status = -EFAULT;
+  next(&rx_buff_tail, count);
+
+  mutex_unlock(&rx_buff_lock);
+
+  if (status)  // error ?
+    return status;
+
+  return (count);
 }
+/*  
+*/
 
-static int lpc_bb_driver_open(struct inode *inode, struct file *filp)
+// ---- driver poll function ----
+// checks and returns "read data available" and "write allowed"
+static unsigned int lpc_bb_driver_fops_poll(struct file *filp, poll_table *wait)
 {
-  int status = 0;
+  unsigned int mask = 0;  // assume nothing first
+  poll_wait(filp, &rx_wqueue, wait);
 
-  nonseekable_open(inode, filp);
-
-  return status;
-}
-
-static int lpc_bb_driver_release(struct inode *inode, struct file *filp)
-{
-  int status = 0;
-
-  return status;
+  // if there is data in buffer, reading is allowed
+  if (rx_buff_tail != rx_buff_head)
+    mask |= POLLIN | POLLRDNORM;
+  return mask;
 }
 
 static const struct file_operations lpc_bb_driver_fops = {
-  .owner   = THIS_MODULE,
-  .write   = lpc_bb_driver_write,
-  .read    = lpc_bb_driver_read,
-  .open    = lpc_bb_driver_open,
-  .release = lpc_bb_driver_release,
-  .llseek  = no_llseek,
+  .owner  = THIS_MODULE,
+  .write  = lpc_bb_driver_write,
+  .read   = lpc_bb_driver_read,
+  .open   = nonseekable_open,
+  .llseek = no_llseek,
+  .poll   = lpc_bb_driver_fops_poll,
 };
 
 static struct class *lpc_bb_driver_class;
@@ -307,8 +394,6 @@ static int lpc_bb_driver_probe(struct spi_device *dev)
   struct device_node *  dn = dev->dev.of_node;
   struct device *       tmpd;
   u32 *                 msg_size;
-
-  printk("lpc_bb_driver_probe\n");
 
   sb = devm_kzalloc(&dev->dev, sizeof(struct lpc_bb_driver), GFP_KERNEL);
   if (!sb)
@@ -387,7 +472,6 @@ static int lpc_bb_driver_probe(struct spi_device *dev)
 
   /** create the device */
   tmpd                   = device_create(lpc_bb_driver_class, &dev->dev, MKDEV(LPC_BB_DRIVER_DEV_MAJOR, 0), sb, "lpc_bb_driver");
-  rx_bytes_to_read       = 0;
   tx_write_buffer        = 0;
   tx_write_buffer_offset = 4;
   msg_size               = (u32 *) tx_buff;
@@ -402,7 +486,7 @@ static int lpc_bb_driver_probe(struct spi_device *dev)
   dev_info(&dev->dev, "spi registered, item=0x%p\n", (void *) sb);
 
   INIT_DELAYED_WORK(&(sb->work), (work_func_t) lpc_bb_driver_poll);
-  queue_delayed_work(workqueue, &(sb->work), msecs_to_jiffies(10));  // jiffies / HZ -> ms, so 10ms
+  queue_delayed_work(workqueue, &(sb->work), msecs_to_jiffies(RESTART_WQUEUE_MS));  // jiffies / HZ -> ms, so 4ms
 
   return ret;
 }
@@ -411,8 +495,6 @@ static int lpc_bb_driver_probe(struct spi_device *dev)
 static int lpc_bb_driver_remove(struct spi_device *spi)
 {
   struct lpc_bb_driver *sb = (struct lpc_bb_driver *) dev_get_drvdata(&spi->dev);
-
-  printk("spi_lpc_bb_remove\n");
 
   cancel_delayed_work(&(sb->work));
 
@@ -443,10 +525,7 @@ static int __init lpc_bb_driver_init(void)
 {
   int ret;
 
-#warning### SPI speed is set to a debug-able speed ###
-
-  printk("lpc_bb_driver_init --\n");
-  printk("lpc_bb_driver VERSION: 17-12-2014\n");
+  printk(KERN_INFO "%s() VERSION: 2020-04-20\n", __func__);
 
   ret = register_chrdev(LPC_BB_DRIVER_DEV_MAJOR, "spi", &lpc_bb_driver_fops);
   if (ret < 0)
@@ -467,11 +546,9 @@ static int __init lpc_bb_driver_init(void)
   if (ret)
     pr_err("%s: problem at spi_register_driver\n", __func__);
 
-  no_rdy      = 0;
+  busy        = 0;
   no_hb_count = 0;
   xfer_repeat = 0;
-
-  printk("registration done --\n");
 
   return ret;
 }
@@ -480,13 +557,11 @@ module_init(lpc_bb_driver_init);
 // **************************************************************************
 static void __exit lpc_bb_driver_exit(void)
 {
-  printk("lpc_bb_driver_exit --\n");
-
   spi_unregister_driver(&lpc_bb_driver_driver);
 }
 module_exit(lpc_bb_driver_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Nemanja Nikodijevic");
+MODULE_AUTHOR("Nemanja Nikodijevic/Klaus Strohhaecker");
 MODULE_DESCRIPTION("lpc_bb_driver");
-MODULE_VERSION("2016-03-02");
+MODULE_VERSION("2020-04-20");
