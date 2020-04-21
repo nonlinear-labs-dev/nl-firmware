@@ -77,6 +77,7 @@ template <uint32_t Voices> class PolyKeyPacket
     m_data[m_length].m_velocity = m_data[0].m_velocity;
     m_data[m_length].m_tune = m_data[0].m_tune;
     m_data[m_length].m_trigger_env = m_data[0].m_trigger_env;
+    m_data[m_length].m_trigger_glide = m_data[0].m_trigger_glide;
     m_length++;
   }
   PolyKeyEvent m_data[Voices];
