@@ -8,4 +8,5 @@ class DirectLoadSetting : public BooleanSetting
 
   DirectLoadSetting(const DirectLoadSetting& other) = delete;
   DirectLoadSetting& operator=(const DirectLoadSetting&) = delete;
+bool set(tEnum m) override;
 };
