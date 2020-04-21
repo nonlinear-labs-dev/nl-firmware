@@ -1165,7 +1165,6 @@ uint32_t dsp_host_dual::onSettingToneToggle()
 
 void dsp_host_dual::render()
 {
-  m_sample_counter += SAMPLE_COUNT;
   m_fade.evalTaskStatus();
 
   if(m_fade.isMuted())
