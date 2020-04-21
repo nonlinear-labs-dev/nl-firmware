@@ -20,7 +20,7 @@
 #include <linux/uaccess.h>
 
 /* speed can only be f_max/(2^n) -> f_max = 24 MHz */
-#define LPC_BB_DRIVER_MAX_SPEED    3000000
+#define LPC_BB_DRIVER_MAX_SPEED    6000000  // was 3000000
 #define LPC_BB_DRIVER_XFER_SIZE    1024
 #define LPC_BB_DRIVER_DEV_MAJOR    300
 #define LPC_BB_DRIVER_RX_BUFF_SIZE 1024
