@@ -208,7 +208,7 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
     switch(i)
     {
       case Buttons::BUTTON_A:
-        if(m_mode == Mode::ParameterValue)
+        if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
           auto eb = Application::get().getPresetManager()->getEditBuffer();
 
@@ -221,11 +221,12 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
         }
 
       case Buttons::BUTTON_B:
-        toggleMode(Mode::MacroControlSelection);
+        if(!isCurrentParameterDisabled())
+          toggleMode(Mode::MacroControlSelection);
         return true;
 
       case Buttons::BUTTON_C:
-        if(hasModulationSource())
+        if(hasModulationSource() && !isCurrentParameterDisabled())
           toggleMode(Mode::MacroControlAmount);
         return true;
 
@@ -381,6 +382,13 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
     indication->setVisible(desiredMode == Mode::ParameterValue);
   }
 
+  if(isCurrentParameterDisabled())
+  {
+    m_mcPosButton->setText("");
+    m_mcAmtButton->setText("");
+    m_mcSelButton->setText("");
+  }
+
   handleSelectPartButton();
 
   m_mcPosButton->setVisible(true);
@@ -532,6 +540,11 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       setCarousel(new ModulationCarousel(ModulationCarousel::Mode::LowerBound, Rect(195, 1, 58, 62)));
       break;
   }
+}
+bool ModulateableParameterSelectLayout2::isCurrentParameterDisabled() const
+{
+  return isParameterNotAvailableInSoundType(getCurrentParameter(),
+                                            Application::get().getPresetManager()->getEditBuffer());
 }
 
 bool ModulateableParameterSelectLayout2::handleMCRecall(Buttons i, bool down)

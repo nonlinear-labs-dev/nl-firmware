@@ -5,6 +5,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)
@@ -33,8 +34,13 @@ void SelectedParameterValue::onParameterSelected(Parameter *parameter)
   m_paramValueConnection.disconnect();
 
   if(parameter)
+  {
     m_paramValueConnection
         = parameter->onParameterChanged(sigc::mem_fun(this, &SelectedParameterValue::onParamValueChanged));
+
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    setVisible(!ParameterLayout2::isParameterNotAvailableInSoundType(parameter, eb));
+  }
 }
 
 void SelectedParameterValue::onParamValueChanged(const Parameter *param)

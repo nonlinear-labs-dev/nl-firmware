@@ -12,6 +12,7 @@ class Slider;
 class Label;
 class Button;
 class ModuleCaption;
+class EditBuffer;
 
 class ParameterLayout2 : public Layout
 {
@@ -20,13 +21,14 @@ class ParameterLayout2 : public Layout
   typedef ParameterLayout2 virtual_base;
   ParameterLayout2();
 
+  static bool isParameterNotAvailableInSoundType(const Parameter *p, EditBuffer *eb);
+
  protected:
   void init() override;
   constexpr static int BUTTON_VALUE_Y_POSITION = 34;
   constexpr static int BIG_SLIDER_X = 77;
   constexpr static int BIG_SLIDER_WIDTH = 102;
 
- protected:
   virtual Parameter *getCurrentParameter() const;
   virtual Parameter *getCurrentEditParameter() const;
   virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
@@ -35,7 +37,6 @@ class ParameterLayout2 : public Layout
   void handlePresetValueRecall();
   void copyFrom(Layout *src) override;
 
- protected:
   virtual ModuleCaption *createModuleCaption() const;
 
  private:

@@ -256,9 +256,15 @@ std::vector<int> cleanParameterIDSForType(const std::vector<gint32> &ids, SoundT
 
 bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> ids, bool state)
 {
+  if(ids.empty())
+    return true;
+
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
   auto cleanedParameterIdForType = cleanParameterIDSForType(ids, editBuffer->getType());
+
+  if(cleanedParameterIdForType.empty())
+    return true;
 
   auto voiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto firstParameterInList = editBuffer->findParameterByID({ cleanedParameterIdForType.front(), voiceGroup });
