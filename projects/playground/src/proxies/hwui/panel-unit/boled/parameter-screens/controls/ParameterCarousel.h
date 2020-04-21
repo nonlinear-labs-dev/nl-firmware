@@ -2,6 +2,7 @@
 
 #include <proxies/hwui/buttons.h>
 #include "Carousel.h"
+#include <nltools/Types.h>
 
 class Application;
 class Parameter;
@@ -34,4 +35,5 @@ class ParameterCarousel : public Carousel
   void setupChildControls(Parameter *selectedParameter, const std::__cxx11::list<int> &buttonAssignments);
 
   void setupChildControlsForParameterWithoutButtonMapping(Parameter *selectedParameter);
+  bool paramShouldBeHiddenForSoundtype(Parameter *param, SoundType type);
 };

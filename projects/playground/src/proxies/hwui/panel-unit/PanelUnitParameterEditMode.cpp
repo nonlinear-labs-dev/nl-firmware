@@ -197,6 +197,21 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button) 
   return m_mappings.findParameters(button);
 }
 
+std::vector<int> cleanParameterIDSForType(const std::vector<gint32> &ids, SoundType type);
+
+std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button, SoundType type) const
+{
+  auto raw = getButtonAssignments(button);
+  std::vector<int> ass;
+  std::copy(raw.begin(), raw.end(), std::back_inserter(ass));
+
+  auto cl = cleanParameterIDSForType(ass, type);
+
+  std::list<int> ret;
+  std::copy(cl.begin(), cl.end(), std::back_inserter(ret));
+  return ret;
+}
+
 UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::vector<gint32> toggleAudioIDs)
 {
 #warning "TODO"
@@ -217,17 +232,42 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
   return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
 
+std::vector<int> cleanParameterIDSForType(const std::vector<gint32> &ids, SoundType type)
+{
+  auto rawList = ids;
+  std::vector<int> ret;
+
+  switch(type)
+  {
+    case SoundType::Single:
+      std::copy_if(rawList.begin(), rawList.end(), std::back_inserter(ret),
+                   [](int id) { return id != 350 && id != 352 && id != 354 && id != 362; });
+      break;
+    case SoundType::Split:
+      std::copy_if(rawList.begin(), rawList.end(), std::back_inserter(ret),
+                   [](int id) { return id != 350 && id != 352 && id != 354; });
+      break;
+    case SoundType::Layer:
+    case SoundType::Invalid:
+      return rawList;
+  }
+  return ret;
+}
+
 bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> ids, bool state)
 {
-  auto voiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto firstParameterInList = editBuffer->findParameterByID({ ids.front(), voiceGroup });
+
+  auto cleanedParameterIdForType = cleanParameterIDSForType(ids, editBuffer->getType());
+
+  auto voiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto firstParameterInList = editBuffer->findParameterByID({ cleanedParameterIdForType.front(), voiceGroup });
 
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
 
   if(auto modParam = dynamic_cast<ModulateableParameter *>(firstParameterInList))
   {
-    mcStateMachine.setCurrentModulateableParameter({ ids.front(), voiceGroup });
+    mcStateMachine.setCurrentModulateableParameter({ cleanedParameterIdForType.front(), voiceGroup });
 
     if(mcStateMachine.traverse(state ? MacroControlAssignmentEvents::ModParamPressed
                                      : MacroControlAssignmentEvents::ModParamReleased))
@@ -241,42 +281,43 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
   {
     Parameter *selParam = editBuffer->getSelected();
 
-    if(tryParameterToggleOnMacroControl(ids, selParam))
+    if(tryParameterToggleOnMacroControl(cleanedParameterIdForType, selParam))
       return true;
 
     if(isShowingParameterScreen())
     {
       auto selParamID = selParam->getID();
-      auto pos = find(ids.begin(), ids.end(), selParamID.getNumber());
+      auto pos = find(cleanedParameterIdForType.begin(), cleanedParameterIdForType.end(), selParamID.getNumber());
 
-      if(pos != ids.end())
+      if(pos != cleanedParameterIdForType.end())
         if(switchToNormalModeInCurrentParameterLayout())
           return true;
 
-      for(auto it = ids.begin(); it != ids.end(); ++it)
+      for(auto it = cleanedParameterIdForType.begin(); it != cleanedParameterIdForType.end(); ++it)
       {
         if(*it == selParamID.getNumber())
         {
           auto next = std::next(it);
 
-          if(next == ids.end())
-            next = ids.begin();
+          if(next == cleanedParameterIdForType.end())
+            next = cleanedParameterIdForType.begin();
 
           setParameterSelection({ *next, selParamID.getVoiceGroup() }, state);
           return true;
         }
       }
 
-      if(ParameterId::isGlobal(ids.front()))
-        setParameterSelection({ ids.front(), VoiceGroup::Global }, state);
+      if(ParameterId::isGlobal(cleanedParameterIdForType.front()))
+        setParameterSelection({ cleanedParameterIdForType.front(), VoiceGroup::Global }, state);
       else
-        setParameterSelection({ ids.front(), Application::get().getHWUI()->getCurrentVoiceGroup() }, state);
+        setParameterSelection(
+            { cleanedParameterIdForType.front(), Application::get().getHWUI()->getCurrentVoiceGroup() }, state);
     }
     else
     {
       if(Application::get().getHWUI()->getButtonModifiers()[SHIFT])
       {
-        for(auto paramId : ids)
+        for(auto paramId : cleanedParameterIdForType)
         {
           auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
           if(ParameterId::isGlobal(paramId))
@@ -292,7 +333,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
       }
 
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      setParameterSelection({ ids.front(), vg }, state);
+      setParameterSelection({ cleanedParameterIdForType.front(), vg }, state);
     }
   }
 

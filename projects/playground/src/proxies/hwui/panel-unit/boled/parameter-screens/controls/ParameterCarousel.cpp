@@ -58,7 +58,8 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
 void ParameterCarousel::setupChildControls(const std::shared_ptr<PanelUnitParameterEditMode>& edit,
                                            Parameter* selectedParameter, Buttons button)
 {
-  std::list<int> buttonAssignments = edit->getButtonAssignments(button);
+  std::list<int> buttonAssignments
+      = edit->getButtonAssignments(button, Application::get().getPresetManager()->getEditBuffer()->getType());
 
   if(buttonAssignments.size() > 1)
   {
@@ -85,6 +86,9 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
 
     if(!param)
       param = eb->findParameterByID({ i, VoiceGroup::Global });
+
+    if(!param)
+      continue;
 
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
 
@@ -176,4 +180,41 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
   {
     setupChildControls(selectedParameter, { 249, 250, 252, 253 });
   }
+}
+
+bool ParameterCarousel::paramShouldBeHiddenForSoundtype(Parameter* param, SoundType type)
+{
+  if(param == nullptr)
+    return true;
+
+  const auto id = param->getID();
+  const auto num = id.getNumber();
+  const auto vg = id.getVoiceGroup();
+
+  switch(type)
+  {
+    case SoundType::Single:
+    {
+      if(num == 346 || num == 348)
+        return true;
+      if(num == 350 || num == 352 || num == 354)
+        return true;
+      if(num == 362)
+        return true;
+    }
+    break;
+    case SoundType::Split:
+    {
+      if(num == 346 || num == 348)
+        return true;
+      if(num == 350 || num == 352 || num == 354)
+        return true;
+    }
+    break;
+    case SoundType::Layer:
+      break;
+    case SoundType::Invalid:
+      break;
+  }
+  return false;
 }
