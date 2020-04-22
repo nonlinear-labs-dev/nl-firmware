@@ -7,6 +7,7 @@
 #include <array>
 #include <omp.h>
 #include <x86intrin.h>
+#include <vector>
 
 template <typename T, size_t size> class ParallelData
 {
@@ -345,6 +346,20 @@ template <typename T, size_t size> inline T sumUp(const ParallelData<T, size> &i
 
   for(size_t i = 0; i < size; i++)
     ret += in[i];
+
+  return ret;
+}
+
+template <typename TScalar, typename TIntegral, size_t size>
+inline ParallelData<TScalar, size> polyVectorIndex(const std::vector<ParallelData<TScalar, size>> &_vector,
+                                                   const ParallelData<TIntegral, size> &_index)
+{
+  ParallelData<TScalar, size> ret;
+
+  for(size_t i = 0; i < size; i++)
+  {
+    ret[i] = _vector[_index[i]][i];
+  }
 
   return ret;
 }

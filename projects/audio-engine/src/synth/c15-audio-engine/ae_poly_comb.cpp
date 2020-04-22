@@ -148,6 +148,15 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   ind_tp1 &= m_buffer_sz_m1;
   ind_tp2 &= m_buffer_sz_m1;
   PolyValue sample_tm1, sample_t0, sample_tp1, sample_tp2;
+#if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_3
+  // POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_3: provided by parallel template
+  sample_tm1 = polyVectorIndex(m_buffer, ind_tm1);
+  sample_t0 = polyVectorIndex(m_buffer, ind_t0);
+  sample_tp1 = polyVectorIndex(m_buffer, ind_tp1);
+  sample_tp2 = polyVectorIndex(m_buffer, ind_tp2);
+  // seems to work as well, although I'm not sure if passing the whole buffer (even as reference) is a good idea..?
+  // (instead of reference, maybe a pointer is a better idea, i.d.k.)
+#else
   //  delay buffer "read" --- unfortunately still scalar, via voice loop (3 / 3)
   for(uint32_t i = 0; i < C15::Config::local_polyphony; i++)
   {
@@ -156,6 +165,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
     sample_tp1[i] = m_buffer[ind_tp1[i]][i];
     sample_tp2[i] = m_buffer[ind_tp2[i]][i];
   }
+#endif
   m_out = interpolRT(tmpSmooth, sample_tm1, sample_t0, sample_tp1, sample_tp2);
   /// Envelope for voicestealingtmpVar
   m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;
