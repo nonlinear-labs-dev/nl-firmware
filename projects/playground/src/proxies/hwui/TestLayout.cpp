@@ -12,10 +12,6 @@ TestLayout::TestLayout(OLEDProxy &parent)
 {
 }
 
-TestLayout::~TestLayout()
-{
-}
-
 void TestLayout::iterate()
 {
   m_test++;

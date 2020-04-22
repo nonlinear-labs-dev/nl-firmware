@@ -9,14 +9,13 @@ class TestLayout : public Layout
   typedef Layout super;
 
  public:
-  TestLayout(OLEDProxy &parent);
-  virtual ~TestLayout();
+  explicit TestLayout(OLEDProxy& parent);
+  ~TestLayout() override = default;
 
   void iterate();
   bool redraw(FrameBuffer& fb) override;
 
  private:
-
   enum Tests
   {
     Full = 0,
@@ -26,5 +25,4 @@ class TestLayout : public Layout
   };
 
   int m_test = Full;
-  bool m_isDirty = true;
 };
