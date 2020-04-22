@@ -898,6 +898,9 @@ TEST_CASE("Load Single into Split Part II")
 
     const auto oldUnisonIHash = EBL::createValueHash(EBL::getUnison<VoiceGroup::I>(), EBL::getMono<VoiceGroup::I>());
 
+    const auto oldFadeIIHash
+        = EBL::createValueHash({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() });
+
     eb->undoableLoadSinglePreset(preset, VoiceGroup::II);
 
     THEN("Type is Same")
@@ -971,9 +974,10 @@ TEST_CASE("Load Single into Split Part II")
             == oldFadeIHash);
     }
 
-    THEN("Fade II is default")
+    THEN("Fade II is ignored")
     {
-      CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
+      CHECK(EBL::createValueHash({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() })
+            == oldFadeIIHash);
     }
 
     THEN("EB unchanged")

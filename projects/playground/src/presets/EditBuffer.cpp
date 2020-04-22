@@ -763,7 +763,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   if(oldType == type)
     return;
-  
+
   undoableSetType(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
@@ -1023,10 +1023,10 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
       {
         p->undoableLock(scope->getTransaction());
       }
-
-      for(auto p : fadeFromParams)
-        p->undoableLock(scope->getTransaction());
     }
+
+    for(auto p : fadeFromParams)
+      p->undoableLock(scope->getTransaction());
 
     toFxParam->undoableLock(scope->getTransaction());
     undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, to);
@@ -1038,10 +1038,10 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
       {
         p->undoableUnlock(scope->getTransaction());
       }
-
-      for(auto p : fadeFromParams)
-        p->undoableUnlock(scope->getTransaction());
     }
+
+    for(auto p : fadeFromParams)
+      p->undoableUnlock(scope->getTransaction());
   }
 }
 
