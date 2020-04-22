@@ -197,8 +197,9 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
   void undoableConvertSingleToLayer(UNDO::Transaction *transaction);
   void undoableConvertSingleToSplit(UNDO::Transaction *transaction);
-  void undoableConvertLayerToSplit(UNDO::Transaction* transaction);
-  void undoableConvertSplitToLayer(UNDO::Transaction* transaction);
-void calculateSplitPointFromFadeParams(UNDO::Transaction* transaction);
-void copySinglePresetMasterToPartMaster(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup targetGroup);
+  void undoableConvertLayerToSplit(UNDO::Transaction *transaction);
+  void undoableConvertSplitToLayer(UNDO::Transaction *transaction);
+  void calculateSplitPointFromFadeParams(UNDO::Transaction *transaction);
+  void copySinglePresetMasterToPartMaster(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup targetGroup);
+  std::vector<Parameter *> getCrossFBParameters(const VoiceGroup &to) const;
 };

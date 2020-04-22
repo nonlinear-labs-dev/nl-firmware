@@ -909,6 +909,30 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   ae->toggleSuppressParameterChanges(transaction);
 
   setVoiceGroupName(transaction, preset->getName(), copyTo);
+
+  std::map<int, bool> oldLocks;
+
+  auto f1 = findParameterByID({ 396, copyTo });
+  auto f2 = findParameterByID({ 397, copyTo });
+  auto crossFBParams = getCrossFBParameters(copyTo);
+
+  if(getType() == SoundType::Layer)
+  {
+    oldLocks[f1->getID().getNumber()] = f1->isLocked();
+    oldLocks[f2->getID().getNumber()] = f2->isLocked();
+    f1->undoableLock(transaction);
+    f2->undoableLock(transaction);
+
+    if(preset->getType() == SoundType::Split)
+    {
+      for(auto p : crossFBParams)
+      {
+        oldLocks[p->getID().getNumber()] = p->isLocked();
+        p->undoableLock(transaction);
+      }
+    }
+  }
+  
   super::copyFrom(transaction, preset, from, copyTo);
 
   if(preset->isDual())
@@ -923,6 +947,23 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   }
 
   initFadeParameters(transaction, copyTo);
+
+  if(getType() == SoundType::Layer)
+  {
+    if(!oldLocks[f1->getID().getNumber()])
+      f1->undoableUnlock(transaction);
+    if(!oldLocks[f2->getID().getNumber()])
+      f2->undoableUnlock(transaction);
+
+    if(preset->getType() == SoundType::Split)
+    {
+      for(auto p : crossFBParams)
+      {
+        if(!oldLocks[p->getID().getNumber()])
+          p->undoableUnlock(transaction);
+      }
+    }
+  }
 
   initRecallValues(transaction);
 
@@ -1003,17 +1044,10 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
 
     auto toFxParam = findParameterByID({ 362, to });
 
-    constexpr static auto FB_OSC = 346;
-    constexpr static auto FB_OSC_SRC = 348;
-    constexpr static auto FB_COMB_FROM = 350;
-    constexpr static auto FB_SVF_FROM = 352;
-    constexpr static auto FB_FX_FROM = 354;
-    constexpr static auto FADE_FROM = 396;
-    constexpr static auto FADE_RANGE = 397;
+    constexpr auto FADE_FROM = 396;
+    constexpr auto FADE_RANGE = 397;
 
-    auto crossFBParams = { findParameterByID({ FB_OSC, to }), findParameterByID({ FB_OSC_SRC, to }),
-                           findParameterByID({ FB_COMB_FROM, to }), findParameterByID({ FB_SVF_FROM, to }),
-                           findParameterByID({ FB_FX_FROM, to }) };
+    auto crossFBParams = getCrossFBParameters(to);
 
     auto fadeFromParams = { findParameterByID({ FADE_FROM, to }), findParameterByID({ FADE_RANGE, to }) };
 
@@ -1074,6 +1108,18 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
   }
 }
 
+std::vector<Parameter *> EditBuffer::getCrossFBParameters(const VoiceGroup &to) const
+{
+  constexpr static auto FB_OSC = 346;
+  constexpr static auto FB_OSC_SRC = 348;
+  constexpr static auto FB_COMB_FROM = 350;
+  constexpr static auto FB_SVF_FROM = 352;
+  constexpr static auto FB_FX_FROM = 354;
+  return std::vector<Parameter *>({ findParameterByID({ FB_OSC, to }), findParameterByID({ FB_OSC_SRC, to }),
+                                    findParameterByID({ FB_COMB_FROM, to }), findParameterByID({ FB_SVF_FROM, to }),
+                                    findParameterByID({ FB_FX_FROM, to }) });
+}
+
 void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset,
                                                             VoiceGroup copyTo)
 {
@@ -1096,22 +1142,32 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto presetPartVolume = preset->findParameterByID({ 358, copyFrom }, false);
   auto presetPartTune = preset->findParameterByID({ 360, copyFrom }, false);
 
+  auto globalVolume = findParameterByID({ 247, VoiceGroup::Global });
+  auto globalTune = findParameterByID({ 248, VoiceGroup::Global });
+
   auto partVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyTo }));
   auto partTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, copyTo }));
 
   if(presetGlobalVolume && presetGlobalTune && partVolume && partTune)
   {
     auto volumeScaleConverter
-        = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
-    auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
-    auto partVolumeDV
-        = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : .5);
+        = dynamic_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
 
-    auto newVolumeDV = globalVolumeDV + partVolumeDV;
+    auto ebGlobalVolumeDV = volumeScaleConverter->controlPositionToDisplay(globalVolume->getControlPositionValue());
+    auto presetGlobalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+    auto presetPartVolumeDV = volumeScaleConverter->controlPositionToDisplay(
+        presetPartVolume ? presetPartVolume->getValue() : partVolume->getDefaultValue());
+
+    auto newVolumeDV = (presetGlobalVolumeDV + presetPartVolumeDV) - ebGlobalVolumeDV;
     auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
     partVolume->setCPFromHwui(transaction, newVolumeCP);
-    partTune->setCPFromHwui(transaction,
-                            presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : 0));
+
+    auto ebGlobalTuneCP = globalTune->getControlPositionValue();
+
+    partTune->setCPFromHwui(
+        transaction,
+        (presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : partTune->getDefaultValue()))
+            - ebGlobalTuneCP);
 
     if(preset->getType() == SoundType::Single)
     {
@@ -1128,15 +1184,6 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
     partVolume->loadDefault(transaction);
   }
 }
-
-/*
-       combine() { // combine source and target master volume/tune
-        target.part.volume.pos = source.master.volume.pos - target.master.volume.pos;
-        target.part.volume.mod = source.master.volume.mod;
-        target.part.tune.pos = source.master.tune.pos - target.master.tune.pos;
-        target.part.tune.mod = source.master.tune.mod;
-       }
-     */
 
 void EditBuffer::copySinglePresetMasterToPartMaster(UNDO::Transaction *transaction, const Preset *preset,
                                                     VoiceGroup targetGroup)

@@ -1312,6 +1312,8 @@ TEST_CASE("Load Part I of Split into Split Part II")
         REQUIRE(false);
       }
     }
+
+    detail::changeAllParameters(transaction);
   }
 
   WHEN("Load")
@@ -1337,8 +1339,6 @@ TEST_CASE("Load Part I of Split into Split Part II")
     const auto oldUnisonMonoIHash
         = EBL::createValueHash(EBL::getMono<VoiceGroup::I>(), EBL::getUnison<VoiceGroup::I>());
 
-    const auto oldToFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
@@ -1347,6 +1347,11 @@ TEST_CASE("Load Part I of Split into Split Part II")
     THEN("Type is Same")
     {
       CHECK(eb->getType() == SoundType::Split);
+    }
+
+    THEN("Local I untouched")
+    {
+      CHECK(localNormalIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()));
     }
 
     THEN("Local Special I unchanged")
@@ -1367,11 +1372,6 @@ TEST_CASE("Load Part I of Split into Split Part II")
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::II }), 0.666);
     }
 
-    THEN("Local I untouched")
-    {
-      CHECK(localNormalIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()));
-    }
-
     THEN("Split unchanged")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
@@ -1385,6 +1385,17 @@ TEST_CASE("Load Part I of Split into Split Part II")
     THEN("Unison and Mono of I unchanged")
     {
       CHECK(oldUnisonMonoIHash == EBL::createValueHash(EBL::getMono<VoiceGroup::I>(), EBL::getUnison<VoiceGroup::I>()));
+    }
+
+    THEN("Fade I untouched")
+    {
+      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->getHash() + EBL::getFadeRange<VoiceGroup::I>()->getHash()
+            == oldFadeIHash);
+    }
+
+    THEN("Fade II Default")
+    {
+      CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
     }
 
     THEN("Part Volume and Tune correct")
@@ -1411,13 +1422,13 @@ TEST_CASE("Load Part I of Split into Split Part II")
       auto presetPartVolumeDisplay = volumeScale->controlPositionToDisplay(ogPartVolume->getValue());
 
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue()
-            == (presetGlobalVolumeDisplay + presetPartVolumeDisplay) - oldVolumeDisplay);
+            == Approx((presetGlobalVolumeDisplay + presetPartVolumeDisplay) - oldVolumeDisplay).epsilon(0.005));
 
       auto presetGlobalTuneDisplay = tuneScale->controlPositionToDisplay(tune->getValue());
       auto presetPartTuneDisplay = tuneScale->controlPositionToDisplay(ogPartTune->getValue());
 
       CHECK(EBL::getPartTune<VoiceGroup::II>()->getDisplayValue()
-            == (presetGlobalTuneDisplay + presetPartTuneDisplay) - oldTuneDisplay);
+            == Approx((presetGlobalTuneDisplay + presetPartTuneDisplay) - oldTuneDisplay).epsilon(0.005));
 
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationSource() == MacroControls::MC1);
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount() == 1);
@@ -1428,17 +1439,6 @@ TEST_CASE("Load Part I of Split into Split Part II")
       CHECK(EBL::createHashOfVector(EBL::getMaster()) == oldMasterHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
-    }
-
-    THEN("Fade I untouched")
-    {
-      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->getHash() + EBL::getFadeRange<VoiceGroup::I>()->getHash()
-            == oldFadeIHash);
-    }
-
-    THEN("Fade II Default")
-    {
-      CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
     }
 
     THEN("EB unchanged")
@@ -1485,6 +1485,8 @@ TEST_CASE("Load Part I of Split into Layer Part II")
       auto toFX = preset->findParameterByID({ p->getID().getNumber(), VoiceGroup::I }, true);
       toFX->setValue(transaction, 0.187);
     }
+
+    detail::changeAllParameters(transaction);
   }
 
   WHEN("Load")
@@ -1587,13 +1589,13 @@ TEST_CASE("Load Part I of Split into Layer Part II")
       auto presetPartVolumeDisplay = volumeScale->controlPositionToDisplay(ogPartVolume->getValue());
 
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue()
-            == (presetGlobalVolumeDisplay + presetPartVolumeDisplay) - oldVolumeDisplay);
+            == Approx((presetGlobalVolumeDisplay + presetPartVolumeDisplay) - oldVolumeDisplay).epsilon(.005));
 
       auto presetGlobalTuneDisplay = tuneScale->controlPositionToDisplay(tune->getValue());
       auto presetPartTuneDisplay = tuneScale->controlPositionToDisplay(ogPartTune->getValue());
 
       CHECK(EBL::getPartTune<VoiceGroup::II>()->getDisplayValue()
-            == (presetGlobalTuneDisplay + presetPartTuneDisplay) - oldTuneDisplay);
+            == Approx((presetGlobalTuneDisplay + presetPartTuneDisplay) - oldTuneDisplay).epsilon(0.005));
 
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationSource() == MacroControls::MC1);
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount() == 1);
@@ -1698,6 +1700,16 @@ TEST_CASE("Load Part I of Layer into Split Part II")
       CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>()) == localSpecialIHash);
     }
 
+    THEN("Local I untouched")
+    {
+      CHECK(localNormalIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()));
+    }
+
+    THEN("Local Normal was copied to current VG")
+    {
+      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::II }), 0.666);
+    }
+
     THEN("ToFX II copied from Preset")
     {
       for(auto& p : EBL::getToFX<VoiceGroup::II>())
@@ -1706,19 +1718,14 @@ TEST_CASE("Load Part I of Layer into Split Part II")
       }
     }
 
+    THEN("Fade II default")
+    {
+      CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
+    }
+
     THEN("Cross FB II default")
     {
       CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-    }
-
-    THEN("Local Normal was copied to current VG")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::II }), 0.666);
-    }
-
-    THEN("Local I untouched")
-    {
-      CHECK(localNormalIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()));
     }
 
     THEN("Split unchanged")
@@ -1778,11 +1785,6 @@ TEST_CASE("Load Part I of Layer into Split Part II")
       CHECK(EBL::createHashOfVector(EBL::getMaster()) == oldMasterHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
-    }
-
-    THEN("Fade II default")
-    {
-      CHECK(EBL::isDefaultLoaded({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() }));
     }
 
     THEN("EB unchanged")
