@@ -165,7 +165,13 @@ s32 ssd1322_fb_init(struct oleds_fb_par *par)
   ssd1322_buff     = kcalloc(SSD1322_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
   ssd1322_tmp_buff = kcalloc(SSD1322_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
   if (!ssd1322_buff || !ssd1322_tmp_buff)
+  {
+    if (ssd1322_buff)
+      kfree(ssd1322_buff);
+    if (ssd1322_tmp_buff)
+      kfree(ssd1322_tmp_buff);
     return -ENOMEM;
+  }
 
   memset(ssd1322_buff, 0, SSD1322_BUFF_SIZE);
   memset(ssd1322_tmp_buff, 0, SSD1322_BUFF_SIZE);
