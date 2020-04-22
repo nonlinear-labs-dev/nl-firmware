@@ -1002,11 +1002,49 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
     auto scope = getParent()->getUndoScope().startTransaction(
         nltools::string::concat("Load '", preset->getName(), "' into ", toString(to)));
 
+    auto ebType = getType();
+
     auto toFxParam = findParameterByID({ 362, to });
+
+    constexpr static auto FB_OSC = 346;
+    constexpr static auto FB_OSC_SRC = 348;
+    constexpr static auto FB_COMB_FROM = 350;
+    constexpr static auto FB_SVF_FROM = 352;
+    constexpr static auto FB_FX_FROM = 354;
+    constexpr static auto FADE_FROM = 396;
+    constexpr static auto FADE_RANGE = 397;
+
+    auto crossFBParams = { findParameterByID({ FB_OSC, to }), findParameterByID({ FB_OSC_SRC, to }),
+                           findParameterByID({ FB_COMB_FROM, to }), findParameterByID({ FB_SVF_FROM, to }),
+                           findParameterByID({ FB_FX_FROM, to }) };
+
+    auto fadeFromParams = { findParameterByID({ FADE_FROM, to }), findParameterByID({ FADE_RANGE, to }) };
+
+    if(ebType == SoundType::Layer)
+    {
+      for(auto p : crossFBParams)
+      {
+        p->undoableLock(scope->getTransaction());
+      }
+
+      for(auto p : fadeFromParams)
+        p->undoableLock(scope->getTransaction());
+    }
 
     toFxParam->undoableLock(scope->getTransaction());
     undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, to);
     toFxParam->undoableUnlock(scope->getTransaction());
+
+    if(ebType == SoundType::Layer)
+    {
+      for(auto p : crossFBParams)
+      {
+        p->undoableUnlock(scope->getTransaction());
+      }
+
+      for(auto p : fadeFromParams)
+        p->undoableUnlock(scope->getTransaction());
+    }
   }
 }
 
@@ -1157,8 +1195,12 @@ void EditBuffer::copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup fro
 
 void EditBuffer::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group)
 {
-  findParameterByID({ 396, group })->loadDefault(transaction);
-  findParameterByID({ 397, group })->loadDefault(transaction);
+  auto f1 = findParameterByID({ 396, group });
+  if(!f1->isLocked())
+    f1->loadDefault(transaction);
+  auto f2 = findParameterByID({ 397, group });
+  if(!f2->isLocked())
+    f2->loadDefault(transaction);
 }
 
 void EditBuffer::initCrossFB(UNDO::Transaction *transaction)

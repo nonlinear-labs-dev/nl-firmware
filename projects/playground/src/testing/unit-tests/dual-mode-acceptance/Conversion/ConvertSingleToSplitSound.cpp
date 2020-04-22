@@ -948,7 +948,7 @@ TEST_CASE("Load Single into Split Part II")
       auto presetGlobalVolumeDisplay = volumeScale->controlPositionToDisplay(vol->getValue());
 
       auto calculatedVolumeCP = volumeScale->displayToControlPosition(presetGlobalVolumeDisplay - oldVolumeDisplay);
-      
+
       CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getPartVolume<VoiceGroup::II>(), calculatedVolumeCP);
 
       auto presetGlobalTuneDisplay = tuneScale->controlPositionToDisplay(tune->getValue());
@@ -1007,6 +1007,8 @@ TEST_CASE("Load Single into Layer Part II")
 
     auto unisonVoices = preset->findParameterByID({ 249, VoiceGroup::I }, true);
     unisonVoices->setValue(transaction, 1);  // <- setting cp in range 0..23
+
+    detail::changeAllParameters(transaction);
   }
 
   WHEN("Load")
@@ -1014,7 +1016,7 @@ TEST_CASE("Load Single into Layer Part II")
     const auto localSpecialIHash
         = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>());
     const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-    const auto crossFBIIHash = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>());
+
     const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
 
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
@@ -1030,8 +1032,9 @@ TEST_CASE("Load Single into Layer Part II")
     const auto oldFadeIIHash
         = EBL::createValueHash(EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>());
 
+    const auto oldCrossFBIIHash = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>());
+
     const auto oldUnisonIHash = EBL::createValueHash(EBL::getUnison<VoiceGroup::I>(), EBL::getMono<VoiceGroup::I>());
-    const auto oldUnisonIIHash = EBL::createValueHash(EBL::getUnison<VoiceGroup::II>(), EBL::getMono<VoiceGroup::II>());
 
     eb->undoableLoadSinglePreset(preset, VoiceGroup::II);
 
@@ -1043,13 +1046,12 @@ TEST_CASE("Load Single into Layer Part II")
     THEN("Local Special unchanged")
     {
       CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>()) == localSpecialIHash);
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
-      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>()) == crossFBIIHash);
     }
 
-    THEN("Cross FB loaded to is Default")
+    THEN("Cross FB and to fx II ignored")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>()) == oldCrossFBIIHash);
+      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
     }
 
     THEN("Local Normal was copied to current VG")
@@ -1062,10 +1064,17 @@ TEST_CASE("Load Single into Layer Part II")
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
     }
 
-    THEN("Unison and Mono Untouched")
+    THEN("Unison and Mono I Untouched")
     {
       CHECK(oldUnisonIHash == EBL::createValueHash(EBL::getUnison<VoiceGroup::I>(), EBL::getMono<VoiceGroup::I>()));
-      CHECK(oldUnisonIIHash == EBL::createValueHash(EBL::getUnison<VoiceGroup::II>(), EBL::getMono<VoiceGroup::II>()));
+    }
+
+    THEN("Fade I/II is untouched")
+    {
+      CHECK(EBL::createValueHash(EBL::getFadeFrom<VoiceGroup::I>(), EBL::getFadeRange<VoiceGroup::I>())
+            == oldFadeIHash);
+      CHECK(EBL::createValueHash(EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>())
+            == oldFadeIIHash);
     }
 
     THEN("Unison and Mono II is default")
@@ -1076,7 +1085,8 @@ TEST_CASE("Load Single into Layer Part II")
 
     THEN("Part Volume and Tune correct")
     {
-      auto volumeScale = EBL::getMasterVolume()->getValue().getScaleConverter();
+      auto volumeScale
+          = static_cast<const ParabolicGainDbScaleConverter*>(EBL::getMasterVolume()->getValue().getScaleConverter());
       PresetParameter* vol = nullptr;
       CHECK_NOTHROW(vol = preset->findParameterByID({ 247, VoiceGroup::Global }, true));
       CHECK(vol != nullptr);
@@ -1087,10 +1097,13 @@ TEST_CASE("Load Single into Layer Part II")
       CHECK(tune != nullptr);
 
       auto presetGlobalVolumeDisplay = volumeScale->controlPositionToDisplay(vol->getValue());
-      CHECK(EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue() == presetGlobalVolumeDisplay - oldVolumeDisplay);
+
+      auto calculatedVolumeCP = volumeScale->displayToControlPosition(presetGlobalVolumeDisplay - oldVolumeDisplay);
+
+      CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getPartVolume<VoiceGroup::II>(), calculatedVolumeCP);
 
       auto presetGlobalTuneDisplay = tuneScale->controlPositionToDisplay(tune->getValue());
-      CHECK(EBL::getPartTune<VoiceGroup::II>()->getDisplayValue() == presetGlobalTuneDisplay - oldTuneDisplay);
+      CHECK(EBL::getPartTune<VoiceGroup::II>()->getDisplayValue() == Approx(presetGlobalTuneDisplay - oldTuneDisplay));
 
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationSource() == MacroControls::MC1);
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount() == 1);
@@ -1101,14 +1114,6 @@ TEST_CASE("Load Single into Layer Part II")
       CHECK(EBL::createHashOfVector(EBL::getMaster()) == oldMasterHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
-    }
-
-    THEN("Fade I/II is untouched")
-    {
-      CHECK(EBL::createValueHash(EBL::getFadeFrom<VoiceGroup::I>(), EBL::getFadeRange<VoiceGroup::I>())
-            == oldFadeIHash);
-      CHECK(EBL::createValueHash(EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>())
-            == oldFadeIIHash);
     }
 
     THEN("EB unchanged")
