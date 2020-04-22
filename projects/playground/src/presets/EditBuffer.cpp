@@ -1017,31 +1017,60 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
 
     auto fadeFromParams = { findParameterByID({ FADE_FROM, to }), findParameterByID({ FADE_RANGE, to }) };
 
+    auto unisonGroup = getParameterGroupByID({ "Unison", to });
+    auto monoGroup = getParameterGroupByID({ "Mono", to });
+
+    std::map<int, bool> priorLocks;
+
+    const bool unisonWasLocked = unisonGroup->isAnyParameterLocked();
+    const bool monoWasLocked = monoGroup->isAnyParameterLocked();
+
     if(ebType == SoundType::Layer)
     {
       for(auto p : crossFBParams)
       {
+        priorLocks[p->getID().getNumber()] = p->isLocked();
         p->undoableLock(scope->getTransaction());
       }
+
+      unisonGroup->undoableLock(scope->getTransaction());
+      monoGroup->undoableLock(scope->getTransaction());
     }
 
     for(auto p : fadeFromParams)
+    {
+      priorLocks[p->getID().getNumber()] = p->isLocked();
       p->undoableLock(scope->getTransaction());
+    }
+
+    const auto toFxLocked = toFxParam->isLocked();
 
     toFxParam->undoableLock(scope->getTransaction());
+
     undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, to);
-    toFxParam->undoableUnlock(scope->getTransaction());
+
+    if(!toFxLocked)
+      toFxParam->undoableUnlock(scope->getTransaction());
 
     if(ebType == SoundType::Layer)
     {
       for(auto p : crossFBParams)
       {
-        p->undoableUnlock(scope->getTransaction());
+        if(!priorLocks[p->getID().getNumber()])
+          p->undoableUnlock(scope->getTransaction());
       }
+
+      if(!unisonWasLocked)
+        unisonGroup->undoableUnlock(scope->getTransaction());
+      if(!monoWasLocked)
+        monoGroup->undoableUnlock(scope->getTransaction());
     }
 
     for(auto p : fadeFromParams)
-      p->undoableUnlock(scope->getTransaction());
+    {
+      if(!priorLocks[p->getID().getNumber()])
+        p->undoableUnlock(scope->getTransaction());
+    }
   }
 }
 
@@ -1121,21 +1150,29 @@ void EditBuffer::copySinglePresetMasterToPartMaster(UNDO::Transaction *transacti
   auto partVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, targetGroup }));
   auto partTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, targetGroup }));
 
-  partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() - ebGlobalTune->getControlPositionValue());
-  partTune->setModulationSource(transaction, presetGlobalTune->getModulationSource());
-  partTune->setModulationAmount(transaction, presetGlobalTune->getModulationAmount());
+  if(presetGlobalTune && presetGlobalVolume)
+  {
+    partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() - ebGlobalTune->getControlPositionValue());
+    partTune->setModulationSource(transaction, presetGlobalTune->getModulationSource());
+    partTune->setModulationAmount(transaction, presetGlobalTune->getModulationAmount());
 
-  auto volumeConverter
-      = static_cast<const ParabolicGainDbScaleConverter *>(ebGlobalVolume->getValue().getScaleConverter());
+    auto volumeConverter
+        = static_cast<const ParabolicGainDbScaleConverter *>(ebGlobalVolume->getValue().getScaleConverter());
 
-  auto presetVolumeDisplay = volumeConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
-  auto ebVolumeDisplay = volumeConverter->controlPositionToDisplay(ebGlobalVolume->getControlPositionValue());
+    auto presetVolumeDisplay = volumeConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+    auto ebVolumeDisplay = volumeConverter->controlPositionToDisplay(ebGlobalVolume->getControlPositionValue());
 
-  auto newVolumeCP = volumeConverter->displayToControlPosition(presetVolumeDisplay - ebVolumeDisplay);
+    auto newVolumeCP = volumeConverter->displayToControlPosition(presetVolumeDisplay - ebVolumeDisplay);
 
-  partVolume->setCPFromHwui(transaction, newVolumeCP);
-  partVolume->setModulationSource(transaction, presetGlobalVolume->getModulationSource());
-  partVolume->setModulationAmount(transaction, presetGlobalVolume->getModulationAmount());
+    partVolume->setCPFromHwui(transaction, newVolumeCP);
+    partVolume->setModulationSource(transaction, presetGlobalVolume->getModulationSource());
+    partVolume->setModulationAmount(transaction, presetGlobalVolume->getModulationAmount());
+  }
+  else
+  {
+    partTune->loadDefault(transaction);
+    partVolume->loadDefault(transaction);
+  }
 }
 
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
