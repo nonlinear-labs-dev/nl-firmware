@@ -494,6 +494,12 @@ public class ServerProxy {
 		return "";
 	}
 
+	public void incDisplayTest() {
+		StaticURI.Path path = new StaticURI.Path("settings", "inc-test-display");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
 	public static boolean didChange(Node n) {
 		return n.getAttributes().getNamedItem("changed").getNodeValue().equals("1");
 	}
