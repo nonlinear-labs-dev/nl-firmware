@@ -1,5 +1,6 @@
 #include <iostream>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
+#include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include "testing/TestHelper.h"
 #include "testing/unit-tests/mock/EditBufferNamedLogicalParts.h"
 #include "proxies/hwui/HWUI.h"
@@ -39,6 +40,11 @@ namespace detail
     TestHelper::forceParameterChange(transaction, EBL::getFadeFrom<VoiceGroup::II>());
     TestHelper::forceParameterChange(transaction, EBL::getFadeRange<VoiceGroup::I>());
     TestHelper::forceParameterChange(transaction, EBL::getFadeRange<VoiceGroup::II>());
+  };
+
+  auto changeAllParameters = [](auto transaction) {
+    auto eb = TestHelper::getEditBuffer();
+    eb->forEachParameter([&](Parameter* param) { TestHelper::forceParameterChange(transaction, param); });
   };
 }
 
@@ -869,6 +875,8 @@ TEST_CASE("Load Single into Split Part II")
 
     auto unisonVoices = preset->findParameterByID({ 249, VoiceGroup::I }, true);
     unisonVoices->setValue(transaction, 1);  // <- setting cp in range 0..23
+
+    detail::changeAllParameters(transaction);
   }
 
   WHEN("Load")
@@ -926,7 +934,8 @@ TEST_CASE("Load Single into Split Part II")
 
     THEN("Part Volume and Tune correct")
     {
-      auto volumeScale = EBL::getMasterVolume()->getValue().getScaleConverter();
+      auto volumeScale
+          = static_cast<const ParabolicGainDbScaleConverter*>(EBL::getMasterVolume()->getValue().getScaleConverter());
       PresetParameter* vol = nullptr;
       CHECK_NOTHROW(vol = preset->findParameterByID({ 247, VoiceGroup::Global }, true));
       CHECK(vol != nullptr);
@@ -937,10 +946,13 @@ TEST_CASE("Load Single into Split Part II")
       CHECK(tune != nullptr);
 
       auto presetGlobalVolumeDisplay = volumeScale->controlPositionToDisplay(vol->getValue());
-      CHECK(EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue() == presetGlobalVolumeDisplay - oldVolumeDisplay);
+
+      auto calculatedVolumeCP = volumeScale->displayToControlPosition(presetGlobalVolumeDisplay - oldVolumeDisplay);
+      
+      CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getPartVolume<VoiceGroup::II>(), calculatedVolumeCP);
 
       auto presetGlobalTuneDisplay = tuneScale->controlPositionToDisplay(tune->getValue());
-      CHECK(EBL::getPartTune<VoiceGroup::II>()->getDisplayValue() == presetGlobalTuneDisplay - oldTuneDisplay);
+      CHECK(EBL::getPartTune<VoiceGroup::II>()->getDisplayValue() == Approx(presetGlobalTuneDisplay - oldTuneDisplay));
 
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationSource() == MacroControls::MC1);
       CHECK(EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount() == 1);

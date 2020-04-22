@@ -914,7 +914,10 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   setVoiceGroupName(transaction, preset->getName(), copyTo);
   super::copyFrom(transaction, preset, from, copyTo);
 
-  copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
+  if(preset->isDual())
+    copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
+  else
+    copySinglePresetMasterToPartMaster(transaction, preset, copyTo);
 
   if(getType() == SoundType::Layer)
   {
@@ -998,7 +1001,12 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
   {
     auto scope = getParent()->getUndoScope().startTransaction(
         nltools::string::concat("Load '", preset->getName(), "' into ", toString(to)));
+
+    auto toFxParam = findParameterByID({ 362, to });
+
+    toFxParam->undoableLock(scope->getTransaction());
     undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, to);
+    toFxParam->undoableUnlock(scope->getTransaction());
   }
 }
 
@@ -1055,6 +1063,44 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
     partTune->loadDefault(transaction);
     partVolume->loadDefault(transaction);
   }
+}
+
+/*
+       combine() { // combine source and target master volume/tune
+        target.part.volume.pos = source.master.volume.pos - target.master.volume.pos;
+        target.part.volume.mod = source.master.volume.mod;
+        target.part.tune.pos = source.master.tune.pos - target.master.tune.pos;
+        target.part.tune.mod = source.master.tune.mod;
+       }
+     */
+
+void EditBuffer::copySinglePresetMasterToPartMaster(UNDO::Transaction *transaction, const Preset *preset,
+                                                    VoiceGroup targetGroup)
+{
+  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global }, false);
+  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global }, false);
+
+  auto ebGlobalVolume = findParameterByID({ 247, VoiceGroup::Global });
+  auto ebGlobalTune = findParameterByID({ 248, VoiceGroup::Global });
+
+  auto partVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, targetGroup }));
+  auto partTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, targetGroup }));
+
+  partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() - ebGlobalTune->getControlPositionValue());
+  partTune->setModulationSource(transaction, presetGlobalTune->getModulationSource());
+  partTune->setModulationAmount(transaction, presetGlobalTune->getModulationAmount());
+
+  auto volumeConverter
+      = static_cast<const ParabolicGainDbScaleConverter *>(ebGlobalVolume->getValue().getScaleConverter());
+
+  auto presetVolumeDisplay = volumeConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+  auto ebVolumeDisplay = volumeConverter->controlPositionToDisplay(ebGlobalVolume->getControlPositionValue());
+
+  auto newVolumeCP = volumeConverter->displayToControlPosition(presetVolumeDisplay - ebVolumeDisplay);
+
+  partVolume->setCPFromHwui(transaction, newVolumeCP);
+  partVolume->setModulationSource(transaction, presetGlobalVolume->getModulationSource());
+  partVolume->setModulationAmount(transaction, presetGlobalVolume->getModulationAmount());
 }
 
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)

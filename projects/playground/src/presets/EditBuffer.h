@@ -200,4 +200,5 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertLayerToSplit(UNDO::Transaction* transaction);
   void undoableConvertSplitToLayer(UNDO::Transaction* transaction);
 void calculateSplitPointFromFadeParams(UNDO::Transaction* transaction);
+void copySinglePresetMasterToPartMaster(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup targetGroup);
 };
