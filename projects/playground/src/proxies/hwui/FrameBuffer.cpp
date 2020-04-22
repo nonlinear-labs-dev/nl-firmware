@@ -152,7 +152,6 @@ void FrameBuffer::setColor(const Colors &c)
 void FrameBuffer::fiddleColor(tPixel p)
 {
   m_currentColor = (Colors)(p);
-  g_assert(isValidColor(m_currentColor));
 }
 
 FrameBuffer::Colors FrameBuffer::getColor() const
