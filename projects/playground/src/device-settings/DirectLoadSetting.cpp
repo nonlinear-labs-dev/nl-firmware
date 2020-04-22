@@ -8,12 +8,21 @@ DirectLoadSetting::DirectLoadSetting(Settings &settings)
 {
 }
 
+void DirectLoadSetting::load(const Glib::ustring &text)
+{
+  m_isLoading = true;
+  BooleanSetting::load(text);
+  m_isLoading = false;
+}
+
 bool DirectLoadSetting::set(BooleanSettings m)
 {
   auto ret = EnumSetting::set(m);
-  if(auto pm = Application::get().getPresetManager())
-  {
-    if(m == BooleanSettings::BOOLEAN_SETTING_TRUE)
-      pm->doAutoLoadSelectedPreset();
-  }
+
+  if(!m_isLoading)
+    if(auto pm = Application::get().getPresetManager())
+      if(m == BooleanSettings::BOOLEAN_SETTING_TRUE)
+        pm->doAutoLoadSelectedPreset();
+
+  return ret;
 }
