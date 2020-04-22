@@ -42,7 +42,11 @@ void Engine::PolyOutputMixer::combine(PolySignals &_signals, const PolyValue &_v
   mainSample = threeRanges(mainSample, tmpSample, _signals.get(C15::Signals::Quasipoly_Signals::Out_Mix_Fold));
   auto tmpSampleQuad = mainSample * mainSample;
   tmpSampleQuad = tmpSampleQuad - m_hp30hz_stateVar_L;
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+  m_hp30hz_stateVar_L = tmpSampleQuad * m_hp30hz_b0 + m_hp30hz_stateVar_L;
+#else
   m_hp30hz_stateVar_L = tmpSampleQuad * m_hp30hz_b0 + m_hp30hz_stateVar_L + NlToolbox::Constants::DNC_const;
+#endif
   mainSample = parAsym(mainSample, tmpSampleQuad, _signals.get(C15::Signals::Quasipoly_Signals::Out_Mix_Asym));
   m_out_l = sumUp(mainSample * _voiceLevel);
   // right
@@ -56,7 +60,11 @@ void Engine::PolyOutputMixer::combine(PolySignals &_signals, const PolyValue &_v
   mainSample = threeRanges(mainSample, tmpVar, _signals.get(C15::Signals::Quasipoly_Signals::Out_Mix_Fold));
   tmpVar = mainSample * mainSample;
   tmpVar = tmpVar - m_hp30hz_stateVar_R;
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+  m_hp30hz_stateVar_R = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar_R;
+#else
   m_hp30hz_stateVar_R = tmpVar * m_hp30hz_b0 + m_hp30hz_stateVar_R + NlToolbox::Constants::DNC_const;
+#endif
   mainSample = parAsym(mainSample, tmpVar, _signals.get(C15::Signals::Quasipoly_Signals::Out_Mix_Asym));
   m_out_r = sumUp(mainSample * _voiceLevel);
 }
@@ -67,14 +75,24 @@ void Engine::PolyOutputMixer::filter_level(PolySignals &_signals)
   float tmpVar = m_hp_b0 * m_out_l;
   tmpVar += m_hp_b1 * m_hp_stateVar_L1;
   tmpVar += m_hp_a1 * m_hp_stateVar_L2;
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+  m_hp_stateVar_L1 = m_out_l;
+  m_hp_stateVar_L2 = tmpVar;
+#else
   m_hp_stateVar_L1 = m_out_l + NlToolbox::Constants::DNC_const;
   m_hp_stateVar_L2 = tmpVar + NlToolbox::Constants::DNC_const;
+#endif
   // HP R
   tmpVar = m_hp_b0 * m_out_r;
   tmpVar += m_hp_b1 * m_hp_stateVar_R1;
   tmpVar += m_hp_a1 * m_hp_stateVar_R2;
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+  m_hp_stateVar_R1 = m_out_r;
+  m_hp_stateVar_R2 = tmpVar;
+#else
   m_hp_stateVar_R1 = m_out_r + NlToolbox::Constants::DNC_const;
   m_hp_stateVar_R2 = tmpVar + NlToolbox::Constants::DNC_const;
+#endif
   m_out_l *= _signals.get(C15::Signals::Quasipoly_Signals::Out_Mix_Lvl);
   m_out_r *= _signals.get(C15::Signals::Quasipoly_Signals::Out_Mix_Lvl);
 }

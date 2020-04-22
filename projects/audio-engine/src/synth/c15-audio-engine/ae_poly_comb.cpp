@@ -47,14 +47,22 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   auto tmpHP = m_hpCoeff_b0 * m_out;
   tmpHP += (m_hpCoeff_b1 * m_hpInStateVar);
   tmpHP += (m_hpCoeff_a1 * m_hpOutStateVar);
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+  m_hpInStateVar = m_out;
+  m_hpOutStateVar = tmpHP;
+#else
   m_hpInStateVar = m_out + NlToolbox::Constants::DNC_const;
   m_hpOutStateVar = tmpHP + NlToolbox::Constants::DNC_const;
+#endif
   m_out = tmpHP;
   m_out += m_decayStateVar;
   // 1-pole lp
   m_out *= (1.0f - m_lpCoeff);
   m_out += (m_lpCoeff * m_lpStateVar);
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+#else
   m_out += NlToolbox::Constants::DNC_const;
+#endif
   m_lpStateVar = m_out;
   // allpass
   auto tmpOut = m_out;
@@ -63,7 +71,10 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   m_out += m_apStateVar_2;
   m_out -= (m_apStateVar_3 * m_apCoeff_1);
   m_out -= (m_apStateVar_4 * m_apCoeff_2);
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+#else
   m_out += NlToolbox::Constants::DNC_const;
+#endif
   m_apStateVar_2 = m_apStateVar_1;
   m_apStateVar_1 = tmpOut;
   m_apStateVar_4 = m_apStateVar_3;
@@ -281,7 +292,13 @@ float Engine::PolyCombFilter::calcDecayGain(const float _decay, const float _fre
 {
   // previously in slow set function, now public for evaluation in PolySection postProcessing
   float frequency = _frequency * std::abs(_decay);
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+  frequency = std::max(frequency, 1.e-18f);
+#elif POTENTIAL_IMPROVEMENT_DNC_CONST_OF_ZERO
+  frequency = std::max(frequency, 1.e-18f);
+#else
   frequency = std::max(frequency, NlToolbox::Constants::DNC_const);
+#endif
   frequency = (1.0f / frequency) * -6.28318f;
   if(frequency > 0.0f)  // Exp Clipped
   {

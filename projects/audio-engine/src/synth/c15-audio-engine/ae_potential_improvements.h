@@ -29,3 +29,6 @@
 // - three options, potentially reducing voice loops within the Comb Filter to zero
 
 #define POTENTIAL_IMPROVEMENT_DNC_CONST_OF_ZERO __POTENTIAL_IMPROVEMENT_DISABLED__
+#define POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC __POTENTIAL_IMPROVEMENT_DISABLED__
+#define POTENTIAL_IMPROVEMENT_DNC_OMIT_MONOPHONIC __POTENTIAL_IMPROVEMENT_DISABLED__
+// - first option just for proof of concept, two further options potentially saving many additions
