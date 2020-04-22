@@ -122,8 +122,6 @@ void espi_driver_leds_poll(struct espi_driver *p)
   force_update = 0;
   mutex_unlock(&led_state_lock);
 
-  update |= (diffMS >= ESD_INTERVAL);  // periodic update due ("anti-ESD" update) ?
-
   if (update == 0)
     return;
 
