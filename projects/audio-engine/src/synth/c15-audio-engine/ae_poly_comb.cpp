@@ -68,6 +68,9 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   m_apStateVar_1 = tmpOut;
   m_apStateVar_4 = m_apStateVar_3;
   m_apStateVar_3 = m_out;
+#if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_1
+  // POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_1: provide a parallel implementation for "paraD"
+#else
   // para d --- unfortunately still scalar, via voice loop (1 / 3)
   for(uint32_t v = 0; v < C15::Config::local_polyphony; v++)
   {
@@ -95,6 +98,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
       }
     }
   }
+#endif
   // smooth b
   auto tmpSmooth = m_delaySamples - m_delayStateVar;
   tmpSmooth *= m_delayConst;
@@ -104,11 +108,17 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   tmpSmooth += (phaseMod * tmpSmooth);
   // delay
   auto holdsample = m_out;  // for Bypass
+#if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_2
+  // POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_2: the polyphony "sample" at the current index can be set in parallel
+  m_buffer[m_buffer_indx] = m_out;
+  // seems appropriate, doesn't seem to affect sound at all
+#else
   // delay buffer "write" --- unfortunately still scalar, via voice loop (2 / 3)
   for(uint32_t v = 0; v < C15::Config::local_polyphony; v++)
   {
     m_buffer[m_buffer_indx][v] = m_out[v];
   }
+#endif
   /// hier kommt voicestealing hin!!
   tmpSmooth -= 1.0f;
   tmpSmooth = std::clamp(tmpSmooth, 1.0f, 8189.f);
