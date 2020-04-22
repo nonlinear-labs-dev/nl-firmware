@@ -763,10 +763,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   if(oldType == type)
     return;
-
-  setVoiceGroupName(transaction, getName(), VoiceGroup::I);
-  setVoiceGroupName(transaction, getName(), VoiceGroup::II);
-
+  
   undoableSetType(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
@@ -1216,6 +1213,8 @@ void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
 {
+  setVoiceGroupName(transaction, getName(), VoiceGroup::I);
+  setVoiceGroupName(transaction, getName(), VoiceGroup::II);
   initToFX(transaction);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
@@ -1225,6 +1224,8 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
 {
+  setVoiceGroupName(transaction, getName(), VoiceGroup::I);
+  setVoiceGroupName(transaction, getName(), VoiceGroup::II);
   initToFX(transaction);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
