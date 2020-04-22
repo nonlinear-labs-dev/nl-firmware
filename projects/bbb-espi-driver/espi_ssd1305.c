@@ -46,7 +46,13 @@ s32 ssd1305_fb_init(struct oleds_fb_par *par)
   ssd1305_buff     = kcalloc(SSD1305_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
   ssd1305_tmp_buff = kcalloc(SSD1305_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
   if (!ssd1305_buff || !ssd1305_tmp_buff)
+  {
+    if (ssd1305_buff)
+      kfree(ssd1305_buff);
+    if (ssd1305_tmp_buff)
+      kfree(ssd1305_tmp_buff);
     return -ENOMEM;
+  }
 
   /** DISPLAY INITIALIZATION *************/
   i = 0;
