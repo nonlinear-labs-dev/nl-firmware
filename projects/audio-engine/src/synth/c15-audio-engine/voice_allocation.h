@@ -272,6 +272,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     {
       m_localIndex[v] = v / LocalVoices;
       m_localVoice[v] = v % LocalVoices;
+      m_glideAllowance[v] = v == LocalVoices;
     }
   }
   inline bool keyDown(const uint32_t _keyPos, const float _vel, LayerMode currentMode)
@@ -429,6 +430,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   KeyAssignment m_keyState[Keys];
   VoiceAssignment m_voiceState[GlobalVoices];
   uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {};
+  bool m_glideAllowance[GlobalVoices] = {};
   const AllocatorId m_layerId[2] = { AllocatorId::Local_I, AllocatorId::Local_II };
   inline void keyDown_apply(KeyAssignment* _keyState, LayerMode currentMode)
   {
@@ -660,12 +662,14 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     for(uint32_t unisonIndex = 0; unisonIndex < _unisonVoices; unisonIndex++)
     {
       const uint32_t voiceId = _firstVoice + unisonIndex;
+      // glide is allowed for: first unison voice and: first unison voice of second voice group (important for single-sound cases)
+      const bool allow_glide = unisonIndex == 0 ? true : m_glideAllowance[voiceId];
       VoiceAssignment* voiceState = &m_voiceState[voiceId];
       voiceState->m_keyId = _keyId;
       voiceState->m_stolen = voiceState->m_active;
       voiceState->m_active = true;
       m_traversal.add(m_localIndex[voiceId], m_localVoice[voiceId], unisonIndex, voiceState->m_active,
-                      voiceState->m_stolen);
+                      voiceState->m_stolen, allow_glide);
     }
   }
   inline void keyUp_unisonLoop(const uint32_t _firstVoice, const uint32_t _unisonVoices)
@@ -673,10 +677,12 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     for(uint32_t unisonIndex = 0; unisonIndex < _unisonVoices; unisonIndex++)
     {
       const uint32_t voiceId = _firstVoice + unisonIndex;
+      // glide is allowed for: first unison voice and: first unison voice of second voice group (important for single-sound cases)
+      const bool allow_glide = unisonIndex == 0 ? true : m_glideAllowance[voiceId];
       VoiceAssignment* voiceState = &m_voiceState[voiceId];
       voiceState->m_stolen = voiceState->m_active = false;
       m_traversal.add(m_localIndex[voiceId], m_localVoice[voiceId], unisonIndex, voiceState->m_active,
-                      voiceState->m_stolen);
+                      voiceState->m_stolen, allow_glide);
     }
   }
   inline void clear_keyState()
