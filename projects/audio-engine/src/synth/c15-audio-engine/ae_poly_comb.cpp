@@ -69,7 +69,18 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   m_apStateVar_4 = m_apStateVar_3;
   m_apStateVar_3 = m_out;
 #if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_1
-  // POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_1: provide a parallel implementation for "paraD"
+  // POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_1: provide a parallel implementation for "para d"
+  auto para_d = std::abs(m_out);
+  const PolyInt para_d_sign_condition((m_out > 0.0f)),  // contains -1 (true) or 0 (false)
+      para_d_sat_condition((para_d > 0.501187f));       // contains -1 (true) or 0 (false)
+  para_d -= 0.501187f;
+  auto tmpVar = para_d * 0.2512f;
+  para_d = std::min(para_d, 2.98815f);
+  para_d *= 0.7488f * (1.0f - (para_d * 0.167328f));
+  para_d += tmpVar + 0.501187f;
+  para_d *= static_cast<PolyValue>((-2 * para_d_sign_condition) - 1);  // restore sign
+  tmpVar = para_d - m_out;                                             // detect difference to unsaturated signal
+  m_out -= static_cast<PolyValue>(para_d_sat_condition) * tmpVar;      // restore signal
 #else
   // para d --- unfortunately still scalar, via voice loop (1 / 3)
   for(uint32_t v = 0; v < C15::Config::local_polyphony; v++)
