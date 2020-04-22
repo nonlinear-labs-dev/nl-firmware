@@ -81,6 +81,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   para_d *= static_cast<PolyValue>((-2 * para_d_sign_condition) - 1);  // restore sign
   tmpVar = para_d - m_out;                                             // detect difference to unsaturated signal
   m_out -= static_cast<PolyValue>(para_d_sat_condition) * tmpVar;      // restore signal
+  // this approach seems to work and produce similar results
 #else
   // para d --- unfortunately still scalar, via voice loop (1 / 3)
   for(uint32_t v = 0; v < C15::Config::local_polyphony; v++)
@@ -120,7 +121,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   // delay
   auto holdsample = m_out;  // for Bypass
 #if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_2
-  // POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_2: the polyphony "sample" at the current index can be set in parallel
+  // POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_2: the polyphonic "sample" at the current index can be set in parallel
   m_buffer[m_buffer_indx] = m_out;
   // seems appropriate, doesn't seem to affect sound at all
 #else
