@@ -82,7 +82,7 @@ deploy_scripts() {
     echo "Deploying update scripts..."
 
     cp $SOURCE_DIR/update_scripts/run.sh $OUT_DIRECTORY/ && chmod 777 $OUT_DIRECTORY/run.sh || fail_and_exit;
-    sed -i "s/ASPECTS=\"TO_BE_REPLACED\"/ASPECTS=\"$ASPECTS\"/g" $OUT_DIRECTORY/run.sh
+    sed -i "s/ASPECTS=\"TO_BE_REPLACED_BY_CREATE_C15_UPDATE\"/ASPECTS=\"$ASPECTS\"/g" $OUT_DIRECTORY/run.sh
 
     if [ $UPDATE_BBB == 1 ]; then
         cp $SOURCE_DIR/update_scripts/bbb_update.sh $OUT_DIRECTORY/BBB/ && \
