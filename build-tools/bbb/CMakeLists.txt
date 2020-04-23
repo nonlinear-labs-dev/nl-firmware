@@ -74,7 +74,7 @@ add_custom_command(
 
 add_custom_command(
     COMMENT "Build BBB rootfs"
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz
+    OUTPUT ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
     DEPENDS .nonlinux-update
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -88,8 +88,32 @@ add_custom_command(
         "make C15-clean-for-reconfigure"
         "make C15-rebuild"
         "make"
-    COMMAND echo "The final rootfs is located at ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz"
+    COMMAND mv ${CMAKE_BINARY_DIR}/build-tools/bbb/nonlinux/output/images/rootfs.tar.gz ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
 )
 
-add_custom_target(bbb-rootfs DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nonlinux/output/images/rootfs.tar.gz)
+add_custom_command(
+    COMMENT "Build BBB update"
+    OUTPUT ${CMAKE_BINARY_DIR}/nonlinear-bbb-update.tar
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+    DEPENDS ${SOURCE_FILES}
+    COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
+        "unused-epc"
+        ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+        "unused-lpc"
+        "unused-lpc"
+        ${CMAKE_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}
+        nonlinear-bbb-update
+        bbb
+)
+
+add_custom_target(bbb-ota-update
+    DEPENDS ${CMAKE_BINARY_DIR}/nonlinear-bbb-update.tar
+    COMMAND ${CMAKE_SOURCE_DIR}/build-tools/c15-ota-update.sh
+        ${CMAKE_BINARY_DIR}/nonlinear-bbb-update.tar
+        \${UNIT_NAME}
+        \${UNIT_PASSWORD}
+    )
+
+add_custom_target(bbb-rootfs DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz)
 add_custom_target(bbb-prepare-build-dir DEPENDS .nonlinux-setup)
