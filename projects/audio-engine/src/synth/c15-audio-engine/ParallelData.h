@@ -263,38 +263,79 @@ inline ParallelData<T, size> unipolarCrossFade(const ParallelData<T, size> &_sam
 
 template <typename T, size_t size> inline ParallelData<T, size> keepFractional(const ParallelData<T, size> &in)
 {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_KEEP_FRACTIONAL
+  const ParallelData<T, size> wrap = 0.5f
+      + static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((in < 0.0f)));  // negative: -0.5, positive: 0.5
+  ParallelData<T, size> ret
+      = in - static_cast<ParallelData<T, size>>(static_cast<ParallelData<int32_t, size>>(in + wrap));
+  return ret;
+  // first tests revealed no audible difference
+#else
   ParallelData<T, size> ret;
 
   for(size_t i = 0; i < size; i++)
     ret[i] = in[i] - NlToolbox::Conversion::float2int(in[i]);
 
   return ret;
+#endif
 }
 
 template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(ParallelData<T, size> _x)
 {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_SINP3_WRAP
+  _x += -0.25f;
+  const ParallelData<T, size> wrap = 0.5f
+      + static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((_x < 0.0f)));  // negative: -0.5, positive: 0.5
+  _x -= static_cast<ParallelData<T, size>>(static_cast<ParallelData<int32_t, size>>(_x + wrap));
+  // similar to sinP3_noWrap now...
+  const ParallelData<T, size> x = 0.5f - std::abs(_x + _x), squared = x * x;
+  ParallelData<T, size> ret = x * ((2.26548f * squared - 5.13274f) * squared + 3.14159f);
+  return ret;
+  // first tests revealed no audible difference
+#else
   ParallelData<T, size> ret;
 
   for(size_t i = 0; i < size; i++)
     ret[i] = NlToolbox::Math::sinP3_wrap(_x[i]);
 
   return ret;
+#endif
 }
 
 template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(ParallelData<T, size> _x)
 {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_SINP3_NOWRAP
+  const ParallelData<T, size> x = 0.5f - std::abs(_x + _x), squared = x * x;
+  ParallelData<T, size> ret = x * ((2.26548f * squared - 5.13274f) * squared + 3.14159f);
+  return ret;
+  // first tests revealed no audible difference
+#else
   ParallelData<T, size> ret;
 
   for(size_t i = 0; i < size; i++)
     ret[i] = NlToolbox::Math::sinP3_noWrap(_x[i]);
 
   return ret;
+#endif
 }
 
 template <typename T, size_t size>
 inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, const ParallelData<T, size> &ctrlSample,
                                          const float &foldAmnt)
 {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_THREE_RANGES
+  const ParallelData<T, size> abs = std::abs(ctrlSample);
+  // fold: contains -1 (true) or 0 (false)
+  const ParallelData<T, size> fold = static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((abs > 0.25f)));
+  // sign: properly reflects sign (negative: -1, positive: 1)
+  const ParallelData<T, size> sign
+      = (-2.0f * static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((ctrlSample >= 0.0f)))) - 1.0f;
+  const ParallelData<T, size> shaped
+      = ((sample - sign) * foldAmnt) + sign - sample;  // expressed as difference to "unshaped" sample
+  ParallelData<T, size> ret = sample - (fold * shaped);
+  return ret;
+  // first tests revealed no audible difference
+#else
   ParallelData<T, size> ret;
 
   for(size_t i = 0; i < size; i++)
@@ -314,6 +355,7 @@ inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, co
   }
 
   return ret;
+#endif
 }
 
 template <typename T, size_t size>
@@ -356,7 +398,6 @@ template <typename T, size_t size> inline T sumUp(const ParallelData<T, size> &i
 }
 
 #if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_3
-
 template <typename TScalar, typename TIntegral, size_t size>
 inline ParallelData<TScalar, size> polyVectorIndex(const std::vector<ParallelData<TScalar, size>> &_vector,
                                                    const ParallelData<TIntegral, size> &_index)
@@ -370,5 +411,4 @@ inline ParallelData<TScalar, size> polyVectorIndex(const std::vector<ParallelDat
 
   return ret;
 }
-
 #endif
