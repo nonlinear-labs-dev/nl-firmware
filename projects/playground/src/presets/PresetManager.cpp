@@ -861,7 +861,15 @@ const Preset *PresetManager::getSelectedPreset() const
   {
     return bank->getSelectedPreset();
   }
+  return nullptr;
+}
 
+Preset *PresetManager::getSelectedPreset()
+{
+  if(auto bank = getSelectedBank())
+  {
+    return bank->getSelectedPreset();
+  }
   return nullptr;
 }
 

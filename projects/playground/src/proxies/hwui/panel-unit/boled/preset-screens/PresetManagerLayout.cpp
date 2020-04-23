@@ -417,9 +417,7 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
           if(loadToPartActive)
           {
             auto load = getPresetPartSelection(currentVoiceGroup);
-            auto scope = getPresetManager()->getUndoScope().startTransaction("Load Preset Part into Part");
-            eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), load->m_preset, load->m_voiceGroup,
-                                               currentVoiceGroup);
+            eb->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
             animateSelectedPresetIfInLoadPartMode([]() {});
           }
           else

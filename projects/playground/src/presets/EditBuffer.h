@@ -38,12 +38,20 @@ class EditBuffer : public ParameterDualGroupSet
 
   void undoableLoad(UNDO::Transaction *transaction, Preset *preset);
   void undoableLoad(Preset *preset);
+  void undoableLoadToPart(const Preset *preset, VoiceGroup from, VoiceGroup to);
+  void undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to);
+
+  void undoableLoadSelectedPreset(VoiceGroup loadInto);
+  void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
+  void undoableLoadSelectedToPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
+
+ private:
   void undoableLoadSinglePreset(Preset *preset, VoiceGroup to);
   void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
   void undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
                                       VoiceGroup copyTo);
 
-  void undoableLoadSelectedPreset(VoiceGroup loadInto);
+ public:
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
   void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator);
@@ -95,8 +103,8 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
-  void undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup target);
-  void undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup target);
+  void undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGroup vg);
+  void undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup to);
 
   const SplitPointParameter *getSplitPoint() const;
   SplitPointParameter *getSplitPoint();
@@ -181,7 +189,8 @@ class EditBuffer : public ParameterDualGroupSet
   void initToFX(UNDO::Transaction *transaction);
   void copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transaction *transaction);
 
-  void loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset, VoiceGroup copyTo);
+  void loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, const Preset *preset,
+                                                  VoiceGroup copyTo);
 
   void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                    VoiceGroup copyFrom, VoiceGroup copyTo);
@@ -202,4 +211,12 @@ class EditBuffer : public ParameterDualGroupSet
   void calculateSplitPointFromFadeParams(UNDO::Transaction *transaction);
   void copySinglePresetMasterToPartMaster(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup targetGroup);
   std::vector<Parameter *> getCrossFBParameters(const VoiceGroup &to) const;
+  void loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup loadInto);
+  void loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup loadTo);
+  void undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                            VoiceGroup copyTo);
+  void undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
+                                            VoiceGroup copyTo);
+  void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
+                                             VoiceGroup copyTo);
 };

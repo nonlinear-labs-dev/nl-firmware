@@ -93,14 +93,13 @@ TEST_CASE("Part Origin Attribute")
     TestHelper::initDualEditBuffer<SoundType::Layer>();
     auto scope = TestHelper::createTestScope();
 
-    eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), presets.getSplitPreset(), VoiceGroup::I, VoiceGroup::I);
+    eb->undoableLoadToPart(scope->getTransaction(), presets.getSplitPreset(), VoiceGroup::I, VoiceGroup::I);
 
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     CHECK(originI.presetUUID == presets.getSplitPreset()->getUuid());
     CHECK(originI.sourceGroup == VoiceGroup::I);
 
-    eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), presets.getSplitPreset(), VoiceGroup::II,
-                                       VoiceGroup::II);
+    eb->undoableLoadToPart(scope->getTransaction(), presets.getSplitPreset(), VoiceGroup::II, VoiceGroup::II);
 
     auto originII = eb->getPartOrigin(VoiceGroup::II);
     CHECK(originII.presetUUID == presets.getSplitPreset()->getUuid());

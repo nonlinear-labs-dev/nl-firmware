@@ -11,6 +11,11 @@
 
 using EBL = EditBufferLogicalParts;
 
+auto getPresetParameter = [](auto preset, auto parameter) {
+  auto id = parameter->getID();
+  return preset->findParameterByID(id, false);
+};
+
 TEST_CASE("Load Single into Split Part I")
 {
   auto eb = TestHelper::getEditBuffer();
@@ -41,10 +46,9 @@ TEST_CASE("Load Single into Split Part I")
 
   WHEN("Load")
   {
-    const auto localSpecialIIHash
-        = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>());
+    const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
     const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-    const auto oldToFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
+
     const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
 
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
@@ -59,24 +63,23 @@ TEST_CASE("Load Single into Split Part I")
     const auto oldFadeIIHash
         = EBL::createValueHash({ EBL::getFadeFrom<VoiceGroup::II>(), EBL::getFadeRange<VoiceGroup::II>() });
 
-    eb->undoableLoadSinglePreset(preset, VoiceGroup::I);
+    eb->undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("Type is Same")
     {
       CHECK(eb->getType() == SoundType::Split);
     }
 
-    THEN("Local Special II unchanged")
+    THEN("toFX unchanged")
     {
-      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>())
-            == localSpecialIIHash);
+      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == toFXIHash);
       CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
     }
 
-    THEN("Cross FB is Default in loaded to part")
+    THEN("Cross FB is Default")
     {
       CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == oldToFXIHash);
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Local Normal was copied to current VG")
@@ -176,10 +179,9 @@ TEST_CASE("Load Single into Split Part II")
 
   WHEN("Load")
   {
-    const auto localSpecialIHash
-        = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>());
-    const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
     const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
+    const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
+
     const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
 
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
@@ -194,7 +196,7 @@ TEST_CASE("Load Single into Split Part II")
 
     const auto oldUnisonIHash = EBL::createValueHash(EBL::getUnison<VoiceGroup::I>(), EBL::getMono<VoiceGroup::I>());
 
-    eb->undoableLoadSinglePreset(preset, VoiceGroup::II);
+    eb->undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::II);
 
     THEN("Type is Same")
     {
@@ -203,13 +205,13 @@ TEST_CASE("Load Single into Split Part II")
 
     THEN("Local Special unchanged")
     {
-      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>()) == localSpecialIHash);
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
       CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == toFXIHash);
+      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
     }
 
-    THEN("Cross FB loaded to is Default")
+    THEN("Cross FB is Default")
     {
+      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
       CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 

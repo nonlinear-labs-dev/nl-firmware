@@ -83,7 +83,7 @@ TEST_CASE("Load Part I of Split into Layer Part I")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    eb->undoableLoadPresetPartIntoPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
+    eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("Type is Same")
     {
@@ -260,7 +260,7 @@ TEST_CASE("Load Part I of Split into Layer Part II")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    eb->undoableLoadPresetPartIntoPart(transaction, preset, VoiceGroup::I, VoiceGroup::II);
+    eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::II);
 
     THEN("Type is Same")
     {
@@ -436,7 +436,7 @@ TEST_CASE("Load Part I of Layer into Layer Part I")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    eb->undoableLoadPresetPartIntoPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
+    eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("Type is Same")
     {
@@ -617,7 +617,7 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    eb->undoableLoadPresetPartIntoPart(transaction, preset, VoiceGroup::I, VoiceGroup::II);
+    eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::II);
 
     THEN("Type is Same")
     {

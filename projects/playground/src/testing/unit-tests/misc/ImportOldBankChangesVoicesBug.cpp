@@ -41,17 +41,6 @@ TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
       CHECK(eb->getType() == SoundType::Single);
       CHECK(voicesI->getDisplayString() == "8 voices");
     }
-
-    THEN("Load into Dual -> voices == 8")
-    {
-      auto scope = TestHelper::createTestScope();
-      auto transaction = scope->getTransaction();
-      TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
-      eb->undoableLoadPresetPartIntoPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
-
-      CHECK(eb->getType() == SoundType::Layer);
-      CHECK(voicesI->getDisplayString() == "8 voices");
-    }
   }
 }
 

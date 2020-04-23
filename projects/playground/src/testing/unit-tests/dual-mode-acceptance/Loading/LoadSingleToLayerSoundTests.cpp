@@ -65,23 +65,20 @@ TEST_CASE("Load Single into Layer Part I")
 
     const auto oldUnisonIHash = EBL::createValueHash(EBL::getUnison<VoiceGroup::I>(), EBL::getMono<VoiceGroup::I>());
 
-    eb->undoableLoadSinglePreset(preset, VoiceGroup::I);
+    eb->undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("Type is Same")
     {
       CHECK(eb->getType() == SoundType::Layer);
     }
 
-    THEN("Local Special II unchanged")
-    {
-      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>())
-            == localSpecialIIHash);
-    }
-
-    THEN("Local Special I unchanged")
+    THEN("Local Special I/II unchanged")
     {
       CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>()) == oldCrossFBIHash);
       CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == toFXIHash);
+
+      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>())
+            == localSpecialIIHash);
     }
 
     THEN("Local Normal was copied to current VG")
@@ -206,7 +203,7 @@ TEST_CASE("Load Single into Layer Part II")
 
     const auto oldUnisonIHash = EBL::createValueHash(EBL::getUnison<VoiceGroup::I>(), EBL::getMono<VoiceGroup::I>());
 
-    eb->undoableLoadSinglePreset(preset, VoiceGroup::II);
+    eb->undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::II);
 
     THEN("Type is Same")
     {
