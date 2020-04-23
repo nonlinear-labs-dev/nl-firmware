@@ -7,7 +7,12 @@
 #include <array>
 #include <omp.h>
 #include <x86intrin.h>
+
+#include "ae_potential_improvements.h"
+
+#if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_3
 #include <vector>
+#endif
 
 template <typename T, size_t size> class ParallelData
 {
@@ -350,6 +355,8 @@ template <typename T, size_t size> inline T sumUp(const ParallelData<T, size> &i
   return ret;
 }
 
+#if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_3
+
 template <typename TScalar, typename TIntegral, size_t size>
 inline ParallelData<TScalar, size> polyVectorIndex(const std::vector<ParallelData<TScalar, size>> &_vector,
                                                    const ParallelData<TIntegral, size> &_index)
@@ -363,3 +370,5 @@ inline ParallelData<TScalar, size> polyVectorIndex(const std::vector<ParallelDat
 
   return ret;
 }
+
+#endif

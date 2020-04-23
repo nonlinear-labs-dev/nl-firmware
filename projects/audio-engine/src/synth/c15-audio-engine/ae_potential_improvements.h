@@ -23,12 +23,30 @@
 
 // each potential improvent can now be disabled/enabled individually
 
+// COMB IMPROVEMENTS
+
 #define POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_1 __POTENTIAL_IMPROVEMENT_DISABLED__
 #define POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_2 __POTENTIAL_IMPROVEMENT_DISABLED__
 #define POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_3 __POTENTIAL_IMPROVEMENT_DISABLED__
 // - three options, potentially reducing voice loops within the Comb Filter to zero
 
+// DNC IMPROVEMENTS
+
 #define POTENTIAL_IMPROVEMENT_DNC_CONST_OF_ZERO __POTENTIAL_IMPROVEMENT_DISABLED__
+// - first option just for proof of concept
 #define POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC __POTENTIAL_IMPROVEMENT_DISABLED__
 #define POTENTIAL_IMPROVEMENT_DNC_OMIT_MONOPHONIC __POTENTIAL_IMPROVEMENT_DISABLED__
-// - first option just for proof of concept, two further options potentially saving many additions
+// - two further options potentially saving many additions
+
+// PARALLEL DATA SPECIFIC IMPROVEMENTS
+
+//#define POTENTIAL_IMPROVEMENT_PARALLEL_DATA_REDUCE_LOOPS __POTENTIAL_IMPROVEMENT_DISABLED__
+// - getting rid of Loops that could be fully parallel (first step: std::abs())
+
+#define POTENTIAL_IMPROVEMENT_SINP3_NOWRAP __POTENTIAL_IMPROVEMENT_DISABLED__
+
+// TODO: TIME HANDLING IMPROVEMENTS
+
+// - macro control times operate completely event based, as does the whole modulation mechanism (so no improvements here)
+//#define POTENTIAL_IMPROVEMENT_TIME_IN_ENVELOPES __POTENTIAL_IMPROVEMENT_DISABLED__
+//#define POTENTIAL_IMPROVEMENT_TIME_IN_MONO_GLIDE __POTENTIAL_IMPROVEMENT_DISABLED__
