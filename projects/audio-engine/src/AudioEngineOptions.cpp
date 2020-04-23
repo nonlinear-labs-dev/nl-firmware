@@ -38,6 +38,8 @@ AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
   add(mainGroup, m_numPeriods, "num-periods", 'n', "alsa audio input number of periods");
   add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "alsa audio input ring buffer size");
   add(mainGroup, m_playgroundHost, "playground-host", 'x', "Where to find the playground");
+  add(mainGroup, m_cpuBurningSines, "num-sines", 'u',
+      "Do not run the c15 synth, but run a lot of sines in order to burn CPU.");
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
@@ -116,4 +118,9 @@ int AudioEngineOptions::getPolyphony() const
 bool AudioEngineOptions::doMeasurePerformance()
 {
   return m_measurePerformance;
+}
+
+int AudioEngineOptions::getNumCpuBurningSines() const
+{
+  return m_cpuBurningSines;
 }
