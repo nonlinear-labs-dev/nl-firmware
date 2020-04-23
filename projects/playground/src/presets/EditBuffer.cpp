@@ -943,7 +943,10 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
         oldLocks[p->getID().getNumber()] = p->isLocked();
         p->undoableLock(transaction);
       }
+    }
 
+    if(preset->isDual())
+    {
       monoGroupI->undoableLock(transaction);
       monoGroupII->undoableLock(transaction);
       unisonGroupI->undoableLock(transaction);
@@ -984,7 +987,10 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
         if(!oldLocks[p->getID().getNumber()])
           p->undoableUnlock(transaction);
       }
+    }
 
+    if(preset->isDual())
+    {
       if(!mILocked)
         monoGroupI->undoableUnlock(transaction);
 
