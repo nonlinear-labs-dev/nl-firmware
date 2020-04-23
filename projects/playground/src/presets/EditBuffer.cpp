@@ -737,7 +737,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 
   initToFX(transaction);
-  initFadeFrom(transaction, SoundType::Single);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
   initCrossFB(transaction);
   initSplitPoint(transaction);
 
@@ -932,7 +933,7 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
       }
     }
   }
-  
+
   super::copyFrom(transaction, preset, from, copyTo);
 
   if(preset->isDual())
@@ -947,6 +948,10 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   }
 
   initFadeParameters(transaction, copyTo);
+  if(getType() == SoundType::Split && preset->getType() == SoundType::Layer)
+  {
+    initFadeParameters(transaction, invert(copyTo));
+  }
 
   if(getType() == SoundType::Layer)
   {
@@ -1105,6 +1110,13 @@ void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
       if(!priorLocks[p->getID().getNumber()])
         p->undoableUnlock(scope->getTransaction());
     }
+
+    if(getType() == SoundType::Split && preset->getType() == SoundType::Single)
+    {
+      initFadeFrom(scope->getTransaction(), to);
+    }
+
+    initRecallValues(scope->getTransaction());
   }
 }
 
@@ -1228,12 +1240,10 @@ void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
   splitPoint->loadDefault(transaction);
 }
 
-void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, SoundType newType)
+void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  findParameterByID({ 396, VoiceGroup::I })->loadDefault(transaction);
-  findParameterByID({ 397, VoiceGroup::I })->loadDefault(transaction);
-  findParameterByID({ 396, VoiceGroup::II })->loadDefault(transaction);
-  findParameterByID({ 397, VoiceGroup::II })->loadDefault(transaction);
+  findParameterByID({ 396, vg })->loadDefault(transaction);
+  findParameterByID({ 397, vg })->loadDefault(transaction);
 }
 
 EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
@@ -1302,7 +1312,8 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
   initToFX(transaction);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
-  initFadeFrom(transaction, SoundType::Split);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
 }
 
@@ -1314,7 +1325,8 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
-  initFadeFrom(transaction, SoundType::Layer);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
 }
@@ -1323,7 +1335,8 @@ void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
 {
   copyVoicesGroups(transaction, VoiceGroup::I, VoiceGroup::II);
   calculateSplitPointFromFadeParams(transaction);
-  initFadeFrom(transaction, SoundType::Split);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
 }
 
 void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)

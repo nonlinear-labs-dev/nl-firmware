@@ -84,6 +84,16 @@ namespace TestHelper
         for(auto& p : g->getParameters())
           cb(p);
   }
+
+  inline void changeAllParameters(UNDO::Transaction* transaction)
+  {
+    auto eb = TestHelper::getEditBuffer();
+    eb->forEachParameter([&](Parameter* param) { TestHelper::forceParameterChange(transaction, param); });
+  };
+
+  void randomizeCrossFBAndToFX(UNDO::Transaction* transaction);
+
+  void randomizeFadeParams(UNDO::Transaction* transaction);
 }
 
 inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double v)

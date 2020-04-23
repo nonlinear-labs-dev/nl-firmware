@@ -1,4 +1,5 @@
 #pragma once
+#include <testing/TestHelper.h>
 
 namespace detail
 {

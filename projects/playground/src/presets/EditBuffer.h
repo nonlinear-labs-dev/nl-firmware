@@ -186,7 +186,7 @@ class EditBuffer : public ParameterDualGroupSet
   void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                    VoiceGroup copyFrom, VoiceGroup copyTo);
   void initSplitPoint(UNDO::Transaction *transaction);
-  void initFadeFrom(UNDO::Transaction *transaction, SoundType newType);
+  void initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg);
   void calculateFadeParamsFromSplitPoint(UNDO::Transaction *transaction);
   void copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
   void combineSplitPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
