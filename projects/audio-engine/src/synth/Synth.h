@@ -21,7 +21,7 @@ class Synth
   void start();
   void stop();
 
-  const AudioOutput *getAudioOut() const;
+  AudioOutput *getAudioOut() const;
 
   using AudioBlock = std::vector<SampleFrame>;
   using RealtimeFactor = double;
