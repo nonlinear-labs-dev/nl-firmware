@@ -917,6 +917,18 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   auto f2 = findParameterByID({ 397, copyTo });
   auto crossFBParams = getCrossFBParameters(copyTo);
 
+  auto monoGroupI = getParameterGroupByID({ "Mono", VoiceGroup::I });
+  auto monoGroupII = getParameterGroupByID({ "Mono", VoiceGroup::II });
+
+  auto unisonGroupI = getParameterGroupByID({ "Unison", VoiceGroup::I });
+  auto unisonGroupII = getParameterGroupByID({ "Unison", VoiceGroup::II });
+
+  const auto mILocked = monoGroupI->isAnyParameterLocked();
+  const auto mIILocked = monoGroupII->isAnyParameterLocked();
+
+  const auto uILocked = unisonGroupI->isAnyParameterLocked();
+  const auto uIILocked = unisonGroupII->isAnyParameterLocked();
+
   if(getType() == SoundType::Layer)
   {
     oldLocks[f1->getID().getNumber()] = f1->isLocked();
@@ -931,6 +943,11 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
         oldLocks[p->getID().getNumber()] = p->isLocked();
         p->undoableLock(transaction);
       }
+
+      monoGroupI->undoableLock(transaction);
+      monoGroupII->undoableLock(transaction);
+      unisonGroupI->undoableLock(transaction);
+      unisonGroupII->undoableLock(transaction);
     }
   }
 
@@ -967,6 +984,18 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
         if(!oldLocks[p->getID().getNumber()])
           p->undoableUnlock(transaction);
       }
+
+      if(!mILocked)
+        monoGroupI->undoableUnlock(transaction);
+
+      if(!mIILocked)
+        monoGroupII->undoableUnlock(transaction);
+
+      if(!uILocked)
+        unisonGroupI->undoableUnlock(transaction);
+
+      if(!uIILocked)
+        unisonGroupII->undoableUnlock(transaction);
     }
   }
 
