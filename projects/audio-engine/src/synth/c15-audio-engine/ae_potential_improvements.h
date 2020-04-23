@@ -43,8 +43,6 @@
 //#define POTENTIAL_IMPROVEMENT_PARALLEL_DATA_REDUCE_LOOPS __POTENTIAL_IMPROVEMENT_DISABLED__
 // - getting rid of Loops that could be fully parallel (first step: std::abs())
 
-#define POTENTIAL_IMPROVEMENT_SINP3_NOWRAP __POTENTIAL_IMPROVEMENT_DISABLED__
-
 // TODO: TIME HANDLING IMPROVEMENTS
 
 // - macro control times operate completely event based, as does the whole modulation mechanism (so no improvements here)
