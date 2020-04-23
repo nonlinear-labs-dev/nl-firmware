@@ -62,6 +62,25 @@ class EditBufferLogicalParts
     return ret;
   }
 
+  std::vector<Parameter*> filter(const std::vector<Parameter*>& in, const std::vector<ParameterId>& exclude)
+  {
+    std::vector<Parameter*> ret;
+    std::copy_if(in.begin(), in.end(), std::back_inserter(ret), [&](Parameter* p) {
+      auto it = std::find(exclude.begin(), exclude.end(), p->getID());
+      return it == exclude.end();
+    });
+    return ret;
+  }
+
+  template <VoiceGroup vg> static std::vector<Parameter*> getAllNonGlobalParameters()
+  {
+    using namespace detail;
+    auto eb = TestHelper::getEditBuffer();
+    std::vector<Parameter*> ret {};
+    eb->forEachParameter<vg>([&](Parameter* p) { ret.emplace_back(p); });
+    return ret;
+  }
+
   template <VoiceGroup vg> static std::vector<Parameter*> getCrossFB()
   {
     using namespace detail;
@@ -97,6 +116,16 @@ class EditBufferLogicalParts
   static std::vector<Parameter*> getMaster()
   {
     return { getMasterVolume(), getMasterTune() };
+  }
+
+  template <VoiceGroup vg> static std::vector<Parameter*> getVoices()
+  {
+    std::vector<Parameter*> ret;
+    auto unison = getUnison<vg>();
+    auto mono = getMono<vg>();
+    std::copy(unison.begin(), unison.end(), std::back_inserter(ret));
+    std::copy(mono.begin(), mono.end(), std::back_inserter(ret));
+    return ret;
   }
 
   template <VoiceGroup vg> static std::vector<Parameter*> getUnison()
@@ -137,6 +166,11 @@ class EditBufferLogicalParts
     ret.emplace_back(getPartVolume<vg>());
     ret.emplace_back(getPartTune<vg>());
     return ret;
+  }
+
+  template <VoiceGroup vg> static std::vector<Parameter*> getFade()
+  {
+    return { getFadeFrom<vg>(), getFadeRange<vg>() };
   }
 
   template <VoiceGroup vg> static Parameter* getFadeFrom()
