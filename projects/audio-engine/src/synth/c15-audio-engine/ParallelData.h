@@ -192,22 +192,49 @@ namespace std
 {
   template <typename T, size_t size> inline ParallelData<T, size> abs(const ParallelData<T, size> &in)
   {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_ABS
+    // unfortunately, I did not manage to establish a reduced operator like:
+    //   template <typename T1, size_t size>
+    //   inline ParallelData<T1, size> operator&(const ParallelData<T1, size> &l, uint32_t &r) {...}
+    // - so, for now this is the only way I can come up with
+    ParallelData<T, size> ret = in & ParallelData<uint32_t, size>(0x7FFFFFFF);  // masking sign bit
+    // first tests revealed no audible difference
+    return ret;
+#else
     ParallelData<T, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = abs(in[i]);
 
     return ret;
+#endif
   }
 
   template <typename T, size_t size> inline ParallelData<T, size> min(const ParallelData<T, size> &in, T a)
   {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MIN
+    constexpr auto parallelism = 4;
+    constexpr auto iterations = size / parallelism;
+    static_assert((size % parallelism) == 0, "Cannot use this std::min with this type!");
+    ParallelData<T, size> ret;
+    __m128 cmp = { a, a, a, a };
+
+    for(size_t i = 0; i < iterations; i++)
+    {
+      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
+      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
+      *tmp = _mm_min_ps(*val, cmp);
+    }
+
+    return ret;
+#else
     ParallelData<T, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = std::min(in[i], a);
 
     return ret;
+#endif
   }
 
   template <typename T, size_t size> inline ParallelData<T, size> max(const ParallelData<T, size> &in, T a)
@@ -398,6 +425,8 @@ template <typename T, size_t size> inline T sumUp(const ParallelData<T, size> &i
 }
 
 #if POTENTIAL_IMPROVEMENT_COMB_REDUCE_VOICE_LOOP_3
+// this function is NOT compliant with SIMD, however it abstracts the voice loop away from the Comb Filter,
+// fitting the established parallel paradigm (no voice loops necessary in poly components)
 template <typename TScalar, typename TIntegral, size_t size>
 inline ParallelData<TScalar, size> polyVectorIndex(const std::vector<ParallelData<TScalar, size>> &_vector,
                                                    const ParallelData<TIntegral, size> &_index)
