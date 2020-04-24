@@ -198,8 +198,8 @@ namespace std
     //   inline ParallelData<T1, size> operator&(const ParallelData<T1, size> &l, uint32_t &r) {...}
     // - so, for now this is the only way I can come up with
     ParallelData<T, size> ret = in & ParallelData<uint32_t, size>(0x7FFFFFFF);  // masking sign bit
-    // first tests revealed no audible difference
     return ret;
+    // first tests revealed no audible difference
 #else
     ParallelData<T, size> ret;
 
@@ -212,10 +212,11 @@ namespace std
 
   template <typename T, size_t size> inline ParallelData<T, size> min(const ParallelData<T, size> &in, T a)
   {
-#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MIN
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
     constexpr auto parallelism = 4;
     constexpr auto iterations = size / parallelism;
-    static_assert((size % parallelism) == 0, "Cannot use this std::min with this type!");
+    static_assert((size % parallelism) == 0, "Cannot use std::min with this type!");
+    static_assert(std::is_same<T, float>::value, "std::min works with single precision floats only!");
     ParallelData<T, size> ret;
     __m128 cmp = { a, a, a, a };
 
@@ -227,6 +228,7 @@ namespace std
     }
 
     return ret;
+    // first tests revealed no audible difference
 #else
     ParallelData<T, size> ret;
 
@@ -239,45 +241,113 @@ namespace std
 
   template <typename T, size_t size> inline ParallelData<T, size> max(const ParallelData<T, size> &in, T a)
   {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
+    constexpr auto parallelism = 4;
+    constexpr auto iterations = size / parallelism;
+    static_assert((size % parallelism) == 0, "Cannot use std::max with this type!");
+    static_assert(std::is_same<T, float>::value, "std::max works with single precision floats only!");
+    ParallelData<T, size> ret;
+    __m128 cmp = { a, a, a, a };
+
+    for(size_t i = 0; i < iterations; i++)
+    {
+      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
+      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
+      *tmp = _mm_max_ps(*val, cmp);
+    }
+
+    return ret;
+    // first tests revealed no audible difference
+#else
     ParallelData<T, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = std::max(in[i], a);
 
     return ret;
+#endif
   }
 
   template <typename T, size_t size> inline ParallelData<T, size> clamp(const ParallelData<T, size> &in, T min, T max)
   {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
+    constexpr auto parallelism = 4;
+    constexpr auto iterations = size / parallelism;
+    static_assert((size % parallelism) == 0, "Cannot use std::clamp with this type!");
+    static_assert(std::is_same<T, float>::value, "std::clamp works with single precision floats only!");
+    ParallelData<T, size> ret;
+    __m128 cmpMin = { min, min, min, min }, cmpMax = { max, max, max, max };
+
+    for(size_t i = 0; i < iterations; i++)
+    {
+      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
+      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
+      *tmp = _mm_max_ps(_mm_min_ps(*val, cmpMax), cmpMin);
+    }
+
+    return ret;
+    // first tests revealed no audible difference
+#else
     ParallelData<T, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = std::clamp(in[i], min, max);
 
     return ret;
+#endif
   }
 
   // with the new state variable filter, we need a parallel vector max
   template <typename T, size_t size>
   inline ParallelData<T, size> clamp(const ParallelData<T, size> &in, T min, const ParallelData<T, size> &max)
   {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
+    constexpr auto parallelism = 4;
+    constexpr auto iterations = size / parallelism;
+    static_assert((size % parallelism) == 0, "Cannot use std::clamp with this type!");
+    static_assert(std::is_same<T, float>::value, "std::clamp works with single precision floats only!");
+    ParallelData<T, size> ret;
+    __m128 cmpMin = { min, min, min, min };
+
+    for(size_t i = 0; i < iterations; i++)
+    {
+      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
+      auto cmpMax = reinterpret_cast<const __m128 *>(max.getDataPtr() + parallelism * i);
+      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
+      *tmp = _mm_max_ps(_mm_min_ps(*val, *cmpMax), cmpMin);
+    }
+
+    return ret;
+    // first tests revealed no audible difference
+#else
     ParallelData<T, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = std::clamp(in[i], min, max[i]);
 
     return ret;
+#endif
   }
 
   template <typename TOut, typename T, size_t size>
   inline ParallelData<TOut, size> round(const ParallelData<T, size> &in)
   {
+#if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_ROUND
+    // assuming that the ROUNDING paradigm should fit nltoolbox.h[line 359]::float2int()
+    const ParallelData<T, size> wrap = 0.5f
+        + static_cast<ParallelData<T, size>>(
+                                           ParallelData<int32_t, size>((in < 0.0f)));  // negative: -0.5, positive: 0.5
+    ParallelData<TOut, size> ret = static_cast<ParallelData<TOut, size>>(in + wrap);
+    return ret;
+    // first tests revealed no audible difference
+#else
     ParallelData<TOut, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = static_cast<TOut>(std::round(in[i]));
 
     return ret;
+#endif
   }
 }
 
