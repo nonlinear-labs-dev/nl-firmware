@@ -11,9 +11,6 @@
 
 using EBL = EditBufferLogicalParts;
 
-//TODO Check load to part tests for completeness
-// This file: done
-
 TEST_CASE("Load Part I of Split into Layer Part I")
 {
   auto eb = TestHelper::getEditBuffer();
