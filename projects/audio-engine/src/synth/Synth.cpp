@@ -41,7 +41,7 @@ void Synth::stop()
   m_out->stop();
 }
 
-const AudioOutput *Synth::getAudioOut() const
+AudioOutput *Synth::getAudioOut() const
 {
   return m_out.get();
 }

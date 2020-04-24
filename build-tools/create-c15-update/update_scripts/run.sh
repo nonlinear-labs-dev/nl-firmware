@@ -201,7 +201,7 @@ main() {
         sleep 2
     fi
 
-    [ $UPDATE_EPC == 1 ] && rebootEPC
+    [ $UPDATE_EPC == 1 -a $UPDATE_BBB == 1 ] && rebootEPC
     [ $UPDATE_BBB == 1 ] && rebootBBB
 }
 
