@@ -173,6 +173,7 @@ TEST_CASE("Convert Layer (II) to Single")
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
 
+  auto monoI = EBL::getMonoEnable<VoiceGroup::I>();
   auto monoII = EBL::getMonoEnable<VoiceGroup::II>();
 
   auto globalVolume = EBL::getMasterVolume();
@@ -186,12 +187,12 @@ TEST_CASE("Convert Layer (II) to Single")
     auto transaction = scope->getTransaction();
     TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
 
-    voicesII->loadDefault(transaction);
-    voicesII->stepCPFromHwui(transaction, 12, {});
-    CHECK(voicesII->getDisplayString() == "12 voices");
+    voicesI->loadDefault(transaction);
+    voicesI->stepCPFromHwui(transaction, 12, {});
+    CHECK(voicesI->getDisplayString() == "12 voices");
 
-    monoII->setCPFromHwui(transaction, 1);
-    CHECK(monoII->getDisplayString() == "On");
+    monoI->setCPFromHwui(transaction, 1);
+    CHECK(monoI->getDisplayString() == "On");
 
     globalTune->setCPFromHwui(transaction, 0.25);
     globalVolume->setModulationAmount(transaction, 0.5);
@@ -236,9 +237,7 @@ TEST_CASE("Convert Layer (II) to Single")
     auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
 
-    auto selectedVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-
-    eb->undoableConvertToSingle(transaction, selectedVG);
+    eb->undoableConvertToSingle(transaction, VoiceGroup::II);
 
     THEN("Unison Voices Correct")
     {

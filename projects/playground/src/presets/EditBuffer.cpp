@@ -733,16 +733,9 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   undoableSetType(transaction, SoundType::Single);
 
   if(oldType == SoundType::Split)
-  {
-    combineSplitPartGlobalMaster(transaction, copyFrom);
-  }
+    undoableConvertSplitToSingle(transaction, copyFrom);
   else if(oldType == SoundType::Layer)
-  {
-    combineLayerPartGlobalMaster(transaction, copyFrom);
-  }
-
-  if(copyFrom != VoiceGroup::I)
-    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+    undoableConvertLayerToSingle(transaction, copyFrom);
 
   initToFX(transaction);
   initFadeFrom(transaction, VoiceGroup::I);
@@ -764,6 +757,23 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initRecallValues(transaction);
 
   transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+}
+
+void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  combineLayerPartGlobalMaster(transaction, copyFrom);
+  ScopedLock locks(transaction);
+  locks.addGroupLock({ "Unison", VoiceGroup::I });
+  locks.addGroupLock({ "Mono", VoiceGroup::I });
+  if(copyFrom != VoiceGroup::I)
+    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+}
+
+void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  combineSplitPartGlobalMaster(transaction, copyFrom);
+  if(copyFrom != VoiceGroup::I)
+    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 }
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
