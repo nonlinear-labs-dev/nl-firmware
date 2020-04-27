@@ -492,7 +492,7 @@ TEST_CASE("Load Part I of Layer into Split Part I")
   }
 }
 
-TEST_CASE("Load Part I of Layer into Split Part II")
+TEST_CASE("Load Part II of Layer into Split Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -506,9 +506,8 @@ TEST_CASE("Load Part I of Layer into Split Part II")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
     TestHelper::initDualEditBuffer<SoundType::Split>(transaction);
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
 
-    auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
+    auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::II }, true);
     envAAttack->setValue(transaction, 0.666);
 
     auto volume = preset->findParameterByID({ 247, VoiceGroup::Global }, true);
@@ -517,7 +516,7 @@ TEST_CASE("Load Part I of Layer into Split Part II")
     auto tune = preset->findParameterByID({ 248, VoiceGroup::Global }, true);
     tune->setValue(transaction, 0.265);
 
-    auto partVolume = preset->findParameterByID({ 358, VoiceGroup::I }, true);
+    auto partVolume = preset->findParameterByID({ 358, VoiceGroup::II }, true);
     partVolume->setField(transaction, PresetParameter::Fields::ModSource, "1");
     partVolume->setField(transaction, PresetParameter::Fields::ModAmount, "1");
 
@@ -527,9 +526,9 @@ TEST_CASE("Load Part I of Layer into Split Part II")
     auto monoEnable = preset->findParameterByID({ 364, VoiceGroup::I }, true);
     monoEnable->setValue(transaction, 1);
 
-    for(auto p : EBL::getToFX<VoiceGroup::I>())
+    for(auto p : EBL::getToFX<VoiceGroup::II>())
     {
-      auto toFX = preset->findParameterByID({ p->getID().getNumber(), VoiceGroup::I }, true);
+      auto toFX = preset->findParameterByID(p->getID(), true);
       toFX->setValue(transaction, 0.187);
     }
 
@@ -551,7 +550,7 @@ TEST_CASE("Load Part I of Layer into Split Part II")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::II);
+    eb->undoableLoadToPart(transaction, preset, VoiceGroup::II, VoiceGroup::II);
 
     THEN("Type is Same")
     {
@@ -611,8 +610,8 @@ TEST_CASE("Load Part I of Layer into Split Part II")
 
       PresetParameter* vol = preset->findParameterByID({ 247, VoiceGroup::Global }, true);
       PresetParameter* tune = preset->findParameterByID({ 248, VoiceGroup::Global }, true);
-      PresetParameter* ogPartTune = preset->findParameterByID({ 360, VoiceGroup::I }, true);
-      PresetParameter* ogPartVolume = preset->findParameterByID({ 358, VoiceGroup::I }, true);
+      PresetParameter* ogPartTune = preset->findParameterByID({ 360, VoiceGroup::II }, true);
+      PresetParameter* ogPartVolume = preset->findParameterByID({ 358, VoiceGroup::II }, true);
 
       const auto presetGlobalVolumeDisplay = volumeScale->controlPositionToDisplay(vol->getValue());
       const auto presetPartVolumeDisplay = volumeScale->controlPositionToDisplay(ogPartVolume->getValue());

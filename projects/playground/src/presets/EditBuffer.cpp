@@ -1374,7 +1374,17 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
 
   initFadeParameters(transaction, copyTo);
   if(preset->getType() == SoundType::Layer)
+  {
     initFadeParameters(transaction, invert(copyTo));
+
+    const auto unisonTo = GroupId { "Unison", copyTo };
+    const auto unisonI = GroupId { "Unison", VoiceGroup::I };
+    const auto monoTo = GroupId { "Mono", copyTo };
+    const auto monoI = GroupId { "Mono", VoiceGroup::I };
+
+    getParameterGroupByID(unisonTo)->copyFrom(transaction, preset->findParameterGroup(unisonI));
+    getParameterGroupByID(monoTo)->copyFrom(transaction, preset->findParameterGroup(monoI));
+  }
 
   initRecallValues(transaction);
 
