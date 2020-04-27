@@ -5,6 +5,7 @@ import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Tracer;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
@@ -40,7 +41,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	private boolean onPresenterUpdated(ParameterPresenter p) {
 		presenter = p;
-		invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		setVisible(!presenter.hidden);
+		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
 		return true;
 	}
 
@@ -77,6 +79,10 @@ public abstract class Parameter extends LayoutResizingVertical {
 		RGB c = getRoundingColor();
 		if (c != null) {
 			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), null, c);
+		}
+
+		if(presenter != null && presenter.disabled) {
+			getPixRect().drawRoundedRect(ctx, getBackgroundRoundings(), toXPixels(4), toXPixels(1), RGB.black().withAlpha(0.5), RGB.black().withAlpha(0.2));
 		}
 	}
 
@@ -126,7 +132,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	@Override
 	public Control doubleClick() {
-		setDefault();
+		if(!presenter.disabled && !presenter.hidden)
+			setDefault();
 		return this;
 	}
 
@@ -137,17 +144,17 @@ public abstract class Parameter extends LayoutResizingVertical {
 		case always:
 			select();
 
-			if (isBoolean())
+			if (isBoolean() && !presenter.disabled)
 				toggleBoolean();
-			else
+			else if(!presenter.disabled)
 				startMouseEdit();
 			return this;
 
 		case if_selected:
 			if (isSelected()) {
-				if (isBoolean())
+				if (isBoolean() && !presenter.disabled)
 					toggleBoolean();
-				else
+				else if(!presenter.disabled)
 					startMouseEdit();
 				return this;
 			}
@@ -188,7 +195,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		boolean noDrag = (SetupModel.get().localSettings.editParameter.getValue() == EditParameter.never)
 				|| getWorld().isSpaceDown();
 
-		if (isSelected() && !noDrag) {
+		if (isSelected() && !noDrag && !presenter.disabled && !presenter.hidden) {
 
 			double xPix = newPoint.getX() - oldPoint.getX();
 			double yPix = oldPoint.getY() - newPoint.getY();
@@ -203,6 +210,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 			return this;
 		} else if (noDrag) {
 			return getWorld().mouseDrag(oldPoint, newPoint, fine);
+		} else if(presenter.disabled || presenter.hidden) {
+			return this;
 		}
 
 		return null;

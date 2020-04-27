@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.gwt.dev.util.collect.HashSet;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
@@ -18,6 +19,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.ReturnModes;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
@@ -57,6 +59,12 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 				return true;
 			});
 		}
+
+		EditBufferModel.get().soundType.onChange(type -> {
+			this.presenter.hidden = isParameterHidden(presenter);
+			this.presenter.disabled = isParameterDisabled(presenter);
+			return true;
+		});
 	}
 
 	private boolean isFillFromRightParameter(BasicParameterModel e) {
@@ -68,6 +76,42 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		return false;
 	}
 
+	private boolean isParameterDisabled(ParameterPresenter pp) {
+		return isParameterDisabled(pp.id.getNumber());
+	}
+
+	private boolean isParameterDisabled(BasicParameterModel e) {
+		return isParameterDisabled(e.id.getNumber());
+	}
+
+	private boolean isParameterHidden(BasicParameterModel e) {
+		return isParameterHidden(e.id.getNumber());
+	}
+
+	private boolean isParameterHidden(ParameterPresenter pp) {
+		return isParameterHidden(pp.id.getNumber());
+	}
+
+	private boolean isParameterHidden(int num) {
+		SoundType type = EditBufferModel.get().soundType.getValue(); 
+		if(type != SoundType.Layer) {
+			if(type == SoundType.Single && num == 362) {
+				return true;
+			}
+
+			return num == 348 || num == 350 || num == 352 || num == 354; 
+		}
+		return false;
+	}
+
+	private boolean isParameterDisabled(int num) {
+		if(num == 346) {
+			boolean ret = EditBufferModel.get().soundType.getValue() != SoundType.Layer;
+			return ret;	
+		}
+		return false;
+	}
+	
 	private void updatePresenter(BasicParameterModel e) {
 		presenter.parameterInfo = e.info.getValue();
 		presenter.isBoolean = e.value.metaData.isBoolean.getBool();
@@ -82,6 +126,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.controlPosition = e.value.getQuantizedAndClipped(true);
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
 		presenter.fillFromRightEnabled = isFillFromRightParameter(e);
+		presenter.disabled = isParameterDisabled(e);
+		presenter.hidden = isParameterHidden(e);
 
 		if (e.id.getNumber() == 356 && EditBufferModel.get().voiceGroup.getValue() == EditBufferModel.VoiceGroup.II) {
 			double nextValue = e.value.getIncDecValue(false, 1);

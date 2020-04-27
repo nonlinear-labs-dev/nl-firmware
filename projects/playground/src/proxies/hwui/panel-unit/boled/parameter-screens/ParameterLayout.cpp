@@ -156,7 +156,6 @@ bool ParameterLayout2::isParameterNotAvailableInSoundType(const Parameter *p, co
     case SoundType::Single:
     case SoundType::Split:
       return number == 346 || number == 348;
-      break;
     case SoundType::Layer:
     case SoundType::Invalid:
       break;
