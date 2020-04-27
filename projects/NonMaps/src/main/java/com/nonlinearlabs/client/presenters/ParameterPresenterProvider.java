@@ -47,9 +47,15 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			boolean isSelected = presenter.id.getNumber() == id;
 			if (isSelected != presenter.selected) {
 				presenter.selected = isSelected;
-				presenter.updateHash();
-				notifyChanges();
+				if(presenter.updateHash()) {
+					notifyChanges();
+					return true;
+				}
 			}
+
+			if(presenter.updateHash())
+				notifyChanges();
+
 			return true;
 		});
 
@@ -61,8 +67,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		}
 
 		EditBufferModel.get().soundType.onChange(type -> {
-			this.presenter.hidden = isParameterHidden(presenter);
-			this.presenter.disabled = isParameterDisabled(presenter);
+			updatePresenter(p);
 			return true;
 		});
 	}

@@ -42,7 +42,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	private boolean onPresenterUpdated(ParameterPresenter p) {
 		presenter = p;
 		setVisible(!presenter.hidden);
-		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
+		invalidate(INVALIDATION_FLAG_SCROLLED);
 		return true;
 	}
 
