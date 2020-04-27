@@ -21,7 +21,7 @@ class ParameterLayout2 : public Layout
   typedef ParameterLayout2 virtual_base;
   ParameterLayout2();
 
-  static bool isParameterNotAvailableInSoundType(const Parameter *p, EditBuffer *eb);
+  static bool isParameterNotAvailableInSoundType(const Parameter *p, const EditBuffer *eb);
 
  protected:
   void init() override;

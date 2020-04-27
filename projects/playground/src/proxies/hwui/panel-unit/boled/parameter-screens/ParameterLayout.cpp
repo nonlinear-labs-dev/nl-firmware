@@ -142,7 +142,7 @@ void ParameterLayout2::handlePresetValueRecall()
     getOLEDProxy().setOverlay(new ParameterRecallLayout2());
 }
 
-bool ParameterLayout2::isParameterNotAvailableInSoundType(const Parameter *p, EditBuffer *eb)
+bool ParameterLayout2::isParameterNotAvailableInSoundType(const Parameter *p, const EditBuffer *eb)
 {
   auto currentType = eb->getType();
 

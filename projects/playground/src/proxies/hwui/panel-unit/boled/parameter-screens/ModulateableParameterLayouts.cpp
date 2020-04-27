@@ -214,11 +214,12 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
 
           return SwitchVoiceGroupButton::toggleVoiceGroup();
         }
-        else
+        else if(!isCurrentParameterDisabled())
         {
           setMode(Mode::MacroControlPosition);
           return true;
         }
+        break;
 
       case Buttons::BUTTON_B:
         if(!isCurrentParameterDisabled())

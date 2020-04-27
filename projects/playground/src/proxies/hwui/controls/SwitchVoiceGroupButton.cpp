@@ -12,6 +12,7 @@
 #include <groups/UnisonGroup.h>
 #include <nltools/Types.h>
 #include <libundo/undo/Scope.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)
@@ -29,10 +30,9 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 void SwitchVoiceGroupButton::rebuild()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto ebType = eb->getType();
   auto selected = eb->getSelected();
 
-  if(EditBuffer::isDualParameterForSoundType(selected, ebType))
+  if(allowToggling(selected, eb))
     setText({ "I / II", 0 });
   else
     setText({ "", 0 });
@@ -77,11 +77,19 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
 
 bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const EditBuffer* editBuffer)
 {
-  auto hasCounterPart = selected->getVoiceGroup() != VoiceGroup::Global;
+  if(selected->getVoiceGroup() == VoiceGroup::Global)
+    return false;
+
+  if(editBuffer->getType() == SoundType::Single)
+    return false;
+  
   auto layerAndGroupAllowToggling
       = ((editBuffer->getType() == SoundType::Layer)
          && (!MonoGroup::isMonoParameter(selected) && !UnisonGroup::isUnisonParameter(selected)))
       || (editBuffer->getType() != SoundType::Layer);
 
-  return hasCounterPart && layerAndGroupAllowToggling;
+  if(ParameterLayout2::isParameterNotAvailableInSoundType(selected, editBuffer))
+    return false;
+
+  return layerAndGroupAllowToggling;
 }
