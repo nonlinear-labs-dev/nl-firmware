@@ -495,7 +495,6 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
 
-  cleanupParameterSelection(transaction, getType(), preset->getType());
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
   resetModifiedIndicator(transaction, getHash());
@@ -824,6 +823,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
     auto swap = UNDO::createSwapData(type);
 
     initUnisonVoicesScaling(transaction, type);
+    cleanupParameterSelection(transaction, m_type, type);
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
@@ -1207,7 +1207,7 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
                                                  : Application::get().getHWUI()->getCurrentVoiceGroup();
     if(newType == SoundType::Single && vg == VoiceGroup::II)
       vg = VoiceGroup::I;
-    
+
     undoableSelectParameter(transaction, { newParamNum, vg });
   }
   catch(...)
