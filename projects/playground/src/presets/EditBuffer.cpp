@@ -489,14 +489,13 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
-
-  Application::get().getHWUI()->setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
 
+  cleanupParameterSelection(transaction, getType(), preset->getType());
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
   resetModifiedIndicator(transaction, getHash());
@@ -763,7 +762,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   if(oldType == type)
     return;
-  
+
   undoableSetType(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
@@ -1171,4 +1170,47 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
   const auto meanFadeFrom = (f1 + f2) / 2.0;
 
   getSplitPoint()->setCPFromHwui(transaction, meanFadeFrom);
+}
+
+void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
+{
+  using FromType = SoundType;
+  using ToType = SoundType;
+
+  std::unordered_map<FromType, std::unordered_map<ToType, std::unordered_map<int, int>>> transactions;
+
+  transactions[FromType::Layer]
+      = { { SoundType::Split,
+            { { 346, 346 }, { 348, 346 }, { 350, 156 }, { 352, 158 }, { 354, 160 }, { 396, 358 }, { 397, 358 } } },
+          { SoundType::Single,
+            { { 346, 346 },
+              { 348, 346 },
+              { 350, 156 },
+              { 352, 158 },
+              { 354, 160 },
+              { 362, 185 },
+              { 358, 247 },
+              { 360, 248 },
+              { 396, 247 },
+              { 397, 247 } } } };
+
+  transactions[FromType::Split] = { { ToType::Layer, { { 356, 358 } } },
+                                    { ToType::Single, { { 356, 247 }, { 360, 248 }, { 358, 247 }, { 362, 185 } } } };
+
+  try
+  {
+    auto conv = transactions.at(oldType);
+    auto to = conv.at(newType);
+    auto id = getSelected()->getID();
+    auto newParamNum = to.at(id.getNumber());
+    auto vg = ParameterId::isGlobal(newParamNum) ? VoiceGroup::Global
+                                                 : Application::get().getHWUI()->getCurrentVoiceGroup();
+    if(newType == SoundType::Single && vg == VoiceGroup::II)
+      vg = VoiceGroup::I;
+    
+    undoableSelectParameter(transaction, { newParamNum, vg });
+  }
+  catch(...)
+  {
+  }
 }

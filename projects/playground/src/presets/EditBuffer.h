@@ -197,7 +197,8 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
   void undoableConvertSingleToLayer(UNDO::Transaction *transaction);
   void undoableConvertSingleToSplit(UNDO::Transaction *transaction);
-  void undoableConvertLayerToSplit(UNDO::Transaction* transaction);
-  void undoableConvertSplitToLayer(UNDO::Transaction* transaction);
-void calculateSplitPointFromFadeParams(UNDO::Transaction* transaction);
+  void undoableConvertLayerToSplit(UNDO::Transaction *transaction);
+  void undoableConvertSplitToLayer(UNDO::Transaction *transaction);
+  void calculateSplitPointFromFadeParams(UNDO::Transaction *transaction);
+  void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
 };
