@@ -21,6 +21,7 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.ParameterContextMenu;
@@ -41,7 +42,6 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	private boolean onPresenterUpdated(ParameterPresenter p) {
 		presenter = p;
-		setVisible(!presenter.hidden);
 		invalidate(INVALIDATION_FLAG_SCROLLED);
 		return true;
 	}
@@ -314,6 +314,36 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	public boolean isLocked() {
 		return presenter.locked;
+	}
+
+	@Override
+	public double getBottomMargin() {
+		if(presenter.hidden)
+			return 0;
+		return super.getBottomMargin();
+	}
+
+	@Override
+	public double getTopMargin() {
+		if(presenter.hidden)
+			return 0;
+		return super.getTopMargin();
+	}
+
+	@Override
+	public double getHeightMargin() {
+		if(presenter.hidden)
+			return 0;
+		return super.getHeightMargin();
+	}
+
+	@Override
+	public void doFirstLayoutPass(double levelOfDetail) {
+		if (presenter.hidden) {
+			setNonSize(new NonDimension(0, 0));
+		} else {
+			super.doFirstLayoutPass(levelOfDetail);
+		}
 	}
 
 }

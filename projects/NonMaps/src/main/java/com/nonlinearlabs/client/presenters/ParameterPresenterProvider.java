@@ -100,13 +100,14 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private boolean isParameterHidden(int num) {
 		SoundType type = EditBufferModel.get().soundType.getValue(); 
 		if(type != SoundType.Layer) {
-			if(type == SoundType.Single && num == 362) {
+			if(type == SoundType.Single && (num == 362)) {
 				return true;
 			}
 
-			return num == 348 || num == 350 || num == 352 || num == 354; 
+			return num == 348 || num == 350 || num == 352 || num == 354 || num == 396 || num == 397; 
+		} else {
+			return num == 356;
 		}
-		return false;
 	}
 
 	private boolean isParameterDisabled(int num) {
