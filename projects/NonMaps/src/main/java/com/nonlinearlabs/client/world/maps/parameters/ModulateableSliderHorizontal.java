@@ -1,21 +1,46 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.world.Dimension;
-import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
-public class ModulateableSliderHorizontal extends ModulateableValueControl {
+public class ModulateableSliderHorizontal extends Slider {
+
+	private boolean isVisible = false;
 
 	public ModulateableSliderHorizontal(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
 	}
 
-    @Override
+	@Override
+	protected double getBasicWidth() {
+		return 80;
+	}
+
+	@Override
+	protected double getBasicHeight() {
+		return 6;
+	}
+
+	@Override
+	protected double getMinHeight() {
+		return 0;
+	}
+
+	@Override
+	public void doFirstLayoutPass(double levelOfDetail) {
+		super.doFirstLayoutPass(levelOfDetail);
+		isVisible = levelOfDetail >= getLevelOfDetailForFullVisibility();
+	}
+
+	@Override
+	public boolean isVisible() {
+		return isVisible && super.isVisible();
+	}
+
+	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
-		if (!isVisible())
+		if (!isVisible)
 			return;
 
 		Rect pixRect = getPixRect();
@@ -80,48 +105,4 @@ public class ModulateableSliderHorizontal extends ModulateableValueControl {
 		ctx.fillRect(indicatorStartX + toXPixels(indicatorAreaWidth - 0.5), pixRect.getTop() + toYPixels(0.5),
 				toXPixels(1), pixRect.getHeight() - toYPixels(1));
 	}
-
-    @Override
-    protected void drawCenterIndicator(Context2d ctx) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void drawBackgroundAndOutline(Context2d ctx) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void drawActiveArea(Context2d ctx) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void drawCorona(Context2d ctx, double left, double right) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected double getBasicWidth() {
-        return 80;
-    }
-
-    @Override
-    public double getTopMargin() {
-        return 4;
-    }
-
-    @Override
-    protected double getBasicHeight() {
-        return 6;
-    }
-
-    @Override
-    protected double getMinHeight() {
-        return 5;
-    }
 }
