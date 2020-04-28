@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
 #include <groups/ScaleGroup.h>
 #include <parameters/ScaleParameter.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include "ParameterCarousel.h"
 #include "Application.h"
 #include "proxies/hwui/HWUI.h"
@@ -28,7 +29,9 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
 
   if(std::shared_ptr<PanelUnitParameterEditMode> edit = std::dynamic_pointer_cast<PanelUnitParameterEditMode>(um))
   {
-    if(selectedParameter)
+    if(selectedParameter
+       && !ParameterSelectLayout2::isParameterNotAvailableInSoundType(
+           selectedParameter, Application::get().getPresetManager()->getEditBuffer()))
     {
       auto button = edit->findButtonForParameter(selectedParameter);
 
@@ -155,19 +158,6 @@ void ParameterCarousel::turn()
       Application::get().getPresetManager()->getEditBuffer()->undoableSelectParameter(p->getParameter()->getID());
 }
 
-bool ParameterCarousel::containsSelectedParameter() const
-{
-  for(auto& p : getControls())
-  {
-    if(auto mp = dynamic_cast<MiniParameter*>(p.get()))
-    {
-      if(mp->getParameter() == Application::get().getPresetManager()->getEditBuffer()->getSelected())
-        return true;
-    }
-  }
-  return false;
-}
-
 void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)
 {
   const auto paramID = selectedParameter->getID().getNumber();
@@ -180,41 +170,4 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
   {
     setupChildControls(selectedParameter, { 249, 250, 252, 253 });
   }
-}
-
-bool ParameterCarousel::paramShouldBeHiddenForSoundtype(Parameter* param, SoundType type)
-{
-  if(param == nullptr)
-    return true;
-
-  const auto id = param->getID();
-  const auto num = id.getNumber();
-  const auto vg = id.getVoiceGroup();
-
-  switch(type)
-  {
-    case SoundType::Single:
-    {
-      if(num == 346 || num == 348)
-        return true;
-      if(num == 350 || num == 352 || num == 354)
-        return true;
-      if(num == 362)
-        return true;
-    }
-    break;
-    case SoundType::Split:
-    {
-      if(num == 346 || num == 348)
-        return true;
-      if(num == 350 || num == 352 || num == 354)
-        return true;
-    }
-    break;
-    case SoundType::Layer:
-      break;
-    case SoundType::Invalid:
-      break;
-  }
-  return false;
 }

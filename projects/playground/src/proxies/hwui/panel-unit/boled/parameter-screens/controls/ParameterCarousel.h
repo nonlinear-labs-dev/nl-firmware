@@ -20,8 +20,6 @@ class ParameterCarousel : public Carousel
   virtual void turn() override;
   virtual void antiTurn() override;
 
-  bool containsSelectedParameter() const;
-
   void requestTurn();
 
  protected:
@@ -35,5 +33,4 @@ class ParameterCarousel : public Carousel
   void setupChildControls(Parameter *selectedParameter, const std::__cxx11::list<int> &buttonAssignments);
 
   void setupChildControlsForParameterWithoutButtonMapping(Parameter *selectedParameter);
-  bool paramShouldBeHiddenForSoundtype(Parameter *param, SoundType type);
 };
