@@ -398,6 +398,14 @@ public class EditBufferUseCases {
 	}
 
 	private VoiceGroup getVoiceGroupFor(int paramNumber) {
+		if(EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
+			if(paramNumber == 249 || paramNumber == 250 || paramNumber == 252 || paramNumber == 253 || 
+			   paramNumber == 364 || paramNumber == 365 || paramNumber == 366 || paramNumber == 367) 
+			{
+				return VoiceGroup.I;
+			}
+		}
+
 		return ParameterFactory.isGlobalParameter(paramNumber) ? VoiceGroup.Global
 				: EditBufferModel.get().voiceGroup.getValue();
 	}

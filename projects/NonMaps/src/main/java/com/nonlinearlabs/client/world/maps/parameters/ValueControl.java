@@ -1,6 +1,9 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.nonlinearlabs.client.Checksum;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.world.Control;
@@ -14,6 +17,15 @@ abstract class ValueControl extends ZoomReactingControl {
 		super(parent);
 
 		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(parameterID, v -> {
+			if(EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
+				int paramNumber = v.id.getNumber();
+				if(paramNumber == 249 || paramNumber == 250 || paramNumber == 252 || paramNumber == 253 || 
+				   paramNumber == 364 || paramNumber == 365 || paramNumber == 366 || paramNumber == 367) 
+				{
+					presenter = ParameterPresenterProviders.get().getParameterPresenter(VoiceGroup.I, v.id.getNumber());
+					return true;
+				}
+			}
 			presenter = v;
 			return true;
 		});

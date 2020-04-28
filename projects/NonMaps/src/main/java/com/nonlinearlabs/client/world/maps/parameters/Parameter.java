@@ -6,6 +6,8 @@ import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
@@ -41,6 +43,14 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private boolean onPresenterUpdated(ParameterPresenter p) {
+		if(p.fullNameWithGroup.contains("Mono") || p.fullNameWithGroup.contains("Unison")) {
+			if(EditBufferModel.get().soundType.getValue() == SoundType.Layer && p.id.getVoiceGroup() == VoiceGroup.II) {
+				presenter = ParameterPresenterProviders.get().getParameterPresenter(VoiceGroup.I, p.id.getNumber());
+				invalidate(INVALIDATION_FLAG_SCROLLED);
+				return true;
+			}
+		}
+
 		presenter = p;
 		invalidate(INVALIDATION_FLAG_SCROLLED);
 		return true;

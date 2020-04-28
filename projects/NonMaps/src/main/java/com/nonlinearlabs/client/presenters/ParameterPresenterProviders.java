@@ -67,6 +67,10 @@ public class ParameterPresenterProviders {
 		findMap(id.getVoiceGroup()).get(id.getNumber()).onChange(cb);
 	}
 
+	public ParameterPresenter getParameterPresenter(VoiceGroup vg, int num) {
+		return findMap(vg).get(num).getValue();
+	}
+
 	private HashMap<Integer, ParameterPresenterProvider> findMap(VoiceGroup vg) {
 		switch (vg) {
 		case Global:
