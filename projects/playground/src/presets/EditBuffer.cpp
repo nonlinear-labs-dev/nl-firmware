@@ -489,8 +489,6 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
-
-  Application::get().getHWUI()->setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
@@ -763,7 +761,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   if(oldType == type)
     return;
-  
+
   undoableSetType(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
@@ -825,6 +823,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
     auto swap = UNDO::createSwapData(type);
 
     initUnisonVoicesScaling(transaction, type);
+    cleanupParameterSelection(transaction, m_type, type);
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
@@ -1171,4 +1170,51 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
   const auto meanFadeFrom = (f1 + f2) / 2.0;
 
   getSplitPoint()->setCPFromHwui(transaction, meanFadeFrom);
+}
+
+void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
+{
+  using ParameterNumberMap = std::unordered_map<int, int>;
+  using From = SoundType;
+  using To = SoundType;
+  using Conversion = std::pair<From, To>;
+  using ConversionMap = std::map<Conversion, ParameterNumberMap>;
+
+  // clang-format off
+  static ConversionMap conversions {
+  {
+    { From::Layer, To::Split },
+    { { 346, 346 }, { 348, 346 }, { 350, 156 }, { 352, 158 }, { 354, 160 }, { 396, 358 }, { 397, 358 } }
+  },
+  {
+    { From::Layer, To::Single },
+    { { 346, 346 }, { 348, 346 }, { 350, 156 }, { 352, 158 }, { 354, 160 },
+      { 362, 185 }, { 358, 247 }, { 360, 248 }, { 396, 247 }, { 397, 247 } }
+  },
+  {
+    { From::Split, To::Layer },
+    { { 356, 358 } }
+  },
+  {
+    { From::Split, To::Single },
+    { { 356, 247 }, { 360, 248 }, { 358, 247 }, { 362, 185 } }
+  }};
+  // clang-format on
+
+  auto itMap = conversions.find({ oldType, newType });
+  if(itMap != conversions.end())
+  {
+    const auto &conv = itMap->second;
+    auto id = getSelected()->getID();
+    auto itConv = conv.find(id.getNumber());
+    if(itConv != conv.end())
+    {
+      auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto vg = ParameterId::isGlobal(itConv->second) ? VoiceGroup::Global : currentVg;
+      if(newType == SoundType::Single && vg == VoiceGroup::II)
+        vg = VoiceGroup::I;
+
+      undoableSelectParameter(transaction, { itConv->second, vg });
+    }
+  }
 }

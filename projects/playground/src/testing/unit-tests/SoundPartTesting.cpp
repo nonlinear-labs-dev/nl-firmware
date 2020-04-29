@@ -7,32 +7,6 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/ModulateableParameter.h>
 
-TEST_CASE("HWUI Voice Group Selection")
-{
-  MockPresetStorage presets;
-
-  auto hwui = Application::get().getHWUI();
-
-  auto eb = TestHelper::getEditBuffer();
-  {
-    auto scope = TestHelper::createTestScope();
-    eb->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
-    hwui->setCurrentVoiceGroup(VoiceGroup::II);
-    REQUIRE(hwui->getCurrentVoiceGroup() == VoiceGroup::II);
-  }
-
-  SECTION("Reset Voice Group Selection to I on Preset Load")
-  {
-    {
-      auto scope = TestHelper::createTestScope();
-      REQUIRE(hwui->getCurrentVoiceGroup() == VoiceGroup::II);
-      eb->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
-    }
-
-    REQUIRE(hwui->getCurrentVoiceGroup() == VoiceGroup::I);
-  }
-}
-
 SCENARIO("Single sound with modulation aspects on mod-param")
 {
   MockPresetStorage storage;
