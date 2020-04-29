@@ -50,7 +50,10 @@ bool MonoModeParameterLayout::onButton(Buttons i, bool down, ButtonModifiers mod
 Parameter *MonoModeModulateableParameterLayout::getCurrentParameter() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->getSelected();
+  auto sel = eb->getSelected();
+  if(eb->getType() == SoundType::Layer)
+    nltools_assertOnDevPC(sel->getVoiceGroup() == VoiceGroup::I);
+  return sel;
 }
 
 MonoModeModulateableParameterLayout::MonoModeModulateableParameterLayout()

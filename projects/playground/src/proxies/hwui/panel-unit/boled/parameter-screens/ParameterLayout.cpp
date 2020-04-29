@@ -122,7 +122,7 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   if(auto p = getCurrentEditParameter())
   {
-    if(!isParameterAvailableInSoundType(p, Application::get().getPresetManager()->getEditBuffer()))
+    if(isParameterAvailableInSoundType(p, Application::get().getPresetManager()->getEditBuffer()))
     {
       auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
       p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
