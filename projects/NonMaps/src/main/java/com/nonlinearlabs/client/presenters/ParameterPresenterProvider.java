@@ -14,6 +14,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulationRouterParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
@@ -81,10 +82,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		return false;
 	}
 
-	private boolean isParameterDisabled(ParameterPresenter pp) {
-		return isParameterDisabled(pp.id.getNumber());
-	}
-
 	private boolean isParameterDisabled(BasicParameterModel e) {
 		return isParameterDisabled(e.id.getNumber());
 	}
@@ -93,29 +90,22 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		return isParameterHidden(e.id.getNumber());
 	}
 
-	private boolean isParameterHidden(ParameterPresenter pp) {
-		return isParameterHidden(pp.id.getNumber());
+	private boolean containsElement(int e, int[] arr) {
+		for (int i : arr) {
+			if(i == e)
+				return true;
+		}
+		return false;
 	}
 
 	private boolean isParameterHidden(int num) {
-		SoundType type = EditBufferModel.get().soundType.getValue(); 
-		if(type != SoundType.Layer) {
-			if(type == SoundType.Single && (num == 362)) {
-				return true;
-			}
-
-			return num == 348 || num == 350 || num == 352 || num == 354 || num == 396 || num == 397; 
-		} else {
-			return num == 356;
-		}
+		SoundType type = EditBufferModel.get().soundType.getValue();
+		return containsElement(num, ParameterFactory.hiddenParametersBySoundType.get(type));
 	}
 
 	private boolean isParameterDisabled(int num) {
-		if(num == 346) {
-			boolean ret = EditBufferModel.get().soundType.getValue() != SoundType.Layer;
-			return ret;	
-		}
-		return false;
+		SoundType type = EditBufferModel.get().soundType.getValue();
+		return containsElement(num, ParameterFactory.disabledParametersBySoundType.get(type));
 	}
 	
 	private void updatePresenter(BasicParameterModel e) {

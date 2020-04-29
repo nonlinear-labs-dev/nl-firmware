@@ -2,8 +2,11 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.HashMap;
 
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.world.overlay.html.soundSettings.SoundSettingsDialog;
 
 public class ParameterFactory {
 	static private int[] parameters = { 0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19, 21, 23, 25, 27, 29, 31, 33, 34,
@@ -51,6 +54,30 @@ public class ParameterFactory {
 			"Gap Filt", "MCM", "MCs", "Master", "Mixer", "Mono", "Osc A", "Osc B", "Part", "Reverb", "SVF", "Scale",
 			"Sh A", "Sh B", "Split", "Unison" };
 	static private String[] globalParameterGroups = { "CS", "MCM", "MCs", "Master", "Scale", "Split" };
+
+	static public HashMap<SoundType, int[]> hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
+	static {
+		hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
+
+		final int[] layerHidden = {356};
+		hiddenParametersBySoundType.put(SoundType.Layer, layerHidden);
+		final int[] singleHidden = {362, 348, 350, 352, 354, 396, 397};
+		hiddenParametersBySoundType.put(SoundType.Single, singleHidden);
+		final int[] splitHidden = {348, 350, 352, 354, 396, 397};
+		hiddenParametersBySoundType.put(SoundType.Split, splitHidden);
+	}
+
+	static public HashMap<SoundType, int[]> disabledParametersBySoundType;
+	static {
+		disabledParametersBySoundType = new HashMap<SoundType, int[]>();
+		
+		final int[] layerDisabled = {};
+		disabledParametersBySoundType.put(SoundType.Layer, layerDisabled);
+		final int[] splitDisabled = {346};
+		disabledParametersBySoundType.put(SoundType.Split, splitDisabled);
+		final int[] singleDisabled = {346};
+		disabledParametersBySoundType.put(SoundType.Single, singleDisabled);
+	}
 
 	static public BasicParameterModel create(ParameterId id) {
 		if (Arrays.binarySearch(parameters, id.getNumber()) < 0)
