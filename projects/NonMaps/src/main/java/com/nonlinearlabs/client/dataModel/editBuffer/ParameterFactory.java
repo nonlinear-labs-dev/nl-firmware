@@ -59,8 +59,6 @@ public class ParameterFactory {
 
 	static public HashMap<SoundType, int[]> hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
 	static {
-		hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
-
 		final int[] layerHidden = {356};
 		hiddenParametersBySoundType.put(SoundType.Layer, layerHidden);
 		final int[] singleHidden = {362, 348, 350, 352, 354, 396, 397};
@@ -69,10 +67,8 @@ public class ParameterFactory {
 		hiddenParametersBySoundType.put(SoundType.Split, splitHidden);
 	}
 
-	static public HashMap<SoundType, int[]> disabledParametersBySoundType;
-	static {
-		disabledParametersBySoundType = new HashMap<SoundType, int[]>();
-		
+	static public HashMap<SoundType, int[]> disabledParametersBySoundType = new HashMap<SoundType, int[]>();
+	static {		
 		final int[] layerDisabled = {};
 		disabledParametersBySoundType.put(SoundType.Layer, layerDisabled);
 		final int[] splitDisabled = {346};
