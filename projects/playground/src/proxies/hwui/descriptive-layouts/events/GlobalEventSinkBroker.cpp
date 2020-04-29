@@ -28,6 +28,8 @@ namespace DescriptiveLayouts
     auto eb = Application::get().getPresetManager()->getEditBuffer();
     auto hwui = Application::get().getHWUI();
 
+    registerEvent(EventSinks::Swallow, []() { return; });
+
     registerEvent(EventSinks::IncParam, [eb, hwui]() {
       if(auto p = eb->getSelected())
       {
