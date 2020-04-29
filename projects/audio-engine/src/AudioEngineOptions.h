@@ -25,6 +25,7 @@ class AudioEngineOptions
   int getAlsaRingBufferSize() const;
 
   std::string getPlaygroundHost() const;
+  int getNumCpuBurningSines() const;
 
  private:
   bool m_fatalXRuns = false;
@@ -41,4 +42,5 @@ class AudioEngineOptions
   int m_framesPerPeriod = 96;
   int m_numPeriods = 2;
   int m_alsaBufferSize = 96 * 2;
+  int m_cpuBurningSines = 0;
 };

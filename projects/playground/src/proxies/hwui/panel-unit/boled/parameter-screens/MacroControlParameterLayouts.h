@@ -43,6 +43,7 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
 
   Mode m_mode = Mode::MacroControlValue;
   Overlay *m_modeOverlay = nullptr;
+  void selectSmoothingParameterForMC();
 };
 
 class MacroControlParameterSelectLayout2 : public ParameterSelectLayout2, public MacroControlParameterLayout2

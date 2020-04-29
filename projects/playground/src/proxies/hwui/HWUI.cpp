@@ -33,20 +33,18 @@
 #include "UsageMode.h"
 
 HWUI::HWUI()
-    : m_readersCancel(Gio::Cancellable::create())
+    : m_voiceGoupSignal {}
+    , m_currentVoiceGroup { VoiceGroup::I }
+    , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
-    , m_voiceGoupSignal {}
-    , m_currentVoiceGroup { VoiceGroup::I }
 {
-#ifdef _DEVELOPMENT_PC
   if(isatty(fileno(stdin)))
   {
     m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
     m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
   }
-#endif
 
   nltools::msg::receive<nltools::msg::ButtonChangedMessage>(nltools::msg::EndPoint::Playground,
                                                             sigc::mem_fun(this, &HWUI::onButtonMessage));

@@ -1,3 +1,9 @@
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <Application.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/MacroControlSmoothingParameterLayout.h>
+#include <parameters/MacroControlSmoothingParameter.h>
 #include "MacroControlsGroup.h"
 #include "parameters/MacroControlParameter.h"
 #include "parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h"
@@ -19,18 +25,24 @@ void MacroControlsGroup::init()
   appendParameter(new MacroControlParameter(this, { 369, VoiceGroup::Global }));
   appendParameter(new MacroControlParameter(this, { 371, VoiceGroup::Global }));
 
-  appendParameter(new Parameter(this, { 324, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 325, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 326, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 327, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 370, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
-  appendParameter(new Parameter(this, { 372, VoiceGroup::Global },
-                                ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0.4, 100, 1000));
+  appendParameter(new MacroControlSmoothingParameter(this, { 324, VoiceGroup::Global },
+                                                     ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
+                                                     0.4, 100, 1000));
+  appendParameter(new MacroControlSmoothingParameter(this, { 325, VoiceGroup::Global },
+                                                     ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
+                                                     0.4, 100, 1000));
+  appendParameter(new MacroControlSmoothingParameter(this, { 326, VoiceGroup::Global },
+                                                     ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
+                                                     0.4, 100, 1000));
+  appendParameter(new MacroControlSmoothingParameter(this, { 327, VoiceGroup::Global },
+                                                     ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
+                                                     0.4, 100, 1000));
+  appendParameter(new MacroControlSmoothingParameter(this, { 370, VoiceGroup::Global },
+                                                     ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
+                                                     0.4, 100, 1000));
+  appendParameter(new MacroControlSmoothingParameter(this, { 372, VoiceGroup::Global },
+                                                     ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(),
+                                                     0.4, 100, 1000));
 }
 
 ParameterId MacroControlsGroup::modSrcToSmoothingId(MacroControls mcId)
@@ -91,7 +103,7 @@ ParameterId MacroControlsGroup::modSrcToParamId(MacroControls src)
   return ParameterId::invalid();
 }
 
-MacroControls MacroControlsGroup::paramIDToModSrc(ParameterId pid)
+MacroControls MacroControlsGroup::paramIDToModSrc(const ParameterId &pid)
 {
   switch(pid.getNumber())
   {
@@ -127,4 +139,25 @@ bool MacroControlsGroup::isMacroControl(const int paramNumber)
 {
   return paramNumber == 243 || paramNumber == 244 || paramNumber == 245 || paramNumber == 246 || paramNumber == 369
       || paramNumber == 371;
+}
+
+ParameterId MacroControlsGroup::smoothingIdToMCId(const ParameterId &smoothingId)
+{
+  switch(smoothingId.getNumber())
+  {
+    case 324:
+      return { 243, VoiceGroup::Global };
+    case 325:
+      return { 244, VoiceGroup::Global };
+    case 326:
+      return { 245, VoiceGroup::Global };
+    case 327:
+      return { 246, VoiceGroup::Global };
+    case 370:
+      return { 369, VoiceGroup::Global };
+    case 372:
+      return { 371, VoiceGroup::Global };
+    default:
+      return ParameterId::invalid();
+  }
 }

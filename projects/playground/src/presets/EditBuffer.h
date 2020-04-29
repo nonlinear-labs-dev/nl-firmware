@@ -221,4 +221,5 @@ class EditBuffer : public ParameterDualGroupSet
                                             VoiceGroup copyTo);
   void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
                                              VoiceGroup copyTo);
+  void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
 };
