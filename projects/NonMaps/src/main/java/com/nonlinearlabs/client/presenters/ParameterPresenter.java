@@ -25,6 +25,8 @@ public class ParameterPresenter {
 	public String longName = "---";
 	public String fullNameWithGroup = "";
 	public boolean fillFromRightEnabled = false;
+	public boolean disabled = false;
+	public boolean hidden = false;
 
 	public long hash = 0;
 
@@ -82,6 +84,8 @@ public class ParameterPresenter {
 		c.eat(longName);
 		c.eat(fullNameWithGroup);
 		c.eat(fillFromRightEnabled);
+		c.eat(disabled);
+		c.eat(hidden);
 		c.eat(modulation.modulationRange.left);
 		c.eat(modulation.modulationRange.right);
 		c.eat(modulation.modulationSourceLabel);

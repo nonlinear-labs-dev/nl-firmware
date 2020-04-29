@@ -5,6 +5,7 @@
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 
 Slider::Slider(Parameter *param, const Rect &rect)
     : super(rect)
@@ -77,4 +78,10 @@ bool Slider::hasBorder() const
 bool Slider::isBiPolar() const
 {
   return m_bipolar;
+}
+
+void Slider::drawBackground(FrameBuffer &fb)
+{
+  if(isVisible())
+    Control::drawBackground(fb);
 }

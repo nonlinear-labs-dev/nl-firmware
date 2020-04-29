@@ -397,7 +397,22 @@ public class EditBufferUseCases {
 			selectVoiceGroup(VoiceGroup.I);
 	}
 
+	private boolean containsElement(int e, int[] arr) {
+		for (int i : arr) {
+			if(e == i)
+			return true;
+		}
+		return false;
+	}
+
 	private VoiceGroup getVoiceGroupFor(int paramNumber) {
+		if(EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
+			if(containsElement(paramNumber, ParameterFactory.voicesParameters)) 
+			{
+				return VoiceGroup.I;
+			}
+		}
+
 		return ParameterFactory.isGlobalParameter(paramNumber) ? VoiceGroup.Global
 				: EditBufferModel.get().voiceGroup.getValue();
 	}
