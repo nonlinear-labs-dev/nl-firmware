@@ -20,5 +20,5 @@ class ScopedLock
   void addLocks(const std::vector<Parameter *>& params);
  private:
   UNDO::Transaction* m_transaction;
-  std::unordered_map<ParameterId, bool> m_oldLockStates;
+  std::vector<ParameterId> m_oldLockedParameters;
 };

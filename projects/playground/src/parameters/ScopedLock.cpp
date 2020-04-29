@@ -12,14 +12,11 @@ ScopedLock::ScopedLock(UNDO::Transaction* trans)
 ScopedLock::~ScopedLock()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  for(auto [parameterId, oldLockState] : m_oldLockStates)
+  for(const auto& parameterId : m_oldLockedParameters)
   {
-    if(!oldLockState)
+    if(auto param = eb->findParameterByID(parameterId))
     {
-      if(auto param = eb->findParameterByID(parameterId))
-      {
-        param->undoableUnlock(m_transaction);
-      }
+      param->undoableUnlock(m_transaction);
     }
   }
 }
@@ -27,7 +24,6 @@ ScopedLock::~ScopedLock()
 ScopedLock::ScopedLock(UNDO::Transaction* trans, std::vector<ParameterId>& ids)
     : ScopedLock(trans)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
   for(const auto& id : ids)
   {
     addLock(id);
@@ -45,9 +41,9 @@ void ScopedLock::addLock(const ParameterId& id)
 
 void ScopedLock::addLock(Parameter* param)
 {
-  if(param)
+  if(param && !param->isLocked())
   {
-    m_oldLockStates[param->getID()] = param->isLocked();
+    m_oldLockedParameters.emplace_back(param->getID());
     param->undoableLock(m_transaction);
   }
 }
