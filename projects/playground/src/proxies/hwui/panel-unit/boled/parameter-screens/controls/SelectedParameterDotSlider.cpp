@@ -21,5 +21,5 @@ void SelectedParameterDotSlider::setParameter(Parameter* param)
 {
   Slider::setParameter(param);
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  setVisible(!ParameterLayout2::isParameterNotAvailableInSoundType(param, eb));
+  setVisible(ParameterLayout2::isParameterAvailableInSoundType(param, eb));
 }

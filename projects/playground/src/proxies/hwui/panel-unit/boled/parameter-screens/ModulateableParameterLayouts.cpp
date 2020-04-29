@@ -544,8 +544,8 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
 }
 bool ModulateableParameterSelectLayout2::isCurrentParameterDisabled() const
 {
-  return isParameterNotAvailableInSoundType(getCurrentParameter(),
-                                            Application::get().getPresetManager()->getEditBuffer());
+  return !isParameterAvailableInSoundType(getCurrentParameter(),
+                                          Application::get().getPresetManager()->getEditBuffer());
 }
 
 bool ModulateableParameterSelectLayout2::handleMCRecall(Buttons i, bool down)

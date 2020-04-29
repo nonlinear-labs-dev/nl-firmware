@@ -122,7 +122,7 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   if(auto p = getCurrentEditParameter())
   {
-    if(!isParameterNotAvailableInSoundType(p, Application::get().getPresetManager()->getEditBuffer()))
+    if(!isParameterAvailableInSoundType(p, Application::get().getPresetManager()->getEditBuffer()))
     {
       auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
       p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
@@ -142,12 +142,12 @@ void ParameterLayout2::handlePresetValueRecall()
     getOLEDProxy().setOverlay(new ParameterRecallLayout2());
 }
 
-bool ParameterLayout2::isParameterNotAvailableInSoundType(const Parameter *p, const EditBuffer *eb)
+bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p, const EditBuffer *eb)
 {
   auto currentType = eb->getType();
 
   if(!p)
-    return true;
+    return false;
 
   auto number = p->getID().getNumber();
 
@@ -155,13 +155,13 @@ bool ParameterLayout2::isParameterNotAvailableInSoundType(const Parameter *p, co
   {
     case SoundType::Single:
     case SoundType::Split:
-      return number == 346 || number == 348;
+      return number != 346 && number != 348;
     case SoundType::Layer:
     case SoundType::Invalid:
       break;
   }
 
-  return false;
+  return true;
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2()

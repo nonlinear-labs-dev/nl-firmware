@@ -39,7 +39,7 @@ void SelectedParameterValue::onParameterSelected(Parameter *parameter)
         = parameter->onParameterChanged(sigc::mem_fun(this, &SelectedParameterValue::onParamValueChanged));
 
     auto eb = Application::get().getPresetManager()->getEditBuffer();
-    setVisible(!ParameterLayout2::isParameterNotAvailableInSoundType(parameter, eb));
+    setVisible(ParameterLayout2::isParameterAvailableInSoundType(parameter, eb));
   }
 }
 

@@ -15,8 +15,8 @@ MCSelectButton::~MCSelectButton() = default;
 
 void MCSelectButton::update(const Parameter *parameter)
 {
-  if(ParameterLayout2::isParameterNotAvailableInSoundType(parameter,
-                                                          Application::get().getPresetManager()->getEditBuffer()))
+  if(!ParameterLayout2::isParameterAvailableInSoundType(parameter,
+                                                        Application::get().getPresetManager()->getEditBuffer()))
   {
     setText("");
     return;
