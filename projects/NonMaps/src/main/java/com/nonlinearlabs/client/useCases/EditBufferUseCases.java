@@ -397,10 +397,17 @@ public class EditBufferUseCases {
 			selectVoiceGroup(VoiceGroup.I);
 	}
 
+	private boolean containsElement(int e, int[] arr) {
+		for (int i : arr) {
+			if(e == i)
+			return true;
+		}
+		return false;
+	}
+
 	private VoiceGroup getVoiceGroupFor(int paramNumber) {
 		if(EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
-			if(paramNumber == 249 || paramNumber == 250 || paramNumber == 252 || paramNumber == 253 || 
-			   paramNumber == 364 || paramNumber == 365 || paramNumber == 366 || paramNumber == 367) 
+			if(containsElement(paramNumber, ParameterFactory.voicesParameters)) 
 			{
 				return VoiceGroup.I;
 			}
