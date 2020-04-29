@@ -197,7 +197,8 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button) 
   return m_mappings.findParameters(button);
 }
 
-std::vector<int> cleanParameterIDSForType(const std::vector<gint32> &ids, SoundType type);
+template <typename OutContainer, typename InContainer>
+OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type);
 
 std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button, SoundType type) const
 {
@@ -205,7 +206,7 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button, 
   std::vector<int> ass;
   std::copy(raw.begin(), raw.end(), std::back_inserter(ass));
 
-  auto cl = cleanParameterIDSForType(ass, type);
+  auto cl = cleanParameterIDSForType<std::vector<int>>(ass, type);
 
   std::list<int> ret;
   std::copy(cl.begin(), cl.end(), std::back_inserter(ret));
@@ -232,24 +233,24 @@ UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::
   return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
 
-std::vector<int> cleanParameterIDSForType(const std::vector<gint32> &ids, SoundType type)
+template <typename OutContainer, typename InContainer>
+OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type)
 {
-  auto rawList = ids;
-  std::vector<int> ret;
+  OutContainer ret;
 
   switch(type)
   {
     case SoundType::Single:
-      std::copy_if(rawList.begin(), rawList.end(), std::back_inserter(ret),
+      std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),
                    [](int id) { return id != 350 && id != 352 && id != 354 && id != 362; });
       break;
     case SoundType::Split:
-      std::copy_if(rawList.begin(), rawList.end(), std::back_inserter(ret),
+      std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),
                    [](int id) { return id != 350 && id != 352 && id != 354; });
       break;
     case SoundType::Layer:
     case SoundType::Invalid:
-      return rawList;
+      return ids;
   }
   return ret;
 }
@@ -261,7 +262,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
 
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-  auto cleanedParameterIdForType = cleanParameterIDSForType(ids, editBuffer->getType());
+  auto cleanedParameterIdForType = cleanParameterIDSForType<std::vector<int>>(ids, editBuffer->getType());
 
   if(cleanedParameterIdForType.empty())
     return true;
