@@ -15,4 +15,5 @@ else
     arch-chroot /mnt/sda2 /bin/bash -c "cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI"
     umount /mnt/sda2/boot
     umount /mnt/sda2
+    reboot
 fi
