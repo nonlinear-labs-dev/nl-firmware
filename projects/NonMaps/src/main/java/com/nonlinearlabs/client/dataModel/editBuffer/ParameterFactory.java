@@ -55,6 +55,8 @@ public class ParameterFactory {
 			"Sh A", "Sh B", "Split", "Unison" };
 	static private String[] globalParameterGroups = { "CS", "MCM", "MCs", "Master", "Scale", "Split" };
 
+	static public int[] voicesParameters = {249, 250, 252, 253, 364, 365, 366, 367 };
+
 	static public HashMap<SoundType, int[]> hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
 	static {
 		hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
@@ -211,6 +213,7 @@ public class ParameterFactory {
 		assert (isSorted(macroControls));
 		assert (isSorted(modulationRouters));
 		assert (isSorted(scaleOffsetParameters));
+		assert (isSorted(voicesParameters));
 
 		assert (isSorted(parameterGroups));
 		assert (isSorted(globalParameterGroups));

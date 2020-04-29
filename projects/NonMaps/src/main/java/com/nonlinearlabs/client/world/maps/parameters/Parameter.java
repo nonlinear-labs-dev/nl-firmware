@@ -43,14 +43,6 @@ public abstract class Parameter extends LayoutResizingVertical {
 	}
 
 	private boolean onPresenterUpdated(ParameterPresenter p) {
-		if(p.fullNameWithGroup.contains("Mono") || p.fullNameWithGroup.contains("Unison")) {
-			if(EditBufferModel.get().soundType.getValue() == SoundType.Layer && p.id.getVoiceGroup() == VoiceGroup.II) {
-				presenter = ParameterPresenterProviders.get().getParameterPresenter(VoiceGroup.I, p.id.getNumber());
-				invalidate(INVALIDATION_FLAG_SCROLLED);
-				return true;
-			}
-		}
-
 		presenter = p;
 		invalidate(INVALIDATION_FLAG_SCROLLED);
 		return true;
