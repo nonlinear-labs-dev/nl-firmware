@@ -130,8 +130,9 @@ void Parameter::setCPFromWebUI(UNDO::Transaction *transaction, const tControlPos
 
 void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
-  setIndirect(transaction, value);
-  m_lastSnapshotedValue = value;
+  auto q = getValue().getQuantizedValue(value, true);
+  setIndirect(transaction, q);
+  m_lastSnapshotedValue = q;
 }
 
 void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
@@ -151,6 +152,11 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
 void Parameter::loadDefault(UNDO::Transaction *transaction)
 {
   loadFromPreset(transaction, getDefaultValue());
+}
+
+bool Parameter::isDefaultLoaded() const
+{
+  return !isValueDifferentFrom(getDefaultValue());
 }
 
 void Parameter::reset(UNDO::Transaction *transaction, Initiator initiator)
@@ -582,5 +588,5 @@ void Parameter::sendParameterMessage() const
 
 bool Parameter::isValueDifferentFrom(double d) const
 {
-  return m_value.differs(d);
+  return m_value.differs(getValue().getQuantizedValue(d, true));
 }

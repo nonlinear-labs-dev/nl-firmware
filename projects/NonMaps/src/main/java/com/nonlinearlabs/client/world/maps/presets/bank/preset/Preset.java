@@ -39,6 +39,7 @@ import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetDeleter;
 import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDialog;
+import com.nonlinearlabs.client.world.maps.presets.bank.preset.ChoosePresetPartDialog;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 	private String uuid = null;
@@ -324,7 +325,23 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return NonMaps.get().getNonLinearWorld().getPresetManager().hasCustomPresetSelection();
 	}
 
+	public CustomPresetSelector getCustomPresetSelection() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getCustomPresetSelection();
+	}
+
 	private boolean wasJustSelected = false;
+
+	private static ChoosePresetPartDialog choosePresetPart = null;
+
+	private Control loadToPartClickBehaviour(LoadToPartMode mode) {
+		if(isDual()) {
+			choosePresetPart = new ChoosePresetPartDialog(this);
+		} else {
+			mode.setSelectedPreset(this);
+		}
+		
+		return this;
+	}
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
@@ -341,10 +358,16 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return clickBehaviour();
 	}
 
+	private boolean isInLoadToPartMode() {
+		return (LoadToPartMode)getCustomPresetSelection() != null;
+	}
+
 	private Control clickBehaviour() {
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		} else if(isInLoadToPartMode()) {
+			loadToPartClickBehaviour((LoadToPartMode)getCustomPresetSelection());
 		} else if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
 			getParent().getParent().startMultiSelection(this, true);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -376,10 +399,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public void selectPreset() {
-		StoreSelectMode storeMode = getNonMaps().getNonLinearWorld().getPresetManager().getStoreSelectMode();
+		CustomPresetSelector selector = getNonMaps().getNonLinearWorld().getPresetManager().getCustomPresetSelection();
 
-		if (storeMode != null) {
-			storeMode.setSelectedPreset(this);
+		if (selector != null) {
+			selector.setSelectedPreset(this);
 		} else {
 			getParent().getPresetList().selectPreset(getUUID(), true);
 

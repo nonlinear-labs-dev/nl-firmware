@@ -176,7 +176,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
-  void initUnisonVoices(UNDO::Transaction *transaction, SoundType newType);
+  void initUnisonVoicesScaling(UNDO::Transaction *transaction, SoundType newType);
 
   void initToFX(UNDO::Transaction *transaction);
   void copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transaction *transaction);
@@ -186,5 +186,18 @@ class EditBuffer : public ParameterDualGroupSet
   void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                    VoiceGroup copyFrom, VoiceGroup copyTo);
   void initSplitPoint(UNDO::Transaction *transaction);
-  void initFadeFrom(UNDO::Transaction *transaction);
+  void initFadeFrom(UNDO::Transaction *transaction, SoundType newType);
+  void calculateFadeParamsFromSplitPoint(UNDO::Transaction *transaction);
+  void copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
+  void combineSplitPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group);
+  void initCrossFB(UNDO::Transaction *transaction);
+  void undoableUnmuteLayers(UNDO::Transaction *transaction);
+  void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
+  void undoableConvertSingleToLayer(UNDO::Transaction *transaction);
+  void undoableConvertSingleToSplit(UNDO::Transaction *transaction);
+  void undoableConvertLayerToSplit(UNDO::Transaction* transaction);
+  void undoableConvertSplitToLayer(UNDO::Transaction* transaction);
+void calculateSplitPointFromFadeParams(UNDO::Transaction* transaction);
 };

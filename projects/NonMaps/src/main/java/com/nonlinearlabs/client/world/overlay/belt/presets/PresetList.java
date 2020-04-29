@@ -283,12 +283,13 @@ public class PresetList extends OverlayLayout {
 		for (OverlayControl c : getChildren()) {
 			BeltPreset p = (BeltPreset) c;
 
-			if(isInLoadToPartMode())
+			if(isInLoadToPartMode()) {
 				if(getLoadToPartMode().getSelectedPreset() == p.getMapsPreset())
 					return p;
-
-			if (p.getMapsPreset().isSelected())
-				return p;
+			} else {
+				if (p.getMapsPreset().isSelected())
+					return p;
+			}
 		}
 		return null;
 	}
@@ -318,6 +319,7 @@ public class PresetList extends OverlayLayout {
 				Preset sourcePreset = (Preset) sourceCtrl;
 				BeltPreset targetPreset = (BeltPreset) target.next();
 				targetPreset.setOrigin(sourcePreset);
+				targetPreset.invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
 		}
 	}

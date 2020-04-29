@@ -232,4 +232,5 @@ public class LoadToPartMode implements CustomPresetSelector {
 	public boolean isOriginalPreset(Preset mapsPreset) {
 		return mapsPreset == m_originPreset;
 	}
+
 }

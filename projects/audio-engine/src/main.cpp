@@ -1,6 +1,7 @@
 #include "AudioEngineOptions.h"
 #include "synth/SimpleSynth.h"
 #include "synth/C15Synth.h"
+#include "synth/CPUBurningSynth.h"
 #include "ui/CommandlinePerformanceWatch.h"
 
 #include <nltools/logging/Log.h>
@@ -49,6 +50,22 @@ void setupMessaging(const AudioEngineOptions *o)
   nltools::msg::init(conf);
 }
 
+std::unique_ptr<Synth> createSynth(const AudioEngineOptions *options)
+{
+  if(options->getNumCpuBurningSines())
+    return std::make_unique<CPUBurningSynth>(options);
+
+  return std::make_unique<C15Synth>(options);
+}
+
+std::unique_ptr<C15_CLI> createCLI(Synth *synth)
+{
+  if(auto c15 = dynamic_cast<C15Synth *>(synth))
+    return std::make_unique<C15_CLI>(c15);
+
+  return nullptr;
+}
+
 int main(int args, char *argv[])
 {
   Glib::init();
@@ -65,9 +82,9 @@ int main(int args, char *argv[])
     return EXIT_SUCCESS;
   }
 
-  //auto synth = std::make_unique<SimpleSynth>();
-  auto synth = std::make_unique<C15Synth>(theOptions.get());
-  C15_CLI commandLineInterface(synth.get());
+  auto synth = createSynth(theOptions.get());
+  auto cli = createCLI(synth.get());
+
   CommandlinePerformanceWatch watch(synth->getAudioOut());
   synth->start();
   MidiHeartBeat heartbeat(theOptions->getHeartBeatDeviceName());

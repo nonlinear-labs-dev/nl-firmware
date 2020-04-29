@@ -235,8 +235,10 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-
-      eb->undoableSelectParameter({ 364, vg });
+      if(eb->getType() == SoundType::Split)
+        eb->undoableSelectParameter({ 364, vg });
+      else
+        eb->undoableSelectParameter({ 364, VoiceGroup::I });
     });
 
     registerEvent(EventSinks::OpenPartScreen, [eb]() {
@@ -253,7 +255,10 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::OpenUnisonParameter, [eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      eb->undoableSelectParameter({ 249, vg });
+      if(eb->getType() == SoundType::Split)
+        eb->undoableSelectParameter({ 249, vg });
+      else
+        eb->undoableSelectParameter({ 249, VoiceGroup::I });
     });
 
     registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {

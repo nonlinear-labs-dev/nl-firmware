@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2020-04-07, 12:26
+    @date       2020-04-20, 16:15
     @version	1.7B-4
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -449,7 +449,6 @@ namespace C15
 
     enum class Poly_Sync
     {
-      Split_Split_Point,
       Voice_Grp_Fade_From,
       Voice_Grp_Fade_Range,
       Env_A_Lvl_Vel,

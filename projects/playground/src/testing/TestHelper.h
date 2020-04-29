@@ -7,6 +7,7 @@
 #include <catch.hpp>
 #include <libundo/undo/Scope.h>
 #include <Application.h>
+#include <parameters/ModulateableParameter.h>
 
 namespace TestHelper
 {

@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-04-07, 12:26
+    @date       2020-04-20, 16:15
     @version	1.7B-4
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -984,7 +984,7 @@ namespace C15
       0.25f,
       { Smoothers::Mono_Slow::Cabinet_Asym, Signals::Mono_Signals::Cabinet_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, None, None, "", "Cabinet", "Cabinet", "Asymmetry", "Asmymetry",
+      { 100, 1000, None, None, "", "Cabinet", "Cabinet", "Asymmetry", "Asymmetry",
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values, it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Cabinet_Tilt,
@@ -1931,7 +1931,7 @@ namespace C15
     { Parameters::Global_Modulateables::Split_Split_Point,
       356,
       30.0f / 59.0f,
-      { Smoothers::Poly_Sync::Split_Split_Point, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
+      { None, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
       { 59, 59, 59, 59, "", "Split", "Split", "Split Point", "Split Point",
         "Determines the split position of a sound as a key number. Keys from the lower end up to the Split Point will "
         "be associated to Part I, keys from the Split Point up to the upper end will be associated to Part II." } },

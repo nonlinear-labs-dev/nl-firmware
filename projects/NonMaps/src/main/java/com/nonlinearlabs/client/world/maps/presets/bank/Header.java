@@ -336,7 +336,7 @@ public class Header extends Label {
 	public Control onContextMenu(Position pos) {
 		Bank bank = getParent();
 
-		if (bank.getParent().hasCustomPresetSelection())
+		if (bank.getParent().isInStoreSelectMode())
 			return null;
 
 		bank.getParent().pushBankOntoTop(bank);
