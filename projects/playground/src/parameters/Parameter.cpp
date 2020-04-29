@@ -578,7 +578,6 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 {
   if(!isLocked())
   {
-    nltools_assertOnDevPC(other->getVoiceGroup() != getVoiceGroup());
     setCpValue(transaction, Initiator::INDIRECT, other->getControlPositionValue(), false);
   }
 }
