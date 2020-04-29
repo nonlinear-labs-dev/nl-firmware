@@ -139,11 +139,6 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
             return true;
           }
         }
-        else if(getMode() != Mode::MacroControlValue)
-        {
-          toggleMode(Mode::PlayControlPosition);
-          return true;
-        }
       }
         return true;
 
@@ -153,7 +148,8 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
         return true;
 
       case Buttons::BUTTON_C:
-        toggleMode(Mode::PlayControlAmount);
+        if(getMode() == Mode::MacroControlValue)
+          selectSmoothingParameterForMC();
         return true;
     }
   }
@@ -187,6 +183,11 @@ MacroControlParameterLayout2::Mode MacroControlParameterLayout2::getMode() const
   return m_mode;
 }
 
+void MacroControlParameterLayout2::setButtonA(Button *a)
+{
+  m_buttonA = a;
+}
+
 void MacroControlParameterLayout2::setButtonAText(const std::string &s)
 {
   if(m_buttonA)
@@ -216,15 +217,12 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
     }
     else
     {
-      setButtonAText("HW Pos");
+      setButtonAText("");
     }
   }
   else
   {
-    if(getMode() == Mode::MacroControlValue)
-      setButtonAText("");
-    else
-      setButtonAText("HW Pos");
+    setButtonAText("");
   }
 
   switch(m_mode)
@@ -277,6 +275,15 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
   }
 }
 
+void MacroControlParameterLayout2::selectSmoothingParameterForMC()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  if(auto mc = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
+  {
+    eb->undoableSelectParameter(mc->getSmoothingParameter());
+  }
+}
+
 MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     : virtual_base()
     , super1()
@@ -292,12 +299,12 @@ MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     }
     else
     {
-      setButtonAText("HW Pos");
+      setButtonAText("");
     }
   }
 
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
-  addControl(new Button("HW Amt", Buttons::BUTTON_C));
+  addControl(new Button("more..", Buttons::BUTTON_C));
 }
 
 void MacroControlParameterSelectLayout2::init()
@@ -328,11 +335,6 @@ bool MacroControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
 void MacroControlParameterSelectLayout2::setMode(Mode desiredMode)
 {
   super2::setMode(desiredMode);
-}
-
-void MacroControlParameterLayout2::setButtonA(Button *button)
-{
-  m_buttonA = button;
 }
 
 MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()

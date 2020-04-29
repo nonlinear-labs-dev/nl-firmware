@@ -20,6 +20,8 @@
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>
 #include <glibmm/main.h>
+#include <groups/MacroControlsGroup.h>
+#include <parameters/MacroControlSmoothingParameter.h>
 
 class ParameterInfoLayout;
 
@@ -428,7 +430,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
     setLedStates(states);
 
-    if(selParam->getParentGroup()->getID().getName() == "MCs")
+    if(selParam->getParentGroup()->getID().getName() == "MCs" || MacroControlsGroup::isMacroTime(selParam->getID()))
     {
       letMacroControlTargetsBlink();
     }
@@ -502,6 +504,11 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterI
     selectedParameterID = ParameterId(ScaleGroup::getScaleBaseParameterNumber(), selectedParameterID.getVoiceGroup());
   }
 
+  if(MacroControlsGroup::isMacroTime(selectedParameterID))
+  {
+    selectedParameterID = MacroControlsGroup::smoothingIdToMCId(selectedParameterID);
+  }
+
   auto button = m_mappings.findButton(selectedParameterID.getNumber());
 
   if(button != Buttons::INVALID)
@@ -532,6 +539,11 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   Parameter *selParam = editBuffer->getSelected();
   auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+
+  if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(selParam))
+  {
+    selParam = editBuffer->findParameterByID(modTime->getMC());
+  }
 
   if(auto mc = dynamic_cast<MacroControlParameter *>(selParam))
   {
