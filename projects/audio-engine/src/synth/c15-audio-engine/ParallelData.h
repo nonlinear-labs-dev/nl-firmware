@@ -188,20 +188,21 @@ inline ParallelData<T1, size> &operator&=(ParallelData<T1, size> &l, const Paral
   return l;
 }
 
+// the following (std::abs, std::min, std::max, std::clamp, std::round) parallel operations are now only operable with floats
 namespace std
 {
-  template <typename T, size_t size> inline ParallelData<T, size> abs(const ParallelData<T, size> &in)
+  template <size_t size> inline ParallelData<float, size> abs(const ParallelData<float, size> &in)
   {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_ABS
     // unfortunately, I did not manage to establish a reduced operator like:
     //   template <typename T1, size_t size>
     //   inline ParallelData<T1, size> operator&(const ParallelData<T1, size> &l, uint32_t &r) {...}
     // - so, for now this is the only way I can come up with
-    ParallelData<T, size> ret = in & ParallelData<uint32_t, size>(0x7FFFFFFF);  // masking sign bit
+    ParallelData<float, size> ret = in & ParallelData<uint32_t, size>(0x7FFFFFFF);  // masking sign bit
     return ret;
     // first tests revealed no audible difference
 #else
-    ParallelData<T, size> ret;
+    ParallelData<float, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = abs(in[i]);
@@ -210,14 +211,13 @@ namespace std
 #endif
   }
 
-  template <typename T, size_t size> inline ParallelData<T, size> min(const ParallelData<T, size> &in, T a)
+  template <size_t size> inline ParallelData<float, size> min(const ParallelData<float, size> &in, float a)
   {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
     constexpr auto parallelism = 4;
     constexpr auto iterations = size / parallelism;
     static_assert((size % parallelism) == 0, "Cannot use std::min with this type!");
-    static_assert(std::is_same<T, float>::value, "std::min works with single precision floats only!");
-    ParallelData<T, size> ret;
+    ParallelData<float, size> ret;
     __m128 cmp = { a, a, a, a };
 
     for(size_t i = 0; i < iterations; i++)
@@ -230,7 +230,7 @@ namespace std
     return ret;
     // first tests revealed no audible difference
 #else
-    ParallelData<T, size> ret;
+    ParallelData<float, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = std::min(in[i], a);
@@ -239,14 +239,13 @@ namespace std
 #endif
   }
 
-  template <typename T, size_t size> inline ParallelData<T, size> max(const ParallelData<T, size> &in, T a)
+  template <size_t size> inline ParallelData<float, size> max(const ParallelData<float, size> &in, float a)
   {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
     constexpr auto parallelism = 4;
     constexpr auto iterations = size / parallelism;
     static_assert((size % parallelism) == 0, "Cannot use std::max with this type!");
-    static_assert(std::is_same<T, float>::value, "std::max works with single precision floats only!");
-    ParallelData<T, size> ret;
+    ParallelData<float, size> ret;
     __m128 cmp = { a, a, a, a };
 
     for(size_t i = 0; i < iterations; i++)
@@ -259,7 +258,7 @@ namespace std
     return ret;
     // first tests revealed no audible difference
 #else
-    ParallelData<T, size> ret;
+    ParallelData<float, size> ret;
 
     for(size_t i = 0; i < size; i++)
       ret[i] = std::max(in[i], a);
@@ -268,75 +267,63 @@ namespace std
 #endif
   }
 
-  template <typename T, size_t size> inline ParallelData<T, size> clamp(const ParallelData<T, size> &in, T min, T max)
+  template <size_t size>
+  inline ParallelData<float, size> clamp(const ParallelData<float, size> &in, float _min, float _max)
   {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
-    constexpr auto parallelism = 4;
-    constexpr auto iterations = size / parallelism;
-    static_assert((size % parallelism) == 0, "Cannot use std::clamp with this type!");
-    static_assert(std::is_same<T, float>::value, "std::clamp works with single precision floats only!");
-    ParallelData<T, size> ret;
-    __m128 cmpMin = { min, min, min, min }, cmpMax = { max, max, max, max };
+    ParallelData<float, size> ret;
 
-    for(size_t i = 0; i < iterations; i++)
-    {
-      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
-      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
-      *tmp = _mm_max_ps(_mm_min_ps(*val, cmpMax), cmpMin);
-    }
+    ret = max(min(in, _max), _min);
 
     return ret;
     // first tests revealed no audible difference
 #else
-    ParallelData<T, size> ret;
+    ParallelData<float, size> ret;
 
     for(size_t i = 0; i < size; i++)
-      ret[i] = std::clamp(in[i], min, max);
+      ret[i] = std::clamp(in[i], _min, _max);
 
     return ret;
 #endif
   }
 
   // with the new state variable filter, we need a parallel vector max
-  template <typename T, size_t size>
-  inline ParallelData<T, size> clamp(const ParallelData<T, size> &in, T min, const ParallelData<T, size> &max)
+  template <size_t size>
+  inline ParallelData<float, size> clamp(const ParallelData<float, size> &in, float _min,
+                                         const ParallelData<float, size> &_max)
   {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_MINMAX_FLOAT
     constexpr auto parallelism = 4;
     constexpr auto iterations = size / parallelism;
     static_assert((size % parallelism) == 0, "Cannot use std::clamp with this type!");
-    static_assert(std::is_same<T, float>::value, "std::clamp works with single precision floats only!");
-    ParallelData<T, size> ret;
-    __m128 cmpMin = { min, min, min, min };
+    ParallelData<float, size> ret = max(in, _min);
 
     for(size_t i = 0; i < iterations; i++)
     {
-      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
-      auto cmpMax = reinterpret_cast<const __m128 *>(max.getDataPtr() + parallelism * i);
-      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
-      *tmp = _mm_max_ps(_mm_min_ps(*val, *cmpMax), cmpMin);
+      auto val = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
+      auto cmpMax = reinterpret_cast<const __m128 *>(_max.getDataPtr() + parallelism * i);
+      *val = _mm_min_ps(*val, *cmpMax);
     }
 
     return ret;
     // first tests revealed no audible difference
 #else
-    ParallelData<T, size> ret;
+    ParallelData<float, size> ret;
 
     for(size_t i = 0; i < size; i++)
-      ret[i] = std::clamp(in[i], min, max[i]);
+      ret[i] = std::clamp(in[i], _min, _max[i]);
 
     return ret;
 #endif
   }
 
-  template <typename TOut, typename T, size_t size>
-  inline ParallelData<TOut, size> round(const ParallelData<T, size> &in)
+  template <typename TOut, size_t size> inline ParallelData<TOut, size> round(const ParallelData<float, size> &in)
   {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_STD_ROUND
     // assuming that the ROUNDING paradigm should fit nltoolbox.h[line 359]::float2int()
-    const ParallelData<T, size> wrap = 0.5f
-        + static_cast<ParallelData<T, size>>(
-                                           ParallelData<int32_t, size>((in < 0.0f)));  // negative: -0.5, positive: 0.5
+    const ParallelData<float, size> wrap = 0.5f
+        + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
+              (in < 0.0f)));  // negative: -0.5, positive: 0.5
     ParallelData<TOut, size> ret = static_cast<ParallelData<TOut, size>>(in + wrap);
     return ret;
     // first tests revealed no audible difference
@@ -351,24 +338,27 @@ namespace std
   }
 }
 
-template <typename T, size_t size>
-inline ParallelData<T, size> unipolarCrossFade(const ParallelData<T, size> &_sample1,
-                                               const ParallelData<T, size> &_sample2, const float &_mix)
+// the following (unipolarCrossFade, keepFractional, sinP3_wrap, sinP3_noWrap, threeRanges, parAsym, bipolarCrossFade, interpolRT) ...
+// ... parallel operations are now only operable with floats
+template <size_t size>
+inline ParallelData<float, size> unipolarCrossFade(const ParallelData<float, size> &_sample1,
+                                                   const ParallelData<float, size> &_sample2, const float &_mix)
 {
   return (1.f - _mix) * _sample1 + _mix * _sample2;
 }
 
-template <typename T, size_t size> inline ParallelData<T, size> keepFractional(const ParallelData<T, size> &in)
+template <size_t size> inline ParallelData<float, size> keepFractional(const ParallelData<float, size> &in)
 {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_KEEP_FRACTIONAL
-  const ParallelData<T, size> wrap = 0.5f
-      + static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((in < 0.0f)));  // negative: -0.5, positive: 0.5
-  ParallelData<T, size> ret
-      = in - static_cast<ParallelData<T, size>>(static_cast<ParallelData<int32_t, size>>(in + wrap));
+  const ParallelData<float, size> wrap = 0.5f
+      + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
+            (in < 0.0f)));  // negative: -0.5, positive: 0.5
+  ParallelData<float, size> ret
+      = in - static_cast<ParallelData<float, size>>(static_cast<ParallelData<int32_t, size>>(in + wrap));
   return ret;
   // first tests revealed no audible difference
 #else
-  ParallelData<T, size> ret;
+  ParallelData<float, size> ret;
 
   for(size_t i = 0; i < size; i++)
     ret[i] = in[i] - NlToolbox::Conversion::float2int(in[i]);
@@ -377,20 +367,21 @@ template <typename T, size_t size> inline ParallelData<T, size> keepFractional(c
 #endif
 }
 
-template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(ParallelData<T, size> _x)
+template <size_t size> inline ParallelData<float, size> sinP3_wrap(ParallelData<float, size> _x)
 {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_SINP3_WRAP
   _x += -0.25f;
-  const ParallelData<T, size> wrap = 0.5f
-      + static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((_x < 0.0f)));  // negative: -0.5, positive: 0.5
-  _x -= static_cast<ParallelData<T, size>>(static_cast<ParallelData<int32_t, size>>(_x + wrap));
+  const ParallelData<float, size> wrap = 0.5f
+      + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
+            (_x < 0.0f)));  // negative: -0.5, positive: 0.5
+  _x -= static_cast<ParallelData<float, size>>(static_cast<ParallelData<int32_t, size>>(_x + wrap));
   // similar to sinP3_noWrap now...
-  const ParallelData<T, size> x = 0.5f - std::abs(_x + _x), squared = x * x;
-  ParallelData<T, size> ret = x * ((2.26548f * squared - 5.13274f) * squared + 3.14159f);
+  const ParallelData<float, size> x = 0.5f - std::abs(_x + _x), squared = x * x;
+  ParallelData<float, size> ret = x * ((2.26548f * squared - 5.13274f) * squared + 3.14159f);
   return ret;
   // first tests revealed no audible difference
 #else
-  ParallelData<T, size> ret;
+  ParallelData<float, size> ret;
 
   for(size_t i = 0; i < size; i++)
     ret[i] = NlToolbox::Math::sinP3_wrap(_x[i]);
@@ -399,15 +390,15 @@ template <typename T, size_t size> inline ParallelData<T, size> sinP3_wrap(Paral
 #endif
 }
 
-template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(ParallelData<T, size> _x)
+template <size_t size> inline ParallelData<float, size> sinP3_noWrap(ParallelData<float, size> _x)
 {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_SINP3_NOWRAP
-  const ParallelData<T, size> x = 0.5f - std::abs(_x + _x), squared = x * x;
-  ParallelData<T, size> ret = x * ((2.26548f * squared - 5.13274f) * squared + 3.14159f);
+  const ParallelData<float, size> x = 0.5f - std::abs(_x + _x), squared = x * x;
+  ParallelData<float, size> ret = x * ((2.26548f * squared - 5.13274f) * squared + 3.14159f);
   return ret;
   // first tests revealed no audible difference
 #else
-  ParallelData<T, size> ret;
+  ParallelData<float, size> ret;
 
   for(size_t i = 0; i < size; i++)
     ret[i] = NlToolbox::Math::sinP3_noWrap(_x[i]);
@@ -416,24 +407,25 @@ template <typename T, size_t size> inline ParallelData<T, size> sinP3_noWrap(Par
 #endif
 }
 
-template <typename T, size_t size>
-inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, const ParallelData<T, size> &ctrlSample,
-                                         const float &foldAmnt)
+template <size_t size>
+inline ParallelData<float, size> threeRanges(const ParallelData<float, size> &sample,
+                                             const ParallelData<float, size> &ctrlSample, const float &foldAmnt)
 {
 #if POTENTIAL_IMPROVEMENT_PARALLEL_DATA_THREE_RANGES
-  const ParallelData<T, size> abs = std::abs(ctrlSample);
+  const ParallelData<float, size> abs = std::abs(ctrlSample);
   // fold: contains -1 (true) or 0 (false)
-  const ParallelData<T, size> fold = static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((abs > 0.25f)));
+  const ParallelData<float, size> fold
+      = static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>((abs > 0.25f)));
   // sign: properly reflects sign (negative: -1, positive: 1)
-  const ParallelData<T, size> sign
-      = (-2.0f * static_cast<ParallelData<T, size>>(ParallelData<int32_t, size>((ctrlSample >= 0.0f)))) - 1.0f;
-  const ParallelData<T, size> shaped
+  const ParallelData<float, size> sign
+      = (-2.0f * static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>((ctrlSample >= 0.0f)))) - 1.0f;
+  const ParallelData<float, size> shaped
       = ((sample - sign) * foldAmnt) + sign - sample;  // expressed as difference to "unshaped" sample
-  ParallelData<T, size> ret = sample - (fold * shaped);
+  ParallelData<float, size> ret = sample - (fold * shaped);
   return ret;
   // first tests revealed no audible difference
 #else
-  ParallelData<T, size> ret;
+  ParallelData<float, size> ret;
 
   for(size_t i = 0; i < size; i++)
   {
@@ -455,24 +447,25 @@ inline ParallelData<T, size> threeRanges(const ParallelData<T, size> &sample, co
 #endif
 }
 
-template <typename T, size_t size>
-inline ParallelData<T, size> parAsym(const ParallelData<T, size> &sample, const ParallelData<T, size> &sample_square,
-                                     const float &asymAmnt)
+template <size_t size>
+inline ParallelData<float, size> parAsym(const ParallelData<float, size> &sample,
+                                         const ParallelData<float, size> &sample_square, const float &asymAmnt)
 {
   return ((1.f - asymAmnt) * sample) + (2.f * asymAmnt * sample_square);
 }
 
-template <typename T, size_t size>
-inline ParallelData<T, size> bipolarCrossFade(const ParallelData<T, size> &_sample1,
-                                              const ParallelData<T, size> &_sample2, const T &_mix)
+template <size_t size>
+inline ParallelData<float, size> bipolarCrossFade(const ParallelData<float, size> &_sample1,
+                                                  const ParallelData<float, size> &_sample2, const float &_mix)
 {
   return (1.f - std::abs(_mix)) * _sample1 + _mix * _sample2;
 }
 
-template <typename T, size_t size>
-inline ParallelData<T, size> interpolRT(const ParallelData<T, size> &fract, const ParallelData<T, size> &sample_tm1,
-                                        const ParallelData<T, size> &sample_t0, const ParallelData<T, size> &sample_tp1,
-                                        const ParallelData<T, size> &sample_tp2)
+template <size_t size>
+inline ParallelData<float, size>
+    interpolRT(const ParallelData<float, size> &fract, const ParallelData<float, size> &sample_tm1,
+               const ParallelData<float, size> &sample_t0, const ParallelData<float, size> &sample_tp1,
+               const ParallelData<float, size> &sample_tp2)
 {
   auto fract_square = fract * fract;
   auto fract_cube = fract_square * fract;
