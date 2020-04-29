@@ -219,7 +219,8 @@ void ParameterDualGroupSet::copyVoiceGroup(UNDO::Transaction *transaction, Voice
     group->copyFrom(transaction, getParameterGroupByID({ group->getID().getName(), from }));
 }
 
-void ParameterDualGroupSet::loadIntoVoiceGroup(UNDO::Transaction *transaction, Preset *p, VoiceGroup target)
+void ParameterDualGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transaction, const Preset *p,
+                                                           VoiceGroup target)
 {
   nltools_assertOnDevPC(p->getType() == SoundType::Single);
 

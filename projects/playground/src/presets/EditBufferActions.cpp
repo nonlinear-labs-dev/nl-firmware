@@ -248,21 +248,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
     if(auto presetToLoad = pm->findPreset(presetUUID))
     {
-      std::stringstream ss;
-      ss << "Load Part " << toString(presetPart) << " of Preset \"" << presetToLoad->getName() << "\" into Part "
-         << toString(loadTo);
-
-      auto scope = pm->getUndoScope().startTransaction(ss.str());
-      editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), presetToLoad, presetPart, loadTo);
+      editBuffer->undoableLoadToPart(presetToLoad, presetPart, loadTo);
     }
-  });
-
-  addAction("load-preset-into-editbuffer-part", [=](auto request) {
-    auto presetUUID = request->get("uuid");
-    auto loadInto = to<VoiceGroup>(request->get("load-to"));
-
-    if(auto preset = editBuffer->getParent()->findPreset(presetUUID))
-      editBuffer->undoableLoadSinglePreset(preset, loadInto);
   });
 }
 

@@ -72,7 +72,7 @@ ENDIF()
 
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/playground.cpp)
 list(REMOVE_ITEM SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/testing/unit-tests/playground-tests.cpp)
-file(GLOB_RECURSE UNIT_TEST_FILES src/testing/unit-tests/*.cpp)
+file(GLOB_RECURSE UNIT_TEST_FILES src/testing/*.cpp)
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${UNIT_TEST_FILES})
 set(${BINARY_NAME}_SOURCES "src/playground.cpp")
 set(${TEST_BINARY_NAME}_SOURCES ${UNIT_TEST_FILES})

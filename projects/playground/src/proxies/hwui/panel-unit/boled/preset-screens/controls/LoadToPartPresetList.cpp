@@ -186,14 +186,11 @@ void LoadToPartPresetList::onSelectionChanged(const PresetPartSelection& selecti
 
 void LoadToPartPresetList::onEnterButtonPressed()
 {
-  auto& scope = Application::get().getPresetManager()->getUndoScope();
-  auto transScope = scope.startTransaction("Load Preset Part");
-  auto transaction = transScope->getTransaction();
   if(const auto selection = getCurrentSelection())
   {
     const auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-    Application::get().getPresetManager()->getEditBuffer()->undoableLoadPresetPartIntoPart(
-        transaction, selection->m_preset, selection->m_voiceGroup, currentVG);
+    Application::get().getPresetManager()->getEditBuffer()->undoableLoadToPart(selection->m_preset,
+                                                                               selection->m_voiceGroup, currentVG);
   }
 }
 

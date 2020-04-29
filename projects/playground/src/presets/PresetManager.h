@@ -114,6 +114,7 @@ class PresetManager : public ContentSection
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
 
   const Preset *getSelectedPreset() const;
+  Preset *getSelectedPreset();
 
   //Test Helper
   void TEST_forceScheduledAutoLoad();

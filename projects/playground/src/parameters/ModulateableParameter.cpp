@@ -503,10 +503,13 @@ void ModulateableParameter::copyFrom(UNDO::Transaction *transaction, const Param
 {
   Parameter::copyFrom(transaction, other);
 
-  if(auto otherMod = dynamic_cast<const ModulateableParameter *>(other))
+  if(!isLocked())
   {
-    setModulationSource(transaction, otherMod->getModulationSource());
-    setModulationAmount(transaction, otherMod->getModulationAmount());
+    if(auto otherMod = dynamic_cast<const ModulateableParameter *>(other))
+    {
+      setModulationSource(transaction, otherMod->getModulationSource());
+      setModulationAmount(transaction, otherMod->getModulationAmount());
+    }
   }
 }
 

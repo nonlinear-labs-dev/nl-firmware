@@ -36,6 +36,7 @@
 #include <tools/PerformanceTimer.h>
 #include <device-settings/Settings.h>
 #include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
+#include <parameters/ScopedLock.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -441,15 +442,10 @@ void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      auto isCurrentlyDualSound = getType() != SoundType::Single;
-      auto presetToLoadIsDual = preset->getType() != SoundType::Single;
-
-      if(isLoadToPartActive() && isCurrentlyDualSound)
+      if(isLoadToPartActive() && isDual())
       {
-        if(!presetToLoadIsDual)
+        if(!preset->isDual())
           undoableLoadPresetIntoDualSound(preset, loadInto);
-        else
-          nltools::Log::error("dual preset was not loaded!");
       }
       else
       {
@@ -489,6 +485,18 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
+}
+
+void EditBuffer::undoableLoadToPart(const Preset *preset, VoiceGroup from, VoiceGroup to)
+{
+  UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction(
+      preset->buildUndoTransactionTitle("Load Part " + toString(from) + " To Part " + toString(to)));
+  undoableLoadToPart(scope->getTransaction(), preset, from, to);
+}
+
+void EditBuffer::undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to)
+{
+  undoableLoadPresetPartIntoPart(trans, p, from, to);
 }
 
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
@@ -723,19 +731,13 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   undoableSetType(transaction, SoundType::Single);
 
   if(oldType == SoundType::Split)
-  {
-    combineSplitPartGlobalMaster(transaction, copyFrom);
-  }
+    undoableConvertSplitToSingle(transaction, copyFrom);
   else if(oldType == SoundType::Layer)
-  {
-    combineLayerPartGlobalMaster(transaction, copyFrom);
-  }
-
-  if(copyFrom != VoiceGroup::I)
-    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+    undoableConvertLayerToSingle(transaction, copyFrom);
 
   initToFX(transaction);
-  initFadeFrom(transaction, SoundType::Single);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
   initCrossFB(transaction);
   initSplitPoint(transaction);
 
@@ -753,6 +755,23 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initRecallValues(transaction);
 
   transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+}
+
+void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  combineLayerPartGlobalMaster(transaction, copyFrom);
+  ScopedLock locks(transaction);
+  locks.addGroupLock({ "Unison", VoiceGroup::I });
+  locks.addGroupLock({ "Mono", VoiceGroup::I });
+  if(copyFrom != VoiceGroup::I)
+    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+}
+
+void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  combineSplitPartGlobalMaster(transaction, copyFrom);
+  if(copyFrom != VoiceGroup::I)
+    copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 }
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
@@ -833,21 +852,40 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
   }
 }
 
-void EditBuffer::undoableLoadPresetIntoDualSound(Preset *preset, VoiceGroup vg)
+void EditBuffer::undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGroup vg)
 {
   auto scope = getUndoScope().startTransaction("Load Preset into Part " + toString(vg));
   auto transaction = scope->getTransaction();
-  undoableLoadPresetIntoDualSound(transaction, preset, vg);
+  undoableLoadSinglePresetIntoDualSound(transaction, preset, vg);
 }
 
-void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, Preset *preset, VoiceGroup vg)
+void EditBuffer::undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset,
+                                                       VoiceGroup to)
 {
   auto ae = Application::get().getAudioEngineProxy();
   ae->toggleSuppressParameterChanges(transaction);
 
-  setVoiceGroupName(transaction, preset->getName(), vg);
-  loadIntoVoiceGroup(transaction, preset, vg);
-  loadPresetGlobalMasterIntoVoiceGroupMaster(transaction, preset, vg);
+  setVoiceGroupName(transaction, preset->getName(), to);
+
+  {
+    ScopedLock lock(transaction);
+
+    lock.addGroupLock({ "Unison", VoiceGroup::I });
+    lock.addGroupLock({ "Unison", VoiceGroup::II });
+    lock.addGroupLock({ "Mono", VoiceGroup::I });
+    lock.addGroupLock({ "Mono", VoiceGroup::II });
+
+    for(auto &p : getCrossFBParameters(VoiceGroup::I))
+      lock.addLock(p);
+
+    for(auto &p : getCrossFBParameters(VoiceGroup::II))
+      lock.addLock(p);
+
+    loadSinglePresetIntoVoiceGroup(transaction, preset, to);
+  }
+
+  loadPresetGlobalMasterIntoVoiceGroupMaster(transaction, preset, to);
+
   initRecallValues(transaction);
 
   ae->toggleSuppressParameterChanges(transaction);
@@ -885,7 +923,8 @@ void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGr
 
   auto transString = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(copyTo));
   auto scope = getParent()->getUndoScope().startTransaction(transString);
-  undoableLoadPresetPartIntoPart(scope->getTransaction(), selectedPreset, from, copyTo);
+
+  undoableLoadToPart(scope->getTransaction(), selectedPreset, from, copyTo);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
@@ -899,30 +938,25 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
     from = VoiceGroup::I;
   }
 
-  if(getType() == SoundType::Single)
+  switch(getType())
   {
-    copyTo = VoiceGroup::I;
+    case SoundType::Single:
+    case SoundType::Invalid:
+      undoableLoadPresetPartIntoSingleSound(transaction, preset, from, VoiceGroup::I);
+      break;
+    case SoundType::Split:
+      if(preset->isDual())
+        undoableLoadPresetPartIntoSplitSound(transaction, preset, from, copyTo);
+      else
+        loadSinglePresetIntoSplitPart(transaction, preset, copyTo);
+      break;
+    case SoundType::Layer:
+      if(preset->isDual())
+        undoableLoadPresetPartIntoLayerSound(transaction, preset, from, copyTo);
+      else
+        loadSinglePresetIntoLayerPart(transaction, preset, copyTo);
+      break;
   }
-
-  auto ae = Application::get().getAudioEngineProxy();
-  ae->toggleSuppressParameterChanges(transaction);
-
-  setVoiceGroupName(transaction, preset->getName(), copyTo);
-  super::copyFrom(transaction, preset, from, copyTo);
-
-  copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
-
-  if(getType() == SoundType::Layer)
-  {
-    getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction);
-    getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction);
-  }
-
-  initFadeParameters(transaction, copyTo);
-
-  initRecallValues(transaction);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::initUnisonVoicesScaling(UNDO::Transaction *transaction, SoundType newType)
@@ -990,15 +1024,47 @@ void EditBuffer::initToFX(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
 {
-  if(preset && preset->getType() == SoundType::Single)
+  if(!preset)
+    return;
+
+  if(preset->isDual())
+    return;
+
+  if(!isDual())
+    return;
+
+  auto scope = getParent()->getUndoScope().startTransaction(
+      nltools::string::concat("Load '", preset->getName(), "' into ", toString(to)));
+  auto transaction = scope->getTransaction();
+
+  switch(getType())
   {
-    auto scope = getParent()->getUndoScope().startTransaction(
-        nltools::string::concat("Load '", preset->getName(), "' into ", toString(to)));
-    undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, VoiceGroup::I, to);
+    case SoundType::Split:
+      loadSinglePresetIntoSplitPart(transaction, preset, to);
+      break;
+    case SoundType::Layer:
+      loadSinglePresetIntoLayerPart(transaction, preset, to);
+      break;
+    case SoundType::Invalid:
+    case SoundType::Single:
+      break;
   }
 }
 
-void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, Preset *preset,
+std::vector<Parameter *> EditBuffer::getCrossFBParameters(const VoiceGroup &to) const
+{
+  constexpr static auto FB_OSC = 346;
+  constexpr static auto FB_OSC_SRC = 348;
+  constexpr static auto FB_COMB_FROM = 350;
+  constexpr static auto FB_SVF_FROM = 352;
+  constexpr static auto FB_FX_FROM = 354;
+
+  return std::vector<Parameter *>({ findParameterByID({ FB_OSC, to }), findParameterByID({ FB_OSC_SRC, to }),
+                                    findParameterByID({ FB_COMB_FROM, to }), findParameterByID({ FB_SVF_FROM, to }),
+                                    findParameterByID({ FB_FX_FROM, to }) });
+}
+
+void EditBuffer::loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, const Preset *preset,
                                                             VoiceGroup copyTo)
 {
   auto part = getParameterGroupByID({ "Part", copyTo });
@@ -1020,22 +1086,32 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   auto presetPartVolume = preset->findParameterByID({ 358, copyFrom }, false);
   auto presetPartTune = preset->findParameterByID({ 360, copyFrom }, false);
 
+  auto globalVolume = findParameterByID({ 247, VoiceGroup::Global });
+  auto globalTune = findParameterByID({ 248, VoiceGroup::Global });
+
   auto partVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyTo }));
   auto partTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, copyTo }));
 
   if(presetGlobalVolume && presetGlobalTune && partVolume && partTune)
   {
     auto volumeScaleConverter
-        = static_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
-    auto globalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
-    auto partVolumeDV
-        = volumeScaleConverter->controlPositionToDisplay(presetPartVolume ? presetPartVolume->getValue() : .5);
+        = dynamic_cast<const ParabolicGainDbScaleConverter *>(partVolume->getValue().getScaleConverter());
 
-    auto newVolumeDV = globalVolumeDV + partVolumeDV;
+    auto ebGlobalVolumeDV = volumeScaleConverter->controlPositionToDisplay(globalVolume->getControlPositionValue());
+    auto presetGlobalVolumeDV = volumeScaleConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+    auto presetPartVolumeDV = volumeScaleConverter->controlPositionToDisplay(
+        presetPartVolume ? presetPartVolume->getValue() : partVolume->getDefaultValue());
+
+    auto newVolumeDV = (presetGlobalVolumeDV + presetPartVolumeDV) - ebGlobalVolumeDV;
     auto newVolumeCP = volumeScaleConverter->displayToControlPosition(newVolumeDV);
     partVolume->setCPFromHwui(transaction, newVolumeCP);
-    partTune->setCPFromHwui(transaction,
-                            presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : 0));
+
+    auto ebGlobalTuneCP = globalTune->getControlPositionValue();
+
+    partTune->setCPFromHwui(
+        transaction,
+        (presetGlobalTune->getValue() + (presetPartTune ? presetPartTune->getValue() : partTune->getDefaultValue()))
+            - ebGlobalTuneCP);
 
     if(preset->getType() == SoundType::Single)
     {
@@ -1053,18 +1129,53 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   }
 }
 
+void EditBuffer::copySinglePresetMasterToPartMaster(UNDO::Transaction *transaction, const Preset *preset,
+                                                    VoiceGroup targetGroup)
+{
+  auto presetGlobalVolume = preset->findParameterByID({ 247, VoiceGroup::Global }, false);
+  auto presetGlobalTune = preset->findParameterByID({ 248, VoiceGroup::Global }, false);
+
+  auto ebGlobalVolume = findParameterByID({ 247, VoiceGroup::Global });
+  auto ebGlobalTune = findParameterByID({ 248, VoiceGroup::Global });
+
+  auto partVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, targetGroup }));
+  auto partTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, targetGroup }));
+
+  if(presetGlobalTune && presetGlobalVolume)
+  {
+    partTune->setCPFromHwui(transaction, presetGlobalTune->getValue() - ebGlobalTune->getControlPositionValue());
+    partTune->setModulationSource(transaction, presetGlobalTune->getModulationSource());
+    partTune->setModulationAmount(transaction, presetGlobalTune->getModulationAmount());
+
+    auto volumeConverter
+        = static_cast<const ParabolicGainDbScaleConverter *>(ebGlobalVolume->getValue().getScaleConverter());
+
+    auto presetVolumeDisplay = volumeConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
+    auto ebVolumeDisplay = volumeConverter->controlPositionToDisplay(ebGlobalVolume->getControlPositionValue());
+
+    auto newVolumeCP = volumeConverter->displayToControlPosition(presetVolumeDisplay - ebVolumeDisplay);
+
+    partVolume->setCPFromHwui(transaction, newVolumeCP);
+    partVolume->setModulationSource(transaction, presetGlobalVolume->getModulationSource());
+    partVolume->setModulationAmount(transaction, presetGlobalVolume->getModulationAmount());
+  }
+  else
+  {
+    partTune->loadDefault(transaction);
+    partVolume->loadDefault(transaction);
+  }
+}
+
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
 {
   auto splitPoint = findParameterByID({ 356, VoiceGroup::Global });
   splitPoint->loadDefault(transaction);
 }
 
-void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, SoundType newType)
+void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  findParameterByID({ 396, VoiceGroup::I })->loadDefault(transaction);
-  findParameterByID({ 397, VoiceGroup::I })->loadDefault(transaction);
-  findParameterByID({ 396, VoiceGroup::II })->loadDefault(transaction);
-  findParameterByID({ 397, VoiceGroup::II })->loadDefault(transaction);
+  findParameterByID({ 396, vg })->loadDefault(transaction);
+  findParameterByID({ 397, vg })->loadDefault(transaction);
 }
 
 EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
@@ -1107,17 +1218,21 @@ void EditBuffer::copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup fro
 
 void EditBuffer::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group)
 {
-  findParameterByID({ 396, group })->loadDefault(transaction);
-  findParameterByID({ 397, group })->loadDefault(transaction);
+  auto f1 = findParameterByID({ 396, group });
+  if(!f1->isLocked())
+    f1->loadDefault(transaction);
+  auto f2 = findParameterByID({ 397, group });
+  if(!f2->isLocked())
+    f2->loadDefault(transaction);
 }
 
 void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    for(auto paramNum : { 346, 348, 350, 352, 354 })
+    for(auto param : getCrossFBParameters(vg))
     {
-      findParameterByID({ paramNum, vg })->loadDefault(transaction);
+      param->loadDefault(transaction);
     }
   }
 }
@@ -1129,7 +1244,8 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
   initToFX(transaction);
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
-  initFadeFrom(transaction, SoundType::Split);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
 }
 
@@ -1141,7 +1257,8 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
   copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
-  initFadeFrom(transaction, SoundType::Layer);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
 }
@@ -1150,7 +1267,8 @@ void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
 {
   copyVoicesGroups(transaction, VoiceGroup::I, VoiceGroup::II);
   calculateSplitPointFromFadeParams(transaction);
-  initFadeFrom(transaction, SoundType::Split);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
 }
 
 void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
@@ -1170,6 +1288,192 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
   const auto meanFadeFrom = (f1 + f2) / 2.0;
 
   getSplitPoint()->setCPFromHwui(transaction, meanFadeFrom);
+}
+
+void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset,
+                                               VoiceGroup loadInto)
+{
+
+  {
+    auto toFxParam = findParameterByID({ 362, loadInto });
+
+    ScopedLock locks(transaction);
+    locks.addLock(toFxParam);
+
+    super::copyFrom(transaction, preset, VoiceGroup::I, loadInto);
+  }
+
+  copySinglePresetMasterToPartMaster(transaction, preset, loadInto);
+  initCrossFB(transaction);
+  initFadeFrom(transaction, loadInto);
+  initRecallValues(transaction);
+}
+
+void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup loadTo)
+{
+
+  constexpr auto FADE_FROM = 396;
+  constexpr auto FADE_RANGE = 397;
+
+  auto toFxParam = findParameterByID({ 362, loadTo });
+  auto fadeFromParams = { findParameterByID({ FADE_FROM, loadTo }), findParameterByID({ FADE_RANGE, loadTo }) };
+
+  {
+    ScopedLock locks(transaction);
+    locks.addLock(toFxParam);
+    locks.addGroupLock({ "Unison", VoiceGroup::I });
+    locks.addGroupLock({ "Unison", VoiceGroup::II });
+    locks.addGroupLock({ "Mono", VoiceGroup::I });
+    locks.addGroupLock({ "Mono", VoiceGroup::II });
+
+    for(auto p : getCrossFBParameters(loadTo))
+      locks.addLock(p);
+
+    for(auto p : fadeFromParams)
+      locks.addLock(p);
+
+    super::copyFrom(transaction, preset, VoiceGroup::I, loadTo);
+  }
+
+  copySinglePresetMasterToPartMaster(transaction, preset, loadTo);
+
+  getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction);
+  getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction);
+
+  initRecallValues(transaction);
+}
+
+void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transaction, const Preset *preset,
+                                                      VoiceGroup from, VoiceGroup copyTo)
+{
+  auto ae = Application::get().getAudioEngineProxy();
+  ae->toggleSuppressParameterChanges(transaction);
+
+  setVoiceGroupName(transaction, preset->getName(), copyTo);
+
+  {
+    auto toFxParam = findParameterByID({ 362, copyTo });
+
+    ScopedLock locks(transaction);
+    for(auto p : getCrossFBParameters(copyTo))
+      locks.addLock(p);
+
+    if(!preset->isDual())
+      locks.addLock(toFxParam);
+
+    super::copyFrom(transaction, preset, from, copyTo);
+  }
+
+  if(preset->isDual())
+    copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
+  else
+    copySinglePresetMasterToPartMaster(transaction, preset, copyTo);
+
+  initCrossFB(transaction);
+
+  initFadeParameters(transaction, copyTo);
+  if(preset->getType() == SoundType::Layer)
+  {
+    initFadeParameters(transaction, invert(copyTo));
+
+    const auto unisonTo = GroupId { "Unison", copyTo };
+    const auto unisonI = GroupId { "Unison", VoiceGroup::I };
+    const auto monoTo = GroupId { "Mono", copyTo };
+    const auto monoI = GroupId { "Mono", VoiceGroup::I };
+
+    getParameterGroupByID(unisonTo)->copyFrom(transaction, preset->findParameterGroup(unisonI));
+    getParameterGroupByID(monoTo)->copyFrom(transaction, preset->findParameterGroup(monoI));
+  }
+
+  initRecallValues(transaction);
+
+  ae->toggleSuppressParameterChanges(transaction);
+}
+
+void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transaction, const Preset *preset,
+                                                      VoiceGroup copyFrom, VoiceGroup copyTo)
+{
+  auto ae = Application::get().getAudioEngineProxy();
+  ae->toggleSuppressParameterChanges(transaction);
+
+  setVoiceGroupName(transaction, preset->getName(), copyTo);
+
+  {
+    ScopedLock locks(transaction);
+    locks.addLock({ 396, copyTo });
+    locks.addLock({ 397, copyTo });
+
+    if(preset->getType() == SoundType::Split)
+    {
+      locks.addLocks(getCrossFBParameters(copyTo));
+    }
+
+    if(preset->isDual())
+    {
+      locks.addGroupLock({ "Mono", VoiceGroup::I });
+      locks.addGroupLock({ "Mono", VoiceGroup::II });
+      locks.addGroupLock({ "Unison", VoiceGroup::I });
+      locks.addGroupLock({ "Unison", VoiceGroup::II });
+    }
+
+    super::copyFrom(transaction, preset, copyFrom, copyTo);
+
+    if(preset->isDual())
+      copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, copyFrom, copyTo);
+    else
+      copySinglePresetMasterToPartMaster(transaction, preset, copyTo);
+
+    initFadeParameters(transaction, copyTo);
+  }
+
+  getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction);
+  getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction);
+
+  initRecallValues(transaction);
+
+  ae->toggleSuppressParameterChanges(transaction);
+}
+
+void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset,
+                                                       VoiceGroup copyFrom, VoiceGroup copyTo)
+{
+  if(!preset->isDual())
+    copyFrom = VoiceGroup::I;
+
+  auto ae = Application::get().getAudioEngineProxy();
+  ae->toggleSuppressParameterChanges(transaction);
+
+  setVoiceGroupName(transaction, preset->getName(), copyTo);
+  super::copyFrom(transaction, preset, copyFrom, copyTo);
+
+  if(preset->isDual())
+    copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, copyFrom, copyTo);
+  else
+    copySinglePresetMasterToPartMaster(transaction, preset, copyTo);
+
+  initFadeParameters(transaction, copyTo);
+  initRecallValues(transaction);
+
+  ae->toggleSuppressParameterChanges(transaction);
+}
+
+void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
+{
+  auto scope = getUndoScope().startTransaction("Load Selected Preset Part", toString(from), "into", toString(to));
+  undoableLoadSelectedToPart(scope->getTransaction(), from, to);
+}
+
+void EditBuffer::undoableLoadSelectedToPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
+{
+  auto selectedPreset = getParent()->getSelectedPreset();
+
+  if(!selectedPreset)
+  {
+    transaction->rollBack();
+    return;
+  }
+
+  undoableLoadToPart(transaction, selectedPreset, from, to);
 }
 
 void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
