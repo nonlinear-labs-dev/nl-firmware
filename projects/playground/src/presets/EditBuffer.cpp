@@ -1174,43 +1174,47 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
 
 void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
 {
-  using FromType = SoundType;
-  using ToType = SoundType;
+  using ParameterNumberMap = std::unordered_map<int, int>;
+  using From = SoundType;
+  using To = SoundType;
+  using Conversion = std::pair<From, To>;
+  using ConversionMap = std::map<Conversion, ParameterNumberMap>;
 
-  std::unordered_map<FromType, std::unordered_map<ToType, std::unordered_map<int, int>>> transactions;
-
-  transactions[FromType::Layer]
-      = { { SoundType::Split,
-            { { 346, 346 }, { 348, 346 }, { 350, 156 }, { 352, 158 }, { 354, 160 }, { 396, 358 }, { 397, 358 } } },
-          { SoundType::Single,
-            { { 346, 346 },
-              { 348, 346 },
-              { 350, 156 },
-              { 352, 158 },
-              { 354, 160 },
-              { 362, 185 },
-              { 358, 247 },
-              { 360, 248 },
-              { 396, 247 },
-              { 397, 247 } } } };
-
-  transactions[FromType::Split] = { { ToType::Layer, { { 356, 358 } } },
-                                    { ToType::Single, { { 356, 247 }, { 360, 248 }, { 358, 247 }, { 362, 185 } } } };
-
-  try
+  // clang-format off
+  static ConversionMap conversions {
   {
-    auto conv = transactions.at(oldType);
-    auto to = conv.at(newType);
+    { From::Layer, To::Split },
+    { { 346, 346 }, { 348, 346 }, { 350, 156 }, { 352, 158 }, { 354, 160 }, { 396, 358 }, { 397, 358 } }
+  },
+  {
+    { From::Layer, To::Single },
+    { { 346, 346 }, { 348, 346 }, { 350, 156 }, { 352, 158 }, { 354, 160 },
+      { 362, 185 }, { 358, 247 }, { 360, 248 }, { 396, 247 }, { 397, 247 } }
+  },
+  {
+    { From::Split, To::Layer },
+    { { 356, 358 } }
+  },
+  {
+    { From::Split, To::Single },
+    { { 356, 247 }, { 360, 248 }, { 358, 247 }, { 362, 185 } }
+  }};
+  // clang-format on
+
+  auto itMap = conversions.find({ oldType, newType });
+  if(itMap != conversions.end())
+  {
+    const auto &conv = itMap->second;
     auto id = getSelected()->getID();
-    auto newParamNum = to.at(id.getNumber());
-    auto vg = ParameterId::isGlobal(newParamNum) ? VoiceGroup::Global
-                                                 : Application::get().getHWUI()->getCurrentVoiceGroup();
-    if(newType == SoundType::Single && vg == VoiceGroup::II)
-      vg = VoiceGroup::I;
+    auto itConv = conv.find(id.getNumber());
+    if(itConv != conv.end())
+    {
+      auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto vg = ParameterId::isGlobal(itConv->second) ? VoiceGroup::Global : currentVg;
+      if(newType == SoundType::Single && vg == VoiceGroup::II)
+        vg = VoiceGroup::I;
 
-    undoableSelectParameter(transaction, { newParamNum, vg });
-  }
-  catch(...)
-  {
+      undoableSelectParameter(transaction, { itConv->second, vg });
+    }
   }
 }
