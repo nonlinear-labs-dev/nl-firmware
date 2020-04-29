@@ -86,7 +86,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Build BBB rootfs"
     OUTPUT ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-    DEPENDS .nonlinux-update
+    DEPENDS .nonlinux-setup
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
@@ -107,7 +107,6 @@ add_custom_command(
         "chown -R ${USER_ID}.${GROUP_ID} /workdir/ccache"
         "cp /fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
         "chown ${USER_ID}.${GROUP_ID} /workdir/rootfs.tar.gz"
-    COMMAND mv ${CMAKE_BINARY_DIR}/build-tools/bbb/nonlinux/output/images/rootfs.tar.gz ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
     COMMAND echo "The final rootfs is located at ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz"
 )
 
