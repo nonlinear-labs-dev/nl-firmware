@@ -125,10 +125,9 @@ void ParameterLayout2::setDefault()
 
 void ParameterLayout2::onSoundTypeChanged()
 {
-  if(!m_soundTypeRedrawThrottler.isPending())
-    m_soundTypeRedrawThrottler.doTask([&] {
-      Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
-    });
+  m_soundTypeRedrawThrottler.doTask([&] {
+    Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
+  });
 }
 
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
@@ -230,9 +229,7 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         break;
 
       case Buttons::BUTTON_D:
-        if(m_carousel
-           && isParameterAvailableInSoundType(getCurrentParameter(),
-                                              Application::get().getPresetManager()->getEditBuffer()))
+        if(m_carousel && isParameterAvailableInSoundType(getCurrentParameter()))
         {
           if(modifiers[SHIFT] == 1)
           {
