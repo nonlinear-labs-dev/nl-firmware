@@ -124,7 +124,7 @@ void ParameterLayout2::setDefault()
 
 void ParameterLayout2::onSoundTypeChanged()
 {
-  Application::get().getMainContext()->signal_idle().connect_once([&] { setDirty(); });
+  Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
 }
 
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
