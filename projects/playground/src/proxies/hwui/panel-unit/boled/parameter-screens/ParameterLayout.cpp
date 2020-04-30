@@ -24,15 +24,17 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
-  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
   addControl(new LockedIndicator(Rect(64, 1, 10, 11)));
-  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
-  addControl(new UndoIndicator(Rect(1, 26, 10, 8)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
+  addControl(new UndoIndicator(Rect(1, 32, 10, 8)));
+  addControl(new ParameterNotAvailableInSoundInfo(Rect(BIG_SLIDER_X - 2, 9, BIG_SLIDER_WIDTH + 4, 50),
+                                                  "Only available with Layer Sounds"));
 }
 
 ModuleCaption *ParameterLayout2::createModuleCaption() const
@@ -119,9 +121,12 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   if(auto p = getCurrentEditParameter())
   {
-    auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
-    p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
-    return true;
+    if(isParameterAvailableInSoundType(p, Application::get().getPresetManager()->getEditBuffer()))
+    {
+      auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+      p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
+      return true;
+    }
   }
 
   return super::onRotary(inc, modifiers);
@@ -134,6 +139,28 @@ void ParameterLayout2::handlePresetValueRecall()
     getOLEDProxy().setOverlay(new PartMasterRecallLayout2());
   else if(getCurrentEditParameter()->isChangedFromLoaded())
     getOLEDProxy().setOverlay(new ParameterRecallLayout2());
+}
+
+bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p, const EditBuffer *eb)
+{
+  auto currentType = eb->getType();
+
+  if(!p)
+    return false;
+
+  auto number = p->getID().getNumber();
+
+  switch(currentType)
+  {
+    case SoundType::Single:
+    case SoundType::Split:
+      return number != 346 && number != 348;
+    case SoundType::Layer:
+    case SoundType::Invalid:
+      break;
+  }
+
+  return true;
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2()

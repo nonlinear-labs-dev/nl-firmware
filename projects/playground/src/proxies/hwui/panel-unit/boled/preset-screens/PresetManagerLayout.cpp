@@ -131,8 +131,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
-  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
-  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
   addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
@@ -229,8 +228,7 @@ void PresetManagerLayout::setupPresetSelect()
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
-  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
-  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
   addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 }
 
@@ -417,9 +415,7 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
           if(loadToPartActive)
           {
             auto load = getPresetPartSelection(currentVoiceGroup);
-            auto scope = getPresetManager()->getUndoScope().startTransaction("Load Preset Part into Part");
-            eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), load->m_preset, load->m_voiceGroup,
-                                               currentVoiceGroup);
+            eb->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
             animateSelectedPresetIfInLoadPartMode([]() {});
           }
           else

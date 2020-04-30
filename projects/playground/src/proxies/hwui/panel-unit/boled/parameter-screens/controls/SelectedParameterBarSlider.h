@@ -13,6 +13,7 @@ class SelectedParameterBarSlider : public BarSlider
   // public methods
   SelectedParameterBarSlider(const Rect& rect);
   virtual ~SelectedParameterBarSlider();
+void setParameter(Parameter* param) override;
 
  private:
   // private methods

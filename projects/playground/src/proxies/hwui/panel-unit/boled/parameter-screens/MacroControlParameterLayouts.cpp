@@ -126,18 +126,14 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
     {
       case Buttons::BUTTON_A:
       {
-        if(Application::get().getPresetManager()->getEditBuffer()->isDual())
+        auto buttonText = getButtonText(Buttons::BUTTON_A);
+        if(buttonText == "HW Pos")
         {
-          if(getMode() == Mode::MacroControlValue)
-          {
-            Application::get().getHWUI()->toggleCurrentVoiceGroup();
-            return true;
-          }
-          else
-          {
-            toggleMode(Mode::PlayControlPosition);
-            return true;
-          }
+          toggleMode(Mode::PlayControlPosition);
+        }
+        else if(buttonText == "I / II")
+        {
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
         }
       }
         return true;
@@ -150,6 +146,8 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
       case Buttons::BUTTON_C:
         if(getMode() == Mode::MacroControlValue)
           selectSmoothingParameterForMC();
+        else
+          toggleMode(Mode::PlayControlAmount);
         return true;
     }
   }
@@ -196,6 +194,29 @@ void MacroControlParameterLayout2::setButtonAText(const std::string &s)
   }
 }
 
+void MacroControlParameterLayout2::setButtonText(Buttons b, const std::string &s)
+{
+  for(auto &button : getControls<Button>())
+  {
+    if(Button::getButtonPos(b) == button->getPosition())
+    {
+      button->setText({ s, 0 });
+    }
+  }
+}
+
+std::string MacroControlParameterLayout2::getButtonText(Buttons b) const
+{
+  for(auto &button : getControls<Button>())
+  {
+    if(Button::getButtonPos(b) == button->getPosition())
+    {
+      return button->getText().text;
+    }
+  }
+  return "";
+}
+
 void MacroControlParameterLayout2::setMode(Mode desiredMode)
 {
   m_mode = desiredMode;
@@ -209,26 +230,15 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
     voiceGroupIndication->setVisible(desiredMode == Mode::MacroControlValue);
   }
 
-  if(Application::get().getPresetManager()->getEditBuffer()->isDual())
-  {
-    if(getMode() == Mode::MacroControlValue)
-    {
-      setButtonAText("I / II");
-    }
-    else
-    {
-      setButtonAText("");
-    }
-  }
-  else
-  {
-    setButtonAText("");
-  }
+  const auto isDual = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
   switch(m_mode)
   {
     case Mode::MacroControlValue:
       m_modeOverlay->addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+      setButtonAText(isDual ? "I / II" : "");
+      setButtonText(Buttons::BUTTON_B, "HW Sel");
+      setButtonText(Buttons::BUTTON_C, "more..");
 
       highlight<ParameterNameLabel>();
       highlight<HWSourceAmountCarousel>();
@@ -237,6 +247,10 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       break;
 
     case Mode::PlayControlPosition:
+      setButtonText(Buttons::BUTTON_A, "HW Pos");
+      setButtonText(Buttons::BUTTON_B, "HW Sel");
+      setButtonText(Buttons::BUTTON_C, "HW Amt");
+
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceSlider(Rect(8, 25, 48, 4)));
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceValue(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceName(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
@@ -251,6 +265,10 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       break;
 
     case Mode::PlayControlSelection:
+      setButtonText(Buttons::BUTTON_A, "HW Pos");
+      setButtonText(Buttons::BUTTON_B, "HW Sel");
+      setButtonText(Buttons::BUTTON_C, "HW Amt");
+
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceSlider(Rect(8, 25, 48, 4)));
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceValue(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceName(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)))
@@ -262,6 +280,10 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       break;
 
     case Mode::PlayControlAmount:
+      setButtonText(Buttons::BUTTON_A, "HW Pos");
+      setButtonText(Buttons::BUTTON_B, "HW Sel");
+      setButtonText(Buttons::BUTTON_C, "HW Amt");
+
       m_modeOverlay->addControl(new SelectedParameterDotSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceSlider(Rect(8, 25, 48, 4)));
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceValue(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));

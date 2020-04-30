@@ -1,5 +1,9 @@
 #include "SelectedParameterKnubbelSlider.h"
 #include <proxies/hwui/FrameBuffer.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 
 static const int c_borderLeft = 1;
 static const int c_borderRight = 1;
@@ -31,4 +35,11 @@ void SelectedParameterKnubbelSlider::drawHandle(FrameBuffer &fb)
 
   fb.fillRect(x + 1 - halfHandle, r.getTop(), c_handleWidth - 2, handleHeight);
   fb.fillRect(x - halfHandle, r.getTop() + 1, c_handleWidth, handleHeight - 2);
+}
+
+void SelectedParameterKnubbelSlider::setParameter(Parameter *param)
+{
+  SelectedParameterDotSlider::setParameter(param);
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  setVisible(ParameterLayout2::isParameterAvailableInSoundType(param, eb));
 }

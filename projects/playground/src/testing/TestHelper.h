@@ -84,6 +84,16 @@ namespace TestHelper
         for(auto& p : g->getParameters())
           cb(p);
   }
+
+  inline void changeAllParameters(UNDO::Transaction* transaction)
+  {
+    auto eb = TestHelper::getEditBuffer();
+    eb->forEachParameter([&](Parameter* param) { TestHelper::forceParameterChange(transaction, param); });
+  };
+
+  void randomizeCrossFBAndToFX(UNDO::Transaction* transaction);
+
+  void randomizeFadeParams(UNDO::Transaction* transaction);
 }
 
 inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double v)
@@ -110,4 +120,19 @@ inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double
     }                                                                                                                  \
     CHECK(p->getControlPositionValue() >= range.first);                                                                \
     CHECK(p->getControlPositionValue() <= range.second);                                                               \
+  }
+
+#define CHECK_PARAMETER_CP_UNEQUALS_FICTION(p, v)                                                                      \
+  {                                                                                                                    \
+    auto range = getNextStepValuesFromValue(p, v);                                                                     \
+    auto inRange = p->getControlPositionValue() >= range.first && p->getControlPositionValue() <= range.second;        \
+    if(inRange)                                                                                                        \
+    {                                                                                                                  \
+      nltools::Log::error(p->getLongName(), '(', p->getID().toString(), ") got", p->getControlPositionValue(),         \
+                          "expected unequals ~", v);                                                                   \
+      CHECK(false);                                                                                                    \
+      return;                                                                                                          \
+    }                                                                                                                  \
+    CHECK_FALSE(p->getControlPositionValue() >= range.first);                                                          \
+    CHECK_FALSE(p->getControlPositionValue() <= range.second);                                                         \
   }

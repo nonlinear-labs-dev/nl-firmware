@@ -4,8 +4,9 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include <sigc++/sigc++.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 
-SelectedParameterDotSlider::SelectedParameterDotSlider(const Rect &rect)
+SelectedParameterDotSlider::SelectedParameterDotSlider(const Rect& rect)
     : super(rect)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
@@ -14,4 +15,11 @@ SelectedParameterDotSlider::SelectedParameterDotSlider(const Rect &rect)
 
 SelectedParameterDotSlider::~SelectedParameterDotSlider()
 {
+}
+
+void SelectedParameterDotSlider::setParameter(Parameter* param)
+{
+  Slider::setParameter(param);
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  setVisible(ParameterLayout2::isParameterAvailableInSoundType(param, eb));
 }

@@ -990,13 +990,6 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void loadPresetIntoPart(String uuid, VoiceGroup loadTo) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-into-editbuffer-part");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("load-to", loadTo.toString()),
-				new StaticURI.KeyValue("uuid", uuid));
-		queueJob(uri, false);
-	}
-
 	public void initPart(VoiceGroup part) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "init-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()));

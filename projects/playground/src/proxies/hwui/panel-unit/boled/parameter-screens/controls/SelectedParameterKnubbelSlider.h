@@ -9,6 +9,7 @@ class SelectedParameterKnubbelSlider : public SelectedParameterDotSlider
 
  public:
   SelectedParameterKnubbelSlider(const Rect &rect);
+void setParameter(Parameter* param) override;
 
  protected:
   virtual void drawHandle(FrameBuffer &fb) override;

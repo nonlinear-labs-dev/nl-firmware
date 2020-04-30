@@ -397,7 +397,22 @@ public class EditBufferUseCases {
 			selectVoiceGroup(VoiceGroup.I);
 	}
 
+	private boolean containsElement(int e, int[] arr) {
+		for (int i : arr) {
+			if(e == i)
+			return true;
+		}
+		return false;
+	}
+
 	private VoiceGroup getVoiceGroupFor(int paramNumber) {
+		if(EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
+			if(containsElement(paramNumber, ParameterFactory.voicesParameters)) 
+			{
+				return VoiceGroup.I;
+			}
+		}
+
 		return ParameterFactory.isGlobalParameter(paramNumber) ? VoiceGroup.Global
 				: EditBufferModel.get().voiceGroup.getValue();
 	}
@@ -424,11 +439,7 @@ public class EditBufferUseCases {
 	public void loadPresetPart(String uuid, VoiceGroup i) {
 		NonMaps.theMaps.getServerProxy().loadPresetPartIntoPart(uuid, i, EditBufferModel.get().voiceGroup.getValue());
 	}
-
-	public void loadSinglePresetIntoPart(String uuid, VoiceGroup loadTo) {
-		NonMaps.theMaps.getServerProxy().loadPresetIntoPart(uuid, loadTo);
-	}
-
+	
 	public void loadPresetPartIntoPart(String uuid, VoiceGroup from, VoiceGroup to) {
 		NonMaps.get().getServerProxy().loadPresetPartIntoPart(uuid, from, to);
 	}
