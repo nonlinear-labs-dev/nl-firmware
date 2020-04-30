@@ -56,12 +56,16 @@ size_t AppendOverwriteInsertButtonMenu::enumToIndex(PresetStoreModeSettings i) c
 
 bool AppendOverwriteInsertButtonMenu::animate()
 {
-  auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout();
+  auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout();
 
   if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout*>(currentLayout.get()))
   {
     return presetManagerLayout->animateSelectedPreset(
-        [] { Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select); });
+        [] { Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select)); });
+  }
+  else
+  {
+    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
   }
 
   return false;
