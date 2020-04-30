@@ -15,17 +15,15 @@ SelectedParameterValue::SelectedParameterValue(const Rect &rect)
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
 
-  m_voiceGroupSelectionConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
 
-  m_soundTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::mem_fun(this, &SelectedParameterValue::onSoundTypeChanged), false);
 }
 
 SelectedParameterValue::~SelectedParameterValue()
 {
-  m_voiceGroupSelectionConnection.disconnect();
-  m_soundTypeConnection.disconnect();
 }
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)

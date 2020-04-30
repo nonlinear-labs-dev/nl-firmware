@@ -10,23 +10,20 @@
 VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
     : Control(r)
 {
-  m_soundTypeChanged = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::mem_fun(this, &VoiceGroupIndicator::onSoundTypeChanged));
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  m_parameterSelectionChanged
-      = eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
+  eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
 
-  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
 }
 
 VoiceGroupIndicator::~VoiceGroupIndicator()
 {
-  m_soundTypeChanged.disconnect();
   m_parameterChanged.disconnect();
-  m_voiceGroupChanged.disconnect();
 }
 
 bool VoiceGroupIndicator::redraw(FrameBuffer& fb)
@@ -65,6 +62,8 @@ bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
 void VoiceGroupIndicator::onSoundTypeChanged()
 {
   m_currentSoundType = Application::get().getPresetManager()->getEditBuffer()->getType();
+  if(m_currentSoundType == SoundType::Single)
+    m_shouldDraw = false;
   setDirty();
 }
 

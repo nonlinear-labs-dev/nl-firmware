@@ -29,6 +29,7 @@
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
+    , m_soundTypeRedrawThrottler { std::chrono::milliseconds(50) }
 {
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
@@ -38,7 +39,7 @@ ParameterLayout2::ParameterLayout2()
   addControl(new ParameterNotAvailableInSoundInfo(Rect(BIG_SLIDER_X - 2, 9, BIG_SLIDER_WIDTH + 4, 50),
                                                   "Only available with Layer Sounds"));
 
-  m_sountTypeConnection = Application::get().get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged), false);
 }
 
@@ -124,7 +125,10 @@ void ParameterLayout2::setDefault()
 
 void ParameterLayout2::onSoundTypeChanged()
 {
-  Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
+  if(!m_soundTypeRedrawThrottler.isPending())
+    m_soundTypeRedrawThrottler.doTask([&] {
+      Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
+    });
 }
 
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
@@ -171,6 +175,12 @@ bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p, const
   }
 
   return true;
+}
+
+bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  return isParameterAvailableInSoundType(p, eb);
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2()

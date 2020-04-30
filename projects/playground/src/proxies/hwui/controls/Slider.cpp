@@ -12,6 +12,8 @@ Slider::Slider(Parameter *param, const Rect &rect)
     , m_value(0)
     , m_bipolar(false)
 {
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::mem_fun(this, &Slider::onSoundTypeChanged), false);
   setParameter(param);
 }
 
@@ -29,11 +31,6 @@ void Slider::setParameter(Parameter *param)
     m_paramValueConnection.disconnect();
 
     auto eb = Application::get().getPresetManager()->getEditBuffer();
-
-    if(!m_soundTypeConnection.connected())
-    {
-      m_soundTypeConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &Slider::onSoundTypeChanged), false);
-    }
 
     if(param)
       m_paramValueConnection = param->onParameterChanged(sigc::mem_fun(this, &Slider::onParamValueChanged));
@@ -58,8 +55,7 @@ void Slider::onParamValueChanged(const Parameter *param)
 
 void Slider::onSoundTypeChanged()
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  setVisible(ParameterLayout2::isParameterAvailableInSoundType(m_param, eb));
+  setVisible(ParameterLayout2::isParameterAvailableInSoundType(m_param));
 }
 
 void Slider::setValue(tDisplayValue v, bool bipolar)
