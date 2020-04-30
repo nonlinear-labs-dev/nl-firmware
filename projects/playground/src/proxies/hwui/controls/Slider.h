@@ -26,10 +26,12 @@ class Slider : public Control
   virtual bool hasBorder() const;
   virtual bool isBiPolar() const;
   virtual void onParamValueChanged(const Parameter *param);
+  void onSoundTypeChanged();
 
  private:
   tDisplayValue m_value;
   bool m_bipolar;
   sigc::connection m_paramValueConnection;
+  sigc::connection m_soundTypeConnection;
   Parameter *m_param = nullptr;
 };

@@ -4,6 +4,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include "ParameterNotAvailableInSoundInfo.h"
 #include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r, const Glib::ustring &text)
     : MultiLineLabel(r, text)

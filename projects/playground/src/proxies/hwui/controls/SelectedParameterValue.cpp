@@ -17,11 +17,15 @@ SelectedParameterValue::SelectedParameterValue(const Rect &rect)
 
   m_voiceGroupSelectionConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
+
+  m_soundTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::mem_fun(this, &SelectedParameterValue::onSoundTypeChanged), false);
 }
 
 SelectedParameterValue::~SelectedParameterValue()
 {
   m_voiceGroupSelectionConnection.disconnect();
+  m_soundTypeConnection.disconnect();
 }
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)
@@ -72,4 +76,11 @@ void SelectedParameterValue::setSuffixFontColor(FrameBuffer &fb) const
 void SelectedParameterValue::onVoiceGroupSelectionChanged(VoiceGroup v)
 {
   setDirty();
+}
+
+void SelectedParameterValue::onSoundTypeChanged()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto visible = ParameterSelectLayout2::isParameterAvailableInSoundType(eb->getSelected(), eb);
+  setVisible(visible);
 }

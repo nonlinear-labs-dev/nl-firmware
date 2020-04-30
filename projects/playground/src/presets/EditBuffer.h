@@ -90,6 +90,7 @@ class EditBuffer : public ParameterDualGroupSet
   sigc::connection onLocksChanged(const sigc::slot<void> &s);
   sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);
   sigc::connection onSoundTypeChanged(sigc::slot<void> s);
+  sigc::connection onSoundTypeChanged(sigc::slot<void> s, bool init);
 
   bool isModified() const;
   void sendToAudioEngine();

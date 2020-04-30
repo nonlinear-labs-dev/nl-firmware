@@ -25,6 +25,7 @@
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
+#include <glibmm/main.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -36,6 +37,9 @@ ParameterLayout2::ParameterLayout2()
   addControl(new UndoIndicator(Rect(1, 26, 10, 8)));
   addControl(new ParameterNotAvailableInSoundInfo(Rect(BIG_SLIDER_X - 2, 9, BIG_SLIDER_WIDTH + 4, 50),
                                                   "Only available with Layer Sounds"));
+
+  m_sountTypeConnection = Application::get().get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged), false);
 }
 
 ModuleCaption *ParameterLayout2::createModuleCaption() const
@@ -116,6 +120,11 @@ void ParameterLayout2::setDefault()
 {
   if(auto p = getCurrentEditParameter())
     p->setDefaultFromHwui();
+}
+
+void ParameterLayout2::onSoundTypeChanged()
+{
+  Application::get().getMainContext()->signal_idle().connect_once([&] { setDirty(); });
 }
 
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
@@ -211,7 +220,9 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         break;
 
       case Buttons::BUTTON_D:
-        if(m_carousel)
+        if(m_carousel
+           && isParameterAvailableInSoundType(getCurrentParameter(),
+                                              Application::get().getPresetManager()->getEditBuffer()))
         {
           if(modifiers[SHIFT] == 1)
           {

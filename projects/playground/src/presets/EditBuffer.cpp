@@ -162,6 +162,14 @@ sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
   return m_signalTypeChanged.connectAndInit(s);
 }
 
+sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s, bool init)
+{
+  if(init)
+    return m_signalTypeChanged.connectAndInit(s);
+  else
+    return m_signalTypeChanged.connect(s);
+}
+
 UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)
 {
   m_deferredJobs.trigger();

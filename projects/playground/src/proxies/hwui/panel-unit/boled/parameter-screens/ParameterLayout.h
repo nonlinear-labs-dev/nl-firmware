@@ -37,9 +37,13 @@ class ParameterLayout2 : public Layout
   void handlePresetValueRecall();
   void copyFrom(Layout *src) override;
 
+  void onSoundTypeChanged();
+
   virtual ModuleCaption *createModuleCaption() const;
 
  private:
+  sigc::connection m_sountTypeConnection;
+
   void showRecallScreenIfAppropriate();
 };
 
