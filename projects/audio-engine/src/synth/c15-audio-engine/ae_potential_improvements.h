@@ -23,7 +23,7 @@
 
 // proposal declaration
 
-#define __POTENTIAL_IMPROVEMENT_PROPOSAL__ __POTENTIAL_IMPROVEMENT_DISABLED__
+#define __POTENTIAL_IMPROVEMENT_PROPOSAL__ __POTENTIAL_IMPROVEMENT_ENABLED__
 #define __POTENTIAL_IMPROVEMENT_NUMERIC_TESTS__ __POTENTIAL_IMPROVEMENT_DISABLED__
 // - enable or disable:
 //   1) implementations of potential improvements
