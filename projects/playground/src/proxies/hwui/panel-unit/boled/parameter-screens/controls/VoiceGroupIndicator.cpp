@@ -86,7 +86,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 
   if(isLayerPartMuted(VoiceGroup::II))
   {
-    if(m_selectedVoiceGroup == VoiceGroup::I)
+    if(m_selectedVoiceGroup == VoiceGroup::II)
       fb.setColor(FrameBufferColors::C77);
     else
       fb.setColor(FrameBufferColors::C255);
