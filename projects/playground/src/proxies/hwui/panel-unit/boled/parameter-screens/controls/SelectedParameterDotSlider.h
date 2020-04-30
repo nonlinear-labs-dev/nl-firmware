@@ -12,7 +12,6 @@ class SelectedParameterDotSlider : public DotSlider
  public:
   SelectedParameterDotSlider(const Rect& rect);
   virtual ~SelectedParameterDotSlider();
-void setParameter(Parameter* param) override;
 
  private:
   SelectedParameterDotSlider(const SelectedParameterDotSlider& other);

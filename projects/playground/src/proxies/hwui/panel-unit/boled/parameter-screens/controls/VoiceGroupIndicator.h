@@ -18,14 +18,11 @@ class VoiceGroupIndicator : public Control
   bool drawLayer(FrameBuffer& fb);
 
   bool isLayerPartMuted(VoiceGroup vg) const;
-  
+  bool shouldDraw();
+
   VoiceGroup m_selectedVoiceGroup {};
   SoundType m_currentSoundType {};
 
-  sigc::connection m_soundTypeChanged;
   sigc::connection m_parameterChanged;
-  sigc::connection m_parameterSelectionChanged;
-  sigc::connection m_voiceGroupChanged;
-
-  bool m_shouldDraw = true;
+  const Parameter* m_param = nullptr;
 };
