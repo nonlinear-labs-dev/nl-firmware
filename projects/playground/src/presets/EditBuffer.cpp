@@ -37,6 +37,7 @@
 #include <device-settings/Settings.h>
 #include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
 #include <parameters/ScopedLock.h>
+#include <tools/StringTools.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -773,6 +774,11 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   locks.addGroupLock({ "Mono", VoiceGroup::I });
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+
+  if(!StringTools::hasEnding(getName(), "conv."))
+  {
+    setName(transaction, getName() + " conv.");
+  }
 }
 
 void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
@@ -780,6 +786,11 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   combineSplitPartGlobalMaster(transaction, copyFrom);
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+
+  if(!StringTools::hasEnding(getName(), "conv."))
+  {
+    setName(transaction, getName() + " conv.");
+  }
 }
 
 void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
