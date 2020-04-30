@@ -181,6 +181,16 @@ void Preset::guessName(UNDO::Transaction *transaction)
   setName(transaction, Application::get().getPresetManager()->createPresetNameBasedOn(currentName));
 }
 
+void Preset::guessConvertedName(UNDO::Transaction *transaction)
+{
+  auto currentName = getName();
+
+  if(currentName.empty())
+    currentName = "New preset";
+
+  setName(transaction, currentName + " (converted)");
+}
+
 PresetParameter *Preset::findParameterByID(ParameterId id, bool throwIfMissing) const
 {
   for(auto &g : m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())])

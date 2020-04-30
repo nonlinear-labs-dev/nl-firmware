@@ -162,7 +162,14 @@ void AppendOverwriteInsertButtonMenu::overwrite(Bank* bank, Preset* tgtPreset, b
   }
   else if(modified)
   {
-    tgtPreset->guessName(transaction);
+    if(pm->getEditBuffer()->getUUIDOfLastLoadedPreset() == Uuid::converted())
+    {
+      tgtPreset->guessConvertedName(transaction);
+    }
+    else
+    {
+      tgtPreset->guessName(transaction);
+    }
     pushRenameScreen();
   }
   else
@@ -220,8 +227,14 @@ void AppendOverwriteInsertButtonMenu::insertPreset(Bank* bank, size_t pos, bool 
   auto preset
       = bank->insertAndLoadPreset(scope->getTransaction(), pos, std::make_unique<Preset>(bank, *pm->getEditBuffer()));
 
-  if(modified)
+  if(pm->getEditBuffer()->getUUIDOfLastLoadedPreset() == Uuid::converted())
+  {
+    preset->guessConvertedName(transaction);
+  }
+  else if(modified)
+  {
     preset->guessName(transaction);
+  }
 
   bank->selectPreset(scope->getTransaction(), preset->getUuid());
   pm->selectBank(transaction, bank->getUuid());
