@@ -30,7 +30,7 @@ VoiceGroupIndicator::~VoiceGroupIndicator()
 
 bool VoiceGroupIndicator::redraw(FrameBuffer& fb)
 {
-  if(m_shouldDraw)
+  if(shouldDraw())
   {
     if(m_currentSoundType == SoundType::Split)
       return drawSplit(fb);
@@ -141,29 +141,14 @@ void VoiceGroupIndicator::onSoundTypeChanged()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   m_currentSoundType = eb->getType();
-
-  if(m_currentSoundType == SoundType::Single)
-  {
-    m_shouldDraw = false;
-    setDirty();
-  }
-  else if(auto sel = eb->getSelected())
-  {
-    onParameterChanged(sel);
-  }
+  setDirty();
 }
 
 void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
 {
-  auto isSplit = parameter->getParentGroup()->getID().getName() == "Split";
-  auto isMC = MacroControlsGroup::isMacroControl(parameter->getID().getNumber());
+  const auto paramNum = parameter->getID().getNumber();
 
-  m_shouldDraw
-      = SwitchVoiceGroupButton::allowToggling(parameter, Application::get().getPresetManager()->getEditBuffer());
-  m_shouldDraw |= isMC;
-  m_shouldDraw |= isSplit;
-
-  if(isSplit || isMC)
+  if(paramNum == C15::PID::Split_Split_Point || MacroControlsGroup::isMacroControl(paramNum))
     m_selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
   else
     m_selectedVoiceGroup = parameter->getID().getVoiceGroup();
@@ -176,8 +161,28 @@ void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, cons
   m_parameterChanged.disconnect();
   if(newParam)
   {
+    m_param = newParam;
     m_parameterChanged = newParam->onParameterChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterChanged));
   }
+}
+
+bool VoiceGroupIndicator::shouldDraw()
+{
+  if(m_currentSoundType == SoundType::Single)
+    return false;
+
+  if(m_param)
+  {
+    auto id = m_param->getID();
+    auto num = id.getNumber();
+
+    auto ret = SwitchVoiceGroupButton::allowToggling(m_param, Application::get().getPresetManager()->getEditBuffer());
+    ret |= MacroControlsGroup::isMacroControl(num);
+    ret |= num == C15::PID::Split_Split_Point;
+
+    return ret;
+  }
+  return false;
 }
 
 void VoiceGroupIndicator::onVoiceGroupSelectionChanged(VoiceGroup vg)
