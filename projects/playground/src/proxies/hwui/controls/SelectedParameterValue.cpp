@@ -40,8 +40,7 @@ void SelectedParameterValue::onParameterSelected(Parameter *parameter)
     m_paramValueConnection
         = parameter->onParameterChanged(sigc::mem_fun(this, &SelectedParameterValue::onParamValueChanged));
 
-    auto eb = Application::get().getPresetManager()->getEditBuffer();
-    setVisible(ParameterLayout2::isParameterAvailableInSoundType(parameter, eb));
+    setVisible(ParameterLayout2::isParameterAvailableInSoundType(parameter));
   }
 }
 
@@ -78,7 +77,7 @@ void SelectedParameterValue::onVoiceGroupSelectionChanged(VoiceGroup v)
 
 void SelectedParameterValue::onSoundTypeChanged()
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto visible = ParameterSelectLayout2::isParameterAvailableInSoundType(eb->getSelected(), eb);
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected();
+  auto visible = ParameterSelectLayout2::isParameterAvailableInSoundType(selected);
   setVisible(visible);
 }

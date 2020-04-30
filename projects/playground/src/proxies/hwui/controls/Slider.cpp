@@ -30,14 +30,12 @@ void Slider::setParameter(Parameter *param)
 
     m_paramValueConnection.disconnect();
 
-    auto eb = Application::get().getPresetManager()->getEditBuffer();
-
     if(param)
       m_paramValueConnection = param->onParameterChanged(sigc::mem_fun(this, &Slider::onParamValueChanged));
     else
       setValue(0, false);
 
-    auto visible = ParameterSelectLayout2::isParameterAvailableInSoundType(eb->getSelected(), eb);
+    auto visible = ParameterSelectLayout2::isParameterAvailableInSoundType(m_param);
     setVisible(visible);
     setDirty();
   }

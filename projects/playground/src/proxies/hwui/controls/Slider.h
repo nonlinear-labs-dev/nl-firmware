@@ -32,6 +32,5 @@ class Slider : public Control
   tDisplayValue m_value;
   bool m_bipolar;
   sigc::connection m_paramValueConnection;
-  sigc::connection m_soundTypeConnection;
   Parameter *m_param = nullptr;
 };

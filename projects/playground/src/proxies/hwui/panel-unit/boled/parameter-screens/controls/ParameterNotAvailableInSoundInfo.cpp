@@ -25,8 +25,7 @@ void ParameterNotAvailableInSoundInfo::setBackgroundColor(FrameBuffer &fb) const
 
 void ParameterNotAvailableInSoundInfo::onSelectionChanged(const Parameter *old, const Parameter *newParam)
 {
-  auto vis = !ParameterLayout2::isParameterAvailableInSoundType(newParam,
-                                                                Application::get().getPresetManager()->getEditBuffer());
+  auto vis = !ParameterLayout2::isParameterAvailableInSoundType(newParam);
   setVisible(vis);
 }
 
