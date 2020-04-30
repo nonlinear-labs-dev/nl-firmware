@@ -61,10 +61,18 @@ bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
 
 void VoiceGroupIndicator::onSoundTypeChanged()
 {
-  m_currentSoundType = Application::get().getPresetManager()->getEditBuffer()->getType();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  m_currentSoundType = eb->getType();
+
   if(m_currentSoundType == SoundType::Single)
+  {
     m_shouldDraw = false;
-  setDirty();
+    setDirty();
+  }
+  else if(auto sel = eb->getSelected())
+  {
+    onParameterChanged(sel);
+  }
 }
 
 void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
@@ -82,7 +90,6 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
   else
     m_selectedVoiceGroup = parameter->getID().getVoiceGroup();
 
-  onSoundTypeChanged();
   setDirty();
 }
 
