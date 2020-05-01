@@ -1,11 +1,11 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h
-    @date	2020-04-30, 23:50
-    @version	1.7B-6
-    @author	M. Seeber
-    @brief	complete list of parameters (and their properties) in TCD order
+/**	@file       parameter_list.h
+    @date       2020-05-01, 17:50
+    @version    1.7B-6
+    @author     M. Seeber
+    @brief      complete list of parameters (and their properties) in TCD order
     @todo
 *******************************************************************************/
 

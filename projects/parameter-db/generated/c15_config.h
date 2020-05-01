@@ -1,11 +1,11 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file       c15_config.h
-    @date       2020-04-30, 23:49
+/**	@file	c15_config.h
+    @date	2020-05-01, 17:50
     @version	1.7B-6
-    @author     M. Seeber
-    @brief      crucial information about the audio engine
+    @author	M. Seeber
+    @brief	crucial information about the audio engine
     @todo
 *******************************************************************************/
 
