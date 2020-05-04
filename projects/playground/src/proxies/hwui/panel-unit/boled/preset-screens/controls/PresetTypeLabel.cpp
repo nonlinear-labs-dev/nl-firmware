@@ -59,7 +59,7 @@ void PresetTypeLabel::update(const Preset *newSelection)
   if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
   {
     m_currentControl = std::make_unique<DualPresetTypeLabel>(
-        Rect { position.getLeft(), position.getTop() + 1, position.getWidth(), position.getHeight() - 1 });
+        Rect { position.getLeft(), position.getTop(), 10, 10 });
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
     dualLabel->update(newSelection);
   }
@@ -192,20 +192,20 @@ bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
 
-  buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 5);
+  buffer.setColor(m_inidicateI ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 4);
   if(m_selectedI)
   {
-    buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 5);
+    buffer.setColor(FrameBufferColors::C255);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 4);
   }
 
-  buffer.setColor(m_inidicateII ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 8, 11, 5);
+  buffer.setColor(m_inidicateII ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 9, 10, 4);
   if(m_selectedII)
   {
-    buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 8, 11, 5);
+    buffer.setColor(FrameBufferColors::C255);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 9, 10, 4);
   }
   return true;
 }
@@ -218,32 +218,32 @@ bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
 
-  buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 2, 5, 11);
+  buffer.setColor(m_inidicateI ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 3, 4, 10);
   if(m_selectedI)
   {
-    buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 2, 5, 11);
+    buffer.setColor(FrameBufferColors::C255);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 3, 4, 10);
   }
 
-  buffer.setColor(m_inidicateII ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX() + 8, getPosition().getY() + 2, 5, 11);
+  buffer.setColor(m_inidicateII ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX() + 8, getPosition().getY() + 3, 4, 10);
   if(m_selectedII)
   {
-    buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX() + 8, getPosition().getY() + 2, 5, 11);
+    buffer.setColor(FrameBufferColors::C255);
+    buffer.drawRect(getPosition().getX() + 8, getPosition().getY() + 3, 4, 10);
   }
   return true;
 }
 
 bool DualPresetTypeLabel::drawSingle(FrameBuffer &buffer)
 {
-  buffer.setColor(m_inidicateI ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 11);
+  buffer.setColor(m_inidicateI ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 10);
   if(m_selectedI)
   {
-    buffer.setColor(FrameBufferColors::C179);
-    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 2, 11, 11);
+    buffer.setColor(FrameBufferColors::C255);
+    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 10);
   }
 
   return true;

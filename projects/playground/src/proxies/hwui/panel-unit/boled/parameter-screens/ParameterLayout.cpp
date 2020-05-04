@@ -25,17 +25,21 @@
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
+#include <glibmm/main.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
+    , m_soundTypeRedrawThrottler { std::chrono::milliseconds(50) }
 {
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
-  addControl(new MuteIndicator(Rect(13, 14, 13, 11)));
   addControl(new LockedIndicator(Rect(64, 1, 10, 11)));
-  addControl(new VoiceGroupIndicator(Rect(0, 14, 11, 11)));
-  addControl(new UndoIndicator(Rect(1, 26, 10, 8)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
+  addControl(new UndoIndicator(Rect(1, 32, 10, 8)));
   addControl(new ParameterNotAvailableInSoundInfo(Rect(BIG_SLIDER_X - 2, 9, BIG_SLIDER_WIDTH + 4, 50),
                                                   "Only available with Layer Sounds"));
+
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged), false);
 }
 
 ModuleCaption *ParameterLayout2::createModuleCaption() const
@@ -118,11 +122,18 @@ void ParameterLayout2::setDefault()
     p->setDefaultFromHwui();
 }
 
+void ParameterLayout2::onSoundTypeChanged()
+{
+  m_soundTypeRedrawThrottler.doTask([&] {
+    Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
+  });
+}
+
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   if(auto p = getCurrentEditParameter())
   {
-    if(!isParameterAvailableInSoundType(p, Application::get().getPresetManager()->getEditBuffer()))
+    if(isParameterAvailableInSoundType(p))
     {
       auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
       p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
@@ -162,6 +173,12 @@ bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p, const
   }
 
   return true;
+}
+
+bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  return isParameterAvailableInSoundType(p, eb);
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2()
@@ -211,7 +228,7 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         break;
 
       case Buttons::BUTTON_D:
-        if(m_carousel)
+        if(m_carousel && isParameterAvailableInSoundType(getCurrentParameter()))
         {
           if(modifiers[SHIFT] == 1)
           {

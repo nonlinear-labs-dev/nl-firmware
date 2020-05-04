@@ -335,6 +335,9 @@ BaseUnit &HWUI::getBaseUnit()
 
 void HWUI::onButtonPressed(Buttons buttonID, bool state)
 {
+  if(buttonID == Buttons::BUTTON_ENCODER)
+    buttonID = Buttons::BUTTON_ENTER;
+
   m_buttonStates[(int) buttonID] = state;
 
   setModifiers(buttonID, state);

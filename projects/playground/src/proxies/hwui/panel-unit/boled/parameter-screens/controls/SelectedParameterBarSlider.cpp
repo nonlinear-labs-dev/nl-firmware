@@ -16,11 +16,3 @@ SelectedParameterBarSlider::SelectedParameterBarSlider(const Rect& rect)
 SelectedParameterBarSlider::~SelectedParameterBarSlider()
 {
 }
-
-void SelectedParameterBarSlider::setParameter(Parameter* param)
-{
-  Slider::setParameter(param);
-
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  setVisible(ParameterLayout2::isParameterAvailableInSoundType(param, eb));
-}

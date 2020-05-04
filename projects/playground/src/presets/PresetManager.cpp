@@ -24,6 +24,7 @@
 #include <giomm/file.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/SelectVoiceGroupLayout.h>
 #include <proxies/hwui/HWUIHelper.h>
+#include <tools/StringTools.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -613,6 +614,11 @@ Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedO
 
   if(base.empty())
     return "New preset";
+
+  if(StringTools::hasEnding(base, "conv."))
+  {
+    return basedOn;
+  }
 
   int highestPostfix = 0;
   m_banks.forEach([&](auto b) { highestPostfix = std::max(highestPostfix, b->getHighestIncrementForBaseName(base)); });
