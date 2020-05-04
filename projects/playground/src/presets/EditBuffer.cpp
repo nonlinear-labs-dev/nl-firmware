@@ -767,9 +767,9 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 
-  if(!StringTools::hasEnding(getName(), "conv."))
+  if(!StringTools::hasEnding(getVoiceGroupName(copyFrom), "conv."))
   {
-    setName(transaction, getName() + " conv.");
+    setName(transaction, getVoiceGroupName(copyFrom) + " conv.");
   }
 }
 
@@ -779,9 +779,9 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 
-  if(!StringTools::hasEnding(getName(), "conv."))
+  if(!StringTools::hasEnding(getVoiceGroupName(copyFrom), "conv."))
   {
-    setName(transaction, getName() + " conv.");
+    setName(transaction, getVoiceGroupName(copyFrom) + " conv.");
   }
 }
 
