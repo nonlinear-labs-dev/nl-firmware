@@ -63,10 +63,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 
   if(isLayerPartMuted(VoiceGroup::I))
   {
-    if(m_selectedVoiceGroup == VoiceGroup::I)
-      fb.setColor(FrameBufferColors::C77);
-    else
-      fb.setColor(FrameBufferColors::C255);
+    fb.setColor(FrameBufferColors::C43);
 
     auto centerX = absPos.getLeft() + 6;
     auto centerY = absPos.getTop() + 2;
@@ -83,10 +80,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 
   if(isLayerPartMuted(VoiceGroup::II))
   {
-    if(m_selectedVoiceGroup == VoiceGroup::II)
-      fb.setColor(FrameBufferColors::C77);
-    else
-      fb.setColor(FrameBufferColors::C255);
+    fb.setColor(FrameBufferColors::C43);
 
     auto centerX = absPos.getLeft() + 6;
     auto centerY = absPos.getTop() + 9;
