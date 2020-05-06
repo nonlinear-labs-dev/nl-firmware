@@ -24,6 +24,9 @@ namespace UNDO
     Glib::ustring getName() const;
     void setName(const Glib::ustring &name);
 
+    virtual void addDoRedoCommand(ActionCommand::tAction doRedo);
+    virtual void addUndoCommand(ActionCommand::tAction undo);
+
     virtual void addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo);
     virtual void addSimpleCommand(ActionCommand::tAction doRedoUndo);
     virtual void addCommand(tCommandPtr cmd);

@@ -70,6 +70,16 @@ namespace UNDO
     return m_isClosed;
   }
 
+  void Transaction::addDoRedoCommand(ActionCommand::tAction doRedo)
+  {
+    addSimpleCommand(doRedo, [](auto) {});
+  }
+
+  void Transaction::addUndoCommand(ActionCommand::tAction undo)
+  {
+    addSimpleCommand([](auto) {}, undo);
+  }
+
   void Transaction::addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo)
   {
     tCommandPtr cmd(new ActionCommand(std::move(doAndRedo), undo));
@@ -277,7 +287,7 @@ namespace UNDO
 
   void Transaction::traverse(std::function<void(const UNDO::Transaction *)> cb) const
   {
-    std::vector<const Transaction *> list{ this };
+    std::vector<const Transaction *> list { this };
     unsigned long long index = 0;
 
     while(index < list.size())
