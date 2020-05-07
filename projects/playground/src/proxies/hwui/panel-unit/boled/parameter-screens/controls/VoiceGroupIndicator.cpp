@@ -8,6 +8,8 @@
 #include <groups/MacroControlsGroup.h>
 #include <proxies/hwui/HWUIHelper.h>
 #include <parameter_declarations.h>
+#include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 
 VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
     : Control(r)
@@ -168,6 +170,14 @@ void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, cons
 
 bool VoiceGroupIndicator::shouldDraw()
 {
+  if(auto layout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout())
+  {
+    if(dynamic_cast<PresetManagerLayout*>(layout.get()))
+    {
+      return m_currentSoundType != SoundType::Single;
+    }
+  }
+
   if(m_currentSoundType == SoundType::Single)
     return false;
 
