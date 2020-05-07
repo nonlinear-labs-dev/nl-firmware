@@ -738,7 +738,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 {
   const auto oldType = getType();
 
-  transaction->addUndoCommand([this](auto) { this->sendToAudioEngine(); });
+  auto sendEditBufferScope = scopedSendEditBufferGuard(transaction);
 
   setName(transaction, getVoiceGroupName(copyFrom));
   undoableSetType(transaction, SoundType::Single);
@@ -766,8 +766,6 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   setVoiceGroupName(transaction, "", VoiceGroup::II);
 
   initRecallValues(transaction);
-
-  transaction->addDoRedoCommand([this](auto) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
@@ -804,7 +802,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   if(oldType == type)
     return;
 
-  transaction->addUndoCommand([this](auto) { this->sendToAudioEngine(); });
+  auto scope = scopedSendEditBufferGuard(transaction);
 
   undoableSetType(transaction, type);
 
@@ -822,8 +820,6 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   initRecallValues(transaction);
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
-
-  transaction->addDoRedoCommand([this](auto) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg)
@@ -1022,7 +1018,7 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
 
 void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+  auto scope = scopedSendEditBufferGuard(transaction);
 
   for(auto &group : getParameterGroups(vg))
     group->undoableClear(transaction);
@@ -1565,4 +1561,9 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
       undoableSelectParameter(transaction, { itConv->second, vg });
     }
   }
+}
+
+std::unique_ptr<SendEditBufferScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
+{
+  return std::make_unique<SendEditBufferScopeGuard>(this, transaction);
 }
