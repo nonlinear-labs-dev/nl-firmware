@@ -5,10 +5,16 @@ SendEditBufferScopeGuard::SendEditBufferScopeGuard(EditBuffer* eb, UNDO::Transac
     : m_editBuffer { eb }
     , m_transaction { transaction }
 {
-  m_transaction->addUndoCommand([this](auto s) { m_editBuffer->sendToAudioEngine(); });
+  m_transaction->addSimpleCommand([this](auto s) {
+    if(s == UNDO::Transaction::UNDOING)
+      m_editBuffer->sendToAudioEngine();
+  });
 }
 
 SendEditBufferScopeGuard::~SendEditBufferScopeGuard()
 {
-  m_transaction->addDoRedoCommand([this](auto) { m_editBuffer->sendToAudioEngine(); });
+  m_transaction->addSimpleCommand([this](auto s) {
+    if(s == UNDO::Transaction::REDOING || s == UNDO::Transaction::DOING)
+      m_editBuffer->sendToAudioEngine();
+  });
 }

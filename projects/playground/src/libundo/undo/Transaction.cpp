@@ -70,16 +70,6 @@ namespace UNDO
     return m_isClosed;
   }
 
-  void Transaction::addDoRedoCommand(ActionCommand::tAction doRedo)
-  {
-    addSimpleCommand(doRedo, [](auto) {});
-  }
-
-  void Transaction::addUndoCommand(ActionCommand::tAction undo)
-  {
-    addSimpleCommand([](auto) {}, undo);
-  }
-
   void Transaction::addSimpleCommand(ActionCommand::tAction doAndRedo, ActionCommand::tAction undo)
   {
     tCommandPtr cmd(new ActionCommand(std::move(doAndRedo), undo));
