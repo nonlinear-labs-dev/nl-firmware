@@ -22,6 +22,7 @@ class EditBuffer : public ParameterDualGroupSet
   ~EditBuffer() override;
 
   Glib::ustring getName() const;
+  Glib::ustring getNameWithSuffix() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
   Glib::ustring getVoiceGroupNameWithSuffix(VoiceGroup vg, bool addSpace) const;
   size_t getHash() const;
@@ -223,4 +224,6 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
                                              VoiceGroup copyTo);
   void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
+  bool isMonoEnabled(const VoiceGroup& vg) const;
+  bool hasMoreThanOneUnisonVoice(const VoiceGroup& vg) const;
 };

@@ -38,6 +38,7 @@
 #include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
 #include <parameters/ScopedLock.h>
 #include <tools/StringTools.h>
+#include <parameter_declarations.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -928,9 +929,46 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 
 Glib::ustring EditBuffer::getVoiceGroupNameWithSuffix(VoiceGroup vg, bool addSpace) const
 {
-  auto mono = findParameterByID({ 364, vg })->getControlPositionValue() > 0;
-  auto unison = findParameterByID({ 249, vg })->getControlPositionValue() > 0;
+  auto isLayer = getType() == SoundType::Layer;
+  if(isLayer)
+    vg = VoiceGroup::I;
+  bool mono = isMonoEnabled(vg);
+  bool unison = hasMoreThanOneUnisonVoice(vg);
   return getVoiceGroupName(vg) + (addSpace ? "\u202F" : "") + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
+}
+
+bool EditBuffer::hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const
+{
+  return findParameterByID({ C15::PID::Unison_Voices, vg })->getControlPositionValue() > 0;
+}
+
+bool EditBuffer::isMonoEnabled(const VoiceGroup &vg) const
+{
+  return findParameterByID({ C15::PID::Mono_Grp_Enable, vg })->getControlPositionValue() > 0;
+}
+
+Glib::ustring EditBuffer::getNameWithSuffix() const
+{
+  auto hasMono = false;
+  auto hasUnison = false;
+  switch(getType())
+  {
+    case SoundType::Layer:
+    case SoundType::Single:
+      hasMono |= isMonoEnabled(VoiceGroup::I);
+      hasUnison |= hasMoreThanOneUnisonVoice(VoiceGroup::I);
+      break;
+    case SoundType::Split:
+      hasMono |= isMonoEnabled(VoiceGroup::I);
+      hasMono |= isMonoEnabled(VoiceGroup::II);
+      hasUnison |= hasMoreThanOneUnisonVoice(VoiceGroup::I);
+      hasUnison |= hasMoreThanOneUnisonVoice(VoiceGroup::II);
+      break;
+    default:
+      break;
+  }
+
+  return getName() + " " + (hasMono ? "\uE040" : "") + (hasUnison ? "\uE041" : "");
 }
 
 void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo)
