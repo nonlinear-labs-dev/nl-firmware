@@ -38,6 +38,7 @@
 #include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
 #include <parameters/ScopedLock.h>
 #include <tools/StringTools.h>
+#include <parameter_declarations.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -547,7 +548,7 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator)
 {
-  transaction->addPostfixCommand([this](auto) -> void { this->sendToAudioEngine(); });
+  auto scope = scopedSendEditBufferGuard(transaction);
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
@@ -558,8 +559,8 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
 void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup vg, Initiator initiator)
 {
-  transaction->addPostfixCommand([this](auto) -> void { this->sendToAudioEngine(); });
-
+  auto scope = scopedSendEditBufferGuard(transaction);
+  
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
   for(auto &g : getParameterGroups(vg))
@@ -568,7 +569,7 @@ void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGrou
 
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
-  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+  auto sendScope = scopedSendEditBufferGuard(transaction);
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     undoableInitPart(transaction, vg);
@@ -703,17 +704,18 @@ void EditBuffer::combineLayerPartGlobalMaster(UNDO::Transaction *transaction, Vo
 {
   auto masterGroup = getParameterGroupByID({ "Master", VoiceGroup::Global });
 
-  auto originVolume = dynamic_cast<ModulateableParameter *>(findParameterByID({ 358, copyFrom }));
-  auto originTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ 360, copyFrom }));
+  auto originVolume
+      = dynamic_cast<ModulateableParameter *>(findParameterByID({ C15::PID::Voice_Grp_Volume, copyFrom }));
+  auto originTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ C15::PID::Voice_Grp_Tune, copyFrom }));
 
-  auto masterVolumeParameter
-      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 247, VoiceGroup::Global }));
-  auto masterTuneParameter
-      = dynamic_cast<ModulateableParameter *>(masterGroup->getParameterByID({ 248, VoiceGroup::Global }));
+  auto masterVolumeParameter = dynamic_cast<ModulateableParameter *>(
+      masterGroup->getParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global }));
+  auto masterTuneParameter = dynamic_cast<ModulateableParameter *>(
+      masterGroup->getParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global }));
 
   // unmute both parts
-  findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
-  findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
+  findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
+  findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 
   ParabolicGainDbScaleConverter dbGainConverter;
 
@@ -736,6 +738,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 {
   const auto oldType = getType();
 
+  auto sendEditBufferScope = scopedSendEditBufferGuard(transaction);
+
   setName(transaction, getVoiceGroupName(copyFrom));
   undoableSetType(transaction, SoundType::Single);
 
@@ -752,8 +756,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 
   forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction); });
 
-  auto vgVolume = findParameterByID({ 358, VoiceGroup::I });
-  auto vgTune = findParameterByID({ 360, VoiceGroup::I });
+  auto vgVolume = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto vgTune = findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I });
   vgVolume->loadDefault(transaction);
   vgTune->loadDefault(transaction);
 
@@ -762,8 +766,6 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   setVoiceGroupName(transaction, "", VoiceGroup::II);
 
   initRecallValues(transaction);
-
-  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
@@ -800,6 +802,8 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   if(oldType == type)
     return;
 
+  auto scope = scopedSendEditBufferGuard(transaction);
+
   undoableSetType(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
@@ -816,7 +820,6 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   initRecallValues(transaction);
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
-  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
 }
 
 void EditBuffer::undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg)
@@ -1015,7 +1018,7 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
 
 void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+  auto scope = scopedSendEditBufferGuard(transaction);
 
   for(auto &group : getParameterGroups(vg))
     group->undoableClear(transaction);
@@ -1558,4 +1561,9 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
       undoableSelectParameter(transaction, { itConv->second, vg });
     }
   }
+}
+
+std::unique_ptr<SendEditBufferScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
+{
+  return std::make_unique<SendEditBufferScopeGuard>(this, transaction);
 }
