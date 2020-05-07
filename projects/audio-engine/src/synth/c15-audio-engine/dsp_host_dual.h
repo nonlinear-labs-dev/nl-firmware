@@ -30,8 +30,8 @@ inline constexpr bool VOICE_FADE_INTERPOLATION = true;
 
 // basic logging switches
 inline constexpr bool LOG_MISSING = false;
-inline constexpr bool LOG_FAIL = true;
-inline constexpr bool LOG_INIT = true;
+inline constexpr bool LOG_FAIL = false;
+inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
 inline constexpr bool LOG_DISPATCH = false;
