@@ -548,7 +548,7 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator)
 {
-  transaction->addPostfixCommand([this](auto) -> void { this->sendToAudioEngine(); });
+  auto scope = scopedSendEditBufferGuard(transaction);
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
@@ -559,8 +559,8 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
 void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup vg, Initiator initiator)
 {
-  transaction->addPostfixCommand([this](auto) -> void { this->sendToAudioEngine(); });
-
+  auto scope = scopedSendEditBufferGuard(transaction);
+  
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
   for(auto &g : getParameterGroups(vg))
@@ -569,7 +569,7 @@ void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGrou
 
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
-  transaction->addPostfixCommand([this](auto) { this->sendToAudioEngine(); });
+  auto sendScope = scopedSendEditBufferGuard(transaction);
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     undoableInitPart(transaction, vg);
