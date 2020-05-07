@@ -44,7 +44,7 @@ inline constexpr bool LOG_RECALL_LEVELS = false;
 inline constexpr bool LOG_KEYS = false;
 inline constexpr bool LOG_KEYS_POLY = false;
 inline constexpr bool LOG_TRANSITIONS = false;
-inline constexpr bool LOG_RESET = true;
+inline constexpr bool LOG_RESET = false;
 inline constexpr bool LOG_HW = false;
 // more detailed logging of specific parameters
 inline constexpr bool LOG_ENGINE_STATUS = false;
