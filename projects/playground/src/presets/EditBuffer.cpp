@@ -475,6 +475,8 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
+  auto scope = scopedSendEditBufferGuard(transaction);
+
   auto ae = Application::get().getAudioEngineProxy();
   ae->toggleSuppressParameterChanges(transaction);
 
@@ -560,7 +562,7 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup vg, Initiator initiator)
 {
   auto scope = scopedSendEditBufferGuard(transaction);
-  
+
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
   for(auto &g : getParameterGroups(vg))
@@ -997,6 +999,8 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
     from = VoiceGroup::I;
   }
 
+  auto scope = scopedSendEditBufferGuard(transaction);
+
   switch(getType())
   {
     case SoundType::Single:
@@ -1079,35 +1083,6 @@ void EditBuffer::initToFX(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     findParameterByID({ 362, vg })->loadDefault(transaction);
-}
-
-void EditBuffer::undoableLoadSinglePreset(Preset *preset, VoiceGroup to)
-{
-  if(!preset)
-    return;
-
-  if(preset->isDual())
-    return;
-
-  if(!isDual())
-    return;
-
-  auto scope = getParent()->getUndoScope().startTransaction(
-      nltools::string::concat("Load '", preset->getName(), "' into ", toString(to)));
-  auto transaction = scope->getTransaction();
-
-  switch(getType())
-  {
-    case SoundType::Split:
-      loadSinglePresetIntoSplitPart(transaction, preset, to);
-      break;
-    case SoundType::Layer:
-      loadSinglePresetIntoLayerPart(transaction, preset, to);
-      break;
-    case SoundType::Invalid:
-    case SoundType::Single:
-      break;
-  }
 }
 
 std::vector<Parameter *> EditBuffer::getCrossFBParameters(const VoiceGroup &to) const
