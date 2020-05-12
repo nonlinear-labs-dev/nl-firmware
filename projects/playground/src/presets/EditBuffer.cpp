@@ -475,8 +475,10 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
+  auto scope = scopedSendEditBufferGuard(transaction);
   auto ae = Application::get().getAudioEngineProxy();
   ae->toggleSuppressParameterChanges(transaction);
+  const auto oldType = getType();
 
   setAttribute(transaction, "origin-I", preset->getUuid().raw());
   setAttribute(transaction, "origin-I-vg", toString(VoiceGroup::I));
@@ -492,6 +494,8 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
     bank->selectPreset(transaction, preset->getUuid());
     pm->selectBank(transaction, bank->getUuid());
   }
+
+  cleanupParameterSelection(transaction, oldType, preset->getType());
 
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
@@ -512,7 +516,6 @@ void EditBuffer::undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, V
 void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 {
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
-
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
   resetModifiedIndicator(transaction, getHash());
@@ -560,7 +563,7 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup vg, Initiator initiator)
 {
   auto scope = scopedSendEditBufferGuard(transaction);
-  
+
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
   for(auto &g : getParameterGroups(vg))
@@ -1582,6 +1585,9 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
   }};
   // clang-format on
 
+  auto hwui = Application::get().getHWUI();
+  auto currentVg = hwui->getCurrentVoiceGroup();
+
   auto itMap = conversions.find({ oldType, newType });
   if(itMap != conversions.end())
   {
@@ -1590,13 +1596,24 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
     auto itConv = conv.find(id.getNumber());
     if(itConv != conv.end())
     {
-      auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
       auto vg = ParameterId::isGlobal(itConv->second) ? VoiceGroup::Global : currentVg;
+
       if(newType == SoundType::Single && vg == VoiceGroup::II)
         vg = VoiceGroup::I;
 
       undoableSelectParameter(transaction, { itConv->second, vg });
+      hwui->setCurrentVoiceGroup(vg);
     }
+  }
+
+  if(newType == SoundType::Single && currentVg == VoiceGroup::II)
+  {
+    auto sel = getSelected();
+    auto selNum = sel->getID().getNumber();
+    if(!ParameterId::isGlobal(selNum))
+      undoableSelectParameter(transaction, { selNum, VoiceGroup::I });
+
+    hwui->setCurrentVoiceGroup(VoiceGroup::I);
   }
 }
 
