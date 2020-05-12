@@ -934,11 +934,13 @@ Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 
 Glib::ustring EditBuffer::getVoiceGroupNameWithSuffix(VoiceGroup vg, bool addSpace) const
 {
+  auto monoUnisonVoiceGroup = vg;
   auto isLayer = getType() == SoundType::Layer;
   if(isLayer)
-    vg = VoiceGroup::I;
-  bool mono = isMonoEnabled(vg);
-  bool unison = hasMoreThanOneUnisonVoice(vg);
+    monoUnisonVoiceGroup = VoiceGroup::I;
+  bool mono = isMonoEnabled(monoUnisonVoiceGroup);
+  bool unison = hasMoreThanOneUnisonVoice(monoUnisonVoiceGroup);
+
   return getVoiceGroupName(vg) + (addSpace ? "\u202F" : "") + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
 }
 
