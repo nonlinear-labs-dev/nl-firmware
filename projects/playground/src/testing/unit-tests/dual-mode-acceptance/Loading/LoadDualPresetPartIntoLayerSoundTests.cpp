@@ -75,7 +75,7 @@ TEST_CASE("Load Part I of Split into Layer Part I")
 
     eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
 
-    THEN("aeMessage is not equals")
+    THEN("AudioEngine Message is different")
     {
       auto newAEMessage = AudioEngineProxy::createLayerEditBufferMessage(*eb);
       CHECK_FALSE(newAEMessage == oldAEMessage);
