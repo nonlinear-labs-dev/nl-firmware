@@ -59,7 +59,7 @@ void PresetTypeLabel::update(const Preset *newSelection)
   if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
   {
     m_currentControl = std::make_unique<DualPresetTypeLabel>(
-        Rect { position.getLeft(), position.getTop(), 10, 10 });
+        Rect { position.getLeft() + 1, position.getTop(), 10, 10 });
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
     dualLabel->update(newSelection);
   }

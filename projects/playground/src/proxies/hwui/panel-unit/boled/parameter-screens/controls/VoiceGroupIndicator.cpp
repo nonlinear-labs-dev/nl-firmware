@@ -67,34 +67,36 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
   {
     fb.setColor(FrameBufferColors::C43);
 
-    auto centerX = absPos.getLeft() + 6;
+    auto centerX = absPos.getLeft() + 5;
     auto centerY = absPos.getTop() + 2;
     fb.setPixel(centerX - 2, centerY - 2);
     fb.setPixel(centerX - 2, centerY + 2);
     fb.setPixel(centerX - 1, centerY - 1);
     fb.setPixel(centerX - 1, centerY + 1);
     fb.setPixel(centerX, centerY);
-    fb.setPixel(centerX + 2, centerY - 2);
-    fb.setPixel(centerX + 2, centerY + 2);
-    fb.setPixel(centerX + 1, centerY - 1);
-    fb.setPixel(centerX + 1, centerY + 1);
+    fb.setPixel(centerX + 1, centerY);
+    fb.setPixel(centerX + 3, centerY - 2);
+    fb.setPixel(centerX + 3, centerY + 2);
+    fb.setPixel(centerX + 2, centerY - 1);
+    fb.setPixel(centerX + 2, centerY + 1);
   }
 
   if(isLayerPartMuted(VoiceGroup::II))
   {
     fb.setColor(FrameBufferColors::C43);
 
-    auto centerX = absPos.getLeft() + 6;
+    auto centerX = absPos.getLeft() + 5;
     auto centerY = absPos.getTop() + 9;
     fb.setPixel(centerX - 2, centerY - 2);
     fb.setPixel(centerX - 2, centerY + 2);
     fb.setPixel(centerX - 1, centerY - 1);
     fb.setPixel(centerX - 1, centerY + 1);
     fb.setPixel(centerX, centerY);
-    fb.setPixel(centerX + 2, centerY - 2);
-    fb.setPixel(centerX + 2, centerY + 2);
-    fb.setPixel(centerX + 1, centerY - 1);
-    fb.setPixel(centerX + 1, centerY + 1);
+    fb.setPixel(centerX + 1, centerY);
+    fb.setPixel(centerX + 3, centerY - 2);
+    fb.setPixel(centerX + 3, centerY + 2);
+    fb.setPixel(centerX + 2, centerY - 1);
+    fb.setPixel(centerX + 2, centerY + 1);
   }
 
   return true;
