@@ -621,21 +621,21 @@ void EditBuffer::sendToAudioEngine()
 
 void EditBuffer::undoableUnlockAllGroups(UNDO::Transaction *transaction)
 {
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto group : getParameterGroups(vg))
       group->undoableUnlock(transaction);
 }
 
 void EditBuffer::undoableLockAllGroups(UNDO::Transaction *transaction)
 {
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto group : getParameterGroups(vg))
       group->undoableLock(transaction);
 }
 
 void EditBuffer::undoableToggleGroupLock(UNDO::Transaction *transaction, const Glib::ustring &groupId)
 {
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     if(auto g = getParameterGroupByID({ groupId, vg }))
       g->undoableToggleLock(transaction);
 }
