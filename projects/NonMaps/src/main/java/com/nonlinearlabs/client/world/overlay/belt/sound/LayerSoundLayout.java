@@ -74,11 +74,11 @@ public class LayerSoundLayout extends SoundLayout {
 			double parts = 20;
 			double unit = (w - 2 * margin) / parts;
 
-			getChildren().get(0).doLayout(margin + 0 * unit + margin, margin, 2 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(1).doLayout(margin + 2 * unit + margin, margin, 8 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(2).doLayout(margin + 10 * unit + margin, margin, 4 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(3).doLayout(margin + 14 * unit + margin, margin, 4 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(4).doLayout(margin + 18 * unit + margin, margin, 2 * unit - 2 * margin, h - 2 * margin);
+			getChildren().get(0).doLayout(margin * 1.5, margin * 1.2, 1.5 * unit - 2 * margin, h - 2 * margin);
+			getChildren().get(1).doLayout(margin + 1.5 * unit + margin, margin, 8.5 * unit - 2 * margin, h - 2 * margin);
+			getChildren().get(2).doLayout(margin + 10 * unit + margin, margin, 4.25 * unit - 2 * margin, h - 2 * margin);
+			getChildren().get(3).doLayout(margin + 14.25 * unit + margin, margin, 4.25 * unit - 2 * margin, h - 2 * margin);
+			getChildren().get(4).doLayout(margin + 18.5 * unit + margin, margin, 1.5 * unit - 2 * margin, h - 2 * margin);
 		}
 
 		@Override
