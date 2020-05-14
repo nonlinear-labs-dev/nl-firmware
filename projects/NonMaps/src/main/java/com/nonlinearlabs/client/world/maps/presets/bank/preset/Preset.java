@@ -13,6 +13,7 @@ import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.Tracer;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
@@ -335,7 +336,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	private Control loadToPartClickBehaviour(LoadToPartMode mode) {
 		if(isDual()) {
-			choosePresetPart = new ChoosePresetPartDialog(this);
+			choosePresetPart = new ChoosePresetPartDialog(this, EditBufferModel.get().voiceGroup.getValue());
 		} else {
 			mode.setSelectedPreset(this);
 		}
