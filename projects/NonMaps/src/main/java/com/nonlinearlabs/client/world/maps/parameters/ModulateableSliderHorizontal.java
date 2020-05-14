@@ -1,14 +1,11 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.world.Dimension;
 import com.nonlinearlabs.client.world.Gray;
-import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.google.gwt.core.client.*;
 
 public class ModulateableSliderHorizontal extends SliderHorizontal {
 
@@ -84,11 +81,6 @@ public class ModulateableSliderHorizontal extends SliderHorizontal {
 		return r;
 	}
 
-	@Override
-	public RGB getColorSliderHighlight() {
-		return super.getColorSliderHighlight();
-	}
-
 	protected double getVerticalOffset() {
 		return 0;
 	}
@@ -115,7 +107,6 @@ public class ModulateableSliderHorizontal extends SliderHorizontal {
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
-		Tracer.log(String.valueOf(levelOfDetail));
 		modVisible = levelOfDetail >= 5;
 	}
 }
