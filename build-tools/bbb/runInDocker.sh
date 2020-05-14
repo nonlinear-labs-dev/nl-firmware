@@ -4,6 +4,8 @@ BINARY_DIR=$(realpath $1)
 shift
 SOURCE_DIR=$(realpath $1)
 shift
+DOCKER_ARGS="$1"
+shift
 
 TMPSCRIPT=$(mktemp)
 TMPSCRIPTBASE=$(basename $TMPSCRIPT)
@@ -19,4 +21,4 @@ do
 done
 
 DOCKERNAME="nl-cross-build-environment"
-docker run --privileged --rm -v $TMPDIRNAME:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash /script/$TMPSCRIPTBASE
+docker run $DOCKER_ARGS --privileged --rm -v $TMPDIRNAME:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash /script/$TMPSCRIPTBASE
