@@ -1,8 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.canvas.dom.client.Context2d.LineCap;
-import com.google.gwt.canvas.dom.client.Context2d.LineJoin;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
@@ -48,7 +46,7 @@ class ValueEdit extends OverlayLayout {
 		}
 
 		@Override
-		public Control doubleClick() {
+		public Control doubleClick(Position pos) {
 			EditBufferUseCases.get().setToDefault(parameter);
 			return this;
 		}
@@ -74,7 +72,7 @@ class ValueEdit extends OverlayLayout {
 		}
 
 		@Override
-		public Control doubleClick() {
+		public Control doubleClick(Position pos) {
 			return click(null);
 		}
 
