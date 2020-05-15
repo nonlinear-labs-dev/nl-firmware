@@ -44,14 +44,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${PROJECT_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/install-update-from-usb.service.in ${PROJECT_BINARY_DIR}/systemd/install-update-from-usb.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/splash-screen.service.in ${PROJECT_BINARY_DIR}/systemd/splash-screen.service @ONLY)
-configure_file(${PROJECT_SOURCE_DIR}/systemd/handle-mmc-device-appeared-twice.service.in ${PROJECT_BINARY_DIR}/systemd/handle-mmc-device-appeared-twice.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/gettimefromepc.service.in ${PROJECT_BINARY_DIR}/systemd/gettimefromepc.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/chkphy.service.in ${PROJECT_BINARY_DIR}/systemd/chkphy.service @ONLY)
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/install-update-from-usb.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/splash-screen.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
-install(FILES ${PROJECT_BINARY_DIR}/systemd/handle-mmc-device-appeared-twice.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/gettimefromepc.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/chkphy.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
@@ -65,7 +63,6 @@ install(CODE "execute_process(
     ln -sf ../${PROJECT_NAME}.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${PROJECT_NAME}.service
     ln -sf ../install-update-from-usb.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/install-update-from-usb.service
     ln -sf ../splash-screen.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/splash-screen.service
-    ln -sf ../handle-mmc-device-appeared-twice.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/handle-mmc-device-appeared-twice.service
     ln -sf ../gettimefromepc.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/gettimefromepc.service
     ln -sf ../chkphy.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/chkphy.service
     \")")
