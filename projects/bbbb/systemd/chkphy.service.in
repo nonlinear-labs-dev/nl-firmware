@@ -1,0 +1,18 @@
+[Unit]
+Description=Check BBB phy on boot and repower if PHY failed
+After=local-fs.target
+Before=
+Requires=
+Wants=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=@C15_INSTALL_PATH@/scripts/bbb-check-phy.sh
+RemainAfterExit=yes
+TimeoutSec=0
+
+# Output needs to appear in instance console output
+StandardOutput=journal+console
+
+[Install]
+WantedBy=network-online.target
