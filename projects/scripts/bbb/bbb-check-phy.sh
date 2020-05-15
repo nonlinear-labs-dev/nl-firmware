@@ -16,8 +16,11 @@ if [ "$(phyreg test 18 13)" = "1" ]; then
         sleep 1
 
         NOW=$(date +%s)
+
         echo "chkphy:Rebooting NOW=$NOW"
         echo "Rebooting $NOW" >>/var/tmp/chkphy.log
+        # OLED output, quick and dirty for better debugging
+        /usr/C15/text2soled/text2soled multitext "" "Ethernet down!" "RESTARTING C15!" "Ethernet down!" "RESTARTING C15!"
         # make sure that log message actually gets written before we pull the plug
         sync
 
