@@ -16,6 +16,7 @@
 #include <presets/Preset.h>
 #include <http/UndoScope.h>
 #include <parameters/names/ParameterDB.h>
+#include <parameter_declarations.h>
 
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);
@@ -148,6 +149,26 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto vg = to<VoiceGroup>(request->get("part"));
     auto scope = editBuffer->getUndoScope().startTransaction("Randomize Part");
     editBuffer->undoableRandomizePart(scope->getTransaction(), vg, Initiator::EXPLICIT_WEBUI);
+  });
+
+  addAction("mute", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto vg = to<VoiceGroup>(request->get("part"));
+    auto scope = editBuffer->getUndoScope().startTransaction("Mute " + toString(vg));
+    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromHwui(scope->getTransaction(), 1);
+  });
+
+  addAction("unmute", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto vg = to<VoiceGroup>(request->get("part"));
+    auto scope = editBuffer->getUndoScope().startTransaction("Unmute " + toString(vg));
+    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromHwui(scope->getTransaction(), 0);
+  });
+
+  addAction("mute-part-unmute-other", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto vg = to<VoiceGroup>(request->get("part"));
+    auto scope = editBuffer->getUndoScope().startTransaction("Mute " + toString(vg));
+    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromHwui(scope->getTransaction(), 1);
+    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I })
+        ->setCPFromHwui(scope->getTransaction(), 0);
   });
 
   addAction("set-modamount-and-value", [=](std::shared_ptr<NetworkRequest> request) mutable {

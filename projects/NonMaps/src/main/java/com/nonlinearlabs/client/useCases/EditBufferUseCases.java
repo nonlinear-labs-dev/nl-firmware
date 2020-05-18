@@ -463,4 +463,16 @@ public class EditBufferUseCases {
 
 	}
 
+	public void unmutePart(VoiceGroup group) {
+		NonMaps.get().getServerProxy().unmutePart(group);
+	}
+
+	public void mutePart(VoiceGroup group) {
+		NonMaps.get().getServerProxy().mutePart(group);
+	}
+
+	public void setMuteForPartAndUnmuteOther(VoiceGroup g) {
+		NonMaps.get().getServerProxy().setMuteForPartAndUnmuteOther(g);
+	}
+
 }
