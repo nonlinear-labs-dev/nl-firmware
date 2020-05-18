@@ -337,6 +337,21 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
   }
 }
 
+bool EditBuffer::isParameterFocusLocked() const
+{
+  return m_lockParameterFocusChanges;
+}
+
+void EditBuffer::lockParameterFocusChanges()
+{
+  m_lockParameterFocusChanges = true;
+}
+
+void EditBuffer::unlockParameterFocusChanges()
+{
+  m_lockParameterFocusChanges = false;
+}
+
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
   if(m_lastSelectedParameter != p->getID())
@@ -359,7 +374,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       if(newP)
         newP->onSelected();
 
-      if(!getParent()->isLoading())
+      if(!getParent()->isLoading() && !isParameterFocusLocked())
       {
         if(auto hwui = Application::get().getHWUI())
         {
@@ -1534,6 +1549,8 @@ void EditBuffer::undoableLoadSelectedToPart(UNDO::Transaction *transaction, Voic
 
 void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
 {
+  auto scope = createScopeGuard([&] { lockParameterFocusChanges(); }, [&] { unlockParameterFocusChanges(); });
+
   using ParameterNumberMap = std::unordered_map<int, int>;
   using From = SoundType;
   using To = SoundType;
@@ -1596,4 +1613,10 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
 std::unique_ptr<SendEditBufferScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
 {
   return std::make_unique<SendEditBufferScopeGuard>(this, transaction);
+}
+
+std::unique_ptr<GenericEditBufferScopeGuard> EditBuffer::createScopeGuard(std::function<void(void)> start,
+                                                                          std::function<void(void)> end)
+{
+  return std::make_unique<GenericEditBufferScopeGuard>(start, end);
 }

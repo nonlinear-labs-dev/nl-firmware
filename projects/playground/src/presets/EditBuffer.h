@@ -139,6 +139,8 @@ class EditBuffer : public ParameterDualGroupSet
 
  private:
   std::unique_ptr<SendEditBufferScopeGuard> scopedSendEditBufferGuard(UNDO::Transaction *transaction);
+  std::unique_ptr<GenericEditBufferScopeGuard> createScopeGuard(std::function<void(void)> start,
+                                                                std::function<void(void)> end);
 
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;
@@ -157,6 +159,10 @@ class EditBuffer : public ParameterDualGroupSet
 
   void doDeferedJobs();
   void checkModified();
+
+  bool isParameterFocusLocked() const;
+  void lockParameterFocusChanges();
+  void unlockParameterFocusChanges();
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   SignalWithCache<void, bool> m_signalModificationState;
@@ -180,6 +186,7 @@ class EditBuffer : public ParameterDualGroupSet
 
   DelayedJob m_deferredJobs;
 
+  bool m_lockParameterFocusChanges = false;
   bool m_isModified;
   RecallParameterGroups m_recallSet;
   SoundType m_type;
@@ -226,6 +233,6 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
                                              VoiceGroup copyTo);
   void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
-  bool isMonoEnabled(const VoiceGroup& vg) const;
-  bool hasMoreThanOneUnisonVoice(const VoiceGroup& vg) const;
+  bool isMonoEnabled(const VoiceGroup &vg) const;
+  bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 };
