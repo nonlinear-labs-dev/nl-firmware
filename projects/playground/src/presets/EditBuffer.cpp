@@ -39,6 +39,7 @@
 #include <parameters/ScopedLock.h>
 #include <tools/StringTools.h>
 #include <parameter_declarations.h>
+#include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -1590,6 +1591,15 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
       undoableSelectParameter(transaction, { selNum, VoiceGroup::I });
 
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
+  }
+
+  if(auto layout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout())
+  {
+    if(auto presetmanagerLayout = dynamic_cast<PresetManagerLayout *>(layout.get()))
+    {
+      presetmanagerLayout->getPresetPartSelection(VoiceGroup::I)->resetToLoaded();
+      presetmanagerLayout->getPresetPartSelection(VoiceGroup::II)->resetToLoaded();
+    }
   }
 }
 

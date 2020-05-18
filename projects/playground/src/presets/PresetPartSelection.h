@@ -15,6 +15,8 @@ class PresetPartSelection
   void selectNextPresetPart();
   void selectPreviousPresetPart();
 
+  void resetToLoaded();
+
   const Bank* m_bank { nullptr };
   const Preset* m_preset { nullptr };
   VoiceGroup m_voiceGroup { VoiceGroup::I };

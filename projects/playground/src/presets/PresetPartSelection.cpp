@@ -121,3 +121,15 @@ void PresetPartSelection::selectPreviousPresetPart()
     }
   }
 }
+
+void PresetPartSelection::resetToLoaded()
+{
+  auto pm = Application::get().getPresetManager();
+  auto eb = pm->getEditBuffer();
+  if(auto loaded = pm->findPreset(eb->getUUIDOfLastLoadedPreset()))
+  {
+    m_preset = loaded;
+    m_bank = static_cast<Bank*>(loaded->getParent());
+    m_voiceGroup = m_preset->isDual() ? eb->getPartOrigin(m_focusedVoiceGroup).sourceGroup : VoiceGroup::I;
+  }
+}
