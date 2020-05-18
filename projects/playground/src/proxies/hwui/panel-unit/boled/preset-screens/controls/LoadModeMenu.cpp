@@ -78,6 +78,11 @@ void LoadModeMenu::installSingle()
   directLoadButton->setHighlight(isDirectLoadEnabled());
 }
 
+void LoadModeMenu::setBackgroundColor(FrameBuffer& fb) const
+{
+  fb.setColor(FrameBufferColors::Transparent);
+}
+
 void LoadModeMenu::installDual()
 {
   m_buttonDHandler = std::make_unique<ShortVsLongPress>([this] { toggleLoadToPartDetail(); },
