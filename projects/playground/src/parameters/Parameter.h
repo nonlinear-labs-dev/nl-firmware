@@ -137,7 +137,7 @@ class Parameter : public UpdateDocumentContributor,
 
  protected:
   virtual void sendToLpc() const;
-  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
+  virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
   virtual void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
