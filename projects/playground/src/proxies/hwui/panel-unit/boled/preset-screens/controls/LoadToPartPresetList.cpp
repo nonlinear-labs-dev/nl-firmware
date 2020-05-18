@@ -9,7 +9,6 @@
 #include <device-settings/Settings.h>
 #include <presets/Bank.h>
 #include <presets/Preset.h>
-#include <proxies/hwui/HWUIHelper.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListHeader.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetListContent.h>
 #include <presets/PresetPartSelection.h>

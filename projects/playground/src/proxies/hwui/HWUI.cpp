@@ -540,6 +540,12 @@ VoiceGroup HWUI::getCurrentVoiceGroup() const
   return m_currentVoiceGroup;
 }
 
+void HWUI::setLoadToPart(bool state)
+{
+  if(std::exchange(m_loadToPartActive, state) != state)
+    m_loadToPartSignal.deferedSend(m_loadToPartActive);
+}
+
 void HWUI::setCurrentVoiceGroup(VoiceGroup v)
 {
   if(v == VoiceGroup::I || v == VoiceGroup::II)
@@ -698,4 +704,19 @@ FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
   in = removeEditOnFocusChange(in);
   in = removeInvalidsFromSound(in);
   return in;
+}
+
+sigc::connection HWUI::onLoadToPartModeChanged(const sigc::slot<void, bool> &cb)
+{
+  return m_loadToPartSignal.connect(cb);
+}
+
+bool HWUI::isInLoadToPart() const
+{
+  return m_loadToPartActive;
+}
+
+void HWUI::toggleLoadToPart()
+{
+  setLoadToPart(!isInLoadToPart());
 }

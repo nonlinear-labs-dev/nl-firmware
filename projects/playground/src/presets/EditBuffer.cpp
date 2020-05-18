@@ -443,7 +443,7 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 bool isLoadToPartActive()
 {
   auto hwui = Application::get().getHWUI();
-  return hwui->getFocusAndMode().detail == UIDetail::LoadToPart;
+  return hwui->isInLoadToPart();
 }
 
 void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
@@ -1590,6 +1590,11 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
       undoableSelectParameter(transaction, { selNum, VoiceGroup::I });
 
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
+  }
+
+  if(newType == SoundType::Single)
+  {
+    Application::get().getHWUI()->setLoadToPart(false);
   }
 }
 

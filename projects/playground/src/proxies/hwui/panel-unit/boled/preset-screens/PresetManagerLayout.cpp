@@ -30,7 +30,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankButton.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadToPartPresetList.h>
-#include <proxies/hwui/HWUIHelper.h>
 #include "presets/Preset.h"
 #include "SelectVoiceGroupLayout.h"
 
@@ -42,6 +41,9 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
   setup();
 
   m_dlSettingConnection = Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
+      sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
+
+  m_loadToPartConnection = Application::get().getHWUI()->onLoadToPartModeChanged(
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 }
 
@@ -139,7 +141,7 @@ void PresetManagerLayout::setupBankSelect()
 
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
-  if(isDualEB && HWUIHelper::isLoadToPartActive())
+  if(isDualEB && Application::get().getHWUI()->isInLoadToPart())
     m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
                                                     getPresetPartSelection(VoiceGroup::II)));
   else
@@ -222,7 +224,7 @@ void PresetManagerLayout::setupPresetSelect()
 
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
+  if(Application::get().getHWUI()->isInLoadToPart() && isDualEditBuffer)
     m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
                                                     getPresetPartSelection(VoiceGroup::II)));
   else
@@ -326,7 +328,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
       case Buttons::BUTTON_ENTER:
         if(m_menu)
           m_menu->doAction();
-        else if(m_focusAndMode.detail == UIDetail::LoadToPart)
+        else if(Application::get().getHWUI()->isInLoadToPart())
         {
           return m_presets->onButton(i, down, modifiers);
         }
@@ -353,7 +355,7 @@ bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
 
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
-  if(HWUIHelper::isLoadToPartActive())
+  if(Application::get().getHWUI()->isInLoadToPart())
     m_presets->animateSelectedPreset(std::move(cb));
   else
     cb();
@@ -402,7 +404,7 @@ void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
     if(auto selPreset = bank->getSelectedPreset())
     {
       auto directLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
-      auto loadToPartActive = HWUIHelper::isLoadToPartActive();
+      auto loadToPartActive = Application::get().getHWUI()->isInLoadToPart();
 
       switch(selPreset->getType())
       {

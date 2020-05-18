@@ -30,6 +30,9 @@ LoadModeMenu::LoadModeMenu(const Rect& rect)
 
   m_directLoadSettingConnection
       = getDirectLoadSetting()->onChange(sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
+
+  m_loadToPartConnection = Application::get().getHWUI()->onLoadToPartModeChanged(
+      sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
 }
 
 LoadModeMenu::~LoadModeMenu()
@@ -58,15 +61,7 @@ void LoadModeMenu::bruteForce()
 void toggleLoadToPartDetail()
 {
   auto hwui = Application::get().getHWUI();
-  auto focusAndMode = hwui->getFocusAndMode();
-  if(focusAndMode.detail != UIDetail::LoadToPart)
-  {
-    hwui->setFocusAndMode(UIDetail::LoadToPart);
-  }
-  else
-  {
-    hwui->setFocusAndMode(UIDetail::Init);
-  }
+  hwui->toggleLoadToPart();
 }
 
 void LoadModeMenu::installSingle()
@@ -102,8 +97,7 @@ bool LoadModeMenu::isDirectLoadEnabled()
 
 bool LoadModeMenu::isLoadToPartEnabled()
 {
-  auto hwui = Application::get().getHWUI();
-  return hwui->getFocusAndMode().detail == UIDetail::LoadToPart;
+  return Application::get().getHWUI()->isInLoadToPart();
 }
 
 bool LoadModeMenu::onButton(Buttons button, bool down, ButtonModifiers modifiers)
