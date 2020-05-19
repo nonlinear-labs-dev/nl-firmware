@@ -2,7 +2,7 @@
 
 #include "ParameterDualGroupSet.h"
 #include "presets/recall/RecallParameterGroups.h"
-#include "SendEditBufferScopeGuard.h"
+#include "nltools/GenericScopeGuard.h"
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
@@ -138,9 +138,7 @@ class EditBuffer : public ParameterDualGroupSet
   PartOrigin getPartOrigin(VoiceGroup vg) const;
 
  private:
-  std::unique_ptr<SendEditBufferScopeGuard> scopedSendEditBufferGuard(UNDO::Transaction *transaction);
-  std::unique_ptr<GenericEditBufferScopeGuard> createScopeGuard(std::function<void(void)> start,
-                                                                std::function<void(void)> end);
+  std::unique_ptr<GenericScopeGuard> scopedSendEditBufferGuard(UNDO::Transaction *transaction);
 
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;

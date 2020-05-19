@@ -1549,7 +1549,8 @@ void EditBuffer::undoableLoadSelectedToPart(UNDO::Transaction *transaction, Voic
 
 void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
 {
-  auto scope = createScopeGuard([&] { lockParameterFocusChanges(); }, [&] { unlockParameterFocusChanges(); });
+  auto scope = std::make_unique<GenericScopeGuard>([&] { lockParameterFocusChanges(); },
+                                                   [&] { unlockParameterFocusChanges(); });
 
   using ParameterNumberMap = std::unordered_map<int, int>;
   using From = SoundType;
@@ -1610,13 +1611,19 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
   }
 }
 
-std::unique_ptr<SendEditBufferScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
+std::unique_ptr<GenericScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
 {
-  return std::make_unique<SendEditBufferScopeGuard>(this, transaction);
-}
-
-std::unique_ptr<GenericEditBufferScopeGuard> EditBuffer::createScopeGuard(std::function<void(void)> start,
-                                                                          std::function<void(void)> end)
-{
-  return std::make_unique<GenericEditBufferScopeGuard>(start, end);
+  return std::make_unique<GenericScopeGuard>(
+      [this, transaction]() {
+        transaction->addSimpleCommand([=](auto s) {
+          if(s == UNDO::Transaction::UNDOING)
+            sendToAudioEngine();
+        });
+      },
+      [this, transaction]() {
+        transaction->addSimpleCommand([=](auto s) {
+          if(s == UNDO::Transaction::DOING || s == UNDO::Transaction::REDOING)
+            sendToAudioEngine();
+        });
+      });
 }
