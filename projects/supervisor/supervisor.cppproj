@@ -146,6 +146,9 @@
     <ListValues>
       <Value>DEBUG</Value>
       <Value>no__NO_EPC__</Value>
+      <Value>no__PWR_CYCLING</Value>
+      <Value>no__PWR_CYCLING_HIDDEN_FEATURE</Value>
+      <Value>no__PWR_CYCLING_HARDCODED</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>

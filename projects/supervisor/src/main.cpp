@@ -17,6 +17,14 @@
     
 *****/
 
+#if defined __PWR_CYCLING
+#if (!defined __PWR_CYCLING_HARDCODED && !defined __PWR_CYCLING_HIDDEN_FEATURE) || (defined __PWR_CYCLING_HARDCODED && defined __PWR_CYCLING_HIDDEN_FEATURE)
+#error "You must supply either __PWR_CYCLING_HARDCODED or __PWR_CYCLING_HIDDEN_FEATURE when using __PWR_CYCLING!"
+#else
+#warning "Power-Cycling enabled. For cycle-time see definition of POWER_CYCLING_TIME in globals.h"
+#endif
+#endif
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -38,7 +46,12 @@
 #define REBOOT_TIME (POWER_CYCLING_TIME / SM_TIMESLICE);
 
 static uint32_t reboot_timer = 0;
-static uint8_t  powerCycling = 0;
+#if defined __PWR_CYCLING && defined __PWR_CYCLING_HARDCODED
+#warning "hardcoded Power-Cycling, normal device operation will be impossible!"
+#define powerCycling (1)
+#else
+static uint8_t powerCycling = 0;
+#endif
 
 // state machine handler variable
 struct StateMachine_t
@@ -110,6 +123,8 @@ void SM_Pause(uint16_t ms)
 
 static void CheckPowerCyclingRequest(void)
 {
+#if defined __PWR_CYCLING && defined __PWR_CYCLING_HIDDEN_FEATURE
+#warning "Power-Cycling enabled as hidden feature of the power button/switch! For required number of presses see definition of POWER_CYCLING_NO_OF_TGLS in globals.h"
   if (PwrSwitch.getStateCntr() > POWER_CYCLING_NO_OF_TGLS)
   {
     powerCycling = !powerCycling;
@@ -117,6 +132,7 @@ static void CheckPowerCyclingRequest(void)
     reboot_timer = powerCycling * REBOOT_TIME;
     PwrSwitch.clrStateCntr();
   }
+#endif
 }
 
 void SM_ProcessStates(void)

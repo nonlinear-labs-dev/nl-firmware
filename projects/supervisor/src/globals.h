@@ -67,7 +67,7 @@ The ID Numbers+1 will be displayed as LED blinks during Power-Up, after HW- Vers
 #define ESPI_TIMESLICE           (1)           // initial ESPI override to set all LEDs on TopCover and PanelUnit, max speed
 #define MONENGINE_TIMESLICE      (10)          // 10ms, do not change (code in the LPC depends on it)
 #define POWER_CYCLING_TIME       (180000ul)    // in ms, 180sec (3min) for power cycling
-#define POWER_CYCLING_NO_OF_TGLS (10)          // number of power switch toggle events required to enable/disable power cycling
+#define POWER_CYCLING_NO_OF_TGLS (15)          // number of power switch toggle events required to enable/disable power cycling
 
 #define NO_OF_TASKS 8  // 8 tasks total, see above
 
