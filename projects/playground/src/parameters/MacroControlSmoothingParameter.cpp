@@ -15,9 +15,3 @@ ParameterId MacroControlSmoothingParameter::getMC() const
 {
   return MacroControlsGroup::smoothingIdToMCId(getID());
 }
-
-void MacroControlSmoothingParameter::setCpValue(UNDO::Transaction* transaction, Initiator initiator,
-                                                tControlPositionValue value, bool doSendToLpc)
-{
-  Parameter::setCpValue(transaction, initiator, value, doSendToLpc);
-}
