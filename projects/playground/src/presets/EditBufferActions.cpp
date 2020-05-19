@@ -154,21 +154,21 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   addAction("mute", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto vg = to<VoiceGroup>(request->get("part"));
     auto scope = editBuffer->getUndoScope().startTransaction("Mute " + toString(vg));
-    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromHwui(scope->getTransaction(), 1);
+    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromWebUI(scope->getTransaction(), 1);
   });
 
   addAction("unmute", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto vg = to<VoiceGroup>(request->get("part"));
     auto scope = editBuffer->getUndoScope().startTransaction("Unmute " + toString(vg));
-    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromHwui(scope->getTransaction(), 0);
+    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromWebUI(scope->getTransaction(), 0);
   });
 
   addAction("mute-part-unmute-other", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto vg = to<VoiceGroup>(request->get("part"));
     auto scope = editBuffer->getUndoScope().startTransaction("Mute " + toString(vg));
-    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromHwui(scope->getTransaction(), 1);
+    editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg })->setCPFromWebUI(scope->getTransaction(), 1);
     editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I })
-        ->setCPFromHwui(scope->getTransaction(), 0);
+        ->setCPFromWebUI(scope->getTransaction(), 0);
   });
 
   addAction("set-modamount-and-value", [=](std::shared_ptr<NetworkRequest> request) mutable {
