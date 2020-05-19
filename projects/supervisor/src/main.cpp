@@ -1,5 +1,5 @@
 /******************************************************************************/
-/** @version	V5.0 2019-05 KSTR
+/** @version	V5.2 2020-05 KSTR
     @date		
     @author		KSTR
     @brief    	        systick 1ms
@@ -34,6 +34,11 @@
 #include "ESPI.h"
 #include "LPC.h"
 #include "comm.h"
+
+#define REBOOT_TIME (POWER_CYCLING_TIME / SM_TIMESLICE);
+
+static uint32_t reboot_timer = 0;
+static uint8_t  powerCycling = 0;
 
 // state machine handler variable
 struct StateMachine_t
@@ -103,8 +108,20 @@ void SM_Pause(uint16_t ms)
   sm.pause = ms / SM_TIMESLICE;
 }
 
+static void CheckPowerCyclingRequest(void)
+{
+  if (PwrSwitch.getStateCntr() > POWER_CYCLING_NO_OF_TGLS)
+  {
+    powerCycling = !powerCycling;
+    Led.PowerCyclingOverride(powerCycling);
+    reboot_timer = powerCycling * REBOOT_TIME;
+    PwrSwitch.clrStateCntr();
+  }
+}
+
 void SM_ProcessStates(void)
 {
+  CheckPowerCyclingRequest();
   if (sm.pause)  // wait first ?
     sm.pause--;
   else
@@ -146,18 +163,19 @@ void SM_Standby(void)
       }
       return;
     case 2:
-      if (PwrSwitch.On_Event() || config.auto_reboot)
+      if (PwrSwitch.On_Event() || config.auto_reboot || powerCycling)
       {
         if (config.auto_reboot)
           sm.step = 3;  // start wait time
         else
           SM_TransitionTo(SM_Booting);
         config.auto_reboot = 0;
+        PwrSwitch.clrStateCntr();
       }
       return;
     default:
       sm.step++;
-      if (sm.step >= 1000 / TSLICE)  // wait a second before auto-restart, to allow for bouncing power plug etc.
+      if (sm.step >= 1000 / SM_TIMESLICE)  // wait a second before auto-restart, to allow for bouncing power plug etc.
         SM_TransitionTo(SM_Booting);
       return;
   }
@@ -171,6 +189,7 @@ void SM_Booting(void)
       sm.step++;
       Led.Blink_Medium();
       Audio.Mute(1);
+      reboot_timer = powerCycling * REBOOT_TIME;
       SM_Pause(200);
       return;
     case 1:
@@ -201,7 +220,13 @@ void SM_Booting(void)
 
 void SM_Running(void)
 {
-  if (PwrSwitch.Off_Event() && !BitGet(config.status, STAT_SYSTEM_LOCKED))
+  uint8_t reboot = 0;
+  if (reboot_timer)
+  {
+    if (!--reboot_timer)
+      reboot = 1;
+  }
+  if ((PwrSwitch.Off_Event() || reboot) && !BitGet(config.status, STAT_SYSTEM_LOCKED))
     SM_TransitionTo(SM_Shutdown);
   else
   {
