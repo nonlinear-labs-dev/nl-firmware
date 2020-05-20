@@ -165,6 +165,11 @@ sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
   return m_signalTypeChanged.connectAndInit(s);
 }
 
+sigc::connection EditBuffer::onSoundTypeChangedSignalType(sigc::slot<void, SoundType> s)
+{
+  return m_signalTypeChangedWithType.connectAndInit(s, m_type);
+}
+
 sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s, bool init)
 {
   if(init)
@@ -872,6 +877,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
       m_signalTypeChanged.send();
+      m_signalTypeChangedWithType.send(m_type);
       onChange();
     });
   }
@@ -1589,17 +1595,6 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
       undoableSelectParameter(transaction, { selNum, VoiceGroup::I });
 
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
-  }
-
-  //TODO move into hwui / PresetPartSelection and subscribe to signals
-
-  if(auto layout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout())
-  {
-    if(auto presetmanagerLayout = dynamic_cast<PresetManagerLayout *>(layout.get()))
-    {
-      presetmanagerLayout->getPresetPartSelection(VoiceGroup::I)->resetToLoaded();
-      presetmanagerLayout->getPresetPartSelection(VoiceGroup::II)->resetToLoaded();
-    }
   }
 }
 

@@ -83,6 +83,7 @@ class HWUI
   PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
 
  private:
+  void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
@@ -108,6 +109,7 @@ class HWUI
   FocusAndMode removeEditOnFocusChange(FocusAndMode in) const;
 
   sigc::connection m_editBufferSoundTypeConnection;
+  sigc::connection m_editBufferPresetLoadedConnection;
 
   Signal<void, VoiceGroup> m_voiceGoupSignal;
   Signal<void, bool> m_loadToPartSignal;

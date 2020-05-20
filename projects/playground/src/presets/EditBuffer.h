@@ -91,6 +91,7 @@ class EditBuffer : public ParameterDualGroupSet
   sigc::connection onLocksChanged(const sigc::slot<void> &s);
   sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);
   sigc::connection onSoundTypeChanged(sigc::slot<void> s);
+  sigc::connection onSoundTypeChangedSignalType(sigc::slot<void, SoundType> s);
   sigc::connection onSoundTypeChanged(sigc::slot<void> s, bool init);
 
   bool isModified() const;
@@ -164,6 +165,7 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
   Signal<void> m_signalTypeChanged;
+  Signal<void, SoundType> m_signalTypeChangedWithType;
 
   sigc::connection m_voiceGroupConnection;
 
@@ -226,6 +228,6 @@ class EditBuffer : public ParameterDualGroupSet
   void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
                                              VoiceGroup copyTo);
   void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
-  bool isMonoEnabled(const VoiceGroup& vg) const;
-  bool hasMoreThanOneUnisonVoice(const VoiceGroup& vg) const;
+  bool isMonoEnabled(const VoiceGroup &vg) const;
+  bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <nltools/Types.h>
+#include <sigc++/connection.h>
 
 class Bank;
 class Preset;

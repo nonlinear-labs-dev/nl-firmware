@@ -61,7 +61,12 @@ void LoadModeMenu::bruteForce()
 void toggleLoadToPartDetail()
 {
   auto hwui = Application::get().getHWUI();
-  hwui->toggleLoadToPart();
+  auto pm = Application::get().getPresetManager();
+
+  if(pm->getNumBanks() != 0)
+  {
+    hwui->toggleLoadToPart();
+  }
 }
 
 void LoadModeMenu::installSingle()

@@ -73,7 +73,10 @@ void HWUI::init()
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  m_editBufferSoundTypeConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
+  m_editBufferSoundTypeConnection
+      = eb->onSoundTypeChangedSignalType(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
+
+  m_editBufferPresetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &HWUI::onPresetLoaded));
 
   m_panelUnit.init();
   m_baseUnit.init();
@@ -741,4 +744,9 @@ PresetPartSelection *HWUI::getPresetPartSelection(VoiceGroup vg)
   static std::array<PresetPartSelection, 2> s_partLoad { PresetPartSelection { VoiceGroup::I },
                                                          PresetPartSelection { VoiceGroup::II } };
   return &s_partLoad[static_cast<int>(vg)];
+}
+
+void HWUI::onPresetLoaded()
+{
+  setLoadToPart(false);
 }
