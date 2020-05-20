@@ -71,3 +71,17 @@ void PedalType::load(const Glib::ustring &text)
   else
     super::load(text);
 }
+
+void PedalType::load(const Glib::ustring &text)
+{
+  static std::map<std::string, std::string> m { { "pot-tip-active", "PotTipActive" },
+                                                { "pot-ring-active", "PotRingActive" },
+                                                { "switch-closing", "SwitchClosing" },
+                                                { "switch-opening", "SwitchOpening" } };
+
+  auto it = m.find(text);
+  if(it != m.end())
+    super::load(it->second);
+  else
+    super::load(text);
+}

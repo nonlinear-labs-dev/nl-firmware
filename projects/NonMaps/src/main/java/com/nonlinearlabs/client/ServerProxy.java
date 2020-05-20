@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -979,7 +980,8 @@ public class ServerProxy {
 	}
 
 	public void loadPresetPartIntoPart(VoiceGroup presetPart, VoiceGroup editbufferPart) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-selected-preset-part-into-editbuffer-part");
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor",
+				"load-selected-preset-part-into-editbuffer-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()),
 				new StaticURI.KeyValue("editbuffer-part", editbufferPart.toString()));
 		queueJob(uri, false);
@@ -987,7 +989,9 @@ public class ServerProxy {
 
 	public void loadPresetPartIntoPart(String presetUUID, VoiceGroup presetPart, VoiceGroup loadTo) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-part-into-editbuffer-part");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()), new StaticURI.KeyValue("editbuffer-part", loadTo.toString()), new StaticURI.KeyValue("preset-uuid", presetUUID));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()),
+				new StaticURI.KeyValue("editbuffer-part", loadTo.toString()),
+				new StaticURI.KeyValue("preset-uuid", presetUUID));
 		queueJob(uri, false);
 	}
 
@@ -1010,6 +1014,7 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+<<<<<<< HEAD
 	public void unmutePart(VoiceGroup group) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "unmute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
@@ -1054,6 +1059,20 @@ public class ServerProxy {
 			@Override
 			public void onError() {
 				GWT.log("Boled not correctly downloaded!");
+			}
+		});
+	}
+
+ 	public void downloadEnumStrings(String enumName, Consumer<String[]> c) {
+		downloadFile("/webui-support/enum/get-strings?name=" + URL.encodeQueryString(enumName), new DownloadHandler() {
+
+			@Override
+			public void onFileDownloaded(String text) {
+				c.accept(text.split(","));
+			}
+
+			@Override
+			public void onError() {
 			}
 		});
 	}
