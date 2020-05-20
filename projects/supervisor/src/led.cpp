@@ -28,6 +28,7 @@ Led_t Led;  // public handler
 const int8_t SEQ_NOP[]         = { 0 };                                     // does nothing
 const int8_t SEQ_OFF[]         = { OFF(200), 0 };                           // turn OFF, refresh port every 200ms
 const int8_t SEQ_ON[]          = { ON(200), 0 };                            // turn ON, refresh port every 200ms
+const int8_t SEQ_25ms_BLINK[]  = { ON(25), OFF(25), 0 };                    // 25ms ON, 25ms OFF loop
 const int8_t SEQ_50ms_BLINK[]  = { ON(50), OFF(50), 0 };                    // 50ms ON, 50ms OFF loop
 const int8_t SEQ_100ms_BLINK[] = { ON(100), OFF(100), 0 };                  // 100ms ON, 100ms OFF loop
 const int8_t SEQ_200ms_BLINK[] = { ON(200), OFF(200), 0 };                  // 200ms ON, 200ms OFF loop
@@ -35,7 +36,7 @@ const int8_t SEQ_500ms_BLINK[] = { ON(500), OFF(500), 0 };                  // 5
 const int8_t SEQ_BLINK_STBY[]  = { ON(25), OFF(2975), 0 };                  // 25ms ON, 3seconds OFF loop
 const int8_t SEQ_ON_GLITCH1[]  = { ON(950), OFF(50), 0 };                   // 1sec ON, 50ms OFF loop
 const int8_t REQ_ON_GLITCH2[]  = { ON(850), OFF(50), ON(50), OFF(50), 0 };  // 1sec ON, 50ms OFF loop
-const int8_t SEQ_PWR_CYCLING[] = { ON(25), OFF(25), 0 };                    // very rapid 25ms blinking
+const int8_t SEQ_PWR_CYCLING[] = { ON(50), OFF(50), 0 };                    // rapid 50ms blinking
 
 static const int8_t *    pSeq_start = SEQ_NOP;  // sequence pointer
 static const int8_t *    pSeq       = SEQ_NOP;  // ^
@@ -68,7 +69,7 @@ void Led_t::Off(void)
 
 void Led_t::Blink_VeryFast(void)
 {
-  Seq_Set(SEQ_50ms_BLINK);
+  Seq_Set(SEQ_25ms_BLINK);
 };
 
 void Led_t::Blink_Fast(void)
@@ -169,9 +170,9 @@ static int8_t showHWandFWids(void)
       break;  // 2.5 sec total OFF : postfix
     default:
       c       = 0;
-      show_id = 0;
-      step    = 0;
-      break;  // stop chain
+      show_id = 0;  // stop
+      step    = 0;  // reset sequence
+      break;  
   }
   return c;
 }
@@ -222,7 +223,7 @@ static void applyWait(int8_t c)
       c++;
     c = -c;
   }
-  wait = c;
+  wait = c - 1;
 }
 
 static void Seq_Set(const int8_t *seq)
