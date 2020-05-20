@@ -1,5 +1,7 @@
 package com.nonlinearlabs.client.world.maps.parameters.Scale;
 
+import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceHighPriority;
@@ -21,6 +23,11 @@ public class ScaleParameter extends ModulationSourceHighPriority {
 	}
 
 
+	@Override
+	protected void startMouseEdit() {
+		currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterNumber(),
+				Millimeter.toPixels(800));
+	}
 
 	public double getDefaultValue() {
 		return 0.0;
