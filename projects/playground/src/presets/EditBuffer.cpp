@@ -337,6 +337,21 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
   }
 }
 
+bool EditBuffer::isParameterFocusLocked() const
+{
+  return m_lockParameterFocusChanges;
+}
+
+void EditBuffer::lockParameterFocusChanges()
+{
+  m_lockParameterFocusChanges = true;
+}
+
+void EditBuffer::unlockParameterFocusChanges()
+{
+  m_lockParameterFocusChanges = false;
+}
+
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
 {
   if(m_lastSelectedParameter != p->getID())
@@ -359,7 +374,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       if(newP)
         newP->onSelected();
 
-      if(!getParent()->isLoading())
+      if(!getParent()->isLoading() && !isParameterFocusLocked())
       {
         if(auto hwui = Application::get().getHWUI())
         {
@@ -1534,6 +1549,9 @@ void EditBuffer::undoableLoadSelectedToPart(UNDO::Transaction *transaction, Voic
 
 void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
 {
+  auto scope = std::make_unique<GenericScopeGuard>([&] { lockParameterFocusChanges(); },
+                                                   [&] { unlockParameterFocusChanges(); });
+
   using ParameterNumberMap = std::unordered_map<int, int>;
   using From = SoundType;
   using To = SoundType;
@@ -1593,7 +1611,19 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
   }
 }
 
-std::unique_ptr<SendEditBufferScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
+std::unique_ptr<GenericScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
 {
-  return std::make_unique<SendEditBufferScopeGuard>(this, transaction);
+  return std::make_unique<GenericScopeGuard>(
+      [this, transaction]() {
+        transaction->addSimpleCommand([=](auto s) {
+          if(s == UNDO::Transaction::UNDOING)
+            sendToAudioEngine();
+        });
+      },
+      [this, transaction]() {
+        transaction->addSimpleCommand([=](auto s) {
+          if(s == UNDO::Transaction::DOING || s == UNDO::Transaction::REDOING)
+            sendToAudioEngine();
+        });
+      });
 }

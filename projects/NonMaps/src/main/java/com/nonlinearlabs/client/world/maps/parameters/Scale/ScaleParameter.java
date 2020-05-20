@@ -10,10 +10,17 @@ public class ScaleParameter extends ModulationSourceHighPriority {
 
 	public ScaleParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelModulationSource(this, getParameterNumber()));
+		addChild(new LabelModulationSource(this, getParameterNumber()) {
+			@Override
+			protected String getDisplayText() {
+				return presenter.longName;
+			}
+		});
 		addChild(new SliderHorizontal(this, getParameterNumber()));
 		addChild(new ValueDisplaySmall(this, getParameterNumber()));
 	}
+
+
 
 	public double getDefaultValue() {
 		return 0.0;
