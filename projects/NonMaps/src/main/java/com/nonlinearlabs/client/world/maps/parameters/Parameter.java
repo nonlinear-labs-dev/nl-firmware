@@ -170,7 +170,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		return super.mouseDown(eventPoint);
 	}
 
-	private void startMouseEdit() {
+	protected void startMouseEdit() {
 		currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterNumber(),
 				Millimeter.toPixels(100));
 	}
