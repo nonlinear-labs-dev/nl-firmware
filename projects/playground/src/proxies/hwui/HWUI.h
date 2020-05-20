@@ -28,6 +28,8 @@ namespace nltools
   }
 }
 
+class PresetPartSelection;
+
 class HWUI
 {
  public:
@@ -77,7 +79,11 @@ class HWUI
   void deInit();
 
   void toggleLoadToPart();
+
+  PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
+
  private:
+  void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
   void onButtonPressed(Buttons buttonID, bool state);
@@ -100,6 +106,8 @@ class HWUI
 
   FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
   FocusAndMode removeEditOnFocusChange(FocusAndMode in) const;
+
+  sigc::connection m_editBufferSoundTypeConnection;
 
   Signal<void, VoiceGroup> m_voiceGoupSignal;
   Signal<void, bool> m_loadToPartSignal;

@@ -29,4 +29,7 @@ class LoadModeMenu : public ControlWithChildren
   static bool isDirectLoadEnabled();
   static bool isLoadToPartEnabled();
   static SoundType getSoundType();
+
+ protected:
+  void setBackgroundColor(FrameBuffer& fb) const override;
 };

@@ -30,6 +30,7 @@
 #include <serialization/EditBufferSerializer.h>
 #include <iostream>
 #include <giomm.h>
+#include <presets/PresetPartSelection.h>
 #include "UsageMode.h"
 
 HWUI::HWUI()
@@ -40,6 +41,7 @@ HWUI::HWUI()
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
 {
+
   if(isatty(fileno(stdin)))
   {
     m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
@@ -68,6 +70,11 @@ void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
 
 void HWUI::init()
 {
+
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  m_editBufferSoundTypeConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
+
   m_panelUnit.init();
   m_baseUnit.init();
 
@@ -719,4 +726,19 @@ bool HWUI::isInLoadToPart() const
 void HWUI::toggleLoadToPart()
 {
   setLoadToPart(!isInLoadToPart());
+}
+
+void HWUI::onEditBufferSoundTypeChanged(SoundType type)
+{
+  if(type == SoundType::Single)
+  {
+    setLoadToPart(false);
+  }
+}
+
+PresetPartSelection *HWUI::getPresetPartSelection(VoiceGroup vg)
+{
+  static std::array<PresetPartSelection, 2> s_partLoad { PresetPartSelection { VoiceGroup::I },
+                                                         PresetPartSelection { VoiceGroup::II } };
+  return &s_partLoad[static_cast<int>(vg)];
 }
