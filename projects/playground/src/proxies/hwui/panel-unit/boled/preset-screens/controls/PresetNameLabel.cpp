@@ -36,16 +36,23 @@ Font::Justification PresetNameLabel::getJustification() const
 PresetNameLabel::StringAndSuffix PresetNameLabel::shortenStringIfNeccessary(std::shared_ptr<Font> font,
                                                                             const StringAndSuffix &text) const
 {
-  return TextCropper::shortenStringIfNeccessary(font, text.text,
-                                                getPosition().getWidth() - getXOffset() - getRightMargin());
+  return TextCropper::shortenStringIfNeccessary(font, text.text, getPosition().getWidth() - getXOffset());
 }
 
 int PresetNameLabel::getXOffset() const
 {
-  return 6;
+  return 3;
 }
 
 int PresetNameLabel::getRightMargin() const
 {
-  return 3;
+#warning CONT Here
+  if(Application::get().getHWUI()->isLoadToPartActive)
+  {
+    return -2;
+  }
+  else
+  {
+    return 0;
+  }
 }

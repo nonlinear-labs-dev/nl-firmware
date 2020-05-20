@@ -10,6 +10,7 @@
 #include <functional>
 #include "PresetTypeLabel.h"
 #include <glibmm/main.h>
+#include <proxies/hwui/HWUI.h>
 
 const float c_numAnimationSteps = 15;
 const float c_animationLength = 500;  // ms
@@ -19,8 +20,8 @@ PresetListEntry::PresetListEntry(const Rect &pos)
     , m_animationProgress(0)
 {
   m_number = addControl(new PresetNumberLabel(Rect(0, 0, 19, 16)));
-  m_name = addControl(new PresetNameLabel(Rect(19, 0, 95, 16)));
-  m_type = addControl(new PresetTypeLabel(Rect(110, 0, 16, 16)));
+  m_name = addControl(new PresetNameLabel(Rect(19, 0, 93, 16)));
+  m_type = addControl(new PresetTypeLabel(Rect(112, 0, 14, 16)));
 }
 
 PresetListEntry::~PresetListEntry()

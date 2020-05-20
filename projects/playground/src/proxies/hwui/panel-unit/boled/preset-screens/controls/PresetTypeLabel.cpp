@@ -57,14 +57,15 @@ void PresetTypeLabel::update(const Preset *newSelection)
 
   if(Application::get().getHWUI()->isInLoadToPart() && isDualEditBuffer)
   {
-    m_currentControl
-        = std::make_unique<DualPresetTypeLabel>(Rect { position.getLeft() + 1, position.getTop(), 10, 10 });
+    auto pos = Rect { position.getLeft(), position.getTop(), 10, 10 };
+    m_currentControl = std::make_unique<DualPresetTypeLabel>(pos);
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
     dualLabel->update(newSelection);
   }
   else
   {
-    m_currentControl = std::make_unique<SinglePresetTypeLabel>(position);
+    auto pos = Rect { position.getLeft(), position.getTop(), 10, 14 };
+    m_currentControl = std::make_unique<SinglePresetTypeLabel>(pos);
     auto singleLabel = dynamic_cast<SinglePresetTypeLabel *>(m_currentControl.get());
     singleLabel->update(newSelection);
   }
@@ -180,13 +181,12 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
         return false;
     }
   }
-  return false;
 }
 
 bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 {
   auto bgRect = getPosition();
-  bgRect.setWidth(14);
+  bgRect.setWidth(12);
   bgRect.setHeight(15);
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
