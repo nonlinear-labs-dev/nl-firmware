@@ -80,19 +80,14 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
   {
     fb.setColor(FrameBufferColors::C103);
     auto pos = getPosition();
-
     bool selected = false;
+    auto hwui = Application::get().getHWUI();
 
-    if(Application::get().getHWUI()->isInLoadToPart())
+    if(hwui->isInLoadToPart())
     {
-      auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
-      auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
-      if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout))
+      if(auto selection = hwui->getPresetPartSelection(hwui->getCurrentVoiceGroup()))
       {
-        if(auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus))
-        {
-          selected = selection->m_preset == selectedPreset;
-        }
+        selected = selection->m_preset == selectedPreset;
       }
     }
     else
@@ -136,7 +131,7 @@ SinglePresetTypeLabel::SinglePresetTypeLabel(const Rect &r)
 
 int SinglePresetTypeLabel::getXOffset() const
 {
-  return 4;
+  return 2;
 }
 
 void SinglePresetTypeLabel::update(const Preset *newPreset)
@@ -181,6 +176,7 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
         return false;
     }
   }
+  return false;
 }
 
 bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
@@ -254,13 +250,11 @@ void DualPresetTypeLabel::update(const Preset *selected)
 
   if(selected)
   {
-    auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto hwui = Application::get().getHWUI();
+    auto currentVGFocus = hwui->getCurrentVoiceGroup();
     const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(currentVGFocus);
 
-    auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
-    auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout);
-
-    auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus);
+    auto selection = hwui->getPresetPartSelection(currentVGFocus);
 
     const auto &presetUUID = selected->getUuid();
 

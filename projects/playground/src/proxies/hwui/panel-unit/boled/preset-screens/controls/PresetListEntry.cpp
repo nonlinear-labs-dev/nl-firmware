@@ -19,9 +19,11 @@ PresetListEntry::PresetListEntry(const Rect &pos)
     : super(pos)
     , m_animationProgress(0)
 {
-  m_number = addControl(new PresetNumberLabel(Rect(0, 0, 19, 16)));
-  m_name = addControl(new PresetNameLabel(Rect(19, 0, 93, 16)));
-  m_type = addControl(new PresetTypeLabel(Rect(112, 0, 14, 16)));
+  auto isLoadToPartActive = Application::get().getHWUI()->isInLoadToPart();
+
+  m_number = addControl(new PresetNumberLabel(getNumberRect()));
+  m_name = addControl(new PresetNameLabel(getNameRect(isLoadToPartActive)));
+  m_type = addControl(new PresetTypeLabel(getTypeRect(isLoadToPartActive)));
 }
 
 PresetListEntry::~PresetListEntry()
@@ -135,4 +137,25 @@ void PresetListEntry::doAnimationCallback()
 
   if(cb)
     cb();
+}
+
+Rect PresetListEntry::getNumberRect()
+{
+  return Rect(0, 0, 19, 16);
+}
+
+Rect PresetListEntry::getNameRect(bool loadToPart)
+{
+  if(loadToPart)
+    return Rect(19, 0, 97, 16);
+  else
+    return Rect(19, 0, 101, 16);
+}
+
+Rect PresetListEntry::getTypeRect(bool loadToPart)
+{
+  if(loadToPart)
+    return Rect(112, 0, 14, 16);
+  else
+    return Rect(116, 0, 12, 16);
 }

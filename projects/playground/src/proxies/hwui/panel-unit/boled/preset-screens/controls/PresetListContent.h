@@ -24,7 +24,6 @@ class PresetListContent : public ControlWithChildren
   bool isTransparent() const override;
 
  private:
-  void onEditBufferChanged();
   Preset *getPresetAtPosition(Bank *bank, int pos) const;
 
   PresetListEntry *m_firstPreset = nullptr;

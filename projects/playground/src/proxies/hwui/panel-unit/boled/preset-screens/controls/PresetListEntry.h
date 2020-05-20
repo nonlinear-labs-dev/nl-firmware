@@ -30,6 +30,14 @@ class PresetListEntry : public ControlWithChildren
  protected:
   bool isTransparent() const override;
 
+  PresetNumberLabel *m_number = nullptr;
+  PresetNameLabel *m_name = nullptr;
+  PresetTypeLabel *m_type = nullptr;
+
+  Rect getNumberRect();
+  Rect getNameRect(bool loadToPart);
+  Rect getTypeRect(bool loadToPart);
+
  private:
   bool animationProgress();
   void doAnimationCallback();
@@ -37,10 +45,6 @@ class PresetListEntry : public ControlWithChildren
 
   float m_animationProgress;
   tCallback m_animationCallback;
-
-  PresetNumberLabel *m_number = nullptr;
-  PresetNameLabel *m_name = nullptr;
-  PresetTypeLabel *m_type = nullptr;
 
   sigc::connection m_animationConnection;
   sigc::connection m_presetConnection;

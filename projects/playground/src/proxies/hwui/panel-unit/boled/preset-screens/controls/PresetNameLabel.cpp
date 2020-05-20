@@ -3,6 +3,7 @@
 #include "Application.h"
 #include <presets/Preset.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 PresetNameLabel::PresetNameLabel(const Rect &pos)
     : super(pos)
@@ -46,13 +47,5 @@ int PresetNameLabel::getXOffset() const
 
 int PresetNameLabel::getRightMargin() const
 {
-#warning CONT Here
-  if(Application::get().getHWUI()->isLoadToPartActive)
-  {
-    return -2;
-  }
-  else
-  {
-    return 0;
-  }
+  return 0;
 }

@@ -553,7 +553,7 @@ VoiceGroup HWUI::getCurrentVoiceGroup() const
 void HWUI::setLoadToPart(bool state)
 {
   if(std::exchange(m_loadToPartActive, state) != state)
-    m_loadToPartSignal.deferedSend(m_loadToPartActive);
+    m_loadToPartSignal.send(m_loadToPartActive);
 }
 
 void HWUI::setCurrentVoiceGroup(VoiceGroup v)

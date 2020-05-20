@@ -15,7 +15,7 @@
 
 LoadToPartPresetList::LoadToPartPresetList(const Rect& pos, bool showBankArrows, PresetPartSelection* partSelectionI,
                                            PresetPartSelection* partSelectionII)
-    : PresetListBase(pos, showBankArrows)
+    : super(pos, showBankArrows)
     , m_selections { partSelectionI, partSelectionII }
 {
   m_voiceGroupConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
