@@ -19,9 +19,19 @@ PresetListEntry::PresetListEntry(const Rect &pos)
     : super(pos)
     , m_animationProgress(0)
 {
+  auto inLoadToPart = Application::get().getHWUI()->isInLoadToPart();
+
   m_number = addControl(new PresetNumberLabel(Rect(0, 0, 19, 16)));
-  m_name = addControl(new PresetNameLabel(Rect(19, 0, 93, 16)));
-  m_type = addControl(new PresetTypeLabel(Rect(112, 0, 14, 16)));
+
+  if(inLoadToPart)
+    m_name = addControl(new PresetNameLabel(Rect(19, 0, 98, 16)));
+  else
+    m_name = addControl(new PresetNameLabel(Rect(19, 0, 100, 16)));
+
+  if(inLoadToPart)
+    m_type = addControl(new PresetTypeLabel(Rect(112, 0, 14, 16)));
+  else
+    m_type = addControl(new PresetTypeLabel(Rect(119, 0, 7, 16)));
 }
 
 PresetListEntry::~PresetListEntry()

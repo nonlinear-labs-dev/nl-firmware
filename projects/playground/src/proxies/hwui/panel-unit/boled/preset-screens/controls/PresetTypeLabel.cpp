@@ -136,7 +136,7 @@ SinglePresetTypeLabel::SinglePresetTypeLabel(const Rect &r)
 
 int SinglePresetTypeLabel::getXOffset() const
 {
-  return 4;
+  return 0;
 }
 
 void SinglePresetTypeLabel::update(const Preset *newPreset)
@@ -151,6 +151,10 @@ void SinglePresetTypeLabel::update(const Preset *newPreset)
 
     setText(typeToString(type), selected, loaded);
   }
+}
+Font::Justification SinglePresetTypeLabel::getJustification() const
+{
+  return Font::Justification::Left;
 }
 
 DualPresetTypeLabel::DualPresetTypeLabel(const Rect &r)
@@ -177,6 +181,7 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
         return drawLayer(fb);
       case SoundType::Split:
         return drawSplit(fb);
+      default:
       case SoundType::Invalid:
         return false;
     }
@@ -212,7 +217,7 @@ bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 {
   auto bgRect = getPosition();
-  bgRect.setWidth(14);
+  bgRect.setWidth(12);
   bgRect.setHeight(15);
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
