@@ -213,7 +213,7 @@ bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 {
   auto bgRect = getPosition();
-  bgRect.setWidth(15);
+  bgRect.setWidth(14);
   bgRect.setHeight(15);
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
