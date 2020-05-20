@@ -16,7 +16,7 @@ class PresetListSelectStorePosition : public PresetListBase
 
  public:
   PresetListSelectStorePosition(const Rect &pos, bool showBankArrows, StoreModeData *pod);
-  ~PresetListSelectStorePosition() override;
+  virtual ~PresetListSelectStorePosition();
 
   virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   virtual void onRotary(int inc, ButtonModifiers modifiers) override;

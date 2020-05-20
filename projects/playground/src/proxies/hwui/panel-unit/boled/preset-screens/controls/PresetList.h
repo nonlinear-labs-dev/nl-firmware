@@ -6,7 +6,6 @@
 #include <sigc++/connection.h>
 #include <libundo/undo/TransactionCreationScope.h>
 #include <libundo/undo/Scope.h>
-#include "PresetListEntry.h"
 
 class Preset;
 class PresetManager;

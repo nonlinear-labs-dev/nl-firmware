@@ -80,14 +80,19 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
   {
     fb.setColor(FrameBufferColors::C103);
     auto pos = getPosition();
-    bool selected = false;
-    auto hwui = Application::get().getHWUI();
 
-    if(hwui->isInLoadToPart())
+    bool selected = false;
+
+    if(Application::get().getHWUI()->isInLoadToPart())
     {
-      if(auto selection = hwui->getPresetPartSelection(hwui->getCurrentVoiceGroup()))
+      auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
+      if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout))
       {
-        selected = selection->m_preset == selectedPreset;
+        if(auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus))
+        {
+          selected = selection->m_preset == selectedPreset;
+        }
       }
     }
     else
@@ -131,7 +136,7 @@ SinglePresetTypeLabel::SinglePresetTypeLabel(const Rect &r)
 
 int SinglePresetTypeLabel::getXOffset() const
 {
-  return 2;
+  return 4;
 }
 
 void SinglePresetTypeLabel::update(const Preset *newPreset)
@@ -176,7 +181,6 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
         return false;
     }
   }
-  return false;
 }
 
 bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
@@ -250,11 +254,13 @@ void DualPresetTypeLabel::update(const Preset *selected)
 
   if(selected)
   {
-    auto hwui = Application::get().getHWUI();
-    auto currentVGFocus = hwui->getCurrentVoiceGroup();
+    auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
     const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(currentVGFocus);
 
-    auto selection = hwui->getPresetPartSelection(currentVGFocus);
+    auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
+    auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout);
+
+    auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus);
 
     const auto &presetUUID = selected->getUuid();
 
