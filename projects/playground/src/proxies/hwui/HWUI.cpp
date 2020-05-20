@@ -74,7 +74,7 @@ void HWUI::init()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   m_editBufferSoundTypeConnection
-      = eb->onSoundTypeChangedSignalType(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
+      = eb->onSoundTypeChanged(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
 
   m_editBufferPresetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &HWUI::onPresetLoaded));
 

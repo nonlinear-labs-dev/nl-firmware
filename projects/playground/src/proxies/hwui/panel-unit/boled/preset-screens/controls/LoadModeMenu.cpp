@@ -26,7 +26,7 @@ LoadModeMenu::LoadModeMenu(const Rect& rect)
     : ControlWithChildren(rect)
 {
   m_soundTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::mem_fun(this, &LoadModeMenu::bruteForce));
+      sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
 
   m_directLoadSettingConnection
       = getDirectLoadSetting()->onChange(sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));

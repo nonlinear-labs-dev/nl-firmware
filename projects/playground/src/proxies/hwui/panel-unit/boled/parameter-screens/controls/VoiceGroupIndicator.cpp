@@ -134,10 +134,9 @@ bool VoiceGroupIndicator::isLayerPartMuted(VoiceGroup vg) const
   return false;
 }
 
-void VoiceGroupIndicator::onSoundTypeChanged()
+void VoiceGroupIndicator::onSoundTypeChanged(SoundType type)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  m_currentSoundType = eb->getType();
+  m_currentSoundType = type;
   setDirty();
 }
 

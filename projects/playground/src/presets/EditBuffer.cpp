@@ -39,7 +39,6 @@
 #include <parameters/ScopedLock.h>
 #include <tools/StringTools.h>
 #include <parameter_declarations.h>
-#include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -160,20 +159,15 @@ sigc::connection EditBuffer::onRecallValuesChanged(const sigc::slot<void> &s)
   return m_recallSet.m_signalRecallValues.connect(s);
 }
 
-sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
+sigc::connection EditBuffer::onSoundTypeChanged(const sigc::slot<void, SoundType> &s)
 {
-  return m_signalTypeChanged.connectAndInit(s);
+  return m_signalTypeChanged.connectAndInit(s, m_type);
 }
 
-sigc::connection EditBuffer::onSoundTypeChangedSignalType(sigc::slot<void, SoundType> s)
-{
-  return m_signalTypeChangedWithType.connectAndInit(s, m_type);
-}
-
-sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s, bool init)
+sigc::connection EditBuffer::onSoundTypeChanged(const sigc::slot<void, SoundType> &s, bool init)
 {
   if(init)
-    return m_signalTypeChanged.connectAndInit(s);
+    return m_signalTypeChanged.connectAndInit(s, m_type);
   else
     return m_signalTypeChanged.connect(s);
 }
@@ -876,8 +870,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
-      m_signalTypeChanged.send();
-      m_signalTypeChangedWithType.send(m_type);
+      m_signalTypeChanged.send(m_type);
       onChange();
     });
   }
