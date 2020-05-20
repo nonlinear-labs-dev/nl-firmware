@@ -135,7 +135,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
-  m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
+  m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
 
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
@@ -218,7 +218,7 @@ void PresetManagerLayout::setupPresetSelect()
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumPresetsInBankLabel(Rect(192, 1, 64, 14)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
-  m_loadMode = addControl(new LoadModeMenu(Rect(195, 1, 58, 62)));
+  m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
 
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
