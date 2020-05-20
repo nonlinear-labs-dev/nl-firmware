@@ -159,15 +159,15 @@ sigc::connection EditBuffer::onRecallValuesChanged(const sigc::slot<void> &s)
   return m_recallSet.m_signalRecallValues.connect(s);
 }
 
-sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s)
+sigc::connection EditBuffer::onSoundTypeChanged(const sigc::slot<void, SoundType> &s)
 {
-  return m_signalTypeChanged.connectAndInit(s);
+  return m_signalTypeChanged.connectAndInit(s, m_type);
 }
 
-sigc::connection EditBuffer::onSoundTypeChanged(sigc::slot<void> s, bool init)
+sigc::connection EditBuffer::onSoundTypeChanged(const sigc::slot<void, SoundType> &s, bool init)
 {
   if(init)
-    return m_signalTypeChanged.connectAndInit(s);
+    return m_signalTypeChanged.connectAndInit(s, m_type);
   else
     return m_signalTypeChanged.connect(s);
 }
@@ -458,7 +458,7 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 bool isLoadToPartActive()
 {
   auto hwui = Application::get().getHWUI();
-  return hwui->getFocusAndMode().detail == UIDetail::LoadToPart;
+  return hwui->isInLoadToPart();
 }
 
 void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
@@ -510,8 +510,6 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
     bank->selectPreset(transaction, preset->getUuid());
     pm->selectBank(transaction, bank->getUuid());
   }
-
-  cleanupParameterSelection(transaction, oldType, preset->getType());
 
   ae->toggleSuppressParameterChanges(transaction);
   resetModifiedIndicator(transaction, getHash());
@@ -887,7 +885,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
-      m_signalTypeChanged.send();
+      m_signalTypeChanged.send(m_type);
       onChange();
     });
   }

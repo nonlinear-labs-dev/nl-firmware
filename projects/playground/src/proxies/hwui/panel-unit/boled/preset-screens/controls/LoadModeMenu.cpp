@@ -26,10 +26,13 @@ LoadModeMenu::LoadModeMenu(const Rect& rect)
     : ControlWithChildren(rect)
 {
   m_soundTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::mem_fun(this, &LoadModeMenu::bruteForce));
+      sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
 
   m_directLoadSettingConnection
       = getDirectLoadSetting()->onChange(sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
+
+  m_loadToPartConnection = Application::get().getHWUI()->onLoadToPartModeChanged(
+      sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
 }
 
 LoadModeMenu::~LoadModeMenu()
@@ -58,14 +61,11 @@ void LoadModeMenu::bruteForce()
 void toggleLoadToPartDetail()
 {
   auto hwui = Application::get().getHWUI();
-  auto focusAndMode = hwui->getFocusAndMode();
-  if(focusAndMode.detail != UIDetail::LoadToPart)
+  auto pm = Application::get().getPresetManager();
+
+  if(pm->getNumBanks() != 0)
   {
-    hwui->setFocusAndMode(UIDetail::LoadToPart);
-  }
-  else
-  {
-    hwui->setFocusAndMode(UIDetail::Init);
+    hwui->toggleLoadToPart();
   }
 }
 
@@ -107,8 +107,7 @@ bool LoadModeMenu::isDirectLoadEnabled()
 
 bool LoadModeMenu::isLoadToPartEnabled()
 {
-  auto hwui = Application::get().getHWUI();
-  return hwui->getFocusAndMode().detail == UIDetail::LoadToPart;
+  return Application::get().getHWUI()->isInLoadToPart();
 }
 
 bool LoadModeMenu::onButton(Buttons button, bool down, ButtonModifiers modifiers)

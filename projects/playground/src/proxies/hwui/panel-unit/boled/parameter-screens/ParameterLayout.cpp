@@ -39,7 +39,7 @@ ParameterLayout2::ParameterLayout2()
                                                   "Only available with Layer Sounds"));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged), false);
+      sigc::hide(sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged)), false);
 }
 
 ModuleCaption *ParameterLayout2::createModuleCaption() const
