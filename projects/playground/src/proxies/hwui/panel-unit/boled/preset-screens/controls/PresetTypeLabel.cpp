@@ -7,7 +7,6 @@
 #include <device-settings/DirectLoadSetting.h>
 #include <proxies/hwui/HWUI.h>
 #include <memory>
-#include <proxies/hwui/HWUIHelper.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 
 PresetTypeLabel::PresetTypeLabel(const Rect &pos)
@@ -56,16 +55,17 @@ void PresetTypeLabel::update(const Preset *newSelection)
   selectedPreset = newSelection;
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
-  if(HWUIHelper::isLoadToPartActive() && isDualEditBuffer)
+  if(Application::get().getHWUI()->isInLoadToPart() && isDualEditBuffer)
   {
-    m_currentControl = std::make_unique<DualPresetTypeLabel>(
-        Rect { position.getLeft() + 1, position.getTop(), 10, 10 });
+    auto pos = Rect { position.getLeft(), position.getTop(), 10, 10 };
+    m_currentControl = std::make_unique<DualPresetTypeLabel>(pos);
     auto dualLabel = dynamic_cast<DualPresetTypeLabel *>(m_currentControl.get());
     dualLabel->update(newSelection);
   }
   else
   {
-    m_currentControl = std::make_unique<SinglePresetTypeLabel>(position);
+    auto pos = Rect { position.getLeft(), position.getTop(), 10, 14 };
+    m_currentControl = std::make_unique<SinglePresetTypeLabel>(pos);
     auto singleLabel = dynamic_cast<SinglePresetTypeLabel *>(m_currentControl.get());
     singleLabel->update(newSelection);
   }
@@ -83,7 +83,7 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
 
     bool selected = false;
 
-    if(HWUIHelper::isLoadToPartActive())
+    if(Application::get().getHWUI()->isInLoadToPart())
     {
       auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
       auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
@@ -136,7 +136,7 @@ SinglePresetTypeLabel::SinglePresetTypeLabel(const Rect &r)
 
 int SinglePresetTypeLabel::getXOffset() const
 {
-  return 4;
+  return 0;
 }
 
 void SinglePresetTypeLabel::update(const Preset *newPreset)
@@ -151,6 +151,10 @@ void SinglePresetTypeLabel::update(const Preset *newPreset)
 
     setText(typeToString(type), selected, loaded);
   }
+}
+Font::Justification SinglePresetTypeLabel::getJustification() const
+{
+  return Font::Justification::Left;
 }
 
 DualPresetTypeLabel::DualPresetTypeLabel(const Rect &r)
@@ -177,17 +181,17 @@ bool DualPresetTypeLabel::redraw(FrameBuffer &fb)
         return drawLayer(fb);
       case SoundType::Split:
         return drawSplit(fb);
+      default:
       case SoundType::Invalid:
         return false;
     }
   }
-  return false;
 }
 
 bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 {
   auto bgRect = getPosition();
-  bgRect.setWidth(14);
+  bgRect.setWidth(12);
   bgRect.setHeight(15);
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
@@ -213,7 +217,7 @@ bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
 bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 {
   auto bgRect = getPosition();
-  bgRect.setWidth(15);
+  bgRect.setWidth(12);
   bgRect.setHeight(15);
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);

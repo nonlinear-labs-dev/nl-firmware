@@ -9,7 +9,7 @@ class VoiceGroupIndicator : public Control
   bool redraw(FrameBuffer& fb) override;
 
  private:
-  void onSoundTypeChanged();
+  void onSoundTypeChanged(SoundType type);
   void onParameterChanged(const Parameter* parameter);
   void onParameterSelectionChanged(const Parameter* old, const Parameter* newParam);
   void onVoiceGroupSelectionChanged(VoiceGroup vg);

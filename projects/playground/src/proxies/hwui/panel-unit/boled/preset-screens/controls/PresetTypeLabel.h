@@ -12,6 +12,9 @@ class SinglePresetTypeLabel : public PresetLabel
   void update(const Preset* newPreset);
 
  protected:
+  Font::Justification getJustification() const override;
+
+ protected:
   int getXOffset() const override;
 };
 

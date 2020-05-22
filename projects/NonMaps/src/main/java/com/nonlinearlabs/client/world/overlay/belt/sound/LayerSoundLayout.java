@@ -209,12 +209,11 @@ public class LayerSoundLayout extends SoundLayout {
 			@Override
 			public Control click(Position eventPoint) {
 				if (isMuted())
-					EditBufferUseCases.get().setParameterValue(new ParameterId(395, group), 0, true);
+					EditBufferUseCases.get().unmutePart(group);
 				else if (isOtherPartMuted()) {
-					EditBufferUseCases.get().setParameterValue(new ParameterId(395, getOtherGroup()), 0, true);
-					EditBufferUseCases.get().setParameterValue(new ParameterId(395, group), 1, true);
+					EditBufferUseCases.get().setMuteForPartAndUnmuteOther(group);					
 				} else {
-					EditBufferUseCases.get().setParameterValue(new ParameterId(395, group), 1, true);
+					EditBufferUseCases.get().mutePart(group);
 				}
 				return this;
 			}

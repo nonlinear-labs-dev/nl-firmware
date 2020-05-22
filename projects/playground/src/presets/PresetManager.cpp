@@ -23,7 +23,6 @@
 #include <glibmm.h>
 #include <giomm/file.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/SelectVoiceGroupLayout.h>
-#include <proxies/hwui/HWUIHelper.h>
 #include <tools/StringTools.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);

@@ -1008,4 +1008,22 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()));
 		queueJob(uri, false);
 	}
+
+	public void unmutePart(VoiceGroup group) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "unmute");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
+		queueJob(uri, false);
+	}
+
+	public void mutePart(VoiceGroup group) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "mute");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
+		queueJob(uri, false);
+	}
+
+	public void setMuteForPartAndUnmuteOther(VoiceGroup group) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "mute-part-unmute-other");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
+		queueJob(uri, false);	
+	}
 }

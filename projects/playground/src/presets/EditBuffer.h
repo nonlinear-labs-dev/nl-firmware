@@ -90,8 +90,8 @@ class EditBuffer : public ParameterDualGroupSet
   sigc::connection onPresetLoaded(const sigc::slot<void> &s);
   sigc::connection onLocksChanged(const sigc::slot<void> &s);
   sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);
-  sigc::connection onSoundTypeChanged(sigc::slot<void> s);
-  sigc::connection onSoundTypeChanged(sigc::slot<void> s, bool init);
+  sigc::connection onSoundTypeChanged(const sigc::slot<void, SoundType> &s);
+  sigc::connection onSoundTypeChanged(const sigc::slot<void, SoundType> &s, bool init);
 
   bool isModified() const;
   void sendToAudioEngine();
@@ -167,7 +167,7 @@ class EditBuffer : public ParameterDualGroupSet
   Signal<void> m_signalChange;
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
-  Signal<void> m_signalTypeChanged;
+  Signal<void, SoundType> m_signalTypeChanged;
 
   sigc::connection m_voiceGroupConnection;
 
