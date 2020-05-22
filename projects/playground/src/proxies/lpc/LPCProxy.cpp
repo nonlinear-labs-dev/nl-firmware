@@ -325,11 +325,14 @@ void LPCProxy::sendSetting(uint16_t key, uint16_t value)
   DebugLevel::info("sending setting", key, "=", value);
 }
 
-void LPCProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType)
+void LPCProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset)
 {
   auto len = EHC_GetLPCMessageLength();
   uint8_t buffer[len];
-  if(auto written = EHC_ComposeLPCSetupMessageById(static_cast<EHC_PRESET_ID>(pedalType), pedal, EHC_NORESET, buffer))
+
+  if(auto written = EHC_ComposeLPCSetupMessageById(static_cast<EHC_PRESET_ID>(pedalType), pedal,
+                                                   reset ? EHC_RESET : EHC_NORESET, buffer))
+
   {
     DebugLevel::info("EHC: send pedal setting", pedal, "=", pedalType);
     nltools::msg::LPCMessage msg;

@@ -14,9 +14,10 @@ PedalType::~PedalType()
 {
 }
 
-void PedalType::sendToLPC() const
+void PedalType::sendToLPC(SendReason reason) const
 {
-  Application::get().getLPCProxy()->sendPedalSetting(m_lpcKey, get());
+  auto reset = reason == SendReason::SettingChanged;
+  Application::get().getLPCProxy()->sendPedalSetting(m_lpcKey, get(), reset);
 }
 
 const std::vector<Glib::ustring> &PedalType::enumToString() const
