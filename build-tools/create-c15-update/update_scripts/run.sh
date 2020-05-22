@@ -2,26 +2,24 @@
 #
 #
 # Name:         Anton Schmied
-# Date:         2020.02.27
-# Version:      2.0
-# TODO:         Trouble Shooting if one of the updates does not work?
-#               Save to journalctl
-#               Where to save the update log, if update is not from USB-Stick?
-#               -> under /persistent/ ?? or is bbb journalctl enough?
+# Date:         2020.05.22
+# Version:      2.1
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
 
 # general Messages
 MSG_DO_NOT_SWITCH_OFF="DO NOT SWITCH OFF C15!"
-MSG_UPDATING_C15="updating C15..."
-MSG_UPDATING_RT_FIRMWARE_1="updating RT-System 1..."
-MSG_UPDATING_RT_FIRMWARE_2="updating RT-System 2..."
-MSG_UPDATING_EPC="updating ePC..."
-MSG_UPDATING_BBB="updating BBB..."
-MSG_DONE="DONE"
-MSG_FAILED="FAILED"
-MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code: "
+MSG_UPDATING_C15="Updating C15"
+MSG_UPDATING_EPC="1/4 Updating..."
+MSG_UPDATING_BBB="2/4 Updating..."
+MSG_UPDATING_RT_FIRMWARE_1="3/4 Updating..."
+MSG_UPDATING_RT_FIRMWARE_2="4/4 Updating..."
+MSG_DONE="DONE!"
+MSG_FAILED="FAILED!"
+MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code:"
+MSG_CHECK_LOG="Please check update log!"
+MSG_RESTART="Please Restart!"
 
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
@@ -62,10 +60,30 @@ pretty() {
     t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
 }
 
-report_and_quit() {
-    pretty "$1" "$2" "$3" "$4" "$5" "$6"
-    echo "$2 $3" | systemd-cat -t "C15_Update"
-#    exit 1
+report() {
+    pretty "$1" "$2" "$3" "$2" "$3"
+    printf "$2" >> /update/errors.log
+    echo "$2" | systemd-cat -t "C15_Update"
+    return 1
+}
+
+executeAsRoot() {
+    echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP "sudo -S /bin/bash -c '$1' 1>&2 > /dev/null"
+    return $?
+}
+
+executeOnWin() {
+    /update/utilities/sshpass -p 'TEST' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no TEST@$EPC_IP "$1" 1>&2 > /dev/null
+    return $?
+}
+
+check_preconditions() {
+    if [ ! executeAsRoot "exit" ]; then
+        [ -z "$EPC_IP" ] && report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!"
+        ping -c1 $EPC_IP 1>&2 > /dev/null || report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!"
+        executeOnWin "exit" && report "" "E84: Cannot run update on old OS!" "Please contact NLL!"
+    fi
+    return 0
 }
 
 epc_push_update() {
@@ -164,14 +182,10 @@ stop_services() {
     return 0
 }
 
-rebootEPC() {
-    echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP "sudo reboot"
-    return 0
-}
-
-rebootBBB() {
-    reboot
-    return 0
+freeze() {
+    while true; do
+        sleep 1
+    fi
 }
 
 main() {
@@ -179,6 +193,7 @@ main() {
     touch /update/errors.log
 
     configure_ssh
+    [ ! check_preconditions ] && freeze
 
     [ $UPDATE_BBB == 1 ] && stop_services
     [ $UPDATE_EPC == 1 ] && epc_update
@@ -187,22 +202,12 @@ main() {
 
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
-        pretty "" "$MSG_UPDATING_C15" "$MSG_FAILED" "$MSG_UPDATING_C15" "$MSG_FAILED"
-        sleep 2
-        pretty "" "Check Update Log..." "" "Check Update Log..." ""
-        sleep 2
-    else
-        pretty "" "$MSG_UPDATING_C15" "$MSG_DONE" "$MSG_UPDATING_C15" "$MSG_DONE"
-        sleep 2
+        pretty "" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG"
+        freeze
     fi
 
-    if [ $UPDATE_EPC == 1 -o $UPDATE_BBB == 1 ]; then
-        pretty "" "Rebooting System..." "" "Rebooting System..." ""
-        sleep 2
-    fi
-
-    [ $UPDATE_EPC == 1 -a $UPDATE_BBB == 1 ] && rebootEPC
-    [ $UPDATE_BBB == 1 ] && rebootBBB
+    pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
+    freeze
 }
 
 main

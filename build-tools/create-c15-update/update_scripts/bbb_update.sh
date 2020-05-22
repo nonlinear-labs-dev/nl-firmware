@@ -25,8 +25,7 @@ executeAsRoot() {
 }
 
 check_preconditions(){
-    if [ -e /settings.xml ] &&
-        [ ! -z "$EPC_IP" ] &&
+    if [ ! -z "$EPC_IP" ] &&
         ping -c1 $EPC_IP 1>&2 > /dev/null &&
         executeAsRoot "exit" &&
         executeAsRoot "mountpoint -q /persistent"; then
@@ -36,8 +35,8 @@ check_preconditions(){
 }
 
 move_files(){
-    if ! check_preconditions; then
-        return 1
+    if [ -e /settings.xml ] && [ ! check_preconditions; ] then
+        then report_and_quit "E59 BBB update: Files on BBB present, but conditions are bad ..." "59";
     fi
 
     executeAsRoot "systemctl stop playground"
@@ -52,7 +51,7 @@ move_files(){
     if [ -e /settings.xml ]; then
         executeAsRoot "scp root@$BBB_IP:/settings.xml /persistent/settings.xml" \
         && rm /settings.xml
-        if [ $? -ne 0 ]; then report_and_quit "E56 BBB update: Moving Settings to ePC failed ..." "56"; fi
+        if [ $? -ne 0 ]; then report_and_quit "E56 BBB update: Moving settings to ePC failed ..." "56"; fi
     fi
 
     if [ -d /internalstorage/calibration ] && [ "$(ls -A /internalstorage/calibration/)" ]; then
