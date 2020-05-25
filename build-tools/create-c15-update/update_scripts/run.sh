@@ -185,7 +185,7 @@ stop_services() {
 freeze() {
     while true; do
         sleep 1
-    fi
+    done
 }
 
 main() {
