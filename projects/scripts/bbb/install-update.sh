@@ -1,10 +1,9 @@
 #!/bin/sh
 
-rm -rf /update
-mkdir -p /update
-
 if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]; then
-    cp /mnt/usb-stick/nonlinear-c15-update.tar /update \
+    rm -rf /update \
+    && mkdir -p /update \
+    && cp /mnt/usb-stick/nonlinear-c15-update.tar /update \
     && cd /update \
     && tar xf nonlinear-c15-update.tar
 
@@ -14,4 +13,3 @@ if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]; then
         /bin/sh /update/run.sh
     fi
 fi
-
