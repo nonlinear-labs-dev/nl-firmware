@@ -4,6 +4,7 @@
 # Name:         Anton Schmied
 # Date:         2020.05.22
 # Version:      2.1
+# TODO:         ePC update: fixCPUBindings.sh and fixOverlayOrder.sh
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
