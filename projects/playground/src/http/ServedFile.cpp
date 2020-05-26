@@ -17,7 +17,12 @@ ServedFile::~ServedFile()
 
 void ServedFile::startServing()
 {
-  Glib::ustring filePath = getFilePathFromMessagePath();
+  Glib::ustring filePath;
+  if(m_request->getPath().find("/tmp/") != 0)
+    filePath = getFilePathFromMessagePath();
+  else
+    filePath = m_request->getPath();
+  
   Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(filePath);
 
   if(file->query_exists())
