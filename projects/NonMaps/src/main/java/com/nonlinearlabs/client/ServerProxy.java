@@ -1031,15 +1031,15 @@ public class ServerProxy {
 	public void exportSoled() {
 		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler(){
 		
-				@Override
-				public void onFileDownloaded(String text) {
-					Window.open(text, "", "");
-				}
-		
-				@Override
-				public void onError() {
-					GWT.log("Soled not correctly downloaded!");
-				}
+			@Override
+			public void onFileDownloaded(String text) {
+				Window.open(text, "", "");
+			}
+	
+			@Override
+			public void onError() {
+				GWT.log("Soled not correctly downloaded!");
+			}
 		});
 	}
 
@@ -1053,7 +1053,7 @@ public class ServerProxy {
 	
 			@Override
 			public void onError() {
-				GWT.log("Soled not correctly downloaded!");
+				GWT.log("Boled not correctly downloaded!");
 			}
 		});
 	}
