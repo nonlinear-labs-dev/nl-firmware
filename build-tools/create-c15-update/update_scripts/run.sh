@@ -64,7 +64,6 @@ report() {
     pretty "$1" "$2" "$3" "$2" "$3"
     printf "$2" >> /update/errors.log
     echo "$2" | systemd-cat -t "C15_Update"
-    return 1
 }
 
 executeAsRoot() {
@@ -78,10 +77,11 @@ executeOnWin() {
 }
 
 check_preconditions() {
-    if [ ! executeAsRoot "exit" ]; then
-        [ -z "$EPC_IP" ] && report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!"
-        ping -c1 $EPC_IP 1>&2 > /dev/null || report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!"
-        executeOnWin "exit" && report "" "E84: Cannot run update on old OS!" "Please contact NLL!"
+    executeAsRoot "exit"
+    if [ $? -ne 0 ]; then
+        if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!"; return 1; fi
+        if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!"; return 1; fi
+        if executeOnWin "exit"; then report "" "E84: Cannot run update on old OS!" "Please contact NLL!"; return 1; fi
     fi
     return 0
 }
@@ -193,7 +193,7 @@ main() {
     touch /update/errors.log
 
     configure_ssh
-    [ ! check_preconditions ] && freeze
+    if ! check_preconditions; then freeze; fi
 
     [ $UPDATE_BBB == 1 ] && stop_services
     [ $UPDATE_EPC == 1 ] && epc_update
