@@ -43,8 +43,7 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
   m_dlSettingConnection = Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 
-  m_loadToPartConnection = Application::get().getHWUI()->onLoadToPartModeChanged(
-      sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
+  Application::get().getHWUI()->onLoadToPartModeChanged(sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 }
 
 PresetManagerLayout::~PresetManagerLayout()
@@ -112,6 +111,7 @@ void PresetManagerLayout::setupBankEdit()
   {
     setStoreModeData(nullptr);
   }
+
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
 
@@ -126,6 +126,8 @@ void PresetManagerLayout::setupBankEdit()
 
 void PresetManagerLayout::setupBankSelect()
 {
+  auto hwui = Application::get().getHWUI();
+
   if(getStoreModeData() != nullptr)
   {
     setStoreModeData(nullptr);
@@ -142,8 +144,9 @@ void PresetManagerLayout::setupBankSelect()
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
   if(isDualEB && Application::get().getHWUI()->isInLoadToPart())
-    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
-                                                    getPresetPartSelection(VoiceGroup::II)));
+    m_presets
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
+                                              hwui->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
 
@@ -213,6 +216,7 @@ void PresetManagerLayout::setupPresetEdit()
 
 void PresetManagerLayout::setupPresetSelect()
 {
+  auto hwui = Application::get().getHWUI();
   if(getStoreModeData() != nullptr)
   {
     setStoreModeData(nullptr);
@@ -225,8 +229,9 @@ void PresetManagerLayout::setupPresetSelect()
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
   if(Application::get().getHWUI()->isInLoadToPart() && isDualEditBuffer)
-    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, getPresetPartSelection(VoiceGroup::I),
-                                                    getPresetPartSelection(VoiceGroup::II)));
+    m_presets
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
+                                              hwui->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
@@ -334,7 +339,8 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
         }
         else if(m_focusAndMode.mode == UIMode::Select)
         {
-          loadSelectedPresetAccordingToLoadType();
+          auto pm = Application::get().getPresetManager();
+          pm->autoLoadPresetAccordingToLoadType();
         }
     }
   }
@@ -375,13 +381,6 @@ std::unique_ptr<StoreModeData> &PresetManagerLayout::getStoreModePtr()
   return s_storeModeData;
 }
 
-PresetPartSelection *PresetManagerLayout::getPresetPartSelection(VoiceGroup vg)
-{
-  static std::array<PresetPartSelection, 2> s_partLoad { PresetPartSelection { VoiceGroup::I },
-                                                         PresetPartSelection { VoiceGroup::II } };
-  return &s_partLoad[static_cast<int>(vg)];
-}
-
 StoreModeData *PresetManagerLayout::getStoreModeData()
 {
 
@@ -391,42 +390,4 @@ StoreModeData *PresetManagerLayout::getStoreModeData()
 void PresetManagerLayout::setStoreModeData(std::unique_ptr<StoreModeData> ptr)
 {
   getStoreModePtr() = std::move(ptr);
-}
-
-void PresetManagerLayout::loadSelectedPresetAccordingToLoadType()
-{
-  auto pm = getPresetManager();
-  auto eb = pm->getEditBuffer();
-  auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
-
-  if(auto bank = pm->getSelectedBank())
-  {
-    if(auto selPreset = bank->getSelectedPreset())
-    {
-      auto directLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
-      auto loadToPartActive = Application::get().getHWUI()->isInLoadToPart();
-
-      switch(selPreset->getType())
-      {
-        case SoundType::Single:
-          eb->undoableLoadSelectedPreset(currentVoiceGroup);
-          animateSelectedPresetIfInLoadPartMode([]() {});
-          break;
-        case SoundType::Layer:
-        case SoundType::Split:
-          if(loadToPartActive)
-          {
-            auto load = getPresetPartSelection(currentVoiceGroup);
-            eb->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
-            animateSelectedPresetIfInLoadPartMode([]() {});
-          }
-          else
-          {
-            eb->undoableLoadSelectedPreset(currentVoiceGroup);
-            animateSelectedPresetIfInLoadPartMode([]() {});
-          }
-          break;
-      }
-    }
-  }
 }

@@ -24,6 +24,7 @@
 #include <giomm/file.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/SelectVoiceGroupLayout.h>
 #include <tools/StringTools.h>
+#include <presets/PresetPartSelection.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -234,7 +235,8 @@ void PresetManager::doAutoLoadSelectedPreset()
 {
   if(auto lock = m_isLoading.lock())
   {
-    FocusAndMode focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+    auto hwui = Application::get().getHWUI();
+    FocusAndMode focusAndMode = hwui->getFocusAndMode();
 
     bool isPresetManagerActive = (focusAndMode.focus == UIFocus::Banks || focusAndMode.focus == UIFocus::Presets);
     bool isStoring = (focusAndMode.mode == UIMode::Store);
@@ -242,7 +244,7 @@ void PresetManager::doAutoLoadSelectedPreset()
 
     if(!isStoringPreset)
     {
-      scheduleAutoLoadSelectedPreset();
+      autoLoadPresetAccordingToLoadType();
     }
   }
 }
@@ -936,4 +938,38 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
       m_autoLoadScheduled = false;
     }
   });
+}
+void PresetManager::autoLoadPresetAccordingToLoadType()
+{
+  auto eb = getEditBuffer();
+  auto hwui = Application::get().getHWUI();
+  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+
+  if(auto bank = getSelectedBank())
+  {
+    if(auto selPreset = bank->getSelectedPreset())
+    {
+      auto directLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+      auto loadToPartActive = Application::get().getHWUI()->isInLoadToPart();
+
+      switch(selPreset->getType())
+      {
+        case SoundType::Single:
+          eb->undoableLoadSelectedPreset(currentVoiceGroup);
+          break;
+        case SoundType::Layer:
+        case SoundType::Split:
+          if(loadToPartActive)
+          {
+            auto load = hwui->getPresetPartSelection(currentVoiceGroup);
+            eb->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+          }
+          else
+          {
+            eb->undoableLoadSelectedPreset(currentVoiceGroup);
+          }
+          break;
+      }
+    }
+  }
 }
