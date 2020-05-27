@@ -196,19 +196,19 @@ bool DualPresetTypeLabel::drawLayer(FrameBuffer &buffer)
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
 
-  buffer.setColor(m_inidicateI ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.setColor(m_inidicateI ? loadedColor : defaultColor);
   buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 4);
   if(m_selectedI)
   {
-    buffer.setColor(FrameBufferColors::C255);
+    buffer.setColor(selectColor);
     buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 4);
   }
 
-  buffer.setColor(m_inidicateII ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.setColor(m_inidicateII ? loadedColor : defaultColor);
   buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 9, 10, 4);
   if(m_selectedII)
   {
-    buffer.setColor(FrameBufferColors::C255);
+    buffer.setColor(selectColor);
     buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 9, 10, 4);
   }
   return true;
@@ -222,19 +222,19 @@ bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
   buffer.setColor(FrameBufferColors::C43);
   buffer.fillRect(bgRect);
 
-  buffer.setColor(m_inidicateI ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.setColor(m_inidicateI ? loadedColor : defaultColor);
   buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 3, 4, 10);
   if(m_selectedI)
   {
-    buffer.setColor(FrameBufferColors::C255);
+    buffer.setColor(selectColor);
     buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 3, 4, 10);
   }
 
-  buffer.setColor(m_inidicateII ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.setColor(m_inidicateII ? loadedColor : defaultColor);
   buffer.fillRect(getPosition().getX() + 8, getPosition().getY() + 3, 4, 10);
   if(m_selectedII)
   {
-    buffer.setColor(FrameBufferColors::C255);
+    buffer.setColor(selectColor);
     buffer.drawRect(getPosition().getX() + 8, getPosition().getY() + 3, 4, 10);
   }
   return true;
@@ -242,11 +242,11 @@ bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 
 bool DualPresetTypeLabel::drawSingle(FrameBuffer &buffer)
 {
-  buffer.setColor(m_inidicateI ? FrameBufferColors::C179 : FrameBufferColors::C128);
+  buffer.setColor(m_inidicateI ? loadedColor : defaultColor);
   buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 10);
   if(m_selectedI)
   {
-    buffer.setColor(FrameBufferColors::C255);
+    buffer.setColor(selectColor);
     buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 10);
   }
 
