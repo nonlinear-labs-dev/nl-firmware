@@ -87,5 +87,8 @@ void BankButton::installDual()
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(
-      [this] { Application::get().getHWUI()->toggleCurrentVoiceGroup(); }, toggleBankFocus);
+      [this] {
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+          },
+          toggleBankFocus);
 }

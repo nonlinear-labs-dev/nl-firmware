@@ -74,6 +74,8 @@ void PresetTypeLabel::update(const Preset *newSelection)
 void PresetTypeLabel::drawBackground(FrameBuffer &fb)
 {
 
+  auto hwui = Application::get().getHWUI();
+
   if(selectedPreset
      && Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset()
          == selectedPreset->getUuid())
@@ -83,16 +85,12 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
 
     bool selected = false;
 
-    if(Application::get().getHWUI()->isInLoadToPart())
+    if(hwui->isInLoadToPart())
     {
-      auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
-      auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
-      if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout))
+      auto currentVGFocus = hwui->getCurrentVoiceGroup();
+      if(auto selection = hwui->getPresetPartSelection(currentVGFocus))
       {
-        if(auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus))
-        {
-          selected = selection->m_preset == selectedPreset;
-        }
+        selected = selection->m_preset == selectedPreset;
       }
     }
     else
@@ -259,13 +257,11 @@ void DualPresetTypeLabel::update(const Preset *selected)
 
   if(selected)
   {
-    auto currentVGFocus = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto hwui = Application::get().getHWUI();
+    auto currentVGFocus = hwui->getCurrentVoiceGroup();
     const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(currentVGFocus);
 
-    auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
-    auto presetManagerLayout = dynamic_cast<PresetManagerLayout *>(currentLayout);
-
-    auto selection = presetManagerLayout->getPresetPartSelection(currentVGFocus);
+    auto selection = hwui->getPresetPartSelection(currentVGFocus);
 
     const auto &presetUUID = selected->getUuid();
 

@@ -553,14 +553,14 @@ VoiceGroup HWUI::getCurrentVoiceGroup() const
 void HWUI::setLoadToPart(bool state)
 {
   if(std::exchange(m_loadToPartActive, state) != state)
-    m_loadToPartSignal.deferedSend(m_loadToPartActive);
+    m_loadToPartSignal.send(m_loadToPartActive);
 }
 
 void HWUI::setCurrentVoiceGroup(VoiceGroup v)
 {
   if(v == VoiceGroup::I || v == VoiceGroup::II)
     if(std::exchange(m_currentVoiceGroup, v) != v)
-      m_voiceGoupSignal.deferedSend(m_currentVoiceGroup);
+      m_voiceGoupSignal.send(m_currentVoiceGroup);
 }
 
 void HWUI::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v)
@@ -718,7 +718,7 @@ FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
 
 sigc::connection HWUI::onLoadToPartModeChanged(const sigc::slot<void, bool> &cb)
 {
-  return m_loadToPartSignal.connect(cb);
+  return m_loadToPartSignal.connectAndInit(cb, m_loadToPartActive);
 }
 
 bool HWUI::isInLoadToPart() const
