@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#include "../../../shared/lpc-defs.h"
+#include "shared/lpc-defs.h"
 
 // # of milliseconds between calls to handler.
 // DO NOT CHANGE without need, and check back corresponding Supervisor Code!!

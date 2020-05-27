@@ -121,8 +121,8 @@ void           Init(void)
   M4SysTick_Init();
 
   /* watchdog */
-  // SYS_WatchDogInit(WATCHDOG_TIMEOUT_MS);
-#warning "watchdog is off!"
+  SYS_WatchDogInit(WATCHDOG_TIMEOUT_MS);
+  //#warning "watchdog is off!"
 }
 
 /******************************************************************************/
