@@ -16,8 +16,8 @@ List of current Error Messages
 - 45 :: "E45 ePC update: Reboot taking too long... timed out"
 - 46 :: "E46 ePC update: Could not start server on BBB..."
 - 47 :: "E47 ePC update: deploying update failed ..."
-- 48 :: "E48 ePC update: setting Kernel Params failed"
-- 49 :: "E49 ePC update: Fixing Overlay order failed"
+- 48 :: "E48 ePC update: "fixing Overlay order failed"
+- 49 :: "E49 ePC update: "setting Kernel Params failed"
 
 5. BBB
 - 54 :: "E54 BBB update: User partition not mounted om ePC ..."
