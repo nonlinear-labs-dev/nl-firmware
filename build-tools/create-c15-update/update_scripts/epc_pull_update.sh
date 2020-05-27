@@ -67,52 +67,9 @@ update(){
     report_and_quit "E47 ePC update: deploying update failed ..." "47"
 }
 
-fix_overlay() {
-    if executeAsRoot "mount | grep "/lroot:/nloverlay/os-overlay""; then
-        if ! executeAsRoot "mkdir /tmp/sda2 \
-            && mount /dev/sda2 /tmp/sda2 \
-            && sed -i 's@/lroot:/nloverlay/os-overlay@/nloverlay/os-overlay:/lroot@' /tmp/sda2/lib/initcpio/hooks/oroot \
-            && mount /tmp/sda2 \
-            && mkinitcpio -p linux \
-            && mkinitcpio -p linux-rt"; then
-                printf "E48 ePC update: fixing Overlay order failed" >> /update/errors.log && return 1
-        fi
-    fi
-    return 0
-}
-
-
-fix_kernel_settings () {
-    if ! executeAsRoot "cat /etc/default/grub | grep "isolcpus" > /dev/null"; then
-        if ! executeAsRoot "cat /etc/default/grub | grep "mitigations" > /dev/null"; then
-            if ! executeAsRoot "mkdir -p /mnt/sda2 \
-                && mount /dev/sda2 /mnt/sda2 \
-                && mount /dev/sda1 /mnt/sda2/boot \
-                && arch-chroot /mnt/sda2 /bin/bash -c "sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2\\\"/g' /etc/default/grub" \
-                && arch-chroot /mnt/sda2 /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck" \
-                && arch-chroot /mnt/sda2 /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg" \
-                && arch-chroot /mnt/sda2 /bin/bash -c "mkdir -p /boot/EFI/BOOT" \
-                && arch-chroot /mnt/sda2 /bin/bash -c "cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI" \
-                && umount /mnt/sda2/boot \
-                && umount /mnt/sda2"; then
-                    printf "E49 ePC update: setting Kernel Parameter failed " >> /update/errors.log && return 1
-            fi
-        fi
-    fi
-    return 0
-}
-
-epc_fix() {
-    if ! fix_overlay || ! fix_kernel_settings; then
-        report_and_quit "E45 ePC update: Fixing failed" "45"
-    fi
-    return 0
-}
-
 main () {
     check_preconditions
     update
-    epc_fix
     return 0
 }
 

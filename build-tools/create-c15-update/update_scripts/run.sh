@@ -106,6 +106,43 @@ epc_pull_update() {
     return $?
 }
 
+epc_fix() {
+    fix_errors=0
+
+    if executeAsRoot "mount | grep "/lroot:/nloverlay/os-overlay""; then
+        if ! { executeAsRoot "mkdir /tmp/sda2" \
+            && executeAsRoot "mount /dev/sda2 /tmp/sda2" \
+            && executeAsRoot "sed -i 's@/lroot:/nloverlay/os-overlay@/nloverlay/os-overlay:/lroot@' /tmp/sda2/lib/initcpio/hooks/oroot" \
+            && executeAsRoot "mount /tmp/sda2" \
+            && executeAsRoot "mkinitcpio -p linux" \
+            && executeAsRoot "mkinitcpio -p linux-rt" ;}; then
+                printf "E48 ePC update: fixing Overlay order failed" >> /update/errors.log && ((fix_errors++))
+        fi
+    fi
+
+    if ! executeAsRoot "cat /etc/default/grub | grep "isolcpus" > /dev/null"; then
+        if ! executeAsRoot "cat /etc/default/grub | grep "mitigations" > /dev/null"; then
+            if ! { executeAsRoot "mkdir -p /mnt/sda2" \
+                && executeAsRoot "mount /dev/sda2 /mnt/sda2" \
+                && executeAsRoot "mount /dev/sda1 /mnt/sda2/boot" \
+                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2\\\"/g' /etc/default/grub"" \
+                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck"" \
+                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"" \
+                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "mkdir -p /boot/EFI/BOOT"" \
+                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI"" \
+                && executeAsRoot "umount /mnt/sda2/boot" \
+                && executeAsRoot "umount /mnt/sda2"; }; then
+                    printf "E48 ePC update: setting Kernel Parameter failed " >> /update/errors.log && ((fix_errors++))
+            fi
+        fi
+    fi
+
+    if [ $fix_errors -gt 0 ] ; then
+        report "" "E48 ePC update: Fixing failed" "Please retry update!"; return 48
+    fi
+    return 0
+}
+
 epc_update() {
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF"
 
@@ -115,6 +152,12 @@ epc_update() {
             sleep 2
             return 1
         fi
+    fi
+
+    if ! epc_fix; then
+        pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
+        sleep 2
+        return 1
     fi
 
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
