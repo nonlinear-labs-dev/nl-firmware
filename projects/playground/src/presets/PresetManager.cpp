@@ -244,47 +244,17 @@ void PresetManager::doAutoLoadSelectedPreset()
 
     if(!isStoringPreset)
     {
-      autoLoadPresetAccordingToLoadType();
+      scheduleAutoLoadPresetAccordingToLoadType();
     }
   }
 }
 
-void PresetManager::scheduleAutoLoadSelectedPreset()
+void PresetManager::scheduleAutoLoadPresetAccordingToLoadType()
 {
   m_autoLoadScheduled = true;
   m_autoLoadThrottler.doTask([=]() {
     m_autoLoadScheduled = false;
-
-    if(auto b = getSelectedBank())
-    {
-      const auto &presetUUID = b->getSelectedPresetUuid();
-      auto eb = getEditBuffer();
-      bool shouldLoad = eb->getUUIDOfLastLoadedPreset() != presetUUID || eb->isModified();
-
-      if(shouldLoad)
-      {
-        if(auto p = b->findPreset(presetUUID))
-        {
-          if(auto currentUndo = getUndoScope().getUndoTransaction())
-          {
-            if(!currentUndo->isClosed())
-            {
-              eb->undoableLoad(currentUndo, p);
-            }
-            else
-            {
-              currentUndo->reopen();
-              eb->undoableLoad(currentUndo, p);
-              currentUndo->close();
-            }
-            return;
-          }
-
-          auto scope = getUndoScope().startTransaction(p->buildUndoTransactionTitle("Load"));
-          eb->undoableLoad(scope->getTransaction(), p);
-        }
-      }
-    }
+    autoLoadPresetAccordingToLoadType();
   });
 }
 
@@ -308,7 +278,7 @@ std::shared_ptr<ScopedGuard::Lock> PresetManager::getLoadingLock()
   return m_isLoading.lock();
 }
 
-void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder)
+void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File>& pmFolder)
 {
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
@@ -316,7 +286,7 @@ void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transa
   m_editBuffer->sendToAudioEngine();
 }
 
-void PresetManager::loadInitSound(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder)
+void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File>& pmFolder)
 {
   DebugLevel::gassy("loadInitSound", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Init Sound");
