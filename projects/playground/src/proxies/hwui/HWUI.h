@@ -11,6 +11,7 @@
 #include <array>
 #include <memory>
 #include <glibmm/refptr.h>
+#include <png++/image.hpp>
 
 class Application;
 class UsageMode;
@@ -82,7 +83,12 @@ class HWUI
 
   PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
 
+  std::string exportSoled();
+  std::string exportBoled();
+
  private:
+  void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
+
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);

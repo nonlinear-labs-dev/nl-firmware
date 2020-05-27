@@ -2,6 +2,7 @@ package com.nonlinearlabs.client;
 
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
@@ -1025,5 +1026,35 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "mute-part-unmute-other");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
 		queueJob(uri, false);	
+	}
+
+	public void exportSoled() {
+		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler(){
+		
+			@Override
+			public void onFileDownloaded(String text) {
+				Window.open(text, "", "");
+			}
+	
+			@Override
+			public void onError() {
+				GWT.log("Soled not correctly downloaded!");
+			}
+		});
+	}
+
+	public void exportBoled() {
+		downloadFile("/presets/param-editor/download-boled-as-png", new DownloadHandler(){
+		
+			@Override
+			public void onFileDownloaded(String text) {
+				Window.open(text, "", "");
+			}
+	
+			@Override
+			public void onError() {
+				GWT.log("Boled not correctly downloaded!");
+			}
+		});
 	}
 }
