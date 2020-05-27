@@ -139,7 +139,6 @@ add_custom_command(
         "unused-epc"
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
         "unused-lpc"
-        "unused-lpc"
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         nonlinear-bbb-update

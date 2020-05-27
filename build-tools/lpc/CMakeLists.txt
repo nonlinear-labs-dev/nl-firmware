@@ -19,7 +19,7 @@ add_custom_command(
 
 add_custom_command(
     COMMENT "Build blob for LPC containing both cores"
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/projects/realtime-system/main.bin
+    OUTPUT ${CMAKE_BINARY_DIR}/build-tools/lpc/projects/realtime-system/src/main/main.bin
     DEPENDS .docker-container-created
     DEPENDS ${ALL_FILES_IN_PROJECT}
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
@@ -36,12 +36,12 @@ IF(BUILD_BBB) # we need the BBB utilities
         COMMENT "Build LPC update"
         OUTPUT ${CMAKE_BINARY_DIR}/nonlinear-lpc-update.tar
         DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-        DEPENDS ${CMAKE_BINARY_DIR}/build-tools/lpc/projects/realtime-system/main.bin
+        DEPENDS ${CMAKE_BINARY_DIR}/build-tools/lpc/projects/realtime-system/src/main/main.bin
         DEPENDS ${SOURCE_FILES}
         COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
             "unused-epc"
             ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-            ${CMAKE_BINARY_DIR}/build-tools/lpc/projects/realtime-system/main.bin
+            ${CMAKE_BINARY_DIR}/build-tools/lpc/projects/realtime-system/src/main/main.bin
             ${CMAKE_BINARY_DIR}
             ${CMAKE_SOURCE_DIR}
             nonlinear-lpc-update
@@ -58,6 +58,6 @@ IF(BUILD_BBB) # we need the BBB utilities
 ENDIF()
 
 add_custom_target(lpc-blobs
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/projects/realtime-system/main.bin
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/lpc/projects/realtime-system/src/main/main.bin
     )
 

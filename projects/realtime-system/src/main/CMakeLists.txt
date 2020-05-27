@@ -30,4 +30,5 @@ set_target_properties(${BLOBNAME} PROPERTIES COMPILE_FLAGS "${CMAKE_C_FLAGS}")
 add_custom_target(${BLOBNAME}.bin 
     COMMENT "Create ${BLOBNAME}.bin" 
     DEPENDS ${BLOBNAME}
+    BYPRODUCTS ${BLOBNAME}.bin
     COMMAND arm-none-eabi-objcopy -Obinary ${BLOBNAME} ${BLOBNAME}.bin)
