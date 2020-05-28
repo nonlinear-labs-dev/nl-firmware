@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.dataModel.setup;
 
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
@@ -35,7 +36,7 @@ public class SetupModel {
 	}
 
 	public enum PedalType {
-		None, PotTipActive, PotRingActive, PotTipActiveReverse, PotRingActiveReverse, Resitor, ResistorReversed,
+		PotTipActive, PotRingActive, PotTipActiveReverse, PotRingActiveReverse, Resitor, ResistorReversed,
 		SwitchClosing, SwitchOpening, CV0to5V, CV0To5VAutoRange, OFF, BossEV30, BossFV500L, DoepferFP5, FractalEV2,
 		KorgDS1H, KorgEXP2, LeadFootLFX1, MAudioEXP, MoogEP3, RolandDP10, RolandEV5, YamahaFC3A, YamahaFC7
 	}
@@ -95,6 +96,22 @@ public class SetupModel {
 		}
 	}
 
+	class PedalTypeSetting extends EnumDataModelEntity<PedalType> {
+		public PedalTypeSetting() {
+			super(PedalType.class, PedalType.PotTipActive);
+		}
+
+		@Override
+		public void fromString(String str) {
+			try {
+				PedalType p = PedalType.valueOf(str);
+				setValue(p);
+			} catch (Exception e) {
+				Tracer.log("WARNING: Could not parse pedal type value of " + str);
+			}
+		}
+	}
+
 	public class SystemSettings {
 		public BooleanDataModelEntity directLoad = new BooleanDataModelEntity();
 		public EnumDataModelEntity<AftertouchCurve> aftertouchCurve = createEnumDataModelEntity(AftertouchCurve.class,
@@ -115,14 +132,10 @@ public class SetupModel {
 		public EnumDataModelEntity<EditModeRibbonBehaviour> editmodeRibbonBehavior = createEnumDataModelEntity(
 				EditModeRibbonBehaviour.class, EditModeRibbonBehaviour.absolute);
 		public StringDataModelEntity passPhrase = new StringDataModelEntity();
-		public EnumDataModelEntity<PedalType> pedal1Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
-		public EnumDataModelEntity<PedalType> pedal2Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
-		public EnumDataModelEntity<PedalType> pedal3Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
-		public EnumDataModelEntity<PedalType> pedal4Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
+		public EnumDataModelEntity<PedalType> pedal1Type = new PedalTypeSetting();
+		public EnumDataModelEntity<PedalType> pedal2Type = new PedalTypeSetting();
+		public EnumDataModelEntity<PedalType> pedal3Type = new PedalTypeSetting();
+		public EnumDataModelEntity<PedalType> pedal4Type = new PedalTypeSetting();
 		public BooleanDataModelEntity benderOnPressedKeys = new BooleanDataModelEntity();
 		public BooleanDataModelEntity presetDragEnabled = new BooleanDataModelEntity();
 		public BooleanDataModelEntity presetGlitchSuppression = new BooleanDataModelEntity();

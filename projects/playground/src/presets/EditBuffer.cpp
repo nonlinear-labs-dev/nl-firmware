@@ -1593,4 +1593,3 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
   }
 }
-

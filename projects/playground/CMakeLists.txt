@@ -63,7 +63,7 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/fix-overlay-order.service.in ${PROJ
 SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp ${CMAKE_SOURCE_DIR}/projects/shared/*.c)
 file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
 
 IF(NOT DSL_LAYOUTS)
@@ -93,6 +93,7 @@ target_include_directories(${LIB_NAME} PUBLIC ${PROJECT_BINARY_DIR}/src)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/nltools/include/)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/parameter-db/generated/)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/playground/src)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared)
 target_link_libraries(${LIB_NAME} PUBLIC pthread stdc++fs nltools)
 
 ## BINARY
