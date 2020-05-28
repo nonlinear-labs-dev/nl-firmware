@@ -6,7 +6,7 @@ enum class BenderCurves
 {
   Soft = 0,
   Normal = 1,
-  Hard = 2,
+  Hard = 2
 };
 
 class BenderCurve : public EnumSetting<BenderCurves>

@@ -73,22 +73,22 @@ public class SystemSettings {
 
 	public void setPedal1Type(PedalType c) {
 		SetupModel.get().systemSettings.pedal1Type.setValue(c);
-		NonMaps.theMaps.getServerProxy().setSetting("Pedal1Type", netify(c.name()));
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal1Type", c.name());
 	}
 
 	public void setPedal2Type(PedalType c) {
 		SetupModel.get().systemSettings.pedal2Type.setValue(c);
-		NonMaps.theMaps.getServerProxy().setSetting("Pedal2Type", netify(c.name()));
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal2Type", c.name());
 	}
 
 	public void setPedal3Type(PedalType c) {
 		SetupModel.get().systemSettings.pedal3Type.setValue(c);
-		NonMaps.theMaps.getServerProxy().setSetting("Pedal3Type", netify(c.name()));
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal3Type", c.name());
 	}
 
 	public void setPedal4Type(PedalType c) {
 		SetupModel.get().systemSettings.pedal4Type.setValue(c);
-		NonMaps.theMaps.getServerProxy().setSetting("Pedal4Type", netify(c.name()));
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal4Type", c.name());
 	}
 
 	public void setPresetGlitchSurpression(BooleanValues c) {

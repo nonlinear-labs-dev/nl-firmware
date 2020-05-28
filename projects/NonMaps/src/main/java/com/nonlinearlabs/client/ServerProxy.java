@@ -1014,7 +1014,6 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-<<<<<<< HEAD
 	public void unmutePart(VoiceGroup group) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "unmute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
@@ -1030,17 +1029,17 @@ public class ServerProxy {
 	public void setMuteForPartAndUnmuteOther(VoiceGroup group) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "mute-part-unmute-other");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
-		queueJob(uri, false);	
+		queueJob(uri, false);
 	}
 
 	public void exportSoled() {
-		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler(){
-		
+		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {
+
 			@Override
 			public void onFileDownloaded(String text) {
 				Window.open(text, "", "");
 			}
-	
+
 			@Override
 			public void onError() {
 				GWT.log("Soled not correctly downloaded!");
@@ -1049,13 +1048,13 @@ public class ServerProxy {
 	}
 
 	public void exportBoled() {
-		downloadFile("/presets/param-editor/download-boled-as-png", new DownloadHandler(){
-		
+		downloadFile("/presets/param-editor/download-boled-as-png", new DownloadHandler() {
+
 			@Override
 			public void onFileDownloaded(String text) {
 				Window.open(text, "", "");
 			}
-	
+
 			@Override
 			public void onError() {
 				GWT.log("Boled not correctly downloaded!");
@@ -1063,12 +1062,12 @@ public class ServerProxy {
 		});
 	}
 
- 	public void downloadEnumStrings(String enumName, Consumer<String[]> c) {
+	public void downloadEnumStrings(String enumName, Consumer<String[]> c) {
 		downloadFile("/webui-support/enum/get-strings?name=" + URL.encodeQueryString(enumName), new DownloadHandler() {
 
 			@Override
 			public void onFileDownloaded(String text) {
-				c.accept(text.split(","));
+				c.accept(text.split("\n"));
 			}
 
 			@Override

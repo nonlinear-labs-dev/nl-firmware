@@ -25,6 +25,10 @@ public class DeviceSettingsProvider {
 	private LinkedList<Function<DeviceSettings, Boolean>> clients = new LinkedList<Function<DeviceSettings, Boolean>>();
 	private DeviceSettings settings = new DeviceSettings();
 
+	public DeviceSettings getPresenter() {
+		return settings;
+	}
+
 	private DeviceSettingsProvider() {
 		SetupModel.get().systemSettings.velocityCurve.onChange(t -> {
 			settings.velocityCurve.selected = t.ordinal();
@@ -128,7 +132,8 @@ public class DeviceSettingsProvider {
 	}
 
 	public void connectToPedal(int id, Pedal target) {
-		PedalParameterModel srcPedal = (PedalParameterModel) EditBufferModel.get().getParameter(new ParameterId(id, VoiceGroup.Global));
+		PedalParameterModel srcPedal = (PedalParameterModel) EditBufferModel.get()
+				.getParameter(new ParameterId(id, VoiceGroup.Global));
 		srcPedal.value.onChange(t -> {
 			double v = t.value.getValue();
 			target.displayValue = Stringizers.get().stringize(srcPedal.value.metaData.scaling.getValue(), v);

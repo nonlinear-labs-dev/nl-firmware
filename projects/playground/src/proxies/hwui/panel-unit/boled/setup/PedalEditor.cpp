@@ -10,9 +10,7 @@ PedalEditor::PedalEditor(std::shared_ptr<PedalType> m)
   m_mode->onChange(mem_fun(this, &PedalEditor::onSettingChanged));
 }
 
-PedalEditor::~PedalEditor()
-{
-}
+PedalEditor::~PedalEditor() = default;
 
 void PedalEditor::incSetting(int inc)
 {
@@ -21,10 +19,14 @@ void PedalEditor::incSetting(int inc)
 
 const std::vector<Glib::ustring> &PedalEditor::getDisplayStrings() const
 {
-  return m_mode->enumToDisplayString();
+  return m_mode->getDisplayStrings();
 }
 
 int PedalEditor::getSelectedIndex() const
 {
-  return (int) m_mode->get();
+  auto v = getDisplayStrings();
+  auto it = std::find(v.begin(), v.end(), m_mode->getDisplayString());
+  if(it != v.end())
+    return std::distance(v.begin(), it);
+  return 0;
 }

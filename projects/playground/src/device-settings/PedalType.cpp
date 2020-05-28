@@ -13,30 +13,20 @@ PedalType::PedalType(UpdateDocumentContributor &settings, uint16_t lpcKey)
 {
 }
 
-PedalType::~PedalType() = default;
-
-void PedalType::sendToLPC(SendReason reason) const
+Glib::ustring PedalType::getDisplayString() const
 {
-  auto reset = reason == SendReason::SettingChanged;
-  Application::get().getLPCProxy()->sendPedalSetting(m_lpcKey, get(), reset);
-}
-
-const std::vector<Glib::ustring> &PedalType::enumToString() const
-{
-  static std::vector<Glib::ustring> s_modeNames;
-
-  if(s_modeNames.empty())
+  auto v = getAllValues<PedalTypes>();
+  auto it = std::find(v.begin(), v.end(), get());
+  if(it != v.end())
   {
-    for(auto n : getAllStrings<PedalTypes>())
-    {
-      s_modeNames.emplace_back(n);
-    }
+    auto idx = std::distance(v.begin(), it);
+    return getDisplayStrings().at(idx);
   }
 
-  return s_modeNames;
+  return "";
 }
 
-const std::vector<Glib::ustring> &PedalType::enumToDisplayString() const
+const std::vector<Glib::ustring> &PedalType::getDisplayStrings() const
 {
   static std::vector<Glib::ustring> s_modeNames;
 
@@ -52,24 +42,18 @@ const std::vector<Glib::ustring> &PedalType::enumToDisplayString() const
   return s_modeNames;
 }
 
+PedalType::~PedalType() = default;
+
+void PedalType::sendToLPC(SendReason reason) const
+{
+  auto reset = reason == SendReason::SettingChanged;
+  Application::get().getLPCProxy()->sendPedalSetting(m_lpcKey, get(), reset);
+}
+
 void PedalType::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
   writer.writeTextElement("value", toString(get()), Attribute("changed", changed));
-}
-
-void PedalType::load(const Glib::ustring &text)
-{
-  static std::map<std::string, std::string> m { { "pot-tip-active", "PotTipActive" },
-                                                { "pot-ring-active", "PotRingActive" },
-                                                { "switch-closing", "SwitchClosing" },
-                                                { "switch-opening", "SwitchOpening" } };
-
-  auto it = m.find(text);
-  if(it != m.end())
-    super::load(it->second);
-  else
-    super::load(text);
 }
 
 void PedalType::load(const Glib::ustring &text)

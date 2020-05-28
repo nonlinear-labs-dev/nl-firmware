@@ -3,22 +3,21 @@
 #include <xml/OutStream.h>
 #include <http/NetworkRequest.h>
 #include <http/HTTPRequest.h>
+#include <Application.h>
+#include <device-settings/Settings.h>
+#include <device-settings/PedalType.h>
 
 namespace
 {
   template <typename T> std::string getEnumStrings()
   {
-    std::stringstream str;
+    std::string result;
+    auto names = Application::get().getSettings()->getSetting<PedalType>()->getDisplayStrings();
 
-#warning "TODO: not return enum-string, but preset name base on enum"
-    for(const auto name : getAllStrings<T>())
-    {
-      if(str.tellp())
-        str << ',';
-      str << name;
-    }
+    for(const auto name : names)
+      result.append(result.empty() ? 0 : 1, '\n').append(name);
 
-    return str.str();
+    return result;
   }
 }
 
