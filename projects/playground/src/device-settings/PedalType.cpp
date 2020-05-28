@@ -4,8 +4,6 @@
 #include <EHC-pedal-presets.h>
 #include "Application.h"
 #include "proxies/lpc/LPCProxy.h"
-#include "xml/Writer.h"
-#include "xml/Attribute.h"
 
 PedalType::PedalType(UpdateDocumentContributor &settings, uint16_t lpcKey)
     : super(settings, PedalTypes::PotTipActive)
@@ -48,12 +46,6 @@ void PedalType::sendToLPC(SendReason reason) const
 {
   auto reset = reason == SendReason::SettingChanged;
   Application::get().getLPCProxy()->sendPedalSetting(m_lpcKey, get(), reset);
-}
-
-void PedalType::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
-{
-  bool changed = knownRevision < getUpdateIDOfLastChange();
-  writer.writeTextElement("value", toString(get()), Attribute("changed", changed));
 }
 
 void PedalType::load(const Glib::ustring &text)

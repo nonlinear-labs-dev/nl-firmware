@@ -17,7 +17,6 @@ class PedalType : public NLEnumSetting<PedalTypes>
   const std::vector<Glib::ustring> &getDisplayStrings() const;
 
  private:
-  void writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const override;
   void sendToLPC(SendReason reason) const override;
   void load(const Glib::ustring &text) override;
 

@@ -2,6 +2,8 @@
 
 #include "Setting.h"
 #include <nltools/enums/EnumTools.h>
+#include "xml/Writer.h"
+#include "xml/Attribute.h"
 
 template <typename TEnum> class NLEnumSetting : public Setting
 {
@@ -58,6 +60,12 @@ template <typename TEnum> class NLEnumSetting : public Setting
   Glib::ustring save() const
   {
     return toString(get());
+  }
+
+  void writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const override
+  {
+    bool changed = knownRevision < getUpdateIDOfLastChange();
+    writer.writeTextElement("value", toString(get()), Attribute("changed", changed));
   }
 
  private:
