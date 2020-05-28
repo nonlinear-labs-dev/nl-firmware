@@ -154,25 +154,32 @@ Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) 
   auto paramId = [](uint16_t id) {
     switch(id)
     {
-      case 0:
+      case HW_SOURCE_ID_PEDAL_1:
         return HardwareSourcesGroup::getPedal1ParameterID();
-      case 1:
+      case HW_SOURCE_ID_PEDAL_2:
         return HardwareSourcesGroup::getPedal2ParameterID();
-      case 2:
+      case HW_SOURCE_ID_PEDAL_3:
         return HardwareSourcesGroup::getPedal3ParameterID();
-      case 3:
+      case HW_SOURCE_ID_PEDAL_4:
         return HardwareSourcesGroup::getPedal4ParameterID();
-      case 4:
+      case HW_SOURCE_ID_PITCHBEND:
         return HardwareSourcesGroup::getPitchbendParameterID();
-      case 5:
+      case HW_SOURCE_ID_AFTERTOUCH:
         return HardwareSourcesGroup::getAftertouchParameterID();
-      case 6:
+      case HW_SOURCE_ID_RIBBON_1:
       case 284:
         return HardwareSourcesGroup::getUpperRibbonParameterID();
-      case 7:
+      case HW_SOURCE_ID_RIBBON_2:
       case 289:
         return HardwareSourcesGroup::getLowerRibbonParameterID();
-      default:
+      case HW_SOURCE_ID_PEDAL_5:
+      case HW_SOURCE_ID_PEDAL_6:
+      case HW_SOURCE_ID_PEDAL_7:
+      case HW_SOURCE_ID_PEDAL_8:
+        //todo new pedals
+      case HW_SOURCE_ID_LAST_KEY:
+        //todo last key
+        default:
         return ParameterId::invalid();
     }
   }(id);

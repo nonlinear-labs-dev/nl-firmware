@@ -127,9 +127,9 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
 
 Parameter *ParameterDualGroupSet::findParameterByID(const ParameterId &id) const
 {
-  if(static_cast<size_t>(id.getVoiceGroup()) > m_idToParameterMap.size())
+  if(static_cast<size_t>(id.getVoiceGroup()) >= m_idToParameterMap.size())
     return nullptr;
-  
+
   auto &m = m_idToParameterMap.at(static_cast<size_t>(id.getVoiceGroup()));
   auto it = m.find(id.getNumber());
 
