@@ -1,7 +1,7 @@
 #!/bin/sh
 
 UPDATE_PACKAGE_SERVERS="http://hoegelow.com/nl/ https://ind.mirror.pkgbuild.com/community/os/x86_64/ https://sgp.mirror.pkgbuild.com/extra/os/x86_64/"
-PACKAGES_TO_INSTALL="fuse-common-3.9.0-1-x86_64.pkg.tar.xz fuse3-3.9.0-1-x86_64.pkg.tar.xz sshfs-3.7.0-1-x86_64.pkg.tar.zst"
+PACKAGES_TO_INSTALL="fuse-common-3.9.0-1-x86_64.pkg.tar.xz fuse3-3.9.0-1-x86_64.pkg.tar.xz sshfs-3.7.0-1-x86_64.pkg.tar.zst mc-4.8.24-2-x86_64.pkg.tar.zst"
 
 copy_running_os() {
     echo "Copying running os..."
@@ -48,7 +48,7 @@ create_update() {
 }
 
 deploy_update() {
-    mv /update.tar /workdir/update.tar
+    mv /update.tar /bindir/update.tar
 }
 
 setup_build_overlay() {
@@ -113,6 +113,10 @@ update_fstab() {
   /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
     echo 'root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0' >> /etc/fstab"
 }
+
+set -x
+mkdir -p /workdir
+mount -o loop /bindir/fs.ext4 /workdir
 
 setup_build_overlay
 build_update

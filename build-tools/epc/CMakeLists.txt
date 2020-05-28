@@ -1,10 +1,12 @@
 SET(USER $ENV{USER})
-SET(DOCKERNAME nl-epc-build-environment-${USER})
+SET(DOCKERNAME nl-epc-build-environment)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
+file(GLOB_RECURSE ALL_BUILD_TOOLS_FILES ${CMAKE_SOURCE_DIR}/build-tools/*)
 file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/NonMaps/target/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET_FILES})
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX CMakeLists.txt)
+list(APPEND ALL_FILES_IN_PROJECT ${ALL_BUILD_TOOLS_FILES})
 
 EXECUTE_PROCESS(OUTPUT_VARIABLE GROUP_ID COMMAND sh -c "id -g $USER")
 EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
@@ -13,11 +15,19 @@ string(STRIP ${USER_ID} USER_ID)
 file(GLOB_RECURSE EPC_SCRIPTS ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 add_custom_command(
-    COMMENT "Create Docker Container for the current User ${USER}"
+    COMMENT "Create Docker Container"
     OUTPUT .docker-container-created
-    COMMAND docker build --build-arg user=${USER} --build-arg user_id=${USER_ID} --build-arg group_id=${GROUP_ID} -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND docker build -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR}
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile
     COMMAND touch .docker-container-created
+)
+
+add_custom_command(
+    COMMENT "Create filesystem"
+    OUTPUT  .filesystem-created
+    COMMAND truncate -s 7G ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
+    COMMAND mkfs.ext4 ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
+    COMMAND touch .filesystem-created
 )
 
 add_custom_command(
@@ -37,6 +47,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Create NonLinux ISO Image"
     DEPENDS .docker-container-created
+    DEPENDS .filesystem-created
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
     DEPENDS ${EPC_SCRIPTS}
@@ -50,6 +61,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Install system on virtual machine"
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
+    DEPENDS .filesystem-created
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/disk.raw
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -67,6 +79,7 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
     DEPENDS .docker-container-created
+    DEPENDS .filesystem-created
     OUTPUT .nonlinux-local-rootfs
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -80,6 +93,7 @@ add_custom_command(
     COMMENT "Create ePC update"
     DEPENDS .nonlinux-local-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
+    DEPENDS .filesystem-created
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -90,6 +104,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Build install medium (to be run with prefix EPC_INSTALL_MEDIUM=/dev/sdX)"
     OUTPUT .nonlinux-install-medium
+    DEPENDS .filesystem-created
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh
@@ -101,14 +116,17 @@ IF(BUILD_BBB) # we need the BBB utilities
     add_custom_command(
         COMMENT "Build ePC update"
         OUTPUT ${CMAKE_BINARY_DIR}/nonlinear-epc-update.tar
+        DEPENDS .filesystem-created
         DEPENDS epc-create-update
         DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
-        DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-        DEPENDS ${SOURCE_FILES}
+        DEPENDS bbb-rootfs
+        DEPENDS bbb-rootfs
+        DEPENDS ${ALL_FILES_IN_PROJECT}
         COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
             ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
             ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-            "unused-lpc"
+            "unused-lpc-m0"
+            "unused-lpc-m4"
             ${CMAKE_BINARY_DIR}
             ${CMAKE_SOURCE_DIR}
             nonlinear-epc-update
@@ -117,6 +135,7 @@ IF(BUILD_BBB) # we need the BBB utilities
 
     add_custom_target(epc-ota-update
         DEPENDS ${CMAKE_BINARY_DIR}/nonlinear-epc-update.tar
+        DEPENDS .filesystem-created
         COMMAND ${CMAKE_SOURCE_DIR}/build-tools/c15-ota-update.sh
             ${CMAKE_BINARY_DIR}/nonlinear-epc-update.tar
             \${UNIT_NAME}
