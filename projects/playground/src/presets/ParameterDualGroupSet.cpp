@@ -127,13 +127,10 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
 
 Parameter *ParameterDualGroupSet::findParameterByID(const ParameterId &id) const
 {
-  auto partIt
-      = std::find(m_idToParameterMap.begin(), m_idToParameterMap.end(), static_cast<size_t>(id.getVoiceGroup()));
-
-  if(partIt == m_idToParameterMap.end())
+  if(static_cast<size_t>(id.getVoiceGroup()) > m_idToParameterMap.size())
     return nullptr;
-
-  auto &m = *partIt;
+  
+  auto &m = m_idToParameterMap.at(static_cast<size_t>(id.getVoiceGroup()));
   auto it = m.find(id.getNumber());
 
   if(it == m.end())
