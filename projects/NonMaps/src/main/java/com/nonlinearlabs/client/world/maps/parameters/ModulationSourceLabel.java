@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;

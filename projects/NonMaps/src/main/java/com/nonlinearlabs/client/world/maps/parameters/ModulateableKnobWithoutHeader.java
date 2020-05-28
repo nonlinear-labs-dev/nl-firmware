@@ -6,9 +6,7 @@ public class ModulateableKnobWithoutHeader extends ModulatableParameterWithoutNa
 
 	public ModulateableKnobWithoutHeader(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new LabelModulationSource(this, getParameterNumber()) {
-			
-		});
+		addChild(new LabelModulationSource(this, getParameterNumber()));
 		addChild(new ModulationSourceLabel(this, getParameterNumber()));
 		addChild(new KnobLarge(this, getParameterNumber()));
 		addChild(new ValueDisplayLarge(this, getParameterNumber()));

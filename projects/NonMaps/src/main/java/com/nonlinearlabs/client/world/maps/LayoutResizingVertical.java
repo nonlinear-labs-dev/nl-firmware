@@ -24,17 +24,4 @@ public abstract class LayoutResizingVertical extends LayoutVertical {
 		for (int i = 1; i < getChildren().size(); i++)
 			getChildren().get(i).getNonPosition().moveBy(0, diff);
 	}
-
-	public void centerChildren() {
-		double height = getNonPosition().getHeight();
-		double childrenHeight = 0;
-
-		for (int i = 0; i < getChildren().size(); i++)
-			childrenHeight += getChildren().get(i).getNonPosition().getHeight();
-
-		double diff = (height - childrenHeight) / 2;
-
-		for (int i = 0; i < getChildren().size(); i++)
-			getChildren().get(i).getNonPosition().moveBy(0, diff);
-	}
 }
