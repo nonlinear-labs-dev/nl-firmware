@@ -14,12 +14,6 @@ public class ModulatableHorizontalSlider extends ModulatableParameterWithoutName
 	}
 
 	@Override
-	public void doFirstLayoutPass(double levelOfDetail) {
-		// TODO Auto-generated method stub
-		super.doFirstLayoutPass(levelOfDetail);
-	}
-
-	@Override
 	public boolean skipChildOnLayout(MapsControl c) {
 		return c instanceof LabelModulationSource;
 	}
