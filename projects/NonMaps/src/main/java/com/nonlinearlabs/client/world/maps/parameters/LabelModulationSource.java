@@ -5,9 +5,4 @@ public class LabelModulationSource extends SmallParameterName {
 	public LabelModulationSource(Parameter parent, int parameterID) {
 		super(parent, parameterID);
 	}
-
-	@Override
-	public double getLevelOfDetailForFullVisibility() {
-		return getParent().getLevelOfDetailForFullVisibility();
-	}
 }
