@@ -167,10 +167,8 @@ Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) 
       case HW_SOURCE_ID_AFTERTOUCH:
         return HardwareSourcesGroup::getAftertouchParameterID();
       case HW_SOURCE_ID_RIBBON_1:
-      case 284:
         return HardwareSourcesGroup::getUpperRibbonParameterID();
       case HW_SOURCE_ID_RIBBON_2:
-      case 289:
         return HardwareSourcesGroup::getLowerRibbonParameterID();
       case HW_SOURCE_ID_PEDAL_5:
       case HW_SOURCE_ID_PEDAL_6:
