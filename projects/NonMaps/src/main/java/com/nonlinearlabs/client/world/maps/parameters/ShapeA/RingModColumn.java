@@ -1,13 +1,28 @@
 package com.nonlinearlabs.client.world.maps.parameters.ShapeA;
 
+import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
-import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
+import com.nonlinearlabs.client.world.maps.parameters.Parameter;
+import com.nonlinearlabs.client.world.maps.parameters.SizeLinkedParameterColumn;
 
-class RingModColumn extends ParameterColumn {
+class RingModColumn extends SizeLinkedParameterColumn {
 
-	RingModColumn(MapsLayout parent) {
+	Parameter sizeReference = null;
+	Parameter ringMod = null;
+
+	RingModColumn(MapsLayout parent, Parameter sizeReference) {
 		super(parent);
-		addChild(new ModulateableKnob(this, 81));
+		ringMod = addChild(new ModulateableKnob(this, 81));
+		this.sizeReference = sizeReference;
+	}
+
+	@Override
+	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
+		parentsHeightFromFirstPass = sizeReference.getNonPosition().getHeight();
+		super.doSecondLayoutPass(parentsWidthFromFirstPass, parentsHeightFromFirstPass);
+		setNonSize(getNonPosition().getWidth(), parentsHeightFromFirstPass);
+		LayoutResizingVertical param = (LayoutResizingVertical) getChildren().get(0);
+		param.setNonSize(getNonPosition().getDimension().getWidth(), parentsHeightFromFirstPass);
 	}
 }
