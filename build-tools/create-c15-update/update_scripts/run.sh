@@ -4,7 +4,6 @@
 # Name:         Anton Schmied
 # Date:         2020.05.22
 # Version:      2.1
-# TODO:         ePC update: fixCPUBindings.sh and fixOverlayOrder.sh
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
@@ -85,8 +84,10 @@ check_preconditions() {
         if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
             report "" "E84: Upgrade OS first!" "Please contact NLL!" && return 1
         else
-            mount.cifs //192.168.10.10/update /mnt/windows -o user=TEST,password=TEST
-            if cat /mnt/windows/ | grep Phase22Renderer.ens; then report "" "E85: OS too old for update!" "Please contact NLL!"; return 1; fi
+            if mount.cifs //192.168.10.10/update /mnt/windows -o user=TEST,password=TEST \
+                && ls -l /mnt/windows/ | grep Phase22Renderer.ens; then
+                    report "" "E85: OS too old for update!" "Please contact NLL!"; return 1
+            fi
         fi
         report "" "Something went wrong!" "Please retry update!"
         return 1
@@ -107,38 +108,12 @@ epc_pull_update() {
 }
 
 epc_fix() {
-    fix_errors=0
+    /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_fix.sh sscl@192.168.10.10:/tmp
+    executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh"
+    result=$?
 
-    if executeAsRoot "mount | grep "/lroot:/nloverlay/os-overlay""; then
-        if ! { executeAsRoot "mkdir /tmp/sda2" \
-            && executeAsRoot "mount /dev/sda2 /tmp/sda2" \
-            && executeAsRoot "sed -i 's@/lroot:/nloverlay/os-overlay@/nloverlay/os-overlay:/lroot@' /tmp/sda2/lib/initcpio/hooks/oroot" \
-            && executeAsRoot "mount /tmp/sda2" \
-            && executeAsRoot "mkinitcpio -p linux" \
-            && executeAsRoot "mkinitcpio -p linux-rt" ;}; then
-                printf "E48 ePC update: fixing Overlay order failed" >> /update/errors.log && ((fix_errors++))
-        fi
-    fi
-
-    if ! executeAsRoot "cat /etc/default/grub | grep "isolcpus" > /dev/null"; then
-        if ! executeAsRoot "cat /etc/default/grub | grep "mitigations" > /dev/null"; then
-            if ! { executeAsRoot "mkdir -p /mnt/sda2" \
-                && executeAsRoot "mount /dev/sda2 /mnt/sda2" \
-                && executeAsRoot "mount /dev/sda1 /mnt/sda2/boot" \
-                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT=\\\"quiet ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2\\\"/g' /etc/default/grub"" \
-                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck"" \
-                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"" \
-                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "mkdir -p /boot/EFI/BOOT"" \
-                && executeAsRoot "arch-chroot /mnt/sda2 /bin/bash -c "cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI"" \
-                && executeAsRoot "umount /mnt/sda2/boot" \
-                && executeAsRoot "umount /mnt/sda2"; }; then
-                    printf "E48 ePC update: setting Kernel Parameter failed " >> /update/errors.log && ((fix_errors++))
-            fi
-        fi
-    fi
-
-    if [ $fix_errors -gt 0 ] ; then
-        report "" "E48 ePC update: Fixing failed" "Please retry update!"; return 48
+    if [ $result -ne 0 ]; then
+        executeAsRoot "cat /tmp/fix_error.log" >> /update/errors.log && return $result
     fi
     return 0
 }

@@ -94,7 +94,9 @@ deploy_scripts() {
         cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh && \
             cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ && \
-            chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh || \
+            chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh && \
+            cp $SOURCE_DIR/update_scripts/epc_fix.sh $OUT_DIRECTORY/EPC/ && \
+            chmod 777 $OUT_DIRECTORY/EPC/epc_fix.sh || \
             fail_and_exit;
     fi
 

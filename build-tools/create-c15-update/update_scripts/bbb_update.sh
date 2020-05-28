@@ -36,7 +36,7 @@ check_preconditions(){
 
 move_files(){
     if [ -e /settings.xml ] && ! check_preconditions; then
-        then report_and_quit "E59 BBB update: Files on BBB present, but conditions are bad ..." "59";
+        report_and_quit "E59 BBB update: Files on BBB present, but conditions are bad ..." "59"
     fi
 
     executeAsRoot "systemctl stop playground"
