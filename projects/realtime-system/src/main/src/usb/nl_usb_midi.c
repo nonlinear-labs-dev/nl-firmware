@@ -34,12 +34,6 @@
 #include "usb/nl_usb_descmidi.h"
 #include "usb/nl_usb_core.h"
 
-#include "cmsis/LPC43xx.h"
-#include "spibb/nl_spi_bb.h"
-#include "spibb/nl_bb_msg.h"
-#include "drv/nl_dbg.h"
-#include "heartbeat/nl_heartbeat.h"
-
 static uint32_t endOfBuffer = 0;
 
 static uint8_t  midiBuffer[2][USB_MIDI_BUFFER_SIZE];
