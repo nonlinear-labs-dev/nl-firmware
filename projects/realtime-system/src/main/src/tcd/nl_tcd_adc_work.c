@@ -299,7 +299,6 @@ void ADC_WORK_Init2(void)
 /*****************************************************************************
 * @brief	SendEditMessageToBB - when using a ribbon as an edit control,
 * 			the messages are sent by calls to this function
-* @param	paramId: parameter Ids (254 ... 289), see: nl_tcd_param_work.h
 * @param	value: ribbon position (0 ... 16000)
 * @param	inc: position increment (theoretically -16000 ... 16000)
 ******************************************************************************/

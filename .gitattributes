@@ -1,6 +1,6 @@
-*               -text
+*               text=auto
 *.c             text eol=lf
 *.cpp           text eol=lf
 *.h             text eol=lf
 *.sh            text eol=lf
-CMakeLists.txt  text eol=lf
+*.txt           text eol=lf
