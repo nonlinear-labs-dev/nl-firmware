@@ -228,6 +228,12 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           printf("NOTIFICATION : ");
           data[0] = data[1];
           goto ShowMuteStatus;
+        case LPC_NOTIFICATION_ID_TEST_MSG:
+          if (data[1] < 30000)
+            printf("NOTIFICATION : TestMessage received, seq #: %5hu\n", data[1]);
+          else
+            printf("NOTIFICATION : TestMessage received, seq #: %5hu (break)\n", data[1] - 30000);
+          break;
         default:
           printf("NOTIFICATION : unknown ID=%d, data=%d     \n", data[0], data[1]);
           break;

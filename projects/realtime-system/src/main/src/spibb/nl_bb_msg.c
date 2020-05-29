@@ -257,6 +257,18 @@ int32_t BB_MSG_SendTheBuffer(void)
     return -1;
 }
 
+// -- integrity check test messaging
+static void ProcessTestMessage(uint16_t length, uint16_t* data)
+{
+  static uint16_t seqNo = 0xFFFF;
+
+  uint16_t passed = ((uint16_t)(1 + seqNo) == data[0]);
+  seqNo           = data[0];
+
+  BB_MSG_WriteMessage2Arg(LPC_BB_MSG_TYPE_NOTIFICATION, LPC_NOTIFICATION_ID_TEST_MSG, data[0] + 30000u * !passed);
+  BB_MSG_SendTheBuffer();
+}
+
 /*****************************************************************************
  * @brief		BB_MSG_ReceiveCallback - Callback for receiving messages from
  * the Beaglebone (called from the PackageParser of the spi_bb driver).
@@ -268,7 +280,9 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
   // data[1]  - first value
   // data[2]  - second value
 
-  if (type == LPC_BB_MSG_TYPE_RIBBON_CAL)
+  if (type == LPC_BB_MSG_TYPE_TEST_MSG)
+    ProcessTestMessage(length, data);
+  else if (type == LPC_BB_MSG_TYPE_RIBBON_CAL)
     ADC_WORK_SetRibbonCalibration(length, data);
   else if (type == LPC_BB_MSG_TYPE_EHC_CONFIG)
     NL_EHC_SetEHCconfig(data[0], data[1]);  // Configurate External Hardware Controller

@@ -21,6 +21,7 @@ enum LPC_BB_MESSAGE_TYPES
   LPC_BB_MSG_TYPE_KEY_EMUL      = 0x1100,  // direction: input/output;  arguments (uint16): 3, midi key , time(lo), time(high)
   LPC_BB_MSG_TYPE_STAT_DATA     = 0x1200,  // direction: output; arguments (uint16): 4
   LPC_BB_MSG_TYPE_KEYMAP_DATA   = 0x1300,  // direction: input; arguments  (uint16): 32 (for 61 keys)
+  LPC_BB_MSG_TYPE_TEST_MSG      = 0xFFFF,  // direction in/out
 };
 
 enum LPC_SETTING_IDS
@@ -78,6 +79,7 @@ enum LPC_NOTIFICATION_IDS
   LPC_NOTIFICATION_ID_CLEAR_EEPROM   = 0x0003,
   LPC_NOTIFICATION_ID_STAT_DATA      = 0x0004,
   LPC_NOTIFICATION_ID_EHC_EEPROMSAVE = 0x0005,
+  LPC_NOTIFICATION_ID_TEST_MSG       = 0xFFFF,
 };
 
 enum LPC_EHC_COMMAND_IDS
