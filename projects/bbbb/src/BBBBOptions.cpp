@@ -1,4 +1,4 @@
-#include "Options.h"
+#include "BBBBOptions.h"
 #include <glibmm/optiongroup.h>
 #include <glibmm/optioncontext.h>
 #include <nltools/logging/Log.h>
@@ -17,7 +17,7 @@ namespace OptionDetail
   }
 }
 
-AudioEngineOptions::AudioEngineOptions(int& argc, char**& argv)
+BBBBOptions::BBBBOptions(int& argc, char**& argv)
 {
   Glib::OptionGroup mainGroup("common", "common options");
   Glib::OptionContext ctx;
@@ -29,6 +29,9 @@ AudioEngineOptions::AudioEngineOptions(int& argc, char**& argv)
 
   OptionDetail::createOption(mainGroup, "log-heart-beat", 'h', "log lpc heart beat to console", m_logHeartBeat);
   OptionDetail::createOption(mainGroup, "log-lpc-raw", 'l', "log raw lpc messages to console", m_logLpcRaw);
+
+  OptionDetail::createOption(mainGroup, "to-lpc-driver", 'o', "to LPC Driver file", m_toLpcDriverPath);
+  OptionDetail::createOption(mainGroup, "from-lpc-driver", 'i', "from LPC Driver file", m_fromLpcDriverPath);
 
   ctx.set_main_group(mainGroup);
   ctx.set_help_enabled(true);
@@ -46,27 +49,37 @@ AudioEngineOptions::AudioEngineOptions(int& argc, char**& argv)
   }
 }
 
-Glib::ustring AudioEngineOptions::getPlaygroundHost() const
+Glib::ustring BBBBOptions::getPlaygroundHost() const
 {
   return m_playgroundHost;
 }
 
-Glib::ustring AudioEngineOptions::getAudioEngineHost() const
+Glib::ustring BBBBOptions::getAudioEngineHost() const
 {
   return m_audioengineHost;
 }
 
-bool AudioEngineOptions::doTimeStamps() const
+bool BBBBOptions::doTimeStamps() const
 {
   return m_doTimeStamps;
 }
 
-bool AudioEngineOptions::logLPCRaw() const
+bool BBBBOptions::logLPCRaw() const
 {
   return m_logLpcRaw;
 }
 
-bool AudioEngineOptions::logHeartBeat() const
+bool BBBBOptions::logHeartBeat() const
 {
   return m_logHeartBeat;
+}
+
+Glib::ustring BBBBOptions::getFromLPCPath() const
+{
+  return m_fromLpcDriverPath;
+}
+
+Glib::ustring BBBBOptions::getToLPCPath() const
+{
+  return m_toLpcDriverPath;
 }

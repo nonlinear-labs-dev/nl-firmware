@@ -1,10 +1,11 @@
 #include <io/ToLPCBridge.h>
 #include <Application.h>
+#include <BBBBOptions.h>
 #include "files/FileIOSender.h"
 #include <nltools/messaging/Message.h>
 
 ToLPCBridge::ToLPCBridge()
-    : super(new FileIOSender("/dev/lpc_bb_driver"), nullptr)
+    : super(new FileIOSender(Application::get().getOptions()->getToLPCPath().c_str()), nullptr)
 {
   nltools::msg::receive<nltools::msg::LPCMessage>(nltools::msg::EndPoint::Lpc,
                                                   sigc::mem_fun(this, &ToLPCBridge::onMessage));

@@ -2,7 +2,7 @@
 #include <io/ToOledsBridge.h>
 #include <nltools/messaging/Message.h>
 #include <Application.h>
-#include <Options.h>
+#include <BBBBOptions.h>
 #include <glibmm/main.h>
 
 ToOledsBridge::ToOledsBridge()

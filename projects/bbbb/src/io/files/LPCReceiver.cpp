@@ -1,6 +1,6 @@
 #include <io/files/LPCReceiver.h>
 #include "Application.h"
-#include "Options.h"
+#include "BBBBOptions.h"
 #include "MessageParser.h"
 #include <giomm.h>
 #include <string.h>
@@ -12,7 +12,7 @@
 #include <iostream>
 
 LPCReceiver::LPCReceiver()
-    : super("/dev/lpc_bb_driver", MessageParser::getNumInitialBytesNeeded())
+    : super(Application::get().getOptions()->getFromLPCPath().c_str(), MessageParser::getNumInitialBytesNeeded())
     , m_parser(std::make_unique<MessageParser>())
 {
 }
