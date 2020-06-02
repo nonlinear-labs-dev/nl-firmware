@@ -4,6 +4,7 @@
 #include "device-settings/DebugLevel.h"
 #include "Application.h"
 #include <giomm.h>
+#include <nltools/ErrorCodes.h>
 
 Options::Options(int &argc, char **&argv)
 {
@@ -51,12 +52,23 @@ Options::Options(int &argc, char **&argv)
   {
     ctx.parse(argc, argv);
   }
+  catch(const Glib::OptionError &optErr)
+  {
+    nltools::Log::error(optErr.what());
+    std::exit(static_cast<int>(nltools::ErrorCode::UnknownOptionKeyError));
+  }
+  catch(const Glib::ConvertError &convErr)
+  {
+    nltools::Log::error(convErr.what());
+    std::exit(static_cast<int>(nltools::ErrorCode::OptionConvertError));
+  }
   catch(...)
   {
     std::stringstream ss;
     for(auto i = 0; i < argc; i++)
       ss << argv[i] << " ";
     nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
+    std::exit(static_cast<int>(nltools::ErrorCode::UnknownOptionKeyError));
   }
 }
 
