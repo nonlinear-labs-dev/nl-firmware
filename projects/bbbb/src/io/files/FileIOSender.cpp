@@ -2,6 +2,7 @@
 #include <nltools/logging/Log.h>
 #include <glibmm/iochannel.h>
 #include <glibmm/bytes.h>
+#include <giomm.h>
 
 FileIOSender::FileIOSender(const char *path)
     : m_path(path)
@@ -37,11 +38,36 @@ void FileIOSender::write(const char *bytes, size_t numBytes)
     try
     {
       gsize numBytesWritten = 0;
-      m_channel->write(bytes, static_cast<gssize>(numBytes), numBytesWritten);
+      auto ret = m_channel->write(bytes, static_cast<gssize>(numBytes), numBytesWritten);
+
+      switch(ret)
+      {
+        case Glib::IO_STATUS_NORMAL:
+          break;
+
+        case Glib::IO_STATUS_ERROR:
+          nltools::Log::error("An Glib::IO_STATUS_ERROR Error Occured!", __FILE__, __PRETTY_FUNCTION__);
+          break;
+        case Glib::IO_STATUS_EOF:
+          nltools::Log::error("An Glib::IO_STATUS_EOF Error Occured!", __FILE__, __PRETTY_FUNCTION__);
+          break;
+        case Glib::IO_STATUS_AGAIN:
+          nltools::Log::error(m_path, "Resource temporarily unavailable.", __FILE__, __PRETTY_FUNCTION__);
+          break;
+      }
+
       if(numBytes != numBytesWritten)
         nltools::Log::error("BBBB", __FILE__, __PRETTY_FUNCTION__, "Not all Bytes written! numBytes: ", numBytes,
                             " written: ", numBytesWritten);
       m_channel->flush();
+    }
+    catch(const Glib::IOChannelError &channelError)
+    {
+      nltools::Log::error("Exception: ", m_path, " -> ", channelError.what());
+    }
+    catch(const Glib::ConvertError &convertError)
+    {
+      nltools::Log::error("Exception: ", m_path, " -> ", convertError.what());
     }
     catch(Glib::Error &err)
     {
