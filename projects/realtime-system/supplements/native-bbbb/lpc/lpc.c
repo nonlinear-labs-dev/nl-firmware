@@ -82,10 +82,12 @@ void Usage(void)
   puts("  key : <note-nr> <time>  : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
   puts("     <time>                 : key time (~1/velocity) in ms (1...525), negative means key release");
-  puts("  test : <size> <count> <delay> : send test message");
+  puts("  test : <size> <count> <delay>  [<count2> <delay2>] : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
-  puts("     <count>                    : # of times the message is send (1..30000)");
+  puts("     <count>                    : # of times the message is send (1..65535)");
   puts("     <delay>                    : delay in usecs between messages");
+  puts("     <count2>                   : # of messages before a block pause");
+  puts("     <delay2>                   : delay in usecs between blocks");
   exit(3);
 }
 
@@ -299,11 +301,12 @@ int main(int argc, char const *argv[])
     return 0;
   }
 
+  // test data
   if (strncmp(argv[1], TEST, sizeof TEST) == 0)
   {
-    if (argc != 5)
+    if (argc != 5 && argc != 7)
     {
-      puts("test: too few arguments!");
+      puts("test: wrong number of arguments (either 3 or 5)!");
       Usage();
     }
 
@@ -324,15 +327,31 @@ int main(int argc, char const *argv[])
       puts("test: count argument error (uint16 expected)");
       Usage();
     }
-    if (count < 1 || count > 30000)
+    if (count < 1)
     {
-      puts("test: count must be 1..30000");
+      puts("test: count must be 1..65535");
       Usage();
     }
     if (sscanf(argv[4], "%u", &delay) != 1)
     {
       puts("test: delay argument error (uint32 expected)");
       Usage();
+    }
+
+    uint16_t blocks = 0;
+    uint32_t pause  = 0;
+    if (argc == 7)
+    {
+      if (sscanf(argv[5], "%hu", &blocks) != 1)
+      {
+        puts("test: count2 argument error (uint16 expected)");
+        Usage();
+      }
+      if (sscanf(argv[6], "%u", &pause) != 1)
+      {
+        puts("test: delay2 argument error (uint16 expected)");
+        Usage();
+      }
     }
 
     uint16_t testDataBuffer[len + 2];
@@ -343,13 +362,28 @@ int main(int argc, char const *argv[])
       for (int i = 0; i < len - 1; i++)
         testDataBuffer[i + 3] = i;
 
+    uint16_t block = blocks;
     while (count--)
     {
       writeData(driver, (len + 2) * sizeof(uint16_t), &testDataBuffer[0]);
-      fflush(driver);
-      usleep(delay);
       testDataBuffer[2]++;
+      if (delay)
+      {
+        fflush(driver);
+        usleep(delay);
+      }
+      if (block)
+      {
+        if (!--block)
+        {
+          block = blocks;
+          if (!delay)
+            fflush(driver);
+          usleep(pause);
+        }
+      }
     }
+    fflush(driver);
     return 0;
   }
 
