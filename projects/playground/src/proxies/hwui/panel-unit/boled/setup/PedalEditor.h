@@ -14,7 +14,7 @@ class PedalEditor : public MenuEditor
  public:
   PedalEditor(std::shared_ptr<PedalType> m);
   virtual ~PedalEditor();
-
+  void setPosition(const Rect& r) override;
   virtual void incSetting(int inc) override;
   virtual const std::vector<Glib::ustring> &getDisplayStrings() const override;
   virtual int getSelectedIndex() const override;

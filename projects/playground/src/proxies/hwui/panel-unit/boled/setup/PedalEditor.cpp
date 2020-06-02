@@ -17,7 +17,7 @@ void PedalEditor::incSetting(int inc)
   m_mode->inc(inc, false);
 }
 
-const std::vector<Glib::ustring> &PedalEditor::getDisplayStrings() const
+const std::vector<Glib::ustring>& PedalEditor::getDisplayStrings() const
 {
   return m_mode->getDisplayStrings();
 }
@@ -29,4 +29,21 @@ int PedalEditor::getSelectedIndex() const
   if(it != v.end())
     return std::distance(v.begin(), it);
   return 0;
+}
+
+void PedalEditor::setPosition(const Rect& r)
+{
+  static const Rect menuEditorPosition(129, 16, 126, 48);
+  Control::setPosition(menuEditorPosition);
+
+  int y = 0;
+  int h = 12;
+  int w = menuEditorPosition.getWidth();
+  int x = (menuEditorPosition.getWidth() - w) / 2;
+
+  for(auto& c : getControls())
+  {
+    c->setPosition(Rect(x, y, w, h));
+    y += h;
+  }
 }
