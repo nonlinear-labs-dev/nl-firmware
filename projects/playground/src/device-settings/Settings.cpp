@@ -164,12 +164,6 @@ void Settings::addSetting(const Glib::ustring &key, Setting *s)
   m_settings[key] = tSettingPtr(s);
 }
 
-void Settings::setSetting(const Glib::ustring &key, const Glib::ustring &value)
-{
-  if(auto s = getSetting(key))
-    s->load(value);
-}
-
 const Settings::tMap &Settings::getSettings() const
 {
   return m_settings;
@@ -182,7 +176,7 @@ Settings::tSettingPtr Settings::getSetting(const Glib::ustring &key)
   if(it != m_settings.end())
     return it->second;
 
-  return NULL;
+  return nullptr;
 }
 
 void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
@@ -203,12 +197,6 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
   m_actions->handleRequest(request);
-}
-
-void Settings::onEditBufferSent()
-{
-  for(auto &s : m_settings)
-    s.second->sendToLPC(Setting::SendReason::EditBufferSent);
 }
 
 bool Settings::isLoading() const

@@ -59,7 +59,7 @@ void RibbonRelativeFactor::set(tControlPositionValue amount)
 
 void RibbonRelativeFactor::sendToLPC(SendReason reason) const
 {
-  uint16_t v = (uint16_t)(m_factor.getTcdValue());
+  auto v = static_cast<uint16_t>(m_factor.getTcdValue());
   Application::get().getLPCProxy()->sendSetting(RIBBON_REL_FACTOR, v);
 }
 

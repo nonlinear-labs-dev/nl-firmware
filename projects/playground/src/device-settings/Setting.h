@@ -25,8 +25,7 @@ class Setting : public UpdateDocumentContributor
   enum class SendReason
   {
     SettingsLoaded,
-    SettingChanged,
-    EditBufferSent,
+    SettingChanged
   };
 
   virtual void sendToLPC(SendReason reason = SendReason::SettingChanged) const;

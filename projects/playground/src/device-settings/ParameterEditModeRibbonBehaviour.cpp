@@ -30,7 +30,7 @@ void ParameterEditModeRibbonBehaviour::sendRelatedSettingToLPC() const
 
 void ParameterEditModeRibbonBehaviour::sendToLPC(SendReason reason) const
 {
-  uint16_t v = (uint16_t) get();
+  auto v = static_cast<uint16_t>(get());
   Application::get().getLPCProxy()->sendSetting(PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR, v);
 }
 

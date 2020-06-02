@@ -341,8 +341,6 @@ void AudioEngineProxy::sendEditBuffer()
       nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage(*eb));
       break;
   }
-
-  Application::get().getSettings()->onEditBufferSent();
 }
 
 void AudioEngineProxy::freezeParameterMessages()

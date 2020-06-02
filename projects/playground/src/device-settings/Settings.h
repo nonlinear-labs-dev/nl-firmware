@@ -20,14 +20,13 @@ class Settings : public ContentSection
   typedef std::shared_ptr<Setting> tSettingPtr;
   typedef std::map<Glib::ustring, tSettingPtr> tMap;
 
-  Settings(UpdateDocumentMaster *master);
-  virtual ~Settings();
+  explicit Settings(UpdateDocumentMaster *master);
+  ~Settings() override;
 
   void init();
   void reload();
 
   tSettingPtr getSetting(const Glib::ustring &key);
-  void setSetting(const Glib::ustring &key, const Glib::ustring &value);
   void addSetting(const Glib::ustring &key, Setting *s);
 
   template <typename T> std::shared_ptr<T> getSetting()
@@ -43,8 +42,6 @@ class Settings : public ContentSection
 
   void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
-
-  void onEditBufferSent();
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
