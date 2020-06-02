@@ -59,8 +59,9 @@ int readWord(uint16_t *const data)
       bl    = fgetc(driver);
       if (bl == EOF)
       {
-        if (errno && errno != EAGAIN)
-          Error(strerror(errno));
+        exit(0);
+        //        if (errno && errno != EAGAIN)
+        //          Error(strerror(errno));
       }
       else
         step++;
@@ -70,8 +71,9 @@ int readWord(uint16_t *const data)
       bh    = fgetc(driver);
       if (bh == EOF)
       {
-        if (errno && errno != EAGAIN)
-          Error(strerror(errno));
+        exit(0);
+        //        if (errno && errno != EAGAIN)
+        //          Error(strerror(errno));
       }
       else
       {
@@ -140,9 +142,10 @@ void Usage(char const *const string, int const exitCode)
 {
   if (string)
     puts(string);
-  puts("read-lpc-msgs <options>");
+  puts("read-lpc-msgs [@filename] <options>");
+  puts("  @filename : specify input file rather than using /dev/lpc_bb_driver");
   puts("  <options> is a white-space seperated list of letters, preceeded");
-  puts("             by either a + or -, turning the display on or off");
+  puts("            by either a + or -, turning the display on or off");
   puts("  default is +a -d");
   puts(" a   All options");
   puts(" r   oveRlay messages of same type");
@@ -162,14 +165,23 @@ void Usage(char const *const string, int const exitCode)
 // ===================
 int main(int argc, char *argv[])
 {
-  int driverFileNo;
-  int flags;
+  int   driverFileNo;
+  int   flags;
+  char  drpath[] = "/dev/lpc_bb_driver";
+  char *path     = drpath;
 
-  printf("\nOutput from /dev/lpc_bb_driver:\n");
+  if (argc > 1 && argv[1][0] == '@')
+  {  // cmdline override of input
+    path = &argv[1][1];
+    argc--;
+    argv++;
+  }
 
-  driver = fopen("/dev/lpc_bb_driver", "r+");
+  printf("\nOutput from '%s' :\n", path);
+
+  driver = fopen(path, "r+");
   if (!driver)
-    Error("cannot open /dev/lpc_bb_driver");
+    Error("cannot open driver or input file");
 
   driverFileNo = fileno(driver);
   if (driverFileNo == -1)
