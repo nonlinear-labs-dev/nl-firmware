@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "shared/lpc-defs.h"
 
@@ -53,6 +54,8 @@ void writeData(FILE *const output, uint16_t const len, uint16_t *data)
 
 #define KEY_EMUL "key"
 
+#define TEST "test"
+
 uint16_t REQ_DATA[] = { LPC_BB_MSG_TYPE_REQUEST, 0x0001, 0x0000 };
 uint16_t SET_DATA[] = { LPC_BB_MSG_TYPE_SETTING, 0x0002, 0x0000, 0x0000 };
 uint16_t KEY_DATA[] = { LPC_BB_MSG_TYPE_KEY_EMUL, 0x0003, 0x0000, 0x0000, 0x0000 };
@@ -62,7 +65,7 @@ void Usage(void)
 {
   puts("Usage:");
   puts(" lpc  <command>");
-  puts("  <commands> : req|set|key");
+  puts("  <commands> : req|set|key|test");
   puts("  req[uest] : sw-version|muting|clear-eeprom|status|save-ehc");
   puts("     sw-version   : get LPC firware version");
   puts("     muting       : get software&hardware muting status");
@@ -78,7 +81,13 @@ void Usage(void)
   puts("                  : System Special; reboot system, reset heartbeat counter, enable midi");
   puts("  key : <note-nr> <time>  : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
-  puts("     <time>                 : key time (~1/velocity) in ms (2...525), negative means key release");
+  puts("     <time>                 : key time (~1/velocity) in ms (1...525), negative means key release");
+  puts("  test : <size> <count> <delay>  [<count2> <delay2>] : send test message");
+  puts("     <size>                     : payload size in words (1..1000)");
+  puts("     <count>                    : # of times the message is send (1..65535)");
+  puts("     <delay>                    : delay in usecs between messages");
+  puts("     <count2>                   : # of messages before a block pause");
+  puts("     <delay2>                   : delay in usecs between blocks");
   exit(3);
 }
 
@@ -289,6 +298,92 @@ int main(int argc, char const *argv[])
     KEY_DATA[3] = time & 0xFFFF;
     KEY_DATA[4] = (time >> 16) & 0xFFFF;
     writeData(driver, sizeof KEY_DATA, &KEY_DATA[0]);
+    return 0;
+  }
+
+  // test data
+  if (strncmp(argv[1], TEST, sizeof TEST) == 0)
+  {
+    if (argc != 5 && argc != 7)
+    {
+      puts("test: wrong number of arguments (either 3 or 5)!");
+      Usage();
+    }
+
+    uint16_t len, count;
+    uint32_t delay;
+    if (sscanf(argv[2], "%hu", &len) != 1)
+    {
+      puts("test: size argument error (uint16 expected)");
+      Usage();
+    }
+    if (len < 1 || len > 1000)
+    {
+      puts("test: size must be 1..1000");
+      Usage();
+    }
+    if (sscanf(argv[3], "%hu", &count) != 1)
+    {
+      puts("test: count argument error (uint16 expected)");
+      Usage();
+    }
+    if (count < 1)
+    {
+      puts("test: count must be 1..65535");
+      Usage();
+    }
+    if (sscanf(argv[4], "%u", &delay) != 1)
+    {
+      puts("test: delay argument error (uint32 expected)");
+      Usage();
+    }
+
+    uint16_t blocks = 0;
+    uint32_t pause  = 0;
+    if (argc == 7)
+    {
+      if (sscanf(argv[5], "%hu", &blocks) != 1)
+      {
+        puts("test: count2 argument error (uint16 expected)");
+        Usage();
+      }
+      if (sscanf(argv[6], "%u", &pause) != 1)
+      {
+        puts("test: delay2 argument error (uint16 expected)");
+        Usage();
+      }
+    }
+
+    uint16_t testDataBuffer[len + 2];
+    testDataBuffer[0] = LPC_BB_MSG_TYPE_TEST_MSG;
+    testDataBuffer[1] = len;
+    testDataBuffer[2] = 0;
+    if (len > 1)
+      for (int i = 0; i < len - 1; i++)
+        testDataBuffer[i + 3] = i;
+
+    uint16_t block = blocks;
+    while (count--)
+    {
+      writeData(driver, (len + 2) * sizeof(uint16_t), &testDataBuffer[0]);
+      testDataBuffer[2]++;
+      if (delay)
+      {
+        fflush(driver);
+        usleep(delay);
+      }
+      if (block)
+      {
+        if (!--block)
+        {
+          block = blocks;
+          if (!delay)
+            fflush(driver);
+          usleep(pause);
+        }
+      }
+    }
+    fflush(driver);
     return 0;
   }
 

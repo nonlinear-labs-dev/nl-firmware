@@ -228,6 +228,18 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           printf("NOTIFICATION : ");
           data[0] = data[1];
           goto ShowMuteStatus;
+        case LPC_NOTIFICATION_ID_TEST_MSG:
+          printf("NOTIFICATION : TestMessage received, seq. #: %5hu", data[1] & 0x3FFF);
+          if (data[1] & (1 << 15))
+            printf(" (seq. broken)");
+          else
+            printf("              ");
+          if (data[1] & (1 << 14))
+            printf(" (data corrupt)");
+          else
+            printf("               ");
+          printf("\n");
+          break;
         default:
           printf("NOTIFICATION : unknown ID=%d, data=%d     \n", data[0], data[1]);
           break;
@@ -614,10 +626,216 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = cmd << 16;
       return;
 
+    // --------------------- send data -----------------------------
+    // settings
+    case LPC_BB_MSG_TYPE_SETTING:
+      dump(cmd, len, data, flags);
+      if (len != 2)
+      {
+        printf("SETTING : wrong length of %d\n", len);
+        return;
+      }
+      displayCounter();
+      printf("SETTING(ID=%04X): ", data[0]);
+      switch (data[0])
+      {
+        case LPC_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR:  // = 0,       // ==> BIT 0 set if (returnMode == RETURN), ...
+        case LPC_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR:  // = 1,       // ... BIT 1 set if (touchBehaviour == RELATIVE)
+          printf("%s ribbon play mode=", data[0] == LPC_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR ? "upper" : "lower");
+          printf("%s,%s\n", data[1] & 1 ? "return" : "non-return", data[1] & 2 ? "absolute" : "relative");
+          break;
+        case LPC_SETTING_ID_BASE_UNIT_UI_MODE:  //= 3,       // ==> PLAY = 0, PARAMETER_EDIT = 1
+          printf("base unit UI mode=%s\n", data[1] ? "edit" : "play");
+          break;
+        case LPC_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR:  // = 4,       // ==> RELATIVE = 0, ABSOLUTE = 1
+          printf("edit-mode ribbon behavior=%s\n", data[1] ? "absolute" : "relative");
+          break;
+        case LPC_SETTING_ID_UPPER_RIBBON_REL_FACTOR:  // = 9,       // ==> tTcdRange(256, 2560)
+        case LPC_SETTING_ID_LOWER_RIBBON_REL_FACTOR:  // = 10,      // ==> tTcdRange(256, 2560)
+          printf("%s ribbon relative factor=", data[0] == LPC_SETTING_ID_UPPER_RIBBON_REL_FACTOR ? "upper" : "lower");
+          printf("%5.2lf\n", (double) (data[1]) / 256.0);
+          break;
+        case LPC_SETTING_ID_VELOCITY_CURVE:  // = 11,      // ==> VERY_SOFT = 0, SOFT = 1, NORMAL = 2, HARD = 3, VERY_HARD = 4
+          printf("key velocity curve=%u\n", data[1]);
+          break;
+        case LPC_SETTING_ID_PEDAL_1_TYPE:  //                     = 26,      // ==> PotTipActive  = 0
+        case LPC_SETTING_ID_PEDAL_2_TYPE:  //                     = 27,      // ... PotRingActive = 1
+        case LPC_SETTING_ID_PEDAL_3_TYPE:  //                     = 28,      // ... SwitchClosing = 2 // aka momentary switch, normally open
+        case LPC_SETTING_ID_PEDAL_4_TYPE:  //                     = 29,      // ... SwitchOpening = 3 // aka momentary switch, normally closed
+          printf("legacy pedal type, pedal#%u=%u\n", data[0] - LPC_SETTING_ID_PEDAL_1_TYPE + 1, data[1]);
+          break;
+        case LPC_SETTING_ID_AFTERTOUCH_CURVE:  //                 = 30,      // SOFT = 0, NORMAL = 1, HARD = 2
+          printf("aftertouch curve=%u\n", data[1]);
+          break;
+        case LPC_SETTING_ID_BENDER_CURVE:  //                     = 31,      // SOFT = 0, NORMAL = 1, HARD = 2
+          printf("bender curve=%u\n", data[1]);
+          break;
+        case LPC_SETTING_ID_UPPER_RIBBON_VALUE:  //               = 36,      // set initial output value (for relative mode)
+        case LPC_SETTING_ID_LOWER_RIBBON_VALUE:  //               = 37,      // set initial output value (for relative mode)
+          printf("%s ribbon value : %u\n", data[0] == LPC_SETTING_ID_UPPER_RIBBON_VALUE ? "upper" : "lower", data[1]);
+          break;
+        case LPC_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:  //           = 0xFF01,  // direction: input; arguments(uint16): 1, mode bit pattern
+          printf("software mute override=%04X\n", data[1]);
+          break;
+        case LPC_SETTING_ID_SEND_RAW_SENSOR_DATA:  //             = 0xFF02,  // direction: input; arguments(uint16): 1, flag (!= 0)
+          printf("raw sensor data=%s\n", data[1] ? "on" : "off");
+          break;
+        case LPC_SETTING_ID_ENABLE_KEY_LOGGING:  //               = 0xFF03,  // direction: input; arguments(uint16): 1, flag (!= 0)
+          printf("key logging=%s\n", data[1] ? "on" : "off");
+          break;
+        case LPC_SETTING_ID_ENABLE_EHC:  //                       = 0xFF04,  // direction: input; arguments(uint16): 1, flag (!= 0)
+          printf("ehc processing=%s\n", data[1] ? "enabled" : "disabled");
+          break;
+        case LPC_SETTING_ID_AUDIO_ENGINE_CMD:  //                 = 0xFF05,  // direction: input; arguments(uint16): 1, command (1:testtone OFF; 2:testtone ON; 3:default sound)
+          printf("Audio Engine special command=");
+          switch (data[1])
+          {
+            case 1:
+              printf("test-tone OFF\n");
+              break;
+            case 2:
+              printf("test-tone ON\n");
+              break;
+            case 3:
+              printf("init default sound\n");
+              break;
+            default:
+              printf("unknown(%u)\n", data[1]);
+              break;
+          }
+          break;
+        case LPC_SETTING_ID_ENABLE_KEY_MAPPING:  //               = 0xFF07,  // direction: input; arguments(uint16): 1, flag (!= 0)
+          printf("key re-mapping=%s\n", data[1] ? "enabled" : "disabled");
+          break;
+        case LPC_SETTING_ID_SYSTEM_SPECIAL:  //                   = 0xFF06,  // direction: input; arguments(uint16): 1, command (1:reset heartbeat: 2: system reset: 3:Enable MIDI)
+          printf("System special command=");
+          switch (data[1])
+          {
+            case 1:
+              printf("reset heartbeat\n");
+              break;
+            case 2:
+              printf("system reset\n");
+              break;
+            default:
+              printf("unknown(%u)\n", data[1]);
+              break;
+          }
+          break;
+
+        case LPC_SETTING_ID_NOTE_SHIFT:
+        case LPC_SETTING_ID_PEDAL_1_MODE:
+        case LPC_SETTING_ID_PEDAL_2_MODE:
+        case LPC_SETTING_ID_PEDAL_3_MODE:
+        case LPC_SETTING_ID_PEDAL_4_MODE:
+        case LPC_SETTING_ID_TRANSITION_TIME:
+        case LPC_SETTING_ID_PITCHBEND_ON_PRESSED_KEYS:
+        case LPC_SETTING_ID_EDIT_SMOOTHING_TIME:
+        case LPC_SETTING_ID_PRESET_GLITCH_SUPPRESSION:
+        case LPC_SETTING_ID_BENDER_RAMP_BYPASS:
+          printf("unused lecagy ID %u, data=0x%04X\n", data[0], data[1]);
+          break;
+
+        default:
+          printf("unknown ID %u, data=0x%04X\n", data[0], data[1]);
+          break;
+      }
+      return;
+
+    // EHC config
+    case LPC_BB_MSG_TYPE_EHC_CONFIG:
+      dump(cmd, len, data, flags);
+      if (len != 2)
+      {
+        printf("EHC COMMAND : wrong length of %d\n", len);
+        return;
+      }
+      displayCounter();
+      printf("EHC COMMAND: ");
+      uint16_t ehcCmd = data[0] & 0xFF00;
+      uint8_t  ctrlId = data[0] & 0x00FF;
+      switch (ehcCmd)
+      {
+        case LPC_EHC_COMMAND_SET_CONTROL_REGISTER:
+        {
+          printf("config=0x%04X ", data[1]);
+          EHC_ControllerConfig_T config = EHC_uint16ToConfig(data[1]);
+          printf("ctrlId:%u", config.ctrlId);
+          if (config.hwId == 15)
+            printf(", OFF\n");
+          else
+          {
+            printf(", hwId:%u", config.hwId);
+            printf(", silent:%u", config.silent);
+            printf(", is3wire:%u", config.is3wire);
+            printf(", pullup:%u", config.pullup);
+            printf(", cont.:%u", config.continuous);
+            printf(", invert:%u", config.polarityInvert);
+            printf(", hold:%u", config.autoHoldStrength);
+            printf(", autoRange:%u\n", config.doAutoRanging);
+          }
+          break;
+        }
+        case LPC_EHC_COMMAND_SET_RANGE_MIN:
+        case LPC_EHC_COMMAND_SET_RANGE_MAX:
+          printf("range (ctrlId:%u) %s=%u\n", ctrlId, data[0] == LPC_EHC_COMMAND_SET_RANGE_MIN ? "min" : "max", data[1]);
+          break;
+        case LPC_EHC_COMMAND_RESET_DELETE:
+          printf("%s ctrlId:%u\n", data[1] ? "delete" : "reset", ctrlId);
+          break;
+        case LPC_EHC_COMMAND_FORCE_OUTPUT:
+          printf("force output (ctrlId:%u)\n", ctrlId);
+          break;
+        case LPC_EHC_COMMAND_SET_DEAD_ZONES:
+          printf("dead zone (ctrlId:%u) upper=%u, lower=%u\n", ctrlId, data[1] >> 8, data[1] & 0xFF);
+          break;
+        default:
+          printf("unknown EHC command 0x%04X, data=0x%04x\n", data[0], data[1]);
+          break;
+      }
+      return;
+
+    // Request
+    case LPC_BB_MSG_TYPE_REQUEST:
+      dump(cmd, len, data, flags);
+      if (len != 1)
+      {
+        printf("REQUEST : wrong length of %d\n", len);
+        return;
+      }
+      displayCounter();
+      printf("REQUEST: ");
+      switch (data[0])
+      {
+        case LPC_REQUEST_ID_SW_VERSION:
+          printf("firmware version\n");
+          break;
+        case LPC_REQUEST_ID_UNMUTE_STATUS:
+          printf("muting status\n");
+          break;
+        case LPC_REQUEST_ID_EHC_DATA:
+          printf("EHC data\n");
+          break;
+        case LPC_REQUEST_ID_CLEAR_EEPROM:
+          printf("clear EERPOM\n");
+          break;
+        case LPC_REQUEST_ID_STAT_DATA:
+          printf("profiling data\n");
+          break;
+        case LPC_REQUEST_ID_EHC_EEPROMSAVE:
+          printf("save EHC data to EEPROM\n");
+          break;
+        default:
+          printf("unknown(%u)\n", data[1]);
+          break;
+      }
+      break;
+
     default:
       if (flags & NO_UNKNOWN)
         return;
-      printf("UNKNOWN ");
+      displayCounter();
+      printf("UNKNOWN, ");
       flags &= ~NO_HEXDUMP;
       dump(cmd, len, data, flags);
       return;
