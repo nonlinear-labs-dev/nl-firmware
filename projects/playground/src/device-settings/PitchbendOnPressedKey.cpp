@@ -13,5 +13,5 @@ PitchbendOnPressedKey::~PitchbendOnPressedKey()
 
 void PitchbendOnPressedKey::sendToLPC(SendReason reason) const
 {
-  Application::get().getLPCProxy()->sendSetting(PITCHBEND_ON_PRESSED_KEYS, get());
+#warning UNUSED Feature
 }
