@@ -37,7 +37,6 @@ class PedalParameter : public PhysicalControlParameter
 
  private:
   const ScaleConverter *createScaleConverter() const;
-  uint16_t mapParameterIdToLPCSetting() const;
   void sendModeToLpc() const;
   tControlPositionValue getDefValueAccordingToMode() const;
   void setRoutersModeAccordingToReturnMode();
