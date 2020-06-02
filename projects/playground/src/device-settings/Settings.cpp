@@ -203,3 +203,11 @@ bool Settings::isLoading() const
 {
   return m_isLoading.isLocked();
 }
+
+void Settings::sendSettingsToLPC(SendReason reason)
+{
+  for(auto &[key, value] : getSettings())
+  {
+    value->sendToLPC(reason);
+  }
+}

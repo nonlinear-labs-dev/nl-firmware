@@ -21,6 +21,7 @@
 #include <memory.h>
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
+#include <device-settings/Settings.h>
 
 LPCProxy::LPCProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -107,14 +108,16 @@ void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
 
   DebugLevel::info("LPC Heartbeat", heartbeat);
 
-  if(heartbeat < m_lastReceivedHeartbeat)
+  if(m_heartbeatReceived && heartbeat < m_lastReceivedHeartbeat)
   {
     DebugLevel::warning("LPCProxy had to re-send the edit buffer, as the heartbeat stumbled from",
                         m_lastReceivedHeartbeat, "to", heartbeat);
 
     Application::get().getAudioEngineProxy()->sendEditBuffer();
+    Application::get().getSettings()->sendSettingsToLPC(SendReason::HeartBeatDropped);
   }
 
+  m_heartbeatReceived = true;
   m_lastReceivedHeartbeat = heartbeat;
 }
 
@@ -176,8 +179,8 @@ Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) 
       case HW_SOURCE_ID_PEDAL_8:
         //todo new pedals
       case HW_SOURCE_ID_LAST_KEY:
-        //todo last key
-        default:
+      //todo last key
+      default:
         return ParameterId::invalid();
     }
   }(id);

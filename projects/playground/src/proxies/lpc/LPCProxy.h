@@ -112,4 +112,5 @@ class LPCProxy
   gint32 m_throttledAbsoluteParameterValue = 0;
 
   uint64_t m_lastReceivedHeartbeat = -1;
+  bool m_heartbeatReceived = false;
 };

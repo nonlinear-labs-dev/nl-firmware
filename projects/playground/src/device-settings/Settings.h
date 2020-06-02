@@ -6,6 +6,7 @@
 #include <tools/ScopedGuard.h>
 #include <utility>
 #include <map>
+#include "SendReason.h"
 
 class Application;
 class Setting;
@@ -39,6 +40,8 @@ class Settings : public ContentSection
   }
 
   const tMap &getSettings() const;
+
+  void sendSettingsToLPC(SendReason reason);
 
   void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;

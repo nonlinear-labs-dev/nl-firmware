@@ -119,12 +119,6 @@ void PedalParameter::undoableIncPedalMode(UNDO::Transaction *transaction)
   undoableSetPedalMode(transaction, static_cast<PedalModes>(e));
 }
 
-void PedalParameter::onPresetSentToLpc() const
-{
-  Parameter::onPresetSentToLpc();
-  sendModeToLpc();
-}
-
 void PedalParameter::sendModeToLpc() const
 {
   if(Application::exists())

@@ -35,12 +35,12 @@ class RibbonParameter : public PhysicalControlParameter
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
-  void onPresetSentToLpc() const override;
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
   bool hasBehavior() const override;
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;
+  void sendToLpc() const override;
 
  private:
   void ensureExclusiveRoutingIfNeeded();
