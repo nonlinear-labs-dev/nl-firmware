@@ -38,6 +38,9 @@ void FileIOSender::write(const char *bytes, size_t numBytes)
     {
       gsize numBytesWritten = 0;
       m_channel->write(bytes, static_cast<gssize>(numBytes), numBytesWritten);
+      if(numBytes != numBytesWritten)
+        nltools::Log::error("BBBB", __FILE__, __PRETTY_FUNCTION__, "Not all Bytes written! numBytes: ", numBytes,
+                            " written: ", numBytesWritten);
       m_channel->flush();
     }
     catch(Glib::Error &err)
