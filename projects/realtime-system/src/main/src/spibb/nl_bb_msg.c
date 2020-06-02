@@ -260,12 +260,19 @@ int32_t BB_MSG_SendTheBuffer(void)
 // -- integrity check test messaging
 static void ProcessTestMessage(uint16_t length, uint16_t* data)
 {
-  static uint16_t seqNo = 0xFFFF;
-
-  uint16_t passed = ((uint16_t)(1 + seqNo) == data[0]);
-  seqNo           = data[0];
-
-  BB_MSG_WriteMessage2Arg(LPC_BB_MSG_TYPE_NOTIFICATION, LPC_NOTIFICATION_ID_TEST_MSG, data[0] + 30000u * !passed);
+  static uint16_t seqNo  = 0xFFFF;
+  uint16_t        dataOk = 1;
+  uint16_t        seqOk  = ((uint16_t)(1 + seqNo) == data[0]);
+  seqNo                  = data[0];
+  if (length > 1)
+    for (uint16_t i = 0; i < length - 1; i++)
+      if (data[i + 1] != i)
+      {
+        dataOk = 0;
+        break;
+      }
+  data[0] = (data[0] & 0x3FFF) | (!dataOk << 14) | (!seqOk << 15);
+  BB_MSG_WriteMessage2Arg(LPC_BB_MSG_TYPE_NOTIFICATION, LPC_NOTIFICATION_ID_TEST_MSG, data[0]);
   BB_MSG_SendTheBuffer();
 }
 
