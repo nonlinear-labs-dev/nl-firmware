@@ -642,7 +642,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         case LPC_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR:  // = 0,       // ==> BIT 0 set if (returnMode == RETURN), ...
         case LPC_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR:  // = 1,       // ... BIT 1 set if (touchBehaviour == RELATIVE)
           printf("%s ribbon play mode=", data[0] == LPC_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR ? "upper" : "lower");
-          printf("%s,%s\n", data[1] & 1 ? "return" : "non-return", data[1] & 2 ? "absolute" : "relative");
+          printf("%s,%s\n", data[1] & 1 ? "return" : "non-return", data[1] & 2 ? "relative" : "absolute");
           break;
         case LPC_SETTING_ID_BASE_UNIT_UI_MODE:  //= 3,       // ==> PLAY = 0, PARAMETER_EDIT = 1
           printf("base unit UI mode=%s\n", data[1] ? "edit" : "play");
@@ -650,10 +650,8 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         case LPC_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR:  // = 4,       // ==> RELATIVE = 0, ABSOLUTE = 1
           printf("edit-mode ribbon behavior=%s\n", data[1] ? "absolute" : "relative");
           break;
-        case LPC_SETTING_ID_UPPER_RIBBON_REL_FACTOR:  // = 9,       // ==> tTcdRange(256, 2560)
-        case LPC_SETTING_ID_LOWER_RIBBON_REL_FACTOR:  // = 10,      // ==> tTcdRange(256, 2560)
-          printf("%s ribbon relative factor=", data[0] == LPC_SETTING_ID_UPPER_RIBBON_REL_FACTOR ? "upper" : "lower");
-          printf("%5.2lf\n", (double) (data[1]) / 256.0);
+        case LPC_SETTING_ID_RIBBON_REL_FACTOR:  // = 9,       // ==> tTcdRange(256, 2560)
+          printf("ribbon relative factor=%5.2lf\n", (double) (data[1]) / 256.0);
           break;
         case LPC_SETTING_ID_VELOCITY_CURVE:  // = 11,      // ==> VERY_SOFT = 0, SOFT = 1, NORMAL = 2, HARD = 3, VERY_HARD = 4
           printf("key velocity curve=%u\n", data[1]);
@@ -672,7 +670,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           break;
         case LPC_SETTING_ID_UPPER_RIBBON_VALUE:  //               = 36,      // set initial output value (for relative mode)
         case LPC_SETTING_ID_LOWER_RIBBON_VALUE:  //               = 37,      // set initial output value (for relative mode)
-          printf("%s ribbon value : %u\n", data[0] == LPC_SETTING_ID_UPPER_RIBBON_VALUE ? "upper" : "lower", data[1]);
+          printf("%s ribbon value=%u\n", data[0] == LPC_SETTING_ID_UPPER_RIBBON_VALUE ? "upper" : "lower", data[1]);
           break;
         case LPC_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:  //           = 0xFF01,  // direction: input; arguments(uint16): 1, mode bit pattern
           printf("software mute override=%04X\n", data[1]);

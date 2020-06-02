@@ -35,8 +35,8 @@ enum LPC_SETTING_IDS
   LPC_SETTING_ID_PEDAL_2_MODE                     = 6,       // not used, ... RETURN_TO_ZERO = 1
   LPC_SETTING_ID_PEDAL_3_MODE                     = 7,       // not used, ... RETURN_TO_CENTER = 2,
   LPC_SETTING_ID_PEDAL_4_MODE                     = 8,       // not used,
-  LPC_SETTING_ID_UPPER_RIBBON_REL_FACTOR          = 9,       // ==> tTcdRange(256, 2560)
-  LPC_SETTING_ID_LOWER_RIBBON_REL_FACTOR          = 10,      // ==> tTcdRange(256, 2560)
+  LPC_SETTING_ID_RIBBON_REL_FACTOR                = 9,       // ==> tTcdRange(256, 2560), formlery "upper ribbon factor"
+  LPC_SETTING_ID_LOWER_RIBBON_REL_FACTOR          = 10,      // not used, ==> tTcdRange(256, 2560)
   LPC_SETTING_ID_VELOCITY_CURVE                   = 11,      // ==> VERY_SOFT = 0, SOFT = 1, NORMAL = 2, HARD = 3, VERY_HARD = 4
   LPC_SETTING_ID_TRANSITION_TIME                  = 12,      // not used, ==> tTcdRange(0, 16000)
   LPC_SETTING_ID_PEDAL_1_TYPE                     = 26,      // ==> PotTipActive  = 0

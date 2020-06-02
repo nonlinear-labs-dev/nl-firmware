@@ -319,8 +319,8 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       case LPC_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR:  // Parameter edit mode ribbon behaviour
         ADC_WORK_SetRibbon1EditBehaviour(data[1]);     // 0: Rel, 1: Abs
         break;
-      case LPC_SETTING_ID_UPPER_RIBBON_REL_FACTOR:  // Factor for the increments when a ribbon is in Relative mode
-        ADC_WORK_SetRibbonRelFactor(data[1]);       // factor = data[1] / 256
+      case LPC_SETTING_ID_RIBBON_REL_FACTOR:   // Factor for the increments when a ribbon is in Relative mode
+        ADC_WORK_SetRibbonRelFactor(data[1]);  // factor = data[1] / 256
         break;
       case LPC_SETTING_ID_VELOCITY_CURVE:  // Velocity Curve
         POLY_Select_VelTable(data[1]);     // Parameter: 0 = very soft ... 4 = very hard
