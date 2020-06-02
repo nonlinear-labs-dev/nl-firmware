@@ -51,11 +51,6 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("EditSmoothingTime", Double.toString(v));
 	}
 
-	public void setPitchBenderRaw(BooleanValues v) {
-		SetupModel.get().systemSettings.benderRampBypass.setValue(v);
-		NonMaps.get().getServerProxy().setBenderRampBypass(v);
-	}
-
 	public void setVelocityCurve(VelocityCurve c) {
 		SetupModel.get().systemSettings.velocityCurve.setValue(c);
 		NonMaps.theMaps.getServerProxy().setSetting("VelocityCurve", netify(c.name()));

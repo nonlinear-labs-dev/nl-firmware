@@ -47,7 +47,6 @@ public class SetupUpdater extends Updater {
 		m.put("TuneReference", SetupModel.get().systemSettings.tuneReference);
 		m.put("VelocityCurve", SetupModel.get().systemSettings.velocityCurve);
 		m.put("RandomizeAmount", SetupModel.get().systemSettings.randomizeAmount);
-		m.put("BenderRampBypass", SetupModel.get().systemSettings.benderRampBypass);
 		m.put("HighlightChangedParameters", SetupModel.get().systemSettings.highlightChangedParameters);
 		m.put("ForceHighlightChangedParameters", SetupModel.get().systemSettings.forceHighlightChangedParameters);
 		m.put("CrashOnError", SetupModel.get().systemSettings.crashOnError);

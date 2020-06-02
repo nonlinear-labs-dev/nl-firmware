@@ -27,7 +27,6 @@
 #include <device-settings/KioskModeSetting.h>
 #include <device-settings/BlockingMainThreadIndication.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
-#include <device-settings/BenderRampBypass.h>
 #include <http/NetworkRequest.h>
 #include <http/UpdateDocumentMaster.h>
 #include <Options.h>
@@ -81,7 +80,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SignalFlowIndication", new SignalFlowIndicationSetting(*this));
   addSetting("KioskMode", new KioskModeSetting(*this));
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
-  addSetting("BenderRampBypass", new BenderRampBypass(*this));
   addSetting("WifiSetting", new WifiSetting(*this));
   addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));

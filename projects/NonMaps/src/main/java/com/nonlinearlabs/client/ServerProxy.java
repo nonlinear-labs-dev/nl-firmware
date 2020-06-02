@@ -935,10 +935,6 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void setBenderRampBypass(BooleanValues val) {
-		setSetting("bender-ramp-bypass", val.toString());
-	}
-
 	public void requestRTSoftwareVersion() {
 		StaticURI.Path path = new StaticURI.Path("device-info", "refresh-rt-software-version");
 		StaticURI uri = new StaticURI(path);

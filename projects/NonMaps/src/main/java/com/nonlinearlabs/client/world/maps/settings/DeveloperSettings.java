@@ -23,7 +23,6 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new KioskMode(this));
 		addChild(new TestHWUIDisplay(this));
 		addChild(new BlockingMainThreadIndication(this));
-		addChild(new BenderRampBypassSetting(this));
 		addChild(new CrashOnError(this));
 		addChild(new ExportBoled(this));
 		addChild(new ExportSoled(this));

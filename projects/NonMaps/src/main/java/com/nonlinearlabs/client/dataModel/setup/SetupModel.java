@@ -150,7 +150,6 @@ public class SetupModel {
 		public ValueDataModelEntity transitionTime = new ValueDataModelEntity();
 		public EnumDataModelEntity<VelocityCurve> velocityCurve = createEnumDataModelEntity(VelocityCurve.class,
 				VelocityCurve.normal);
-		public BooleanDataModelEntity benderRampBypass = new BooleanDataModelEntity();
 		public BooleanDataModelEntity highlightChangedParameters = new BooleanDataModelEntity();
 		public BooleanDataModelEntity forceHighlightChangedParameters = new BooleanDataModelEntity();
 		public BooleanDataModelEntity crashOnError = new BooleanDataModelEntity();
