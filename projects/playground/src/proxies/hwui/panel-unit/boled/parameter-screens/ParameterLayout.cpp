@@ -338,9 +338,7 @@ ParameterRecallLayout2::ParameterRecallLayout2()
 
     m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
 
-    auto sc = p->getValue().getScaleConverter();
-    auto displayValue = sc->controlPositionToDisplay(originalValue);
-    auto displayString = sc->getDimension().stringize(displayValue);
+    auto displayString = p->getDisplayString(originalValue);
 
     m_rightValue = addControl(new Label(displayString, Rect(131, 35, 58, 11)));
   }
@@ -447,11 +445,10 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
     }
     else
     {
-      auto sc = p->getValue().getScaleConverter();
       auto originalParam = p->getOriginalParameter();
       auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
-      auto displayValue = sc->controlPositionToDisplay(originalValue);
-      auto displayString = sc->getDimension().stringize(displayValue);
+      auto displayString = p->getDisplayString(originalValue);
+
       m_leftValue->setText(displayString);
       m_rightValue->setText(p->getDisplayString());
       m_slider->setValue(m_recallValue, p->isBiPolar());
