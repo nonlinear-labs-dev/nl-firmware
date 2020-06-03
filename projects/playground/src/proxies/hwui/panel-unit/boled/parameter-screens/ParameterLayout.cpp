@@ -429,7 +429,6 @@ ButtonMenu *ParameterRecallLayout2::createMenu(const Rect &rect)
 
 void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
 {
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   m_paramLikeInPreset = paramLikeInPreset;
 
   if(auto p = getCurrentParameter())
