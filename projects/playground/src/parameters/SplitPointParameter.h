@@ -6,6 +6,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
  public:
   SplitPointParameter(ParameterGroup *group, const ParameterId &id);
   Glib::ustring getDisplayValue(VoiceGroup vg) const;
+  Glib::ustring getDisplayValue(VoiceGroup vg, tControlPositionValue display) const;
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   Glib::ustring getDisplayString() const override;

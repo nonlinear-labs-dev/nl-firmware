@@ -47,3 +47,8 @@ Glib::ustring SplitPointParameter::modulationValueToDisplayString(tControlPositi
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   return SplitPointDimension::get().stringizeSplitPointDisplay(v, vg);
 }
+
+Glib::ustring SplitPointParameter::getDisplayValue(VoiceGroup vg, tControlPositionValue dpVal) const
+{
+  return SplitPointDimension::stringizeSplitPointDisplay(dpVal, vg);
+}
