@@ -13,6 +13,7 @@ class FileIOSender : public Sender
   void write(const char *bytes, size_t numBytes);
 
  private:
+  void write(const char *bytes, size_t numBytes, size_t numTry);
   Glib::RefPtr<Glib::IOChannel> m_channel;
   const char *m_path = nullptr;
 };

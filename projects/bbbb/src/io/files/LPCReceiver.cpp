@@ -131,7 +131,7 @@ Glib::RefPtr<Glib::Bytes> LPCReceiver::interceptHeartbeat(Glib::RefPtr<Glib::Byt
   {
     auto lpcHeartBeatPtr = reinterpret_cast<const uint64_t *>(rawBytes + Heartbeat::headerSize);
     auto lpcHeartBeat = *lpcHeartBeatPtr;
-    auto chainHeartBeat = lpcHeartBeat + m_heartbeat;
+    auto chainHeartBeat = lpcHeartBeat + m_heartbeat++;
 
     uint8_t scratch[Heartbeat::messageSize];
     memcpy(scratch, rawBytes, Heartbeat::messageSize);

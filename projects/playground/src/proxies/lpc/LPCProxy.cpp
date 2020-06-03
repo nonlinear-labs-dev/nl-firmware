@@ -108,7 +108,7 @@ void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
 
   DebugLevel::info("LPC Heartbeat", heartbeat);
 
-  if(m_heartbeatReceived && heartbeat < m_lastReceivedHeartbeat)
+  if(heartbeat < m_lastReceivedHeartbeat)
   {
     DebugLevel::warning("LPCProxy had to re-send the edit buffer, as the heartbeat stumbled from",
                         m_lastReceivedHeartbeat, "to", heartbeat);
