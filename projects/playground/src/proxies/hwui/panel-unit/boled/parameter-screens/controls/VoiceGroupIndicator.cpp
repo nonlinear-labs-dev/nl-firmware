@@ -10,8 +10,9 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 
-VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r)
+VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart)
     : Control(r)
+    , m_allowLoadToPart(allowLoadToPart)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
@@ -196,6 +197,6 @@ void VoiceGroupIndicator::onVoiceGroupSelectionChanged(VoiceGroup vg)
 
 void VoiceGroupIndicator::onLoadModeChanged(bool loadModeActive)
 {
-  m_inLoadToPart = loadModeActive;
+  m_inLoadToPart = m_allowLoadToPart && loadModeActive;
   setDirty();
 }
