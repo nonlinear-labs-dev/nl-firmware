@@ -28,7 +28,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Create filesystem"
     OUTPUT  .filesystem-created
-    COMMAND truncate -s 10G ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
+    COMMAND truncate -s 12G ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
     COMMAND mkfs.ext4 ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
     COMMAND touch .filesystem-created
 )
@@ -75,10 +75,10 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " "
-        "export HOME=/workdir/ccache"
-        "mkdir -p /workdir/ccache"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
+        "mkdir -p /fs/ccache"
+        "export HOME=/fs/ccache"
         "cd /fs/nonlinux"
         "git pull origin nonlinear_2020.04"
         "make nonlinear_defconfig"
@@ -94,10 +94,10 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " "
-        "export HOME=/workdir/ccache"
-        "mkdir -p /workdir/ccache"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
+        "mkdir -p /fs/ccache"
+        "export HOME=/fs/ccache"
         'rm -rf /fs/nonlinux/output/target/usr/C15'
         'rm -rf /fs/nonlinux/output/target/usr/C15-\*'
         "cd /fs/nonlinux"
@@ -122,10 +122,10 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " -ti "
-        "export HOME=/workdir/ccache"
-        "mkdir -p /workdir/ccache"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
+        "mkdir -p /fs/ccache"
+        "export HOME=/fs/ccache"
         "cd /fs/nonlinux"
         "bash"
 )
