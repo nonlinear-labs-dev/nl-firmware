@@ -1358,7 +1358,6 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
   setVoiceGroupName(transaction, preset->getName(), loadInto);
   initCrossFB(transaction);
   initFadeFrom(transaction, loadInto);
-  initRecallValues(transaction);
 }
 
 void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup loadTo)
@@ -1393,8 +1392,6 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
   getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction);
 
   setVoiceGroupName(transaction, preset->getName(), loadTo);
-
-  initRecallValues(transaction);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transaction, const Preset *preset,
@@ -1444,8 +1441,6 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
   else
     setVoiceGroupName(transaction, preset->getName(), copyTo);
 
-  initRecallValues(transaction);
-
   ae->toggleSuppressParameterChanges(transaction);
 }
 
@@ -1493,8 +1488,6 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
   else
     setVoiceGroupName(transaction, preset->getName(), copyTo);
 
-  initRecallValues(transaction);
-
   ae->toggleSuppressParameterChanges(transaction);
 }
 
@@ -1521,7 +1514,6 @@ void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transa
     setVoiceGroupName(transaction, preset->getName(), copyTo);
 
   initFadeParameters(transaction, copyTo);
-  initRecallValues(transaction);
 
   ae->toggleSuppressParameterChanges(transaction);
 }
