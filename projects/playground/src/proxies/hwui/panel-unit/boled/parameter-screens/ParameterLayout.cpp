@@ -33,7 +33,7 @@ ParameterLayout2::ParameterLayout2()
 {
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
-  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), false));
   addControl(new UndoIndicator(Rect(1, 32, 10, 8)));
   addControl(new ParameterNotAvailableInSoundInfo(Rect(BIG_SLIDER_X - 2, 9, BIG_SLIDER_WIDTH + 4, 50),
                                                   "Only available with Layer Sounds"));

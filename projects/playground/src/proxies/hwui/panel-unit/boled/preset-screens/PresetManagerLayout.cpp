@@ -135,7 +135,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
-  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
   addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
@@ -235,7 +235,7 @@ void PresetManagerLayout::setupPresetSelect()
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
-  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
   addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
 }
 
