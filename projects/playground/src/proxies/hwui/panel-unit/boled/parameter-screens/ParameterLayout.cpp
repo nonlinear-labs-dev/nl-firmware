@@ -26,8 +26,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
 #include <glibmm/main.h>
-#include <parameters/SplitPointParameter.h>
-#include <parameter_declarations.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -340,15 +338,7 @@ ParameterRecallLayout2::ParameterRecallLayout2()
 
     m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
 
-    auto sc = p->getValue().getScaleConverter();
-    auto displayValue = sc->controlPositionToDisplay(originalValue);
-    auto displayString = sc->getDimension().stringize(displayValue);
-
-    if(p->getID().getNumber() == C15::PID::Split_Split_Point)
-    {
-      displayString = dynamic_cast<SplitPointParameter *>(p)->getDisplayValue(
-          Application::get().getHWUI()->getCurrentVoiceGroup(), originalValue);
-    }
+    auto displayString = p->getDisplayString(originalValue);
 
     m_rightValue = addControl(new Label(displayString, Rect(131, 35, 58, 11)));
   }
@@ -446,10 +436,7 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
   {
     if(paramLikeInPreset)
     {
-      if(p->getID().getNumber() == C15::PID::Split_Split_Point)
-        m_leftValue->setText(dynamic_cast<SplitPointParameter *>(p)->getDisplayValue(currentVG));
-      else
-        m_leftValue->setText(p->getDisplayString());
+      m_leftValue->setText(p->getDisplayString());
       m_rightValue->setText(m_recallString);
       m_slider->setValue(p->getControlPositionValue(), p->isBiPolar());
       m_rightValue->setHighlight(false);
@@ -459,20 +446,12 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
     }
     else
     {
-      auto sc = p->getValue().getScaleConverter();
       auto originalParam = p->getOriginalParameter();
       auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
-      auto displayValue = sc->controlPositionToDisplay(originalValue);
-      auto displayString = sc->getDimension().stringize(displayValue);
-
-      if(p->getID().getNumber() == C15::PID::Split_Split_Point)
-        displayString = dynamic_cast<SplitPointParameter *>(p)->getDisplayValue(currentVG, originalValue);
+      auto displayString = p->getDisplayString(originalValue);
 
       m_leftValue->setText(displayString);
-      if(p->getID().getNumber() == C15::PID::Split_Split_Point)
-        m_rightValue->setText(dynamic_cast<SplitPointParameter *>(p)->getDisplayValue(currentVG));
-      else
-        m_rightValue->setText(p->getDisplayString());
+      m_rightValue->setText(p->getDisplayString());
       m_slider->setValue(m_recallValue, p->isBiPolar());
       m_leftValue->setHighlight(false);
       m_rightValue->setHighlight(true);

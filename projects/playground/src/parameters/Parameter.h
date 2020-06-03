@@ -93,6 +93,7 @@ class Parameter : public UpdateDocumentContributor,
   tDisplayValue getDisplayValue() const;
   virtual tControlPositionValue getControlPositionValue() const;
   virtual Glib::ustring getDisplayString() const;
+  virtual Glib::ustring getDisplayString(tControlPositionValue cp) const;
 
   QuantizedValue &getValue();
   const QuantizedValue &getValue() const;

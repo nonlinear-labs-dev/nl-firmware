@@ -27,14 +27,14 @@ Layout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
   }
 }
 
-Glib::ustring SplitPointParameter::getDisplayValue(VoiceGroup vg) const
+Glib::ustring SplitPointParameter::getDisplayString(VoiceGroup vg) const
 {
   return SplitPointDimension::stringizeSplitPointDisplay(getValue().getRawValue(), vg);
 }
 
 Glib::ustring SplitPointParameter::getDisplayString() const
 {
-  return getDisplayValue(Application::get().getHWUI()->getCurrentVoiceGroup());
+  return getDisplayString(Application::get().getHWUI()->getCurrentVoiceGroup());
 }
 
 Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionValue amount) const
@@ -45,10 +45,15 @@ Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionVal
 Glib::ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
 {
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-  return SplitPointDimension::get().stringizeSplitPointDisplay(v, vg);
+  return SplitPointDimension::stringizeSplitPointDisplay(v, vg);
 }
 
-Glib::ustring SplitPointParameter::getDisplayValue(VoiceGroup vg, tControlPositionValue dpVal) const
+Glib::ustring SplitPointParameter::getDisplayString(VoiceGroup vg, tControlPositionValue display) const
 {
-  return SplitPointDimension::stringizeSplitPointDisplay(dpVal, vg);
+  return SplitPointDimension::stringizeSplitPointDisplay(display, vg);
+}
+
+Glib::ustring SplitPointParameter::getDisplayString(tControlPositionValue cp) const
+{
+  return getDisplayString(Application::get().getHWUI()->getCurrentVoiceGroup(), cp);
 }

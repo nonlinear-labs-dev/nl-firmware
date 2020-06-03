@@ -20,16 +20,16 @@ TEST_CASE("Split Point Display Value")
   auto transaction = transScope->getTransaction();
 
   parameter->setCPFromHwui(transaction, 0);
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "C1");
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "C#1");
+  REQUIRE(parameter->getDisplayString(VoiceGroup::I) == "C1");
+  REQUIRE(parameter->getDisplayString(VoiceGroup::II) == "C#1");
 
   parameter->setCPFromHwui(transaction, 0.5);
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "F#3");
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "G3");
+  REQUIRE(parameter->getDisplayString(VoiceGroup::I) == "F#3");
+  REQUIRE(parameter->getDisplayString(VoiceGroup::II) == "G3");
 
   parameter->setCPFromHwui(transaction, 1);
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::I) == "B5");
-  REQUIRE(parameter->getDisplayValue(VoiceGroup::II) == "C6");
+  REQUIRE(parameter->getDisplayString(VoiceGroup::I) == "B5");
+  REQUIRE(parameter->getDisplayString(VoiceGroup::II) == "C6");
 }
 
 TEST_CASE("Note to Display")
