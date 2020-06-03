@@ -13,6 +13,7 @@
 #include <nltools/Types.h>
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
+#include <parameter_declarations.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)
@@ -78,7 +79,7 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
 bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const EditBuffer* editBuffer)
 {
   if(selected->getVoiceGroup() == VoiceGroup::Global)
-    return false;
+    return selected->getID().getNumber() == C15::PID::Split_Split_Point;
 
   if(editBuffer->getType() == SoundType::Single)
     return false;
