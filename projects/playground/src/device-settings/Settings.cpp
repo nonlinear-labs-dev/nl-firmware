@@ -17,7 +17,6 @@
 #include <device-settings/PedalType.h>
 #include <device-settings/AftertouchCurve.h>
 #include <device-settings/BenderCurve.h>
-#include <device-settings/PitchbendOnPressedKey.h>
 #include <device-settings/EditSmoothingTime.h>
 #include <device-settings/SSID.h>
 #include <device-settings/Passphrase.h>
@@ -72,7 +71,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("LayoutVersionMode", new LayoutMode(this));
   addSetting("AftertouchCurve", new AftertouchCurve(*this));
   addSetting("BenderCurve", new BenderCurve(*this));
-  addSetting("PitchbendOnPressedKeys", new PitchbendOnPressedKey(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
   addSetting("SSID", new SSID(*this));
   addSetting("Passphrase", new Passphrase(*this));
