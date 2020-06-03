@@ -140,11 +140,6 @@ TEST_CASE("Load Single into Split Part I")
     {
       CHECK(EBL::createHashOfVector(EBL::getFade<VoiceGroup::II>()) == oldFadeIIHash);
     }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
-    }
   }
 }
 
@@ -174,7 +169,7 @@ TEST_CASE("Load Single into Split Part II")
     unisonVoices->setValue(transaction, 1);  // <- setting cp in range 0..23
 
     preset->setName(transaction, "Ho");
-    
+
     TestHelper::changeAllParameters(transaction);
   }
 
@@ -271,11 +266,6 @@ TEST_CASE("Load Single into Split Part II")
     THEN("Fade II is Default")
     {
       CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
-    }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }

@@ -164,11 +164,6 @@ TEST_CASE("Load Part I of Split into Layer Part I")
       CHECK(EBL::createValueHash(EBL::getFade<VoiceGroup::I>()) == oldFadeIHash);
       CHECK(EBL::createValueHash(EBL::getFade<VoiceGroup::II>()) == oldFadeIIHash);
     }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
-    }
   }
 }
 
@@ -315,11 +310,6 @@ TEST_CASE("Load Part I of Split into Layer Part II")
     {
       CHECK(EBL::createValueHash(EBL::getFade<VoiceGroup::I>()) == oldFadeIHash);
       CHECK(EBL::createValueHash(EBL::getFade<VoiceGroup::II>()) == oldFadeIIHash);
-    }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
@@ -477,11 +467,6 @@ TEST_CASE("Load Part I of Layer into Layer Part I")
       CHECK(oldFadeIHash == EBL::createHashOfVector(EBL::getFade<VoiceGroup::I>()));
       CHECK(oldFadeIIHash == EBL::createHashOfVector(EBL::getFade<VoiceGroup::II>()));
     }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
-    }
   }
 }
 
@@ -636,11 +621,6 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
     {
       CHECK(oldFadeIHash == EBL::createHashOfVector(EBL::getFade<VoiceGroup::I>()));
       CHECK(oldFadeIIHash == EBL::createHashOfVector(EBL::getFade<VoiceGroup::II>()));
-    }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }
