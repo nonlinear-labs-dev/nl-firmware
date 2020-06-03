@@ -61,7 +61,7 @@ static void SPI_BB_PackageParser(uint8_t* buff, uint32_t len)
   {
     buff += 4;
 
-    for (i = 0; i < todo; )
+    for (i = 0; i < todo;)
     {
       msg_t* package = (msg_t*) buff;
 
