@@ -1,13 +1,13 @@
 /******************************************************************************/
 /** @file	spi_lpc_bb.c
-    @date	last modified date/name: 2020-04-20 KSTR
+    @date	last modified date/name: 2020-06-03 KSTR
     @brief    	This module takes care about the communication with the LPC via
     SPI.
     @author	Nemanja Nikodijevic [2014-03-02]
 *******************************************************************************/
 
 #define LOG_XMIT         (0) // define this != 0 to log the transmit buffer
-#define LOG_WRITE_STATUS (1) // define this != 0 to log write return status
+#define LOG_WRITE_STATUS (0) // define this != 0 to log write return status
 
 #include <linux/module.h>
 #include <linux/kernel.h>
