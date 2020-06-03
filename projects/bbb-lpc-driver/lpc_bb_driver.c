@@ -6,8 +6,8 @@
     @author	Nemanja Nikodijevic [2014-03-02]
 *******************************************************************************/
 
-#define LOG_XMIT         (0) // define this != 0 to log the transmit buffer
-#define LOG_WRITE_STATUS (0) // define this != 0 to log write return status
+#define LOG_XMIT         (0)  // define this != 0 to log the transmit buffer
+#define LOG_WRITE_STATUS (0)  // define this != 0 to log write return status
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -242,15 +242,15 @@ static void lpc_bb_driver_poll(struct delayed_work *p)
       txb = txb_repeat;
     else
       txb = lpc_bb_driver_get_txb();
-    
+
 #if LOG_XMIT
     if (tx_payload)
     {
       printk("%s() TX debug : ", __func__);
-      u16 * p = (u16*)(txb+1);
-      int count = *p;
+      u16 *p     = (u16 *) (txb + 1);
+      int  count = *p;
       printk("(%02X) %d (%02X) = ", *txb, count, *(txb + 3));
-      p = (u16 *)(txb +4);
+      p = (u16 *) (txb + 4);
       while (count > 0)
       {
         printk("%04X ", *(p++));
@@ -258,7 +258,7 @@ static void lpc_bb_driver_poll(struct delayed_work *p)
       }
       printk("\n");
     }
-#endif    
+#endif
 
     gpio_set_value(spi->cs_gpio, 0);
     lpc_bb_driver_transfer(((struct lpc_bb_driver *) p)->spidev, txb);
@@ -327,7 +327,7 @@ static ssize_t lpc_bb_driver_write(struct file *filp, const char __user *buf, si
 #endif
       return -EMSGSIZE;
     }
-    
+
     if (busy)
     {
 #if LOG_WRITE_STATUS
