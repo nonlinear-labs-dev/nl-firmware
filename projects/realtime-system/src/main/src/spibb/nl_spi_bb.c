@@ -43,7 +43,7 @@ typedef struct __attribute__((__packed__))
 typedef struct __attribute__((__packed__))
 {
   msg_header_t header;
-  uint16_t     values[1];
+  uint16_t     values[512];
 } msg_t;
 
 // calls the initialized callback for every message
@@ -61,7 +61,7 @@ static void SPI_BB_PackageParser(uint8_t* buff, uint32_t len)
   {
     buff += 4;
 
-    for (i = 0; i < todo; i++)
+    for (i = 0; i < todo; )
     {
       msg_t* package = (msg_t*) buff;
 

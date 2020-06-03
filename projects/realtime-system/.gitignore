@@ -1,6 +1,10 @@
 # Blacklist files/folders in same directory as the .gitignore file
 
 # Whitelist some files
+!src/main/.cproject
+!src/main/.project
+!src/co-proc/.cproject
+!src/co-proc/.project
 
 # Blacklist files/folders
 .metadata/
