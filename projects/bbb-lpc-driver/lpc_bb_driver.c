@@ -6,6 +6,9 @@
     @author	Nemanja Nikodijevic [2014-03-02]
 *******************************************************************************/
 
+#define LOG_XMIT         (0) // define this != 0 to log the transmit buffer
+#define LOG_WRITE_STATUS (1) // define this != 0 to log write return status
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/workqueue.h>
@@ -239,6 +242,23 @@ static void lpc_bb_driver_poll(struct delayed_work *p)
       txb = txb_repeat;
     else
       txb = lpc_bb_driver_get_txb();
+    
+#if LOG_XMIT
+    if (tx_payload)
+    {
+      printk("%s() TX debug : ", __func__);
+      u16 * p = (u16*)(txb+1);
+      int count = *p;
+      printk("(%02X) %d (%02X) = ", *txb, count, *(txb + 3));
+      p = (u16 *)(txb +4);
+      while (count > 0)
+      {
+        printk("%04X ", *(p++));
+        count -= 2;
+      }
+      printk("\n");
+    }
+#endif    
 
     gpio_set_value(spi->cs_gpio, 0);
     lpc_bb_driver_transfer(((struct lpc_bb_driver *) p)->spidev, txb);
@@ -290,14 +310,35 @@ static ssize_t lpc_bb_driver_write(struct file *filp, const char __user *buf, si
 
   // if the communication is dead, return IO-Error
   if (no_hb_count >= MAX_NO_HB_COUNT)
+  {
+#if LOG_WRITE_STATUS
+    printk(KERN_INFO "%s() returns -EIO\n", __func__);
+#endif
     return -EIO;
+  }
 
   // if tx buffer is full, return
   if ((tx_write_buffer_offset + count) > LPC_BB_DRIVER_XFER_SIZE)
   {
+    if (count > LPC_BB_DRIVER_XFER_SIZE - 4)
+    {
+#if LOG_WRITE_STATUS
+      printk(KERN_INFO "%s() returns -EMSGSIZE\n", __func__);
+#endif
+      return -EMSGSIZE;
+    }
+    
     if (busy)
+    {
+#if LOG_WRITE_STATUS
+      printk(KERN_INFO "%s() returns -EBUSY\n", __func__);
+#endif
       return -EBUSY;
-    // NOTE: !! if a transmit with count > LPC_BB_DRIVER_XFER_SIZE is attempted, user code will loop with -EAGAIN forever !!
+    }
+
+#if LOG_WRITE_STATUS
+    printk(KERN_INFO "%s() returns -EAGAIN\n", __func__);
+#endif
     return -EAGAIN;
   }
 
@@ -312,7 +353,12 @@ static ssize_t lpc_bb_driver_write(struct file *filp, const char __user *buf, si
     status = count;
   }
   else
+  {
+#if LOG_WRITE_STATUS
+    printk(KERN_INFO "%s() returns -EFAULT\n", __func__);
+#endif
     status = -EFAULT;
+  }
 
   mutex_unlock(&tx_buff_lock);
 
