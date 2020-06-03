@@ -3,27 +3,38 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 #include "shared/lpc-defs.h"
 
-void IOerror(int ret)
+void Error(const char *msg)
 {
-  puts("\nI/O error (driver). Terminating.");
-  exit(ret);
+  perror(msg);
+  exit(3);
 }
-
 // ===================
-void writeData(FILE *const output, uint16_t const len, uint16_t *data)
+void writeData(int output, uint16_t const len, uint16_t *data)
 {
   if (len == 0)
     return;
-
-  for (uint16_t i = 0; i < len / 2; i++)
+Retry:
+  if (write(output, data, len) != len)
   {
-    if (fputc(*data & 0xFF, output) == EOF)
-      IOerror(3);
-    if (fputc((*data++ & 0xFF00) >> 8, output) == EOF)
-      IOerror(3);
+    if (errno == EAGAIN || errno == EBUSY || errno == EFAULT)
+    {
+      usleep(1000);
+      goto Retry;
+    }
+
+    if (errno == EMSGSIZE)
+    {
+      puts("Message too long, discarded");
+      return;
+    }
+
+    perror("Error");
+    exit(3);
   }
 }
 
@@ -82,12 +93,10 @@ void Usage(void)
   puts("  key : <note-nr> <time>  : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
   puts("     <time>                 : key time (~1/velocity) in ms (1...525), negative means key release");
-  puts("  test : <size> <count> <delay>  [<count2> <delay2>] : send test message");
+  puts("  test : <size> <count> <delay> : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
   puts("     <count>                    : # of times the message is send (1..65535)");
   puts("     <delay>                    : delay in usecs between messages");
-  puts("     <count2>                   : # of messages before a block pause");
-  puts("     <delay2>                   : delay in usecs between blocks");
   exit(3);
 }
 
@@ -96,14 +105,12 @@ void Usage(void)
 // ===================
 int main(int argc, char const *argv[])
 {
-  FILE *driver;
-
   if (argc == 1)
     Usage();
 
-  driver = fopen(DRIVER, "r+");
-  if (!driver)
-    IOerror(3);
+  int driver = open("/dev/lpc_bb_driver", O_WRONLY);
+  if (driver < 0)
+    Error("cannot open driver or input file");
 
   // request
   if (strncmp(argv[1], REQUEST, sizeof REQUEST) == 0)
@@ -304,9 +311,9 @@ int main(int argc, char const *argv[])
   // test data
   if (strncmp(argv[1], TEST, sizeof TEST) == 0)
   {
-    if (argc != 5 && argc != 7)
+    if (argc != 5)
     {
-      puts("test: wrong number of arguments (either 3 or 5)!");
+      puts("test: wrong number of arguments");
       Usage();
     }
 
@@ -338,22 +345,6 @@ int main(int argc, char const *argv[])
       Usage();
     }
 
-    uint16_t blocks = 0;
-    uint32_t pause  = 0;
-    if (argc == 7)
-    {
-      if (sscanf(argv[5], "%hu", &blocks) != 1)
-      {
-        puts("test: count2 argument error (uint16 expected)");
-        Usage();
-      }
-      if (sscanf(argv[6], "%u", &pause) != 1)
-      {
-        puts("test: delay2 argument error (uint16 expected)");
-        Usage();
-      }
-    }
-
     uint16_t testDataBuffer[len + 2];
     testDataBuffer[0] = LPC_BB_MSG_TYPE_TEST_MSG;
     testDataBuffer[1] = len;
@@ -362,28 +353,13 @@ int main(int argc, char const *argv[])
       for (int i = 0; i < len - 1; i++)
         testDataBuffer[i + 3] = i;
 
-    uint16_t block = blocks;
     while (count--)
     {
       writeData(driver, (len + 2) * sizeof(uint16_t), &testDataBuffer[0]);
       testDataBuffer[2]++;
       if (delay)
-      {
-        fflush(driver);
         usleep(delay);
-      }
-      if (block)
-      {
-        if (!--block)
-        {
-          block = blocks;
-          if (!delay)
-            fflush(driver);
-          usleep(pause);
-        }
-      }
     }
-    fflush(driver);
     return 0;
   }
 
