@@ -19,7 +19,7 @@ class FBMixerColumn4 extends ParameterColumn {
 			@Override
 			protected int getBackgroundRoundings() {
 				EditBufferPresenter p = EditBufferPresenterProvider.getPresenter();
-				if (p.soundType == SoundType.Single)
+				if (p.soundType != SoundType.Layer)
 					return Rect.ROUNDING_BOTTOM;
 
 				return Rect.ROUNDING_NONE;

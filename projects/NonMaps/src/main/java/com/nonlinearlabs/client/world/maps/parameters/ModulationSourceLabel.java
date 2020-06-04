@@ -62,4 +62,5 @@ public class ModulationSourceLabel extends Label {
 		}
 		return super.getColorFont();
 	}
+
 }
