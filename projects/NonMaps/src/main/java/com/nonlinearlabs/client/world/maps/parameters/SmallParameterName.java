@@ -25,6 +25,11 @@ public class SmallParameterName extends LabelSmall {
 		return 80;
 	}
 
+	@Override
+	protected double getMinHeight() {
+		return 7.5;
+	}
+
 	protected String getDisplayText() {
 		return presenter.shortName;
 	}
