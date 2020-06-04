@@ -7,13 +7,23 @@ public class ModulationSourceSwitch extends ModulationSourceHighPriority {
 
 	public ModulationSourceSwitch(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-        addChild(new LabelModulationSource(this, getParameterNumber()));
-        addChild(new KeyTrackParameter(this, getParameterNumber()));
+		addChild(new LabelModulationSource(this, getParameterNumber()) {
+			@Override
+			protected double getMinHeight() {
+				return 0;
+			}
+		});
+		addChild(new KeyTrackParameter(this, getParameterNumber()));
 	}
 
 	@Override
 	protected void startMouseEdit() {
 		currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterNumber(),
 				getPixRect().getWidth() / 2);
+	}
+
+	@Override
+	public double getMinHeight() {
+		return 15;
 	}
 }

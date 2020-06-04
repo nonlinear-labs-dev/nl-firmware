@@ -9,11 +9,13 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
+import com.nonlinearlabs.client.world.maps.parameters.Spacer;
 
 class UnisonControls extends ParameterGroup {
 
 	UnisonControls(MapsLayout parent) {
 		super(parent, "Unison");
+		addChild(new Spacer(this, 1, 1));
 		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {

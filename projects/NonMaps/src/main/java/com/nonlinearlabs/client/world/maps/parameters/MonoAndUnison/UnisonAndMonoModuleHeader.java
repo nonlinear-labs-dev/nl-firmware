@@ -6,18 +6,17 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelSmall;
 
-
 public class UnisonAndMonoModuleHeader extends LabelSmall {
 
 	public UnisonAndMonoModuleHeader(MapsLayout parent) {
 		super(parent);
 	}
 
-    @Override
-    public String getText() {
-        return "Voices";
+	@Override
+	public String getText() {
+		return "Voices";
 	}
-	
+
 	@Override
 	protected String getDisplayText() {
 		return getText();

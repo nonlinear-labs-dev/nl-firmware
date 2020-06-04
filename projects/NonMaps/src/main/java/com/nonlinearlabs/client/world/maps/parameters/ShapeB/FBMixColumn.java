@@ -8,8 +8,6 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class FBMixColumn extends ParameterColumn {
 
-	Parameter mixSlider = null;
-
 	FBMixColumn(MapsLayout parent) {
 		super(parent);
 		addChild(new ModulatableSlider(this, 108));
@@ -17,6 +15,6 @@ class FBMixColumn extends ParameterColumn {
 	}
 
 	public Parameter getSlider() {
-		return (Parameter)getChildren().get(0);
+		return (Parameter) getChildren().get(0);
 	}
 }

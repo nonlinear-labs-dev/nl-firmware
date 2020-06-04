@@ -9,11 +9,13 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.LabelModuleHeader;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
+import com.nonlinearlabs.client.world.maps.parameters.Spacer;
 
 class MonoControls extends ParameterGroup {
 
 	MonoControls(MapsLayout parent) {
 		super(parent, "Mono");
+		addChild(new Spacer(this, 1, 1));
 		addChild(new LabelModuleHeader(this) {
 			@Override
 			public RGB getColorFont() {
@@ -50,7 +52,7 @@ class MonoControls extends ParameterGroup {
 
 	@Override
 	public void drawBorder(Context2d ctx) {
-		
+
 		return;
 	}
 
