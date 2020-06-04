@@ -237,6 +237,7 @@ void RibbonParameter::boundToMacroControl(tControlPositionValue v)
   getValue().setRawValue(Initiator::INDIRECT, v);
   onChange();
   invalidate();
+  sendToLpc();
 }
 
 bool RibbonParameter::hasBehavior() const
