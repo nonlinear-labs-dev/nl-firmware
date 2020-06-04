@@ -12,12 +12,6 @@ import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
 import com.nonlinearlabs.client.world.maps.parameters.UnModulateableParameterName;
 
 public class MonoColumn extends ParameterColumn {
-    private final class GlideKnob extends ModulateableKnobWithoutHeader {
-        private GlideKnob(MapsLayout parent, int parameterID) {
-            super(parent, parameterID);
-        }
-    }
-
     private class Enable extends Parameter {
 
         private Enable(MapsLayout parent) {
@@ -75,7 +69,7 @@ public class MonoColumn extends ParameterColumn {
         super(parent);
         addChild(new Enable(this));
         addChild(new Priority(this));
-        addChild(new GlideKnob(this, 367));
+        addChild(new ModulateableKnobWithoutHeader(this, 367));
         addChild(new Legato(this));
     }
 }
