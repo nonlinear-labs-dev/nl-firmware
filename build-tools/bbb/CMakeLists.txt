@@ -82,7 +82,6 @@ add_custom_command(
         "cd /fs/nonlinux"
         "git pull origin nonlinear_2020.04"
         "make nonlinear_defconfig"
-        "chown -R ${USER_ID}.${GROUP_ID} /workdir/ccache"
     COMMAND touch .nonlinux-setup
 )
 
@@ -108,7 +107,6 @@ add_custom_command(
         "make espi_driver-clean-for-reconfigure"
         "make espi_driver-rebuild"
         "make"
-        "chown -R ${USER_ID}.${GROUP_ID} /workdir/ccache"
         "cp /fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
         "chown ${USER_ID}.${GROUP_ID} /workdir/rootfs.tar.gz"
     COMMAND echo "The final rootfs is located at ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz"
