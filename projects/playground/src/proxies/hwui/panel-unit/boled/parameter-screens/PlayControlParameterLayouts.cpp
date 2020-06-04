@@ -267,6 +267,7 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
   addControl(new Button("HW Amt..", Buttons::BUTTON_C));
   addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
   highlight<ParameterNameLabel>();
+  highlight<SelectedParameterValue>();
 }
 
 Carousel *PlayControlParameterSelectLayout2::createCarousel(const Rect &rect)
