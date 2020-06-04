@@ -4,7 +4,7 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
 import com.nonlinearlabs.client.world.maps.parameters.SizeLinkedParameterColumn;
 
-class DriveExtColumn extends SizeLinkedParameterColumn {
+class FoldColumn extends SizeLinkedParameterColumn {
 
 	private class Fold extends ModulateableKnob {
 
@@ -13,7 +13,7 @@ class DriveExtColumn extends SizeLinkedParameterColumn {
 		}
 	}
 
-	DriveExtColumn(MapsLayout parent) {
+	FoldColumn(MapsLayout parent) {
 		super(parent);
 		addChild(new Fold(this));
 	}

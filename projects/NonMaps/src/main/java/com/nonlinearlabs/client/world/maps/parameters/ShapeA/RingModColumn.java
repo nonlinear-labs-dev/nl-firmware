@@ -1,28 +1,28 @@
 package com.nonlinearlabs.client.world.maps.parameters.ShapeA;
 
-import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
-import com.nonlinearlabs.client.world.maps.parameters.SizeLinkedParameterColumn;
+import com.nonlinearlabs.client.world.maps.parameters.KnobLarge;
+import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
+import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceLabel;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
+import com.nonlinearlabs.client.world.maps.parameters.Spacer;
+import com.nonlinearlabs.client.world.maps.parameters.ValueDisplayLarge;
 
-class RingModColumn extends SizeLinkedParameterColumn {
+class RingModColumn extends ParameterColumn {
 
-	Parameter sizeReference = null;
-	Parameter ringMod = null;
-
-	RingModColumn(MapsLayout parent, Parameter sizeReference) {
-		super(parent);
-		ringMod = addChild(new ModulateableKnob(this, 81));
-		this.sizeReference = sizeReference;
+	private final class RingModKnob extends ModulatableParameter {
+		private RingModKnob(MapsLayout parent, int parameterID) {
+			super(parent, parameterID);
+			addChild(new ModulationSourceLabel(this, getParameterNumber()));
+			addChild(new Spacer(this, 1, 23));
+			addChild(new KnobLarge(this, getParameterNumber()));
+			addChild(new Spacer(this, 1, 24));
+			addChild(new ValueDisplayLarge(this, getParameterNumber()));
+		}
 	}
 
-	@Override
-	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
-		parentsHeightFromFirstPass = sizeReference.getNonPosition().getHeight();
-		super.doSecondLayoutPass(parentsWidthFromFirstPass, parentsHeightFromFirstPass);
-		setNonSize(getNonPosition().getWidth(), parentsHeightFromFirstPass);
-		LayoutResizingVertical param = (LayoutResizingVertical) getChildren().get(0);
-		param.setNonSize(getNonPosition().getDimension().getWidth(), parentsHeightFromFirstPass);
+	RingModColumn(MapsLayout parent) {
+		super(parent);
+		addChild(new RingModKnob(this, 81));
 	}
 }
