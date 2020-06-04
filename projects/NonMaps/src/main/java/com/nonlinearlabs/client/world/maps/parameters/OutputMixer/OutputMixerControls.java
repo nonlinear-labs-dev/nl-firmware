@@ -12,6 +12,7 @@ class OutputMixerControls extends ParameterGroupControls {
 		addChild(new CombColumn(this));
 		addChild(new SVFilterColumn(this));
 		addChild(new DriveColumn(this));
+		addChild(new FoldAsymColumn(this));
 		addChild(new LevelColumn(this));
 	}
 }

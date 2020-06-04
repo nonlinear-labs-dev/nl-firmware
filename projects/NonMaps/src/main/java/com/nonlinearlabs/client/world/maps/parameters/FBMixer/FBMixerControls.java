@@ -11,6 +11,7 @@ class FBMixerControls extends ParameterGroupControls {
 		addChild(new FBMixerColumn2(this));
 		addChild(new FBMixerColumn3(this));
 		addChild(new FBMixerColumn4(this));
+		addChild(new FBMixerColumn5(this));
 		addChild(new FBMixerColumn6(this));
 		addChild(new FBMixerColumn7(this));
 	}
