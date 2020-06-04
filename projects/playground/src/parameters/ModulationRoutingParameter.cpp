@@ -53,6 +53,7 @@ void ModulationRoutingParameter::onExclusiveRoutingLost()
   getValue().setRawValue(Initiator::INDIRECT, 0);
   onChange();
   invalidate();
+  sendToLpc();
 }
 
 void ModulationRoutingParameter::applyLpcPhysicalControl(tControlPositionValue diff)

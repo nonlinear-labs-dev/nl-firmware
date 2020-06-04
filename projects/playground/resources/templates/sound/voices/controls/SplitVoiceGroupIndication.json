@@ -3,12 +3,12 @@
     "SplitVoiceGroupIndication": {
       "I": {
         "Class": "Bar",
-        "Rect": "0, 0, 5, 11",
+        "Rect": "0, 0, 5, 12",
         "Tag": "Box"
       },
       "II": {
         "Class": "Bar",
-        "Rect": "6, 0, 5, 11",
+        "Rect": "7, 0, 5, 12",
         "Tag": "Box"
       }
     }

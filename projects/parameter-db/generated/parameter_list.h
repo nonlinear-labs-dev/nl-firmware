@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h																			
-	@date	2020-05-18, 18:15																			
-	@version	1.7B-6																			
-	@author	M. Seeber																			
-	@brief	complete list of parameters (and their properties) in TCD order																			
-	@todo																				
+/**	@file	parameter_list.h
+	@date	2020-06-04, 13:12
+	@version	1.7B-6
+	@author	M. Seeber
+	@brief	complete list of parameters (and their properties) in TCD order
+	@todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -1932,7 +1932,7 @@ namespace C15
       PID::Split_Split_Point,
       30.0f / 59.0f,
       { None, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
-      { 59, 59, 59, 59, "", "Split", "Split", "Split Point", "Split Point",
+      { 59, 59, 59, 59, "", "Split", "Split", "Split Point", "Split Pnt",
         "Determines the split position of a sound as a key number. Keys from the lower end up to the Split Point will "
         "be associated to Part I, keys from the Split Point up to the upper end will be associated to Part II." } },
     { None },
@@ -1940,7 +1940,7 @@ namespace C15
       PID::Voice_Grp_Volume,
       0.5f,
       { Smoothers::Poly_Fast::Voice_Grp_Volume, None, Properties::SmootherScale::Parabolic, 4.0f, 0.0f, false },
-      { 100, 1000, 100, 1000, "", "Voices", "Voices", "Part Volume", "Part Vol",
+      { 100, 1000, 100, 1000, "", "Voices", "Voices", "Part Volume", "Volume",
         "Part volume [in dB], available when using Split or Layer mode. Applied at the end of the corresponding effect "
         "chain, before the Master Volume." } },
     { None },
@@ -1948,7 +1948,7 @@ namespace C15
       PID::Voice_Grp_Tune,
       0.0f,
       { Smoothers::Poly_Slow::Voice_Grp_Tune, None, Properties::SmootherScale::Linear, 48.0f, 0.0f, true },
-      { 48, 4800, 48, 4800, "", "Voices", "Voices", "Part Tune", "Part Tune",
+      { 48, 4800, 48, 4800, "", "Voices", "Voices", "Part Tune", "Tune",
         "Part pitch transposition [in semitones], available when using Split or Layer mode. Applied for the "
         "corresponding Part only." } },
     { None },
@@ -1970,7 +1970,7 @@ namespace C15
       PID::Mono_Grp_Prio,
       0.0f,
       { None, None, Properties::SmootherScale::Linear, 2.0f, 0.0f, false },
-      { 2, 2, None, None, "", "Mono", "Mono", "Key Priority", "Key Prio",
+      { 2, 2, None, None, "", "Mono", "Mono", "Key Priority", "Priority",
         "When pressing multiple keys in Mono mode, they are sorted according to the priority set by this parameter. "
         "The key matching the priority determines the pitch of the Mono voice." } },
     { Parameters::Local_Unmodulateables::Mono_Grp_Legato,
