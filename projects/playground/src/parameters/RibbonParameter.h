@@ -32,6 +32,8 @@ class RibbonParameter : public PhysicalControlParameter
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
+  void sendModeToLpc() const;
+
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
@@ -44,7 +46,6 @@ class RibbonParameter : public PhysicalControlParameter
 
  private:
   void ensureExclusiveRoutingIfNeeded();
-  void sendModeToLpc() const;
   const ScaleConverter *createScaleConverter() const;
   tControlPositionValue getDefaultValueAccordingToMode() const;
   void setupScalingAndDefaultValue();

@@ -44,6 +44,10 @@
 #include "CrashOnError.h"
 #include "LayoutMode.h"
 #include "TuneReference.h"
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <parameter_declarations.h>
+#include <parameters/RibbonParameter.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -206,15 +210,10 @@ bool Settings::isLoading() const
 
 void Settings::sendSettingsToLPC(SendReason reason)
 {
-  if(reason == SendReason::HeartBeatDropped) {
+  if(reason == SendReason::HeartBeatDropped)
+  {
     sendGlobalLPCInitSettings();
     return;
-  }
-
-
-  for(auto &[key, value] : getSettings())
-  {
-    value->sendToLPC(reason);
   }
 }
 
@@ -237,4 +236,13 @@ void Settings::sendGlobalLPCInitSettings()
 void Settings::sendRibbonCalibration()
 {
   //TODO send /persistent/calibration
+}
+
+void Settings::sendPresetSettingsToLPC()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto r1 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_1, VoiceGroup::Global }));
+  auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
+  r1->sendModeToLpc();
+  r2->sendModeToLpc();
 }

@@ -115,6 +115,7 @@ void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
 
     Application::get().getAudioEngineProxy()->sendEditBuffer();
     Application::get().getSettings()->sendSettingsToLPC(SendReason::HeartBeatDropped);
+    Application::get().getSettings()->sendPresetSettingsToLPC();
   }
 
   m_heartbeatReceived = true;

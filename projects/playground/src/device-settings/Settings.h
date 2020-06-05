@@ -51,6 +51,7 @@ class Settings : public ContentSection
 
   bool isLoading() const;
 
+  void sendPresetSettingsToLPC();
  protected:
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
