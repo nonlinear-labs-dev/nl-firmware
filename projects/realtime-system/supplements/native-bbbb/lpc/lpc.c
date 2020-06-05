@@ -7,6 +7,9 @@
 #include <errno.h>
 
 #include "shared/lpc-defs.h"
+#include "shared/version.h"
+
+#define VERSION_STRING "1.0"
 
 void Error(const char *msg)
 {
@@ -37,6 +40,8 @@ Retry:
     exit(3);
   }
 }
+#define HELP    "--help"
+#define VERSION "--version"
 
 #define REQUEST         "req"
 #define SW_VERSION      "sw-version"
@@ -74,7 +79,10 @@ uint16_t KEY_DATA[] = { LPC_BB_MSG_TYPE_KEY_EMUL, 0x0003, 0x0000, 0x0000, 0x0000
 // ===================
 void Usage(void)
 {
+  printf("lpc version " VERSION_STRING ", %s\n", GetC15Version());
   puts("Usage:");
+  puts(" lpc --help           : display usage and exit");
+  puts(" lpc --version        : print version and exit");
   puts(" lpc  <command>");
   puts("  <commands> : req|set|key|test");
   puts("  req[uest] : sw-version|muting|clear-eeprom|status|save-ehc");
@@ -107,6 +115,15 @@ int main(int argc, char const *argv[])
 {
   if (argc == 1)
     Usage();
+
+  if (strncmp(argv[1], HELP, sizeof HELP) == 0)
+    Usage();
+
+  if (strncmp(argv[1], VERSION, sizeof VERSION) == 0)
+  {
+    printf("lpc version " VERSION_STRING ", %s\n", GetC15Version());
+    return 0;
+  }
 
   int driver = open("/dev/lpc_bb_driver", O_WRONLY);
   if (driver < 0)
