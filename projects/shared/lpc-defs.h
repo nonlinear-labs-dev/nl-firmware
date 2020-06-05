@@ -108,7 +108,7 @@ enum HW_SOURCE_IDS
   HW_SOURCE_ID_PEDAL_8    = 11,
   // HW_SOURCE_ID_LAST_KEY is only used to signal last pressed key to BBB (not a real HW_SOURCE for AE)
   // high byte is the physical key number 0..60, low byte is logical note number (36..96, unless hardware-remapped)
-  HW_SOURCE_ID_LAST_KEY   = 12,
+  HW_SOURCE_ID_LAST_KEY = 12,
 };
 #define NUM_HW_REAL_SOURCES (HW_SOURCE_ID_PEDAL_8 + 1)  // all but LAST_KEY
 #define NUM_HW_SOURCES      (HW_SOURCE_ID_LAST_KEY + 1)

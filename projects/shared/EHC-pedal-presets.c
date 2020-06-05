@@ -574,11 +574,11 @@ size_t EHC_ComposeLPCSetupMessageByPreset(EHC_PresetT const *const pPreset, uint
   config.ctrlId += (port - 1) * 2;  // set CTRLID  corresponding to port number, factoring in the tip/ring pre-selection
 
   // clear adjacent controller
-  EHC_ControllerConfig_T clearConfig = config;
-  clearConfig.ctrlId ^= 1;  // select adjacent controller
-  clearConfig.hwId = 15;    // special ID to clear controller
-  CMD_DATA[2]      = LPC_EHC_COMMAND_SET_CONTROL_REGISTER;
-  CMD_DATA[3]      = EHC_configToUint16(clearConfig);
+  EHC_ControllerConfig_T clearConfig = EHC_uint16ToConfig(0);
+  clearConfig.ctrlId                 = config.ctrlId ^ 1;  // select adjacent controller
+  clearConfig.hwId                   = 15;                 // special ID to clear controller
+  CMD_DATA[2]                        = LPC_EHC_COMMAND_SET_CONTROL_REGISTER;
+  CMD_DATA[3]                        = EHC_configToUint16(clearConfig);
   bytesWritten += writeData(&bufp, sizeof CMD_DATA, &CMD_DATA[0]);
 
   // clear this controller if forced reset
