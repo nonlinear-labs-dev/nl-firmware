@@ -16,10 +16,10 @@ class BaseUnitUIMode : public EnumSetting<BaseUnitUIModes>
   typedef EnumSetting<BaseUnitUIModes> super;
 
  public:
-  BaseUnitUIMode(Settings &settings);
-  virtual ~BaseUnitUIMode();
+  explicit BaseUnitUIMode(Settings &settings);
+  ~BaseUnitUIMode() override;
 
-  bool set(BaseUnitUIModes m) override;
+  void sendToLPC(SendReason reason) const override;
 
  private:
   BaseUnitUIMode(const BaseUnitUIMode &other);

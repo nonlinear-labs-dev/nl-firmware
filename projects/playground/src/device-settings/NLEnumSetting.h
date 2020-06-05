@@ -30,6 +30,13 @@ template <typename TEnum> class NLEnumSetting : public Setting
     return false;
   }
 
+  bool forceset(tEnum m)
+  {
+    m_mode = m;
+    notify();
+    return true;
+  }
+
   tEnum get() const
   {
     return m_mode;

@@ -61,3 +61,8 @@ void PedalType::load(const Glib::ustring &text)
   else
     super::load(text);
 }
+
+bool PedalType::set(PedalTypes m)
+{
+  return forceset(m);
+}

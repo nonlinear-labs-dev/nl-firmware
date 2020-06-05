@@ -13,20 +13,6 @@ BaseUnitUIMode::~BaseUnitUIMode()
 {
 }
 
-bool BaseUnitUIMode::set(BaseUnitUIModes m)
-{
-  if(super::set(m))
-  {
-    if(m != BaseUnitUIModes::ParameterEdit)
-      m = BaseUnitUIModes::Play;
-
-    uint16_t v = (uint16_t) m;
-    Application::get().getLPCProxy()->sendSetting(BASE_UNIT_UI_MODE, v);
-    return true;
-  }
-  return false;
-}
-
 const std::vector<Glib::ustring> &BaseUnitUIMode::enumToString() const
 {
   static std::vector<Glib::ustring> s_modeNames = { "play", "parameter-edit", "banks", "presets" };
@@ -37,4 +23,13 @@ const std::vector<Glib::ustring> &BaseUnitUIMode::enumToDisplayString() const
 {
   static std::vector<Glib::ustring> s_modeNames = { "Play", "Parameter Edit", "Banks", "Presets" };
   return s_modeNames;
+}
+
+void BaseUnitUIMode::sendToLPC(SendReason reason) const
+{
+  auto m = get();
+  if(m != BaseUnitUIModes::ParameterEdit)
+    m = BaseUnitUIModes::Play;
+  auto v = static_cast<uint16_t>(m);
+  Application::get().getLPCProxy()->sendSetting(BASE_UNIT_UI_MODE, v);
 }
