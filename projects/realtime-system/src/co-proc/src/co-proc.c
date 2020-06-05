@@ -25,6 +25,7 @@
 #include "espi/dev/nl_espi_dev_ribbons.h"
 #include "espi/dev/nl_espi_dev_adc.h"
 #include "io/pins.h"
+#include "shared/version.h"
 
 #define ESPI_MODE_ADC      LPC_SSP0, ESPI_CPOL_0 | ESPI_CPHA_0
 #define ESPI_MODE_ATT_DOUT LPC_SSP0, ESPI_CPOL_0 | ESPI_CPHA_0
@@ -280,11 +281,14 @@ static void ProcessADCs(void)
 }
 
 /******************************************************************************/
-volatile char* pVersionString;
+volatile char* pVersionString1;
+volatile char* pVersionString2;
 
 void main(void)
 {
-  pVersionString = VERSION_STRING;  // referencing the version string so compiler won't optimize it away
+  // referencing the version string so compiler won't optimize it away
+  pVersionString1 = VERSION_STRING;
+  pVersionString2 = GetC15Version();
 
   Emphase_IPC_Init();
   KBS_Init();
