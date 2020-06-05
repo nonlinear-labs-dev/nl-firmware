@@ -19,7 +19,7 @@
 // 60 == release candidate, beta test, lots of improvements (Keybed Scanner)
 // 61 == release candidate, beta test, removed all standard libraries, and now using hardware floating point
 // 62 == release candidate, beta test, introduce jitter on ESPI and keybed scanner for EMC, add key mapping
-#define SW_VERSION 63206
+#define SW_VERSION 206
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros
