@@ -9,20 +9,15 @@
 #include <stdint.h>
 
 #include "cr_start_m0.h"
-
 #include "sys/nl_coos.h"
 #include "sys/nl_watchdog.h"
 #include "sys/delays.h"
 #include "CPU_clock.h"
-
 #include "drv/nl_gpdma.h"
-
 #include "usb/nl_usb_midi.h"
 #include "ipc/emphase_ipc.h"
-
 #include "spibb/nl_spi_bb.h"
 #include "spibb/nl_bb_msg.h"
-
 #include "tcd/nl_tcd_adc_work.h"
 #include "tcd/nl_tcd_poly.h"
 #include "tcd/nl_tcd_msg.h"
@@ -33,6 +28,7 @@
 #include "sys/crc.h"
 #include "io/pins.h"
 #include "sys/nl_version.h"
+#include "shared/version.h"
 
 #define DBG_CLOCK_MONITOR (0)
 
@@ -50,10 +46,14 @@ void FastProcesses(void)
   SPI_BB_Polling();     // every 125 us, checking the buffer with messages from the BBB, may do callbacks ?
 }
 
-volatile char *pVersionString;
-void           Init(void)
+volatile char *pVersionString1;
+volatile char *pVersionString2;
+
+void Init(void)
 {
-  pVersionString = VERSION_STRING;  // referencing the version string so compiler won't optimize it away
+  // referencing the version string so compiler won't optimize it away
+  pVersionString1 = VERSION_STRING;
+  pVersionString2 = GetC15Version();
 
   /* CPU clock */
   CPU_ConfigureClocks();
