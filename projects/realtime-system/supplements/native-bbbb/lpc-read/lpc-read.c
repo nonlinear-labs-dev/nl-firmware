@@ -6,6 +6,12 @@
 #include <errno.h>
 #include <string.h>
 #include <errno.h>
+#include "shared/version.h"
+
+#define VERSION_STRING "1.0"
+
+#define HELP    "--help"
+#define VERSION "--version"
 
 #include "process-read-msgs.h"
 
@@ -140,9 +146,12 @@ void writeMessages(void)
 // ===================
 void Usage(char const *const string, int const exitCode)
 {
+  printf("lpc-read version " VERSION_STRING ", %s\n", GetC15Version());
   if (string)
     puts(string);
-  puts("read-lpc-msgs [@filename] <options>");
+  puts("lpc-read --help           : display usage and exit");
+  puts("lpc-read --version        : print version and exit");
+  puts("lpc-read [@filename] <options>");
   puts("  @filename : specify input file rather than using /dev/lpc_bb_driver");
   puts("  <options> is a white-space seperated list of letters, preceeded");
   puts("            by either a + or -, turning the display on or off");
@@ -175,6 +184,18 @@ int main(int argc, char *argv[])
     path = &argv[1][1];
     argc--;
     argv++;
+  }
+
+  if (argc > 1)
+  {
+    if (strncmp(argv[1], HELP, sizeof HELP) == 0)
+      Usage(NULL, 0);
+
+    if (strncmp(argv[1], VERSION, sizeof VERSION) == 0)
+    {
+      printf("lpc-read version " VERSION_STRING ", %s\n", GetC15Version());
+      return 0;
+    }
   }
 
   printf("\nOutput from '%s' :\n", path);
