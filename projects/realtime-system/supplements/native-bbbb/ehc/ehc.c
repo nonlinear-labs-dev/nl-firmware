@@ -7,6 +7,9 @@
 
 #include "shared/lpc-defs.h"
 #include "shared/lpc-converters.h"
+#include "shared/version.h"
+
+#define VERSION_STRING "1.0"
 
 void IOerror(int ret)
 {
@@ -32,9 +35,12 @@ void writeData(FILE *const output, uint16_t const len, uint16_t *data)
 // ===================
 void Usage(void)
 {
+  printf("ehc version " VERSION_STRING ", %s\n", GetC15Version());
   puts("Usage:");
   puts(" ehc  <command>");
   puts("  commands:");
+  puts("  --help           : display usage and exit");
+  puts("  --version        : print version and exit");
   puts("  get              : sent \"fetch data request\"");
   puts("                   (display with read-lpc-msgs in another shell");
   puts("  clear-all        : clear all controllers");
@@ -63,6 +69,8 @@ void Usage(void)
 }
 
 // ===================
+#define HELP     "--help"
+#define VERSION  "--version"
 #define GET      "get"
 #define CLEARALL "clear-all"
 #define CLEAR    "clear"
@@ -174,6 +182,15 @@ int main(int argc, char const *argv[])
 
   if (argc == 1)
     Usage();
+
+  if (strncmp(argv[1], HELP, sizeof HELP) == 0)
+    Usage();
+
+  if (strncmp(argv[1], VERSION, sizeof VERSION) == 0)
+  {
+    printf("ehc version " VERSION_STRING ", %s\n", GetC15Version());
+    return 0;
+  }
 
   driver = fopen(DRIVER, "r+");
   if (!driver)

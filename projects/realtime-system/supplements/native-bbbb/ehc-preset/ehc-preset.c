@@ -8,6 +8,9 @@
 #include "shared/lpc-defs.h"
 #include "shared/lpc-converters.h"
 #include "shared/EHC-pedal-presets.h"
+#include "shared/version.h"
+
+#define VERSION_STRING "1.0"
 
 // ===================
 void IOerror(int ret)
@@ -34,7 +37,10 @@ void writeData(FILE *const output, uint16_t const len, uint16_t *data)
 // ===================
 void Usage(void)
 {
+  printf("ehc-preset version " VERSION_STRING ", %s\n", GetC15Version());
   puts("Usage:");
+  puts(" ehc-preset  --help      : display usage and exit");
+  puts(" ehc-preset  --version    : print version and exit");
   puts(" ehc-preset  list|details : list available presets, with details");
   puts(" ehc-preset  <preset-name> <port> [reset]");
   puts("  preset-name : name of the preset, or its display name, enclosed in \"\n");
@@ -44,6 +50,8 @@ void Usage(void)
 }
 
 // ===================
+#define HELP    "--help"
+#define VERSION "--version"
 #define LIST    "list"
 #define DETAILS "details"
 #define RESET   "reset"
@@ -65,7 +73,6 @@ uint16_t readPortNumber(const char *string)
 }
 
 #define DRIVER "/dev/lpc_bb_driver"
-//#define DRIVER "test.bin"
 // ===================
 int main(int argc, char const *argv[])
 {
@@ -73,6 +80,15 @@ int main(int argc, char const *argv[])
 
   if (argc == 1)
     Usage();
+
+  if (strncmp(argv[1], HELP, sizeof HELP) == 0)
+    Usage();
+
+  if (strncmp(argv[1], VERSION, sizeof VERSION) == 0)
+  {
+    printf("ehc version " VERSION_STRING ", %s\n", GetC15Version());
+    return 0;
+  }
 
   driver = fopen(DRIVER, "r+");
   if (!driver)
