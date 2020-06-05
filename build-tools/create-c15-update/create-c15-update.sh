@@ -133,6 +133,12 @@ get_tools_from_rootfs() {
         fi
     done
 
+    # once mxli is part of /usr/bin this can be done in the loop above
+    if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/ -type f -name "mxli") $OUT_DIRECTORY/utilities/ & ! chmod +x $OUT_DIRECTORY/utilities/mxli; then
+      echo "could not get mxli from rootfs or make executable"
+      return 1
+    fi
+
     for lib in libpopt.so.0.0.0 libpopt.so.0 libpopt.so; do
         if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/lib/ -name "$lib") $OUT_DIRECTORY/utilities/; then
                echo "could not get library $lib from rootfs"
