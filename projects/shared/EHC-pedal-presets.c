@@ -109,8 +109,8 @@ const EHC_PresetT EHC_presets[] = {
       },
       .rangeMin      = -1,
       .rangeMax      = -1,
-      .deadZoneLower = -1,
-      .deadZoneUpper = -1,
+      .deadZoneLower = 5,  // 5% dead zone
+      .deadZoneUpper = 5,  // 5% dead zone
   },
   {
       .id          = EHC_PRESET_Resistor_Rev,
