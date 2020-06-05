@@ -1,9 +1,4 @@
 #!/bin/sh
-#
-#
-# Name:         Anton Schmied
-# Date:         2020.05.22
-# Version:      2.1
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
@@ -208,18 +203,12 @@ stop_services() {
     return 0
 }
 
-freeze() {
-    while true; do
-        sleep 1
-    done
-}
-
 main() {
     rm -f /update/errors.log
     touch /update/errors.log
 
     configure_ssh
-    if ! check_preconditions; then freeze; fi
+    check_preconditions || return 1
 
     [ $UPDATE_BBB == 1 ] && stop_services
     [ $UPDATE_EPC == 1 ] && epc_update
@@ -229,11 +218,11 @@ main() {
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
         pretty "" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG"
-        freeze
+        return 1
     fi
 
     pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
-    freeze
+    return 0
 }
 
 main
