@@ -42,6 +42,7 @@ class Settings : public ContentSection
   const tMap &getSettings() const;
 
   void sendSettingsToLPC(SendReason reason);
+  void sendGlobalLPCInitSettings();
 
   void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
@@ -62,4 +63,5 @@ class Settings : public ContentSection
   tMap m_settings;
   DelayedJob m_saveJob;
   ScopedGuard m_isLoading;
+  void sendRibbonCalibration();
 };

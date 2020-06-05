@@ -206,8 +206,35 @@ bool Settings::isLoading() const
 
 void Settings::sendSettingsToLPC(SendReason reason)
 {
+  if(reason == SendReason::HeartBeatDropped) {
+    sendGlobalLPCInitSettings();
+    return;
+  }
+
+
   for(auto &[key, value] : getSettings())
   {
     value->sendToLPC(reason);
   }
+}
+
+void Settings::sendGlobalLPCInitSettings()
+{
+  getSetting<BaseUnitUIMode>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<RibbonRelativeFactor>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<ParameterEditModeRibbonBehaviour>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<VelocityCurve>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<AftertouchCurve>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<BenderCurve>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal1Type")->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal2Type")->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal3Type")->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal4Type")->sendToLPC(SendReason::HeartBeatDropped);
+
+  sendRibbonCalibration();
+}
+
+void Settings::sendRibbonCalibration()
+{
+  //TODO send /persistent/calibration
 }
