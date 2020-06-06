@@ -29,7 +29,7 @@ PresetListEntry::PresetListEntry(const Rect &pos)
     m_name = addControl(new PresetNameLabel(Rect(19, 0, 100, 16)));
 
   if(inLoadToPart)
-    m_type = addControl(new PresetTypeLabel(Rect(112, 0, 14, 16)));
+    m_type = addControl(new PresetTypeLabel(Rect(111, 0, 14, 16)));
   else
     m_type = addControl(new PresetTypeLabel(Rect(119, 0, 7, 16)));
 }

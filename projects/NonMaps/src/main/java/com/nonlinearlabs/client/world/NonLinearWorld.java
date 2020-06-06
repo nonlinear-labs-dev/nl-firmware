@@ -346,7 +346,8 @@ public class NonLinearWorld extends MapsLayout {
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
 		double pix = toYPixels(-amount);
-		zoom(24 * pix / getCurrentZoom(), eventPoint.getX(), eventPoint.getY());
+		double factor = fine ? 5 : 24;
+		zoom(factor * pix / getCurrentZoom(), eventPoint.getX(), eventPoint.getY());
 		return this;
 	}
 

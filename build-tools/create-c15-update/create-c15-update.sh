@@ -91,7 +91,9 @@ deploy_scripts() {
         cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh && \
             cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ && \
-            chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh || \
+            chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh && \
+            cp $SOURCE_DIR/update_scripts/epc_fix.sh $OUT_DIRECTORY/EPC/ && \
+            chmod 777 $OUT_DIRECTORY/EPC/epc_fix.sh || \
             fail_and_exit;
     fi
 
@@ -124,6 +126,19 @@ get_tools_from_rootfs() {
     for i in sshpass text2soled rsync socat thttpd; do
         if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "$i") $OUT_DIRECTORY/utilities/; then
           echo "could not get $i from rootfs"
+          return 1
+        fi
+    done
+
+    # once mxli is part of /usr/bin this can be done in the loop above
+    if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/ -type f -name "mxli") $OUT_DIRECTORY/utilities/; then
+      echo "could not get mxli from rootfs"
+      return 1
+    fi
+
+    for i in sshpass text2soled rsync socat thttpd mxli; do
+        if ! chmod +x $OUT_DIRECTORY/utilities/"$i"; then
+          echo "could not make $i executable"
           return 1
         fi
     done

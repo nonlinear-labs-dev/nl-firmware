@@ -4,7 +4,7 @@
 class VoiceGroupIndicator : public Control
 {
  public:
-  explicit VoiceGroupIndicator(const Rect& r);
+  explicit VoiceGroupIndicator(const Rect& r, bool allowLoadToPart);
   ~VoiceGroupIndicator() override;
   bool redraw(FrameBuffer& fb) override;
 
@@ -27,4 +27,5 @@ class VoiceGroupIndicator : public Control
 
   sigc::connection m_parameterChanged;
   const Parameter* m_param = nullptr;
+  const bool m_allowLoadToPart;
 };

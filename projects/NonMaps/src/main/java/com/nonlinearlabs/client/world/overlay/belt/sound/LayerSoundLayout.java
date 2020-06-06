@@ -74,11 +74,17 @@ public class LayerSoundLayout extends SoundLayout {
 			double parts = 20;
 			double unit = (w - 2 * margin) / parts;
 
-			getChildren().get(0).doLayout(margin * 1.5, margin * 1.2, 1.5 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(1).doLayout(margin + 1.5 * unit + margin, margin, 8.5 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(2).doLayout(margin + 10 * unit + margin, margin, 4.25 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(3).doLayout(margin + 14.25 * unit + margin, margin, 4.25 * unit - 2 * margin, h - 2 * margin);
-			getChildren().get(4).doLayout(margin + 18.5 * unit + margin, margin, 1.5 * unit - 2 * margin, h - 2 * margin);
+			double voiceGroupWidth = Math.max(1.5 * unit - 2 * margin, Millimeter.toPixels(7));
+
+			getChildren().get(0).doLayout(margin * 1.5, margin * 1.2, voiceGroupWidth, h - 2 * margin);
+			getChildren().get(1).doLayout(margin + 1.5 * unit + margin, margin, 8.5 * unit - 2 * margin,
+					h - 2 * margin);
+			getChildren().get(2).doLayout(margin + 10 * unit + margin, margin, 4.25 * unit - 2 * margin,
+					h - 2 * margin);
+			getChildren().get(3).doLayout(margin + 14.25 * unit + margin, margin, 4.25 * unit - 2 * margin,
+					h - 2 * margin);
+			getChildren().get(4).doLayout(margin + 18.5 * unit + margin, margin, 1.5 * unit - 2 * margin,
+					h - 2 * margin);
 		}
 
 		@Override
@@ -98,32 +104,31 @@ public class LayerSoundLayout extends SoundLayout {
 			contentRect.drawRoundedArea(ctx, margin, 1, new Gray(30), new Gray(30));
 			super.draw(ctx, invalidationMask);
 
-			if(isDropTarget) {
+			if (isDropTarget) {
 				getPixRect().getReducedBy(1).drawRoundedArea(ctx, margin, 1, RGBA.transparent(), RGB.red());
 			}
 		}
 
 		private boolean isDropTarget = false;
 
-
 		@Override
 		public Control drag(Position pos, DragProxy dragProxy) {
 			if (!getPixRect().contains(pos))
 				return null;
-	
+
 			if (dragProxy.getOrigin() instanceof IPreset) {
 				setIsDropTarget(true);
 				return this;
 			}
 			return super.drag(pos, dragProxy);
 		}
-	
+
 		@Override
 		public void dragLeave() {
 			setIsDropTarget(false);
 			super.dragLeave();
 		}
-	
+
 		private void setIsDropTarget(boolean isDropTarget) {
 			if (this.isDropTarget != isDropTarget) {
 				this.isDropTarget = isDropTarget;
@@ -132,20 +137,20 @@ public class LayerSoundLayout extends SoundLayout {
 		}
 
 		private ChoosePresetPartDialog choosePresetPart = null;
-	
+
 		@Override
 		public Control drop(Position pos, DragProxy dragProxy) {
-	
+
 			if (dragProxy.getOrigin() instanceof IPreset)
-				if(dragProxy.getOrigin() instanceof Preset) {
-					Preset p = (Preset)dragProxy.getOrigin();
-					if(p.isDual()) {
-						choosePresetPart = new ChoosePresetPartDialog(p, group);		
+				if (dragProxy.getOrigin() instanceof Preset) {
+					Preset p = (Preset) dragProxy.getOrigin();
+					if (p.isDual()) {
+						choosePresetPart = new ChoosePresetPartDialog(p, group);
 					} else {
 						NonMaps.get().getServerProxy().loadPresetPartIntoPart(p.getUUID(), VoiceGroup.I, group);
 					}
 				}
-	
+
 			setIsDropTarget(false);
 			return this;
 		}

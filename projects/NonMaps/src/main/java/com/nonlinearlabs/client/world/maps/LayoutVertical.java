@@ -46,28 +46,32 @@ abstract class LayoutVertical extends MapsLayout {
 
 			switch (layoutDirection) {
 
-			case CENTER:
-				double centeredX = (maxWidth - c.getNonPosition().getWidth()) / 2.0;
-				c.moveTo(centeredX + getXMargin(), maxY);
-				break;
+				case CENTER:
+					double centeredX = (maxWidth - c.getNonPosition().getWidth()) / 2.0;
+					c.moveTo(centeredX + getXMargin(), maxY);
+					break;
 
-			case LEFT:
-				c.moveTo(getXMargin(), maxY);
-				break;
+				case LEFT:
+					c.moveTo(getXMargin(), maxY);
+					break;
 
-			case RIGHT:
-				double left = maxWidth - c.getNonPosition().getWidth();
-				c.moveTo(left + getXMargin(), maxY);
-				break;
+				case RIGHT:
+					double left = maxWidth - c.getNonPosition().getWidth();
+					c.moveTo(left + getXMargin(), maxY);
+					break;
 
-			default:
-				break;
+				default:
+					break;
 			}
 
 			maxY += c.getNonPosition().getHeight();
 			maxY += padding;
 		}
-		return new NonDimension(maxWidth + getWidthMargin(), maxHeight);
+		return new NonDimension(maxWidth + getWidthMargin(), Math.max(getMinHeight(), maxHeight));
+	}
+
+	public double getMinHeight() {
+		return 0;
 	}
 
 	public boolean skipChildOnLayout(MapsControl c) {
