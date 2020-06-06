@@ -9,6 +9,12 @@
 #include "shared/version.h"
 
 #define VERSION_STRING "1.0"
+#define PROGNAME       "lpc-read"
+
+void printVersion(void)
+{
+  printf(PROGNAME " version " VERSION_STRING ", %s (Build: %s)\n", GetC15Version(), GetC15Build());
+}
 
 #define HELP    "--help"
 #define VERSION "--version"
@@ -146,7 +152,7 @@ void writeMessages(void)
 // ===================
 void Usage(char const *const string, int const exitCode)
 {
-  printf("lpc-read version " VERSION_STRING ", %s\n", GetC15Version());
+  printVersion();
   if (string)
     puts(string);
   puts("lpc-read --help           : display usage and exit");
@@ -193,7 +199,7 @@ int main(int argc, char *argv[])
 
     if (strncmp(argv[1], VERSION, sizeof VERSION) == 0)
     {
-      printf("lpc-read version " VERSION_STRING ", %s\n", GetC15Version());
+      printVersion();
       return 0;
     }
   }

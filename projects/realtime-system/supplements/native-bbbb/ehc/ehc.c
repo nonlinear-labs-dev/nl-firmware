@@ -10,6 +10,12 @@
 #include "shared/version.h"
 
 #define VERSION_STRING "1.0"
+#define PROGNAME       "ehc"
+
+void printVersion(void)
+{
+  printf(PROGNAME " version " VERSION_STRING ", %s (Build: %s)\n", GetC15Version(), GetC15Build());
+}
 
 void IOerror(int ret)
 {
@@ -35,7 +41,7 @@ void writeData(FILE *const output, uint16_t const len, uint16_t *data)
 // ===================
 void Usage(void)
 {
-  printf("ehc version " VERSION_STRING ", %s\n", GetC15Version());
+  printVersion();
   puts("Usage:");
   puts(" ehc  <command>");
   puts("  commands:");
@@ -188,7 +194,7 @@ int main(int argc, char const *argv[])
 
   if (strncmp(argv[1], VERSION, sizeof VERSION) == 0)
   {
-    printf("ehc version " VERSION_STRING ", %s\n", GetC15Version());
+    printVersion();
     return 0;
   }
 

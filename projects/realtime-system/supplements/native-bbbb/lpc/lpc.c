@@ -10,6 +10,12 @@
 #include "shared/version.h"
 
 #define VERSION_STRING "1.0"
+#define PROGNAME       "lpc"
+
+void printVersion(void)
+{
+  printf(PROGNAME " version " VERSION_STRING ", %s (Build: %s)\n", GetC15Version(), GetC15Build());
+}
 
 void Error(const char *msg)
 {
@@ -79,7 +85,7 @@ uint16_t KEY_DATA[] = { LPC_BB_MSG_TYPE_KEY_EMUL, 0x0003, 0x0000, 0x0000, 0x0000
 // ===================
 void Usage(void)
 {
-  printf("lpc version " VERSION_STRING ", %s\n", GetC15Version());
+  printVersion();
   puts("Usage:");
   puts(" lpc --help           : display usage and exit");
   puts(" lpc --version        : print version and exit");
@@ -121,7 +127,7 @@ int main(int argc, char const *argv[])
 
   if (strncmp(argv[1], VERSION, sizeof VERSION) == 0)
   {
-    printf("lpc version " VERSION_STRING ", %s\n", GetC15Version());
+    printVersion();
     return 0;
   }
 
