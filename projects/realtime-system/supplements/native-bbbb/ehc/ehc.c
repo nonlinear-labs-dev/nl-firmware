@@ -14,7 +14,7 @@
 
 void printVersion(void)
 {
-  printf(PROGNAME " version " VERSION_STRING ", %s (Build: %s)\n", GetC15Version(), GetC15Build());
+  printf(PROGNAME " version " VERSION_STRING " (Build: %s, %s)\n", GetC15Version(), GetC15Build());
 }
 
 void IOerror(int ret)
