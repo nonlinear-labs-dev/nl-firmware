@@ -1433,8 +1433,6 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
     setVoiceGroupName(transaction, preset->getVoiceGroupName(from), copyTo);
   else
     setVoiceGroupName(transaction, preset->getName(), copyTo);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transaction, const Preset *preset,
@@ -1479,8 +1477,6 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
     setVoiceGroupName(transaction, preset->getVoiceGroupName(copyFrom), copyTo);
   else
     setVoiceGroupName(transaction, preset->getName(), copyTo);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset,
@@ -1505,8 +1501,6 @@ void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transa
     setVoiceGroupName(transaction, preset->getName(), copyTo);
 
   initFadeParameters(transaction, copyTo);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
