@@ -446,7 +446,7 @@ namespace NavTree
   struct UISoftwareVersion : EditableLeaf
   {
     UISoftwareVersion(InnerNode *parent)
-        : EditableLeaf(parent, "UI Software Version")
+        : EditableLeaf(parent, "Software Version")
     {
     }
 
