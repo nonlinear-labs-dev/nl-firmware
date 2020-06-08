@@ -58,7 +58,7 @@ configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.c
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
 
 # SOURCE FILE COLLECTIONS
-SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
+SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp ${CMAKE_SOURCE_DIR}/projects/shared/*.c)
