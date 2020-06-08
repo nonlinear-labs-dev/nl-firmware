@@ -65,7 +65,8 @@ class FlangerCol6 extends DoubleParameterColumn {
 
 	FlangerCol6(MapsLayout parent) {
 		super(parent);
-		addChild(new FeedbackColumn(this));
-		addChild(new CrossFBAndHicut(this));
+		FeedbackColumn fb = addChild(new FeedbackColumn(this));
+		CrossFBAndHicut cFB = addChild(new CrossFBAndHicut(this));
+		fb.setReferenceControl(cFB);
 	}
 }
