@@ -121,7 +121,7 @@ deploy_scripts() {
 
 get_tools_from_rootfs() {
     echo "Getting tools from rootfs..."
-    mkdir -p $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE -C $BINARY_DIR/build-tools/bbb/rootfs
+    mkdir -p $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
 
     for i in sshpass text2soled rsync socat thttpd; do
         if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "$i") $OUT_DIRECTORY/utilities/; then
