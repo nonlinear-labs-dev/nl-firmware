@@ -1,4 +1,4 @@
-LPC firmware Version 206 (beta V. 63206) (for Milestone 1.7) features:
+LPC firmware Version 206 (for Milestone 1.7) features:
 
 
 0) Proccesing changes : 
@@ -125,3 +125,5 @@ time --> 20us (vs. 150us) velocity resolution.
 
 9) Complete Restructuring of the source tree for less overlap, no libraries etc.
 
+
+10) Added low-level keybedkey remapping, and key emulation/logging.
