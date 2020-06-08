@@ -66,7 +66,8 @@ class FlangerCol1 extends DoubleParameterColumn {
 
 	FlangerCol1(MapsLayout parent) {
 		super(parent);
-		addChild(new RateColumn(this));
-		addChild(new EnvAndPhaseColumn(this));
+		RateColumn f = addChild(new RateColumn(this));
+		EnvAndPhaseColumn e = addChild(new EnvAndPhaseColumn(this));
+		f.setReferenceControl(e);
 	}
 }
