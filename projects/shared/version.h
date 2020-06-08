@@ -20,7 +20,8 @@
 // and searched in an editor (text or hex), etc. That's why the "\n\n" are part of the strings so
 // that the text is easily spotted.
 
-#define C15_VERSION_STRING "YYWW"
+//                         "YYWW"
+#define C15_VERSION_STRING "2024"
 #warning "make sure version string is up-to date when building a release or beta"
 
 // do not change these two strings:

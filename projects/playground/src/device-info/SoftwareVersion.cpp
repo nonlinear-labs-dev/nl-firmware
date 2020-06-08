@@ -2,10 +2,11 @@
 #include <xml/Writer.h>
 #include <xml/Attribute.h>
 #include <device-settings/DebugLevel.h>
+#include <version.h>
 
 SoftwareVersion::SoftwareVersion(DeviceInformation *parent)
     : DeviceInformationItem(parent)
-    , m_versionString("@C15_VERSION@")
+    , m_versionString(GetC15Version())
 {
 }
 

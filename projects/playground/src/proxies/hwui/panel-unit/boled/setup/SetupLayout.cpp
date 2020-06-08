@@ -462,21 +462,6 @@ namespace NavTree
     }
   };
 
-  struct RTSoftwareVersion : Leaf
-  {
-    RTSoftwareVersion(InnerNode *parent)
-        : Leaf(parent, "RT Software Version")
-    {
-    }
-
-    virtual Control *createView() override
-    {
-      Application::get().getLPCProxy()->requestLPCSoftwareVersion();
-      auto info = Application::get().getDeviceInformation()->getItem<::RTSoftwareVersion>().get();
-      return new DeviceInfoItemView(info);
-    }
-  };
-
   struct DateTime : EditableLeaf
   {
     DateTime(InnerNode *parent)
@@ -493,20 +478,6 @@ namespace NavTree
     virtual Control *createEditor() override
     {
       return new DateTimeEditor();
-    }
-  };
-
-  struct OSVersion : Leaf
-  {
-    OSVersion(InnerNode *parent)
-        : Leaf(parent, "OS Version")
-    {
-    }
-
-    virtual Control *createView() override
-    {
-      auto info = Application::get().getDeviceInformation()->getItem<::OSVersion>().get();
-      return new DeviceInfoItemView(info);
     }
   };
 
@@ -540,8 +511,6 @@ namespace NavTree
       children.emplace_back(new WebUIAdress(this));
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new UISoftwareVersion(this));
-      children.emplace_back(new RTSoftwareVersion(this));
-      children.emplace_back(new OSVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
     }
