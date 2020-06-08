@@ -46,14 +46,22 @@ void FastProcesses(void)
   SPI_BB_Polling();     // every 125 us, checking the buffer with messages from the BBB, may do callbacks ?
 }
 
-volatile char *pVersionString1;
-volatile char *pVersionString2;
+volatile char dummy;
+
+void dummyFunction(const char *string)
+{
+  while (*string)
+  {
+    dummy = *string++;
+  }
+}
 
 void Init(void)
 {
   // referencing the version string so compiler won't optimize it away
-  pVersionString1 = VERSION_STRING;
-  pVersionString2 = GetC15Version();
+  dummyFunction(VERSION_STRING);
+  dummyFunction(GetC15Version());
+  dummyFunction(GetC15Build());
 
   /* CPU clock */
   CPU_ConfigureClocks();

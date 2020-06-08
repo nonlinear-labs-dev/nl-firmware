@@ -27,9 +27,9 @@
 #define C15_VERSION_STRING_IN_MEMORY_PREFIX  "\n\nC15 Version: "
 #define C15_VERSION_STRING_IN_MEMORY_POSTFIX "\0\n\n"
 
-static volatile char C15_VERSION_STRING_IN_MEMORY[] = C15_VERSION_STRING_IN_MEMORY_PREFIX C15_VERSION_STRING C15_VERSION_STRING_IN_MEMORY_POSTFIX;
+static const char C15_VERSION_STRING_IN_MEMORY[] = C15_VERSION_STRING_IN_MEMORY_PREFIX C15_VERSION_STRING C15_VERSION_STRING_IN_MEMORY_POSTFIX;
 
-static inline volatile char* GetC15Version(void)
+static inline const char* GetC15Version(void)
 {
   return &(C15_VERSION_STRING_IN_MEMORY[15]);  // extract date only
 }
@@ -38,26 +38,24 @@ static inline volatile char* GetC15Version(void)
 // TODO : replace this with auto-extracted data from git at compile time (branch name, commit date, commit ID,
 // also the seperate functions for each of these items)
 
-static volatile char C15_BUILD_STRING_IN_MEMORY[] = "\n\nthis C15 program was built on " __DATE__ " " __TIME__ "\0\n\n";
+static const char C15_BUILD_STRING_IN_MEMORY[] = "\n\nthis C15 program was built on " __DATE__ " " __TIME__ "\0\n\n";
 
-static inline volatile char* GetC15Build(void)
+static inline const char* GetC15Build(void)
 {                                            // TODO: fill with auto-generated content, concatenated string: branch name, commit date, commit ID
   return &(C15_BUILD_STRING_IN_MEMORY[32]);  // extract date only
 }
 
-static inline volatile char* GetC15BuildBranch(void)
+static inline const char* GetC15BuildBranch(void)
 {  // TODO: fill with auto-generated content
   return "<branch>";
 }
 
-static inline volatile char* GetC15BuildCommitDate(void)
+static inline const char* GetC15BuildCommitDate(void)
 {  // TODO: fill with auto-generated content
   return "<commit-date>";
 }
 
-static inline volatile char* GetC15BuildCommitID(void)
+static inline const char* GetC15BuildCommitID(void)
 {  // TODO: fill with auto-generated content
   return "<commit-ID>";
 }
-
-// NOTE: volatiles needed to keep compiler from optimizing away the strings
