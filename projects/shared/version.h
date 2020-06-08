@@ -2,8 +2,8 @@
 
 // A) Global "Version Name" String :
 // 1. Version String for official releases, build from an official release branch :
-// The syntax is "YYWW", a 4-digit code, first two digits is year and second two
-// digits is calender week (1..52), eg 2022 means 2020, week 22
+// The syntax is "YY-WW", a 4-digit code, first two digits is year and second two
+// digits is calender week (1..52), eg 20-22 means 2020, week 22
 //
 // 2. Version String for inofficial beta builds, build from any branch :
 // The syntax is "Beta: <arbitrary string>"
@@ -20,8 +20,8 @@
 // and searched in an editor (text or hex), etc. That's why the "\n\n" are part of the strings so
 // that the text is easily spotted.
 
-//                         "YYWW"
-#define C15_VERSION_STRING "2024"
+//                         "YY-WW"
+#define C15_VERSION_STRING "20-24"
 #warning "make sure version string is up-to date when building a release or beta"
 
 // do not change these two strings:
