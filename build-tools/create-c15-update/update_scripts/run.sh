@@ -71,21 +71,30 @@ executeOnWin() {
     return $?
 }
 
+TIMEOUT=10
+
+wait4playground() {
+    for COUNTER in $(seq 1 $TIMEOUT); do
+        echo "awaiting reboot ... $COUNTER/$TIMEOUT"
+        sleep 1
+        executeAsRoot "systemctl status playground" && return 0
+    done
+    return 1
+}
+
 check_preconditions() {
-    executeAsRoot "exit"
-    if [ $? -ne 0 ]; then
-        if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!"; return 1; fi
-        if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!"; return 1; fi
+    if ! wait4playground; then
+        if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
+        if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
         if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
             report "" "E84: Upgrade OS first!" "Please contact NLL!" && return 1
         else
             if mount.cifs //192.168.10.10/update /mnt/windows -o user=TEST,password=TEST \
                 && ls -l /mnt/windows/ | grep Phase22Renderer.ens; then
-                    report "" "E85: OS too old for update!" "Please contact NLL!"; return 1
+                    report "" "E85: OS too old for update!" "Please contact NLL!" && return 1
             fi
         fi
-        report "" "Something went wrong!" "Please retry update!"
-        return 1
+        report "" "Something went wrong!" "Please retry update!" && return 1
     fi
     return 0
 }
