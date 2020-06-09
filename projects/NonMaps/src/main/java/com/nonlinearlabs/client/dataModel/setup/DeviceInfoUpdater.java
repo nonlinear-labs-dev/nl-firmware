@@ -34,7 +34,8 @@ public class DeviceInfoUpdater extends Updater {
 				if (info.getNodeType() == Node.ELEMENT_NODE) {
 					String value = getText(info);
 					DataModelEntityBase s = findDeviceInfoFromTagName(info.getNodeName());
-					s.fromString(value);
+					if(s != null)
+						s.fromString(value);
 
 				}
 				info = info.getNextSibling();
