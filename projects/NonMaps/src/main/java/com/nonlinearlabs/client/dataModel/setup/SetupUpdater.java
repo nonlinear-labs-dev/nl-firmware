@@ -35,7 +35,6 @@ public class SetupUpdater extends Updater {
 		m.put("Pedal2Type", SetupModel.get().systemSettings.pedal2Type);
 		m.put("Pedal3Type", SetupModel.get().systemSettings.pedal3Type);
 		m.put("Pedal4Type", SetupModel.get().systemSettings.pedal4Type);
-		m.put("PitchbendOnPressedKeys", SetupModel.get().systemSettings.benderOnPressedKeys);
 		m.put("PresetDragDropEnabled", SetupModel.get().systemSettings.presetDragEnabled);
 		m.put("PresetGlitchSuppression", SetupModel.get().systemSettings.presetGlitchSuppression);
 		m.put("PresetStoreModeSetting", SetupModel.get().systemSettings.presetStoreModeSetting);

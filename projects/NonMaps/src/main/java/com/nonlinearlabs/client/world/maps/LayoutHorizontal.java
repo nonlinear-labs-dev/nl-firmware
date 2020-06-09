@@ -17,6 +17,11 @@ public abstract class LayoutHorizontal extends MapsLayout {
 				maxX += getPadding();
 
 			c.doFirstLayoutPass(levelOfDetail);
+
+			if (skipChildOnLayout(c)) {
+				continue;
+			}
+
 			c.moveTo(maxX, y);
 			maxX += c.getNonPosition().getWidth();
 			maxHeight = Math.max(maxHeight, c.getNonPosition().getHeight());
@@ -32,11 +37,20 @@ public abstract class LayoutHorizontal extends MapsLayout {
 				maxX += getPadding();
 
 			c.doSecondLayoutPass(maxWidth, maxHeight);
+
+			if (skipChildOnLayout(c)) {
+				continue;
+			}
+
 			c.moveTo(maxX, y);
 			maxX += c.getNonPosition().getWidth();
 			first = false;
 		}
 
 		return new NonDimension(maxX + getRightMargin(), maxHeight + getHeightMargin());
+	}
+
+	public boolean skipChildOnLayout(MapsControl c) {
+		return false;
 	}
 }

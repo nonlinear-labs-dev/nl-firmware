@@ -19,17 +19,17 @@ public class BooleanControlSmall extends NumericalControlSmall {
 	}
 
 	@Override
-	protected double getInsetY() {
-		return 6;
-	}
-
-	@Override
 	protected double getBasicWidth() {
 		return 80;
 	}
 
 	@Override
+	protected double getInsetY() {
+		return 2;
+	}
+
+	@Override
 	protected double getBasicHeight() {
-		return 27;
+		return 19;
 	}
 }

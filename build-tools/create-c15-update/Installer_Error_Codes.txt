@@ -16,6 +16,7 @@ List of current Error Messages
 - 45 :: "E45 ePC update: Reboot taking too long... timed out"
 - 46 :: "E46 ePC update: Could not start server on BBB..."
 - 47 :: "E47 ePC update: deploying update failed ..."
+- 48 :: "E48 ePC update: "fixing Overlay order failed" or "setting Kernel Params failed"
 
 5. BBB
 - 54 :: "E54 BBB update: User partition not mounted om ePC ..."
@@ -23,11 +24,14 @@ List of current Error Messages
 - 56 :: "E56 BBB update: Moving Settings to ePC failed ..."
 - 57 :: "E57 BBB update: Moving calibration settings to ePC failed ..."
 - 58 :: "E58 BBB update: Syncing rootfs failed ..."
+- 59 :: "E59 BBB update: Files on BBB present, but conditions are bad ..." ==> Update from 1.5 to 1.7: If we don't stop here, we will wipe everything (presets/settings/calirbation!)
 
 8. General
 - 81 :: "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..."
 - 82 :: "E82: Can't ping ePC on $EPC_IP ..."
 - 83 :: "E83: Can't logon to ePC OS ..."
+- 84 :: "E84: Upgrade OS first!"
+- 84 :: "E85: OS too old for update!"
 
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------

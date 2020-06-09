@@ -17,6 +17,7 @@
 #include <http/UndoScope.h>
 #include <parameters/names/ParameterDB.h>
 #include <parameter_declarations.h>
+#include <http/SoupOutStream.h>
 
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);
@@ -271,6 +272,22 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     if(auto presetToLoad = pm->findPreset(presetUUID))
     {
       editBuffer->undoableLoadToPart(presetToLoad, presetPart, loadTo);
+    }
+  });
+
+  addAction("download-soled-as-png", [=](std::shared_ptr<NetworkRequest> request) {
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
+    {
+      auto hwui = Application::get().getHWUI();
+      httpRequest->respond(hwui->exportSoled());
+    }
+  });
+
+  addAction("download-boled-as-png", [=](auto request) {
+    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
+    {
+      auto hwui = Application::get().getHWUI();
+      httpRequest->respond(hwui->exportBoled());
     }
   });
 }

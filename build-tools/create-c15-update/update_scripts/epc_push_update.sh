@@ -49,11 +49,10 @@ main () {
     check_preconditions
     update
 
-    executeAsRoot "sudo reboot"
+    executeAsRoot "reboot"
     if ! wait4playground; then
         report_and_quit "E45: ePC update: Reboot taking too long... timed out" "45"
     fi
-
     return 0
 }
 

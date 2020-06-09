@@ -8,6 +8,7 @@ class OscAControls extends ParameterGroupControls {
 		super(parent);
 		addChild(new PitchColumn(this));
 		addChild(new FluctColumn(this));
+		addChild(new PhaseColumn(this));
 		addChild(new PMSelfColumn(this));
 		addChild(new PMBColumn(this));
 		addChild(new PMFBColumn(this));

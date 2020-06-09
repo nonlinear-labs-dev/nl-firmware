@@ -11,11 +11,6 @@ public class KeyTrackParameter extends NumericalControlSmall {
 	}
 
 	@Override
-	protected double getMinHeight() {
-		return 7.5;
-	}
-
-	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
 		isVisible = levelOfDetail >= getLevelOfDetailForFullVisibility();
@@ -35,5 +30,10 @@ public class KeyTrackParameter extends NumericalControlSmall {
 	@Override
 	protected double getBasicHeight() {
 		return 25;
+	}
+
+	@Override
+	protected double getMinHeight() {
+		return 7.5;
 	}
 }

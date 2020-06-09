@@ -42,7 +42,7 @@ PresetNameLabel::StringAndSuffix PresetNameLabel::shortenStringIfNeccessary(std:
 
 int PresetNameLabel::getXOffset() const
 {
-  return 2;
+  return 3;
 }
 
 int PresetNameLabel::getRightMargin() const

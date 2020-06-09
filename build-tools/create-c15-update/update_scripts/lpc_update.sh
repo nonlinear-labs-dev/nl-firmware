@@ -53,7 +53,7 @@ function write_to_gpio {
 
 function write_blob() {
 	# in-service programming of the LPC, errors are appended to file "/update/mxli.log"
-	/nonlinear/scripts/mxli -v -d /dev/ttyUSB0 -N LPC4337 -E -b115200 -T500 -c12000000 -F8kix8,64kix7 -B1024,4096 -A0x1A000000,0x1B000000 -M32ki@0x10000000 -I0xA001CA30,0xXXXXXX00 -R0x200@0x1008000,-288@0x10000000 -S8@7 -y$LPC_BANK $LPC_FIRMWARE 2>> /update/mxli.log
+        /update/utilities/mxli -v -d /dev/ttyUSB0 -N LPC4337 -E -b115200 -T500 -c12000000 -F8kix8,64kix7 -B1024,4096 -A0x1A000000,0x1B000000 -M32ki@0x10000000 -I0xA001CA30,0xXXXXXX00 -R0x200@0x1008000,-288@0x10000000 -S8@7 -y$LPC_BANK $LPC_FIRMWARE 2>> /update/mxli.log
 	return $?
 }
 

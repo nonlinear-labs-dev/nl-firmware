@@ -134,11 +134,6 @@ TEST_CASE("Load Single into Layer Part I")
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
     }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
-    }
   }
 }
 
@@ -267,11 +262,6 @@ TEST_CASE("Load Single into Layer Part II")
       CHECK(EBL::createHashOfVector(EBL::getMaster()) == oldMasterHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
-    }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }

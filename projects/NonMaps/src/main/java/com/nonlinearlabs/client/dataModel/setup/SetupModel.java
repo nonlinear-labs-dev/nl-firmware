@@ -121,7 +121,6 @@ public class SetupModel {
 				PedalType.pot_tip_active);
 		public EnumDataModelEntity<PedalType> pedal4Type = createEnumDataModelEntity(PedalType.class,
 				PedalType.pot_tip_active);
-		public BooleanDataModelEntity benderOnPressedKeys = new BooleanDataModelEntity();
 		public BooleanDataModelEntity presetDragEnabled = new BooleanDataModelEntity();
 		public BooleanDataModelEntity presetGlitchSuppression = new BooleanDataModelEntity();
 		public EnumDataModelEntity<PresetStoreMode> presetStoreModeSetting = createEnumDataModelEntity(

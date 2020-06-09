@@ -31,7 +31,7 @@ string(STRIP ${COMMIT_COUNT} COMMIT_COUNT)
 string(STRIP ${HEAD_REF} HEAD_REF)
 string(STRIP ${BRANCH_NAME} BRANCH_NAME)
 
-set(LIBS gio-unix-2.0 giomm-2.4 uuid libsoup-2.4 freetype2)
+set(LIBS gio-unix-2.0 giomm-2.4 uuid libsoup-2.4 freetype2 libpng)
 
 # OPTIONS
 OPTION(DEV_PC "Enable some tests and tools not suitable for embedded device" OFF)
@@ -57,7 +57,6 @@ configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
-configure_file(${PROJECT_SOURCE_DIR}/systemd/fix-overlay-order.service.in ${PROJECT_BINARY_DIR}/systemd/fix-overlay-order.service @ONLY)
 
 # SOURCE FILE COLLECTIONS
 SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
@@ -116,9 +115,7 @@ install(TARGETS ${BINARY_NAME} DESTINATION ${C15_INSTALL_PATH}/${BINARY_NAME})
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_SOURCE_DIR}/systemd/persistent.mount DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
-install(FILES ${PROJECT_BINARY_DIR}/systemd/fix-overlay-order.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SYSTEMD_SERVICES_INSTALL_DIR}/${BINARY_NAME}.service ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${BINARY_NAME}.service)")
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SYSTEMD_SERVICES_INSTALL_DIR}/persistent.mount ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/persistent.mount)")
-install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SYSTEMD_SERVICES_INSTALL_DIR}/fix-overlay-order.service ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/fix-overlay-order.service)")

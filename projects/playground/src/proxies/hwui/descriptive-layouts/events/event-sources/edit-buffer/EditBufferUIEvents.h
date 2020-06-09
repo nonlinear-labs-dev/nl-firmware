@@ -153,7 +153,7 @@ namespace DescriptiveLayouts
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(auto splitPoint = eb->getSplitPoint())
       {
-        setValue({ splitPoint->getDisplayValue(vg), 0 });
+        setValue({ splitPoint->getDisplayString(vg), 0 });
       }
       else
       {

@@ -292,6 +292,11 @@ Glib::ustring Parameter::getDisplayString() const
   return m_value.getDisplayString();
 }
 
+Glib::ustring Parameter::getDisplayString(tControlPositionValue cp) const
+{
+  return m_value.getDisplayString(cp);
+}
+
 tControlPositionValue Parameter::getControlPositionValue() const
 {
   return m_value.getQuantizedClipped();

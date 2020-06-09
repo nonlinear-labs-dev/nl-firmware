@@ -12,7 +12,5 @@ class FluctColumn extends ParameterColumn {
 		super(parent);
 		addChild(new ModulateableKnob(this, 57));
 		addChild(new ModulationSourceSlider(this, 59));
-		addChild(new ModulateableKnob(this, 301));
-		addChild(new ModulationSourceSwitch(this, 393));
 	}
 }

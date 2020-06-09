@@ -1,6 +1,6 @@
 [Unit]
 Description=Fix CPU bindings
-After=fix-overlay-order.service
+After=syslog.target persistent.mount
 
 [Service]
 ExecStart=@C15_INSTALL_PATH@/scripts/fixCpuBindings.sh

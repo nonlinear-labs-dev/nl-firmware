@@ -127,8 +127,13 @@ public class SplitSoundLayout extends SoundLayout {
 			double parameterLabelWidth = 6 * xunit;
 			double parameterValueWidth = 10 * xunit;
 
+			double vgLabelMargin = margin;
+			if(xunit < margin) {
+				vgLabelMargin /= 2;
+			}
+
 			if (group == VoiceGroup.I) {
-				m_voiceGroupLabel.doLayout(margin, middleLine - labelHeight / 2, voiceGroupLabelWidth, labelHeight);
+				m_voiceGroupLabel.doLayout(vgLabelMargin, middleLine - labelHeight / 2, voiceGroupLabelWidth, labelHeight);
 				m_presetName.doLayout(margin + 4 * xunit, margin, presetNameWidth, 5 * yunit);
 				m_volumeLabel.doLayout(margin + 4 * xunit, margin + 8 * yunit, parameterLabelWidth, 5 * yunit);
 				m_volumeValue.doLayout(margin + 10 * xunit, margin + 8 * yunit, parameterValueWidth, 5 * yunit);
@@ -141,7 +146,7 @@ public class SplitSoundLayout extends SoundLayout {
 				m_volumeLabel.doLayout(margin + parameterValueWidth, margin + 8 * yunit, parameterLabelWidth,
 						5 * yunit);
 				m_presetName.doLayout(margin, margin, presetNameWidth, 5 * yunit);
-				m_voiceGroupLabel.doLayout(w - margin - voiceGroupLabelWidth, middleLine - labelHeight / 2,
+				m_voiceGroupLabel.doLayout(w - vgLabelMargin - voiceGroupLabelWidth, middleLine - labelHeight / 2,
 						voiceGroupLabelWidth, labelHeight);
 			}
 		}
@@ -171,7 +176,7 @@ public class SplitSoundLayout extends SoundLayout {
 				r.drawRoundedArea(ctx, margin, 1, new Gray(30), new Gray(30));
 			}
 
-			if(isDropTarget) {
+			if (isDropTarget) {
 				getPixRect().getReducedBy(1).drawRoundedArea(ctx, margin, 1, RGBA.transparent(), RGB.red());
 			}
 

@@ -33,7 +33,7 @@ ParameterLayout2::ParameterLayout2()
 {
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
-  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16)));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), false));
   addControl(new UndoIndicator(Rect(1, 32, 10, 8)));
   addControl(new ParameterNotAvailableInSoundInfo(Rect(BIG_SLIDER_X - 2, 9, BIG_SLIDER_WIDTH + 4, 50),
                                                   "Only available with Layer Sounds"));
@@ -338,9 +338,7 @@ ParameterRecallLayout2::ParameterRecallLayout2()
 
     m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
 
-    auto sc = p->getValue().getScaleConverter();
-    auto displayValue = sc->controlPositionToDisplay(originalValue);
-    auto displayString = sc->getDimension().stringize(displayValue);
+    auto displayString = p->getDisplayString(originalValue);
 
     m_rightValue = addControl(new Label(displayString, Rect(131, 35, 58, 11)));
   }
@@ -447,11 +445,10 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
     }
     else
     {
-      auto sc = p->getValue().getScaleConverter();
       auto originalParam = p->getOriginalParameter();
       auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
-      auto displayValue = sc->controlPositionToDisplay(originalValue);
-      auto displayString = sc->getDimension().stringize(displayValue);
+      auto displayString = p->getDisplayString(originalValue);
+
       m_leftValue->setText(displayString);
       m_rightValue->setText(p->getDisplayString());
       m_slider->setValue(m_recallValue, p->isBiPolar());

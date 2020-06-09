@@ -164,11 +164,6 @@ TEST_CASE("Load Part I of Split into Split Part I")
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
     }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
-    }
   }
 }
 
@@ -328,11 +323,6 @@ TEST_CASE("Load Part I of Split into Split Part II")
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
     }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
-    }
   }
 }
 
@@ -484,11 +474,6 @@ TEST_CASE("Load Part I of Layer into Split Part I")
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
     }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
-    }
   }
 }
 
@@ -635,11 +620,6 @@ TEST_CASE("Load Part II of Layer into Split Part II")
       CHECK(EBL::createHashOfVector(EBL::getMaster()) == oldMasterHash);
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == oldMCMHash);
       CHECK(EBL::createHashOfVector(EBL::getScale()) == oldScaleHash);
-    }
-
-    THEN("EB unchanged")
-    {
-      CHECK_FALSE(eb->findAnyParameterChanged());
     }
   }
 }

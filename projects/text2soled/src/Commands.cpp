@@ -153,7 +153,6 @@ public:
     auto resourcePath = parentPath + "/resources/";
     font              = std::make_unique<Font>(resourcePath + "Emphase-8-Regular.ttf", 8);
     FrameBuffer::get().setColor(FrameBuffer::C255);
-    FrameBuffer::get().clear();
   }
 
   virtual int getNumArguments() const override
@@ -163,6 +162,7 @@ public:
 
   virtual void execute(char** argv, int numArgs) override
   {
+    FrameBuffer::get().clear();
     for (int i = 0; i < numArgs; i++)
       draw(parsePart(argv[i]));
   }
@@ -313,9 +313,6 @@ void Commands::execute(int numArgs, char** argv)
       }
       else
       {
-        ClearCommand clear;
-        clear.execute(nullptr, 0);
-
         TextCommand text;
         if (numArgs >= text.getNumArguments())
           text.execute(argv, numArgs);
