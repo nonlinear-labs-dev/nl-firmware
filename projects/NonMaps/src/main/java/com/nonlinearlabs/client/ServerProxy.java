@@ -70,11 +70,13 @@ public class ServerProxy {
 
 			@Override
 			public void onServerConnectionOpened() {
-				if (nonmapsVersion == null) {
 					downloadFile("nonmaps-version.txt", new DownloadHandler() {
 
 						@Override
 						public void onFileDownloaded(String text) {
+							if(nonmapsVersion != null || nonmapsVersion.isEmpty()) {
+								GWT.log("overwriting nonmaps version " + nonmapsVersion + " with " + text);
+							}
 							nonmapsVersion = text;
 						}
 
@@ -82,7 +84,6 @@ public class ServerProxy {
 						public void onError() {
 						}
                     });
-            	}	
 			}
 		});
 	}
