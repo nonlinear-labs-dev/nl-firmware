@@ -1,0 +1,18 @@
+#include <device-info/BuildVersion.h>
+#include <xml/Writer.h>
+
+BuildVersion::BuildVersion(DeviceInformation* parent)
+    : DeviceInformationItem(parent)
+    , m_c15VersionString { "@C15_VERSION@" }
+{
+}
+
+void BuildVersion::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  writer.writeTextElement("build-version", get());
+}
+
+Glib::ustring BuildVersion::get() const
+{
+  return m_c15VersionString;
+}

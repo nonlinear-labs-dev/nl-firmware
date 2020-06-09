@@ -5,6 +5,7 @@
 #include <xml/Writer.h>
 #include "device-settings/DebugLevel.h"
 #include "RTSoftwareVersion.h"
+#include "BuildVersion.h"
 #include "OSVersion.h"
 #include "DateTimeInfo.h"
 #include <Application.h>
@@ -20,6 +21,7 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
   m_items.emplace_back(new RTSoftwareVersion(this));
   m_items.emplace_back(new OSVersion(this));
   m_items.emplace_back(new DateTimeInfo(this));
+  m_items.emplace_back(new BuildVersion(this));
 
   m_actions.addAction("refresh-rt-software-version", [](std::shared_ptr<NetworkRequest> request) {
     Application::get().getLPCProxy()->requestLPCSoftwareVersion();

@@ -12,7 +12,7 @@ SoftwareVersion::SoftwareVersion(DeviceInformation *parent)
 
 void SoftwareVersion::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-  writer.writeTextElement("software-version", m_versionString);
+  writer.writeTextElement("software-version", get());
 }
 
 Glib::ustring SoftwareVersion::get() const

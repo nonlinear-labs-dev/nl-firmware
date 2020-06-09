@@ -26,7 +26,6 @@ import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupUpdater;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
@@ -44,8 +43,9 @@ public class ServerProxy {
 
 	private NonMaps nonMaps = null;
 	private WebSocketConnection webSocket;
-	private String nonmapsVersion = null;
+	private String nonmapsVersion = new String();
 	private String playgroundVersion = null;
+	private String buildVersion = null;
 
 	public Notifier<Integer> documentFromPlayground = new Notifier<Integer>() {
 
@@ -81,8 +81,8 @@ public class ServerProxy {
 						@Override
 						public void onError() {
 						}
-					});
-				}
+                    });
+            	}	
 			}
 		});
 	}
@@ -109,6 +109,7 @@ public class ServerProxy {
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
 			setPlaygroundSoftwareVersion(deviceInfo);
+			setBuildVersion(deviceInfo);
 			checkSoftwareVersionCompatibility();
 
 			SetupUpdater setupUpdater = new SetupUpdater(settingsNode);
@@ -128,11 +129,11 @@ public class ServerProxy {
 	}
 
 	private void checkSoftwareVersionCompatibility() {
-		if (playgroundVersion != null && !playgroundVersion.isEmpty() && nonmapsVersion != null
+		if (playgroundVersion != null && !buildVersion.isEmpty() && nonmapsVersion != null
 				&& !nonmapsVersion.isEmpty()) {
-			if (!playgroundVersion.equals(nonmapsVersion)) {
+			if (!buildVersion.equals(nonmapsVersion)) {
 				boolean reload = Window.confirm("WebUI has to be reloaded. The C15 software version is "
-						+ this.playgroundVersion + " while the WebUI version is " + nonmapsVersion + ".");
+						+ this.buildVersion + " while the WebUI version is " + nonmapsVersion + ".");
 
 				if (reload) {
 					nonmapsVersion = null;
@@ -142,8 +143,15 @@ public class ServerProxy {
 		}
 	}
 
+	private void setBuildVersion(Node deviceInfo) {
+		String buildVersion = getChildText(deviceInfo, "build-version");
+		if (buildVersion != null && !buildVersion.isEmpty()) {
+			this.buildVersion = buildVersion;
+		}
+	}
+
 	private void setPlaygroundSoftwareVersion(Node deviceInfo) {
-		String playgroundVersion = getChildText(deviceInfo, "software-version");
+		String playgroundVersion = getChildText(deviceInfo, "playground-version");
 		if (playgroundVersion != null && !playgroundVersion.isEmpty()) {
 			this.playgroundVersion = playgroundVersion;
 		}
