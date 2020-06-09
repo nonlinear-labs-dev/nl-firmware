@@ -43,7 +43,7 @@ public class ServerProxy {
 
 	private NonMaps nonMaps = null;
 	private WebSocketConnection webSocket;
-	private String nonmapsVersion = new String();
+	private String nonmapsVersion = null;
 	private String playgroundVersion = null;
 	private String buildVersion = null;
 
