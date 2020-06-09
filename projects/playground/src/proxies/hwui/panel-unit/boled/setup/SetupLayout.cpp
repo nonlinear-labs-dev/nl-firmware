@@ -67,6 +67,7 @@
 #include <memory>
 #include <device-settings/TuneReference.h>
 #include <device-settings/TransitionTime.h>
+#include <tools/StringTools.h>
 #include "UISoftwareVersionEditor.h"
 
 namespace NavTree
@@ -500,6 +501,50 @@ namespace NavTree
     }
   };
 
+  struct RibbonCalibration : Leaf
+  {
+    static std::pair<Glib::ustring, Glib::ustring> getRibbonCalibrationName()
+    {
+      std::experimental::filesystem::path path = "/persistent/calibration/calibration.ini";
+      static auto fileContent = nltools::getFileContent(path);
+
+      if(fileContent.empty())
+      {
+        return { "None", "None" };
+      }
+
+      auto rDelim = fileContent.find('\r');
+      auto nDelim = fileContent.find('\n');
+      auto delim = rDelim < nDelim ? '\r' : '\n';
+      auto lines = StringTools::splitStringOnAnyDelimiter(fileContent, delim);
+      auto getValue = [](const std::string &s) { return StringTools::splitStringOnAnyDelimiter(s, '='); };
+      return { getValue(lines[0])[1], getValue(lines[1])[1] };
+    }
+
+    struct RibbonCalibrationLabel : public SetupLabel
+    {
+      RibbonCalibrationLabel(bool first)
+          : SetupLabel("foo", Rect(0, 0, 0, 0))
+      {
+        setText({ first ? getRibbonCalibrationName().first : getRibbonCalibrationName().second, 0 });
+      }
+    };
+
+    RibbonCalibration(InnerNode *parent, bool upper)
+        : Leaf(parent, upper ? "Upper Ribbon Calibration" : "Lower Ribbon Calibration")
+        , m_upper { upper }
+    {
+    }
+
+    Control *createView() override
+    {
+      return new RibbonCalibrationLabel(m_upper);
+    }
+
+   private:
+    bool m_upper;
+  };
+
   struct SystemInfo : InnerNode
   {
     SystemInfo(InnerNode *parent)
@@ -513,6 +558,8 @@ namespace NavTree
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
+      children.emplace_back(new RibbonCalibration(this, true));
+      children.emplace_back(new RibbonCalibration(this, false));
     }
   };
 

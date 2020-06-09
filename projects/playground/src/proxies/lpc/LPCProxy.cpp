@@ -22,6 +22,7 @@
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <device-settings/Settings.h>
+#include <experimental/filesystem>
 
 LPCProxy::LPCProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -151,6 +152,23 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
 void LPCProxy::onLPCConnected()
 {
   requestLPCSoftwareVersion();
+  sendCalibrationData();
+}
+
+void LPCProxy::sendCalibrationData()
+{
+  static const char *calibrationPath = "/persistent/calibration/calibration.bin";
+  if(std::experimental::filesystem::exists(calibrationPath))
+  {
+    auto message = nltools::readBinaryFile(calibrationPath);
+    nltools::msg::LPCMessage msg;
+    msg.message = Glib::Bytes::create(&message[0], message.size());
+    nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
+  }
+  else
+  {
+    nltools::Log::error("Could not send calibration data as the file", calibrationPath, "is nonexistent!");
+  }
 }
 
 Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) const

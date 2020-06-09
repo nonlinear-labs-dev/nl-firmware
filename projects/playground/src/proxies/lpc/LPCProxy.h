@@ -92,6 +92,7 @@ class LPCProxy
   void onNotificationMessageReceived(const MessageParser::NLMessage &msg);
   void onLPCConnected();
   void onHeartbeatReceived(const MessageParser::NLMessage &msg);
+  void sendCalibrationData();
 
   Parameter *findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) const;
 

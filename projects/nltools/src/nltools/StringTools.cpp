@@ -1,6 +1,9 @@
 #include <nltools/StringTools.h>
 #include <libsoup/soup.h>
 #include <algorithm>
+#include <fstream>
+#include <nltools/logging/Log.h>
+#include <vector>
 
 namespace nltools
 {
@@ -16,5 +19,40 @@ namespace nltools
   bool startsWith(const std::string &string, const std::string &test)
   {
     return g_str_has_prefix(string.c_str(), test.c_str());
+  }
+
+  std::string getFileContent(const std::string &path)
+  {
+    std::ifstream stream(path);
+    std::stringstream ss;
+    std::string line;
+
+    if(stream.is_open())
+    {
+      while(std::getline(stream, line))
+      {
+        ss << line;
+      }
+    }
+    else
+    {
+      nltools::Log::error("could not open", path, "for reading");
+    }
+
+    return ss.str();
+  }
+
+  std::vector<unsigned char> readBinaryFile(const std::string &path)
+  {
+    std::ifstream input(path, std::ios::binary);
+    if(input.is_open())
+    {
+      std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
+      return buffer;
+    }
+    else
+    {
+      return {};
+    }
   }
 }
