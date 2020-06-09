@@ -37,6 +37,8 @@ main() {
     if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]; then
         unpack_update && check_preconditions && run_update
     fi
+
+    return 0
 }
 
 main
