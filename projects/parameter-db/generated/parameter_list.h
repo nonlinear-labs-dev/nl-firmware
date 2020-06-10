@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-06-10, 11:36
-    @version	1.7B-6
+    @date       2020-06-10, 14:02
+    @version    1.7B-6
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
     @todo
@@ -274,7 +274,7 @@ namespace C15
       { 105, 10500, None, None, "", "Oscillator A", "Oscillator A", "Pitch - Key Trk", "Key Trk",
         "Key tracking of the oscillator pitch. It's the scaling factor between the key position of a received MIDI "
         "note (relative to C3 = 60 semitones) and the pitch of the oscillator.\nAt 100.0 %, the pitch follows the "
-        "equal-tempered scale (when the Scale group is equal--tempered as well). At values slightly larger than 100.0 "
+        "equal-tempered scale (when the Scale group is equal-tempered as well). At values slightly larger than 100.0 "
         "%, the tuning will be stretched.\nAt 50.0 %, a quartertone scale emerges and at 0.0 %, the pitch is constant "
         "for all keys." } },
     { Parameters::Local_Unmodulateables::Osc_A_Pitch_Env_C,
@@ -378,7 +378,7 @@ namespace C15
         1.0f, 0.0f, false },
       { 100, 1000, None, None, "", "Shaper A", "Shaper A", "Fold", "Fold",
         "Amount of folding back of the shaper curve for high input amplitudes.\n0.0 %: flat saturation, no "
-        "folding\n100 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
+        "folding\n100.0 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
         "more nasal sound." } },
     { Parameters::Local_Unmodulateables::Shp_A_Asym,
       PID::Shp_A_Asym,
@@ -435,7 +435,7 @@ namespace C15
       { 105, 10500, None, None, "", "Oscillator B", "Oscillator B", "Pitch - Key Trk", "Key Trk",
         "Key tracking of the oscillator pitch. It's the scaling factor between the key position of a received MIDI "
         "note (relative to C3 = 60 semitones) and the pitch of the oscillator.\nAt 100.0 %, the pitch follows the "
-        "equal-tempered scale (when the Scale group is equal--tempered as well). At values slightly larger than 100.0 "
+        "equal-tempered scale (when the Scale group is equal-tempered as well). At values slightly larger than 100.0 "
         "%, the tuning will be stretched.\nAt 50.0 %, a quartertone scale emerges and at 0.0 %, the pitch is constant "
         "for all keys." } },
     { Parameters::Local_Unmodulateables::Osc_B_Pitch_Env_C,
@@ -539,7 +539,7 @@ namespace C15
         1.0f, 0.0f, false },
       { 100, 1000, None, None, "", "Shaper B", "Shaper B", "Fold", "Fold",
         "Amount of folding back of the shaper curve for high input amplitudes.\n0.0 %: flat saturation, no "
-        "folding\n100 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
+        "folding\n100.0 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
         "more nasal sound." } },
     { Parameters::Local_Unmodulateables::Shp_B_Asym,
       PID::Shp_B_Asym,
@@ -833,7 +833,7 @@ namespace C15
         1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "Reverb Mix", "Rev Mix",
         "Controls the amount of reverb in the feedback independantly from the Mix in the Reverb section.\n0.0 %: dry, "
-        "no reverb signal\n50.0 %: mix of 50 % dry and 50 % wet signal\n100.0 %: wet, 100 % reverb signal" } },
+        "no reverb signal\n50.0 %: mix of 50 % dry and 50 % wet signal\n100.0 %: wet, 100.0 % reverb signal" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Drive,
       PID::FB_Mix_Drive,
@@ -1041,8 +1041,8 @@ namespace C15
       { Smoothers::Mono_Slow::Gap_Flt_Gap, None, Properties::SmootherScale::Linear, 48.0f, 0.0f, false },
       { 96, 960, 96, 960, "", "Gap Filter", "Gap Filter", "Gap", "Gap",
         "Offset between the cutoffs of the lowpass and the highpass [in semitones]. When the filters are running in "
-        "parallel (Mix > 0), the Gap determines the width of the attenuated band, in serial mode (Mix < 0), the Gap "
-        "determines the width of the passed band." } },
+        "parallel (Mix > 0.0), the Gap determines the width of the attenuated band, in serial mode (Mix < 0.0), the "
+        "Gap determines the width of the passed band." } },
     { None },
     { Parameters::Local_Unmodulateables::Gap_Flt_Res,
       PID::Gap_Flt_Res,
@@ -1272,7 +1272,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Unison_Pan, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, None, None, "", "Unison", "Unison", "Pan", "Pan",
-        "Voice panning insied of a group of unison voices. At 100.0 %, the voices are spread over the full stereo "
+        "Voice panning inside of a group of unison voices. At 100.0 %, the voices are spread over the full stereo "
         "base." } },
     { Parameters::Hardware_Sources::Pedal_1,
       PID::Pedal_1,
@@ -1289,7 +1289,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 1 to ", "Ped 1 to ",
         "Determines the influence of Pedal 1 on Macro Control A. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_1_to_MC_B,
       PID::Pedal_1_to_MC_B,
       0.0f,
@@ -1297,7 +1297,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 1 to ", "Ped 1 to ",
         "Determines the influence of Pedal 1 on Macro Control B. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_1_to_MC_C,
       PID::Pedal_1_to_MC_C,
       0.0f,
@@ -1305,7 +1305,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 1 to ", "Ped 1 to ",
         "Determines the influence of Pedal 1 on Macro Control C. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_1_to_MC_D,
       PID::Pedal_1_to_MC_D,
       0.0f,
@@ -1313,7 +1313,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 1 to ", "Ped 1 to ",
         "Determines the influence of Pedal 1 on Macro Control D. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Sources::Pedal_2,
       PID::Pedal_2,
       0.0f,
@@ -1329,7 +1329,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 2 to ", "Ped 2 to ",
         "Determines the influence of Pedal 2 on Macro Control A. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_2_to_MC_B,
       PID::Pedal_2_to_MC_B,
       0.0f,
@@ -1337,7 +1337,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 2 to ", "Ped 2 to ",
         "Determines the influence of Pedal 2 on Macro Control B. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_2_to_MC_C,
       PID::Pedal_2_to_MC_C,
       0.0f,
@@ -1345,7 +1345,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 2 to ", "Ped 2 to ",
         "Determines the influence of Pedal 2 on Macro Control C. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_2_to_MC_D,
       PID::Pedal_2_to_MC_D,
       0.0f,
@@ -1353,7 +1353,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 2 to ", "Ped 2 to ",
         "Determines the influence of Pedal 2 on Macro Control D. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Sources::Pedal_3,
       PID::Pedal_3,
       0.0f,
@@ -1369,7 +1369,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 3 to ", "Ped 3 to ",
         "Determines the influence of Pedal 3 on Macro Control A. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_3_to_MC_B,
       PID::Pedal_3_to_MC_B,
       0.0f,
@@ -1377,7 +1377,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 3 to ", "Ped 3 to ",
         "Determines the influence of Pedal 3 on Macro Control B. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_3_to_MC_C,
       PID::Pedal_3_to_MC_C,
       0.0f,
@@ -1385,7 +1385,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 3 to ", "Ped 3 to ",
         "Determines the influence of Pedal 3 on Macro Control C. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_3_to_MC_D,
       PID::Pedal_3_to_MC_D,
       0.0f,
@@ -1393,7 +1393,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 3 to ", "Ped 3 to ",
         "Determines the influence of Pedal 3 on Macro Control D. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Sources::Pedal_4,
       PID::Pedal_4,
       0.0f,
@@ -1409,7 +1409,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 4 to ", "Ped 4 to ",
         "Determines the influence of Pedal 4 on Macro Control A. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_4_to_MC_B,
       PID::Pedal_4_to_MC_B,
       0.0f,
@@ -1417,7 +1417,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 4 to ", "Ped 4 to ",
         "Determines the influence of Pedal 4 on Macro Control B. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_4_to_MC_C,
       PID::Pedal_4_to_MC_C,
       0.0f,
@@ -1425,7 +1425,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 4 to ", "Ped 4 to ",
         "Determines the influence of Pedal 4 on Macro Control C. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_4_to_MC_D,
       PID::Pedal_4_to_MC_D,
       0.0f,
@@ -1433,7 +1433,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 4 to ", "Ped 4 to ",
         "Determines the influence of Pedal 4 on Macro Control D. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Sources::Bender,
       PID::Bender,
       0.0f,
@@ -1447,32 +1447,32 @@ namespace C15
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Bender to ", "Bend to ",
         "Determines the influence of the Bender on Macro Control A. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %). The bipolar "
-        "range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %). The "
+        "bipolar range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
     { Parameters::Hardware_Amounts::Bender_to_MC_B,
       PID::Bender_to_MC_B,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Bender to ", "Bend to ",
         "Determines the influence of the Bender on Macro Control B. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %). The bipolar "
-        "range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %). The "
+        "bipolar range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
     { Parameters::Hardware_Amounts::Bender_to_MC_C,
       PID::Bender_to_MC_C,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Bender to ", "Bend to ",
         "Determines the influence of the Bender on Macro Control C. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %). The bipolar "
-        "range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %). The "
+        "bipolar range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
     { Parameters::Hardware_Amounts::Bender_to_MC_D,
       PID::Bender_to_MC_D,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Bender to ", "Bend to ",
         "Determines the influence of the Bender on Macro Control D. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %). The bipolar "
-        "range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %). The "
+        "bipolar range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
     { Parameters::Hardware_Sources::Aftertouch,
       PID::Aftertouch,
       0.0f,
@@ -1486,28 +1486,28 @@ namespace C15
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Aftertouch to ", "AT to ",
         "Determines the influence of the Aftertouch on Macro Control A. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Aftertouch_to_MC_B,
       PID::Aftertouch_to_MC_B,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Aftertouch to ", "AT to ",
         "Determines the influence of the Aftertouch on Macro Control B. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Aftertouch_to_MC_C,
       PID::Aftertouch_to_MC_C,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Aftertouch to ", "AT to ",
         "Determines the influence of the Aftertouch on Macro Control C. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Aftertouch_to_MC_D,
       PID::Aftertouch_to_MC_D,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Aftertouch to ", "AT to ",
         "Determines the influence of the Aftertouch on Macro Control D. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Sources::Ribbon_1,
       PID::Ribbon_1,
       0.0f,
@@ -1523,7 +1523,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 1 to ", "Rib 1 to ",
         "Determines the influence of Ribbon 1 on Macro Control A. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_1_to_MC_B,
       PID::Ribbon_1_to_MC_B,
       0.0f,
@@ -1531,7 +1531,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 1 to ", "Rib 1 to ",
         "Determines the influence of Ribbon 1 on Macro Control B. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_1_to_MC_C,
       PID::Ribbon_1_to_MC_C,
       0.0f,
@@ -1539,7 +1539,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 1 to ", "Rib 1 to ",
         "Determines the influence of Ribbon 1 on Macro Control C. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_1_to_MC_D,
       PID::Ribbon_1_to_MC_D,
       0.0f,
@@ -1547,7 +1547,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 1 to ", "Rib 1 to ",
         "Determines the influence of Ribbon 1 on Macro Control D. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Sources::Ribbon_2,
       PID::Ribbon_2,
       0.0f,
@@ -1563,7 +1563,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 2 to ", "Rib 2 to ",
         "Determines the influence of Ribbon 2 on Macro Control A. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_2_to_MC_B,
       PID::Ribbon_2_to_MC_B,
       0.0f,
@@ -1571,7 +1571,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 2 to ", "Rib 2 to ",
         "Determines the influence of Ribbon 2 on Macro Control B. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_2_to_MC_C,
       PID::Ribbon_2_to_MC_C,
       0.0f,
@@ -1579,7 +1579,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 2 to ", "Rib 2 to ",
         "Determines the influence of Ribbon 2 on Macro Control C. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_2_to_MC_D,
       PID::Ribbon_2_to_MC_D,
       0.0f,
@@ -1587,7 +1587,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 2 to ", "Rib 2 to ",
         "Determines the influence of Ribbon 2 on Macro Control D. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Local_Unmodulateables::Env_A_Att_Curve,
       PID::Env_A_Att_Curve,
       0.0f,
@@ -1832,7 +1832,7 @@ namespace C15
       { Smoothers::Poly_Fast::Env_A_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
       { 100, 1000, None, None, "", "Envelope A", "Envelope A", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
-        "slider’s edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
+        "control's edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
     { None },
     { Parameters::Local_Unmodulateables::Env_B_Dec_1_Vel,
@@ -1857,7 +1857,7 @@ namespace C15
       { Smoothers::Poly_Fast::Env_B_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
       { 100, 1000, None, None, "", "Envelope B", "Envelope B", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
-        "slider’s edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
+        "control's edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
     { None },
     { Parameters::Local_Unmodulateables::Env_C_Retr_H,
@@ -1866,7 +1866,7 @@ namespace C15
       { Smoothers::Poly_Sync::Env_C_Retr_H, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, None, None, "", "Envelope C", "Envelope C", "Retrig Hardness", "Retrig",
         "Determines how much the Envelope signal is forced to start at zero instead of the current level (usually from "
-        "the Release phase). At 100 % the Envelope always starts at zero, independant from the previous signal "
+        "the Release phase). At 100.0 % the Envelope always starts at zero, independant from the previous signal "
         "level." } },
     { None },
     { Parameters::Local_Modulateables::Echo_Send,
@@ -1893,7 +1893,7 @@ namespace C15
       { Smoothers::Poly_Fast::FB_Mix_Osc, Signals::Quasipoly_Signals::FB_Mix_Osc, Properties::SmootherScale::Linear,
         1.0f, 0.0f, true },
       { 100, 1000, 100, 1000, "0", "Feedback Mixer", "FB Mixer", "A/B @VG", "A/B @VG",
-        "Level of the signal from branch A or B of the other Part. (Only available when using a Dual mode.)" } },
+        "Level of the signal from branch A or B of the other Part. (Only available when using Layer mode.)" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Osc_Src,
       PID::FB_Mix_Osc_Src,
@@ -1901,7 +1901,7 @@ namespace C15
       { Smoothers::Poly_Fast::FB_Mix_Osc_Src, Signals::Quasipoly_Signals::FB_Mix_Osc_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "A - B", "A - B",
-        "Crossfades between branch A and B of the other Part. (Only available when using a Dual mode.)" } },
+        "Crossfades between branch A and B of the other Part. (Only available when using Layer mode.)" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Comb_Src,
       PID::FB_Mix_Comb_Src,
@@ -1909,7 +1909,7 @@ namespace C15
       { Smoothers::Poly_Fast::FB_Mix_Comb_Src, Signals::Quasipoly_Signals::FB_Mix_Comb_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "Comb - From @VG", "From @VG",
-        "Crossfades to the Comb Filter signal of the other Part. (Only available when using a Dual mode.)" } },
+        "Crossfades to the Comb Filter signal of the other Part. (Only available when using Layer mode.)" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_SVF_Src,
       PID::FB_Mix_SVF_Src,
@@ -1917,8 +1917,7 @@ namespace C15
       { Smoothers::Poly_Fast::FB_Mix_SVF_Src, Signals::Quasipoly_Signals::FB_Mix_SVF_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "SV Filter - From @VG", "From @VG",
-        "Crossfades to the State Variable Filter signal of the other Part. (Only available when using a Dual "
-        "mode.)" } },
+        "Crossfades to the State Variable Filter signal of the other Part. (Only available when using Layer mode.)" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_FX_Src,
       PID::FB_Mix_FX_Src,
@@ -1926,7 +1925,7 @@ namespace C15
       { Smoothers::Poly_Fast::FB_Mix_FX_Src, Signals::Quasipoly_Signals::FB_Mix_FX_Src,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "Effects - From @VG", "From @VG",
-        "Crossfades to the Effects signal of the other Part. (Only available when using a Dual mode.)" } },
+        "Crossfades to the Effects signal of the other Part. (Only available when using Layer mode.)" } },
     { None },
     { Parameters::Global_Modulateables::Split_Split_Point,
       PID::Split_Split_Point,
@@ -1957,8 +1956,8 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_To_FX, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "0", "Output Mixer", "Output Mixer", "To FX @VG", "To FX @VG",
-        "Determines how much of the Output Mixer signal is sent to the Effects section of the other Part. At 100 % the "
-        "signal will be sent to the other Part exclusively. (Only available when using a Dual mode.)" } },
+        "Determines how much of the Output Mixer signal is sent to the Effects section of the other Part. At 100.0 % "
+        "the signal will be sent to the other Part exclusively. (Only available when using a Dual mode.)" } },
     { None },
     { Parameters::Local_Unmodulateables::Mono_Grp_Enable,
       PID::Mono_Grp_Enable,
@@ -2019,7 +2018,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 1 to ", "Ped 1 to ",
         "Determines the influence of Pedal 1 on Macro Control E. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_1_to_MC_F,
       PID::Pedal_1_to_MC_F,
       0.0f,
@@ -2027,7 +2026,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 1 to ", "Ped 1 to ",
         "Determines the influence of Pedal 1 on Macro Control F. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_2_to_MC_E,
       PID::Pedal_2_to_MC_E,
       0.0f,
@@ -2035,7 +2034,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 2 to ", "Ped 2 to ",
         "Determines the influence of Pedal 2 on Macro Control E. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_2_to_MC_F,
       PID::Pedal_2_to_MC_F,
       0.0f,
@@ -2043,7 +2042,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 2 to ", "Ped 2 to ",
         "Determines the influence of Pedal 2 on Macro Control F. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_3_to_MC_E,
       PID::Pedal_3_to_MC_E,
       0.0f,
@@ -2051,7 +2050,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 3 to ", "Ped 3 to ",
         "Determines the influence of Pedal 3 on Macro Control E. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_3_to_MC_F,
       PID::Pedal_3_to_MC_F,
       0.0f,
@@ -2059,7 +2058,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 3 to ", "Ped 3 to ",
         "Determines the influence of Pedal 3 on Macro Control F. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_4_to_MC_E,
       PID::Pedal_4_to_MC_E,
       0.0f,
@@ -2067,7 +2066,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 4 to ", "Ped 4 to ",
         "Determines the influence of Pedal 4 on Macro Control E. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Pedal_4_to_MC_F,
       PID::Pedal_4_to_MC_F,
       0.0f,
@@ -2075,37 +2074,37 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Pedal 4 to ", "Ped 4 to ",
         "Determines the influence of Pedal 4 on Macro Control F. If the pedal is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Bender_to_MC_E,
       PID::Bender_to_MC_E,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Bender to ", "Bend to ",
         "Determines the influence of the Bender on Macro Control E. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %). The bipolar "
-        "range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %). The "
+        "bipolar range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
     { Parameters::Hardware_Amounts::Bender_to_MC_F,
       PID::Bender_to_MC_F,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Bender to ", "Bend to ",
         "Determines the influence of the Bender on Macro Control F. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %). The bipolar "
-        "range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %). The "
+        "bipolar range of the Bender is mapped to the unipolar range of the Macro Control by an amount of 50 %." } },
     { Parameters::Hardware_Amounts::Aftertouch_to_MC_E,
       PID::Aftertouch_to_MC_E,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Aftertouch to ", "AT to ",
         "Determines the influence of the Aftertouch on Macro Control E. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Aftertouch_to_MC_F,
       PID::Aftertouch_to_MC_F,
       0.0f,
       {},
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Aftertouch to ", "AT to ",
         "Determines the influence of the Aftertouch on Macro Control F. The amount can be adjusted continuously [in "
-        "percent] and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_1_to_MC_E,
       PID::Ribbon_1_to_MC_E,
       0.0f,
@@ -2113,7 +2112,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 1 to ", "Rib 1 to ",
         "Determines the influence of Ribbon 1 on Macro Control E. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_1_to_MC_F,
       PID::Ribbon_1_to_MC_F,
       0.0f,
@@ -2121,7 +2120,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 1 to ", "Rib 1 to ",
         "Determines the influence of Ribbon 1 on Macro Control F. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_2_to_MC_E,
       PID::Ribbon_2_to_MC_E,
       0.0f,
@@ -2129,7 +2128,7 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 2 to ", "Rib 2 to ",
         "Determines the influence of Ribbon 2 on Macro Control E. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Hardware_Amounts::Ribbon_2_to_MC_F,
       PID::Ribbon_2_to_MC_F,
       0.0f,
@@ -2137,14 +2136,14 @@ namespace C15
       { 100, 1000, None, None, "", "Hardware Amount", "HW Amount", "Ribbon 2 to ", "Rib 2 to ",
         "Determines the influence of Ribbon 2 on Macro Control F. If the ribbon is set to a returning mode, the amount "
         "can be adjusted continuously, otherwise it will be switch-like. Continuous amounts can be set [in percent] "
-        "and can cover the whole range of the Macro Control in both directions (-100 ... 100 %)." } },
+        "and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %)." } },
     { Parameters::Local_Modulateables::Flanger_Tremolo,
       PID::Flanger_Tremolo,
       0.0f,
       { Smoothers::Mono_Fast::Flanger_Tremolo, Signals::Mono_Signals::Flanger_Tremolo,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "0", "Flanger", "Flanger", "Tremolo", "Tremolo",
-        "Determines the amount of amplitude modulation by the Flanger’s stereo LFO. It is applied after the Mix stage "
+        "Determines the amount of amplitude modulation by the Flanger's stereo LFO. It is applied after the Mix stage "
         "of the Flanger. The Rate and Phase parameters control the frequency and stereo spreading of this effect." } },
     { None },
     { Parameters::Global_Unmodulateables::Scale_Offset_0,
@@ -2197,7 +2196,7 @@ namespace C15
         "level of a Part is faded out. For Part I the fade-out applies to keys above the breakpoint set by \"Fade "
         "From\". For Part II the fade-out applies to keys below the breakpoint set by \"Fade From\".\nWith a Fade "
         "Range of zero the Part is muted for all keys beyond the breakpoint, which is the default behavior. You can "
-        "set this parameter in fractions of semitones to make subtle changes to the curve of the fade-out.." } },
+        "set this parameter in fractions of semitones to make subtle changes to the curve of the fade-out." } },
     { None },
     { None }
   };
