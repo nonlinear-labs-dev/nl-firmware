@@ -65,15 +65,16 @@ class LPCProxy
   void sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset);
 
   sigc::connection onRibbonTouched(sigc::slot<void, int> s);
-  sigc::connection onLPCSoftwareVersionChanged(sigc::slot<void, int> s);
+  sigc::connection onLPCSoftwareVersionChanged(const sigc::slot<void, int> &s);
   int getLastTouchedRibbonParameterID() const;
+  int getLPCSoftwareVersion() const;
 
  private:
   void onLPCMessage(const nltools::msg::LPCMessage &msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);
 
   typedef std::shared_ptr<MessageComposer> tMessageComposerPtr;
-  void queueToLPC(const tMessageComposerPtr& cmp);
+  void queueToLPC(const tMessageComposerPtr &cmp);
 
   gint16 separateSignedBitToComplementary(uint16_t v) const;
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
@@ -96,6 +97,7 @@ class LPCProxy
 
   int m_lastTouchedRibbon;
   Signal<void, int> m_signalRibbonTouched;
+  Signal<void, int> m_signalLPCSoftwareVersionChanged;
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
@@ -109,4 +111,5 @@ class LPCProxy
   uint64_t m_lastReceivedHeartbeat = -1;
 
   void onHeartbeatStumbled();
+  void requestLPCSoftwareVersion();
 };

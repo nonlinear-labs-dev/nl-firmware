@@ -136,6 +136,7 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
     if(m_lpcSoftwareVersion != value)
     {
       m_lpcSoftwareVersion = value;
+      m_signalLPCSoftwareVersionChanged.send(m_lpcSoftwareVersion);
     }
   }
 }
@@ -143,6 +144,7 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
 void LPCProxy::onLPCConnected()
 {
   sendCalibrationData();
+  requestLPCSoftwareVersion();
 }
 
 void LPCProxy::sendCalibrationData()
@@ -380,4 +382,24 @@ void LPCProxy::onHeartbeatStumbled()
   settings->sendSettingsToLPC(SendReason::HeartBeatDropped);
   settings->sendPresetSettingsToLPC();
   sendCalibrationData();
+}
+
+sigc::connection LPCProxy::onLPCSoftwareVersionChanged(const sigc::slot<void, int> &s)
+{
+  return m_signalLPCSoftwareVersionChanged.connectAndInit(s, m_lpcSoftwareVersion);
+}
+
+void LPCProxy::requestLPCSoftwareVersion()
+{
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
+  uint16_t v = MessageParser::SOFTWARE_VERSION;
+  *cmp << v;
+  queueToLPC(cmp);
+
+  DebugLevel::info("sending request", MessageParser::SOFTWARE_VERSION);
+}
+
+int LPCProxy::getLPCSoftwareVersion() const
+{
+  return m_lpcSoftwareVersion;
 }
