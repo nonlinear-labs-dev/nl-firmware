@@ -28,7 +28,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Create filesystem"
     OUTPUT  .filesystem-created
-    COMMAND truncate -s 10G ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
+    COMMAND truncate -s 12G ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
     COMMAND mkfs.ext4 ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
     COMMAND touch .filesystem-created
 )
@@ -75,14 +75,13 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " "
-        "export HOME=/workdir/ccache"
-        "mkdir -p /workdir/ccache"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
+        "mkdir -p /fs/ccache"
+        "export HOME=/fs/ccache"
         "cd /fs/nonlinux"
         "git pull origin nonlinear_2020.04"
         "make nonlinear_defconfig"
-        "chown -R ${USER_ID}.${GROUP_ID} /workdir/ccache"
     COMMAND touch .nonlinux-setup
 )
 
@@ -94,10 +93,10 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " "
-        "export HOME=/workdir/ccache"
-        "mkdir -p /workdir/ccache"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
+        "mkdir -p /fs/ccache"
+        "export HOME=/fs/ccache"
         'rm -rf /fs/nonlinux/output/target/usr/C15'
         'rm -rf /fs/nonlinux/output/target/usr/C15-\*'
         "cd /fs/nonlinux"
@@ -108,7 +107,6 @@ add_custom_command(
         "make espi_driver-clean-for-reconfigure"
         "make espi_driver-rebuild"
         "make"
-        "chown -R ${USER_ID}.${GROUP_ID} /workdir/ccache"
         "cp /fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
         "chown ${USER_ID}.${GROUP_ID} /workdir/rootfs.tar.gz"
     COMMAND echo "The final rootfs is located at ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz"
@@ -122,10 +120,10 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " -ti "
-        "export HOME=/workdir/ccache"
-        "mkdir -p /workdir/ccache"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
+        "mkdir -p /fs/ccache"
+        "export HOME=/fs/ccache"
         "cd /fs/nonlinux"
         "bash"
 )
@@ -138,7 +136,6 @@ add_custom_command(
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         "unused-epc"
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-        "unused-lpc"
         "unused-lpc"
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}

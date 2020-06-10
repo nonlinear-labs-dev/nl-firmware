@@ -20,11 +20,12 @@ class ParameterEditModeRibbonBehaviour : public EnumSetting<ParameterEditModeRib
   virtual bool set(ParameterEditModeRibbonBehaviours m) override;
   void sendRelatedSettingToLPC() const;
 
+  void sendToLPC(SendReason reason) const override;
+
  private:
   ParameterEditModeRibbonBehaviour(const ParameterEditModeRibbonBehaviour &other);
-  ParameterEditModeRibbonBehaviour &operator=(const ParameterEditModeRibbonBehaviour &);
 
-  void sendToLPC() const override;
+  ParameterEditModeRibbonBehaviour &operator=(const ParameterEditModeRibbonBehaviour &);
 
   const std::vector<Glib::ustring> &enumToString() const override;
   const std::vector<Glib::ustring> &enumToDisplayString() const override;

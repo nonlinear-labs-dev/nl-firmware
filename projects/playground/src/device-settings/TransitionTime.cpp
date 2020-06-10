@@ -50,10 +50,8 @@ void TransitionTime::setDefault()
   set(m_time.getDefaultValue());
 }
 
-void TransitionTime::sendToLPC() const
+void TransitionTime::sendToLPC(SendReason reason) const
 {
-  Application::get().getLPCProxy()->sendSetting(TRANSITION_TIME, m_time.getTcdValue());
-
   nltools::msg::Setting::TransitionTimeMessage msg { static_cast<float>(m_time.getRawValue()) };
   Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TransitionTimeMessage>(msg);
 }
@@ -77,7 +75,7 @@ void TransitionTime::incDec(int incs, ButtonModifiers mods)
     incs++;
   }
 
-  sendToLPC();
+  sendToLPC(SendReason::SettingChanged);
   notify();
 }
 

@@ -127,14 +127,16 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
 
 Parameter *ParameterDualGroupSet::findParameterByID(const ParameterId &id) const
 {
-  try
-  {
-    return m_idToParameterMap.at(static_cast<size_t>(id.getVoiceGroup())).at(id.getNumber());
-  }
-  catch(...)
-  {
+  if(static_cast<size_t>(id.getVoiceGroup()) >= m_idToParameterMap.size())
     return nullptr;
-  }
+
+  auto &m = m_idToParameterMap.at(static_cast<size_t>(id.getVoiceGroup()));
+  auto it = m.find(id.getNumber());
+
+  if(it == m.end())
+    return nullptr;
+
+  return it->second;
 }
 
 void ParameterDualGroupSet::forEachParameter(VoiceGroup vg, const std::function<void(Parameter *)> &cb)
@@ -203,7 +205,7 @@ void ParameterDualGroupSet::copyFrom(UNDO::Transaction *transaction, const Prese
 
   setAttribute(transaction, to == VoiceGroup::I ? "origin-I" : "origin-II", preset->getUuid().raw());
   setAttribute(transaction, to == VoiceGroup::I ? "origin-I-vg" : "origin-II-vg", toString(from));
-  
+
   for(auto myGroup : getParameterGroups(to))
   {
     if(auto other = preset->findParameterGroup({ myGroup->getID().getName(), from }))

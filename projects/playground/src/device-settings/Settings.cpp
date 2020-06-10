@@ -26,7 +26,6 @@
 #include <device-settings/KioskModeSetting.h>
 #include <device-settings/BlockingMainThreadIndication.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
-#include <device-settings/BenderRampBypass.h>
 #include <http/NetworkRequest.h>
 #include <http/UpdateDocumentMaster.h>
 #include <Options.h>
@@ -44,6 +43,10 @@
 #include "CrashOnError.h"
 #include "LayoutMode.h"
 #include "TuneReference.h"
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <parameter_declarations.h>
+#include <parameters/RibbonParameter.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -63,10 +66,10 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("TransitionTime", new TransitionTime(*this));
   addSetting("RandomizeAmount", new RandomizeAmount(*this));
   addSetting("RibbonRelFactor", new RibbonRelativeFactor(*this));
-  addSetting("Pedal1Type", new PedalType(*this, PEDAL_1_TYPE));
-  addSetting("Pedal2Type", new PedalType(*this, PEDAL_2_TYPE));
-  addSetting("Pedal3Type", new PedalType(*this, PEDAL_3_TYPE));
-  addSetting("Pedal4Type", new PedalType(*this, PEDAL_4_TYPE));
+  addSetting("Pedal1Type", new PedalType(*this, 1));
+  addSetting("Pedal2Type", new PedalType(*this, 2));
+  addSetting("Pedal3Type", new PedalType(*this, 3));
+  addSetting("Pedal4Type", new PedalType(*this, 4));
   addSetting("EncoderAcceleration", new EncoderAcceleration(*this));
   addSetting("LayoutVersionMode", new LayoutMode(this));
   addSetting("AftertouchCurve", new AftertouchCurve(*this));
@@ -79,7 +82,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SignalFlowIndication", new SignalFlowIndicationSetting(*this));
   addSetting("KioskMode", new KioskModeSetting(*this));
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
-  addSetting("BenderRampBypass", new BenderRampBypass(*this));
   addSetting("WifiSetting", new WifiSetting(*this));
   addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
@@ -164,12 +166,6 @@ void Settings::addSetting(const Glib::ustring &key, Setting *s)
   m_settings[key] = tSettingPtr(s);
 }
 
-void Settings::setSetting(const Glib::ustring &key, const Glib::ustring &value)
-{
-  if(auto s = getSetting(key))
-    s->load(value);
-}
-
 const Settings::tMap &Settings::getSettings() const
 {
   return m_settings;
@@ -182,7 +178,7 @@ Settings::tSettingPtr Settings::getSetting(const Glib::ustring &key)
   if(it != m_settings.end())
     return it->second;
 
-  return NULL;
+  return nullptr;
 }
 
 void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
@@ -205,13 +201,46 @@ void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const 
   m_actions->handleRequest(request);
 }
 
-void Settings::sendToLPC()
-{
-  for(auto &s : m_settings)
-    s.second->sendToLPC();
-}
-
 bool Settings::isLoading() const
 {
   return m_isLoading.isLocked();
+}
+
+void Settings::sendSettingsToLPC(SendReason reason)
+{
+  if(reason == SendReason::HeartBeatDropped)
+  {
+    sendGlobalLPCInitSettings();
+    return;
+  }
+}
+
+void Settings::sendGlobalLPCInitSettings()
+{
+  getSetting<BaseUnitUIMode>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<RibbonRelativeFactor>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<ParameterEditModeRibbonBehaviour>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<VelocityCurve>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<AftertouchCurve>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<BenderCurve>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal1Type")->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal2Type")->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal3Type")->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting("Pedal4Type")->sendToLPC(SendReason::HeartBeatDropped);
+
+  sendRibbonCalibration();
+}
+
+void Settings::sendRibbonCalibration()
+{
+  //TODO send /persistent/calibration
+}
+
+void Settings::sendPresetSettingsToLPC()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto r1 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_1, VoiceGroup::Global }));
+  auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
+  r1->sendModeToLpc();
+  r2->sendModeToLpc();
 }

@@ -32,19 +32,20 @@ class RibbonParameter : public PhysicalControlParameter
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
+  void sendModeToLpc() const;
+
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
-  void onPresetSentToLpc() const override;
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
   bool hasBehavior() const override;
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;
+  void sendToLpc() const override;
 
  private:
   void ensureExclusiveRoutingIfNeeded();
-  void sendModeToLpc() const;
   const ScaleConverter *createScaleConverter() const;
   tControlPositionValue getDefaultValueAccordingToMode() const;
   void setupScalingAndDefaultValue();

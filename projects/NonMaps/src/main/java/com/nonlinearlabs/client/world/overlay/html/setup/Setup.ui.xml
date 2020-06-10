@@ -359,31 +359,13 @@
 
 					<div class="halb-he">
 						<div class="w40p">
-							<p>UI Software Version</p>
+							<p>Software Version</p>
 						</div>
 						<div class="w60p">
 							<g:Label ui:field="uiVersion"></g:Label>
 						</div>
 					</div>
 
-					<div class="halb-he">
-						<div class="w40p">
-							<p>RT Software Version</p>
-						</div>
-						<div class="w60p">
-							<g:Label ui:field="rtVersion"></g:Label>
-						</div>
-					</div>
-
-					<div class="halb-he">
-						<div class="w40p">
-							<p>OS Version</p>
-						</div>
-						<div class="w60p">
-							<g:Label ui:field="osVersion"></g:Label>
-						</div>
-					</div>
-					
 					<div class="halb-he">
 						<div class="w40p">
 							<p>Date/Time</p>

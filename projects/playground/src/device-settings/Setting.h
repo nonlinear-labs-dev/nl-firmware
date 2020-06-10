@@ -3,6 +3,7 @@
 #include <playground.h>
 #include <http/UpdateDocumentContributor.h>
 #include <tools/Signal.h>
+#include "SendReason.h"
 
 class Settings;
 
@@ -22,7 +23,7 @@ class Setting : public UpdateDocumentContributor
   sigc::connection onChange(sigc::slot<void, const Setting *> slot);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
-  virtual void sendToLPC() const;
+  virtual void sendToLPC(SendReason reason = SendReason::SettingChanged) const;
   virtual bool persistent() const;
 
   virtual Glib::ustring getDisplayString() const = 0;

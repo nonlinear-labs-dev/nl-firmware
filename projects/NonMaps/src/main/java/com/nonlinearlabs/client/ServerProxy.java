@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -25,7 +26,6 @@ import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupUpdater;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
@@ -45,6 +45,7 @@ public class ServerProxy {
 	private WebSocketConnection webSocket;
 	private String nonmapsVersion = null;
 	private String playgroundVersion = null;
+	private String buildVersion = null;
 
 	public Notifier<Integer> documentFromPlayground = new Notifier<Integer>() {
 
@@ -69,19 +70,20 @@ public class ServerProxy {
 
 			@Override
 			public void onServerConnectionOpened() {
-				if (nonmapsVersion == null) {
 					downloadFile("nonmaps-version.txt", new DownloadHandler() {
 
 						@Override
 						public void onFileDownloaded(String text) {
+							if(nonmapsVersion != null || nonmapsVersion.isEmpty()) {
+								GWT.log("overwriting nonmaps version " + nonmapsVersion + " with " + text);
+							}
 							nonmapsVersion = text;
 						}
 
 						@Override
 						public void onError() {
 						}
-					});
-				}
+                    });
 			}
 		});
 	}
@@ -108,6 +110,7 @@ public class ServerProxy {
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
 			setPlaygroundSoftwareVersion(deviceInfo);
+			setBuildVersion(deviceInfo);
 			checkSoftwareVersionCompatibility();
 
 			SetupUpdater setupUpdater = new SetupUpdater(settingsNode);
@@ -127,11 +130,11 @@ public class ServerProxy {
 	}
 
 	private void checkSoftwareVersionCompatibility() {
-		if (playgroundVersion != null && !playgroundVersion.isEmpty() && nonmapsVersion != null
+		if (buildVersion != null && !buildVersion.isEmpty() && nonmapsVersion != null
 				&& !nonmapsVersion.isEmpty()) {
-			if (!playgroundVersion.equals(nonmapsVersion)) {
+			if (!buildVersion.equals(nonmapsVersion)) {
 				boolean reload = Window.confirm("WebUI has to be reloaded. The C15 software version is "
-						+ this.playgroundVersion + " while the WebUI version is " + nonmapsVersion + ".");
+						+ this.buildVersion + " while the WebUI version is " + nonmapsVersion + ".");
 
 				if (reload) {
 					nonmapsVersion = null;
@@ -141,8 +144,15 @@ public class ServerProxy {
 		}
 	}
 
+	private void setBuildVersion(Node deviceInfo) {
+		String buildVersion = getChildText(deviceInfo, "build-version");
+		if (buildVersion != null && !buildVersion.isEmpty()) {
+			this.buildVersion = buildVersion;
+		}
+	}
+
 	private void setPlaygroundSoftwareVersion(Node deviceInfo) {
-		String playgroundVersion = getChildText(deviceInfo, "software-version");
+		String playgroundVersion = getChildText(deviceInfo, "playground-version");
 		if (playgroundVersion != null && !playgroundVersion.isEmpty()) {
 			this.playgroundVersion = playgroundVersion;
 		}
@@ -934,16 +944,6 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void setBenderRampBypass(BooleanValues val) {
-		setSetting("bender-ramp-bypass", val.toString());
-	}
-
-	public void requestRTSoftwareVersion() {
-		StaticURI.Path path = new StaticURI.Path("device-info", "refresh-rt-software-version");
-		StaticURI uri = new StaticURI(path);
-		queueJob(uri, false);
-	}
-
 	public void recallCurrentParameterFromPreset() {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-current-from-preset");
 		StaticURI uri = new StaticURI(path);
@@ -979,7 +979,8 @@ public class ServerProxy {
 	}
 
 	public void loadPresetPartIntoPart(VoiceGroup presetPart, VoiceGroup editbufferPart) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-selected-preset-part-into-editbuffer-part");
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor",
+				"load-selected-preset-part-into-editbuffer-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()),
 				new StaticURI.KeyValue("editbuffer-part", editbufferPart.toString()));
 		queueJob(uri, false);
@@ -987,7 +988,9 @@ public class ServerProxy {
 
 	public void loadPresetPartIntoPart(String presetUUID, VoiceGroup presetPart, VoiceGroup loadTo) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-part-into-editbuffer-part");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()), new StaticURI.KeyValue("editbuffer-part", loadTo.toString()), new StaticURI.KeyValue("preset-uuid", presetUUID));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()),
+				new StaticURI.KeyValue("editbuffer-part", loadTo.toString()),
+				new StaticURI.KeyValue("preset-uuid", presetUUID));
 		queueJob(uri, false);
 	}
 
@@ -1025,17 +1028,17 @@ public class ServerProxy {
 	public void setMuteForPartAndUnmuteOther(VoiceGroup group) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "mute-part-unmute-other");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
-		queueJob(uri, false);	
+		queueJob(uri, false);
 	}
 
 	public void exportSoled() {
-		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler(){
-		
+		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {
+
 			@Override
 			public void onFileDownloaded(String text) {
 				Window.open(text, "", "");
 			}
-	
+
 			@Override
 			public void onError() {
 				GWT.log("Soled not correctly downloaded!");
@@ -1044,16 +1047,30 @@ public class ServerProxy {
 	}
 
 	public void exportBoled() {
-		downloadFile("/presets/param-editor/download-boled-as-png", new DownloadHandler(){
-		
+		downloadFile("/presets/param-editor/download-boled-as-png", new DownloadHandler() {
+
 			@Override
 			public void onFileDownloaded(String text) {
 				Window.open(text, "", "");
 			}
-	
+
 			@Override
 			public void onError() {
 				GWT.log("Boled not correctly downloaded!");
+			}
+		});
+	}
+
+	public void downloadEnumStrings(String enumName, Consumer<String[]> c) {
+		downloadFile("/webui-support/enum/get-strings?name=" + URL.encodeQueryString(enumName), new DownloadHandler() {
+
+			@Override
+			public void onFileDownloaded(String text) {
+				c.accept(text.split("\n"));
+			}
+
+			@Override
+			public void onError() {
 			}
 		});
 	}

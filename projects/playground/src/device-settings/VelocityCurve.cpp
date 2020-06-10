@@ -13,9 +13,9 @@ VelocityCurve::~VelocityCurve()
 {
 }
 
-void VelocityCurve::sendToLPC() const
+void VelocityCurve::sendToLPC(SendReason reason) const
 {
-  Application::get().getLPCProxy()->sendSetting(VELOCITY_CURVE, (uint16_t)(get()));
+  Application::get().getLPCProxy()->sendSetting(VELOCITY_CURVE, static_cast<uint16_t>(get()));
 }
 
 const std::vector<Glib::ustring> &VelocityCurve::enumToString() const

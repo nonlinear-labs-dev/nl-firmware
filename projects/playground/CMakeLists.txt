@@ -53,16 +53,16 @@ IF(DSL_LAYOUTS)
 ENDIF(DSL_LAYOUTS)
 
 # CONFIGURED FILES
+configure_file(src/device-info/BuildVersion.cpp.in src/device-info/BuildVersion.cpp)
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
-configure_file(src/device-info/SoftwareVersion.cpp.in src/device-info/SoftwareVersion.cpp)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
 
 # SOURCE FILE COLLECTIONS
-SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/device-info/SoftwareVersion.cpp ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
+SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp ${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp)
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp ${CMAKE_SOURCE_DIR}/projects/shared/*.c)
 file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
 
 IF(NOT DSL_LAYOUTS)
@@ -92,6 +92,7 @@ target_include_directories(${LIB_NAME} PUBLIC ${PROJECT_BINARY_DIR}/src)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/nltools/include/)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/parameter-db/generated/)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/playground/src)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared)
 target_link_libraries(${LIB_NAME} PUBLIC pthread stdc++fs nltools)
 
 ## BINARY

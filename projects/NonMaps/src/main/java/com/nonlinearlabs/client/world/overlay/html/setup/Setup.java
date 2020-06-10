@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
@@ -52,7 +53,7 @@ public class Setup extends Composite {
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
-			editSmoothingTimeDisplayString, freeMemory, uiVersion, rtVersion, osVersion, dateTime;
+			editSmoothingTimeDisplayString, freeMemory, uiVersion, dateTime;
 
 	@UiField
 	InputElement pedal1Slider, pedal2Slider, pedal3Slider, pedal4Slider;
@@ -61,7 +62,6 @@ public class Setup extends Composite {
 	RadioButton presetGlitchSurpressionOn, presetGlitchSurpressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff;
-
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -102,13 +102,23 @@ public class Setup extends Composite {
 	}
 
 	public void setupTexts() {
+		NonMaps.get().getServerProxy().downloadEnumStrings("PedalTypes", (options) -> {
+			fillListboxWithOptions(pedal1Type, options);
+			fillListboxWithOptions(pedal2Type, options);
+			fillListboxWithOptions(pedal3Type, options);
+			fillListboxWithOptions(pedal4Type, options);
+
+			DeviceSettings t = DeviceSettingsProvider.get().getPresenter();
+
+			applyPedalValues(t.pedal1, pedal1Type, pedal1Range, pedal1DisplayString);
+			applyPedalValues(t.pedal2, pedal2Type, pedal2Range, pedal2DisplayString);
+			applyPedalValues(t.pedal3, pedal3Type, pedal3Range, pedal3DisplayString);
+			applyPedalValues(t.pedal4, pedal4Type, pedal4Range, pedal4DisplayString);
+		});
+
 		fillListboxWithOptions(velocityCurve, DeviceSettings.VelocityCurve.options);
 		fillListboxWithOptions(aftertouchCurve, DeviceSettings.AftertouchCurve.options);
 		fillListboxWithOptions(benderCurve, DeviceSettings.BenderCurve.options);
-		fillListboxWithOptions(pedal1Type, DeviceSettings.Pedal.options);
-		fillListboxWithOptions(pedal2Type, DeviceSettings.Pedal.options);
-		fillListboxWithOptions(pedal3Type, DeviceSettings.Pedal.options);
-		fillListboxWithOptions(pedal4Type, DeviceSettings.Pedal.options);
 		fillListboxWithOptions(selectionAutoScroll, LocalSettings.SelectionAutoScroll.options);
 		fillListboxWithOptions(editParameter, LocalSettings.EditParameter.options);
 		fillListboxWithOptions(scalingFactor, LocalSettings.DisplayScalingFactor.options);
@@ -125,8 +135,7 @@ public class Setup extends Composite {
 
 	public void connectEventHandlers() {
 		SystemSettings settings = SystemSettings.get();
-		com.nonlinearlabs.client.useCases.LocalSettings locals = com.nonlinearlabs.client.useCases.LocalSettings
-				.get();
+		com.nonlinearlabs.client.useCases.LocalSettings locals = com.nonlinearlabs.client.useCases.LocalSettings.get();
 
 		deviceSettingsButton.addClickHandler(e -> switchPage(deviceSettingsButton, deviceSettings));
 		uiSettingsButton.addClickHandler(e -> switchPage(uiSettingsButton, uiSettings));
@@ -171,24 +180,22 @@ public class Setup extends Composite {
 		editSmoothingTimeRange.addValueChangeHandler(
 				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
 
-		pedal1Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(254, VoiceGroup.Global), e.getValue().doubleValue(), true));
-		pedal2Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(259, VoiceGroup.Global), e.getValue().doubleValue(), true));
-		pedal3Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(264, VoiceGroup.Global),e.getValue().doubleValue(), true));
-		pedal4Range.addValueChangeHandler(
-				e -> EditBufferUseCases.get().setParameterValue(new ParameterId(269, VoiceGroup.Global),e.getValue().doubleValue(), true));
+		pedal1Range.addValueChangeHandler(e -> EditBufferUseCases.get()
+				.setParameterValue(new ParameterId(254, VoiceGroup.Global), e.getValue().doubleValue(), true));
+		pedal2Range.addValueChangeHandler(e -> EditBufferUseCases.get()
+				.setParameterValue(new ParameterId(259, VoiceGroup.Global), e.getValue().doubleValue(), true));
+		pedal3Range.addValueChangeHandler(e -> EditBufferUseCases.get()
+				.setParameterValue(new ParameterId(264, VoiceGroup.Global), e.getValue().doubleValue(), true));
+		pedal4Range.addValueChangeHandler(e -> EditBufferUseCases.get()
+				.setParameterValue(new ParameterId(269, VoiceGroup.Global), e.getValue().doubleValue(), true));
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
 
 		highlightChangedOn.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.on));
 		highlightChangedOff.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.off));
 
-		transitionTimeSliderRange
-				.addValueChangeHandler(v -> settings.setTransitionTime(v.getValue().doubleValue()));
-		tuneReferenceSliderRange
-				.addValueChangeHandler(v -> settings.setTuneReference(v.getValue().doubleValue()));
+		transitionTimeSliderRange.addValueChangeHandler(v -> settings.setTransitionTime(v.getValue().doubleValue()));
+		tuneReferenceSliderRange.addValueChangeHandler(v -> settings.setTuneReference(v.getValue().doubleValue()));
 
 	}
 
@@ -270,8 +277,6 @@ public class Setup extends Composite {
 	private void applyPresenter(DeviceInformation t) {
 		freeMemory.setText(t.freeDiscSpace);
 		uiVersion.setText(t.uiVersion);
-		rtVersion.setText(t.rtVersion);
-		osVersion.setText(t.osVersion);
 		dateTime.setText(t.dateTime);
 	}
 

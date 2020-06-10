@@ -13,10 +13,8 @@ PresetGlitchSuppression::~PresetGlitchSuppression()
 {
 }
 
-void PresetGlitchSuppression::sendToLPC() const
+void PresetGlitchSuppression::sendToLPC(SendReason reason) const
 {
-  Application::get().getLPCProxy()->sendSetting(PRESET_GLITCH_SUPPRESSION, get());
-
   nltools::msg::Setting::PresetGlitchMessage msg { get() };
   Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::PresetGlitchMessage>(msg);
 }

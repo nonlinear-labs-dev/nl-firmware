@@ -27,6 +27,12 @@ template <typename TEnum> class EnumSetting : public Setting
     return false;
   }
 
+  void forceset(tEnum m)
+  {
+    m_mode = m;
+    notify();
+  }
+
   tEnum get() const
   {
     if(auto overlay = m_overlay.lock())
@@ -42,7 +48,7 @@ template <typename TEnum> class EnumSetting : public Setting
     {
       if(text == it)
       {
-        set((tEnum) i);
+        forceset((tEnum) i);
         return;
       }
       i++;

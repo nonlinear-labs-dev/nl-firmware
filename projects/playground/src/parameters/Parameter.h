@@ -103,8 +103,6 @@ class Parameter : public UpdateDocumentContributor,
   virtual void writeDiff(Writer &writer, Parameter *other) const;
   virtual void writeDifferences(Writer &writer, Parameter *other) const;
   virtual void writeToLPC(MessageComposer &cmp) const;
-  virtual void onPresetSentToLpc() const;
-
   void invalidate();
 
   virtual Glib::ustring getLongName() const;

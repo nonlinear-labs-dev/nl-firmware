@@ -13,4 +13,7 @@ class PedalSelectionControl : public ControlWithChildren
   virtual ~PedalSelectionControl();
 
   void setPosition(const Rect &rect) override;
+
+ protected:
+  void setBackgroundColor(FrameBuffer &fb) const override;
 };

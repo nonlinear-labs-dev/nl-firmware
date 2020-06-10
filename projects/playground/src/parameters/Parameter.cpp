@@ -423,10 +423,6 @@ void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator init
   setCpValue(transaction, initiator, newPos, false);
 }
 
-void Parameter::onPresetSentToLpc() const
-{
-}
-
 void Parameter::exportReaktorParameter(std::stringstream &target) const
 {
   target << getTcdValue() << std::endl;

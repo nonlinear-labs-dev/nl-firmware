@@ -39,6 +39,7 @@
 #include <parameters/ScopedLock.h>
 #include <tools/StringTools.h>
 #include <parameter_declarations.h>
+#include <presets/SendEditBufferScopeGuard.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterDualGroupSet(parent)
@@ -490,10 +491,9 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
 {
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
-  auto scope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scope(transaction);
 
   auto ae = Application::get().getAudioEngineProxy();
-  ae->toggleSuppressParameterChanges(transaction);
   const auto oldType = getType();
 
   setAttribute(transaction, "origin-I", preset->getUuid().raw());
@@ -511,7 +511,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset)
     pm->selectBank(transaction, bank->getUuid());
   }
 
-  ae->toggleSuppressParameterChanges(transaction);
+  cleanupParameterSelection(transaction, oldType, preset->getType());
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -565,7 +565,7 @@ void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator)
 {
-  auto scope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
@@ -576,7 +576,7 @@ void EditBuffer::undoableRandomize(UNDO::Transaction *transaction, Initiator ini
 
 void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup vg, Initiator initiator)
 {
-  auto scope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
 
@@ -586,7 +586,7 @@ void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGrou
 
 void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
 {
-  auto sendScope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     undoableInitPart(transaction, vg);
@@ -755,7 +755,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
 {
   const auto oldType = getType();
 
-  auto sendEditBufferScope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   setName(transaction, getVoiceGroupName(copyFrom));
   undoableSetType(transaction, SoundType::Single);
@@ -819,7 +819,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   if(oldType == type)
     return;
 
-  auto scope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   undoableSetType(transaction, type);
 
@@ -901,9 +901,7 @@ void EditBuffer::undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGrou
 void EditBuffer::undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset,
                                                        VoiceGroup to)
 {
-  auto ae = Application::get().getAudioEngineProxy();
-  ae->toggleSuppressParameterChanges(transaction);
-
+  SendEditBufferScopeGuard scopeGuard(transaction);
   setVoiceGroupName(transaction, preset->getName(), to);
 
   {
@@ -924,10 +922,7 @@ void EditBuffer::undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transa
   }
 
   loadPresetGlobalMasterIntoVoiceGroupMaster(transaction, preset, to);
-
   initRecallValues(transaction);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 const SplitPointParameter *EditBuffer::getSplitPoint() const
@@ -1016,7 +1011,7 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
     from = VoiceGroup::I;
   }
 
-  auto scope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   switch(getType())
   {
@@ -1076,7 +1071,7 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
 
 void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  auto scope = scopedSendEditBufferGuard(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   for(auto &group : getParameterGroups(vg))
     group->undoableClear(transaction);
@@ -1397,9 +1392,7 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
 void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transaction, const Preset *preset,
                                                       VoiceGroup from, VoiceGroup copyTo)
 {
-  auto ae = Application::get().getAudioEngineProxy();
-  ae->toggleSuppressParameterChanges(transaction);
-
+  SendEditBufferScopeGuard scopeGuard(transaction);
   setVoiceGroupName(transaction, preset->getName(), copyTo);
 
   {
@@ -1440,15 +1433,12 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
     setVoiceGroupName(transaction, preset->getVoiceGroupName(from), copyTo);
   else
     setVoiceGroupName(transaction, preset->getName(), copyTo);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transaction, const Preset *preset,
                                                       VoiceGroup copyFrom, VoiceGroup copyTo)
 {
-  auto ae = Application::get().getAudioEngineProxy();
-  ae->toggleSuppressParameterChanges(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   setVoiceGroupName(transaction, preset->getName(), copyTo);
 
@@ -1487,8 +1477,6 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
     setVoiceGroupName(transaction, preset->getVoiceGroupName(copyFrom), copyTo);
   else
     setVoiceGroupName(transaction, preset->getName(), copyTo);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset,
@@ -1497,8 +1485,7 @@ void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transa
   if(!preset->isDual())
     copyFrom = VoiceGroup::I;
 
-  auto ae = Application::get().getAudioEngineProxy();
-  ae->toggleSuppressParameterChanges(transaction);
+  SendEditBufferScopeGuard scopeGuard(transaction);
 
   setVoiceGroupName(transaction, preset->getName(), copyTo);
   super::copyFrom(transaction, preset, copyFrom, copyTo);
@@ -1514,8 +1501,6 @@ void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transa
     setVoiceGroupName(transaction, preset->getName(), copyTo);
 
   initFadeParameters(transaction, copyTo);
-
-  ae->toggleSuppressParameterChanges(transaction);
 }
 
 void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
@@ -1599,21 +1584,4 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
 
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
   }
-}
-
-std::unique_ptr<GenericScopeGuard> EditBuffer::scopedSendEditBufferGuard(UNDO::Transaction *transaction)
-{
-  return std::make_unique<GenericScopeGuard>(
-      [this, transaction]() {
-        transaction->addSimpleCommand([=](auto s) {
-          if(s == UNDO::Transaction::UNDOING)
-            sendToAudioEngine();
-        });
-      },
-      [this, transaction]() {
-        transaction->addSimpleCommand([=](auto s) {
-          if(s == UNDO::Transaction::DOING || s == UNDO::Transaction::REDOING)
-            sendToAudioEngine();
-        });
-      });
 }

@@ -38,7 +38,7 @@ void RibbonRelativeFactor::load(const Glib::ustring &text)
   catch(...)
   {
     set(0);
-    DebugLevel::error("Could not read settings for ribbon relative factor:", text);
+    nltools::Log::error("Could not read settings for ribbon relative factor:", text);
   }
 }
 
@@ -51,15 +51,13 @@ void RibbonRelativeFactor::set(tControlPositionValue amount)
 {
   amount = m_factor.getScaleConverter()->getControlPositionRange().clip(amount);
 
-  if(m_factor.setRawValue(Initiator::INDIRECT, amount))
-  {
-    notify();
-  }
+  m_factor.setRawValue(Initiator::INDIRECT, amount);
+  notify();
 }
 
-void RibbonRelativeFactor::sendToLPC() const
+void RibbonRelativeFactor::sendToLPC(SendReason reason) const
 {
-  uint16_t v = (uint16_t)(m_factor.getTcdValue());
+  auto v = static_cast<uint16_t>(m_factor.getTcdValue());
   Application::get().getLPCProxy()->sendSetting(RIBBON_REL_FACTOR, v);
 }
 
@@ -88,7 +86,6 @@ void RibbonRelativeFactor::incDec(int incs, ButtonModifiers modifiers)
   }
 
   notify();
-  sendToLPC();
 }
 
 Glib::ustring RibbonRelativeFactor::getDisplayString() const

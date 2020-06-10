@@ -11,10 +11,9 @@ BBB_IP=192.168.10.11
 # general Messages
 MSG_DO_NOT_SWITCH_OFF="DO NOT SWITCH OFF C15!"
 MSG_UPDATING_C15="Updating C15"
-MSG_UPDATING_EPC="1/4 Updating..."
-MSG_UPDATING_BBB="2/4 Updating..."
-MSG_UPDATING_RT_FIRMWARE_1="3/4 Updating..."
-MSG_UPDATING_RT_FIRMWARE_2="4/4 Updating..."
+MSG_UPDATING_EPC="1/3 Updating..."
+MSG_UPDATING_BBB="2/3 Updating..."
+MSG_UPDATING_RT_FIRMWARE="3/3 Updating..."
 MSG_DONE="DONE!"
 MSG_FAILED="FAILED!"
 MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code:"
@@ -169,35 +168,21 @@ bbb_update() {
 }
 
 lpc_update() {
-    pretty "" "$MSG_UPDATING_RT_FIRMWARE_1" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_RT_FIRMWARE_1" "$MSG_DO_NOT_SWITCH_OFF"
+    pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DO_NOT_SWITCH_OFF"
     chmod +x /update/LPC/lpc_update.sh
     rm -f /update/mxli.log
 
-    /bin/sh /update/LPC/lpc_update.sh /update/LPC/M0_project.bin B
+    /bin/sh /update/LPC/lpc_update.sh /update/LPC/main.bin A
 
     # error codes 30...39
     return_code=$?
     if [ $return_code -ne 0 ]; then
-        pretty "" "$MSG_UPDATING_RT_FIRMWARE_1" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_RT_FIRMWARE_1" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
+        pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
         sleep 2
         return 1;
     fi
 
-    pretty "" "$MSG_UPDATING_RT_FIRMWARE_1" "$MSG_DONE" "$MSG_UPDATING_RT_FIRMWARE_1" "$MSG_DONE"
-    sleep 2
-
-    pretty "" "$MSG_UPDATING_RT_FIRMWARE_2" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_RT_FIRMWARE_2" "$MSG_DO_NOT_SWITCH_OFF"
-    /bin/sh /update/LPC/lpc_update.sh /update/LPC/M4_project.bin A
-
-    # error codes 30...39
-    return_code=$?
-    if [ $return_code -ne 0 ]; then
-        pretty "" "$MSG_UPDATING_RT_FIRMWARE_2" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_RT_FIRMWARE_2" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
-        sleep 2
-        return 1;
-    fi
-
-    pretty "" "$MSG_UPDATING_RT_FIRMWARE_2" "$MSG_DONE" "$MSG_UPDATING_RT_FIRMWARE_2" "$MSG_DONE"
+    pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DONE" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DONE"
     sleep 2
     return 0
 }

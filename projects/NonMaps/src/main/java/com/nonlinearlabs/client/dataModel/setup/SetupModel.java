@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.dataModel.setup;
 
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
@@ -35,7 +36,9 @@ public class SetupModel {
 	}
 
 	public enum PedalType {
-		pot_tip_active, pot_ring_active, switch_closing, switch_opening
+		PotTipActive, PotRingActive, PotTipActiveReverse, PotRingActiveReverse, Resistor, ResistorReversed,
+		SwitchClosing, SwitchOpening, CV0to5V, CV0To5VAutoRange, OFF, BossEV30, BossFV500L, DoepferFP5, FractalEV2,
+		KorgDS1H, KorgEXP2, LeadFootLFX1, MAudioEXP, MoogEP3, RolandDP10, RolandEV5, YamahaFC3A, YamahaFC7
 	}
 
 	public enum PresetStoreMode {
@@ -77,19 +80,35 @@ public class SetupModel {
 
 		public double toPercent() {
 			switch (getValue()) {
-			case off:
-				return 0;
+				case off:
+					return 0;
 
-			case percent_10:
-				return 10;
+				case percent_10:
+					return 10;
 
-			case percent_25:
-				return 25;
+				case percent_25:
+					return 25;
 
-			case percent_50:
-				return 50;
+				case percent_50:
+					return 50;
 			}
 			return 0;
+		}
+	}
+
+	class PedalTypeSetting extends EnumDataModelEntity<PedalType> {
+		public PedalTypeSetting() {
+			super(PedalType.class, PedalType.PotTipActive);
+		}
+
+		@Override
+		public void fromString(String str) {
+			try {
+				PedalType p = PedalType.valueOf(str);
+				setValue(p);
+			} catch (Exception e) {
+				Tracer.log("WARNING: Could not parse pedal type value of " + str);
+			}
 		}
 	}
 
@@ -113,14 +132,11 @@ public class SetupModel {
 		public EnumDataModelEntity<EditModeRibbonBehaviour> editmodeRibbonBehavior = createEnumDataModelEntity(
 				EditModeRibbonBehaviour.class, EditModeRibbonBehaviour.absolute);
 		public StringDataModelEntity passPhrase = new StringDataModelEntity();
-		public EnumDataModelEntity<PedalType> pedal1Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
-		public EnumDataModelEntity<PedalType> pedal2Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
-		public EnumDataModelEntity<PedalType> pedal3Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
-		public EnumDataModelEntity<PedalType> pedal4Type = createEnumDataModelEntity(PedalType.class,
-				PedalType.pot_tip_active);
+		public EnumDataModelEntity<PedalType> pedal1Type = new PedalTypeSetting();
+		public EnumDataModelEntity<PedalType> pedal2Type = new PedalTypeSetting();
+		public EnumDataModelEntity<PedalType> pedal3Type = new PedalTypeSetting();
+		public EnumDataModelEntity<PedalType> pedal4Type = new PedalTypeSetting();
+		public BooleanDataModelEntity benderOnPressedKeys = new BooleanDataModelEntity();
 		public BooleanDataModelEntity presetDragEnabled = new BooleanDataModelEntity();
 		public BooleanDataModelEntity presetGlitchSuppression = new BooleanDataModelEntity();
 		public EnumDataModelEntity<PresetStoreMode> presetStoreModeSetting = createEnumDataModelEntity(
@@ -134,7 +150,6 @@ public class SetupModel {
 		public ValueDataModelEntity transitionTime = new ValueDataModelEntity();
 		public EnumDataModelEntity<VelocityCurve> velocityCurve = createEnumDataModelEntity(VelocityCurve.class,
 				VelocityCurve.normal);
-		public BooleanDataModelEntity benderRampBypass = new BooleanDataModelEntity();
 		public BooleanDataModelEntity highlightChangedParameters = new BooleanDataModelEntity();
 		public BooleanDataModelEntity forceHighlightChangedParameters = new BooleanDataModelEntity();
 		public BooleanDataModelEntity crashOnError = new BooleanDataModelEntity();

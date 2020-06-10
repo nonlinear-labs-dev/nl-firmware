@@ -1,8 +1,6 @@
 #include <Application.h>
 #include <device-info/DateTimeInfo.h>
 #include <device-info/DeviceInformation.h>
-#include <device-info/OSVersion.h>
-#include <device-info/RTSoftwareVersion.h>
 #include <device-info/SoftwareVersion.h>
 #include <device-settings/PedalType.h>
 #include <groups/HardwareSourcesGroup.h>
@@ -67,6 +65,8 @@
 #include <memory>
 #include <device-settings/TuneReference.h>
 #include <device-settings/TransitionTime.h>
+#include <tools/StringTools.h>
+#include <parameter_declarations.h>
 #include "UISoftwareVersionEditor.h"
 
 namespace NavTree
@@ -446,7 +446,7 @@ namespace NavTree
   struct UISoftwareVersion : EditableLeaf
   {
     UISoftwareVersion(InnerNode *parent)
-        : EditableLeaf(parent, "UI Software Version")
+        : EditableLeaf(parent, "Software Version")
     {
     }
 
@@ -459,21 +459,6 @@ namespace NavTree
     virtual Control *createEditor() override
     {
       return new UISoftwareVersionEditor();
-    }
-  };
-
-  struct RTSoftwareVersion : Leaf
-  {
-    RTSoftwareVersion(InnerNode *parent)
-        : Leaf(parent, "RT Software Version")
-    {
-    }
-
-    virtual Control *createView() override
-    {
-      Application::get().getLPCProxy()->requestLPCSoftwareVersion();
-      auto info = Application::get().getDeviceInformation()->getItem<::RTSoftwareVersion>().get();
-      return new DeviceInfoItemView(info);
     }
   };
 
@@ -496,20 +481,6 @@ namespace NavTree
     }
   };
 
-  struct OSVersion : Leaf
-  {
-    OSVersion(InnerNode *parent)
-        : Leaf(parent, "OS Version")
-    {
-    }
-
-    virtual Control *createView() override
-    {
-      auto info = Application::get().getDeviceInformation()->getItem<::OSVersion>().get();
-      return new DeviceInfoItemView(info);
-    }
-  };
-
   struct WebUIAdress : Leaf
   {
     struct AddressLabel : public SetupLabel
@@ -529,6 +500,50 @@ namespace NavTree
     }
   };
 
+  struct RibbonCalibration : Leaf
+  {
+    static std::pair<Glib::ustring, Glib::ustring> getRibbonCalibrationName()
+    {
+      std::experimental::filesystem::path path = "/persistent/calibration/calibration.ini";
+      static auto fileContent = nltools::getFileContent(path);
+
+      if(fileContent.empty())
+      {
+        return { "None", "None" };
+      }
+
+      auto rDelim = fileContent.find('\r');
+      auto nDelim = fileContent.find('\n');
+      auto delim = rDelim < nDelim ? '\r' : '\n';
+      auto lines = StringTools::splitStringOnAnyDelimiter(fileContent, delim);
+      auto getValue = [](const std::string &s) { return StringTools::splitStringOnAnyDelimiter(s, '='); };
+      return { getValue(lines[0])[1], getValue(lines[1])[1] };
+    }
+
+    struct RibbonCalibrationLabel : public SetupLabel
+    {
+      RibbonCalibrationLabel(bool first)
+          : SetupLabel("foo", Rect(0, 0, 0, 0))
+      {
+        setText({ first ? getRibbonCalibrationName().first : getRibbonCalibrationName().second, 0 });
+      }
+    };
+
+    RibbonCalibration(InnerNode *parent, C15::PID::ParameterID ribbon)
+        : Leaf(parent, ribbon ? "Upper Ribbon Calibration" : "Lower Ribbon Calibration")
+        , m_upper { ribbon == C15::PID::Ribbon_1 }
+    {
+    }
+
+    Control *createView() override
+    {
+      return new RibbonCalibrationLabel(m_upper);
+    }
+
+   private:
+    bool m_upper;
+  };
+
   struct SystemInfo : InnerNode
   {
     SystemInfo(InnerNode *parent)
@@ -540,10 +555,10 @@ namespace NavTree
       children.emplace_back(new WebUIAdress(this));
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new UISoftwareVersion(this));
-      children.emplace_back(new RTSoftwareVersion(this));
-      children.emplace_back(new OSVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
+      children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_1));
+      children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_2));
     }
   };
 

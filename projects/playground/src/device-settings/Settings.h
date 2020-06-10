@@ -6,6 +6,7 @@
 #include <tools/ScopedGuard.h>
 #include <utility>
 #include <map>
+#include "SendReason.h"
 
 class Application;
 class Setting;
@@ -20,14 +21,13 @@ class Settings : public ContentSection
   typedef std::shared_ptr<Setting> tSettingPtr;
   typedef std::map<Glib::ustring, tSettingPtr> tMap;
 
-  Settings(UpdateDocumentMaster *master);
-  virtual ~Settings();
+  explicit Settings(UpdateDocumentMaster *master);
+  ~Settings() override;
 
   void init();
   void reload();
 
   tSettingPtr getSetting(const Glib::ustring &key);
-  void setSetting(const Glib::ustring &key, const Glib::ustring &value);
   void addSetting(const Glib::ustring &key, Setting *s);
 
   template <typename T> std::shared_ptr<T> getSetting()
@@ -41,15 +41,17 @@ class Settings : public ContentSection
 
   const tMap &getSettings() const;
 
+  void sendSettingsToLPC(SendReason reason);
+  void sendGlobalLPCInitSettings();
+
   void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
-
-  void sendToLPC();
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
   bool isLoading() const;
 
+  void sendPresetSettingsToLPC();
  protected:
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
@@ -62,4 +64,5 @@ class Settings : public ContentSection
   tMap m_settings;
   DelayedJob m_saveJob;
   ScopedGuard m_isLoading;
+  void sendRibbonCalibration();
 };

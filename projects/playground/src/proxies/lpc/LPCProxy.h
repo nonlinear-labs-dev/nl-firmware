@@ -7,6 +7,7 @@
 #include <memory>
 #include <nltools/threading/Throttler.h>
 #include <tools/Signal.h>
+#include <device-settings/PedalType.h>
 
 class Application;
 class Parameter;
@@ -40,11 +41,6 @@ enum LPCSettingIDs
 
   TRANSITION_TIME = 12,  // ==> tTcdRange(0, 16000)
 
-  PEDAL_1_TYPE = 26,  // ==> PotTipActive = 0
-  PEDAL_2_TYPE = 27,  // ... PotRingActive = 1
-  PEDAL_3_TYPE = 28,  // ... SwitchClosing = 2
-  PEDAL_4_TYPE = 29,  // ... SwitchOpening = 3
-
   AFTERTOUCH_CURVE = 30,  // SOFT = 0, NORMAL = 1, HARD = 2
   BENDER_CURVE = 31,      // ZERO = 0, NARROW = 1, WIDE = 2
 
@@ -65,21 +61,19 @@ class LPCProxy
 
   void sendSetting(uint16_t key, gint16 value);
   void sendSetting(uint16_t key, uint16_t value);
-  void sendSetting(uint16_t key, bool v);
+
+  void sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset);
 
   sigc::connection onRibbonTouched(sigc::slot<void, int> s);
   sigc::connection onLPCSoftwareVersionChanged(sigc::slot<void, int> s);
   int getLastTouchedRibbonParameterID() const;
-
-  void requestLPCSoftwareVersion();
-  int getLPCSoftwareVersion() const;
 
  private:
   void onLPCMessage(const nltools::msg::LPCMessage &msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);
 
   typedef std::shared_ptr<MessageComposer> tMessageComposerPtr;
-  void queueToLPC(tMessageComposerPtr cmp);
+  void queueToLPC(const tMessageComposerPtr& cmp);
 
   gint16 separateSignedBitToComplementary(uint16_t v) const;
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
@@ -94,6 +88,7 @@ class LPCProxy
   void onNotificationMessageReceived(const MessageParser::NLMessage &msg);
   void onLPCConnected();
   void onHeartbeatReceived(const MessageParser::NLMessage &msg);
+  void sendCalibrationData();
 
   Parameter *findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) const;
 
@@ -104,9 +99,7 @@ class LPCProxy
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
-  int m_lpcSoftwareVersion = 0;
-  Signal<void, int> m_signalLPCSoftwareVersionChanged;
-
+  int m_lpcSoftwareVersion;
   Throttler m_throttledRelativeParameterChange;
   gint32 m_throttledRelativeParameterAccumulator = 0;
 
@@ -114,4 +107,6 @@ class LPCProxy
   gint32 m_throttledAbsoluteParameterValue = 0;
 
   uint64_t m_lastReceivedHeartbeat = -1;
+
+  void onHeartbeatStumbled();
 };

@@ -25,7 +25,6 @@ class PedalParameter : public PhysicalControlParameter
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
-  void onPresetSentToLpc() const override;
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
 
   bool hasBehavior() const override;
@@ -37,7 +36,6 @@ class PedalParameter : public PhysicalControlParameter
 
  private:
   const ScaleConverter *createScaleConverter() const;
-  uint16_t mapParameterIdToLPCSetting() const;
   void sendModeToLpc() const;
   tControlPositionValue getDefValueAccordingToMode() const;
   void setRoutersModeAccordingToReturnMode();

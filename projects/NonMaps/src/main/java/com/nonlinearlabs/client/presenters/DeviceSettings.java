@@ -19,7 +19,6 @@ public class DeviceSettings {
 	static public class Pedal {
 		public String displayValue = "---";
 		public double sliderPosition = 0;
-		static public String[] options = { "Pot Tip Active", "Pot Ring Active", "Switch Closing", "Switch Opening" };
 		public int selected = 0;
 	}
 

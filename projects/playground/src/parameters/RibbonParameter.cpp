@@ -190,12 +190,6 @@ const ScaleConverter *RibbonParameter::createScaleConverter() const
   return ScaleConverter::get<Linear100PercentScaleConverter>();
 }
 
-void RibbonParameter::onPresetSentToLpc() const
-{
-  Parameter::onPresetSentToLpc();
-  sendModeToLpc();
-}
-
 void RibbonParameter::sendModeToLpc() const
 {
   uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
@@ -307,4 +301,12 @@ size_t RibbonParameter::getHash() const
   hash_combine(hash, (int) m_touchBehaviour);
   hash_combine(hash, (int) m_returnMode);
   return hash;
+}
+
+void RibbonParameter::sendToLpc() const
+{
+  Parameter::sendToLpc();
+  auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? LPC_SETTING_ID_UPPER_RIBBON_VALUE
+                                                                         : LPC_SETTING_ID_LOWER_RIBBON_VALUE;
+  Application::get().getLPCProxy()->sendSetting(id, getValue().getTcdValue());
 }

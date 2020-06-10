@@ -138,8 +138,6 @@ class EditBuffer : public ParameterDualGroupSet
   PartOrigin getPartOrigin(VoiceGroup vg) const;
 
  private:
-  std::unique_ptr<GenericScopeGuard> scopedSendEditBufferGuard(UNDO::Transaction *transaction);
-
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;
 

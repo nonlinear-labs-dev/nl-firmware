@@ -6,7 +6,7 @@ enum class BenderCurves
 {
   Soft = 0,
   Normal = 1,
-  Hard = 2,
+  Hard = 2
 };
 
 class BenderCurve : public EnumSetting<BenderCurves>
@@ -18,7 +18,7 @@ class BenderCurve : public EnumSetting<BenderCurves>
   BenderCurve(UpdateDocumentContributor &settings);
   virtual ~BenderCurve();
 
-  void sendToLPC() const override;
+  void sendToLPC(SendReason reason) const override;
 
   const std::vector<Glib::ustring> &enumToDisplayString() const override;
 

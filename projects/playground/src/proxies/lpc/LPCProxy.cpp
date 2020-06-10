@@ -21,6 +21,8 @@
 #include <memory.h>
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
+#include <device-settings/Settings.h>
+#include <experimental/filesystem>
 
 LPCProxy::LPCProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -58,11 +60,6 @@ void LPCProxy::onLPCMessage(const nltools::msg::LPCMessage &msg)
 sigc::connection LPCProxy::onRibbonTouched(sigc::slot<void, int> s)
 {
   return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
-}
-
-sigc::connection LPCProxy::onLPCSoftwareVersionChanged(sigc::slot<void, int> s)
-{
-  return m_signalLPCSoftwareVersionChanged.connectAndInit(s, m_lpcSoftwareVersion);
 }
 
 int LPCProxy::getLastTouchedRibbonParameterID() const
@@ -112,7 +109,7 @@ void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
     DebugLevel::warning("LPCProxy had to re-send the edit buffer, as the heartbeat stumbled from",
                         m_lastReceivedHeartbeat, "to", heartbeat);
 
-    Application::get().getAudioEngineProxy()->sendEditBuffer();
+    onHeartbeatStumbled();
   }
 
   m_lastReceivedHeartbeat = heartbeat;
@@ -139,14 +136,29 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
     if(m_lpcSoftwareVersion != value)
     {
       m_lpcSoftwareVersion = value;
-      m_signalLPCSoftwareVersionChanged.send(m_lpcSoftwareVersion);
     }
   }
 }
 
 void LPCProxy::onLPCConnected()
 {
-  requestLPCSoftwareVersion();
+  sendCalibrationData();
+}
+
+void LPCProxy::sendCalibrationData()
+{
+  static const char *calibrationPath = "/persistent/calibration/calibration.bin";
+  if(std::experimental::filesystem::exists(calibrationPath))
+  {
+    auto message = nltools::readBinaryFile(calibrationPath);
+    nltools::msg::LPCMessage msg;
+    msg.message = Glib::Bytes::create(&message[0], message.size());
+    nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
+  }
+  else
+  {
+    nltools::Log::error("Could not send calibration data as the file", calibrationPath, "is nonexistent!");
+  }
 }
 
 Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) const
@@ -154,24 +166,29 @@ Parameter *LPCProxy::findPhysicalControlParameterFromLPCHWSourceID(uint16_t id) 
   auto paramId = [](uint16_t id) {
     switch(id)
     {
-      case 0:
+      case HW_SOURCE_ID_PEDAL_1:
         return HardwareSourcesGroup::getPedal1ParameterID();
-      case 1:
+      case HW_SOURCE_ID_PEDAL_2:
         return HardwareSourcesGroup::getPedal2ParameterID();
-      case 2:
+      case HW_SOURCE_ID_PEDAL_3:
         return HardwareSourcesGroup::getPedal3ParameterID();
-      case 3:
+      case HW_SOURCE_ID_PEDAL_4:
         return HardwareSourcesGroup::getPedal4ParameterID();
-      case 4:
+      case HW_SOURCE_ID_PITCHBEND:
         return HardwareSourcesGroup::getPitchbendParameterID();
-      case 5:
+      case HW_SOURCE_ID_AFTERTOUCH:
         return HardwareSourcesGroup::getAftertouchParameterID();
-      case 6:
-      case 284:
+      case HW_SOURCE_ID_RIBBON_1:
         return HardwareSourcesGroup::getUpperRibbonParameterID();
-      case 7:
-      case 289:
+      case HW_SOURCE_ID_RIBBON_2:
         return HardwareSourcesGroup::getLowerRibbonParameterID();
+      case HW_SOURCE_ID_PEDAL_5:
+      case HW_SOURCE_ID_PEDAL_6:
+      case HW_SOURCE_ID_PEDAL_7:
+      case HW_SOURCE_ID_PEDAL_8:
+        //todo new pedals
+      case HW_SOURCE_ID_LAST_KEY:
+      //todo last key
       default:
         return ParameterId::invalid();
     }
@@ -287,7 +304,7 @@ void LPCProxy::notifyRibbonTouch(int ribbonsParameterID)
   }
 }
 
-void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
+void LPCProxy::queueToLPC(const tMessageComposerPtr &cmp)
 {
   auto flushed = cmp->flush();
   traceBytes(flushed);
@@ -326,6 +343,26 @@ void LPCProxy::sendSetting(uint16_t key, uint16_t value)
   DebugLevel::info("sending setting", key, "=", value);
 }
 
+void LPCProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset)
+{
+  auto len = EHC_GetLPCMessageLength();
+  uint8_t buffer[len];
+
+  if(auto written = EHC_ComposeLPCSetupMessageById(static_cast<EHC_PRESET_ID>(pedalType), pedal,
+                                                   reset ? EHC_RESET : EHC_NORESET, buffer))
+
+  {
+    DebugLevel::info("EHC: send pedal setting", pedal, "=", pedalType);
+    nltools::msg::LPCMessage msg;
+    msg.message = Glib::Bytes::create(buffer, written);
+    nltools::msg::send(nltools::msg::EndPoint::Lpc, msg);
+  }
+  else
+  {
+    DebugLevel::warning("Could not compose pedal preset", pedal, "=", pedalType);
+  }
+}
+
 void LPCProxy::sendSetting(uint16_t key, gint16 value)
 {
   tMessageComposerPtr cmp(new MessageComposer(MessageParser::SETTING));
@@ -336,22 +373,11 @@ void LPCProxy::sendSetting(uint16_t key, gint16 value)
   DebugLevel::info("sending setting", key, "=", value);
 }
 
-void LPCProxy::sendSetting(uint16_t key, bool value)
+void LPCProxy::onHeartbeatStumbled()
 {
-  sendSetting(key, (uint16_t)(value ? 1 : 0));
-}
-
-void LPCProxy::requestLPCSoftwareVersion()
-{
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
-  uint16_t v = MessageParser::SOFTWARE_VERSION;
-  *cmp << v;
-  queueToLPC(cmp);
-
-  DebugLevel::info("sending request", MessageParser::SOFTWARE_VERSION);
-}
-
-int LPCProxy::getLPCSoftwareVersion() const
-{
-  return m_lpcSoftwareVersion;
+  auto settings = Application::get().getSettings();
+  Application::get().getAudioEngineProxy()->sendEditBuffer();
+  settings->sendSettingsToLPC(SendReason::HeartBeatDropped);
+  settings->sendPresetSettingsToLPC();
+  sendCalibrationData();
 }

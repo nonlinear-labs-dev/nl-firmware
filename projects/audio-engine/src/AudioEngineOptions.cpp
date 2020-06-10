@@ -4,6 +4,8 @@
 #include <glibmm/optioncontext.h>
 #include <iostream>
 #include <nltools/logging/Log.h>
+#include <nltools/ErrorCodes.h>
+#include <giomm.h>
 
 template <typename T>
 void add(Glib::OptionGroup &mainGroup, T &ref, const std::string &longName, const char shortName,
@@ -48,12 +50,23 @@ AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
   {
     ctx.parse(argc, argv);
   }
+  catch(const Glib::OptionError &optErr)
+  {
+    nltools::Log::error(optErr.what());
+    std::exit(static_cast<int>(nltools::ErrorCode::UnknownOptionKeyError));
+  }
+  catch(const Glib::ConvertError &convErr)
+  {
+    nltools::Log::error(convErr.what());
+    std::exit(static_cast<int>(nltools::ErrorCode::OptionConvertError));
+  }
   catch(...)
   {
     std::stringstream ss;
     for(auto i = 0; i < argc; i++)
       ss << argv[i] << " ";
     nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
+    std::exit(static_cast<int>(nltools::ErrorCode::UnknownOptionKeyError));
   }
 
   if(!additionalMidiDelayString.empty())

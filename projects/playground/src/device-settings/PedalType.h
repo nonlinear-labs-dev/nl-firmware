@@ -1,29 +1,25 @@
 #pragma once
 
-#include "EnumSetting.h"
+#include <nltools/enums/EnumTools.h>
+#include "PedalTypes.h"
+#include "NLEnumSetting.h"
 
-enum class PedalTypes
-{
-  PotTipActive = 0,
-  PotRingActive = 1,
-  SwitchClosing = 2,
-  SwitchOpening = 3,
-};
-
-class PedalType : public EnumSetting<PedalTypes>
+class PedalType : public NLEnumSetting<PedalTypes>
 {
  private:
-  typedef EnumSetting<PedalTypes> super;
+  typedef NLEnumSetting<PedalTypes> super;
 
  public:
   PedalType(UpdateDocumentContributor &settings, uint16_t lpcKey);
   virtual ~PedalType();
 
-  const std::vector<Glib::ustring> &enumToDisplayString() const override;
+  Glib::ustring getDisplayString() const override;
+  const std::vector<Glib::ustring> &getDisplayStrings() const;
+  bool set(tEnum m) override;
 
  private:
-  void sendToLPC() const override;
-  const std::vector<Glib::ustring> &enumToString() const override;
+  void sendToLPC(SendReason reason) const override;
+  void load(const Glib::ustring &text) override;
 
   uint16_t m_lpcKey;
 };

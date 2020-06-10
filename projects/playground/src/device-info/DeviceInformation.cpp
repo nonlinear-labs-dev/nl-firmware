@@ -4,8 +4,7 @@
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
 #include "device-settings/DebugLevel.h"
-#include "RTSoftwareVersion.h"
-#include "OSVersion.h"
+#include "BuildVersion.h"
 #include "DateTimeInfo.h"
 #include <Application.h>
 #include <proxies/lpc/LPCProxy.h>
@@ -17,14 +16,8 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
 {
   m_items.emplace_back(new FreeDiscSpaceInformation(this));
   m_items.emplace_back(new SoftwareVersion(this));
-  m_items.emplace_back(new RTSoftwareVersion(this));
-  m_items.emplace_back(new OSVersion(this));
   m_items.emplace_back(new DateTimeInfo(this));
-
-  m_actions.addAction("refresh-rt-software-version", [](std::shared_ptr<NetworkRequest> request) {
-    Application::get().getLPCProxy()->requestLPCSoftwareVersion();
-    request->okAndComplete();
-  });
+  m_items.emplace_back(new BuildVersion(this));
 }
 
 DeviceInformation::~DeviceInformation()
@@ -50,7 +43,7 @@ Glib::ustring DeviceInformation::getPrefix() const
 
 Glib::ustring DeviceInformation::getSoftwareVersion() const
 {
-  for(auto a : m_items)
+  for(const auto &a : m_items)
     if(auto b = std::dynamic_pointer_cast<SoftwareVersion>(a))
       return b->get();
 
