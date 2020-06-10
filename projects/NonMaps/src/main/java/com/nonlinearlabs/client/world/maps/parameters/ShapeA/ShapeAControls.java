@@ -8,14 +8,12 @@ class ShapeAControls extends ParameterGroupControls {
 	ShapeAControls(MapsLayout parent) {
 		super(parent);
 		addChild(new DriveColumn(this));
-		FoldColumn fold = addChild(new FoldColumn(this));
-		AsymColumn asym = addChild(new AsymColumn(this));
-		MixColumn mix = addChild(new MixColumn(this));
+		addChild(new FoldColumn(this));
+		addChild(new AsymColumn(this));
+		addChild(new MixColumn(this));
 		addChild(new FBMixColumn(this));
 		addChild(new RingModColumn(this));
 
-		fold.setReferenceControl(mix);
-		asym.setReferenceControl(mix);
 	}
 
 }

@@ -9,8 +9,7 @@ public class PhaseColumn extends ParameterColumn {
 
     public PhaseColumn(MapsLayout parent) {
         super(parent);
-		addChild(new ModulateableKnob(this, 301));
-		addChild(new ModulationSourceSwitch(this, 393));
+        addChild(new ModulateableKnob(this, 301));
+        addChild(new ModulationSourceSwitch(this, 393));
     }
-    
 }

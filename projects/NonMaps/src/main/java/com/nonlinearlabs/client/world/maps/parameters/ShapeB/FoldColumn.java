@@ -1,13 +1,13 @@
 package com.nonlinearlabs.client.world.maps.parameters.ShapeB;
 
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
-import com.nonlinearlabs.client.world.maps.parameters.SizeLinkedParameterColumn;
+import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnobWithSlidersHeight;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
-class FoldColumn extends SizeLinkedParameterColumn {
+class FoldColumn extends ParameterColumn {
 
 	FoldColumn(MapsLayout parent) {
 		super(parent);
-		addChild(new ModulateableKnob(this, 104));
+		addChild(new ModulateableKnobWithSlidersHeight(this, 104));
 	}
 }

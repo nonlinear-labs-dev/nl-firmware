@@ -1,21 +1,13 @@
 package com.nonlinearlabs.client.world.maps.parameters.ShapeA;
 
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
-import com.nonlinearlabs.client.world.maps.parameters.SizeLinkedParameterColumn;
+import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnobWithSlidersHeight;
+import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
-public class AsymColumn extends SizeLinkedParameterColumn {
+public class AsymColumn extends ParameterColumn {
 
-    private class Asym extends ModulateableKnob {
-
-        private Asym(MapsLayout parent) {
-            super(parent, 75);
-        }
-    }
-    
     public AsymColumn(MapsLayout parent) {
         super(parent);
-        addChild(new Asym(this));
+        addChild(new ModulateableKnobWithSlidersHeight(this, 75));
     }
-    
 }

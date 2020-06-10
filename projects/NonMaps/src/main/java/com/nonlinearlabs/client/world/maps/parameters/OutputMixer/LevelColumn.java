@@ -24,7 +24,6 @@ class LevelColumn extends ParameterColumn {
 
 				return Rect.ROUNDING_NONE;
 			}
-
 		});
 		addChild(new ModulatableHorizontalSlider(this, 362));
 	}
