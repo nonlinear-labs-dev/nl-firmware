@@ -94,11 +94,12 @@ public class ChildrenOwner<TChild extends Control> {
 		int numControls = getChildren().size();
 		for (int i = numControls - 1; i >= 0; i--) {
 			Control c = getChildren().get(i);
+			if (c.isVisible()) {
+				Control found = c.recurseChildren(pos, handler);
 
-			Control found = c.recurseChildren(pos, handler);
-
-			if (found != null)
-				return found;
+				if (found != null)
+					return found;
+			}
 		}
 
 		return null;

@@ -229,20 +229,20 @@ public class DragProxy extends OverlayControl {
 					if (autoScrollCommand == this) {
 						if (currentAutoScrollDirection != AutoScrollDirection.None) {
 							switch (currentAutoScrollDirection) {
-							case Down:
-								NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(0, 1);
-								break;
-							case Left:
-								NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(-1, 0);
-								break;
-							case Right:
-								NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(1, 0);
-								break;
-							case Up:
-								NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(0, -1);
-								break;
-							default:
-								break;
+								case Down:
+									NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(0, 1);
+									break;
+								case Left:
+									NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(-1, 0);
+									break;
+								case Right:
+									NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(1, 0);
+									break;
+								case Up:
+									NonMaps.theMaps.getNonLinearWorld().getViewport().autoScroll(0, -1);
+									break;
+								default:
+									break;
 							}
 							return true;
 						}

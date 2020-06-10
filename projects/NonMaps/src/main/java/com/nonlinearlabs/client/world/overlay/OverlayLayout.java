@@ -151,4 +151,9 @@ public abstract class OverlayLayout extends OverlayControl implements ILayout<Ov
 		super.calcPixRect(parentsReference, currentZoom);
 		children.calcPixRect(getPixRect().getPosition(), currentZoom);
 	}
+
+	@Override
+	public boolean isVisible() {
+		return super.isVisible() && getOpacity() > 0.0;
+	}
 }
