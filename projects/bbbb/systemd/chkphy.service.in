@@ -1,0 +1,9 @@
+[Unit]
+Description=Check BBB phy on boot and repower if PHY failed
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=@C15_INSTALL_PATH@/scripts/bbb-check-phy.sh
+TimeoutSec=0
