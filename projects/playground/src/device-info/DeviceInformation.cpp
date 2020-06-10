@@ -6,6 +6,7 @@
 #include "device-settings/DebugLevel.h"
 #include "BuildVersion.h"
 #include "DateTimeInfo.h"
+#include "RTSoftwareVersion.h"
 #include <Application.h>
 #include <proxies/lpc/LPCProxy.h>
 #include <http/NetworkRequest.h>
@@ -17,6 +18,7 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
   m_items.emplace_back(new FreeDiscSpaceInformation(this));
   m_items.emplace_back(new SoftwareVersion(this));
   m_items.emplace_back(new DateTimeInfo(this));
+  m_items.emplace_back(new RTSoftwareVersion(this));
   m_items.emplace_back(new BuildVersion(this));
 }
 
