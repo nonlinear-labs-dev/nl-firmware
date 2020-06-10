@@ -4,12 +4,10 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.KeyTrackParameter;
-import com.nonlinearlabs.client.world.maps.parameters.LabelModulationSource;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableNumericalControl;
-import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceHighPriority;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
+import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSwitch;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class PitchColumn extends ParameterColumn {
@@ -50,20 +48,11 @@ class PitchColumn extends ParameterColumn {
 		}
 	}
 
-	private class Keytracking extends ModulationSourceHighPriority {
-
-		private Keytracking(MapsLayout parent) {
-			super(parent, 85);
-			addChild(new LabelModulationSource(this, getParameterNumber()));
-			addChild(new KeyTrackParameter(this, getParameterNumber()));
-		}
-
-	}
 
 	PitchColumn(MapsLayout parent) {
 		super(parent);
 		addChild(new Pitch(this));
 		addChild(new ModulationSourceSlider(this, 86));
-		addChild(new Keytracking(this));
+		addChild(new ModulationSourceSwitch(this, 85));
 	}
 }

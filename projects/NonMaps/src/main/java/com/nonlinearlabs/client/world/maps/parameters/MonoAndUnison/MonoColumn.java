@@ -4,20 +4,47 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.BooleanControlSmall;
-import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnobWithoutHeader;
-import com.nonlinearlabs.client.world.maps.parameters.NumericalControlSmall;
+import com.nonlinearlabs.client.world.maps.parameters.KnobLarge;
+import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameterWithoutName;
+import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceLabel;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterGroup;
+import com.nonlinearlabs.client.world.maps.parameters.SmallModulateableParameter;
+import com.nonlinearlabs.client.world.maps.parameters.Spacer;
 import com.nonlinearlabs.client.world.maps.parameters.UnModulateableParameterName;
+import com.nonlinearlabs.client.world.maps.parameters.ValueDisplayLarge;
 
 public class MonoColumn extends ParameterColumn {
-    private class Enable extends Parameter {
-
-        private Enable(MapsLayout parent) {
-            super(parent, 364);
+    private final class GlideParameter extends ModulatableParameterWithoutName {
+        private GlideParameter(MapsLayout parent, int parameterID) {
+            super(parent, parameterID);
             addChild(new UnModulateableParameterName(this));
-            addChild(new BooleanControlSmall(this, getParameterNumber()));
+            addChild(new ModulationSourceLabel(this, getParameterNumber()));
+            addChild(new KnobLarge(this, getParameterNumber()));
+            addChild(new ValueDisplayLarge(this, getParameterNumber()));
+        }
+    }
+
+    private class BooleanParameter extends Parameter {
+
+        private BooleanParameter(MapsLayout parent, int id) {
+            super(parent, id);
+            addChild(new UnModulateableParameterName(this));
+
+            addChild(new BooleanControlSmall(this, getParameterNumber()) {
+                @Override
+                protected double getInsetY() {
+                    return 0;
+                }
+
+                @Override
+                protected double getBasicHeight() {
+                    return 14;
+                }
+            });
+
+            addChild(new Spacer(this, 1, 6));
         }
 
         @Override
@@ -32,44 +59,11 @@ public class MonoColumn extends ParameterColumn {
         }
     }
 
-    private class PriorityControlSmall extends NumericalControlSmall {
-
-        public PriorityControlSmall(MapsLayout parent, int parameterID) {
-            super(parent, parameterID);
-        }
-
-        @Override
-        protected double getInsetY() {
-            return 2;
-        }
-
-        @Override
-        protected double getBasicHeight() {
-            return 19;
-        }
-    }
-
-    private class Priority extends Parameter {
-        private Priority(MapsLayout parent) {
-            super(parent, 365);
-            addChild(new UnModulateableParameterName(this));
-            addChild(new PriorityControlSmall(this, getParameterNumber()));
-        }
-    }
-
-    private class Legato extends Parameter {
-        private Legato(MapsLayout parent) {
-            super(parent, 366);
-            addChild(new UnModulateableParameterName(this));
-            addChild(new BooleanControlSmall(this, getParameterNumber()));
-        }
-    }
-
     public MonoColumn(ParameterGroup parent) {
         super(parent);
-        addChild(new Enable(this));
-        addChild(new Priority(this));
-        addChild(new ModulateableKnobWithoutHeader(this, 367));
-        addChild(new Legato(this));
+        addChild(new BooleanParameter(this, 364));
+        addChild(new SmallModulateableParameter(this, 365));
+        addChild(new GlideParameter(this, 367));
+        addChild(new BooleanParameter(this, 366));
     }
 }

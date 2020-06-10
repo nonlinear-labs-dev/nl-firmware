@@ -7,12 +7,14 @@ class FlangerControls extends ParameterGroupControls {
 
 	FlangerControls(MapsLayout parent) {
 		super(parent);
-		addChild(new FlangerCol1(this));
+		addChild(new RateColumn(this));
+		addChild(new EnvAndPhaseColumn(this));
 		addChild(new FlangerCol2(this));
 		addChild(new FlangerCol3(this));
 		addChild(new FlangerCol4(this));
 		addChild(new FlangerCol5(this));
-		addChild(new FlangerCol6(this));
+		addChild(new FeedbackColumn(this));
+		addChild(new CrossFBAndHicut(this));
 		addChild(new FlangerCol7(this));
 		addChild(new FlangerCol8(this));
 	}

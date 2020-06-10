@@ -29,7 +29,8 @@ public class ModulationSourceLabel extends Label {
 	@Override
 	public void doSecondLayoutPass(double parentsWidthFromFirstPass, double parentsHeightFromFirstPass) {
 		super.doSecondLayoutPass(parentsWidthFromFirstPass, parentsHeightFromFirstPass);
-		setNonSize(parentsWidthFromFirstPass * 0.9, getNonPosition().getHeight());
+		double inset = (getBasicHeight() - getFontHeight()) / 2 + moveFontVerticallyBy() * 2;
+		setNonSize(parentsWidthFromFirstPass - inset, getNonPosition().getHeight());
 	}
 
 	@Override
@@ -50,6 +51,11 @@ public class ModulationSourceLabel extends Label {
 	@Override
 	protected TextAlign getTextAlignment() {
 		return TextAlign.RIGHT;
+	}
+
+	@Override
+	protected double moveFontVerticallyBy() {
+		return super.moveFontVerticallyBy() + 1;
 	}
 
 	@Override

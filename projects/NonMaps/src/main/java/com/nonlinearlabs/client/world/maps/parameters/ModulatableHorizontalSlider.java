@@ -34,4 +34,9 @@ public class ModulatableHorizontalSlider extends ModulatableParameterWithoutName
 		return ret;
 	}
 
+	@Override
+	public double getLevelOfDetailForFullVisibility() {
+		return 4;
+	}
+
 }

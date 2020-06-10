@@ -29,11 +29,16 @@ public class KeyTrackParameter extends NumericalControlSmall {
 
 	@Override
 	protected double getBasicHeight() {
-		return 25;
+		return 15;
 	}
 
 	@Override
 	protected double getMinHeight() {
-		return 7.5;
+		return 0;
+	}
+
+	@Override
+	protected double getInsetY() {
+		return 0;
 	}
 }
