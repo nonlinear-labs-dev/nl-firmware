@@ -1,6 +1,6 @@
 %~d0
 cd %~dp0
-for /R %%f in (*.sh *.txt) do dos2unix.exe "%%f"
+for /R %%f in (*.sh *.txt *.in *.service) do dos2unix.exe "%%f"
 cd build-tools\epc\hook
 for /R %%f in (*.*) do dos2unix.exe "%%f"
 cd build-tools\epc\install
