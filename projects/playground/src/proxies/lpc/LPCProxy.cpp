@@ -220,7 +220,8 @@ void LPCProxy::onEditControlMessageReceived(const MessageParser::NLMessage &msg)
   DebugLevel::info("it is an edit control message");
 
   uint16_t id = msg.params[0];
-  notifyRibbonTouch(id);
+  auto ribbonParam = findPhysicalControlParameterFromLPCHWSourceID(id);
+  notifyRibbonTouch(ribbonParam->getID().getNumber());
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
