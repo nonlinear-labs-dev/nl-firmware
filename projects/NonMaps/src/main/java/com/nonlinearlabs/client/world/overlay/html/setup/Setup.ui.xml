@@ -359,7 +359,7 @@
 
 					<div class="halb-he">
 						<div class="w40p">
-							<p>UI Software Version</p>
+							<p>Software Version</p>
 						</div>
 						<div class="w60p">
 							<g:Label ui:field="uiVersion"></g:Label>
