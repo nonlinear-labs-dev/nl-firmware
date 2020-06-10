@@ -41,13 +41,13 @@ public class SplitSoundLayout extends SoundLayout {
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 			double margin = Millimeter.toPixels(2);
-			double parts = 20;
-			double unit = (w - 2 * margin) / parts;
 			double splitPointHeight = Math.min(h, Millimeter.toPixels(30));
-			double splitPointWidth = Math.min(3 * unit, Millimeter.toPixels(40));
-			getChildren().get(0).doLayout(0 * unit, margin, 8 * unit, h - 2 * margin);
-			getChildren().get(1).doLayout(9 * unit, (h - splitPointHeight) / 2, splitPointWidth, splitPointHeight);
-			getChildren().get(2).doLayout(10 * unit + splitPointWidth, margin, 8 * unit, h - 2 * margin);
+			double splitPointWidth = Math.min(w / 4, Millimeter.toPixels(40));
+			double settingWidth = (w - splitPointWidth - 2 * margin) / 2;
+			getChildren().get(0).doLayout(0, margin, settingWidth, h - 2 * margin);
+			getChildren().get(1).doLayout(settingWidth + margin, (h - splitPointHeight) / 2, splitPointWidth,
+					splitPointHeight);
+			getChildren().get(2).doLayout(w - settingWidth, margin, settingWidth, h - 2 * margin);
 		}
 	}
 
@@ -128,12 +128,13 @@ public class SplitSoundLayout extends SoundLayout {
 			double parameterValueWidth = 10 * xunit;
 
 			double vgLabelMargin = margin;
-			if(xunit < margin) {
+			if (xunit < margin) {
 				vgLabelMargin /= 2;
 			}
 
 			if (group == VoiceGroup.I) {
-				m_voiceGroupLabel.doLayout(vgLabelMargin, middleLine - labelHeight / 2, voiceGroupLabelWidth, labelHeight);
+				m_voiceGroupLabel.doLayout(vgLabelMargin, middleLine - labelHeight / 2, voiceGroupLabelWidth,
+						labelHeight);
 				m_presetName.doLayout(margin + 4 * xunit, margin, presetNameWidth, 5 * yunit);
 				m_volumeLabel.doLayout(margin + 4 * xunit, margin + 8 * yunit, parameterLabelWidth, 5 * yunit);
 				m_volumeValue.doLayout(margin + 10 * xunit, margin + 8 * yunit, parameterValueWidth, 5 * yunit);
@@ -275,20 +276,20 @@ public class SplitSoundLayout extends SoundLayout {
 		public Control drag(Position pos, DragProxy dragProxy) {
 			if (!getPixRect().contains(pos))
 				return null;
-	
+
 			if (dragProxy.getOrigin() instanceof IPreset) {
 				setIsDropTarget(true);
 				return this;
 			}
 			return super.drag(pos, dragProxy);
 		}
-	
+
 		@Override
 		public void dragLeave() {
 			setIsDropTarget(false);
 			super.dragLeave();
 		}
-	
+
 		private boolean isDropTarget = false;
 
 		private void setIsDropTarget(boolean isDropTarget) {
@@ -299,20 +300,20 @@ public class SplitSoundLayout extends SoundLayout {
 		}
 
 		private ChoosePresetPartDialog choosePresetPart = null;
-	
+
 		@Override
 		public Control drop(Position pos, DragProxy dragProxy) {
-	
+
 			if (dragProxy.getOrigin() instanceof IPreset)
-				if(dragProxy.getOrigin() instanceof Preset) {
-					Preset p = (Preset)dragProxy.getOrigin();
-					if(p.isDual()) {
-						choosePresetPart = new ChoosePresetPartDialog(p, group);		
+				if (dragProxy.getOrigin() instanceof Preset) {
+					Preset p = (Preset) dragProxy.getOrigin();
+					if (p.isDual()) {
+						choosePresetPart = new ChoosePresetPartDialog(p, group);
 					} else {
 						NonMaps.get().getServerProxy().loadPresetPartIntoPart(p.getUUID(), VoiceGroup.I, group);
 					}
 				}
-	
+
 			setIsDropTarget(false);
 			return this;
 		}
