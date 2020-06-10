@@ -62,11 +62,6 @@ sigc::connection LPCProxy::onRibbonTouched(sigc::slot<void, int> s)
   return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
 }
 
-sigc::connection LPCProxy::onLPCSoftwareVersionChanged(sigc::slot<void, int> s)
-{
-  return m_signalLPCSoftwareVersionChanged.connectAndInit(s, m_lpcSoftwareVersion);
-}
-
 int LPCProxy::getLastTouchedRibbonParameterID() const
 {
   return m_lastTouchedRibbon;
@@ -114,12 +109,9 @@ void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
     DebugLevel::warning("LPCProxy had to re-send the edit buffer, as the heartbeat stumbled from",
                         m_lastReceivedHeartbeat, "to", heartbeat);
 
-    Application::get().getAudioEngineProxy()->sendEditBuffer();
-    Application::get().getSettings()->sendSettingsToLPC(SendReason::HeartBeatDropped);
-    Application::get().getSettings()->sendPresetSettingsToLPC();
+    onHeartbeatStumbled();
   }
 
-  m_heartbeatReceived = true;
   m_lastReceivedHeartbeat = heartbeat;
 }
 
@@ -144,14 +136,12 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
     if(m_lpcSoftwareVersion != value)
     {
       m_lpcSoftwareVersion = value;
-      m_signalLPCSoftwareVersionChanged.send(m_lpcSoftwareVersion);
     }
   }
 }
 
 void LPCProxy::onLPCConnected()
 {
-  requestLPCSoftwareVersion();
   sendCalibrationData();
 }
 
@@ -313,7 +303,7 @@ void LPCProxy::notifyRibbonTouch(int ribbonsParameterID)
   }
 }
 
-void LPCProxy::queueToLPC(tMessageComposerPtr cmp)
+void LPCProxy::queueToLPC(const tMessageComposerPtr &cmp)
 {
   auto flushed = cmp->flush();
   traceBytes(flushed);
@@ -382,22 +372,11 @@ void LPCProxy::sendSetting(uint16_t key, gint16 value)
   DebugLevel::info("sending setting", key, "=", value);
 }
 
-void LPCProxy::sendSetting(uint16_t key, bool value)
+void LPCProxy::onHeartbeatStumbled()
 {
-  sendSetting(key, (uint16_t)(value ? 1 : 0));
-}
-
-void LPCProxy::requestLPCSoftwareVersion()
-{
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
-  uint16_t v = MessageParser::SOFTWARE_VERSION;
-  *cmp << v;
-  queueToLPC(cmp);
-
-  DebugLevel::info("sending request", MessageParser::SOFTWARE_VERSION);
-}
-
-int LPCProxy::getLPCSoftwareVersion() const
-{
-  return m_lpcSoftwareVersion;
+  auto settings = Application::get().getSettings();
+  Application::get().getAudioEngineProxy()->sendEditBuffer();
+  settings->sendSettingsToLPC(SendReason::HeartBeatDropped);
+  settings->sendPresetSettingsToLPC();
+  sendCalibrationData();
 }

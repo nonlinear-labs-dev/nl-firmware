@@ -26,18 +26,6 @@ public class DeviceInformationProvider {
 			return true;
 		});
 
-		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().rtSoftwareVersion.onChange(v -> {
-			info.rtVersion = v;
-			notifyClients();
-			return true;
-		});
-
-		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().osVersion.onChange(v -> {
-			info.osVersion = v;
-			notifyClients();
-			return true;
-		});
-
 		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().dateTimeDisplay.onChange(v -> {
 			info.dateTime = v;
 			notifyClients();

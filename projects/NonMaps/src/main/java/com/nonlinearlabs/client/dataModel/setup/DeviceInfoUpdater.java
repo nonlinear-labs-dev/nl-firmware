@@ -18,8 +18,6 @@ public class DeviceInfoUpdater extends Updater {
 
 		m.put("free-disc-space", DeviceInformation.get().freeDiscSpace);
 		m.put("software-version", DeviceInformation.get().softwareVersion);
-		m.put("rt-software-version", DeviceInformation.get().rtSoftwareVersion);
-		m.put("os-version", DeviceInformation.get().osVersion);
 		m.put("date-time", DeviceInformation.get().dateTime);
 		m.put("date-time-display", DeviceInformation.get().dateTimeDisplay);
 

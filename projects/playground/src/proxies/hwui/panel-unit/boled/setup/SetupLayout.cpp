@@ -1,8 +1,6 @@
 #include <Application.h>
 #include <device-info/DateTimeInfo.h>
 #include <device-info/DeviceInformation.h>
-#include <device-info/OSVersion.h>
-#include <device-info/RTSoftwareVersion.h>
 #include <device-info/SoftwareVersion.h>
 #include <device-settings/PedalType.h>
 #include <groups/HardwareSourcesGroup.h>

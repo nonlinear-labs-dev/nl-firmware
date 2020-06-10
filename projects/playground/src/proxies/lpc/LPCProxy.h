@@ -63,21 +63,17 @@ class LPCProxy
   void sendSetting(uint16_t key, uint16_t value);
 
   void sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset);
-  void sendSetting(uint16_t key, bool v);
 
   sigc::connection onRibbonTouched(sigc::slot<void, int> s);
   sigc::connection onLPCSoftwareVersionChanged(sigc::slot<void, int> s);
   int getLastTouchedRibbonParameterID() const;
-
-  void requestLPCSoftwareVersion();
-  int getLPCSoftwareVersion() const;
 
  private:
   void onLPCMessage(const nltools::msg::LPCMessage &msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);
 
   typedef std::shared_ptr<MessageComposer> tMessageComposerPtr;
-  void queueToLPC(tMessageComposerPtr cmp);
+  void queueToLPC(const tMessageComposerPtr& cmp);
 
   gint16 separateSignedBitToComplementary(uint16_t v) const;
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
@@ -103,9 +99,7 @@ class LPCProxy
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
-  int m_lpcSoftwareVersion = 0;
-  Signal<void, int> m_signalLPCSoftwareVersionChanged;
-
+  int m_lpcSoftwareVersion;
   Throttler m_throttledRelativeParameterChange;
   gint32 m_throttledRelativeParameterAccumulator = 0;
 
@@ -113,5 +107,6 @@ class LPCProxy
   gint32 m_throttledAbsoluteParameterValue = 0;
 
   uint64_t m_lastReceivedHeartbeat = -1;
-  bool m_heartbeatReceived = false;
+
+  void onHeartbeatStumbled();
 };

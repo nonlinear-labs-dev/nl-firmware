@@ -944,12 +944,6 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void requestRTSoftwareVersion() {
-		StaticURI.Path path = new StaticURI.Path("device-info", "refresh-rt-software-version");
-		StaticURI uri = new StaticURI(path);
-		queueJob(uri, false);
-	}
-
 	public void recallCurrentParameterFromPreset() {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-current-from-preset");
 		StaticURI uri = new StaticURI(path);
