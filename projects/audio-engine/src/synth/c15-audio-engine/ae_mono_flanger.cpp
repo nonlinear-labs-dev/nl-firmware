@@ -207,7 +207,7 @@ void Engine::MonoFlanger::apply(MonoSignals &_signals, const float _rawSample_L,
       = NlToolbox::Crossfades::crossFade(_rawSample_L, tmpVar_2, _signals.get(C15::Signals::Mono_Signals::Flanger_DRY),
                                          _signals.get(C15::Signals::Mono_Signals::Flanger_WET));
   m_out_L *= 1.0f
-      + (_signals.get(C15::Signals::Mono_Signals::Flanger_LFO_L)
+      + (_signals.get(C15::Signals::Mono_Signals::Flanger_Tremolo_L)
          * _signals.get(C15::Signals::Mono_Signals::Flanger_Tremolo));
   // right channel
   tmpVar_1 = _rawSample_R + (m_stateVar_R * _signals.get(C15::Signals::Mono_Signals::Flanger_FB_Local))
@@ -293,7 +293,7 @@ void Engine::MonoFlanger::apply(MonoSignals &_signals, const float _rawSample_L,
       = NlToolbox::Crossfades::crossFade(_rawSample_R, tmpVar_2, _signals.get(C15::Signals::Mono_Signals::Flanger_DRY),
                                          _signals.get(C15::Signals::Mono_Signals::Flanger_WET));
   m_out_R *= 1.0f
-      + (_signals.get(C15::Signals::Mono_Signals::Flanger_LFO_R)
+      + (_signals.get(C15::Signals::Mono_Signals::Flanger_Tremolo_R)
          * _signals.get(C15::Signals::Mono_Signals::Flanger_Tremolo));
   // ringbuffer index update
   m_buffer_indx = (m_buffer_indx + 1) & m_buffer_sz_m1;

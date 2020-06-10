@@ -157,6 +157,8 @@ void MonoSection::postProcess_audio()
   m_flanger_lfo.tick();
   const float tmp_env = (m_flanger_env.m_body[0].m_signal_magnitude * 2.0f) - 1.0f,
               tmp_wet = m_smoothers.get(C15::Smoothers::Mono_Slow::Flanger_Envelope), tmp_dry = 1.0f - tmp_wet;
+  m_signals.set(C15::Signals::Mono_Signals::Flanger_Tremolo_L, m_flanger_lfo.m_left);
+  m_signals.set(C15::Signals::Mono_Signals::Flanger_Tremolo_R, m_flanger_lfo.m_right);
   m_signals.set(C15::Signals::Mono_Signals::Flanger_LFO_L, (tmp_dry * m_flanger_lfo.m_left) + (tmp_wet * tmp_env));
   m_signals.set(C15::Signals::Mono_Signals::Flanger_LFO_R, (tmp_dry * m_flanger_lfo.m_right) + (tmp_wet * tmp_env));
 }
