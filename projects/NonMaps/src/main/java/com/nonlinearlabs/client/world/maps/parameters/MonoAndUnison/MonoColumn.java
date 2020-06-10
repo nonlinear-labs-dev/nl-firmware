@@ -64,6 +64,11 @@ public class MonoColumn extends ParameterColumn {
         addChild(new BooleanParameter(this, 364));
         addChild(new SmallModulateableParameter(this, 365));
         addChild(new GlideParameter(this, 367));
-        addChild(new BooleanParameter(this, 366));
+        addChild(new BooleanParameter(this, 366) {
+            @Override
+            protected int getBackgroundRoundings() {
+                return Rect.ROUNDING_BOTTOM;
+            }
+        });
     }
 }
