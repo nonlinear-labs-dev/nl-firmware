@@ -1,9 +1,4 @@
 #!/bin/sh
-#
-#
-# Name:         Anton Schmied
-# Date:         2020.05.22
-# Version:      2.1
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
@@ -75,21 +70,30 @@ executeOnWin() {
     return $?
 }
 
+TIMEOUT=10
+
+wait4playground() {
+    for COUNTER in $(seq 1 $TIMEOUT); do
+        echo "awaiting reboot ... $COUNTER/$TIMEOUT"
+        sleep 1
+        executeAsRoot "systemctl status playground" && return 0
+    done
+    return 1
+}
+
 check_preconditions() {
-    executeAsRoot "exit"
-    if [ $? -ne 0 ]; then
-        if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!"; return 1; fi
-        if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!"; return 1; fi
+    if ! wait4playground; then
+        if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
+        if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
         if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
             report "" "E84: Upgrade OS first!" "Please contact NLL!" && return 1
         else
             if mount.cifs //192.168.10.10/update /mnt/windows -o user=TEST,password=TEST \
                 && ls -l /mnt/windows/ | grep Phase22Renderer.ens; then
-                    report "" "E85: OS too old for update!" "Please contact NLL!"; return 1
+                    report "" "E85: OS too old for update!" "Please contact NLL!" && return 1
             fi
         fi
-        report "" "Something went wrong!" "Please retry update!"
-        return 1
+        report "" "Something went wrong!" "Please retry update!" && return 1
     fi
     return 0
 }
@@ -193,18 +197,12 @@ stop_services() {
     return 0
 }
 
-freeze() {
-    while true; do
-        sleep 1
-    done
-}
-
 main() {
     rm -f /update/errors.log
     touch /update/errors.log
 
     configure_ssh
-    if ! check_preconditions; then freeze; fi
+    check_preconditions || return 1
 
     [ $UPDATE_BBB == 1 ] && stop_services
     [ $UPDATE_EPC == 1 ] && epc_update
@@ -214,11 +212,11 @@ main() {
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
         pretty "" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG"
-        freeze
+        return 1
     fi
 
     pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
-    freeze
+    return 0
 }
 
 main
