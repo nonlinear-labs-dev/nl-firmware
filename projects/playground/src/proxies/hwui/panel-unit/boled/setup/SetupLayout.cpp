@@ -66,6 +66,7 @@
 #include <device-settings/TuneReference.h>
 #include <device-settings/TransitionTime.h>
 #include <tools/StringTools.h>
+#include <parameter_declarations.h>
 #include "UISoftwareVersionEditor.h"
 
 namespace NavTree
@@ -528,9 +529,9 @@ namespace NavTree
       }
     };
 
-    RibbonCalibration(InnerNode *parent, bool upper)
-        : Leaf(parent, upper ? "Upper Ribbon Calibration" : "Lower Ribbon Calibration")
-        , m_upper { upper }
+    RibbonCalibration(InnerNode *parent, C15::PID::ParameterID ribbon)
+        : Leaf(parent, ribbon ? "Upper Ribbon Calibration" : "Lower Ribbon Calibration")
+        , m_upper { ribbon == C15::PID::Ribbon_1 }
     {
     }
 
@@ -556,8 +557,8 @@ namespace NavTree
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
-      children.emplace_back(new RibbonCalibration(this, true));
-      children.emplace_back(new RibbonCalibration(this, false));
+      children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_1));
+      children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_2));
     }
   };
 
