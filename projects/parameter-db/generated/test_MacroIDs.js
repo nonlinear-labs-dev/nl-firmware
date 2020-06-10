@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**	@file       MacroIDs.js
-    @date       2020-05-01, 17:50
-    @version    1.7B-6
+    @date       2020-06-10, 11:36
+    @version	1.7B-6
     @author     M. Seeber
     @brief      all Macro IDs named and provided in immutable structure
     @todo
@@ -15,5 +15,3 @@ const MacroIDs = {
     get MC_E() { return 369; },
     get MC_F() { return 371; }
 };
-
-console.log("usage: MacroIDs.MC_A = ", MacroIDs.MC_A);
