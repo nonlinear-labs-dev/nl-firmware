@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h
-	@date	2020-06-04, 13:12
-	@version	1.7B-6
-	@author	M. Seeber
-	@brief	complete list of parameters (and their properties) in TCD order
-	@todo
+/**	@file       parameter_list.h
+    @date       2020-06-10, 11:36
+    @version	1.7B-6
+    @author     M. Seeber
+    @brief      complete list of parameters (and their properties) in TCD order
+    @todo
 *******************************************************************************/
 
 #include "c15_config.h"

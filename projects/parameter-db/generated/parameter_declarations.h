@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_declarations.h
-	@date	2020-06-04, 13:12
-	@version	1.7B-6
-	@author	M. Seeber
-	@brief	descriptors for all parameter-related details
-	@todo
+/**	@file       parameter_declarations.h
+    @date       2020-06-10, 11:35
+    @version	1.7B-6
+    @author     M. Seeber
+    @brief      descriptors for all parameter-related details
+    @todo
 *******************************************************************************/
 
 namespace C15
@@ -830,6 +830,8 @@ namespace C15
       Flanger_WET,
       Flanger_APF_L,
       Flanger_APF_R,
+      Flanger_Tremolo_L,
+      Flanger_Tremolo_R,
       Cabinet_Drive,
       Cabinet_Fold,
       Cabinet_Asym,
