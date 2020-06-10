@@ -113,12 +113,13 @@ void PolySection::render_audio(const float _mute)
   m_z_self->m_osc_b = m_soundgenerator.m_out_B;
   m_z_self->m_comb = m_combfilter.m_out;
   m_z_self->m_svf = m_svfilter.m_out;
+  m_z_self->m_mute_factor = m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);  // track part mute for fb mixer
   // eval sends
-  float send = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX);
+  float send = (1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX));  // send self stays unmuted
   m_send_self_l = m_outputmixer.m_out_l * send;
   m_send_self_r = m_outputmixer.m_out_r * send;
   send = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX)
-      * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
+      * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);  // apply part mute to send other
   m_send_other_l = m_outputmixer.m_out_l * send;
   m_send_other_r = m_outputmixer.m_out_r * send;
 }
