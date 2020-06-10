@@ -6,7 +6,7 @@ set(OBJDIR ${CMAKE_CURRENT_BINARY_DIR}/obj)
 set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/compilation-mappings.txt)
 
 file(GLOB_RECURSE SOURCE_FILES
-  ${NONMAPS_ROOT}/src/*.java)
+  ${NONMAPS_ROOT}/src/*.java ${NONMAPS_ROOT}/src/*.xml)
 
 file (GLOB MCSITE ${NONMAPS_ROOT}/PerformanceView/*)
 
