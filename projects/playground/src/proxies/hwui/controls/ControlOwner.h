@@ -29,7 +29,7 @@ class ControlOwner : public Uncopyable
 
   template <class T> std::list<std::shared_ptr<T>> getControls() const
   {
-    std::list<std::shared_ptr<T>> ret{};
+    std::list<std::shared_ptr<T>> ret {};
     for(auto &c : m_controls)
     {
       if(auto casted = std::dynamic_pointer_cast<T>(c))
@@ -63,13 +63,22 @@ class ControlOwner : public Uncopyable
     return nullptr;
   }
 
+  template <typename T> const std::shared_ptr<T> findControlOfType() const
+  {
+    for(auto &c : getControls())
+      if(auto p = std::dynamic_pointer_cast<T>(c))
+        return p;
+
+    return nullptr;
+  }
+
   template <typename... TControls> struct ControlList
   {
     template <typename CB> static bool findFirstAndCall(ControlOwner *o, CB cb)
     {
       using this_type = ControlList<TControls...>;
       bool found = false;
-      std::initializer_list<bool>{ (this_type::callIfMatches<CB, TControls>(found, o, cb), false)... };
+      std::initializer_list<bool> { (this_type::callIfMatches<CB, TControls>(found, o, cb), false)... };
       return found;
     }
 

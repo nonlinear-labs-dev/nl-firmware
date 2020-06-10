@@ -12,7 +12,8 @@ class PedalView : public SetupLabel
  public:
   PedalView(std::shared_ptr<PedalType> s);
   virtual ~PedalView();
+  bool redraw(FrameBuffer& fb) override;
 
  private:
-  void onSettingChanged(const Setting *s);
+  void onSettingChanged(const Setting* s);
 };
