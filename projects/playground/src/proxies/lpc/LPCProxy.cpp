@@ -22,7 +22,7 @@
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <device-settings/Settings.h>
-#include <experimental/filesystem>
+#include <filesystem>
 
 LPCProxy::LPCProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -150,7 +150,7 @@ void LPCProxy::onLPCConnected()
 void LPCProxy::sendCalibrationData()
 {
   static const char *calibrationPath = "/persistent/calibration/calibration.bin";
-  if(std::experimental::filesystem::exists(calibrationPath))
+  if(std::filesystem::exists(calibrationPath))
   {
     auto message = nltools::readBinaryFile(calibrationPath);
     nltools::msg::LPCMessage msg;

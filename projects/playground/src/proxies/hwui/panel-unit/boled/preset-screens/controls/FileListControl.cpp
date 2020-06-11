@@ -5,7 +5,7 @@ FileListControl::FileListControl(const Rect &pos)
     : selectedItem(0)
     , ControlWithChildren(pos)
 {
-  fileList = std::make_unique<FileTools::FileList>();
+  fileList = std::make_unique<FileSystem::FileList>();
   upperFile = addControl(new Label("", Rect(0, 0, 256, 12)));
   middleFile = addControl(new Label("", Rect(0, 12, 256, 12)));
   bottomFile = addControl(new Label("", Rect(0, 24, 256, 12)));
@@ -15,9 +15,9 @@ FileListControl::FileListControl(const Rect &pos)
   setSelection(0);
 }
 
-void FileListControl::setFileList(FileTools::FileList list)
+void FileListControl::setFileList(FileSystem::FileList list)
 {
-  fileList = std::make_unique<FileTools::FileList>(list);
+  fileList = std::make_unique<FileSystem::FileList>(list);
   setSelection(selectedItem);
 }
 

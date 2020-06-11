@@ -1,7 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/ButtonMenu.h"
-#include <experimental/filesystem>
+#include <filesystem>
 #include <utility>
 
 class Bank;
@@ -13,11 +13,11 @@ class BankEditButtonMenu : public ButtonMenu
 
   struct FileInfos
   {
-    explicit FileInfos(const std::experimental::filesystem::directory_entry& file)
+    explicit FileInfos(const std::filesystem::directory_entry& file)
     {
       filePath = file.path().string();
       fileName = file.path().filename().string();
-      auto lastModified = std::experimental::filesystem::last_write_time(file);
+      auto lastModified = std::filesystem::last_write_time(file);
       millisecondsFromEpoch
           = std::chrono::duration_cast<std::chrono::milliseconds>(lastModified.time_since_epoch()).count();
     }
@@ -64,7 +64,7 @@ class BankEditButtonMenu : public ButtonMenu
   static Glib::ustring createValidOutputPath(const Glib::ustring& bankName);
 
   static void writeSelectedBankToFile(Bank* selBank, const std::string& outFile);
-  static FileInfos extractFileInfos(const std::experimental::filesystem::directory_entry& file);
-  static void importBankFromPath(const std::experimental::filesystem::directory_entry& file);
-  static bool applicableBackupFilesFilter(const std::experimental::filesystem::directory_entry& term);
+  static FileInfos extractFileInfos(const std::filesystem::directory_entry& file);
+  static void importBankFromPath(const std::filesystem::directory_entry& file);
+  static bool applicableBackupFilesFilter(const std::filesystem::directory_entry& term);
 };

@@ -5,7 +5,7 @@
 #include <proxies/hwui/debug-oled/DebugLayout.h>
 #include <proxies/hwui/HWUI.h>
 #include <tools/ExceptionTools.h>
-#include <tools/FileTools.h>
+#include <tools/FileSystem.h>
 #include "LayoutParser.h"
 #include "ControlRegistry.h"
 #include "ControlParser.h"
@@ -16,6 +16,7 @@
 
 #include <tools/json.h>
 #include <iostream>
+#include <giomm/file.h>
 
 LayoutFolderMonitor& LayoutFolderMonitor::get()
 {
@@ -49,7 +50,7 @@ void LayoutFolderMonitor::bruteForce()
 
     for(auto& file : allFiles)
     {
-      auto path = FileTools::getFullPath(file);
+      auto path = FileSystem::getFullPath(file);
 
       if(g_str_has_suffix(path.c_str(), ".json"))
       {
