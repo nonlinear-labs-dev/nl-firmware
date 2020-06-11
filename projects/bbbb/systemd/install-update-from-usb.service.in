@@ -1,8 +1,10 @@
 [Unit]
-Description=Copy Update From USB Stick
+Description=Copy Update From USB Stick and Execute
 After=syslog.target network.target chkphy.service systemd-modules-load.service
+Before=bbbb.service
 
 [Service]
+Type=oneshot
 ExecStart=@C15_INSTALL_PATH@/scripts/install-update.sh
 
 [Install]
