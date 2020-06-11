@@ -1,4 +1,5 @@
 #include "SplitPointParameter.h"
+#include <parameters/scale-converters/LinearBipolar59StScaleConverter.h>
 #include <parameters/scale-converters/SplitPointScaleConverter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
@@ -9,7 +10,7 @@
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, const ParameterId &id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
-                                              ScaleConverter::get<SplitPointScaleConverter>(), 0.5, 59, 59)
+                                              ScaleConverter::get<LinearBipolar59StScaleConverter>(), 0.5, 59, 59)
 {
 }
 

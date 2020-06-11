@@ -1,4 +1,5 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
@@ -33,14 +34,13 @@ public class ParameterValueSlider extends OverlayControl {
 			if (isBiPolar)
 				drawCenterMark(ctx);
 
-			if(parameter.fillFromRightEnabled)
+			if (parameter.fillFromRightEnabled)
 				drawIndicatorFromRight(ctx, value);
 			else
 				drawIndicator(ctx, value, isBiPolar);
 
 			drawHandle(ctx, value, isBiPolar);
 		} else {
-
 			Rect background = getPixRect().copy();
 			double rounding = background.getHeight() / 2;
 			background.applyPadding(-rounding, 0, -rounding, 0);
@@ -50,34 +50,33 @@ public class ParameterValueSlider extends OverlayControl {
 				drawCenterMark(ctx);
 			drawRoundHandle(ctx, value, isBiPolar);
 			drawReturnIndicators(ctx, parameter);
-
 		}
 	}
 
 	protected void drawIndicatorFromRight(Context2d ctx, double value) {
-	
+
 		Rect indicatorRect = getPixRect().copy();
 
-		double width = indicatorRect.getWidth() - indicatorRect.getWidth() * value; 
+		double width = indicatorRect.getWidth() - indicatorRect.getWidth() * value;
 
 		indicatorRect.setLeft(indicatorRect.getRight() - width);
 		indicatorRect.setWidth(width);
 		indicatorRect.reduceHeightBy(2);
 		indicatorRect.reduceWidthBy(2);
 		indicatorRect.fill(ctx, getIndicatorColor());
-		
+
 	}
 
 	protected void drawReturnIndicators(Context2d ctx, ParameterPresenter parameter) {
 		Rect pixRect = getPixRect().copy();
 
-			double oneMM = Millimeter.toPixels(1);
-			double top = pixRect.getTop() - oneMM;
-			double bottom = pixRect.getBottom() + oneMM;
-			
-		if (parameter.drawCenterReturnIndicator) 
+		double oneMM = Millimeter.toPixels(1);
+		double top = pixRect.getTop() - oneMM;
+		double bottom = pixRect.getBottom() + oneMM;
+
+		if (parameter.drawCenterReturnIndicator)
 			drawReturnArrow(ctx, pixRect.getCenterPoint().getX(), top, bottom);
-		else if(parameter.drawZeroReturnIndicator)
+		else if (parameter.drawZeroReturnIndicator)
 			drawReturnArrow(ctx, pixRect.getLeft(), top, bottom);
 	}
 

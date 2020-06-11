@@ -44,6 +44,7 @@ public class ModulateableSliderHorizontal extends SliderHorizontal {
 			r.setLeft(x + width / 2 * modLeft);
 			r.setRight(x + width / 2 * modRight);
 			targetX = x + width / 2 * targetValue;
+
 		} else {
 			r.setLeft(sliderLeftStart + width * modLeft);
 			r.setRight(sliderLeftStart + width * modRight);
