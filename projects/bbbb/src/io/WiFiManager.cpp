@@ -5,13 +5,13 @@
 
 WiFiManager::WiFiManager()
 {
-  nltools::msg::receive<nltools::msg::WiFi::SetWiFiSSIDMessage>(nltools::msg::EndPoint::WiFiManager,
+  nltools::msg::receive<nltools::msg::WiFi::SetWiFiSSIDMessage>(nltools::msg::EndPoint::BeagleBone,
                                                                 [this](const auto& msg) {
                                                                   m_lastSeenSSID = msg.m_ssid.get();
                                                                   saveConfig();
                                                                 });
 
-  nltools::msg::receive<nltools::msg::WiFi::SetWiFiPasswordMessage>(nltools::msg::EndPoint::WiFiManager,
+  nltools::msg::receive<nltools::msg::WiFi::SetWiFiPasswordMessage>(nltools::msg::EndPoint::BeagleBone,
                                                                     [this](const auto& msg) {
                                                                       m_lastSeenPassword = msg.m_password.get();
                                                                       saveConfig();

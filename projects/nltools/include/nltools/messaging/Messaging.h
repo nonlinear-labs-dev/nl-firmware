@@ -16,7 +16,7 @@ namespace nltools
     // Types:
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 
-    ENUM(EndPoint, uint16_t, None, Lpc, Oled, PanelLed, RibbonLed, AudioEngine, Playground, WiFiManager, TestEndPoint);
+    ENUM(EndPoint, uint16_t, None, Lpc, Oled, PanelLed, RibbonLed, AudioEngine, Playground, BeagleBone, TestEndPoint);
 
     uint getPortFor(EndPoint p);
 

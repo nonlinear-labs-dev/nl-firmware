@@ -42,7 +42,7 @@ void Passphrase::updatePassword(const Glib::ustring& password)
   m_password = password;
 
   auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(m_password);
-  nltools::msg::send(nltools::msg::EndPoint::WiFiManager, passwordMsg);
+  nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
 
   notify();
 }
