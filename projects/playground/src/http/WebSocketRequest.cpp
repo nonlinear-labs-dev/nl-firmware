@@ -31,9 +31,9 @@ const SoupWebsocketConnection *WebSocketRequest::getSocket() const
   return m_socket;
 }
 
-std::shared_ptr<OutStream> WebSocketRequest::createStream(const Glib::ustring &contentType, bool zip)
+std::unique_ptr<OutStream> WebSocketRequest::createStream(const Glib::ustring &contentType, bool zip)
 {
-  return std::shared_ptr<OutStream>(new WebSocketOutStream(m_socket));
+  return std::make_unique<WebSocketOutStream>(m_socket);
 }
 
 void WebSocketRequest::okAndComplete()

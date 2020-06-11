@@ -9,7 +9,7 @@ class Attribute;
 class Writer
 {
  public:
-  Writer(std::shared_ptr<OutStream> out);
+  Writer(std::unique_ptr<OutStream> out);
   virtual ~Writer();
 
   typedef std::function<void()> tTagContentWriter;
@@ -61,5 +61,5 @@ class Writer
   template <typename tFirst, typename... tAttributes>
   void writeAttributes(const tFirst &first, const tAttributes &... attributes);
 
-  std::shared_ptr<OutStream> m_out;
+  std::unique_ptr<OutStream> m_out;
 };

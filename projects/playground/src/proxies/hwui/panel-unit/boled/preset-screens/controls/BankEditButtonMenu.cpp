@@ -178,7 +178,7 @@ void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::strin
   selBank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
   selBank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
   PresetBankSerializer serializer(selBank, false);
-  XmlWriter writer(std::make_shared<FileOutStream>(outFile, false));
+  XmlWriter writer(std::make_unique<FileOutStream>(outFile, false));
   serializer.write(writer, VersionAttribute::get());
 }
 

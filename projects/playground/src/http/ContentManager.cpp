@@ -212,8 +212,7 @@ bool ContentManager::feedWebSocket(tWebsocketConnection c)
     if(c->getLastSentUpdateId() != currentUpdateId)
     {
       DebugLevel::info("Updating websocket", c->getConnection(), "with document for updateID", currentUpdateId);
-      std::shared_ptr<OutStream> stream(new WebSocketOutStream(c->getConnection()));
-      XmlWriter writer(stream);
+      XmlWriter writer(std::make_unique<WebSocketOutStream>(c->getConnection()));
       writeDocument(writer, c->getLastSentUpdateId(), c->canOmitOracles(currentUpdateId));
       c->setLastSentUpdateId(currentUpdateId);
     }
@@ -251,10 +250,8 @@ void ContentManager::delayResponseUntilChanged(std::shared_ptr<HTTPRequest> requ
 void ContentManager::deliverResponse(std::shared_ptr<HTTPRequest> request,
                                      UpdateDocumentContributor::tUpdateID clientsUpdateID)
 {
-  std::shared_ptr<OutStream> stream = request->createStream("text/xml", false);
   request->setHeader("updateID", to_string(getUpdateIDOfLastChange()));
-
-  XmlWriter writer(stream);
+  XmlWriter writer(request->createStream("text/xml", false));
   writeDocument(writer, clientsUpdateID);
 }
 

@@ -2,8 +2,8 @@
 #include "Attribute.h"
 #include "OutStream.h"
 
-Writer::Writer(std::shared_ptr<OutStream> out)
-    : m_out(out)
+Writer::Writer(std::unique_ptr<OutStream> out)
+    : m_out(std::move(out))
 {
 }
 
@@ -26,19 +26,20 @@ void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &te
   implWriteTextElement(name, text, { a });
 }
 
-void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b)
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a,
+                              const Attribute &b)
 {
   implWriteTextElement(name, text, { a, b });
 }
 
-void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b,
-                              const Attribute &c)
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a,
+                              const Attribute &b, const Attribute &c)
 {
   implWriteTextElement(name, text, { a, b, c });
 }
 
-void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a, const Attribute &b,
-                              const Attribute &c, const Attribute &d)
+void Writer::writeTextElement(const Glib::ustring &name, const Glib::ustring &text, const Attribute &a,
+                              const Attribute &b, const Attribute &c, const Attribute &d)
 {
   implWriteTextElement(name, text, { a, b, c, d });
 }
@@ -53,7 +54,8 @@ void Writer::writeTag(const Glib::ustring &name, const Writer::tTagContentWriter
   implWriteTag(name, {}, w);
 }
 
-void Writer::writeTag(const Glib::ustring &name, std::initializer_list<Attribute> &&a, const Writer::tTagContentWriter &w)
+void Writer::writeTag(const Glib::ustring &name, std::initializer_list<Attribute> &&a,
+                      const Writer::tTagContentWriter &w)
 {
   implWriteTag(name, a, w);
 }
