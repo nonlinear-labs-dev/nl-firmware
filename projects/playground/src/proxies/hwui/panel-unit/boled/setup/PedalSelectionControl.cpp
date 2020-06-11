@@ -5,10 +5,26 @@
 #include <proxies/hwui/panel-unit/boled/setup/SetupLabel.h>
 #include <proxies/hwui/Oleds.h>
 #include "SmallerParameterValueLabel.h"
+#include "SetupLayout.h"
+#include "PedalEditor.h"
 #include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/HWUI.h>
+#include <Application.h>
 
 namespace detail
 {
+  static bool isInPedalEditor()
+  {
+    auto hwui = Application::get().getHWUI();
+
+    if(auto setupLayout = dynamic_cast<SetupLayout *>(hwui->getPanelUnit().getEditPanel().getBoled().getLayout().get()))
+    {
+      return setupLayout->findControlOfType<PedalEditor>() != nullptr;
+    }
+
+    return false;
+  }
+
   class PedalSetupLabel : public SetupLabel
   {
    public:
@@ -17,7 +33,7 @@ namespace detail
    protected:
     void setBackgroundColor(FrameBuffer &fb) const override
     {
-      if(isHighlight())
+      if(isHighlight() && !isInPedalEditor())
       {
         fb.setColor(FrameBufferColors::C103);
       }
@@ -36,7 +52,7 @@ namespace detail
    protected:
     void setBackgroundColor(FrameBuffer &fb) const override
     {
-      if(isHighlight())
+      if(isHighlight() && !isInPedalEditor())
       {
         fb.setColor(FrameBufferColors::C103);
       }
@@ -46,6 +62,7 @@ namespace detail
       }
     }
   };
+
 }
 
 PedalSelectionControl::PedalSelectionControl(Parameter *param)
@@ -69,6 +86,6 @@ void PedalSelectionControl::setPosition(const Rect &rect)
 
 void PedalSelectionControl::setBackgroundColor(FrameBuffer &fb) const
 {
-  auto isFocused = findControlOfType<detail::PedalSetupLabel>()->isHighlight();
+  auto isFocused = findControlOfType<detail::PedalSetupLabel>()->isHighlight() && !detail::isInPedalEditor();
   fb.setColor(isFocused ? FrameBufferColors::C103 : FrameBufferColors::C43);
 }

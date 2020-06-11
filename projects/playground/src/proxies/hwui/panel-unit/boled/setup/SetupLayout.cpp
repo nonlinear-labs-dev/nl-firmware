@@ -557,8 +557,8 @@ namespace NavTree
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
-      children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_1));
-      children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_2));
+      //children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_1));
+      //children.emplace_back(new RibbonCalibration(this, C15::PID::Ribbon_2));
     }
   };
 
