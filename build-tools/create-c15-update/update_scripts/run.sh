@@ -75,7 +75,7 @@ TIMEOUT=10
 
 wait4playground() {
     for COUNTER in $(seq 1 $TIMEOUT); do
-        echo "awaiting reboot ... $COUNTER/$TIMEOUT"
+        echo "awaiting playground ... $COUNTER/$TIMEOUT"
         sleep 1
         executeAsRoot "systemctl status playground" && return 0
     done
