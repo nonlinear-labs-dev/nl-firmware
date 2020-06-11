@@ -100,9 +100,7 @@ void LPCProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 
 void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
 {
-  uint64_t heartbeat = *(reinterpret_cast<const uint64_t *>(msg.params.data()));
-
-  DebugLevel::info("LPC Heartbeat", heartbeat);
+  auto heartbeat = *(reinterpret_cast<const uint64_t *>(msg.params.data()));
 
   if(heartbeat < m_lastReceivedHeartbeat)
   {
