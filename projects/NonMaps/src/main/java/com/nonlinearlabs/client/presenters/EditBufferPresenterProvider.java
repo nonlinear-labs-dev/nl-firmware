@@ -69,6 +69,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 
         model.loadedPreset.onChange(v -> {
             presenter.loadedPresetUUID = v;
+            presenter.currentPartName = model.getPresetNameOfVoiceGroup(model.voiceGroup.getValue());
             notifyChanges();
             return true;
         });
