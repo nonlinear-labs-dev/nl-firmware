@@ -138,6 +138,14 @@ void Settings::load()
   DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
 
   sanitize();
+
+  using nltools::msg::EndPoint;
+  if(m_aeSettingsConnection.connected())
+  {
+    m_aeSettingsConnection.disconnect();
+  }
+
+  m_aeSettingsConnection = onConnectionEstablished(EndPoint::AudioEngine, [&] { sendGlobalAESettings(); });
 }
 
 void Settings::save()
@@ -227,13 +235,14 @@ void Settings::sendGlobalLPCInitSettings()
   getSetting("Pedal2Type")->sendToLPC(SendReason::HeartBeatDropped);
   getSetting("Pedal3Type")->sendToLPC(SendReason::HeartBeatDropped);
   getSetting("Pedal4Type")->sendToLPC(SendReason::HeartBeatDropped);
-
-  sendRibbonCalibration();
 }
 
-void Settings::sendRibbonCalibration()
+void Settings::sendGlobalAESettings()
 {
-  //TODO send /persistent/calibration
+  getSetting<PresetGlitchSuppression>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<TransitionTime>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<NoteShift>()->sendToLPC(SendReason::HeartBeatDropped);
+  getSetting<TuneReference>()->sendToLPC(SendReason::HeartBeatDropped);
 }
 
 void Settings::sendPresetSettingsToLPC()

@@ -52,6 +52,7 @@ class Settings : public ContentSection
   bool isLoading() const;
 
   void sendPresetSettingsToLPC();
+
  protected:
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
@@ -64,5 +65,6 @@ class Settings : public ContentSection
   tMap m_settings;
   DelayedJob m_saveJob;
   ScopedGuard m_isLoading;
-  void sendRibbonCalibration();
+  void sendGlobalAESettings();
+  sigc::connection m_aeSettingsConnection;
 };
