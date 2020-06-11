@@ -1,5 +1,6 @@
 SET(USER $ENV{USER})
 SET(DOCKERNAME nl-cross-build-environment)
+SET(NONLINUX nonlinear_2020.04--lpc-tools)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 
@@ -43,10 +44,10 @@ add_custom_command(
         " "
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
-        "git clone -b nonlinear_2020.04 --single-branch https://github.com/nonlinear-labs-dev/nonlinux.git /fs/nonlinux"
+        "git clone -b ${NONLINUX} --single-branch https://github.com/nonlinear-labs-dev/nonlinux.git /fs/nonlinux"
         "cd /fs/nonlinux"
         "git status"
-        "git pull origin nonlinear_2020.04"
+        "git pull origin ${NONLINUX}"
         "git remote add rw git@github.com:nonlinear-labs-dev/nonlinux.git"
         "echo 1"
     COMMAND touch .nonlinux-cloned
@@ -63,8 +64,8 @@ add_custom_command(
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
         "cd /fs/nonlinux"
-        "git checkout nonlinear_2020.04"
-        "git pull origin nonlinear_2020.04"
+        "git checkout ${NONLINUX}"
+        "git pull origin ${NONLINUX}"
 )
 
 add_custom_command(
@@ -80,7 +81,7 @@ add_custom_command(
         "mkdir -p /fs/ccache"
         "export HOME=/fs/ccache"
         "cd /fs/nonlinux"
-        "git pull origin nonlinear_2020.04"
+        "git pull origin ${NONLINUX}"
         "make nonlinear_defconfig"
     COMMAND touch .nonlinux-setup
 )
