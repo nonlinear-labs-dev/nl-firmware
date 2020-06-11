@@ -24,12 +24,11 @@ class NoteShift : public Setting
   void decOctave();
 
   Glib::ustring getDisplayString() const override;
+  void sendToLPC(SendReason reason) const override;
 
  private:
   NoteShift(const NoteShift& other) = delete;
   NoteShift& operator=(const NoteShift&) = delete;
-
-  void sendToLPC(SendReason reason) const override;
 
   int m_shift;
 };

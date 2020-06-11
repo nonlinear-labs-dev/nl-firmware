@@ -11,6 +11,5 @@ class PresetGlitchSuppression : public BooleanSetting
   PresetGlitchSuppression(UpdateDocumentContributor &settings);
   virtual ~PresetGlitchSuppression();
 
- private:
   void sendToLPC(SendReason reason) const override;
 };
