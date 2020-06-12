@@ -152,10 +152,8 @@ void Settings::save()
 {
   try
   {
-    std::shared_ptr<OutStream> out(new FileOutStream(Application::get().getOptions()->getSettingsFile(), false));
-
     SettingsSerializer serializer(*this);
-    XmlWriter writer(out);
+    XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
     serializer.write(writer, VersionAttribute::get());
   }
   catch(...)

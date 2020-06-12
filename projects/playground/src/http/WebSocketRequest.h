@@ -12,7 +12,7 @@ class WebSocketRequest : public NetworkRequest
   WebSocketRequest(SoupWebsocketConnection *socket, GBytes *message);
   virtual ~WebSocketRequest();
 
-  virtual std::shared_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip);
+  virtual std::unique_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip);
   virtual void okAndComplete();
   virtual void unpause();
   virtual void pause();

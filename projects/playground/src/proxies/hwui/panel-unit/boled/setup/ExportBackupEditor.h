@@ -17,7 +17,7 @@ class ExportBackupEditor : public ControlWithChildren, public SetupEditor
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   void exportBanks();
 
-  static void writeBackupToStream(std::shared_ptr<OutStream> stream);
+  static void writeBackupToStream(std::unique_ptr<OutStream> stream);
 
  private:
   enum State

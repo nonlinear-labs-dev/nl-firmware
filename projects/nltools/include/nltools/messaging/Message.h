@@ -50,6 +50,17 @@ namespace nltools
       };
     }
 
+    namespace FileSystem
+    {
+      struct Sync
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::SyncFS;
+        }
+      };
+    }
+
     namespace WiFi
     {
 

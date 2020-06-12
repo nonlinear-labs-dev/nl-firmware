@@ -11,7 +11,7 @@
 #include "FileNameHeadlineLabel.h"
 #include "FileInfoCaption.h"
 
-FileDialogInfoLayout::FileDialogInfoLayout(std::experimental::filesystem::directory_entry file, std::string header)
+FileDialogInfoLayout::FileDialogInfoLayout(std::filesystem::directory_entry file, std::string header)
     : InfoLayout()
     , m_file(file)
     , m_header(header)

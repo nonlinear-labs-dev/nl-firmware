@@ -49,9 +49,9 @@ Glib::ustring HTTPRequest::getPath()
   return soup_uri_get_path(uri);
 }
 
-std::shared_ptr<OutStream> HTTPRequest::createStream(const Glib::ustring &contentType, bool zip)
+std::unique_ptr<OutStream> HTTPRequest::createStream(const Glib::ustring &contentType, bool zip)
 {
-  return std::shared_ptr<OutStream>(new SoupOutStream(m_message, contentType, zip));
+  return std::make_unique<SoupOutStream>(m_message, contentType, zip);
 }
 
 void HTTPRequest::pause()

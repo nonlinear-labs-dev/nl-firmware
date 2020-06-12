@@ -847,9 +847,8 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
 
       if(auto bank = m_presetManager.findBank(uuid))
       {
-        auto stream = request->createStream("text/xml", false);
         httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + bank->getName(true) + ".xml\"");
-        XmlWriter writer(stream);
+        XmlWriter writer(request->createStream("text/xml", false));
         PresetBankSerializer serializer(bank);
         serializer.write(writer, VersionAttribute::get());
 
@@ -869,8 +868,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
 
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto stream = request->createStream("text/xml", false);
-      XmlWriter writer(stream);
+      XmlWriter writer(request->createStream("text/xml", false));
 
       Glib::ustring uuid = request->get("uuid");
 

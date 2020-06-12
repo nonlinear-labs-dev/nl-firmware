@@ -26,7 +26,7 @@
 #include <thread>
 #include "USBStickAvailableView.h"
 #include "device-settings/DebugLevel.h"
-#include <tools/FileTools.h>
+#include <tools/FileSystem.h>
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 
 static const Rect c_fullRightSidePosition(129, 16, 126, 48);
@@ -78,15 +78,14 @@ bool ImportBackupEditor::onButton(Buttons i, bool down, ButtonModifiers modifier
   return false;
 }
 
-Glib::ustring
-    ImportBackupEditor::generateFileDialogCompliantNameFromPath(std::experimental::filesystem::directory_entry file)
+Glib::ustring ImportBackupEditor::generateFileDialogCompliantNameFromPath(std::filesystem::directory_entry file)
 {
   auto nameWithoutZipAtTheEnd = file.path().stem().string();
   auto parentPathToFile = file.path().parent_path().string();
   return parentPathToFile + "/" + nameWithoutZipAtTheEnd;
 }
 
-bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem::directory_entry term)
+bool ImportBackupEditor::filterApplicableFileNames(std::filesystem::directory_entry term)
 {
   auto fileName = term.path().filename().string();
   std::string endA = ".xml.zip";
@@ -95,13 +94,13 @@ bool ImportBackupEditor::filterApplicableFileNames(std::experimental::filesystem
            || std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
 }
 
-void ImportBackupEditor::importBackupFileFromPath(std::experimental::filesystem::directory_entry file)
+void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_entry file)
 {
   using namespace std::chrono_literals;
   auto &app = Application::get();
   auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
 
-  if(file != std::experimental::filesystem::directory_entry())
+  if(file != std::filesystem::directory_entry())
   {
     auto path = generateFileDialogCompliantNameFromPath(file);
 

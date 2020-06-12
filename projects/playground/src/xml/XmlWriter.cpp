@@ -2,16 +2,14 @@
 #include <libsoup/soup.h>
 #include <glibmm.h>
 
-XmlWriter::XmlWriter(std::shared_ptr<OutStream> out)
-    : super(out)
+XmlWriter::XmlWriter(std::unique_ptr<OutStream> out)
+    : super(std::move(out))
     , m_stackSize(0)
 {
-  out->write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+  writeToStream("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 }
 
-XmlWriter::~XmlWriter()
-{
-}
+XmlWriter::~XmlWriter() = default;
 
 void XmlWriter::implWriteTextElement(const Glib::ustring &name, const Glib::ustring &text,
                                      const std::initializer_list<Attribute> &attributes)

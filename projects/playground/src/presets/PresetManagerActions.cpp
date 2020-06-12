@@ -246,8 +246,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
           fields.push_back(SearchQuery::Fields::DeviceName);
       });
 
-      auto stream = request->createStream("text/xml", false);
-      XmlWriter writer(stream);
+      XmlWriter writer(request->createStream("text/xml", false));
       Application::get().getPresetManager()->searchPresets(writer, query, mode, std::move(fields));
       return true;
     }
@@ -263,10 +262,9 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       const auto time = TimeTools::getDisplayStringFromStamp(TimeTools::getAdjustedTimestamp());
       const auto timeWithoutWhitespaces = StringTools::replaceAll(time, " ", "-");
       const auto timeSanitized = StringTools::replaceAll(timeWithoutWhitespaces, ":", "-");
-      auto stream = request->createStream("application/zip", true);
       httpRequest->setHeader("Content-Disposition",
                              "attachment; filename=\"" + timeSanitized + "-nonlinear-c15-banks.xml.tar.gz\"");
-      ExportBackupEditor::writeBackupToStream(stream);
+      ExportBackupEditor::writeBackupToStream(request->createStream("application/zip", true));
 
       boled.resetOverlay();
       return true;
@@ -288,8 +286,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       auto b = pm->findPreset(bUUID);
       a = a ? a : ebAsPreset.get();
       b = b ? b : ebAsPreset.get();
-      auto stream = request->createStream("text/xml", false);
-      XmlWriter writer(stream);
+      XmlWriter writer(request->createStream("text/xml", false));
       a->writeDiff(writer, b, to<VoiceGroup>(voiceGroupOfA), to<VoiceGroup>(voiceGroupOfB));
       return true;
     }

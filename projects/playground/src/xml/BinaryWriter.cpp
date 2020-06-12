@@ -1,14 +1,13 @@
 #include <xml/BinaryWriter.h>
 #include <xml/Attribute.h>
+#include <xml/OutStream.h>
 
-BinaryWriter::BinaryWriter(std::shared_ptr<OutStream> out)
-    : Writer(out)
+BinaryWriter::BinaryWriter(std::unique_ptr<OutStream> out)
+    : Writer(std::move(out))
 {
 }
 
-BinaryWriter::~BinaryWriter()
-{
-}
+BinaryWriter::~BinaryWriter() = default;
 
 void BinaryWriter::implWriteTextElement(const Glib::ustring &name, const Glib::ustring &text,
                                         const std::initializer_list<Attribute> &attributes)

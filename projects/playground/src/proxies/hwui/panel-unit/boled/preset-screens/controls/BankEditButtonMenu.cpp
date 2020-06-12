@@ -8,7 +8,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankEditButtonMenu.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/RenameBankLayout.h>
-#include <tools/FileTools.h>
+#include <tools/FileSystem.h>
 #include <serialization/PresetBankSerializer.h>
 #include <xml/FileOutStream.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
@@ -109,23 +109,22 @@ void BankEditButtonMenu::newBank()
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(layout);
 }
 
-BankEditButtonMenu::FileInfos
-    BankEditButtonMenu::extractFileInfos(const std::experimental::filesystem::directory_entry& file)
+BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(const std::filesystem::directory_entry& file)
 {
   return FileInfos { file };
 }
 
-bool BankEditButtonMenu::applicableBackupFilesFilter(const std::experimental::filesystem::directory_entry& term)
+bool BankEditButtonMenu::applicableBackupFilesFilter(const std::filesystem::directory_entry& term)
 {
   auto fileName = term.path().filename().string();
   std::string end = ".xml";
   return !std::equal(end.rbegin(), end.rend(), fileName.rbegin());
 }
 
-void BankEditButtonMenu::importBankFromPath(const std::experimental::filesystem::directory_entry& file)
+void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_entry& file)
 {
   auto hwui = Application::get().getHWUI();
-  if(file != std::experimental::filesystem::directory_entry())
+  if(file != std::filesystem::directory_entry())
   {
     auto fileInfos = extractFileInfos(file);
 
@@ -149,7 +148,7 @@ void BankEditButtonMenu::importBank()
 
 Glib::ustring BankEditButtonMenu::createValidOutputPath(const Glib::ustring& bankName)
 {
-  auto fileName = FileTools::findSuitableFileName(bankName, "/mnt/usb-stick/", 0);
+  auto fileName = FileSystem::findSuitableFileName(bankName, "/mnt/usb-stick/", 0);
   return "/mnt/usb-stick/" + fileName + ".xml";
 }
 
@@ -179,7 +178,7 @@ void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::strin
   selBank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
   selBank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
   PresetBankSerializer serializer(selBank, false);
-  XmlWriter writer(std::make_shared<FileOutStream>(outFile, false));
+  XmlWriter writer(std::make_unique<FileOutStream>(outFile, false));
   serializer.write(writer, VersionAttribute::get());
 }
 

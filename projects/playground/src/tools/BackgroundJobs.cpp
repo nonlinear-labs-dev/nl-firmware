@@ -2,6 +2,7 @@
 
 #include "BackgroundJobs.h"
 #include <nltools/Assert.h>
+#include <device-settings/DebugLevel.h>
 
 BackgroundJob::BackgroundJob(BackgroundJob::tCallback cb)
     : callback(std::move(cb))
@@ -40,7 +41,7 @@ FileCrawlerJob::FileCrawlerJob(const std::string& dir, FileCrawlerJob::tFilterFu
     : BackgroundJob(std::move(cb))
     , fileFilter(std::move(filter))
 {
-  it = std::experimental::filesystem::recursive_directory_iterator(fs::path(dir.c_str()));
+  it = std::filesystem::recursive_directory_iterator(fs::path(dir.c_str()));
 }
 
 bool FileCrawlerJob::iterate()
@@ -73,7 +74,7 @@ bool FileCrawlerJob::iterate()
   }
 }
 
-FileTools::FileList FileCrawlerJob::copyData()
+FileSystem::FileList FileCrawlerJob::copyData()
 {
   std::lock_guard<std::mutex> lock(m);
   return list;

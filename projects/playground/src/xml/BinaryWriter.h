@@ -5,7 +5,7 @@
 class BinaryWriter : public Writer
 {
  public:
-  BinaryWriter(std::shared_ptr<OutStream> out);
+  BinaryWriter(std::unique_ptr<OutStream> out);
   virtual ~BinaryWriter();
 
   void implWriteTextElement(const Glib::ustring &name, const Glib::ustring &text,

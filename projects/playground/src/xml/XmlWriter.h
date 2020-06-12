@@ -12,7 +12,7 @@ class XmlWriter : public Writer
   typedef Writer super;
 
  public:
-  XmlWriter(std::shared_ptr<OutStream> out);
+  XmlWriter(std::unique_ptr<OutStream> out);
   virtual ~XmlWriter();
 
  private:
