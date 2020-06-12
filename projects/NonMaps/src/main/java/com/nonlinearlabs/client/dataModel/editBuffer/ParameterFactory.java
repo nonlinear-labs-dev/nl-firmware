@@ -32,8 +32,8 @@ public class ParameterFactory {
 	static private int[] modulateableParameters = { 0, 2, 4, 6, 8, 10, 12, 19, 21, 23, 25, 27, 29, 31, 38, 40, 42, 44,
 			46, 53, 57, 60, 64, 68, 71, 76, 78, 81, 83, 87, 90, 94, 98, 101, 106, 108, 111, 113, 115, 119, 123, 127,
 			129, 133, 136, 138, 140, 144, 148, 150, 153, 156, 158, 160, 162, 164, 169, 172, 175, 178, 181, 185, 188,
-			192, 194, 197, 199, 201, 204, 207, 209, 211, 214, 216, 219, 223, 225, 227, 229, 233, 235, 238, 241, 247, 
-			248, 250, 297, 299, 301, 302, 305, 308, 310, 346, 348, 350, 352, 354, 356, 358, 360, 362, 367  };
+			192, 194, 197, 199, 201, 204, 207, 209, 211, 214, 216, 219, 223, 225, 227, 229, 233, 235, 238, 241, 247,
+			248, 250, 297, 299, 301, 302, 305, 308, 310, 346, 348, 350, 352, 354, 356, 358, 360, 362, 367, 389 };
 
 	static private int[] pedals = { 254, 259, 264, 269 };
 	static private int[] ribbons = { 284, 289 };
@@ -54,25 +54,25 @@ public class ParameterFactory {
 			"Sh A", "Sh B", "Split", "Unison" };
 	static private String[] globalParameterGroups = { "CS", "MCM", "MCs", "Master", "Scale", "Split" };
 
-	static public int[] voicesParameters = {249, 250, 252, 253, 364, 365, 366, 367 };
+	static public int[] voicesParameters = { 249, 250, 252, 253, 364, 365, 366, 367 };
 
 	static public HashMap<SoundType, int[]> hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
 	static {
-		final int[] layerHidden = {356};
+		final int[] layerHidden = { 356 };
 		hiddenParametersBySoundType.put(SoundType.Layer, layerHidden);
-		final int[] singleHidden = {362, 348, 350, 352, 354, 396, 397};
+		final int[] singleHidden = { 362, 348, 350, 352, 354, 396, 397 };
 		hiddenParametersBySoundType.put(SoundType.Single, singleHidden);
-		final int[] splitHidden = {348, 350, 352, 354, 396, 397};
+		final int[] splitHidden = { 348, 350, 352, 354, 396, 397 };
 		hiddenParametersBySoundType.put(SoundType.Split, splitHidden);
 	}
 
 	static public HashMap<SoundType, int[]> disabledParametersBySoundType = new HashMap<SoundType, int[]>();
-	static {		
+	static {
 		final int[] layerDisabled = {};
 		disabledParametersBySoundType.put(SoundType.Layer, layerDisabled);
-		final int[] splitDisabled = {346};
+		final int[] splitDisabled = { 346 };
 		disabledParametersBySoundType.put(SoundType.Split, splitDisabled);
-		final int[] singleDisabled = {346};
+		final int[] singleDisabled = { 346 };
 		disabledParametersBySoundType.put(SoundType.Single, singleDisabled);
 	}
 
