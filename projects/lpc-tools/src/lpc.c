@@ -9,7 +9,9 @@
 #include "shared/lpc-defs.h"
 #include "shared/version.h"
 
-#define VERSION_STRING "1.0"
+#include "linuxgpio.h"
+
+#define VERSION_STRING "1.1"
 #define PROGNAME       "lpc"
 
 void printVersion(void)
@@ -22,6 +24,28 @@ void Error(const char *msg)
   perror(msg);
   exit(3);
 }
+
+// ===================
+void makeDriverNonblocking(int const driverFileNo, int const flags)
+{
+  if (fcntl(driverFileNo, F_SETFL, flags | O_NONBLOCK) < 0)
+    Error("fcntl: can't switch to non-blocking");
+}
+
+void makeDriverBlocking(int const driverFileNo, int const flags)
+{
+  if (fcntl(driverFileNo, F_SETFL, flags & (~O_NONBLOCK)) < 0)
+    Error("fcntl: can't switch to blocking");
+}
+
+int getDriverFlags(int const driverFileNo)
+{
+  int flags;
+  if ((flags = fcntl(driverFileNo, F_GETFL, 0)) < 0)
+    Error("fcntl: getflags failed");
+  return flags;
+}
+
 // ===================
 void writeData(int output, uint16_t const len, uint16_t *data)
 {
@@ -78,6 +102,8 @@ Retry:
 
 #define TEST "test"
 
+#define RESET "reset"
+
 uint16_t REQ_DATA[] = { LPC_BB_MSG_TYPE_REQUEST, 0x0001, 0x0000 };
 uint16_t SET_DATA[] = { LPC_BB_MSG_TYPE_SETTING, 0x0002, 0x0000, 0x0000 };
 uint16_t KEY_DATA[] = { LPC_BB_MSG_TYPE_KEY_EMUL, 0x0003, 0x0000, 0x0000, 0x0000 };
@@ -104,18 +130,57 @@ void Usage(void)
   puts("     ae-cmd: tton|ttoff|def-snd     : Audio Engine Special, test-tone on/off, load default sound");
   puts("     system: reboot|hb-reset|enable-midi");
   puts("                  : System Special; reboot system, reset heartbeat counter, enable midi");
-  puts("  key : <note-nr> <time>  : send emulated key");
+  puts("  key <note-nr> <time>      : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
   puts("     <time>                 : key time (~1/velocity) in ms (1...525), negative means key release");
-  puts("  test : <size> <count> <delay> : send test message");
+  puts("  test <size> <count> <delay>   : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
   puts("     <count>                    : # of times the message is send (1..65535)");
   puts("     <delay>                    : delay in usecs between messages");
+  puts("  reset [<retries>]           : reset and check if online, with optional retries if offline");
+  puts("                              : return value is 0 when reset was successful, 1 otherwise");
   exit(3);
 }
 
+int purgeBuffer(int driver)
+{
+  uint8_t byte;
+  int     ret = 0;
+  while (read(driver, &byte, 1) == 1)
+    ret = 1;
+  return ret;
+}
+
+#define LPC_RESET_PIN (50u)                      // port number of the toggle pin GPIO
+#define WAIT_TIME_US  (200000u)                  // 200ms wait time after any port access
+#define POLL_DELAY_US (1000000u - WAIT_TIME_US)  // 1 second total delay until polling for LPC response
+
+int lpcReset(int driver)
+{
+  int fd;
+
+  linuxgpio_export(LPC_RESET_PIN);
+  linuxgpio_dir_out(LPC_RESET_PIN);
+  fd = linuxgpio_openfd(LPC_RESET_PIN);
+
+  write(fd, "0", 1);  // pull RESET line low --> reset
+  purgeBuffer(driver);
+  usleep(WAIT_TIME_US);
+  write(fd, "1", 1);
+  usleep(WAIT_TIME_US);
+
+  close(fd);
+  linuxgpio_dir_in(LPC_RESET_PIN);
+  linuxgpio_unexport(LPC_RESET_PIN);
+
+  usleep(POLL_DELAY_US);
+  if (purgeBuffer(driver))
+    return 1;
+  puts("LPC is down");
+  return 0;
+}
+
 #define DRIVER "/dev/lpc_bb_driver"
-//#define DRIVER "test.bin"
 // ===================
 int main(int argc, char const *argv[])
 {
@@ -133,7 +198,14 @@ int main(int argc, char const *argv[])
 
   int driver = open("/dev/lpc_bb_driver", O_WRONLY);
   if (driver < 0)
-    Error("cannot open driver or input file");
+    Error("cannot open driver for write");
+
+  int driverRd = open("/dev/lpc_bb_driver", O_RDONLY);
+  if (driver < 0)
+    Error("cannot open driver for read");
+
+  int flags = getDriverFlags(driverRd);
+  makeDriverNonblocking(driverRd, flags);
 
   // request
   if (strncmp(argv[1], REQUEST, sizeof REQUEST) == 0)
@@ -384,6 +456,44 @@ int main(int argc, char const *argv[])
         usleep(delay);
     }
     return 0;
+  }
+
+  // reset and check
+  if (strncmp(argv[1], RESET, sizeof RESET) == 0)
+  {
+    if (argc != 2 && argc != 3)
+    {
+      puts("reset: wrong number of arguments");
+      Usage();
+    }
+
+    uint16_t retries = 1;
+    if (argc == 3)
+    {
+      if (sscanf(argv[2], "%hu", &retries) != 1)
+      {
+        puts("reset: retries argument error (uint16 expected)");
+        Usage();
+      }
+      if (retries < 1)
+      {
+        puts("reset: retries must be >= 1");
+        Usage();
+      }
+    }
+
+    uint16_t savedRetries = retries;
+    while (retries--)
+    {
+      if (lpcReset(driverRd))
+      {
+        printf("LPC reset successful after %u retries\n", savedRetries - retries);
+        return 0;
+      }
+    }
+
+    printf(">>> LPC reset failed after %u retries\n", savedRetries);
+    return 1;  // reset failed
   }
 
   // unknown
