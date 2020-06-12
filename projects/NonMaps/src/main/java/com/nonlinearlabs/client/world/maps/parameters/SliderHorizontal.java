@@ -90,8 +90,16 @@ public class SliderHorizontal extends Slider {
 	protected void drawIndicatorArea(Context2d ctx, double centerX, double indicatorAreaWidth, double indicatorStartX) {
 		Rect pixRect = getPixRect();
 		ctx.setFillStyle(getColorSliderHighlight().toString());
-		ctx.fillRect(indicatorStartX, pixRect.getTop() + toYPixels(0.5), toXPixels(indicatorAreaWidth),
-				pixRect.getHeight() - toYPixels(1));
+		double y = pixRect.getTop() + toYPixels(0.5);
+		double h = pixRect.getHeight() - toYPixels(1);
+		double w = toXPixels(getIndicatorAreaBaseWidth());
+		double highlightW = toXPixels(indicatorAreaWidth);
+
+		if (presenter.fillFromRightEnabled) {
+			ctx.fillRect(indicatorStartX + highlightW, y, w - highlightW, h);
+		} else {
+			ctx.fillRect(indicatorStartX, y, highlightW, h);
+		}
 	}
 
 	protected void drawHandle(Context2d ctx, double indicatorAreaWidth, double indicatorStartX) {
