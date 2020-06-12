@@ -29,6 +29,8 @@
 // this code.
 //*****************************************************************************
 
+#include "io/pins.h"
+
 #if defined(__cplusplus)
 #ifdef __REDLIB__
 #error Redlib does not support C++
@@ -308,6 +310,7 @@ extern unsigned int __bss_section_table_end;
 //*****************************************************************************
 void ResetISR(void)
 {
+  debugPinsInit();
 
 // *************************************************************
 // The following conditional block of code manually resets as
