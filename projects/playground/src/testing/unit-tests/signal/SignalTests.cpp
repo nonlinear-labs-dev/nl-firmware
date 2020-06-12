@@ -30,7 +30,7 @@ TEST_CASE("Normal life cycle", "[Signals]")
   auto *s = new Detail::Sender();
   auto *r = new Detail::Receiver(received);
   s->sig.connectAndInit(mem_fun(r, &Detail::Receiver::fn), false);
-  g_main_iteration(FALSE);
+  g_main_context_iteration(nullptr, FALSE);
   delete r;
   delete s;
   CHECK(received == 1);
@@ -44,7 +44,7 @@ TEST_CASE("Sender dies first", "[Signals]")
   auto *r = new Detail::Receiver(received);
   s->sig.connectAndInit(mem_fun(r, &Detail::Receiver::fn), false);
   delete s;
-  g_main_iteration(FALSE);
+  g_main_context_iteration(nullptr, FALSE);
   delete r;
   CHECK(received == 0);
 }
@@ -56,7 +56,7 @@ TEST_CASE("Receiver Dies First", "[Signals]")
   auto *r = new Detail::Receiver(received);
   s->sig.connectAndInit(mem_fun(r, &Detail::Receiver::fn), false);
   delete r;
-  g_main_iteration(FALSE);
+  g_main_context_iteration(nullptr, FALSE);
   delete s;
   CHECK(received == 0);
 }
@@ -90,7 +90,7 @@ TEST_CASE("Reconnect Before Init CB Was Received", "[Signals]")
   auto connection = senderA->sig.connectAndInit(mem_fun(r.get(), &Receiver::fn), senderA.get());
   connection.disconnect();
   connection = senderB->sig.connectAndInit(mem_fun(r.get(), &Receiver::fn), senderB.get());
-  g_main_iteration(FALSE);
+  g_main_context_iteration(nullptr, FALSE);
   CHECK(r->received[senderA.get()] == 0);
   CHECK(r->received[senderB.get()] == 1);
 }

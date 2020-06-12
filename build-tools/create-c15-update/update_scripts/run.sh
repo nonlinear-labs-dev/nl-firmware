@@ -5,6 +5,7 @@ BBB_IP=192.168.10.11
 
 # general Messages
 MSG_DO_NOT_SWITCH_OFF="DO NOT SWITCH OFF C15!"
+MSG_STARTING_UPDATE="Starting C15 update..."
 MSG_UPDATING_C15="Updating C15"
 MSG_UPDATING_EPC="1/3 Updating..."
 MSG_UPDATING_BBB="2/3 Updating..."
@@ -74,7 +75,7 @@ TIMEOUT=10
 
 wait4playground() {
     for COUNTER in $(seq 1 $TIMEOUT); do
-        echo "awaiting reboot ... $COUNTER/$TIMEOUT"
+        echo "awaiting playground ... $COUNTER/$TIMEOUT"
         sleep 1
         executeAsRoot "systemctl status playground" && return 0
     done
@@ -192,7 +193,7 @@ lpc_update() {
 }
 
 stop_services() {
-    systemctl stop playground > /dev/null
+    systemctl stop playground > /dev/null || executeAsRoot "systemctl stop playground"
     systemctl stop bbbb > /dev/null
     return 0
 }
@@ -204,7 +205,10 @@ main() {
     configure_ssh
     check_preconditions || return 1
 
-    [ $UPDATE_BBB == 1 ] && stop_services
+    pretty "" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF"
+    sleep 2
+
+    stop_services
     [ $UPDATE_EPC == 1 ] && epc_update
     [ $UPDATE_BBB == 1 ] && bbb_update
     [ $UPDATE_LPC == 1 ] && lpc_update

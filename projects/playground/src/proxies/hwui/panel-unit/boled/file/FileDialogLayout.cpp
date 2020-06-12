@@ -107,7 +107,7 @@ void FileDialogLayout::updateLabels()
     positionLabel->setText("[0/0]");
 }
 
-std::experimental::filesystem::directory_entry FileDialogLayout::getSelectedFile()
+std::filesystem::directory_entry FileDialogLayout::getSelectedFile()
 {
   return fileList->getSelection();
 }

@@ -68,10 +68,11 @@ void Serializer::write(Glib::RefPtr<Gio::File> folder, const std::string &name)
   {
     auto title = folder->get_path() + "/" + name + ".binary";
     PerformanceTimer timer(title.c_str(), 0);
-    auto out = std::make_shared<CommitableFileOutStream>(title, false);
-    BinaryWriter writer(out);
+    auto out = std::make_unique<CommitableFileOutStream>(title, false);
+    auto outPtr = out.get();  // out will be handed over to writer
+    BinaryWriter writer(std::move(out));
     write(writer, VersionAttribute::get());
-    out->commit();
+    outPtr->commit();  // as long as writer is valid, outPtr is vaild, too
   }
   catch(...)
   {

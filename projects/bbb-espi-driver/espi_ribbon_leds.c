@@ -55,7 +55,7 @@ static ssize_t rbled_write(struct file *filp, const char __user *buf_user, size_
     return -EFAULT;
 
   mutex_lock(&rbled_state_lock);  // keep espi_driver_rb_leds_poll() from interfering
-  force_update = 0;
+
   for (i = 0; (i + 1) < count; i += 2)
   {
     led_id    = buf[i];

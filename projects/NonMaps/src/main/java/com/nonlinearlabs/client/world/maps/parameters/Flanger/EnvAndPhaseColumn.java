@@ -2,12 +2,13 @@ package com.nonlinearlabs.client.world.maps.parameters.Flanger;
 
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.UnmodulateableKnob;
 
 class EnvAndPhaseColumn extends ParameterColumn {
 
-    private class EnvF extends UnmodulateableKnob {
+    private class EnvF extends ModulateableKnob {
 
         private EnvF(MapsLayout parent) {
             super(parent, 307);

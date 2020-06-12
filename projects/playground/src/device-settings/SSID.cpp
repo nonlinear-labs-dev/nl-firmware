@@ -45,7 +45,7 @@ void SSID::setSSIDAndNotifyBBB(const Glib::ustring &str)
   m_ssid = str;
 
   auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid);
-  nltools::msg::send(nltools::msg::EndPoint::WiFiManager, ssidMsg);
+  nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
 
   notify();
 }

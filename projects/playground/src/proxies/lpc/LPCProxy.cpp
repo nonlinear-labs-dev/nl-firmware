@@ -22,7 +22,7 @@
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <device-settings/Settings.h>
-#include <experimental/filesystem>
+#include <filesystem>
 
 LPCProxy::LPCProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -100,9 +100,7 @@ void LPCProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 
 void LPCProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
 {
-  uint64_t heartbeat = *(reinterpret_cast<const uint64_t *>(msg.params.data()));
-
-  DebugLevel::info("LPC Heartbeat", heartbeat);
+  auto heartbeat = *(reinterpret_cast<const uint64_t *>(msg.params.data()));
 
   if(heartbeat < m_lastReceivedHeartbeat)
   {
@@ -150,7 +148,7 @@ void LPCProxy::onLPCConnected()
 void LPCProxy::sendCalibrationData()
 {
   static const char *calibrationPath = "/persistent/calibration/calibration.bin";
-  if(std::experimental::filesystem::exists(calibrationPath))
+  if(std::filesystem::exists(calibrationPath))
   {
     auto message = nltools::readBinaryFile(calibrationPath);
     nltools::msg::LPCMessage msg;

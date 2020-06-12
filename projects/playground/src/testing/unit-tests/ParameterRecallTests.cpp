@@ -14,15 +14,16 @@ TEST_CASE("Recall write and Read")
 
   SECTION("a")
   {
-    auto fos = std::make_shared<FileOutStream>("/tmp/recalldata.xml", false);
-    XmlWriter writer{ fos };
+    auto fos = std::make_unique<FileOutStream>("/tmp/recalldata.xml", false);
+    auto fosPtr = fos.get();
+    XmlWriter writer { std::move(fos) };
     serializer.write(writer);
-    fos->commit();
+    fosPtr->commit();
 
     {
       auto fis = std::make_shared<FileInStream>("/tmp/recalldata.xml", false);
       auto scope = TestHelper::createTestScope();
-      XmlReader reader{ *fis.get(), scope->getTransaction() };
+      XmlReader reader { *fis.get(), scope->getTransaction() };
       serializer.read(reader);
     }
 

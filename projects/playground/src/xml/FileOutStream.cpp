@@ -16,7 +16,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <xml/FileOutStream.h>
-#include <tools/FileTools.h>
+#include <tools/FileSystem.h>
 
 FileOutStream::FileOutStream(const Glib::ustring &fileName, bool zip)
     : m_filename(fileName)
@@ -95,14 +95,8 @@ void FileOutStream::commit()
     m_fileHandle = -1;
 
     auto oldName = getTmpFileName();
-
-    if(g_rename(oldName.c_str(), m_filename.c_str()))
-    {
-      DebugLevel::error("FileOutStream: Could not rename tmp file", oldName, "to target file", m_filename, ":",
-                        g_strerror(errno), " trying with backup option! (FileTools::rename)");
-
-      FileTools::rename(oldName, m_filename);
-    }
+    FileSystem::rename(oldName, m_filename);
+    FileSystem::syncAll();
   }
 }
 
@@ -144,12 +138,12 @@ void FileOutStream::setKioskMode(bool kiosk)
 {
   if(kiosk)
   {
-    auto ret = FileTools::writeToFile(Application::get().getOptions()->getKioskModeFile(), "1");
+    auto ret = FileSystem::writeToFile(Application::get().getOptions()->getKioskModeFile(), "1");
     DebugLevel::warning("writing kioskMode: ", ret, "path: ", Application::get().getOptions()->getKioskModeFile());
   }
   else
   {
-    auto ret = FileTools::writeToFile(Application::get().getOptions()->getKioskModeFile(), "0");
+    auto ret = FileSystem::writeToFile(Application::get().getOptions()->getKioskModeFile(), "0");
     DebugLevel::warning("writing kioskMode: ", ret, "path: ", Application::get().getOptions()->getKioskModeFile());
 
     auto &app = Application::get();
@@ -165,7 +159,7 @@ void FileOutStream::setKioskMode(bool kiosk)
 
 bool FileOutStream::getKioskMode()
 {
-  return FileTools::readFromFile(Application::get().getOptions()->getKioskModeFile()).find("1") != Glib::ustring::npos
+  return FileSystem::readFromFile(Application::get().getOptions()->getKioskModeFile()).find("1") != Glib::ustring::npos
       ? true
       : false;
 }

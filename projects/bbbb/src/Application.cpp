@@ -23,7 +23,7 @@ char *Application::initStatic(Application *app, char *argv)
   theApp = app;
   Configuration conf;
   conf.offerEndpoints
-      = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed, EndPoint::WiFiManager };
+      = { EndPoint::Lpc, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed, EndPoint::BeagleBone };
   conf.useEndpoints = { { EndPoint::Playground, app->getOptions()->getPlaygroundHost() },
                         { EndPoint::AudioEngine, app->getOptions()->getAudioEngineHost() } };
   nltools::msg::init(conf);
@@ -37,6 +37,11 @@ Application::Application(int numArgs, char **argv)
     , m_wifiManager(std::make_unique<WiFiManager>())
     , m_usbManager(std::make_unique<USBManager>())
 {
+
+  nltools::msg::receive<nltools::msg::FileSystem::Sync>(nltools::msg::EndPoint::BeagleBone, [this](const auto &msg) {
+    sync();
+    nltools::Log::warning("Synced file system.");
+  });
 }
 
 Application::~Application() = default;

@@ -1,15 +1,16 @@
 #include <xml/FileInStream.h>
 #include <device-settings/DebugLevel.h>
-#include <tools/FileTools.h>
+#include <tools/FileSystem.h>
+#include <giomm/file.h>
 
-static bool doesZipFileExists(const Glib::ustring &fileName)
+static bool doesZipFileExist(const Glib::ustring &fileName)
 {
-  return FileTools::doesFileExists(fileName + ".zip");
+  return FileSystem::doesFileExist(fileName + ".zip");
 }
 
-static bool doesGzFileExists(const Glib::ustring &fileName)
+static bool doesGzFileExist(const Glib::ustring &fileName)
 {
-  return FileTools::doesFileExists(fileName + ".gz");
+  return FileSystem::doesFileExist(fileName + ".gz");
 }
 
 FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
@@ -18,9 +19,9 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
 
   if(tryZip)
   {
-    if(doesZipFileExists(fileName))
+    if(doesZipFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".zip");
-    else if(doesGzFileExists(fileName))
+    else if(doesGzFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".gz");
     else
       tryZip = false;

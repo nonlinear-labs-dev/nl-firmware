@@ -3,11 +3,11 @@
 #include <regex>
 #include <chrono>
 #include <utility>
-#include <tools/FileTools.h>
+#include <tools/FileSystem.h>
 #include <proxies/hwui/panel-unit/boled/info/MultiLineInfoContent.h>
 #include <proxies/hwui/panel-unit/boled/info/InfoField.h>
 
-FileInfoContent::FileInfoContent(std::experimental::filesystem::directory_entry file)
+FileInfoContent::FileInfoContent(std::filesystem::directory_entry file)
     : m_file(std::move(file))
 {
   addInfoField("filename", "Filename:");
@@ -18,9 +18,12 @@ FileInfoContent::FileInfoContent(std::experimental::filesystem::directory_entry 
   updateContent();
 }
 
-std::string writeTimeToString(std::experimental::filesystem::file_time_type ftime)
+std::string writeTimeToString(std::filesystem::file_time_type ftime)
 {
-  std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
+  using namespace std::chrono;
+  auto sctp = time_point_cast<system_clock::duration>(ftime - std::filesystem::file_time_type::clock::now()
+                                                      + system_clock::now());
+  std::time_t cftime = system_clock::to_time_t(sctp);
   std::string stringWithTrailingNewLine(std::asctime(std::localtime(&cftime)));
   return stringWithTrailingNewLine.substr(0, stringWithTrailingNewLine.size() - 1);
 }
@@ -31,6 +34,6 @@ void FileInfoContent::fillContents()
 
   infoFields["filename"]->setInfo(m_file.path().filename().string());
   infoFields["path"]->setInfo(filePath.empty() ? "/" : to_string(filePath));
-  infoFields["date"]->setInfo(writeTimeToString(std::experimental::filesystem::last_write_time(m_file.path())));
-  infoFields["size"]->setInfo(FileTools::bytesToHumanreadable(std::experimental::filesystem::file_size(m_file.path())));
+  infoFields["date"]->setInfo(writeTimeToString(std::filesystem::last_write_time(m_file.path())));
+  infoFields["size"]->setInfo(FileSystem::bytesToHumanreadable(std::filesystem::file_size(m_file.path())));
 }

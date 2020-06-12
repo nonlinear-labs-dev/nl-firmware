@@ -3,7 +3,7 @@
 #include <functional>
 #include <thread>
 #include <mutex>
-#include "FileTools.h"
+#include <tools/FileSystem.h>
 
 class BackgroundJob
 {
@@ -25,7 +25,7 @@ class BackgroundJob
   bool m_close = false;
 };
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 class FileCrawlerJob : public BackgroundJob
 {
@@ -36,11 +36,11 @@ class FileCrawlerJob : public BackgroundJob
   FileCrawlerJob(const std::string& dir, tFilterFunction filter, tCallback cb);
 
   bool iterate() override;
-  FileTools::FileList copyData();
+  FileSystem::FileList copyData();
 
  protected:
   std::mutex m;
-  FileTools::FileList list;
+  FileSystem::FileList list;
   std::function<bool(fs::directory_entry)> fileFilter;
   fs::recursive_directory_iterator it;
 };

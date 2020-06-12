@@ -46,7 +46,7 @@ void setupMessaging(const Options *options)
                         { EndPoint::TestEndPoint },
 #endif
                         { EndPoint::PanelLed, bbbb },  { EndPoint::RibbonLed, bbbb },
-                        { EndPoint::AudioEngine, ae }, { EndPoint::WiFiManager, bbbb } };
+                        { EndPoint::AudioEngine, ae }, { EndPoint::BeagleBone, bbbb } };
   nltools::msg::init(conf);
 }
 

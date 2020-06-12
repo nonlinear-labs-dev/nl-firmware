@@ -14,7 +14,7 @@ class HTTPRequest : public NetworkRequest
   HTTPRequest(SoupMessage *msg);
   virtual ~HTTPRequest();
 
-  virtual std::shared_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) override;
+  virtual std::unique_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) override;
 
   void okAndComplete() override;
   void moved(const Glib::ustring &url);

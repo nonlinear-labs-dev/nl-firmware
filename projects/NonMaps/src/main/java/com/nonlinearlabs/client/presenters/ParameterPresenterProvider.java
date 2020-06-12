@@ -47,13 +47,13 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			boolean isSelected = presenter.id.getNumber() == id;
 			if (isSelected != presenter.selected) {
 				presenter.selected = isSelected;
-				if(presenter.updateHash()) {
+				if (presenter.updateHash()) {
 					notifyChanges();
 					return true;
 				}
 			}
 
-			if(presenter.updateHash())
+			if (presenter.updateHash())
 				notifyChanges();
 
 			return true;
@@ -73,9 +73,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	private boolean isFillFromRightParameter(BasicParameterModel e) {
-		if(e.group != null) {
-			boolean isSplit = e.group.longName.getValue() == "Split";
-			boolean isFadeFrom = e.id.getNumber() == 396 && e.id.getVoiceGroup() == VoiceGroup.II;
+		if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.II) {
+			boolean isSplit = e.id.getNumber() == 356;
+			boolean isFadeFrom = e.id.getNumber() == 396;
 			return isSplit || isFadeFrom;
 		}
 		return false;
@@ -91,7 +91,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private boolean containsElement(int e, int[] arr) {
 		for (int i : arr) {
-			if(i == e)
+			if (i == e)
 				return true;
 		}
 		return false;
@@ -106,7 +106,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		SoundType type = EditBufferModel.get().soundType.getValue();
 		return containsElement(num, ParameterFactory.disabledParametersBySoundType.get(type));
 	}
-	
+
 	private void updatePresenter(BasicParameterModel e) {
 		presenter.parameterInfo = e.info.getValue();
 		presenter.isBoolean = e.value.metaData.isBoolean.getBool();
@@ -143,7 +143,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		presenter.showContextMenu = false;
 		presenter.isMacroControl = false;
- 
+
 		if (e instanceof ModulateableParameterModel)
 			updatePresenter((ModulateableParameterModel) e);
 
@@ -164,11 +164,17 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.highlightChanged = presenter.changed && (highlight || forceHighlight);
 
 		boolean changed = presenter.changed;
-		if (e.group == null)
+		if (e.group == null) {
 			presenter.fullNameWithGroup = "---";
-		else
-			presenter.fullNameWithGroup = e.group.longName.getValue() + "   \u2013   " + e.longName.getValue()
-					+ (changed ? " *" : "");
+		} else {
+			String groupName = e.group.longName.getValue();
+			if (e.id.getNumber() == 356) {
+				// although the split parameter lives in the global 'Split' group, it is shown
+				// in both parts
+				groupName = "Part";
+			}
+			presenter.fullNameWithGroup = groupName + "   \u2013   " + e.longName.getValue() + (changed ? " *" : "");
+		}
 
 		if (presenter.updateHash())
 			notifyChanges();
