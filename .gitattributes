@@ -9,5 +9,5 @@
 *.mk            text eol=lf
 .clang-format   text eol=lf
 .git*           text eol=lf
-ohook           text eol=lf
+oroot           text eol=lf
 nlhook          text eol=lf
