@@ -8,19 +8,21 @@
 #include "sys/nl_status.h"
 #include "ipc/emphase_ipc.h"
 #include "drv/nl_cgu.h"
+#include "tcd/nl_tcd_msg.h"
 
 #pragma GCC diagnostic ignored "-Wunused-function"
 
 NL_systemStatus_T NL_systemStatus = {
-  .M4_ticker             = 0,
-  .COOS_totalOverruns    = 0,
-  .COOS_maxTasksPerSlice = 0,
-  .COOS_maxTaskTime      = 0,
-  .COOS_maxDispatchTime  = 0,
-  .BB_MSG_bufferOvers    = 0,
-  .TCD_usbJams           = 0,
-  .M0_ADCTime            = 0,
-  .M0_KbsIrqOver         = 0,
+  .M4_ticker                 = 0,
+  .COOS_totalOverruns        = 0,
+  .COOS_maxTasksPerSlice     = 0,
+  .COOS_maxTaskTime          = 0,
+  .COOS_maxDispatchTime      = 0,
+  .BB_MSG_bufferOvers        = 0,
+  .TCD_usbJams               = 0,
+  .M0_ADCTime                = 0,
+  .M0_KbsIrqOver             = 0,
+  .DroppedMidiMessageBuffers = 0,
 };
 
 uint16_t NL_STAT_GetDataSize(void)
@@ -59,11 +61,27 @@ void NL_STAT_GetData(uint16_t *buffer)
   *(buffer++) = NL_systemStatus.M0_ADCTime = M4TicksToUS(IPC_GetAndResetADCTime());
   *(buffer++) = NL_systemStatus.M0_KbsIrqOver = (s.RitCrtlReg != 0) ? s.RitCrtlReg & 1 : 0xFFFF;
   s.RitCrtlReg                                = 0;
+  *(buffer++)                                 = NL_systemStatus.DroppedMidiMessageBuffers;
 
-  NL_systemStatus.COOS_totalOverruns    = 0;
-  NL_systemStatus.COOS_maxTasksPerSlice = 0;
-  NL_systemStatus.COOS_maxTaskTime      = 0;
-  NL_systemStatus.COOS_maxDispatchTime  = 0;
-  NL_systemStatus.BB_MSG_bufferOvers    = 0;
-  NL_systemStatus.TCD_usbJams           = 0;
+  NL_systemStatus.COOS_totalOverruns        = 0;
+  NL_systemStatus.COOS_maxTasksPerSlice     = 0;
+  NL_systemStatus.COOS_maxTaskTime          = 0;
+  NL_systemStatus.COOS_maxDispatchTime      = 0;
+  NL_systemStatus.BB_MSG_bufferOvers        = 0;
+  NL_systemStatus.TCD_usbJams               = 0;
+  NL_systemStatus.DroppedMidiMessageBuffers = 0;
+}
+
+uint16_t NL_STAT_GetKeyDataSize(void)
+{
+  return (64 + 128);
+}
+
+void NL_STAT_GetKeyData(uint16_t *buffer)
+{
+  uint16_t *p = buffer;
+  for (uint16_t i = 0; i < 64; i++)
+    *(p++) = (uint16_t) s.keyOnOffCntr[i];
+  for (uint16_t i = 0; i < 128; i++)
+    *(p++) = (uint16_t) TCD_keyOnOffCntr[i];
 }

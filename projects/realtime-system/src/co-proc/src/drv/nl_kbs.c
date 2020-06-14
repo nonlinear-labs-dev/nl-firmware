@@ -335,7 +335,14 @@ static __attribute__((always_inline)) inline void DetectNotes(uint32_t const key
 
   if ((currentSwitches.both & mask) == keyOff[key])
   {  // either both switches on AND key off, or both switches off AND key on ==> key event (either on or off)
-    Emphase_IPC_M0_KeyBuffer_WriteKeyEvent(key | ((keyOff[key] ^= mask) ? 0 : IPC_KEYBUFFER_NOTEON) | (ticker - keyTime[key]));
+    if (keyOff[key] ^= mask)
+    {
+      Emphase_IPC_M0_KeyBuffer_WriteKeyEvent(key | (ticker - keyTime[key]));
+      s.keyOnOffCntr[key]--;
+      return;
+    }
+    Emphase_IPC_M0_KeyBuffer_WriteKeyEvent(key | IPC_KEYBUFFER_NOTEON | (ticker - keyTime[key]));
+    s.keyOnOffCntr[key]++;
     return;
   }
 

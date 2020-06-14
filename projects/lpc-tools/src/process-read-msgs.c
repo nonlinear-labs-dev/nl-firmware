@@ -148,7 +148,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       dump(cmd, len, data, flags);
       if (len != 3)
       {
-        printf("PARAM : wrong length of %d\n", len);
+        printf("KEY : wrong length of %d\n", len);
         return;
       }
       if ((same = !(flags & NO_OVERLAY) && (lastMessage == (((uint32_t) cmd << 16)) + (uint32_t) data[0])))
@@ -171,6 +171,43 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         printf(" (%5.1lf%%)", 100.0 * data[1] / 16000.0);
       printf("\n");
       lastMessage = (cmd << 16) + data[0];
+      return;
+
+    case LPC_BB_MSG_TYPE_KEYCNTR_DATA:
+      if (flags & NO_KEY_LOG)
+        return;
+      dump(cmd, len, data, flags);
+      if (len != 64 + 128)
+      {
+        printf("KEY_COUNTERS : wrong length of %d\n", len);
+        return;
+      }
+      if ((same = !(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16))))
+        cursorUp(20);
+      displayCounter();
+      puts("Key Counters");
+      puts(" Scanner:");
+      for (int i = 0; i < 61; i++)
+      {
+        if (data[i])
+          printf("%+5d ", data[i]);
+        else
+          printf("    . ");
+        if (i % 12 == 11)
+          printf("\n");
+      }
+      puts("\n TCD:");
+      for (int i = 0; i < 128; i++)
+      {
+        if (data[i + 64])
+          printf("%+5d ", data[i + 64]);
+        else
+          printf("    . ");
+        if (i % 12 == 11)
+          printf("\n");
+      }
+      printf("\n");
+      lastMessage = (cmd << 16);
       return;
 
     case LPC_BB_MSG_TYPE_PARAMETER:
@@ -251,13 +288,13 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       if (flags & NO_STATDATA)
         return;
       dump(cmd, len, data, flags);
-      if (len != 10)
+      if (len != 11)
       {
         printf("STATUS : wrong length of %d\n", len);
         return;
       }
       if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
-        cursorUp(10);
+        cursorUp(11);
       displayCounter();
       printf("SYSTEM STATUS:\n");
       printf("  M4 ticker      : %10u\n", (unsigned) data[0] + ((unsigned) data[1] << 16));
@@ -268,6 +305,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       printf("  BBB Msg        : %5d buffer overruns / ESPI send fails\n", data[6]);
       printf("  TCD Msg        : %5d buffer overruns / USB send fails\n", data[7]);
       printf("  M0 ADC Scanner : %5dus max. round trip time\n", data[8]);
+      printf("  Midi Buffers   : %5d dropped\n", data[9]);
       if (data[8] != 0xFFFF)
         printf("  M0 Key Scanner : %5d (overrun flag)\n", data[9]);
       else

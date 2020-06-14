@@ -79,6 +79,7 @@ Retry:
 #define CLEAR_EEPROM    "clear-eeprom"
 #define STAT_DATA       "status"
 #define EHC_SAVE_EEPROM "save-ehc"
+#define KEY_CNTRS       "key-cntrs"
 
 #define SETTING             "set"
 #define MUTE_CTRL           "mute-ctrl"
@@ -123,6 +124,7 @@ void Usage(void)
   puts("     clear-eeprom : erase EEPROM");
   puts("     status       : get diagnostic status data (and clear it)");
   puts("     save-ehc     : save current EHC config data to EEPROM");
+  puts("     key-cntrs    : get diagnostic key counters");
   puts("  set[ting] : mute-ctrl|sensors|key-logging|ae-cmd|system");
   puts("     mute-ctrl: disable|mute|unmute : disable mute override or set/clear muting");
   puts("     sensors: on|off                : turn raw sensor messages on/off");
@@ -242,6 +244,12 @@ int main(int argc, char const *argv[])
     if (strncmp(argv[2], EHC_SAVE_EEPROM, sizeof EHC_SAVE_EEPROM) == 0)
     {
       REQ_DATA[2] = LPC_REQUEST_ID_EHC_EEPROMSAVE;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], KEY_CNTRS, sizeof KEY_CNTRS) == 0)
+    {
+      REQ_DATA[2] = LPC_REQUEST_ID_KEYCNTR_DATA;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }

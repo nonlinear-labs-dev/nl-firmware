@@ -406,6 +406,15 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       case LPC_REQUEST_ID_EHC_EEPROMSAVE:
         NL_EHC_ForceEepromUpdate();
         break;
+      case LPC_REQUEST_ID_KEYCNTR_DATA:
+      {
+        uint16_t words = NL_STAT_GetKeyDataSize();
+        uint16_t buffer[words];
+        NL_STAT_GetKeyData(buffer);
+        BB_MSG_WriteMessage(LPC_BB_MSG_TYPE_KEYCNTR_DATA, words, buffer);
+        BB_MSG_SendTheBuffer();
+        break;
+      }
       default:
         type = 0;  // to set a breakpoint only
         break;
