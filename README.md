@@ -3,7 +3,7 @@
 ## How to build
 
 Preconditions:
-- g++-8 has to be installed and must be the default g++ see: (how to have different g++ installations for ubuntu)[https://askubuntu.com/a/1028656]
+- g++-8 has to be installed and must be the default g++ see: [how to have different g++ installations for ubuntu](https://askubuntu.com/a/1028656)
 - git, cmake, docker have to be installed, docker has to be enabled/started
 - current user has to be in group 'docker' (pitfall: one has to logout/login after adding user to group)
 - at least one target expects a qemu installation
