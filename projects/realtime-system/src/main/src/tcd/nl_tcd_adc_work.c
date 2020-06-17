@@ -61,13 +61,13 @@ typedef struct  // __attribute__((packed))
 // clang-format off
 static RibbonCalibrationData_T NL_EEPROM_ALIGN ribbonCalibrationData[2] = {
 // initialized with default data derived from a variety of ribbons
-  { .threshold = 151,
+  { .threshold = 122,
     .tableX    = { 173, 283, 412, 535, 657, 773, 888, 1004, 1121, 1238, 1355, 1471, 1586, 1700, 1814, 1927, 2039,
                    2151, 2262, 2374, 2487, 2602, 2717, 2837, 2957, 3083, 3209, 3342, 3475, 3620, 3764, 3916, 4040 },
     .tableY    = { 0, 712, 1198, 1684, 2170, 2655, 3141, 3627, 4113, 4599, 5085, 5571, 6057, 6542, 7028, 7514, 8000,
                    8500, 8993, 9494, 9994, 10495, 10995, 11496, 11996, 12497, 12997, 13498, 13998, 14499, 14999, 15500, 16000 }
   },
-  { .threshold = 151,
+  { .threshold = 122,
     .tableX    = { 173, 283, 412, 535, 657, 773, 888, 1004, 1121, 1238, 1355, 1471, 1586, 1700, 1814, 1927, 2039,
                    2151, 2262, 2374, 2487, 2602, 2717, 2837, 2957, 3083, 3209, 3342, 3475, 3620, 3764, 3916, 4040 },
     .tableY    = { 0, 712, 1198, 1684, 2170, 2655, 3141, 3627, 4113, 4599, 5085, 5571, 6057, 6542, 7028, 7514, 8000,
@@ -275,8 +275,9 @@ void ADC_WORK_Init1(void)
 #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
     ribbon[i].calibration = &ribbonCalibration[i];
 #pragma GCC diagnostic pop
-    ribbon[i].ipcId      = (i == 0 ? IPC_ADC_RIBBON1 : IPC_ADC_RIBBON2);
-    ribbon[i].hwSourceId = (i == 0 ? HW_SOURCE_ID_RIBBON_1 : HW_SOURCE_ID_RIBBON_2);
+    ribbonCalibrationData[i].threshold = SetThreshold(ribbonCalibrationData[i].threshold);
+    ribbon[i].ipcId                    = (i == 0 ? IPC_ADC_RIBBON1 : IPC_ADC_RIBBON2);
+    ribbon[i].hwSourceId               = (i == 0 ? HW_SOURCE_ID_RIBBON_1 : HW_SOURCE_ID_RIBBON_2);
   }
 
   NL_EHC_InitControllers();
