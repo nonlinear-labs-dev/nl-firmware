@@ -1,11 +1,13 @@
 [Unit]
 Description=Nonlinear-Labs C15 Audio Engine
-After=syslog.target systemd-modules-load.service sound.target fixCpuBindings.service
+After=systemd-modules-load.service sound.target fixCpuBindings.service
 StartLimitIntervalSec=0
 StartLimitInterval=0
 
 [Service]
 WorkingDirectory=@C15_INSTALL_PATH@/audio-engine
+ExecStartPre=/usr/bin/bash -c "while [ ! -f /proc/asound/EMPHASE/id ]; do sleep 0.1; done"
+ExecStartPre=/usr/bin/bash -c "while [ ! -f /proc/asound/PCH/id ]; do sleep 0.1; done"
 ExecStartPre=amixer -D hw:PCH set Master 100%
 ExecStartPre=/usr/bin/bash -c "/usr/bin/systemctl set-environment FRAMES_PER_PERIOD=49"
 ExecStartPre=/usr/bin/bash -c "if cat /proc/cpuinfo | grep \"model name\" | grep \"7010\" > /dev/null; then /usr/bin/systemctl set-environment FRAMES_PER_PERIOD=49; fi"
