@@ -21,7 +21,7 @@
 // that the text is easily spotted.
 
 //                         "YY-WW"
-#define C15_VERSION_STRING "20-24"
+#define C15_VERSION_STRING "Beta-#1953b"
 #warning "make sure version string is up-to date when building a release or beta"
 
 // do not change these two strings:
