@@ -49,8 +49,7 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/fixCpuBindings.service.in ${PROJECT
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/fixCpuBindings.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
-install(FILES ${PROJECT_SOURCE_DIR}/systemd/${PROJECT_NAME}.path DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)
-install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SYSTEMD_SERVICES_INSTALL_DIR}/${PROJECT_NAME}.path ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${PROJECT_NAME}.path)")
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SYSTEMD_SERVICES_INSTALL_DIR}/fixCpuBindings.service ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/fixCpuBindings.service)")
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${SYSTEMD_SERVICES_INSTALL_DIR}/audio-engine.service ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/audio-engine.service)")
