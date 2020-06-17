@@ -21,6 +21,8 @@ typedef struct __attribute__((packed))
   uint16_t M0_ADCTime;
   uint16_t M0_KbsIrqOver;
   uint16_t DroppedMidiMessageBuffers;
+  uint16_t MissedKeybedEventsScanner;
+  uint16_t MissedKeybedEventsTCD;
 } NL_systemStatus_T;
 
 extern NL_systemStatus_T NL_systemStatus;
