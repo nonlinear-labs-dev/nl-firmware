@@ -8,6 +8,7 @@ class BBBBOptions;
 class Bridges;
 class WiFiManager;
 class USBManager;
+class FileSystemSync;
 
 class Application
 {
@@ -34,4 +35,5 @@ class Application
   std::unique_ptr<Bridges> m_bridges;
   std::unique_ptr<WiFiManager> m_wifiManager;
   std::unique_ptr<USBManager> m_usbManager;
+  std::unique_ptr<FileSystemSync> m_fsSync;
 };

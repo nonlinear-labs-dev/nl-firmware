@@ -133,7 +133,8 @@ Glib::ustring FileSystem::getFullPath(const Glib::RefPtr<Gio::File> &file)
 
 void FileSystem::syncAll()
 {
-  nltools::Log::warning("Syncing file systems");
+  nltools::Log::warning("Syncing file systems ...");
   sync();
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, nltools::msg::FileSystem::Sync());
+  nltools::Log::warning("Syncing file systems done.");
 }
