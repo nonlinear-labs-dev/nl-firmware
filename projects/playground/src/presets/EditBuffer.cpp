@@ -880,11 +880,11 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
   {
     auto swap = UNDO::createSwapData(type);
 
-    initUnisonVoicesScaling(transaction, type);
     cleanupParameterSelection(transaction, m_type, type);
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
+      initUnisonVoicesScaling(m_type);
       m_signalTypeChanged.send(m_type);
       onChange();
     });
@@ -1034,11 +1034,11 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   }
 }
 
-void EditBuffer::initUnisonVoicesScaling(UNDO::Transaction *transaction, SoundType newType)
+void EditBuffer::initUnisonVoicesScaling(SoundType newType)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     if(auto unisonParam = dynamic_cast<UnisonVoicesParameter *>(findParameterByID({ 249, vg })))
-      unisonParam->updateScaling(transaction, newType);
+      unisonParam->updateScaling(newType);
 }
 
 bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundType type)
