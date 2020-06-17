@@ -13,49 +13,30 @@ UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup *group, VoiceGroup v
 
 bool UnisonVoicesParameter::shouldWriteDocProperties(UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-  auto ret = Parameter::shouldWriteDocProperties(knownRevision) || didScalingChange();
-
-  if(ret)
-    m_scalingChanged = false;
-
-  return ret;
+  return std::exchange(m_scalingChanged, false) || Parameter::shouldWriteDocProperties(knownRevision);
 }
 
-void UnisonVoicesParameter::updateScaling(UNDO::Transaction *transaction, SoundType type)
+void UnisonVoicesParameter::updateScaling(SoundType type)
 {
   auto oldVoices = getDisplayValue();
 
-  auto set24Voices = [&] {
+  if(type == SoundType::Single)
+  {
     getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>());
     getValue().setCoarseDenominator(23);
     getValue().setFineDenominator(23);
-  };
-
-  auto set12Voices = [&] {
-    getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<12, VoicesDimension>>());
-    getValue().setCoarseDenominator(11);
-    getValue().setFineDenominator(11);
-  };
-
-  if(type == SoundType::Single)
-  {
-    transaction->addSimpleCommand([=](auto) { set24Voices(); }, [=](auto) { set12Voices(); });
   }
   else
   {
-    transaction->addSimpleCommand([=](auto) { set12Voices(); }, [=](auto) { set24Voices(); });
+    getValue().setScaleConverter(ScaleConverter::get<LinearCountScaleConverter<12, VoicesDimension>>());
+    getValue().setCoarseDenominator(11);
+    getValue().setFineDenominator(11);
   }
 
-  setCPFromHwui(transaction, 0);
-  stepCPFromHwui(transaction, oldVoices, {});
-
+  getValue().setRawValue(Initiator::INDIRECT, 0);
+  getValue().setRawValue(Initiator::INDIRECT, getNextStepValue(oldVoices, {}));
   m_scalingChanged = true;
   onChange();
-}
-
-bool UnisonVoicesParameter::didScalingChange() const
-{
-  return m_scalingChanged;
 }
 
 void UnisonVoicesParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)

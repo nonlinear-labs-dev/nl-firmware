@@ -107,6 +107,7 @@ add_custom_command(
         "make lpc_bb_driver-rebuild"
         "make espi_driver-clean-for-reconfigure"
         "make espi_driver-rebuild"
+        "rm -rf /fs/nonlinux/output/target/mnt/.not-mounted"
         "make"
         "cp /fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
         "chown ${USER_ID}.${GROUP_ID} /workdir/rootfs.tar.gz"

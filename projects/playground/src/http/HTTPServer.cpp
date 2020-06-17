@@ -62,10 +62,10 @@ void HTTPServer::initializeServer()
   }
 }
 
-void HTTPServer::webSocket(SoupServer *, SoupWebsocketConnection *connection, const char *, SoupClientContext *,
+void HTTPServer::webSocket(SoupServer *, SoupWebsocketConnection *connection, const char *path, SoupClientContext *,
                            HTTPServer *pThis)
 {
-  pThis->m_contentManager.connectWebSocket(connection);
+  pThis->m_contentManager.connectWebSocket(path, connection);
 }
 
 void HTTPServer::mcWebSocket(SoupServer *, SoupWebsocketConnection *connection, const char *, SoupClientContext *,

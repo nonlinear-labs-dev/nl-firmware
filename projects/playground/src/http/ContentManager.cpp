@@ -162,9 +162,9 @@ void ContentManager::onUpdateIdChangedByNetworkRequest(std::shared_ptr<NetworkRe
   {
     for(const auto &ws : m_webSockets)
     {
-      if(causer->getSocket() == ws->getConnection())
+      if(causer->getSocket() == ws.second->getConnection())
       {
-        ws->onWebsocketRequestDone(causer, oldUpdateID, newUpdateID);
+        ws.second->onWebsocketRequestDone(causer, oldUpdateID, newUpdateID);
       }
     }
   }
@@ -175,11 +175,12 @@ bool ContentManager::isSendResponsesScheduled() const
   return m_sendResponsesScheduled;
 }
 
-void ContentManager::connectWebSocket(SoupWebsocketConnection *connection)
+void ContentManager::connectWebSocket(const std::string &path, SoupWebsocketConnection *connection)
 {
   g_signal_connect(connection, "message", G_CALLBACK(&ContentManager::onWebSocketMessage), this);
-  m_webSockets.push_back(std::make_shared<WebsocketConnection>(connection));
-  feedWebSocket(m_webSockets.back());
+  auto ws = std::make_shared<WebsocketConnection>(connection);
+  m_webSockets[path] = ws;
+  feedWebSocket(ws);
 }
 
 void ContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type, GBytes *message,
@@ -198,7 +199,18 @@ void ContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type
 
 void ContentManager::feedWebSockets()
 {
-  m_webSockets.remove_if([=](tWebsocketConnection &c) { return !feedWebSocket(c); });
+  for(auto it = m_webSockets.begin(); it != m_webSockets.end();)
+  {
+    if(!feedWebSocket(it->second))
+    {
+      it = m_webSockets.erase(it);
+      nltools::Log::warning(__PRETTY_FUNCTION__, "remove web socket connection");
+    }
+    else
+    {
+      ++it;
+    }
+  }
 }
 
 bool ContentManager::feedWebSocket(tWebsocketConnection c)
