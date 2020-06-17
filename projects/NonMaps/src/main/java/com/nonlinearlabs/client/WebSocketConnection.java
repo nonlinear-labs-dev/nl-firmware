@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.world.Uuid;
 import com.nonlinearlabs.client.world.overlay.GWTDialog;
 
 class WebSocketConnection {
@@ -60,18 +61,19 @@ class WebSocketConnection {
 	}
 
 	ServerListener listener;
+	static String clientId = Uuid.random();
 
 	public void startPolling(ServerListener listener) {
 		Tracer.log("startPolling");
 		this.listener = listener;
 		if (Window.Location.getPort() == "8888") {
-			webSocketOpen(Window.Location.getHostName() + ":8080");
+			webSocketOpen(Window.Location.getHostName() + ":8080", clientId);
 		} else {
-			webSocketOpen(Window.Location.getHost());
+			webSocketOpen(Window.Location.getHost(), clientId);
 		}
 
 		SetupModel.get().systemSettings.deviceName.onChange(t -> {
-			if(lastDeviceName != null && !lastDeviceName.isEmpty() && !t.isEmpty() && lastDeviceName != t) {
+			if (lastDeviceName != null && !lastDeviceName.isEmpty() && !t.isEmpty() && lastDeviceName != t) {
 				notifyHostChanged(lastDeviceName, t);
 			}
 
@@ -85,9 +87,9 @@ class WebSocketConnection {
 		return self.@com.nonlinearlabs.client.WebSocketConnection::webSocketConnection.bufferedAmount;
 	}-*/;
 
-	public native void webSocketOpen(String host)
+	public native void webSocketOpen(String host, String path)
 	/*-{
-		var address = 'ws://' + host + '/ws/';
+		var address = 'ws://' + host + '/ws/' + path;
 		var connection = new WebSocket(address);
 		var self = this;
 	
@@ -243,15 +245,17 @@ class WebSocketConnection {
 			setModal(true);
 			setWidth("20em");
 			addHeader("C15 SSID change detected!");
-	
+
 			HTMLPanel panel = new HTMLPanel("");
 			HTMLPanel buttons = new HTMLPanel("");
-			panel.add(new Label("The SSID of the connected C15 instrument has changed. Do you want to reload the Graphical User Interface now?", true));
-	
+			panel.add(new Label(
+					"The SSID of the connected C15 instrument has changed. Do you want to reload the Graphical User Interface now?",
+					true));
+
 			Button yes, cancelButton;
-	
+
 			buttons.add(cancelButton = new Button("Cancel", new ClickHandler() {
-	
+
 				@Override
 				public void onClick(ClickEvent arg0) {
 					commit();
@@ -259,7 +263,7 @@ class WebSocketConnection {
 			}));
 
 			buttons.add(yes = new Button("Reload", new ClickHandler() {
-	
+
 				@Override
 				public void onClick(ClickEvent arg0) {
 					Window.Location.reload();

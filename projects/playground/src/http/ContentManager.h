@@ -28,7 +28,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
 
   UNDO::Scope &getUndoScope() override;
   const UNDO::Scope &getUndoScope() const override;
-  void connectWebSocket(SoupWebsocketConnection *connection);
+  void connectWebSocket(const std::string &path, SoupWebsocketConnection *connection);
 
   bool isSendResponsesScheduled() const;
 
@@ -89,5 +89,5 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
                                          UpdateDocumentContributor::tUpdateID oldUpdateID,
                                          UpdateDocumentContributor::tUpdateID newUpdateID);
 
-  std::list<tWebsocketConnection> m_webSockets;
+  std::map<std::string, tWebsocketConnection> m_webSockets;
 };
