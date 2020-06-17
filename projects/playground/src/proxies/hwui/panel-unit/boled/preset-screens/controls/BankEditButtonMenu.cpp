@@ -18,6 +18,7 @@
 #include <device-info/DateTimeInfo.h>
 #include <xml/VersionAttribute.h>
 #include <tools/TimeTools.h>
+#include <nltools/GenericScopeGuard.h>
 
 static size_t s_lastSelectedButton = 0;
 
@@ -173,6 +174,7 @@ void BankEditButtonMenu::exportBank()
 
 void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::string& outFile)
 {
+  GenericScopeGuard syncAfterAllFileOperation([] {}, FileSystem::syncAll);
   SplashLayout::addStatus("Exporting " + selBank->getName(true));
   auto scope = UNDO::Scope::startTrashTransaction();
   selBank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());

@@ -96,7 +96,6 @@ void FileOutStream::commit()
 
     auto oldName = getTmpFileName();
     FileSystem::rename(oldName, m_filename);
-    FileSystem::syncAll();
   }
 }
 
