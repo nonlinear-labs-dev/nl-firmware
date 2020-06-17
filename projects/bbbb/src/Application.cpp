@@ -1,14 +1,11 @@
 #include "Application.h"
 #include "io/Bridges.h"
-#include <fcntl.h>
 #include "BBBBOptions.h"
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <nltools/messaging/Messaging.h>
 #include <giomm.h>
 #include <io/WiFiManager.h>
 #include <io/USBManager.h>
+#include <FileSystemSync.h>
 
 #ifdef _DEVELOPMENT_PC
 #include <ui/Window.h>
@@ -36,12 +33,8 @@ Application::Application(int numArgs, char **argv)
     , m_bridges(std::make_unique<Bridges>())
     , m_wifiManager(std::make_unique<WiFiManager>())
     , m_usbManager(std::make_unique<USBManager>())
+    , m_fsSync(std::make_unique<FileSystemSync>())
 {
-
-  nltools::msg::receive<nltools::msg::FileSystem::Sync>(nltools::msg::EndPoint::BeagleBone, [this](const auto &msg) {
-    sync();
-    nltools::Log::warning("Synced file system.");
-  });
 }
 
 Application::~Application() = default;
