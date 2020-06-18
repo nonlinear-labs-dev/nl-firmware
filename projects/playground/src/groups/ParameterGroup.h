@@ -7,7 +7,7 @@
 #include "tools/IntrusiveList.h"
 
 class PresetParameterGroup;
-class ParameterDualGroupSet;
+class ParameterGroupSet;
 
 class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListItem<ParameterGroup *>
 {
@@ -15,7 +15,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   typedef UpdateDocumentContributor super;
 
  public:
-  ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
+  ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                  const char *webUIName);
   virtual ~ParameterGroup();
 

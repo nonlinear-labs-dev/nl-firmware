@@ -9,7 +9,7 @@
 #include "parameters/MacroControlParameter.h"
 #include "parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h"
 
-MacroControlsGroup::MacroControlsGroup(ParameterDualGroupSet *parent)
+MacroControlsGroup::MacroControlsGroup(ParameterGroupSet *parent)
     : ParameterGroup(parent, { "MCs", VoiceGroup::Global }, "Macro Control", "Macro Control", "Macro Control")
 {
 }

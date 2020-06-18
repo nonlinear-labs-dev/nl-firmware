@@ -13,14 +13,14 @@ class Parameter;
 class Preset;
 class ParameterGroup;
 
-class ParameterDualGroupSet : public AttributesOwner
+class ParameterGroupSet : public AttributesOwner
 {
  private:
   using super = AttributesOwner;
 
  public:
-  explicit ParameterDualGroupSet(UpdateDocumentContributor *parent);
-  ~ParameterDualGroupSet() override;
+  explicit ParameterGroupSet(UpdateDocumentContributor *parent);
+  ~ParameterGroupSet() override;
 
   typedef ParameterGroup *tParameterGroupPtr;
 
@@ -45,7 +45,7 @@ class ParameterDualGroupSet : public AttributesOwner
 
  protected:
   void loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transaction, const Preset *p, VoiceGroup target);
-  virtual ParameterDualGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p);
+  virtual ParameterGroupSet::tParameterGroupPtr appendParameterGroup(ParameterGroup *p);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other);
   virtual void copyFrom(UNDO::Transaction *transaction, const Preset *other, VoiceGroup from, VoiceGroup to);
 

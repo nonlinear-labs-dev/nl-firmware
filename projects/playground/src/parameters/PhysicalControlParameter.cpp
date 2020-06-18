@@ -8,7 +8,7 @@
 #include <device-settings/DebugLevel.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/HardwareSourcesGroup.h>
-#include <presets/ParameterDualGroupSet.h>
+#include <presets/ParameterGroupSet.h>
 #include <limits>
 #include <math.h>
 #include "ParameterAlgorithm.h"
@@ -166,7 +166,7 @@ void PhysicalControlParameter::setUiSelectedModulationRouter(const ParameterId &
 
   if(current != paramNumber)
   {
-    if(auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent()))
+    if(auto grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent()))
     {
       if(auto oldRouter = grandPa->findParameterByID(current))
         oldRouter->onUnselected();
@@ -190,7 +190,7 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 {
   auto id = getUiSelectedModulationRouter();
 
-  if(auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent()))
+  if(auto grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent()))
   {
     auto mappings
         = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
@@ -201,7 +201,7 @@ void PhysicalControlParameter::toggleUiSelectedModulationRouter(int inc)
 
 ParameterId PhysicalControlParameter::getUiSelectedModulationRouter() const
 {
-  auto grandPa = dynamic_cast<const ParameterDualGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<const ParameterGroupSet *>(getParent()->getParent());
   auto lastSelectedMacroControl = MacroControlParameter::getLastSelectedMacroControl();
   auto mc = dynamic_cast<MacroControlParameter *>(grandPa->findParameterByID(lastSelectedMacroControl));
   auto mcm = dynamic_cast<MacroControlMappingGroup *>(grandPa->getParameterGroupByID({ "MCM", VoiceGroup::Global }));

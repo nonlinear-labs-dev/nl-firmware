@@ -11,7 +11,7 @@
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-OutputMixerGroup::OutputMixerGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+OutputMixerGroup::OutputMixerGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Mixer", vg }, "Output Mixer", "Output Mixer", "Output Mixer")
 {
 }

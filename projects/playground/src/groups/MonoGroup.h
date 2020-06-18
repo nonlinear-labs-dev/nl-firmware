@@ -5,7 +5,7 @@
 class MonoGroup : public ParameterGroup
 {
  public:
-  MonoGroup(ParameterDualGroupSet* parent, VoiceGroup voicegroup);
+  MonoGroup(ParameterGroupSet* parent, VoiceGroup voicegroup);
   void init();
 
   static bool isMonoParameter(const ParameterId& id);

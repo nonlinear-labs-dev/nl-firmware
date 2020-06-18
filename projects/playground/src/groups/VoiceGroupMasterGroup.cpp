@@ -9,7 +9,7 @@
 #include <parameters/scale-converters/LinearBipolar96StScaleConverterFine.h>
 #include "VoiceGroupMasterGroup.h"
 
-VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterDualGroupSet* parent, VoiceGroup vg)
+VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterGroupSet* parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Part", vg }, "Part", "Part", "Part")
 {
 }

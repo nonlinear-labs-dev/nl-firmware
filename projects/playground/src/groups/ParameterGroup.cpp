@@ -1,7 +1,7 @@
 #include "ParameterGroup.h"
 #include "xml/Writer.h"
 #include "parameters/Parameter.h"
-#include "presets/ParameterDualGroupSet.h"
+#include "presets/ParameterGroupSet.h"
 #include "presets/PresetParameterGroup.h"
 #include <fstream>
 #include <parameters/ModulateableParameter.h>
@@ -11,7 +11,7 @@
 #include <xml/Attribute.h>
 #include <nltools/logging/Log.h>
 
-ParameterGroup::ParameterGroup(ParameterDualGroupSet *parent, GroupId id, const char *shortName, const char *longName,
+ParameterGroup::ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                                const char *webUIName)
     : UpdateDocumentContributor(parent)
     , m_id(id)

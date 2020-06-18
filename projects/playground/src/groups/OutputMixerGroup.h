@@ -5,7 +5,7 @@
 class OutputMixerGroup : public ParameterGroup
 {
  public:
-  OutputMixerGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  OutputMixerGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
   virtual ~OutputMixerGroup();
 
   void init();

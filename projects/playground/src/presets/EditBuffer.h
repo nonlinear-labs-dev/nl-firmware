@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ParameterDualGroupSet.h"
+#include "ParameterGroupSet.h"
 #include "presets/recall/RecallParameterGroups.h"
 #include "nltools/GenericScopeGuard.h"
 #include <nltools/threading/Expiration.h>
@@ -13,10 +13,10 @@ class PresetManager;
 class HWUI;
 class SplitPointParameter;
 
-class EditBuffer : public ParameterDualGroupSet
+class EditBuffer : public ParameterGroupSet
 {
  private:
-  typedef ParameterDualGroupSet super;
+  typedef ParameterGroupSet super;
 
  public:
   EditBuffer(PresetManager *parent);

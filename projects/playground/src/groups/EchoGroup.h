@@ -5,7 +5,7 @@
 class EchoGroup : public ParameterGroup
 {
  public:
-  EchoGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  EchoGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
   virtual ~EchoGroup();
 
   void init();

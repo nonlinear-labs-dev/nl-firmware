@@ -5,7 +5,7 @@
 class SVFilterGroup : public ParameterGroup
 {
  public:
-  SVFilterGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  SVFilterGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
   virtual ~SVFilterGroup();
 
   void init();

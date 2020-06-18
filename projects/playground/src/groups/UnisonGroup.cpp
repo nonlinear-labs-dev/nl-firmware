@@ -13,7 +13,7 @@
 #include <parameters/UnisonVoicesParameter.h>
 #include <parameters/unison-parameters/ModulateableUnisonParameterWithUnusualModUnit.h>
 
-UnisonGroup::UnisonGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+UnisonGroup::UnisonGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Unison", vg }, "Unison", "Unison", "Unison")
 {
 }

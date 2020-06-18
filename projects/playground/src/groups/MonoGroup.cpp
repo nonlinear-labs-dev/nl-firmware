@@ -7,7 +7,7 @@
 #include <parameters/scale-converters/LegatoScaleConverter.h>
 #include "MonoGroup.h"
 
-MonoGroup::MonoGroup(ParameterDualGroupSet* parent, VoiceGroup vg)
+MonoGroup::MonoGroup(ParameterGroupSet* parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Mono", vg }, "Mono", "Mono", "Mono")
 {
 }

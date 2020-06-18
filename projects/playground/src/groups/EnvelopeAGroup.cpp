@@ -14,7 +14,7 @@
 #include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 #include <parameters/scale-converters/LinearBipolar60DBTScaleConverter.h>
 
-EnvelopeAGroup::EnvelopeAGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+EnvelopeAGroup::EnvelopeAGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Env A", vg }, "Envelope A", "Envelope A", "Envelope A")
 {
 }

@@ -9,7 +9,7 @@
 #include <libundo/undo/Transaction.h>
 #include <device-settings/DebugLevel.h>
 #include <xml/Writer.h>
-#include <presets/ParameterDualGroupSet.h>
+#include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <Application.h>
 #include <presets/EditBuffer.h>
@@ -129,7 +129,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
     auto swapData = UNDO::createSwapData(src);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+      if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
       {
         if(m_modSource != MacroControls::NONE)
         {

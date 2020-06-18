@@ -14,7 +14,7 @@
 #include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 #include <parameter_declarations.h>
 
-EnvelopeCGroup::EnvelopeCGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+EnvelopeCGroup::EnvelopeCGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Env C", vg }, "Envelope C", "Envelope C", "Envelope C")
 {
 }

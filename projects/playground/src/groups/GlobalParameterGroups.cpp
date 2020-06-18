@@ -4,7 +4,7 @@
 #include <parameters/SplitPointParameter.h>
 #include "GlobalParameterGroups.h"
 
-GlobalParameterGroups::GlobalParameterGroups(ParameterDualGroupSet *parent)
+GlobalParameterGroups::GlobalParameterGroups(ParameterGroupSet *parent)
     : ParameterGroup(parent, { "Split", VoiceGroup::Global }, "Split", "Split", "Split")
 {
 }
