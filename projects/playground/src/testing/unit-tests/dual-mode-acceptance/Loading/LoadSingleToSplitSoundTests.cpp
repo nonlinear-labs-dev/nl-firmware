@@ -1,6 +1,8 @@
 #include <iostream>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
+#include <testing/unit-tests/mock/PreDualModePresetBank.h>
+#include <parameter_declarations.h>
 #include "testing/TestHelper.h"
 #include "testing/unit-tests/mock/EditBufferNamedLogicalParts.h"
 #include "proxies/hwui/HWUI.h"
@@ -15,6 +17,27 @@ auto getPresetParameter = [](auto preset, auto parameter) {
   auto id = parameter->getID();
   return preset->findParameterByID(id, false);
 };
+
+TEST_CASE("Load Pre 1.7 Preset into Mono Enabled part resets Mono Enable")
+{
+  auto eb = TestHelper::getEditBuffer();
+  PreDualModePresetBank bank;
+  auto preset = bank.createMockPreset();
+
+  TestHelper::initDualEditBuffer<SoundType::Split>();
+
+  auto scope = TestHelper::createTestScope();
+  auto transaction = scope->getTransaction();
+
+  auto monoEnable = eb->findParameterByID({ C15::PID::Mono_Grp_Enable, VoiceGroup::I });
+
+  monoEnable->setCPFromHwui(transaction, 1);
+  CHECK(monoEnable->getDisplayString() == "On");
+
+  eb->undoableLoadToPart(transaction, preset.get(), VoiceGroup::I, VoiceGroup::I);
+
+  CHECK(monoEnable->getDisplayString() == "Off");
+}
 
 TEST_CASE("Load Single into Split Part I")
 {
