@@ -29,6 +29,7 @@ ContentManager::WebsocketConnection::WebsocketConnection(SoupWebsocketConnection
 
 ContentManager::WebsocketConnection::~WebsocketConnection()
 {
+  DebugLevel::warning("destroying old WebsocketConnection");
   g_object_unref(ws);
 }
 
@@ -179,6 +180,7 @@ void ContentManager::connectWebSocket(const std::string &path, SoupWebsocketConn
 {
   g_signal_connect(connection, "message", G_CALLBACK(&ContentManager::onWebSocketMessage), this);
   auto ws = std::make_shared<WebsocketConnection>(connection);
+  DebugLevel::warning("adding new WebsocketConnection for path", path);
   m_webSockets[path] = ws;
   feedWebSocket(ws);
 }

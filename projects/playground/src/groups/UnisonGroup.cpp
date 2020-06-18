@@ -25,14 +25,14 @@ void UnisonGroup::init()
   appendParameter(new UnisonVoicesParameter(this, getVoiceGroup()));
 
   appendParameter(new ModulateableUnisonParameterWithUnusualModUnit(
-      this, ParameterId{ 250, getVoiceGroup() }, ScaleConverter::get<Fine12STScaleConverter>(),
+      this, ParameterId { 250, getVoiceGroup() }, ScaleConverter::get<Fine12STScaleConverter>(),
       ScaleConverter::get<FineBipolar12STScaleConverter>(), 0, 120, 12000));
 
   appendParameter(new UnmodulateableUnisonParameter(
-      this, ParameterId{ 252, getVoiceGroup() }, ScaleConverter::get<Linear360DegreeScaleConverter>(), 0, 360, 3600));
+      this, ParameterId { 252, getVoiceGroup() }, ScaleConverter::get<Linear360DegreeScaleConverter>(), 0, 360, 3600));
 
   appendParameter(new UnmodulateableUnisonParameter(
-      this, ParameterId{ 253, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+      this, ParameterId { 253, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
 }
 
 bool UnisonGroup::isUnisonParameter(const Parameter *parameter)

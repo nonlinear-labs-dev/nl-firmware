@@ -33,7 +33,7 @@ public class EditBufferModelUpdater extends Updater {
 			String soundType = getAttributeValue(root, "editbuffer-type");
 			EditBufferModel.get().soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
 
-			if(EditBufferModel.SoundType.valueOf(soundType) == SoundType.Single)
+			if (EditBufferModel.SoundType.valueOf(soundType) == SoundType.Single)
 				EditBufferModel.get().voiceGroup.setValue(VoiceGroup.I);
 
 			String vgIName = getAttributeValue(root, "vg-I-name");
@@ -50,30 +50,30 @@ public class EditBufferModelUpdater extends Updater {
 
 			String srcUUIDI = getAttributeValue(root, "origin-I");
 			EditBufferModel.get().sourceUUIDI.setValue(srcUUIDI);
-			
+
 			String srcUUIDII = getAttributeValue(root, "origin-II");
 			EditBufferModel.get().sourceUUIDII.setValue(srcUUIDII);
 
 			String srcVGI = getAttributeValue(root, "origin-I-vg");
-			if(!srcVGI.isEmpty())
+			if (!srcVGI.isEmpty())
 				EditBufferModel.get().sourceVGI.setValue(VoiceGroup.valueOf(srcVGI));
-			
-				String srcVGII = getAttributeValue(root, "origin-II-vg");
-			if(!srcVGII.isEmpty())
+
+			String srcVGII = getAttributeValue(root, "origin-II-vg");
+			if (!srcVGII.isEmpty())
 				EditBufferModel.get().sourceVGII.setValue(VoiceGroup.valueOf(srcVGII));
-			
+
 			processChangedChildrenElements(root, "recall-data", c -> processOriginal(c));
 		}
 
-		processChildrenElements(root, "global-parameters", child -> {
+		processChangedChildrenElements(root, "global-parameters", child -> {
 			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.Global));
 		});
 
-		processChildrenElements(root, "voice-group-I-parameters", child -> {
+		processChangedChildrenElements(root, "voice-group-I-parameters", child -> {
 			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.I));
 		});
 
-		processChildrenElements(root, "voice-group-II-parameters", child -> {
+		processChangedChildrenElements(root, "voice-group-II-parameters", child -> {
 			processChangedChildrenElements(child, "parameter-group", group -> processGroup(group, VoiceGroup.II));
 		});
 	}

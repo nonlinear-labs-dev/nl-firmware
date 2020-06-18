@@ -126,7 +126,7 @@ public class PresetManager extends MapsLayout {
 		});
 
 		EditBufferModel.get().soundType.onChange(type -> {
-			if(type == SoundType.Single) {
+			if (type == SoundType.Single) {
 				endLoadToPartMode();
 				return true;
 			}
@@ -255,7 +255,8 @@ public class PresetManager extends MapsLayout {
 				Node child = children.item(i);
 
 				if (child.getNodeName().equals("banks"))
-					updateBanks(child);
+					if (ServerProxy.didChange(child))
+						updateBanks(child);
 			}
 
 			Preset newPresetSelection = getSelectedPreset();
@@ -1036,8 +1037,8 @@ public class PresetManager extends MapsLayout {
 	}
 
 	public StoreSelectMode getStoreSelectMode() {
-		if(isInStoreSelectMode())
-			return (StoreSelectMode)customPresetSelector;
+		if (isInStoreSelectMode())
+			return (StoreSelectMode) customPresetSelector;
 		return null;
 	}
 };
