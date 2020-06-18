@@ -222,7 +222,13 @@ main() {
     fi
 
     pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
+
+    if [ "$1" = "reboot" ]; then
+        executeAsRoot "reboot"
+        reboot
+    fi
+
     return 0
 }
 
-main
+main $1
