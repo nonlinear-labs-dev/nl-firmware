@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Author:       Anton Scmied
+# Author:       Anton Schmied
 # Date:         12.02.2020
 # vom Cmake übergebene Pfade zu den .tarS
 
@@ -181,6 +181,32 @@ calc_checksum() {
     return 1
 }
 
+print_version_string()
+{
+    [ ! -z "$1" ] && echo " " $(grep -m 1 --binary-files=text "C15 Version" $1 | sed '$ s/\x00*$//') " (" $1 ")"
+}
+
+print_C15_version_strings() {
+    echo "Getting version strings..."
+    if [ $UPDATE_EPC == 1 ]; then
+        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
+        rm -f $FILE
+        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar ./update/NonLinuxOverlay.tar.gz
+        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/NonLinuxOverlay.tar.gz ./usr/local/C15/playground/playground
+        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
+        print_version_string $FILE
+    fi
+    if [ $UPDATE_LPC == 1 ]; then
+        print_version_string $(find $BINARY_DIR/build-tools/lpc/ -type f -name "main.bin")
+    fi
+    if [ $UPDATE_BBB == 1 ]; then
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "lpc")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "lpc-read")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "ehc")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "ehc-preset")
+    fi
+    echo "Getting version strings done."
+}
 
 main() {
     check_preconditions || fail_and_exit
@@ -189,6 +215,7 @@ main() {
     deploy_scripts || fail_and_exit
     get_tools_from_rootfs || fail_and_exit
     create_update_tar || fail_and_exit
+    print_C15_version_strings
 }
 
 main
