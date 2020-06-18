@@ -214,6 +214,10 @@ void ParameterGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *p
     {
       myGroup->copyFrom(transaction, other);
     }
+    else
+    {
+      myGroup->undoableLoadDefault(transaction);
+    }
   }
 }
 
@@ -229,8 +233,16 @@ void ParameterGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transa
   nltools_assertOnDevPC(p->getType() == SoundType::Single);
 
   for(auto &g : getParameterGroups(target))
+  {
     if(auto c = p->findParameterGroup({ g->getID().getName(), VoiceGroup::I }))
+    {
       g->copyFrom(transaction, c);
+    }
+    else
+    {
+      g->undoableLoadDefault(transaction);
+    }
+  }
 
   if(target == VoiceGroup::I)
   {
