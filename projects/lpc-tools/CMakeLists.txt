@@ -20,7 +20,7 @@ include_directories(${CMAKE_SOURCE_DIR}/projects/)
 
 
 # INSTALL
-install(TARGETS lpc         DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
-install(TARGETS lpc-read    DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
-install(TARGETS ehc         DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
-install(TARGETS ehc-preset  DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
+install(TARGETS lpc         DESTINATION /usr/bin)
+install(TARGETS lpc-read    DESTINATION /usr/bin)
+install(TARGETS ehc         DESTINATION /usr/bin)
+install(TARGETS ehc-preset  DESTINATION /usr/bin)
