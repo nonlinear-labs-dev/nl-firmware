@@ -203,6 +203,7 @@ main() {
     rm -f /mnt/usb-stick/nonlinear-c15-update.log.txt
     rm -f /update/errors.log
     touch /update/errors.log
+    chmod +x /update/utilities/*
 
     configure_ssh
     check_preconditions || return 1
