@@ -20,9 +20,15 @@ typedef struct __attribute__((packed))
   uint16_t TCD_usbJams;
   uint16_t M0_ADCTime;
   uint16_t M0_KbsIrqOver;
+  uint16_t DroppedMidiMessageBuffers;
+  uint16_t MissedKeybedEventsScanner;
+  uint16_t MissedKeybedEventsTCD;
 } NL_systemStatus_T;
 
 extern NL_systemStatus_T NL_systemStatus;
 
+void     NL_STAT_ClearData(void);
 void     NL_STAT_GetData(uint16_t *buffer);
 uint16_t NL_STAT_GetDataSize(void);
+void     NL_STAT_GetKeyData(uint16_t *buffer);
+uint16_t NL_STAT_GetKeyDataSize(void);

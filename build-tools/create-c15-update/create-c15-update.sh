@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Author:       Anton Scmied
+# Author:       Anton Schmied
 # Date:         12.02.2020
 # vom Cmake übergebene Pfade zu den .tarS
 
@@ -99,7 +99,9 @@ deploy_scripts() {
 
     if [ $UPDATE_LPC == 1 ]; then
         cp $SOURCE_DIR/update_scripts/lpc_update.sh $OUT_DIRECTORY/LPC/ && \
-            chmod 777 $OUT_DIRECTORY/LPC/lpc_update.sh || \
+            chmod 777 $OUT_DIRECTORY/LPC/lpc_update.sh && \
+            cp $SOURCE_DIR/update_scripts/lpc_check.sh $OUT_DIRECTORY/LPC/ && \
+            chmod 777 $OUT_DIRECTORY/LPC/lpc_check.sh || \
             fail_and_exit;
     fi
 
@@ -123,7 +125,7 @@ get_tools_from_rootfs() {
     echo "Getting tools from rootfs..."
     mkdir -p $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
 
-    for i in sshpass text2soled rsync socat thttpd; do
+    for i in sshpass text2soled rsync socat thttpd lpc; do
         if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "$i") $OUT_DIRECTORY/utilities/; then
           echo "could not get $i from rootfs"
           return 1
@@ -136,7 +138,7 @@ get_tools_from_rootfs() {
       return 1
     fi
 
-    for i in sshpass text2soled rsync socat thttpd mxli; do
+    for i in sshpass text2soled rsync socat thttpd mxli lpc; do
         if ! chmod +x $OUT_DIRECTORY/utilities/"$i"; then
           echo "could not make $i executable"
           return 1
@@ -179,6 +181,32 @@ calc_checksum() {
     return 1
 }
 
+print_version_string()
+{
+    [ ! -z "$1" ] && echo " " $(grep -m 1 --binary-files=text "C15 Version" $1 | sed '$ s/\x00*$//') " (" $1 ")"
+}
+
+print_C15_version_strings() {
+    echo "Getting version strings..."
+    if [ $UPDATE_EPC == 1 ]; then
+        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
+        rm -f $FILE
+        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar ./update/NonLinuxOverlay.tar.gz
+        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/NonLinuxOverlay.tar.gz ./usr/local/C15/playground/playground
+        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
+        print_version_string $FILE
+    fi
+    if [ $UPDATE_LPC == 1 ]; then
+        print_version_string $(find $BINARY_DIR/build-tools/lpc/ -type f -name "main.bin")
+    fi
+    if [ $UPDATE_BBB == 1 ]; then
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "lpc")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "lpc-read")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "ehc")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "ehc-preset")
+    fi
+    echo "Getting version strings done."
+}
 
 main() {
     check_preconditions || fail_and_exit
@@ -187,6 +215,7 @@ main() {
     deploy_scripts || fail_and_exit
     get_tools_from_rootfs || fail_and_exit
     create_update_tar || fail_and_exit
+    print_C15_version_strings
 }
 
 main

@@ -72,6 +72,7 @@ typedef struct
   volatile uint32_t  ticker;
   uint32_t           ADCTicks;
   uint32_t           RitCrtlReg;
+  int16_t            keyOnOffCntr[64];
 } SharedData_T;
 
 extern SharedData_T s;

@@ -8,6 +8,7 @@ OPTION(BUILD_ONLINEHELP "Enable building and installing of the C15 online help" 
 OPTION(BUILD_TEXT2SOLED "Enable building and installing of the text2soled utility" Off)
 OPTION(BUILD_TESTING "Enable tests" On)
 OPTION(BUILD_REALTIME_SYSTEM "Enable building of the LPC realtime system" Off)
+OPTION(BUILD_LPC_TOOLS "Enable building of the LPC helper tools" Off)
 
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log -n 1 --pretty='format:%cd' --date=format:'%Y-%m-%d %H:%M:%S'" OUTPUT_VARIABLE LAST_COMMIT_STAMP)
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse --abbrev-ref HEAD" OUTPUT_VARIABLE BRANCH_NAME)
@@ -70,6 +71,10 @@ ENDIF(BUILD_ONLINEHELP)
 IF(BUILD_TEXT2SOLED)
     add_subdirectory(text2soled)
 ENDIF(BUILD_TEXT2SOLED)
+
+IF(BUILD_LPC_TOOLS)
+    add_subdirectory(lpc-tools)
+ENDIF(BUILD_LPC_TOOLS)
 
 IF(BUILD_REALTIME_SYSTEM)
     add_subdirectory(realtime-system)

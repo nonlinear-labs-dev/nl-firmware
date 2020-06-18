@@ -99,6 +99,8 @@ void MSG_SendMidiBuffer(void)
   }
 }
 
+int16_t         TCD_keyOnOffCntr[128];
+static uint16_t keyOnOffIndex;
 /*****************************************************************************
 *	@brief  MSG_KeyPosition
 *	Sends the index of the selected key before sending the On/Off velocity
@@ -115,6 +117,8 @@ void MSG_KeyPosition(uint32_t key)
   buff[writeBuffer][buf++] = AE_TCD_KEY_POS;
   buff[writeBuffer][buf++] = key >> 7;    // first 7 bits
   buff[writeBuffer][buf++] = key & 0x7F;  // second 7 bits
+
+  keyOnOffIndex = key;
 
   if (buf == BUFFER_SIZE)
   {
@@ -134,6 +138,8 @@ void MSG_KeyDown(uint32_t vel)
   buff[writeBuffer][buf++] = vel >> 7;    // first 7 bits
   buff[writeBuffer][buf++] = vel & 0x7F;  // second 7 bits
 
+  TCD_keyOnOffCntr[keyOnOffIndex]++;
+
   if (buf == BUFFER_SIZE)
   {
     MSG_SendMidiBuffer();
@@ -151,6 +157,8 @@ void MSG_KeyUp(uint32_t vel)
   buff[writeBuffer][buf++] = AE_TCD_KEY_UP;
   buff[writeBuffer][buf++] = vel >> 7;    // first 7 bits
   buff[writeBuffer][buf++] = vel & 0x7F;  // second 7 bits
+
+  TCD_keyOnOffCntr[keyOnOffIndex]--;
 
   if (buf == BUFFER_SIZE)
   {

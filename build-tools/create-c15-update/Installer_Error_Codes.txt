@@ -11,6 +11,7 @@ List of current Error Messages
 - 32 :: "E32 RT update: no file" ==> parameter passed to lpc_update.sh didn't is not a file
 - 33 :: "E33 RT update: cannot connect to LPC, details:" ==> the "mxli" progging tool could find the chip or failed programming it
         (can happen occasionally when the LPC doesn't run because the clock oscillator didn't start up for some reason)
+- 34 :: "E34 RT update: no response after reset" ==> LPC does not respond after reset (with a number of retries), something has gone wrong
 
 4. ePC
 - 45 :: "E45 ePC update: Reboot taking too long... timed out"
@@ -31,7 +32,7 @@ List of current Error Messages
 - 82 :: "E82: Can't ping ePC on $EPC_IP ..."
 - 83 :: "E83: Can't logon to ePC OS ..."
 - 84 :: "E84: Upgrade OS first!"
-- 84 :: "E85: OS too old for update!"
+- 85 :: "E85: OS too old for update!"
 
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------

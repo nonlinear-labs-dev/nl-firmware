@@ -73,17 +73,17 @@ executeOnWin() {
 
 TIMEOUT=10
 
-wait4playground() {
+wait4epc() {
     for COUNTER in $(seq 1 $TIMEOUT); do
-        echo "awaiting playground ... $COUNTER/$TIMEOUT"
+        echo "waiting for OS response ... $COUNTER/$TIMEOUT"
         sleep 1
-        executeAsRoot "systemctl status playground" && return 0
+        executeAsRoot "exit" && return 0
     done
     return 1
 }
 
 check_preconditions() {
-    if ! wait4playground; then
+    if ! wait4epc; then
         if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
         if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
         if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
@@ -175,9 +175,10 @@ bbb_update() {
 lpc_update() {
     pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DO_NOT_SWITCH_OFF"
     chmod +x /update/LPC/lpc_update.sh
+    chmod +x /update/LPC/lpc_check.sh
     rm -f /update/mxli.log
 
-    /bin/sh /update/LPC/lpc_update.sh /update/LPC/main.bin A
+    /bin/sh /update/LPC/lpc_update.sh /update/LPC/main.bin A && sleep 1 && /bin/sh /update/LPC/lpc_check.sh 5
 
     # error codes 30...39
     return_code=$?
@@ -199,6 +200,7 @@ stop_services() {
 }
 
 main() {
+    rm -f /mnt/usb-stick/nonlinear-c15-update.log.txt
     rm -f /update/errors.log
     touch /update/errors.log
 

@@ -16,6 +16,7 @@
 /******************************************************************************
 *	public functions
 ******************************************************************************/
+extern int16_t TCD_keyOnOffCntr[128];
 
 void MSG_CheckUSB(void);
 void MSG_SendMidiBuffer(void);

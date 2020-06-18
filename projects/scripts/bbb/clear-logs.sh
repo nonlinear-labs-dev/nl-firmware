@@ -1,13 +1,11 @@
 #!/bin/sh
 
 #
-# last changed: 2018-11-16 KSTR
-# version : 1.0
+# last changed: 2020-06-16 KSTR
+# version : 1.1
 #
 # ---------- Clear Log Files -----------
-#
+# source : https://unix.stackexchange.com/questions/139513/how-to-clear-journalctl/333899#333899
 #
 
-journalctl --flush
-journalctl --rotate
-journalctl --vacuum-time=1seconds
+find /var/log/journal -name "*.journal" | xargs rm; systemctl restart systemd-journald

@@ -168,7 +168,7 @@ void Usage(char const *const string, int const exitCode)
   puts(" d   additional hex Dump, forces -r");
   puts(" e   EHC data");
   puts(" h   Heartbeat");
-  puts(" k   Key logging");
+  puts(" k   Key logging and key counters");
   puts(" m   Mute status");
   puts(" n   Notificiation");
   puts(" p   Parameter");
