@@ -403,6 +403,11 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       }
+      case LPC_REQUEST_ID_CLEAR_STAT:
+        NL_STAT_ClearData();
+        BB_MSG_WriteMessage2Arg(LPC_BB_MSG_TYPE_NOTIFICATION, LPC_NOTIFICATION_ID_CLEAR_STAT, 1);
+        BB_MSG_SendTheBuffer();
+        break;
       case LPC_REQUEST_ID_EHC_EEPROMSAVE:
         NL_EHC_ForceEepromUpdate();
         break;
@@ -412,6 +417,7 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         uint16_t buffer[words];
         NL_STAT_GetKeyData(buffer);
         BB_MSG_WriteMessage(LPC_BB_MSG_TYPE_KEYCNTR_DATA, words, buffer);
+        BB_MSG_WriteMessage2Arg(LPC_BB_MSG_TYPE_NOTIFICATION, LPC_NOTIFICATION_ID_KEYCNTR_DATA, 1);
         BB_MSG_SendTheBuffer();
         break;
       }

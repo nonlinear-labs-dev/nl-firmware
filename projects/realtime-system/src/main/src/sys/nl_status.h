@@ -27,8 +27,8 @@ typedef struct __attribute__((packed))
 
 extern NL_systemStatus_T NL_systemStatus;
 
+void     NL_STAT_ClearData(void);
 void     NL_STAT_GetData(uint16_t *buffer);
 uint16_t NL_STAT_GetDataSize(void);
-
 void     NL_STAT_GetKeyData(uint16_t *buffer);
 uint16_t NL_STAT_GetKeyDataSize(void);

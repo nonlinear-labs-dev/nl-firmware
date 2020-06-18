@@ -77,9 +77,10 @@ Retry:
 #define SW_VERSION      "sw-version"
 #define MUTE_STATUS     "muting"
 #define CLEAR_EEPROM    "clear-eeprom"
+#define CLEAR_STAT      "clear-status"
 #define STAT_DATA       "status"
 #define EHC_SAVE_EEPROM "save-ehc"
-#define KEY_CNTRS       "key-cntrs"
+#define KEY_CNTRS       "key-counters"
 
 #define SETTING             "set"
 #define MUTE_CTRL           "mute-ctrl"
@@ -118,13 +119,14 @@ void Usage(void)
   puts(" lpc --version        : print version and exit");
   puts(" lpc  <command>");
   puts("  <commands> : req|set|key|test");
-  puts("  req[uest] : sw-version|muting|clear-eeprom|status|save-ehc");
+  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|key-counters");
   puts("     sw-version   : get LPC firware version");
   puts("     muting       : get software&hardware muting status");
   puts("     clear-eeprom : erase EEPROM");
-  puts("     status       : get diagnostic status data (and clear it)");
+  puts("     status       : get diagnostic status data");
+  puts("     clear-status : clear diagnostic status data");
   puts("     save-ehc     : save current EHC config data to EEPROM");
-  puts("     key-cntrs    : get diagnostic key counters");
+  puts("     key-counters : get diagnostic key error counters");
   puts("  set[ting] : mute-ctrl|sensors|key-logging|ae-cmd|system");
   puts("     mute-ctrl: disable|mute|unmute : disable mute override or set/clear muting");
   puts("     sensors: on|off                : turn raw sensor messages on/off");
@@ -238,6 +240,12 @@ int main(int argc, char const *argv[])
     if (strncmp(argv[2], STAT_DATA, sizeof STAT_DATA) == 0)
     {
       REQ_DATA[2] = LPC_REQUEST_ID_STAT_DATA;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], CLEAR_STAT, sizeof CLEAR_STAT) == 0)
+    {
+      REQ_DATA[2] = LPC_REQUEST_ID_CLEAR_STAT;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
