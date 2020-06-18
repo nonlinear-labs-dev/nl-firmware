@@ -5,7 +5,7 @@
 class CombFilterGroup : public ParameterGroup
 {
  public:
-  CombFilterGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  CombFilterGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
   virtual ~CombFilterGroup();
 
   void init();

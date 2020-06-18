@@ -15,7 +15,7 @@
 #include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar60DBTScaleConverter.h>
 
-EnvelopeBGroup::EnvelopeBGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+EnvelopeBGroup::EnvelopeBGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Env B", vg }, "Envelope B", "Envelope B", "Envelope B")
 {
 }

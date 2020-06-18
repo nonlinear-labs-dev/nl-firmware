@@ -9,7 +9,7 @@ class MacroControlParameter;
 class HardwareSourcesGroup : public ParameterGroup
 {
  public:
-  HardwareSourcesGroup(ParameterDualGroupSet* parent);
+  HardwareSourcesGroup(ParameterGroupSet* parent);
   virtual ~HardwareSourcesGroup();
 
   typedef PhysicalControlParameter* tPhysicalControlParameter;

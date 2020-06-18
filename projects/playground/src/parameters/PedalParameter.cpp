@@ -13,7 +13,7 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/value/QuantizedValue.h>
 #include <playground.h>
-#include <presets/ParameterDualGroupSet.h>
+#include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
@@ -61,7 +61,7 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
 void PedalParameter::setRoutersModeAccordingToReturnMode()
 {
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
-  if(auto eb = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  if(auto eb = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
   {
     auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
 

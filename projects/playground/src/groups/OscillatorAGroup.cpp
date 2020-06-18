@@ -21,7 +21,7 @@
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/OnOffScaleConverter.h>
 
-OscillatorAGroup::OscillatorAGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+OscillatorAGroup::OscillatorAGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Osc A", vg }, "Oscillator A", "Oscillator A", "Oscillator A")
 {
 }

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <testing/TestRootDocument.h>
-#include <presets/ParameterDualGroupSet.h>
+#include <presets/ParameterGroupSet.h>
 
-class TestGroupSet : public ParameterDualGroupSet
+class TestGroupSet : public ParameterGroupSet
 {
 public:
   explicit TestGroupSet(TestRootDocument *root);

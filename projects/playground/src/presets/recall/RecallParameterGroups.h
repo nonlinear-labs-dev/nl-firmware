@@ -4,7 +4,7 @@
 #include <tools/Signal.h>
 #include <ParameterId.h>
 
-class ParameterDualGroupSet;
+class ParameterGroupSet;
 class EditBuffer;
 class RecallParameterGroup;
 class RecallParameter;

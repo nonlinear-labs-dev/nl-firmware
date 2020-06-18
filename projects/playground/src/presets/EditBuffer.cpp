@@ -42,7 +42,7 @@
 #include <presets/SendEditBufferScopeGuard.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
-    : ParameterDualGroupSet(parent)
+    : ParameterGroupSet(parent)
     , m_deferredJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
     , m_recallSet(this)
@@ -183,7 +183,7 @@ UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)
     m_signalLocksChanged.deferedSend();
   }
 
-  return ParameterDualGroupSet::onChange(flags);
+  return ParameterGroupSet::onChange(flags);
 }
 
 void EditBuffer::doDeferedJobs()
@@ -427,7 +427,7 @@ bool EditBuffer::isZombie() const
 
 void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
-  auto changed = knownRevision < ParameterDualGroupSet::getUpdateIDOfLastChange();
+  auto changed = knownRevision < ParameterGroupSet::getUpdateIDOfLastChange();
   auto pm = static_cast<const PresetManager *>(getParent());
   auto origin = pm->findPreset(getUUIDOfLastLoadedPreset());
   auto zombie = isZombie();
@@ -619,7 +619,7 @@ void EditBuffer::undoableSetDefaultValues(UNDO::Transaction *transaction, Preset
 
 UNDO::Scope &EditBuffer::getUndoScope()
 {
-  return ParameterDualGroupSet::getUndoScope();
+  return ParameterGroupSet::getUndoScope();
 }
 
 Uuid EditBuffer::getUUIDOfLastLoadedPreset() const

@@ -9,7 +9,7 @@
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-ShaperAGroup::ShaperAGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+ShaperAGroup::ShaperAGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Sh A", vg }, "Shaper A", "Shaper A", "Shaper A")
 {
 }

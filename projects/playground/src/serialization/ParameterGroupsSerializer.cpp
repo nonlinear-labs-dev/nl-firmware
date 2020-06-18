@@ -1,12 +1,12 @@
 #include "xml/Attributes.h"
 #include "xml/Writer.h"
 #include "xml/Reader.h"
-#include "presets/ParameterDualGroupSet.h"
+#include "presets/ParameterGroupSet.h"
 #include "ParameterGroupsSerializer.h"
 #include "ParameterGroupSerializer.h"
 #include <groups/ParameterGroup.h>
 
-ParameterGroupsSerializer::ParameterGroupsSerializer(ParameterDualGroupSet *paramGroups)
+ParameterGroupsSerializer::ParameterGroupsSerializer(ParameterGroupSet *paramGroups)
     : Serializer(getTagName())
     , m_paramGroups(paramGroups)
 {

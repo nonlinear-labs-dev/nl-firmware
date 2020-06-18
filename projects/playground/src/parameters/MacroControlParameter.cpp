@@ -4,7 +4,7 @@
 #include "ModulateableParameter.h"
 #include "PhysicalControlParameter.h"
 #include "scale-converters/MacroControlScaleConverter.h"
-#include "presets/ParameterDualGroupSet.h"
+#include "presets/ParameterGroupSet.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/MacroControlsGroup.h>
@@ -137,7 +137,7 @@ void MacroControlParameter::propagateMCChangeToMCViews(const Initiator &initiati
 
 void MacroControlParameter::updateBoundRibbon()
 {
-  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
   {
     auto mcm = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
 
@@ -163,7 +163,7 @@ void MacroControlParameter::setUiSelectedHardwareSource(ParameterId number)
 {
   if(m_UiSelectedHardwareSourceParameterID != number)
   {
-    if(auto *eb = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent()))
+    if(auto *eb = dynamic_cast<ParameterGroupSet *>(getParent()->getParent()))
     {
       if(auto old = eb->findParameterByID(m_UiSelectedHardwareSourceParameterID))
         old->onUnselected();
@@ -178,7 +178,7 @@ void MacroControlParameter::toggleUiSelectedHardwareSource(int inc)
 {
   auto id = getUiSelectedHardwareSource();
 
-  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
   auto controlSources
       = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID({ "CS", VoiceGroup::Global }));
   auto availableSources = controlSources->getPhysicalControlParameters();
@@ -355,7 +355,7 @@ void MacroControlParameter::onSelected()
 
 void MacroControlParameter::onUnselected()
 {
-  auto grandPa = dynamic_cast<ParameterDualGroupSet *>(getParent()->getParent());
+  auto grandPa = dynamic_cast<ParameterGroupSet *>(getParent()->getParent());
   auto controlSources
       = dynamic_cast<HardwareSourcesGroup *>(grandPa->getParameterGroupByID({ "CS", VoiceGroup::Global }));
 

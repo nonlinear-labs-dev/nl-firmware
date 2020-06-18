@@ -4,7 +4,7 @@
 class GlobalParameterGroups : public ParameterGroup
 {
  public:
-  GlobalParameterGroups(ParameterDualGroupSet *parent);
+  GlobalParameterGroups(ParameterGroupSet *parent);
   void init() override;
 
   static bool isSplitPoint(const Parameter* p);

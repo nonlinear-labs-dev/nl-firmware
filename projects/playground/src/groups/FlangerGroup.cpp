@@ -13,7 +13,7 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar140StScaleConverter.h>
 
-FlangerGroup::FlangerGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+FlangerGroup::FlangerGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Flang", vg }, "Flanger", "Flanger", "Flanger")
 {
 }

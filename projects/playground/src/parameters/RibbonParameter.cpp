@@ -14,7 +14,7 @@
 #include <device-settings/DebugLevel.h>
 #include <cmath>
 #include <libundo/undo/Transaction.h>
-#include <presets/ParameterDualGroupSet.h>
+#include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <presets/EditBuffer.h>
 #include <nltools/messaging/Message.h>
@@ -57,7 +57,7 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
-  if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+  if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
   {
     auto mappings
         = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
@@ -158,7 +158,7 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
-    if(auto groups = dynamic_cast<ParameterDualGroupSet *>(getParentGroup()->getParent()))
+    if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
     {
       auto mappings
           = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));

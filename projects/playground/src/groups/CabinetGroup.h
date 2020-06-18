@@ -5,7 +5,7 @@
 class CabinetGroup : public ParameterGroup
 {
  public:
-  CabinetGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  CabinetGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
   virtual ~CabinetGroup();
 
   void init();

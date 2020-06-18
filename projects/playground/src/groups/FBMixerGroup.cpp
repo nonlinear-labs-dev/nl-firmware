@@ -13,7 +13,7 @@
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/Linear70DbScaleConverter.h>
 
-FBMixerGroup::FBMixerGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+FBMixerGroup::FBMixerGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "FB", vg }, "FB Mixer", "Feedback Mixer", "Feedback Mixer")
 {
 }

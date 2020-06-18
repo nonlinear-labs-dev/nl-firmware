@@ -1,7 +1,7 @@
 #include "TestGroupSet.h"
 
 TestGroupSet::TestGroupSet(TestRootDocument *root)
-    : ParameterDualGroupSet(root)
+    : ParameterGroupSet(root)
 {
 }
 

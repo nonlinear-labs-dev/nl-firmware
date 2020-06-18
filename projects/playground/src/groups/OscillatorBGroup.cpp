@@ -19,7 +19,7 @@
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 #include <parameters/scale-converters/OnOffScaleConverter.h>
 
-OscillatorBGroup::OscillatorBGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+OscillatorBGroup::OscillatorBGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Osc B", vg }, "Oscillator B", "Oscillator B", "Oscillator B")
 {
 }

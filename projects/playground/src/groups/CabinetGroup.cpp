@@ -14,7 +14,7 @@
 #include "parameters/scale-converters/LinearBipolar50DbScaleConverter.h"
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
 
-CabinetGroup::CabinetGroup(ParameterDualGroupSet *parent, VoiceGroup vg)
+CabinetGroup::CabinetGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Cab", vg }, "Cabinet", "Cabinet", "Cabinet")
 {
 }

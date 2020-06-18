@@ -5,7 +5,7 @@
 class UnisonGroup : public ParameterGroup
 {
  public:
-  UnisonGroup(ParameterDualGroupSet *parent, VoiceGroup voicegroup);
+  UnisonGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
   virtual ~UnisonGroup();
 
   void init();

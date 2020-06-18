@@ -4,7 +4,7 @@
 #include <parameters/scale-converters/KeyScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 
-ScaleGroup::ScaleGroup(ParameterDualGroupSet* parent)
+ScaleGroup::ScaleGroup(ParameterGroupSet* parent)
     : ParameterGroup(parent, { "Scale", VoiceGroup::Global }, "Scale", "Scale", "Scale")
     , m_updateNames(std::chrono::milliseconds(200))
 {

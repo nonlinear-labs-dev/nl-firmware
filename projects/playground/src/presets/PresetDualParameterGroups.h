@@ -5,7 +5,7 @@
 #include "GroupId.h"
 
 class Preset;
-class ParameterDualGroupSet;
+class ParameterGroupSet;
 class PresetParameterGroup;
 class EditBuffer;
 
