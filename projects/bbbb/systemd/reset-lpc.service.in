@@ -5,4 +5,4 @@ Before=install-update-from-usb.service
 
 [Service]
 Type=oneshot
-ExecStart=@C15_INSTALL_PATH@/lpc-tools/lpc reset 5
+ExecStart=/usr/bin/lpc reset 5
