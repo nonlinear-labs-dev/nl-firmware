@@ -20,9 +20,10 @@
 // and searched in an editor (text or hex), etc. That's why the "\n\n" are part of the strings so
 // that the text is easily spotted.
 
-//                         "YY-WW"
-#define C15_VERSION_STRING "Beta-#1953-f(2020-06-18 10:40)"
-#warning "make sure version string is up-to date when building a release or beta"
+//                         "YY-WW" or "Beta-<name>-YYMMDDHHMM
+#define C15_VERSION_STRING "Beta-1953f-2006181040"
+#warning
+#pragma message("make sure version string '" C15_VERSION_STRING "' is up-to date when building a release or beta")
 
 // do not change these two strings:
 #define C15_VERSION_STRING_IN_MEMORY_PREFIX  "\n\nC15 Version: "
