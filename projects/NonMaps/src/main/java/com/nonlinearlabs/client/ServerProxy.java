@@ -70,20 +70,17 @@ public class ServerProxy {
 
 			@Override
 			public void onServerConnectionOpened() {
-					downloadFile("nonmaps-version.txt", new DownloadHandler() {
+				downloadFile("nonmaps-version.txt", new DownloadHandler() {
 
-						@Override
-						public void onFileDownloaded(String text) {
-							if(nonmapsVersion != null || nonmapsVersion.isEmpty()) {
-								GWT.log("overwriting nonmaps version " + nonmapsVersion + " with " + text);
-							}
-							nonmapsVersion = text;
-						}
+					@Override
+					public void onFileDownloaded(String text) {
+						nonmapsVersion = text;
+					}
 
-						@Override
-						public void onError() {
-						}
-                    });
+					@Override
+					public void onError() {
+					}
+				});
 			}
 		});
 	}
@@ -130,8 +127,7 @@ public class ServerProxy {
 	}
 
 	private void checkSoftwareVersionCompatibility() {
-		if (buildVersion != null && !buildVersion.isEmpty() && nonmapsVersion != null
-				&& !nonmapsVersion.isEmpty()) {
+		if (buildVersion != null && !buildVersion.isEmpty() && nonmapsVersion != null && !nonmapsVersion.isEmpty()) {
 			if (!buildVersion.equals(nonmapsVersion)) {
 				boolean reload = Window.confirm("WebUI has to be reloaded. The C15 software version is "
 						+ this.buildVersion + " while the WebUI version is " + nonmapsVersion + ".");

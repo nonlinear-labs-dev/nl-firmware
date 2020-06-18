@@ -64,7 +64,7 @@ class WebSocketConnection {
 	static String clientId = Uuid.random();
 
 	public void startPolling(ServerListener listener) {
-		Tracer.log("startPolling");
+		Tracer.log("startPolling for clientId " + clientId);
 		this.listener = listener;
 		if (Window.Location.getPort() == "8888") {
 			webSocketOpen(Window.Location.getHostName() + ":8080", clientId);
@@ -92,22 +92,22 @@ class WebSocketConnection {
 		var address = 'ws://' + host + '/ws/' + path;
 		var connection = new WebSocket(address);
 		var self = this;
+		self.@com.nonlinearlabs.client.WebSocketConnection::webSocketConnection = connection;
 	
 		connection.onopen = function() {
-			self.@com.nonlinearlabs.client.WebSocketConnection::webSocketConnection = connection;
-			self.@com.nonlinearlabs.client.WebSocketConnection::onServerOpen(Ljava/lang/String;)('');
+			self.@com.nonlinearlabs.client.WebSocketConnection::onServerOpen(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)('', connection);
 		};
 	
 		connection.onerror = function(error) {
-			self.@com.nonlinearlabs.client.WebSocketConnection::onServerError(Ljava/lang/String;)('error');
+			self.@com.nonlinearlabs.client.WebSocketConnection::onServerError(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)('error', connection);
 		};
 	
 		connection.onclose = function(e) {
-			self.@com.nonlinearlabs.client.WebSocketConnection::onServerClosed(Ljava/lang/String;)('closed');
+			self.@com.nonlinearlabs.client.WebSocketConnection::onServerClosed(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)('closed', connection);
 		};
 	
 		connection.onmessage = function(e) {
-			self.@com.nonlinearlabs.client.WebSocketConnection::onServerUpdate(Ljava/lang/String;)(e.data);
+			self.@com.nonlinearlabs.client.WebSocketConnection::onServerUpdate(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(e.data, connection);
 		};
 	}-*/;
 
@@ -123,7 +123,12 @@ class WebSocketConnection {
 					.send(command);
 	}-*/;
 
-	public void onServerUpdate(String data) {
+	public void onServerUpdate(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server update arrived for outdated connection - ignoring.");
+			return;
+		}
+
 		if (data.startsWith("/pong/")) {
 			onPongReceived();
 		} else {
@@ -172,12 +177,23 @@ class WebSocketConnection {
 		notifyTimer.schedule(diff);
 	}
 
-	public void onServerError(String data) {
+	public void onServerError(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server error notified for outdated connection - ignoring.");
+			return;
+		}
+
+		Tracer.log("onServerError");
 		reconnect(2000);
 		showConnectionError();
 	}
 
-	public void onServerOpen(String data) {
+	public void onServerOpen(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server open notified for outdated connection - ignoring.");
+			return;
+		}
+
 		hideConnectionError();
 		ping();
 		listener.onServerConnectionOpened();
@@ -192,6 +208,7 @@ class WebSocketConnection {
 				@Override
 				public boolean execute() {
 					if (ping == this) {
+						Tracer.log("ping timeout");
 						showConnectionError();
 						reconnect(1000);
 					}
@@ -203,7 +220,13 @@ class WebSocketConnection {
 		}
 	}
 
-	public void onServerClosed(String data) {
+	public void onServerClosed(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server closed notified for outdated connection - ignoring.");
+			return;
+		}
+
+		Tracer.log("onServerClosed");
 		reconnect(2000);
 		showConnectionError();
 	}

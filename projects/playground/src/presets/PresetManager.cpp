@@ -278,7 +278,8 @@ std::shared_ptr<ScopedGuard::Lock> PresetManager::getLoadingLock()
   return m_isLoading.lock();
 }
 
-void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File>& pmFolder)
+void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction,
+                                                       const Glib::RefPtr<Gio::File> &pmFolder)
 {
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
@@ -286,7 +287,7 @@ void PresetManager::loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transa
   m_editBuffer->sendToAudioEngine();
 }
 
-void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File>& pmFolder)
+void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder)
 {
   DebugLevel::gassy("loadInitSound", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Init Sound");
@@ -701,9 +702,14 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
                     {
                       m_editBuffer->writeDocument(writer, knownRevision);
 
-                      writer.writeTag("banks", Attribute("selected-bank", getSelectedBankUuid().raw()), [&]() {
-                        forEachBank([&](auto bank) { bank->writeDocument(writer, knownRevision); });
-                      });
+                      bool anyBankChanged = false;
+                      forEachBank([&](Bank *bank) { anyBankChanged |= bank->didChangeSince(knownRevision); });
+
+                      writer.writeTag("banks", Attribute("changed", anyBankChanged),
+                                      Attribute("selected-bank", getSelectedBankUuid().raw()), [&]() {
+                                        if(anyBankChanged)
+                                          forEachBank([&](auto bank) { bank->writeDocument(writer, knownRevision); });
+                                      });
                     }
                   });
 }

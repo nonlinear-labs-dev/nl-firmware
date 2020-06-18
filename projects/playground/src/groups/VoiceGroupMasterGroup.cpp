@@ -22,8 +22,7 @@ class FadeFrom : public VoiceGroupMasterUnmodulateableParameter
                                                 60, 60)
   {
   }
-
-  };
+};
 
 void VoiceGroupMasterGroup::init()
 {

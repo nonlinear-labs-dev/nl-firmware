@@ -34,6 +34,7 @@
 #include <groups/MonoGroup.h>
 #include <groups/GlobalParameterGroups.h>
 #include <groups/VoiceGroupMasterGroup.h>
+#include <xml/Attribute.h>
 
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
@@ -177,20 +178,23 @@ void ParameterDualGroupSet::writeDocument(Writer &writer, UpdateDocumentContribu
 {
   super::writeDocument(writer, knownRevision);
 
-  writer.writeTag("global-parameters", [&] {
-    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::Global))
-      p->writeDocument(writer, knownRevision);
-  });
+  auto writePerVoiceGroup = [&](auto id, auto tag) {
+    auto &groups = getParameterGroups(id);
+    auto anyGroupChanged = false;
 
-  writer.writeTag("voice-group-I-parameters", [&] {
-    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::I))
-      p->writeDocument(writer, knownRevision);
-  });
+    for(auto &p : groups)
+      anyGroupChanged |= p->didChangeSince(knownRevision);
 
-  writer.writeTag("voice-group-II-parameters", [&] {
-    for(tParameterGroupPtr p : getParameterGroups(VoiceGroup::II))
-      p->writeDocument(writer, knownRevision);
-  });
+    writer.writeTag(tag, Attribute("changed", anyGroupChanged), [&] {
+      if(anyGroupChanged)
+        for(auto &p : groups)
+          p->writeDocument(writer, knownRevision);
+    });
+  };
+
+  writePerVoiceGroup(VoiceGroup::Global, "global-parameters");
+  writePerVoiceGroup(VoiceGroup::I, "voice-group-I-parameters");
+  writePerVoiceGroup(VoiceGroup::II, "voice-group-II-parameters");
 }
 
 const IntrusiveList<ParameterDualGroupSet::tParameterGroupPtr> &

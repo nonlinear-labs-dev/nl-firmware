@@ -17,7 +17,7 @@ public class PresetManagerUpdater extends Updater {
 
 	public void doUpdate() {
 		if (didChange(root))
-			processChildrenElements(root, "banks", t -> updateBanks(target, t));
+			processChangedChildrenElements(root, "banks", t -> updateBanks(target, t));
 	}
 
 	private void updateBanks(PresetManagerModel pm, Node banks) {

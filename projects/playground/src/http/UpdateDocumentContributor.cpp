@@ -53,7 +53,7 @@ void UpdateDocumentContributor::propagateChangeDownstream()
 
 bool UpdateDocumentContributor::didChangeSince(tUpdateID clientsUpdateID) const
 {
-  return m_updateIDOnLastChange > clientsUpdateID;
+  return m_updateIDOnLastChange > clientsUpdateID || clientsUpdateID == 0;
 }
 
 UpdateDocumentContributor::tUpdateID UpdateDocumentContributor::getUpdateIDOfLastChange() const
