@@ -34,6 +34,7 @@
 #include <groups/MonoGroup.h>
 #include <groups/GlobalParameterGroups.h>
 #include <groups/VoiceGroupMasterGroup.h>
+#include <xml/Attribute.h>
 
 ParameterDualGroupSet::ParameterDualGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
