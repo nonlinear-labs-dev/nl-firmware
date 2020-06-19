@@ -21,7 +21,7 @@
 // that the text is easily spotted.
 
 //                         "YY-WW" or "Beta-<name>-YYMMDDHHMM
-#define C15_VERSION_STRING "Beta-1953g-2006181545"
+#define C15_VERSION_STRING "Beta 20-25 RC01"
 #warning
 #pragma message("make sure version string '" C15_VERSION_STRING "' is up-to date when building a release or beta")
 
