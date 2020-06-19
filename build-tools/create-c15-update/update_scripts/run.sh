@@ -203,6 +203,7 @@ main() {
     rm -f /mnt/usb-stick/nonlinear-c15-update.log.txt
     rm -f /update/errors.log
     touch /update/errors.log
+    chmod +x /update/utilities/*
 
     configure_ssh
     check_preconditions || return 1
@@ -222,7 +223,13 @@ main() {
     fi
 
     pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
+
+    if [ "$1" = "reboot" ]; then
+        executeAsRoot "reboot"
+        reboot
+    fi
+
     return 0
 }
 
-main
+main $1
