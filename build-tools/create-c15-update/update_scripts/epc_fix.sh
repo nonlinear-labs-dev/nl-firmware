@@ -41,6 +41,12 @@ epc_fix() {
         fi
     fi
 
+    if ! fsck /dev/sda4 -n; then
+        if ! mkfs.ext4 /dev/sda4; then
+            printf "E48 ePC update: fixing sda4 failed" >> /tmp/fix_error.log && ((fix_errors++))
+        fi
+    fi
+
     if [ $fix_errors -gt 0 ]; then
          return 48
     fi

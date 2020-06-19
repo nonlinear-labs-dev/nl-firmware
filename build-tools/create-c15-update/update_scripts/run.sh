@@ -71,9 +71,8 @@ executeOnWin() {
     return $?
 }
 
-TIMEOUT=10
-
 wait4epc() {
+    TIMEOUT=$1
     for COUNTER in $(seq 1 $TIMEOUT); do
         echo "waiting for OS response ... $COUNTER/$TIMEOUT"
         sleep 1
@@ -83,7 +82,7 @@ wait4epc() {
 }
 
 check_preconditions() {
-    if ! wait4epc; then
+    if ! wait4epc 10; then
         if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
         if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
         if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
@@ -119,6 +118,9 @@ epc_fix() {
     if [ $result -ne 0 ]; then
         executeAsRoot "cat /tmp/fix_error.log" >> /update/errors.log && return $result
     fi
+
+    executeAsRoot "reboot"
+    wait4epc 60
     return 0
 }
 
