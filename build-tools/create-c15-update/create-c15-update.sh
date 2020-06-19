@@ -47,11 +47,12 @@ check_preconditions () {
 
 create_update_file_structure() {
     echo "Creating Update Structure..."
-    mkdir -p $OUT_DIRECTORY || fail_and_exit
-    if [ $UPDATE_BBB == 1 ]; then mkdir -p $OUT_DIRECTORY/BBB || fail_and_exit; fi
-    if [ $UPDATE_EPC == 1 ]; then mkdir -p $OUT_DIRECTORY/EPC || fail_and_exit; fi
-    if [ $UPDATE_LPC == 1 ]; then mkdir -p $OUT_DIRECTORY/LPC || fail_and_exit; fi
-    mkdir -p $OUT_DIRECTORY/utilities || fail_and_exit
+    rm -rf $OUT_DIRECTORY
+    mkdir $OUT_DIRECTORY || fail_and_exit
+    if [ $UPDATE_BBB == 1 ]; then mkdir $OUT_DIRECTORY/BBB || fail_and_exit; fi
+    if [ $UPDATE_EPC == 1 ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
+    if [ $UPDATE_LPC == 1 ]; then mkdir $OUT_DIRECTORY/LPC || fail_and_exit; fi
+    mkdir $OUT_DIRECTORY/utilities || fail_and_exit
     echo "Creating Update Structure done."
     return 0
 }
@@ -123,7 +124,8 @@ deploy_scripts() {
 
 get_tools_from_rootfs() {
     echo "Getting tools from rootfs..."
-    mkdir -p $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
+    rm -rf $BINARY_DIR/build-tools/bbb/rootfs
+    mkdir $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
 
     for i in sshpass text2soled rsync socat thttpd lpc; do
         if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "$i") $OUT_DIRECTORY/utilities/; then
