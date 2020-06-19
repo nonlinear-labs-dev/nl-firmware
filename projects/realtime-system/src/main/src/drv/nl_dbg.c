@@ -9,6 +9,7 @@
 *******************************************************************************/
 
 #include "io/pins.h"
+#include "sys/nl_status.h"
 
 static uint16_t errorTimer          = 0;
 static uint16_t warningTimer        = 0;
@@ -41,12 +42,17 @@ void DBG_Led_Warning_TimedOn(int16_t time)
 
 /******************************************************************************/
 /** @brief    	Handling the M4 LEDs (HeartBeat, Warning, Error), every 100ms
+ *              Also checks for missed keybed events and displays them as
+ *              a 200ms warning LED blink every 500ms. Of course also set
+ *              during playing when keys actually are pressed.
 *******************************************************************************/
 void DBG_Process(void)
 {
-  static int HB_Timer = 5;
+  static int HB_Timer = 5;  // 500ms on/off times
   if (!--HB_Timer)
   {
+    if (NL_STAT_CheckMissedKeybedEvents())
+      DBG_Led_Warning_TimedOn(2);
     HB_Timer       = 5;
     ledM4heartbeat = ~ledM4heartbeat;
   }
