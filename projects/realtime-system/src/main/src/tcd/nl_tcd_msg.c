@@ -1,7 +1,7 @@
 /******************************************************************************/
 /** @file		nl_tcd_msg.c
-    @date		2013-04-23
-    @version	0.02
+    @date		2020-06-19 KSTR
+    @version	1.0
     @author		Stephan Schmitt [2012-06-15]
     @brief		<tbd>
     @ingroup	nl_tcd_modules
@@ -16,19 +16,21 @@
 #include "shared/lpc-defs.h"
 
 /******************************************************************************/
-/*	modul local defines														  */
+/*	module local defines														  */
 /******************************************************************************/
 
-#define BUFFER_SIZE 512
+#define BUFFER_SIZE       (64)
+#define NUMBER_OF_BUFFERS (8)
 
 /******************************************************************************/
 /*	modul local variables													  */
 /******************************************************************************/
 
-static uint8_t  buff[2][BUFFER_SIZE] = {};  // Two buffers for MIDI sending, alternately used
-static uint32_t buf                  = 0;   // Counts the used bytes of the bulk buffer
-
-static uint32_t writeBuffer = 0;
+// ringbuffer of buffers
+static uint8_t  buff[NUMBER_OF_BUFFERS][BUFFER_SIZE];
+static uint16_t bufHead      = 0;  // 0..(NUMBER_OF_BUFFERS-1)
+static uint16_t bufTail      = 0;  // 0..(NUMBER_OF_BUFFERS-1)
+static uint16_t bufHeadIndex = 0;  // used bytes in the current head (front) buffer
 
 static uint8_t midiUSBConfigured = 0;
 static uint8_t dropMessages      = 0;
@@ -47,23 +49,22 @@ void MSG_CheckUSB(void)  // every 200 ms
   if (USB_MIDI_IsConfigured())
   {
     if (midiUSBConfigured == 0)
-    {
-      // DBG_Led_Usb_Off();
       USB_MIDI_DropMessages(0);
-    }
-
     midiUSBConfigured = 1;
   }
   else
   {
     if (midiUSBConfigured == 1)
-    {
-      // DBG_Led_Usb_On();
       USB_MIDI_DropMessages(1);
-    }
-
     midiUSBConfigured = 0;
   }
+}
+
+static void LogError(void)
+{
+  DBG_Led_Error_TimedOn(10);
+  if (NL_systemStatus.TCD_usbJams < 0xFFFF)
+    NL_systemStatus.TCD_usbJams++;
 }
 
 /******************************************************************************/
@@ -71,31 +72,42 @@ void MSG_CheckUSB(void)  // every 200 ms
 *******************************************************************************/
 void MSG_SendMidiBuffer(void)
 {
-
   if (dropMessages)
-  {
-    buf = 0;  // discard all messages
+  {  // discard all messages
+    bufHead      = 0;
+    bufTail      = 0;
+    bufHeadIndex = 0;
     return;
   }
-  if (buf)  // Anything to send
-  {
-#if 0
-		if (USB_MIDI_Send(buff[writeBuffer], buf, 1) )	// Sending of the current writeBuffer and checking for success
-#endif
 
-    if ((USB_MIDI_BytesToSend() == 0)                   // Last transfer has finished
-        && (USB_MIDI_Send(buff[writeBuffer], buf, 0)))  // Sending of the current writeBuffer and checking for success
-    {
-      writeBuffer = (writeBuffer + 1) & 0x1;  // Use the other buffer for next writing
-    }
-    else  // USB failure or "traffic jam"
-    {
-      DBG_Led_Error_TimedOn(10);
-      if (NL_systemStatus.TCD_usbJams < 0xFFFF)
-        NL_systemStatus.TCD_usbJams++;
-    }
+  if (bufHeadIndex >= BUFFER_SIZE)
+  {  // current head is full, switch to next one
+    bufHead      = (bufHead + 1) % NUMBER_OF_BUFFERS;
+    bufHeadIndex = 0;
+    if (bufHead == bufTail)
+      LogError();  // ring of buffers is full
+  }
 
-    buf = 0;  // this discard the messages in case of error, no re-send attempts
+  if (bufHead == bufTail && bufHeadIndex == 0)
+    return;  // nothing to send
+
+  if (USB_MIDI_BytesToSend() != 0)
+    return;  // last transfer still in progress
+
+  if (bufHead != bufTail)
+  {  // send stashed buffers first
+    if (!USB_MIDI_Send(buff[bufTail], BUFFER_SIZE, 0))
+      LogError();  // send failed
+    bufTail = (bufTail + 1) % NUMBER_OF_BUFFERS;
+    return;
+  }
+  if (bufHeadIndex != 0)
+  {  // send current buffer
+    if (!USB_MIDI_Send(buff[bufHead], bufHeadIndex, 0))
+      LogError();  // send failed
+    bufHead      = (bufHead + 1) % NUMBER_OF_BUFFERS;
+    bufHeadIndex = 0;
+    bufTail      = bufHead;
   }
 }
 
@@ -109,21 +121,14 @@ static uint16_t keyOnOffIndex;
 void MSG_KeyPosition(uint32_t key)
 {
   if ((key < 36) || (key > 96))
-  {
     return;  /// assertion
-  }
-
-  buff[writeBuffer][buf++] = AE_TCD_WRAPPER;
-  buff[writeBuffer][buf++] = AE_TCD_KEY_POS;
-  buff[writeBuffer][buf++] = key >> 7;    // first 7 bits
-  buff[writeBuffer][buf++] = key & 0x7F;  // second 7 bits
+  buff[bufHead][bufHeadIndex++] = AE_TCD_WRAPPER;
+  buff[bufHead][bufHeadIndex++] = AE_TCD_KEY_POS;
+  buff[bufHead][bufHeadIndex++] = key >> 7;    // first 7 bits
+  buff[bufHead][bufHeadIndex++] = key & 0x7F;  // second 7 bits
 
   keyOnOffIndex = key;
-
-  if (buf == BUFFER_SIZE)
-  {
-    MSG_SendMidiBuffer();
-  }
+  MSG_SendMidiBuffer();
 }
 
 /*****************************************************************************
@@ -133,17 +138,13 @@ void MSG_KeyPosition(uint32_t key)
 ******************************************************************************/
 void MSG_KeyDown(uint32_t vel)
 {
-  buff[writeBuffer][buf++] = AE_TCD_WRAPPER;
-  buff[writeBuffer][buf++] = AE_TCD_KEY_DOWN;
-  buff[writeBuffer][buf++] = vel >> 7;    // first 7 bits
-  buff[writeBuffer][buf++] = vel & 0x7F;  // second 7 bits
+  buff[bufHead][bufHeadIndex++] = AE_TCD_WRAPPER;
+  buff[bufHead][bufHeadIndex++] = AE_TCD_KEY_DOWN;
+  buff[bufHead][bufHeadIndex++] = vel >> 7;    // first 7 bits
+  buff[bufHead][bufHeadIndex++] = vel & 0x7F;  // second 7 bits
 
   TCD_keyOnOffCntr[keyOnOffIndex]++;
-
-  if (buf == BUFFER_SIZE)
-  {
-    MSG_SendMidiBuffer();
-  }
+  MSG_SendMidiBuffer();
 }
 
 /*****************************************************************************
@@ -153,17 +154,13 @@ void MSG_KeyDown(uint32_t vel)
 ******************************************************************************/
 void MSG_KeyUp(uint32_t vel)
 {
-  buff[writeBuffer][buf++] = AE_TCD_WRAPPER;
-  buff[writeBuffer][buf++] = AE_TCD_KEY_UP;
-  buff[writeBuffer][buf++] = vel >> 7;    // first 7 bits
-  buff[writeBuffer][buf++] = vel & 0x7F;  // second 7 bits
+  buff[bufHead][bufHeadIndex++] = AE_TCD_WRAPPER;
+  buff[bufHead][bufHeadIndex++] = AE_TCD_KEY_UP;
+  buff[bufHead][bufHeadIndex++] = vel >> 7;    // first 7 bits
+  buff[bufHead][bufHeadIndex++] = vel & 0x7F;  // second 7 bits
 
   TCD_keyOnOffCntr[keyOnOffIndex]--;
-
-  if (buf == BUFFER_SIZE)
-  {
-    MSG_SendMidiBuffer();
-  }
+  MSG_SendMidiBuffer();
 }
 
 /*****************************************************************************
@@ -175,19 +172,12 @@ void MSG_KeyUp(uint32_t vel)
 void MSG_HWSourceUpdate(uint32_t source, uint32_t position)
 {
   if ((source >= NUM_HW_REAL_SOURCES) || (position > 16000))
-  {
     return;  /// assertion
-  }
-
-  buff[writeBuffer][buf++] = AE_TCD_WRAPPER;
-  buff[writeBuffer][buf++] = AE_TCD_HW_POS | source;
-  buff[writeBuffer][buf++] = position >> 7;    // first 7 bits
-  buff[writeBuffer][buf++] = position & 0x7F;  // second 7 bits
-
-  if (buf == BUFFER_SIZE)
-  {
-    MSG_SendMidiBuffer();
-  }
+  buff[bufHead][bufHeadIndex++] = AE_TCD_WRAPPER;
+  buff[bufHead][bufHeadIndex++] = AE_TCD_HW_POS | source;
+  buff[bufHead][bufHeadIndex++] = position >> 7;    // first 7 bits
+  buff[bufHead][bufHeadIndex++] = position & 0x7F;  // second 7 bits
+  MSG_SendMidiBuffer();
 }
 
 /*****************************************************************************
@@ -197,15 +187,11 @@ void MSG_HWSourceUpdate(uint32_t source, uint32_t position)
 ******************************************************************************/
 void MSG_SendAEDevelopperCmd(uint32_t cmd)
 {
-  buff[writeBuffer][buf++] = AE_TCD_WRAPPER;
-  buff[writeBuffer][buf++] = AE_TCD_DEVELOPPER_CMD;
-  buff[writeBuffer][buf++] = cmd >> 7;    // first 7 bits
-  buff[writeBuffer][buf++] = cmd & 0x7F;  // second 7 bits
-
-  if (buf == BUFFER_SIZE)
-  {
-    MSG_SendMidiBuffer();
-  }
+  buff[bufHead][bufHeadIndex++] = AE_TCD_WRAPPER;
+  buff[bufHead][bufHeadIndex++] = AE_TCD_DEVELOPPER_CMD;
+  buff[bufHead][bufHeadIndex++] = cmd >> 7;    // first 7 bits
+  buff[bufHead][bufHeadIndex++] = cmd & 0x7F;  // second 7 bits
+  MSG_SendMidiBuffer();
 }
 
 /*****************************************************************************
@@ -215,14 +201,10 @@ void MSG_SendAEDevelopperCmd(uint32_t cmd)
 void MSG_SendActiveSensing(void)
 {
 #ifdef __IMPLEMENT_ACTIVE_SENSING
-  buff[writeBuffer][buf++] = 0x0F;  // cable 0, packet type "single byte"
-  buff[writeBuffer][buf++] = 0xFE;  // MIDI real-time command "active sensing"
-  buff[writeBuffer][buf++] = 0x00;
-  buff[writeBuffer][buf++] = 0x00;
-
-  if (buf == BUFFER_SIZE)
-  {
-    MSG_SendMidiBuffer();
-  }
+  buff[bufHead][bufHeadIndex++] = 0x0F;  // cable 0, packet type "single byte"
+  buff[bufHead][bufHeadIndex++] = 0xFE;  // MIDI real-time command "active sensing"
+  buff[bufHead][bufHeadIndex++] = 0x00;
+  buff[bufHead][bufHeadIndex++] = 0x00;
+  MSG_SendMidiBuffer();
 #endif
 }
