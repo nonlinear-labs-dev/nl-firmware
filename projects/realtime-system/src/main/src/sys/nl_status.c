@@ -64,7 +64,7 @@ static uint16_t M0JiffiesToNS(uint16_t jiffies)
   return (uint16_t) ret;
 }
 
-void CheckMissedKeybedEvents(void)
+uint16_t NL_STAT_CheckMissedKeybedEvents(void)
 {
   uint16_t missed = 0;
   for (uint16_t i = 0; i < 64; i++)
@@ -77,11 +77,12 @@ void CheckMissedKeybedEvents(void)
     if (TCD_keyOnOffCntr[i] && missed < 65535)
       missed++;
   NL_systemStatus.MissedKeybedEventsTCD = missed;
+  return (NL_systemStatus.MissedKeybedEventsScanner > 0 || NL_systemStatus.MissedKeybedEventsTCD > 0);
 }
 
 void NL_STAT_GetData(uint16_t *buffer)
 {
-  CheckMissedKeybedEvents();
+  NL_STAT_CheckMissedKeybedEvents();
   uint32_t ticker = NL_systemStatus.M4_ticker = (s.ticker) - NL_systemStatus.M4_ticker;
   NL_systemStatus.M4_ticker                   = s.ticker;
   *(buffer++)                                 = ticker & 0xFFFF;

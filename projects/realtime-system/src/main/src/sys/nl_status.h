@@ -27,6 +27,7 @@ typedef struct __attribute__((packed))
 
 extern NL_systemStatus_T NL_systemStatus;
 
+uint16_t NL_STAT_CheckMissedKeybedEvents(void);  // == 0 means all counters are zero
 void     NL_STAT_ClearData(void);
 void     NL_STAT_GetData(uint16_t *buffer);
 uint16_t NL_STAT_GetDataSize(void);
