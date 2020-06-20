@@ -10,6 +10,7 @@
 
 #include "io/pins.h"
 #include "sys/nl_status.h"
+#include "shared/globals.h"
 
 static uint16_t errorTimer          = 0;
 static uint16_t warningTimer        = 0;
@@ -51,8 +52,10 @@ void DBG_Process(void)
   static int HB_Timer = 5;  // 500ms on/off times
   if (!--HB_Timer)
   {
+#if LPC_KEYBED_DIAG
     if (NL_STAT_CheckMissedKeybedEvents())
       DBG_Led_Warning_TimedOn(2);
+#endif
     HB_Timer       = 5;
     ledM4heartbeat = ~ledM4heartbeat;
   }

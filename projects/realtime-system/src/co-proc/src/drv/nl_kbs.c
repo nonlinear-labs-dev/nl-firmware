@@ -49,6 +49,7 @@
 #include <stdint.h>
 #include "ipc/emphase_ipc.h"
 #include "drv/nl_cgu.h"
+#include "shared/globals.h"
 
 __attribute__((aligned(4))) static uint16_t keyOff[NUM_KEYS];   // flag array to store logical on/off state
 __attribute__((aligned(4))) static uint32_t keyTime[NUM_KEYS];  // in M0 systicks, which are already left-shifted (for speed)
@@ -338,14 +339,17 @@ static __attribute__((always_inline)) inline void DetectNotes(uint32_t const key
     if (keyOff[key] ^= mask)
     {
       Emphase_IPC_M0_KeyBuffer_WriteKeyEvent(key | (ticker - keyTime[key]));
+#if LPC_KEYBED_DIAG
       s.keyOnOffCntr[key]--;
+#endif
       return;
     }
     Emphase_IPC_M0_KeyBuffer_WriteKeyEvent(key | IPC_KEYBUFFER_NOTEON | (ticker - keyTime[key]));
+#if LPC_KEYBED_DIAG
     s.keyOnOffCntr[key]++;
+#endif
     return;
   }
-
   // now upper contact is closed and lower contact must be open (or vice-versa, irrelevant)
   keyTime[key] = ticker;  // start time measuring
 }

@@ -7,7 +7,8 @@
 *******************************************************************************/
 #pragma once
 
-#include "stdint.h"
+#include <stdint.h>
+#include "shared/globals.h"
 
 /******************************************************************************
 *	defines
@@ -16,10 +17,12 @@
 /******************************************************************************
 *	public functions
 ******************************************************************************/
+#if LPC_KEYBED_DIAG
 extern int16_t TCD_keyOnOffCntr[128];
+#endif
 
 void MSG_CheckUSB(void);
-void MSG_SendMidiBuffer(void);
+void MSG_Process(void);
 void MSG_DropMidiMessages(uint8_t drop);
 
 void MSG_KeyPosition(uint32_t key);
