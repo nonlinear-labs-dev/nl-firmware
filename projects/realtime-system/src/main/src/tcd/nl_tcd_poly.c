@@ -201,7 +201,6 @@ void POLY_ForceKey(uint16_t const hardwareKeyNumber, uint16_t const timeLow, uin
     forcedKeyEvent |= IPC_KEYBUFFER_NOTEON;
   forcedKeyEvent |= (time / M0_PERIOD_62_5NS) << IPC_KEYBUFFER_TIME_SHIFT;
   ProcessKeyEvent(forcedKeyEvent, LOG_OFF);  // emulated key, never log it
-  MSG_SendMidiBuffer();                      // note this call also takes care of sending other pending MIDI data like ActiveSensing
 }
 
 /******************************************************************************
@@ -214,5 +213,5 @@ void POLY_Process(void)
 
   for (i = 0; i < numKeyEvents; i++)
     ProcessKeyEvent(keyEvent[i], logKeys);  // hardware key event, so send key log if requested
-  MSG_SendMidiBuffer();                     // note this call also takes care of sending other pending MIDI data like ActiveSensing
+  MSG_Process();                            // note this call also takes care of sending other pending MIDI data HW sources
 }
