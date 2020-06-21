@@ -197,7 +197,10 @@ void ForceKey(uint16_t const hardwareKeyNumber, int time)
 /******************************************************************************
 	@brief		POLY_ForceKey : emulate a key down/up event via software
 	            Special Function: If all 3 input parameters == 0, generate a
-	            burst sequence of all 61 keys on, then immediately off
+	            burst sequence of all 61 keys, switching note on/off selection
+	            with every call (as it turned out sending note off really
+	            immediately after note on seems to give no sound at all from
+	            AE (which seems somewhat reasonable)
 *******************************************************************************/
 void POLY_ForceKey(uint16_t const hardwareKeyNumber, uint16_t const timeLow, uint16_t const timeHigh)
 {
