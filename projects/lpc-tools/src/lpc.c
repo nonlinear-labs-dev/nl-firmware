@@ -145,7 +145,7 @@ void Usage(void)
   puts("                  : System Special; reboot system, reset heartbeat counter, enable midi");
   puts("  key <note-nr> <time>      : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
-  puts("     <time>                 : key time (~1/velocity) in ms (1...525), negative means key release");
+  puts("     <time>                 : key time (~1/velocity) in us (1000...525000), negative means key release");
   puts("  test <size> <count> <delay>   : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
   puts("     <count>                    : # of times the message is send (1..65535)");
