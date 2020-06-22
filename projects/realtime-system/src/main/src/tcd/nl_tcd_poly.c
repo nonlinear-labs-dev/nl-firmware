@@ -183,25 +183,43 @@ static void ProcessKeyEvent(uint32_t const keyEvent, enum KeyLog_T const logFlag
   }
 }
 
-/******************************************************************************
-	@brief		POLY_ForceKey : emulate a key down/up event via software
-*******************************************************************************/
-void POLY_ForceKey(uint16_t const hardwareKeyNumber, uint16_t const timeLow, uint16_t const timeHigh)
+void ForceKey(uint16_t const hardwareKeyNumber, int time)
 {
-  uint32_t forcedKeyEvent;
-  int      time;
-
-  if (hardwareKeyNumber > 64)
-    return;
-  forcedKeyEvent = hardwareKeyNumber;
-  time           = (int) (((uint32_t) timeHigh << 16) + (uint32_t) timeLow);
+  uint32_t forcedKeyEvent = hardwareKeyNumber;
   if (time < 0)
     time = -time;
   else
     forcedKeyEvent |= IPC_KEYBUFFER_NOTEON;
-  forcedKeyEvent |= (time / M0_PERIOD_62_5NS) << IPC_KEYBUFFER_TIME_SHIFT;
+  forcedKeyEvent |= ((time / M0_PERIOD_62_5NS) + 1) << IPC_KEYBUFFER_TIME_SHIFT;
   ProcessKeyEvent(forcedKeyEvent, LOG_OFF);  // emulated key, never log it
-  MSG_SendMidiBuffer();                      // note this call also takes care of sending other pending MIDI data like ActiveSensing
+}
+
+/******************************************************************************
+	@brief		POLY_ForceKey : emulate a key down/up event via software
+	            Special Function: If all 3 input parameters == 0, generate a
+	            burst sequence of all 61 keys, switching note on/off selection
+	            with every call (as it turned out sending note off really
+	            immediately after note on seems to give no sound at all from
+	            AE (which seems somewhat reasonable)
+*******************************************************************************/
+void POLY_ForceKey(uint16_t const hardwareKeyNumber, uint16_t const timeLow, uint16_t const timeHigh)
+{
+  if (hardwareKeyNumber > 64)
+    return;
+  if (hardwareKeyNumber != 0 || timeLow != 0 || timeHigh != 0)
+  {
+    ForceKey(hardwareKeyNumber, (int) (((uint32_t) timeHigh << 16) + (uint32_t) timeLow));
+    return;
+  }
+
+  // generate key bursts
+  static int time = -1;
+  if (time == -1)
+	  time = 10000;  // 10ms, moderate press, to avoid shocking volume/distortion
+  else
+	  time = -1;   // fast release
+  for (uint16_t key = 0; key <= 60; key++)
+    ForceKey(key, time);
 }
 
 /******************************************************************************
@@ -214,5 +232,5 @@ void POLY_Process(void)
 
   for (i = 0; i < numKeyEvents; i++)
     ProcessKeyEvent(keyEvent[i], logKeys);  // hardware key event, so send key log if requested
-  MSG_SendMidiBuffer();                     // note this call also takes care of sending other pending MIDI data like ActiveSensing
+  MSG_Process();                            // note this call also takes care of sending other pending MIDI data HW sources
 }
