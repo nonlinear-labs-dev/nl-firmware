@@ -55,6 +55,14 @@ pretty() {
     t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
 }
 
+configure_ssh() {
+    echo "Host 192.168.10.10
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null
+            " > ~/.ssh/config
+    chmod 400 ~/.ssh/config
+}
+
 report() {
     pretty "$1" "$2" "$3" "$2" "$3"
     printf "$2" >> /update/errors.log
@@ -113,45 +121,37 @@ epc_pull_update() {
 epc_fix() {
     /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_fix.sh sscl@192.168.10.10:/tmp
     executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh"
-    result=$?
-
-    if [ $result -ne 0 ]; then
-        executeAsRoot "cat /tmp/fix_error.log" >> /update/errors.log && return $result
-    fi
-
-    executeAsRoot "reboot"
-    wait4epc 60
-    return 0
+    return $?
 }
 
 epc_update() {
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF"
 
     if ! epc_push_update; then
-        if ! epc_pull_update; then
+        epc_pull_update
+        return_code=$?
+        if [ $return_code -ne 0 ]; then
             pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
             sleep 2
             return 1
         fi
     fi
 
-    if ! epc_fix; then
+    epc_fix
+    return_code=$?
+    if [ $return_code -ne 0 ]; then
+        /update/utilities/sshpass -p "sscl" scp -r sscl@192.168.10.10:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
         pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
         sleep 2
         return 1
     fi
 
+    executeAsRoot "reboot"
+    wait4epc 60
+
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
     sleep 2
     return 0
-}
-
-configure_ssh() {
-    echo "Host 192.168.10.10
-            StrictHostKeyChecking no
-            UserKnownHostsFile=/dev/null
-            " > ~/.ssh/config
-    chmod 400 ~/.ssh/config
 }
 
 bbb_update() {

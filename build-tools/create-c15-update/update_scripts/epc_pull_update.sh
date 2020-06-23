@@ -33,7 +33,6 @@ wait4playground() {
     return 1
 }
 
-
 check_preconditions(){
     [ -z "$EPC_IP" ] && report_and_quit "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "81"
     ping -c1 $EPC_IP 1>&2 > /dev/null || report_and_quit "E82: Can't ping ePC on $EPC_IP ..." "82"
@@ -64,7 +63,8 @@ update(){
 
     killall thttpd
     rm /update/EPC/server.log
-    report_and_quit "E47 ePC update: deploying update failed ..." "47"
+    report_and_quit "E47 ePC update: pulling update failed ..." "47"
+    return 0
 }
 
 main () {

@@ -42,6 +42,7 @@ epc_fix() {
     fi
 
     if ! fsck /dev/sda4 -n; then
+        umount /dev/sda4
         if ! mkfs.ext4 /dev/sda4; then
             printf "E48 ePC update: fixing sda4 failed" >> /tmp/fix_error.log && ((fix_errors++))
         fi
@@ -55,6 +56,7 @@ epc_fix() {
 
 main() {
     epc_fix
+    return $?
 }
 
 main
