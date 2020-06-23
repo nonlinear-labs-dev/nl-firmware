@@ -139,4 +139,29 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override;
   };
 
+  //ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0
+
+  class ToFXIUnder100 : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class ToFXIIUnder100 : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class ToFXIOver0 : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class ToFXIIOver0 : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
 }

@@ -51,7 +51,8 @@ namespace DescriptiveLayouts
        NextNumber, NextName, NextSelected, NextLoaded, PreviousType, NextType, CurrentType, CurrentVoiceGroupText,
        EditBufferNameWithSuffix,
 
-       AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII);
+       AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0,
+       ToFXIOver0);
 
   ENUM(EventSinks, uint8_t, Swallow, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,

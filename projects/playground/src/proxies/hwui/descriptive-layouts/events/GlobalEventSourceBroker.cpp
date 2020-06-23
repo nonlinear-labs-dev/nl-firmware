@@ -117,6 +117,11 @@ namespace DescriptiveLayouts
     m_map[EventSources::AnyLayerCrossFB] = std::make_unique<AnyLayerCrossFB>();
     m_map[EventSources::AnyLayerCrossFBToI] = std::make_unique<AnyLayerCrossFBToI>();
     m_map[EventSources::AnyLayerCrossFBToII] = std::make_unique<AnyLayerCrossFBToII>();
+
+    m_map[EventSources::ToFXIUnder100] = std::make_unique<ToFXIUnder100>();
+    m_map[EventSources::ToFXIOver0] = std::make_unique<ToFXIOver0>();
+    m_map[EventSources::ToFXIIUnder100] = std::make_unique<ToFXIIUnder100>();
+    m_map[EventSources::ToFXIIOver0] = std::make_unique<ToFXIIOver0>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

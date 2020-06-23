@@ -231,3 +231,23 @@ void DescriptiveLayouts::AnyLayerCrossFBToII::onChange(const EditBuffer *eb)
   state |= eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I })->getControlPositionValue() != 0;
   setValue(state);
 }
+
+void DescriptiveLayouts::ToFXIUnder100::onChange(const EditBuffer *eb)
+{
+  setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II })->getControlPositionValue() < 1.0);
+}
+
+void DescriptiveLayouts::ToFXIIUnder100::onChange(const EditBuffer *eb)
+{
+  setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() < 1.0);
+}
+
+void DescriptiveLayouts::ToFXIOver0::onChange(const EditBuffer *eb)
+{
+  setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II })->getControlPositionValue() > 0);
+}
+
+void DescriptiveLayouts::ToFXIIOver0::onChange(const EditBuffer *eb)
+{
+  setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() > 0);
+}
