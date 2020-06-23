@@ -66,17 +66,17 @@
         },
         "FBToI": {
           "Class": "ArrowTipRight",
-          "Position": "39, 19",
+          "Position": "37, 19",
           "Events": "AnyLayerCrossFBToI => ANY[Visibility]"
         },
         "FBToII": {
           "Class": "ArrowTipRight",
-          "Position": "39, 35",
+          "Position": "37, 35",
           "Events": "AnyLayerCrossFBToII => ANY[Visibility]"
         },
         "ArrowLineFB": {
           "Class": "ArrowLineFB",
-          "Position": "38, 23",
+          "Position": "36, 23",
           "Events": "AnyLayerCrossFB => ANY[Visibility]"
         }
       },
