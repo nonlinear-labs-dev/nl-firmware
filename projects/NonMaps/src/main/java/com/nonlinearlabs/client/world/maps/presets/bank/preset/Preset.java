@@ -344,7 +344,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
-	public Control mouseDown(Position eventPoint) {
+	public Control mouseUp(Position eventPoint) {
 		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
 			selectPreset();
 			wasJustSelected = true;
