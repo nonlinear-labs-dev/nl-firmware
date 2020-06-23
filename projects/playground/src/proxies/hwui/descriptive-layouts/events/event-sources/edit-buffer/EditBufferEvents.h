@@ -115,9 +115,28 @@ namespace DescriptiveLayouts
   class UnisonButtonText : public EditBufferEvent<DisplayString>
   {
    public:
-    void onChange(const EditBuffer *eb);
+    void onChange(const EditBuffer *eb) override;
 
    private:
     bool isChanged(const EditBuffer *eb);
   };
+
+  class AnyLayerCrossFB : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class AnyLayerCrossFBToI : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class AnyLayerCrossFBToII : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
 }

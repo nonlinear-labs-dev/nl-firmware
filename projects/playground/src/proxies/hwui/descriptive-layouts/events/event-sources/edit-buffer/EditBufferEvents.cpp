@@ -5,6 +5,7 @@
 #include <sigc++/sigc++.h>
 #include <parameters/SplitPointParameter.h>
 #include <presets/EditBuffer.h>
+#include <parameter_declarations.h>
 
 void DescriptiveLayouts::EditBufferTypeStringEvent::onChange(const EditBuffer *eb)
 {
@@ -195,4 +196,38 @@ void DescriptiveLayouts::IsLayerSound::onChange(const EditBuffer *eb)
 void DescriptiveLayouts::IsSplitSound::onChange(const EditBuffer *eb)
 {
   setValue(eb->getType() == SoundType::Split);
+}
+
+void DescriptiveLayouts::AnyLayerCrossFB::onChange(const EditBuffer *eb)
+{
+  auto state = false;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  setValue(state);
+}
+
+void DescriptiveLayouts::AnyLayerCrossFBToI::onChange(const EditBuffer *eb)
+{
+  auto state = false;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  setValue(state);
+}
+
+void DescriptiveLayouts::AnyLayerCrossFBToII::onChange(const EditBuffer *eb)
+{
+  auto state = false;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  setValue(state);
 }

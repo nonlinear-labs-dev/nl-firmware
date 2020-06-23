@@ -55,9 +55,50 @@
         "Class":"Bar",
         "Rect": "2, 1, 1, 7"
       }
+    },
+    "ArrowTipRight":
+    {
+      "s": {
+        "Tag": "arrow",
+        "Class":"Bar",
+        "Rect":"5, 4, 1, 1"
+      },
+      "sS": {
+        "Tag": "arrow",
+        "Class": "Bar",
+        "Rect": "4, 3, 1, 3"
+      },
+      "S": {
+        "Tag": "arrow",
+        "Class":"Bar",
+        "Rect":"3, 2, 1, 5"
+      }
+    },
+    "ArrowLineFB": {
+      "VerticalLine" : {
+        "Class": "Bar",
+        "Rect": "0, 0, 1, 16"
+      },
+      "HorizontallLineTop" : {
+        "Class": "Bar",
+        "Rect": "0, 0, 6, 1"
+      },
+      "HorizontallLineBottom" : {
+        "Class": "Bar",
+        "Rect": "0, 16, 6, 1"
+      }
     }
   },
   "styles": {
+    "ArrowTip": {
+      "selector": {
+        "ControlClasses": "ArrowTipRight"
+      },
+      "styles":{
+        "Color": "C128",
+        "BackgroundColor": "Transparent"
+      }
+    },
     "Default-Arrow-bg": {
       "selector": {
         "PrimitiveClass": "Bar",

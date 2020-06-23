@@ -63,6 +63,21 @@
             "Master[Text]": ""
           },
           "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text], VGIIMuted => MuteIndication[Text]"
+        },
+        "FBToI": {
+          "Class": "ArrowTipRight",
+          "Position": "39, 19",
+          "Events": "AnyLayerCrossFBToI => ANY[Visibility]"
+        },
+        "FBToII": {
+          "Class": "ArrowTipRight",
+          "Position": "39, 35",
+          "Events": "AnyLayerCrossFBToII => ANY[Visibility]"
+        },
+        "ArrowLineFB": {
+          "Class": "ArrowLineFB",
+          "Position": "38, 23",
+          "Events": "AnyLayerCrossFB => ANY[Visibility]"
         }
       },
       "EventSinks": {

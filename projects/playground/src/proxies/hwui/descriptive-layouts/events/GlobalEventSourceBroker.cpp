@@ -113,6 +113,10 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::MonoButtonText] = std::make_unique<MonoButtonText>();
     m_map[EventSources::UnisonButtonText] = std::make_unique<UnisonButtonText>();
+
+    m_map[EventSources::AnyLayerCrossFB] = std::make_unique<AnyLayerCrossFB>();
+    m_map[EventSources::AnyLayerCrossFBToI] = std::make_unique<AnyLayerCrossFBToI>();
+    m_map[EventSources::AnyLayerCrossFBToII] = std::make_unique<AnyLayerCrossFBToII>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;
