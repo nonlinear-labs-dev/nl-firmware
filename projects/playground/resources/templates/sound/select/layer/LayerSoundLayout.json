@@ -81,22 +81,22 @@
         },
         "FXIToFXI": {
           "Class": "StraightLineArrow",
-          "Position": "220, 15",
+          "Position": "215, 20",
           "Events": "ToFXIIUnder100 => ANY[Visibility]"
         },
         "FXIToFXII": {
           "Class": "DiagonalDownArrow",
-          "Position": "220, 15",
+          "Position": "215, 20",
           "Events": "ToFXIIOver0 => ANY[Visibility]"
         },
         "FXIIToFXII": {
           "Class": "StraightLineArrow",
-          "Position": "220, 41",
+          "Position": "215, 36",
           "Events": "ToFXIUnder100 => ANY[Visibility]"
         },
         "FXIIToFXI": {
           "Class": "DiagonalUpArrow",
-          "Position": "220, 32",
+          "Position": "215, 23",
           "Events": "ToFXIOver0 => ANY[Visibility]"
         }
       },
