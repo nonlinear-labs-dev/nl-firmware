@@ -218,6 +218,24 @@
     }
   },
   "styles": {
+    "diagonalUp": {
+      "selector":{
+        "ControlClasses": "DiagonalUpArrow"
+      },
+      "styles": {
+        "Color": "C128",
+        "BackgroundColor": "Transparent"
+      }
+    },
+    "diagonalDown": {
+      "selector":{
+        "ControlClasses": "DiagonalDownArrow"
+      },
+      "styles": {
+        "Color": "C128",
+        "BackgroundColor": "Transparent"
+      }
+    },
     "Str8Arrow": {
       "selector": {
         "ControlClasses": "StraightLineArrow"
