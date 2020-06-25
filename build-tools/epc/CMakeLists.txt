@@ -27,7 +27,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Create filesystem"
     OUTPUT  .filesystem-created
-    COMMAND truncate -s 7G ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
+    COMMAND truncate -s 10G ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
     COMMAND mkfs.ext4 ${CMAKE_CURRENT_BINARY_DIR}/fs.ext4
     COMMAND touch .filesystem-created
 )
