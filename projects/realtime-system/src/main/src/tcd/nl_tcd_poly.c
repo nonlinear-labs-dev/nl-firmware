@@ -215,9 +215,9 @@ void POLY_ForceKey(uint16_t const hardwareKeyNumber, uint16_t const timeLow, uin
   // generate key bursts
   static int time = -1;
   if (time == -1)
-	  time = 10000;  // 10ms, moderate press, to avoid shocking volume/distortion
+    time = 10000;  // 10ms, moderate press, to avoid shocking volume/distortion
   else
-	  time = -1;   // fast release
+    time = -1;  // fast release
   for (uint16_t key = 0; key <= 60; key++)
     ForceKey(key, time);
 }

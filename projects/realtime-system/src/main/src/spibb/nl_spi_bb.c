@@ -57,6 +57,11 @@ static void SPI_BB_PackageParser(uint8_t* buff, uint32_t len)
   raw_package_header_t* rawPackage = (raw_package_header_t*) buff;
   uint32_t              todo       = rawPackage->size_in_bytes;
 
+  if (!buff || !*((uint64_t*) buff))  // error condition empty buffer
+    while (1)                         // looping here ...
+      ;                               // will trigger watchdog reset
+#warning "TODO: Find root cause of empty DMA packets problem"
+
   if ((rawPackage->post == PACKAGE_ENCLOSURE) && (rawPackage->pre == PACKAGE_ENCLOSURE) && (todo <= (len - 4)))
   {
     buff += 4;
