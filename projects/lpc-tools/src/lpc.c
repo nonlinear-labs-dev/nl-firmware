@@ -8,6 +8,7 @@
 
 #include "shared/lpc-defs.h"
 #include "shared/version.h"
+#include "shared/globals.h"
 
 #include "linuxgpio.h"
 
@@ -80,7 +81,9 @@ Retry:
 #define CLEAR_STAT      "clear-status"
 #define STAT_DATA       "status"
 #define EHC_SAVE_EEPROM "save-ehc"
-#define KEY_CNTRS       "key-counters"
+#if LPC_KEYBED_DIAG
+#define KEY_CNTRS "key-counters"
+#endif
 
 #define SETTING             "set"
 #define MUTE_CTRL           "mute-ctrl"
@@ -119,14 +122,20 @@ void Usage(void)
   puts(" lpc --version        : print version and exit");
   puts(" lpc  <command>");
   puts("  <commands> : req|set|key|test");
+#if LPC_KEYBED_DIAG
   puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|key-counters");
+#else
+  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc");
+#endif
   puts("     sw-version   : get LPC firware version");
   puts("     muting       : get software&hardware muting status");
   puts("     clear-eeprom : erase EEPROM");
   puts("     status       : get diagnostic status data");
   puts("     clear-status : clear diagnostic status data");
   puts("     save-ehc     : save current EHC config data to EEPROM");
+#if LPC_KEYBED_DIAG
   puts("     key-counters : get diagnostic key error counters");
+#endif
   puts("  set[ting] : mute-ctrl|sensors|key-logging|ae-cmd|system");
   puts("     mute-ctrl: disable|mute|unmute : disable mute override or set/clear muting");
   puts("     sensors: on|off                : turn raw sensor messages on/off");
@@ -136,7 +145,7 @@ void Usage(void)
   puts("                  : System Special; reboot system, reset heartbeat counter, enable midi");
   puts("  key <note-nr> <time>      : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
-  puts("     <time>                 : key time (~1/velocity) in ms (1...525), negative means key release");
+  puts("     <time>                 : key time (~1/velocity) in us (1000...525000), negative means key release");
   puts("  test <size> <count> <delay>   : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
   puts("     <count>                    : # of times the message is send (1..65535)");
@@ -255,12 +264,14 @@ int main(int argc, char const *argv[])
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
+#if LPC_KEYBED_DIAG
     if (strncmp(argv[2], KEY_CNTRS, sizeof KEY_CNTRS) == 0)
     {
       REQ_DATA[2] = LPC_REQUEST_ID_KEYCNTR_DATA;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
+#endif
     puts("req: unknown request");
     Usage();
   }

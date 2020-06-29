@@ -7,10 +7,9 @@
 #ifndef EMPHASE_IPC_H
 #define EMPHASE_IPC_H
 #include <stdint.h>
+#include "shared/globals.h"
 
-// #define ADC_STRESS_TEST
-
-#ifdef ADC_STRESS_TEST
+#if LPC_DGB_ADC_STRESS_TEST
 // use a free-running 0..4095 counter rather than real ADC values
 // counter is incremented when adcBufferWriteIndex is advanced
 #warning "ADC stress test is on, no real ADC values will be used"
@@ -72,7 +71,9 @@ typedef struct
   volatile uint32_t  ticker;
   uint32_t           ADCTicks;
   uint32_t           RitCrtlReg;
-  int16_t            keyOnOffCntr[64];
+#if LPC_KEYBED_DIAG
+  int16_t keyOnOffCntr[64];
+#endif
 } SharedData_T;
 
 extern SharedData_T s;
@@ -179,7 +180,7 @@ static inline int32_t IPC_ReadAdcBufferSum(uint8_t const adc_id)
 *   @param[in]	IPC id of the adc channel 0...15
 *   @param[in]  adc channel value
 ******************************************************************************/
-#ifdef ADC_STRESS_TEST
+#if LPC_DGB_ADC_STRESS_TEST
 static inline void IPC_WriteAdcBuffer(uint8_t const adc_id, int32_t value)
 {
   value = adc_val;
@@ -202,7 +203,8 @@ static inline void IPC_WriteAdcBuffer(uint8_t const adc_id, int32_t const value)
 static inline void IPC_AdcBufferWriteNext(void)
 {
   s.adcBufferWriteIndex = (s.adcBufferWriteIndex + 1) & IPC_ADC_BUFFER_MASK;
-#ifdef ADC_STRESS_TEST
+#if LPC_DGB_ADC_STRESS_TEST
+
   adc_val = (adc_val + 1) & 4095;
 #endif
 }

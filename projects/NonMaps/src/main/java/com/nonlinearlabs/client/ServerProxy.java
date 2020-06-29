@@ -61,7 +61,7 @@ public class ServerProxy {
 
 	void startPolling() {
 		webSocket = new WebSocketConnection();
-		webSocket.startPolling(new ServerListener() {
+		webSocket.connectToServer(new ServerListener() {
 
 			@Override
 			public void onServerUpdate(String text) {

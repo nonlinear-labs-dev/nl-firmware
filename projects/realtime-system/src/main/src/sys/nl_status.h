@@ -7,7 +7,8 @@
 *******************************************************************************/
 #pragma once
 
-#include "stdint.h"
+#include <stdint.h>
+#include "shared/globals.h"
 
 typedef struct __attribute__((packed))
 {
@@ -21,14 +22,19 @@ typedef struct __attribute__((packed))
   uint16_t M0_ADCTime;
   uint16_t M0_KbsIrqOver;
   uint16_t DroppedMidiMessageBuffers;
+#if LPC_KEYBED_DIAG
   uint16_t MissedKeybedEventsScanner;
   uint16_t MissedKeybedEventsTCD;
+#endif
 } NL_systemStatus_T;
 
 extern NL_systemStatus_T NL_systemStatus;
 
+uint16_t NL_STAT_CheckMissedKeybedEvents(void);  // == 0 means all counters are zero
 void     NL_STAT_ClearData(void);
 void     NL_STAT_GetData(uint16_t *buffer);
 uint16_t NL_STAT_GetDataSize(void);
+#if LPC_KEYBED_DIAG
 void     NL_STAT_GetKeyData(uint16_t *buffer);
 uint16_t NL_STAT_GetKeyDataSize(void);
+#endif

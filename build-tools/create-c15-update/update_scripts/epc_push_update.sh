@@ -42,7 +42,7 @@ update(){
        return 0
     fi
 
-    return 1
+    report_and_quit "E49 ePC update: pushing update failed ..." "49"
 }
 
 main () {

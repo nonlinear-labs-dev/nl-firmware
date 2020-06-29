@@ -8,6 +8,7 @@
 // 2. Version String for inofficial beta builds, build from any branch :
 // The syntax is "Beta: <arbitrary string>"
 // The version string may also indicate year and week as before but may contain different/other info.
+// Master is just a special beta which is always beta.
 // At any rate, it MUST mark the version beta status in a clear way:
 // Whatever string is choosen, it must always start with "Beta:", like "Beta: Preview-MS1.8".
 //
@@ -19,9 +20,16 @@
 // of the microcontrollers in the system, which can be searched for with "grep", or viewed and
 // and searched in an editor (text or hex), etc. That's why the "\n\n" are part of the strings so
 // that the text is easily spotted.
-
-//                         "YY-WW" or "Beta-<name>-YYMMDDHHMM
-#define C15_VERSION_STRING "Beta-1953g-2006181545"
+//
+// The Version String shall contain all required info to easily back-track what we are dealing with,
+// and note this is the only string that is available when using the WebUI (no more detailed info there)
+// That's why some form date conding is required.
+//
+//  Final Versions         "YY-WW"                  , YY-WW : branch creation date or final release date (tbd).
+//  Release Candidates     "Beta YY-WW RCnn"        , YY-WW : branch creation date, nn is upcounting RC number 01...99.
+//  Other Betas            "Beta-<name>-YYMMDDHHMM" , name would typically be a 4-digit issue/PR number, ...
+//  Master                 "Master-YYMMDDHHMM"      , ... and YYMMDDHHMM is the time stamp.
+#define C15_VERSION_STRING "Beta 20-25 RC03"
 #warning
 #pragma message("make sure version string '" C15_VERSION_STRING "' is up-to date when building a release or beta")
 
