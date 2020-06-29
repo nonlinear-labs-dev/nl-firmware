@@ -29,7 +29,7 @@
 //  Release Candidates     "Beta YY-WW RCnn"        , YY-WW : branch creation date, nn is upcounting RC number 01...99.
 //  Other Betas            "Beta-<name>-YYMMDDHHMM" , name would typically be a 4-digit issue/PR number, ...
 //  Master                 "Master-YYMMDDHHMM"      , ... and YYMMDDHHMM is the time stamp.
-#define C15_VERSION_STRING "Beta 20-25 RC03"
+#define C15_VERSION_STRING "Beta 20-25 RC04"
 #warning
 #pragma message("make sure version string '" C15_VERSION_STRING "' is up-to date when building a release or beta")
 
