@@ -12,7 +12,28 @@ class MCAssignedIndicator : public ControlWithChildren
   bool redraw(FrameBuffer& fb) override;
 
  private:
-  LabelRegular8* m_label = nullptr;
+  struct AffectedGroups
+  {
+    std::array<bool, 2> mono { false, false };
+    std::array<bool, 2> unison { false, false };
+    std::array<bool, 2> part { false, false };
+    bool scale { false };
+    bool master { false };
+
+    bool affected() const
+    {
+      return scale || master || mono[0] || mono[1] || unison[0] || unison[1] || part[0] || part[1];
+    }
+  };
+
+  void drawSplit(FrameBuffer& fb, const AffectedGroups& mods);
+  void drawLayer(FrameBuffer& fb, const AffectedGroups& mods);
+  void drawSingle(FrameBuffer& fb, const AffectedGroups& mods);
+
+  LabelRegular8* m_topRowLabel = nullptr;
+  LabelRegular8* m_middleRowLabel = nullptr;
+  LabelRegular8* m_bottomRowLabel = nullptr;
   const MacroControlParameter* m_parameter = nullptr;
   void drawNonLEDTargets(FrameBuffer& fb);
+  void drawArrow(FrameBuffer& fb) const;
 };
