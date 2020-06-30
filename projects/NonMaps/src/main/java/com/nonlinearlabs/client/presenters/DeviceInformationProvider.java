@@ -49,6 +49,12 @@ public class DeviceInformationProvider {
 			notifyClients();
 			return true;
 		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().date.onChange(v -> {
+			info.commitDate = v;
+			notifyClients();
+			return true;
+		});
 	}
 
 	protected void notifyClients() {

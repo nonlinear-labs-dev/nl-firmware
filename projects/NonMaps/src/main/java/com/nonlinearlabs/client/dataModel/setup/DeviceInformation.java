@@ -16,4 +16,5 @@ public class DeviceInformation {
 	public StringDataModelEntity branch = new StringDataModelEntity();
 	public StringDataModelEntity commits = new StringDataModelEntity();
 	public StringDataModelEntity head = new StringDataModelEntity();
+	public StringDataModelEntity date = new StringDataModelEntity();
 }

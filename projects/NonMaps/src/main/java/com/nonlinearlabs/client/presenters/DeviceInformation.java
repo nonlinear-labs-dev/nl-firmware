@@ -7,4 +7,5 @@ public class DeviceInformation {
 	public String branch = "---";
 	public String head = "---";
 	public String commits = "---";
+	public String commitDate = "---";
 }

@@ -14,6 +14,7 @@ void BuildVersion::writeDocument(Writer& writer, UpdateDocumentContributor::tUpd
   writer.writeTextElement("build-head", UISoftwareVersionEditor::getHead());
   writer.writeTextElement("build-commits", UISoftwareVersionEditor::getCommitCount());
   writer.writeTextElement("build-branch", UISoftwareVersionEditor::getBranch());
+  writer.writeTextElement("build-date", UISoftwareVersionEditor::getCommitDate());
 }
 
 Glib::ustring BuildVersion::get() const

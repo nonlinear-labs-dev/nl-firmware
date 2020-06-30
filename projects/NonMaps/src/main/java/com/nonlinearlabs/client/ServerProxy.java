@@ -151,6 +151,7 @@ public class ServerProxy {
 		String head = getChildText(deviceInfo, "build-head");
 		String commits = getChildText(deviceInfo, "build-commits");
 		String branch = getChildText(deviceInfo, "build-branch");
+		String date = getChildText(deviceInfo, "build-date");
 
 		if(branch != null) {
 			DeviceInformation.get().branch.setValue(branch);
@@ -162,6 +163,10 @@ public class ServerProxy {
 
 		if(head != null) {
 			DeviceInformation.get().head.setValue(head);
+		}
+
+		if(date != null) {
+			DeviceInformation.get().date.setValue(date);
 		}
 	}
 
