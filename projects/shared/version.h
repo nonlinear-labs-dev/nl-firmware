@@ -25,12 +25,9 @@
 // and note this is the only string that is available when using the WebUI (no more detailed info there)
 // That's why some form date conding is required.
 //
-//  Final Versions         "YY-WW"                  , YY-WW : branch creation date or final release date (tbd).
-//  Release Candidates     "Beta YY-WW RCnn"        , YY-WW : branch creation date, nn is upcounting RC number 01...99.
-//  Other Betas            "Beta-<name>-YYMMDDHHMM" , name would typically be a 4-digit issue/PR number, ...
-//  Master                 "Master-YYMMDDHHMM"      , ... and YYMMDDHHMM is the time stamp.
-#define C15_VERSION_STRING "Beta 20-25 RC04"
-#warning
+//  Final Versions         "YY-WW"   YY-WW : release date (tbd).
+//  Everting else                    whatever seems approbriate
+#define C15_VERSION_STRING "MS 1.7 beta"
 #pragma message("make sure version string '" C15_VERSION_STRING "' is up-to date when building a release or beta")
 
 // do not change these two strings:
