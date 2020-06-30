@@ -898,15 +898,8 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
         {
           eb->undoableLoadPresetPartIntoPart(currentUndo, preset, loadFrom, loadTo);
           m_autoLoadScheduled = false;
+          return;
         }
-        else
-        {
-          currentUndo->reopen();
-          eb->undoableLoadPresetPartIntoPart(currentUndo, preset, loadFrom, loadTo);
-          m_autoLoadScheduled = false;
-          currentUndo->close();
-        }
-        return;
       }
 
       auto scope = getUndoScope().startContinuousTransaction(this, std::chrono::milliseconds(500), "Load Preset Part");
