@@ -368,6 +368,33 @@
 
 					<div class="halb-he">
 						<div class="w40p">
+							<p>Branch</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiBranch"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Head</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiHead"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Commits</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiCommits"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
 							<p>Date/Time</p>
 						</div>
 						<div class="w60p">

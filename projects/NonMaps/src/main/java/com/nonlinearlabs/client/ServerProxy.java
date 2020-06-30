@@ -26,7 +26,9 @@ import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
+import com.nonlinearlabs.client.dataModel.setup.DeviceInformation;
 import com.nonlinearlabs.client.dataModel.setup.SetupUpdater;
+import com.nonlinearlabs.client.presenters.DeviceInformationProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
 import com.nonlinearlabs.client.world.IPreset;
@@ -144,6 +146,22 @@ public class ServerProxy {
 		String buildVersion = getChildText(deviceInfo, "build-version");
 		if (buildVersion != null && !buildVersion.isEmpty()) {
 			this.buildVersion = buildVersion;
+		}
+
+		String head = getChildText(deviceInfo, "build-head");
+		String commits = getChildText(deviceInfo, "build-commits");
+		String branch = getChildText(deviceInfo, "build-branch");
+
+		if(branch != null) {
+			DeviceInformation.get().branch.setValue(branch);
+		}
+
+		if(commits != null) {
+			DeviceInformation.get().commits.setValue(commits);
+		}
+
+		if(head != null) {
+			DeviceInformation.get().head.setValue(head);
 		}
 	}
 

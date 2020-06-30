@@ -13,4 +13,7 @@ public class DeviceInformation {
 	public StringDataModelEntity softwareVersion = new StringDataModelEntity();
 	public StringDataModelEntity dateTime = new StringDataModelEntity();
 	public StringDataModelEntity dateTimeDisplay = new StringDataModelEntity();
+	public StringDataModelEntity branch = new StringDataModelEntity();
+	public StringDataModelEntity commits = new StringDataModelEntity();
+	public StringDataModelEntity head = new StringDataModelEntity();
 }

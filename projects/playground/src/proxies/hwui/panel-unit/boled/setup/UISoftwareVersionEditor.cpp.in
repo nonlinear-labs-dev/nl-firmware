@@ -6,9 +6,9 @@
 
 UISoftwareVersionEditor::UISoftwareVersionEditor()
 {
-  addEntry("branch", "Branch:", "@BRANCH_NAME@");
-  addEntry("commits", "Commits:", "@COMMIT_COUNT@");
-  addEntry("head", "HEAD:", "@HEAD_REF@");
+  addEntry("branch", "Branch:", getBranch());
+  addEntry("commits", "Commits:", getCommitCount());
+  addEntry("head", "HEAD:", getHead());
 
   auto rtSoftwareValue = Application::get().getDeviceInformation()->getItem<RTSoftwareVersion>()->get();
   addEntry("rt", "RT Version:", rtSoftwareValue);
@@ -18,4 +18,19 @@ UISoftwareVersionEditor::UISoftwareVersionEditor()
 void UISoftwareVersionEditor::setPosition(const Rect &)
 {
   doLayout();
+}
+
+const char* UISoftwareVersionEditor::getBranch()
+{
+  return "@BRANCH_NAME@";
+}
+
+const char* UISoftwareVersionEditor::getHead()
+{
+  return "@HEAD_REF@";
+}
+
+const char* UISoftwareVersionEditor::getCommitCount()
+{
+  return "@COMMIT_COUNT@";
 }

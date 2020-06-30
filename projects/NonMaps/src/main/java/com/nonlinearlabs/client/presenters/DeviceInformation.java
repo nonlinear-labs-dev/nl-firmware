@@ -4,4 +4,7 @@ public class DeviceInformation {
 	public String freeDiscSpace = "---";
 	public String uiVersion = "---";
 	public String dateTime = "---";
+	public String branch = "---";
+	public String head = "---";
+	public String commits = "---";
 }

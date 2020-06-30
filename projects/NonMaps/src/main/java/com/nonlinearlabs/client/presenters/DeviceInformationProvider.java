@@ -31,6 +31,24 @@ public class DeviceInformationProvider {
 			notifyClients();
 			return true;
 		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().branch.onChange(v -> {
+			info.branch = v;
+			notifyClients();
+			return true;
+		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().head.onChange(v -> {
+			info.head = v;
+			notifyClients();
+			return true;
+		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().commits.onChange(v -> {
+			info.commits = v;
+			notifyClients();
+			return true;
+		});
 	}
 
 	protected void notifyClients() {

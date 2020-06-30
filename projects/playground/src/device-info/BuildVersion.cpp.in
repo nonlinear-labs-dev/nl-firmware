@@ -1,5 +1,6 @@
 #include <device-info/BuildVersion.h>
 #include <xml/Writer.h>
+#include <proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.h>
 
 BuildVersion::BuildVersion(DeviceInformation* parent)
     : DeviceInformationItem(parent)
@@ -10,6 +11,9 @@ BuildVersion::BuildVersion(DeviceInformation* parent)
 void BuildVersion::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   writer.writeTextElement("build-version", get());
+  writer.writeTextElement("build-head", UISoftwareVersionEditor::getHead());
+  writer.writeTextElement("build-commits", UISoftwareVersionEditor::getCommitCount());
+  writer.writeTextElement("build-branch", UISoftwareVersionEditor::getBranch());
 }
 
 Glib::ustring BuildVersion::get() const
