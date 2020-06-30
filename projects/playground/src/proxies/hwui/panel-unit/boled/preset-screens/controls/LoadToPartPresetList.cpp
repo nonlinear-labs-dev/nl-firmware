@@ -161,6 +161,7 @@ void LoadToPartPresetList::selectPreviousBank(PresetManager* pm)
   if(auto selection = getCurrentSelection())
   {
     selection->selectPreviousBank();
+    onSelectionChanged(*selection);
     update(Application::get().getPresetManager());
   }
 }
@@ -170,6 +171,7 @@ void LoadToPartPresetList::selectNextBank(PresetManager* pm)
   if(auto selection = getCurrentSelection())
   {
     selection->selectNextBank();
+    onSelectionChanged(*selection);
     update(Application::get().getPresetManager());
   }
 }
