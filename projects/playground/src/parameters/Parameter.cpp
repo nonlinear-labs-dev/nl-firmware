@@ -420,7 +420,9 @@ void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator init
   auto range = getValue().getScaleConverter()->getControlPositionRange();
   auto newPos
       = (getControlPositionValue() * (1.0 - amount)) + ((range.getMin() + rnd * range.getRangeWidth()) * amount);
-  setCpValue(transaction, initiator, newPos, false);
+
+  auto quantized = getValue().getQuantizedValue(newPos, true);
+  setCpValue(transaction, initiator, quantized, false);
 }
 
 void Parameter::exportReaktorParameter(std::stringstream &target) const
