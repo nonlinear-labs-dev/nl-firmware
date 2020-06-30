@@ -10,4 +10,5 @@ class UISoftwareVersionEditor : public DisplayEditor
   static const char* getBranch();
   static const char* getHead();
   static const char* getCommitCount();
+  static const char* getCommitDate();
 };

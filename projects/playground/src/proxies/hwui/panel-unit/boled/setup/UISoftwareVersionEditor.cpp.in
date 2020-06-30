@@ -34,3 +34,8 @@ const char* UISoftwareVersionEditor::getCommitCount()
 {
   return "@COMMIT_COUNT@";
 }
+
+const char* UISoftwareVersionEditor::getCommitDate()
+{
+  return "@COMMIT_DATE@";
+}
