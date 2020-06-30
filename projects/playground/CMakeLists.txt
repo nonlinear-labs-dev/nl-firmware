@@ -27,7 +27,7 @@ execute_process(COMMAND git rev-parse --short HEAD
     RESULT_VARIABLE git_result
     OUTPUT_VARIABLE HEAD_REF)
     
-execute_process(COMMAND git log -n 1 --pretty=format:"%cd" --date=format:"%Y-%m-%d %H:%M:%S"
+execute_process(COMMAND git log -n 1 "--pretty=format:%cd" "--date=format:%Y-%m-%d %H:%M:%S"
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     RESULT_VARIABLE git_result
     OUTPUT_VARIABLE COMMIT_DATE)
