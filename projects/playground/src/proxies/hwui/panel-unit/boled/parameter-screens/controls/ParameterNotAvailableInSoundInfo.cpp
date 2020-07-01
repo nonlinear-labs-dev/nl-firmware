@@ -1,10 +1,8 @@
+#include "ParameterNotAvailableInSoundInfo.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
-#include "ParameterNotAvailableInSoundInfo.h"
-#include "ParameterCarousel.h"
-#include "NeverHighlitButton.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <sigc++/adaptors/hide.h>
@@ -20,7 +18,7 @@ ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r
   m_parameterSelectionConnection
       = eb->onSelectionChanged(sigc::mem_fun(this, &ParameterNotAvailableInSoundInfo::onSelectionChanged));
 
-  m_sountTypeConnection
+  m_soundTypeConnection
       = eb->onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &ParameterNotAvailableInSoundInfo::onSoundTypeChanged)));
 
   addControl(new CenterAlignedLabel("Only available with", { 0, 8, 128, 10 }));
@@ -57,9 +55,4 @@ void ParameterNotAvailableInSoundInfo::setVisible(bool b)
   }
 
   Control::setVisible(b);
-}
-
-void ParameterNotAvailableInSoundInfo::init()
-{
-  onSoundTypeChanged();
 }
