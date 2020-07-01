@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.Gray;
@@ -27,7 +28,7 @@ public class ParameterValueSlider extends OverlayControl {
 	public void draw(Context2d ctx, int invalidationMask) {
 		ParameterPresenter parameter = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		double value = parameter.controlPosition;
-		GWT.log("Slider: " + value);
+		Tracer.log("Slider: " + value);
 		boolean isBiPolar = parameter.bipolar;
 
 		if (!parameter.drawHandleOnly) {
