@@ -101,9 +101,6 @@ public class ServerProxy {
 			Node presetManagerNode = xml.getElementsByTagName("preset-manager").item(0);
 			Node deviceInfo = xml.getElementsByTagName("device-information").item(0);
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
-
-			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
-			boolean omitOracles = omitOracles(world);
 		
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
 			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
