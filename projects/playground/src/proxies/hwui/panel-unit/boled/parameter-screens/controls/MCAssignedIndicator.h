@@ -1,5 +1,6 @@
 #pragma once
 #include <proxies/hwui/controls/ControlWithChildren.h>
+#include <nltools/Types.h>
 
 class Parameter;
 class MacroControlParameter;
@@ -20,9 +21,18 @@ class MCAssignedIndicator : public ControlWithChildren
     bool scale { false };
     bool master { false };
 
-    bool affected() const
+    [[nodiscard]] bool affected(SoundType s) const
     {
-      return scale || master || mono[0] || mono[1] || unison[0] || unison[1] || part[0] || part[1];
+      switch(s)
+      {
+        case SoundType::Single:
+        default:
+          return scale || master || mono[0] || unison[0];
+        case SoundType::Layer:
+          return scale || master || mono[0] || unison[0] || part[0] || part[1];
+        case SoundType::Split:
+          return scale || master || mono[0] || mono[1] || unison[0] || unison[1] || part[0] || part[1];
+      }
     }
   };
 

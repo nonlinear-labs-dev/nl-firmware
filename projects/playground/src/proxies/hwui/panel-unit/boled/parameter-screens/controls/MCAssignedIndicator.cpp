@@ -5,6 +5,8 @@
 #include <groups/ParameterGroup.h>
 #include <proxies/hwui/controls/LabelRegular8.h>
 #include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 MCAssignedIndicator::MCAssignedIndicator(const Rect& r, const Parameter* p)
     : ControlWithChildren(r)
@@ -13,13 +15,17 @@ MCAssignedIndicator::MCAssignedIndicator(const Rect& r, const Parameter* p)
   auto pos = r;
   pos.setWidth(25);
   pos.setLeft(r.getLeft());
+  pos.setHeight(8);
+
   pos.setTop(r.getTop());
   m_topRowLabel = addControl(new LabelRegular8(pos));
   m_topRowLabel->setJustification(Font::Justification::Right);
+
   pos.setTop(r.getTop() + 8);
   m_middleRowLabel = addControl(new LabelRegular8(pos));
   m_middleRowLabel->setJustification(Font::Justification::Right);
-  pos.setTop(r.getTop() + 8);
+
+  pos.setTop(r.getTop() + 16);
   m_bottomRowLabel = addControl(new LabelRegular8(pos));
   m_bottomRowLabel->setJustification(Font::Justification::Right);
 }
@@ -36,39 +42,6 @@ bool MCAssignedIndicator::redraw(FrameBuffer& fb)
   return true;
 }
 
-void MCAssignedIndicator::drawSingle(FrameBuffer& fb, const AffectedGroups& mods)
-{
-
-  std::stringstream ss;
-
-  if(modPart)
-  {
-    ss << "P";
-    if(modVoices || modMaster)
-      ss << ",";
-  }
-
-  if(modVoices)
-  {
-    ss << "V";
-    if(modMaster)
-      ss << ",";
-  }
-
-  if(modMaster)
-  {
-    ss << "M";
-  }
-
-  m_middleRowLabel->setText({ ss.str(), 0 });
-  m_middleRowLabel->redraw(fb);
-
-  if(modVoices || modMaster || modPart)
-  {
-    drawArrow(fb);
-  }
-}
-
 void MCAssignedIndicator::drawArrow(FrameBuffer& fb) const
 {
   if(isHighlight())
@@ -79,7 +52,7 @@ void MCAssignedIndicator::drawArrow(FrameBuffer& fb) const
   Rect r = getPosition();
   Point c = r.getCenter();
 
-  const auto margin = m_label->getWidth();
+  const auto margin = m_middleRowLabel->getWidth();
   const auto middle = r.getCenter().getY();
 
   fb.setPixel(r.getLeft() + margin + 1, middle - 1);
@@ -91,12 +64,165 @@ void MCAssignedIndicator::drawArrow(FrameBuffer& fb) const
     fb.setPixel(i, middle);
 }
 
+void MCAssignedIndicator::drawSingle(FrameBuffer& fb, const AffectedGroups& mods)
+{
+  std::stringstream ss;
+
+  if(mods.mono[0])
+  {
+    ss << "\uE040";
+    if(mods.scale || mods.master || mods.unison[0])
+      ss << " ";
+  }
+
+  if(mods.unison[0])
+  {
+    ss << "\uE041";
+    if(mods.scale || mods.master)
+      ss << " ";
+  }
+
+  if(mods.scale)
+  {
+    ss << "S";
+    if(mods.master)
+      ss << " ";
+  }
+
+  if(mods.master)
+  {
+    ss << "M";
+  }
+
+  m_middleRowLabel->setText({ ss.str(), 0 });
+  m_middleRowLabel->redraw(fb);
+
+  if(mods.affected(SoundType::Single))
+  {
+    drawArrow(fb);
+  }
+}
+
 void MCAssignedIndicator::drawSplit(FrameBuffer& fb, const AffectedGroups& mods)
 {
+  std::stringstream middleSs;
+  std::stringstream topSs;
+  std::stringstream bottomSs;
+
+  if(mods.mono[0])
+  {
+    topSs << "\uE040";
+    if(mods.unison[0] || mods.part[0])
+      topSs << " ";
+  }
+
+  if(mods.mono[1])
+  {
+    bottomSs << "\uE040";
+    if(mods.unison[1] || mods.part[1])
+      bottomSs << " ";
+  }
+
+  if(mods.unison[0])
+  {
+    topSs << "\uE041";
+    if(mods.part[0])
+      topSs << " ";
+  }
+
+  if(mods.unison[1])
+  {
+    bottomSs << "\uE041";
+    if(mods.part[1])
+      bottomSs << " ";
+  }
+
+  if(mods.scale)
+  {
+    middleSs << "S";
+    if(mods.master)
+      middleSs << " ";
+  }
+
+  if(mods.master)
+  {
+    middleSs << "M";
+  }
+
+  if(mods.part[0])
+  {
+    topSs << "P";
+  }
+
+  if(mods.part[1])
+  {
+    bottomSs << "P";
+  }
+
+  m_topRowLabel->setText({ topSs.str(), 0 });
+  m_topRowLabel->redraw(fb);
+
+  m_middleRowLabel->setText({ middleSs.str(), 0 });
+  m_middleRowLabel->redraw(fb);
+
+  m_bottomRowLabel->setText({ bottomSs.str(), 0 });
+  m_bottomRowLabel->redraw(fb);
+
+  if(mods.affected(SoundType::Split))
+  {
+    drawArrow(fb);
+  }
 }
 
 void MCAssignedIndicator::drawLayer(FrameBuffer& fb, const AffectedGroups& mods)
 {
+  std::stringstream ss;
+
+  if(mods.mono[0])
+  {
+    ss << "\uE040";
+    if(mods.unison[0] || mods.master || mods.scale)
+      ss << " ";
+  }
+
+  if(mods.unison[0])
+  {
+    ss << "\uE041";
+    if(mods.master || mods.scale)
+      ss << " ";
+  }
+
+  if(mods.scale)
+  {
+    ss << "S";
+    if(mods.master)
+      ss << " ";
+  }
+
+  if(mods.master)
+  {
+    ss << "M";
+  }
+
+  if(mods.part[0])
+  {
+    m_topRowLabel->setText({ "P", 0 });
+    m_topRowLabel->redraw(fb);
+  }
+
+  if(mods.part[1])
+  {
+    m_bottomRowLabel->setText({ "P", 0 });
+    m_bottomRowLabel->redraw(fb);
+  }
+
+  m_middleRowLabel->setText({ ss.str(), 0 });
+  m_middleRowLabel->redraw(fb);
+
+  if(mods.affected(SoundType::Layer))
+  {
+    drawArrow(fb);
+  }
 }
 
 void MCAssignedIndicator::drawNonLEDTargets(FrameBuffer& fb)
@@ -104,6 +230,10 @@ void MCAssignedIndicator::drawNonLEDTargets(FrameBuffer& fb)
   auto targets = m_parameter->getTargets();
 
   AffectedGroups mods {};
+
+  m_topRowLabel->setText({ "", 0 });
+  m_middleRowLabel->setText({ "", 0 });
+  m_bottomRowLabel->setText({ "", 0 });
 
   for(auto& t : targets)
   {
@@ -120,7 +250,7 @@ void MCAssignedIndicator::drawNonLEDTargets(FrameBuffer& fb)
     }
   }
 
-  switch(Application::get().getPresetManager().getEditBuffer()->getType())
+  switch(Application::get().getPresetManager()->getEditBuffer()->getType())
   {
     case SoundType::Split:
       drawSplit(fb, mods);
