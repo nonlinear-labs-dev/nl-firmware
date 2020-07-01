@@ -3,20 +3,28 @@
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include "ParameterNotAvailableInSoundInfo.h"
+#include "ParameterCarousel.h"
+#include "NeverHighlitButton.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <sigc++/adaptors/hide.h>
+#include <proxies/hwui/controls/CenterAlignedLabel.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 
-ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r, const Glib::ustring &text)
-    : MultiLineLabel(r, text)
+ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r, ParameterLayout2 *parent)
+    : ControlWithChildren(r)
+    , m_parent { parent }
 {
-  m_parameterSelectionConnection = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &ParameterNotAvailableInSoundInfo::onSelectionChanged));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  m_sountTypeConnection = Application::get().get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::hide(sigc::mem_fun(this, &ParameterNotAvailableInSoundInfo::onSoundTypeChanged)));
+  m_parameterSelectionConnection
+      = eb->onSelectionChanged(sigc::mem_fun(this, &ParameterNotAvailableInSoundInfo::onSelectionChanged));
 
-  setVisible(false);
+  m_sountTypeConnection
+      = eb->onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &ParameterNotAvailableInSoundInfo::onSoundTypeChanged)));
+
+  addControl(new CenterAlignedLabel("Only available with", { 0, 8, 128, 10 }));
+  addControl(new CenterAlignedLabel("Layer Sounds", { 0, 22, 128, 10 }));
 }
 
 void ParameterNotAvailableInSoundInfo::setBackgroundColor(FrameBuffer &fb) const
@@ -36,4 +44,22 @@ void ParameterNotAvailableInSoundInfo::onSoundTypeChanged()
   auto current = eb->getSelected();
   const auto vis = !ParameterLayout2::isParameterAvailableInSoundType(current, eb);
   setVisible(vis);
+}
+
+void ParameterNotAvailableInSoundInfo::setVisible(bool b)
+{
+  for(auto &c : m_parent->getControls())
+  {
+    if(c.get() != this && dynamic_cast<const ModuleCaption *>(c.get()) == nullptr)
+    {
+      c->setVisible(!b);
+    }
+  }
+
+  Control::setVisible(b);
+}
+
+void ParameterNotAvailableInSoundInfo::init()
+{
+  onSoundTypeChanged();
 }

@@ -24,7 +24,7 @@ class Control : public sigc::trackable, public Uncopyable
 
   void setDirty();
   virtual bool isVisible() const;
-  void setVisible(bool b);
+  virtual void setVisible(bool b);
   int getHeight() const;
   int getWidth() const;
   virtual void setPosition(const Rect &rect);

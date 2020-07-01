@@ -4,10 +4,12 @@
 
 class Parameter;
 
-class ParameterNotAvailableInSoundInfo : public MultiLineLabel
+class ParameterNotAvailableInSoundInfo : public ControlWithChildren
 {
  public:
-  ParameterNotAvailableInSoundInfo(const Rect& r, const Glib::ustring& text);
+  ParameterNotAvailableInSoundInfo(const Rect& r, ParameterLayout2* parent);
+  void setVisible(bool b) override;
+  void init();
 
  protected:
   void setBackgroundColor(FrameBuffer& fb) const override;
@@ -15,6 +17,8 @@ class ParameterNotAvailableInSoundInfo : public MultiLineLabel
  private:
   void onSelectionChanged(const Parameter* old, const Parameter* newParam);
   void onSoundTypeChanged();
+
+  ParameterLayout2* m_parent;
 
   sigc::connection m_parameterSelectionConnection;
   sigc::connection m_sountTypeConnection;
