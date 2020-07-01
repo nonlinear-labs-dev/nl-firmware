@@ -99,6 +99,34 @@
         "Rect": "17, 1, 1, 5"
       }
     },
+    "StraightLineArrowLeft": {
+      "HorizontalLine": {
+        "Class": "Bar",
+        "Rect": "0, 3, 15, 1"
+      },
+      "ArrowTipSecondRow": {
+        "Class": "Bar",
+        "Rect": "1, 2, 1, 3"
+      },
+      "ArrowTipThirdRow": {
+        "Class": "Bar",
+        "Rect": "2, 1, 1, 5"
+      }
+    },
+    "StraightLineArrowRight": {
+      "HorizontalLine": {
+        "Class": "Bar",
+        "Rect": "0, 3, 15, 1"
+      },
+      "ArrowTipSecondRow": {
+        "Class": "Bar",
+        "Rect": "13, 2, 1, 3"
+      },
+      "ArrowTipThirdRow": {
+        "Class": "Bar",
+        "Rect": "12, 1, 1, 5"
+      }
+    },
     "DiagonalDownArrow": {
       
       "S3": {
