@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.useCases;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
@@ -322,7 +323,10 @@ public class EditBufferUseCases {
 			pixelsPerRange = Millimeter.toPixels(10);
 		}
 
-		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> setParameterValue(id, v, true, b), () -> {
+		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> {
+			setParameterValue(id, v, true, b);
+			GWT.log("edit parameter value" + v);
+		}, () -> {
 			if (p instanceof PhysicalControlParameterModel) {
 				PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
 				if (m.isReturning())

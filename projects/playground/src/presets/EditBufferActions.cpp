@@ -38,6 +38,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto id = request->get("id");
     auto value = std::stod(request->get("value"));
     editBuffer->setParameter(ParameterId(id), value);
+    std::cout << value << std::endl;
   });
 
   addAction("set-mod-amount", [=](std::shared_ptr<NetworkRequest> request) mutable {
