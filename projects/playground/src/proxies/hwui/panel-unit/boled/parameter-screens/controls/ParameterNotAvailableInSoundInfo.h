@@ -4,6 +4,7 @@
 
 class Parameter;
 class ParameterLayout2;
+class Label;
 
 class ParameterNotAvailableInSoundInfo : public ControlWithChildren
 {
@@ -19,6 +20,7 @@ class ParameterNotAvailableInSoundInfo : public ControlWithChildren
   void onSoundTypeChanged();
 
   ParameterLayout2* m_parent;
+  Label* m_parameterNameLabel;
 
   sigc::connection m_parameterSelectionConnection;
   sigc::connection m_soundTypeConnection;

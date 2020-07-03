@@ -46,7 +46,7 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
     }
   }
 
-  if(getNumChildren() == 0 && paramAvailable)
+  if(getNumChildren() == 0)
   {
     addControl(new NeverHighlitButton("", Rect(0, 51, 58, 11)));
   }
