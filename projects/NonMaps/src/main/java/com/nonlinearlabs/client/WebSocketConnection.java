@@ -32,7 +32,9 @@ class WebSocketConnection {
 
 		public ConnectionErrorPopup() {
 			super(false);
-			setWidget(new Label("The connection to the Nonlinear Instrument seems to be broken :-("));
+			Label l = null;
+			setWidget(l = new Label("The connection to the Nonlinear Instrument seems to be broken :-("));
+			l.getElement().addClassName("dc-text");
 			setGlassEnabled(true);
 			center();
 		}
