@@ -1,4 +1,5 @@
 #include "ParameterNotAvailableInSoundInfo.h"
+#include "ParameterCarousel.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -66,14 +67,16 @@ void ParameterNotAvailableInSoundInfo::onSoundTypeChanged()
 
 void ParameterNotAvailableInSoundInfo::setVisible(bool b)
 {
-  for(auto& l: getControls<Label>()) {
+  for(auto &l : getControls<Label>())
+  {
     l->setHighlight(true);
   }
 
   for(auto &c : m_parent->getControls())
   {
     if(c.get() != this && dynamic_cast<const ModuleCaption *>(c.get()) == nullptr
-       && dynamic_cast<const Button *>(c.get()) == nullptr)
+       && dynamic_cast<const Button *>(c.get()) == nullptr
+       && dynamic_cast<const ParameterCarousel *>(c.get()) == nullptr)
     {
       c->setVisible(!b);
     }
