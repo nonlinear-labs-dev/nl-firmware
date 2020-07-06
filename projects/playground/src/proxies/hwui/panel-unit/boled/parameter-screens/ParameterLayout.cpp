@@ -135,7 +135,7 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
   {
     if(isParameterAvailableInSoundType(p))
     {
-      auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+      auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterNameWithVoiceGroup());
       p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
       return true;
     }
