@@ -35,8 +35,7 @@ ParameterLayout2::ParameterLayout2()
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), false));
   addControl(new UndoIndicator(Rect(1, 32, 10, 8)));
-  addControl(new ParameterNotAvailableInSoundInfo(Rect(BIG_SLIDER_X - 2, 9, BIG_SLIDER_WIDTH + 4, 50),
-                                                  "Only available with Layer Sounds"));
+  addControl(new ParameterNotAvailableInSoundInfo(Rect(64, 0, 192, 96), this));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::hide(sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged)), false);
@@ -135,7 +134,7 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
   {
     if(isParameterAvailableInSoundType(p))
     {
-      auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+      auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterNameWithVoiceGroup());
       p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
       return true;
     }

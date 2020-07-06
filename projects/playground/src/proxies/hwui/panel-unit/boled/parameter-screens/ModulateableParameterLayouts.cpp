@@ -203,6 +203,10 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
     }
   }
 
+  bool isAssigned = false;
+  if(modParam)
+    isAssigned = modParam->getMacroControl() != nullptr;
+
   if(down)
   {
     switch(i)
@@ -214,9 +218,14 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
 
           return SwitchVoiceGroupButton::toggleVoiceGroup();
         }
-        else if(!isCurrentParameterDisabled())
+        else if(!isCurrentParameterDisabled() && m_mode != Mode::MacroControlPosition && isAssigned)
         {
           setMode(Mode::MacroControlPosition);
+          return true;
+        }
+        else if(!isCurrentParameterDisabled() && m_mode == Mode::MacroControlPosition)
+        {
+          setMode(Mode::ParameterValue);
           return true;
         }
         break;

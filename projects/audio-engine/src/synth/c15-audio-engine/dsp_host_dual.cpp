@@ -701,6 +701,7 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::MacroCo
     {
       nltools::Log::info("mc_edit(pos:", param->m_position, ")");
     }
+    param->m_unclipped = param->m_position;  // fixing #2023: unclipped always up-to-date
     globalModChain(param);
     if(m_layer_mode == LayerMode::Single)
     {
@@ -1461,7 +1462,7 @@ void dsp_host_dual::hwModChain(HW_Src_Param* _src, const uint32_t _id, const flo
       if(amount->m_position != 0.0f)
       {
         auto macro = m_params.get_macro(macroId);
-        macro->m_position = _src->m_position;
+        macro->m_unclipped = macro->m_position = _src->m_position;  // fixing #2023: unclipped always up-to-date
         if(m_layer_mode == LayerMode::Single)
         {
           if(LOG_HW)
@@ -1501,7 +1502,9 @@ void dsp_host_dual::hwModChain(HW_Src_Param* _src, const uint32_t _id, const flo
         if(amount->m_position != 0.0f)
         {
           auto macro = m_params.get_macro(macroId);
-          macro->m_unclipped = macro->m_position + (_inc * amount->m_position);
+          macro->m_unclipped += (_inc * amount->m_position);  // fixing #2023:
+          // only rely on unclipped (always up-to-date)
+          // NOTE: hopefully, this won't introduce accumulating floating point rounding errors !!!
           const float clipped
               = macro->m_unclipped < 0.0f ? 0.0f : macro->m_unclipped > 1.0f ? 1.0f : macro->m_unclipped;
           if(macro->m_position != clipped)
@@ -2360,6 +2363,7 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::MacroParam
   {
     auto param = m_params.get_macro(element.m_param.m_index);
     param->update_position(static_cast<float>(_param.controlPosition));
+    param->m_unclipped = param->m_position;  // fixing #2023: unclipped always up-to-date
   }
   else if(LOG_FAIL)
   {

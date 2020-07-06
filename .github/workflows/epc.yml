@@ -3,7 +3,7 @@ name: epc-Build
 on:
   push:
     branches:
-      - master
+      - master-disabled
 
 jobs:
   build:

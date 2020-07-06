@@ -324,7 +324,7 @@ void EditBuffer::undoableSelectParameter(Parameter *p)
   {
     auto newSelection = p;
     auto scope = getUndoScope().startContinuousTransaction(&newSelection, std::chrono::hours(1), "Select '%0'",
-                                                           p->getGroupAndParameterName());
+                                                           p->getGroupAndParameterNameWithVoiceGroup());
     undoableSelectParameter(scope->getTransaction(), p);
   }
   else

@@ -372,7 +372,7 @@ void espi_driver_pollbuttons(struct espi_driver *p)
   for (i = 0; i < BUTTON_STATES_SIZE; i++)
   {
     changed_bits = (button_states_head()[i] ^ button_states_tail()[i]);  // we don't need to check the middle bits, only the edge bits
-    if (panel_unit_is_online() && changed_bits)
+    if (changed_bits)
     {  // new state is different for at least one line in this byte
       for (j = 0; j < 8; j++)
       {  // scan through bits
@@ -384,6 +384,8 @@ void espi_driver_pollbuttons(struct espi_driver *p)
         btn_id = (i * 8) + (7 - j);
         if (btn_id == PANEL_UNIT_CONNECTION_ID)  // special, discard "return panel_unit_offline"
           continue;
+        if (!panel_unit_is_online() && (btn_id <= PANEL_UNIT_CONNECTION_ID))
+          continue;  // discard any false triggers from panel-unit buttons if the panel-init is offline
         if (button_states_head()[i] & bit_pos)      // new bit is high (released) ?
           write_id_to_outputbuffer(0x80 | btn_id);  //  then add in bit 7
         else
