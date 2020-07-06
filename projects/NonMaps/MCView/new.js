@@ -813,9 +813,9 @@ function setCDX(range) {
    range.controls[1]["MCX"] = 369;
    range.controls[1]["MCY"] = 371;
    range.controls[2]["MCX"] = 245;
-   range.controls[2]["MCY"] = 369;
+   range.controls[2]["MCY"] = null;
    range.controls[3]["MCX"] = 246;
-   range.controls[3]["MCY"] = 371;
+   range.controls[3]["MCY"] = null;
 
    try {
      window.localStorage.setItem("xy", false);
@@ -828,9 +828,9 @@ function setCDXY(range) {
   range.controls[1]["MCX"] = 245;
   range.controls[1]["MCY"] = 246;
   range.controls[2]["MCX"] = 369;
-  range.controls[2]["MCY"] = 379;
+  range.controls[2]["MCY"] = null;
   range.controls[3]["MCX"] = 371;
-  range.controls[3]["MCY"] = 371;
+  range.controls[3]["MCY"] = null;
 
   try {
     window.localStorage.setItem("xy", true);
