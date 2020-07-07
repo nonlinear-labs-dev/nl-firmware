@@ -363,6 +363,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	private Control clickBehaviour() {
+		if(isDraggingControl())
+			return this;
+		
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
