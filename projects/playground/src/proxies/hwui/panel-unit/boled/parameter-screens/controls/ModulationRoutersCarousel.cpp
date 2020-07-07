@@ -76,3 +76,8 @@ void ModulationRoutersCarousel::antiTurn()
      = dynamic_cast<PhysicalControlParameter *>(Application::get().getPresetManager()->getEditBuffer()->getSelected()))
     p->toggleUiSelectedModulationRouter(-1);
 }
+
+void ModulationRoutersCarousel::setHighlight(bool isHighlight)
+{
+  Control::setHighlight(isHighlight);
+}
