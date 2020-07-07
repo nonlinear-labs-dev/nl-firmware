@@ -26,12 +26,12 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
   clear();
 
   auto um = Application::get().getHWUI()->getPanelUnit().getUsageMode();
+  const auto paramAvailable = ParameterSelectLayout2::isParameterAvailableInSoundType(
+      selectedParameter, Application::get().getPresetManager()->getEditBuffer());
 
   if(std::shared_ptr<PanelUnitParameterEditMode> edit = std::dynamic_pointer_cast<PanelUnitParameterEditMode>(um))
   {
-    if(selectedParameter
-       && ParameterSelectLayout2::isParameterAvailableInSoundType(
-           selectedParameter, Application::get().getPresetManager()->getEditBuffer()))
+    if(selectedParameter && paramAvailable)
     {
       auto button = edit->findButtonForParameter(selectedParameter);
 

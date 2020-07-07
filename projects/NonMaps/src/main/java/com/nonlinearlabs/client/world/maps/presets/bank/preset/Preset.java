@@ -44,6 +44,8 @@ import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDial
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 	private String uuid = null;
 	private String realName = "";
+	private String partIName = "";
+	private String partIIName = "";
 	private ColorTag tag = null;
 	private TypeLabel typeLabel = null;
 	private Name name = null;
@@ -127,6 +129,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		}
 	}
 
+	public String getPartName(VoiceGroup vg) {
+		if(vg == VoiceGroup.I) {
+			return this.partIName;
+		} else if(vg == VoiceGroup.II) {
+			return this.partIIName;
+		}
+		return "";
+	}
+
 	public boolean isDual() {
 		return getType() != SoundType.Single;
 	}
@@ -170,6 +181,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		this.name.setText(suffixedName);
 
 		String typeStr = preset.getAttributes().getNamedItem("type").getNodeValue();
+
+		this.partIName = preset.getAttributes().getNamedItem("part-I-name").getNodeValue();
+		this.partIIName = preset.getAttributes().getNamedItem("part-II-name").getNodeValue();
 		this.type = SoundType.valueOf(typeStr);
 		this.typeLabel.updateType(this.type);
 
@@ -444,9 +458,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		Control ret = null;
 		double yMargin = getPixRect().getTop() - mousePos.getY();
 		double xMargin = getPixRect().getLeft() - mousePos.getX();
-
-		Tracer.log("yMargin: " + yMargin);
-		Tracer.log("xMargin: " + xMargin);
 
 		for (String uuid : selection.getSelectedPresets()) {
 			Preset p = pm.findPreset(uuid);

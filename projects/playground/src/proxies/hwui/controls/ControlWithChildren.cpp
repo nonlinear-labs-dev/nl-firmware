@@ -48,3 +48,13 @@ bool ControlWithChildren::isTransparent() const
 {
   return false;
 }
+
+void ControlWithChildren::setVisible(bool b)
+{
+  for(auto &c : getControls())
+  {
+    c->setVisible(b);
+  }
+
+  Control::setVisible(b);
+}
