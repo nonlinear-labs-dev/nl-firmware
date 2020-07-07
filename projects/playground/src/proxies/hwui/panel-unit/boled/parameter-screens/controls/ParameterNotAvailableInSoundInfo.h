@@ -9,8 +9,9 @@ class Label;
 class ParameterNotAvailableInSoundInfo : public ControlWithChildren
 {
  public:
-  ParameterNotAvailableInSoundInfo(const Rect& r, ParameterLayout2* parent);
+  ParameterNotAvailableInSoundInfo(const Rect& r);
   void setVisible(bool b) override;
+  int getZPriority() const override;
 
  protected:
   void setBackgroundColor(FrameBuffer& fb) const override;
@@ -19,7 +20,6 @@ class ParameterNotAvailableInSoundInfo : public ControlWithChildren
   void onSelectionChanged(const Parameter* old, const Parameter* newParam);
   void onSoundTypeChanged();
 
-  ParameterLayout2* m_parent;
   Label* m_parameterNameLabel;
 
   sigc::connection m_parameterSelectionConnection;

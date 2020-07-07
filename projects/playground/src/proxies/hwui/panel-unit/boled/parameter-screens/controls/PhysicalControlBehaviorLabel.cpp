@@ -33,6 +33,7 @@ void PhysicalControlBehaviorLabel::onParamValueChanged(const Parameter *param)
     }
   }
 }
+
 void PhysicalControlBehaviorLabel::setBackgroundColor(FrameBuffer &fb) const
 {
   if(isVisible())

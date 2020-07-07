@@ -29,6 +29,8 @@ class Control : public sigc::trackable, public Uncopyable
   int getWidth() const;
   virtual void setPosition(const Rect &rect);
 
+  virtual int getZPriority() const;
+
  protected:
   virtual void setBackgroundColor(FrameBuffer &fb) const;
 
