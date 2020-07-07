@@ -19,6 +19,9 @@ class ModulationRoutersCarousel : public Carousel
   void antiTurn() override;
 
  protected:
+ public:
+  void setHighlight(bool isHighlight) override;
+ protected:
   void setup(Parameter *selectedParameter) override;
 
  private:
