@@ -331,9 +331,15 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("preset",
-                  { Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                    Attribute("name-suffixed", getDisplayNameWithSuffixes(true)), Attribute("changed", changed),
-                    Attribute("type", toString(m_type)) },
+                  {
+                      Attribute("uuid", m_uuid.raw()),
+                      Attribute("name", m_name),
+                      Attribute("name-suffixed", getDisplayNameWithSuffixes(true)),
+                      Attribute("changed", changed),
+                      Attribute("type", toString(m_type)),
+                      Attribute("part-I-name", getVoiceGroupName(VoiceGroup::I)),
+                      Attribute("part-II-name", getVoiceGroupName(VoiceGroup::II)),
+                  },
                   [&]() {
                     if(changed)
                     {
