@@ -97,7 +97,6 @@ public class ServerProxy {
 			
 			Document xml = XMLParser.parse(responseText);
 			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
-			Tracer.log("omit Oracles: " + omitOracles(world));
 			if(omitOracles(world))
 				return;
 				
