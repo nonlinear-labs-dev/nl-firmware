@@ -29,8 +29,11 @@ public class ChoosePresetPartDialog extends GWTDialog {
         panel.add(new Label("Which part of the dual preset do you want to load into EditBuffer part " + target.toString() + "?", true));
 
         Button part1, part2, cancelButton;
+        
+        String I = p.getPartName(VoiceGroup.I);
+        String II = p.getPartName(VoiceGroup.II);
 
-        buttons.add(part1 = new Button("Part I", new ClickHandler() {
+        buttons.add(part1 = new Button(I.isEmpty() ? "Part I" : "Part I: " + I, new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent arg0) {
@@ -39,7 +42,7 @@ public class ChoosePresetPartDialog extends GWTDialog {
             }
         }));
 
-        buttons.add(part2 = new Button("Part II", new ClickHandler() {
+        buttons.add(part2 = new Button(II.isEmpty() ? "Part II" : "Part II: " + II, new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent arg0) {

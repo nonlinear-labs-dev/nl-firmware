@@ -25,9 +25,8 @@ namespace detail
   };
 }
 
-ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r, ParameterLayout2 *parent)
+ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r)
     : ControlWithChildren(r)
-    , m_parent { parent }
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
@@ -72,19 +71,10 @@ void ParameterNotAvailableInSoundInfo::setVisible(bool b)
     l->setHighlight(true);
   }
 
-  for(auto &c : m_parent->getControls())
-  {
-    if(c.get() != this && dynamic_cast<const ModuleCaption *>(c.get()) == nullptr
-       && dynamic_cast<const Button *>(c.get()) == nullptr
-       && dynamic_cast<const ParameterCarousel *>(c.get()) == nullptr)
-    {
-      c->setVisible(!b);
-    }
-    else if(auto button = dynamic_cast<Button *>(c.get()))
-    {
-      button->blind(b);
-    }
-  }
-
   Control::setVisible(b);
+}
+
+int ParameterNotAvailableInSoundInfo::getZPriority() const
+{
+  return 1;
 }
