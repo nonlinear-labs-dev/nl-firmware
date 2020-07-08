@@ -94,7 +94,13 @@ public class ServerProxy {
 
 	private void applyChanges(String responseText) {
 		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
+			
 			Document xml = XMLParser.parse(responseText);
+			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
+			Tracer.log("omit Oracles: " + omitOracles(world));
+			if(omitOracles(world))
+				return;
+				
 			Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
 			Node settingsNode = xml.getElementsByTagName("settings").item(0);
 			Node undoNode = xml.getElementsByTagName("undo").item(0);
@@ -197,6 +203,7 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
 				new StaticURI.KeyValue("value", v));
+
 		queueJob(uri, oracle);
 	}
 
