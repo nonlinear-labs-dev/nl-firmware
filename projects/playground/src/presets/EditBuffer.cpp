@@ -257,18 +257,18 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   }
 }
 
-void EditBuffer::setModulationSource(MacroControls src)
+void EditBuffer::setModulationSource(MacroControls src, const ParameterId &id)
 {
-  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected()))
+  if(auto p = dynamic_cast<ModulateableParameter *>(findParameterByID(id)))
   {
     auto scope = getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
     p->undoableSelectModSource(scope->getTransaction(), src);
   }
 }
 
-void EditBuffer::setModulationAmount(double amount)
+void EditBuffer::setModulationAmount(double amount, const ParameterId &id)
 {
-  if(auto p = dynamic_cast<ModulateableParameter *>(getSelected()))
+  if(auto p = dynamic_cast<ModulateableParameter *>(findParameterByID(id)))
   {
     auto scope = getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
                                                            p->getGroupAndParameterName());
