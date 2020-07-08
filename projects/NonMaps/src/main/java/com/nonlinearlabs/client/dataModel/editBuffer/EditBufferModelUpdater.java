@@ -14,7 +14,7 @@ public class EditBufferModelUpdater extends Updater {
 
 	@Override
 	public void doUpdate() {
-		if (root != null && didChange(root)) {
+		if (root != null) {
 			String selParamStr = getAttributeValue(root, "selected-parameter");
 			ParameterId selParam = new ParameterId(selParamStr);
 			EditBufferModel.get().selectedParameter.setValue(selParam.getNumber());
