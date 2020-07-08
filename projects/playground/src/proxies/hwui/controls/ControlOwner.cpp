@@ -23,7 +23,17 @@ bool ControlOwner::redraw(FrameBuffer &fb)
 {
   bool didRedraw = false;
 
+  std::vector<Control *> sorted {};
+
   for(const auto &c : m_controls)
+  {
+    sorted.emplace_back(c.get());
+  }
+
+  std::sort(sorted.begin(), sorted.end(),
+            [](const Control *a, const Control *b) -> bool { return a->getZPriority() < b->getZPriority(); });
+
+  for(const auto &c : sorted)
   {
     c->drawBackground(fb);
 

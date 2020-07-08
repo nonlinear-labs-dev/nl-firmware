@@ -43,12 +43,14 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("set-mod-amount", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto amount = std::stod(request->get("amount"));
-    editBuffer->setModulationAmount(amount);
+    auto id = request->get("id");
+    editBuffer->setModulationAmount(amount, ParameterId { id });
   });
 
   addAction("set-mod-src", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto src = std::stoi(request->get("source"));
-    editBuffer->setModulationSource(static_cast<MacroControls>(src));
+    auto id = request->get("id");
+    editBuffer->setModulationSource(static_cast<MacroControls>(src), ParameterId { id });
   });
 
   addAction("reset", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -205,8 +207,9 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     editBuffer->undoableToggleGroupLock(scope->getTransaction(), groupId);
   });
 
-  addAction("recall-current-from-preset", [=](std::shared_ptr<NetworkRequest> request) {
-    if(auto selParam = editBuffer->getSelected())
+  addAction("recall-current-from-preset", [=](auto request) {
+    auto id = request->get("id");
+    if(auto selParam = editBuffer->findParameterByID(ParameterId(id)))
     {
       if(selParam->isChangedFromLoaded())
       {
@@ -216,7 +219,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 
   addAction("recall-mc-for-current-mod-param", [=](auto request) {
-    if(auto selParam = editBuffer->getSelected())
+    auto id = request->get("id");
+    if(auto selParam = editBuffer->findParameterByID(ParameterId(id)))
     {
       if(auto modP = dynamic_cast<ModulateableParameter*>(selParam))
       {
@@ -226,7 +230,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 
   addAction("recall-mc-amount-for-current-mod-param", [=](auto request) {
-    if(auto selParam = editBuffer->getSelected())
+    auto id = request->get("id");
+    if(auto selParam = editBuffer->findParameterByID(ParameterId(id)))
     {
       if(auto modP = dynamic_cast<ModulateableParameter*>(selParam))
       {

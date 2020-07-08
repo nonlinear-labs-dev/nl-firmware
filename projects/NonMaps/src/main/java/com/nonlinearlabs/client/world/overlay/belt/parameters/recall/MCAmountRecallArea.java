@@ -28,7 +28,7 @@ public class MCAmountRecallArea extends RecallArea {
 		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 
 		if (p.modulation.isModAmountChanged) {
-			NonMaps.get().getServerProxy().recallMcAmountForCurrentParameter();
+			NonMaps.get().getServerProxy().recallMcAmountForCurrentParameter(p.id);
 			getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
 	}

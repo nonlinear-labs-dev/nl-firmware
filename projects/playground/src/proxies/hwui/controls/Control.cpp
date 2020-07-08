@@ -67,6 +67,11 @@ void Control::setBackgroundColor(FrameBuffer &fb) const
   fb.setColor(FrameBufferColors::C43);
 }
 
+int Control::getZPriority() const
+{
+  return 0;
+}
+
 void Control::drawBackground(FrameBuffer &fb)
 {
   setBackgroundColor(fb);

@@ -14,7 +14,7 @@ class ControlWithChildren : public Control, public ControlOwner
 
   bool redraw(FrameBuffer &fb) override;
   void drawBackground(FrameBuffer &fb) override;
-
+  void setVisible(bool b) override;
   void setDirty() override;
 
   void setHighlight(bool isHighlight) override;

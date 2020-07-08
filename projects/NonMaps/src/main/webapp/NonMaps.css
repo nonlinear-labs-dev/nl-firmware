@@ -35,6 +35,10 @@ h1 {
   text-align: center;
 }
 
+.dc-text {
+  color: #000000;
+}
+
 .sendButton {
   display: block;
   font-size: 18pt;

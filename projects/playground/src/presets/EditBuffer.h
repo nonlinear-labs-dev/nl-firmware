@@ -150,8 +150,8 @@ class EditBuffer : public ParameterGroupSet
   void undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
-  void setModulationSource(MacroControls src);
-  void setModulationAmount(double amount);
+  void setModulationSource(MacroControls src, const ParameterId &id);
+  void setModulationAmount(double amount, const ParameterId &id);
 
   void doDeferedJobs();
   void checkModified();
