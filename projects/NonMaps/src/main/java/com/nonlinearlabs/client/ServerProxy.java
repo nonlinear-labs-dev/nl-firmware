@@ -448,15 +448,17 @@ public class ServerProxy {
 		RenameDialog.awaitNewPreset(uuid);
 	}
 
-	public void setModulationAmount(double amount) {
+	public void setModulationAmount(double amount, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), 
+											new StaticURI.KeyValue("id", id));
 		queueJob(uri, true);
 	}
 
-	public void setModulationSource(ModSource src) {
+	public void setModulationSource(ModSource src, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()), 
+											new StaticURI.KeyValue("id", id));
 		queueJob(uri, true);
 	}
 
@@ -963,21 +965,21 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void recallCurrentParameterFromPreset() {
+	public void recallCurrentParameterFromPreset(ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-current-from-preset");
-		StaticURI uri = new StaticURI(path);
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, false);
 	}
 
-	public void recallMCPosForCurrentParameter() {
+	public void recallMCPosForCurrentParameter(ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-for-current-mod-param");
-		StaticURI uri = new StaticURI(path);
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, false);
 	}
 
-	public void recallMcAmountForCurrentParameter() {
+	public void recallMcAmountForCurrentParameter(ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-amount-for-current-mod-param");
-		StaticURI uri = new StaticURI(path);
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, false);
 	}
 

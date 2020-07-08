@@ -254,7 +254,7 @@ public class EditBufferUseCases {
 		double diff = newValue - oldValue;
 
 		if (diff != 0)
-			NonMaps.get().getServerProxy().setModulationAmount(newValue);
+			NonMaps.get().getServerProxy().setModulationAmount(newValue, id);
 	}
 
 	private void setModulationUpperBound(ParameterId id, double newAmount, boolean fine) {
@@ -313,7 +313,7 @@ public class EditBufferUseCases {
 	public void setModulationSource(ParameterId id, ModSource src) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		if (p.modSource.setValue(src))
-			NonMaps.get().getServerProxy().setModulationSource(src);
+			NonMaps.get().getServerProxy().setModulationSource(src, id);
 	}
 
 	public IncrementalChanger startEditParameterValue(ParameterId id, double pixelsPerRange) {
