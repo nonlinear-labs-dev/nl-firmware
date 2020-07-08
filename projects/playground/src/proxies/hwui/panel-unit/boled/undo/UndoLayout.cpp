@@ -8,6 +8,7 @@
 #include "UndoMenu.h"
 #include "PositionInTreeLabel.h"
 #include <libundo/undo/Transaction.h>
+#include <proxies/hwui/controls/RamUsageLabel.h>
 
 UndoLayout::UndoLayout()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -16,6 +17,7 @@ UndoLayout::UndoLayout()
   m_editButton = addControl(new Button("", Buttons::BUTTON_D));
 
   m_posInTree = addControl(new PositionInTreeLabel(Rect(195, 0, 58, 11)));
+  m_ramLabel = addControl(new RamUsageLabel(Rect(195, 12, 58, 11)));
 
   Application::get().getUndoScope()->onUndoScopeChanged(mem_fun(this, &UndoLayout::assignTransactions));
 }
@@ -132,6 +134,7 @@ void UndoLayout::assignTransactions()
 {
   auto tip = getTip();
   m_list->assignTransactions(tip);
+  m_ramLabel->refresh();
 
   m_posInTree->assignTransaction(tip, false, false);
 

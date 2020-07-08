@@ -11,6 +11,7 @@ class UndoList;
 class UndoMenu;
 class Button;
 class Label;
+class RamUsageLabel;
 class PositionInTreeLabel;
 
 class UndoLayout : public Layout
@@ -45,6 +46,7 @@ class UndoLayout : public Layout
 
   UndoList *m_list = nullptr;
   Button *m_editButton = nullptr;
+  RamUsageLabel *m_ramLabel = nullptr;
   Label *m_editMode = nullptr;
   PositionInTreeLabel *m_posInTree = nullptr;
 };
