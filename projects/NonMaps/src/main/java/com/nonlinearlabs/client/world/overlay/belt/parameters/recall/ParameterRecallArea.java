@@ -27,7 +27,7 @@ public class ParameterRecallArea extends RecallArea {
 	public void resetValue() {
 		ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		if (p.changed) {
-			NonMaps.get().getServerProxy().recallCurrentParameterFromPreset();
+			NonMaps.get().getServerProxy().recallCurrentParameterFromPreset(p.id);
 			getParent().getParent().invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		}
 	}

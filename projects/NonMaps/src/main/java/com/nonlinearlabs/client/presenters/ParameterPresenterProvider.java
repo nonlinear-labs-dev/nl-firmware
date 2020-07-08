@@ -66,6 +66,11 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			});
 		}
 
+		EditBufferModel.get().voiceGroup.onChange(vg -> { 
+			updatePresenter(p);
+			return true;
+		});
+
 		EditBufferModel.get().soundType.onChange(type -> {
 			updatePresenter(p);
 			return true;
