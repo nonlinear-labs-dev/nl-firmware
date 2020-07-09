@@ -12,9 +12,10 @@ MSG_UPDATING_BBB="2/3 Updating..."
 MSG_UPDATING_RT_FIRMWARE="3/3 Updating..."
 MSG_DONE="DONE!"
 MSG_FAILED="FAILED!"
-MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code:"
+MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
 MSG_CHECK_LOG="Please check update log!"
-MSG_RESTART="Please Restart!"
+MSG_RESTART="Please restart!"
+MSG_RESTART_AUT="Will restart now!"
 
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
@@ -231,12 +232,13 @@ main() {
     fi
 
     if [ "$1" = "reboot" ]; then
+        pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_AUT" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_AUT"
+        sleep 2
         executeAsRoot "reboot"
         reboot
     fi
 
     pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
-
     return 0
 }
 
