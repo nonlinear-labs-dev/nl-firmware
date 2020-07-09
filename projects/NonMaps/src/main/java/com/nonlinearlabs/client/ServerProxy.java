@@ -28,7 +28,6 @@ import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQuery
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInformation;
 import com.nonlinearlabs.client.dataModel.setup.SetupUpdater;
-import com.nonlinearlabs.client.presenters.DeviceInformationProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
 import com.nonlinearlabs.client.world.IPreset;
@@ -475,7 +474,7 @@ public class ServerProxy {
 	}
 
 	public void setSetting(final String key, final String value) {
-		setSetting(key, value, true);
+		setSetting(key, value, false);
 	}
 
 	public void setSetting(final String key, final String value, boolean isOracle) {
