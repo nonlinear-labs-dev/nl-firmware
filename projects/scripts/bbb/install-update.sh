@@ -1,11 +1,5 @@
 #!/bin/sh
 
-freeze() {
-    while true; do
-        sleep 1
-    done
-}
-
 unpack_update() {
     if rm -rf /update \
         && mkdir -p /update \
@@ -23,13 +17,13 @@ check_preconditions() {
         && ! ls -l /update/BBB/ | grep playground-RELEASE-2019-05-1.5-706569a; then
             return 0
     fi
+    rm -rf /update/*
     return 1
 }
 
 run_update() {
     chmod +x /update/run.sh
     /bin/sh /update/run.sh && mv /mnt/usb-stick/nonlinear-c15-update.tar /mnt/usb-stick/nonlinear-c15-update.tar-copied
-    freeze
 }
 
 

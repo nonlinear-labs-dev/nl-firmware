@@ -55,6 +55,12 @@ pretty() {
     t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
 }
 
+freeze() {
+    while true; do
+        sleep 1
+    done
+}
+
 configure_ssh() {
     echo "Host 192.168.10.10
             StrictHostKeyChecking no
@@ -208,7 +214,7 @@ main() {
     chmod +x /update/utilities/*
 
     configure_ssh
-    check_preconditions || return 1
+    check_preconditions || freeze
 
     pretty "" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF"
     sleep 2
@@ -221,15 +227,15 @@ main() {
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
         pretty "" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG"
-        return 1
+        freeze
     fi
-
-    pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
 
     if [ "$1" = "reboot" ]; then
         executeAsRoot "reboot"
         reboot
     fi
+
+    pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
 
     return 0
 }
