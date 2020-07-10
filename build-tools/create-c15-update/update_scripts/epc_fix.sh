@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#
-# Author:       Anton Schmied
 # version :     1.0
 #
 # ----------- fix CPU Bindings and Overlay Order ---------
