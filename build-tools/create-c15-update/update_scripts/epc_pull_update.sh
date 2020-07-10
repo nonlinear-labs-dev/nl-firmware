@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#
-# Author: Anton Schmied
 # version : 2.0
 #
 # ----------- install a ePC Updates from USB-Stick ---------

@@ -1,8 +1,6 @@
 #!/bin/sh
 
-#
-# last changed: 2020-02-24 KSTR
-# version : 1.1
+# verions : 2.0
 # changes : append to /update/mxli.log to allow for multiple flashing reports in one file
 #
 # ---------- in-service programming the RT firmware into the LPC chip -----------

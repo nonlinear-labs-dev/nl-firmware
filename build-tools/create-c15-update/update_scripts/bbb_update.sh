@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#
-# Author: Anton Schmied
 # version : 2.0
 #
 # ----------- install a BBB Updates from USB-Stick ---------
@@ -68,7 +66,7 @@ move_files(){
 update(){
     mkdir /update/BBB/rootfs \
     && gzip -dc /update/BBB/rootfs.tar.gz | tar -C /update/BBB/rootfs -xf - \
-    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' / \
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' --delete /update/BBB/rootfs/ / \
     && chown -R root.root /update
     if [ $? -ne 0 ]; then report_and_quit "E58 BBB update: Syncing rootfs failed ..." "58"; fi
     mkdir /var/log/journal/$(cat /etc/machine-id)

@@ -1,4 +1,5 @@
 #!/bin/sh
+# version : 2.0
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
@@ -14,7 +15,7 @@ MSG_DONE="DONE!"
 MSG_FAILED="FAILED!"
 MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
 MSG_CHECK_LOG="Please check update log!"
-MSG_RESTART="Please restart!"
+MSG_RESTART_MAN="Please restart!"
 MSG_RESTART_AUT="Will restart now!"
 
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
@@ -60,6 +61,11 @@ freeze() {
     while true; do
         sleep 1
     done
+}
+
+determine_termination() {
+    cat /nonlinear/scripts/install-update.sh | grep 'version : 1.0' \
+        && freeze || exit 1
 }
 
 configure_ssh() {
@@ -215,7 +221,7 @@ main() {
     chmod +x /update/utilities/*
 
     configure_ssh
-    check_preconditions || freeze
+    check_preconditions || determine_termination
 
     pretty "" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF"
     sleep 2
@@ -228,7 +234,7 @@ main() {
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
         pretty "" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG"
-        freeze
+        determine_termination
     fi
 
     if [ "$1" = "reboot" ]; then
@@ -238,7 +244,7 @@ main() {
         reboot
     fi
 
-    pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
+    pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN"
     return 0
 }
 
