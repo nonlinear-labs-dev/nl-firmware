@@ -24,6 +24,7 @@ check_preconditions() {
         && ! ls -l /update/BBB/ | grep playground-RELEASE-2019-05-1.5-706569a; then
             return 0
     fi
+    rm -rf /update/*
     return 1
 }
 
