@@ -322,7 +322,9 @@ public class EditBufferUseCases {
 			pixelsPerRange = Millimeter.toPixels(10);
 		}
 
-		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> setParameterValue(id, v, true, b), () -> {
+		return new IncrementalChanger(p.value, pixelsPerRange, (v, b) -> {
+			setParameterValue(id, v, true, b);
+		}, () -> {
 			if (p instanceof PhysicalControlParameterModel) {
 				PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
 				if (m.isReturning())
