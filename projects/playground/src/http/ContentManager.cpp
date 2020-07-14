@@ -215,7 +215,7 @@ void ContentManager::feedWebSockets()
   }
 }
 
-bool ContentManager::feedWebSocket(tWebsocketConnection c)
+bool ContentManager::feedWebSocket(const tWebsocketConnection &c)
 {
   auto state = soup_websocket_connection_get_state(c->getConnection());
 

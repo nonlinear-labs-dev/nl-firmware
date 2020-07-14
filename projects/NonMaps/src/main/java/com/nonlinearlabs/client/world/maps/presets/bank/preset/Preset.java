@@ -358,7 +358,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
-	public Control mouseDown(Position eventPoint) {
+	public Control mouseUp(Position eventPoint) {
 		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
 			selectPreset();
 			wasJustSelected = true;
@@ -377,6 +377,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	private Control clickBehaviour() {
+		if(isDraggingControl())
+			return this;
+		
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);

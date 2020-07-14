@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#
-# Author: Anton Schmied
 # version : 2.0
 #
 # ----------- install a BBB Updates from USB-Stick ---------
