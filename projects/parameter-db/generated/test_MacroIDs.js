@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**	@file       MacroIDs.js
-    @date       2020-06-10, 14:02
-    @version    1.7B-6
+    @date       2020-07-15, 13:57
+    @version    1.7B-7
     @author     M. Seeber
     @brief      all Macro IDs named and provided in immutable structure
     @todo
