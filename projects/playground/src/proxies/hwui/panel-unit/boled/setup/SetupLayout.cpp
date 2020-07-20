@@ -67,6 +67,7 @@
 #include <device-settings/TransitionTime.h>
 #include <tools/StringTools.h>
 #include <parameter_declarations.h>
+#include <device-settings/SyncVoiceGroupsAcrossUIS.h>
 #include "UISoftwareVersionEditor.h"
 
 namespace NavTree
@@ -259,32 +260,14 @@ namespace NavTree
 
     Control *createEditor() override
     {
-      return new NumericSettingEditor<tSetting>();
-    }
-  };
-
-  template <typename tSetting> struct EnumSettingItem : EditableLeaf
-  {
-   private:
-    tSetting *getSetting()
-    {
-      return Application::get().getSettings()->getSetting<tSetting>();
-    }
-
-   public:
-    EnumSettingItem(InnerNode *parent, const char *name)
-        : EditableLeaf(parent, name)
-    {
-    }
-
-    Control *createView() override
-    {
-      return new SettingView<tSetting>();
-    }
-
-    Control *createEditor() override
-    {
-      return new EnumSettingEditor<tSetting>();
+      if constexpr(std::is_base_of_v<BooleanSetting, tSetting>)
+      {
+        return new BooleanSettingEditor<tSetting>();
+      }
+      else
+      {
+        return new NumericSettingEditor<tSetting>();
+      }
     }
   };
 
@@ -349,6 +332,7 @@ namespace NavTree
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new PresetGlitchSuppression(this));
+      children.emplace_back(new SettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));
       children.emplace_back(new WiFiSetting(this));
     }
   };

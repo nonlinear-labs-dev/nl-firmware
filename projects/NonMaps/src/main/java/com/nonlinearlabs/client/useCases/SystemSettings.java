@@ -9,6 +9,8 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.DebugLevel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.VelocityCurve;
 
+import jdk.jfr.internal.settings.BooleanValue;
+
 public class SystemSettings {
 	private static SystemSettings theInstance = new SystemSettings();
 
@@ -54,6 +56,11 @@ public class SystemSettings {
 	public void setVelocityCurve(VelocityCurve c) {
 		SetupModel.get().systemSettings.velocityCurve.setValue(c);
 		NonMaps.theMaps.getServerProxy().setSetting("VelocityCurve", netify(c.name()));
+	}
+
+	public void setSyncParts(BooleanValues v) {
+		SetupModel.get().systemSettings.syncVoiceGroups.setValue(v);
+		NonMaps.theMaps.getServerProxy().setSetting("SyncVoiceGroups", netify(v.name()));
 	}
 
 	public void setAftertouchCurve(AftertouchCurve c) {
