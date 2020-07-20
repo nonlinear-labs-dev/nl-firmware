@@ -54,24 +54,31 @@ class ServerProxy {
   constructor(onStartCB) {
     this.onStartCB = onStartCB;
     this.uuid = new UUID();
-    this.scheduleReconnection(0);
+    this.scheduleReconnection();
   }
 
   scheduleReconnection(timeOut) {
-    setTimeout(() => {
-      this.webSocket = null;
-      //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/"); //Local
-      //this.webSocket = new WebSocket("ws://192.168.0.2:8080/ws-mc/"); //Buildserver
-      this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/'); //Production
-      this.webSocket.onopen = this.onStartCB;
-      this.webSocket.onmessage = this.onMessage;
-      let that = this;
-      this.webSocket.onclose = function(event) {
+    let that = this;
+    var connectFunc = function() {
+      that.webSocket = null;
+      //that.webSocket = new WebSocket("ws://localhost:8080/ws-mc/"); //Local
+      //that.webSocket = new WebSocket("ws://192.168.0.2:8080/ws-mc/"); //Buildserver
+      that.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/'); //Production
+      that.webSocket.onopen = that.onStartCB;
+      that.webSocket.onmessage = that.onMessage;
+
+      that.webSocket.onclose = function(event) {
         let connectionDeadElement = document.getElementById('connection-dead');
         connectionDeadElement.style.display = 'block';
         that.scheduleReconnection(2500);
       };
-    }, timeOut);
+    }
+    
+    if(timeOut) {
+      setTimeout(connectFunc, timeOut);
+    } else {
+      connectFunc();
+    }
   }
 
   getValueForKeyFromMessage(message, key) {
