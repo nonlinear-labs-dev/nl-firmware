@@ -17,17 +17,19 @@ MCAssignedIndicator::MCAssignedIndicator(const Rect& r, const Parameter* p)
   pos.setLeft(r.getLeft());
   pos.setHeight(8);
 
-  pos.setTop(r.getTop());
+  auto offset = 0;
+
   m_topRowLabel = addControl(new LabelRegular8(pos));
-  m_topRowLabel->setJustification(Font::Justification::Right);
-
-  pos.setTop(r.getTop() + 8);
   m_middleRowLabel = addControl(new LabelRegular8(pos));
-  m_middleRowLabel->setJustification(Font::Justification::Right);
-
-  pos.setTop(r.getTop() + 16);
   m_bottomRowLabel = addControl(new LabelRegular8(pos));
-  m_bottomRowLabel->setJustification(Font::Justification::Right);
+
+  for(auto l : { m_topRowLabel, m_middleRowLabel, m_bottomRowLabel })
+  {
+    pos.setTop(r.getTop() + offset);
+    l->setPosition(pos);
+    l->setJustification(Font::Justification::Right);
+    offset += 8;
+  }
 }
 
 bool MCAssignedIndicator::redraw(FrameBuffer& fb)
@@ -231,9 +233,13 @@ void MCAssignedIndicator::drawNonLEDTargets(FrameBuffer& fb)
 
   AffectedGroups mods {};
 
-  m_topRowLabel->setText({ "", 0 });
-  m_middleRowLabel->setText({ "", 0 });
-  m_bottomRowLabel->setText({ "", 0 });
+  auto color = isHighlight() ? FrameBufferColors::C128 : FrameBufferColors::C204;
+
+  for(auto l : { m_topRowLabel, m_middleRowLabel, m_bottomRowLabel })
+  {
+    l->setText({ "", 0 });
+    l->setFontColor(color);
+  }
 
   for(auto& t : targets)
   {
