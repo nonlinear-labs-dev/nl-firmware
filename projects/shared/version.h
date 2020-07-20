@@ -26,8 +26,8 @@
 // That's why some form date conding is required.
 //
 //  Final Versions         "YY-WW"   YY-WW : release date (tbd).
-//  Everting else                    whatever seems approbriate
-#define C15_VERSION_STRING "RELEASE-2020-06"
+//  Everything else        whatever seems appropriate
+#define C15_VERSION_STRING "20-29"
 #pragma message("make sure version string '" C15_VERSION_STRING "' is up-to date when building a release or beta")
 
 // do not change these two strings:
