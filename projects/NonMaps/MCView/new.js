@@ -52,12 +52,26 @@ class Slot {
 
 class ServerProxy {
   constructor(onStartCB) {
-    //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/"); //Local
-    //this.webSocket = new WebSocket("ws://192.168.0.2:8080/ws-mc/"); //Buildserver
-    this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/'); //Production
+    this.onStartCB = onStartCB;
     this.uuid = new UUID();
-    this.webSocket.onopen =  onStartCB;
-    this.webSocket.onmessage = this.onMessage;
+    this.scheduleReconnection(0);
+  }
+
+  scheduleReconnection(timeOut) {
+    setTimeout(() => {
+      this.webSocket = null;
+      //this.webSocket = new WebSocket("ws://localhost:8080/ws-mc/"); //Local
+      //this.webSocket = new WebSocket("ws://192.168.0.2:8080/ws-mc/"); //Buildserver
+      this.webSocket = new WebSocket('ws://192.168.8.2:80/ws-mc/'); //Production
+      this.webSocket.onopen = this.onStartCB;
+      this.webSocket.onmessage = this.onMessage;
+      let that = this;
+      this.webSocket.onclose = function(event) {
+        let connectionDeadElement = document.getElementById('connection-dead');
+        connectionDeadElement.style.display = 'block';
+        that.scheduleReconnection(2500);
+      };
+    }, timeOut);
   }
 
   getValueForKeyFromMessage(message, key) {
@@ -136,8 +150,10 @@ class MC {
   }
 
   setTarget(val) {
-    this.targetValue = val;
-    this.onTargetChanged.onChange(val);
+    if(serverProxy.webSocket.readyState == 1) {
+      this.targetValue = val;
+      this.onTargetChanged.onChange(val);
+    }
   }
 
   updateValue(val) {
@@ -893,6 +909,9 @@ function onLoad() {
     model = new MCModel(serverProxy.webSocket);
     view = new MCView();
     controller = new MCController();
+    let connectionDeadElement = document.getElementById('connection-dead');
+    connectionDeadElement.style.display = 'none';
+
     setInterval(function() {
       var changed = false;
       model.mcs.forEach(function(mc){
@@ -955,3 +974,5 @@ document.addEventListener("fullscreenchange", () => {
 window.addEventListener('resize', () => {
   view.redraw(model);
 });
+
+onLoad();
