@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#
-# Author:       Anton Schmied
 # version :     1.0
 #
 # ----------- fix CPU Bindings and Overlay Order ---------
@@ -41,6 +39,13 @@ epc_fix() {
         fi
     fi
 
+    if ! fsck /dev/sda4 -n; then
+        umount /dev/sda4
+        if ! mkfs.ext4 /dev/sda4; then
+            printf "E48 ePC update: fixing sda4 failed" >> /tmp/fix_error.log && ((fix_errors++))
+        fi
+    fi
+
     if [ $fix_errors -gt 0 ]; then
          return 48
     fi
@@ -49,6 +54,7 @@ epc_fix() {
 
 main() {
     epc_fix
+    return $?
 }
 
 main

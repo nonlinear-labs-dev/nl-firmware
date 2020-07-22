@@ -1,4 +1,5 @@
 #!/bin/sh
+# version : 2.0
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
@@ -12,9 +13,10 @@ MSG_UPDATING_BBB="2/3 Updating..."
 MSG_UPDATING_RT_FIRMWARE="3/3 Updating..."
 MSG_DONE="DONE!"
 MSG_FAILED="FAILED!"
-MSG_FAILED_WITH_ERROR_CODE="FAILED! Error Code:"
+MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
 MSG_CHECK_LOG="Please check update log!"
-MSG_RESTART="Please Restart!"
+MSG_RESTART_MAN="Please restart!"
+MSG_RESTART_AUT="Will restart now!"
 
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
@@ -55,6 +57,25 @@ pretty() {
     t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
 }
 
+freeze() {
+    while true; do
+        sleep 1
+    done
+}
+
+determine_termination() {
+    cat /nonlinear/scripts/install-update.sh | grep 'version : 1.0' \
+        && freeze || exit 1
+}
+
+configure_ssh() {
+    echo "Host 192.168.10.10
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null
+            " > ~/.ssh/config
+    chmod 400 ~/.ssh/config
+}
+
 report() {
     pretty "$1" "$2" "$3" "$2" "$3"
     printf "$2" >> /update/errors.log
@@ -71,9 +92,8 @@ executeOnWin() {
     return $?
 }
 
-TIMEOUT=10
-
 wait4epc() {
+    TIMEOUT=$1
     for COUNTER in $(seq 1 $TIMEOUT); do
         echo "waiting for OS response ... $COUNTER/$TIMEOUT"
         sleep 1
@@ -83,7 +103,7 @@ wait4epc() {
 }
 
 check_preconditions() {
-    if ! wait4epc; then
+    if ! wait4epc 10; then
         if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
         if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
         if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
@@ -114,42 +134,37 @@ epc_pull_update() {
 epc_fix() {
     /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_fix.sh sscl@192.168.10.10:/tmp
     executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh"
-    result=$?
-
-    if [ $result -ne 0 ]; then
-        executeAsRoot "cat /tmp/fix_error.log" >> /update/errors.log && return $result
-    fi
-    return 0
+    return $?
 }
 
 epc_update() {
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF"
 
     if ! epc_push_update; then
-        if ! epc_pull_update; then
+        epc_pull_update
+        return_code=$?
+        if [ $return_code -ne 0 ]; then
             pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
             sleep 2
             return 1
         fi
     fi
 
-    if ! epc_fix; then
+    epc_fix
+    return_code=$?
+    if [ $return_code -ne 0 ]; then
+        /update/utilities/sshpass -p "sscl" scp -r sscl@192.168.10.10:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
         pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
         sleep 2
         return 1
     fi
 
+    executeAsRoot "reboot"
+    wait4epc 60
+
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
     sleep 2
     return 0
-}
-
-configure_ssh() {
-    echo "Host 192.168.10.10
-            StrictHostKeyChecking no
-            UserKnownHostsFile=/dev/null
-            " > ~/.ssh/config
-    chmod 400 ~/.ssh/config
 }
 
 bbb_update() {
@@ -206,7 +221,7 @@ main() {
     chmod +x /update/utilities/*
 
     configure_ssh
-    check_preconditions || return 1
+    check_preconditions || determine_termination
 
     pretty "" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_STARTING_UPDATE" "$MSG_DO_NOT_SWITCH_OFF"
     sleep 2
@@ -219,16 +234,17 @@ main() {
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
         pretty "" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG" "$MSG_UPDATING_C15 $MSG_FAILED" "$MSG_CHECK_LOG"
-        return 1
+        determine_termination
     fi
 
-    pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART"
-
     if [ "$1" = "reboot" ]; then
+        pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_AUT" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_AUT"
+        sleep 2
         executeAsRoot "reboot"
         reboot
     fi
 
+    pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN"
     return 0
 }
 

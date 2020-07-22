@@ -346,10 +346,19 @@
 
 					<div class="eins-he">
 						<div class="w40p">
-							<p>Free Internal Memory</p>
+							<p>Free Disk Space</p>
 						</div>
 						<div class="w60p">
 							<g:Label ui:field="freeMemory"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Date/Time</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="dateTime"></g:Label>
 						</div>
 					</div>
 
@@ -368,10 +377,37 @@
 
 					<div class="halb-he">
 						<div class="w40p">
-							<p>Date/Time</p>
+							<p>Branch</p>
 						</div>
 						<div class="w60p">
-							<g:Label ui:field="dateTime"></g:Label>
+							<g:Label ui:field="uiBranch"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Head</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiHead"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Commits</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiCommits"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Commit Date</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiCommitDate"></g:Label>
 						</div>
 					</div>
 

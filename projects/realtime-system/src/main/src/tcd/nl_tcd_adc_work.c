@@ -376,8 +376,6 @@ static void SendAEMessages(void)
   };
 
   uint16_t j, i;
-  uint16_t send = 0;
-
   for (j = 0; j < NUM_HW_REAL_SOURCES; j++)
   {
     i = PRIORITY_TABLE[j];  // sort update by priority
@@ -385,11 +383,8 @@ static void SendAEMessages(void)
     {
       MSG_HWSourceUpdate(i, aeSendValue[i] - 1);
       aeSendValue[i] = 0;  // clear value, including update flag
-      send           = 1;
     }
   }
-  if (send)
-    MSG_SendMidiBuffer();
 }
 
 /*****************************************************************************

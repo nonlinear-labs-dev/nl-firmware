@@ -55,8 +55,8 @@ class ParameterSelectLayout2 : public virtual ParameterLayout2
   ParameterSelectLayout2();
 
  protected:
-  virtual void init() override;
-  virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+  void init() override;
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 
   virtual Carousel *createCarousel(const Rect &rect);
 
