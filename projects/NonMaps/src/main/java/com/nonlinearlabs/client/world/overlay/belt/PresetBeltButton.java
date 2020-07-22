@@ -1,13 +1,19 @@
 package com.nonlinearlabs.client.world.overlay.belt;
 
 import com.nonlinearlabs.client.world.Control;
+import com.nonlinearlabs.client.world.IPreset;
 import com.nonlinearlabs.client.world.Position;
+import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 
 public class PresetBeltButton extends BeltButton {
 
+	private Belt m_belt;
+
 	public PresetBeltButton(OverlayLayout parent, Belt belt) {
 		super(parent, belt, "Preset_Tab_Enabled.svg", "Preset_Tab_Disabled.svg");
+		m_belt = belt;
 	}
 
 	@Override
@@ -23,5 +29,18 @@ public class PresetBeltButton extends BeltButton {
 	@Override
 	public boolean isActive() {
 		return belt.isPresetView();
+	}
+
+	@Override
+	public Control drag(Position p, DragProxy dragProxy) {
+		if(getPixRect().contains(p) && dragProxy.getOrigin() instanceof IPreset)
+		{
+			if(m_belt.isHidden())
+				m_belt.toggle();
+				
+			m_belt.openTab(BeltTab.Preset);
+			return this;
+		}
+		return super.drag(p, dragProxy);
 	}
 }
