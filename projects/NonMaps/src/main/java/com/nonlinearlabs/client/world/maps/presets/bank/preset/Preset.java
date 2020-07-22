@@ -12,7 +12,6 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
@@ -130,9 +129,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public String getPartName(VoiceGroup vg) {
-		if(vg == VoiceGroup.I) {
+		if (vg == VoiceGroup.I) {
 			return this.partIName;
-		} else if(vg == VoiceGroup.II) {
+		} else if (vg == VoiceGroup.II) {
 			return this.partIIName;
 		}
 		return "";
@@ -358,6 +357,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	@Override
+	public Control mouseDown(Position eventPoint) {
+		return this;
+	}
+
+	@Override
 	public Control mouseUp(Position eventPoint) {
 		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
 			selectPreset();
@@ -377,9 +381,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	private Control clickBehaviour() {
-		if(isDraggingControl())
+		if (isDraggingControl())
 			return this;
-		
+
 		if (isInMultiplePresetSelectionMode()) {
 			getParent().getParent().getMultiSelection().toggle(this);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);

@@ -41,7 +41,8 @@ void Passphrase::updatePassword(const Glib::ustring& password)
 {
   m_password = password;
 
-  auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(m_password);
+  auto shortened = m_password.size() <= 8 ? m_password : m_password.substr(0, 8);
+  auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(shortened);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
 
   notify();
