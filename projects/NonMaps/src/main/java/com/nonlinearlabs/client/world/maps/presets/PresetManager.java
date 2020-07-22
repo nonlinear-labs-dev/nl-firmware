@@ -22,6 +22,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
@@ -283,8 +285,7 @@ public class PresetManager extends MapsLayout {
 		if (PresetInfoDialog.isShown())
 			PresetInfoDialog.update(newPresetSelection);
 
-		if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "preset",
-				"parameter-and-preset"))
+		if (LocalSettingsProvider.get().getSettings().selectionAutoScroll.isOneOf(SetupModel.SelectionAutoScroll.parameter_and_preset, SetupModel.SelectionAutoScroll.preset))
 			scrollToSelectedPreset();
 	}
 
