@@ -285,7 +285,7 @@ public class ServerProxy {
 		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", bank.getUUID());
 		StaticURI.KeyValue order = new StaticURI.KeyValue("order-number", newOrderNumber);
 		StaticURI uri = new StaticURI(path, uuid, order);
-		queueJob(uri, true);
+		queueJob(uri, false);
 	}
 
 	public void dropPresetsAbove(String csv, IPreset actionAnchor) {
