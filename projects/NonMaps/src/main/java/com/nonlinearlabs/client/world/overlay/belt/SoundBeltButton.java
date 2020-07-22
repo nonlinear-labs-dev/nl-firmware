@@ -10,11 +10,8 @@ import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 
 public class SoundBeltButton extends BeltButton {
 
-	private Belt m_belt;
-
 	public SoundBeltButton(OverlayLayout parent, Belt belt) {
 		super(parent, belt, "Sound_Tab_Enabled_A.svg", "Sound_Tab_Disabled_A.svg");
-		m_belt = belt;
 	}
 
 	@Override
@@ -37,10 +34,10 @@ public class SoundBeltButton extends BeltButton {
 	public Control drag(Position p, DragProxy dragProxy) {
 		if(getPixRect().contains(p) && dragProxy.getOrigin() instanceof IPreset)
 		{
-			if(m_belt.isHidden())
-				m_belt.toggle();
+			if(belt.isHidden())
+				belt.toggle();
 				
-			m_belt.openTab(BeltTab.Sound);
+			belt.openTab(BeltTab.Sound);
 			return this;
 		}
 		return super.drag(p, dragProxy);

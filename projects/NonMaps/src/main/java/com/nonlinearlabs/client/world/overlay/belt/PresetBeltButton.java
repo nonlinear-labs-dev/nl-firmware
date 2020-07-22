@@ -9,11 +9,8 @@ import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 
 public class PresetBeltButton extends BeltButton {
 
-	private Belt m_belt;
-
 	public PresetBeltButton(OverlayLayout parent, Belt belt) {
 		super(parent, belt, "Preset_Tab_Enabled.svg", "Preset_Tab_Disabled.svg");
-		m_belt = belt;
 	}
 
 	@Override
@@ -35,10 +32,10 @@ public class PresetBeltButton extends BeltButton {
 	public Control drag(Position p, DragProxy dragProxy) {
 		if(getPixRect().contains(p) && dragProxy.getOrigin() instanceof IPreset)
 		{
-			if(m_belt.isHidden())
-				m_belt.toggle();
+			if(belt.isHidden())
+				belt.toggle();
 				
-			m_belt.openTab(BeltTab.Preset);
+			belt.openTab(BeltTab.Preset);
 			return this;
 		}
 		return super.drag(p, dragProxy);
