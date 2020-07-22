@@ -96,8 +96,9 @@ public class ServerProxy {
 
 	private void updateSyncedPart(Node webuiHelp) {
 		if(SetupModel.get().systemSettings.syncVoiceGroups.isTrue()) {
-			String vg = getChildText(webuiHelp, "selected-vg");
-			if(vg != null && vg.isEmpty()) {
+			Node selected = getChild(webuiHelp, "selected-part");
+			String vg = getChildText(selected);
+			if(vg != null && !vg.isEmpty()) {
 				EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.valueOf(vg));
 			}
 		}
