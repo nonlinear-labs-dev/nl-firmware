@@ -21,8 +21,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -285,25 +285,16 @@ public class PresetManager extends MapsLayout {
 		if (PresetInfoDialog.isShown())
 			PresetInfoDialog.update(newPresetSelection);
 
-		if (LocalSettingsProvider.get().getSettings().selectionAutoScroll.isOneOf(SetupModel.SelectionAutoScroll.parameter_and_preset, SetupModel.SelectionAutoScroll.preset))
+		if (LocalSettingsProvider.get().getSettings().selectionAutoScroll
+				.isOneOf(SetupModel.SelectionAutoScroll.parameter_and_preset, SetupModel.SelectionAutoScroll.preset))
 			scrollToSelectedPreset();
 	}
 
 	private void scrollToSelectedPreset() {
-		Rect pixRect = getNonMaps().getNonLinearWorld().getViewport().getPixRectWithoutBelt();
 		Preset p = getSelectedPreset();
 
-		if (p != null) {
-
-			if (pixRect.contains(p.getPixRect())) {
-				return;
-			}
-
-			Bank b = p.getParent();
-
-			if (!pixRect.contains(b.getPixRect()))
-				b.scrollToMakeFullyVisible();
-		}
+		if (p != null)
+			p.scrollToMakeFullyVisible();
 	}
 
 	private boolean updateBanks(Node banks) {
@@ -676,7 +667,7 @@ public class PresetManager extends MapsLayout {
 			ParameterInfoDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-                        Window.open("/online-help/index.html", "", "");
+			Window.open("/online-help/index.html", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
