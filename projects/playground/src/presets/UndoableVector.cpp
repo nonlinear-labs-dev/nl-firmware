@@ -15,8 +15,11 @@ bool UndoableVectorBase::select(UNDO::Transaction *transaction, const Uuid &uuid
   {
     transaction->addSimpleCommand([this, swap = UNDO::createSwapData(uuid)](auto) {
       Checker checker(this);
+      auto old = m_selection;
       swap->swapWith(m_selection);
       invalidate();
+      invalidate(old);
+      invalidate(m_selection);
     });
     return true;
   }

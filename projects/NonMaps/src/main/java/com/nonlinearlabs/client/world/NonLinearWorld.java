@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.Animator;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.ClipboardManager;
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ContextState;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
@@ -582,8 +583,10 @@ public class NonLinearWorld extends MapsLayout {
 	}
 
 	public void scrollToShow(MapsControl mapsControl) {
-		NonPosition leftTop = toNonPosition(mapsControl.getPixRect().getLeftTop());
-		NonPosition rightBottom = toNonPosition(mapsControl.getPixRect().getRightBottom());
+		double margin = Millimeter.toPixels(20);
+		Rect controlPos = mapsControl.getPixRect().getReducedBy(-margin);
+		NonPosition leftTop = toNonPosition(controlPos.getLeftTop());
+		NonPosition rightBottom = toNonPosition(controlPos.getRightBottom());
 		Rect vpPixRect = getViewport().getPixRectWithoutBelt();
 		NonRect vpRect = new NonRect(toNonPosition(vpPixRect.getPosition()), toNonDimension(vpPixRect.getDimension()));
 
