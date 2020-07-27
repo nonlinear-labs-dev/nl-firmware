@@ -256,11 +256,8 @@ public class DragProxy extends OverlayControl {
 	}
 
 	private AutoScrollDirection getDesiredAutoScrollDirection(Position newPoint) {
-		Rect r = NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRectWithoutBelt();
+		Rect r = NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect();
 		Rect beltRect = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPixRect();
-
-		if (beltRect.contains(newPoint))
-			return AutoScrollDirection.None;
 
 		double borderSize = Millimeter.toPixels(10);
 

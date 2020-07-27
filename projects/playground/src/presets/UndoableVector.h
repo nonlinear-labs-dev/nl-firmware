@@ -33,6 +33,7 @@ class UndoableVectorBase
 
   virtual void check() = 0;
   virtual void invalidate() = 0;
+  virtual void invalidate(Uuid item) = 0;
 
   Uuid m_selection;
 };
@@ -409,6 +410,12 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
   void invalidate() override
   {
     m_owner.invalidate();
+  }
+
+  void invalidate(Uuid item) override
+  {
+    if(auto c = find(item))
+      c->invalidate();
   }
 
   void check() override

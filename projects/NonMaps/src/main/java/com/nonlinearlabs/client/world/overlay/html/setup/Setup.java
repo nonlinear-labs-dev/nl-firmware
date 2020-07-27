@@ -53,7 +53,7 @@ public class Setup extends Composite {
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
-			editSmoothingTimeDisplayString, freeMemory, uiVersion, dateTime;
+			editSmoothingTimeDisplayString, freeMemory, uiVersion, dateTime, uiHead, uiBranch, uiCommits, uiCommitDate;
 
 	@UiField
 	InputElement pedal1Slider, pedal2Slider, pedal3Slider, pedal4Slider;
@@ -277,7 +277,11 @@ public class Setup extends Composite {
 	private void applyPresenter(DeviceInformation t) {
 		freeMemory.setText(t.freeDiscSpace);
 		uiVersion.setText(t.uiVersion);
+		uiBranch.setText(t.branch);
+		uiHead.setText(t.head);
+		uiCommits.setText(t.commits);
 		dateTime.setText(t.dateTime);
+		uiCommitDate.setText(t.commitDate);
 	}
 
 	public void switchPage(Button btn, DivElement page) {

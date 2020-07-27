@@ -60,13 +60,13 @@ void FileSystem::rename(const Glib::ustring &oldFile, const Glib::ustring &newFi
   while(!std::filesystem::exists(newName) && std::chrono::steady_clock::now() < waitUntil)
   {
     std::this_thread::sleep_for(250ms);
-    nltools::Log::warning("Waiting for file to be actually renamed...");
+    nltools::Log::info("Waiting for file to be actually renamed...");
   }
 
   if(!std::filesystem::exists(newName))
-    nltools::Log::warning("Renamed file does still not exist.");
+    nltools::Log::info("Renamed file does still not exist.");
   else
-    nltools::Log::warning("Successfully renamed file", oldFile, "into", newFile);
+    nltools::Log::info("Successfully renamed file", oldFile, "into", newFile);
 }
 
 Glib::ustring FileSystem::findSuitableFileName(const Glib::ustring &desiredName, const Glib::ustring &directoryPath,

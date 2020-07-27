@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-06-10, 14:02
-    @version    1.7B-6
+    @date       2020-07-15, 13:57
+    @version    1.7B-7
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
     @todo
@@ -392,7 +392,7 @@ namespace C15
       PID::Shp_A_Mix,
       0.0f,
       { Smoothers::Poly_Fast::Shp_A_Mix, Signals::Quasipoly_Signals::Shp_A_Mix, Properties::SmootherScale::Linear, 1.0f,
-        0.0f, false },
+        0.0f, true },
       { 100, 1000, 100, 1000, "0", "Shaper A", "Shaper A", "Mix", "Mix",
         "Mix amount of Shaper A in the signal sent to the Filters and to the Output Mixer. At zero, it is the input "
         "signal of the Shaper - behind FB Mix. At negative values, the signal from the Shaper is inverted." } },
@@ -401,7 +401,7 @@ namespace C15
       PID::Shp_A_FB_Mix,
       0.0f,
       { Smoothers::Poly_Fast::Shp_A_FB_Mix, Signals::Quasipoly_Signals::Shp_A_FB_Mix, Properties::SmootherScale::Cubic,
-        1.0f, 0.0f, true },
+        1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "0", "Shaper A", "Shaper A", "FB Mix", "FB Mix",
         "Crossfades between Oscillator & Shaper A (at zero) and the Feedback signal for the signal A." } },
     { None },
@@ -553,7 +553,7 @@ namespace C15
       PID::Shp_B_Mix,
       0.0f,
       { Smoothers::Poly_Fast::Shp_B_Mix, Signals::Quasipoly_Signals::Shp_B_Mix, Properties::SmootherScale::Linear, 1.0f,
-        0.0f, false },
+        0.0f, true },
       { 100, 1000, 100, 1000, "0", "Shaper B", "Shaper B", "Mix", "Mix",
         "Mix amount of Shaper B in the signal sent to the Filters and to the Output Mixer. At zero, it is the input "
         "signal of the Shaper - behind FB Mix. At negative values, the signal from the Shaper is inverted." } },
@@ -562,7 +562,7 @@ namespace C15
       PID::Shp_B_FB_Mix,
       0.0f,
       { Smoothers::Poly_Fast::Shp_B_FB_Mix, Signals::Quasipoly_Signals::Shp_B_FB_Mix, Properties::SmootherScale::Cubic,
-        1.0f, 0.0f, true },
+        1.0f, 0.0f, false },
       { 100, 1000, 100, 1000, "0", "Shaper B", "Shaper B", "FB Mix", "FB Mix",
         "Crossfades between Oscillator & Shaper B (at zero) and the Feedback signal for the signal B." } },
     { None },

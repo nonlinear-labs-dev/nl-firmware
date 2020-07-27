@@ -18,7 +18,6 @@ import com.nonlinearlabs.client.world.Rect;
 
 class LayerDisplay extends OverlayLayout {
 
-
     public LayerDisplay(OverlayLayout parent) {
         super(parent);
 
@@ -89,7 +88,6 @@ class LayerDisplay extends OverlayLayout {
         box.setLeft(pix.getCenterPoint().getX() + margin / 2);
         box.fillAndStroke(ctx, fill, 2, stroke);
 
-
         double loadtoPartHeight = Math.abs(pix.getBottom() - box.getBottom()) * 0.8;
         double loadtoPartWidth = partWidth * 0.8;
         if (isLoadIntoPartEnabled()) {
@@ -138,11 +136,11 @@ class LayerDisplay extends OverlayLayout {
 
         if (isLoadIntoPartEnabled()) {
             if (selected == VoiceGroup.I) {
-                drawTriangleSideways(ctx, RGB.white(), RGB.black(), new Position(pix.getRight() - 1, boxIY + partHeight / 2),
-                        partHeight, partHeight);
+                drawTriangleSideways(ctx, RGB.white(), RGB.black(),
+                        new Position(pix.getRight() - 1, boxIY + partHeight / 2), partHeight, partHeight);
             } else {
-                drawTriangleSideways(ctx, RGB.white(), RGB.black(), new Position(pix.getRight() - 1, boxIIY + partHeight / 2),
-                        partHeight, partHeight);
+                drawTriangleSideways(ctx, RGB.white(), RGB.black(),
+                        new Position(pix.getRight() - 1, boxIIY + partHeight / 2), partHeight, partHeight);
             }
         }
     }
@@ -190,4 +188,11 @@ class LayerDisplay extends OverlayLayout {
 
         return super.click(eventPoint);
     }
+
+    @Override
+    public Control doubleClick(Position pos) {
+        return this;
+    }
+
+    
 }

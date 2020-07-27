@@ -40,6 +40,7 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly)
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
   m_actionManagers.emplace_back(new BankActions(*this));
   m_actionManagers.emplace_back(new EditBufferActions(m_editBuffer.get()));
+  onRestoreHappened([&]() { invalidate(); });
 }
 
 PresetManager::~PresetManager()
@@ -898,15 +899,8 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
         {
           eb->undoableLoadPresetPartIntoPart(currentUndo, preset, loadFrom, loadTo);
           m_autoLoadScheduled = false;
+          return;
         }
-        else
-        {
-          currentUndo->reopen();
-          eb->undoableLoadPresetPartIntoPart(currentUndo, preset, loadFrom, loadTo);
-          m_autoLoadScheduled = false;
-          currentUndo->close();
-        }
-        return;
       }
 
       auto scope = getUndoScope().startContinuousTransaction(this, std::chrono::milliseconds(500), "Load Preset Part");

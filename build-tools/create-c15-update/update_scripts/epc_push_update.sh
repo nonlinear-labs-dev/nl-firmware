@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# version : 2.0
+#
+# ----------- install a ePC Updates from USB-Stick ---------
+#
+# This scripts will push the ePC update (os-overlay content) dierectly to /dev/sda3
+
+# timeout is so long because the initramFS will potentialy be rebuild which takes quite a while
+
 EPC_IP=$1
 TIMEOUT=300
 
@@ -42,7 +50,7 @@ update(){
        return 0
     fi
 
-    return 1
+    report_and_quit "E49 ePC update: pushing update failed ..." "49"
 }
 
 main () {

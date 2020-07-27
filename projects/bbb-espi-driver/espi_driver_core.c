@@ -241,7 +241,6 @@ static s32 espi_driver_probe(struct spi_device *dev)
   dev_info(&dev->dev, "espi driver: \n");
   dev_info(&dev->dev, "  sck_hz=%i Hz\n", sck_hz);
   dev_info(&dev->dev, "  espi_hw_ref=%s\n", sb->hw_rev_str);
-  dev_info(&dev->dev, "  build: %s - %s \n", __DATE__, __TIME__);
 
   return ret;
 }
@@ -307,4 +306,4 @@ module_exit(espi_driver_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Nemanja Nikodijevic");
 MODULE_DESCRIPTION("espi_driver");
-MODULE_VERSION(__DATE__ " " __TIME__ " SHA1=" NL_VERSION);
+MODULE_VERSION("2020-07-01");

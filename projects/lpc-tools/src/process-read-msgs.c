@@ -1,6 +1,7 @@
 #include "process-read-msgs.h"
 #include "shared/lpc-defs.h"
 #include "shared/lpc-converters.h"
+#include "shared/globals.h"
 
 char paramNameTable[][NUM_HW_SOURCES] = {
   "EHC 1     ",
@@ -173,6 +174,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = (cmd << 16) + data[0];
       return;
 
+#if LPC_KEYBED_DIAG
     case LPC_BB_MSG_TYPE_KEYCNTR_DATA:
       if (flags & NO_KEY_LOG)
         return;
@@ -209,6 +211,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       printf("\n");
       lastMessage = (cmd << 16);
       return;
+#endif
 
     case LPC_BB_MSG_TYPE_PARAMETER:
       if (flags & NO_PARAMS)
@@ -255,9 +258,11 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         case LPC_NOTIFICATION_ID_CLEAR_STAT:
           printf("NOTIFICATION : Status Data cleared\n");
           break;
+#if LPC_KEYBED_DIAG
         case LPC_NOTIFICATION_ID_KEYCNTR_DATA:
           printf("NOTIFICATION : Key Errors Counters Data sent\n");
           break;
+#endif
         case LPC_NOTIFICATION_ID_SW_VERSION:
           printf("NOTIFICATION : Software Version: %hu\n", data[1]);
           break;
@@ -294,13 +299,21 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       if (flags & NO_STATDATA)
         return;
       dump(cmd, len, data, flags);
+#if LPC_KEYBED_DIAG
       if (len != 13)
+#else
+      if (len != 11)
+#endif
       {
         printf("STATUS : wrong length of %d\n", len);
         return;
       }
       if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+#if LPC_KEYBED_DIAG
         cursorUp(16);
+#else
+        cursorUp(13);
+#endif
       displayCounter();
       printf("SYSTEM STATUS:\n");
       printf("cleared with 'lpc req clear-status':\n");
@@ -318,9 +331,11 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         printf("  M0 Key Scanner : %5d (overrun flag)\n", data[10]);
       else
         printf("  M0 Key Scanner : -n/a- (overrun flag)\n");
+#if LPC_KEYBED_DIAG
       printf("cleared only by reset:\n");
       printf("  Keybed:        : %5d missed events (Scanner)\n", data[11]);
       printf("  Keybed:        : %5d missed events (TCD)\n", data[12]);
+#endif
       lastMessage = cmd << 16;
       return;
 

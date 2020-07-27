@@ -21,18 +21,20 @@ import com.nonlinearlabs.client.world.overlay.GWTDialog;
 class WebSocketConnection {
 	JavaScriptObject webSocketConnection;
 	private Timer pollTimer;
-	private RepeatingCommand ping;
+	private RepeatingCommand pingTimeout;
 	private int pingCount = 0;
 	private Date timeSent;
 	private Timer notifyTimer;
-	private int delay = 200;
+	private int delay = 50;
 	private LinkedList<String> pendingUpdates = new LinkedList<String>();
 
 	private static class ConnectionErrorPopup extends PopupPanel {
 
 		public ConnectionErrorPopup() {
 			super(false);
-			setWidget(new Label("The connection to the Nonlinear Instrument seems to be broken :-("));
+			Label l = null;
+			setWidget(l = new Label("The connection to the Nonlinear Instrument seems to be broken :-("));
+			l.getElement().addClassName("dc-text");
 			setGlassEnabled(true);
 			center();
 		}
@@ -63,13 +65,13 @@ class WebSocketConnection {
 	ServerListener listener;
 	static String clientId = Uuid.random();
 
-	public void startPolling(ServerListener listener) {
+	public void connectToServer(ServerListener listener) {
 		Tracer.log("startPolling for clientId " + clientId);
 		this.listener = listener;
 		if (Window.Location.getPort() == "8888") {
-			webSocketOpen(Window.Location.getHostName() + ":8080", clientId);
+			openWebSocket(Window.Location.getHostName() + ":8080", clientId);
 		} else {
-			webSocketOpen(Window.Location.getHost(), clientId);
+			openWebSocket(Window.Location.getHost(), clientId);
 		}
 
 		SetupModel.get().systemSettings.deviceName.onChange(t -> {
@@ -82,12 +84,7 @@ class WebSocketConnection {
 		});
 	}
 
-	private native int getBufferedAmount()
-	/*-{
-		return self.@com.nonlinearlabs.client.WebSocketConnection::webSocketConnection.bufferedAmount;
-	}-*/;
-
-	public native void webSocketOpen(String host, String path)
+	public native void openWebSocket(String host, String path)
 	/*-{
 		var address = 'ws://' + host + '/ws/' + path;
 		var connection = new WebSocket(address);
@@ -107,9 +104,59 @@ class WebSocketConnection {
 		};
 	
 		connection.onmessage = function(e) {
-			self.@com.nonlinearlabs.client.WebSocketConnection::onServerUpdate(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(e.data, connection);
+			self.@com.nonlinearlabs.client.WebSocketConnection::onServerMessage(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(e.data, connection);
 		};
 	}-*/;
+
+	public void onServerOpen(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server open notified for outdated connection - ignoring.");
+			return;
+		}
+
+		pingTimeout = null;
+		hideConnectionError();
+		ping(connection);
+		listener.onServerConnectionOpened();
+	}
+
+	public void onServerError(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server error notified for outdated connection - ignoring.");
+			return;
+		}
+
+		pingTimeout = null;
+		Tracer.log("onServerError");
+		reconnect(2000);
+		showConnectionError();
+	}
+
+	public void onServerClosed(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server closed notified for outdated connection - ignoring.");
+			return;
+		}
+
+		pingTimeout = null;
+		Tracer.log("onServerClosed");
+		reconnect(2000);
+		showConnectionError();
+	}
+
+	public void onServerMessage(String data, JavaScriptObject connection) {
+		if (connection != webSocketConnection) {
+			Tracer.log("Server update arrived for outdated connection - ignoring.");
+			return;
+		}
+
+		if (data.startsWith("/pong/")) {
+			onPongReceived(connection);
+		} else {
+			pendingUpdates.add(data);
+			scheduleNotify();
+		}
+	}
 
 	public void send(String command) {
 		doSend(command);
@@ -122,20 +169,6 @@ class WebSocketConnection {
 			this.@com.nonlinearlabs.client.WebSocketConnection::webSocketConnection
 					.send(command);
 	}-*/;
-
-	public void onServerUpdate(String data, JavaScriptObject connection) {
-		if (connection != webSocketConnection) {
-			Tracer.log("Server update arrived for outdated connection - ignoring.");
-			return;
-		}
-
-		if (data.startsWith("/pong/")) {
-			onPongReceived();
-		} else {
-			pendingUpdates.add(data);
-			scheduleNotify();
-		}
-	}
 
 	protected void scheduleNotify() {
 		if (notifyTimer != null)
@@ -177,68 +210,34 @@ class WebSocketConnection {
 		notifyTimer.schedule(diff);
 	}
 
-	public void onServerError(String data, JavaScriptObject connection) {
-		if (connection != webSocketConnection) {
-			Tracer.log("Server error notified for outdated connection - ignoring.");
-			return;
-		}
+	protected void ping(JavaScriptObject connection) {
+		send("/ping/" + pingCount);
 
-		Tracer.log("onServerError");
-		reconnect(2000);
-		showConnectionError();
-	}
+		pingTimeout = new RepeatingCommand() {
 
-	public void onServerOpen(String data, JavaScriptObject connection) {
-		if (connection != webSocketConnection) {
-			Tracer.log("Server open notified for outdated connection - ignoring.");
-			return;
-		}
-
-		hideConnectionError();
-		ping();
-		listener.onServerConnectionOpened();
-	}
-
-	protected void ping() {
-		if (ping == null) {
-			send("/ping/" + pingCount);
-
-			ping = new RepeatingCommand() {
-
-				@Override
-				public boolean execute() {
-					if (ping == this) {
-						Tracer.log("ping timeout");
-						showConnectionError();
-						reconnect(1000);
-					}
-					return false;
+			@Override
+			public boolean execute() {
+				if (pingTimeout == this) {
+					Tracer.log("ping timeout");
+					showConnectionError();
+					reconnect(1000);
 				}
-			};
+				return false;
+			}
+		};
 
-			Scheduler.get().scheduleFixedPeriod(ping, 6000);
-		}
+		Scheduler.get().scheduleFixedPeriod(pingTimeout, 6000);
+
 	}
 
-	public void onServerClosed(String data, JavaScriptObject connection) {
-		if (connection != webSocketConnection) {
-			Tracer.log("Server closed notified for outdated connection - ignoring.");
-			return;
-		}
-
-		Tracer.log("onServerClosed");
-		reconnect(2000);
-		showConnectionError();
-	}
-
-	private void onPongReceived() {
-		ping = null;
+	private void onPongReceived(JavaScriptObject connection) {
+		pingTimeout = null;
 		hideConnectionError();
 		Scheduler.get().scheduleFixedPeriod(new RepeatingCommand() {
 
 			@Override
 			public boolean execute() {
-				ping();
+				ping(connection);
 				return false;
 			}
 		}, 2000);
@@ -250,7 +249,7 @@ class WebSocketConnection {
 				@Override
 				public void run() {
 					pollTimer = null;
-					startPolling(listener);
+					connectToServer(listener);
 				}
 			};
 
