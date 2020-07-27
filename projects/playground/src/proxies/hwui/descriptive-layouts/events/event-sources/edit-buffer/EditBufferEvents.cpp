@@ -251,3 +251,11 @@ void DescriptiveLayouts::ToFXIIOver0::onChange(const EditBuffer *eb)
 {
   setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() > 0);
 }
+
+void DescriptiveLayouts::LayerIIFBToI::onChange(const EditBuffer *eb)
+{
+}
+
+void DescriptiveLayouts::LayerIFBToII::onChange(const EditBuffer *eb)
+{
+}

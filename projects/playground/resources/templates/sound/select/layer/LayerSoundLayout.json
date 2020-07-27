@@ -64,20 +64,24 @@
           },
           "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text], VGIIMuted => MuteIndication[Text]"
         },
+        "FB_L": {
+          "Class": "FX_Label_L",
+          "Position": "2, 20",
+          "Init": {
+            "TypeLabel[Text]": "FB",
+            "VGI[Text]": "I",
+            "VGII[Text]": "II"
+          }
+        },
         "FBToI": {
-          "Class": "ArrowTipRight",
+          "Class": "StraightLineArrow",
           "Position": "37, 19",
-          "Events": "AnyLayerCrossFBToI => ANY[Visibility]"
+          "Events": "LayerIFBToI => ANY[Visibility]"
         },
         "FBToII": {
-          "Class": "ArrowTipRight",
+          "Class": "StraightLineArrow",
           "Position": "37, 35",
-          "Events": "AnyLayerCrossFBToII => ANY[Visibility]"
-        },
-        "ArrowLineFB": {
-          "Class": "ArrowLineFB",
-          "Position": "36, 23",
-          "Events": "AnyLayerCrossFB => ANY[Visibility]"
+          "Events": "LayerIIFBToII => ANY[Visibility]"
         },
         "FXIToFXI": {
           "Class": "StraightLineArrow",
