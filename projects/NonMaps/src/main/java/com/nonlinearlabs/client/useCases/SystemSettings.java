@@ -86,7 +86,7 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("Pedal4Type", c.name());
 	}
 
-	public void setPresetGlitchSurpression(BooleanValues c) {
+	public void setPresetGlitchSuppression(BooleanValues c) {
 		SetupModel.get().systemSettings.presetGlitchSuppression.setValue(c);
 		NonMaps.theMaps.getServerProxy().setSetting("PresetGlitchSuppression", netify(c.name()));
 	}

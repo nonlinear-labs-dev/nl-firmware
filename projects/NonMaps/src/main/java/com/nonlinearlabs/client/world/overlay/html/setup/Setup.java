@@ -59,7 +59,7 @@ public class Setup extends Composite {
 	InputElement pedal1Slider, pedal2Slider, pedal3Slider, pedal4Slider;
 
 	@UiField
-	RadioButton presetGlitchSurpressionOn, presetGlitchSurpressionOff, showContextMenusOn, showContextMenusOff,
+	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff;
 
@@ -124,8 +124,8 @@ public class Setup extends Composite {
 		fillListboxWithOptions(scalingFactor, LocalSettings.DisplayScalingFactor.options);
 		fillListboxWithOptions(stripeBrightness, LocalSettings.StripeBrightness.options);
 
-		fillRadioButtons(presetGlitchSurpressionOn, presetGlitchSurpressionOff,
-				DeviceSettings.PresetGlitchSurpression.options);
+		fillRadioButtons(presetGlitchSuppressionOn, presetGlitchSuppressionOff,
+				DeviceSettings.PresetGlitchSuppression.options);
 		fillRadioButtons(showContextMenusOn, showContextMenusOff, LocalSettings.ContextMenus.options);
 		fillRadioButtons(presetDragDropOn, presetDragDropOff, LocalSettings.PresetDragDrop.options);
 		fillRadioButtons(bitmapCacheOn, bitmapCacheOff, LocalSettings.BitmapCache.options);
@@ -161,8 +161,8 @@ public class Setup extends Composite {
 		stripeBrightness.addChangeHandler(
 				e -> locals.setStripeBrightness(StripeBrightness.values()[stripeBrightness.getSelectedIndex()]));
 
-		presetGlitchSurpressionOn.addClickHandler(e -> settings.setPresetGlitchSurpression(BooleanValues.on));
-		presetGlitchSurpressionOff.addClickHandler(e -> settings.setPresetGlitchSurpression(BooleanValues.off));
+		presetGlitchSuppressionOn.addClickHandler(e -> settings.setPresetGlitchSuppression(BooleanValues.on));
+		presetGlitchSuppressionOff.addClickHandler(e -> settings.setPresetGlitchSuppression(BooleanValues.off));
 
 		showContextMenusOn.addClickHandler(e -> locals.setContextMenus(BooleanValues.on));
 		showContextMenusOff.addClickHandler(e -> locals.setContextMenus(BooleanValues.off));
@@ -236,8 +236,8 @@ public class Setup extends Composite {
 		applyPedalValues(t.pedal3, pedal3Type, pedal3Range, pedal3DisplayString);
 		applyPedalValues(t.pedal4, pedal4Type, pedal4Range, pedal4DisplayString);
 
-		presetGlitchSurpressionOn.setValue(t.presetGlitchSurpession.value);
-		presetGlitchSurpressionOff.setValue(!t.presetGlitchSurpession.value);
+		presetGlitchSuppressionOn.setValue(t.presetGlitchSurpession.value);
+		presetGlitchSuppressionOff.setValue(!t.presetGlitchSurpession.value);
 		editSmoothingTimeRange.setValue(t.editSmoothingTime.sliderPosition);
 		editSmoothingTimeDisplayString.setText(t.editSmoothingTime.displayValue);
 
