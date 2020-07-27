@@ -96,8 +96,6 @@ public class ServerProxy {
 			
 			Document xml = XMLParser.parse(responseText);
 			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
-			if(omitOracles(world))
-				return;
 				
 			Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
 			Node settingsNode = xml.getElementsByTagName("settings").item(0);
@@ -122,9 +120,11 @@ public class ServerProxy {
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
 			deviceInfoUpdater.doUpdate();
 
-			EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
-			ebu.doUpdate();
-
+			if(!omitOracles(world)) {
+				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
+				ebu.doUpdate();
+			}
+			
 			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
 			pmu.doUpdate();
 
