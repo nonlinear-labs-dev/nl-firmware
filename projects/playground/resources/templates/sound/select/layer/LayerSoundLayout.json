@@ -74,24 +74,24 @@
           }
         },
         "FBToI": {
-          "Class": "StraightLineArrow",
-          "Position": "37, 19",
+          "Class": "StraightLineArrowLonger",
+          "Position": "25, 19",
           "Events": "LayerIFBToI => ANY[Visibility]"
         },
         "FBToII": {
-          "Class": "StraightLineArrow",
-          "Position": "37, 35",
+          "Class": "StraightLineArrowLonger",
+          "Position": "25, 35",
           "Events": "LayerIIFBToII => ANY[Visibility]"
         },
-        "FXIToFXI": {
-          "Class": "StraightLineArrow",
-          "Position": "212, 20",
-          "Events": "ToFXIIUnder100 => ANY[Visibility]"
-        },
-        "FXIToFXII": {
+        "FBIToII": {
           "Class": "DiagonalDownArrow",
-          "Position": "212, 20",
-          "Events": "ToFXIIOver0 => ANY[Visibility]"
+          "Position": "25, 19",
+          "Events": "LayerIFBToII => ANY[Visibility]"
+        },
+        "FBIIToI": {
+          "Class": "DiagonalUpArrow",
+          "Position": "25, 35",
+          "Events": "LayerIFBToII => ANY[Visibility]"
         },
         "FX_R": {
           "Class": "FX_Label_R",
@@ -102,15 +102,15 @@
             "VGII[Text]": "II"
           }
         },
-        "FXIIToFXII": {
-          "Class": "StraightLineArrow",
-          "Position": "212, 36",
-          "Events": "ToFXIUnder100 => ANY[Visibility]"
+        "FXIToFXI": {
+          "Class": "StraightLineArrowLonger",
+          "Position": "201, 20",
+          "Events": "ToFXIIUnder100 => ANY[Visibility]"
         },
-        "FXIIToFXI": {
-          "Class": "DiagonalUpArrow",
-          "Position": "215, 23",
-          "Events": "ToFXIOver0 => ANY[Visibility]"
+        "FXIIToFXII": {
+          "Class": "StraightLineArrowLonger",
+          "Position": "201, 36",
+          "Events": "ToFXIUnder100 => ANY[Visibility]"
         }
       },
       "EventSinks": {
