@@ -236,8 +236,8 @@ public class Setup extends Composite {
 		applyPedalValues(t.pedal3, pedal3Type, pedal3Range, pedal3DisplayString);
 		applyPedalValues(t.pedal4, pedal4Type, pedal4Range, pedal4DisplayString);
 
-		presetGlitchSuppressionOn.setValue(t.presetGlitchSurpession.value);
-		presetGlitchSuppressionOff.setValue(!t.presetGlitchSurpession.value);
+		presetGlitchSuppressionOn.setValue(t.presetGlitchSuppression.value);
+		presetGlitchSuppressionOff.setValue(!t.presetGlitchSuppression.value);
 		editSmoothingTimeRange.setValue(t.editSmoothingTime.sliderPosition);
 		editSmoothingTimeDisplayString.setText(t.editSmoothingTime.displayValue);
 

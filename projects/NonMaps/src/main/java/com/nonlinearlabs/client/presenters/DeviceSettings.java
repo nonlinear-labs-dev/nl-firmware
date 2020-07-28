@@ -44,7 +44,7 @@ public class DeviceSettings {
 	public Pedal pedal2 = new Pedal();
 	public Pedal pedal3 = new Pedal();
 	public Pedal pedal4 = new Pedal();
-	public PresetGlitchSuppression presetGlitchSurpession = new PresetGlitchSuppression();
+	public PresetGlitchSuppression presetGlitchSuppression = new PresetGlitchSuppression();
 	public EditSmoothingTime editSmoothingTime = new EditSmoothingTime();
 	public String deviceName = "";
 	public HighlightChanged highlightChangedParameters = new HighlightChanged();
