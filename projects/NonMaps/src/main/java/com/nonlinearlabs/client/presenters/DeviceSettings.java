@@ -37,6 +37,11 @@ public class DeviceSettings {
 		public boolean value = false;
 	}
 
+	static public class SyncPartsAcrossUI {
+		static public String[] options = {"On", "Off"};
+		public boolean value = false;
+	}
+
 	public VelocityCurve velocityCurve = new VelocityCurve();
 	public AftertouchCurve aftertouchCurve = new AftertouchCurve();
 	public BenderCurve benderCurve = new BenderCurve();
@@ -48,6 +53,7 @@ public class DeviceSettings {
 	public EditSmoothingTime editSmoothingTime = new EditSmoothingTime();
 	public String deviceName = "";
 	public HighlightChanged highlightChangedParameters = new HighlightChanged();
+	public SyncPartsAcrossUI syncParts = new SyncPartsAcrossUI();
 
 	public double randomizeAmountValue = 0;
 	public String randomizeAmountDisplayString = "";

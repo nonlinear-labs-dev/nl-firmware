@@ -61,7 +61,7 @@ public class Setup extends Composite {
 	@UiField
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
-			highlightChangedOn, highlightChangedOff;
+			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -131,6 +131,7 @@ public class Setup extends Composite {
 		fillRadioButtons(bitmapCacheOn, bitmapCacheOff, LocalSettings.BitmapCache.options);
 		fillRadioButtons(developerOptionsOn, developerOptionsOff, LocalSettings.ShowDeveloperOptions.options);
 		fillRadioButtons(highlightChangedOn, highlightChangedOff, DeviceSettings.HighlightChanged.options);
+		fillRadioButtons(syncPartsOn, syncPartsOff, DeviceSettings.SyncPartsAcrossUI.options);
 	}
 
 	public void connectEventHandlers() {
@@ -179,6 +180,9 @@ public class Setup extends Composite {
 		editSmoothingTimeRange = Range.wrap(editSmoothingTimeSlider);
 		editSmoothingTimeRange.addValueChangeHandler(
 				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
+
+		syncPartsOn.addClickHandler(e -> settings.setSyncParts(BooleanValues.on));
+		syncPartsOff.addClickHandler(e -> settings.setSyncParts(BooleanValues.off));
 
 		pedal1Range.addValueChangeHandler(e -> EditBufferUseCases.get()
 				.setParameterValue(new ParameterId(254, VoiceGroup.Global), e.getValue().doubleValue(), true));
@@ -240,6 +244,9 @@ public class Setup extends Composite {
 		presetGlitchSuppressionOff.setValue(!t.presetGlitchSuppression.value);
 		editSmoothingTimeRange.setValue(t.editSmoothingTime.sliderPosition);
 		editSmoothingTimeDisplayString.setText(t.editSmoothingTime.displayValue);
+
+		syncPartsOn.setValue(t.syncParts.value);
+		syncPartsOff.setValue(!t.syncParts.value);
 
 		deviceName.setText(t.deviceName);
 

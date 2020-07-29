@@ -78,6 +78,12 @@ public class DeviceSettingsProvider {
 			return true;
 		});
 
+		SetupModel.get().systemSettings.syncVoiceGroups.onChange(t -> {
+			settings.syncParts.value = (t == BooleanValues.on);
+			notifyClients();
+			return true;
+		});
+
 		SetupModel.get().systemSettings.editSmoothingTime.onChange(t -> {
 			double v = t.value.getValue();
 			settings.editSmoothingTime.sliderPosition = v;
