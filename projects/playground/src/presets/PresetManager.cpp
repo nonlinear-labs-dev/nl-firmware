@@ -40,6 +40,7 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly)
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
   m_actionManagers.emplace_back(new BankActions(*this));
   m_actionManagers.emplace_back(new EditBufferActions(m_editBuffer.get()));
+  onRestoreHappened([&]() { invalidate(); });
 }
 
 PresetManager::~PresetManager()

@@ -73,7 +73,7 @@ public class DeviceSettingsProvider {
 		});
 
 		SetupModel.get().systemSettings.presetGlitchSuppression.onChange(t -> {
-			settings.presetGlitchSurpession.value = (t == BooleanValues.on);
+			settings.presetGlitchSuppression.value = (t == BooleanValues.on);
 			notifyClients();
 			return true;
 		});

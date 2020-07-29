@@ -113,10 +113,6 @@ public class ServerProxy {
 			updateSyncedPart(webUIHelper);
 
 			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
-			
-			if(omitOracles(world))
-				return;
-				
 			Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
 			Node settingsNode = xml.getElementsByTagName("settings").item(0);
 			Node undoNode = xml.getElementsByTagName("undo").item(0);
@@ -140,9 +136,11 @@ public class ServerProxy {
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
 			deviceInfoUpdater.doUpdate();
 
-			EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
-			ebu.doUpdate();
-
+			if(!omitOracles(world)) {
+				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
+				ebu.doUpdate();
+			}
+			
 			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
 			pmu.doUpdate();
 
@@ -303,7 +301,7 @@ public class ServerProxy {
 		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", bank.getUUID());
 		StaticURI.KeyValue order = new StaticURI.KeyValue("order-number", newOrderNumber);
 		StaticURI uri = new StaticURI(path, uuid, order);
-		queueJob(uri, true);
+		queueJob(uri, false);
 	}
 
 	public void dropPresetsAbove(String csv, IPreset actionAnchor) {
