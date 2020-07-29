@@ -22,7 +22,7 @@ public class DeviceSettings {
 		public int selected = 0;
 	}
 
-	static public class PresetGlitchSurpression {
+	static public class PresetGlitchSuppression {
 		static public String[] options = { "On", "Off" };
 		public boolean value = false;
 	}
@@ -44,7 +44,7 @@ public class DeviceSettings {
 	public Pedal pedal2 = new Pedal();
 	public Pedal pedal3 = new Pedal();
 	public Pedal pedal4 = new Pedal();
-	public PresetGlitchSurpression presetGlitchSurpession = new PresetGlitchSurpression();
+	public PresetGlitchSuppression presetGlitchSuppression = new PresetGlitchSuppression();
 	public EditSmoothingTime editSmoothingTime = new EditSmoothingTime();
 	public String deviceName = "";
 	public HighlightChanged highlightChangedParameters = new HighlightChanged();

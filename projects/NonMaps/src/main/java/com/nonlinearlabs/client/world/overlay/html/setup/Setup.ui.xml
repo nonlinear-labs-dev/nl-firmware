@@ -132,12 +132,12 @@
 
 					<div class="eins-he">
 						<div class="w70p">
-							<p>Preset Glitch Surpression</p>
+							<p>Preset Glitch Suppression</p>
 						</div>
 						<div class="w30p mw-fit-content">
-							<g:RadioButton ui:field="presetGlitchSurpressionOn"
+							<g:RadioButton ui:field="presetGlitchSuppressionOn"
 								name="rad_pgs" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="presetGlitchSurpressionOff"
+							<g:RadioButton ui:field="presetGlitchSuppressionOff"
 								name="rad_pgs" value="false"></g:RadioButton>
 						</div>
 					</div>
