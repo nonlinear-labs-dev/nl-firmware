@@ -14,7 +14,7 @@ if [ -z "$1" ] ; then
   LPC_RETRIES=1
 fi
 
-function check_lpc() {
+check_lpc() {
 	/update/utilities/lpc reset $LPC_RETRIES
 	return $?
 }
