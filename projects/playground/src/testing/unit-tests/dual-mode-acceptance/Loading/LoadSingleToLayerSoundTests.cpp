@@ -23,7 +23,7 @@ TEST_CASE("Load Single into Layer Part I")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
     TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
-    TestHelper::getEditBuffer()->setCurrentVoiceGroup(VoiceGroup::I);
+    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -149,7 +149,7 @@ TEST_CASE("Load Single into Layer Part II")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
     TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
-    TestHelper::getEditBuffer()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);

@@ -403,10 +403,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
 Parameter *EditBuffer::getSelected() const
 {
-  auto vg = getCurrentHWUIVoiceGroup();
-  if(ParameterId::isGlobal(m_lastSelectedParameter.getNumber()))
-    vg = VoiceGroup::Global;
-  return findParameterByID({ m_lastSelectedParameter.getNumber(), vg });
+  return findParameterByID(m_lastSelectedParameter);
 }
 
 void EditBuffer::setName(UNDO::Transaction *transaction, const Glib::ustring &name)
@@ -1322,7 +1319,7 @@ void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
 
 void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
 {
-  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   copyVoicesGroups(transaction, currentVG, invert(currentVG));
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   calculateFadeParamsFromSplitPoint(transaction);
@@ -1558,7 +1555,7 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
   // clang-format on
 
   auto hwui = Application::get().getHWUI();
-  auto currentVg = getCurrentHWUIVoiceGroup();
+  auto currentVg = hwui->getCurrentVoiceGroup();
 
   auto itMap = conversions.find({ oldType, newType });
   if(itMap != conversions.end())
@@ -1574,7 +1571,7 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
         vg = VoiceGroup::I;
 
       undoableSelectParameter(transaction, { itConv->second, vg });
-      setCurrentVoiceGroupAndUpdateParameterSelection(transaction, vg);
+      hwui->setCurrentVoiceGroup(vg);
     }
   }
 
@@ -1585,64 +1582,6 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
     if(!ParameterId::isGlobal(selNum))
       undoableSelectParameter(transaction, { selNum, VoiceGroup::I });
 
-    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
+    hwui->setCurrentVoiceGroup(VoiceGroup::I);
   }
-}
-
-void EditBuffer::setCurrentVoiceGroup(VoiceGroup vg)
-{
-  if(vg == VoiceGroup::I || vg == VoiceGroup::II)
-    if(std::exchange(m_currentHWUIVoiceGroup, vg) != vg)
-      m_voiceGroupSignal.send(m_currentHWUIVoiceGroup);
-}
-
-VoiceGroup EditBuffer::getCurrentHWUIVoiceGroup() const
-{
-  return m_currentHWUIVoiceGroup;
-}
-
-sigc::connection EditBuffer::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
-{
-  return m_voiceGroupSignal.connectAndInit(cb, m_currentHWUIVoiceGroup);
-}
-
-void EditBuffer::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v)
-{
-  setCurrentVoiceGroup(v);
-  undoableUpdateParameterSelection(transaction);
-}
-
-void EditBuffer::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
-{
-  if(auto selected = getSelected())
-  {
-    auto id = selected->getID();
-
-    if(id.getVoiceGroup() != VoiceGroup::Global)
-    {
-      undoableSelectParameter(transaction, { id.getNumber(), m_currentHWUIVoiceGroup });
-    }
-  }
-}
-
-void EditBuffer::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction)
-{
-  if(!isDual())
-    return;
-
-  if(m_currentHWUIVoiceGroup == VoiceGroup::I)
-    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::II);
-  else if(m_currentHWUIVoiceGroup == VoiceGroup::II)
-    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
-}
-
-void EditBuffer::toggleCurrentVoiceGroup()
-{
-  if(!isDual())
-    return;
-
-  if(m_currentHWUIVoiceGroup == VoiceGroup::I)
-    setCurrentVoiceGroup(VoiceGroup::II);
-  else if(m_currentHWUIVoiceGroup == VoiceGroup::II)
-    setCurrentVoiceGroup(VoiceGroup::I);
 }

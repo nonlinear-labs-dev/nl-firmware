@@ -46,7 +46,7 @@ RandomizePart::~RandomizePart() = default;
 MenuOverlay* RandomizePart::createOverlay()
 {
   return new ChangeSettingWithCommitOverlay<RandomizeAmount>(getDefaultOverlayRect(), [] {
-    auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
     auto currentVoiceGroup = toString(vg);
     auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Randomize Part %s",
                                                                                         currentVoiceGroup);

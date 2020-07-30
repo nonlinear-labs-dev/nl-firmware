@@ -14,15 +14,18 @@
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include <parameter_declarations.h>
-#include <proxies/hwui/HWUI.h>
 
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->onSelectionChanged(sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged));
-  eb->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
-  eb->onPresetLoaded(sigc::mem_fun(this, &SwitchVoiceGroupButton::rebuild));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged));
+
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::rebuild));
 }
 
 void SwitchVoiceGroupButton::rebuild()
@@ -54,12 +57,9 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
 
   if(dynamic_cast<const SplitPointParameter*>(selected))
   {
-    eb->toggleCurrentVoiceGroup();
+    Application::get().getHWUI()->toggleCurrentVoiceGroup();
     return true;
   }
-
-  auto layoutSwitchLock = GenericScopeGuard([]() { Application::get().getHWUI()->freezeFocusAndMode(); },
-                                            []() { Application::get().getHWUI()->thawFocusAndMode(); });
 
   if(allowToggling(selected, eb))
   {
@@ -68,7 +68,7 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
     {
       auto scope = pm->getUndoScope().startContinuousTransaction(&other, std::chrono::hours(1), "Select '%0'",
                                                                  other->getGroupAndParameterNameWithVoiceGroup());
-      eb->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
+      Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
       return true;
     }
   }

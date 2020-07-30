@@ -19,10 +19,14 @@
 ModuleCaption::ModuleCaption(const Rect &pos)
     : super(pos)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->onSelectionChanged(sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)));
-  eb->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSelectionChanged)));
-  eb->onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSoundTypeChanged)));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)));
+
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSelectionChanged)));
+
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSoundTypeChanged)));
 }
 
 Label::StringAndSuffix ModuleCaption::shortenStringIfNeccessary(std::shared_ptr<Font> font,

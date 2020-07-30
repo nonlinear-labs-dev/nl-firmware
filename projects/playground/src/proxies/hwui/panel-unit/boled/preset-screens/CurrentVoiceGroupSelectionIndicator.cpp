@@ -7,17 +7,21 @@
 
 inline static Glib::ustring currentVoiceGroupToString()
 {
-  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   return toString(currentVG);
 }
 
 CurrentVoiceGroupSelectionIndicator::CurrentVoiceGroupSelectionIndicator(const Rect &r)
     : LabelRegular8(currentVoiceGroupToString(), r)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged)));
-  eb->onPresetLoaded(sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
-  eb->onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged)));
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged)));
+
+  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+      sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged));
+
+  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::hide(sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged)));
 }
 
 void CurrentVoiceGroupSelectionIndicator::focusChanged()

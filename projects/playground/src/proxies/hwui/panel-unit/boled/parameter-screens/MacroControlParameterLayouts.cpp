@@ -134,7 +134,7 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
         }
         else if(buttonText == "I / II")
         {
-          Application::get().getPresetManager()->getEditBuffer()->toggleCurrentVoiceGroup();
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
         }
       }
         return true;

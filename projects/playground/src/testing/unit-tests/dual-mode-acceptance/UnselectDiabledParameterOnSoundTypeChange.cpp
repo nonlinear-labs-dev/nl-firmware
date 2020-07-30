@@ -10,7 +10,7 @@ TEST_CASE("FROM Layer")
   auto eb = TestHelper::getEditBuffer();
   eb->undoableLoad(presets.getLayerPreset());
 
-  TestHelper::getEditBuffer()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
 
   CHECK(eb->getType() == SoundType::Layer);
 
@@ -293,7 +293,7 @@ TEST_CASE("Split Loaded")
   auto eb = TestHelper::getEditBuffer();
   eb->undoableLoad(presets.getSplitPreset());
 
-  TestHelper::getEditBuffer()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
   CHECK(eb->getType() == SoundType::Split);
 
   WHEN("OUT: To FX x selected")

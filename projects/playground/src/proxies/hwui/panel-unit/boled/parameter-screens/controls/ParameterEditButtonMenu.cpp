@@ -28,7 +28,7 @@ ParameterEditButtonMenu::~ParameterEditButtonMenu()
 void ParameterEditButtonMenu::setup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   clear();
 

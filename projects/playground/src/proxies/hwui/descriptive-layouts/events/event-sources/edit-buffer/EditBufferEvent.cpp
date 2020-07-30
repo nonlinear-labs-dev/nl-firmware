@@ -10,8 +10,8 @@ DescriptiveLayouts::EditBufferEventBase::EditBufferEventBase()
   m_changedConnection = eb->onChange(sigc::mem_fun(this, &EditBufferEventBase::onEditBufferChanged));
   m_presetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &EditBufferEventBase::onPresetLoaded));
   m_onRecallChanged = eb->onRecallValuesChanged(sigc::mem_fun(this, &EditBufferEventBase::onRecallChanged));
-  m_onHardwareUIVoiceGroupSelectionChanged
-      = eb->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &EditBufferEventBase::onHWUIVoiceGroupSelectionChanged));
+  m_onHardwareUIVoiceGroupSelectionChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &EditBufferEventBase::onHWUIVoiceGroupSelectionChanged));
 }
 
 DescriptiveLayouts::EditBufferEventBase::~EditBufferEventBase()
@@ -48,6 +48,6 @@ EditBuffer *DescriptiveLayouts::EditBufferEventBase::getEditBuffer()
 
 DescriptiveLayouts::VoiceGroupSelectEventBase::VoiceGroupSelectEventBase()
 {
-  m_vgSelection = Application::get().getPresetManager()->getEditBuffer()->onCurrentVoiceGroupChanged(
+  m_vgSelection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &VoiceGroupSelectEventBase::onChange));
 }

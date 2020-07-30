@@ -5,7 +5,6 @@
 #include <sigc++/sigc++.h>
 #include <parameters/SplitPointParameter.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
 
 void DescriptiveLayouts::EditBufferTypeStringEvent::onChange(const EditBuffer *eb)
 {
@@ -26,19 +25,19 @@ void DescriptiveLayouts::EditBufferNameWithSuffix::onChange(const EditBuffer *eb
 
 void DescriptiveLayouts::CurrentVoiceGroupLabel::onChange(const EditBuffer *eb)
 {
-  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   setValue({ eb->getVoiceGroupNameWithSuffix(currentVG, false), 0 });
 }
 
 void DescriptiveLayouts::IsCurrentVGI::onChange(const EditBuffer *eb)
 {
-  auto val = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto val = Application::get().getHWUI()->getCurrentVoiceGroup();
   setValue(val == VoiceGroup::I);
 }
 
 void DescriptiveLayouts::IsCurrentVGII::onChange(const EditBuffer *eb)
 {
-  auto val = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto val = Application::get().getHWUI()->getCurrentVoiceGroup();
   setValue(val == VoiceGroup::II);
 }
 
@@ -132,8 +131,7 @@ bool DescriptiveLayouts::MonoButtonText::isChanged(const EditBuffer *eb)
     }
     case SoundType::Split:
     {
-      auto mono = eb->getParameterGroupByID(
-          { "Mono", Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup() });
+      auto mono = eb->getParameterGroupByID({ "Mono", Application::get().getHWUI()->getCurrentVoiceGroup() });
       return mono && mono->isAnyParameterChanged();
     }
   }
@@ -155,14 +153,12 @@ bool DescriptiveLayouts::UnisonButtonText::isChanged(const EditBuffer *eb)
     case SoundType::Invalid:
     case SoundType::Layer:
     {
-      auto unison = eb->getParameterGroupByID(
-          { "Unison", Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup() });
+      auto unison = eb->getParameterGroupByID({ "Unison", Application::get().getHWUI()->getCurrentVoiceGroup() });
       return unison && unison->isAnyParameterChanged();
     }
     case SoundType::Split:
     {
-      auto unison = eb->getParameterGroupByID(
-          { "Unison", Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup() });
+      auto unison = eb->getParameterGroupByID({ "Unison", Application::get().getHWUI()->getCurrentVoiceGroup() });
       return unison && unison->isAnyParameterChanged();
     }
   }

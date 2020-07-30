@@ -244,8 +244,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto transaction = scope->getTransaction();
     auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
     editBuffer->undoableConvertToSingle(transaction, voiceGroup);
-    editBuffer->setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
     Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
+    Application::get().getHWUI()->setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
   });
 
   addAction("convert-to-split", [=](auto request) {

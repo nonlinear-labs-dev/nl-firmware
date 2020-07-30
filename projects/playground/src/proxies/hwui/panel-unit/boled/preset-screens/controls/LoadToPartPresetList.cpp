@@ -18,7 +18,7 @@ LoadToPartPresetList::LoadToPartPresetList(const Rect& pos, bool showBankArrows,
     : PresetListBase(pos, showBankArrows)
     , m_selections { partSelectionI, partSelectionII }
 {
-  m_voiceGroupConnection = Application::get().getPresetManager()->getEditBuffer()->onCurrentVoiceGroupChanged(
+  m_voiceGroupConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &LoadToPartPresetList::onVoiceGroupChanged)));
 }
 
@@ -178,7 +178,7 @@ void LoadToPartPresetList::selectNextBank(PresetManager* pm)
 
 void LoadToPartPresetList::onSelectionChanged(const PresetPartSelection& selection)
 {
-  auto currentVg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
   if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
   {
     Application::get().getPresetManager()->scheduleLoadToPart(selection.m_preset, selection.m_voiceGroup, currentVg);
@@ -190,7 +190,7 @@ void LoadToPartPresetList::onEnterButtonPressed()
   if(const auto selection = getCurrentSelection())
   {
     animateSelectedPreset([=] {
-      const auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+      const auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
       Application::get().getPresetManager()->getEditBuffer()->undoableLoadToPart(selection->m_preset,
                                                                                  selection->m_voiceGroup, currentVG);
     });
@@ -205,13 +205,13 @@ void LoadToPartPresetList::onVoiceGroupChanged()
 
 PresetPartSelection* LoadToPartPresetList::getCurrentSelection()
 {
-  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   return m_selections[static_cast<int>(vg)];
 }
 
 const PresetPartSelection* LoadToPartPresetList::getCurrentSelection() const
 {
-  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   return m_selections[static_cast<int>(vg)];
 }
 

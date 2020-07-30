@@ -692,5 +692,5 @@ const Preset *Bank::getFirstPreset() const
 
 auto currentVG()
 {
-  return Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  return Application::get().getHWUI()->getCurrentVoiceGroup();
 }

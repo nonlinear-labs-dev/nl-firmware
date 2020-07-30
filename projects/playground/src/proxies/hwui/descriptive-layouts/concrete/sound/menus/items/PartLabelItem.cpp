@@ -13,7 +13,7 @@ inline EditBuffer* getEditBuffer()
 
 VoiceGroup currentVoiceGroup()
 {
-  return Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  return Application::get().getHWUI()->getCurrentVoiceGroup();
 }
 
 Glib::ustring getPartLabel(VoiceGroup vg)

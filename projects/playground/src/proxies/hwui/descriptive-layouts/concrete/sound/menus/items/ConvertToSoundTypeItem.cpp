@@ -12,7 +12,7 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
       auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction(
           nltools::string::concat("Convert Sound to ", toString(toType)));
       auto transaction = scope->getTransaction();
-      auto currentVoiceGroup = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+      auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
 
       switch(toType)
       {

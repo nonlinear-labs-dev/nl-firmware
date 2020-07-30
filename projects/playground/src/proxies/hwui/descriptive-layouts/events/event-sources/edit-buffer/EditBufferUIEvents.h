@@ -1,8 +1,6 @@
 #pragma once
 
 #include <parameters/SplitPointParameter.h>
-#include <presets/PresetManager.h>
-#include <presets/EditBuffer.h>
 #include "EditBufferEvent.h"
 
 namespace DescriptiveLayouts
@@ -18,7 +16,7 @@ namespace DescriptiveLayouts
         setValue({ "Sound Edit", 0 });
       else
       {
-        auto sel = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+        auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
         setValue({ "Sound Edit - Part " + toString(sel), 0 });
       }
     }
@@ -29,7 +27,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
       if(eb->getType() != SoundType::Split)
       {
@@ -50,7 +48,7 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         if(auto param = eb->findParameterByID({ 364, vg }))
           setValue(param->getControlPositionValue() != 0);
       }
@@ -69,7 +67,7 @@ namespace DescriptiveLayouts
     {
       if(eb->getType() == SoundType::Split)
       {
-        auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+        auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
         if(auto param = eb->findParameterByID({ 249, vg }))
           setValue(param->getControlPositionValue() > 0);
       }
@@ -108,7 +106,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(eb->getType() != SoundType::Split)
       {
         vg = VoiceGroup::I;
@@ -124,7 +122,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(auto param = eb->findParameterByID({ id, vg }))
         setValue({ param->getDisplayString(), 0 });
     }
@@ -135,7 +133,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *editBuffer)
     {
-      auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
       if(editBuffer->getType() != SoundType::Split)
       {
@@ -152,7 +150,7 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override
     {
-      auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(auto splitPoint = eb->getSplitPoint())
       {
         setValue({ splitPoint->getDisplayString(vg), 0 });

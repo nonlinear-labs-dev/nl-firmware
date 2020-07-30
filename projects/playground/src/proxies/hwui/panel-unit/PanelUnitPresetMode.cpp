@@ -19,13 +19,14 @@ PanelUnitPresetMode::PanelUnitPresetMode()
 {
   DebugLevel::gassy(__PRETTY_FUNCTION__);
 
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-
   Application::get().getHWUI()->onModifiersChanged(
       sigc::hide(sigc::mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds)));
 
-  eb->onChange(mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds));
-  eb->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds)));
+  Application::get().getPresetManager()->getEditBuffer()->onChange(
+      mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds));
+
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::hide(sigc::mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds)));
 }
 
 PanelUnitPresetMode::~PanelUnitPresetMode()
@@ -64,7 +65,7 @@ void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::li
                                                  std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto currentParams = getMappings().findParameters(buttonId);
   auto ebParameters = editBuffer->getParametersSortedByNumber(vg);
   auto globalParameters = editBuffer->getParametersSortedByNumber(VoiceGroup::Global);
@@ -88,7 +89,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
                                             std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   for(const auto i : parameters)
   {

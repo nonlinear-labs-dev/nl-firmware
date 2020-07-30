@@ -12,9 +12,11 @@
 PresetTypeLabel::PresetTypeLabel(const Rect &pos)
     : Control(pos)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  m_editbufferConnection = eb->onChange(sigc::mem_fun(this, &PresetTypeLabel::onEditBufferChanged));
-  m_voiceGroupChanged = eb->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &PresetTypeLabel::onVoiceGroupChanged));
+  m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
+      sigc::mem_fun(this, &PresetTypeLabel::onEditBufferChanged));
+
+  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+      sigc::mem_fun(this, &PresetTypeLabel::onVoiceGroupChanged));
 }
 
 PresetTypeLabel::~PresetTypeLabel()
@@ -85,8 +87,7 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
 
     if(hwui->isInLoadToPart())
     {
-      auto eb = Application::get().getPresetManager()->getEditBuffer();
-      auto currentVGFocus = eb->getCurrentHWUIVoiceGroup();
+      auto currentVGFocus = hwui->getCurrentVoiceGroup();
       if(auto selection = hwui->getPresetPartSelection(currentVGFocus))
       {
         selected = selection->m_preset == selectedPreset;
@@ -257,8 +258,7 @@ void DualPresetTypeLabel::update(const Preset *selected)
   if(selected)
   {
     auto hwui = Application::get().getHWUI();
-    auto eb = Application::get().getPresetManager()->getEditBuffer();
-    auto currentVGFocus = eb->getCurrentHWUIVoiceGroup();
+    auto currentVGFocus = hwui->getCurrentVoiceGroup();
     const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(currentVGFocus);
 
     auto selection = hwui->getPresetPartSelection(currentVGFocus);

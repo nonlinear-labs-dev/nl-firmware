@@ -35,7 +35,9 @@
 #include "UsageMode.h"
 
 HWUI::HWUI()
-    : m_readersCancel(Gio::Cancellable::create())
+    : m_voiceGoupSignal {}
+    , m_currentVoiceGroup { VoiceGroup::I }
+    , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
@@ -542,10 +544,67 @@ FocusAndMode HWUI::getOldFocusAndMode() const
   return m_oldFocusAndMode;
 }
 
+VoiceGroup HWUI::getCurrentVoiceGroup() const
+{
+  return m_currentVoiceGroup;
+}
+
 void HWUI::setLoadToPart(bool state)
 {
   if(std::exchange(m_loadToPartActive, state) != state)
     m_loadToPartSignal.send(m_loadToPartActive);
+}
+
+void HWUI::setCurrentVoiceGroup(VoiceGroup v)
+{
+  if(v == VoiceGroup::I || v == VoiceGroup::II)
+    if(std::exchange(m_currentVoiceGroup, v) != v)
+      m_voiceGoupSignal.send(m_currentVoiceGroup);
+}
+
+void HWUI::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v)
+{
+  setCurrentVoiceGroup(v);
+  undoableUpdateParameterSelection(transaction);
+}
+
+void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto selected = eb->getSelected();
+  auto id = selected->getID();
+
+  if(id.getVoiceGroup() != VoiceGroup::Global)
+  {
+    eb->undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup });
+  }
+}
+
+void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction)
+{
+  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+    return;
+
+  if(m_currentVoiceGroup == VoiceGroup::I)
+    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::II);
+  else if(m_currentVoiceGroup == VoiceGroup::II)
+    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
+}
+
+void HWUI::toggleCurrentVoiceGroup()
+{
+  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+    return;
+
+  if(m_currentVoiceGroup == VoiceGroup::I)
+    setCurrentVoiceGroup(VoiceGroup::II);
+  else if(m_currentVoiceGroup == VoiceGroup::II)
+    setCurrentVoiceGroup(VoiceGroup::I);
+}
+
+sigc::connection HWUI::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
+{
+  return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
 }
 
 void HWUI::setFocusAndMode(const UIDetail &detail)

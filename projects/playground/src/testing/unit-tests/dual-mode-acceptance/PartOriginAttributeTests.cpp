@@ -132,8 +132,8 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   auto eb = TestHelper::getEditBuffer();
   auto pm = Application::get().getPresetManager();
 
-  TestHelper::getEditBuffer()->setCurrentVoiceGroup(VoiceGroup::I);
-  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   CHECK(currentVG == VoiceGroup::I);
 

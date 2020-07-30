@@ -1,11 +1,10 @@
 #include "UnisonParameterCarousel.h"
 #include <Application.h>
-#include <presets/PresetManager.h>
-#include <presets/EditBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 std::vector<ParameterId> UnisonParameterCarousel::getParameterIdsForMode(SoundType type)
 {
-  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   switch(type)
   {
