@@ -254,26 +254,33 @@ void DescriptiveLayouts::ToFXIIOver0::onChange(const EditBuffer *eb)
 
 void DescriptiveLayouts::LayerIIFBToI::onChange(const EditBuffer *eb)
 {
+  auto oscFB = false;
+  oscFB |= eb->findParameterByID({ C15::PID::FB_Mix_Osc, VoiceGroup::II })->getControlPositionValue() != 0;
+
   auto state = false;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_Osc, VoiceGroup::II})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_Comb, VoiceGroup::II})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_SVF, VoiceGroup::II})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_FX, VoiceGroup::II})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_Comb_Src, VoiceGroup::II})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_SVF_Src, VoiceGroup::II})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II})->getControlPositionValue() != 0;
-  setValue(state);
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Comb, VoiceGroup::II })->getControlPositionValue() != 0
+      && eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_SVF, VoiceGroup::II })->getControlPositionValue() != 0
+      && eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::II })->getControlPositionValue() != 0
+      && eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II })->getControlPositionValue() != 0;
+
+  setValue(oscFB || state);
 }
 
+//FB into I From II!!!
 void DescriptiveLayouts::LayerIFBToII::onChange(const EditBuffer *eb)
 {
+  auto oscFB = false;
+  oscFB |= eb->findParameterByID({ C15::PID::FB_Mix_Osc, VoiceGroup::I })->getControlPositionValue() != 0;
+
   auto state = false;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_Osc, VoiceGroup::I})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_Comb, VoiceGroup::I})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_SVF, VoiceGroup::I})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_FX, VoiceGroup::I})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_Comb_Src, VoiceGroup::I})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_SVF_Src, VoiceGroup::I})->getControlPositionValue() != 0;
-  state |= eb->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I})->getControlPositionValue() != 0;
-  setValue(state);
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_Comb, VoiceGroup::I })->getControlPositionValue() != 0
+      && eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_SVF, VoiceGroup::I })->getControlPositionValue() != 0
+      && eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+  state |= eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::I })->getControlPositionValue() != 0
+      && eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I })->getControlPositionValue() != 0;
+
+  setValue(oscFB || state);
 }

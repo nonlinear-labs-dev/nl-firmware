@@ -86,7 +86,7 @@
         "FBIToII": {
           "Class": "DiagonalDownArrow",
           "Position": "30, 19",
-          "Events": "LayerIFBToII => ANY[Visibility]"
+          "Events": "LayerIIFBToI => ANY[Visibility]"
         },
         "FBIIToI": {
           "Class": "DiagonalUpArrow",
@@ -115,12 +115,12 @@
         "FXIToFXII": {
           "Class": "DiagonalDownArrow",
           "Position": "206, 20",
-          "Events": "ToFXIOver0 => ANY[Visibility]"
+          "Events": "ToFXIIOver0 => ANY[Visibility]"
         },
         "FXIIToFXI": {
           "Class": "DiagonalUpArrow",
           "Position": "206, 23",
-          "Events": "ToFXIIOver0 => ANY[Visibility]"
+          "Events": "ToFXIOver0 => ANY[Visibility]"
         }
       },
       "EventSinks": {

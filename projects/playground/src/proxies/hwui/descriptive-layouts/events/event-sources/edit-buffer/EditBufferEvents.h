@@ -167,6 +167,7 @@ namespace DescriptiveLayouts
     auto fbComb = eb->findParameterByID({ C15::PID::FB_Mix_Comb, vg });
     auto svf = eb->findParameterByID({ C15::PID::FB_Mix_SVF, vg });
     auto effects = eb->findParameterByID({ C15::PID::FB_Mix_FX, vg });
+
     auto fromComb = eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, vg });
     auto fromSvf = eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, vg });
     auto fromFX = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, vg });
@@ -175,9 +176,11 @@ namespace DescriptiveLayouts
 
     auto unequals100 = [&](auto p) { return p->getControlPositionValue() != 1; };
 
-    auto val = unequalsZero(fbComb) || unequalsZero(svf) || unequalsZero(effects);
-    auto val2 = unequals100(fromComb) || unequals100(fromSvf) || unequals100(fromFX);
-    setValue(val || val2);
+    auto combOwn = unequalsZero(fbComb) && unequals100(fromComb);
+    auto svfOwn = unequalsZero(svf) && unequals100(fromSvf);
+    auto fxOwn = unequalsZero(effects) && unequals100(fromFX);
+
+    setValue(combOwn || svfOwn || fxOwn);
   }
 
   class LayerIFBToII : public EditBufferEvent<bool>
