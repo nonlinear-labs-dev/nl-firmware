@@ -261,7 +261,7 @@ TEST_CASE("FROM Layer")
     THEN("Split Preset Loaded")
     {
       eb->undoableLoad(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId({ 358, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ 358, VoiceGroup::II }));
     }
 
     THEN("Single Preset Loaded")
