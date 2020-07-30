@@ -30,7 +30,8 @@ TEST_CASE("Convert Split (II) to Layer")
     monoII->setCPFromHwui(scope->getTransaction(), 1);
     CHECK(monoII->getDisplayString() == "On");
 
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+    auto eb = TestHelper::getEditBuffer();
+    eb->setCurrentVoiceGroup(VoiceGroup::II);
 
     for(auto p : EBL::getLocalNormal<VoiceGroup::I>())
       TestHelper::forceParameterChange(scope->getTransaction(), p);

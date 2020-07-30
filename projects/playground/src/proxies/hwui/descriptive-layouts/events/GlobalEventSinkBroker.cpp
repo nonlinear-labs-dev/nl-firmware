@@ -94,10 +94,8 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection,
+    registerEvent(EventSinks::ToggleVoiceGroup,
                   []() { SwitchVoiceGroupButton::toggleVoiceGroup(); });
-
-    registerEvent(EventSinks::ToggleVoiceGroup, [hwui]() { hwui->toggleCurrentVoiceGroup(); });
 
     /*
        * UIFocus
@@ -236,7 +234,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
       if(eb->getType() == SoundType::Split)
         eb->undoableSelectParameter({ 364, vg });
       else
@@ -244,7 +242,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenPartScreen, [eb]() {
-      eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
+      eb->undoableSelectParameter({ 358, Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup() });
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter({ 247, VoiceGroup::Global }); });
@@ -256,7 +254,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenUnisonParameter, [eb]() {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
       if(eb->getType() == SoundType::Split)
         eb->undoableSelectParameter({ 249, vg });
       else

@@ -1,10 +1,11 @@
 #include "MonoParameterCarousel.h"
 #include <Application.h>
-#include <proxies/hwui/HWUI.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 std::vector<ParameterId> MonoParameterCarousel::getParameterIdsForMode(SoundType type)
 {
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
 
   switch(type)
   {

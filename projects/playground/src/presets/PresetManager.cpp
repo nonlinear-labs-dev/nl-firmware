@@ -859,7 +859,7 @@ Preset *PresetManager::getSelectedPreset()
 
 bool PresetManager::currentLoadedPartIsBeforePresetToLoad() const
 {
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
   auto og = getEditBuffer()->getPartOrigin(currentVG);
 
   if(auto selectedBank = getSelectedBank())
@@ -913,7 +913,7 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
 {
   auto eb = getEditBuffer();
   auto hwui = Application::get().getHWUI();
-  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+  auto currentVoiceGroup = eb->getCurrentHWUIVoiceGroup();
 
   if(auto bank = getSelectedBank())
   {

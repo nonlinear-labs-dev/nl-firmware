@@ -17,7 +17,7 @@ void SplitPointLabel::onParameterChanged(const Parameter* parameter)
 {
   if(auto sp = dynamic_cast<const SplitPointParameter*>(parameter))
   {
-    auto displayVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto displayVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
     setText({ sp->getDisplayString(displayVG), 0 });
   }
 }

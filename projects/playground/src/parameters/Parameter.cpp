@@ -482,7 +482,7 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
       else  //Fade From I
         return VisualizationStyle::Bar;
     case 356:  //Split Point
-      if(Application::get().getHWUI()->getCurrentVoiceGroup() == VoiceGroup::II)
+      if(Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup() == VoiceGroup::II)
         return VisualizationStyle::BarFromRight;
       else
         return VisualizationStyle::Bar;

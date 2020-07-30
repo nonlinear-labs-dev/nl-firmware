@@ -27,7 +27,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
   {
     auto scope = pm->getUndoScope().startTransaction("Convert to Single");
     auto transaction = scope->getTransaction();
-    auto copyFromVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto copyFromVoiceGroup = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
     Application::get().getPresetManager()->getEditBuffer()->undoableConvertToSingle(transaction, copyFromVoiceGroup);
     Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }

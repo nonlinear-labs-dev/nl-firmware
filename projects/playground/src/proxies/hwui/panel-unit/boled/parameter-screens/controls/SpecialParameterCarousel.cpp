@@ -13,11 +13,10 @@
 SpecialParameterCarousel::SpecialParameterCarousel(const Rect &rect)
     : ParameterCarousel(rect)
 {
-  m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
-      sigc::mem_fun(this, &SpecialParameterCarousel::rebuild));
-
-  m_voiceGroupConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::hide(sigc::mem_fun(this, &SpecialParameterCarousel::rebuild)));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  m_editbufferConnection = eb->onChange(sigc::mem_fun(this, &SpecialParameterCarousel::rebuild));
+  m_voiceGroupConnection
+      = eb->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &SpecialParameterCarousel::rebuild)));
 }
 
 void SpecialParameterCarousel::setup(Parameter *selectedParameter)

@@ -10,7 +10,8 @@ MonoGroupControl::MonoGroupControl(const Rect &r)
     : ControlWithChildren(r)
     , m_grid { nullptr }
 {
-  m_connection = Application::get().getHWUI()->onCurrentVoiceGroupChanged([this](auto) { this->rebuild(); });
+  m_connection = Application::get().getPresetManager()->getEditBuffer()->onCurrentVoiceGroupChanged(
+      [this](auto) { this->rebuild(); });
 }
 
 MonoGroupControl::~MonoGroupControl()
@@ -23,7 +24,7 @@ void MonoGroupControl::rebuild()
   clear();
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
   auto paramid = std::array<int, 4> { 364, 366, 367, 365 };
 
   const auto width = 62;

@@ -82,7 +82,7 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
 
   for(int i : buttonAssignments)
   {
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
 
     auto param = eb->findParameterByID({ i, vg });

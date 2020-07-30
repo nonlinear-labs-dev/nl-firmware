@@ -56,10 +56,10 @@ namespace DescriptiveLayouts
        SwitchToButtonADetail, SwitchToButtonBDetail, SwitchToButtonCDetail, SwitchToButtonDDetail,
        SwitchToMCModRangeDetail, SwitchToMCAmtDetail, IncMCSel, DecMCSel, IncMCAmt, DecMCAmt, IncMCPos, DecMCPos,
        IncButtonMenu, DecButtonMenu, FireButtonMenu, IncModulationCarousel, DecModulationCarousel, ToggleVoiceGroup,
-       ToggleVoiceGroupWithParameterSelection, CommitPresetForButtonMenu, ToggleDirectLoad,
-       IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
-       DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter, SwitchToVoicesDetail,
-       OpenMonoParameterScreen, OpenPartScreen, InitSound, IncSplitPoint, DecSplitPoint, LayerMuteInc, LayerMuteDec,
+       CommitPresetForButtonMenu, ToggleDirectLoad, IncPresetSelectionPresetList, DecPresetSelectionPresetList,
+       IncBankSelectionPresetList, DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter,
+       OpenMasterParameter, SwitchToVoicesDetail, OpenMonoParameterScreen, OpenPartScreen, InitSound, IncSplitPoint,
+       DecSplitPoint, LayerMuteInc, LayerMuteDec,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Left, Right, Up, Down, IncParam, DecParam, Commit);

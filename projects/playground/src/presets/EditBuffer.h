@@ -47,6 +47,14 @@ class EditBuffer : public ParameterGroupSet
   void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
   void undoableLoadSelectedToPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
 
+  VoiceGroup getCurrentHWUIVoiceGroup() const;
+  void setCurrentVoiceGroup(VoiceGroup vg);
+  sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
+  void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
+  void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
+  void toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction);
+  void toggleCurrentVoiceGroup();
+
  private:
   void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
   void undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
@@ -166,6 +174,7 @@ class EditBuffer : public ParameterGroupSet
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
   Signal<void, SoundType> m_signalTypeChanged;
+  Signal<void, VoiceGroup> m_voiceGroupSignal;
 
   sigc::connection m_voiceGroupConnection;
 
@@ -176,6 +185,8 @@ class EditBuffer : public ParameterGroupSet
   friend class PresetParameterGroups;
 
   Uuid m_lastLoadedPreset;
+
+  VoiceGroup m_currentHWUIVoiceGroup;
 
   Glib::ustring m_name;
   std::array<Glib::ustring, 2> m_voiceGroupLabels;

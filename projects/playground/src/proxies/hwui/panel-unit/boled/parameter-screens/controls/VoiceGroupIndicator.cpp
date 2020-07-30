@@ -17,11 +17,8 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart)
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   eb->onSoundTypeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onSoundTypeChanged));
-
   eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
-
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
+  eb->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
 
   Application::get().getHWUI()->onLoadToPartModeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onLoadModeChanged));
 }
@@ -147,7 +144,7 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
   const auto paramNum = parameter->getID().getNumber();
 
   if(paramNum == C15::PID::Split_Split_Point || MacroControlsGroup::isMacroControl(paramNum))
-    m_selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+    m_selectedVoiceGroup = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
 
   setDirty();
 }

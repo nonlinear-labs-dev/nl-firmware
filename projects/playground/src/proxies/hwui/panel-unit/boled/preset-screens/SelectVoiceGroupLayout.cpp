@@ -58,7 +58,7 @@ void SelectVoiceGroupLayout::load()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto hwui = Application::get().getHWUI();
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
   auto from = m_loadFrom;
 
   eb->undoableLoadSelectedToPart(from, currentVG);

@@ -11,11 +11,11 @@
 VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect &r)
     : ParameterCarousel(r)
 {
-  m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
-      sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  m_editbufferConnection = eb->onChange(sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
 
-  m_selectConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::hide(sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild)));
+  m_selectConnection
+      = eb->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild)));
 }
 
 VoiceGroupMasterParameterCarousel::~VoiceGroupMasterParameterCarousel()
@@ -28,7 +28,7 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 {
   clear();
 
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
 
   switch(Application::get().getPresetManager()->getEditBuffer()->getType())
   {

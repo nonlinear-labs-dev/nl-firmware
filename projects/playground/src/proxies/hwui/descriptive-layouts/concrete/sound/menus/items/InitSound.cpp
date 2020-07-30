@@ -20,7 +20,7 @@ InitPart::InitPart(const Rect& r)
     : AnimatedGenericItem("Init Part", r, []() {
       auto pm = Application::get().getPresetManager();
       auto scope = pm->getUndoScope().startTransaction("Init Part");
-      auto sel = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto sel = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
       pm->getEditBuffer()->undoableInitPart(scope->getTransaction(), sel);
       auto hwui = Application::get().getHWUI();
       hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });

@@ -8,7 +8,7 @@
 
 UsageMode::UsageMode()
 {
-  m_voiceGroupChangedSignal = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_voiceGroupChangedSignal = Application::get().getPresetManager()->getEditBuffer()->onCurrentVoiceGroupChanged(
       sigc::hide<0>(sigc::mem_fun(this, &UsageMode::bruteForceUpdateLeds)));
 }
 

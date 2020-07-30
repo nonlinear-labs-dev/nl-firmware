@@ -49,17 +49,9 @@ class HWUI
   FocusAndMode getFocusAndMode() const;
   FocusAndMode getOldFocusAndMode() const;
 
-  VoiceGroup getCurrentVoiceGroup() const;
   bool isInLoadToPart() const;
 
   void setLoadToPart(bool state);
-  void setCurrentVoiceGroup(VoiceGroup v);
-  void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
-
-  void toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction);
-  void toggleCurrentVoiceGroup();
-
-  sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
   sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
 
   void freezeFocusAndMode();
@@ -91,7 +83,6 @@ class HWUI
 
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
-  void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
   void onButtonPressed(Buttons buttonID, bool state);
 
@@ -117,11 +108,9 @@ class HWUI
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;
 
-  Signal<void, VoiceGroup> m_voiceGoupSignal;
   Signal<void, bool> m_loadToPartSignal;
 
   bool m_loadToPartActive = false;
-  VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
 
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;

@@ -7,6 +7,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <parameters/scale-converters/dimension/SplitPointDimension.h>
 #include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup *group, const ParameterId &id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
@@ -35,7 +37,7 @@ Glib::ustring SplitPointParameter::getDisplayString(VoiceGroup vg) const
 
 Glib::ustring SplitPointParameter::getDisplayString() const
 {
-  return getDisplayString(Application::get().getHWUI()->getCurrentVoiceGroup());
+  return getDisplayString(Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup());
 }
 
 Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionValue amount) const
@@ -45,7 +47,7 @@ Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionVal
 
 Glib::ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
   return SplitPointDimension::stringizeSplitPointDisplay(v, vg);
 }
 
@@ -56,5 +58,5 @@ Glib::ustring SplitPointParameter::getDisplayString(VoiceGroup vg, tControlPosit
 
 Glib::ustring SplitPointParameter::getDisplayString(tControlPositionValue cp) const
 {
-  return getDisplayString(Application::get().getHWUI()->getCurrentVoiceGroup(), cp);
+  return getDisplayString(Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup(), cp);
 }

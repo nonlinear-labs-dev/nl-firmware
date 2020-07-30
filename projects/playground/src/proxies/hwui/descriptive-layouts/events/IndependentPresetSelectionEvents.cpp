@@ -59,7 +59,7 @@ namespace DescriptiveLayouts
         if(auto preset = m_cursor.getPreset())
         {
           auto eb = Application::get().getPresetManager()->getEditBuffer();
-          auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+          auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
           eb->undoableLoadPresetIntoDualSound(preset, currentVG);
           Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
         }

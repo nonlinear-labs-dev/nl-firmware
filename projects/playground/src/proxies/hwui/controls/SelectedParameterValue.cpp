@@ -10,16 +10,13 @@
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)
 {
-  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  eb->onSelectionChanged(sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)));
+  eb->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
+  eb->onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &SelectedParameterValue::onSoundTypeChanged)), false);
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
-
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
-
-  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::hide(sigc::mem_fun(this, &SelectedParameterValue::onSoundTypeChanged)), false);
 }
 
 SelectedParameterValue::~SelectedParameterValue()

@@ -19,6 +19,7 @@
 #include <tools/ExceptionTools.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
+#include <proxies/hwui/HWUI.h>
 
 BOLED::BOLED()
     : OLEDProxy(Rect(0, 0, 256, 64))
@@ -91,8 +92,18 @@ void BOLED::setupSoundScreen(FocusAndMode focusAndMode)
 
 void BOLED::setupParameterScreen(FocusAndMode focusAndMode)
 {
-  if(auto selParam = Application::get().getPresetManager()->getEditBuffer()->getSelected())
+
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto voiceGroup = eb->getCurrentHWUIVoiceGroup();
+  
+  if(auto selParam = eb->getSelected())
   {
+    if(!ParameterId::isGlobal(selParam->getID().getNumber()))
+    {
+      if(voiceGroup != selParam->getID().getVoiceGroup())
+        nltools::Log::error("Selected Parameter is not in current VoiceGroup!", __FILE__, __LINE__, __FUNCTION__);
+    }
+
     auto layout = selParam->createLayout(focusAndMode);
 
     if(auto currentLayout = getLayout().get())

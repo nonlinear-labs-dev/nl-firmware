@@ -12,11 +12,9 @@
 MuteIndicator::MuteIndicator(const Rect& r)
     : Label(r)
 {
-  m_soundTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::hide(sigc::mem_fun(this, &MuteIndicator::setup)));
-
-  m_vgConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::hide(sigc::mem_fun(this, &MuteIndicator::setup)));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  m_soundTypeConnection = eb->onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &MuteIndicator::setup)));
+  m_vgConnection = eb->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &MuteIndicator::setup)));
 }
 
 void MuteIndicator::setup()
@@ -25,7 +23,7 @@ void MuteIndicator::setup()
 
   if(isInLayerMode)
   {
-    auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto currentVG = Application::get().getPresetManager()->getEditBuffer()->getCurrentHWUIVoiceGroup();
     m_parameterConnection = Application::get()
                                 .getPresetManager()
                                 ->getEditBuffer()
