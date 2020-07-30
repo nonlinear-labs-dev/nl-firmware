@@ -23,6 +23,7 @@ chown -R root /docker-ssh
 if ! grep \"/docker-ssh\" /etc/ssh/ssh_config; then
  echo \"IdentityFile /docker-ssh/id_rsa\" >> /etc/ssh/ssh_config
 fi
+set -e
 " > $TMPSCRIPT
 
 for var in "$@"

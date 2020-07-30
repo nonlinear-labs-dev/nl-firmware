@@ -3,10 +3,10 @@ SET(DOCKERNAME nl-epc-build-environment)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 file(GLOB_RECURSE ALL_BUILD_TOOLS_FILES ${CMAKE_SOURCE_DIR}/build-tools/*)
-file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/NonMaps/target/*)
-file(GLOB_RECURSE LPCX_FILES ${CMAKE_SOURCE_DIR}/projects/realtime-system/.metadata/*)
+file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/epc/web-ui/target/*)
+file(GLOB_RECURSE PlaycontrollerX_FILES ${CMAKE_SOURCE_DIR}/projects/playcontroller/firmware/.metadata/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET_FILES})
-list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${LPCX_FILES})
+list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${PlaycontrollerX_FILES})
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX CMakeLists.txt)
 list(APPEND ALL_FILES_IN_PROJECT ${ALL_BUILD_TOOLS_FILES})
 
@@ -127,7 +127,7 @@ IF(BUILD_BBB) # we need the BBB utilities
         COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
             ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
             ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-            "unused-lpc"
+            "unused-playcontroller"
             ${CMAKE_BINARY_DIR}
             ${CMAKE_SOURCE_DIR}
             nonlinear-epc-update

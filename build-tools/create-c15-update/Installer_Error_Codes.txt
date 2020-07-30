@@ -6,12 +6,12 @@ unless something is really wrong like a corrupt/wrong install package ("by desig
 
 List of current Error Messages
 ------------
-3. RT (LPC)
-- 31 :: "E31 RT update: no argument" ==> call to lpc_update.sh didn't pass a parameter
-- 32 :: "E32 RT update: no file" ==> parameter passed to lpc_update.sh didn't is not a file
-- 33 :: "E33 RT update: cannot connect to LPC, details:" ==> the "mxli" progging tool could find the chip or failed programming it
-        (can happen occasionally when the LPC doesn't run because the clock oscillator didn't start up for some reason)
-- 34 :: "E34 RT update: no response after reset" ==> LPC does not respond after reset (with a number of retries), something has gone wrong
+3. RT (playcontroller)
+- 31 :: "E31 RT update: no argument" ==> call to playcontroller_update.sh didn't pass a parameter
+- 32 :: "E32 RT update: no file" ==> parameter passed to playcontroller_update.sh didn't is not a file
+- 33 :: "E33 RT update: cannot connect to playcontroller, details:" ==> the "mxli" progging tool could find the chip or failed programming it
+        (can happen occasionally when the playcontroller doesn't run because the clock oscillator didn't start up for some reason)
+- 34 :: "E34 RT update: no response after reset" ==> playcontroller does not respond after reset (with a number of retries), something has gone wrong
 
 4. ePC
 - 45 :: "E45 ePC update: Reboot taking too long... timed out"
@@ -42,8 +42,8 @@ Historical Error and Warning Messages
 ------------
 Errors which may actually occur in a user situation are:
 - 41 :: "E41 audio update: cannot connect to ePC" ==> pinging the ePC failed, ePC is off or network connection broken
-- 33 :: "E33 RT update: cannot connect to LPC, details:" ==> the "mxli" progging tool could find the chip or failed programming it,
-can happen occasionally when the LPC doesn't run because the clock oscillator didn't start up for some reason.
+- 33 :: "E33 RT update: cannot connect to playcontroller, details:" ==> the "mxli" progging tool could find the chip or failed programming it,
+can happen occasionally when the playcontroller doesn't run because the clock oscillator didn't start up for some reason.
 
 If these errors occur they also indidcate a potentially unstable C15 which needs repair anyway, as both errors make the C15 inoperable,
 no sound (even there is no indication to the user because UI is still running correctly).
@@ -53,7 +53,7 @@ in a conservative fashion because the older firmware doesn't protect against thi
 These errors also cause the display message "update error! please retry." at the end of the install process.
 Often, a reboot and following new install run fixes these problems because those are typically non persistent hardware glitches.
 Because of this (non-fatal errors), they also do not initiate a recovery to the previous system state at the end of the install
-like most other errors do, and there is no backuped data for ePC and LPC anyway.
+like most other errors do, and there is no backuped data for ePC and playcontroller anyway.
 
 
 ------------

@@ -21,7 +21,7 @@ MSG_RESTART_AUT="Will restart now!"
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
 UPDATE_BBB=0
-UPDATE_LPC=0
+UPDATE_Playcontroller=0
 UPDATE_EPC=0
 
 if [[ $ASPECTS = *epc* ]]
@@ -30,10 +30,10 @@ then
     echo "will update epc"
 fi
 
-if [[ $ASPECTS = *lpc* ]]
+if [[ $ASPECTS = *playcontroller* ]]
 then
-    UPDATE_LPC=1
-    echo "will update lpc"
+    UPDATE_Playcontroller=1
+    echo "will update playcontroller"
 fi
 
 if [[ $ASPECTS = *bbb* ]]
@@ -187,13 +187,13 @@ bbb_update() {
     return 0
 }
 
-lpc_update() {
+playcontroller_update() {
     pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DO_NOT_SWITCH_OFF"
-    chmod +x /update/LPC/lpc_update.sh
-    chmod +x /update/LPC/lpc_check.sh
+    chmod +x /update/playcontroller/playcontroller_update.sh
+    chmod +x /update/playcontroller/playcontroller_check.sh
     rm -f /update/mxli.log
 
-    /bin/sh /update/LPC/lpc_update.sh /update/LPC/main.bin A && sleep 1 && /bin/sh /update/LPC/lpc_check.sh 5
+    /bin/sh /update/playcontroller/playcontroller_update.sh /update/playcontroller/main.bin A && sleep 1 && /bin/sh /update/playcontroller/playcontroller_check.sh 5
 
     # error codes 30...39
     return_code=$?
@@ -229,7 +229,7 @@ main() {
     stop_services
     [ $UPDATE_EPC == 1 ] && epc_update
     [ $UPDATE_BBB == 1 ] && bbb_update
-    [ $UPDATE_LPC == 1 ] && lpc_update
+    [ $UPDATE_Playcontroller == 1 ] && playcontroller_update
 
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
