@@ -68,7 +68,8 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
   setMode(Mode::ParameterValue);
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged));
+      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged),
+      getHWUI()->getCurrentVoiceGroup());
 
   Application::get().getHWUI()->onModifiersChanged(
       sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onModfiersChanged));

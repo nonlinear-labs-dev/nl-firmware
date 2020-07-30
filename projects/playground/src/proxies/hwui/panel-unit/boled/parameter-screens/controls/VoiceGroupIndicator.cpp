@@ -18,7 +18,8 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart)
 
   eb->onSoundTypeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onSoundTypeChanged));
 
-  eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged));
+  eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged),
+                         getHWUI()->getCurrentVoiceGroup());
 
   Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));

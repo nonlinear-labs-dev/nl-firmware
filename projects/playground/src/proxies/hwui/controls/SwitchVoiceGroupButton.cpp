@@ -19,7 +19,7 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged));
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
 
   Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
@@ -31,7 +31,7 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 void SwitchVoiceGroupButton::rebuild()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto selected = eb->getSelected();
+  auto selected = eb->getSelected(getHWUI()->getCurrentVoiceGroup());
 
   if(allowToggling(selected, eb))
     setText({ "I / II", 0 });
@@ -53,7 +53,7 @@ bool SwitchVoiceGroupButton::toggleVoiceGroup()
 {
   auto pm = Application::get().getPresetManager();
   auto eb = pm->getEditBuffer();
-  auto selected = eb->getSelected();
+  auto selected = eb->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
 
   if(dynamic_cast<const SplitPointParameter*>(selected))
   {

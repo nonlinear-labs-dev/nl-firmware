@@ -218,9 +218,10 @@ const PresetManager *EditBuffer::getParent() const
   return static_cast<const PresetManager *>(super::getParent());
 }
 
-sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s)
+sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s,
+                                                VoiceGroup initialVG)
 {
-  return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected());
+  return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected(initialVG));
 }
 
 void EditBuffer::undoableSelectParameter(ParameterId id)
@@ -401,9 +402,17 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
   }
 }
 
-Parameter *EditBuffer::getSelected() const
+Parameter *EditBuffer::getSelected(VoiceGroup voiceGroup) const
 {
-  return findParameterByID(m_lastSelectedParameter);
+  if(!isDual() && (voiceGroup == VoiceGroup::II))
+    voiceGroup = VoiceGroup::I;
+
+  if(ParameterId::isGlobal(m_lastSelectedParameter.getNumber()))
+    voiceGroup = VoiceGroup::Global;
+  else if(voiceGroup == VoiceGroup::Global)
+    voiceGroup = VoiceGroup::I;
+
+  return findParameterByID({ m_lastSelectedParameter.getNumber(), voiceGroup });
 }
 
 void EditBuffer::setName(UNDO::Transaction *transaction, const Glib::ustring &name)
@@ -1561,8 +1570,8 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
   if(itMap != conversions.end())
   {
     const auto &conv = itMap->second;
-    auto id = getSelected()->getID();
-    auto itConv = conv.find(id.getNumber());
+    auto id = getSelectedParameterNumber();
+    auto itConv = conv.find(id);
     if(itConv != conv.end())
     {
       auto vg = ParameterId::isGlobal(itConv->second) ? VoiceGroup::Global : currentVg;
@@ -1577,11 +1586,20 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
 
   if(newType == SoundType::Single && currentVg == VoiceGroup::II)
   {
-    auto sel = getSelected();
-    auto selNum = sel->getID().getNumber();
+    auto selNum = getSelectedParameterNumber();
     if(!ParameterId::isGlobal(selNum))
       undoableSelectParameter(transaction, { selNum, VoiceGroup::I });
 
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
   }
+}
+
+int EditBuffer::getSelectedParameterNumber() const
+{
+  return m_lastSelectedParameter.getNumber();
+}
+
+void EditBuffer::fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group)
+{
+  m_signalSelectedParameter.send(getSelected(oldGroup), getSelected(group));
 }

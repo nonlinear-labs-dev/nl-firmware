@@ -41,7 +41,8 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
     }
   }
 
-  if(auto selectedParam = m_editBuffer->getSelected())
+  //We dont care about the Voice Group Anyways!
+  if(auto selectedParam = m_editBuffer->getSelected(VoiceGroup::I))
     writer.writeTextElement("selected-parameter", selectedParam->getID().toString());
 
   LastLoadedPresetInfoSerializer lastLoaded(m_editBuffer);

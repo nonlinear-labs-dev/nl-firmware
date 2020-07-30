@@ -68,7 +68,7 @@ void ParameterLayout2::showRecallScreenIfAppropriate()
 
 Parameter *ParameterLayout2::getCurrentParameter() const
 {
-  return Application::get().getPresetManager()->getEditBuffer()->getSelected();
+  return Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
 }
 
 Parameter *ParameterLayout2::getCurrentEditParameter() const
@@ -346,7 +346,7 @@ ParameterRecallLayout2::ParameterRecallLayout2()
   m_recallValue = getCurrentParameter()->getControlPositionValue();
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged));
+      sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
 
   updateUI(false);
 }

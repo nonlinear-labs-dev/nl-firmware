@@ -5,6 +5,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <libundo/undo/Scope.h>
+#include <proxies/hwui/HWUI.h>
 
 bool ModulationBoundControl::onButton(Buttons i, bool down, ButtonModifiers)
 {
@@ -14,7 +15,7 @@ bool ModulationBoundControl::onButton(Buttons i, bool down, ButtonModifiers)
       if(down)
       {
         if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(
-               Application::get().getPresetManager()->getEditBuffer()->getSelected()))
+               Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
         {
           auto &undoScope = modulatedParam->getUndoScope();
           auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set MC Amount for '%0'",
