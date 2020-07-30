@@ -1,16 +1,16 @@
 SET(USER $ENV{USER})
 SET(DOCKERNAME nl-cross-build-environment)
-SET(NONLINUX nonlinear_2020.06)
+SET(NONLINUX nonlinear_2020.30)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 
-file(GLOB_RECURSE REALTIME_SYSTEM_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/realtime-system/*)
+file(GLOB_RECURSE REALTIME_SYSTEM_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/playcontroller/firmware/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${REALTIME_SYSTEM_TARGET_FILES})
 
 file(GLOB_RECURSE SUPERVISOR_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/supervisor/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${SUPERVISOR_TARGET_FILES})
 
-file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/NonMaps/target/*)
+file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/epc/web-ui/target/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET_FILES})
 
 EXECUTE_PROCESS(OUTPUT_VARIABLE GROUP_ID COMMAND sh -c "id -g $USER")
@@ -103,8 +103,8 @@ add_custom_command(
         "cd /fs/nonlinux"
         "make C15-clean-for-reconfigure"
         "make C15-rebuild"
-        "make lpc_bb_driver-clean-for-reconfigure"
-        "make lpc_bb_driver-rebuild"
+        "make playcontroller_driver-clean-for-reconfigure"
+        "make playcontroller_driver-rebuild"
         "make espi_driver-clean-for-reconfigure"
         "make espi_driver-rebuild"
         "rm -rf /fs/nonlinux/output/target/mnt/.not-mounted"
@@ -138,7 +138,7 @@ add_custom_command(
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         "unused-epc"
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
-        "unused-lpc"
+        "unused-playcontroller"
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         nonlinear-bbb-update
