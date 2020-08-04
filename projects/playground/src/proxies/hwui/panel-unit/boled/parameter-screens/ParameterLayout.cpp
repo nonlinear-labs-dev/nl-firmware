@@ -150,8 +150,18 @@ void ParameterLayout2::handlePresetValueRecall()
   if(getCurrentParameter()->getParentGroup()->getID().getName() == "Part"
      && Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Layer)
     getOLEDProxy().setOverlay(new PartMasterRecallLayout2());
-  else if(getCurrentEditParameter()->isChangedFromLoaded())
-    getOLEDProxy().setOverlay(new ParameterRecallLayout2());
+  else if(auto editParam = getCurrentEditParameter())
+  {
+    if(auto modParam = dynamic_cast<ModulateableParameter *>(editParam))
+    {
+      if(modParam->isValueChangedFromLoaded())
+        getOLEDProxy().setOverlay(new ParameterRecallLayout2());
+    }
+    else if(editParam->isChangedFromLoaded())
+    {
+      getOLEDProxy().setOverlay(new ParameterRecallLayout2());
+    }
+  }
 }
 
 bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p, const EditBuffer *eb)
