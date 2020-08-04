@@ -231,7 +231,7 @@ sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter
   }
 }
 
-void EditBuffer::undoableSelectParameter(const ParameterId& id)
+void EditBuffer::undoableSelectParameter(const ParameterId &id)
 {
   if(auto p = findParameterByID(id))
     undoableSelectParameter(p);
@@ -269,7 +269,9 @@ void EditBuffer::setModulationSource(MacroControls src, const ParameterId &id)
 {
   if(auto p = dynamic_cast<ModulateableParameter *>(findParameterByID(id)))
   {
-    auto scope = getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
+    auto dual = isDual() && id.isDual();
+    auto scope = getUndoScope().startTransaction(
+        "Set MC Select for '%0'", dual ? p->getGroupAndParameterNameWithVoiceGroup() : p->getGroupAndParameterName());
     p->undoableSelectModSource(scope->getTransaction(), src);
   }
 }
@@ -278,8 +280,10 @@ void EditBuffer::setModulationAmount(double amount, const ParameterId &id)
 {
   if(auto p = dynamic_cast<ModulateableParameter *>(findParameterByID(id)))
   {
+    auto dual = isDual() && id.isDual();
     auto scope = getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
-                                                           p->getGroupAndParameterName());
+                                                           dual ? p->getGroupAndParameterNameWithVoiceGroup()
+                                                                : p->getGroupAndParameterName());
     p->undoableSetModAmount(scope->getTransaction(), amount);
   }
 }

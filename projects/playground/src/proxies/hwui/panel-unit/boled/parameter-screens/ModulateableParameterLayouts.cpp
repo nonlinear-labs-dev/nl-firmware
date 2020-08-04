@@ -294,7 +294,10 @@ bool ModulateableParameterSelectLayout2::onRotary(int inc, ButtonModifiers modif
     case Mode::MacroControlSelection:
       if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
       {
-        auto scope = p->getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
+        auto isDual = Application::get().getPresetManager()->getEditBuffer()->isDual() && p->getID().isDual();
+        auto scope = p->getUndoScope().startTransaction("Set MC Select for '%0'",
+                                                        isDual ? p->getGroupAndParameterNameWithVoiceGroup()
+                                                               : p->getGroupAndParameterName());
         p->undoableIncrementMCSelect(scope->getTransaction(), inc);
       }
 
@@ -303,8 +306,10 @@ bool ModulateableParameterSelectLayout2::onRotary(int inc, ButtonModifiers modif
     case Mode::MacroControlAmount:
       if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
       {
+        auto isDual = Application::get().getPresetManager()->getEditBuffer()->isDual() && p->getID().isDual();
         auto scope = p->getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
-                                                                  p->getGroupAndParameterName());
+                                                                  isDual ? p->getGroupAndParameterNameWithVoiceGroup()
+                                                                         : p->getGroupAndParameterName());
         p->undoableIncrementMCAmount(scope->getTransaction(), inc, modifiers);
       }
 
@@ -337,7 +342,10 @@ void ModulateableParameterSelectLayout2::setDefault()
     case Mode::MacroControlSelection:
       if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
       {
-        auto scope = p->getUndoScope().startTransaction("Set MC Select for '%0'", p->getLongName());
+        auto isDual = Application::get().getPresetManager()->getEditBuffer()->isDual() && p->getID().isDual();
+        auto scope = p->getUndoScope().startTransaction("Set MC Select for '%0'",
+                                                        isDual ? p->getGroupAndParameterNameWithVoiceGroup()
+                                                               : p->getGroupAndParameterName());
         p->undoableSelectModSource(scope->getTransaction(), MacroControls::NONE);
       }
 
