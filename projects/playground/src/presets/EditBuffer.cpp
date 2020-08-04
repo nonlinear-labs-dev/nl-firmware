@@ -244,10 +244,10 @@ void EditBuffer::setParameter(ParameterId id, double cpValue)
   {
     DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
     Glib::ustring name {};
-    if(m_type == SoundType::Single)
+    if(m_type == SoundType::Single || ParameterId::isGlobal(id.getNumber()))
       name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
     else
-      name = UNDO::StringTools::formatString("Set '%0' [%1]", p->getGroupAndParameterName(), id.toString());
+      name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterNameWithVoiceGroup());
 
     if(cpValue == p->getDefaultValue())
       name += " to Default";
@@ -321,11 +321,11 @@ bool EditBuffer::isDual() const
 
 void EditBuffer::undoableSelectParameter(Parameter *p)
 {
-  if(p->getID() != m_lastSelectedParameter)
+  if(p->getID().getNumber() != m_lastSelectedParameter.getNumber())
   {
     auto newSelection = p;
     auto scope = getUndoScope().startContinuousTransaction(&newSelection, std::chrono::hours(1), "Select '%0'",
-                                                           p->getGroupAndParameterNameWithVoiceGroup());
+                                                           p->getGroupAndParameterName());
     undoableSelectParameter(scope->getTransaction(), p);
   }
   else

@@ -7,6 +7,7 @@
 #include <libundo/undo/TransactionCreationScope.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameters/Parameter.h>
+#include <proxies/hwui/HWUI.h>
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
@@ -215,9 +216,8 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
-          auto eb = Application::get().getPresetManager()->getEditBuffer();
-
-          return SwitchVoiceGroupButton::toggleVoiceGroup();
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+          return true;
         }
         else if(!isCurrentParameterDisabled() && m_mode != Mode::MacroControlPosition && isAssigned)
         {

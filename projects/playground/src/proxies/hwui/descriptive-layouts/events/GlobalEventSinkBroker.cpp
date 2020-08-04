@@ -94,8 +94,7 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection,
-                  []() { SwitchVoiceGroupButton::toggleVoiceGroup(); });
+    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [hwui]() { hwui->toggleCurrentVoiceGroup(); });
 
     registerEvent(EventSinks::ToggleVoiceGroup, [hwui]() { hwui->toggleCurrentVoiceGroup(); });
 

@@ -134,8 +134,9 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
   {
     if(isParameterAvailableInSoundType(p))
     {
-      auto scope
-          = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterNameWithVoiceGroup());
+      auto name = ParameterId::isGlobal(p->getID().getNumber()) ? p->getGroupAndParameterName()
+                                                                : p->getGroupAndParameterNameWithVoiceGroup();
+      auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", name);
       p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
       return true;
     }
@@ -223,7 +224,8 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
       case Buttons::BUTTON_A:
         if(auto button = findControlOfType<SwitchVoiceGroupButton>())
         {
-          return SwitchVoiceGroupButton::toggleVoiceGroup();
+          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+          return true;
         }
         break;
 
