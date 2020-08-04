@@ -38,4 +38,5 @@ class NoteShiftStateMachine
   bool m_plusButtonState;
   bool m_minusButtonState;
   Expiration m_resetTimeout;
+  bool m_preventOctaveChange = false;
 };

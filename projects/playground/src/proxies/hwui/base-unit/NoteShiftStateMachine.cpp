@@ -99,6 +99,7 @@ bool NoteShiftStateMachine::setState(NoteShiftStates s)
   switch(s)
   {
     case NoteShiftStates::NOTE_SHIFT_STATE_INITIAL:
+      m_preventOctaveChange = false;
       break;
 
     case NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_INC_OCTAVE_OR_DEC_SEMITONE:
@@ -109,12 +110,16 @@ bool NoteShiftStateMachine::setState(NoteShiftStates s)
 
     case NoteShiftStates::NOTE_SHIFT_STATE_INC_SEMITONE:
       Application::get().getSettings()->getSetting<NoteShift>()->incSemiTone();
+      m_preventOctaveChange = true;
       m_resetTimeout.refresh(std::chrono::seconds(1));
       break;
 
     case NoteShiftStates::NOTE_SHIFT_STATE_INC_OCTAVE:
-      Application::get().getSettings()->getSetting<NoteShift>()->incOctave();
-      s = NoteShiftStates::NOTE_SHIFT_STATE_INITIAL;
+      if(!m_preventOctaveChange)
+      {
+        Application::get().getSettings()->getSetting<NoteShift>()->incOctave();
+        s = NoteShiftStates::NOTE_SHIFT_STATE_INITIAL;
+      }
       break;
 
     case NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_DEC_OCTAVE_OR_INC_SEMITONE:
@@ -122,6 +127,7 @@ bool NoteShiftStateMachine::setState(NoteShiftStates s)
 
     case NoteShiftStates::NOTE_SHIFT_STATE_DEC_SEMITONE:
       Application::get().getSettings()->getSetting<NoteShift>()->decSemiTone();
+      m_preventOctaveChange = true;
       m_resetTimeout.refresh(std::chrono::seconds(1));
       break;
 
@@ -129,8 +135,11 @@ bool NoteShiftStateMachine::setState(NoteShiftStates s)
       break;
 
     case NoteShiftStates::NOTE_SHIFT_STATE_DEC_OCTAVE:
-      Application::get().getSettings()->getSetting<NoteShift>()->decOctave();
-      s = NoteShiftStates::NOTE_SHIFT_STATE_INITIAL;
+      if(!m_preventOctaveChange)
+      {
+        Application::get().getSettings()->getSetting<NoteShift>()->decOctave();
+        s = NoteShiftStates::NOTE_SHIFT_STATE_INITIAL;
+      }
       break;
 
     case NoteShiftStates::NOTE_SHIFT_STATE_RESET:
