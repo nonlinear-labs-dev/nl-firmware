@@ -159,8 +159,13 @@ void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, cons
   if(newParam)
   {
     m_param = newParam;
-    m_selectedVoiceGroup = newParam->getID().getVoiceGroup();
-    setDirty();
+    
+    if(!ParameterId::isGlobal(newParam->getID().getNumber()))
+    {
+      m_selectedVoiceGroup = newParam->getID().getVoiceGroup();
+      setDirty();
+    }
+
     m_parameterChanged = newParam->onParameterChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterChanged));
   }
 }

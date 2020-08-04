@@ -219,12 +219,19 @@ const PresetManager *EditBuffer::getParent() const
 }
 
 sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s,
-                                                VoiceGroup initialVG)
+                                                std::optional<VoiceGroup> initialVG)
 {
-  return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected(initialVG));
+  if(initialVG.has_value())
+  {
+    return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected(initialVG.value()));
+  }
+  else
+  {
+    return m_signalSelectedParameter.connect(s);
+  }
 }
 
-void EditBuffer::undoableSelectParameter(ParameterId id)
+void EditBuffer::undoableSelectParameter(const ParameterId& id)
 {
   if(auto p = findParameterByID(id))
     undoableSelectParameter(p);

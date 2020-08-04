@@ -14,7 +14,7 @@ UpperRibbon::UpperRibbon()
   initLEDs();
 
   m_parameterSelectionChangedSignal = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &UpperRibbon::onParamSelectionChanged), VoiceGroup::Global);
+      sigc::mem_fun(this, &UpperRibbon::onParamSelectionChanged), {});
   m_settingChangedSignal = Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
       sigc::mem_fun(this, &UpperRibbon::onSettingChanged));
 }
