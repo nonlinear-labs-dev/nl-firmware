@@ -60,6 +60,30 @@ NoteShiftStateMachine::NoteShiftStateMachine()
 
   registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_INC_SEMITONE,
                     NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_RELEASED, NoteShiftStates::NOTE_SHIFT_STATE_INITIAL);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_RESET, NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_RELEASED,
+                    NoteShiftStates::NOTE_SHIFT_STATE_INITIAL);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_RESET, NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_RELEASED,
+                    NoteShiftStates::NOTE_SHIFT_STATE_INITIAL);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_RESET_DONE, NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_RELEASED,
+                    NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_INC_OCTAVE_OR_DEC_SEMITONE);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_RESET_DONE, NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_RELEASED,
+                    NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_DEC_OCTAVE_OR_INC_SEMITONE);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_INC_SEMITONE,
+                    NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_RELEASED, NoteShiftStates::NOTE_SHIFT_STATE_INITIAL);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_INC_SEMITONE,
+                    NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_RELEASED, NoteShiftStates::NOTE_SHIFT_STATE_INITIAL);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_DEC_SEMITONE,
+                    NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_RELEASED, NoteShiftStates::NOTE_SHIFT_STATE_INITIAL);
+
+  registerTraversal(NoteShiftStates::NOTE_SHIFT_STATE_WAIT_FOR_DEC_SEMITONE,
+                    NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_RELEASED, NoteShiftStates::NOTE_SHIFT_STATE_INITIAL);
 }
 
 bool NoteShiftStateMachine::traverse(NoteShiftEvents event)
@@ -144,10 +168,13 @@ bool NoteShiftStateMachine::setState(NoteShiftStates s)
 
     case NoteShiftStates::NOTE_SHIFT_STATE_RESET:
       Application::get().getSettings()->getSetting<NoteShift>()->set(0);
-      s = NoteShiftStates::NOTE_SHIFT_STATE_INITIAL;
+      s = NoteShiftStates::NOTE_SHIFT_STATE_RESET_DONE;
       break;
 
     case NoteShiftStates::NOTE_SHIFT_STATE_INVALID:
+      break;
+
+    case NoteShiftStates::NOTE_SHIFT_STATE_RESET_DONE:
       break;
   }
 
