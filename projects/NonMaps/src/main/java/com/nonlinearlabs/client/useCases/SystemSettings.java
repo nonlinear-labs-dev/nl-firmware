@@ -9,8 +9,6 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.DebugLevel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.VelocityCurve;
 
-import jdk.jfr.internal.settings.BooleanValue;
-
 public class SystemSettings {
 	private static SystemSettings theInstance = new SystemSettings();
 
