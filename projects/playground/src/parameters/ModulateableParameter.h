@@ -59,7 +59,6 @@ class ModulateableParameter : public Parameter
   std::pair<tControlPositionValue, tControlPositionValue> getModulationRange(bool clipped) const;
 
   bool isChangedFromLoaded() const override;
-  bool isValueChangedFromLoaded() const;
   bool isAnyModChanged() const;
   bool isModSourceChanged() const;
   bool isModAmountChanged() const;

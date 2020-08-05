@@ -16,6 +16,7 @@
 #include <proxies/hwui/controls/Button.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <parameters/ModulateableParameter.h>
+#include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
@@ -147,19 +148,15 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 
 void ParameterLayout2::handlePresetValueRecall()
 {
-  if(getCurrentParameter()->getParentGroup()->getID().getName() == "Part"
-     && Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Layer)
-    getOLEDProxy().setOverlay(new PartMasterRecallLayout2());
-  else if(auto editParam = getCurrentEditParameter())
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  if(auto editParam = getCurrentEditParameter())
   {
-    if(auto modParam = dynamic_cast<ModulateableParameter *>(editParam))
+    if(editParam->isValueChangedFromLoaded())
     {
-      if(modParam->isValueChangedFromLoaded())
+      if(editParam->getParentGroup()->getID().getName() == "Part" && eb->getType() == SoundType::Layer)
+        getOLEDProxy().setOverlay(new PartMasterRecallLayout2());
+      else
         getOLEDProxy().setOverlay(new ParameterRecallLayout2());
-    }
-    else if(editParam->isChangedFromLoaded())
-    {
-      getOLEDProxy().setOverlay(new ParameterRecallLayout2());
     }
   }
 }

@@ -411,11 +411,6 @@ Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPosi
   return ret;
 }
 
-bool ModulateableParameter::isValueChangedFromLoaded() const
-{
-  return Parameter::isChangedFromLoaded();
-}
-
 bool ModulateableParameter::isChangedFromLoaded() const
 {
   return isAnyModChanged() || Parameter::isChangedFromLoaded();
