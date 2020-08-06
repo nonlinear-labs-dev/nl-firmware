@@ -351,8 +351,8 @@ BankActions::BankActions(PresetManager &presetManager)
         auto scope = undoScope.startTransaction("Append Preset to Bank '%0'", bank->getName(true));
         auto transaction = scope->getTransaction();
 
-        auto newPreset = std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer());
-        auto tgtPreset = bank->appendAndLoadPreset(transaction, std::move(newPreset));
+        auto newPreset = std::make_unique<Preset>(bank, *srcPreset, true);
+        auto tgtPreset = bank->appendPreset(transaction, std::move(newPreset));
 
         bank->selectPreset(transaction, tgtPreset->getUuid());
         m_presetManager.selectBank(transaction, bank->getUuid());
@@ -912,7 +912,7 @@ Bank *BankActions::importBank(UNDO::Transaction *transaction, InStream &stream, 
 {
   auto autoLoadOff = Application::get().getSettings()->getSetting<DirectLoadSetting>()->scopedOverlay(
       BooleanSettings::BOOLEAN_SETTING_FALSE);
-  
+
   auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
 
   XmlReader reader(stream, transaction);
