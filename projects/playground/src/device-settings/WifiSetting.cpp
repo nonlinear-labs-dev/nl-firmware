@@ -1,4 +1,5 @@
 #include <nltools/system/SpawnCommandLine.h>
+#include <nltools/system/SpawnAsyncCommandLine.h>
 #include "WifiSetting.h"
 #include "DebugLevel.h"
 
@@ -14,13 +15,14 @@ bool WifiSetting::set(tEnum m)
 #ifndef _DEVELOPMENT_PC
   if(get())
   {
-    SpawnCommandLine cmd("ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'systemctl enable accesspoint && "\
-                         "systemctl start accesspoint'");
+    SpawnAsyncCommandLine cmd("ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'systemctl enable accesspoint && "
+                              "systemctl start accesspoint'");
   }
   else
   {
-    SpawnCommandLine cmd("ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'systemctl disable accesspoint && "\
-                         "systemctl stop accesspoint'");
+    SpawnAsyncCommandLine cmd(
+        "ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'systemctl disable accesspoint && "
+        "systemctl stop accesspoint'");
   }
 #endif
   return ret;
