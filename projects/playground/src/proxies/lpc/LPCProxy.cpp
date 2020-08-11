@@ -398,7 +398,14 @@ void LPCProxy::requestLPCSoftwareVersion()
   DebugLevel::info("sending request", MessageParser::SOFTWARE_VERSION);
 }
 
-int LPCProxy::getLPCSoftwareVersion() const
+std::string LPCProxy::getLPCSoftwareVersion() const
 {
-  return m_lpcSoftwareVersion;
+  if(m_lpcSoftwareVersion == -1)
+  {
+    return "-";
+  }
+  else
+  {
+    return std::to_string(m_lpcSoftwareVersion);
+  }
 }
