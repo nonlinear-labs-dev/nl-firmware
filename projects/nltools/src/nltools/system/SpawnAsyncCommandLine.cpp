@@ -5,6 +5,7 @@ SpawnAsyncCommandLine::SpawnAsyncCommandLine(const std::string& command)
     : m_command { command }
 {
   m_thread = std::thread([&]() {
+    nltools::Log::warning("Spawning Async Command", command);
     SpawnCommandLine cmd(command);
     nltools::Log::warning("Async Command", command, "out:", cmd.getStdOutput(), "err:", cmd.getStdError());
   });

@@ -1,5 +1,6 @@
 #include <nltools/system/SpawnCommandLine.h>
 #include <nltools/system/SpawnAsyncCommandLine.h>
+#include <Application.h>
 #include "WifiSetting.h"
 #include "DebugLevel.h"
 
@@ -12,6 +13,7 @@ bool WifiSetting::set(tEnum m)
 {
   auto ret = super::set(m);
 
+  Application::get().stopWatchDog();
 #ifndef _DEVELOPMENT_PC
   if(get())
   {
@@ -25,6 +27,8 @@ bool WifiSetting::set(tEnum m)
         "systemctl stop accesspoint'");
   }
 #endif
+
+  Application::get().runWatchDog();
   return ret;
 }
 
