@@ -68,35 +68,24 @@ void MCAssignedIndicator::drawArrow(FrameBuffer& fb) const
 
 void MCAssignedIndicator::drawSingle(FrameBuffer& fb, const AffectedGroups& mods)
 {
-  std::stringstream ss;
+  std::string indicator;
 
   if(mods.mono[0])
-  {
-    ss << "\uE040";
-    if(mods.scale || mods.master || mods.unison[0])
-      ss << " ";
-  }
+    indicator += "\uE040 ";
 
   if(mods.unison[0])
-  {
-    ss << "\uE041";
-    if(mods.scale || mods.master)
-      ss << " ";
-  }
+    indicator += "\uE041 ";
 
   if(mods.scale)
-  {
-    ss << "S";
-    if(mods.master)
-      ss << " ";
-  }
+    indicator += "S ";
 
   if(mods.master)
-  {
-    ss << "M";
-  }
+    indicator += "M ";
 
-  m_middleRowLabel->setText({ ss.str(), 0 });
+  if(!indicator.empty())
+    indicator.pop_back();
+
+  m_middleRowLabel->setText({ indicator, 0 });
   m_middleRowLabel->redraw(fb);
 
   if(mods.affected(SoundType::Single))
@@ -107,67 +96,50 @@ void MCAssignedIndicator::drawSingle(FrameBuffer& fb, const AffectedGroups& mods
 
 void MCAssignedIndicator::drawSplit(FrameBuffer& fb, const AffectedGroups& mods)
 {
-  std::stringstream middleSs;
-  std::stringstream topSs;
-  std::stringstream bottomSs;
+  std::string globalIndicator;
+  std::string partIIndicator;
+  std::string partIIIndicator;
 
   if(mods.mono[0])
-  {
-    topSs << "\uE040";
-    if(mods.unison[0] || mods.part[0])
-      topSs << " ";
-  }
+    partIIndicator += "\uE040 ";
 
   if(mods.mono[1])
-  {
-    bottomSs << "\uE040";
-    if(mods.unison[1] || mods.part[1])
-      bottomSs << " ";
-  }
+    partIIIndicator += "\uE040 ";
 
   if(mods.unison[0])
-  {
-    topSs << "\uE041";
-    if(mods.part[0])
-      topSs << " ";
-  }
+    partIIndicator += "\uE041 ";
 
   if(mods.unison[1])
-  {
-    bottomSs << "\uE041";
-    if(mods.part[1])
-      bottomSs << " ";
-  }
+    partIIIndicator += "\uE041 ";
 
   if(mods.scale)
-  {
-    middleSs << "S";
-    if(mods.master)
-      middleSs << " ";
-  }
+    globalIndicator += "S ";
 
   if(mods.master)
-  {
-    middleSs << "M";
-  }
+    globalIndicator += "M ";
 
   if(mods.part[0])
-  {
-    topSs << "P";
-  }
+    partIIndicator += "P ";
 
   if(mods.part[1])
-  {
-    bottomSs << "P";
-  }
+    partIIIndicator += "P ";
 
-  m_topRowLabel->setText({ topSs.str(), 0 });
+  if(!partIIndicator.empty())
+    partIIndicator.pop_back();
+
+  if(!partIIIndicator.empty())
+    partIIIndicator.pop_back();
+
+  if(!globalIndicator.empty())
+    globalIndicator.pop_back();
+
+  m_topRowLabel->setText({ partIIndicator, 0 });
   m_topRowLabel->redraw(fb);
 
-  m_middleRowLabel->setText({ middleSs.str(), 0 });
+  m_middleRowLabel->setText({ globalIndicator, 0 });
   m_middleRowLabel->redraw(fb);
 
-  m_bottomRowLabel->setText({ bottomSs.str(), 0 });
+  m_bottomRowLabel->setText({ partIIIndicator, 0 });
   m_bottomRowLabel->redraw(fb);
 
   if(mods.affected(SoundType::Split))
@@ -178,33 +150,19 @@ void MCAssignedIndicator::drawSplit(FrameBuffer& fb, const AffectedGroups& mods)
 
 void MCAssignedIndicator::drawLayer(FrameBuffer& fb, const AffectedGroups& mods)
 {
-  std::stringstream ss;
+  std::string indicaton;
 
   if(mods.mono[0])
-  {
-    ss << "\uE040";
-    if(mods.unison[0] || mods.master || mods.scale)
-      ss << " ";
-  }
+    indicaton += "\uE040 ";
 
   if(mods.unison[0])
-  {
-    ss << "\uE041";
-    if(mods.master || mods.scale)
-      ss << " ";
-  }
+    indicaton += "\uE041 ";
 
   if(mods.scale)
-  {
-    ss << "S";
-    if(mods.master)
-      ss << " ";
-  }
+    indicaton += "S ";
 
   if(mods.master)
-  {
-    ss << "M";
-  }
+    indicaton += "M ";
 
   if(mods.part[0])
   {
@@ -218,7 +176,10 @@ void MCAssignedIndicator::drawLayer(FrameBuffer& fb, const AffectedGroups& mods)
     m_bottomRowLabel->redraw(fb);
   }
 
-  m_middleRowLabel->setText({ ss.str(), 0 });
+  if(!indicaton.empty())
+    indicaton.pop_back();
+
+  m_middleRowLabel->setText({ indicaton, 0 });
   m_middleRowLabel->redraw(fb);
 
   if(mods.affected(SoundType::Layer))
