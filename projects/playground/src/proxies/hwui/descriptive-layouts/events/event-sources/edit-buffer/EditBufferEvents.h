@@ -128,19 +128,17 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override;
   };
 
-  class AnyLayerCrossFBToI : public EditBufferEvent<bool>
+  class AnyLayerCrossFBFromII : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;
   };
 
-  class AnyLayerCrossFBToII : public EditBufferEvent<bool>
+  class AnyLayerCrossFBFromI : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;
   };
-
-  //ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0
 
   class ToFXIUnder100 : public EditBufferEvent<bool>
   {

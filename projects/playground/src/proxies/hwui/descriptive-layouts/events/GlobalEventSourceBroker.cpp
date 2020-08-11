@@ -115,8 +115,8 @@ namespace DescriptiveLayouts
     m_map[EventSources::UnisonButtonText] = std::make_unique<UnisonButtonText>();
 
     m_map[EventSources::AnyLayerCrossFB] = std::make_unique<AnyLayerCrossFB>();
-    m_map[EventSources::AnyLayerCrossFBToI] = std::make_unique<AnyLayerCrossFBToI>();
-    m_map[EventSources::AnyLayerCrossFBToII] = std::make_unique<AnyLayerCrossFBToII>();
+    m_map[EventSources::AnyLayerCrossFBToI] = std::make_unique<AnyLayerCrossFBFromII>();
+    m_map[EventSources::AnyLayerCrossFBToII] = std::make_unique<AnyLayerCrossFBFromI>();
 
     m_map[EventSources::ToFXIUnder100] = std::make_unique<ToFXIUnder100>();
     m_map[EventSources::ToFXIOver0] = std::make_unique<ToFXIOver0>();

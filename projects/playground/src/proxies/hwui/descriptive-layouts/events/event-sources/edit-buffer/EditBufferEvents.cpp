@@ -211,14 +211,14 @@ void DescriptiveLayouts::AnyLayerCrossFB::onChange(const EditBuffer *eb)
       ParameterId(C15::PID::FB_Mix_FX_Src, VoiceGroup::I), ParameterId(C15::PID::FB_Mix_FX_Src, VoiceGroup::II)));
 }
 
-void DescriptiveLayouts::AnyLayerCrossFBToI::onChange(const EditBuffer *eb)
+void DescriptiveLayouts::AnyLayerCrossFBFromII::onChange(const EditBuffer *eb)
 {
   setValue(anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::II },
                                      ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::II },
                                      ParameterId { C15::PID::FB_Mix_FX_Src, VoiceGroup ::II }));
 }
 
-void DescriptiveLayouts::AnyLayerCrossFBToII::onChange(const EditBuffer *eb)
+void DescriptiveLayouts::AnyLayerCrossFBFromI::onChange(const EditBuffer *eb)
 {
   setValue(anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::I },
                                      ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::I },
