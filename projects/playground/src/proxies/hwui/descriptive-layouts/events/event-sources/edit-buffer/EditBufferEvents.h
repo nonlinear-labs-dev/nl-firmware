@@ -162,8 +162,6 @@ namespace DescriptiveLayouts
 
   template <VoiceGroup vg> void DescriptiveLayouts::LayerOwnFB<vg>::onChange(const EditBuffer *eb)
   {
-    //ungleich 0: FBMixer Comb, SVF, Effects
-    // From I ungleich 100%
     auto fbComb = eb->findParameterByID({ C15::PID::FB_Mix_Comb, vg });
     auto svf = eb->findParameterByID({ C15::PID::FB_Mix_SVF, vg });
     auto effects = eb->findParameterByID({ C15::PID::FB_Mix_FX, vg });
@@ -183,13 +181,13 @@ namespace DescriptiveLayouts
     setValue(combOwn || svfOwn || fxOwn);
   }
 
-  class LayerIFBToII : public EditBufferEvent<bool>
+  class LayerIFBFromII : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;
   };
 
-  class LayerIIFBToI : public EditBufferEvent<bool>
+  class LayerIIFBFromI : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;

@@ -207,7 +207,6 @@ void DescriptiveLayouts::AnyLayerCrossFB::onChange(const EditBuffer *eb)
 {
   setValue(anyControlPositionNotZero(
       eb, ParameterId(C15::PID::FB_Mix_Comb_Src, VoiceGroup::I), ParameterId(C15::PID::FB_Mix_Comb_Src, VoiceGroup::II),
-      ParameterId(C15::PID::FB_Mix_Osc_Src, VoiceGroup::I), ParameterId(C15::PID::FB_Mix_Osc_Src, VoiceGroup::II),
       ParameterId(C15::PID::FB_Mix_SVF_Src, VoiceGroup::I), ParameterId(C15::PID::FB_Mix_SVF_Src, VoiceGroup::II),
       ParameterId(C15::PID::FB_Mix_FX_Src, VoiceGroup::I), ParameterId(C15::PID::FB_Mix_FX_Src, VoiceGroup::II)));
 }
@@ -215,7 +214,6 @@ void DescriptiveLayouts::AnyLayerCrossFB::onChange(const EditBuffer *eb)
 void DescriptiveLayouts::AnyLayerCrossFBToI::onChange(const EditBuffer *eb)
 {
   setValue(anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::II },
-                                     ParameterId { C15::PID::FB_Mix_Osc_Src, VoiceGroup::II },
                                      ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::II },
                                      ParameterId { C15::PID::FB_Mix_FX_Src, VoiceGroup ::II }));
 }
@@ -223,7 +221,6 @@ void DescriptiveLayouts::AnyLayerCrossFBToI::onChange(const EditBuffer *eb)
 void DescriptiveLayouts::AnyLayerCrossFBToII::onChange(const EditBuffer *eb)
 {
   setValue(anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::I },
-                                     ParameterId { C15::PID::FB_Mix_Osc_Src, VoiceGroup::I },
                                      ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::I },
                                      ParameterId { C15::PID::FB_Mix_FX_Src, VoiceGroup ::I }));
 }
@@ -248,28 +245,44 @@ void DescriptiveLayouts::ToFXIIOver0::onChange(const EditBuffer *eb)
   setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() > 0);
 }
 
-void DescriptiveLayouts::LayerIIFBToI::onChange(const EditBuffer *eb)
+void DescriptiveLayouts::LayerIIFBFromI::onChange(const EditBuffer *eb)
 {
   auto oscFB = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Osc, VoiceGroup::II });
 
-  auto state = anyControlPositionNotZero(
-      eb, ParameterId { C15::PID::FB_Mix_Comb, VoiceGroup::II },
-      ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::II }, ParameterId { C15::PID::FB_Mix_SVF, VoiceGroup::II },
-      ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::II }, ParameterId { C15::PID::FB_Mix_FX, VoiceGroup::II },
-      ParameterId { C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
+  auto combMix = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb, VoiceGroup::II });
+  auto combSrc = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::II });
+  auto comb = combMix && combSrc;
+
+  auto svfMix = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_SVF, VoiceGroup::II });
+  auto svfSrc = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::II });
+  auto svf = svfMix && svfSrc;
+
+  auto fxMix = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_FX, VoiceGroup::II });
+  auto fxSrc = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
+  auto fx = fxMix && fxSrc;
+
+  auto state = comb || svf || fx;
 
   setValue(oscFB || state);
 }
 
-void DescriptiveLayouts::LayerIFBToII::onChange(const EditBuffer *eb)
+void DescriptiveLayouts::LayerIFBFromII::onChange(const EditBuffer *eb)
 {
   auto oscFB = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Osc, VoiceGroup::I });
 
-  auto state = anyControlPositionNotZero(
-      eb, ParameterId { C15::PID::FB_Mix_Comb, VoiceGroup::I },
-      ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::I }, ParameterId { C15::PID::FB_Mix_SVF, VoiceGroup::I },
-      ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::I }, ParameterId { C15::PID::FB_Mix_FX, VoiceGroup::I },
-      ParameterId { C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  auto combMix = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb, VoiceGroup::I });
+  auto combSrc = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Comb_Src, VoiceGroup::I });
+  auto comb = combMix && combSrc;
+
+  auto svfMix = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_SVF, VoiceGroup::I });
+  auto svfSrc = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_SVF_Src, VoiceGroup::I });
+  auto svf = svfMix && svfSrc;
+
+  auto fxMix = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_FX, VoiceGroup::I });
+  auto fxSrc = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  auto fx = fxMix && fxSrc;
+
+  auto state = comb || svf || fx;
 
   setValue(oscFB || state);
 }
