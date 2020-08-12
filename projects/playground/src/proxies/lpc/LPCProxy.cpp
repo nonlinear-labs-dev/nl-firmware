@@ -129,8 +129,6 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
   uint16_t id = msg.params[0];
   uint16_t value = msg.params[1];
 
-  nltools::Log::info("received ID:", id, "from LPC with value:", value);
-
   if(id == MessageParser::SOFTWARE_VERSION)
   {
     if(m_lpcSoftwareVersion != value)
