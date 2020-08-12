@@ -86,12 +86,12 @@
         "FBIToII": {
           "Class": "DiagonalDownArrow",
           "Position": "30, 19",
-          "Events": "LayerIIFBToI => ANY[Visibility]"
+          "Events": "LayerIFBToII => ANY[Visibility]"
         },
         "FBIIToI": {
           "Class": "DiagonalUpArrow",
           "Position": "30, 22",
-          "Events": "LayerIFBToII => ANY[Visibility]"
+          "Events": "LayerIIFBToI => ANY[Visibility]"
         },
         "FX_R": {
           "Class": "FX_Label_R",
