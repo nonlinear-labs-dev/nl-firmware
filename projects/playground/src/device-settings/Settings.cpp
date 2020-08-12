@@ -93,9 +93,7 @@ Settings::Settings(UpdateDocumentMaster *master)
 
 Settings::~Settings()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   save();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 Settings::tUpdateID Settings::onChange(uint64_t flags)
