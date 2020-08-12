@@ -4,6 +4,7 @@
 SpawnAsyncCommandLine::SpawnAsyncCommandLine(const std::string& command)
     : m_command { command }
 {
+  nltools::Log::warning(__LINE__, __PRETTY_FUNCTION__, command);
   m_thread = std::thread([&]() {
     nltools::Log::warning("Spawning Async Command", command);
     SpawnCommandLine cmd(command);

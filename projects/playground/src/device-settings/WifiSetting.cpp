@@ -12,13 +12,16 @@ WifiSetting::WifiSetting(UpdateDocumentContributor& settings)
 bool WifiSetting::set(tEnum m)
 {
   auto ret = super::set(m);
+  nltools::Log::error(__LINE__, __PRETTY_FUNCTION__, to_string(m));
 
   Application::get().stopWatchDog();
+  nltools::Log::error(__LINE__, __PRETTY_FUNCTION__, "Stopping Watchdog!");
 #ifndef _DEVELOPMENT_PC
   if(get())
   {
-    SpawnAsyncCommandLine cmd("ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'systemctl enable accesspoint && "
-                              "systemctl start accesspoint'");
+    SpawnAsyncCommandLine cmd(
+        "ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 'systemctl enable accesspoint && "
+        "systemctl start accesspoint'");
   }
   else
   {
@@ -27,7 +30,7 @@ bool WifiSetting::set(tEnum m)
         "systemctl stop accesspoint'");
   }
 #endif
-
+  nltools::Log::error(__LINE__, __PRETTY_FUNCTION__, "Starting Watchdog!");
   Application::get().runWatchDog();
   return ret;
 }
