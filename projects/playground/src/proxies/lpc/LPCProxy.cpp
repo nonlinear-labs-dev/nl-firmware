@@ -129,6 +129,8 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
   uint16_t id = msg.params[0];
   uint16_t value = msg.params[1];
 
+  nltools::Log::warning("received ID:", id, "from LPC with value:", value);
+
   if(id == MessageParser::SOFTWARE_VERSION)
   {
     if(m_lpcSoftwareVersion != value)
@@ -141,6 +143,7 @@ void LPCProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg
 
 void LPCProxy::onLPCConnected()
 {
+  nltools::Log::warning(__LINE__, __PRETTY_FUNCTION__);
   sendCalibrationData();
   requestLPCSoftwareVersion();
 }
@@ -395,7 +398,7 @@ void LPCProxy::requestLPCSoftwareVersion()
   *cmp << v;
   queueToLPC(cmp);
 
-  DebugLevel::info("sending request", MessageParser::SOFTWARE_VERSION);
+  DebugLevel::warning("sending request SOFTWARE_VERSION to LPC");
 }
 
 std::string LPCProxy::getLPCSoftwareVersion() const
