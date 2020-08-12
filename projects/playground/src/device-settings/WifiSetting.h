@@ -2,12 +2,15 @@
 
 #include "BooleanSetting.h"
 
-class WifiSetting : public BooleanSetting
+class WifiSetting : public BooleanSetting, public sigc::trackable
 {
  public:
   typedef BooleanSetting super;
   explicit WifiSetting(UpdateDocumentContributor& settings);
 
   bool set(tEnum m) override;
-  static bool pollAccessPointRunning();
+
+ private:
+  void pollAccessPointRunning();
+  void onPollReturned(GPid pid, int result);
 };
