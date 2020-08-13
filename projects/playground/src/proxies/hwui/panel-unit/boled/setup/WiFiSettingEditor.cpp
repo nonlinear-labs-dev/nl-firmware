@@ -3,6 +3,10 @@
 #include "WiFiSettingEditor.h"
 #include <device-settings/Settings.h>
 
+#warning("known problems)
+// - when switching, the current poll might return with the wrong value, fixing itself only after ip to 10 sec
+// - after update with disabled wifi, the masking link in /etc will be removed, thus activating the wifi
+
 WiFiSettingEditor::WiFiSettingEditor()
 {
   Application::get().getSettings()->getSetting<WifiSetting>()->onChange(
