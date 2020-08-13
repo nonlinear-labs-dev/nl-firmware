@@ -306,11 +306,11 @@ public class CompareDialog extends GWTDialog {
 			table.getWidget(row, 0).getElement().addClassName("indent-1");
 			row++;
 
-			if(!aFound || !bFound) {
-				row = writeMissingParameter(row, aFound, bFound);
-			} else if(aFound && bFound) {
+			if(aFound && bFound) {
 				for (Node change : elements)
 					row = writeParameterChange(row, paramName, change);
+			} else {
+				row = writeMissingParameter(row, aFound, bFound);
 			}
 		}
 		return row;

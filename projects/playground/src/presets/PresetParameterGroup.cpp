@@ -76,12 +76,33 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
   auto name = group->getLongName();
 
   writer.writeTag("group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"), [&] {
-    auto numP = m_parameters.size();
+    const auto parameterCount = m_parameters.size();
+    const auto otherParameterCount = other->getParameters().size();
+
+    std::vector<int> writtenParameters;
 
     for(auto &parameter : m_parameters)
     {
       auto otherParameter = other->findParameterByID({ parameter.first.getNumber(), other->getVoiceGroup() });
       parameter.second->writeDiff(writer, parameter.first, otherParameter);
+      writtenParameters.emplace_back(parameter.first.getNumber());
+    }
+
+    if(parameterCount < otherParameterCount)
+    {
+      for(auto &parameter : other->getParameters())
+      {
+        if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter.first.getNumber())
+           == writtenParameters.end())
+        {
+          if(auto ebParam = eb->findParameterByID(parameter.first))
+          {
+            auto paramName = ebParam->getLongName();
+            writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
+                            Attribute("bfound", "true"), [] {});
+          }
+        }
+      }
     }
   });
 }
