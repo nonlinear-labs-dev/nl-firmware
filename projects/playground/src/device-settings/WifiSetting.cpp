@@ -3,11 +3,13 @@
 #include <nltools/Types.h>
 #include <nltools/logging/Log.h>
 #include <glibmm.h>
+#include <arpa/inet.h>
 
 WifiSetting::WifiSetting(UpdateDocumentContributor& settings)
-    : BooleanSetting(settings, true)
+    : super(settings, WifiSettings::Querying)
 {
-  pollAccessPointRunning();
+  Glib::MainContext::get_default()->signal_timeout().connect_seconds(
+      sigc::mem_fun(this, &WifiSetting::pollAccessPointRunning), 10);
 }
 
 bool WifiSetting::set(tEnum m)
@@ -16,14 +18,14 @@ bool WifiSetting::set(tEnum m)
 
   if(!isDevelopmentPC)
   {
-    if(get())
+    if(get() == WifiSettings::Enabled)
     {
       nltools::Log::warning("async enabling accesspoint");
       Glib::spawn_command_line_async(
           "ssh -o \"StrictHostKeyChecking=no\" root@192.168.10.11 "
           "\"systemctl unmask accesspoint; systemctl enable accesspoint; systemctl start accesspoint\"");
     }
-    else
+    else if(get() == WifiSettings::Disabled)
     {
       nltools::Log::warning("async disabling accesspoint");
       Glib::spawn_command_line_async(
@@ -35,14 +37,17 @@ bool WifiSetting::set(tEnum m)
   return ret;
 }
 
-void WifiSetting::pollAccessPointRunning()
+bool WifiSetting::persistent() const
+{
+  return false;
+}
+
+bool WifiSetting::pollAccessPointRunning()
 {
   if(!isDevelopmentPC)
   {
-    nltools::Log::warning("async polling accesspoint");
-
-    std::vector<std::string> args { "/usr/bin/ssh", "-o",        "StrictHostKeyChecking=no", "root@192.168.10.11",
-                                    "systemctl",    "is-active", "accesspoint.service" };
+    std::vector<std::string> args{ "/usr/bin/ssh", "-o",        "StrictHostKeyChecking=no", "root@192.168.10.11",
+                                   "systemctl",    "is-active", "accesspoint.service" };
 
     GPid pid;
     try
@@ -56,10 +61,18 @@ void WifiSetting::pollAccessPointRunning()
       nltools::Log::error(e.what());
     }
   }
+
+  return true;
 }
 
 void WifiSetting::onPollReturned(GPid pid, int exitStatus)
 {
-  nltools::Log::warning("async polling accesspoint returned with resul  t", exitStatus);
-  set(exitStatus == 0 ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE);
+  if(exitStatus == 0)
+  {
+    super::set(WifiSettings::Enabled);
+  }
+  else if(exitStatus == (3 << 8))
+  {
+    super::set(WifiSettings::Disabled);
+  }
 }
