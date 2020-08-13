@@ -342,9 +342,13 @@ public class CompareDialog extends GWTDialog {
 	}
 
 	protected void refresh() {
-		VoiceGroup vgA = selectVGA.getSelectedIndex() == 0 ? VoiceGroup.I : VoiceGroup.II;
-		VoiceGroup vgB = selectVGB.getSelectedIndex() == 0 ? VoiceGroup.I : VoiceGroup.II;
-		load(presetA, vgA, presetB, vgB);
+		if(selectVGA != null && selectVGB != null) {
+			VoiceGroup vgA = selectVGA.getSelectedIndex() == 0 ? VoiceGroup.I : VoiceGroup.II;
+			VoiceGroup vgB = selectVGB.getSelectedIndex() == 0 ? VoiceGroup.I : VoiceGroup.II;
+			load(presetA, vgA, presetB, vgB);
+		} else {
+			load(presetA, VoiceGroup.I, presetB, VoiceGroup.I);
+		}
 	}
 
 	public void update() {
@@ -436,6 +440,15 @@ public class CompareDialog extends GWTDialog {
 		selectVGB.addChangeHandler(v -> {
 			refresh();
 		});
+
+		boolean aActive = (presetA != null && presetA.isDual()) || (presetA == null && ebType != SoundType.Single);
+		boolean bActive = (presetB != null && presetB.isDual()) || (presetB == null && ebType != SoundType.Single);
+		selectVGA.setVisible(aActive);
+		selectVGB.setVisible(bActive);
+		if(!aActive)
+			selectVGA.setHeight("0px");
+		if(!bActive)
+			selectVGB.setHeight("0px");
 	}
 
 	private String translateChangeValue(String paramName, String nodeName, String nodeValue) {
