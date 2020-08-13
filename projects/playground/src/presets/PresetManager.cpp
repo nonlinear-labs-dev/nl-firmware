@@ -26,6 +26,7 @@
 #include <tools/StringTools.h>
 #include <presets/PresetPartSelection.h>
 #include <parameter_declarations.h>
+#include <presets/PresetParameter.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -571,7 +572,14 @@ void PresetManager::setOrderNumber(UNDO::Transaction *transaction, const Uuid &b
 
 void PresetManager::resetInitSound(UNDO::Transaction *transaction)
 {
-  auto cleanPreset = std::make_unique<Preset>(this);
+  auto eb = getEditBuffer();
+  auto cleanPreset = std::make_unique<Preset>(this, *eb);
+
+  cleanPreset->forEachParameter([&](PresetParameter *p) {
+    auto src = eb->findParameterByID(p->getID());
+    p->setValue(transaction, src->getValue().getFactoryDefaultValue());
+  });
+
   auto swap = UNDO::createSwapData(std::move(cleanPreset));
 
   transaction->addSimpleCommand([swap, this](auto) {
@@ -755,7 +763,7 @@ void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
   {
     m_editBuffer->undoableSelectParameter(trans, param);
   }
-  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers {});
+  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers{});
 }
 
 void PresetManager::stressAllParams(int numParamChangedForEachParameter)
@@ -834,7 +842,7 @@ void PresetManager::incAllParamsFine()
         for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
           for(auto &group : m_editBuffer->getParameterGroups(vg))
             for(auto &param : group->getParameters())
-              param->stepCPFromHwui(trans, 1, ButtonModifiers { ButtonModifier::FINE });
+              param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
       },
       0);
 }
