@@ -19,6 +19,7 @@ import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.ServerProxy.DownloadHandler;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -80,6 +81,11 @@ public class CompareDialog extends GWTDialog {
 			addHeader("Compare Two Presets");
 
 		load(p1, VoiceGroup.I, p2, VoiceGroup.I);
+
+		EditBufferModel.get().loadedPreset.onChange(uuid -> {
+			refresh();
+			return true;
+		});
 	}
 
 	public void downloadPresets(Preset p1, Preset p2) {
