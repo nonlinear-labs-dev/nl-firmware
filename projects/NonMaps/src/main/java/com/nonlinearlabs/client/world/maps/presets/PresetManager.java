@@ -671,6 +671,8 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M && NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			Window.open("/NonMaps/MCView/index.html", "", "");
 		} else {
 			return null;
 		}
