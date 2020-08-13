@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.overlay;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -221,6 +222,7 @@ public class CompareDialog extends GWTDialog {
 		order.add("Macro Control");
 		order.add("Scale");
 		order.add("Part");
+		order.add("Split");
 		return order;
 	}
 
@@ -245,27 +247,38 @@ public class CompareDialog extends GWTDialog {
 	}
 
 	public int writeParameterGroup(int row, Node group) {
+		boolean aFound = Boolean.parseBoolean(group.getAttributes().getNamedItem("afound").getNodeValue());
+		boolean bFound = Boolean.parseBoolean(group.getAttributes().getNamedItem("bfound").getNodeValue());		
+		
 		table.setText(row, 0, group.getAttributes().getNamedItem("name").getNodeValue());
-		row++;
-		int startedAtRow = row;
+		
+		if(aFound && bFound) {
+			row++;
+			int startedAtRow = row;
 
-		NodeList params = group.getChildNodes();
-
-		int numParams = params.getLength();
-
-		for (int numParam = 0; numParam < numParams; numParam++) {
-			Node param = params.item(numParam);
-
-			if (param.getNodeType() == Node.ELEMENT_NODE) {
-				row = writeParameter(row, param);
+			NodeList params = group.getChildNodes();
+	
+			int numParams = params.getLength();
+	
+			for (int numParam = 0; numParam < numParams; numParam++) {
+				Node param = params.item(numParam);
+	
+				if (param.getNodeType() == Node.ELEMENT_NODE) {
+					row = writeParameter(row, param);
+				}
 			}
+	
+			if (row == startedAtRow) {
+				table.removeRow(row - 1);
+				row--;
+			}
+			return row;
+		} else {
+			table.setText(row, 1, aFound ? "Found" : "Missing");
+			table.setText(row, 2, bFound ? "Found" : "Missing");
+			row++;
+			return row;
 		}
-
-		if (row == startedAtRow) {
-			table.removeRow(row - 1);
-			row--;
-		}
-		return row;
 	}
 
 	public int writeParameter(int row, Node param) {
@@ -281,15 +294,32 @@ public class CompareDialog extends GWTDialog {
 			}
 		}
 
+		String afoundStr = param.getAttributes().getNamedItem("afound").getNodeValue();
+		String bfoundStr = param.getAttributes().getNamedItem("bfound").getNodeValue();
+		boolean aFound = Boolean.parseBoolean(afoundStr);
+		boolean bFound = Boolean.parseBoolean(bfoundStr);
+
 		if (!elements.isEmpty()) {
 			String paramName = param.getAttributes().getNamedItem("name").getNodeValue();
+
 			table.setWidget(row, 0, new HTMLPanel("span", indent + paramName));
 			table.getWidget(row, 0).getElement().addClassName("indent-1");
 			row++;
 
-			for (Node change : elements)
-				row = writeParameterChange(row, paramName, change);
+			if(!aFound || !bFound) {
+				row = writeMissingParameter(row, aFound, bFound);
+			} else if(aFound && bFound) {
+				for (Node change : elements)
+					row = writeParameterChange(row, paramName, change);
+			}
 		}
+		return row;
+	}
+
+	public int writeMissingParameter(int row, boolean aFound, boolean bFound) {
+		table.setText(row - 1, 1, aFound ? "Present" : "Missing");
+		table.setText(row - 1, 2, bFound ? "Present" : "Missing");
+		row++;
 		return row;
 	}
 

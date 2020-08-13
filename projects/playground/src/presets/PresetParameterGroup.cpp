@@ -66,12 +66,18 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
 {
   if(!other)
   {
-    nltools::Log::error(groupId.toString(), "cant diff without other!");
+    writer.writeTag("group", Attribute("name", groupId.getName()), Attribute("afound", "true"),
+                    Attribute("bfound", "false"), [&] {});
     return;
   }
-  auto name = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(groupId)->getLongName();
 
-  writer.writeTag("group", Attribute("name", name), [&] {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto group = eb->getParameterGroupByID(groupId);
+  auto name = group->getLongName();
+
+  writer.writeTag("group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"), [&] {
+    auto numP = m_parameters.size();
+
     for(auto &parameter : m_parameters)
     {
       auto otherParameter = other->findParameterByID({ parameter.first.getNumber(), other->getVoiceGroup() });

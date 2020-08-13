@@ -13,7 +13,7 @@
 #include <xml/Attribute.h>
 
 PresetParameter::PresetParameter(const ParameterId &id)
-    : m_id{ id }
+    : m_id { id }
 {
 }
 
@@ -70,70 +70,66 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
 {
   auto ebParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(parameterID);
 
-  if(!ebParam)
-  {
-    nltools::Log::warning("Could not create diff for parameter", parameterID,
-                          "- the parameter does not exist anymore.");
-    return;
-  }
+  bool aFound = ebParam != nullptr;
+  bool bFound = other != nullptr;
+  auto name = aFound ? std::string(ebParam->getLongName()) : getID().toString();
 
-  if(!other)
-  {
-    nltools::Log::warning("Could not create diff for parameter", parameterID,
-                          "- the parameter does not exist in the preset.");
-    return;
-  }
+  writer.writeTag(
+      "parameter", Attribute("name", name), Attribute("afound", aFound ? "true" : "false"),
+      Attribute("bfound", bFound ? "true" : "false"), [&] {
+        if(aFound && bFound)
+        {
+          auto sc = ebParam->getValue().getScaleConverter();
+          auto myString = sc->getDimension().stringize(sc->controlPositionToDisplay(m_value));
+          auto otherString = sc->getDimension().stringize(sc->controlPositionToDisplay(other->m_value));
 
-  writer.writeTag("parameter", Attribute("name", ebParam->getLongName()), [&] {
-    auto sc = ebParam->getValue().getScaleConverter();
-    auto myString = sc->getDimension().stringize(sc->controlPositionToDisplay(m_value));
-    auto otherString = sc->getDimension().stringize(sc->controlPositionToDisplay(other->m_value));
+          if(myString != otherString)
+            writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
 
-    if(myString != otherString)
-      writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
+          if(getModulationSource() != other->getModulationSource())
+          {
+            writer.writeTextElement("mc-select", "", Attribute("a", getModulationSource()),
+                                    Attribute("b", other->getModulationSource()));
+          }
 
-    if(getModulationSource() != other->getModulationSource())
-    {
-      writer.writeTextElement("mc-select", "", Attribute("a", getModulationSource()),
-                              Attribute("b", other->getModulationSource()));
-    }
+          if(differs(getModulationAmount(), other->getModulationAmount()))
+          {
+            auto c = ScaleConverter::get<LinearBipolar100PercentScaleConverter>();
+            auto currentParameter = c->getDimension().stringize(c->controlPositionToDisplay(getModulationAmount()));
+            auto otherParameter
+                = c->getDimension().stringize(c->controlPositionToDisplay(other->getModulationAmount()));
+            writer.writeTextElement("mc-amount", "", Attribute("a", currentParameter), Attribute("b", otherParameter));
+          }
 
-    if(differs(getModulationAmount(), other->getModulationAmount()))
-    {
-      auto c = ScaleConverter::get<LinearBipolar100PercentScaleConverter>();
-      auto currentParameter = c->getDimension().stringize(c->controlPositionToDisplay(getModulationAmount()));
-      auto otherParameter = c->getDimension().stringize(c->controlPositionToDisplay(other->getModulationAmount()));
-      writer.writeTextElement("mc-amount", "", Attribute("a", currentParameter), Attribute("b", otherParameter));
-    }
+          if(getGivenName() != other->getGivenName())
+          {
+            writer.writeTextElement("name", "", Attribute("a", getGivenName()), Attribute("b", other->getGivenName()));
+          }
 
-    if(getGivenName() != other->getGivenName())
-    {
-      writer.writeTextElement("name", "", Attribute("a", getGivenName()), Attribute("b", other->getGivenName()));
-    }
+          if(getInfo() != other->getInfo())
+          {
+            writer.writeTextElement("info", "", Attribute("a", "changed"), Attribute("b", "changed"));
+          }
 
-    if(getInfo() != other->getInfo())
-    {
-      writer.writeTextElement("info", "", Attribute("a", "changed"), Attribute("b", "changed"));
-    }
+          if(getRibbonReturnMode() != other->getRibbonReturnMode())
+          {
+            writer.writeTextElement("return-mode", "", Attribute("a", static_cast<int>(getRibbonReturnMode())),
+                                    Attribute("b", static_cast<int>(other->getRibbonReturnMode())));
+          }
 
-    if(getRibbonReturnMode() != other->getRibbonReturnMode())
-    {
-      writer.writeTextElement("return-mode", "", Attribute("a", static_cast<int>(getRibbonReturnMode())),
-                              Attribute("b", static_cast<int>(other->getRibbonReturnMode())));
-    }
+          if(getRibbonTouchBehaviour() != other->getRibbonTouchBehaviour())
+          {
+            writer.writeTextElement("behaviour", "", Attribute("a", getRibbonTouchBehaviour()),
+                                    Attribute("b", other->getRibbonTouchBehaviour()));
+          }
 
-    if(getRibbonTouchBehaviour() != other->getRibbonTouchBehaviour())
-    {
-      writer.writeTextElement("behaviour", "", Attribute("a", getRibbonTouchBehaviour()),
-                              Attribute("b", other->getRibbonTouchBehaviour()));
-    }
-
-    if(getPedalMode() != other->getPedalMode())
-    {
-      writer.writeTextElement("return-mode", "", Attribute("a", static_cast<int>(getPedalMode())),
-                              Attribute("b", static_cast<int>(other->getPedalMode())));
-    }
-  });
+          if(getPedalMode() != other->getPedalMode())
+          {
+            writer.writeTextElement("return-mode", "", Attribute("a", static_cast<int>(getPedalMode())),
+                                    Attribute("b", static_cast<int>(other->getPedalMode())));
+          }
+        }
+      });
 }
 
 MacroControls PresetParameter::getModulationSource() const
@@ -216,9 +212,9 @@ enum PedalModes PresetParameter::getPedalMode() const
 void PresetParameter::writeDocument(Writer &writer) const
 {
   writer.writeTag("param",
-                  { Attribute{ "id", m_id.toString() }, Attribute{ "value", to_string(m_value) },
-                    Attribute{ "mod-src", to_string(static_cast<int>(getModulationSource())) },
-                    Attribute{ "mod-amt", to_string(getModulationAmount()) } },
+                  { Attribute { "id", m_id.toString() }, Attribute { "value", to_string(m_value) },
+                    Attribute { "mod-src", to_string(static_cast<int>(getModulationSource())) },
+                    Attribute { "mod-amt", to_string(getModulationAmount()) } },
                   []() {});
 }
 
