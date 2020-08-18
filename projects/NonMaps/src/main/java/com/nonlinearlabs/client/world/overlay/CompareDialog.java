@@ -274,8 +274,8 @@ public class CompareDialog extends GWTDialog {
 			}
 			return row;
 		} else {
-			table.setText(row, 1, aFound ? "Found" : "Missing");
-			table.setText(row, 2, bFound ? "Found" : "Missing");
+			table.setText(row, 1, aFound ? "" : "Missing");
+			table.setText(row, 2, bFound ? "" : "Missing");
 			row++;
 			return row;
 		}

@@ -398,11 +398,7 @@ void Preset::writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis,
     super::writeDiff(writer, other);
 
     writeGroups(writer, other, vgOfThis, vgOfOther);
-
-    if(!this->isDual() && !other->isDual())
-    {
-      writeGroups(writer, other, VoiceGroup::Global, VoiceGroup::Global);
-    }
+    writeGroups(writer, other, VoiceGroup::Global, VoiceGroup::Global);
   });
 }
 
