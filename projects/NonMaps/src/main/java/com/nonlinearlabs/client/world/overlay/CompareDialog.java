@@ -299,13 +299,26 @@ public class CompareDialog extends GWTDialog {
 		boolean aFound = Boolean.parseBoolean(afoundStr);
 		boolean bFound = Boolean.parseBoolean(bfoundStr);
 
+		
 		if (!elements.isEmpty()) {
+			int idNum = Integer.parseInt(param.getAttributes().getNamedItem("id-num").getNodeValue());
+			
+			SoundType type = EditBufferModel.get().soundType.getValue();
+
+			boolean aDisabled = hideParameter(idNum, presetA != null ? presetA.getType() : type);
+			boolean bDisabled = hideParameter(idNum, presetB != null ? presetB.getType() : type);
+			if(aDisabled || bDisabled) {
+				//Ignore Parameter and continue;
+				return row;
+			}
+
 			String paramName = param.getAttributes().getNamedItem("name").getNodeValue();
 
 			table.setWidget(row, 0, new HTMLPanel("span", indent + paramName));
 			table.getWidget(row, 0).getElement().addClassName("indent-1");
 			row++;
 
+			
 			if(aFound && bFound) {
 				for (Node change : elements)
 					row = writeParameterChange(row, paramName, change);
@@ -479,6 +492,18 @@ public class CompareDialog extends GWTDialog {
 			selectVGA.setHeight("0px");
 		if(!bActive)
 			selectVGB.setHeight("0px");
+	}
+
+	private boolean hideParameter(int id, SoundType type) {
+		switch(type) {
+			case Single:
+				return id == 356 || id == 396 || id == 397;
+			case Split:
+				return id == 396 || id == 397;
+			case Layer:
+				return id == 356;
+		}
+		return false;
 	}
 
 	private String translateChangeValue(String paramName, String nodeName, String nodeValue) {

@@ -78,7 +78,7 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
 
   writer.writeTag(
       "parameter", Attribute("name", name), Attribute("afound", aFound ? "true" : "false"),
-      Attribute("bfound", bFound ? "true" : "false"), [&] {
+      Attribute("bfound", bFound ? "true" : "false"), Attribute("id-num", getID().getNumber()), [&] {
         if(aFound && bFound)
         {
           auto sc = ebParam->getValue().getScaleConverter();
