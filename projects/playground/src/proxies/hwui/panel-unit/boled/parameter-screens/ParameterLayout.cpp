@@ -27,6 +27,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
 #include <glibmm/main.h>
+#include <proxies/hwui/HWUI.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -40,6 +41,14 @@ ParameterLayout2::ParameterLayout2()
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::hide(sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged)), false);
+
+  auto current = getCurrentParameter();
+  auto hwui = Application::get().getHWUI();
+  if(hwui->getCurrentVoiceGroup() == VoiceGroup::II && !current->getID().isGlobal()
+     && !SwitchVoiceGroupButton::allowToggling(current, Application::get().getPresetManager()->getEditBuffer()))
+  {
+    hwui->setCurrentVoiceGroup(VoiceGroup::I);
+  }
 }
 
 ModuleCaption *ParameterLayout2::createModuleCaption() const
@@ -231,7 +240,9 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
       case Buttons::BUTTON_A:
         if(auto button = findControlOfType<SwitchVoiceGroupButton>())
         {
-          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+          if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(),
+                                                   Application::get().getPresetManager()->getEditBuffer()))
+            Application::get().getHWUI()->toggleCurrentVoiceGroup();
           return true;
         }
         break;
