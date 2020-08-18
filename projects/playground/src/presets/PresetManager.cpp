@@ -74,6 +74,7 @@ void PresetManager::init()
   {
     nltools::Log::notify("Loading presetmanager at", path);
     loadMetadataAndSendEditBufferToLpc(transaction, file);
+    m_editBuffer->initRecallValues(transaction);
     loadInitSound(transaction, file);
     loadBanks(transaction, file);
     fixMissingPresetSelections(transaction);
