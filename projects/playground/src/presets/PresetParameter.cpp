@@ -11,6 +11,8 @@
 #include <groups/ParameterGroup.h>
 #include <libundo/undo/Scope.h>
 #include <xml/Attribute.h>
+#include <parameter_declarations.h>
+#include <parameters/SplitPointParameter.h>
 
 PresetParameter::PresetParameter(const ParameterId &id)
     : m_id { id }
@@ -82,6 +84,15 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
           auto sc = ebParam->getValue().getScaleConverter();
           auto myString = sc->getDimension().stringize(sc->controlPositionToDisplay(m_value));
           auto otherString = sc->getDimension().stringize(sc->controlPositionToDisplay(other->m_value));
+
+          if(ebParam->getID() == ParameterId { C15::PID::Split_Split_Point, VoiceGroup::Global })
+          {
+            if(auto split = dynamic_cast<SplitPointParameter *>(ebParam))
+            {
+              myString = split->getDisplayString(VoiceGroup::I, m_value);
+              otherString = split->getDisplayString(VoiceGroup::I, other->m_value);
+            }
+          }
 
           if(myString != otherString)
             writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
