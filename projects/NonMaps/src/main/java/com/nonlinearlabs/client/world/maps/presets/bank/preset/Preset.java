@@ -60,6 +60,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private static final PresetColorPack standardColor = new PresetColorPack(new Gray(0), new Gray(25), new Gray(77));
 	private static final PresetColorPack renamedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
 	private static final PresetColorPack selectedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
+	private static final PresetColorPack multiSelectedColor = new PresetColorPack(new Gray(0), new Gray(90),
+			new Gray(77));
 	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
 			new Gray(77));
 	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
@@ -252,6 +254,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			currentPack = loadedColor;
 		else
 			currentPack = selected ? selectedColor : standardColor;
+
+		if (isInMultiplePresetSelectionMode()) {
+			MultiplePresetSelection mps = getParent().getParent().getMultiSelection();
+			if (mps != null) {
+				if(mps.contains(this)) {
+					currentPack = multiSelectedColor;
+				}
+			}
+		}
 
 		if (isSearchOpen) {
 			if (isCurrentFilterMatch)
