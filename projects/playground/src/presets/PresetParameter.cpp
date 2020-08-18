@@ -13,6 +13,8 @@
 #include <xml/Attribute.h>
 #include <parameter_declarations.h>
 #include <parameters/SplitPointParameter.h>
+#include <parameters/scale-converters/LinearCountScaleConverter.h>
+#include <parameters/scale-converters/dimension/VoicesDimension.h>
 
 PresetParameter::PresetParameter(const ParameterId &id)
     : m_id { id }
@@ -92,6 +94,17 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
               myString = split->getDisplayString(VoiceGroup::I, m_value);
               otherString = split->getDisplayString(VoiceGroup::I, other->m_value);
             }
+          }
+          else if(ebParam->getID().getNumber() == C15::PID::Unison_Voices)
+          {
+            //we always use the single converter as unison voices get saved in 24 voices format
+            auto singleConverter = ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>();
+
+            auto stringize
+                = [](auto sc, auto v) { return sc->getDimension().stringize(sc->controlPositionToDisplay(v)); };
+
+            myString = stringize(singleConverter, m_value);
+            otherString = stringize(singleConverter, other->m_value);
           }
 
           if(myString != otherString)
