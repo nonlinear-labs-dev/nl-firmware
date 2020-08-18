@@ -363,10 +363,17 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control mouseUp(Position eventPoint) {
+		if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
+			getParent().getParent().startMultiSelection(this, true);
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			wasJustSelected = true;
+		}
+
 		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
 			selectPreset();
 			wasJustSelected = true;
 		}
+
 		getParent().getParent().pushBankOntoTop(getParent());
 		return this;
 	}
@@ -386,13 +393,14 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			return this;
 
 		if (isInMultiplePresetSelectionMode()) {
-			getParent().getParent().getMultiSelection().toggle(this);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			if (wasJustSelected) {
+				wasJustSelected = false;
+			} else {
+				getParent().getParent().getMultiSelection().toggle(this);
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			}
 		} else if (isInLoadToPartMode()) {
 			loadToPartClickBehaviour((LoadToPartMode) getCustomPresetSelection());
-		} else if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
-			getParent().getParent().startMultiSelection(this, true);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		} else if (isInStoreSelectMode() || !isSelected()) {
 			selectPreset();
 		} else if (isSelected() && !wasJustSelected) {
@@ -521,10 +529,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public double getXMargin() {
 		return 3;
-	}
-
-	public void select() {
-		getParent().getPresetList().selectPreset(getUUID(), true);
 	}
 
 	public void load() {
