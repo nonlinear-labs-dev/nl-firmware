@@ -78,7 +78,7 @@ uint16_t readPortNumber(const char *string)
   return id;
 }
 
-#define DRIVER "/dev/playcontroller_driver"
+#define DRIVER "/dev/lpc_bb_driver"
 // ===================
 int main(int argc, char const *argv[])
 {

@@ -193,7 +193,7 @@ int lpcReset(int driver)
   return 0;
 }
 
-#define DRIVER "/dev/playcontroller_driver"
+#define DRIVER "/dev/lpc_bb_driver"
 // ===================
 int main(int argc, char const *argv[])
 {
@@ -209,11 +209,11 @@ int main(int argc, char const *argv[])
     return 0;
   }
 
-  int driver = open("/dev/playcontroller_driver", O_WRONLY);
+  int driver = open("/dev/lpc_bb_driver", O_WRONLY);
   if (driver < 0)
     Error("cannot open driver for write");
 
-  int driverRd = open("/dev/playcontroller_driver", O_RDONLY);
+  int driverRd = open("/dev/lpc_bb_driver", O_RDONLY);
   if (driver < 0)
     Error("cannot open driver for read");
 
