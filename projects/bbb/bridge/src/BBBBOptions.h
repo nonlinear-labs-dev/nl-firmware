@@ -23,8 +23,8 @@ class BBBBOptions
   bool m_logPlaycontrollerRaw = false;
   bool m_logHeartBeat = false;
 
-  Glib::ustring m_toPlaycontrollerDriverPath = "/dev/playcontroller_driver";
-  Glib::ustring m_fromPlaycontrollerDriverPath = "/dev/playcontroller_driver";
+  Glib::ustring m_toPlaycontrollerDriverPath = "/dev/lpc_bb_driver";
+  Glib::ustring m_fromPlaycontrollerDriverPath = "/dev/lpc_bb_driver";
   Glib::ustring m_playgroundHost = "localhost";
   Glib::ustring m_audioengineHost = "localhost";
 };
