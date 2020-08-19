@@ -136,7 +136,6 @@ update_fstab() {
 
 
 main() {
-    set -x
     mkdir -p /workdir || error "Creation of workdir failed"
     mount -o loop /bindir/fs.ext4 /workdir || error "Mouning filesystem failed."
 

@@ -21,7 +21,7 @@ include_directories(${CMAKE_SOURCE_DIR}/projects/shared)
 
 
 # INSTALL
-install(TARGETS playcontroller          DESTINATION ${CMAKE_INSTALL_PREFIX}/usr/bin)
-install(TARGETS playcontroller-read     DESTINATION ${CMAKE_INSTALL_PREFIX}/usr/bin)
-install(TARGETS ehc                     DESTINATION ${CMAKE_INSTALL_PREFIX}/usr/bin)
-install(TARGETS ehc-preset              DESTINATION ${CMAKE_INSTALL_PREFIX}/usr/bin)
+install(TARGETS playcontroller          DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS playcontroller-read     DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ehc                     DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ehc-preset              DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

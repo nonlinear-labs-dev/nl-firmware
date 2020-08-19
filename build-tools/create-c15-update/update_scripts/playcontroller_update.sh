@@ -7,8 +7,6 @@
 # errors will be logged and reported
 #
 
-set -x
- 
 PLAYCONTROLLER_FIRMWARE=$1
 if [ -z "$1" ] ; then
     echo "no argument supplied, expected path to playcontroller firmware blob!"

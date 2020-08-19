@@ -8,8 +8,6 @@
 # errors will be logged and reported
 #
 
-set -x
- 
 PLAYCONTROLLER_RETRIES=$1
 if [ -z "$1" ] ; then
   PLAYCONTROLLER_RETRIES=1
