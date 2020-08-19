@@ -28,6 +28,7 @@ public class PresetSearchDialog extends GWTDialog {
 			theSearch.addHeader("Search Presets for ...");
 			theSearch.initalShow();
 			theSearch.pushDialogToFront();
+			NonMaps.get().getNonLinearWorld().getPresetManager().closeMultiSelection();
 		}
 	}
 
