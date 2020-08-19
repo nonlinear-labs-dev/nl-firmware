@@ -1,11 +1,3 @@
-/******************************************************************************/
-/** @file	spi_lpc_bb.c
-    @date	last modified date/name: 2020-06-03 KSTR
-    @brief    	This module takes care about the communication with the LPC via
-    SPI.
-    @author	Nemanja Nikodijevic [2014-03-02]
-*******************************************************************************/
-
 #define LOG_XMIT         (0)  // define this != 0 to log the transmit buffer
 #define LOG_WRITE_STATUS (0)  // define this != 0 to log write return status
 
@@ -24,11 +16,11 @@
 #include <linux/ratelimit.h>
 
 /* speed can only be f_max/(2^n) -> f_max = 24 MHz */
-#define playcontroller_driver_MAX_SPEED    6000000  // was 3000000
-#define playcontroller_driver_XFER_SIZE    1024
-#define playcontroller_driver_DEV_MAJOR    300
-#define playcontroller_driver_RX_BUFF_SIZE 1024  // must be 2^n, for buffer mask to work !
-#define playcontroller_driver_RX_BUFF_MASK (playcontroller_driver_RX_BUFF_SIZE - 1)
+#define PLAYCONTROLLER_DRIVER_MAX_SPEED    6000000  // was 3000000
+#define PLAYCONTROLLER_DRIVER_XFER_SIZE    1024
+#define PLAYCONTROLLER_DRIVER_DEV_MAJOR    300
+#define PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE 1024  // must be 2^n, for buffer mask to work !
+#define PLAYCONTROLLER_DRIVER_RX_BUFF_MASK (PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE - 1)
 
 #define SIGNATURE_HEADER (0xFF0000FF)  // signature of low level transfer, size field in the middle
 #define SIGNATURE_BYTE   (0xFF)        // the signature's framing bytes
@@ -42,43 +34,43 @@ struct playcontroller_driver
 
   int rdy_gpio;
   int prq_gpio;
-  int lpc_hb_gpio;
-  int lpc_spare_gpio;
+  int playcontroller_hb_gpio;
+  int playcontroller_spare_gpio;
   int cs_gpio;
 };
 
 // writes are performed using switching dual buffers
 static DEFINE_MUTEX(tx_buff_lock);       // buffer protector
-static u8 *     tx_buff;                 // [2][playcontroller_driver_XFER_SIZE]  current buffer is user write buffer, the other is the SPI xfer buffer
+static u8 *     tx_buff;                 // [2][PLAYCONTROLLER_DRIVER_XFER_SIZE]  current buffer is user write buffer, the other is the SPI xfer buffer
 static u8       tx_write_buffer;         // selected write buffer, 0 or 1
 static unsigned tx_write_buffer_offset;  // current write offset in selected buffer
 
 // reads use a ring buffer
-static u8 *rxb;                             // [playcontroller_driver_XFER_SIZE]   SPI RX buffer
+static u8 *rxb;                             // [PLAYCONTROLLER_DRIVER_XFER_SIZE]   SPI RX buffer
 static DEFINE_MUTEX(rx_buff_lock);          // buffer protector
 static DECLARE_WAIT_QUEUE_HEAD(rx_wqueue);  // wait queue to control buffer dataflow
-static u8 *rx_buff;                         // [playcontroller_driver_RX_BUFF_SIZE]   user RX ring buffer
+static u8 *rx_buff;                         // [PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE]   user RX ring buffer
 static u16 rx_buff_head;
 static u16 rx_buff_tail;
 
-static u8 no_hb_count;       // number of LPC heartbeats currently missed
-#define MAX_NO_HB_COUNT (3)  // number of missed LPC heartbeats allowed before error / write stall
+static u8 no_hb_count;       // number of playcontroller heartbeats currently missed
+#define MAX_NO_HB_COUNT (3)  // number of missed playcontroller heartbeats allowed before error / write stall
 static u8  busy;
-static u8  xfer_repeat;  // flag repeat request (when LPC was offline)
+static u8  xfer_repeat;  // flag repeat request (when playcontroller was offline)
 static u8 *txb_repeat;   // saved tx buffer pointer for delayed xfer
 
 static struct workqueue_struct *workqueue;
 #define RESTART_WQUEUE_MS (2)  // restart queue after X milliseconds
 
 // **************************************************************************
-// check if LPC heartbeat pin toggles after 125us max
+// check if playcontroller heartbeat pin toggles after 125us max
 //
 // We wait for nominally 700us max in nominally 35us steps.
 // usleep_range() is not very precise, it might sleep significantly longer
 // than the max value given.
 // It's only guaranteed that it sleeps AT LEAST for the min time.
 // That's we need to poll the heartbeat more frequently and for a longer period
-// that required by the 125us toggle rate of the LPC (which is precise as it
+// that required by the 125us toggle rate of the playcontroller (which is precise as it
 // is controlled via timer interrupt), to account for the jitter and not
 // report false negatives.
 static int playcontroller_driver_check_hb(int hb_gpio)
@@ -92,20 +84,20 @@ static int playcontroller_driver_check_hb(int hb_gpio)
     if (gpio_get_value(hb_gpio) != hb_val)
       return 1;
   }
-  return 0;  // no change, LPC is busy/dead
+  return 0;  // no change, playcontroller is busy/dead
 }
 
 // **************************************************************************
 //  3 helper functions for rx buffer access
 static inline u16 bytes_in_rx_buffer(void)
 {  // the modulo operation on the difference is required because head may have wrapped around
-  return (rx_buff_head - rx_buff_tail) & playcontroller_driver_RX_BUFF_MASK;
+  return (rx_buff_head - rx_buff_tail) & PLAYCONTROLLER_DRIVER_RX_BUFF_MASK;
 }
 
 static inline void advance(u16 *index, u16 how_much)
 {  // advance index by given amount, modulo buffer size
   (*index) += how_much;
-  (*index) &= playcontroller_driver_RX_BUFF_MASK;
+  (*index) &= PLAYCONTROLLER_DRIVER_RX_BUFF_MASK;
 }
 
 static inline int rx_buff_has_data(void)
@@ -126,11 +118,11 @@ static void playcontroller_driver_package_parse(void)
     return;  // wrong signature
   rx_bytes_to_read = rxb[1] + (rxb[2] << 8);
 
-  if (!rx_bytes_to_read || (rx_bytes_to_read > playcontroller_driver_RX_BUFF_SIZE - 4))
+  if (!rx_bytes_to_read || (rx_bytes_to_read > PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE - 4))
     return;  // no data, or message can't fit in buffer
 
   mutex_lock(&rx_buff_lock);
-  if (rx_bytes_to_read < (playcontroller_driver_RX_BUFF_SIZE - bytes_in_rx_buffer()))
+  if (rx_bytes_to_read < (PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE - bytes_in_rx_buffer()))
   {  // enough free space in buffer
     if (blocked)
     {  // wasn't blocked before so, shot a message and reset counter
@@ -141,9 +133,9 @@ static void playcontroller_driver_package_parse(void)
 
     first  = rx_bytes_to_read;  // assume first chunk will fit ...
     second = 0;                 // .. and no need for second chunk
-    if (rx_buff_head + rx_bytes_to_read > playcontroller_driver_RX_BUFF_SIZE)
+    if (rx_buff_head + rx_bytes_to_read > PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE)
     {  // write beyond physical buffer end, so split in two chunks
-      first  = playcontroller_driver_RX_BUFF_SIZE - rx_buff_head;
+      first  = PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE - rx_buff_head;
       second = rx_bytes_to_read - first;
     }
     memcpy(&rx_buff[rx_buff_head], &rxb[SIGNATURE_SIZE], first);
@@ -174,9 +166,9 @@ static u8 *playcontroller_driver_get_txb(void)
 
   /** request tx buffer */
   mutex_lock(&tx_buff_lock);
-  txb                    = tx_buff + tx_write_buffer * playcontroller_driver_XFER_SIZE;  //[tx_write_buffer];
+  txb                    = tx_buff + tx_write_buffer * PLAYCONTROLLER_DRIVER_XFER_SIZE;  //[tx_write_buffer];
   tx_write_buffer        = (tx_write_buffer + 1) % 2;                                    // switch buffers
-  pSignature             = (u32 *) (tx_buff + tx_write_buffer * playcontroller_driver_XFER_SIZE);
+  pSignature             = (u32 *) (tx_buff + tx_write_buffer * PLAYCONTROLLER_DRIVER_XFER_SIZE);
   *pSignature            = SIGNATURE_HEADER;  // set up signature header, with size field = 0
   tx_write_buffer_offset = SIGNATURE_SIZE;    // acount for signature header
   mutex_unlock(&tx_buff_lock);
@@ -194,8 +186,8 @@ static int playcontroller_driver_transfer(struct spi_device *dev, u8 *txb)
   /** prepare and perform the transfer */
   xfer.tx_buf        = txb;
   xfer.rx_buf        = rxb;
-  xfer.len           = playcontroller_driver_XFER_SIZE;
-  xfer.speed_hz      = playcontroller_driver_MAX_SPEED;
+  xfer.len           = PLAYCONTROLLER_DRIVER_XFER_SIZE;
+  xfer.speed_hz      = PLAYCONTROLLER_DRIVER_MAX_SPEED;
   xfer.bits_per_word = 8;
   xfer.delay_usecs   = 0;
   xfer.tx_nbits = xfer.rx_nbits = SPI_NBITS_SINGLE;
@@ -211,21 +203,20 @@ static int playcontroller_driver_transfer(struct spi_device *dev, u8 *txb)
 // **************************************************************************
 static void playcontroller_driver_poll(struct delayed_work *p)
 {
-  static int                    lpc_offline = 0;
-  struct playcontroller_driver *spi         = (struct playcontroller_driver *) p;
-  int                           ready, poll_request, tx_payload, lpc_heartbeat;
+  static int                    playcontroller_offline = 0;
+  struct playcontroller_driver *spi                    = (struct playcontroller_driver *) p;
+  int                           ready, poll_request, tx_payload, playcontroller_heartbeat;
   u8 *                          txb;
 
-  //printk("Workqueue %i",  ((struct spilpcbb *)p)->counter++);
-  ready         = gpio_get_value(spi->rdy_gpio);
-  poll_request  = gpio_get_value(spi->prq_gpio);
-  lpc_heartbeat = playcontroller_driver_check_hb(spi->lpc_hb_gpio);
-  tx_payload    = tx_write_buffer_offset - SIGNATURE_SIZE;
+  ready                    = gpio_get_value(spi->rdy_gpio);
+  poll_request             = gpio_get_value(spi->prq_gpio);
+  playcontroller_heartbeat = playcontroller_driver_check_hb(spi->playcontroller_hb_gpio);
+  tx_payload               = tx_write_buffer_offset - SIGNATURE_SIZE;
 
-  if (!lpc_heartbeat)
+  if (!playcontroller_heartbeat)
   {
     if (no_hb_count == 0)
-      printk_ratelimited(KERN_INFO "%s() LPC heartbeat missing\n", __func__);
+      printk_ratelimited(KERN_INFO "%s() playcontroller heartbeat missing\n", __func__);
     if (no_hb_count < MAX_NO_HB_COUNT)  // increment fail counter, ...
       no_hb_count++;                    // ...  but saturate
     goto exit;
@@ -264,17 +255,17 @@ static void playcontroller_driver_poll(struct delayed_work *p)
     playcontroller_driver_transfer(((struct playcontroller_driver *) p)->spidev, txb);
     gpio_set_value(spi->cs_gpio, 1);
 
-    lpc_heartbeat = playcontroller_driver_check_hb(spi->lpc_hb_gpio);
-    if (lpc_heartbeat)
-    {  // LPC still online
+    playcontroller_heartbeat = playcontroller_driver_check_hb(spi->playcontroller_hb_gpio);
+    if (playcontroller_heartbeat)
+    {  // playcontroller still online
       xfer_repeat = 0;
       playcontroller_driver_package_parse();  // check any incoming data
     }
     else
-    {  // LPC offline, re-schedule transfer
+    {  // playcontroller offline, re-schedule transfer
       xfer_repeat = 1;
       txb_repeat  = txb;
-      printk_ratelimited(KERN_INFO "%s() LPC heartbeat missing, re-scheduling transfer\n", __func__);
+      printk_ratelimited(KERN_INFO "%s() playcontroller heartbeat missing, re-scheduling transfer\n", __func__);
     }
   }
   else if (!ready)
@@ -282,19 +273,19 @@ static void playcontroller_driver_poll(struct delayed_work *p)
 
 exit:
   if (no_hb_count >= MAX_NO_HB_COUNT)
-  {  // we missed enough LPC heartbeats to consider LPC is offline
-    if (!lpc_offline)
-    {  // LPC went offline now
-      lpc_offline = 1;
-      printk_ratelimited(KERN_INFO "%s() LPC went offline\n", __func__);
+  {  // we missed enough playcontroller heartbeats to consider playcontroller is offline
+    if (!playcontroller_offline)
+    {  // playcontroller went offline now
+      playcontroller_offline = 1;
+      printk_ratelimited(KERN_INFO "%s() playcontroller went offline\n", __func__);
     }
   }
   else
   {
-    if (lpc_offline)
-    {  // LPC went online again
-      lpc_offline = 0;
-      printk_ratelimited(KERN_INFO "%s() LPC went online\n", __func__);
+    if (playcontroller_offline)
+    {  // playcontroller went online again
+      playcontroller_offline = 0;
+      printk_ratelimited(KERN_INFO "%s() playcontroller went online\n", __func__);
     }
   }
 
@@ -318,9 +309,9 @@ static ssize_t playcontroller_driver_write(struct file *filp, const char __user 
   }
 
   // if tx buffer is full, return
-  if ((tx_write_buffer_offset + count) > playcontroller_driver_XFER_SIZE)
+  if ((tx_write_buffer_offset + count) > PLAYCONTROLLER_DRIVER_XFER_SIZE)
   {
-    if (count > playcontroller_driver_XFER_SIZE - 4)
+    if (count > PLAYCONTROLLER_DRIVER_XFER_SIZE - 4)
     {
 #if LOG_WRITE_STATUS
       printk(KERN_INFO "%s() returns -EMSGSIZE\n", __func__);
@@ -344,11 +335,11 @@ static ssize_t playcontroller_driver_write(struct file *filp, const char __user 
 
   mutex_lock(&tx_buff_lock);
 
-  status = copy_from_user((tx_buff + tx_write_buffer * playcontroller_driver_XFER_SIZE + tx_write_buffer_offset), buf, count);
+  status = copy_from_user((tx_buff + tx_write_buffer * PLAYCONTROLLER_DRIVER_XFER_SIZE + tx_write_buffer_offset), buf, count);
   if (status == 0)
   {  // copy succeeded
     tx_write_buffer_offset += count;
-    pSignature = (u32 *) (tx_buff + tx_write_buffer * playcontroller_driver_XFER_SIZE);
+    pSignature = (u32 *) (tx_buff + tx_write_buffer * PLAYCONTROLLER_DRIVER_XFER_SIZE);
     *pSignature += count << 8;  // update size field in signature header
     status = count;
   }
@@ -399,9 +390,9 @@ static ssize_t playcontroller_driver_read(struct file *filp, char __user *buf_us
 
   first  = count;  // assume first chunk will fit ...
   second = 0;      // .. and no need for second chunk
-  if (rx_buff_tail + count > playcontroller_driver_RX_BUFF_SIZE)
+  if (rx_buff_tail + count > PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE)
   {  // read beyond physical buffer end, so split in two chunks
-    first  = playcontroller_driver_RX_BUFF_SIZE - rx_buff_tail;
+    first  = PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE - rx_buff_tail;
     second = count - first;
   }
   if (copy_to_user(buf_user, &rx_buff[rx_buff_tail], first) != 0)
@@ -459,12 +450,12 @@ static int playcontroller_driver_probe(struct spi_device *dev)
   sb = devm_kzalloc(&dev->dev, sizeof(struct playcontroller_driver), GFP_KERNEL);
   if (!sb)
   {
-    dev_err(&dev->dev, "%s: unable to devm_kzalloc for spi-lpc-bb\n", __func__);
+    dev_err(&dev->dev, "%s: unable to devm_kzalloc\n", __func__);
     ret = -ENOMEM;
     goto exit;  // sb is managed malloc, no kfree() needed when failed
   }
 
-  rxb = kcalloc(playcontroller_driver_XFER_SIZE, sizeof(u8), GFP_KERNEL);
+  rxb = kcalloc(PLAYCONTROLLER_DRIVER_XFER_SIZE, sizeof(u8), GFP_KERNEL);
   if (!rxb)
   {
     dev_err(&dev->dev, "%s: unable to kcalloc for rxb\n", __func__);
@@ -472,7 +463,7 @@ static int playcontroller_driver_probe(struct spi_device *dev)
     goto exit;
   }
 
-  tx_buff = kcalloc(2 * playcontroller_driver_XFER_SIZE, sizeof(u8), GFP_KERNEL);
+  tx_buff = kcalloc(2 * PLAYCONTROLLER_DRIVER_XFER_SIZE, sizeof(u8), GFP_KERNEL);
   if (!tx_buff)
   {
     dev_err(&dev->dev, "%s: unable to kcalloc for txb\n", __func__);
@@ -480,7 +471,7 @@ static int playcontroller_driver_probe(struct spi_device *dev)
     goto exit;
   }
 
-  rx_buff = kcalloc(playcontroller_driver_RX_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
+  rx_buff = kcalloc(PLAYCONTROLLER_DRIVER_RX_BUFF_SIZE, sizeof(u8), GFP_KERNEL);
   if (!rx_buff)
   {
     dev_err(&dev->dev, "%s: unable to kcalloc for rx_buff\n", __func__);
@@ -503,24 +494,24 @@ static int playcontroller_driver_probe(struct spi_device *dev)
     ret = -EINVAL;
     goto exit;
   }
-  sb->lpc_hb_gpio = of_get_named_gpio(dn, "lpc-hb-gpio", 0);
-  if (!gpio_is_valid(sb->lpc_hb_gpio))
+  sb->playcontroller_hb_gpio = of_get_named_gpio(dn, "playcontroller-hb-gpio", 0);
+  if (!gpio_is_valid(sb->playcontroller_hb_gpio))
   {
-    dev_err(&dev->dev, "%s: lpc-hb-gpio in the device tree incorrect\n", __func__);
+    dev_err(&dev->dev, "%s: playcontroller-hb-gpio in the device tree incorrect\n", __func__);
     ret = -EINVAL;
     goto exit;
   }
-  sb->lpc_spare_gpio = of_get_named_gpio(dn, "lpc-spare-gpio", 0);
-  if (!gpio_is_valid(sb->lpc_spare_gpio))
+  sb->playcontroller_spare_gpio = of_get_named_gpio(dn, "lpc-spare-gpio", 0);
+  if (!gpio_is_valid(sb->playcontroller_spare_gpio))
   {
-    dev_err(&dev->dev, "%s: lpc-spare-gpio in the device tree incorrect\n", __func__);
+    dev_err(&dev->dev, "%s: playcontroller-spare-gpio in the device tree incorrect\n", __func__);
     ret = -EINVAL;
     goto exit;
   }
   sb->cs_gpio = of_get_named_gpio(dn, "lpc-cs-gpio", 0);
   if (!gpio_is_valid(sb->cs_gpio))
   {
-    dev_err(&dev->dev, "%s: lpc-cs-gpio in the device tree incorrect\n", __func__);
+    dev_err(&dev->dev, "%s: playcontroller-cs-gpio in the device tree incorrect\n", __func__);
     ret = -EINVAL;
     goto exit;
   }
@@ -529,16 +520,16 @@ static int playcontroller_driver_probe(struct spi_device *dev)
     goto exit;
   if ((ret = devm_gpio_request_one(&dev->dev, sb->prq_gpio, GPIOF_IN, "prq_gpio")))
     goto exit;
-  if ((ret = devm_gpio_request_one(&dev->dev, sb->lpc_hb_gpio, GPIOF_IN, "lpc_hb_gpio")))
+  if ((ret = devm_gpio_request_one(&dev->dev, sb->playcontroller_hb_gpio, GPIOF_IN, "lpc_hb_gpio")))
     goto exit;
-  if ((ret = devm_gpio_request_one(&dev->dev, sb->lpc_spare_gpio, GPIOF_OUT_INIT_HIGH, "lpc_spare_gpio")))
+  if ((ret = devm_gpio_request_one(&dev->dev, sb->playcontroller_spare_gpio, GPIOF_OUT_INIT_HIGH, "lpc_spare_gpio")))
     goto exit;
   if ((ret = devm_gpio_request_one(&dev->dev, sb->cs_gpio, GPIOF_OUT_INIT_HIGH, "cs_gpio")))
     goto exit;
 
   /** prepare the spi controller */
   dev->mode          = SPI_MODE_1;
-  dev->max_speed_hz  = playcontroller_driver_MAX_SPEED;
+  dev->max_speed_hz  = PLAYCONTROLLER_DRIVER_MAX_SPEED;
   dev->bits_per_word = 8;
   if (spi_setup(dev))
   {
@@ -548,7 +539,7 @@ static int playcontroller_driver_probe(struct spi_device *dev)
   }
 
   /** create the device */
-  tmpd                   = device_create(playcontroller_driver_class, &dev->dev, MKDEV(playcontroller_driver_DEV_MAJOR, 0), sb, "playcontroller_driver");
+  tmpd                   = device_create(playcontroller_driver_class, &dev->dev, MKDEV(PLAYCONTROLLER_DRIVER_DEV_MAJOR, 0), sb, "playcontroller_driver");
   tx_write_buffer        = 0;
   tx_write_buffer_offset = 4;
   pSignature             = (u32 *) tx_buff;
@@ -586,9 +577,9 @@ static int playcontroller_driver_remove(struct spi_device *spi)
 
   cancel_delayed_work(&(sb->work));
 
-  device_destroy(playcontroller_driver_class, MKDEV(playcontroller_driver_DEV_MAJOR, 0));
+  device_destroy(playcontroller_driver_class, MKDEV(PLAYCONTROLLER_DRIVER_DEV_MAJOR, 0));
   class_destroy(playcontroller_driver_class);
-  unregister_chrdev(playcontroller_driver_DEV_MAJOR, "spi");
+  unregister_chrdev(PLAYCONTROLLER_DRIVER_DEV_MAJOR, "spi");
 
   kfree(rxb);
   kfree(rx_buff);
@@ -615,7 +606,7 @@ static int __init playcontroller_driver_init(void)
 
   printk(KERN_INFO "%s() VERSION: 2020-04-20\n", __func__);
 
-  ret = register_chrdev(playcontroller_driver_DEV_MAJOR, "spi", &playcontroller_driver_fops);
+  ret = register_chrdev(PLAYCONTROLLER_DRIVER_DEV_MAJOR, "spi", &playcontroller_driver_fops);
   if (ret < 0)
     pr_err("%s: problem at register_chrdev\n", __func__);
 

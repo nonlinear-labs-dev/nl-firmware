@@ -101,11 +101,8 @@ class PlaycontrollerProxy
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
-<<<<<<< HEAD:projects/playground/src/proxies/lpc/LPCProxy.h
-  int m_lpcSoftwareVersion = -1;
-=======
-  int m_playcontrollerSoftwareVersion;
->>>>>>> rename LPC into playcontroller, resort projects in directory structure:projects/epc/playground/src/proxies/playcontroller/PlaycontrollerProxy.h
+  int m_playcontrollerSoftwareVersion = -1;
+
   Throttler m_throttledRelativeParameterChange;
   gint32 m_throttledRelativeParameterAccumulator = 0;
 
