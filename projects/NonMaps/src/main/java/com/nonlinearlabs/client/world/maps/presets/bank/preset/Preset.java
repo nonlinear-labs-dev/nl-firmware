@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.maps.presets.bank.preset;
 import java.util.HashMap;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -258,7 +259,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		if (isInMultiplePresetSelectionMode()) {
 			MultiplePresetSelection mps = getParent().getParent().getMultiSelection();
 			if (mps != null) {
-				if(mps.contains(this)) {
+				if (mps.contains(this)) {
 					currentPack = multiSelectedColor;
 				}
 			}
@@ -374,6 +375,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control mouseUp(Position eventPoint) {
+		wasJustSelected = false;
 		if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
 			getParent().getParent().startMultiSelection(this, true);
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
@@ -391,7 +393,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control click(Position point) {
-		return clickBehaviour();
+		Control ret = clickBehaviour();
+		wasJustSelected = false;
+		return ret;
 	}
 
 	private boolean isInLoadToPartMode() {
@@ -404,9 +408,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			return this;
 
 		if (isInMultiplePresetSelectionMode()) {
-			if (wasJustSelected) {
-				wasJustSelected = false;
-			} else {
+			if (!wasJustSelected) {
 				getParent().getParent().getMultiSelection().toggle(this);
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			}
@@ -417,7 +419,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		} else if (isSelected() && !wasJustSelected) {
 			load();
 		}
-		wasJustSelected = false;
 		return this;
 	}
 
