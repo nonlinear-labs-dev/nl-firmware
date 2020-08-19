@@ -127,18 +127,12 @@ get_tools_from_rootfs() {
     rm -rf $BINARY_DIR/build-tools/bbb/rootfs
     mkdir $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
 
-    for i in sshpass text2soled rsync socat thttpd playcontroller; do
-        if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "$i") $OUT_DIRECTORY/utilities/; then
+    for i in mxli sshpass text2soled rsync socat thttpd playcontroller; do
+        if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs -type f -name "$i" | head -n 1) $OUT_DIRECTORY/utilities/; then
           echo "could not get $i from rootfs"
           return 1
         fi
     done
-
-    # once mxli is part of /usr/bin this can be done in the loop above
-    if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/ -type f -name "mxli") $OUT_DIRECTORY/utilities/; then
-      echo "could not get mxli from rootfs"
-      return 1
-    fi
 
     for i in sshpass text2soled rsync socat thttpd mxli playcontroller; do
         if ! chmod +x $OUT_DIRECTORY/utilities/"$i"; then

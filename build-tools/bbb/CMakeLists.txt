@@ -42,7 +42,6 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " "
-        "set -x"
         "git config --global user.email bob@the-builder.com"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"

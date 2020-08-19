@@ -21,7 +21,7 @@ MSG_RESTART_AUT="Will restart now!"
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
 UPDATE_BBB=0
-UPDATE_Playcontroller=0
+UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
 
 if [[ $ASPECTS = *epc* ]]
@@ -32,7 +32,7 @@ fi
 
 if [[ $ASPECTS = *playcontroller* ]]
 then
-    UPDATE_Playcontroller=1
+    UPDATE_PLAYCONTROLLER=1
     echo "will update playcontroller"
 fi
 
@@ -229,7 +229,7 @@ main() {
     stop_services
     [ $UPDATE_EPC == 1 ] && epc_update
     [ $UPDATE_BBB == 1 ] && bbb_update
-    [ $UPDATE_Playcontroller == 1 ] && playcontroller_update
+    [ $UPDATE_PLAYCONTROLLER == 1 ] && playcontroller_update
 
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
