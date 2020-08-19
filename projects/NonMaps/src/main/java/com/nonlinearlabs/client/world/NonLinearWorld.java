@@ -481,6 +481,8 @@ public class NonLinearWorld extends MapsLayout {
 			@Override
 			public boolean onWayDownFound(Control ctrl) {
 				if (ctrl.onKey(event) != null) {
+					event.stopPropagation();
+					event.preventDefault();
 					return true;
 				}
 
