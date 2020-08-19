@@ -1,4 +1,4 @@
-obj-m += playcontroller_driver.o
+obj-m += lpc_bb_driver.o
 
 SRC := $(shell pwd)
 
