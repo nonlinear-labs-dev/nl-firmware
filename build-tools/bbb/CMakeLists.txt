@@ -42,9 +42,11 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " "
+        "set -x"
+        "git config --global user.email bob@the-builder.com"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
-        "git clone -b ${NONLINUX} --single-branch https://github.com/nonlinear-labs-dev/nonlinux.git /fs/nonlinux"
+        'git clone -b ${NONLINUX} --single-branch https://github.com/nonlinear-labs-dev/nonlinux.git /fs/nonlinux || true'
         "cd /fs/nonlinux"
         "git status"
         "git pull origin ${NONLINUX}"
@@ -117,7 +119,7 @@ add_custom_command(
 add_custom_command(
     COMMENT "Starting Buildroot console"
     DEPENDS .nonlinux-setup
-    OUTPUT .nonlinux-interactive
+    OUTPUT .nonlinux-console
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
@@ -155,5 +157,5 @@ add_custom_target(bbb-ota-update
 
 add_custom_target(bbb-rootfs DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz)
 add_custom_target(bbb-prepare-build-dir DEPENDS .nonlinux-setup)
-add_custom_target(bbb-interactive DEPENDS .nonlinux-interactive )
+add_custom_target(bbb-console DEPENDS .nonlinux-console )
 

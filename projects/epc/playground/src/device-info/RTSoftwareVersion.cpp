@@ -22,8 +22,7 @@ void RTSoftwareVersion::writeDocument(Writer &writer, UpdateDocumentContributor:
   writer.writeTextElement("rt-software-version", get());
 }
 
-int RTSoftwareVersion::get() const
+Glib::ustring RTSoftwareVersion::get() const
 {
   return Application::get().getPlaycontrollerProxy()->getPlaycontrollerSoftwareVersion();
 }
-

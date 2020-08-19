@@ -383,7 +383,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   settings->sendSettingsToPlaycontroller(SendReason::HeartBeatDropped);
   settings->sendPresetSettingsToPlaycontroller();
   sendCalibrationData();
-  requestLPCSoftwareVersion();
+  requestPlaycontrollerSoftwareVersion();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -403,13 +403,5 @@ void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
 {
-if(m_playControllerSoftwareVersion == -1)
-  {
-    return "-";
-  }
-  else
-  {
-    return std::to_string(m_playControllerSoftwareVersion);
-  }
+  return (m_playcontrollerSoftwareVersion == -1) ? "-" : std::to_string(m_playcontrollerSoftwareVersion);
 }
-
