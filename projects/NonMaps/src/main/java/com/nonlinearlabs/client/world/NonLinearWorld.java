@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.Composite;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -468,9 +469,12 @@ public class NonLinearWorld extends MapsLayout {
 			if (event.getNativeKeyCode() == com.google.gwt.event.dom.client.KeyCodes.KEY_T)
 				IntegrationTests.doAllTests();
 
-		isShiftDown = event.isShiftKeyDown();
-		isSpaceDown = event.getNativeKeyCode() == KeyCodes.KEY_SPACE;
-		isCtrlDown = event.isControlKeyDown();
+		if(event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
+			isShiftDown = true;
+		if(event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
+			isSpaceDown = true;
+		if(event.getNativeKeyCode() == KeyCodes.KEY_CTRL)
+			isCtrlDown = true;
 
 		Control ctrl = recurseChildren(new ControlFinder() {
 
@@ -488,31 +492,16 @@ public class NonLinearWorld extends MapsLayout {
 	}
 
 	public boolean handleKeyUp(final KeyUpEvent event) {
-		isShiftDown = event.isShiftKeyDown();
+		if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
+			isShiftDown = false;
 
 		if (event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
 			isSpaceDown = false;
 
-		isCtrlDown = event.isControlKeyDown();
+		if (event.getNativeKeyCode() == KeyCodes.KEY_CTRL)
+			isCtrlDown = false;
+
 		return true;
-	}
-
-	public boolean handleKey(final KeyDownEvent event) {
-		isShiftDown = event.isShiftKeyDown();
-
-		Control ctrl = recurseChildren(new ControlFinder() {
-
-			@Override
-			public boolean onWayDownFound(Control ctrl) {
-				if (ctrl.onKey(event) != null) {
-					return true;
-				}
-
-				return false;
-			}
-		});
-
-		return (ctrl != null);
 	}
 
 	public boolean zoomTo(NonRect r, boolean animate) {
