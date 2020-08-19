@@ -49,7 +49,7 @@ add_custom_command(
         "cd /fs/nonlinux"
         "git status"
         "git pull origin ${NONLINUX}"
-        "git remote add rw git@github.com:nonlinear-labs-dev/nonlinux.git"
+        'git remote add rw git@github.com:nonlinear-labs-dev/nonlinux.git || true'
         "echo 1"
     COMMAND touch .nonlinux-cloned
 )
