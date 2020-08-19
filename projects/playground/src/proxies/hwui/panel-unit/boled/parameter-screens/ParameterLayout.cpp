@@ -41,14 +41,6 @@ ParameterLayout2::ParameterLayout2()
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::hide(sigc::mem_fun(this, &ParameterLayout2::onSoundTypeChanged)), false);
-
-  auto current = getCurrentParameter();
-  auto hwui = Application::get().getHWUI();
-  if(hwui->getCurrentVoiceGroup() == VoiceGroup::II && !current->getID().isGlobal()
-     && !SwitchVoiceGroupButton::allowToggling(current, Application::get().getPresetManager()->getEditBuffer()))
-  {
-    hwui->setCurrentVoiceGroup(VoiceGroup::I);
-  }
 }
 
 ModuleCaption *ParameterLayout2::createModuleCaption() const

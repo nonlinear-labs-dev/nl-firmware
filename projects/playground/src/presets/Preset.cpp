@@ -404,9 +404,6 @@ void Preset::writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis,
 
 void Preset::writeGroups(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const
 {
-  const auto numGroups = m_parameterGroups[static_cast<size_t>(vgOfThis)].size();
-  const auto numOtherGroups = other->getNumGroups(vgOfOther);
-
   std::vector<std::string> writtenGroups;
 
   for(auto &g : m_parameterGroups[static_cast<size_t>(vgOfThis)])
@@ -415,14 +412,11 @@ void Preset::writeGroups(Writer &writer, const Preset *other, VoiceGroup vgOfThi
     writtenGroups.emplace_back(g.first.getName());
   }
 
-  if(numGroups < numOtherGroups)
+  for(auto &g : other->getGroups(vgOfOther))
   {
-    for(auto &g : other->getGroups(vgOfOther))
-    {
-      if(std::find(writtenGroups.begin(), writtenGroups.end(), g.first.getName()) == writtenGroups.end())
-        writer.writeTag("group", Attribute("name", g.first.getName()), Attribute("afound", "false"),
-                        Attribute("bfound", "true"), [&] {});
-    }
+    if(std::find(writtenGroups.begin(), writtenGroups.end(), g.first.getName()) == writtenGroups.end())
+      writer.writeTag("group", Attribute("name", g.first.getName()), Attribute("afound", "false"),
+                      Attribute("bfound", "true"), [&] {});
   }
 }
 
