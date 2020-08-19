@@ -179,7 +179,7 @@ uint16_t readHWSID(const char *string)
   return id;
 }
 
-#define DRIVER "/dev/playcontroller_driver"
+#define DRIVER "/dev/lpc_bb_driver"
 //#define DRIVER "test.bin"
 // ===================
 int main(int argc, char const *argv[])

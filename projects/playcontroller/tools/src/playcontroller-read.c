@@ -158,7 +158,7 @@ void Usage(char const *const string, int const exitCode)
   puts("lpc-read --help           : display usage and exit");
   puts("lpc-read --version        : print version and exit");
   puts("lpc-read [@filename] <options>");
-  puts("  @filename : specify input file rather than using /dev/playcontroller_driver");
+  puts("  @filename : specify input file rather than using /dev/lpc_bb_driver");
   puts("  <options> is a white-space seperated list of letters, preceeded");
   puts("            by either a + or -, turning the display on or off");
   puts("  default is +a -d");
@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
 {
   int   driverFileNo;
   int   flags;
-  char  drpath[] = "/dev/playcontroller_driver";
+  char  drpath[] = "/dev/lpc_bb_driver";
   char *path     = drpath;
 
   if (argc > 1 && argv[1][0] == '@')

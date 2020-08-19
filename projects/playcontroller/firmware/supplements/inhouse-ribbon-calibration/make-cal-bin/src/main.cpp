@@ -7,7 +7,7 @@ void Usage(void)
   printf("Usage: make-cal-bin <calibration-file> <binary-output-file>\n");
   printf("    <calibration-file>   : input, text-file with calibration fixture readout value pairs\n");
   printf(
-      "    <binary-output-file> : output, binary file for sending cal data to LPC directly via /dev/playcontroller_driver\n");
+      "    <binary-output-file> : output, binary file for sending cal data to LPC directly via /dev/lpc_bb_driver\n");
 }
 
 int main(int const argc, char const* const argv[])

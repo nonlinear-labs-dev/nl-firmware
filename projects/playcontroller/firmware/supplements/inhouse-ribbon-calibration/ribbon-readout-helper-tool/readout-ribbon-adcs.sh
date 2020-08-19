@@ -11,8 +11,8 @@ ssh root@192.168.8.2 "kill -n 15 \`pidof bbbb.cal\`"
 scp bbbb.cal root@192.168.8.2:/tmp
 scp raw-sensors-on.bbmsg root@192.168.8.2:/tmp
 scp raw-sensors-on_LPC120.bbmsg root@192.168.8.2:/tmp
-ssh root@192.168.8.2 "cat /tmp/raw-sensors-on.bbmsg > /dev/playcontroller_driver"
-ssh root@192.168.8.2 "cat /tmp/raw-sensors-on_LPC120.bbmsg > /dev/playcontroller_driver"
+ssh root@192.168.8.2 "cat /tmp/raw-sensors-on.bbmsg > /dev/lpc_bb_driver"
+ssh root@192.168.8.2 "cat /tmp/raw-sensors-on_LPC120.bbmsg > /dev/lpc_bb_driver"
 echo
 echo "To quit calibration press [CTRL+c], then restart"
 echo "the C15 to resume to normal operation."
