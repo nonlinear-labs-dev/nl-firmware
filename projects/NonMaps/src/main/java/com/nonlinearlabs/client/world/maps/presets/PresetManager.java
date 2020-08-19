@@ -658,6 +658,8 @@ public class PresetManager extends MapsLayout {
 			NonMaps.get().getServerProxy().redo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
 			PresetSearchDialog.toggle();
+			event.stopPropagation();
+			event.preventDefault();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
