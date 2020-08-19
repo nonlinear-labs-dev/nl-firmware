@@ -619,10 +619,6 @@ public class NonLinearWorld extends MapsLayout {
 		return isShiftDown;
 	}
 
-	public void setShiftDown(boolean b) {
-		isShiftDown = b;
-	}
-
 	public boolean isSpaceDown() {
 		return isSpaceDown;
 	}
