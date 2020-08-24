@@ -91,8 +91,10 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
           {
             if(auto split = dynamic_cast<SplitPointParameter *>(ebParam))
             {
-              myString = split->getDisplayString(VoiceGroup::I, m_value);
-              otherString = split->getDisplayString(VoiceGroup::I, other->m_value);
+              myString = split->getDisplayString(VoiceGroup::I, m_value) + " | "
+                  + split->getDisplayString(VoiceGroup::II, m_value);
+              otherString = split->getDisplayString(VoiceGroup::I, other->m_value) + " | "
+                  + split->getDisplayString(VoiceGroup::II, other->m_value);
             }
           }
           else if(ebParam->getID().getNumber() == C15::PID::Unison_Voices)
@@ -107,7 +109,7 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
             otherString = stringize(singleConverter, other->m_value);
           }
 
-          if(myString != otherString)
+          if(m_value != other->m_value)
             writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
 
           if(getModulationSource() != other->getModulationSource())
