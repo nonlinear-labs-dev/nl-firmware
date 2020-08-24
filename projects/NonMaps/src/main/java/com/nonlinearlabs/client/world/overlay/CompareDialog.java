@@ -223,6 +223,7 @@ public class CompareDialog extends GWTDialog {
 		order.add("Scale");
 		order.add("Part");
 		order.add("Split");
+		order.add("Hardware Amount");
 		return order;
 	}
 
