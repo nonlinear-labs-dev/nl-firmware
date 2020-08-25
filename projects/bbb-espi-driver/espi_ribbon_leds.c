@@ -41,35 +41,53 @@ static u64 lastUpdate = 0;
 static DEFINE_MUTEX(rbled_state_lock);
 static u8 force_update = 0;
 
+
+static void updateLedArray(u8 const led_id, u8 val)
+{
+  static const u8 rot[] = { 0, 2, 1, 3 };  // mapping to the bit weighting the hardware requires
+  val                   = rot[val & 0x3];  // get mapped bit weighting
+	u32 led_index         = (RIBBON_LED_STATES_SIZE - 1) - led_id / 4;
+	rb_led_new_st[led_index] &= ~(0x3 << ((led_id % 4) * 2));         // clear the 2 bits for the selected LED
+	rb_led_new_st[led_index] |= val << ((led_id % 4) * 2);            // add in the state bits
+  force_update |= rb_led_new_st[led_index] ^ rb_led_st[led_index];  // mark any changes for update
+}
+
 // ---- write to driver function ----
 // writes requested LED states to "new" buffer
 static ssize_t rbled_write(struct file *filp, const char __user *buf_user, size_t count, loff_t *f_pos)
 {
   char            buf[count];
-  ssize_t         status = 0;
-  u32             i, led_index;
-  u8              val, led_id;
-  static const u8 rot[] = { 0, 2, 1, 3 };  // mapping to the bit weighting the hardware requires
+  u32             i;
+	static u8       firstByte = 1;
+	static u8				led_id, val;
 
   if (copy_from_user(buf, buf_user, count))
     return -EFAULT;
+	
+	if (!count)
+		return 0;
 
   mutex_lock(&rbled_state_lock);  // keep espi_driver_rb_leds_poll() from interfering
 
-  for (i = 0; (i + 1) < count; i += 2)
-  {
-    led_id    = buf[i];
-    val       = rot[buf[i + 1] & 0x3];  // get mapped bit weighting
-		printk(KERN_INFO "LedId:%02X, Val:%02X\n", led_id, val);
-    led_index = (RIBBON_LED_STATES_SIZE - 1) - led_id / 4;
-    rb_led_new_st[led_index] &= ~(0x3 << ((led_id % 4) * 2));         // clear the 2 bits for the selected LED
-    rb_led_new_st[led_index] |= val << ((led_id % 4) * 2);            // add in the state bits
-    force_update |= rb_led_new_st[led_index] ^ rb_led_st[led_index];  // mark any changes for update
-  }
+  i = 0;
+	while (count--)
+	{
+		if (firstByte)
+		{
+			firstByte = 0;
+			led_id = buf[i++];
+		}
+		else
+		{
+			firstByte = 1;
+			val = buf[i++];
+			updateLedArray(led_id, val);
+		}
+	}
+	
   mutex_unlock(&rbled_state_lock);
 
-  status = count;
-  return status;
+  return count;
 }
 
 // file operations structure
