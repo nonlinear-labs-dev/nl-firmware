@@ -60,6 +60,7 @@ static ssize_t rbled_write(struct file *filp, const char __user *buf_user, size_
   {
     led_id    = buf[i];
     val       = rot[buf[i + 1] & 0x3];  // get mapped bit weighting
+		printk(KERN_INFO "LedId:%02X, Val:%02X\n", led_id, val);
     led_index = (RIBBON_LED_STATES_SIZE - 1) - led_id / 4;
     rb_led_new_st[led_index] &= ~(0x3 << ((led_id % 4) * 2));         // clear the 2 bits for the selected LED
     rb_led_new_st[led_index] |= val << ((led_id % 4) * 2);            // add in the state bits
