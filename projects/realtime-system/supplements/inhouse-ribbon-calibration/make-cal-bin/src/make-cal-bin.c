@@ -19,40 +19,41 @@ int main(int const argc, char const* const argv[])
   }
 
   FILE* infile;
-  if ((infile = fopen(argv[1], "r")) == nullptr)
+  if (!(infile = fopen(argv[1], "r")))
   {
     printf("FATAL: Cannot open input file \"%s\"\n", argv[1]);
     return 3;  // --> exit
   }
   FILE* outfile;
-  if ((outfile = fopen(argv[2], "wb")) == nullptr)
+  if (!(outfile = fopen(argv[2], "wb")))
   {
     printf("FATAL: Cannot open output file \"%s\"\n", argv[2]);
     return 3;  // --> exit
   }
 
-  class RibbonData
+  typedef struct
   {
-   public:
-    int      valid = 0;
+    int      valid;
     uint16_t X[34];
     uint16_t Y[33];
-  };
+  } RibbonData;
 
   RibbonData ribbon[2];
+  ribbon[0].valid = 0;
+  ribbon[1].valid = 0;
 
   char buffer[1024];
-  enum Action
+  typedef enum
   {
     NONE    = -1,
     RIBBON1 = 0,
     RIBBON2 = 1
-  };
+  } Action;
 
   while (!feof(infile))
   {
     char* buf = buffer;
-    if (fgets(buf, 1024, infile) == nullptr)
+    if (!fgets(buf, 1024, infile))
       break;
     Action action = NONE;
     if (strncmp("Ribbon1=", buf, 8) == 0)
@@ -67,16 +68,16 @@ int main(int const argc, char const* const argv[])
       case RIBBON1:
       case RIBBON2:
       {
-        int select = int(action) - int(RIBBON1);
+        int select = (int) (action) - (int) (RIBBON1);
         buf += 8;
         for (int i = 0; buf[i] != 0; i++)
-          if (buf[i] == '\n')
+          if (buf[i] == '\n' || buf[i] == '\r')
           {
             buf[i] = 0;
             break;
           }
         FILE* ribfile;
-        if ((ribfile = fopen(buf, "r")) == nullptr)
+        if (!(ribfile = fopen(buf, "r")))
         {
           printf("FATAL: Cannot open ribbon file \"%s\"\n", buf);
           return 3;  // --> exit
@@ -88,7 +89,7 @@ int main(int const argc, char const* const argv[])
           while (!feof(ribfile))
           {
             buf = buffer;
-            if (fgets(buf, 1024, ribfile) == nullptr)
+            if (!fgets(buf, 1024, ribfile))
               break;
             if (strncmp("[Calibration-X]", buf, 15) == 0)
             {
