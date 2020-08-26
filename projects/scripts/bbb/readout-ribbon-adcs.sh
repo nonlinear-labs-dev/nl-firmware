@@ -12,9 +12,9 @@ int_trap() {
 }
 
 systemctl stop bbbb
-./lpc set sensors on
+lpc set sensors on
 leds "\3"
 trap int_trap INT
-./lpc-read -a +r +i
-./lpc set sensors off
+lpc-read -a +r +i
+lpc set sensors off
 leds "\0"
