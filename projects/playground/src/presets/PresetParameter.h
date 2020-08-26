@@ -43,13 +43,13 @@ class PresetParameter
   enum RibbonReturnMode getRibbonReturnMode() const;
   enum RibbonTouchBehaviour getRibbonTouchBehaviour() const;
   enum PedalModes getPedalMode() const;
+  void assignVoiceGroup(VoiceGroup vg);
 
   // transactions
   void setValue(UNDO::Transaction *transaction, tControlPositionValue v);
   void setField(UNDO::Transaction *transaction, Fields field, const std::string &value);
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other);
   void copyFrom(UNDO::Transaction *transaction, const ::Parameter *other);
-  void assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg);
 
   // algorithm
   void writeDiff(Writer &writer, ParameterId parameterID, const PresetParameter *other) const;

@@ -258,11 +258,15 @@ void Preset::copyFrom(UNDO::Transaction *transaction, EditBuffer *edit)
 
 void Preset::copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction *transaction)
 {
-  for(const auto &g : m_parameterGroups[static_cast<size_t>(VoiceGroup::I)])
+  auto vgI = static_cast<size_t>(VoiceGroup::I);
+  auto vgII = static_cast<size_t>(VoiceGroup::II);
+
+  for(const auto &g : m_parameterGroups[vgI])
   {
     auto ptr = g.second.get();
-    m_parameterGroups[static_cast<size_t>(VoiceGroup::II)][g.first] = std::make_unique<PresetParameterGroup>(*ptr);
-    m_parameterGroups[static_cast<size_t>(VoiceGroup::II)][g.first]->assignVoiceGroup(transaction, VoiceGroup::II);
+    GroupId id { g.first.getName(), VoiceGroup::II };
+    m_parameterGroups[vgII][id] = std::make_unique<PresetParameterGroup>(*ptr);
+    m_parameterGroups[vgII][id]->assignVoiceGroup(transaction, VoiceGroup::II);
   }
 }
 

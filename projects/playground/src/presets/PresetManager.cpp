@@ -539,7 +539,12 @@ void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<
 
 void PresetManager::storeInitSound(UNDO::Transaction *transaction)
 {
-  m_initSound->copyFrom(transaction, m_editBuffer.get());
+  when copying, ignore those parameters, that are not actually available in the current sound type,
+      as can be seen in EditBuffer::cleanupParameterSelection Voices / Mono Group : in Single and Layersounds,
+      only groups of VGI are used,
+      Split uses also VGII groups
+
+          m_initSound->copyFrom(transaction, m_editBuffer.get());
 
   if(m_editBuffer->getType() == SoundType::Single)
     m_initSound->copyVoiceGroup1IntoVoiceGroup2(transaction);

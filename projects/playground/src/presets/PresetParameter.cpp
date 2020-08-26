@@ -66,10 +66,9 @@ void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter
   other->copyTo(transaction, this);
 }
 
-void PresetParameter::assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg)
+void PresetParameter::assignVoiceGroup(VoiceGroup vg)
 {
-  ParameterId id(m_id.getNumber(), vg);
-  transaction->addUndoSwap(m_id, id);
+  m_id = { m_id.getNumber(), vg };
 }
 
 void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const PresetParameter *other) const
