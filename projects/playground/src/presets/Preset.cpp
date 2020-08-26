@@ -406,14 +406,20 @@ void Preset::writeGroups(Writer &writer, const Preset *other, VoiceGroup vgOfThi
 {
   std::vector<std::string> writtenGroups;
 
-  auto isSpecialLayerGroup = [](GroupId id) { return id.getName() == "Unison" || id.getName() == "Mono"; };
+  static std::vector<std::string> parameterGroupsThatAreTreatedAsGlobalForLayerSounds = { "Unison", "Mono" };
+
+  auto isParameterGroupPresentInVGII = [&](GroupId id) {
+    auto &v = parameterGroupsThatAreTreatedAsGlobalForLayerSounds;
+    auto it = std::find(v.begin(), v.end(), id.getName());
+    return it != v.end();
+  };
 
   for(auto &g : m_parameterGroups[static_cast<size_t>(vgOfThis)])
   {
     PresetParameterGroup *myGroup = nullptr;
     PresetParameterGroup *otherGroup = nullptr;
 
-    if(getType() == SoundType::Layer && isSpecialLayerGroup(g.first))
+    if(getType() == SoundType::Layer && isParameterGroupPresentInVGII(g.first))
     {
       myGroup = findParameterGroup({ g.first.getName(), VoiceGroup::I });
     }
@@ -422,7 +428,7 @@ void Preset::writeGroups(Writer &writer, const Preset *other, VoiceGroup vgOfThi
       myGroup = g.second.get();
     }
 
-    if(other->getType() == SoundType::Layer && isSpecialLayerGroup(g.first))
+    if(other->getType() == SoundType::Layer && isParameterGroupPresentInVGII(g.first))
     {
       otherGroup = other->findParameterGroup({ g.first.getName(), VoiceGroup::I });
     }

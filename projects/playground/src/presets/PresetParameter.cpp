@@ -109,7 +109,7 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
             otherString = stringize(singleConverter, other->m_value);
           }
 
-          if(m_value != other->m_value)
+          if(myString != otherString)
             writer.writeTextElement("value", "", Attribute("a", myString), Attribute("b", otherString));
 
           if(getModulationSource() != other->getModulationSource())
