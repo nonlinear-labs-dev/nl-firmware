@@ -49,6 +49,7 @@ class PresetParameter
   void setField(UNDO::Transaction *transaction, Fields field, const std::string &value);
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other);
   void copyFrom(UNDO::Transaction *transaction, const ::Parameter *other);
+  void assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg);
 
   // algorithm
   void writeDiff(Writer &writer, ParameterId parameterID, const PresetParameter *other) const;

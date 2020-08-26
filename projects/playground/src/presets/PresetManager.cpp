@@ -540,6 +540,10 @@ void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<
 void PresetManager::storeInitSound(UNDO::Transaction *transaction)
 {
   m_initSound->copyFrom(transaction, m_editBuffer.get());
+
+  if(m_editBuffer->getType() == SoundType::Single)
+    m_initSound->copyVoiceGroup1IntoVoiceGroup2(transaction);
+
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
 }
 
@@ -763,7 +767,7 @@ void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
   {
     m_editBuffer->undoableSelectParameter(trans, param);
   }
-  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers{});
+  param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers {});
 }
 
 void PresetManager::stressAllParams(int numParamChangedForEachParameter)
@@ -842,7 +846,7 @@ void PresetManager::incAllParamsFine()
         for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
           for(auto &group : m_editBuffer->getParameterGroups(vg))
             for(auto &param : group->getParameters())
-              param->stepCPFromHwui(trans, 1, ButtonModifiers{ ButtonModifier::FINE });
+              param->stepCPFromHwui(trans, 1, ButtonModifiers { ButtonModifier::FINE });
       },
       0);
 }
