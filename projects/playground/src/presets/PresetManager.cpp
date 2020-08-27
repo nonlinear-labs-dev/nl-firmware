@@ -27,7 +27,6 @@
 #include <presets/PresetPartSelection.h>
 #include <parameter_declarations.h>
 #include <presets/PresetParameter.h>
-#include <presets/PresetAlgorithms.h>
 #include <set>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
@@ -585,9 +584,16 @@ void PresetManager::storeInitSound(UNDO::Transaction *transaction)
   if(currentSoundType == SoundType::Layer)
     currentState->copyVoiceGroup1IntoVoiceGroup2(transaction, parameterGroupsToCloneInLayerSounds);
 
-  m_initSound = PresetAlgorithms::merge(transaction, std::move(currentState), std::move(m_initSound),
-                                        getUnavailableParametersBySoundType(currentSoundType));
+  auto &takeFromRight = getUnavailableParametersBySoundType(currentSoundType);
 
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto &currentGroup : currentState->getGroups(vg))
+      for(auto &currentParameter : currentGroup.second->getParameters())
+        if(takeFromRight.count(currentParameter.first.getNumber()))
+          if(auto oldParameter = m_initSound->findParameterByID(currentParameter.first, false))
+            currentParameter.second->copyFrom(transaction, oldParameter);
+
+  m_initSound = std::move(currentState);
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
 }
 
