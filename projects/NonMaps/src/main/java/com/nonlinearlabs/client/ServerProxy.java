@@ -121,9 +121,7 @@ public class ServerProxy {
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
 		
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
-			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
-			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
-					presetManagerNode, deviceInfo, undoNode);
+			
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
 			setPlaygroundSoftwareVersion(deviceInfo);
@@ -139,10 +137,16 @@ public class ServerProxy {
 			if(!omitOracles(world)) {
 				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 				ebu.doUpdate();
+
+				nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
+				nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
+					presetManagerNode, deviceInfo, undoNode);
+
+				PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
+					pmu.doUpdate();
 			}
 			
-			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
-			pmu.doUpdate();
+			
 
 			documentFromPlayground.notifyChanges();
 		}
@@ -224,7 +228,7 @@ public class ServerProxy {
 	public void selectPreset(String uuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "select-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
-		queueJob(uri, false);
+		queueJob(uri, true);
 	}
 
 	public void newBank(String initialName, NonPosition pos) {
