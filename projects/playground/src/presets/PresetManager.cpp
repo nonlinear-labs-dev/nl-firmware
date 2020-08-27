@@ -27,6 +27,8 @@
 #include <presets/PresetPartSelection.h>
 #include <parameter_declarations.h>
 #include <presets/PresetParameter.h>
+#include <presets/PresetAlgorithms.h>
+#include <set>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -215,7 +217,7 @@ SaveResult PresetManager::saveBanks(Glib::RefPtr<Gio::File> pmFolder)
 {
   for(auto &b : m_banks.getElements())
   {
-    auto bankFolder = pmFolder->get_child((Glib::ustring) b->getUuid().raw());
+    auto bankFolder = pmFolder->get_child(static_cast<Glib::ustring>(b->getUuid().raw()));
     g_file_make_directory_with_parents(bankFolder->gobj(), nullptr, nullptr);
 
     switch(b->save(bankFolder))
@@ -306,7 +308,7 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::
   DebugLevel::gassy("loadBanks", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Banks");
 
-  int numBanks = m_banks.size();
+  int numBanks = static_cast<int>(m_banks.size());
 
   m_banks.forEach([&, currentBank = 1](Bank *bank) mutable {
     DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
@@ -537,17 +539,54 @@ void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<
   m_banks.sort(transaction, banks);
 }
 
+const std::set<int> &getUnavailableParametersBySoundType(SoundType t)
+{
+  static std::set<int> unavailableInSingleSound {
+    C15::PID::FB_Mix_Comb_Src,   C15::PID::FB_Mix_FX_Src,        C15::PID::FB_Mix_Osc_Src,   C15::PID::Out_Mix_To_FX,
+    C15::PID::Split_Split_Point, C15::PID::Voice_Grp_Fade_From,  C15::PID::Voice_Grp_Tune,   C15::PID::FB_Mix_Osc,
+    C15::PID::FB_Mix_SVF_Src,    C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume,
+  };
+
+  static std::set<int> unavailableInSplitSounds {
+    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_FX_Src,        C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_SVF_Src,
+    C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Fade_Range, C15::PID::FB_Mix_Osc,
+  };
+
+  static std::set<int> unavailableInLayerSounds { C15::PID::Split_Split_Point };
+
+  switch(t)
+  {
+    case SoundType::Single:
+      return std::ref(unavailableInSingleSound);
+
+    case SoundType::Split:
+      return std::ref(unavailableInSplitSounds);
+
+    case SoundType::Layer:
+      return std::ref(unavailableInLayerSounds);
+
+    default:
+      break;
+  }
+  return std::ref(unavailableInSingleSound);
+}
+
 void PresetManager::storeInitSound(UNDO::Transaction *transaction)
 {
-  when copying, ignore those parameters, that are not actually available in the current sound type,
-      as can be seen in EditBuffer::cleanupParameterSelection Voices / Mono Group : in Single and Layersounds,
-      only groups of VGI are used,
-      Split uses also VGII groups
+  auto currentState = std::make_unique<Preset>(this, *m_editBuffer);
+  auto currentSoundType = m_editBuffer->getType();
 
-          m_initSound->copyFrom(transaction, m_editBuffer.get());
+  if(currentSoundType == SoundType::Single)
+    currentState->copyVoiceGroup1IntoVoiceGroup2(transaction, {});
 
-  if(m_editBuffer->getType() == SoundType::Single)
-    m_initSound->copyVoiceGroup1IntoVoiceGroup2(transaction);
+  static auto parameterGroupsToCloneInLayerSounds
+      = std::set<GroupId> { GroupId { "Unison", VoiceGroup::I }, GroupId { "Mono", VoiceGroup::I } };
+
+  if(currentSoundType == SoundType::Layer)
+    currentState->copyVoiceGroup1IntoVoiceGroup2(transaction, parameterGroupsToCloneInLayerSounds);
+
+  m_initSound = PresetAlgorithms::merge(transaction, std::move(currentState), std::move(m_initSound),
+                                        getUnavailableParametersBySoundType(currentSoundType));
 
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
 }
@@ -955,6 +994,8 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
           {
             eb->undoableLoadSelectedPreset(currentVoiceGroup);
           }
+          break;
+        default:
           break;
       }
     }

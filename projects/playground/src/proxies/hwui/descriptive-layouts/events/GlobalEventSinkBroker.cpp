@@ -250,7 +250,7 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::InitSound, [eb] {
       auto scope = eb->getParent()->getUndoScope().startTransaction("Init Sound");
-      eb->undoableInitSound(scope->getTransaction());
+      eb->undoableInitSound(scope->getTransaction(), Defaults::UserDefault);
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
 

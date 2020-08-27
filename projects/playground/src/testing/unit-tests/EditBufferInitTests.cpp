@@ -21,7 +21,7 @@ TEST_CASE("Init Part Tests")
   WHEN("Init Part I")
   {
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableInitPart(scope->getTransaction(), VoiceGroup::I);
+    editBuffer->undoableInitPart(scope->getTransaction(), VoiceGroup::I, Defaults::FactoryDefault);
 
     THEN("Tune I init | Tune II && Master untouched")
     {
@@ -34,7 +34,7 @@ TEST_CASE("Init Part Tests")
   WHEN("Init Part II")
   {
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableInitPart(scope->getTransaction(), VoiceGroup::II);
+    editBuffer->undoableInitPart(scope->getTransaction(), VoiceGroup::II, Defaults::FactoryDefault);
 
     THEN("Tune II init | Tune I && Master untouched")
     {

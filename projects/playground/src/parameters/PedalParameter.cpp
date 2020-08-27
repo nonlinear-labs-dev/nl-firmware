@@ -232,9 +232,9 @@ std::shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
   return std::dynamic_pointer_cast<PedalType>(Application::get().getSettings()->getSetting(str));
 }
 
-void PedalParameter::loadDefault(UNDO::Transaction *transaction)
+void PedalParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  super::loadDefault(transaction);
+  super::loadDefault(transaction, mode);
   undoableSetPedalMode(transaction, PedalModes::STAY);
 }
 

@@ -260,21 +260,21 @@ class EditBufferLogicalParts
     return ret;
   }
 
-  template <typename... tArgs> static bool isDefaultLoaded(tArgs... args)
+  template <typename... tArgs> static bool isFactoryDefaultLoaded(tArgs... args)
   {
     for(auto& v : { args... })
     {
-      if(!isDefaultLoaded(v))
+      if(!isFactoryDefaultLoaded(v))
         return false;
     }
     return true;
   };
 
-  static bool isDefaultLoaded(const std::vector<Parameter*>& v)
+  static bool isFactoryDefaultLoaded(const std::vector<Parameter*>& v)
   {
     for(auto& p : v)
     {
-      if(!p->isDefaultLoaded())
+      if(!p->isFactoryDefaultLoaded())
         return false;
     }
     return true;

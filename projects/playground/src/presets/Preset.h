@@ -9,6 +9,7 @@
 #include <string>
 #include <tools/Uuid.h>
 #include <tools/Signal.h>
+#include <set>
 
 class EditBuffer;
 class Bank;
@@ -66,10 +67,9 @@ class Preset : public PresetDualParameterGroups
   void forEachParameter(const std::function<void(PresetParameter *)> &cb);
   void forEachParameter(const std::function<void(const PresetParameter *)> &cb) const;
 
-  // transactions
   void copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid);
   void copyFrom(UNDO::Transaction *transaction, EditBuffer *edit);
-  void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction *transaction);
+  void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction *transaction, std::optional<std::set<GroupId>> whiteList);
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
   void setName(UNDO::Transaction *transaction, const Glib::ustring &name);
   void setType(UNDO::Transaction *transaction, SoundType type);

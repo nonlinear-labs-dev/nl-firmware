@@ -116,7 +116,7 @@ TEST_CASE("Load Part I of Split into Layer Part I")
 
     THEN("Unison and Mono II are default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
     }
 
     THEN("Unison and Mono of I unchanged")
@@ -263,7 +263,7 @@ TEST_CASE("Load Part I of Split into Layer Part II")
 
     THEN("Unison and Mono II are default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
     }
 
     THEN("Unison and Mono of I unchanged")
@@ -419,7 +419,7 @@ TEST_CASE("Load Part I of Layer into Layer Part I")
 
     THEN("Unison and Mono II are default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
     }
 
     THEN("Unison and Mono of I unchanged")
@@ -575,7 +575,8 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
 
     THEN("Unison and Mono II are default")
     {
-      CHECK(EBL::isDefaultLoaded({ EBL::getUnisonVoice<VoiceGroup::II>(), EBL::getMonoEnable<VoiceGroup::II>() }));
+      CHECK(
+          EBL::isFactoryDefaultLoaded({ EBL::getUnisonVoice<VoiceGroup::II>(), EBL::getMonoEnable<VoiceGroup::II>() }));
     }
 
     THEN("Unison and Mono of I unchanged")

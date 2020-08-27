@@ -90,7 +90,7 @@ TEST_CASE("Load Part I of Split into Split Part I")
 
     THEN("ToFX I copied / Cross FB I default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
 
       for(auto& p : EBL::getToFX<VoiceGroup::I>())
         CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.7);
@@ -98,7 +98,7 @@ TEST_CASE("Load Part I of Split into Split Part I")
 
     THEN("Cross FB II is Default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Local Normal was copied to current VG")
@@ -128,7 +128,7 @@ TEST_CASE("Load Part I of Split into Split Part I")
 
     THEN("Fade I Default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::I>()));
     }
 
     THEN("Part Volume and Tune correct")
@@ -244,7 +244,7 @@ TEST_CASE("Load Part I of Split into Split Part II")
 
     THEN("Cross FB I is default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
     }
 
     THEN("toFX I unchanged")
@@ -254,7 +254,7 @@ TEST_CASE("Load Part I of Split into Split Part II")
 
     THEN("ToFX II copied / Cross FB II default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
 
       for(auto& p : EBL::getToFX<VoiceGroup::II>())
         CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.7);
@@ -287,7 +287,7 @@ TEST_CASE("Load Part I of Split into Split Part II")
 
     THEN("Fade II Default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
     }
 
     THEN("Part Volume and Tune correct")
@@ -395,8 +395,8 @@ TEST_CASE("Load Part I of Layer into Split Part I")
 
     THEN("Cross FB is default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("toFX and local II unchanged")
@@ -420,8 +420,8 @@ TEST_CASE("Load Part I of Layer into Split Part I")
 
     THEN("Fade default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
     }
 
     THEN("Split unchanged")
@@ -563,13 +563,13 @@ TEST_CASE("Load Part II of Layer into Split Part II")
 
     THEN("Cross FB default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Fade II default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
     }
 
     THEN("Split unchanged")

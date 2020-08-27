@@ -52,9 +52,9 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     editBuffer->setModulationSource(static_cast<MacroControls>(src), ParameterId { id });
   });
 
-  addAction("reset", [=](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("reset", [=](std::shared_ptr<NetworkRequest>) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Init Sound");
-    editBuffer->undoableInitSound(scope->getTransaction());
+    editBuffer->undoableInitSound(scope->getTransaction(), Defaults::UserDefault);
   });
 
   addAction("rename-mc", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -125,20 +125,20 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("randomize-sound", [=](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("randomize-sound", [=](std::shared_ptr<NetworkRequest>) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Randomize Sound");
     editBuffer->undoableRandomize(scope->getTransaction(), Initiator::EXPLICIT_WEBUI);
   });
 
-  addAction("init-sound", [=](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("init-sound", [=](std::shared_ptr<NetworkRequest>) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Init Sound");
-    editBuffer->undoableInitSound(scope->getTransaction());
+    editBuffer->undoableInitSound(scope->getTransaction(), Defaults::UserDefault);
   });
 
   addAction("init-part", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto vg = to<VoiceGroup>(request->get("part"));
     auto scope = editBuffer->getUndoScope().startTransaction("Init Part");
-    editBuffer->undoableInitPart(scope->getTransaction(), vg);
+    editBuffer->undoableInitPart(scope->getTransaction(), vg, Defaults::UserDefault);
   });
 
   addAction("rename-part", [=](std::shared_ptr<NetworkRequest> request) mutable {

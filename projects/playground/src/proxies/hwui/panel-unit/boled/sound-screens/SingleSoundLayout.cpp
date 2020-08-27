@@ -245,7 +245,8 @@ void SingleSoundLayout::action()
 void SingleSoundLayout::initSound()
 {
   UNDO::Scope::tTransactionScopePtr scope = Application::get().getUndoScope()->startTransaction("Init Sound");
-  Application::get().getPresetManager()->getEditBuffer()->undoableInitSound(scope->getTransaction());
+  Application::get().getPresetManager()->getEditBuffer()->undoableInitSound(scope->getTransaction(),
+                                                                            Defaults::UserDefault);
   Application::get().getHWUI()->getPanelUnit().getUsageMode()->bruteForceUpdateLeds();
 }
 
