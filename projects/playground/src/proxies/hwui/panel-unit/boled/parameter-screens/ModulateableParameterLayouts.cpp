@@ -39,6 +39,7 @@
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include "ModulateableParameterLayouts.h"
+#include "ModAspectRecallOverlay.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -188,13 +189,29 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
   auto inModRecallAbleMode
       = isModeOf({ Mode::MacroControlAmount, Mode::MacroControlPosition, Mode::MacroControlSelection, Mode::Recall });
 
+  if(m_modAspectRecallOverlay)
+  {
+    if(i == Buttons::BUTTON_SHIFT && !down)
+    {
+      removeModAspectRecall();
+    }
+    else
+    {
+      return m_modAspectRecallOverlay->onButton(i, down, modifiers);
+    }
+  }
+
   if(modParam && inModRecallAbleMode)
   {
-    if(m_mode == Mode::Recall && (modParam->isAnyModChanged() || modParam->isMacroControlAssignedAndChanged()))
+    if(m_mode == Mode::Recall)
     {
       if(handleMCRecall(i, down))
       {
         toggleMode(Mode::Recall);
+        return true;
+      }
+      else
+      {
         return true;
       }
 
@@ -447,42 +464,7 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       break;
 
     case Mode::Recall:
-      addModAmountSliders(m_modeOverlay);
-      if(auto mod = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
-      {
-        if(mod->isMacroControlAssignedAndChanged())
-        {
-          m_modeOverlay->addControl(new RecallMCPositionLabel(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
-          m_modeOverlay->addControl(new RecallButton("Recall", Buttons::BUTTON_A));
-        }
-        else
-        {
-          m_mcPosButton->setVisible(false);
-        }
-        if(mod->isModSourceChanged())
-        {
-          m_modeOverlay->addControl(new RecallModulationSourceLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
-          m_modeOverlay->addControl(new RecallButton("Recall", Buttons::BUTTON_B));
-        }
-        else
-        {
-          m_mcSelButton->setVisible(false);
-        }
-        if(mod->isModAmountChanged())
-        {
-          m_modeOverlay->addControl(new RecallMCAmountLabel(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
-          m_modeOverlay->addControl(new RecallButton("Recall", Buttons::BUTTON_C));
-        }
-        else
-        {
-          m_mcAmtButton->setVisible(false);
-        }
-      }
-      else
-      {
-        throw std::runtime_error(to_string(__LINE__) + " has no modParam selected!");
-      }
-
+      installModAmountRecall();
       break;
 
     case Mode::MacroControlPosition:
@@ -578,24 +560,22 @@ bool ModulateableParameterSelectLayout2::handleMCRecall(Buttons i, bool down)
           if(modP->isMacroControlAssignedAndChanged())
           {
             modP->undoableRecallMCPos();
-            return true;
           }
           break;
         case Buttons::BUTTON_B:
           if(modP->isModSourceChanged())
           {
             modP->undoableRecallMCSource();
-            return true;
           }
           break;
         case Buttons::BUTTON_C:
           if(modP->isModAmountChanged())
           {
             modP->undoableRecallMCAmount();
-            return true;
           }
           break;
       }
+      return !modP->isAnyModChanged();
     }
   }
   return false;
@@ -629,6 +609,28 @@ void ModulateableParameterSelectLayout2::installModulationCarousel(const Mode &m
     {
       setCarousel(createCarousel(Rect(195, 0, 58, 62)));
     }
+  }
+}
+
+void ModulateableParameterSelectLayout2::installModAmountRecall()
+{
+  if(m_modAspectRecallOverlay == nullptr)
+  {
+    if(auto mod = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
+    {
+      m_modAspectRecallOverlay = addControl(new ModAspectRecallOverlay(Rect(0, 0, 256, 64), mod));
+      getCarousel()->setVisible(false);
+    }
+  }
+}
+
+void ModulateableParameterSelectLayout2::removeModAspectRecall()
+{
+  if(m_modAspectRecallOverlay)
+  {
+    remove(m_modAspectRecallOverlay);
+    getCarousel()->setVisible(true);
+    m_modAspectRecallOverlay = nullptr;
   }
 }
 
