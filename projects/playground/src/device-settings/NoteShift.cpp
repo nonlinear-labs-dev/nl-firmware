@@ -17,7 +17,7 @@ NoteShift::NoteShift(Settings &parent)
 
 NoteShift::~NoteShift() = default;
 
-void NoteShift::load(const Glib::ustring &text)
+void NoteShift::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {

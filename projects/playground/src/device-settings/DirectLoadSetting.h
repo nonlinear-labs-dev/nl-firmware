@@ -10,7 +10,7 @@ class DirectLoadSetting : public BooleanSetting
   DirectLoadSetting& operator=(const DirectLoadSetting&) = delete;
 
   bool set(tEnum m) override;
-  void load(const Glib::ustring& text) override;
+  void load(const Glib::ustring& text, Initiator initiator) override;
 
  private:
   bool m_isLoading = false;

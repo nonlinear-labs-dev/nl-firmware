@@ -12,7 +12,7 @@ class RibbonRelativeFactor : public Setting
   RibbonRelativeFactor(Settings &parent);
   virtual ~RibbonRelativeFactor();
 
-  void load(const Glib::ustring &text) override;
+  void load(const Glib::ustring &text, Initiator initiator) override;
   Glib::ustring save() const override;
 
   void set(tControlPositionValue amount);

@@ -8,11 +8,18 @@ DirectLoadSetting::DirectLoadSetting(Settings &settings)
 {
 }
 
-void DirectLoadSetting::load(const Glib::ustring &text)
+void DirectLoadSetting::load(const Glib::ustring &text, Initiator initiator)
 {
-  m_isLoading = true;
-  BooleanSetting::load(text);
-  m_isLoading = false;
+  if(initiator != Initiator::EXPLICIT_WEBUI)
+  {
+    m_isLoading = true;
+    BooleanSetting::load(text, initiator);
+    m_isLoading = false;
+  }
+  else
+  {
+    BooleanSetting::load(text, initiator);
+  }
 }
 
 bool DirectLoadSetting::set(BooleanSettings m)

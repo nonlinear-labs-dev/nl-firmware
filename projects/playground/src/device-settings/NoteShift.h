@@ -11,7 +11,7 @@ class NoteShift : public Setting
   NoteShift(Settings& parent);
   virtual ~NoteShift();
 
-  void load(const Glib::ustring& text) override;
+  void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
 
   void set(int shift);

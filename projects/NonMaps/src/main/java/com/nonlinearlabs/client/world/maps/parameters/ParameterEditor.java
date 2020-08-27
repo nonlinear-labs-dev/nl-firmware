@@ -347,5 +347,4 @@ public class ParameterEditor extends LayoutResizingVertical {
 	public Parameter getSelectedParameter() {
 		return findParameter(EditBufferModel.get().selectedParameter.getValue());
 	}
-
 }

@@ -1,6 +1,8 @@
 package com.nonlinearlabs.client.world.maps.presets.bank;
 
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
@@ -117,14 +119,21 @@ public class PresetList extends LayoutResizingVertical {
 	public void selectPreset(String uuid, boolean sendToServer) {
 		selectedPreset = uuid;
 
-		if(sendToServer)
+		boolean isDL = SetupModel.get().systemSettings.directLoad.getBool();
+
+		if(sendToServer) {
 			getNonMaps().getServerProxy().selectPreset(uuid);
+			if(isDL) {
+				// WIP
+				//getNonMaps().getNonLinearWorld().getParameterEditor().setLoadedPreset(uuid);
+			}
+		}
 
 		requestLayout();
 
 		if (getParent().isSelected()) {
 			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl()
-					.getPresetList().scheduleAutoScroll(ScrollRequest.Smooth);
+					.getPresetList().scheduleAutoScroll(ScrollRequest.Jump);
 		}
 
 		getParent().getParent().onPresetSelectionChanged(findPreset(selectedPreset));

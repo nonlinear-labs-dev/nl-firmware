@@ -71,6 +71,7 @@ typedef double tControlPositionValue;
 
 enum class Initiator
 {
+  EXPLICIT_LOAD,
   EXPLICIT_WEBUI,
   EXPLICIT_HWUI,
   EXPLICIT_LPC,
