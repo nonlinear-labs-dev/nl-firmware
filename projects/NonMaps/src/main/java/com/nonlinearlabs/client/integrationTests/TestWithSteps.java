@@ -41,7 +41,7 @@ public class TestWithSteps {
     TestWithSteps() {
     }
 
-    private void tryNextStep() {
+    protected void tryNextStep() {
         if (steps.get(0).isDone())
             nextStep();
     }

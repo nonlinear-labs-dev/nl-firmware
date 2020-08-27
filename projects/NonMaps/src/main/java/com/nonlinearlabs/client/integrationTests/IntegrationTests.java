@@ -5,7 +5,8 @@ import com.google.gwt.core.client.Scheduler;
 public class IntegrationTests {
 
     public static void doAllTests() {
-        new ConvertSoundTypeTests();
+        //new ConvertSoundTypeTests();
+        new OracleTests();
     }
 
     protected static void in(int milliSeconds, Runnable r) {

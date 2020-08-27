@@ -104,6 +104,8 @@ public class ServerProxy {
 		}
 	}
 
+	private boolean lastOmitOracles = false;
+
 	private void applyChanges(String responseText) {
 		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
 			
@@ -134,7 +136,9 @@ public class ServerProxy {
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
 			deviceInfoUpdater.doUpdate();
 
-			if(!omitOracles(world)) {
+			lastOmitOracles = omitOracles(world);
+
+			if(!lastOmitOracles) {
 				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 				ebu.doUpdate();
 
@@ -143,7 +147,7 @@ public class ServerProxy {
 					presetManagerNode, deviceInfo, undoNode);
 
 				PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
-					pmu.doUpdate();
+				pmu.doUpdate();
 			}
 			
 			
@@ -1126,5 +1130,9 @@ public class ServerProxy {
 			public void onError() {
 			}
 		});
+	}
+
+	public boolean lastDocumentCouldOmitOracles() {
+		return lastOmitOracles;
 	}
 }

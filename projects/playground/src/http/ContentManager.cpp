@@ -225,9 +225,11 @@ bool ContentManager::feedWebSocket(const tWebsocketConnection &c)
 
     if(c->getLastSentUpdateId() != currentUpdateId)
     {
-      DebugLevel::info("Updating websocket", c->getConnection(), "with document for updateID", currentUpdateId);
+      auto canOmitOracles = c->canOmitOracles(currentUpdateId);
+      DebugLevel::info("Updating websocket", c->getConnection(), "with document for updateID", currentUpdateId,
+                       "canOmitOracles", canOmitOracles);
       XmlWriter writer(std::make_unique<WebSocketOutStream>(c->getConnection()));
-      writeDocument(writer, c->getLastSentUpdateId(), c->canOmitOracles(currentUpdateId));
+      writeDocument(writer, c->getLastSentUpdateId(), canOmitOracles);
       c->setLastSentUpdateId(currentUpdateId);
     }
     else

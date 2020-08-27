@@ -14,7 +14,7 @@ bool WifiSetting::set(tEnum m)
 {
   auto ret = super::set(m);
 
-  if(!isDevelopmentPC)
+  if constexpr(!isDevelopmentPC)
   {
     if(get())
     {
@@ -37,7 +37,7 @@ bool WifiSetting::set(tEnum m)
 
 void WifiSetting::pollAccessPointRunning()
 {
-  if(!isDevelopmentPC)
+  if constexpr(!isDevelopmentPC)
   {
     nltools::Log::warning("async polling accesspoint");
 
@@ -60,6 +60,6 @@ void WifiSetting::pollAccessPointRunning()
 
 void WifiSetting::onPollReturned(GPid pid, int exitStatus)
 {
-  nltools::Log::warning("async polling accesspoint returned with resul  t", exitStatus);
+  nltools::Log::warning("async polling accesspoint returned with result", exitStatus);
   set(exitStatus == 0 ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE);
 }

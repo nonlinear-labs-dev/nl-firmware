@@ -18,7 +18,7 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.world.Uuid;
 import com.nonlinearlabs.client.world.overlay.GWTDialog;
 
-class WebSocketConnection {
+public class WebSocketConnection {
 	JavaScriptObject webSocketConnection;
 	private Timer pollTimer;
 	private RepeatingCommand pingTimeout;
@@ -56,16 +56,17 @@ class WebSocketConnection {
 		}
 	}
 
-	interface ServerListener {
+	public interface ServerListener {
 		public void onServerConnectionOpened();
 
 		public void onServerUpdate(String text);
 	}
 
 	ServerListener listener;
-	static String clientId = Uuid.random();
+	String clientId;
 
 	public void connectToServer(ServerListener listener) {
+		clientId = Uuid.random();
 		Tracer.log("startPolling for clientId " + clientId);
 		this.listener = listener;
 		if (Window.Location.getPort() == "8888") {
