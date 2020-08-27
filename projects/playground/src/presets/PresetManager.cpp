@@ -713,8 +713,8 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
                       m_editBuffer->writeDocument(writer, knownRevision);
 
                       bool anyBankChanged = false;
-                      forEachBank([&](Bank *bank) { anyBankChanged |= bank->didChangeSince(knownRevision); });
-
+                      forEachBank([&](Bank *bank) { anyBankChanged |= (bank->didChangeSince(knownRevision)); });
+                      anyBankChanged |= didChangeSince(knownRevision);
                       writer.writeTag("banks", Attribute("changed", anyBankChanged),
                                       Attribute("selected-bank", getSelectedBankUuid().raw()), [&]() {
                                         if(anyBankChanged)
