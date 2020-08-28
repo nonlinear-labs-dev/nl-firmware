@@ -16,12 +16,15 @@ LED intensity value (binary, only Bits 0..1 of value byte are used)
 Setting up a LED requires 2 bytes written to the driver:
  - LED ID
  - Intensity
- When writing an odd number of bytes, the last byte will be ignored to avoid going out
- of sync. But when sync is lost for other reasons, no attempt is made to resync !
+The two bytes do not need to be inside the same data packet.
 
 The LEDs are force-updated in specific time intervals to care for ESD-induced upsets.
 
- */
+RESET:
+Sending a single 0xFF resets the step chain so that the next byte received is interpreted as start
+of command (unless 0xFF again), containing the LED id.
+
+*/
 
 #include <linux/string.h>
 #include <linux/of_gpio.h>
@@ -71,6 +74,15 @@ static ssize_t rbled_write(struct file *filp, const char __user *buf_user, size_
   mutex_lock(&rbled_state_lock);  // keep espi_driver_rb_leds_poll() from interfering
   while (count--)
   {
+    if (buf[i] == 0xFF)  // special to clear state machine
+    {
+      firstByte = 1;
+      i++;
+      if (count)   // more data to follow ?
+        continue;  // then skip the special byte
+      else
+        break;  // else quit parsing
+    }
     if (firstByte)
     {
       firstByte = 0;
