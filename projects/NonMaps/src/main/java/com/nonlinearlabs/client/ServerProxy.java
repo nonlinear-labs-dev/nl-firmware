@@ -50,6 +50,7 @@ public class ServerProxy {
 	private String nonmapsVersion = null;
 	private String playgroundVersion = null;
 	private String buildVersion = null;
+	private int lastUpdateID = 0;
 
 	public Notifier<Integer> documentFromPlayground = new Notifier<Integer>() {
 
@@ -95,10 +96,10 @@ public class ServerProxy {
 	}
 
 	private void updateSyncedPart(Node webuiHelp) {
-		if(SetupModel.get().systemSettings.syncVoiceGroups.isTrue()) {
+		if (SetupModel.get().systemSettings.syncVoiceGroups.isTrue()) {
 			Node selected = getChild(webuiHelp, "selected-part");
 			String vg = getChildText(selected);
-			if(vg != null && !vg.isEmpty()) {
+			if (vg != null && !vg.isEmpty()) {
 				EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.valueOf(vg));
 			}
 		}
@@ -108,9 +109,8 @@ public class ServerProxy {
 
 	private void applyChanges(String responseText) {
 		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
-			
-			Document xml = XMLParser.parse(responseText);
 
+			Document xml = XMLParser.parse(responseText);
 			Node webUIHelper = xml.getElementsByTagName("webui-helper").item(0);
 			updateSyncedPart(webUIHelper);
 
@@ -121,9 +121,9 @@ public class ServerProxy {
 			Node presetManagerNode = xml.getElementsByTagName("preset-manager").item(0);
 			Node deviceInfo = xml.getElementsByTagName("device-information").item(0);
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
-		
+
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
-			
+
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
 			setPlaygroundSoftwareVersion(deviceInfo);
@@ -137,23 +137,35 @@ public class ServerProxy {
 			deviceInfoUpdater.doUpdate();
 
 			lastOmitOracles = omitOracles(world);
+			lastUpdateID = getUpdateID(world);
 
-			if(!lastOmitOracles) {
+			if (!lastOmitOracles) {
 				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 				ebu.doUpdate();
 
 				nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
 				nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
-					presetManagerNode, deviceInfo, undoNode);
+						presetManagerNode, deviceInfo, undoNode);
 
 				PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
 				pmu.doUpdate();
 			}
-			
-			
 
 			documentFromPlayground.notifyChanges();
 		}
+	}
+
+	private int getUpdateID(Node world) {
+		try {
+			return Integer.parseInt(world.getAttributes().getNamedItem("updateID").getNodeValue());
+		} catch (Exception e) {
+			Tracer.log("ServerProxy.updateID not found");
+		}
+		return 0;
+	}
+
+	public int getLastUpdateID() {
+		return lastUpdateID;
 	}
 
 	private void checkSoftwareVersionCompatibility() {
@@ -181,19 +193,19 @@ public class ServerProxy {
 		String branch = getChildText(deviceInfo, "build-branch");
 		String date = getChildText(deviceInfo, "build-date");
 
-		if(branch != null) {
+		if (branch != null) {
 			DeviceInformation.get().branch.setValue(branch);
 		}
 
-		if(commits != null) {
+		if (commits != null) {
 			DeviceInformation.get().commits.setValue(commits);
 		}
 
-		if(head != null) {
+		if (head != null) {
 			DeviceInformation.get().head.setValue(head);
 		}
 
-		if(date != null) {
+		if (date != null) {
 			DeviceInformation.get().date.setValue(date);
 		}
 	}
@@ -479,15 +491,14 @@ public class ServerProxy {
 
 	public void setModulationAmount(double amount, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), 
-											new StaticURI.KeyValue("id", id));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), new StaticURI.KeyValue("id", id));
 		queueJob(uri, true);
 	}
 
 	public void setModulationSource(ModSource src, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()), 
-											new StaticURI.KeyValue("id", id));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()),
+				new StaticURI.KeyValue("id", id));
 		queueJob(uri, true);
 	}
 

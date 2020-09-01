@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.integrationTests;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.ServerProxy;
@@ -14,10 +15,15 @@ public class OracleTests extends TestWithSteps {
     WebSocketConnection webSocket;
     ServerProxy server = NonMaps.get().getServerProxy();
     PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+    boolean documentReceived = false;
+    int lastDocumentID = -1;
     
-    OracleTests() {
+    OracleTests(Runnable after) {
+        super(after);
 
         createWebSocket();
+
+        disableDirectLoad();
 
         createBank();
 
@@ -31,22 +37,35 @@ public class OracleTests extends TestWithSteps {
         start();
     }
 
+    private void disableDirectLoad() {
+        server.setSetting("DirectLoad", "off");
+    }
+
     private void selectPresetViaNewWebSocket() {
         addStep(() -> {
+            documentReceived = false;
             webSocket.send("/presets/banks/select-preset?uuid=" + findBank().getPreset(0).getUUID().toString() + "&isOracle=true");
         }, () -> {
             boolean wasOracleOfServer = server.lastDocumentCouldOmitOracles();
-            return !wasOracleOfServer;
+            return !wasOracleOfServer && documentReceived;
         });
+
+        setStepName("Select Via WebSocket");
     }
 
     private void selectPresetViaProxy() {
         addStep(() -> {
+            documentReceived = false;
+            lastDocumentID = server.getLastUpdateID();
             server.selectPreset(findBank().getPreset(1).getUUID());
         }, () -> {
             boolean wasOracleOfServer = server.lastDocumentCouldOmitOracles();
-            return wasOracleOfServer;
+            boolean updateIsNewer = lastDocumentID < server.getLastUpdateID();
+            GWT.log("update was Oracle: " + wasOracleOfServer + " is newer: " + updateIsNewer + " received on ws: " + documentReceived); 
+            return wasOracleOfServer && documentReceived && updateIsNewer;
         });
+
+        setStepName("Select Via Proxy");
     }
 
     private void createWebSocket() {
@@ -55,6 +74,7 @@ public class OracleTests extends TestWithSteps {
 
 			@Override
 			public void onServerUpdate(String text) {
+                documentReceived = true;
 			}
 
 			@Override
@@ -69,6 +89,8 @@ public class OracleTests extends TestWithSteps {
         }, () -> {
             return findBank() != null;
         });
+
+        setStepName("Create Bank");
     }
 
     private void createPresets() {
@@ -80,6 +102,8 @@ public class OracleTests extends TestWithSteps {
         }, () -> {
             return findBank().getPresetList().getPresetCount() == 3;
         });
+
+        setStepName("Create Presets");
     }
 
     private Bank findBank() {
@@ -98,5 +122,7 @@ public class OracleTests extends TestWithSteps {
         }, () -> {
             return findBank() == null;
         });
+
+        setStepName("Delete Bank");
     }
 }

@@ -65,8 +65,11 @@ public class WebSocketConnection {
 	ServerListener listener;
 	String clientId;
 
-	public void connectToServer(ServerListener listener) {
+	public WebSocketConnection() {
 		clientId = Uuid.random();
+	}
+
+	public void connectToServer(ServerListener listener) {
 		Tracer.log("startPolling for clientId " + clientId);
 		this.listener = listener;
 		if (Window.Location.getPort() == "8888") {

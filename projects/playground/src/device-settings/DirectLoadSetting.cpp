@@ -10,7 +10,7 @@ DirectLoadSetting::DirectLoadSetting(Settings &settings)
 
 void DirectLoadSetting::load(const Glib::ustring &text, Initiator initiator)
 {
-  if(initiator != Initiator::EXPLICIT_WEBUI)
+  if(initiator == Initiator::EXPLICIT_LOAD)
   {
     m_isLoading = true;
     BooleanSetting::load(text, initiator);
