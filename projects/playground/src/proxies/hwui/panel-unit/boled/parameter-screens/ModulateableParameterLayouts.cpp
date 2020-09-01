@@ -36,6 +36,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
 #include <proxies/hwui/HWUI.h>
+#include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include "ModulateableParameterLayouts.h"
@@ -129,6 +130,12 @@ void ModulateableParameterSelectLayout2::onModfiersChanged(ButtonModifiers modif
   }
 }
 
+void ModulateableParameterSelectLayout2::handlePresetValueRecall()
+{
+  if(m_mode == Mode::ParameterValue)
+    ParameterLayout2::handlePresetValueRecall();
+}
+
 void ModulateableParameterSelectLayout2::onCurrentParameterChanged(const Parameter *p)
 {
   fixModeIfNecessary(p);
@@ -186,8 +193,6 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
   }
 
   auto modParam = dynamic_cast<const ModulateableParameter *>(getCurrentParameter());
-  auto inModRecallAbleMode
-      = isModeOf({ Mode::MacroControlAmount, Mode::MacroControlPosition, Mode::MacroControlSelection, Mode::Recall });
 
   if(m_modAspectRecallOverlay)
   {
@@ -198,27 +203,6 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
     else
     {
       return m_modAspectRecallOverlay->onButton(i, down, modifiers);
-    }
-  }
-
-  if(modParam && inModRecallAbleMode)
-  {
-    if(m_mode == Mode::Recall)
-    {
-      if(handleMCRecall(i, down))
-      {
-        toggleMode(Mode::Recall);
-        return true;
-      }
-      else
-      {
-        return true;
-      }
-
-      if(i == Buttons::BUTTON_SHIFT)
-      {
-        return true;
-      }
     }
   }
 
@@ -406,6 +390,18 @@ void ModulateableParameterSelectLayout2::installMcAmountScreen()
 
 void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
 {
+  auto modp = dynamic_cast<ModulateableParameter *>(getCurrentParameter());
+
+  if(desiredMode == Mode::Recall)
+  {
+    if(m_mode == Mode::MacroControlSelection && !modp->isModSourceChanged())
+      return;
+    else if(m_mode == Mode::MacroControlAmount && !modp->isModAmountChanged())
+      return;
+    else if(m_mode == Mode::MacroControlPosition && !modp->getMacroControl()->isValueChangedFromLoaded())
+      return;
+  }
+
   m_lastMode = m_mode;
   m_mode = desiredMode;
 
@@ -464,7 +460,7 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       break;
 
     case Mode::Recall:
-      installModAmountRecall();
+      installModAspectRecall();
       break;
 
     case Mode::MacroControlPosition:
@@ -548,39 +544,6 @@ bool ModulateableParameterSelectLayout2::isCurrentParameterDisabled() const
                                           Application::get().getPresetManager()->getEditBuffer());
 }
 
-bool ModulateableParameterSelectLayout2::handleMCRecall(Buttons i, bool down)
-{
-  if(down)
-  {
-    if(auto modP = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
-    {
-      switch(i)
-      {
-        case Buttons::BUTTON_A:
-          if(modP->isMacroControlAssignedAndChanged())
-          {
-            modP->undoableRecallMCPos();
-          }
-          break;
-        case Buttons::BUTTON_B:
-          if(modP->isModSourceChanged())
-          {
-            modP->undoableRecallMCSource();
-          }
-          break;
-        case Buttons::BUTTON_C:
-          if(modP->isModAmountChanged())
-          {
-            modP->undoableRecallMCAmount();
-          }
-          break;
-      }
-      return !modP->isAnyModChanged();
-    }
-  }
-  return false;
-}
-
 bool ModulateableParameterSelectLayout2::isModeOf(std::vector<ModulateableParameterSelectLayout2::Mode> modes) const
 {
   for(const auto &mode : modes)
@@ -612,16 +575,32 @@ void ModulateableParameterSelectLayout2::installModulationCarousel(const Mode &m
   }
 }
 
-void ModulateableParameterSelectLayout2::installModAmountRecall()
+void ModulateableParameterSelectLayout2::installModAspectRecall()
 {
   if(m_modAspectRecallOverlay == nullptr)
   {
     if(auto mod = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
     {
-      m_modAspectRecallOverlay = addControl(new ModAspectRecallOverlay(Rect(0, 0, 256, 64), mod));
+      ModAspectRecallOverlay::Mode openMode;
+      switch(m_lastMode)
+      {
+        default:
+        case Mode::MacroControlPosition:
+          openMode = ModAspectRecallOverlay::Mode::MC_POS;
+          break;
+        case Mode::MacroControlAmount:
+          openMode = ModAspectRecallOverlay::Mode::MC_AMT;
+          break;
+        case Mode::MacroControlSelection:
+          openMode = ModAspectRecallOverlay::Mode::MC_SEL;
+          break;
+      }
+
+      m_modAspectRecallOverlay = addControl(new ModAspectRecallOverlay(Rect(0, 0, 256, 64), mod, openMode));
       getCarousel()->setVisible(false);
     }
   }
+
 }
 
 void ModulateableParameterSelectLayout2::removeModAspectRecall()

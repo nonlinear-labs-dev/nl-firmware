@@ -473,7 +473,6 @@ void ModulateableParameter::undoableRecallMCPos()
   if(auto mc = getMacroControl())
   {
     mc->undoableRecallFromPreset();
-    onChange(ChangeFlags::Generic);
   }
 }
 
@@ -489,7 +488,6 @@ void ModulateableParameter::undoableRecallMCSource()
   {
     setModulationSource(transaction, original->getRecallModSource());
   }
-  onChange(ChangeFlags::Generic);
 }
 
 void ModulateableParameter::undoableRecallMCAmount()
@@ -504,7 +502,6 @@ void ModulateableParameter::undoableRecallMCAmount()
   {
     setModulationAmount(transaction, original->getRecallModulationAmount());
   }
-  onChange(ChangeFlags::Generic);
 }
 
 void ModulateableParameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
@@ -527,4 +524,22 @@ bool ModulateableParameter::isDefaultLoaded() const
   auto modSrcSame = getModulationSource() == MacroControls::NONE;
   auto modAmtSame = getModulationAmount() == 0;
   return valSame && modSrcSame && modAmtSame;
+}
+
+void ModulateableParameter::undoableUndoRecallMCSel(MacroControls &controls)
+{
+  auto scope = getUndoScope().startTransaction("Recall MC Selection %0 from Editbuffer", controls);
+  setModulationSource(scope->getTransaction(), controls);
+}
+
+void ModulateableParameter::undoableUndoRecallMCAmount(float mcAmt)
+{
+  auto scope = getUndoScope().startTransaction("Recall MC Amount from Editbuffer");
+  setModulationAmount(scope->getTransaction(), mcAmt);
+}
+
+void ModulateableParameter::undoableUndoRecallMCPos(float mcPos)
+{
+  auto scope = getUndoScope().startTransaction("Recall MC Pos from Editbuffer");
+  getMacroControl()->setCPFromHwui(scope->getTransaction(), mcPos);
 }

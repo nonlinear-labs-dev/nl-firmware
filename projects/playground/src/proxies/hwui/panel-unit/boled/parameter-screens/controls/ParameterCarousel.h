@@ -21,6 +21,7 @@ class ParameterCarousel : public Carousel
   virtual void antiTurn() override;
 
   void requestTurn();
+  void setVisible(bool b) override;
 
  protected:
   virtual void setup(Parameter *selectedParameter) override;

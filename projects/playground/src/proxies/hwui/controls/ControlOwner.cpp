@@ -47,6 +47,9 @@ bool ControlOwner::redraw(FrameBuffer &fb)
 
 void ControlOwner::remove(const Control *ctrl)
 {
+  if(!ctrl)
+    return;
+  
   for(auto it = m_controls.begin(); it != m_controls.end(); it++)
   {
     if(it->get() == ctrl)
