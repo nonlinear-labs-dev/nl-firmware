@@ -895,6 +895,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
   auto partI = getParameterGroupByID({ "Part", VoiceGroup::I });
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
+  //Copy Volume and Tune
   for(auto &ids : std::vector<std::pair<int, int>> { { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
                                                      { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune } })
   {
@@ -1307,6 +1308,7 @@ void EditBuffer::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup g
   auto f1 = findParameterByID({ C15::PID::Voice_Grp_Fade_From, group });
   if(!f1->isLocked())
     f1->loadDefault(transaction, Defaults::FactoryDefault);
+
   auto f2 = findParameterByID({ C15::PID::Voice_Grp_Fade_Range, group });
   if(!f2->isLocked())
     f2->loadDefault(transaction, Defaults::FactoryDefault);
