@@ -62,6 +62,21 @@ void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::Para
   transaction->addUndoSwap(m_voiceGroup, other->getVoiceGroup());
 }
 
+void PresetParameterGroup::assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg)
+{
+  transaction->addUndoSwap(m_voiceGroup, vg);
+
+  transaction->addSimpleCommand([=](auto) {
+    auto cp = std::move(m_parameters);
+
+    for(auto &g : cp)
+    {
+      g.second->assignVoiceGroup(vg);
+      m_parameters[{ g.first.getNumber(), vg }] = std::move(g.second);
+    }
+  });
+}
+
 void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const
 {
   if(!other)

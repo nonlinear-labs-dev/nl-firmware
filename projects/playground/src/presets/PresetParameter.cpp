@@ -13,7 +13,7 @@
 #include <xml/Attribute.h>
 
 PresetParameter::PresetParameter(const ParameterId &id)
-    : m_id{ id }
+    : m_id { id }
 {
 }
 
@@ -64,6 +64,11 @@ void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter
   nltools_assertAlways(m_id == other->getID());
   transaction->addUndoSwap(eb, m_fields, {});
   other->copyTo(transaction, this);
+}
+
+void PresetParameter::assignVoiceGroup(VoiceGroup vg)
+{
+  m_id = { m_id.getNumber(), vg };
 }
 
 void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const PresetParameter *other) const
@@ -216,9 +221,9 @@ enum PedalModes PresetParameter::getPedalMode() const
 void PresetParameter::writeDocument(Writer &writer) const
 {
   writer.writeTag("param",
-                  { Attribute{ "id", m_id.toString() }, Attribute{ "value", to_string(m_value) },
-                    Attribute{ "mod-src", to_string(static_cast<int>(getModulationSource())) },
-                    Attribute{ "mod-amt", to_string(getModulationAmount()) } },
+                  { Attribute { "id", m_id.toString() }, Attribute { "value", to_string(m_value) },
+                    Attribute { "mod-src", to_string(static_cast<int>(getModulationSource())) },
+                    Attribute { "mod-amt", to_string(getModulationAmount()) } },
                   []() {});
 }
 

@@ -78,7 +78,7 @@ public class Setup extends Composite {
 	TextArea deviceName;
 
 	@UiField
-	Button saveDeviceName;
+	Button saveDeviceName, storeInitSound, resetInitSound;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -197,6 +197,8 @@ public class Setup extends Composite {
 		transitionTimeSliderRange.addValueChangeHandler(v -> settings.setTransitionTime(v.getValue().doubleValue()));
 		tuneReferenceSliderRange.addValueChangeHandler(v -> settings.setTuneReference(v.getValue().doubleValue()));
 
+		resetInitSound.addClickHandler(e -> settings.resetInitSound());
+		storeInitSound.addClickHandler(e -> settings.storeInitSound());
 	}
 
 	public void connectUpdate() {

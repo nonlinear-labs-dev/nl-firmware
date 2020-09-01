@@ -102,8 +102,8 @@ TEST_CASE("Load Single into Split Part I")
 
     THEN("Cross FB is Default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Local Normal was copied to current VG")
@@ -156,7 +156,7 @@ TEST_CASE("Load Single into Split Part I")
 
     THEN("Fade I is default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::I>()));
     }
 
     THEN("Fade II is ignored")
@@ -229,8 +229,8 @@ TEST_CASE("Load Single into Split Part II")
 
     THEN("Cross FB is Default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Local Normal was copied to current VG")
@@ -288,7 +288,7 @@ TEST_CASE("Load Single into Split Part II")
 
     THEN("Fade II is Default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
     }
   }
 }

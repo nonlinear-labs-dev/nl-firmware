@@ -56,7 +56,7 @@ TEST_CASE("Convert Dual to Single Sound", "[Unison][Parameter]")
   auto transaction = scope->getTransaction();
 
   eb->undoableConvertToDual(transaction, SoundType::Layer);
-  eb->undoableInitSound(transaction);
+  eb->undoableInitSound(transaction, Defaults::FactoryDefault);
 
   auto unisonVoices = eb->findParameterByID({ 249, VoiceGroup::I });
   unisonVoices->setCPFromHwui(scope->getTransaction(), 0);

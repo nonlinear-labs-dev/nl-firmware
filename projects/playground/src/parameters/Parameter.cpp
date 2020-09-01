@@ -149,14 +149,19 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
   }
 }
 
-void Parameter::loadDefault(UNDO::Transaction *transaction)
+void Parameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  loadFromPreset(transaction, getDefaultValue());
+  loadFromPreset(transaction, mode == Defaults::UserDefault ? getDefaultValue() : getFactoryDefaultValue());
 }
 
 bool Parameter::isDefaultLoaded() const
 {
   return !isValueDifferentFrom(getDefaultValue());
+}
+
+bool Parameter::isFactoryDefaultLoaded() const
+{
+  return !isValueDifferentFrom(getFactoryDefaultValue());
 }
 
 void Parameter::reset(UNDO::Transaction *transaction, Initiator initiator)
@@ -280,6 +285,11 @@ ParameterId Parameter::getID() const
 tControlPositionValue Parameter::getDefaultValue() const
 {
   return m_value.getDefaultValue();
+}
+
+tControlPositionValue Parameter::getFactoryDefaultValue() const
+{
+  return m_value.getFactoryDefaultValue();
 }
 
 tTcdValue Parameter::getTcdValue() const

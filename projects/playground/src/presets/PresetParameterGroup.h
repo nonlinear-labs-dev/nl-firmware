@@ -31,6 +31,7 @@ class PresetParameterGroup
   // transactions
   void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
   void copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other);
+  void assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg);
 
   const std::map<ParameterId, ParameterPtr> &getParameters() const
   {
