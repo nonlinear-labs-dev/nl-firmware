@@ -54,7 +54,7 @@ class EditBuffer : public ParameterGroupSet
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
   void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator);
   void undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup currentVoiceGroup, Initiator initiator);
-  void undoableInitSound(UNDO::Transaction *transaction);
+  void undoableInitSound(UNDO::Transaction *transaction, Defaults mode);
   void undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *values);
   void undoableLockAllGroups(UNDO::Transaction *transaction);
   void undoableUnlockAllGroups(UNDO::Transaction *transaction);
@@ -111,21 +111,21 @@ class EditBuffer : public ParameterGroupSet
 
   static bool isDualParameterForSoundType(const Parameter *parameter, SoundType type);
 
-  void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group);
+  void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group, Defaults mode);
 
   void TEST_doDeferredJobs();
 
   struct PartOrigin
   {
     PartOrigin(Uuid preset, VoiceGroup vg)
-        : presetUUID{ preset }
-        , sourceGroup{ sourceGroup }
+        : presetUUID { preset }
+        , sourceGroup { sourceGroup }
     {
     }
 
     PartOrigin()
-        : presetUUID{ Uuid::none() }
-        , sourceGroup{ VoiceGroup::Global }
+        : presetUUID { Uuid::none() }
+        , sourceGroup { VoiceGroup::Global }
     {
     }
 
@@ -232,5 +232,5 @@ class EditBuffer : public ParameterGroupSet
   ParameterId m_lastSelectedParameter;
   size_t m_hashOnStore;
 
-  mutable Preset *m_originCache{ nullptr };
+  mutable Preset *m_originCache { nullptr };
 };

@@ -123,7 +123,7 @@ void ParameterGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *o
       if(auto c = other->findParameterGroup(g->getID()))
         g->copyFrom(transaction, c);
       else
-        g->forEachParameter([&](Parameter *p) { p->loadDefault(transaction); });
+        g->forEachParameter([&](Parameter *p) { p->loadDefault(transaction, Defaults::FactoryDefault); });
 }
 
 Parameter *ParameterGroupSet::findParameterByID(const ParameterId &id) const
@@ -204,7 +204,6 @@ const IntrusiveList<ParameterGroupSet::tParameterGroupPtr> &ParameterGroupSet::g
 
 void ParameterGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from, VoiceGroup to)
 {
-
   setAttribute(transaction, to == VoiceGroup::I ? "origin-I" : "origin-II", preset->getUuid().raw());
   setAttribute(transaction, to == VoiceGroup::I ? "origin-I-vg" : "origin-II-vg", toString(from));
 
@@ -216,7 +215,7 @@ void ParameterGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *p
     }
     else
     {
-      myGroup->undoableLoadDefault(transaction);
+      myGroup->undoableLoadDefault(transaction, Defaults::FactoryDefault);
     }
   }
 }
@@ -240,7 +239,7 @@ void ParameterGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transa
     }
     else
     {
-      g->undoableLoadDefault(transaction);
+      g->undoableLoadDefault(transaction, Defaults::FactoryDefault);
     }
   }
 

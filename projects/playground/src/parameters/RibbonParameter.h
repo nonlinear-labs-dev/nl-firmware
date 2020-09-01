@@ -25,7 +25,7 @@ class RibbonParameter : public PhysicalControlParameter
   ReturnMode getReturnMode() const override;
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
   void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
-  void loadDefault(UNDO::Transaction *transaction) override;
+  void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
 
   void boundToMacroControl(tControlPositionValue v);
 

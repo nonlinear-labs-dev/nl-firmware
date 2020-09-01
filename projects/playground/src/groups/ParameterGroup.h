@@ -46,7 +46,6 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
     return m_parameters;
   }
 
-  void undoableClear(UNDO::Transaction *transaction);
   void undoableReset(UNDO::Transaction *transaction, Initiator initiator);
 
   void undoableLock(UNDO::Transaction *transaction);
@@ -75,7 +74,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   void check();
   VoiceGroup getVoiceGroup() const;
 
-  void undoableLoadDefault(UNDO::Transaction *transaction);
+  void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);
 
  protected:
   tParameterPtr appendParameter(Parameter *p);

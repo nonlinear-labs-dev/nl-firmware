@@ -120,4 +120,12 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.tuneReference.value.setValue(v);
 		NonMaps.theMaps.getServerProxy().setSetting("TuneReference", Double.toString(v));
 	}
+
+	public void resetInitSound() {
+		NonMaps.theMaps.getServerProxy().resetInit();
+	}
+
+	public void storeInitSound() {
+		NonMaps.theMaps.getServerProxy().storeAsInit();
+	}
 }

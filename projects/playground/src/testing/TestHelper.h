@@ -45,7 +45,7 @@ namespace TestHelper
     auto eb = getEditBuffer();
     eb->undoableUnlockAllGroups(transaction);
     eb->undoableConvertToDual(transaction, tType);
-    eb->undoableInitSound(transaction);
+    eb->undoableInitSound(transaction, Defaults::FactoryDefault);
   }
 
   template <SoundType tType> inline void initDualEditBuffer()
@@ -59,7 +59,7 @@ namespace TestHelper
     auto eb = getEditBuffer();
     eb->undoableUnlockAllGroups(transaction);
     eb->undoableConvertToSingle(transaction, VoiceGroup::I);
-    eb->undoableInitSound(transaction);
+    eb->undoableInitSound(transaction, Defaults::FactoryDefault);
   }
 
   inline void forceParameterChange(UNDO::Transaction* transaction, Parameter* param)

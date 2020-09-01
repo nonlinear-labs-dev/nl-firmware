@@ -64,8 +64,7 @@
 							<g:Label ui:field="pedal1DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
-							<input type="range" ui:field="pedal1Slider" class="slider-b"
-								min="0" max="1" step="0.001" disabled="disabled"></input>
+							<input type="range" ui:field="pedal1Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">
@@ -82,8 +81,7 @@
 							<g:Label ui:field="pedal2DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
-							<input type="range" ui:field="pedal2Slider" class="slider-b"
-								min="0" max="1" step="0.001" disabled="disabled"></input>
+							<input type="range" ui:field="pedal2Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">
@@ -100,8 +98,7 @@
 							<g:Label ui:field="pedal3DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
-							<input type="range" ui:field="pedal3Slider" class="slider-b"
-								min="0" max="1" step="0.001" disabled="disabled"></input>
+							<input type="range" ui:field="pedal3Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">
@@ -118,8 +115,7 @@
 							<g:Label ui:field="pedal4DisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w25p">
-							<input type="range" ui:field="pedal4Slider" class="slider-b"
-								min="0" max="1" step="0.001" disabled="disabled"></input>
+							<input type="range" ui:field="pedal4Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
 						<div class="w30p">
@@ -160,31 +156,23 @@
 						<div class="w35p">
 							<p>Edit Smoothing Time</p>
 						</div>
-						<div class="w20p">
-							<g:Label ui:field="editSmoothingTimeDisplayString"
-								styleName="gui-label-1">90 %</g:Label>
+						<div class="w25p">
+							<g:Label ui:field="editSmoothingTimeDisplayString" styleName="gui-label-1">90 %</g:Label>
 						</div>
 						<div class="w40p">
-							<input type="range" ui:field="editSmoothingTimeSlider"
-								class="slider-a" min="0" max="1" step="0.001" value="0"></input>
+							<input type="range" ui:field="editSmoothingTimeSlider" class="slider-a" min="0" max="1" step="0.001" value="0"></input>
 						</div>
 					</div>
-
-
-
-
 
 					<div class="eins-he">
 						<div class="w35p">
 							<p>Transition Time</p>
 						</div>
-						<div class="w20p">
-							<g:Label ui:field="transitionTimeDisplayString"
-								styleName="gui-label-1"></g:Label>
+						<div class="w25p">
+							<g:Label ui:field="transitionTimeDisplayString" styleName="gui-label-1"></g:Label>
 						</div>
 						<div class="w40p">
-							<input type="range" ui:field="transitionTimeSlider"
-								class="slider-a" min="0" max="1" step="0.001" value="0"></input>
+							<input type="range" ui:field="transitionTimeSlider" class="slider-a" min="0" max="1" step="0.001" value="0"></input>
 						</div>
 					</div>
 
@@ -192,13 +180,23 @@
 						<div class="w35p">
 							<p>Tune Reference</p>
 						</div>
-						<div class="w20p">
-							<g:Label ui:field="tuneReferenceDisplayString"
-								styleName="gui-label-1"></g:Label>
+						<div class="w25p">
+							<g:Label ui:field="tuneReferenceDisplayString" styleName="gui-label-1"></g:Label>
 						</div>
 						<div class="w40p">
-							<input type="range" ui:field="tuneReferenceSlider"
-								class="slider-a" min="0" max="1" step="0.0001" value="0"></input>
+							<input type="range" ui:field="tuneReferenceSlider" class="slider-a" min="0" max="1" step="0.0001" value="0"></input>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Init Sound</p>
+						</div>
+						<div class="w20p fl-j-center">
+							<g:Button ui:field="storeInitSound" ui:text="Store"></g:Button>
+						</div>
+						<div class="w20p fl-j-center">
+							<g:Button ui:field="resetInitSound" ui:text="Reset"></g:Button>
 						</div>
 					</div>
 				</div>
@@ -238,10 +236,8 @@
 							<p>Highlight Changed Parameters</p>
 						</div>
 						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="highlightChangedOn" name="rad_hcp" 
-								value="true"></g:RadioButton>
-							<g:RadioButton ui:field="highlightChangedOff" name="rad_hcp" 
-								value="false"></g:RadioButton>
+							<g:RadioButton ui:field="highlightChangedOn" name="rad_hcp" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="highlightChangedOff" name="rad_hcp" value="false"></g:RadioButton>
 						</div>
 					</div>
 
@@ -252,10 +248,8 @@
 							<p>Show Context Menus</p>
 						</div>
 						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="showContextMenusOn" name="rad_scm"
-								value="true"></g:RadioButton>
-							<g:RadioButton ui:field="showContextMenusOff" name="rad_scm"
-								value="false"></g:RadioButton>
+							<g:RadioButton ui:field="showContextMenusOn" name="rad_scm" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="showContextMenusOff" name="rad_scm" value="false"></g:RadioButton>
 						</div>
 					</div>
 
@@ -266,10 +260,8 @@
 							<p>Preset Drag and Drop</p>
 						</div>
 						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="presetDragDropOn" name="rad_pdd"
-								value="true"></g:RadioButton>
-							<g:RadioButton ui:field="presetDragDropOff" name="rad_pdd"
-								value="false"></g:RadioButton>
+							<g:RadioButton ui:field="presetDragDropOn" name="rad_pdd" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="presetDragDropOff" name="rad_pdd" value="false"></g:RadioButton>
 						</div>
 					</div>
 
@@ -306,10 +298,8 @@
 							<p>Bitmap Cache</p>
 						</div>
 						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="bitmapCacheOn" name="rad_bmpc"
-								value="true"></g:RadioButton>
-							<g:RadioButton ui:field="bitmapCacheOff" name="rad_bmpc"
-								value="false"></g:RadioButton>
+							<g:RadioButton ui:field="bitmapCacheOn" name="rad_bmpc" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="bitmapCacheOff" name="rad_bmpc" value="false"></g:RadioButton>
 						</div>
 					</div>
 
@@ -320,10 +310,8 @@
 							<p>Show Developer Options</p>
 						</div>
 						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="developerOptionsOn" name="rad_devop"
-								value="true"></g:RadioButton>
-							<g:RadioButton ui:field="developerOptionsOff" name="rad_devop"
-								value="false"></g:RadioButton>
+							<g:RadioButton ui:field="developerOptionsOn" name="rad_devop" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="developerOptionsOff" name="rad_devop" value="false"></g:RadioButton>
 						</div>
 					</div>
 

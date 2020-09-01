@@ -262,11 +262,11 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   }
 }
 
-void ModulateableParameter::loadDefault(UNDO::Transaction *transaction)
+void ModulateableParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   undoableSelectModSource(transaction, MacroControls::NONE);
   undoableSetModAmount(transaction, 0.0);
-  super::loadDefault(transaction);
+  super::loadDefault(transaction, mode);
 }
 
 void ModulateableParameter::undoableLoadPackedModulationInfo(UNDO::Transaction *transaction,

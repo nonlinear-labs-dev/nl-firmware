@@ -22,7 +22,7 @@ SSID::~SSID() = default;
 
 void SSID::load(const Glib::ustring &ssid)
 {
-  m_ssid = ssid;
+  setSSIDAndNotifyBBB(ssid);
 }
 
 Glib::ustring SSID::save() const
