@@ -473,6 +473,7 @@ void ModulateableParameter::undoableRecallMCPos()
   if(auto mc = getMacroControl())
   {
     mc->undoableRecallFromPreset();
+    mc->onChange(ChangeFlags::Generic);
   }
 }
 
@@ -487,6 +488,7 @@ void ModulateableParameter::undoableRecallMCSource()
   if(original)
   {
     setModulationSource(transaction, original->getRecallModSource());
+    onChange(ChangeFlags::Generic);
   }
 }
 
@@ -501,6 +503,7 @@ void ModulateableParameter::undoableRecallMCAmount()
   if(original)
   {
     setModulationAmount(transaction, original->getRecallModulationAmount());
+    onChange(ChangeFlags::Generic);
   }
 }
 

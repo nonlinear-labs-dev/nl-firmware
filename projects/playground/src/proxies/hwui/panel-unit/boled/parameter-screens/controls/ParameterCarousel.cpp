@@ -58,11 +58,6 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
   setDirty();
 }
 
-void ParameterCarousel::setVisible(bool b)
-{
-  ControlWithChildren::setVisible(b);
-}
-
 void ParameterCarousel::setupChildControls(const std::shared_ptr<PanelUnitParameterEditMode>& edit,
                                            Parameter* selectedParameter, Buttons button)
 {

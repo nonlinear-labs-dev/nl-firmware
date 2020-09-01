@@ -70,7 +70,10 @@ class ModulateableParameter : public Parameter
   void undoableRecallMCAmount();
   bool isDefaultLoaded() const override;
 
- void undoableUndoRecallMCSel(MacroControls& controls);void undoableUndoRecallMCAmount(float mcAmt);void undoableUndoRecallMCPos(float mcPos);protected:
+  void undoableUndoRecallMCSel(MacroControls &controls);
+  void undoableUndoRecallMCAmount(float mcAmt);
+  void undoableUndoRecallMCPos(float mcPos);
+ protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
   virtual Glib::ustring modulationValueToDisplayString(tControlPositionValue v) const;
