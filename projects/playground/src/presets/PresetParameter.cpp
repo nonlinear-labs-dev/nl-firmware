@@ -70,6 +70,11 @@ void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter
   other->copyTo(transaction, this);
 }
 
+void PresetParameter::assignVoiceGroup(VoiceGroup vg)
+{
+  m_id = { m_id.getNumber(), vg };
+}
+
 void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const PresetParameter *other) const
 {
   auto ebParam = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(parameterID);

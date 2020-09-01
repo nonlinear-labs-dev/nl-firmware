@@ -34,7 +34,7 @@ class ModulateableParameter : public Parameter
 
   void undoableLoadPackedModulationInfo(UNDO::Transaction *transaction, const Glib::ustring &packedModulationInfo);
 
-  void loadDefault(UNDO::Transaction *transaction) override;
+  void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
 
   uint16_t getModulationSourceAndAmountPacked() const;
   void applyLpcMacroControl(tDisplayValue diff);

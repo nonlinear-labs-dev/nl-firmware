@@ -265,9 +265,9 @@ void MacroControlParameter::undoableResetConnectionsToTargets()
   }
 }
 
-void MacroControlParameter::loadDefault(UNDO::Transaction *transaction)
+void MacroControlParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  super::loadDefault(transaction);
+  super::loadDefault(transaction, mode);
   undoableSetGivenName(transaction, "");
   undoableSetInfo(transaction, "");
 }

@@ -617,12 +617,12 @@ void EditBuffer::undoableRandomizePart(UNDO::Transaction *transaction, VoiceGrou
     g->undoableRandomize(transaction, initiator, amount);
 }
 
-void EditBuffer::undoableInitSound(UNDO::Transaction *transaction)
+void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode)
 {
   SendEditBufferScopeGuard scopeGuard(transaction);
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
-    undoableInitPart(transaction, vg);
+    undoableInitPart(transaction, vg, mode);
 
   auto swap = UNDO::createSwapData(Uuid::init());
   transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
@@ -805,12 +805,12 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initCrossFB(transaction);
   initSplitPoint(transaction);
 
-  forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction); });
+  forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction, Defaults::FactoryDefault); });
 
   auto vgVolume = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
   auto vgTune = findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I });
-  vgVolume->loadDefault(transaction);
-  vgTune->loadDefault(transaction);
+  vgVolume->loadDefault(transaction, Defaults::FactoryDefault);
+  vgTune->loadDefault(transaction, Defaults::FactoryDefault);
 
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
   setVoiceGroupName(transaction, "", VoiceGroup::I);
@@ -875,8 +875,12 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
 void EditBuffer::undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  getParameterGroupByID({ "Mono", vg })->forEachParameter([&](auto p) -> void { p->loadDefault(transaction); });
-  getParameterGroupByID({ "Unison", vg })->forEachParameter([&](auto p) -> void { p->loadDefault(transaction); });
+  getParameterGroupByID({ "Mono", vg })->forEachParameter([&](auto p) -> void {
+    p->loadDefault(transaction, Defaults::FactoryDefault);
+  });
+  getParameterGroupByID({ "Unison", vg })->forEachParameter([&](auto p) -> void {
+    p->loadDefault(transaction, Defaults::FactoryDefault);
+  });
 }
 
 void EditBuffer::undoableUnmuteLayers(UNDO::Transaction *transaction)
@@ -891,6 +895,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
   auto partI = getParameterGroupByID({ "Part", VoiceGroup::I });
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
+  //Copy Volume and Tune
   for(auto &ids : std::vector<std::pair<int, int>> { { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
                                                      { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune } })
   {
@@ -904,7 +909,7 @@ void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transactio
 
   for(auto &parameter : global->getParameters())
   {
-    parameter->loadDefault(transaction);
+    parameter->loadDefault(transaction, Defaults::FactoryDefault);
   }
 }
 
@@ -1104,12 +1109,12 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
   return false;
 }
 
-void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg)
+void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg, Defaults mode)
 {
   SendEditBufferScopeGuard scopeGuard(transaction);
 
   for(auto &group : getParameterGroups(vg))
-    group->undoableClear(transaction);
+    group->undoableLoadDefault(transaction, mode);
 
   if(vg != VoiceGroup::Global)
   {
@@ -1129,7 +1134,7 @@ void EditBuffer::TEST_doDeferredJobs()
 void EditBuffer::initToFX(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    findParameterByID({ 362, vg })->loadDefault(transaction);
+    findParameterByID({ 362, vg })->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 std::vector<Parameter *> EditBuffer::getCrossFBParameters(const VoiceGroup &to) const
@@ -1201,8 +1206,8 @@ void EditBuffer::copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *
   }
   else if(partTune && partVolume)
   {
-    partTune->loadDefault(transaction);
-    partVolume->loadDefault(transaction);
+    partTune->loadDefault(transaction, Defaults::FactoryDefault);
+    partVolume->loadDefault(transaction, Defaults::FactoryDefault);
   }
 }
 
@@ -1239,21 +1244,21 @@ void EditBuffer::copySinglePresetMasterToPartMaster(UNDO::Transaction *transacti
   }
   else
   {
-    partTune->loadDefault(transaction);
-    partVolume->loadDefault(transaction);
+    partTune->loadDefault(transaction, Defaults::FactoryDefault);
+    partVolume->loadDefault(transaction, Defaults::FactoryDefault);
   }
 }
 
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
 {
   auto splitPoint = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global });
-  splitPoint->loadDefault(transaction);
+  splitPoint->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })->loadDefault(transaction);
-  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg })->loadDefault(transaction);
+  findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })->loadDefault(transaction, Defaults::FactoryDefault);
+  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg })->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
@@ -1280,8 +1285,10 @@ void EditBuffer::calculateFadeParamsFromSplitPoint(UNDO::Transaction *transactio
       ->setCPFromHwui(transaction, getSplitPoint()->getControlPositionValue());
   findParameterByID({ C15::PID::Voice_Grp_Fade_From, VoiceGroup::II })
       ->setCPFromHwui(transaction, getSplitPoint()->getControlPositionValue());
-  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::I })->loadDefault(transaction);
-  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::II })->loadDefault(transaction);
+  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::I })
+      ->loadDefault(transaction, Defaults::FactoryDefault);
+  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::II })
+      ->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 void EditBuffer::copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
@@ -1300,10 +1307,11 @@ void EditBuffer::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup g
 {
   auto f1 = findParameterByID({ C15::PID::Voice_Grp_Fade_From, group });
   if(!f1->isLocked())
-    f1->loadDefault(transaction);
+    f1->loadDefault(transaction, Defaults::FactoryDefault);
+
   auto f2 = findParameterByID({ C15::PID::Voice_Grp_Fade_Range, group });
   if(!f2->isLocked())
-    f2->loadDefault(transaction);
+    f2->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
@@ -1312,7 +1320,7 @@ void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
   {
     for(auto param : getCrossFBParameters(vg))
     {
-      param->loadDefault(transaction);
+      param->loadDefault(transaction, Defaults::FactoryDefault);
     }
   }
 }
@@ -1414,8 +1422,8 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
 
   copySinglePresetMasterToPartMaster(transaction, preset, loadTo);
 
-  getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction);
-  getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction);
+  getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
+  getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
 
   setVoiceGroupName(transaction, preset->getName(), loadTo);
 }
@@ -1501,8 +1509,8 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
     initFadeParameters(transaction, copyTo);
   }
 
-  getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction);
-  getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction);
+  getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
+  getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
 
   if(preset->isDual())
     setVoiceGroupName(transaction, preset->getVoiceGroupName(copyFrom), copyTo);
