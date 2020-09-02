@@ -600,7 +600,6 @@ void ModulateableParameterSelectLayout2::installModAspectRecall()
       getCarousel()->setVisible(false);
     }
   }
-
 }
 
 void ModulateableParameterSelectLayout2::removeModAspectRecall()
@@ -610,6 +609,19 @@ void ModulateableParameterSelectLayout2::removeModAspectRecall()
     remove(m_modAspectRecallOverlay);
     getCarousel()->setVisible(true);
     m_modAspectRecallOverlay = nullptr;
+
+    cleanMode();
+  }
+}
+
+void ModulateableParameterSelectLayout2::cleanMode()
+{
+  auto modAspectFocus = isModeOf({ Mode::MacroControlPosition, Mode::MacroControlAmount });
+  auto mcAssigned = dynamic_cast<ModulateableParameter *>(getCurrentParameter())->getMacroControl() != nullptr;
+
+  if(modAspectFocus && !mcAssigned)
+  {
+    setMode(Mode::ParameterValue);
   }
 }
 

@@ -70,6 +70,7 @@ void handlePresetValueRecall() override;
   bool isCurrentParameterDisabled() const;
   void installModAspectRecall();
   void removeModAspectRecall();
+void cleanMode();
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2
