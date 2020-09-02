@@ -45,12 +45,9 @@ add_custom_command(
         "git config --global user.email bob@the-builder.com"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
-        'git clone -b ${NONLINUX} --single-branch https://github.com/nonlinear-labs-dev/nonlinux.git /fs/nonlinux || true'
+        'git clone https://github.com/nonlinear-labs-dev/nonlinux.git /fs/nonlinux || true'
         "cd /fs/nonlinux"
-        "git status"
-        "git pull origin ${NONLINUX}"
         'git remote add rw git@github.com:nonlinear-labs-dev/nonlinux.git || true'
-        "echo 1"
     COMMAND touch .nonlinux-cloned
 )
 
@@ -62,10 +59,13 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         " "
+        "git config --global user.email bob@the-builder.com"
         "mkdir -p /fs"
         "mount -o loop /workdir/fs.ext4 /fs"
         "cd /fs/nonlinux"
-        "git checkout ${NONLINUX}"
+        "rm -f .gitattributes"
+        "git fetch origin"
+        "git checkout -f ${NONLINUX}"
         "git pull origin ${NONLINUX}"
 )
 
