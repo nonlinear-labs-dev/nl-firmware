@@ -578,7 +578,7 @@ void Parameter::check()
 void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto transactionScope = scope.startTransaction("Recall %0 value", getLongName());
+  auto transactionScope = scope.startTransaction("Recall value from Preset for '%0'", getGroupAndParameterName());
   auto transaction = transactionScope->getTransaction();
   undoableRecallFromPreset(transaction);
 }
