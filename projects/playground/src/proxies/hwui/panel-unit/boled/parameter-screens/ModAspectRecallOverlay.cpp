@@ -1,6 +1,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterModAmount.h>
 #include <proxies/hwui/controls/Button.h>
 #include <parameters/MacroControlParameter.h>
+#include <presets/recall/RecallParameter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MCPositionLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
@@ -9,6 +10,11 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallModulationSourceLabel.h>
 #include "ModAspectRecallOverlay.h"
 #include <proxies/hwui/FrameBuffer.h>
+#include <groups/MacroControlsGroup.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <parameters/scale-converters/MacroControlScaleConverter.h>
 
 bool ModAspectRecallOverlay::onButton(Buttons i, bool down, ButtonModifiers mod)
 {
@@ -26,13 +32,14 @@ bool ModAspectRecallOverlay::onButton(Buttons i, bool down, ButtonModifiers mod)
     return true;
   }
 
-  if(m_buttonB->getText().text == "Recall" && i == Buttons::BUTTON_B)
+  auto& recall = m_oldRecallValues[m_mode];
+  if(i == Buttons::BUTTON_B && !recall.likeInPreset)
   {
     doRecall();
     return true;
   }
 
-  if(m_buttonC->getText().text == "Recall" && i == Buttons::BUTTON_C)
+  if(i == Buttons::BUTTON_B && recall.likeInPreset)
   {
     undoRecall();
     return true;
@@ -44,8 +51,8 @@ bool ModAspectRecallOverlay::onButton(Buttons i, bool down, ButtonModifiers mod)
 ModAspectRecallOverlay::ModAspectRecallOverlay(const Rect& r, ModulateableParameter* modP, Mode openMode)
     : Overlay { r }
     , m_modParam { modP }
+    , m_mode { openMode }
 {
-  constexpr static int BUTTON_VALUE_Y_POSITION = 34;
   constexpr static int BIG_SLIDER_X = 77;
   constexpr static int BIG_SLIDER_WIDTH = 102;
 
@@ -53,15 +60,19 @@ ModAspectRecallOverlay::ModAspectRecallOverlay(const Rect& r, ModulateableParame
   addControl(new SelectedParameterModAmount(Rect(BIG_SLIDER_X + 1, 30, BIG_SLIDER_WIDTH - 2, 1)));
 
   m_labelA = addControl(new Label({ 0, 35, 64, 12 }));
+  m_labelB = addControl(new Label({ 64, 35, 64, 12 }));
+  m_labelC = addControl(new Label({ 128, 35, 64, 12 }));
 
   m_buttonA = addControl(new Button("<", Buttons::BUTTON_A));
   m_buttonB = addControl(new Button("Recall", Buttons::BUTTON_B));
-  m_buttonC = addControl(new Button("Recall", Buttons::BUTTON_C));
+  m_buttonC = addControl(new Button("", Buttons::BUTTON_C));
   m_buttonD = addControl(new Button(">", Buttons::BUTTON_D));
 
-  m_oldRecallValues[Mode::MC_POS] = { false, 0.0 };
-  m_oldRecallValues[Mode::MC_SEL] = { false, MacroControls::NONE };
-  m_oldRecallValues[Mode::MC_AMT] = { false, 0.0 };
+  m_labelC->setHighlight(true);
+
+  m_oldRecallValues[Mode::MC_POS] = { isMCAssignedAndChanged(), false, getOGMCPos(), getMCPos() };
+  m_oldRecallValues[Mode::MC_SEL] = { isMCSelChanged(), false, getOGMCSelection(), getMCSelection() };
+  m_oldRecallValues[Mode::MC_AMT] = { isMCAmtChanged(), false, getOGAmount(), getMCAmount() };
 
   installMode(openMode);
 }
@@ -88,191 +99,64 @@ void ModAspectRecallOverlay::drawBackground(FrameBuffer& fb)
 void ModAspectRecallOverlay::installMode(ModAspectRecallOverlay::Mode m)
 {
   m_mode = m;
-
-  remove(m_labelB);
-  remove(m_labelC);
-
-  auto& recall = m_oldRecallValues[m];
-
-  const auto mcPosChanged = m_modParam->getMacroControl()->isValueChangedFromLoaded();
-  const auto modAmtChanged = m_modParam->isModAmountChanged();
-  const auto modSelChanged = m_modParam->isModSourceChanged();
-
-  switch(m)
-  {
-    case Mode::MC_POS:
-      m_labelA->setText("MC Position");
-      m_labelB = addControl(new RecallMCPositionLabel(Rect(64, 34, 64, 12)));
-      m_labelC = addControl(new MCPositionLabel({ 128, 34, 64, 12 }));
-
-      if(mcPosChanged)
-      {
-        m_buttonB->setText("Recall");
-        m_buttonC->setText("");
-
-        m_labelB->setHighlight(false);
-        m_labelC->setHighlight(true);
-      }
-      else if(recall.wasRecalled)
-      {
-        m_labelC->setText({ std::to_string(std::get<MacroControls>(recall.old)), 0 });
-        m_buttonB->setText("");
-        m_buttonC->setText("Recall");
-
-        m_labelB->setHighlight(true);
-        m_labelC->setHighlight(false);
-      }
-
-      if(modAmtChanged || modSelChanged)
-      {
-        m_buttonA->setText("<");
-        m_buttonD->setText(">");
-      }
-      else
-      {
-        m_buttonA->setText("");
-        m_buttonD->setText("");
-      }
-
-      break;
-    case Mode::MC_SEL:
-      m_labelA->setText("MC Selection");
-      m_labelB = addControl(new RecallModulationSourceLabel(Rect(64, 34, 64, 12)));
-      m_labelC = addControl(new ModulationSourceLabel({ 128, 34, 64, 12 }));
-
-      if(modSelChanged)
-      {
-        m_buttonB->setText("Recall");
-        m_buttonC->setText("");
-
-        m_labelB->setHighlight(false);
-        m_labelC->setHighlight(true);
-      }
-      else if(recall.wasRecalled)
-      {
-        m_labelC->setText({ std::to_string(std::get<float>(recall.old)), 0 });
-
-        m_buttonB->setText("");
-        m_buttonC->setText("Recall");
-
-        m_labelB->setHighlight(false);
-        m_labelC->setHighlight(true);
-      }
-
-      if(modAmtChanged || mcPosChanged)
-      {
-        m_buttonA->setText("<");
-        m_buttonD->setText(">");
-      }
-      else
-      {
-        m_buttonA->setText("");
-        m_buttonD->setText("");
-      }
-
-      break;
-    case Mode::MC_AMT:
-      m_labelA->setText("MC Amount");
-      m_labelB = addControl(new RecallMCAmountLabel(Rect(64, 34, 64, 12)));
-      m_labelC = addControl(new MCAmountLabel({ 128, 34, 64, 12 }));
-
-      if(modAmtChanged)
-      {
-        m_buttonB->setText("Recall");
-        m_buttonC->setText("");
-
-        m_labelB->setHighlight(false);
-        m_labelC->setHighlight(true);
-      }
-      else if(recall.wasRecalled)
-      {
-        m_labelC->setText({ std::to_string(std::get<float>(recall.old)), 0 });
-
-        m_buttonB->setText("");
-        m_buttonC->setText("Recall");
-
-        m_labelB->setHighlight(true);
-        m_labelC->setHighlight(false);
-      }
-
-      if(modSelChanged || mcPosChanged)
-      {
-        m_buttonA->setText("<");
-        m_buttonD->setText(">");
-      }
-      else
-      {
-        m_buttonA->setText("");
-        m_buttonD->setText("");
-      }
-      break;
-  }
+  updateUI();
 }
 
 void ModAspectRecallOverlay::doRecall()
 {
   auto& recall = m_oldRecallValues[m_mode];
-
-  auto oldValB = m_labelB->getText();
-  auto oldValC = m_labelC->getText();
-
-  recall.wasRecalled = true;
+  recall.anyRecallHappened = true;
 
   switch(m_mode)
   {
     case Mode::MC_SEL:
-      recall.old = m_modParam->getModulationSource();
+      recall.leftRecallValue = m_modParam->getModulationSource();
       m_modParam->undoableRecallMCSource();
+      recall.rightRecallValue = m_modParam->getModulationSource();
       break;
     case Mode::MC_AMT:
-      recall.old = m_modParam->getModulationAmount();
+      recall.leftRecallValue = m_modParam->getModulationAmount();
       m_modParam->undoableRecallMCAmount();
+      recall.rightRecallValue = m_modParam->getModulationAmount();
       break;
     case Mode::MC_POS:
-      recall.old = m_modParam->getMacroControl()->getControlPositionValue();
+      recall.leftRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
       m_modParam->undoableRecallMCPos();
+      recall.rightRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
       break;
   }
 
-  m_labelB->setText(oldValC);
-  m_labelC->setText(oldValB);
-
-  m_labelB->setHighlight(false);
-  m_labelC->setHighlight(true);
-
-  m_buttonB->setText("");
-  m_buttonC->setText("Recall");
+  recall.likeInPreset = true;
+  updateUI();
 }
 
 void ModAspectRecallOverlay::undoRecall()
 {
   auto& recall = m_oldRecallValues[m_mode];
-  recall.wasRecalled = false;
-
-  auto oldValB = m_labelB->getText();
-  auto oldValC = m_labelC->getText();
+  auto oldL = recall.leftRecallValue;
+  recall.anyRecallHappened = true;
 
   switch(m_mode)
   {
     case Mode::MC_SEL:
-      m_modParam->undoableUndoRecallMCSel(std::get<MacroControls>(recall.old));
+      recall.leftRecallValue = m_modParam->getModulationSource();
+      m_modParam->undoableUndoRecallMCSel(std::get<MacroControls>(oldL));
+      recall.rightRecallValue = m_modParam->getModulationSource();
       break;
     case Mode::MC_AMT:
-      m_modParam->undoableUndoRecallMCAmount(std::get<float>(recall.old));
+      recall.leftRecallValue = m_modParam->getModulationAmount();
+      m_modParam->undoableUndoRecallMCAmount(std::get<float>(oldL));
+      recall.rightRecallValue = m_modParam->getModulationAmount();
       break;
     case Mode::MC_POS:
-      m_modParam->undoableUndoRecallMCPos(std::get<float>(recall.old));
+      recall.leftRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
+      m_modParam->undoableUndoRecallMCPos(std::get<float>(oldL));
+      recall.rightRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
       break;
   }
 
-  m_labelB->setText(oldValC);
-  m_labelC->setText(oldValB);
-
-  m_labelB->setHighlight(false);
-  m_labelC->setHighlight(true);
-
-  m_buttonB->setText("Recall");
-  m_buttonC->setText("");
+  recall.likeInPreset = false;
+  updateUI();
 }
 
 void ModAspectRecallOverlay::previousMode()
@@ -280,21 +164,21 @@ void ModAspectRecallOverlay::previousMode()
   switch(m_mode)
   {
     case MC_POS:
-      if(m_modParam->isModAmountChanged())
+      if(isMCAmtChanged() || m_oldRecallValues[MC_AMT].anyRecallHappened)
         installMode(MC_AMT);
-      else if(m_modParam->isModSourceChanged())
+      else if(isMCSelChanged() || m_oldRecallValues[MC_SEL].anyRecallHappened)
         installMode(MC_SEL);
       break;
     case MC_SEL:
-      if(m_modParam->getMacroControl()->isValueChangedFromLoaded())
+      if(isMCAssignedAndChanged() || m_oldRecallValues[MC_POS].anyRecallHappened)
         installMode(MC_POS);
-      else if(m_modParam->isModAmountChanged())
+      else if(isMCAmtChanged() || m_oldRecallValues[MC_AMT].anyRecallHappened)
         installMode(MC_AMT);
       break;
     case MC_AMT:
-      if(m_modParam->isModSourceChanged())
+      if(isMCSelChanged() || m_oldRecallValues[MC_SEL].anyRecallHappened)
         installMode(MC_SEL);
-      else if(m_modParam->getMacroControl()->isValueChangedFromLoaded())
+      else if(isMCAssignedAndChanged() || m_oldRecallValues[MC_POS].anyRecallHappened)
         installMode(MC_POS);
       break;
   }
@@ -305,22 +189,147 @@ void ModAspectRecallOverlay::nextMode()
   switch(m_mode)
   {
     case MC_POS:
-      if(m_modParam->isModSourceChanged())
+      if(isMCSelChanged() || m_oldRecallValues[MC_SEL].anyRecallHappened)
         installMode(MC_SEL);
-      else if(m_modParam->isModAmountChanged())
+      else if(isMCAmtChanged() || m_oldRecallValues[MC_AMT].anyRecallHappened)
         installMode(MC_AMT);
       break;
     case MC_SEL:
-      if(m_modParam->isModAmountChanged())
+      if(isMCAmtChanged() || m_oldRecallValues[MC_AMT].anyRecallHappened)
         installMode(MC_AMT);
-      else if(m_modParam->getMacroControl()->isValueChangedFromLoaded())
+      else if(isMCAssignedAndChanged() || m_oldRecallValues[MC_SEL].anyRecallHappened)
         installMode(MC_POS);
       break;
     case MC_AMT:
-      if(m_modParam->getMacroControl()->isValueChangedFromLoaded())
+      if(isMCAssignedAndChanged() || m_oldRecallValues[MC_POS].anyRecallHappened)
         installMode(MC_POS);
-      else if(m_modParam->isModSourceChanged())
+      else if(isMCSelChanged() || m_oldRecallValues[MC_SEL].anyRecallHappened)
         installMode(MC_SEL);
       break;
   }
+}
+
+void ModAspectRecallOverlay::updateUI()
+{
+  auto& recall = m_oldRecallValues[m_mode];
+
+  auto arrowsEnabled = false;
+
+  switch(m_mode)
+  {
+    case MC_POS:
+      arrowsEnabled = isMCAmtChanged() || isMCSelChanged() || m_oldRecallValues[MC_AMT].anyRecallHappened
+          || m_oldRecallValues[MC_SEL].anyRecallHappened;
+      m_labelA->setText("MC Position");
+      m_labelB->setText({ stringizeMCPos(std::get<float>(recall.leftRecallValue)), 0 });
+      m_labelC->setText({ stringizeMCPos(std::get<float>(recall.rightRecallValue)), 0 });
+      break;
+    case MC_SEL:
+      arrowsEnabled = isMCAmtChanged() || isMCAssignedAndChanged() || m_oldRecallValues[MC_AMT].anyRecallHappened
+          || m_oldRecallValues[MC_POS].anyRecallHappened;
+      m_labelA->setText("MC Selection");
+      m_labelB->setText({ mcSelectionToDisplay(std::get<MacroControls>(recall.leftRecallValue)), 0 });
+      m_labelC->setText({ mcSelectionToDisplay(std::get<MacroControls>(recall.rightRecallValue)), 0 });
+      break;
+    case MC_AMT:
+      arrowsEnabled = isMCAssignedAndChanged() || isMCSelChanged() || m_oldRecallValues[MC_SEL].anyRecallHappened
+          || m_oldRecallValues[MC_POS].anyRecallHappened;
+      m_labelA->setText("MC Amount");
+      m_labelB->setText({ m_modParam->stringizeModulationAmount(std::get<float>(recall.leftRecallValue)), 0 });
+      m_labelC->setText({ m_modParam->stringizeModulationAmount(std::get<float>(recall.rightRecallValue)), 0 });
+      break;
+  }
+
+  m_buttonA->setText(arrowsEnabled ? "<" : "");
+  m_buttonD->setText(arrowsEnabled ? ">" : "");
+}
+
+//Helper
+
+std::string ModAspectRecallOverlay::mcSelectionToDisplay(MacroControls src) const
+{
+  auto id = MacroControlsGroup::modSrcToParamId(src);
+  if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+  {
+    return mc->getShortName();
+  }
+  return "[-]";
+}
+
+std::string ModAspectRecallOverlay::stringizeMCPos(tDisplayValue src) const
+{
+  auto id = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
+  if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+  {
+    return mc->getDisplayString(src);
+  }
+  return std::string();
+}
+
+bool ModAspectRecallOverlay::isMCAssignedAndChanged() const
+{
+  if(auto mc = m_modParam->getMacroControl())
+  {
+    return mc->isValueChangedFromLoaded();
+  }
+  return false;
+}
+
+bool ModAspectRecallOverlay::isMCAmtChanged() const
+{
+  return m_modParam->isModAmountChanged();
+}
+
+bool ModAspectRecallOverlay::isMCSelChanged() const
+{
+  return m_modParam->isModSourceChanged();
+}
+
+float ModAspectRecallOverlay::getOGAmount() const
+{
+  if(auto og = m_modParam->getOriginalParameter())
+  {
+    return og->getRecallModulationAmount();
+  }
+  return {};
+}
+
+float ModAspectRecallOverlay::getOGMCPos() const
+{
+  if(auto mc = m_modParam->getMacroControl())
+  {
+    if(auto og = mc->getOriginalParameter())
+    {
+      return og->getRecallValue();
+    }
+  }
+  return {};
+}
+
+MacroControls ModAspectRecallOverlay::getOGMCSelection() const
+{
+  if(auto og = m_modParam->getOriginalParameter())
+  {
+    return og->getRecallModSource();
+  }
+  return MacroControls::NONE;
+}
+
+float ModAspectRecallOverlay::getMCAmount() const
+{
+  return m_modParam->getModulationAmount();
+}
+
+float ModAspectRecallOverlay::getMCPos() const
+{
+  if(auto mc = m_modParam->getMacroControl())
+  {
+    return mc->getControlPositionValue();
+  }
+  return {};
+}
+
+MacroControls ModAspectRecallOverlay::getMCSelection() const
+{
+  return m_modParam->getModulationSource();
 }

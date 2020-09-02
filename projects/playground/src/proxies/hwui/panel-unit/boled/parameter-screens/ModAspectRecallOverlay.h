@@ -22,6 +22,20 @@ class ModAspectRecallOverlay : public Overlay, public ButtonReceiver
   bool redraw(FrameBuffer& fb) override;
 
  private:
+  void updateUI();
+
+  bool isMCAssignedAndChanged() const;
+  bool isMCAmtChanged() const;
+  bool isMCSelChanged() const;
+
+  float getOGAmount() const;
+  float getOGMCPos() const;
+  MacroControls getOGMCSelection() const;
+
+  float getMCAmount() const;
+  float getMCPos() const;
+  MacroControls getMCSelection() const;
+
   void installMode(Mode m);
 
   Label* m_labelA = nullptr;
@@ -37,8 +51,10 @@ class ModAspectRecallOverlay : public Overlay, public ButtonReceiver
 
   struct RecallPair
   {
-    bool wasRecalled = false;
-    std::variant<float, MacroControls> old;
+    bool anyRecallHappened = false;
+    bool likeInPreset = false;
+    std::variant<float, MacroControls> leftRecallValue;
+    std::variant<float, MacroControls> rightRecallValue;
   };
 
   std::unordered_map<Mode, RecallPair> m_oldRecallValues;
@@ -46,4 +62,7 @@ class ModAspectRecallOverlay : public Overlay, public ButtonReceiver
   void undoRecall();
   void previousMode();
   void nextMode();
+
+  std::string mcSelectionToDisplay(MacroControls src) const;
+  std::string stringizeMCPos(tDisplayValue src) const;
 };
