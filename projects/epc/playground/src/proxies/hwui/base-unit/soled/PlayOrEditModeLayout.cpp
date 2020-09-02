@@ -12,6 +12,7 @@
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/controls/VerticalLine.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -32,7 +33,8 @@ PlayOrEditModeLayout::PlayOrEditModeLayout()
   addControl(new PlayModeRibbonBehaviourLabel(HardwareSourcesGroup::getLowerRibbonParameterID(),
                                               Rect(getBehaviourLeft(), 17, 12, 14)));
 
-  Application::get().getPlaycontrollerProxy()->onRibbonTouched(mem_fun(this, &PlayOrEditModeLayout::onLastTouchedRibbonChanged));
+  Application::get().getPlaycontrollerProxy()->onRibbonTouched(
+      mem_fun(this, &PlayOrEditModeLayout::onLastTouchedRibbonChanged));
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       mem_fun(this, &PlayOrEditModeLayout::onParameterSelectionChanged), {});
 }
