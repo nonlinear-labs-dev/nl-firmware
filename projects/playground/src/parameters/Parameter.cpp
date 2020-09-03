@@ -609,3 +609,13 @@ bool Parameter::isValueDifferentFrom(double d) const
 {
   return m_value.differs(getValue().getQuantizedValue(d, true));
 }
+
+bool Parameter::isMaximum() const
+{
+  return !m_value.differs(getValue().getUpperBorder());
+}
+
+bool Parameter::isMinimum() const
+{
+  return !m_value.differs(getValue().getLowerBorder());
+}
