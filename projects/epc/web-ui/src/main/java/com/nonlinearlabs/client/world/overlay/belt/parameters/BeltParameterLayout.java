@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -493,7 +494,8 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	@Override
 	public Control doubleClick(Position pos) {
-		startEdit().setToDefault();
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		NonMaps.get().getServerProxy().defaultParameter(p.id.getNumber());
 		return this;
 	}
 
