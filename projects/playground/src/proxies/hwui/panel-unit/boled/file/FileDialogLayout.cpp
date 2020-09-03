@@ -77,7 +77,7 @@ bool FileDialogLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
           overlayInfo();
         return true;
       case Buttons::BUTTON_A:
-        hwui->undoableSetFocusAndMode(UIMode::Select);
+        getOLEDProxy().resetOverlay();
         return true;
     }
   }
