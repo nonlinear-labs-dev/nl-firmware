@@ -48,3 +48,8 @@ void PresetDualParameterGroups::init(const Preset *preset)
     for(auto &group : preset->m_parameterGroups[static_cast<size_t>(vg)])
       m_parameterGroups[static_cast<size_t>(vg)][group.first] = std::make_unique<PresetParameterGroup>(*group.second);
 }
+
+PresetDualParameterGroups::GroupsMap &PresetDualParameterGroups::getGroups(VoiceGroup vg)
+{
+  return m_parameterGroups[static_cast<size_t>(vg)];
+}

@@ -34,7 +34,7 @@ class MacroControlParameter : public Parameter
   const Glib::ustring &getGivenName() const;
   const Glib::ustring &getInfo() const;
 
-  void loadDefault(UNDO::Transaction *transaction) override;
+  void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
   void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
   Glib::ustring getLongName() const override;

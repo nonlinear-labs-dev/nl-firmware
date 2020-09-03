@@ -2,11 +2,10 @@
 
 TEST_CASE("Default value for Fade From is different in I and II")
 {
-  TestHelper::initDualEditBuffer<SoundType::Layer>();
-
   auto eb = TestHelper::getEditBuffer();
-  CHECK(eb->findParameterByID({ 396, VoiceGroup::I })->getDisplayString() == "C6");
-  CHECK(eb->findParameterByID({ 396, VoiceGroup::II })->getDisplayString() == "C1");
+  CHECK(TestHelper::floating::differs(
+      eb->findParameterByID({ 396, VoiceGroup::I })->getValue().getFactoryDefaultValue(),
+      eb->findParameterByID({ 396, VoiceGroup::II })->getValue().getFactoryDefaultValue()));
 }
 
 TEST_CASE("Fade From gets properly initialized on convert to Layer")

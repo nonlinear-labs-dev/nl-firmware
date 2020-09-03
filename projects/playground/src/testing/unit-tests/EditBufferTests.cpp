@@ -533,7 +533,7 @@ void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
     eb->TEST_doDeferredJobs();
     REQUIRE(eb->isModified());
     REQUIRE(eb->findAnyParameterChanged());
-    eb->undoableInitSound(scope->getTransaction());
+    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
     REQUIRE_FALSE(eb->isModified());
     REQUIRE_FALSE(eb->findAnyParameterChanged());
 
@@ -722,7 +722,7 @@ TEST_CASE("Init Sound initializes VG Labels to 'init'")
   {
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getSplitPreset());
-    eb->undoableInitSound(scope->getTransaction());
+    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
 
     THEN("Labels initialized")
     {
@@ -735,7 +735,7 @@ TEST_CASE("Init Sound initializes VG Labels to 'init'")
   {
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getLayerPreset());
-    eb->undoableInitSound(scope->getTransaction());
+    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
 
     THEN("Labels initialized")
     {
@@ -748,7 +748,7 @@ TEST_CASE("Init Sound initializes VG Labels to 'init'")
   {
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
-    eb->undoableInitSound(scope->getTransaction());
+    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
 
     THEN("Labels initialized")
     {

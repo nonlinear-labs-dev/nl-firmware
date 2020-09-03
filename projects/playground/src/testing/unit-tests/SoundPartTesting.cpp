@@ -18,7 +18,7 @@ SCENARIO("Single sound with modulation aspects on mod-param")
   {
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), storage.getSinglePreset());
-    eb->undoableInitSound(scope->getTransaction());
+    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
   }
 
   REQUIRE(modParamI);

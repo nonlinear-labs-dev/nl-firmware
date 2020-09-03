@@ -66,7 +66,10 @@ void PedalParameter::setRoutersModeAccordingToReturnMode()
     auto mappings = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
 
     for(auto router : mappings->getModulationRoutingParametersFor(this))
-      router->getValue().setIsBoolean(routersAreBoolean);
+    {
+      if(router->getValue().setIsBoolean(routersAreBoolean))
+        router->onChange();
+    }
   }
 }
 
@@ -232,9 +235,9 @@ std::shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
   return std::dynamic_pointer_cast<PedalType>(Application::get().getSettings()->getSetting(str));
 }
 
-void PedalParameter::loadDefault(UNDO::Transaction *transaction)
+void PedalParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  super::loadDefault(transaction);
+  super::loadDefault(transaction, mode);
   undoableSetPedalMode(transaction, PedalModes::STAY);
 }
 

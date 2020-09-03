@@ -63,7 +63,10 @@ void RibbonParameter::setupScalingAndDefaultValue()
         = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
 
     for(auto router : mappings->getModulationRoutingParametersFor(this))
-      router->getValue().setIsBoolean(routersAreBoolean);
+    {
+      if(router->getValue().setIsBoolean(routersAreBoolean))
+        router->onChange();
+    }
   }
 
   ensureExclusiveRoutingIfNeeded();
@@ -288,9 +291,9 @@ Layout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
   g_return_val_if_reached(nullptr);
 }
 
-void RibbonParameter::loadDefault(UNDO::Transaction *transaction)
+void RibbonParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  super::loadDefault(transaction);
+  super::loadDefault(transaction, mode);
   undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
   undoableSetRibbonTouchBehaviour(transaction, RibbonTouchBehaviour::ABSOLUTE);
 }

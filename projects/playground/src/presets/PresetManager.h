@@ -127,8 +127,8 @@ class PresetManager : public ContentSection
   void scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo);
 
  private:
-  void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File>& pmFolder);
-  void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File>& pmFolder);
+  void loadMetadataAndSendEditBufferToLpc(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder);
+  void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder);
   void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
   Glib::ustring getBaseName(const Glib::ustring &basedOn) const;
