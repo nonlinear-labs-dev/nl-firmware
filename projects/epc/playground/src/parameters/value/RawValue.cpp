@@ -52,6 +52,11 @@ bool RawValue::differs(tValueType other) const
   return std::abs(other - m_rawValue) > std::numeric_limits<tValueType>::epsilon();
 }
 
+bool RawValue::equals(tValueType other) const
+{
+  return !differs(other);
+}
+
 void RawValue::changeRawValue(Initiator initiator, tValueType diff)
 {
   setRawValue(initiator, m_rawValue + diff);

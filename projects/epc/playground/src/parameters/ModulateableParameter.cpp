@@ -426,23 +426,17 @@ bool ModulateableParameter::isModAmountChanged() const
   if(getModulationSource() == MacroControls::NONE)
     return false;
 
-  if(auto original = getOriginalParameter())
-  {
-    const int denominator = static_cast<const int>(getValue().getFineDenominator());
-    const int roundedNow = static_cast<const int>(getModulationAmount() * denominator);
-    const int roundedOG = static_cast<const int>(original->getRecallModulationAmount() * denominator);
-    return roundedOG != roundedNow;
-  }
-  return false;
+  auto original = getOriginalParameter();
+  const int denominator = static_cast<const int>(getValue().getFineDenominator());
+  const int roundedNow = static_cast<const int>(getModulationAmount() * denominator);
+  const int roundedOG = static_cast<const int>(original->getRecallModulationAmount() * denominator);
+  return roundedOG != roundedNow;
 }
 
 bool ModulateableParameter::isModSourceChanged() const
 {
-  if(auto original = getOriginalParameter())
-  {
-    return original->getRecallModSource() != getModulationSource();
-  }
-  return false;
+  auto original = getOriginalParameter();
+  return original->getRecallModSource() != getModulationSource();
 }
 
 bool ModulateableParameter::isMacroControlAssignedAndChanged() const

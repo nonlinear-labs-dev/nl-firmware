@@ -94,58 +94,30 @@ tControlPositionValue Parameter::expropriateSnapshotValue()
   return v == c_invalidSnapshotValue ? getControlPositionValue() : v;
 }
 
-void Parameter::setDefaultFromHwui(DefaultReason reason)
+void Parameter::setDefaultFromHwui()
 {
-
-  if(reason == DefaultReason::Default)
+  if(getValue().equals(getDefaultValue()) && m_cpBeforeDefault.has_value())
   {
-    if(wasDefaultedAndNotUnselected() && !getValue().differs(getDefaultValue()))
-    {
-      undoableUndoSetDefault();
-      return;
-    }
-    else
-    {
-      m_wasDefaulted = true;
-      m_cpBeforeDefault = getControlPositionValue();
-    }
+    auto scope = getUndoScope().startTransaction("Set '%0'", getGroupAndParameterName());
+    setCPFromHwui(scope->getTransaction(), m_cpBeforeDefault.value());
   }
-
-  auto scope = getUndoScope().startContinuousTransaction(this, "Set '%0'", getGroupAndParameterName());
-  setCPFromHwui(scope->getTransaction(), getDefaultValue());
+  else
+  {
+    auto scope = getUndoScope().startContinuousTransaction(this, "Set '%0'", getGroupAndParameterName());
+    auto transaction = scope->getTransaction();
+    transaction->addUndoSwap(m_cpBeforeDefault, { getControlPositionValue() });
+    setCPFromHwui(transaction, getDefaultValue());
+  }
 }
 
-void Parameter::undoableUndoSetDefault()
+void Parameter::resetWasDefaulted(UNDO::Transaction *transaction)
 {
-  auto scope = getUndoScope().startTransaction("Set '%0'", getGroupAndParameterName());
-  setCPFromHwui(scope->getTransaction(), getPriorDefaultValue());
-  resetWasDefaulted();
+  transaction->addUndoSwap(m_cpBeforeDefault, { std::nullopt });
 }
 
-const tControlPositionValue &Parameter::getPriorDefaultValue() const
-{
-  return m_cpBeforeDefault;
-}
-
-bool Parameter::wasDefaultedAndNotUnselected() const
-{
-  return m_wasDefaulted;
-}
-
-void Parameter::resetWasDefaulted()
+void Parameter::setDefaultFromHwui(UNDO::Transaction *transaction)
 {
   m_cpBeforeDefault = getControlPositionValue();
-  m_wasDefaulted = false;
-}
-
-void Parameter::setDefaultFromHwui(UNDO::Transaction *transaction, DefaultReason reason)
-{
-  if(reason == DefaultReason::Default)
-  {
-    m_cpBeforeDefault = getControlPositionValue();
-    m_wasDefaulted = true;
-  }
-
   setCPFromHwui(transaction, getDefaultValue());
 }
 
@@ -240,6 +212,7 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *
 {
   if(!isLocked())
   {
+    resetWasDefaulted(transaction);
     loadFromPreset(transaction, other->getValue());
   }
 }
@@ -285,9 +258,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
-  nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
-  return ret;
+  return eb->getRecallParameterSet().findParameterByID(getID());
 }
 
 bool Parameter::isChangedFromLoaded() const
@@ -506,13 +477,11 @@ Layout *Parameter::createLayout(FocusAndMode focusAndMode) const
 
 void Parameter::onUnselected()
 {
-  resetWasDefaulted();
   onChange();
 }
 
 void Parameter::onSelected()
 {
-  resetWasDefaulted();
   onChange();
 }
 
@@ -629,16 +598,14 @@ void Parameter::undoableRecallFromPreset()
 void Parameter::undoableRecallFromPreset(UNDO::Transaction *transaction)
 {
   auto original = getOriginalParameter();
-  if(original)
-    setCPFromHwui(transaction, original->getRecallValue());
-  else
-    setDefaultFromHwui(transaction, DefaultReason::Recall);
+  setCPFromHwui(transaction, original->getRecallValue());
 }
 
 void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 {
   if(!isLocked())
   {
+    resetWasDefaulted(transaction);
     setCpValue(transaction, Initiator::INDIRECT, other->getControlPositionValue(), false);
   }
 }

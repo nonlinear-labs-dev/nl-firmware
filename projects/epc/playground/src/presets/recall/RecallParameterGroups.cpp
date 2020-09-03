@@ -8,6 +8,7 @@
 #include "presets/PresetParameter.h"
 #include <groups/ParameterGroup.h>
 #include <xml/Attribute.h>
+#include <nltools/Assert.h>
 
 RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)
@@ -42,8 +43,7 @@ RecallParameter *RecallParameterGroups::findParameterByID(const ParameterId &id)
   if(it != m_parameters.end())
     return it->second.get();
 
-  nltools::Log::error("Could not find Recall Parameter with id", id.toString());
-  return nullptr;
+  nltools::throwException("Could not find Recall Parameter with id ", id.toString());
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)

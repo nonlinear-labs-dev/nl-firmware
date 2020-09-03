@@ -15,6 +15,7 @@ class RawValue
   tValueType getRawValue() const;
   bool setRawValue(Initiator initiator, tValueType newRawValue);
   bool differs(tValueType other) const;
+  bool equals(tValueType other) const;
   void changeRawValue(Initiator initiator, tValueType diff);
   void setDefaultValue(tValueType defaultValue);
   tValueType getDefaultValue() const;

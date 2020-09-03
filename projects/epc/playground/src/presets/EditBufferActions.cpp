@@ -326,7 +326,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto id = ParameterId(request->get("id"));
     if(auto p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
     {
-      p->setDefaultFromHwui(DefaultReason::Default);
+      p->setDefaultFromHwui();
     }
   });
 }
