@@ -63,6 +63,8 @@ public class PresetManager extends MapsLayout {
 	private LoadToPartModeNotifier loadToPartNotifier = null;
 	private Tape attachingTapes[] = new Tape[2];
 
+	private boolean scrollToSelectedPresetScheduled = false;
+
 	private static NonRect oldView = null;
 
 	public List<Bank> getBanks() {
@@ -247,6 +249,11 @@ public class PresetManager extends MapsLayout {
 	public void calcPixRect(Position parentsReference, double currentZoom) {
 		if (super.calcPixRectWithoutMargins(parentsReference, currentZoom))
 			children.calcPixRect(this.getPixRect().getCenterPoint(), currentZoom);
+
+		if (scrollToSelectedPresetScheduled) {
+			scrollToSelectedPresetScheduled = false;
+			scrollToSelectedPreset();
+		}
 	}
 
 	public void update(Node presetManagerNode) {
@@ -297,8 +304,16 @@ public class PresetManager extends MapsLayout {
 	private void scrollToSelectedPreset() {
 		Preset p = getSelectedPreset();
 
-		if (p != null)
-			p.scrollToMakeFullyVisible();
+		if (p != null) {
+			if (p.getNonPosition().getHeight() == 0) {
+				// preset is not yet layouted, wait for layout, then scroll
+				requestLayout();
+				scrollToSelectedPresetScheduled = true;
+			} else {
+				p.scrollToMakeFullyVisible();
+			}
+		}
+
 	}
 
 	private boolean updateBanks(Node banks) {
