@@ -31,8 +31,12 @@ USBManager::~USBManager()
 
 bool USBManager::usbAvailable()
 {
+#ifndef _DEVELOPMENT_PC
   SpawnCommandLine cmd("lsblk");
   return cmd.getStdOutput().find("/mnt/usb-stick") != std::string::npos;
+#else
+  return true;
+#endif
 }
 
 bool USBManager::updateAvailable()
