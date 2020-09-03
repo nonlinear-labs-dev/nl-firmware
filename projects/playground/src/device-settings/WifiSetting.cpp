@@ -46,7 +46,7 @@ bool WifiSetting::set(tEnum m)
 {
   auto ret = super::set(m);
 
-  if(!isDevelopmentPC)
+  if constexpr(!isDevelopmentPC)
   {
     m_pollConnection.disconnect();
 
@@ -72,7 +72,7 @@ bool WifiSetting::persistent() const
 
 bool WifiSetting::pollAccessPointRunning()
 {
-  if(!isDevelopmentPC)
+  if constexpr(!isDevelopmentPC)
   {
     std::vector<std::string> args { "/usr/bin/ssh", "-o",        "StrictHostKeyChecking=no", "root@192.168.10.11",
                                     "systemctl",    "is-active", "accesspoint.service" };

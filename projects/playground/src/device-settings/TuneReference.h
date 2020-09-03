@@ -9,7 +9,7 @@ class TuneReference : public Setting
   TuneReference(UpdateDocumentContributor& parent);
 
  public:
-  void load(const Glib::ustring& text) override;
+  void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
   Glib::ustring getDisplayString() const override;
   void incDec(int inc, ButtonModifiers mod);

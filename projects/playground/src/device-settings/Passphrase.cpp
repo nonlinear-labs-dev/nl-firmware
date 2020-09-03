@@ -10,7 +10,7 @@ Passphrase::Passphrase(Settings& parent)
 
 Passphrase::~Passphrase() = default;
 
-void Passphrase::load(const Glib::ustring& password)
+void Passphrase::load(const Glib::ustring& password, Initiator initiator)
 {
   updatePassword(password);
 }

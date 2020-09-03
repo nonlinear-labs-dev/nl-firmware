@@ -18,7 +18,7 @@ const std::vector<Glib::ustring>& LayoutMode::enumToDisplayString() const
   return s_displayStrings;
 }
 
-void LayoutMode::load(const Glib::ustring& text)
+void LayoutMode::load(const Glib::ustring& text, Initiator initiator)
 {
-  EnumSetting::load(toString(LayoutVersionMode::Mixed));
+  EnumSetting::load(toString(LayoutVersionMode::Mixed), initiator);
 }

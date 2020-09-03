@@ -14,7 +14,7 @@ RandomizeAmount::~RandomizeAmount()
 {
 }
 
-void RandomizeAmount::load(const Glib::ustring &text)
+void RandomizeAmount::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {

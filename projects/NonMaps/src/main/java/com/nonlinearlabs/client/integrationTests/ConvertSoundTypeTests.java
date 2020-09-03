@@ -57,6 +57,8 @@ class ConvertSoundTypeTests extends TestWithSteps {
             setParameter(34, vg, offset + 0.09);
             setParameter(35, vg, offset + 0.10);
         }, () -> true);
+
+        setStepName("Tweak Parameters " + vg + " offset " + offset);
     }
 
     private void assertParameters(VoiceGroup vg, double offset) {
@@ -73,6 +75,8 @@ class ConvertSoundTypeTests extends TestWithSteps {
             assertParameter(34, vg, offset + 0.09);
             assertParameter(35, vg, offset + 0.10);
         }, () -> true);
+
+        setStepName("Assert Parameters " + vg + " offset " + offset);
     }
 
     private void assertParameter(int i, VoiceGroup vg, double d) {
@@ -89,6 +93,7 @@ class ConvertSoundTypeTests extends TestWithSteps {
         addStep(() -> {
             EditBufferUseCases.get().initializeSound();
         }, () -> true);
+        setStepName("InitSound");
     }
 
     private void convertToSplit() {
@@ -97,6 +102,7 @@ class ConvertSoundTypeTests extends TestWithSteps {
         }, () -> {
             return EditBufferModel.get().soundType.getValue() == SoundType.Split;
         });
+        setStepName("convertToSplit");
     }
 
     private void convertToLayer() {
@@ -105,6 +111,7 @@ class ConvertSoundTypeTests extends TestWithSteps {
         }, () -> {
             return EditBufferModel.get().soundType.getValue() == SoundType.Layer;
         });
+        setStepName("convertToLayer");
     }
 
     private void convertToSingle() {
@@ -113,6 +120,7 @@ class ConvertSoundTypeTests extends TestWithSteps {
         }, () -> {
             return EditBufferModel.get().soundType.getValue() == SoundType.Single;
         });
+        setStepName("convertToSingle");
     }
 
     private void createBank() {
@@ -122,6 +130,7 @@ class ConvertSoundTypeTests extends TestWithSteps {
         }, () -> {
             return findBank() != null;
         });
+        setStepName("createBank");
     }
 
     private void appendAndAwaitPreset(int n) {
@@ -131,6 +140,8 @@ class ConvertSoundTypeTests extends TestWithSteps {
         }, () -> {
             return findBank().getPreset(n) != null;
         });
+
+        setStepName("appendAndAwaitPreset " + n);
     }
 
     private Bank findBank() {
@@ -150,6 +161,7 @@ class ConvertSoundTypeTests extends TestWithSteps {
         }, () -> {
             return findBank() == null;
         });
+        setStepName("delete Bank");
     }
 
 }

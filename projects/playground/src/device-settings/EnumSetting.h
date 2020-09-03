@@ -35,7 +35,7 @@ template <typename TEnum> class EnumSetting : public Setting
     return m_mode;
   }
 
-  void load(const Glib::ustring &text)
+  void load(const Glib::ustring &text, Initiator initiator) override
   {
     int i = 0;
     for(const auto &it : enumToString())
