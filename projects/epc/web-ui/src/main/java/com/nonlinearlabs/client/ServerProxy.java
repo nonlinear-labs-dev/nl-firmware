@@ -1110,7 +1110,10 @@ public class ServerProxy {
 
 	public void defaultParameter(int paramNumber) {
 		VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
-		ParameterId id = new ParameterId(paramNumber, vg);
+		defaultParameter(new ParameterId(paramNumber, vg));
+	}
+
+	public void defaultParameter(ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "default-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
 		queueJob(uri, false);

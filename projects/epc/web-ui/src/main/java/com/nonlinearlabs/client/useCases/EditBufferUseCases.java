@@ -206,7 +206,7 @@ public class EditBufferUseCases {
 	}
 
 	public void setToDefault(ParameterId id) {
-		NonMaps.get().getServerProxy().defaultParameter(id.getNumber());
+		NonMaps.get().getServerProxy().defaultParameter(id);
 	}
 
 	public void setToDefault(int paramNumber) {

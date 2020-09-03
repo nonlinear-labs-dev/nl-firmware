@@ -495,7 +495,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	@Override
 	public Control doubleClick(Position pos) {
 		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		NonMaps.get().getServerProxy().defaultParameter(p.id.getNumber());
+		EditBufferUseCases.get().setToDefault(p.id);
 		return this;
 	}
 
