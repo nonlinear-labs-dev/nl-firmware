@@ -1107,6 +1107,16 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+
+	public void defaultParameter(int paramNumber) {
+		VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+		ParameterId id = new ParameterId(paramNumber, vg);
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "default-param");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
+		queueJob(uri, false);
+	}
+
+
 	public void exportSoled() {
 		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {
 

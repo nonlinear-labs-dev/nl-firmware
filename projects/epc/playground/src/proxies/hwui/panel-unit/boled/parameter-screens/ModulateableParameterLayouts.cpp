@@ -361,7 +361,6 @@ void ModulateableParameterSelectLayout2::setDefault()
     case Mode::ParameterValue:
     case Mode::MacroControlPosition:
       super1::setDefault();
-      super2::setDefault();
       break;
   }
 }

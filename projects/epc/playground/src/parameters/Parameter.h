@@ -32,6 +32,11 @@ enum class Defaults
   UserDefault
 };
 
+enum class DefaultReason {
+  Recall,
+  Default
+};
+
 class Parameter : public UpdateDocumentContributor,
                   public IntrusiveListItem<Parameter *>,
                   public FlagOwner<ParameterFlags, uint8_t>
@@ -64,9 +69,8 @@ class Parameter : public UpdateDocumentContributor,
   tControlPositionValue getDefaultValue() const;
   tControlPositionValue getFactoryDefaultValue() const;
 
-  void setDefaultFromHwui();
-  void setDefaultFromHwui(UNDO::Transaction *transaction);
-  void setDefaultFromWebUI(UNDO::Transaction *transaction);
+  void setDefaultFromHwui(DefaultReason reason);
+  void setDefaultFromHwui(UNDO::Transaction *transaction, DefaultReason reason);
 
   virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
@@ -90,6 +94,7 @@ class Parameter : public UpdateDocumentContributor,
   void undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value);
   virtual void loadDefault(UNDO::Transaction *transaction, Defaults mode);
   void undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *values);
+  void undoableUndoSetDefault();
 
   void undoableLock(UNDO::Transaction *transaction);
   void undoableUnlock(UNDO::Transaction *transaction);
@@ -146,6 +151,7 @@ class Parameter : public UpdateDocumentContributor,
 
   bool isMaximum() const;
   bool isMinimum() const;
+  void resetWasDefaulted();
 
  protected:
   virtual void sendToPlaycontroller() const;
@@ -158,6 +164,9 @@ class Parameter : public UpdateDocumentContributor,
   virtual tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
 
+  const tControlPositionValue &getPriorDefaultValue() const;
+  bool wasDefaultedAndNotUnselected() const;
+
  private:
   mutable Signal<void, const Parameter *> m_signalParamChanged;
 
@@ -165,6 +174,8 @@ class Parameter : public UpdateDocumentContributor,
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
   VoiceGroup m_voiceGroup;
+  bool m_wasDefaulted = false;
+  tControlPositionValue m_cpBeforeDefault = 0.0;
 
   friend class QuantizedValue;
   friend class EditBufferSnapshotMaker;

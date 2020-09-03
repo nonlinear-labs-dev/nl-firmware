@@ -206,17 +206,11 @@ public class EditBufferUseCases {
 	}
 
 	public void setToDefault(ParameterId id) {
-		BasicParameterModel p = EditBufferModel.get().getParameter(id);
-		if (p != null) {
-			setParameterValue(id, p.value.metaData.defaultValue.getValue(), true);
-		}
+		NonMaps.get().getServerProxy().defaultParameter(id.getNumber());
 	}
 
 	public void setToDefault(int paramNumber) {
-		ParameterId id = toParamId(paramNumber);
-		BasicParameterModel p = EditBufferModel.get().getParameter(id);
-		double v = p.value.metaData.defaultValue.getValue();
-		setParameterValue(id, v, true);
+		NonMaps.get().getServerProxy().defaultParameter(paramNumber);
 	}
 
 	public void toggleBoolean(int paramNumber) {

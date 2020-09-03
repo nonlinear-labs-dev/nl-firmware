@@ -321,6 +321,14 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto scope = eb->getUndoScope().startTransaction("Select Part " + to_string(part));
     hwui->setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
   });
+
+  addAction("default-param", [=](auto request) {
+    auto id = ParameterId(request->get("id"));
+    if(auto p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
+    {
+      p->setDefaultFromHwui(DefaultReason::Default);
+    }
+  });
 }
 
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer)

@@ -27,6 +27,8 @@
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
+bool wasDefaultedAndNotUnselected();
+const tControlPositionValue &getPriorDefaultValue();
 Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
                      tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
     : UpdateDocumentContributor(group)
@@ -92,20 +94,59 @@ tControlPositionValue Parameter::expropriateSnapshotValue()
   return v == c_invalidSnapshotValue ? getControlPositionValue() : v;
 }
 
-void Parameter::setDefaultFromHwui()
+void Parameter::setDefaultFromHwui(DefaultReason reason)
 {
+
+  if(reason == DefaultReason::Default)
+  {
+    if(wasDefaultedAndNotUnselected() && !getValue().differs(getDefaultValue()))
+    {
+      undoableUndoSetDefault();
+      return;
+    }
+    else
+    {
+      m_wasDefaulted = true;
+      m_cpBeforeDefault = getControlPositionValue();
+    }
+  }
+
   auto scope = getUndoScope().startContinuousTransaction(this, "Set '%0'", getGroupAndParameterName());
   setCPFromHwui(scope->getTransaction(), getDefaultValue());
 }
 
-void Parameter::setDefaultFromHwui(UNDO::Transaction *transaction)
+void Parameter::undoableUndoSetDefault()
 {
-  setCPFromHwui(transaction, getDefaultValue());
+  auto scope = getUndoScope().startTransaction("Set '%0'", getGroupAndParameterName());
+  setCPFromHwui(scope->getTransaction(), getPriorDefaultValue());
+  resetWasDefaulted();
 }
 
-void Parameter::setDefaultFromWebUI(UNDO::Transaction *transaction)
+const tControlPositionValue &Parameter::getPriorDefaultValue() const
 {
-  setCPFromWebUI(transaction, getDefaultValue());
+  return m_cpBeforeDefault;
+}
+
+bool Parameter::wasDefaultedAndNotUnselected() const
+{
+  return m_wasDefaulted;
+}
+
+void Parameter::resetWasDefaulted()
+{
+  m_cpBeforeDefault = getControlPositionValue();
+  m_wasDefaulted = false;
+}
+
+void Parameter::setDefaultFromHwui(UNDO::Transaction *transaction, DefaultReason reason)
+{
+  if(reason == DefaultReason::Default)
+  {
+    m_cpBeforeDefault = getControlPositionValue();
+    m_wasDefaulted = true;
+  }
+
+  setCPFromHwui(transaction, getDefaultValue());
 }
 
 void Parameter::stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers)
@@ -465,11 +506,13 @@ Layout *Parameter::createLayout(FocusAndMode focusAndMode) const
 
 void Parameter::onUnselected()
 {
+  resetWasDefaulted();
   onChange();
 }
 
 void Parameter::onSelected()
 {
+  resetWasDefaulted();
   onChange();
 }
 
@@ -589,7 +632,7 @@ void Parameter::undoableRecallFromPreset(UNDO::Transaction *transaction)
   if(original)
     setCPFromHwui(transaction, original->getRecallValue());
   else
-    setDefaultFromHwui(transaction);
+    setDefaultFromHwui(transaction, DefaultReason::Recall);
 }
 
 void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
