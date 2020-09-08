@@ -43,6 +43,8 @@
 #include "CrashOnError.h"
 #include "LayoutMode.h"
 #include "TuneReference.h"
+#include "TotalRAM.h"
+#include "UsedRAM.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -87,6 +89,8 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
   addSetting("CrashOnError", new CrashOnError(*this));
   addSetting("TuneReference", new TuneReference(*this));
+  addSetting("TotalRAM", new TotalRAM(*this));
+  addSetting("UsedRAM", new UsedRAM(*this));
 }
 
 Settings::~Settings()
@@ -109,6 +113,10 @@ Glib::ustring Settings::getPrefix() const
 
 void Settings::init()
 {
+  for(auto& s: getSettings()) {
+    s.second->init();
+  }
+
   load();
 }
 

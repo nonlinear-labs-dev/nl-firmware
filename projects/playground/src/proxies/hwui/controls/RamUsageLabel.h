@@ -5,12 +5,6 @@
 class RamUsageLabel : public Label
 {
  public:
-  RamUsageLabel(const Rect &r);
-
-  void refresh();
+  explicit RamUsageLabel(const Rect &r);
   StringAndSuffix getText() const override;
-
- private:
-  std::string totalMegsOfRam;
-  std::string m_usedRam;
 };

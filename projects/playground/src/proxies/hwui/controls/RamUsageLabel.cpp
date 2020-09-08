@@ -1,19 +1,21 @@
+#include <Application.h>
+#include <device-settings/UsedRAM.h>
+#include <sigc++/adaptors/hide.h>
+#include <device-settings/TotalRAM.h>
 #include "RamUsageLabel.h"
+#include "device-settings/Settings.h"
 
 RamUsageLabel::RamUsageLabel(const Rect &r)
     : Label(r)
 {
-  static SpawnCommandLine cmd("free --mega | awk 'FNR == 2 {print $2}'");
-  totalMegsOfRam = cmd.getStdOutput();
-}
-
-void RamUsageLabel::refresh()
-{
-  SpawnCommandLine cmd("free --mega | awk 'FNR == 2 {print $3}'");
-  m_usedRam = cmd.getStdOutput();
+  auto settings = Application::get().getSettings();
+  settings->getSetting<UsedRAM>()->onChange(sigc::hide<0>(sigc::mem_fun(this, &RamUsageLabel::setDirty)));
 }
 
 Label::StringAndSuffix RamUsageLabel::getText() const
 {
-  return { m_usedRam + "/" + totalMegsOfRam + "M", 0 };
+  auto settings = Application::get().getSettings();
+  auto used = settings->getSetting<UsedRAM>();
+  auto total = settings->getSetting<TotalRAM>();
+  return { used->getDisplayString() + "/" + total->getDisplayString() + "Mb", 0 };
 }

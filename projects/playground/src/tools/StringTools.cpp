@@ -55,7 +55,36 @@ namespace StringTools
     ret.erase(std::remove_if(ret.begin(), ret.end(), [&](char c) { return std::isspace(c); }), ret.end());
     return ret;
   }
-  
+
+  std::vector<std::string> splitStringAtSpacesAndTrimSpaces(const Glib::ustring &in)
+  {
+    std::vector<std::string> ret;
+    std::string currentString;
+    bool wasSpace = false;
+    for(const auto &c : in)
+    {
+      if(std::isspace(c))
+      {
+        wasSpace = true;
+        if(!currentString.empty())
+        {
+          ret.emplace_back(currentString);
+          currentString.clear();
+        }
+      }
+      else
+      {
+        currentString += c;
+      }
+    }
+
+    if(!currentString.empty())
+    {
+      ret.emplace_back(currentString);
+    }
+    return ret;
+  }
+
   bool hasEnding(std::string const &in, std::string const &test)
   {
     if(in.length() >= test.length())
