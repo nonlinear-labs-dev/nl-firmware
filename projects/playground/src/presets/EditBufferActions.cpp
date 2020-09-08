@@ -194,6 +194,34 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
+  addAction("set-lower-modulation", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto id = ParameterId { request->get("id") };
+    auto newAmt = std::stod(request->get("mod-amt"));
+    auto newParamVal = std::stod(request->get("param-val"));
+    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(id)))
+    {
+      auto scope = param->getUndoScope().startContinuousTransaction(param, "Set Lower Modulation Limit for '%0'",
+                                                                    param->getGroupAndParameterName());
+
+      param->undoableSetModAmount(scope->getTransaction(), newAmt);
+      param->setCPFromHwui(scope->getTransaction(), newParamVal);
+    }
+  });
+
+  addAction("set-upper-modulation", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto id = ParameterId { request->get("id") };
+    auto newAmt = std::stod(request->get("mod-amt"));
+    auto newParamVal = std::stod(request->get("param-val"));
+    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(id)))
+    {
+      auto scope = param->getUndoScope().startContinuousTransaction(param, "Set Upper Modulation Limit for '%0'",
+                                                                    param->getGroupAndParameterName());
+
+      param->undoableSetModAmount(scope->getTransaction(), newAmt);
+      param->setCPFromHwui(scope->getTransaction(), newParamVal);
+    }
+  });
+
   addAction("unlock-all-groups", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Unlock all Groups");
     editBuffer->undoableUnlockAllGroups(scope->getTransaction());

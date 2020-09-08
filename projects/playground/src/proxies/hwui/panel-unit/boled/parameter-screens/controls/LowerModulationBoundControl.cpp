@@ -71,7 +71,7 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         newModAmount /= 2;
 
       auto &undoScope = modulatedParam->getUndoScope();
-      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set '%0'",
+      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set Lower Modulation Limit for '%0'",
                                                         modulatedParam->getGroupAndParameterName());
       auto transaction = scope->getTransaction();
 
