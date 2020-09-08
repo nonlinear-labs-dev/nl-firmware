@@ -1,8 +1,6 @@
 #!/bin/sh
 
-#
-# last changed: 2020-02-24 KSTR
-# version : 1.1
+# verions : 2.0
 # changes : append to /update/mxli.log to allow for multiple flashing reports in one file
 #
 # ---------- in-service programming the RT firmware into the LPC chip -----------
@@ -30,28 +28,28 @@ if [ -z "$2" ] ; then
 	exit 34
 fi
 
-function export_gpio {
+export_gpio() {
 	GPIO=$1
 	echo $GPIO > /sys/class/gpio/export
 	sleep 0.1
 	echo out > /sys/class/gpio/gpio$GPIO/direction
 	sleep 0.1
 }
-function unexport_gpio {
+
+unexport_gpio() {
 	GPIO=$1
 	echo $GPIO > /sys/class/gpio/unexport
 	sleep 0.1
 }
-function write_to_gpio {
+
+write_to_gpio() {
 	GPIO=$1
 	VALUE=$2
 	echo $VALUE > /sys/class/gpio/gpio$GPIO/value
 	sleep 0.1
 }
 
-
-
-function write_blob() {
+write_blob() {
 	# in-service programming of the LPC, errors are appended to file "/update/mxli.log"
         /update/utilities/mxli -v -d /dev/ttyUSB0 -N LPC4337 -E -b115200 -T500 -c12000000 -F8kix8,64kix7 -B1024,4096 -A0x1A000000,0x1B000000 -M32ki@0x10000000 -I0xA001CA30,0xXXXXXX00 -R0x200@0x1008000,-288@0x10000000 -S8@7 -y$LPC_BANK $LPC_FIRMWARE 2>> /update/mxli.log
 	return $?

@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.Animator;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.ClipboardManager;
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ContextState;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
@@ -467,15 +468,20 @@ public class NonLinearWorld extends MapsLayout {
 			if (event.getNativeKeyCode() == com.google.gwt.event.dom.client.KeyCodes.KEY_T)
 				IntegrationTests.doAllTests();
 
-		isShiftDown = event.isShiftKeyDown();
-		isSpaceDown = event.getNativeKeyCode() == KeyCodes.KEY_SPACE;
-		isCtrlDown = event.isControlKeyDown();
+		if(event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
+			isShiftDown = true;
+		if(event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
+			isSpaceDown = true;
+		if(event.getNativeKeyCode() == KeyCodes.KEY_CTRL)
+			isCtrlDown = true;
 
 		Control ctrl = recurseChildren(new ControlFinder() {
 
 			@Override
 			public boolean onWayDownFound(Control ctrl) {
 				if (ctrl.onKey(event) != null) {
+					event.stopPropagation();
+					event.preventDefault();
 					return true;
 				}
 
@@ -487,31 +493,16 @@ public class NonLinearWorld extends MapsLayout {
 	}
 
 	public boolean handleKeyUp(final KeyUpEvent event) {
-		isShiftDown = event.isShiftKeyDown();
+		if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
+			isShiftDown = false;
 
 		if (event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
 			isSpaceDown = false;
 
-		isCtrlDown = event.isControlKeyDown();
+		if (event.getNativeKeyCode() == KeyCodes.KEY_CTRL)
+			isCtrlDown = false;
+
 		return true;
-	}
-
-	public boolean handleKey(final KeyDownEvent event) {
-		isShiftDown = event.isShiftKeyDown();
-
-		Control ctrl = recurseChildren(new ControlFinder() {
-
-			@Override
-			public boolean onWayDownFound(Control ctrl) {
-				if (ctrl.onKey(event) != null) {
-					return true;
-				}
-
-				return false;
-			}
-		});
-
-		return (ctrl != null);
 	}
 
 	public boolean zoomTo(NonRect r, boolean animate) {
@@ -535,8 +526,12 @@ public class NonLinearWorld extends MapsLayout {
 
 	@Override
 	public Control doubleClick(Position pos) {
-		zoomTo(parameterEditor);
-		presetManager.resetStoredViewportPosition();
+		if(presetManager.hasStoredViewportPosition()) {
+			presetManager.resetView();
+		} else {
+			zoomTo(parameterEditor);
+			presetManager.saveView();
+		}
 		return this;
 	}
 
@@ -582,8 +577,10 @@ public class NonLinearWorld extends MapsLayout {
 	}
 
 	public void scrollToShow(MapsControl mapsControl) {
-		NonPosition leftTop = toNonPosition(mapsControl.getPixRect().getLeftTop());
-		NonPosition rightBottom = toNonPosition(mapsControl.getPixRect().getRightBottom());
+		double margin = Millimeter.toPixels(20);
+		Rect controlPos = mapsControl.getPixRect().getReducedBy(-margin);
+		NonPosition leftTop = toNonPosition(controlPos.getLeftTop());
+		NonPosition rightBottom = toNonPosition(controlPos.getRightBottom());
 		Rect vpPixRect = getViewport().getPixRectWithoutBelt();
 		NonRect vpRect = new NonRect(toNonPosition(vpPixRect.getPosition()), toNonDimension(vpPixRect.getDimension()));
 
@@ -625,16 +622,20 @@ public class NonLinearWorld extends MapsLayout {
 		return isShiftDown;
 	}
 
-	public void setShiftDown(boolean b) {
-		isShiftDown = b;
-	}
-
 	public boolean isSpaceDown() {
 		return isSpaceDown;
 	}
 
 	public boolean isCtrlDown() {
 		return isCtrlDown;
+	}
+
+	public void setShiftDown(boolean s) {
+		isShiftDown = s;
+	}
+
+	public void setCtrlDown(boolean s) {
+		isCtrlDown = s;
 	}
 
 	@Override

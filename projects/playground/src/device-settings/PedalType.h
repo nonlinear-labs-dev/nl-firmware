@@ -19,7 +19,7 @@ class PedalType : public NLEnumSetting<PedalTypes>
 
  private:
   void sendToLPC(SendReason reason) const override;
-  void load(const Glib::ustring &text) override;
+  void load(const Glib::ustring &text, Initiator initiator) override;
 
   uint16_t m_lpcKey;
 };

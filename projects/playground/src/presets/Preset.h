@@ -9,6 +9,7 @@
 #include <string>
 #include <tools/Uuid.h>
 #include <tools/Signal.h>
+#include <set>
 
 class EditBuffer;
 class Bank;
@@ -42,6 +43,7 @@ class Preset : public PresetDualParameterGroups
   void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other) override;
   void clear(UNDO::Transaction *transaction) override;
   void invalidate();
+  size_t getNumGroups(const VoiceGroup &vg) const;
 
   SoundType getType() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
@@ -66,9 +68,12 @@ class Preset : public PresetDualParameterGroups
   void forEachParameter(const std::function<void(PresetParameter *)> &cb);
   void forEachParameter(const std::function<void(const PresetParameter *)> &cb) const;
 
+  std::vector<std::pair<GroupId, const PresetParameterGroup *>> getGroups(const VoiceGroup &vg) const;
+
   // transactions
   void copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid);
   void copyFrom(UNDO::Transaction *transaction, EditBuffer *edit);
+  void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction *transaction, std::optional<std::set<GroupId>> whiteList);
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
   void setName(UNDO::Transaction *transaction, const Glib::ustring &name);
   void setType(UNDO::Transaction *transaction, SoundType type);
@@ -92,7 +97,7 @@ class Preset : public PresetDualParameterGroups
   size_t getHash() const = delete;
   void updateBanksLastModifiedTimestamp(UNDO::Transaction *transaction);
 
-  void writeGroups(Writer &w, const Preset *preset, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
+  void writeGroups(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
   Uuid m_uuid;
   Glib::ustring m_name;
   std::array<Glib::ustring, 2> m_voiceGroupLabels;

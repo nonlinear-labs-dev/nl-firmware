@@ -15,7 +15,7 @@ class EditSmoothingTime : public Setting
   EditSmoothingTime(Settings &parent);
   virtual ~EditSmoothingTime();
 
-  void load(const Glib::ustring &text) override;
+  void load(const Glib::ustring &text, Initiator initiator) override;
   Glib::ustring save() const override;
 
   void incDec(int incs, ButtonModifiers mods);

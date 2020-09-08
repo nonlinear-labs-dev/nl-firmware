@@ -242,7 +242,8 @@ void LPCProxy::onEditControlMessageReceived(const MessageParser::NLMessage &msg)
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
-  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected())
+  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(
+         Application::get().getHWUI()->getCurrentVoiceGroup()))
   {
     auto ribbonModeBehaviour = Application::get().getSettings()->getSetting<ParameterEditModeRibbonBehaviour>()->get();
 
@@ -380,6 +381,7 @@ void LPCProxy::onHeartbeatStumbled()
   settings->sendSettingsToLPC(SendReason::HeartBeatDropped);
   settings->sendPresetSettingsToLPC();
   sendCalibrationData();
+  requestLPCSoftwareVersion();
 }
 
 sigc::connection LPCProxy::onLPCSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -394,10 +396,17 @@ void LPCProxy::requestLPCSoftwareVersion()
   *cmp << v;
   queueToLPC(cmp);
 
-  DebugLevel::info("sending request", MessageParser::SOFTWARE_VERSION);
+  DebugLevel::info("sending request SOFTWARE_VERSION to LPC");
 }
 
-int LPCProxy::getLPCSoftwareVersion() const
+std::string LPCProxy::getLPCSoftwareVersion() const
 {
-  return m_lpcSoftwareVersion;
+  if(m_lpcSoftwareVersion == -1)
+  {
+    return "-";
+  }
+  else
+  {
+    return std::to_string(m_lpcSoftwareVersion);
+  }
 }

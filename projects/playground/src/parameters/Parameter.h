@@ -26,6 +26,12 @@ namespace UNDO
   class Transaction;
 }
 
+enum class Defaults
+{
+  FactoryDefault,
+  UserDefault
+};
+
 class Parameter : public UpdateDocumentContributor,
                   public IntrusiveListItem<Parameter *>,
                   public FlagOwner<ParameterFlags, uint8_t>
@@ -46,7 +52,7 @@ class Parameter : public UpdateDocumentContributor,
 
   Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
             tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
-  virtual ~Parameter();
+  virtual ~Parameter() override;
 
   tControlPositionValue expropriateSnapshotValue();
 
@@ -56,6 +62,7 @@ class Parameter : public UpdateDocumentContributor,
 
   bool isBiPolar() const;
   tControlPositionValue getDefaultValue() const;
+  tControlPositionValue getFactoryDefaultValue() const;
 
   void setDefaultFromHwui();
   void setDefaultFromHwui(UNDO::Transaction *transaction);
@@ -70,17 +77,18 @@ class Parameter : public UpdateDocumentContributor,
 
   virtual void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value);
 
-  virtual void loadDefault(UNDO::Transaction *transaction);
   virtual void reset(UNDO::Transaction *transaction, Initiator initiator);
   virtual void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other);
   virtual void copyFrom(UNDO::Transaction *transaction, const Parameter *other);
   virtual void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const;
 
   virtual bool isDefaultLoaded() const;
+  bool isFactoryDefaultLoaded() const;
 
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
 
   void undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value);
+  virtual void loadDefault(UNDO::Transaction *transaction, Defaults mode);
   void undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *values);
 
   void undoableLock(UNDO::Transaction *transaction);
@@ -130,6 +138,8 @@ class Parameter : public UpdateDocumentContributor,
   const RecallParameter *getOriginalParameter() const;
 
   virtual bool isChangedFromLoaded() const;
+  virtual bool isValueChangedFromLoaded() const;
+
   bool isValueDifferentFrom(double d) const;
 
   VoiceGroup getVoiceGroup() const;

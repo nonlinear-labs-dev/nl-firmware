@@ -43,6 +43,7 @@ class PresetParameter
   enum RibbonReturnMode getRibbonReturnMode() const;
   enum RibbonTouchBehaviour getRibbonTouchBehaviour() const;
   enum PedalModes getPedalMode() const;
+  void assignVoiceGroup(VoiceGroup vg);
 
   // transactions
   void setValue(UNDO::Transaction *transaction, tControlPositionValue v);

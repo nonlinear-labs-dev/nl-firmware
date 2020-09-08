@@ -3,7 +3,7 @@
 #include "TotalRAM.h"
 #include "Settings.h"
 
-void TotalRAM::load(const Glib::ustring& text)
+void TotalRAM::load(const Glib::ustring& text, Initiator initiator)
 {
   m_display = text;
 }
@@ -33,5 +33,5 @@ TotalRAM::TotalRAM(Settings& s)
   auto memoryStats = StringTools::splitStringAtSpacesAndTrimSpaces(memory);
   auto total = memoryStats[1];
 
-  load(total);
+  load(total, Initiator::EXPLICIT_LOAD);
 }

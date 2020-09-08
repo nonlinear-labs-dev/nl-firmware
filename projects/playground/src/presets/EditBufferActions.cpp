@@ -52,9 +52,9 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     editBuffer->setModulationSource(static_cast<MacroControls>(src), ParameterId { id });
   });
 
-  addAction("reset", [=](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("reset", [=](std::shared_ptr<NetworkRequest>) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Init Sound");
-    editBuffer->undoableInitSound(scope->getTransaction());
+    editBuffer->undoableInitSound(scope->getTransaction(), Defaults::UserDefault);
   });
 
   addAction("rename-mc", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -125,20 +125,20 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     }
   });
 
-  addAction("randomize-sound", [=](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("randomize-sound", [=](std::shared_ptr<NetworkRequest>) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Randomize Sound");
     editBuffer->undoableRandomize(scope->getTransaction(), Initiator::EXPLICIT_WEBUI);
   });
 
-  addAction("init-sound", [=](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("init-sound", [=](std::shared_ptr<NetworkRequest>) mutable {
     auto scope = editBuffer->getUndoScope().startTransaction("Init Sound");
-    editBuffer->undoableInitSound(scope->getTransaction());
+    editBuffer->undoableInitSound(scope->getTransaction(), Defaults::UserDefault);
   });
 
   addAction("init-part", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto vg = to<VoiceGroup>(request->get("part"));
     auto scope = editBuffer->getUndoScope().startTransaction("Init Part");
-    editBuffer->undoableInitPart(scope->getTransaction(), vg);
+    editBuffer->undoableInitPart(scope->getTransaction(), vg, Defaults::UserDefault);
   });
 
   addAction("rename-part", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -176,14 +176,18 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("set-modamount-and-value", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto id = request->get("id");
-
-    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(ParameterId(id))))
+    auto paramId = ParameterId(id);
+    if(auto param = dynamic_cast<ModulateableParameter*>(editBuffer->findParameterByID(paramId)))
     {
       auto modAmount = std::stod(request->get("mod-amount"));
       auto value = std::stod(request->get("value"));
 
+      auto isDual = editBuffer->isDual();
+      auto withSuffix = isDual && paramId.isDual();
+
       auto scope = editBuffer->getUndoScope().startContinuousTransaction(
-          param->getAmountCookie(), "Set Modulation Amount for '%0'", param->getGroupAndParameterName());
+          param->getAmountCookie(), "Set Modulation Amount for '%0'",
+          withSuffix ? param->getGroupAndParameterNameWithVoiceGroup() : param->getGroupAndParameterName());
       auto transaction = scope->getTransaction();
       param->undoableSetModAmount(transaction, modAmount);
       param->setCPFromHwui(transaction, value);
@@ -294,6 +298,14 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
       auto hwui = Application::get().getHWUI();
       httpRequest->respond(hwui->exportBoled());
     }
+  });
+
+  addAction("select-part-from-webui", [=](auto request) {
+    auto part = to<VoiceGroup>(request->get("part"));
+    auto hwui = Application::get().getHWUI();
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    auto scope = eb->getUndoScope().startTransaction("Select Part " + to_string(part));
+    hwui->setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
   });
 }
 

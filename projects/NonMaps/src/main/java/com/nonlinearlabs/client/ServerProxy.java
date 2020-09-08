@@ -19,6 +19,7 @@ import com.nonlinearlabs.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
@@ -27,8 +28,9 @@ import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInformation;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupUpdater;
-import com.nonlinearlabs.client.presenters.DeviceInformationProvider;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
 import com.nonlinearlabs.client.world.IPreset;
@@ -48,6 +50,7 @@ public class ServerProxy {
 	private String nonmapsVersion = null;
 	private String playgroundVersion = null;
 	private String buildVersion = null;
+	private int lastUpdateID = 0;
 
 	public Notifier<Integer> documentFromPlayground = new Notifier<Integer>() {
 
@@ -92,9 +95,26 @@ public class ServerProxy {
 			webSocket.send(uri.getURI(isOracle));
 	}
 
+	private void updateSyncedPart(Node webuiHelp) {
+		if (SetupModel.get().systemSettings.syncVoiceGroups.isTrue()) {
+			Node selected = getChild(webuiHelp, "selected-part");
+			String vg = getChildText(selected);
+			if (vg != null && !vg.isEmpty()) {
+				EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.valueOf(vg));
+			}
+		}
+	}
+
+	private boolean lastOmitOracles = false;
+
 	private void applyChanges(String responseText) {
 		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
+
 			Document xml = XMLParser.parse(responseText);
+			Node webUIHelper = xml.getElementsByTagName("webui-helper").item(0);
+			updateSyncedPart(webUIHelper);
+
+			Node world = xml.getElementsByTagName("nonlinear-world").item(0);
 			Node editBufferNode = xml.getElementsByTagName("edit-buffer").item(0);
 			Node settingsNode = xml.getElementsByTagName("settings").item(0);
 			Node undoNode = xml.getElementsByTagName("undo").item(0);
@@ -103,9 +123,7 @@ public class ServerProxy {
 			Node clipboardInfo = xml.getElementsByTagName("clipboard").item(0);
 
 			nonMaps.getNonLinearWorld().getClipboardManager().update(clipboardInfo);
-			nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
-			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
-					presetManagerNode, deviceInfo, undoNode);
+
 			nonMaps.getNonLinearWorld().invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 
 			setPlaygroundSoftwareVersion(deviceInfo);
@@ -118,14 +136,36 @@ public class ServerProxy {
 			DeviceInfoUpdater deviceInfoUpdater = new DeviceInfoUpdater(deviceInfo);
 			deviceInfoUpdater.doUpdate();
 
-			EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
-			ebu.doUpdate();
+			lastOmitOracles = omitOracles(world);
+			lastUpdateID = getUpdateID(world);
 
-			PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
-			pmu.doUpdate();
+			if (!lastOmitOracles) {
+				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
+				ebu.doUpdate();
+
+				nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
+				nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
+						presetManagerNode, deviceInfo, undoNode);
+
+				PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
+				pmu.doUpdate();
+			}
 
 			documentFromPlayground.notifyChanges();
 		}
+	}
+
+	private int getUpdateID(Node world) {
+		try {
+			return Integer.parseInt(world.getAttributes().getNamedItem("updateID").getNodeValue());
+		} catch (Exception e) {
+			Tracer.log("ServerProxy.updateID not found");
+		}
+		return 0;
+	}
+
+	public int getLastUpdateID() {
+		return lastUpdateID;
 	}
 
 	private void checkSoftwareVersionCompatibility() {
@@ -153,19 +193,19 @@ public class ServerProxy {
 		String branch = getChildText(deviceInfo, "build-branch");
 		String date = getChildText(deviceInfo, "build-date");
 
-		if(branch != null) {
+		if (branch != null) {
 			DeviceInformation.get().branch.setValue(branch);
 		}
 
-		if(commits != null) {
+		if (commits != null) {
 			DeviceInformation.get().commits.setValue(commits);
 		}
 
-		if(head != null) {
+		if (head != null) {
 			DeviceInformation.get().head.setValue(head);
 		}
 
-		if(date != null) {
+		if (date != null) {
 			DeviceInformation.get().date.setValue(date);
 		}
 	}
@@ -197,13 +237,14 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
 				new StaticURI.KeyValue("value", v));
+
 		queueJob(uri, oracle);
 	}
 
 	public void selectPreset(String uuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "select-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
-		queueJob(uri, false);
+		queueJob(uri, true);
 	}
 
 	public void newBank(String initialName, NonPosition pos) {
@@ -280,7 +321,7 @@ public class ServerProxy {
 		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", bank.getUUID());
 		StaticURI.KeyValue order = new StaticURI.KeyValue("order-number", newOrderNumber);
 		StaticURI uri = new StaticURI(path, uuid, order);
-		queueJob(uri, true);
+		queueJob(uri, false);
 	}
 
 	public void dropPresetsAbove(String csv, IPreset actionAnchor) {
@@ -450,15 +491,14 @@ public class ServerProxy {
 
 	public void setModulationAmount(double amount, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), 
-											new StaticURI.KeyValue("id", id));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), new StaticURI.KeyValue("id", id));
 		queueJob(uri, true);
 	}
 
 	public void setModulationSource(ModSource src, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()), 
-											new StaticURI.KeyValue("id", id));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()),
+				new StaticURI.KeyValue("id", id));
 		queueJob(uri, true);
 	}
 
@@ -469,7 +509,7 @@ public class ServerProxy {
 	}
 
 	public void setSetting(final String key, final String value) {
-		setSetting(key, value, true);
+		setSetting(key, value, false);
 	}
 
 	public void setSetting(final String key, final String value, boolean isOracle) {
@@ -1052,6 +1092,13 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+	public void syncVoiceGroup() {
+		VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-part-from-webui");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", vg.toString()));
+		queueJob(uri, false);
+	}
+
 	public void exportSoled() {
 		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {
 
@@ -1094,5 +1141,9 @@ public class ServerProxy {
 			public void onError() {
 			}
 		});
+	}
+
+	public boolean lastDocumentCouldOmitOracles() {
+		return lastOmitOracles;
 	}
 }

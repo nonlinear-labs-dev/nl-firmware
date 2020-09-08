@@ -17,7 +17,7 @@ void UsedRAM::init()
   Application::get().getUndoScope()->onUndoScopeChanged(sigc::mem_fun(this, &UsedRAM::scheduleReload));
 }
 
-void UsedRAM::load(const Glib::ustring& text)
+void UsedRAM::load(const Glib::ustring& text, Initiator initiator)
 {
   m_displayString = text;
 }
@@ -46,7 +46,7 @@ void UsedRAM::scheduleReload()
         auto memory = lines[1];
         auto memoryStats = StringTools::splitStringAtSpacesAndTrimSpaces(memory);
         auto used = memoryStats[2];
-        load(used);
+        load(used, Initiator::EXPLICIT_LOAD);
       },
       [&](const std::string& e) { nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e); });
 }

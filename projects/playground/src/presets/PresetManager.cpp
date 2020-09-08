@@ -25,6 +25,9 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/SelectVoiceGroupLayout.h>
 #include <tools/StringTools.h>
 #include <presets/PresetPartSelection.h>
+#include <parameter_declarations.h>
+#include <presets/PresetParameter.h>
+#include <set>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -40,6 +43,7 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly)
   m_actionManagers.emplace_back(new PresetManagerActions(*this));
   m_actionManagers.emplace_back(new BankActions(*this));
   m_actionManagers.emplace_back(new EditBufferActions(m_editBuffer.get()));
+  onRestoreHappened([&]() { invalidate(); });
 }
 
 PresetManager::~PresetManager()
@@ -212,7 +216,7 @@ SaveResult PresetManager::saveBanks(Glib::RefPtr<Gio::File> pmFolder)
 {
   for(auto &b : m_banks.getElements())
   {
-    auto bankFolder = pmFolder->get_child((Glib::ustring) b->getUuid().raw());
+    auto bankFolder = pmFolder->get_child(static_cast<Glib::ustring>(b->getUuid().raw()));
     g_file_make_directory_with_parents(bankFolder->gobj(), nullptr, nullptr);
 
     switch(b->save(bankFolder))
@@ -303,7 +307,7 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::
   DebugLevel::gassy("loadBanks", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Banks");
 
-  int numBanks = m_banks.size();
+  int numBanks = static_cast<int>(m_banks.size());
 
   m_banks.forEach([&, currentBank = 1](Bank *bank) mutable {
     DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
@@ -534,9 +538,62 @@ void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<
   m_banks.sort(transaction, banks);
 }
 
+const std::set<int> &getUnavailableParametersBySoundType(SoundType t)
+{
+  static std::set<int> unavailableInSingleSound {
+    C15::PID::FB_Mix_Comb_Src,   C15::PID::FB_Mix_FX_Src,        C15::PID::FB_Mix_Osc_Src,   C15::PID::Out_Mix_To_FX,
+    C15::PID::Split_Split_Point, C15::PID::Voice_Grp_Fade_From,  C15::PID::Voice_Grp_Tune,   C15::PID::FB_Mix_Osc,
+    C15::PID::FB_Mix_SVF_Src,    C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume,
+  };
+
+  static std::set<int> unavailableInSplitSounds {
+    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_FX_Src,        C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_SVF_Src,
+    C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Fade_Range, C15::PID::FB_Mix_Osc,
+  };
+
+  static std::set<int> unavailableInLayerSounds { C15::PID::Split_Split_Point };
+
+  switch(t)
+  {
+    case SoundType::Single:
+      return std::ref(unavailableInSingleSound);
+
+    case SoundType::Split:
+      return std::ref(unavailableInSplitSounds);
+
+    case SoundType::Layer:
+      return std::ref(unavailableInLayerSounds);
+
+    default:
+      break;
+  }
+  return std::ref(unavailableInSingleSound);
+}
+
 void PresetManager::storeInitSound(UNDO::Transaction *transaction)
 {
-  m_initSound->copyFrom(transaction, m_editBuffer.get());
+  auto currentState = std::make_unique<Preset>(this, *m_editBuffer);
+  auto currentSoundType = m_editBuffer->getType();
+
+  if(currentSoundType == SoundType::Single)
+    currentState->copyVoiceGroup1IntoVoiceGroup2(transaction, {});
+
+  static auto parameterGroupsToCloneInLayerSounds
+      = std::set<GroupId> { GroupId { "Unison", VoiceGroup::I }, GroupId { "Mono", VoiceGroup::I } };
+
+  if(currentSoundType == SoundType::Layer)
+    currentState->copyVoiceGroup1IntoVoiceGroup2(transaction, parameterGroupsToCloneInLayerSounds);
+
+  auto &takeFromRight = getUnavailableParametersBySoundType(currentSoundType);
+
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+    for(auto &currentGroup : currentState->getGroups(vg))
+      for(auto &currentParameter : currentGroup.second->getParameters())
+        if(takeFromRight.count(currentParameter.first.getNumber()))
+          if(auto oldParameter = m_initSound->findParameterByID(currentParameter.first, false))
+            currentParameter.second->copyFrom(transaction, oldParameter);
+
+  m_initSound = std::move(currentState);
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
 }
 
@@ -569,7 +626,14 @@ void PresetManager::setOrderNumber(UNDO::Transaction *transaction, const Uuid &b
 
 void PresetManager::resetInitSound(UNDO::Transaction *transaction)
 {
-  auto cleanPreset = std::make_unique<Preset>(this);
+  auto eb = getEditBuffer();
+  auto cleanPreset = std::make_unique<Preset>(this, *eb);
+
+  cleanPreset->forEachParameter([&](PresetParameter *p) {
+    auto src = eb->findParameterByID(p->getID());
+    p->setValue(transaction, src->getValue().getFactoryDefaultValue());
+  });
+
   auto swap = UNDO::createSwapData(std::move(cleanPreset));
 
   transaction->addSimpleCommand([swap, this](auto) {
@@ -702,8 +766,10 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
                     {
                       m_editBuffer->writeDocument(writer, knownRevision);
 
-                      bool anyBankChanged = false;
-                      forEachBank([&](Bank *bank) { anyBankChanged |= bank->didChangeSince(knownRevision); });
+                      bool anyBankChanged = didChangeSince(knownRevision);
+
+                      if(!anyBankChanged)
+                        forEachBank([&](Bank *bank) { anyBankChanged |= (bank->didChangeSince(knownRevision)); });
 
                       writer.writeTag("banks", Attribute("changed", anyBankChanged),
                                       Attribute("selected-bank", getSelectedBankUuid().raw()), [&]() {
@@ -718,13 +784,12 @@ void PresetManager::stress(int numTransactions)
 {
   Glib::MainContext::get_default()->signal_timeout().connect_once(
       [=]() {
-        int parameterId = g_random_int_range(0, 200);
-
         {
           auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
-          m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), { parameterId, VoiceGroup::I });
+          m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(),
+                                                { C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
 
-          if(auto p = m_editBuffer->getSelected())
+          if(auto p = m_editBuffer->getSelected(VoiceGroup::I))
           {
             p->stepCPFromHwui(transactionScope->getTransaction(), g_random_boolean() ? -1 : 1, ButtonModifiers());
           }
@@ -745,12 +810,12 @@ void PresetManager::stress(int numTransactions)
           stress(numTransactions - 1);
         }
       },
-      20);
+      0);
 }
 
 void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
 {
-  if(m_editBuffer->getSelected() != param)
+  if(m_editBuffer->getSelected(VoiceGroup::I) != param)
   {
     m_editBuffer->undoableSelectParameter(trans, param);
   }
@@ -770,7 +835,7 @@ void PresetManager::stressAllParams(int numParamChangedForEachParameter)
               for(auto i = 0; i < numParamChangedForEachParameter; i++)
                 stressParam(trans, param);
       },
-      20);
+      0);
 }
 
 void PresetManager::stressBlocking(int numTransactions)
@@ -780,7 +845,7 @@ void PresetManager::stressBlocking(int numTransactions)
     auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
     m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), { parameterId, VoiceGroup::I });
 
-    if(auto p = m_editBuffer->getSelected())
+    if(auto p = m_editBuffer->getSelected(VoiceGroup::I))
     {
       p->stepCPFromHwui(transactionScope->getTransaction(), g_random_boolean() ? -1 : 1, ButtonModifiers());
     }
@@ -820,7 +885,7 @@ void PresetManager::stressLoad(int numTransactions)
           });
         }
       },
-      20);
+      0);
 }
 
 void PresetManager::incAllParamsFine()
@@ -835,7 +900,7 @@ void PresetManager::incAllParamsFine()
             for(auto &param : group->getParameters())
               param->stepCPFromHwui(trans, 1, ButtonModifiers { ButtonModifier::FINE });
       },
-      20);
+      0);
 }
 
 const Preset *PresetManager::getSelectedPreset() const
@@ -937,6 +1002,8 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
           {
             eb->undoableLoadSelectedPreset(currentVoiceGroup);
           }
+          break;
+        default:
           break;
       }
     }

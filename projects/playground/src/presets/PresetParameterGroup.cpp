@@ -9,7 +9,7 @@
 #include <xml/Attribute.h>
 
 PresetParameterGroup::PresetParameterGroup(VoiceGroup vg)
-    : m_voiceGroup{ vg }
+    : m_voiceGroup { vg }
 {
 }
 
@@ -62,15 +62,56 @@ void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::Para
   transaction->addUndoSwap(m_voiceGroup, other->getVoiceGroup());
 }
 
+void PresetParameterGroup::assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg)
+{
+  transaction->addUndoSwap(m_voiceGroup, vg);
+
+  transaction->addSimpleCommand([=](auto) {
+    auto cp = std::move(m_parameters);
+
+    for(auto &g : cp)
+    {
+      g.second->assignVoiceGroup(vg);
+      m_parameters[{ g.first.getNumber(), vg }] = std::move(g.second);
+    }
+  });
+}
+
 void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const
 {
-  auto name = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(groupId)->getLongName();
+  if(!other)
+  {
+    writer.writeTag("group", Attribute("name", groupId.getName()), Attribute("afound", "true"),
+                    Attribute("bfound", "false"), [&] {});
+    return;
+  }
 
-  writer.writeTag("group", Attribute("name", name), [&] {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto group = eb->getParameterGroupByID(groupId);
+  auto name = group->getLongName();
+
+  writer.writeTag("group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"), [&] {
+    std::vector<int> writtenParameters;
+
     for(auto &parameter : m_parameters)
     {
       auto otherParameter = other->findParameterByID({ parameter.first.getNumber(), other->getVoiceGroup() });
       parameter.second->writeDiff(writer, parameter.first, otherParameter);
+      writtenParameters.emplace_back(parameter.first.getNumber());
+    }
+
+    for(auto &parameter : other->getParameters())
+    {
+      if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter.first.getNumber())
+         == writtenParameters.end())
+      {
+        if(auto ebParam = eb->findParameterByID(parameter.first))
+        {
+          auto paramName = ebParam->getLongName();
+          writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
+                          Attribute("bfound", "true"), [] {});
+        }
+      }
     }
   });
 }

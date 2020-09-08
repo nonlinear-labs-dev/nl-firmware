@@ -21,7 +21,9 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
@@ -61,6 +63,8 @@ public class PresetManager extends MapsLayout {
 	private LoadToPartModeNotifier loadToPartNotifier = null;
 	private Tape attachingTapes[] = new Tape[2];
 
+	private boolean scrollToSelectedPresetScheduled = false;
+
 	private static NonRect oldView = null;
 
 	public List<Bank> getBanks() {
@@ -73,12 +77,12 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
-	private void saveView() {
+	public void saveView() {
 		if (NonMaps.theMaps.getNonLinearWorld() != null && NonMaps.theMaps.getNonLinearWorld().getViewport() != null)
 			oldView = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();
 	}
 
-	private void resetView() {
+	public void resetView() {
 		if (NonMaps.theMaps.getNonLinearWorld() != null && oldView != null)
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(oldView, true);
 
@@ -87,6 +91,10 @@ public class PresetManager extends MapsLayout {
 
 	public void resetStoredViewportPosition() {
 		oldView = null;
+	}
+
+	public boolean hasStoredViewportPosition() {
+		return oldView != null;
 	}
 
 	public PresetManager(NonLinearWorld parent) {
@@ -241,6 +249,11 @@ public class PresetManager extends MapsLayout {
 	public void calcPixRect(Position parentsReference, double currentZoom) {
 		if (super.calcPixRectWithoutMargins(parentsReference, currentZoom))
 			children.calcPixRect(this.getPixRect().getCenterPoint(), currentZoom);
+
+		if (scrollToSelectedPresetScheduled) {
+			scrollToSelectedPresetScheduled = false;
+			scrollToSelectedPreset();
+		}
 	}
 
 	public void update(Node presetManagerNode) {
@@ -283,26 +296,24 @@ public class PresetManager extends MapsLayout {
 		if (PresetInfoDialog.isShown())
 			PresetInfoDialog.update(newPresetSelection);
 
-		if (NonMaps.theMaps.getNonLinearWorld().getSettings().isOneOf("SelectionAutoScroll", "on", "preset",
-				"parameter-and-preset"))
+		if (LocalSettingsProvider.get().getSettings().selectionAutoScroll
+				.isOneOf(SetupModel.SelectionAutoScroll.parameter_and_preset, SetupModel.SelectionAutoScroll.preset))
 			scrollToSelectedPreset();
 	}
 
 	private void scrollToSelectedPreset() {
-		Rect pixRect = getNonMaps().getNonLinearWorld().getViewport().getPixRectWithoutBelt();
 		Preset p = getSelectedPreset();
 
 		if (p != null) {
-
-			if (pixRect.contains(p.getPixRect())) {
-				return;
+			if (p.getNonPosition().getHeight() == 0) {
+				// preset is not yet layouted, wait for layout, then scroll
+				requestLayout();
+				scrollToSelectedPresetScheduled = true;
+			} else {
+				p.scrollToMakeFullyVisible();
 			}
-
-			Bank b = p.getParent();
-
-			if (!pixRect.contains(b.getPixRect()))
-				b.scrollToMakeFullyVisible();
 		}
+
 	}
 
 	private boolean updateBanks(Node banks) {
@@ -675,10 +686,14 @@ public class PresetManager extends MapsLayout {
 			ParameterInfoDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-			Window.open("/NonMaps/war/online-help/index.html", "", "");
+			Window.open("/online-help/index.html", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
+			closeMultiSelection();
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			Window.open("/NonMaps/MCView/index.html", "", "");
 		} else {
 			return null;
 		}
@@ -935,7 +950,6 @@ public class PresetManager extends MapsLayout {
 
 	@Override
 	public Control click(Position eventPoint) {
-		NonMaps.get().getNonLinearWorld().setShiftDown(false);
 
 		if (moveAllBanks != null) {
 			toggleMoveAllBanks();

@@ -45,6 +45,7 @@
 #include "TuneReference.h"
 #include "TotalRAM.h"
 #include "UsedRAM.h"
+#include "SyncVoiceGroupsAcrossUIS.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -91,13 +92,12 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("TuneReference", new TuneReference(*this));
   addSetting("TotalRAM", new TotalRAM(*this));
   addSetting("UsedRAM", new UsedRAM(*this));
+  addSetting("SyncVoiceGroups", new SyncVoiceGroupsAcrossUIS(*this));
 }
 
 Settings::~Settings()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   save();
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 Settings::tUpdateID Settings::onChange(uint64_t flags)
@@ -113,7 +113,8 @@ Glib::ustring Settings::getPrefix() const
 
 void Settings::init()
 {
-  for(auto& s: getSettings()) {
+  for(auto &s : getSettings())
+  {
     s.second->init();
   }
 

@@ -44,8 +44,14 @@ public abstract class Mouseing {
 		canvas.addMouseWheelHandler(new NonMapsWheelHandler());
 		canvas.addDoubleClickHandler(new NonMapsMousDoubleClickHandler());
 
+		NonLinearWorld nw = NonMaps.get().getNonLinearWorld();
+
 		canvas.addDomHandler((event) -> {
 			Position p = new Position(event.getNativeEvent());
+
+			nw.setCtrlDown(event.isControlKeyDown());
+			nw.setShiftDown(event.isShiftKeyDown());
+
 			capturePointer(canvas.getCanvasElement(), event.pointerId);
 			touches.add(new Touch(event.pointerId, p));
 
@@ -104,10 +110,7 @@ public abstract class Mouseing {
 		KeyDownHandler keypress = new KeyDownHandler() {
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
-				if (handleKeyPress(event)) {
-					event.preventDefault();
-					event.stopPropagation();
-				}
+				NonMaps.get().getNonLinearWorld().handleKeyPress(event);
 			}
 		};
 

@@ -69,7 +69,7 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT
 SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp ${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp)
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp ${CMAKE_SOURCE_DIR}/projects/shared/*.c)
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp src/*.h ${CMAKE_SOURCE_DIR}/projects/shared/*.c)
 file(GLOB_RECURSE DSL_SOURCE_FILES src/proxies/hwui/descriptive-layouts/dsl/*.cpp)
 
 IF(NOT DSL_LAYOUTS)

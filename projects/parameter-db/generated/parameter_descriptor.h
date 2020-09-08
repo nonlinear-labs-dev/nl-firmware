@@ -1,11 +1,11 @@
 #pragma once
 
 /******************************************************************************/
-/** @file     parameter_descriptor.h
-    @date     2020-06-10, 14:02
-    @version  1.7B-6
-    @author   M. Seeber
-    @brief    provide a flexible descriptor structure
+/** @file       parameter_descriptor.h
+    @date       2020-07-15, 13:56
+    @version    1.7B-7
+    @author     M. Seeber
+    @brief      provide a flexible descriptor structure
     @todo
 *******************************************************************************/
 

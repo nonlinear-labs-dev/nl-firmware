@@ -6,7 +6,7 @@ class UsedRAM : public Setting
 {
  public:
   UsedRAM(UpdateDocumentContributor& parent);
-  void load(const Glib::ustring& text) override;
+  void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
   Glib::ustring getDisplayString() const override;
   bool persistent() const override;

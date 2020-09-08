@@ -149,14 +149,19 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
   }
 }
 
-void Parameter::loadDefault(UNDO::Transaction *transaction)
+void Parameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  loadFromPreset(transaction, getDefaultValue());
+  loadFromPreset(transaction, mode == Defaults::UserDefault ? getDefaultValue() : getFactoryDefaultValue());
 }
 
 bool Parameter::isDefaultLoaded() const
 {
   return !isValueDifferentFrom(getDefaultValue());
+}
+
+bool Parameter::isFactoryDefaultLoaded() const
+{
+  return !isValueDifferentFrom(getFactoryDefaultValue());
 }
 
 void Parameter::reset(UNDO::Transaction *transaction, Initiator initiator)
@@ -246,6 +251,11 @@ const RecallParameter *Parameter::getOriginalParameter() const
 
 bool Parameter::isChangedFromLoaded() const
 {
+  return isValueChangedFromLoaded();
+}
+
+bool Parameter::isValueChangedFromLoaded() const
+{
   const int denominator = static_cast<const int>(getValue().getFineDenominator());
   const int roundedNow = static_cast<const int>(std::round(getControlPositionValue() * denominator));
   const int roundedOG = static_cast<const int>(std::round(getOriginalParameter()->getRecallValue() * denominator));
@@ -275,6 +285,11 @@ ParameterId Parameter::getID() const
 tControlPositionValue Parameter::getDefaultValue() const
 {
   return m_value.getDefaultValue();
+}
+
+tControlPositionValue Parameter::getFactoryDefaultValue() const
+{
+  return m_value.getFactoryDefaultValue();
 }
 
 tTcdValue Parameter::getTcdValue() const

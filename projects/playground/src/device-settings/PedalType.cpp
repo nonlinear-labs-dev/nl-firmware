@@ -48,7 +48,7 @@ void PedalType::sendToLPC(SendReason reason) const
   Application::get().getLPCProxy()->sendPedalSetting(m_lpcKey, get(), reset);
 }
 
-void PedalType::load(const Glib::ustring &text)
+void PedalType::load(const Glib::ustring &text, Initiator initiator)
 {
   static std::map<std::string, std::string> m { { "pot-tip-active", "PotTipActive" },
                                                 { "pot-ring-active", "PotRingActive" },
@@ -57,9 +57,9 @@ void PedalType::load(const Glib::ustring &text)
 
   auto it = m.find(text);
   if(it != m.end())
-    super::load(it->second);
+    super::load(it->second, initiator);
   else
-    super::load(text);
+    super::load(text, initiator);
 }
 
 bool PedalType::set(PedalTypes m)

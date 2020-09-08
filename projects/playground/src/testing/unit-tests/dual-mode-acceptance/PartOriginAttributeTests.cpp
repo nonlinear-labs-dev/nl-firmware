@@ -50,7 +50,7 @@ TEST_CASE("Part Origin Attribute")
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
 
-    eb->undoableInitSound(scope->getTransaction());
+    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 
@@ -65,12 +65,12 @@ TEST_CASE("Part Origin Attribute")
     auto scope = TestHelper::createTestScope();
     eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset());
 
-    eb->undoableInitPart(scope->getTransaction(), VoiceGroup::I);
+    eb->undoableInitPart(scope->getTransaction(), VoiceGroup::I, Defaults::FactoryDefault);
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     CHECK(originI.presetUUID == "");
     CHECK(originI.sourceGroup == VoiceGroup::Global);
 
-    eb->undoableInitPart(scope->getTransaction(), VoiceGroup::II);
+    eb->undoableInitPart(scope->getTransaction(), VoiceGroup::II, Defaults::FactoryDefault);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
     CHECK(originII.presetUUID == "");
     CHECK(originII.sourceGroup == VoiceGroup::Global);

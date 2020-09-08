@@ -18,7 +18,7 @@ int main(int numArgs, char **argv)
   ::signal(SIGBUS, Environment::printStackTrace);
   ::signal(SIGKILL, Environment::printStackTrace);
 
-  Application app(numArgs, argv);
+  Application app(0, nullptr);
 
   nltools::Log::setLevel(nltools::Log::Error);
 

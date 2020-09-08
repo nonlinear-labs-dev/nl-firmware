@@ -2,9 +2,11 @@ package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.GroupId;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterGroupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -14,6 +16,7 @@ import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.NonDimension;
+import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.Cabinet.Cabinet;
 import com.nonlinearlabs.client.world.maps.parameters.CombFilter.CombFilter;
 import com.nonlinearlabs.client.world.maps.parameters.Echo.Echo;
@@ -221,9 +224,9 @@ public class ParameterEditor extends LayoutResizingVertical {
 			boolean autoScroll = LocalSettingsProvider.get().getSettings().selectionAutoScroll
 					.isOneOf(SelectionAutoScroll.parameter, SelectionAutoScroll.parameter_and_preset);
 
-			ParameterGroupModel group = EditBufferModel.get().getAnyParameter(i).group;
-			if (autoScroll && group != null) {
-				scrollToSelectedParameterGroup(group.id);
+			BasicParameterModel param = EditBufferModel.get().getAnyParameter(i);					
+			if (autoScroll && param != null) {
+				scrollToSelectedParameter(param.id);
 			}
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return true;
@@ -246,17 +249,12 @@ public class ParameterEditor extends LayoutResizingVertical {
 		return theEditor;
 	}
 
-	private void scrollToSelectedParameterGroup(GroupId id) {
-		if (id.getName() == "CS")
-			id = new GroupId("MCM", id.getVoiceGroup());
-
-		if(id.getName() == "Split")
-			id = new GroupId("Part", EditBufferModel.get().voiceGroup.getValue());
-
-		ParameterGroup p = findParameterGroup(id);
-
-		if (!p.isVisible())
-			p.scrollToMakeFullyVisible();
+	private void scrollToSelectedParameter(ParameterId id) {
+		if(NonMaps.get() != null && NonMaps.get().getNonLinearWorld() != null) {
+			Parameter param = NonMaps.get().getNonLinearWorld().getParameterEditor().findParameter(id.getNumber());
+			if(param != null)
+				param.scrollToMakeFullyVisible();
+		}
 	}
 
 	public ParameterGroup findParameterGroup(final GroupId groupID) {
@@ -349,5 +347,4 @@ public class ParameterEditor extends LayoutResizingVertical {
 	public Parameter getSelectedParameter() {
 		return findParameter(EditBufferModel.get().selectedParameter.getValue());
 	}
-
 }

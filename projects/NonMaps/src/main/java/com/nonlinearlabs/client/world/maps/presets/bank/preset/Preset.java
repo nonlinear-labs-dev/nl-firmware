@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.maps.presets.bank.preset;
 import java.util.HashMap;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -12,7 +13,6 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.StoreSelectMode;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
@@ -61,6 +61,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private static final PresetColorPack standardColor = new PresetColorPack(new Gray(0), new Gray(25), new Gray(77));
 	private static final PresetColorPack renamedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
 	private static final PresetColorPack selectedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
+	private static final PresetColorPack multiSelectedColor = new PresetColorPack(new Gray(0), new Gray(90),
+			new Gray(77));
 	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
 			new Gray(77));
 	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
@@ -130,9 +132,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	}
 
 	public String getPartName(VoiceGroup vg) {
-		if(vg == VoiceGroup.I) {
+		if (vg == VoiceGroup.I) {
 			return this.partIName;
-		} else if(vg == VoiceGroup.II) {
+		} else if (vg == VoiceGroup.II) {
 			return this.partIIName;
 		}
 		return "";
@@ -254,6 +256,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		else
 			currentPack = selected ? selectedColor : standardColor;
 
+		if (isInMultiplePresetSelectionMode()) {
+			MultiplePresetSelection mps = getParent().getParent().getMultiSelection();
+			if (mps != null) {
+				if (mps.contains(this)) {
+					currentPack = multiSelectedColor;
+				}
+			}
+		}
+
 		if (isSearchOpen) {
 			if (isCurrentFilterMatch)
 				currentPack = loaded ? filterMatchHighlightedLoaded : filterMatchHighlighted;
@@ -359,38 +370,55 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
+		return this;
+	}
+
+	@Override
+	public Control mouseUp(Position eventPoint) {
+		wasJustSelected = false;
+		if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
+			getParent().getParent().startMultiSelection(this, true);
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			wasJustSelected = true;
+		}
+
 		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
 			selectPreset();
 			wasJustSelected = true;
 		}
+
 		getParent().getParent().pushBankOntoTop(getParent());
 		return this;
 	}
 
 	@Override
 	public Control click(Position point) {
-		return clickBehaviour();
+		Control ret = clickBehaviour();
+		wasJustSelected = false;
+		return ret;
 	}
 
 	private boolean isInLoadToPartMode() {
-		return (LoadToPartMode) getCustomPresetSelection() != null;
+		CustomPresetSelector cps = getCustomPresetSelection();
+		return cps != null && cps instanceof LoadToPartMode;
 	}
 
 	private Control clickBehaviour() {
+		if (isDraggingControl())
+			return this;
+
 		if (isInMultiplePresetSelectionMode()) {
-			getParent().getParent().getMultiSelection().toggle(this);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			if (!wasJustSelected) {
+				getParent().getParent().getMultiSelection().toggle(this);
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			}
 		} else if (isInLoadToPartMode()) {
 			loadToPartClickBehaviour((LoadToPartMode) getCustomPresetSelection());
-		} else if (NonMaps.get().getNonLinearWorld().isShiftDown() && !isInMultiplePresetSelectionMode()) {
-			getParent().getParent().startMultiSelection(this, true);
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		} else if (isInStoreSelectMode() || !isSelected()) {
 			selectPreset();
 		} else if (isSelected() && !wasJustSelected) {
 			load();
 		}
-		wasJustSelected = false;
 		return this;
 	}
 
@@ -513,10 +541,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	@Override
 	public double getXMargin() {
 		return 3;
-	}
-
-	public void select() {
-		getParent().getPresetList().selectPreset(getUUID(), true);
 	}
 
 	public void load() {

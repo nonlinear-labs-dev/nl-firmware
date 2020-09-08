@@ -100,7 +100,7 @@ TEST_CASE("Load Single into Layer Part I")
 
     THEN("Unison and Mono II is default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
     }
 
     THEN("Part Volume and Tune correct")
@@ -229,7 +229,7 @@ TEST_CASE("Load Single into Layer Part II")
 
     THEN("Unison and Mono II is default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getVoices<VoiceGroup::II>()));
     }
 
     THEN("Part Volume and Tune correct")

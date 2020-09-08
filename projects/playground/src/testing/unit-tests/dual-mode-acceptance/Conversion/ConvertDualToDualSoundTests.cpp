@@ -23,7 +23,7 @@ TEST_CASE("Convert Split (II) to Layer")
   {
     auto scope = TestHelper::createTestScope();
     TestHelper::initDualEditBuffer<SoundType::Split>(scope->getTransaction());
-    voicesII->loadDefault(scope->getTransaction());
+    voicesII->loadDefault(scope->getTransaction(), Defaults::FactoryDefault);
     voicesII->stepCPFromHwui(scope->getTransaction(), 12, {});
     CHECK(voicesII->getDisplayString() == "12 voices");
 
@@ -86,8 +86,8 @@ TEST_CASE("Convert Split (II) to Layer")
 
     THEN("Cross FB I/II default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("to FX unchanged")
@@ -120,12 +120,12 @@ TEST_CASE("Convert Split (II) to Layer")
     {
       for(auto& p : EBL::getMono<VoiceGroup::II>())
       {
-        CHECK(p->isDefaultLoaded());
+        CHECK(p->isFactoryDefaultLoaded());
       }
 
       for(auto& p : EBL::getUnison<VoiceGroup::II>())
       {
-        CHECK(p->isDefaultLoaded());
+        CHECK(p->isFactoryDefaultLoaded());
       }
     }
 
@@ -133,13 +133,13 @@ TEST_CASE("Convert Split (II) to Layer")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getFadeFrom<VoiceGroup::I>(), splitCP);
       CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getFadeFrom<VoiceGroup::II>(), splitCP);
-      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isDefaultLoaded());
+      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Master/Scale/MCM is unchanged")
@@ -172,7 +172,7 @@ TEST_CASE("Convert Layer I to Split")
     auto transaction = scope->getTransaction();
     TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
 
-    voicesI->loadDefault(transaction);
+    voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "12 voices");
 
@@ -244,8 +244,8 @@ TEST_CASE("Convert Layer I to Split")
 
     THEN("CrossFB Params are default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("To FX Unchanged")
@@ -265,10 +265,10 @@ TEST_CASE("Convert Layer I to Split")
 
     THEN("Fade is default")
     {
-      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Part Master was copied from I")

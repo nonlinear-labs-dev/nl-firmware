@@ -99,7 +99,7 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParame
     }
     else
     {
-      myParameter->loadDefault(transaction);
+      myParameter->loadDefault(transaction, Defaults::FactoryDefault);
     }
   }
 }
@@ -123,17 +123,6 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
                       for(const auto p : m_parameters)
                         p->writeDocument(writer, knownRevision);
                   });
-}
-
-void ParameterGroup::undoableClear(UNDO::Transaction *transaction)
-{
-  for(auto p : getParameters())
-  {
-    if(!p->isLocked())
-    {
-      p->loadDefault(transaction);
-    }
-  }
 }
 
 void ParameterGroup::undoableReset(UNDO::Transaction *transaction, Initiator initiator)
@@ -219,13 +208,13 @@ void ParameterGroup::copyFrom(UNDO::Transaction *transaction, const ParameterGro
     }
     else
     {
-      myParameter->loadDefault(transaction);
+      myParameter->loadDefault(transaction, Defaults::FactoryDefault);
     }
   }
 }
 
-void ParameterGroup::undoableLoadDefault(UNDO::Transaction *transaction)
+void ParameterGroup::undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   for(auto &p : getParameters())
-    p->loadDefault(transaction);
+    p->loadDefault(transaction, mode);
 }

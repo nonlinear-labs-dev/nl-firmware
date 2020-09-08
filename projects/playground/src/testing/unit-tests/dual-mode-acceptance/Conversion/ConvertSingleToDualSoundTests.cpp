@@ -25,7 +25,7 @@ TEST_CASE("Convert Single Sound to Split")
     auto transaction = scope->getTransaction();
 
     TestHelper::initSingleEditBuffer(transaction);
-    voicesI->loadDefault(transaction);
+    voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "13 voices");
 
@@ -63,18 +63,18 @@ TEST_CASE("Convert Single Sound to Split")
 
     THEN("Special Local Params are default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Fade is default")
     {
-      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Local normal I have been copied to II")
@@ -91,13 +91,13 @@ TEST_CASE("Convert Single Sound to Split")
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isDefaultLoaded());
+      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Master is Default")
     {
-      CHECK(EBL::getMasterVolume()->isDefaultLoaded());
-      CHECK(EBL::getMasterTune()->isDefaultLoaded());
+      CHECK(EBL::getMasterVolume()->isFactoryDefaultLoaded());
+      CHECK(EBL::getMasterTune()->isFactoryDefaultLoaded());
     }
 
     THEN("Part Master have Preset Global Master Values")
@@ -135,7 +135,7 @@ TEST_CASE("Convert Single Sound to Layer")
     auto transaction = scope->getTransaction();
 
     TestHelper::initSingleEditBuffer(transaction);
-    voicesI->loadDefault(transaction);
+    voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "13 voices");
 
@@ -171,18 +171,18 @@ TEST_CASE("Convert Single Sound to Layer")
 
     THEN("Special Local Params are default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Fade is default")
     {
-      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isDefaultLoaded());
-      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeRange<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Local normal I have been copied to II")
@@ -192,8 +192,8 @@ TEST_CASE("Convert Single Sound to Layer")
 
     THEN("Voice Parameters of II are default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getMono<VoiceGroup::II>()));
-      CHECK(EBL::isDefaultLoaded(EBL::getUnison<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getMono<VoiceGroup::II>()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getUnison<VoiceGroup::II>()));
     }
 
     THEN("Part Master I/II was Copied from Global Master")
@@ -204,12 +204,12 @@ TEST_CASE("Convert Single Sound to Layer")
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isDefaultLoaded());
+      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Master is Default")
     {
-      CHECK(EBL::isDefaultLoaded(EBL::getMaster()));
+      CHECK(EBL::isFactoryDefaultLoaded(EBL::getMaster()));
     }
 
     THEN("Macro Mappings are same")
