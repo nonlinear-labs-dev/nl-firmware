@@ -55,6 +55,18 @@ public class DeviceInformationProvider {
 			notifyClients();
 			return true;
 		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().totalRam.onChange(v -> {
+			info.totalRam = v;
+			notifyClients();
+			return true;
+		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().usedRam.onChange(v -> {
+			info.usedRam = v;
+			notifyClients();
+			return true;
+		});
 	}
 
 	protected void notifyClients() {
