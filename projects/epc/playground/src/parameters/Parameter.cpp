@@ -94,7 +94,7 @@ tControlPositionValue Parameter::expropriateSnapshotValue()
   return v == c_invalidSnapshotValue ? getControlPositionValue() : v;
 }
 
-void Parameter::setDefaultFromHwui()
+void Parameter::toggleLoadDefaultValue()
 {
   if(getValue().equals(getDefaultValue()) && m_cpBeforeDefault.has_value())
   {
@@ -113,12 +113,6 @@ void Parameter::setDefaultFromHwui()
 void Parameter::resetWasDefaulted(UNDO::Transaction *transaction)
 {
   transaction->addUndoSwap(m_cpBeforeDefault, { std::nullopt });
-}
-
-void Parameter::setDefaultFromHwui(UNDO::Transaction *transaction)
-{
-  m_cpBeforeDefault = getControlPositionValue();
-  setCPFromHwui(transaction, getDefaultValue());
 }
 
 void Parameter::stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers)

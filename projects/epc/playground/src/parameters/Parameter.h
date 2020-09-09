@@ -64,8 +64,7 @@ class Parameter : public UpdateDocumentContributor,
   tControlPositionValue getDefaultValue() const;
   tControlPositionValue getFactoryDefaultValue() const;
 
-  void setDefaultFromHwui();
-  void setDefaultFromHwui(UNDO::Transaction *transaction);
+  void toggleLoadDefaultValue();
 
   virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);

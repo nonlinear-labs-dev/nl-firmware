@@ -209,10 +209,6 @@ public class EditBufferUseCases {
 		NonMaps.get().getServerProxy().defaultParameter(id);
 	}
 
-	public void setToDefault(int paramNumber) {
-		NonMaps.get().getServerProxy().defaultParameter(paramNumber);
-	}
-
 	public void toggleBoolean(int paramNumber) {
 		ParameterId id = toParamId(paramNumber);
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
