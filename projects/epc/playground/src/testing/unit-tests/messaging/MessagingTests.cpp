@@ -5,27 +5,6 @@
 #include <nltools/threading/Expiration.h>
 #include <testing/TestHelper.h>
 
-namespace test_detail
-{
-  void doMainLoop(std::chrono::milliseconds minTime, std::chrono::milliseconds timeout,
-                  const std::function<bool()> &test)
-  {
-    Expiration exp;
-    exp.refresh(timeout);
-
-    Expiration min;
-
-    if(minTime != std::chrono::milliseconds::zero())
-      min.refresh(minTime);
-
-    while((exp.isPending() && !test()) || min.isPending())
-      g_main_context_iteration(nullptr, TRUE);
-
-    CHECK(test());
-  }
-
-}
-
 using namespace nltools::msg;
 using namespace std::chrono_literals;
 
@@ -33,7 +12,7 @@ TEST_CASE("Notify on discovery", "[Messaging][nltools]")
 {
   bool received = false;
   auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
-  test_detail::doMainLoop(1s, 1s, [&] { return received; });
+  TestHelper::doMainLoop(1s, 1s, [&] { return received; });
   c.disconnect();
 }
 
@@ -45,7 +24,7 @@ TEST_CASE("Send Receive", "[Messaging][nltools]")
   auto c
       = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
   send(EndPoint::TestEndPoint, msgToSend);
-  test_detail::doMainLoop(1s, 1s, [&] { return numMessages == 1; });
+  TestHelper::doMainLoop(1s, 1s, [&] { return numMessages == 1; });
   c.disconnect();
 }
 
@@ -62,7 +41,7 @@ TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
   for(int i = 0; i < numSendMessages; i++)
     send(EndPoint::TestEndPoint, msgToSend);
 
-  test_detail::doMainLoop(1s, 1s, [&] { return numRecMessages == numSendMessages; });
+  TestHelper::doMainLoop(1s, 1s, [&] { return numRecMessages == numSendMessages; });
   c.disconnect();
 }
 
@@ -79,6 +58,6 @@ TEST_CASE("No packet doubles", "[Messaging][nltools]")
   for(int i = 0; i < numSendMessages; i++)
     send(EndPoint::TestEndPoint, msgToSend);
 
-  test_detail::doMainLoop(1s, 1s, [&] { return numRecMessages <= numSendMessages; });
+  TestHelper::doMainLoop(1s, 1s, [&] { return numRecMessages <= numSendMessages; });
   c.disconnect();
 }

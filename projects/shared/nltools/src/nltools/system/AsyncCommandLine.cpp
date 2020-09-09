@@ -16,6 +16,8 @@ AsyncCommandLine::AsyncCommandLine(const std::vector<std::string>& command,
   Glib::spawn_async_with_pipes("", command, Glib::SPAWN_DO_NOT_REAP_CHILD | Glib::SPAWN_SEARCH_PATH,
                                Glib::SlotSpawnChildSetup(), &m_childPid, nullptr, &m_coutFD, &m_cerrFD);
 
+  nltools_detailedAssertAlways(m_childPid != 0, "Child PID can not be 0");
+
   m_streamCout = Glib::IOChannel::create_from_fd(m_coutFD);
   m_streamCerr = Glib::IOChannel::create_from_fd(m_cerrFD);
   m_isRunning = true;
@@ -46,16 +48,14 @@ void AsyncCommandLine::watchHandler(Glib::Pid pid, int status)
 void AsyncCommandLine::closeWatch(Glib::Pid pid)
 {
   Glib::spawn_close_pid(pid);
-
-  if(m_cerrFD)
-    m_streamCerr->close();
-  if(m_coutFD)
-    m_streamCout->close();
-
   m_isRunning = false;
 }
 
 bool AsyncCommandLine::isRunning() const
 {
   return m_isRunning;
+}
+
+AsyncCommandLine::~AsyncCommandLine(){
+    closeWatch(m_childPid);
 }

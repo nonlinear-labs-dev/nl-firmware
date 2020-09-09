@@ -10,6 +10,7 @@ class AsyncCommandLine
   AsyncCommandLine(const std::vector<std::string>& command, std::function<void(const std::string&)> onSuccess,
                    std::function<void(const std::string&)> onError);
 
+  ~AsyncCommandLine();
   bool isRunning() const;
 
  private:

@@ -94,6 +94,23 @@ namespace TestHelper
   void randomizeCrossFBAndToFX(UNDO::Transaction* transaction);
 
   void randomizeFadeParams(UNDO::Transaction* transaction);
+
+  inline void doMainLoop(std::chrono::milliseconds minTime, std::chrono::milliseconds timeout,
+                         const std::function<bool()>& test)
+  {
+    Expiration exp;
+    exp.refresh(timeout);
+
+    Expiration min;
+
+    if(minTime != std::chrono::milliseconds::zero())
+      min.refresh(minTime);
+
+    while((exp.isPending() && !test()) || min.isPending())
+      g_main_context_iteration(nullptr, TRUE);
+
+    CHECK(test());
+  }
 }
 
 inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double v)
