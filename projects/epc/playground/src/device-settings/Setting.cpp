@@ -10,6 +10,10 @@ Setting::Setting(UpdateDocumentContributor &parent)
 
 Setting::~Setting() = default;
 
+void Setting::init()
+{
+}
+
 bool Setting::persistent() const
 {
   return true;

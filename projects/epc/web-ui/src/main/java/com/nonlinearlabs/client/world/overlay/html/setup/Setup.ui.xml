@@ -405,6 +405,18 @@
 						</div>
 					</div>
 
+										<div class="halb-he">
+						<div class="w40p">
+							<p>RAM usage</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiUsedRam"></g:Label>
+							<g:Label>/</g:Label>
+							<g:Label ui:field="uiTotalRam"></g:Label>
+							<g:Label>MB</g:Label>
+						</div>
+					</div>
+
 					<div class="mb05"></div>
 
 				</div>

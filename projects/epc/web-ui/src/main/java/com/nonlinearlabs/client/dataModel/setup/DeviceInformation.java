@@ -17,4 +17,6 @@ public class DeviceInformation {
 	public StringDataModelEntity commits = new StringDataModelEntity();
 	public StringDataModelEntity head = new StringDataModelEntity();
 	public StringDataModelEntity date = new StringDataModelEntity();
+	public StringDataModelEntity usedRam = new StringDataModelEntity();
+	public StringDataModelEntity totalRam = new StringDataModelEntity();
 }

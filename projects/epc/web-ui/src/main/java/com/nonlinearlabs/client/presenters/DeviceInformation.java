@@ -8,4 +8,6 @@ public class DeviceInformation {
 	public String head = "---";
 	public String commits = "---";
 	public String commitDate = "---";
+	public String totalRam = "---";
+	public String usedRam = "---";
 }

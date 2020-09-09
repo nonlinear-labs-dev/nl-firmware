@@ -8,6 +8,7 @@
 #include "UndoMenu.h"
 #include "PositionInTreeLabel.h"
 #include <libundo/undo/Transaction.h>
+#include <proxies/hwui/controls/RamUsageLabel.h>
 
 UndoLayout::UndoLayout()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())

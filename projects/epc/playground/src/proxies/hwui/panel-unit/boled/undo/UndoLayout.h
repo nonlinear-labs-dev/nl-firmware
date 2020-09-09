@@ -11,6 +11,7 @@ class UndoList;
 class UndoMenu;
 class Button;
 class Label;
+class RamUsageLabel;
 class PositionInTreeLabel;
 
 class UndoLayout : public Layout
