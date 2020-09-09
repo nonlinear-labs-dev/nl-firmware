@@ -1,8 +1,0 @@
-[Unit]
-Description=safety reset the LPC, for older motherboards
-After=systemd-modules-load.service
-Before=install-update-from-usb.service
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/lpc reset 5
