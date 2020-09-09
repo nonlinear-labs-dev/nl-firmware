@@ -36,7 +36,7 @@ class ParameterLayout2 : public Layout
   virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   virtual bool onRotary(int inc, ButtonModifiers modifiers) override;
   virtual void setDefault();
-  void handlePresetValueRecall();
+  virtual void handlePresetValueRecall();
   void copyFrom(Layout *src) override;
 
   void onSoundTypeChanged();

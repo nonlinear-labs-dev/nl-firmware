@@ -144,6 +144,9 @@ class Parameter : public UpdateDocumentContributor,
 
   VoiceGroup getVoiceGroup() const;
 
+  bool isMaximum() const;
+  bool isMinimum() const;
+
  protected:
   virtual void sendToLpc() const;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool doSendToLpc);

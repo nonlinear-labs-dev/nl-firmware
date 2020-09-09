@@ -1134,7 +1134,7 @@ void EditBuffer::TEST_doDeferredJobs()
 void EditBuffer::initToFX(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    findParameterByID({ 362, vg })->loadDefault(transaction, Defaults::FactoryDefault);
+    findParameterByID({ C15::PID::Out_Mix_To_FX, vg })->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 std::vector<Parameter *> EditBuffer::getCrossFBParameters(const VoiceGroup &to) const

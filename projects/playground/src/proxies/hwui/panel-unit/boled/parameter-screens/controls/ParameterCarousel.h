@@ -14,16 +14,14 @@ class ParameterCarousel : public Carousel
   typedef Carousel super;
 
  public:
-  ParameterCarousel(const Rect &pos);
-  virtual ~ParameterCarousel();
+  explicit ParameterCarousel(const Rect &pos);
+  ~ParameterCarousel() override;
 
-  virtual void turn() override;
-  virtual void antiTurn() override;
-
-  void requestTurn();
+  void turn() override;
+  void antiTurn() override;
 
  protected:
-  virtual void setup(Parameter *selectedParameter) override;
+  void setup(Parameter *selectedParameter) override;
 
  private:
   ParameterCarousel(const ParameterCarousel &other);
