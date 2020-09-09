@@ -120,7 +120,7 @@ bool ParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 void ParameterLayout2::setDefault()
 {
   if(auto p = getCurrentEditParameter())
-    p->setDefaultFromHwui();
+    p->toggleLoadDefaultValue();
 }
 
 void ParameterLayout2::onSoundTypeChanged()

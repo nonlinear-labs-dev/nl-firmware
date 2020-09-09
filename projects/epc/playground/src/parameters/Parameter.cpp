@@ -27,6 +27,8 @@
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
+bool wasDefaultedAndNotUnselected();
+const tControlPositionValue &getPriorDefaultValue();
 Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
                      tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
     : UpdateDocumentContributor(group)
@@ -92,20 +94,25 @@ tControlPositionValue Parameter::expropriateSnapshotValue()
   return v == c_invalidSnapshotValue ? getControlPositionValue() : v;
 }
 
-void Parameter::setDefaultFromHwui()
+void Parameter::toggleLoadDefaultValue()
 {
-  auto scope = getUndoScope().startContinuousTransaction(this, "Set '%0'", getGroupAndParameterName());
-  setCPFromHwui(scope->getTransaction(), getDefaultValue());
+  if(getValue().equals(getDefaultValue()) && m_cpBeforeDefault.has_value())
+  {
+    auto scope = getUndoScope().startTransaction("Set '%0'", getGroupAndParameterName());
+    setCPFromHwui(scope->getTransaction(), m_cpBeforeDefault.value());
+  }
+  else
+  {
+    auto scope = getUndoScope().startContinuousTransaction(this, "Set '%0'", getGroupAndParameterName());
+    auto transaction = scope->getTransaction();
+    transaction->addUndoSwap(m_cpBeforeDefault, { getControlPositionValue() });
+    setCPFromHwui(transaction, getDefaultValue());
+  }
 }
 
-void Parameter::setDefaultFromHwui(UNDO::Transaction *transaction)
+void Parameter::resetWasDefaulted(UNDO::Transaction *transaction)
 {
-  setCPFromHwui(transaction, getDefaultValue());
-}
-
-void Parameter::setDefaultFromWebUI(UNDO::Transaction *transaction)
-{
-  setCPFromWebUI(transaction, getDefaultValue());
+  transaction->addUndoSwap(m_cpBeforeDefault, { std::nullopt });
 }
 
 void Parameter::stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers)
@@ -199,6 +206,7 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *
 {
   if(!isLocked())
   {
+    resetWasDefaulted(transaction);
     loadFromPreset(transaction, other->getValue());
   }
 }
@@ -244,9 +252,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
 const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  auto ret = eb->getRecallParameterSet().findParameterByID(getID());
-  nltools_detailedAssertAlways(ret != nullptr, "originalParameter is null and should not be");
-  return ret;
+  return eb->getRecallParameterSet().findParameterByID(getID());
 }
 
 bool Parameter::isChangedFromLoaded() const
@@ -586,16 +592,14 @@ void Parameter::undoableRecallFromPreset()
 void Parameter::undoableRecallFromPreset(UNDO::Transaction *transaction)
 {
   auto original = getOriginalParameter();
-  if(original)
-    setCPFromHwui(transaction, original->getRecallValue());
-  else
-    setDefaultFromHwui(transaction);
+  setCPFromHwui(transaction, original->getRecallValue());
 }
 
 void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 {
   if(!isLocked())
   {
+    resetWasDefaulted(transaction);
     setCpValue(transaction, Initiator::INDIRECT, other->getControlPositionValue(), false);
   }
 }

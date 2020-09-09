@@ -371,6 +371,8 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
   {
     auto swapData = UNDO::createSwapData(p->getID());
 
+    p->resetWasDefaulted(transaction);
+
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       auto oldSelection = m_lastSelectedParameter;
 

@@ -223,21 +223,6 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button, 
 
 UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::vector<gint32> toggleAudioIDs)
 {
-#warning "TODO"
-#if _TESTS && 0
-
-  for(gint32 id : toggleAudioIDs)
-  {
-    if(!Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id)
-       && !Application::get().getPresetManager()->getEditBuffer()->findGlobalParameterByID(id))
-      g_error("Attempt to link a button to parameter ID %d, which does not exist!", id);
-
-    g_assert(assignedAudioIDs.find(id) == assignedAudioIDs.end());
-    assignedAudioIDs.insert(id);
-  }
-
-#endif
-
   return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
 

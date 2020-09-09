@@ -64,9 +64,7 @@ class Parameter : public UpdateDocumentContributor,
   tControlPositionValue getDefaultValue() const;
   tControlPositionValue getFactoryDefaultValue() const;
 
-  void setDefaultFromHwui();
-  void setDefaultFromHwui(UNDO::Transaction *transaction);
-  void setDefaultFromWebUI(UNDO::Transaction *transaction);
+  void toggleLoadDefaultValue();
 
   virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
@@ -146,6 +144,7 @@ class Parameter : public UpdateDocumentContributor,
 
   bool isMaximum() const;
   bool isMinimum() const;
+  void resetWasDefaulted(UNDO::Transaction* transaction);
 
  protected:
   virtual void sendToPlaycontroller() const;
@@ -165,6 +164,8 @@ class Parameter : public UpdateDocumentContributor,
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
   VoiceGroup m_voiceGroup;
+
+  std::optional<tControlPositionValue> m_cpBeforeDefault = std::nullopt;
 
   friend class QuantizedValue;
   friend class EditBufferSnapshotMaker;
