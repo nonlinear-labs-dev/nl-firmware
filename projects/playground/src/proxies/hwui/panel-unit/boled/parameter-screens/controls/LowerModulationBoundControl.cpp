@@ -42,7 +42,8 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-  if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  if(auto modulatedParam
+     = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected(getHWUI()->getCurrentVoiceGroup())))
   {
     auto mc = modulatedParam->getModulationSource();
     auto mcID = MacroControlsGroup::modSrcToParamId(mc);
@@ -71,8 +72,9 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
         newModAmount /= 2;
 
       auto &undoScope = modulatedParam->getUndoScope();
-      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set Lower Modulation Limit for '%0'",
+      auto scope = undoScope.startContinuousTransaction(modulatedParam, "Set Modulation Limit for '%0'",
                                                         modulatedParam->getGroupAndParameterName());
+
       auto transaction = scope->getTransaction();
 
       modulatedParam->undoableSetModAmount(transaction, newModAmount);
