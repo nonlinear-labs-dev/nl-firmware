@@ -69,7 +69,7 @@ class Preset : public PresetDualParameterGroups
   void forEachParameter(const std::function<void(const PresetParameter *)> &cb) const;
 
   std::vector<std::pair<GroupId, const PresetParameterGroup *>> getGroups(const VoiceGroup &vg) const;
-
+  
   // transactions
   void copyFrom(UNDO::Transaction *transaction, const Preset *other, bool ignoreUuid);
   void copyFrom(UNDO::Transaction *transaction, EditBuffer *edit);

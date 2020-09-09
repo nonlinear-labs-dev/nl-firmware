@@ -578,7 +578,7 @@ void Parameter::check()
 void Parameter::undoableRecallFromPreset()
 {
   auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto transactionScope = scope.startTransaction("Recall %0 value", getLongName());
+  auto transactionScope = scope.startTransaction("Recall value from Preset for '%0'", getGroupAndParameterName());
   auto transaction = transactionScope->getTransaction();
   undoableRecallFromPreset(transaction);
 }
@@ -608,4 +608,14 @@ void Parameter::sendParameterMessage() const
 bool Parameter::isValueDifferentFrom(double d) const
 {
   return m_value.differs(getValue().getQuantizedValue(d, true));
+}
+
+bool Parameter::isMaximum() const
+{
+  return !m_value.differs(getValue().getUpperBorder());
+}
+
+bool Parameter::isMinimum() const
+{
+  return !m_value.differs(getValue().getLowerBorder());
 }

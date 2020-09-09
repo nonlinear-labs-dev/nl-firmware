@@ -139,13 +139,15 @@ public class ServerProxy {
 			lastOmitOracles = omitOracles(world);
 			lastUpdateID = getUpdateID(world);
 
+
+			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
+							presetManagerNode, deviceInfo, undoNode);
+
 			if (!lastOmitOracles) {
 				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 				ebu.doUpdate();
 
 				nonMaps.getNonLinearWorld().getPresetManager().update(presetManagerNode);
-				nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
-						presetManagerNode, deviceInfo, undoNode);
 
 				PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
 				pmu.doUpdate();
@@ -193,19 +195,19 @@ public class ServerProxy {
 		String branch = getChildText(deviceInfo, "build-branch");
 		String date = getChildText(deviceInfo, "build-date");
 
-		if (branch != null) {
+		if (branch != null && !branch.isEmpty()) {
 			DeviceInformation.get().branch.setValue(branch);
 		}
 
-		if (commits != null) {
+		if (commits != null && !commits.isEmpty()) {
 			DeviceInformation.get().commits.setValue(commits);
 		}
 
-		if (head != null) {
+		if (head != null && !head.isEmpty()) {
 			DeviceInformation.get().head.setValue(head);
 		}
 
-		if (date != null) {
+		if (date != null && !date.isEmpty()) {
 			DeviceInformation.get().date.setValue(date);
 		}
 	}
@@ -1096,6 +1098,12 @@ public class ServerProxy {
 		VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-part-from-webui");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", vg.toString()));
+		queueJob(uri, false);
+	}
+
+	public void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modulation-limit");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()), new StaticURI.KeyValue("mod-amt", newAmount), new StaticURI.KeyValue("param-val", newParameterValue));
 		queueJob(uri, false);
 	}
 

@@ -2,6 +2,8 @@
 
 #include "ParameterLayout.h"
 
+class ModAspectRecallOverlay;
+
 class ModulateableParameterLayout2 : public virtual ParameterLayout2
 {
  public:
@@ -30,6 +32,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   virtual Parameter *getCurrentEditParameter() const override;
   virtual void setDefault() override;
   virtual bool switchToNormalMode() override;
+void handlePresetValueRecall() override;
 
  private:
   void handleSelectPartButton();
@@ -60,12 +63,14 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   Mode m_mode = Mode::ParameterValue;
   Mode m_lastMode = Mode::ParameterValue;
   Overlay *m_modeOverlay = nullptr;
+  ModAspectRecallOverlay *m_modAspectRecallOverlay = nullptr;
   sigc::connection m_paramConnection;
-
-  bool handleMCRecall(Buttons i, bool down);
 
   void installModulationCarousel(const Mode &mode);
   bool isCurrentParameterDisabled() const;
+  void installModAspectRecall();
+  void removeModAspectRecall();
+void cleanMode();
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2

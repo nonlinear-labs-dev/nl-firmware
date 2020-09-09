@@ -385,8 +385,12 @@ bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
 
   if(i == Buttons::BUTTON_INC || i == Buttons::BUTTON_DEC)
   {
+    auto resetOled = (i == Buttons::BUTTON_INC && !getCurrentParameter()->isMaximum())
+        || (i == Buttons::BUTTON_DEC && !getCurrentParameter()->isMinimum());
+
     auto ret = super::onButton(i, down, modifiers);
-    getOLEDProxy().resetOverlay();
+    if(resetOled)
+      getOLEDProxy().resetOverlay();
     return ret;
   }
 
@@ -405,8 +409,12 @@ bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
 
 bool ParameterRecallLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
+  auto resetScreen
+      = (inc > 0 && !getCurrentParameter()->isMaximum()) || (inc < 0 && !getCurrentParameter()->isMinimum());
   auto ret = super::onRotary(inc, modifiers);
-  getOLEDProxy().resetOverlay();
+
+  if(resetScreen)
+    getOLEDProxy().resetOverlay();
   return ret;
 }
 
