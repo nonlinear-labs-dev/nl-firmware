@@ -280,21 +280,14 @@ public class EditBufferUseCases {
 		double lowerBoundDiff = newLowerBound - oldLowerBound;
 		double newParameterValue = oldValue - lowerBoundDiff;
 
-		setModulationUpperBound(id, newAmount, newParameterValue);
+		setModulationBounds(id, newAmount, newParameterValue);
 	}
 
-	private void setModulationUpperBound(ParameterId id, double newAmount, double newParameterValue) {
+	private void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
 		ModulateableParameterModel p = (ModulateableParameterModel)EditBufferModel.get().getParameter(id);
 		p.modAmount.value.setValue(newAmount);
 		p.value.value.setValue(newParameterValue);
-		NonMaps.get().getServerProxy().setUpperModulationBound(id, newAmount, newParameterValue);
-	}
-
-	private void setModulationLowerBound(ParameterId id, double newAmount, double newParameterValue) {
-		ModulateableParameterModel p = (ModulateableParameterModel)EditBufferModel.get().getParameter(id);
-		p.modAmount.value.setValue(newAmount);
-		p.value.value.setValue(newParameterValue);
-		NonMaps.get().getServerProxy().setLowerModulationBound(id, newAmount, newParameterValue);
+		NonMaps.get().getServerProxy().setModulationBounds(id, newAmount, newParameterValue);
 	}
 
 	private void setModulationLowerBound(ParameterId id, double newAmount, boolean fine) {
@@ -320,7 +313,7 @@ public class EditBufferUseCases {
 		double upperBoundDiff = newUpperBound - oldUpperBound;
 		double newParameterValue = oldValue - upperBoundDiff;
 
-		setModulationLowerBound(id, newAmount, newParameterValue);
+		setModulationBounds(id, newAmount, newParameterValue);
 	}
 
 	public void setModulationSource(ParameterId id, ModSource src) {
