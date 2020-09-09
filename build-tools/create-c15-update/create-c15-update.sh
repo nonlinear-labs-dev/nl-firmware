@@ -6,7 +6,7 @@
 
 EPC_UPDATE=$1
 BBB_UPDATE=$2
-LPC_UPDATE=$3
+PLAYCONTROLLER_UPDATE=$3
 BINARY_DIR=$4
 SOURCE_DIR=$5/build-tools/create-c15-update
 OUTNAME=$6
@@ -15,7 +15,7 @@ OUT_DIRECTORY=$BINARY_DIR/$OUTNAME
 OUT_TAR=$BINARY_DIR/$OUTNAME.tar
 
 UPDATE_BBB=0
-UPDATE_LPC=0
+UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
 
 if [[ $ASPECTS = *epc* ]]
@@ -23,9 +23,9 @@ then
     UPDATE_EPC=1
 fi
 
-if [[ $ASPECTS = *lpc* ]]
+if [[ $ASPECTS = *playcontroller* ]]
 then
-    UPDATE_LPC=1
+    UPDATE_PLAYCONTROLLER=1
 fi
 
 if [[ $ASPECTS = *bbb* ]]
@@ -41,7 +41,7 @@ fail_and_exit() {
 check_preconditions () {
     if [ -z "$EPC_UPDATE" -a $UPDATE_EPC == 1 ]; then echo "ePC update missing..." && return 1; fi
     if [ -z "$BBB_UPDATE" -a $UPDATE_BBB == 1 ]; then echo "BBB update missing..." && return 1; fi
-    if [ -z "$LPC_UPDATE" -a $UPDATE_LPC == 1 ]; then echo "LPC update missing..." && return 1; fi
+    if [ -z "$PLAYCONTROLLER_UPDATE" -a $UPDATE_PLAYCONTROLLER == 1 ]; then echo "playcontroller update missing..." && return 1; fi
     return 0
 }
 
@@ -51,7 +51,7 @@ create_update_file_structure() {
     mkdir $OUT_DIRECTORY || fail_and_exit
     if [ $UPDATE_BBB == 1 ]; then mkdir $OUT_DIRECTORY/BBB || fail_and_exit; fi
     if [ $UPDATE_EPC == 1 ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
-    if [ $UPDATE_LPC == 1 ]; then mkdir $OUT_DIRECTORY/LPC || fail_and_exit; fi
+    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then mkdir $OUT_DIRECTORY/playcontroller || fail_and_exit; fi
     mkdir $OUT_DIRECTORY/utilities || fail_and_exit
     echo "Creating Update Structure done."
     return 0
@@ -68,8 +68,8 @@ deploy_updates() {
         cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update.tar && chmod 666 $OUT_DIRECTORY/EPC/update.tar || fail_and_exit;
     fi
 
-    if [ $UPDATE_LPC == 1 ]; then
-        cp $LPC_UPDATE $OUT_DIRECTORY/LPC/main.bin && chmod 666 $OUT_DIRECTORY/LPC/main.bin || fail_and_exit;
+    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
+        cp $PLAYCONTROLLER_UPDATE $OUT_DIRECTORY/playcontroller/main.bin && chmod 666 $OUT_DIRECTORY/playcontroller/main.bin || fail_and_exit;
     fi
 
     echo "Deploying updates done."
@@ -98,11 +98,11 @@ deploy_scripts() {
             fail_and_exit;
     fi
 
-    if [ $UPDATE_LPC == 1 ]; then
-        cp $SOURCE_DIR/update_scripts/lpc_update.sh $OUT_DIRECTORY/LPC/ && \
-            chmod 777 $OUT_DIRECTORY/LPC/lpc_update.sh && \
-            cp $SOURCE_DIR/update_scripts/lpc_check.sh $OUT_DIRECTORY/LPC/ && \
-            chmod 777 $OUT_DIRECTORY/LPC/lpc_check.sh || \
+    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
+        cp $SOURCE_DIR/update_scripts/playcontroller_update.sh $OUT_DIRECTORY/playcontroller/ && \
+            chmod 777 $OUT_DIRECTORY/playcontroller/playcontroller_update.sh && \
+            cp $SOURCE_DIR/update_scripts/playcontroller_check.sh $OUT_DIRECTORY/playcontroller/ && \
+            chmod 777 $OUT_DIRECTORY/playcontroller/playcontroller_check.sh || \
             fail_and_exit;
     fi
 
@@ -127,20 +127,14 @@ get_tools_from_rootfs() {
     rm -rf $BINARY_DIR/build-tools/bbb/rootfs
     mkdir $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
 
-    for i in sshpass text2soled rsync socat thttpd lpc; do
-        if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "$i") $OUT_DIRECTORY/utilities/; then
+    for i in mxli sshpass text2soled rsync socat thttpd playcontroller; do
+        if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs -type f -name "$i" | head -n 1) $OUT_DIRECTORY/utilities/; then
           echo "could not get $i from rootfs"
           return 1
         fi
     done
 
-    # once mxli is part of /usr/bin this can be done in the loop above
-    if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs/ -type f -name "mxli") $OUT_DIRECTORY/utilities/; then
-      echo "could not get mxli from rootfs"
-      return 1
-    fi
-
-    for i in sshpass text2soled rsync socat thttpd mxli lpc; do
+    for i in sshpass text2soled rsync socat thttpd mxli playcontroller; do
         if ! chmod +x $OUT_DIRECTORY/utilities/"$i"; then
           echo "could not make $i executable"
           return 1
@@ -198,12 +192,12 @@ print_C15_version_strings() {
         FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
         print_version_string $FILE
     fi
-    if [ $UPDATE_LPC == 1 ]; then
-        print_version_string $(find $BINARY_DIR/build-tools/lpc/ -type f -name "main.bin")
+    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
+        print_version_string $(find $BINARY_DIR/build-tools/playcontroller/ -type f -name "main.bin")
     fi
     if [ $UPDATE_BBB == 1 ]; then
-        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "lpc")
-        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "lpc-read")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "playcontroller")
+        print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "playcontroller-read")
         print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "ehc")
         print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "ehc-preset")
     fi
@@ -211,6 +205,7 @@ print_C15_version_strings() {
 }
 
 main() {
+    set -e
     check_preconditions || fail_and_exit
     create_update_file_structure || fail_and_exit
     deploy_updates || fail_and_exit

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 mkdir -p /workdir
 mount -o loop /bindir/fs.ext4 /workdir
 

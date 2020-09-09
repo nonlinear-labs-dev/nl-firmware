@@ -1,9 +1,0 @@
-M0:
-compiler, release : -DRELEASE -DCORE_M0 -D__MULTICORE_M0APP -I"R:\VM_Shared\C15-KSTR\projects\realtime-system\src\co-proc\src" -I"../../main/src" -I"../../shared" -I"../../../.." -O3 -fno-common -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -flto -ffat-lto-objects -mcpu=cortex-m0 -mthumb
-linker, release   : -nodefaultlibs -nostdlib -Xlinker -Map="co-proc.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -flto -O3 -mcpu=cortex-m0 -mthumb -T C15_LPC4337_co-proc.ld -L "../../../ld"
-
-M4:
-compiler, debug   : -DDEBUG   -DCORE_M4 -D__MULTICORE_MASTER -D__MULTICORE_MASTER_SLAVE_M0APP -I"R:\VM_Shared\C15-KSTR\projects\realtime-system\src\main\src" -I"../../co-proc/src" -I"../../shared" -I"../../../.." -Og -fno-common -g3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb
-compiler, release : -DRELEASE -DCORE_M4 -D__MULTICORE_MASTER -D__MULTICORE_MASTER_SLAVE_M0APP -I"R:\VM_Shared\C15-KSTR\projects\realtime-system\src\main\src" -I"../../co-proc/src" -I"../../shared" -I"../../../.." -O3 -fno-common     -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb
-linker, debug     : -nodefaultlibs -nostdlib -Xlinker -Map="main.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -T "C15_LPC4337_main.ld" -L "../../../ld"
-linker, release   : -nodefaultlibs -nostdlib -Xlinker -Map="main.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -T "C15_LPC4337_main.ld" -L "../../../ld"

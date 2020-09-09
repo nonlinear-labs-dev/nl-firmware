@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 52 32" enable-background="new 0 0 52 32" xml:space="preserve">
+<g id="Btn_UnDo_Aktiv_1_">
+	<g>
+		<path fill="#808080" d="M1.5,30.5v-29H48c1.379,0,2.5,1.121,2.5,2.5v24c0,1.379-1.121,2.5-2.5,2.5H1.5z"/>
+		<path fill="#999999" d="M48,2c1.103,0,2,0.897,2,2v24c0,1.103-0.897,2-2,2H2V2H48 M48,1H1v30h47c1.65,0,3-1.35,3-3V4
+			C51,2.35,49.65,1,48,1L48,1z"/>
+		<path d="M48,1c1.65,0,3,1.35,3,3v24c0,1.65-1.35,3-3,3H1V1H48 M48,0H1H0v1v30v1h1h47c2.206,0,4-1.794,4-4V4
+			C52,1.794,50.206,0,48,0L48,0z"/>
+	</g>
+	<g id="Arrow_UnDO_4_">
+		<path fill="none" stroke="#E6E6E6" stroke-width="2" stroke-miterlimit="10" d="M28.147,22.013
+			c-1.046,1.046-2.417,1.569-3.789,1.569c-1.371,0-2.742-0.523-3.789-1.569C19.523,20.967,19,19.596,19,18.225
+			c0-1.624,0.429-2.789,1.475-3.836c1.046-1.046,2.215-1.667,4.878-1.664l7.647,0"/>
+		<polyline fill="none" stroke="#E6E6E6" stroke-width="2" stroke-miterlimit="10" points="28.692,8.417 33,12.725 28.692,17.033 		
+			"/>
+	</g>
+</g>
+</svg>
