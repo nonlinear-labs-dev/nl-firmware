@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.useCases;
 
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -275,12 +276,18 @@ public class EditBufferUseCases {
 			double oldLowerCP = NLMath.clamp(oldLowerBound, 0, 1.0);
 			newAmount = NLMath.clamp(newAmount, -oldLowerCP, 1.0 - oldLowerCP);
 		}
-
-		setModulationAmount(id, newAmount, true);
-
 		double newLowerBound = oldValue - (factor * newAmount) * mcValue;
 		double lowerBoundDiff = newLowerBound - oldLowerBound;
-		setParameterValue(id, oldValue - lowerBoundDiff, true);
+		double newParameterValue = oldValue - lowerBoundDiff;
+
+		setModulationBounds(id, newAmount, newParameterValue);
+	}
+
+	private void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
+		ModulateableParameterModel p = (ModulateableParameterModel)EditBufferModel.get().getParameter(id);
+		p.modAmount.value.setValue(newAmount);
+		p.value.value.setValue(newParameterValue);
+		NonMaps.get().getServerProxy().setModulationBounds(id, newAmount, newParameterValue);
 	}
 
 	private void setModulationLowerBound(ParameterId id, double newAmount, boolean fine) {
@@ -302,12 +309,11 @@ public class EditBufferUseCases {
 			double oldUpperCP = NLMath.clamp(oldUpperBound, 0, 1.0);
 			newAmount = NLMath.clamp(newAmount, oldUpperCP - 1, oldUpperCP);
 		}
-
-		setModulationAmount(id, newAmount, true);
-
 		double newUpperBound = oldValue + (factor * newAmount) * (1.0 - mcValue);
 		double upperBoundDiff = newUpperBound - oldUpperBound;
-		setParameterValue(id, oldValue - upperBoundDiff, true);
+		double newParameterValue = oldValue - upperBoundDiff;
+
+		setModulationBounds(id, newAmount, newParameterValue);
 	}
 
 	public void setModulationSource(ParameterId id, ModSource src) {

@@ -1099,6 +1099,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+	public void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modulation-limit");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()), new StaticURI.KeyValue("mod-amt", newAmount), new StaticURI.KeyValue("param-val", newParameterValue));
+		queueJob(uri, false);
+	}
+
 	public void exportSoled() {
 		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {
 
