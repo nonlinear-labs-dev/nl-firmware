@@ -42,7 +42,7 @@ template <typename TEnum> class NLEnumSetting : public Setting
     return m_mode;
   }
 
-  void load(const Glib::ustring &text)
+  void load(const Glib::ustring &text, Initiator) override
   {
     set(to<TEnum>(text));
   }

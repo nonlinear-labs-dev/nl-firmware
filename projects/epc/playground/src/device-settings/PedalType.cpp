@@ -58,9 +58,9 @@ void PedalType::load(const Glib::ustring &text, Initiator initiator)
 
   auto it = m.find(text);
   if(it != m.end())
-    super::load(it->second);
+    super::load(it->second, initiator);
   else
-    super::load(text);
+    super::load(text, initiator);
 }
 
 bool PedalType::set(PedalTypes m)
