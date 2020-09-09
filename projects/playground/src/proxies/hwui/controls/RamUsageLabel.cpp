@@ -17,5 +17,5 @@ Label::StringAndSuffix RamUsageLabel::getText() const
   auto settings = Application::get().getSettings();
   auto used = settings->getSetting<UsedRAM>();
   auto total = settings->getSetting<TotalRAM>();
-  return { used->getDisplayString() + "/" + total->getDisplayString() + "Mb", 0 };
+  return { used->getDisplayString() + "/" + total->getDisplayString() + "MB", 0 };
 }
