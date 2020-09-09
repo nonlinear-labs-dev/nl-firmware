@@ -11,5 +11,5 @@ class SpawnAsyncCommandLine
 
  private:
   friend class AsyncCommandLine;
-  static std::vector<std::unique_ptr<AsyncCommandLine>> m_commands;
+  static std::list<std::unique_ptr<AsyncCommandLine>> m_commands;
 };

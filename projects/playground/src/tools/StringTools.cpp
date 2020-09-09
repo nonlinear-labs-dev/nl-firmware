@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm>
 #include <libundo/undo/StringTools.h>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include "StringTools.h"
 
 namespace StringTools
@@ -60,12 +62,11 @@ namespace StringTools
   {
     std::vector<std::string> ret;
     std::string currentString;
-    bool wasSpace = false;
+
     for(const auto &c : in)
     {
       if(std::isspace(c))
       {
-        wasSpace = true;
         if(!currentString.empty())
         {
           ret.emplace_back(currentString);

@@ -9,6 +9,7 @@
 
 UsedRAM::UsedRAM(UpdateDocumentContributor& parent)
     : Setting(parent)
+    , m_scheduleThrottler { Expiration::Duration { std::chrono::minutes { 1 } } }
 {
 }
 
@@ -39,14 +40,16 @@ bool UsedRAM::persistent() const
 
 void UsedRAM::scheduleReload()
 {
-  SpawnAsyncCommandLine::spawn(
-      std::vector<std::string> { "free", "--mega" },
-      [&](const std::string& s) {
-        auto lines = StringTools::splitStringOnAnyDelimiter(s, '\n');
-        auto memory = lines[1];
-        auto memoryStats = StringTools::splitStringAtSpacesAndTrimSpaces(memory);
-        auto used = memoryStats[2];
-        load(used, Initiator::EXPLICIT_LOAD);
-      },
-      [&](const std::string& e) { nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e); });
+  m_scheduleThrottler.doTask([&] {
+    SpawnAsyncCommandLine::spawn(
+        std::vector<std::string> { "free", "--mega" },
+        [&](const std::string& s) {
+          auto lines = StringTools::splitStringOnAnyDelimiter(s, '\n');
+          auto memory = lines[1];
+          auto memoryStats = StringTools::splitStringAtSpacesAndTrimSpaces(memory);
+          auto used = memoryStats[2];
+          load(used, Initiator::EXPLICIT_LOAD);
+        },
+        [&](const std::string& e) { nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e); });
+  });
 }

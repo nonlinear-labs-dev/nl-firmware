@@ -1,6 +1,7 @@
 #pragma once
 #include <thread>
 #include "Setting.h"
+#include <nltools/threading/Throttler.h>
 
 class UsedRAM : public Setting
 {
@@ -17,5 +18,5 @@ class UsedRAM : public Setting
   Glib::ustring m_displayString;
   void scheduleReload();
 
-  std::thread m_pollThread;
+  Throttler m_scheduleThrottler;
 };
