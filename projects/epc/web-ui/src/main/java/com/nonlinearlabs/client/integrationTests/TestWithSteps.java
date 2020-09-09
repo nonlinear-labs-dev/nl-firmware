@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.ServerProxy;
@@ -14,6 +15,7 @@ public class TestWithSteps {
         Runnable task;
         int timeout;
         boolean stillWaiting;
+        String name;
 
         Step(int timeout, BooleanSupplier done, Runnable task) {
             this.done = done;
@@ -37,13 +39,25 @@ public class TestWithSteps {
     }
 
     List<Step> steps = new ArrayList<Step>();
+    Runnable after = null; 
+
+    TestWithSteps(Runnable a) {
+        after(a);
+    }
 
     TestWithSteps() {
     }
 
+    public void after(Runnable a) {
+        this.after = a;
+    }
+
     private void tryNextStep() {
-        if (steps.get(0).isDone())
+        Step s = steps.get(0);
+        if (s.isDone()) {
+            GWT.log(s.name + " complete!");
             nextStep();
+        }
     }
 
     private boolean nextStep() {
@@ -52,8 +66,14 @@ public class TestWithSteps {
         if (!steps.isEmpty()) {
             steps.get(0).run();
             return true;
+        } else if(after != null) {
+            after.run();
         }
         return false;
+    }
+
+    public void setStepName(String n) {
+        steps.get(steps.size() - 1).name = n;
     }
 
     protected void addStep(int timeout, Runnable task, BooleanSupplier done) {

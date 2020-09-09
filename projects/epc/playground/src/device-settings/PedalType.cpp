@@ -49,7 +49,7 @@ void PedalType::sendToPlaycontroller(SendReason reason) const
   Application::get().getPlaycontrollerProxy()->sendPedalSetting(m_playcontrollerKey, get(), reset);
 }
 
-void PedalType::load(const Glib::ustring &text)
+void PedalType::load(const Glib::ustring &text, Initiator initiator)
 {
   static std::map<std::string, std::string> m { { "pot-tip-active", "PotTipActive" },
                                                 { "pot-ring-active", "PotRingActive" },

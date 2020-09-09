@@ -43,5 +43,5 @@ void Setting::sendToPlaycontroller(SendReason reason) const
 
 void Setting::setSetting(Initiator initiator, const Glib::ustring &text)
 {
-  load(text);
+    load(text, initiator);
 }

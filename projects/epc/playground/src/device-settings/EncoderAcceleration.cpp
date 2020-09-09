@@ -18,7 +18,7 @@ EncoderAcceleration::~EncoderAcceleration()
 {
 }
 
-void EncoderAcceleration::load(const Glib::ustring &text)
+void EncoderAcceleration::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {

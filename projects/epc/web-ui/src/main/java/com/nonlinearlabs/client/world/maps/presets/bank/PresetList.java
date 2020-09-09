@@ -117,14 +117,15 @@ public class PresetList extends LayoutResizingVertical {
 	public void selectPreset(String uuid, boolean sendToServer) {
 		selectedPreset = uuid;
 
-		if(sendToServer)
+		if(sendToServer) {
 			getNonMaps().getServerProxy().selectPreset(uuid);
+		}
 
 		requestLayout();
 
 		if (getParent().isSelected()) {
 			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPresetLayout().getBankControl()
-					.getPresetList().scheduleAutoScroll(ScrollRequest.Smooth);
+					.getPresetList().scheduleAutoScroll(ScrollRequest.Jump);
 		}
 
 		getParent().getParent().onPresetSelectionChanged(findPreset(selectedPreset));

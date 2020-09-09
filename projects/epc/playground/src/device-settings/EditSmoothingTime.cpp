@@ -19,7 +19,7 @@ EditSmoothingTime::~EditSmoothingTime()
 {
 }
 
-void EditSmoothingTime::load(const Glib::ustring &text)
+void EditSmoothingTime::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {

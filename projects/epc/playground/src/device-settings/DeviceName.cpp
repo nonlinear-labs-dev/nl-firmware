@@ -14,7 +14,7 @@ DeviceName::~DeviceName()
 {
 }
 
-void DeviceName::load(const Glib::ustring &text)
+void DeviceName::load(const Glib::ustring &text, Initiator initiator)
 {
   set(text);
 }

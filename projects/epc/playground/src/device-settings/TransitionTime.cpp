@@ -19,7 +19,7 @@ TransitionTime::~TransitionTime()
 {
 }
 
-void TransitionTime::load(const Glib::ustring &text)
+void TransitionTime::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {

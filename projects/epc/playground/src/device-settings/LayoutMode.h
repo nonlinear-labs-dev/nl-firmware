@@ -11,5 +11,5 @@ class LayoutMode : public EnumSetting<LayoutVersionMode>
   const std::vector<Glib::ustring>& enumToString() const override;
   const std::vector<Glib::ustring>& enumToDisplayString() const override;
 
-  void load(const Glib::ustring& text) override;
+  void load(const Glib::ustring& text, Initiator initiator) override;
 };

@@ -29,7 +29,7 @@ RibbonRelativeFactor::~RibbonRelativeFactor()
 {
 }
 
-void RibbonRelativeFactor::load(const Glib::ustring &text)
+void RibbonRelativeFactor::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {

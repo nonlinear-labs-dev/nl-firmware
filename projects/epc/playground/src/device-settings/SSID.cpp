@@ -20,7 +20,7 @@ SSID::SSID(Settings &parent)
 
 SSID::~SSID() = default;
 
-void SSID::load(const Glib::ustring &ssid)
+void SSID::load(const Glib::ustring &ssid, Initiator initiator)
 {
   setSSIDAndNotifyBBB(ssid);
 }

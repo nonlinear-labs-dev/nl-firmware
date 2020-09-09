@@ -11,7 +11,7 @@ TuneReference::TuneReference(UpdateDocumentContributor& parent)
 {
 }
 
-void TuneReference::load(const Glib::ustring& text)
+void TuneReference::load(const Glib::ustring& text, Initiator initiator)
 {
   m_value.setRawValue(Initiator::EXPLICIT_OTHER, std::stod(text));
 }

@@ -27,6 +27,6 @@ void SettingsSerializer::readTagContent(Reader &reader) const
   reader.onTextElement("setting", [&](const Glib::ustring &text, const Attributes &attr) mutable {
     if(auto s = m_settings.getSetting(attr.get("id")))
       if(s->persistent())
-        s->load(text);
+        s->load(text, Initiator::EXPLICIT_LOAD);
   });
 }

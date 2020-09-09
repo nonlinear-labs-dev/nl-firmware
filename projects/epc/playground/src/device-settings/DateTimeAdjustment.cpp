@@ -16,7 +16,7 @@ DateTimeAdjustment::~DateTimeAdjustment()
 {
 }
 
-void DateTimeAdjustment::load(const Glib::ustring &text)
+void DateTimeAdjustment::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {

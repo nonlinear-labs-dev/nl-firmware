@@ -17,7 +17,7 @@ class Setting : public UpdateDocumentContributor
   virtual ~Setting();
 
   virtual void setSetting(Initiator initiator, const Glib::ustring &text);
-  virtual void load(const Glib::ustring &text) = 0;
+  virtual void load(const Glib::ustring &text, Initiator initiator) = 0;
   virtual Glib::ustring save() const = 0;
 
   sigc::connection onChange(sigc::slot<void, const Setting *> slot);
