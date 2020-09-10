@@ -110,7 +110,7 @@ build_update() {
     download_packages || error "Downloading packages failed."
 
     /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
-        cd /build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On /sources && make -j8"
+        cd /build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On /sources && make -j8"
     return $?
 }
 
