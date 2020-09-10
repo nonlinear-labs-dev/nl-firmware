@@ -8,6 +8,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <nltools/threading/Expiration.h>
 #include <tools/Signal.h>
+#include <tools/DelayedJob.h>
 #include <array>
 #include <memory>
 #include <glibmm/refptr.h>
@@ -147,4 +148,6 @@ class HWUI
   Expiration m_switchOffBlockingMainThreadIndicator;
 
   bool m_focusAndModeFrozen = false;
+
+  DelayedJob m_setupJob;
 };

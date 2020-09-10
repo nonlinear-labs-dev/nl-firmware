@@ -41,6 +41,10 @@ HWUI::HWUI()
     , m_buttonStates { false }
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
+    , m_setupJob(1, [this] {
+      m_panelUnit.setupFocusAndMode(m_focusAndMode);
+      m_baseUnit.setupFocusAndMode(m_focusAndMode);
+    })
 {
 
   if(isatty(fileno(stdin)))
@@ -94,8 +98,7 @@ void HWUI::indicateBlockingMainThread()
 
 void HWUI::setupFocusAndMode()
 {
-  m_panelUnit.setupFocusAndMode(m_focusAndMode);
-  m_baseUnit.setupFocusAndMode(m_focusAndMode);
+  m_setupJob.trigger();
 }
 
 void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
