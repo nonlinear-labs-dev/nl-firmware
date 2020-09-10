@@ -145,17 +145,20 @@ void PanelUnit::installUsageMode(FocusAndMode focusAndMode)
   {
     case UIFocus::Presets:
     case UIFocus::Banks:
-      setUsageMode(new PanelUnitPresetMode());
+      if(typeid(PanelUnitPresetMode) != typeid(*getUsageMode().get()))
+        setUsageMode(new PanelUnitPresetMode());
       break;
 
     case UIFocus::Sound:
-      setUsageMode(new PanelUnitSoundMode());
+      if(typeid(PanelUnitSoundMode) != typeid(*getUsageMode().get()))
+        setUsageMode(new PanelUnitSoundMode());
       break;
 
     case UIFocus::Parameters:
     case UIFocus::Setup:
     case UIFocus::Unchanged:
-      setUsageMode(new PanelUnitParameterEditMode());
+      if(typeid(PanelUnitParameterEditMode) != typeid(*getUsageMode().get()))
+        setUsageMode(new PanelUnitParameterEditMode());
       break;
   }
 }
