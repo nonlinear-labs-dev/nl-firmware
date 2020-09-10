@@ -8,14 +8,11 @@
 
 UsageMode::UsageMode()
 {
-  m_voiceGroupChangedSignal = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
       sigc::hide<0>(sigc::mem_fun(this, &UsageMode::bruteForceUpdateLeds)));
 }
 
-UsageMode::~UsageMode()
-{
-  m_voiceGroupChangedSignal.disconnect();
-}
+UsageMode::~UsageMode() = default;
 
 bool UsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state)
 {

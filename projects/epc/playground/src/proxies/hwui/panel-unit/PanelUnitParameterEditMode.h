@@ -5,7 +5,6 @@
 #include <proxies/hwui/panel-unit/UndoButtonsStateMachine.h>
 #include <proxies/hwui/UsageMode.h>
 #include <ParameterId.h>
-#include <sigc++/trackable.h>
 #include <sigc++/connection.h>
 #include <array>
 #include <list>
@@ -18,7 +17,7 @@ class Layout;
 class BOLED;
 class MacroControlAssignmentStateMachine;
 
-class PanelUnitParameterEditMode : public UsageMode, public sigc::trackable
+class PanelUnitParameterEditMode : public UsageMode
 {
   typedef UsageMode super;
 

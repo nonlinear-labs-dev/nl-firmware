@@ -6,11 +6,11 @@
 #include <nltools/Uncopyable.h>
 #include <map>
 #include <set>
-#include <sigc++/connection.h>
+#include <sigc++/trackable.h>
 
 class Application;
 
-class UsageMode : public Uncopyable
+class UsageMode : public Uncopyable, public sigc::trackable
 {
  public:
   UsageMode();
@@ -38,6 +38,4 @@ class UsageMode : public Uncopyable
   static const int num_buttons = 128;
 
   std::map<Buttons, tAction> m_actions;
-
-  sigc::connection m_voiceGroupChangedSignal;
 };
