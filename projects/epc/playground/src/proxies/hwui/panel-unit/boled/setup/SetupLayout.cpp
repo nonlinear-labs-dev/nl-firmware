@@ -69,6 +69,7 @@
 #include <parameter_declarations.h>
 #include <device-settings/SyncVoiceGroupsAcrossUIS.h>
 #include "UISoftwareVersionEditor.h"
+#include "ScreenSaverTimeControls.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 
@@ -651,6 +652,24 @@ namespace NavTree
     }
   };
 
+  struct ScreenSaverTime : EditableLeaf
+  {
+    ScreenSaverTime(InnerNode *parent)
+        : EditableLeaf(parent, "Screensaver Timeout")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new ScreenSaverTimeView();
+    }
+
+    Control *createEditor() override
+    {
+      return new ScreenSaverTimeEditor();
+    }
+  };
+
   struct HardwareUI : InnerNode
   {
     HardwareUI(InnerNode *parent)
@@ -659,6 +678,7 @@ namespace NavTree
       children.emplace_back(new EncoderAcceleration(this));
       children.emplace_back(new RibbonRelativeFactorSetting(this));
       children.emplace_back(new SignalFlowIndicationSetting(this));
+      children.emplace_back(new ScreenSaverTime(this));
     }
   };
 

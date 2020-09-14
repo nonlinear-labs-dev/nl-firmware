@@ -374,6 +374,8 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
       }
     }
   }
+
+  m_inputSignal.send();
 }
 
 void HWUI::setModifiers(Buttons buttonID, bool state)
@@ -406,6 +408,8 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
   {
     removeModifier(ButtonModifier::FINE);
   }
+
+  m_inputSignal.send();
 }
 
 bool HWUI::isFineAllowed()
@@ -726,6 +730,11 @@ FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
 sigc::connection HWUI::onLoadToPartModeChanged(const sigc::slot<void, bool> &cb)
 {
   return m_loadToPartSignal.connectAndInit(cb, m_loadToPartActive);
+}
+
+sigc::connection HWUI::onHWUIChanged(const sigc::slot<void> &cb)
+{
+  return m_inputSignal.connect(cb);
 }
 
 bool HWUI::isInLoadToPart() const

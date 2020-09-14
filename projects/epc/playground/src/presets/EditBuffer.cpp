@@ -140,9 +140,12 @@ sigc::connection EditBuffer::onModificationStateChanged(const sigc::slot<void, b
   return m_signalModificationState.connectAndInit(s, m_isModified);
 }
 
-sigc::connection EditBuffer::onChange(const sigc::slot<void> &s)
+sigc::connection EditBuffer::onChange(const sigc::slot<void> &s, bool init)
 {
-  return m_signalChange.connectAndInit(s);
+  if(init)
+    return m_signalChange.connectAndInit(s);
+  else
+    return m_signalChange.connect(s);
 }
 
 sigc::connection EditBuffer::onPresetLoaded(const sigc::slot<void> &s)

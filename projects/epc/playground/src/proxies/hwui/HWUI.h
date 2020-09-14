@@ -62,6 +62,7 @@ class HWUI
 
   sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
   sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
+  sigc::connection onHWUIChanged(const sigc::slot<void> &cb);
 
   void freezeFocusAndMode();
   void thawFocusAndMode();
@@ -120,6 +121,7 @@ class HWUI
 
   Signal<void, VoiceGroup> m_voiceGoupSignal;
   Signal<void, bool> m_loadToPartSignal;
+  Signal<void> m_inputSignal;
 
   bool m_loadToPartActive = false;
   VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
