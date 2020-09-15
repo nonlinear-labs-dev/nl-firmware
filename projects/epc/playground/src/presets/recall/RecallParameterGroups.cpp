@@ -44,6 +44,7 @@ RecallParameter *RecallParameterGroups::findParameterByID(const ParameterId &id)
     return it->second.get();
 
   nltools::throwException("Could not find Recall Parameter with id ", id.toString());
+  return nullptr;
 }
 
 void RecallParameterGroups::copyFromEditBuffer(UNDO::Transaction *transaction, const EditBuffer *other)
