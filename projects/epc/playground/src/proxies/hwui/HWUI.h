@@ -118,6 +118,9 @@ class HWUI
 
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;
+  sigc::connection m_rotaryChangedConnection;
+
+  void onRotaryChanged();
 
   Signal<void, VoiceGroup> m_voiceGoupSignal;
   Signal<void, bool> m_loadToPartSignal;

@@ -85,7 +85,15 @@ void HWUI::init()
   m_panelUnit.init();
   m_baseUnit.init();
 
+  m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
+      sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
+
   Oleds::get().syncRedraw();
+}
+
+void HWUI::onRotaryChanged()
+{
+  m_inputSignal.send();
 }
 
 void HWUI::indicateBlockingMainThread()

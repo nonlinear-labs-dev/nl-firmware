@@ -7,6 +7,7 @@ class SOLEDScreenSaver : public Layout
 {
  public:
   explicit SOLEDScreenSaver(OLEDProxy& oled);
+  bool redraw(FrameBuffer& fb) override;
 
  private:
   int velocity = 1;

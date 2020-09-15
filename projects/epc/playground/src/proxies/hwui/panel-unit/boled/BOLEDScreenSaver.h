@@ -2,6 +2,8 @@
 #include <proxies/hwui/Layout.h>
 #include <sigc++/connection.h>
 
+class Label;
+
 class BOLEDScreenSaver : public Layout
 {
  public:
@@ -11,10 +13,9 @@ class BOLEDScreenSaver : public Layout
  private:
   void destroy();
   bool animate();
-  std::pair<int, int> m_velC = { 1, 1 };
-  std::pair<int, int> m_velN = { -1, -1 };
   sigc::connection m_animation;
   sigc::connection m_editBufferConnection;
-  Control* m_logoNL;
-  Control* m_logoC15;
+
+  std::pair<int, int> m_vel = { -1, -1 };
+  Label* m_logoNL;
 };
