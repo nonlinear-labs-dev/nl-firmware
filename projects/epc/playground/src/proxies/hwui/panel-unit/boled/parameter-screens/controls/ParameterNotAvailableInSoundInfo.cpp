@@ -28,6 +28,7 @@ namespace detail
 ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r)
     : ControlWithChildren(r)
 {
+  auto hwui = Application::get().getHWUI();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   auto vg = getHWUI()->getCurrentVoiceGroup();
@@ -43,6 +44,9 @@ ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r
   m_parameterNameLabel->setHighlight(true);
   addControl(new CenterAlignedLabel("Only available with", { 0, 20, 128, 10 }))->setHighlight(true);
   addControl(new CenterAlignedLabel("Layer Sounds", { 0, 32, 128, 10 }))->setHighlight(true);
+
+  auto vis = !ParameterLayout2::isParameterAvailableInSoundType(eb->getSelected(hwui->getCurrentVoiceGroup()));
+  setVisible(vis);
 }
 
 void ParameterNotAvailableInSoundInfo::setBackgroundColor(FrameBuffer &fb) const
