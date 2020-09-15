@@ -17,4 +17,5 @@ class SOLED : public OLEDProxy
 
  private:
   void onBaseUnitUIModeChange(const Setting *s);
+  void toggleScreenSaver(bool enable);
 };

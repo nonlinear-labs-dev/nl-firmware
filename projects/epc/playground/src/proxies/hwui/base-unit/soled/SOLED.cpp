@@ -8,14 +8,19 @@
 #include "PresetsLayout.h"
 #include "device-settings/Settings.h"
 #include "device-settings/BaseUnitUIMode.h"
+#include "SOLEDScreenSaver.h"
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
 
 SOLED::SOLED()
     : OLEDProxy(Rect(0, 64, 128, 32))
 {
   Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
       sigc::mem_fun(this, &SOLED::onBaseUnitUIModeChange));
+
+  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
+      sigc::mem_fun(this, &SOLED::toggleScreenSaver));
 }
 
 SOLED::~SOLED()
@@ -53,5 +58,16 @@ void SOLED::onBaseUnitUIModeChange(const Setting *s)
     case BaseUnitUIModes::Presets:
       reset(new PresetsLayout());
       break;
+  }
+}
+void SOLED::toggleScreenSaver(bool enable)
+{
+  if(enable)
+  {
+    setOverlay(new SOLEDScreenSaver(*this));
+  }
+  else if(std::dynamic_pointer_cast<SOLEDScreenSaver>(getOverlay()))
+  {
+    resetOverlay();
   }
 }
