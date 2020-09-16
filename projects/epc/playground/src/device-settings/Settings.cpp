@@ -50,6 +50,8 @@
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
 #include <parameters/RibbonParameter.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
+#include <iostream>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -93,6 +95,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("TotalRAM", new TotalRAM(*this));
   addSetting("UsedRAM", new UsedRAM(*this));
   addSetting("SyncVoiceGroups", new SyncVoiceGroupsAcrossUIS(*this));
+  addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
 }
 
 Settings::~Settings()
@@ -113,12 +116,12 @@ Glib::ustring Settings::getPrefix() const
 
 void Settings::init()
 {
+  load();
+
   for(auto &s : getSettings())
   {
     s.second->init();
   }
-
-  load();
 }
 
 void Settings::reload()

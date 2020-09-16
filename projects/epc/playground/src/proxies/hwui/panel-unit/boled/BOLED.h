@@ -32,6 +32,8 @@ class BOLED : public OLEDProxy, public sigc::trackable
   void bruteForce();
 
  private:
+  void toggleScreenSaver(bool enabled);
+
   void installOldLayouts(FocusAndMode foucsAndMode);
   void setupSoundScreen(FocusAndMode focusAndMode);
   void setupParameterScreen(FocusAndMode focusAndMode);

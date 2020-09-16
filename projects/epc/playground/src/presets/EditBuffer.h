@@ -84,7 +84,7 @@ class EditBuffer : public ParameterGroupSet
   sigc::connection onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s,
                                       std::optional<VoiceGroup> initialVG);
   sigc::connection onModificationStateChanged(const sigc::slot<void, bool> &s);
-  sigc::connection onChange(const sigc::slot<void> &s);
+  sigc::connection onChange(const sigc::slot<void> &s, bool init = true);
   sigc::connection onPresetLoaded(const sigc::slot<void> &s);
   sigc::connection onLocksChanged(const sigc::slot<void> &s);
   sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);

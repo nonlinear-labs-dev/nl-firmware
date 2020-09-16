@@ -85,7 +85,15 @@ void HWUI::init()
   m_panelUnit.init();
   m_baseUnit.init();
 
+  m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
+      sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
+
   Oleds::get().syncRedraw();
+}
+
+void HWUI::onRotaryChanged()
+{
+  m_inputSignal.send();
 }
 
 void HWUI::indicateBlockingMainThread()
@@ -374,6 +382,8 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
       }
     }
   }
+
+  m_inputSignal.send();
 }
 
 void HWUI::setModifiers(Buttons buttonID, bool state)
@@ -406,6 +416,8 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
   {
     removeModifier(ButtonModifier::FINE);
   }
+
+  m_inputSignal.send();
 }
 
 bool HWUI::isFineAllowed()
@@ -726,6 +738,11 @@ FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
 sigc::connection HWUI::onLoadToPartModeChanged(const sigc::slot<void, bool> &cb)
 {
   return m_loadToPartSignal.connectAndInit(cb, m_loadToPartActive);
+}
+
+sigc::connection HWUI::onHWUIChanged(const sigc::slot<void> &cb)
+{
+  return m_inputSignal.connect(cb);
 }
 
 bool HWUI::isInLoadToPart() const

@@ -19,6 +19,9 @@
 #include <tools/ExceptionTools.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
+#include <device-settings/Settings.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
+#include "BOLEDScreenSaver.h"
 
 BOLED::BOLED()
     : OLEDProxy(Rect(0, 0, 256, 64))
@@ -32,6 +35,20 @@ void BOLED::init()
   reset(new SplashLayout());
 
   LayoutFolderMonitor::get().onChange(sigc::mem_fun(this, &BOLED::bruteForce));
+  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
+      sigc::mem_fun(this, &BOLED::toggleScreenSaver));
+}
+
+void BOLED::toggleScreenSaver(bool enabled)
+{
+  if(enabled)
+  {
+    setOverlay(new BOLEDScreenSaver(*this));
+  }
+  else if(std::dynamic_pointer_cast<BOLEDScreenSaver>(getOverlay()) != nullptr)
+  {
+    resetOverlay();
+  }
 }
 
 void BOLED::bruteForce()
