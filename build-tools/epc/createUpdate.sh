@@ -99,8 +99,9 @@ install_packages() {
     /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
         cd /update-packages
         for package in $PACKAGES_TO_INSTALL; do
-            if !pacman --noconfirm -U ./\$package; then
-                return 1
+	    
+	    if ! pacman --noconfirm -U ./\$package; then
+              	return 1
             fi
         done"
     return $?
