@@ -9,7 +9,22 @@ abstract public class PhysicalControlParameter extends Parameter {
 		super(parent, parameterID);
 		addChild(new UnModulateableParameterName(this));
 		addChild(new SliderHorizontalWithHandle(this, getParameterNumber()));
-		addChild(new ValueDisplaySmall(this, getParameterNumber()));
+		addChild(new ValueDisplaySmall(this, getParameterNumber()) {
+			@Override
+			protected double getFontHeight() {
+				return 11;
+			}
+		
+			@Override
+			protected double getBasicWidth() {
+				return 80;
+			}
+			
+			@Override
+			public double getLevelOfDetailForFullVisibility() {
+				return 5;
+			}
+		});
 	}
 
 	@Override

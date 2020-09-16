@@ -9,7 +9,7 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontalWithHandle;
 import com.nonlinearlabs.client.world.maps.parameters.UnModulateableParameterName;
-import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
+import com.nonlinearlabs.client.world.maps.parameters.ValueDisplayLarge;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.ParameterInfoDialog;
@@ -19,14 +19,9 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	private String info = "";
 
-	private class MacroControlValueDisplay extends ValueDisplaySmall {
+	private class MacroControlValueDisplay extends ValueDisplayLarge {
 		private MacroControlValueDisplay(MapsLayout parent, int parameterID) {
 			super(parent, parameterID);
-		}
-
-		@Override
-		protected double getBasicHeight() {
-			return 22;
 		}
 	}
 
