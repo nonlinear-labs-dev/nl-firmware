@@ -69,6 +69,16 @@ public abstract class BankContextMenu extends ContextMenu {
 
 		if (bank != null) {
 
+			addChild(new ContextMenuItem(this, "Export Bank as File ...") {
+				@Override
+				public Control click(Position eventPoint) {
+					String bankName = URL.encodePathSegment(bank.getCurrentName());
+					String uri = "/presets/banks/download-bank/" + bankName + ".xml?uuid=" + bank.getUUID();
+					Window.open(uri, "", "");
+					return super.click(eventPoint);
+				}
+			});
+
 			if (!BankInfoDialog.isShown()) {
 				String bankInfoText = "Bank Info ...";
 				addChild(new ContextMenuItem(this, bankInfoText) {
@@ -148,16 +158,6 @@ public abstract class BankContextMenu extends ContextMenu {
 					}
 				});
 			}
-
-			addChild(new ContextMenuItem(this, "Export as File ...") {
-				@Override
-				public Control click(Position eventPoint) {
-					String bankName = URL.encodePathSegment(bank.getCurrentName());
-					String uri = "/presets/banks/download-bank/" + bankName + ".xml?uuid=" + bank.getUUID();
-					Window.open(uri, "", "");
-					return super.click(eventPoint);
-				}
-			});
 
 			addChild(new ContextMenuItem(this, "Sort Bank Numbers") {
 				@Override
