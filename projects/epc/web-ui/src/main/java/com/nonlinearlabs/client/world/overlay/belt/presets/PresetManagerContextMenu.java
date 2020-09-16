@@ -9,6 +9,7 @@ import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.nonlinearlabs.client.ClipboardManager.ClipboardContent;
+import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.world.Control;
@@ -19,6 +20,8 @@ import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.ContextMenuItem;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
+import com.google.gwt.http.client.URL;
 
 public class PresetManagerContextMenu extends ContextMenu {
 
@@ -56,6 +59,22 @@ public class PresetManagerContextMenu extends ContextMenu {
 					NonMaps.theMaps.getServerProxy().importBank(fileName, text, pos);
 				}, ".xml");
 
+				return super.click(eventPoint);
+			}
+		});
+
+
+		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
+		Bank bank = pm.findBank(pm.getSelectedBank());
+
+		String name = "Export Bank (" + bank.getOrderNumber() + " - " + bank.getCurrentName() + ") to File ...";
+
+		addChild(new ContextMenuItem(this, name) {
+			@Override
+			public Control click(final Position eventPoint) {
+				String bankName = URL.encodePathSegment(bank.getCurrentName());
+				String uri = "/presets/banks/download-bank/" + bankName + ".xml?uuid=" + bank.getUUID();
+				Window.open(uri, "", "");
 				return super.click(eventPoint);
 			}
 		});
@@ -107,8 +126,6 @@ public class PresetManagerContextMenu extends ContextMenu {
 			}
 
 		});
-
-		PresetManager pm = getNonMaps().getNonLinearWorld().getPresetManager();
 
 		addChild(new ContextMenuItem(this, !pm.isInMoveAllBanks() ? "Move all Banks" : "Disable Move all Banks") {
 			@Override
