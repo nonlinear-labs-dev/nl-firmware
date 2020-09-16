@@ -118,10 +118,6 @@ class PresetManager : public ContentSection
   const Preset *getSelectedPreset() const;
   Preset *getSelectedPreset();
 
-  //Test Helper
-  void TEST_forceScheduledAutoLoad();
-  bool isAutoLoadScheduled() const;
-
   bool currentLoadedPartIsBeforePresetToLoad() const;
 
   void scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo);
