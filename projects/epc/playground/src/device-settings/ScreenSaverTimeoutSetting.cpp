@@ -37,7 +37,7 @@ Glib::ustring ScreenSaverTimeoutSetting::getDisplayString() const
 
 sigc::connection ScreenSaverTimeoutSetting::onScreenSaverStateChanged(sigc::slot<void, bool> s)
 {
-  return m_screenSaverSignal.connectAndInit(s, m_active);
+  return m_screenSaverSignal.connect(s);
 }
 
 void ScreenSaverTimeoutSetting::init()

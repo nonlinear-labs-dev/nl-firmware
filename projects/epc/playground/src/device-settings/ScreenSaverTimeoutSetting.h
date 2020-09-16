@@ -20,7 +20,5 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   std::unique_ptr<Expiration> m_expiration = nullptr;
   Signal<void, bool> m_screenSaverSignal;
 
-  bool m_active = false;
-
   std::chrono::minutes m_timeout;
 };

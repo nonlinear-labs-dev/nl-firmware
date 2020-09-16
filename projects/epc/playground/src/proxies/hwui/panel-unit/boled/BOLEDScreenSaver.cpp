@@ -10,13 +10,18 @@
 BOLEDScreenSaver::BOLEDScreenSaver(OLEDProxy& oled)
     : Layout(oled)
 {
-  m_logoNL = addControl(new Label({ "Nonlinear Labs - C15", 0 }, { 128, 40, 93, 9 }));
 
   m_animation = Application::get().getMainContext()->signal_timeout().connect(
       sigc::mem_fun(this, &BOLEDScreenSaver::animate), 50);
 
   m_editBufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &BOLEDScreenSaver::destroy), false);
+}
+
+void BOLEDScreenSaver::init()
+{
+  m_label = addControl(new Label({ "Nonlinear Labs - C15", 0 }, { 128, 40, 93, 9 }));
+  Layout::init();
 }
 
 BOLEDScreenSaver::~BOLEDScreenSaver()
@@ -26,7 +31,7 @@ BOLEDScreenSaver::~BOLEDScreenSaver()
 
 bool BOLEDScreenSaver::animate()
 {
-  auto old = m_logoNL->getPosition();
+  auto old = m_label->getPosition();
 
   if(old.getRight() > 256)
   {
@@ -51,7 +56,7 @@ bool BOLEDScreenSaver::animate()
   old.setLeft(old.getLeft() + m_vel.first);
   old.setTop(old.getTop() + m_vel.second);
 
-  m_logoNL->setPosition(old);
+  m_label->setPosition(old);
 
   setDirty();
   return true;

@@ -9,7 +9,6 @@
 SOLEDScreenSaver::SOLEDScreenSaver(OLEDProxy& oled)
     : Layout(oled)
 {
-  m_scrollingLabel = addControl(new Label({ "Nonlinear Labs - C15", 0 }, { 1, 0, 93, 32 }));
 
   m_animationConnection = Application::get().getMainContext()->signal_timeout().connect(
       sigc::mem_fun(this, &SOLEDScreenSaver::animate), 50);
@@ -37,6 +36,11 @@ bool SOLEDScreenSaver::redraw(FrameBuffer& fb)
   fb.setColor(FrameBufferColors::C43);
   fb.fillRect(0, 0, 128, 32);
   return ControlOwner::redraw(fb);
+}
+
+void SOLEDScreenSaver::init()
+{
+  m_scrollingLabel = addControl(new Label({ "Nonlinear Labs - C15", 0 }, { 1, 0, 93, 32 }));
 }
 
 void SOLEDScreenSaver::destroy()

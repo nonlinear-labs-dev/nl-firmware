@@ -9,6 +9,7 @@ class BOLEDScreenSaver : public Layout
  public:
   BOLEDScreenSaver(OLEDProxy& oled);
   ~BOLEDScreenSaver() override;
+  void init() override;
 
  private:
   void destroy();
@@ -17,5 +18,5 @@ class BOLEDScreenSaver : public Layout
   sigc::connection m_editBufferConnection;
 
   std::pair<int, int> m_vel = { -1, -1 };
-  Label* m_logoNL;
+  Label* m_label = nullptr;
 };
