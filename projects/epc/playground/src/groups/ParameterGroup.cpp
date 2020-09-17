@@ -135,7 +135,7 @@ void ParameterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator
 {
   for(auto p : getParameters())
   {
-    if(!p->isLocked())
+    if(!p->isLocked() && !p->isDisabled())
     {
       p->undoableRandomize(transaction, initiator, amount);
     }

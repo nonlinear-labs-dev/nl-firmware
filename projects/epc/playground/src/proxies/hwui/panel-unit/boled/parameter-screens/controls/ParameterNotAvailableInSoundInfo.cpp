@@ -45,8 +45,8 @@ ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r
   addControl(new CenterAlignedLabel("Only available with", { 0, 20, 128, 10 }))->setHighlight(true);
   addControl(new CenterAlignedLabel("Layer Sounds", { 0, 32, 128, 10 }))->setHighlight(true);
 
-  auto vis = !ParameterLayout2::isParameterAvailableInSoundType(eb->getSelected(hwui->getCurrentVoiceGroup()));
-  setVisible(vis);
+  auto selected = eb->getSelected(hwui->getCurrentVoiceGroup());
+  setVisible(selected->isDisabled());
 }
 
 void ParameterNotAvailableInSoundInfo::setBackgroundColor(FrameBuffer &fb) const
@@ -56,16 +56,15 @@ void ParameterNotAvailableInSoundInfo::setBackgroundColor(FrameBuffer &fb) const
 
 void ParameterNotAvailableInSoundInfo::onSelectionChanged(const Parameter *old, const Parameter *newParam)
 {
-  auto vis = !ParameterLayout2::isParameterAvailableInSoundType(newParam);
   m_parameterNameLabel->setText({ newParam->getLongName(), 0 });
-  setVisible(vis);
+  setVisible(newParam->isDisabled());
 }
 
 void ParameterNotAvailableInSoundInfo::onSoundTypeChanged()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto current = eb->getSelected(getHWUI()->getCurrentVoiceGroup());
-  const auto vis = !ParameterLayout2::isParameterAvailableInSoundType(current, eb);
+  const auto vis = current->isDisabled();
   m_parameterNameLabel->setText({ current->getLongName(), 0 });
   setVisible(vis);
 }

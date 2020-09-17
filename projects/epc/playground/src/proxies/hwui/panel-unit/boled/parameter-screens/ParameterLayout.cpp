@@ -134,7 +134,7 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   if(auto p = getCurrentEditParameter())
   {
-    if(isParameterAvailableInSoundType(p))
+    if(!p->isDisabled())
     {
       auto name = ParameterId::isGlobal(p->getID().getNumber()) ? p->getGroupAndParameterName()
                                                                 : p->getGroupAndParameterNameWithVoiceGroup();
@@ -160,34 +160,6 @@ void ParameterLayout2::handlePresetValueRecall()
         getOLEDProxy().setOverlay(new ParameterRecallLayout2());
     }
   }
-}
-
-bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p, const EditBuffer *eb)
-{
-  auto currentType = eb->getType();
-
-  if(!p)
-    return false;
-
-  auto number = p->getID().getNumber();
-
-  switch(currentType)
-  {
-    case SoundType::Single:
-    case SoundType::Split:
-      return number != 346 && number != 348;
-    case SoundType::Layer:
-    case SoundType::Invalid:
-      break;
-  }
-
-  return true;
-}
-
-bool ParameterLayout2::isParameterAvailableInSoundType(const Parameter *p)
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return isParameterAvailableInSoundType(p, eb);
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2()
@@ -240,7 +212,7 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         break;
 
       case Buttons::BUTTON_D:
-        if(m_carousel && isParameterAvailableInSoundType(getCurrentParameter()))
+        if(m_carousel && !getCurrentParameter()->isDisabled())
         {
           if(modifiers[SHIFT] == 1)
           {

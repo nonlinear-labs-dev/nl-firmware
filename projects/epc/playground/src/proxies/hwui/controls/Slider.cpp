@@ -36,8 +36,7 @@ void Slider::setParameter(Parameter *param)
     else
       setValue(0, false);
 
-    auto visible = ParameterSelectLayout2::isParameterAvailableInSoundType(m_param);
-    setVisible(visible);
+    setVisible(!m_param->isDisabled());
     setDirty();
   }
 }
@@ -54,7 +53,7 @@ void Slider::onParamValueChanged(const Parameter *param)
 
 void Slider::onSoundTypeChanged()
 {
-  setVisible(ParameterLayout2::isParameterAvailableInSoundType(m_param));
+  setVisible(!m_param->isDisabled());
 }
 
 void Slider::setValue(tDisplayValue v, bool bipolar)

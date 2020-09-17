@@ -59,7 +59,7 @@ void SelectedParamsMacroControlSlider::setParameter(Parameter *param)
   if(param)
   {
     auto eb = Application::get().getPresetManager()->getEditBuffer();
-    setVisible(ParameterLayout2::isParameterAvailableInSoundType(param, eb));
+    setVisible(!param->isDisabled());
   }
 }
 

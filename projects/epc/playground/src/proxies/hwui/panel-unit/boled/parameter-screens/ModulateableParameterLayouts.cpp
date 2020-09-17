@@ -537,10 +537,10 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       break;
   }
 }
+
 bool ModulateableParameterSelectLayout2::isCurrentParameterDisabled() const
 {
-  return !isParameterAvailableInSoundType(getCurrentParameter(),
-                                          Application::get().getPresetManager()->getEditBuffer());
+  return getCurrentParameter()->isDisabled();
 }
 
 bool ModulateableParameterSelectLayout2::isModeOf(std::vector<ModulateableParameterSelectLayout2::Mode> modes) const
