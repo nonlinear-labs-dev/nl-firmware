@@ -58,6 +58,9 @@ public class IncrementalChanger {
 
 	public void changeBy(boolean fine, double amount) {
 
+		if(amount == 0)
+			return;
+
 		amount /= pixPerRange;
 
 		if (isBipolar)
@@ -68,21 +71,34 @@ public class IncrementalChanger {
 
 		pendingAmount += bendAmount(amount);
 
-		double newVal = getQuantizedValue(lastQuantizedValue + pendingAmount, fine);
-		newVal = clip(newVal);
+		double newValRaw = getQuantizedValue(lastQuantizedValue + amount, fine);
+		double newValPending = getQuantizedValue(lastQuantizedValue + pendingAmount, fine);
 
-		if (newVal != lastQuantizedValue) {
+		newValPending = clip(newValPending);
+
+		if (newValPending != lastQuantizedValue) {
 
 			if (isBoolean) {
-				if (newVal > lastQuantizedValue)
-					newVal = 1.0;
-				else if (newVal < lastQuantizedValue)
-					newVal = 0.0;
+				if (newValPending > lastQuantizedValue)
+					newValPending = 1.0;
+				else if (newValPending < lastQuantizedValue)
+					newValPending = 0.0;
 			}
 
-			callback.accept(newVal, false);
+			callback.accept(newValPending, false);
 			pendingAmount = 0;
-			lastQuantizedValue = newVal;
+			lastQuantizedValue = newValPending;
+		} else if (newValRaw != lastQuantizedValue && (lastQuantizedValue == getLowerBorder() || lastQuantizedValue == getUpperBorder())) {
+			if (isBoolean) {
+				if (newValRaw > lastQuantizedValue)
+					newValRaw = 1.0;
+				else if (newValRaw < lastQuantizedValue)
+					newValRaw = 0.0;
+			}
+
+			callback.accept(newValRaw, false);
+			pendingAmount = 0;
+			lastQuantizedValue = newValRaw;
 		}
 	}
 
