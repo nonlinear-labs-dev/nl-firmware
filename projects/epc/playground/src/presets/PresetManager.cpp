@@ -262,16 +262,6 @@ void PresetManager::scheduleAutoLoadPresetAccordingToLoadType()
   });
 }
 
-void PresetManager::TEST_forceScheduledAutoLoad()
-{
-  m_autoLoadThrottler.doActionSync();
-}
-
-bool PresetManager::isAutoLoadScheduled() const
-{
-  return m_autoLoadScheduled;
-}
-
 bool PresetManager::isLoading() const
 {
   return m_isLoading.isLocked();

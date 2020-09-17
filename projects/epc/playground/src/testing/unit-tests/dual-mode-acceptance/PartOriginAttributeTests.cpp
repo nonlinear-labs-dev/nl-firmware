@@ -113,14 +113,6 @@ auto getOrigins()
   return std::pair { eb->getPartOrigin(VoiceGroup::I), eb->getPartOrigin(VoiceGroup::II) };
 };
 
-auto forceAutoLoadIfPending()
-{
-  auto pm = Application::get().getPresetManager();
-
-  if(pm->isAutoLoadScheduled())
-    pm->TEST_forceScheduledAutoLoad();
-}
-
 TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
 {
   DualPresetBank presets;
@@ -159,58 +151,54 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
                                                             { UIFocus::Presets, UIMode::Select, UIDetail::Init });
     }
 
-    forceAutoLoadIfPending();
+    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&]() {
+      auto uuid = eb->getUUIDOfLastLoadedPreset();
+      return uuid == bank->getPresetAt(0)->getUuid();
+    });
 
-    auto uuid = eb->getUUIDOfLastLoadedPreset();
-    CHECK(uuid == bank->getPresetAt(0)->getUuid());
     hwui->setLoadToPart(true);
 
     detail::pressButton(Buttons::BUTTON_INC);
-    forceAutoLoadIfPending();
-    {
+
+    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&]() {
       auto [ogI, ogII] = getOrigins();
-      CHECK(ogI.presetUUID == bank->getPresetAt(0)->getUuid());
-      CHECK(ogI.sourceGroup == VoiceGroup::II);
-    }
+      auto x = ogI.presetUUID == bank->getPresetAt(0)->getUuid();
+      return x && ogI.sourceGroup == VoiceGroup::II;
+    });
 
     detail::pressButton(Buttons::BUTTON_INC);
-    forceAutoLoadIfPending();
-    {
+    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
       auto [ogI, ogII] = getOrigins();
-      CHECK(ogI.presetUUID == bank->getPresetAt(1)->getUuid());
-      CHECK(ogI.sourceGroup == VoiceGroup::I);
-    }
+      auto x = ogI.presetUUID == bank->getPresetAt(1)->getUuid();
+      return x && ogI.sourceGroup == VoiceGroup::I;
+    });
 
     detail::pressButton(Buttons::BUTTON_INC);
-    forceAutoLoadIfPending();
-    {
+    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
       auto [ogI, ogII] = getOrigins();
-      CHECK(ogI.presetUUID == bank->getPresetAt(1)->getUuid());
-      CHECK(ogI.sourceGroup == VoiceGroup::II);
-    }
+      auto x = ogI.presetUUID == bank->getPresetAt(1)->getUuid();
+      return x && ogI.sourceGroup == VoiceGroup::II;
+    });
 
     detail::pressButton(Buttons::BUTTON_DEC);
-    forceAutoLoadIfPending();
-    {
+    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
       auto [ogI, ogII] = getOrigins();
-      CHECK(ogI.presetUUID == bank->getPresetAt(1)->getUuid());
-      CHECK(ogI.sourceGroup == VoiceGroup::I);
-    }
+      auto x = ogI.presetUUID == bank->getPresetAt(1)->getUuid();
+      return x && ogI.sourceGroup == VoiceGroup::I;
+    });
 
     detail::pressButton(Buttons::BUTTON_DEC);
-    forceAutoLoadIfPending();
-    {
+    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
       auto [ogI, ogII] = getOrigins();
-      CHECK(ogI.presetUUID == bank->getPresetAt(0)->getUuid());
-      CHECK(ogI.sourceGroup == VoiceGroup::II);
-    }
+      auto x = ogI.presetUUID == bank->getPresetAt(0)->getUuid();
+      return x && ogI.sourceGroup == VoiceGroup::II;
+    });
 
     detail::pressButton(Buttons::BUTTON_DEC);
-    forceAutoLoadIfPending();
-    {
+    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
       auto [ogI, ogII] = getOrigins();
-      CHECK(ogI.presetUUID == bank->getPresetAt(0)->getUuid());
-      CHECK(ogI.sourceGroup == VoiceGroup::I);
-    }
+      auto x = ogI.presetUUID == bank->getPresetAt(0)->getUuid();
+      return x && ogI.sourceGroup == VoiceGroup::I;
+    });
   }
 }

@@ -30,42 +30,44 @@ TEST_CASE("Test Previous Boled Focus on Button")
 
   auto getFocusAndMode = [&hwui] { return hwui->getFocusAndMode(); };
 
-  CHECK(isParameterLayout(getLayout()));
+  const auto min = std::chrono::milliseconds(200);
+  const auto max = std::chrono::milliseconds(1000);
+
+  TestHelper::doMainLoop(min, max, [&] { return isParameterLayout(getLayout()); });
 
   SECTION("Parameter to Preset and Back")
   {
     auto oldFocus = getFocusAndMode();
     pressButton(Buttons::BUTTON_PRESET);
-    CHECK(isPresetLayout(getLayout()));
+    TestHelper::doMainLoop(min, max, [&] { return isPresetLayout(getLayout()); });
     pressButton(Buttons::BUTTON_PRESET);
-    auto newFocus = getFocusAndMode();
-    CHECK(newFocus == oldFocus);
+    TestHelper::doMainLoop(min, max, [&] { return oldFocus == getFocusAndMode(); });
   }
 
   SECTION("Parameter to Store and Back")
   {
     auto oldFocus = getFocusAndMode();
     pressButton(Buttons::BUTTON_STORE);
-    CHECK(isPresetLayout(getLayout()));
+    TestHelper::doMainLoop(min, max, [&] { return isPresetLayout(getLayout()); });
     pressButton(Buttons::BUTTON_STORE);
-    auto newFocus = getFocusAndMode();
-    CHECK(newFocus == oldFocus);
+    TestHelper::doMainLoop(min, max, [&] { return oldFocus == getFocusAndMode(); });
   }
 
   SECTION("Parameter to Store to Preset")
   {
     pressButton(Buttons::BUTTON_STORE);
-    CHECK(isPresetLayout(getLayout()));
+    TestHelper::doMainLoop(min, max, [&] { return isPresetLayout(getLayout()); });
     pressButton(Buttons::BUTTON_PRESET);
-    CHECK(isPresetLayout(getLayout()));
-    CHECK(getFocusAndMode().mode == UIMode::Select);
+    TestHelper::doMainLoop(min, max,
+                           [&] { return isPresetLayout(getLayout()) && getFocusAndMode().mode == UIMode::Select; });
   }
 
-  SECTION("Parameter to Preset to Store") {
+  SECTION("Parameter to Preset to Store")
+  {
     pressButton(Buttons::BUTTON_PRESET);
-    CHECK(isPresetLayout(getLayout()));
+    TestHelper::doMainLoop(min, max, [&] { return isPresetLayout(getLayout()); });
     pressButton(Buttons::BUTTON_STORE);
-    CHECK(isPresetLayout(getLayout()));
-    CHECK(getFocusAndMode().mode == UIMode::Store);
+    TestHelper::doMainLoop(min, max,
+                           [&] { return isPresetLayout(getLayout()) && getFocusAndMode().mode == UIMode::Store; });
   }
 }
