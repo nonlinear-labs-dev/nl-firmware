@@ -24,6 +24,7 @@
 #include <xml/Attribute.h>
 #include <http/UndoScope.h>
 #include <proxies/hwui/HWUI.h>
+#include <parameter_declarations.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -156,9 +157,25 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
   }
 }
 
+bool Parameter::isDisabledForType(SoundType type) const
+{
+  auto number = getID().getNumber();
+
+  switch(type)
+  {
+    case SoundType::Single:
+    case SoundType::Split:
+      return number == C15::PID::FB_Mix_Osc || number == C15::PID::FB_Mix_Osc_Src;
+    case SoundType::Layer:
+    case SoundType::Invalid:
+      return true;
+  }
+}
+
 void Parameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  loadFromPreset(transaction, mode == Defaults::UserDefault ? getDefaultValue() : getFactoryDefaultValue());
+  if(!isDisabled() && !isLocked())
+    loadFromPreset(transaction, mode == Defaults::UserDefault ? getDefaultValue() : getFactoryDefaultValue());
 }
 
 bool Parameter::isDefaultLoaded() const
@@ -622,4 +639,10 @@ bool Parameter::isMaximum() const
 bool Parameter::isMinimum() const
 {
   return !m_value.differs(getValue().getLowerBorder());
+}
+
+bool Parameter::isDisabled() const
+{
+  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
+  return isDisabledForType(eb->getType());
 }

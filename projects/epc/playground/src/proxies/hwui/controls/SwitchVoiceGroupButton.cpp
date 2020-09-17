@@ -62,7 +62,7 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
          && (!MonoGroup::isMonoParameter(selected) && !UnisonGroup::isUnisonParameter(selected)))
       || (editBuffer->getType() != SoundType::Layer);
 
-  if(ParameterLayout2::isParameterAvailableInSoundType(selected, editBuffer))
+  if(!selected->isDisabled())
     return layerAndGroupAllowToggling;
   else
     return false;

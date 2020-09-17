@@ -146,6 +146,9 @@ class Parameter : public UpdateDocumentContributor,
   bool isMinimum() const;
   void resetWasDefaulted(UNDO::Transaction* transaction);
 
+  bool isDisabledForType(SoundType type) const;
+  bool isDisabled() const;
+
  protected:
   virtual void sendToPlaycontroller() const;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool dosendToPlaycontroller);

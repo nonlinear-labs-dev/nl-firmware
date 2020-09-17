@@ -28,8 +28,7 @@ void SelectedParameterModAmount::setParameter(Parameter *param)
     m_paramValueConnection
         = param->onParameterChanged(sigc::mem_fun(this, &SelectedParameterModAmount::onParamValueChanged));
 
-    auto eb = Application::get().getPresetManager()->getEditBuffer();
-    auto available = ParameterLayout2::isParameterAvailableInSoundType(param, eb);
+    auto available = !param->isDisabled();
     setVisible(available);
   }
 }

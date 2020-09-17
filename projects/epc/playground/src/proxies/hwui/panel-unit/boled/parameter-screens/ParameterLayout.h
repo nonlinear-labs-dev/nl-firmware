@@ -22,9 +22,6 @@ class ParameterLayout2 : public Layout
   typedef ParameterLayout2 virtual_base;
   ParameterLayout2();
 
-  static bool isParameterAvailableInSoundType(const Parameter *p, const EditBuffer *eb);
-  static bool isParameterAvailableInSoundType(const Parameter *p);
-
  protected:
   void init() override;
   constexpr static int BUTTON_VALUE_Y_POSITION = 34;
