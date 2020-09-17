@@ -88,8 +88,7 @@ public class IncrementalChanger {
 			callback.accept(newValPending, false);
 			pendingAmount = 0;
 			lastQuantizedValue = newValPending;
-		} else if (newValRaw != lastQuantizedValue) {
-
+		} else if (newValRaw != lastQuantizedValue && (lastQuantizedValue == getLowerBorder() || lastQuantizedValue == getUpperBorder())) {
 			if (isBoolean) {
 				if (newValRaw > lastQuantizedValue)
 					newValRaw = 1.0;
