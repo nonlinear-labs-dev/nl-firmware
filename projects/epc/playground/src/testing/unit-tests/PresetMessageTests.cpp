@@ -74,7 +74,7 @@ template <int vg, typename tMsg> void collectDual(const tMsg &msg)
   collectIDs(msg.hwsources, count);
   collectIDs(msg.macros, count);
   collectIDs(msg.scale, count);
-  collectID(msg.splitpoint, count);
+  collectIDs(msg.splitpoint, count);
   assertMap(count);
 }
 

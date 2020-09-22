@@ -20,6 +20,8 @@
 #include <groups/UnisonGroup.h>
 #include <groups/ScaleGroup.h>
 #include <device-settings/Settings.h>
+#include <parameter_declarations.h>
+#include <groups/SplitParameterGroups.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -138,6 +140,10 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
     {
       fillMonoPart(msg.mono, monoGroup);
     }
+    else if(auto splitGroup = dynamic_cast<SplitParameterGroups *>(g))
+    {
+      //Ignore
+    }
     else
     {
       for(auto p : g->getParameters())
@@ -254,11 +260,14 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, const EditBuffer &editB
       {
         if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
         {
-          auto &mod = msg.modulateables[arrayIndex][modP++];
-          mod.id = modParam->getID().getNumber();
-          mod.controlPosition = modParam->getControlPositionValue();
-          mod.modulationAmount = modParam->getModulationAmount();
-          mod.mc = modParam->getModulationSource();
+          if(modParam->getID().getNumber() != C15::PID::Split_Split_Point)
+          {
+            auto &mod = msg.modulateables[arrayIndex][modP++];
+            mod.id = modParam->getID().getNumber();
+            mod.controlPosition = modParam->getControlPositionValue();
+            mod.modulationAmount = modParam->getModulationAmount();
+            mod.mc = modParam->getModulationSource();
+          }
         }
         else
         {
@@ -284,9 +293,12 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
-  if(auto sp = eb.getSplitPoint())
+  for(auto i = 0; i < 2; i++)
   {
-    auto &t = msg.splitpoint;
+    auto sp = dynamic_cast<ModulateableParameter *>(
+        eb.findParameterByID({ C15::PID::Split_Split_Point, i == 0 ? VoiceGroup::I : VoiceGroup::II }));
+
+    auto &t = msg.splitpoint[1];
     t.id = sp->getID().getNumber();
     t.controlPosition = sp->getControlPositionValue();
     t.modulationAmount = sp->getModulationAmount();

@@ -6,7 +6,7 @@
 SendEditBufferScopeGuard::SendEditBufferScopeGuard(UNDO::Transaction* transaction)
     : m_transaction { transaction }
 {
-  m_transaction->addSimpleCommand([this](auto s) {
+  m_transaction->addSimpleCommand([](auto s) {
     if(s == UNDO::Transaction::UNDOING)
       Application::get().getAudioEngineProxy()->thawParameterMessages();
     else
@@ -16,7 +16,7 @@ SendEditBufferScopeGuard::SendEditBufferScopeGuard(UNDO::Transaction* transactio
 
 SendEditBufferScopeGuard::~SendEditBufferScopeGuard()
 {
-  m_transaction->addSimpleCommand([this](auto s) {
+  m_transaction->addSimpleCommand([](auto s) {
     if(s == UNDO::Transaction::REDOING || s == UNDO::Transaction::DOING)
       Application::get().getAudioEngineProxy()->thawParameterMessages();
     else

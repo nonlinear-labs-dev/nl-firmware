@@ -26,7 +26,7 @@ class ValueEdit extends OverlayLayout {
 		ValueLabel(OverlayLayout parent, ParameterId id) {
 			super(parent);
 
-			ParameterPresenterProviders.get().register(id, p -> {
+			ParameterPresenterProviders.get().registerForCurrentVoiceGroup(id.getNumber(), p -> {
 				presenter = p;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return true;

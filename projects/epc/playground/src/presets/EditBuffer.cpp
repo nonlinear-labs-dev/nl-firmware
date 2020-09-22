@@ -29,7 +29,7 @@
 #include <device-settings/DirectLoadSetting.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
-#include <groups/GlobalParameterGroups.h>
+#include <groups/SplitParameterGroups.h>
 #include <groups/MonoGroup.h>
 #include <groups/UnisonGroup.h>
 #include <presets/PresetParameter.h>
@@ -87,9 +87,6 @@ size_t EditBuffer::getHash() const
   for(auto &vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
     for(const auto g : getParameterGroups(vg))
       hash_combine(hash, g->getHash());
-
-  if(auto split = getSplitPoint())
-    hash_combine(hash, split->getHash());
 
   hash_combine(hash, static_cast<int>(getType()));
 
@@ -302,9 +299,6 @@ bool EditBuffer::findAnyParameterChanged(VoiceGroup vg) const
     for(auto &param : paramGroup->getParameters())
       if(param->isChangedFromLoaded())
         return true;
-
-  if(getType() == SoundType::Split)
-    return getSplitPoint()->isChangedFromLoaded();
 
   return false;
 }
@@ -969,17 +963,6 @@ void EditBuffer::undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transa
   initRecallValues(transaction);
 }
 
-const SplitPointParameter *EditBuffer::getSplitPoint() const
-{
-  return static_cast<const SplitPointParameter *>(
-      findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }));
-}
-
-SplitPointParameter *EditBuffer::getSplitPoint()
-{
-  return static_cast<SplitPointParameter *>(findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }));
-}
-
 Glib::ustring EditBuffer::getVoiceGroupName(VoiceGroup vg) const
 {
   nltools_assertOnDevPC(vg == VoiceGroup::I || vg == VoiceGroup::II);
@@ -1103,12 +1086,12 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
     if(MonoGroup::isMonoParameter(parameter))
       return false;
 
-    return GlobalParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+    return SplitParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
   }
 
   if(type == SoundType::Split)
   {
-    return GlobalParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+    return SplitParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
   }
 
   return false;
@@ -1256,8 +1239,11 @@ void EditBuffer::copySinglePresetMasterToPartMaster(UNDO::Transaction *transacti
 
 void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
 {
-  auto splitPoint = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global });
-  splitPoint->loadDefault(transaction, Defaults::FactoryDefault);
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    auto splitPoint = findParameterByID({ C15::PID::Split_Split_Point, vg });
+    splitPoint->loadDefault(transaction, Defaults::FactoryDefault);
+  }
 }
 
 void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg)
@@ -1286,14 +1272,13 @@ EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
 
 void EditBuffer::calculateFadeParamsFromSplitPoint(UNDO::Transaction *transaction)
 {
-  findParameterByID({ C15::PID::Voice_Grp_Fade_From, VoiceGroup::I })
-      ->setCPFromHwui(transaction, getSplitPoint()->getControlPositionValue());
-  findParameterByID({ C15::PID::Voice_Grp_Fade_From, VoiceGroup::II })
-      ->setCPFromHwui(transaction, getSplitPoint()->getControlPositionValue());
-  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::I })
-      ->loadDefault(transaction, Defaults::FactoryDefault);
-  findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::II })
-      ->loadDefault(transaction, Defaults::FactoryDefault);
+
+  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    auto split = findParameterByID({ C15::PID::Split_Split_Point, vg })->getControlPositionValue();
+    findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })->setCPFromHwui(transaction, split);
+    findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg })->loadDefault(transaction, Defaults::FactoryDefault);
+  }
 }
 
 void EditBuffer::copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
@@ -1380,7 +1365,10 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
   const auto f2 = findParameterByID({ C15::PID::Voice_Grp_Fade_From, VoiceGroup::II })->getControlPositionValue();
   const auto meanFadeFrom = (f1 + f2) / 2.0;
 
-  getSplitPoint()->setCPFromHwui(transaction, meanFadeFrom);
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    findParameterByID({ C15::PID::Split_Split_Point, vg })->setCPFromHwui(transaction, meanFadeFrom);
+  }
 }
 
 void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset,

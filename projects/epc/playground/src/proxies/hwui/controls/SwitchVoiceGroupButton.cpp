@@ -51,8 +51,11 @@ void SwitchVoiceGroupButton::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
 
 bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const EditBuffer* editBuffer)
 {
+  if(selected == nullptr)
+    return false;
+  
   if(selected->getVoiceGroup() == VoiceGroup::Global)
-    return selected->getID().getNumber() == C15::PID::Split_Split_Point;
+    return false;
 
   if(editBuffer->getType() == SoundType::Single)
     return false;

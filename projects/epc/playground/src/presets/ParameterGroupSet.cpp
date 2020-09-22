@@ -33,7 +33,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <groups/MonoGroup.h>
-#include <groups/GlobalParameterGroups.h>
+#include <groups/SplitParameterGroups.h>
 #include <groups/VoiceGroupMasterGroup.h>
 
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
@@ -63,13 +63,13 @@ ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
     appendParameterGroup(new ReverbGroup(this, vg));
     appendParameterGroup(new UnisonGroup(this, vg));
 
+    appendParameterGroup(new SplitParameterGroups(this, vg));
     appendParameterGroup(new MonoGroup(this, vg));
     appendParameterGroup(new VoiceGroupMasterGroup(this, vg));
 
     m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
   }
 
-  appendParameterGroup(new GlobalParameterGroups(this));
   appendParameterGroup(new MasterGroup(this));
   appendParameterGroup(new ScaleGroup(this));
 

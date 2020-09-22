@@ -92,17 +92,7 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
           auto myString = sc->getDimension().stringize(sc->controlPositionToDisplay(m_value));
           auto otherString = sc->getDimension().stringize(sc->controlPositionToDisplay(other->m_value));
 
-          if(ebParam->getID() == ParameterId { C15::PID::Split_Split_Point, VoiceGroup::Global })
-          {
-            if(auto split = dynamic_cast<SplitPointParameter *>(ebParam))
-            {
-              myString = split->getDisplayString(VoiceGroup::I, m_value) + " | "
-                  + split->getDisplayString(VoiceGroup::II, m_value);
-              otherString = split->getDisplayString(VoiceGroup::I, other->m_value) + " | "
-                  + split->getDisplayString(VoiceGroup::II, other->m_value);
-            }
-          }
-          else if(ebParam->getID().getNumber() == C15::PID::Unison_Voices)
+          if(ebParam->getID().getNumber() == C15::PID::Unison_Voices)
           {
             //we always use the single converter as unison voices get saved in 24 voices format
             auto singleConverter = ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>();

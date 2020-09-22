@@ -10,6 +10,7 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
 #include "VoiceGroupsLockSerializer.h"
+#include "SplitGroupsFromOldGlobalGroupSerializer.h"
 #include <groups/ParameterGroup.h>
 #include <nltools/logging/Log.h>
 
@@ -57,6 +58,11 @@ void EditBufferSerializer::writeTagContent(Writer &writer) const
   recall.write(writer);
 }
 
+bool isOldSplitGroup(const GroupId &id)
+{
+  return id.getVoiceGroup() == VoiceGroup::Global && id.getName() == "Split";
+}
+
 void EditBufferSerializer::readTagContent(Reader &reader) const
 {
   SplashLayout::addStatus("Reading Edit Buffer");
@@ -67,11 +73,22 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
 
   reader.onTag(ParameterGroupSerializer::getTagName(), [&](auto attr) -> ParameterGroupSerializer * {
     auto id = attr.get("id");
-    auto group = m_editBuffer->getParameterGroupByID(GroupId(id));
+    auto groupId = GroupId(id);
+    auto group = m_editBuffer->getParameterGroupByID(groupId);
 
     if(!group)
     {
+
+      if(isOldSplitGroup(groupId))
+      {
+        nltools::Log::warning("Encountered:", id,
+                              "which was split into dual groups! (initializing them to the same values now)");
+
+        return new SplitGroupsFromOldGlobalGroupSerializer(m_editBuffer);
+      }
+
       nltools::Log::error("Could not find group:", id, "which is parsed to:", GroupId(id));
+
       return nullptr;
     }
 

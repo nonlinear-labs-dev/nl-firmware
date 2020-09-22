@@ -89,6 +89,11 @@ bool ParameterId::isGlobal(int number)
   if(number >= 400 || number < 0)
     return false;
 
+  if(number == C15::PID::Split_Split_Point)
+    return false;
+
+  //TODO change split declaration to be local modulateable
+
   auto &paramDescript = C15::ParameterList[number];
   auto type = paramDescript.m_param.m_type;
   return type != C15::Descriptors::ParameterType::Local_Modulateable

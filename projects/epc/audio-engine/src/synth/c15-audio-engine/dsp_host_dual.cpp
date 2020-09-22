@@ -2095,7 +2095,9 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
-  globalParRcl(msg->splitpoint);
+
+  //TODO handle 2 split points?
+  globalParRcl(msg->splitpoint[0]);
   if(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
