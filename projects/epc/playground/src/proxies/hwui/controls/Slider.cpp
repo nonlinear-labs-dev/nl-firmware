@@ -13,9 +13,9 @@ Slider::Slider(Parameter *param, const Rect &rect)
     , m_value(0)
     , m_bipolar(false)
 {
+  setParameter(param);
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::hide(sigc::mem_fun(this, &Slider::onSoundTypeChanged)), false);
-  setParameter(param);
 }
 
 Slider::Slider(const Rect &rect)
@@ -53,7 +53,7 @@ void Slider::onParamValueChanged(const Parameter *param)
 
 void Slider::onSoundTypeChanged()
 {
-  setVisible(!m_param->isDisabled());
+  setVisible(m_param && !m_param->isDisabled());
 }
 
 void Slider::setValue(tDisplayValue v, bool bipolar)
