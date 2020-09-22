@@ -1368,7 +1368,6 @@ void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
 {
   auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   copyVoicesGroups(transaction, currentVG, invert(currentVG));
-  undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   calculateFadeParamsFromSplitPoint(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   initSplitPoint(transaction);

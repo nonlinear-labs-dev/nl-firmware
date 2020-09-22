@@ -170,12 +170,19 @@ bool Parameter::isDisabledForType(SoundType type) const
     case SoundType::Invalid:
       return true;
   }
+  return false;
 }
 
 void Parameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  if(!isDisabled() && !isLocked())
-    loadFromPreset(transaction, mode == Defaults::UserDefault ? getDefaultValue() : getFactoryDefaultValue());
+  if(mode == Defaults::FactoryDefault)
+  {
+    loadFromPreset(transaction, getFactoryDefaultValue());
+  }
+  else if(!isLocked())
+  {
+    loadFromPreset(transaction, getDefaultValue());
+  }
 }
 
 bool Parameter::isDefaultLoaded() const
