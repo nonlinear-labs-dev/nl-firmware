@@ -9,5 +9,6 @@ class PNGControl : public Control
   void drawBackground(FrameBuffer& fb) override;
 
  private:
+  std::string m_imagePath;
   png::image<png::rgba_pixel> m_image;
 };

@@ -3,10 +3,12 @@
 #include "PNGControl.h"
 #include <map>
 #include <proxies/hwui/FrameBuffer.h>
+#include <nltools/logging/Log.h>
 
 PNGControl::PNGControl(const Rect& pos, const std::string& imagePath)
     : Control(pos)
     , m_image { getResourcesDir() + "/png/" + imagePath }
+    , m_imagePath { imagePath }
 {
 }
 
@@ -19,8 +21,8 @@ bool PNGControl::redraw(FrameBuffer& fb)
 {
   using FBC = FrameBufferColors;
   static std::map<unsigned char, FrameBufferColors> pixelToColor
-      = { { 0, FBC::Transparent }, { 1, FBC::C43 },  { 2, FBC::C77 },  { 3, FBC::C103 },
-          { 4, FBC::C128 },        { 5, FBC::C179 }, { 6, FBC::C204 }, { 7, FBC::C255 } };
+      = { { 0, FBC::C43 },  { 1, FBC::C77 },  { 2, FBC::C103 }, { 3, FBC::C128 },
+          { 4, FBC::C179 }, { 5, FBC::C204 }, { 6, FBC::C255 } };
 
   auto pos = getPosition();
 
@@ -33,12 +35,17 @@ bool PNGControl::redraw(FrameBuffer& fb)
       {
         //TODO communicate what colors will be used in png
         auto maxColor = std::max(pixel.blue, std::max(pixel.green, pixel.red));
-        auto mapped = mapValue(maxColor, 0, 255, 0, 7);
-        auto color = pixelToColor.at(mapped);
-        if(color != FBC::Transparent)
+        auto mapped = mapValue(maxColor, 0, 255, 0, 6);
+
+        try
         {
+          auto color = pixelToColor.at(mapped);
           fb.setColor(color);
           fb.setPixel(pos.getLeft() + x, pos.getTop() + y);
+        }
+        catch(...)
+        {
+          nltools::Log::error("Invalid color at:", x, "/", y, "in file", m_imagePath);
         }
       }
     }
