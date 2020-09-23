@@ -24,7 +24,7 @@ Layout *SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
       return new ModulateableParameterEditLayout2();
     case UIMode::Select:
     default:
-      return new ModulateableDualVoiceGroupMasterAndSplitPointLayout();
+      return new SplitPointParameterLayout();
   }
 }
 

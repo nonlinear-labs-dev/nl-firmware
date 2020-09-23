@@ -23,3 +23,13 @@ class UnmodulateableDualVoiceGroupMasterAndSplitPointLayout : public Unmodulatea
   Carousel* createCarousel(const Rect& rect) override;
   ModuleCaption* createModuleCaption() const override;
 };
+
+class SplitPointParameterLayout : public ModulateableDualVoiceGroupMasterAndSplitPointLayout
+{
+ protected:
+ public:
+  SplitPointParameterLayout();
+
+ protected:
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
+};
