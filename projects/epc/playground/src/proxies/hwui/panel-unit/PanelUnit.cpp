@@ -65,14 +65,15 @@ PanelUnit::PanelUnit()
         editBuffer->undoableSelectParameter(scope->getTransaction(), modParam);
 
         auto hwui = Application::get().getHWUI();
-        auto layout = hwui->getPanelUnit().getEditPanel().getBoled().getLayout();
-
-        if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(layout.get()))
-        {
-          modParamLayout->installMcAmountScreen();
-          m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
-          return true;
-        }
+        auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
+        boled.onLayoutInstalled([&](Layout *l) {
+          if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(l))
+          {
+            modParamLayout->installMcAmountScreen();
+            m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
+            return true;
+          }
+        });
       }
     }
     return true;
