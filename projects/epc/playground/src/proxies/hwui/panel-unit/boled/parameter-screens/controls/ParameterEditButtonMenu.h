@@ -18,7 +18,6 @@ class ParameterEditButtonMenu : public ButtonMenu
   void selectButton(size_t i) override;
 
  private:
-  void setup();
   void toggleGroupLock();
   void unlockAll();
   void lockAll();
@@ -33,4 +32,8 @@ class ParameterEditButtonMenu : public ButtonMenu
   sigc::connection m_connection;
 
   static int s_lastAction;
+
+ protected:
+  void setup();
+  virtual void addActions();
 };

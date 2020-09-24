@@ -25,10 +25,21 @@ ParameterEditButtonMenu::~ParameterEditButtonMenu() = default;
 
 void ParameterEditButtonMenu::setup()
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   clear();
+
+  addActions();
+
+  sanitizeIndex();
+  sanitizeLastAction();
+
+  selectButton(s_lastAction);
+}
+
+void ParameterEditButtonMenu::addActions()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   if(eb->getSelected(vg)->lockingEnabled())
   {
@@ -45,11 +56,6 @@ void ParameterEditButtonMenu::setup()
     addButton("Unlock all", std::bind(&ParameterEditButtonMenu::unlockAll, this));
 
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged), vg);
-
-  sanitizeIndex();
-  sanitizeLastAction();
-
-  selectButton(s_lastAction);
 }
 
 void ParameterEditButtonMenu::onParameterSelectionChanged(Parameter *oldParameter, Parameter *newParameter)
@@ -93,7 +99,7 @@ void ParameterEditButtonMenu::toggleGroupLock()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto vg = getHWUI()->getCurrentVoiceGroup();
   auto group = eb->getSelected(vg)->getParentGroup();
-  
+
   if(group->areAllParametersLocked())
   {
     auto scope = Application::get().getUndoScope()->startTransaction("Unlock Group");

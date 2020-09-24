@@ -151,7 +151,7 @@ class Parameter : public UpdateDocumentContributor,
 
  protected:
   virtual void sendToPlaycontroller() const;
-  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool dosendToPlaycontroller);
+  virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool dosendToPlaycontroller);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
   virtual void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,

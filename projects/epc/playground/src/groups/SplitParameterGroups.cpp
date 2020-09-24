@@ -12,7 +12,7 @@ SplitParameterGroups::SplitParameterGroups(ParameterGroupSet *parent, VoiceGroup
 
 void SplitParameterGroups::init()
 {
-  appendParameter(new SplitPointParameter(this, { 356, getVoiceGroup() }));
+  appendParameter(new SplitPointParameter(this, { C15::PID::Split_Split_Point, getVoiceGroup() }));
 }
 
 bool SplitParameterGroups::isSplitPoint(const Parameter *p)

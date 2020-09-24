@@ -35,6 +35,7 @@
 #include <groups/MonoGroup.h>
 #include <groups/SplitParameterGroups.h>
 #include <groups/VoiceGroupMasterGroup.h>
+#include <parameter_declarations.h>
 
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
@@ -124,6 +125,25 @@ void ParameterGroupSet::copyFrom(UNDO::Transaction *transaction, const Preset *o
         g->copyFrom(transaction, c);
       else
         g->forEachParameter([&](Parameter *p) { p->loadDefault(transaction, Defaults::FactoryDefault); });
+
+  copyGlobalSplitIntoDualSplit(transaction, other);
+}
+
+void ParameterGroupSet::copyGlobalSplitIntoDualSplit(UNDO::Transaction *transaction, const Preset *other)
+{
+  if(other->getType() == SoundType::Split)
+  {
+    if(auto presetSplit = other->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }, false))
+    {
+      for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+      {
+        if(auto split = findParameterByID({ C15::PID::Split_Split_Point, vg }))
+        {
+          split->copyFrom(transaction, presetSplit);
+        }
+      }
+    }
+  }
 }
 
 Parameter *ParameterGroupSet::findParameterByID(const ParameterId &id) const

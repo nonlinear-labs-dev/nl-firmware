@@ -7,7 +7,9 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/SplitPointOverlapIndicator.h>
 #include "ModulateableDualVoiceGroupMasterAndSplitPointLayout.h"
+#include "SplitPointSyncIndicator.h"
 #include <proxies/hwui/controls/Slider.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SplitPointEditMenu.h>
 
 Carousel *ModulateableDualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
 {
@@ -42,4 +44,19 @@ SplitPointParameterLayout::SplitPointParameterLayout()
     : ModulateableDualVoiceGroupMasterAndSplitPointLayout()
 {
   addControl(new SplitPointOverlapIndicator({ BIG_SLIDER_X - 4, 23, 1, 8 }));
+  addControl(new SplitPointSyncIndicator({ BIG_SLIDER_X + BIG_SLIDER_WIDTH + 1, 23, 9, 8 }));
+}
+
+SplitPointParameterEditLayout::SplitPointParameterEditLayout()
+{
+}
+
+ButtonMenu *SplitPointParameterEditLayout::createMenu(const Rect &rect)
+{
+  return new SplitPointEditMenu(rect);
+}
+
+ModuleCaption *SplitPointParameterEditLayout::createModuleCaption() const
+{
+  return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
 }

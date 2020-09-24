@@ -33,3 +33,14 @@ class SplitPointParameterLayout : public ModulateableDualVoiceGroupMasterAndSpli
  protected:
   bool onRotary(int inc, ButtonModifiers modifiers) override;
 };
+
+class SplitPointParameterEditLayout : public ModulateableParameterEditLayout2
+{
+ protected:
+ public:
+  SplitPointParameterEditLayout();
+  ButtonMenu* createMenu(const Rect& rect) override;
+
+ protected:
+  ModuleCaption* createModuleCaption() const override;
+};
