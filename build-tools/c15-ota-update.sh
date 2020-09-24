@@ -24,3 +24,4 @@ scp -C $UPDATE root@$IP:/update
 ssh root@$IP "cd /update/ && tar xf *.tar"
 ssh root@$IP "chmod +x /update/run.sh"
 ssh root@$IP '/update/run.sh reboot > /dev/null &'
+
