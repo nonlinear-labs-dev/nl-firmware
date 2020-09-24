@@ -9,7 +9,7 @@ namespace DescriptiveLayouts
 {
   using ComponentID = Glib::ustring;
 
-  ENUM(PrimitiveProperty, uint8_t, None, Text, Range, Visibility, Highlight, ControlPosition);
+  ENUM(PrimitiveProperty, uint8_t, None, Text, ImagePath, Range, Visibility, Highlight, ControlPosition);
   ENUM(StyleKey, uint8_t, BackgroundColor, Color, TextAlign, FontSize, BorderStyle, FontDecoration, SuffixColor,
        BorderColor, HighlightBackgroundColor, HighlightColor);
   ENUM(ParameterType, uint8_t, Unipolar = 1 << 0, Bipolar = 1 << 1);
@@ -68,7 +68,7 @@ namespace DescriptiveLayouts
        Left, Right, Up, Down, IncParam, DecParam, Commit);
 
   ENUM(EventProviders, uint8_t, None, Global, IndependentPresetSelectionEvents, PresetManagerEvents);
-  ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
+  ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle, Image);
 
   template <typename Derived> class StringId : public std::string
   {

@@ -5,11 +5,15 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <nltools/logging/Log.h>
 
+PNGControl::PNGControl(const Rect& pos)
+    : Control(pos)
+{
+}
+
 PNGControl::PNGControl(const Rect& pos, const std::string& imagePath)
     : Control(pos)
-    , m_image { getResourcesDir() + "/png/" + imagePath }
-    , m_imagePath { imagePath }
 {
+  loadImage(imagePath);
 }
 
 int mapValue(unsigned char x, int in_min, int in_max, int out_min, int out_max)
@@ -20,9 +24,6 @@ int mapValue(unsigned char x, int in_min, int in_max, int out_min, int out_max)
 bool PNGControl::redraw(FrameBuffer& fb)
 {
   using FBC = FrameBufferColors;
-  static std::map<unsigned char, FrameBufferColors> pixelToColor
-      = { { 0, FBC::C43 },  { 1, FBC::C77 },  { 2, FBC::C103 }, { 3, FBC::C128 },
-          { 4, FBC::C179 }, { 5, FBC::C204 }, { 6, FBC::C255 } };
 
   auto pos = getPosition();
 
@@ -33,20 +34,8 @@ bool PNGControl::redraw(FrameBuffer& fb)
       auto pixel = m_image.get_pixel(x, y);
       if(pixel.alpha != 0)
       {
-        //TODO communicate what colors will be used in png
-        auto maxColor = std::max(pixel.blue, std::max(pixel.green, pixel.red));
-        auto mapped = mapValue(maxColor, 0, 255, 0, 6);
-
-        try
-        {
-          auto color = pixelToColor.at(mapped);
-          fb.setColor(color);
-          fb.setPixel(pos.getLeft() + x, pos.getTop() + y);
-        }
-        catch(...)
-        {
-          nltools::Log::error("Invalid color at:", x, "/", y, "in file", m_imagePath);
-        }
+        fb.setColor(m_color);
+        fb.setPixel(pos.getLeft() + x, pos.getTop() + y);
       }
     }
   }
@@ -55,4 +44,23 @@ bool PNGControl::redraw(FrameBuffer& fb)
 
 void PNGControl::drawBackground(FrameBuffer& fb)
 {
+}
+
+void PNGControl::loadImage(const std::string& l)
+{
+  try
+  {
+    m_image.read(l);
+    m_imagePath = l;
+  }
+  catch(const std::runtime_error& err)
+  {
+    nltools::Log::error(__LINE__, __FILE__, err.what());
+  }
+}
+
+void PNGControl::setColor(FrameBufferColors color)
+{
+  m_color = color;
+  setDirty();
 }

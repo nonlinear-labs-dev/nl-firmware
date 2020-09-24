@@ -223,7 +223,6 @@ void PresetManagerLayout::setupPresetSelect()
     setStoreModeData(nullptr);
   }
 
-  addControl(new PNGControl({ 0, 34, 30, 30 }, "test_control.png"));
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumPresetsInBankLabel(Rect(192, 1, 64, 14)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));

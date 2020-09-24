@@ -1,0 +1,10 @@
+{
+  "controls": {
+    "FXITOFXII": {
+      "FXITOFXII_image": {
+        "Class": "Image",
+        "Rect": "0, 0, 22, 19"
+      }
+    }
+  }
+}
