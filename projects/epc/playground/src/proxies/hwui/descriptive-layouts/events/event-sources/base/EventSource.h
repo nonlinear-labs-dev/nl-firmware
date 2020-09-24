@@ -40,7 +40,7 @@ namespace DescriptiveLayouts
     }
 
    protected:
-    std::experimental::any getLastValue() const override
+    std::any getLastValue() const override
     {
       return m_lastValue;
     }

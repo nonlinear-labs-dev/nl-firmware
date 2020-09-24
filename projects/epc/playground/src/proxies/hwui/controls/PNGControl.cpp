@@ -31,11 +31,20 @@ bool PNGControl::redraw(FrameBuffer& fb)
   {
     for(auto x = 0; x < m_image.get_height(); x++)
     {
-      auto pixel = m_image.get_pixel(x, y);
-      if(pixel.alpha != 0)
+      try
       {
-        fb.setColor(m_color);
-        fb.setPixel(pos.getLeft() + x, pos.getTop() + y);
+        auto pixel = m_image.get_pixel(x, y);
+        if(pixel.alpha != 0)
+        {
+          fb.setColor(m_color);
+          fb.setPixel(pos.getLeft() + x, pos.getTop() + y);
+        }
+      }
+      catch(...)
+      {
+        //todo fix exception on fb icon draw
+        auto eptr = std::current_exception();
+        nltools::Log::error(nltools::handle_eptr(eptr));
       }
     }
   }
@@ -50,8 +59,8 @@ void PNGControl::loadImage(const std::string& l)
 {
   try
   {
-    m_image.read(l);
-    m_imagePath = l;
+    m_image.read(getResourcesDir() + "/png/" + l);
+    m_imagePath = getResourcesDir() + "/png/" + l;
   }
   catch(const std::runtime_error& err)
   {

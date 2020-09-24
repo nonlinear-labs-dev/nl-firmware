@@ -1,6 +1,6 @@
 #pragma once
 
-#include <experimental/any>
+#include <any>
 #include "TemplateEnums.h"
 
 namespace DescriptiveLayouts
@@ -8,6 +8,6 @@ namespace DescriptiveLayouts
   class PropertyOwner
   {
    public:
-    virtual void setProperty(PrimitiveProperty key, std::experimental::any value) = 0;
+    virtual void setProperty(PrimitiveProperty key, std::any value) = 0;
   };
 }

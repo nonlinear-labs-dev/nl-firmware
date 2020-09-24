@@ -25,7 +25,7 @@ namespace DescriptiveLayouts
 
       using tPrimitiveInstance = Glib::ustring;
       using tPrimitiveProperty = PrimitiveProperty;
-      using tValue = std::experimental::any;
+      using tValue = std::any;
 
       struct InitEntry
       {

@@ -87,9 +87,8 @@
         "FXIToFXII": {
           "Class": "FXITOFXII",
           "Position": "206, 20",
-          "Events": "ToFXIIOver0 => ANY[Visibility]",
           "Init": {
-            "FXITOFXII[ImagePath]": "Layer_FX_B.png"
+            "FXITOFXII_image[ImagePath]": "Layer_FX_B.png"
           }
         },
         "FXIIToFXI": {

@@ -1,4 +1,5 @@
 #include <any>
+#include <nltools/logging/Log.h>
 #include "Image.h"
 
 DescriptiveLayouts::Image::Image(const DescriptiveLayouts::PrimitiveInstance& instance)
@@ -7,7 +8,7 @@ DescriptiveLayouts::Image::Image(const DescriptiveLayouts::PrimitiveInstance& in
 {
 }
 
-void DescriptiveLayouts::Image::setProperty(DescriptiveLayouts::PrimitiveProperty key, std::experimental::any value)
+void DescriptiveLayouts::Image::setProperty(DescriptiveLayouts::PrimitiveProperty key, std::any value)
 {
   if(key == PrimitiveProperty::ImagePath)
   {
@@ -18,6 +19,8 @@ void DescriptiveLayouts::Image::setProperty(DescriptiveLayouts::PrimitivePropert
     }
     catch(...)
     {
+      auto curr = std::current_exception();
+      nltools::Log::error(nltools::handle_eptr(curr));
     }
   }
 }

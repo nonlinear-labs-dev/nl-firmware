@@ -83,9 +83,9 @@ namespace DescriptiveLayouts
     return str;
   }
 
-  std::experimental::any getAnyFromProperty(const json& value, const PrimitiveProperty& eventTargetProperty)
+  std::any getAnyFromProperty(const json& value, const PrimitiveProperty& eventTargetProperty)
   {
-    std::experimental::any ret {};
+    std::any ret {};
     switch(eventTargetProperty)
     {
       case PrimitiveProperty::ControlPosition:
@@ -102,6 +102,11 @@ namespace DescriptiveLayouts
       case PrimitiveProperty::Text:
       {
         return Text::DisplayString(value.template get<std::string>(), 0);
+      }
+
+      case PrimitiveProperty::ImagePath:
+      {
+        return std::string(value.template get<std::string>());
       }
 
       case PrimitiveProperty::Highlight:

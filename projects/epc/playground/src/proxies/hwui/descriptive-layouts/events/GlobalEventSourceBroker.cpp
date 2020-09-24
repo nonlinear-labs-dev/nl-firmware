@@ -131,7 +131,7 @@ namespace DescriptiveLayouts
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;
 
   sigc::connection GlobalEventSourceBroker::connect(EventSources source,
-                                                    const std::function<void(std::experimental::any)>& cb)
+                                                    const std::function<void(std::any)>& cb)
   {
     if(source == EventSources::None)
       return {};
