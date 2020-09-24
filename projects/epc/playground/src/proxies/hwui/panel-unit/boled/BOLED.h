@@ -26,7 +26,6 @@ class BOLED : public OLEDProxy, public sigc::trackable
   void onRotary(signed char i);
 
   void setupFocusAndMode(FocusAndMode focusAndMode);
-
   void showUndoScreen();
 
   void bruteForce();

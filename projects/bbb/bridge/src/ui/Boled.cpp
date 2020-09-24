@@ -10,10 +10,10 @@ constexpr auto frameBufferDimY = 96;
 
 typedef std::tuple<uint8_t, uint8_t, uint8_t> RGB;
 static std::map<uint8_t, RGB> colorMap
-    = { { 0x00, std::make_tuple(43, 32, 21) },   { 0x02, std::make_tuple(77, 60, 10) },
-        { 0x05, std::make_tuple(103, 81, 12) },  { 0x06, std::make_tuple(128, 102, 16) },
-        { 0x0A, std::make_tuple(179, 142, 21) }, { 0x0B, std::make_tuple(204, 162, 24) },
-        { 0x0F, std::make_tuple(255, 203, 31) } };
+    = { { 0x00, std::make_tuple(0, 0, 0) },       { 0x02, std::make_tuple(73, 73, 73) },
+        { 0x05, std::make_tuple(110, 110, 110) }, { 0x06, std::make_tuple(146, 146, 146) },
+        { 0x0A, std::make_tuple(183, 183, 183) }, { 0x0B, std::make_tuple(219, 219, 219) },
+        { 0x0F, std::make_tuple(255, 255, 255) } };
 
 Boled::Boled()
 {

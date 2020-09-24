@@ -15,7 +15,7 @@ MCSelectButton::~MCSelectButton() = default;
 
 void MCSelectButton::update(const Parameter *parameter)
 {
-  if(parameter->isDisabled())
+  if(parameter == nullptr || parameter->isDisabled())
   {
     setText("");
     return;
