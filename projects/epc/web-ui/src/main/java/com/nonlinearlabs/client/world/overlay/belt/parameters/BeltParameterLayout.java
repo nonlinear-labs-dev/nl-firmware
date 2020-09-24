@@ -5,6 +5,8 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.ServerProxy;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -22,6 +24,7 @@ import com.nonlinearlabs.client.world.overlay.belt.parameters.recall.ParameterRe
 import com.nonlinearlabs.client.world.overlay.belt.parameters.recall.RecallArea;
 import com.nonlinearlabs.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.client.world.pointer.TouchPinch;
+import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public class BeltParameterLayout extends OverlayLayout {
 
@@ -102,6 +105,23 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	}
 
+	private final class SyncParameterButton extends SVGImage {
+		public SyncParameterButton(OverlayLayout parent) {
+			super(parent, "Morph_Tab_Disabled.svg", "Morph_Tab_Enabled.svg");
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return SetupModel.get().systemSettings.syncSplit.getBool() ? 1 : 0;
+		}
+
+		@Override
+		public Control click(Position eventPoint) {
+			EditBufferUseCases.get().toggleSyncSplit();
+			return this;
+		}
+	}
+
 	private Mode mode = Mode.modulateableParameter;
 	private IncrementalChanger currentIncrementalChanger;
 
@@ -124,6 +144,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	private ParameterClippingLabel mcLowerClip;
 
 	private RecallArea currentRecall;
+	private SyncParameterButton syncSplitParameter;
 
 	public BeltParameterLayout(final Belt parent) {
 		super(parent);
@@ -149,10 +170,13 @@ public class BeltParameterLayout extends OverlayLayout {
 		addChild(mcUpperClip = new ParameterClippingLabel(this, Mode.mcUpper));
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
 		addChild(currentRecall = new ParameterRecallArea(this));
+		addChild(syncSplitParameter = new SyncParameterButton(this));
 
 		EditBufferPresenterProvider.get().onChange(p -> {
 			if (p.selectedParameter.id.getNumber() != lastSelectedParameterNumber) {
 				lastSelectedParameterNumber = p.selectedParameter.id.getNumber();
+
+				syncSplitParameter.setVisible(p.selectedParameter.id.getNumber() == 356);
 
 				if (p.selectedParameter.modulation.isModulateable)
 					setMode(Mode.modulateableParameter);
@@ -242,6 +266,8 @@ public class BeltParameterLayout extends OverlayLayout {
 		final double sliderWidth = slider.getRelativePosition().getWidth();
 		final double margin = Millimeter.toPixels(2.5);
 		final double modulationButtonWidth = 1.5 * mcPositionRadioButton.getSelectedImage().getImgWidth();
+
+		syncSplitParameter.doLayout(modulationButtonsLeft + (modulationButtonsDimX * 2) + sliderWidth, (h - modulationButtonsDimY) * 0.5, modulationButtonsDimX, modulationButtonsDimY);
 
 		final HarmonicLayouter layouter = new HarmonicLayouter();
 

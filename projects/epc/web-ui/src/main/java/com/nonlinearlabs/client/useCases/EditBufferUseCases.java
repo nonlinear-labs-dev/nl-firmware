@@ -426,6 +426,16 @@ public class EditBufferUseCases {
 		}
 	}
 
+	public void toggleSyncSplit() {
+		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
+			SetupModel.get().systemSettings.syncSplit.setValue(false);
+			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "off");
+		} else {
+			SetupModel.get().systemSettings.syncSplit.setValue(true);
+			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "on");
+		}
+	}
+
 	public void loadPreset(String uuid) {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}

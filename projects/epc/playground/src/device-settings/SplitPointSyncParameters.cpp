@@ -8,13 +8,13 @@ SplitPointSyncParameters::SplitPointSyncParameters(Settings& s)
 
 void SplitPointSyncParameters::load(const Glib::ustring& text, Initiator initiator)
 {
-  m_state = text == "Active";
+  m_state = text == "on";
   notify();
 }
 
 Glib::ustring SplitPointSyncParameters::save() const
 {
-  return getDisplayString();
+  return m_state ? "on" : "off";
 }
 
 Glib::ustring SplitPointSyncParameters::getDisplayString() const

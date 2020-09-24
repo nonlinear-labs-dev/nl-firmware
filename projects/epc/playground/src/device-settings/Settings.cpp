@@ -97,7 +97,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("UsedRAM", new UsedRAM(*this));
   addSetting("SyncVoiceGroups", new SyncVoiceGroupsAcrossUIS(*this));
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
-  addSetting("SplitPointSyncParameters", new SplitPointSyncParameters(*this));
+  addSetting("SyncSplit", new SplitPointSyncParameters(*this));
 }
 
 Settings::~Settings()
