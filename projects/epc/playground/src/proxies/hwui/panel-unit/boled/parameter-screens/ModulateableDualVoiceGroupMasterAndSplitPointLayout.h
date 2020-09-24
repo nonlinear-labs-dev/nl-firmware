@@ -29,9 +29,6 @@ class SplitPointParameterLayout : public ModulateableDualVoiceGroupMasterAndSpli
  protected:
  public:
   SplitPointParameterLayout();
-
- protected:
-  bool onRotary(int inc, ButtonModifiers modifiers) override;
 };
 
 class SplitPointParameterEditLayout : public ModulateableParameterEditLayout2

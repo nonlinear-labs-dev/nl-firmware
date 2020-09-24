@@ -31,15 +31,6 @@ ModuleCaption *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createModu
   return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
 }
 
-bool SplitPointParameterLayout::onRotary(int inc, ButtonModifiers modifiers)
-{
-  if(modifiers[ButtonModifier::SHIFT])
-  {
-    //TODO
-  }
-  return ModulateableParameterSelectLayout2::onRotary(inc, modifiers);
-}
-
 SplitPointParameterLayout::SplitPointParameterLayout()
     : ModulateableDualVoiceGroupMasterAndSplitPointLayout()
 {
