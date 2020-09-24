@@ -1,3 +1,4 @@
+
 #include <parameters/names/ParameterDB.h>
 #include "Parameter.h"
 #include "groups/ParameterGroup.h"
@@ -168,7 +169,7 @@ bool Parameter::isDisabledForType(SoundType type) const
       return number == C15::PID::FB_Mix_Osc || number == C15::PID::FB_Mix_Osc_Src;
     case SoundType::Layer:
     case SoundType::Invalid:
-      return true;
+      return false;
   }
   return false;
 }
