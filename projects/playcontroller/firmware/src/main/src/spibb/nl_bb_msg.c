@@ -302,10 +302,10 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
     switch (data[0])
     {
       case PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR:  // Play mode ribbon 1 behaviour
-        ADC_WORK_SetRibbon1Behaviour(data[1]);               // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
+        ADC_WORK_SetRibbon1Behaviour(data[1]);                          // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
         break;
       case PLAYCONTROLLER_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR:  // Play mode ribbon 2 behaviour
-        ADC_WORK_SetRibbon2Behaviour(data[1]);               // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
+        ADC_WORK_SetRibbon2Behaviour(data[1]);                          // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
         break;
       case PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE:
         ADC_WORK_SetRibbon1OutputValue(data[1]);
@@ -313,23 +313,23 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       case PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE:
         ADC_WORK_SetRibbon2OutputValue(data[1]);
         break;
-      case PLAYCONTROLLER_SETTING_ID_BASE_UNIT_UI_MODE:   // "Unit Mode" - Ribbon 1 can be switched between Edit and Play mode.
-        ADC_WORK_SetRibbon1EditMode(data[1]);  // 0: Play, 1: Parameter Edit
+      case PLAYCONTROLLER_SETTING_ID_BASE_UNIT_UI_MODE:  // "Unit Mode" - Ribbon 1 can be switched between Edit and Play mode.
+        ADC_WORK_SetRibbon1EditMode(data[1]);            // 0: Play, 1: Parameter Edit
         break;
       case PLAYCONTROLLER_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR:  // Parameter edit mode ribbon behaviour
-        ADC_WORK_SetRibbon1EditBehaviour(data[1]);     // 0: Rel, 1: Abs
+        ADC_WORK_SetRibbon1EditBehaviour(data[1]);                // 0: Rel, 1: Abs
         break;
-      case PLAYCONTROLLER_SETTING_ID_RIBBON_REL_FACTOR:   // Factor for the increments when a ribbon is in Relative mode
-        ADC_WORK_SetRibbonRelFactor(data[1]);  // factor = data[1] / 256
+      case PLAYCONTROLLER_SETTING_ID_RIBBON_REL_FACTOR:  // Factor for the increments when a ribbon is in Relative mode
+        ADC_WORK_SetRibbonRelFactor(data[1]);            // factor = data[1] / 256
         break;
       case PLAYCONTROLLER_SETTING_ID_VELOCITY_CURVE:  // Velocity Curve
-        POLY_Select_VelTable(data[1]);     // Parameter: 0 = very soft ... 4 = very hard
+        POLY_Select_VelTable(data[1]);                // Parameter: 0 = very soft ... 4 = very hard
         break;
-      case PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE:        // Aftertouch Curve
-        ADC_WORK_Select_AftertouchTable(data[1]);  // 0: soft, 1: normal, 2: hard
+      case PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE:  // Aftertouch Curve
+        ADC_WORK_Select_AftertouchTable(data[1]);       // 0: soft, 1: normal, 2: hard
         break;
-      case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:        // Bender Curve
-        ADC_WORK_Select_BenderTable(data[1]);  // 0: soft, 1: normal, 2: hard
+      case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:  // Bender Curve
+        ADC_WORK_Select_BenderTable(data[1]);       // 0: soft, 1: normal, 2: hard
         break;
       case PLAYCONTROLLER_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:
         SUP_SetMuteOverride(data[1]);  // enable/disable Software Mute Override and value
