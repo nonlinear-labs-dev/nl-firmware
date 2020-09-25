@@ -1,7 +1,7 @@
 #include "process-read-msgs.h"
-#include "shared/lpc-defs.h"
-#include "shared/lpc-converters.h"
-#include "shared/globals.h"
+#include "shared/playcontroller/playcontroller-defs.h"
+#include "shared/playcontroller/playcontroller-converters.h"
+#include "globals.h"
 
 char paramNameTable[][NUM_HW_SOURCES] = {
   "EHC 1     ",
@@ -143,7 +143,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
 
   switch (cmd)
   {
-    case LPC_BB_MSG_TYPE_KEY_EMUL:
+    case PLAYCONTROLLER_BB_MSG_TYPE_KEY_EMUL:
       if (flags & NO_KEY_LOG)
         return;
       dump(cmd, len, data, flags);
@@ -175,7 +175,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       return;
 
 #if LPC_KEYBED_DIAG
-    case LPC_BB_MSG_TYPE_KEYCNTR_DATA:
+    case PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA:
       if (flags & NO_KEY_LOG)
         return;
       dump(cmd, len, data, flags);
@@ -213,7 +213,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       return;
 #endif
 
-    case LPC_BB_MSG_TYPE_PARAMETER:
+    case PLAYCONTROLLER_BB_MSG_TYPE_PARAMETER:
       if (flags & NO_PARAMS)
         return;
       dump(cmd, len, data, flags);
@@ -235,7 +235,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = (cmd << 16) + data[0];
       return;
 
-    case LPC_BB_MSG_TYPE_NOTIFICATION:
+    case PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION:
       if (flags & NO_NOTIFICATION)
         return;
       dump(cmd, len, data, flags);
@@ -249,34 +249,34 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       displayCounter();
       switch (data[0])
       {
-        case LPC_NOTIFICATION_ID_CLEAR_EEPROM:
+        case PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_EEPROM:
           printf("NOTIFICATION : EEPROM cleared\n");
           break;
-        case LPC_NOTIFICATION_ID_STAT_DATA:
+        case PLAYCONTROLLER_NOTIFICATION_ID_STAT_DATA:
           printf("NOTIFICATION : Status Data sent\n");
           break;
-        case LPC_NOTIFICATION_ID_CLEAR_STAT:
+        case PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT:
           printf("NOTIFICATION : Status Data cleared\n");
           break;
 #if LPC_KEYBED_DIAG
-        case LPC_NOTIFICATION_ID_KEYCNTR_DATA:
+        case PLAYCONTROLLER_NOTIFICATION_ID_KEYCNTR_DATA:
           printf("NOTIFICATION : Key Errors Counters Data sent\n");
           break;
 #endif
-        case LPC_NOTIFICATION_ID_SW_VERSION:
+        case PLAYCONTROLLER_NOTIFICATION_ID_SW_VERSION:
           printf("NOTIFICATION : Software Version: %hu\n", data[1]);
           break;
-        case LPC_NOTIFICATION_ID_EHC_DATA:
+        case PLAYCONTROLLER_NOTIFICATION_ID_EHC_DATA:
           printf("NOTIFICATION : EHC data sent: %s\n", data[1] ? "success  " : "failed  ");
           break;
-        case LPC_NOTIFICATION_ID_EHC_EEPROMSAVE:
+        case PLAYCONTROLLER_NOTIFICATION_ID_EHC_EEPROMSAVE:
           printf("NOTIFICATION : EHC data save to EEPROM: %s\n", data[1] ? "started successfully" : "postponed/failed   ");
           break;
-        case LPC_NOTIFICATION_ID_UNMUTE_STATUS:
+        case PLAYCONTROLLER_NOTIFICATION_ID_UNMUTE_STATUS:
           printf("NOTIFICATION : ");
           data[0] = data[1];
           goto ShowMuteStatus;
-        case LPC_NOTIFICATION_ID_TEST_MSG:
+        case PLAYCONTROLLER_NOTIFICATION_ID_TEST_MSG:
           printf("NOTIFICATION : TestMessage received, seq. #: %5hu", data[1] & 0x3FFF);
           if (data[1] & (1 << 15))
             printf(" (seq. broken)");
@@ -295,7 +295,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = (cmd << 16) + data[0];
       return;
 
-    case LPC_BB_MSG_TYPE_STAT_DATA:
+    case PLAYCONTROLLER_BB_MSG_TYPE_STAT_DATA:
       if (flags & NO_STATDATA)
         return;
       dump(cmd, len, data, flags);
@@ -339,7 +339,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = cmd << 16;
       return;
 
-    case LPC_BB_MSG_TYPE_HEARTBEAT:
+    case PLAYCONTROLLER_BB_MSG_TYPE_HEARTBEAT:
       if (flags & NO_HEARTBEAT)
         return;
       dump(cmd, len, data, flags);
@@ -361,7 +361,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = cmd << 16;
       return;
 
-    case LPC_BB_MSG_TYPE_SENSORS_RAW:
+    case PLAYCONTROLLER_BB_MSG_TYPE_SENSORS_RAW:
       if ((flags & NO_SENSORSRAW) && (flags & NO_RIBBONS))
         return;
       dump(cmd, len, data, flags);
@@ -423,7 +423,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = cmd << 16;
       return;
 
-    case LPC_BB_MSG_TYPE_MUTESTATUS:
+    case PLAYCONTROLLER_BB_MSG_TYPE_MUTESTATUS:
       if (flags & NO_MUTESTATUS)
         return;
       dump(cmd, len, data, flags);
@@ -461,7 +461,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       lastMessage = cmd << 16;
       return;
 
-    case LPC_BB_MSG_TYPE_EHC_DATA:
+    case PLAYCONTROLLER_BB_MSG_TYPE_EHC_DATA:
       if (flags & NO_EHCDATA)
         return;
       dump(cmd, len, data, flags);
@@ -728,7 +728,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
 
     // --------------------- send data -----------------------------
     // settings
-    case LPC_BB_MSG_TYPE_SETTING:
+    case PLAYCONTROLLER_BB_MSG_TYPE_SETTING:
       dump(cmd, len, data, flags);
       if (len != 2)
       {
@@ -739,52 +739,52 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       printf("SETTING(ID=%04X): ", data[0]);
       switch (data[0])
       {
-        case LPC_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR:  // = 0,       // ==> BIT 0 set if (returnMode == RETURN), ...
-        case LPC_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR:  // = 1,       // ... BIT 1 set if (touchBehaviour == RELATIVE)
-          printf("%s ribbon play mode=", data[0] == LPC_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR ? "upper" : "lower");
+        case PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR:  // = 0,       // ==> BIT 0 set if (returnMode == RETURN), ...
+        case PLAYCONTROLLER_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR:  // = 1,       // ... BIT 1 set if (touchBehaviour == RELATIVE)
+          printf("%s ribbon play mode=", data[0] == PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR ? "upper" : "lower");
           printf("%s,%s\n", data[1] & 1 ? "return" : "non-return", data[1] & 2 ? "relative" : "absolute");
           break;
-        case LPC_SETTING_ID_BASE_UNIT_UI_MODE:  //= 3,       // ==> PLAY = 0, PARAMETER_EDIT = 1
+        case PLAYCONTROLLER_SETTING_ID_BASE_UNIT_UI_MODE:  //= 3,       // ==> PLAY = 0, PARAMETER_EDIT = 1
           printf("base unit UI mode=%s\n", data[1] ? "edit" : "play");
           break;
-        case LPC_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR:  // = 4,       // ==> RELATIVE = 0, ABSOLUTE = 1
+        case PLAYCONTROLLER_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR:  // = 4,       // ==> RELATIVE = 0, ABSOLUTE = 1
           printf("edit-mode ribbon behavior=%s\n", data[1] ? "absolute" : "relative");
           break;
-        case LPC_SETTING_ID_RIBBON_REL_FACTOR:  // = 9,       // ==> tTcdRange(256, 2560)
+        case PLAYCONTROLLER_SETTING_ID_RIBBON_REL_FACTOR:  // = 9,       // ==> tTcdRange(256, 2560)
           printf("ribbon relative factor=%5.2lf\n", (double) (data[1]) / 256.0);
           break;
-        case LPC_SETTING_ID_VELOCITY_CURVE:  // = 11,      // ==> VERY_SOFT = 0, SOFT = 1, NORMAL = 2, HARD = 3, VERY_HARD = 4
+        case PLAYCONTROLLER_SETTING_ID_VELOCITY_CURVE:  // = 11,      // ==> VERY_SOFT = 0, SOFT = 1, NORMAL = 2, HARD = 3, VERY_HARD = 4
           printf("key velocity curve=%u\n", data[1]);
           break;
-        case LPC_SETTING_ID_PEDAL_1_TYPE:  //                     = 26,      // ==> PotTipActive  = 0
-        case LPC_SETTING_ID_PEDAL_2_TYPE:  //                     = 27,      // ... PotRingActive = 1
-        case LPC_SETTING_ID_PEDAL_3_TYPE:  //                     = 28,      // ... SwitchClosing = 2 // aka momentary switch, normally open
-        case LPC_SETTING_ID_PEDAL_4_TYPE:  //                     = 29,      // ... SwitchOpening = 3 // aka momentary switch, normally closed
-          printf("legacy pedal type, pedal#%u=%u\n", data[0] - LPC_SETTING_ID_PEDAL_1_TYPE + 1, data[1]);
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_1_TYPE:  //                     = 26,      // ==> PotTipActive  = 0
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_2_TYPE:  //                     = 27,      // ... PotRingActive = 1
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_3_TYPE:  //                     = 28,      // ... SwitchClosing = 2 // aka momentary switch, normally open
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_4_TYPE:  //                     = 29,      // ... SwitchOpening = 3 // aka momentary switch, normally closed
+          printf("legacy pedal type, pedal#%u=%u\n", data[0] - PLAYCONTROLLER_SETTING_ID_PEDAL_1_TYPE + 1, data[1]);
           break;
-        case LPC_SETTING_ID_AFTERTOUCH_CURVE:  //                 = 30,      // SOFT = 0, NORMAL = 1, HARD = 2
+        case PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE:  //                 = 30,      // SOFT = 0, NORMAL = 1, HARD = 2
           printf("aftertouch curve=%u\n", data[1]);
           break;
-        case LPC_SETTING_ID_BENDER_CURVE:  //                     = 31,      // SOFT = 0, NORMAL = 1, HARD = 2
+        case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:  //                     = 31,      // SOFT = 0, NORMAL = 1, HARD = 2
           printf("bender curve=%u\n", data[1]);
           break;
-        case LPC_SETTING_ID_UPPER_RIBBON_VALUE:  //               = 36,      // set initial output value (for relative mode)
-        case LPC_SETTING_ID_LOWER_RIBBON_VALUE:  //               = 37,      // set initial output value (for relative mode)
-          printf("%s ribbon value=%u\n", data[0] == LPC_SETTING_ID_UPPER_RIBBON_VALUE ? "upper" : "lower", data[1]);
+        case PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE:  //               = 36,      // set initial output value (for relative mode)
+        case PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE:  //               = 37,      // set initial output value (for relative mode)
+          printf("%s ribbon value=%u\n", data[0] == PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE ? "upper" : "lower", data[1]);
           break;
-        case LPC_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:  //           = 0xFF01,  // direction: input; arguments(uint16): 1, mode bit pattern
+        case PLAYCONTROLLER_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:  //           = 0xFF01,  // direction: input; arguments(uint16): 1, mode bit pattern
           printf("software mute override=%04X\n", data[1]);
           break;
-        case LPC_SETTING_ID_SEND_RAW_SENSOR_DATA:  //             = 0xFF02,  // direction: input; arguments(uint16): 1, flag (!= 0)
+        case PLAYCONTROLLER_SETTING_ID_SEND_RAW_SENSOR_DATA:  //             = 0xFF02,  // direction: input; arguments(uint16): 1, flag (!= 0)
           printf("raw sensor data=%s\n", data[1] ? "on" : "off");
           break;
-        case LPC_SETTING_ID_ENABLE_KEY_LOGGING:  //               = 0xFF03,  // direction: input; arguments(uint16): 1, flag (!= 0)
+        case PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_LOGGING:  //               = 0xFF03,  // direction: input; arguments(uint16): 1, flag (!= 0)
           printf("key logging=%s\n", data[1] ? "on" : "off");
           break;
-        case LPC_SETTING_ID_ENABLE_EHC:  //                       = 0xFF04,  // direction: input; arguments(uint16): 1, flag (!= 0)
+        case PLAYCONTROLLER_SETTING_ID_ENABLE_EHC:  //                       = 0xFF04,  // direction: input; arguments(uint16): 1, flag (!= 0)
           printf("ehc processing=%s\n", data[1] ? "enabled" : "disabled");
           break;
-        case LPC_SETTING_ID_AUDIO_ENGINE_CMD:  //                 = 0xFF05,  // direction: input; arguments(uint16): 1, command (1:testtone OFF; 2:testtone ON; 3:default sound)
+        case PLAYCONTROLLER_SETTING_ID_AUDIO_ENGINE_CMD:  //                 = 0xFF05,  // direction: input; arguments(uint16): 1, command (1:testtone OFF; 2:testtone ON; 3:default sound)
           printf("Audio Engine special command=");
           switch (data[1])
           {
@@ -802,10 +802,10 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
               break;
           }
           break;
-        case LPC_SETTING_ID_ENABLE_KEY_MAPPING:  //               = 0xFF07,  // direction: input; arguments(uint16): 1, flag (!= 0)
+        case PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_MAPPING:  //               = 0xFF07,  // direction: input; arguments(uint16): 1, flag (!= 0)
           printf("key re-mapping=%s\n", data[1] ? "enabled" : "disabled");
           break;
-        case LPC_SETTING_ID_SYSTEM_SPECIAL:  //                   = 0xFF06,  // direction: input; arguments(uint16): 1, command (1:reset heartbeat: 2: system reset: 3:Enable MIDI)
+        case PLAYCONTROLLER_SETTING_ID_SYSTEM_SPECIAL:  //                   = 0xFF06,  // direction: input; arguments(uint16): 1, command (1:reset heartbeat: 2: system reset: 3:Enable MIDI)
           printf("System special command=");
           switch (data[1])
           {
@@ -821,16 +821,16 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           }
           break;
 
-        case LPC_SETTING_ID_NOTE_SHIFT:
-        case LPC_SETTING_ID_PEDAL_1_MODE:
-        case LPC_SETTING_ID_PEDAL_2_MODE:
-        case LPC_SETTING_ID_PEDAL_3_MODE:
-        case LPC_SETTING_ID_PEDAL_4_MODE:
-        case LPC_SETTING_ID_TRANSITION_TIME:
-        case LPC_SETTING_ID_PITCHBEND_ON_PRESSED_KEYS:
-        case LPC_SETTING_ID_EDIT_SMOOTHING_TIME:
-        case LPC_SETTING_ID_PRESET_GLITCH_SUPPRESSION:
-        case LPC_SETTING_ID_BENDER_RAMP_BYPASS:
+        case PLAYCONTROLLER_SETTING_ID_NOTE_SHIFT:
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_1_MODE:
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_2_MODE:
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_3_MODE:
+        case PLAYCONTROLLER_SETTING_ID_PEDAL_4_MODE:
+        case PLAYCONTROLLER_SETTING_ID_TRANSITION_TIME:
+        case PLAYCONTROLLER_SETTING_ID_PITCHBEND_ON_PRESSED_KEYS:
+        case PLAYCONTROLLER_SETTING_ID_EDIT_SMOOTHING_TIME:
+        case PLAYCONTROLLER_SETTING_ID_PRESET_GLITCH_SUPPRESSION:
+        case PLAYCONTROLLER_SETTING_ID_BENDER_RAMP_BYPASS:
           printf("unused lecagy ID %u, data=0x%04X\n", data[0], data[1]);
           break;
 
@@ -841,7 +841,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       return;
 
     // EHC config
-    case LPC_BB_MSG_TYPE_EHC_CONFIG:
+    case PLAYCONTROLLER_BB_MSG_TYPE_EHC_CONFIG:
       dump(cmd, len, data, flags);
       if (len != 2)
       {
@@ -854,7 +854,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       uint8_t  ctrlId = data[0] & 0x00FF;
       switch (ehcCmd)
       {
-        case LPC_EHC_COMMAND_SET_CONTROL_REGISTER:
+        case PLAYCONTROLLER_EHC_COMMAND_SET_CONTROL_REGISTER:
         {
           printf("config=0x%04X ", data[1]);
           EHC_ControllerConfig_T config = EHC_uint16ToConfig(data[1]);
@@ -874,17 +874,17 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           }
           break;
         }
-        case LPC_EHC_COMMAND_SET_RANGE_MIN:
-        case LPC_EHC_COMMAND_SET_RANGE_MAX:
-          printf("range (ctrlId:%u) %s=%u\n", ctrlId, data[0] == LPC_EHC_COMMAND_SET_RANGE_MIN ? "min" : "max", data[1]);
+        case PLAYCONTROLLER_EHC_COMMAND_SET_RANGE_MIN:
+        case PLAYCONTROLLER_EHC_COMMAND_SET_RANGE_MAX:
+          printf("range (ctrlId:%u) %s=%u\n", ctrlId, data[0] == PLAYCONTROLLER_EHC_COMMAND_SET_RANGE_MIN ? "min" : "max", data[1]);
           break;
-        case LPC_EHC_COMMAND_RESET_DELETE:
+        case PLAYCONTROLLER_EHC_COMMAND_RESET_DELETE:
           printf("%s ctrlId:%u\n", data[1] ? "delete" : "reset", ctrlId);
           break;
-        case LPC_EHC_COMMAND_FORCE_OUTPUT:
+        case PLAYCONTROLLER_EHC_COMMAND_FORCE_OUTPUT:
           printf("force output (ctrlId:%u)\n", ctrlId);
           break;
-        case LPC_EHC_COMMAND_SET_DEAD_ZONES:
+        case PLAYCONTROLLER_EHC_COMMAND_SET_DEAD_ZONES:
           printf("dead zone (ctrlId:%u) upper=%u, lower=%u\n", ctrlId, data[1] >> 8, data[1] & 0xFF);
           break;
         default:
@@ -894,7 +894,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       return;
 
     // Request
-    case LPC_BB_MSG_TYPE_REQUEST:
+    case PLAYCONTROLLER_BB_MSG_TYPE_REQUEST:
       dump(cmd, len, data, flags);
       if (len != 1)
       {
@@ -905,22 +905,22 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       printf("REQUEST: ");
       switch (data[0])
       {
-        case LPC_REQUEST_ID_SW_VERSION:
+        case PLAYCONTROLLER_REQUEST_ID_SW_VERSION:
           printf("firmware version\n");
           break;
-        case LPC_REQUEST_ID_UNMUTE_STATUS:
+        case PLAYCONTROLLER_REQUEST_ID_UNMUTE_STATUS:
           printf("muting status\n");
           break;
-        case LPC_REQUEST_ID_EHC_DATA:
+        case PLAYCONTROLLER_REQUEST_ID_EHC_DATA:
           printf("EHC data\n");
           break;
-        case LPC_REQUEST_ID_CLEAR_EEPROM:
+        case PLAYCONTROLLER_REQUEST_ID_CLEAR_EEPROM:
           printf("clear EERPOM\n");
           break;
-        case LPC_REQUEST_ID_STAT_DATA:
+        case PLAYCONTROLLER_REQUEST_ID_STAT_DATA:
           printf("profiling data\n");
           break;
-        case LPC_REQUEST_ID_EHC_EEPROMSAVE:
+        case PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE:
           printf("save EHC data to EEPROM\n");
           break;
         default:

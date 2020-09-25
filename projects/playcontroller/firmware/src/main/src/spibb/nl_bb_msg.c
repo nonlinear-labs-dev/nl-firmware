@@ -379,21 +379,21 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
   {
     switch (data[0])
     {
-      case LPC_REQUEST_ID_SW_VERSION:  // sending the firmware version to the BB
+      case PLAYCONTROLLER_REQUEST_ID_SW_VERSION:  // sending the firmware version to the BB
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_SW_VERSION, SW_VERSION);
         BB_MSG_SendTheBuffer();
         break;
-      case LPC_REQUEST_ID_UNMUTE_STATUS:  // sending the muting status to the BB
+      case PLAYCONTROLLER_REQUEST_ID_UNMUTE_STATUS:  // sending the muting status to the BB
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_UNMUTE_STATUS, SUP_GetUnmuteStatusBits());
         BB_MSG_SendTheBuffer();
         break;
-      case LPC_REQUEST_ID_EHC_DATA:  // send EHC data to BB
+      case PLAYCONTROLLER_REQUEST_ID_EHC_DATA:  // send EHC data to BB
         NL_EHC_RequestToSendEHCdata();
         break;
-      case LPC_REQUEST_ID_CLEAR_EEPROM:
+      case PLAYCONTROLLER_REQUEST_ID_CLEAR_EEPROM:
         NL_EEPROM_RequestFullErase();
         break;
-      case LPC_REQUEST_ID_STAT_DATA:
+      case PLAYCONTROLLER_REQUEST_ID_STAT_DATA:
       {
         uint16_t words = NL_STAT_GetDataSize();
         uint16_t buffer[words];
@@ -403,22 +403,22 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       }
-      case LPC_REQUEST_ID_CLEAR_STAT:
+      case PLAYCONTROLLER_REQUEST_ID_CLEAR_STAT:
         NL_STAT_ClearData();
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT, 1);
         BB_MSG_SendTheBuffer();
         break;
-      case LPC_REQUEST_ID_EHC_EEPROMSAVE:
+      case PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE:
         NL_EHC_ForceEepromUpdate();
         break;
 #if LPC_KEYBED_DIAG
-      case LPC_REQUEST_ID_KEYCNTR_DATA:
+      case PLAYCONTROLLER_REQUEST_ID_KEYCNTR_DATA:
       {
         uint16_t words = NL_STAT_GetKeyDataSize();
         uint16_t buffer[words];
         NL_STAT_GetKeyData(buffer);
-        BB_MSG_WriteMessage(LPC_BB_MSG_TYPE_KEYCNTR_DATA, words, buffer);
-        BB_MSG_WriteMessage2Arg(LPC_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_KEYCNTR_DATA, 1);
+        BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA, words, buffer);
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_KEYCNTR_DATA, 1);
         BB_MSG_SendTheBuffer();
         break;
       }
