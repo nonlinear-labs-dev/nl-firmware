@@ -10,18 +10,19 @@ DescriptiveLayouts::Image::Image(const DescriptiveLayouts::PrimitiveInstance& in
 
 void DescriptiveLayouts::Image::setProperty(DescriptiveLayouts::PrimitiveProperty key, std::experimental::any value)
 {
-  if(key == PrimitiveProperty::ImagePath)
+  try
   {
-    try
-    {
-      auto v = std::experimental::any_cast<std::string>(value);
-      loadImage(v);
-    }
-    catch(...)
-    {
-      auto curr = std::current_exception();
-      nltools::Log::error(nltools::handle_eptr(curr));
-    }
+    if(key == PrimitiveProperty::Visibility)
+      setVisible(std::experimental::any_cast<bool>(value));
+    if(key == PrimitiveProperty::ImagePath)
+      loadImage(std::experimental::any_cast<std::string>(value));
+    if(key == PrimitiveProperty::ImageOffset)
+      setOffset(std::experimental::any_cast<std::pair<int, int>>(value));
+  }
+  catch(...)
+  {
+    auto curr = std::current_exception();
+    nltools::Log::error(nltools::handle_eptr(curr));
   }
 }
 
@@ -33,6 +34,11 @@ const DescriptiveLayouts::PrimitiveInstance& DescriptiveLayouts::Image::getPrimi
 void DescriptiveLayouts::Image::setDirty()
 {
   PNGControl::setDirty();
+}
+
+void DescriptiveLayouts::Image::drawBackground(FrameBuffer& fb)
+{
+  Control::drawBackground(fb);
 }
 
 bool DescriptiveLayouts::Image::redraw(FrameBuffer& fb)

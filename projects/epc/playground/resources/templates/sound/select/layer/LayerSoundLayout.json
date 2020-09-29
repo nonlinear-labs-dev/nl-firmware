@@ -64,36 +64,47 @@
           },
           "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text], VGIIMuted => MuteIndication[Text]"
         },
-        "FBToI": {
-          "Class": "StraightLineArrowLonger",
-          "Position": "25, 19",
-          "Events": "LayerIFBToI => ANY[Visibility]"
+        "FBBoth": {
+          "Class": "LayerFBImageLarge",
+          "Position": "29, 19",
+          "Init": {
+            "Image[ImagePath]": "Layer_FB_C.png",
+            "ANY[Visibility]": "false"
+          },
+          "Events": "LayerFBIToIIAndIIToI => ANY[Visibility]"
         },
-        "FBToII": {
-          "Class": "StraightLineArrowLonger",
-          "Position": "25, 35",
-          "Events": "LayerIIFBToII => ANY[Visibility]"
+        "FBIToIIOnly": {
+          "Class": "LayerFBImageLarge",
+          "Position": "34, 24",
+          "Init": {
+            "Image[ImagePath]": "Layer_FB_B.png",
+            "ANY[Visibility]": "false"
+          },
+          "Events": "LayerFBIToIIOnly => ANY[Visibility]"
         },
-        "FBIToII": {
-          "Class": "DiagonalDownArrow",
-          "Position": "30, 19",
-          "Events": "LayerIFBToII => ANY[Visibility]"
-        },
-        "FBIIToI": {
-          "Class": "DiagonalUpArrow",
-          "Position": "30, 22",
-          "Events": "LayerIIFBToI => ANY[Visibility]"
+        "FBIIToIOnly": {
+          "Class": "LayerFBImageLarge",
+          "Position": "34, 24",
+          "Init": {
+            "Image[ImagePath]": "Layer_FB_A.png",
+            "ANY[Visibility]": "false"
+          },
+          "Events": "LayerFBIIToIOnly => ANY[Visibility]"
         },
         "FXIToFXII": {
           "Class": "FXITOFXII",
-          "Position": "206, 20",
+          "Position": "202, 23",
           "Init": {
             "FXITOFXII_image[ImagePath]": "Layer_FX_B.png"
-          }
+          },
+          "Events": "ToFXIIOver0 => ANY[Visibility]"
         },
         "FXIIToFXI": {
           "Class": "FXITOFXII",
-          "Position": "206, 23",
+          "Position": "202, 21",
+          "Init": {
+            "FXITOFXII_image[ImagePath]": "Layer_FX_A.png"
+          },
           "Events": "ToFXIOver0 => ANY[Visibility]"
         }
       },

@@ -245,7 +245,7 @@ void DescriptiveLayouts::ToFXIIOver0::onChange(const EditBuffer *eb)
   setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() > 0);
 }
 
-void DescriptiveLayouts::LayerIIFBFromI::onChange(const EditBuffer *eb)
+bool DescriptiveLayouts::LayerIIFBFromI::check(const EditBuffer *eb)
 {
   auto oscFB = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Osc, VoiceGroup::II });
 
@@ -263,10 +263,10 @@ void DescriptiveLayouts::LayerIIFBFromI::onChange(const EditBuffer *eb)
 
   auto state = comb || svf || fx;
 
-  setValue(oscFB || state);
+  return oscFB || state;
 }
 
-void DescriptiveLayouts::LayerIFBFromII::onChange(const EditBuffer *eb)
+bool DescriptiveLayouts::LayerIFBFromII::check(const EditBuffer *eb)
 {
   auto oscFB = anyControlPositionNotZero(eb, ParameterId { C15::PID::FB_Mix_Osc, VoiceGroup::I });
 
@@ -284,5 +284,23 @@ void DescriptiveLayouts::LayerIFBFromII::onChange(const EditBuffer *eb)
 
   auto state = comb || svf || fx;
 
-  setValue(oscFB || state);
+  return oscFB || state;
+}
+
+void DescriptiveLayouts::LayerFBIToIIOnly::onChange(const EditBuffer *eb)
+{
+  auto b = LayerIFBFromII::check(eb) && !LayerIIFBFromI::check(eb);
+  setValue(b);
+}
+
+void DescriptiveLayouts::LayerFBIIToIOnly::onChange(const EditBuffer *eb)
+{
+  auto b = !LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb);
+  setValue(b);
+}
+
+void DescriptiveLayouts::LayerFBIToIIAndIIToI::onChange(const EditBuffer *eb)
+{
+  auto b = LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb);
+  setValue(b);
 }

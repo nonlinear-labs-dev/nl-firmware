@@ -21,6 +21,12 @@ int mapValue(unsigned char x, int in_min, int in_max, int out_min, int out_max)
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+void PNGControl::setOffset(const std::pair<int, int>& offset)
+{
+  offsetX = offset.first;
+  offsetY = offset.second;
+}
+
 bool PNGControl::redraw(FrameBuffer& fb)
 {
   using FBC = FrameBufferColors;
@@ -37,22 +43,17 @@ bool PNGControl::redraw(FrameBuffer& fb)
         if(pixel.alpha != 0)
         {
           fb.setColor(m_color);
-          fb.setPixel(pos.getLeft() + x, pos.getTop() + y);
+          fb.setPixel(pos.getLeft() + x + offsetX, pos.getTop() + y + offsetY);
         }
       }
       catch(...)
       {
-        //todo fix exception on fb icon draw
         auto eptr = std::current_exception();
         nltools::Log::error(nltools::handle_eptr(eptr));
       }
     }
   }
   return true;
-}
-
-void PNGControl::drawBackground(FrameBuffer& fb)
-{
 }
 
 void PNGControl::loadImage(const std::string& l)

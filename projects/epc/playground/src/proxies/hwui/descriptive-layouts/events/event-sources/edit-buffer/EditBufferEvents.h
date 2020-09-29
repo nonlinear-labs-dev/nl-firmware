@@ -179,16 +179,16 @@ namespace DescriptiveLayouts
     setValue(combOwn || svfOwn || fxOwn);
   }
 
-  class LayerIFBFromII : public EditBufferEvent<bool>
+  class LayerIFBFromII
   {
    public:
-    void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
   };
 
-  class LayerIIFBFromI : public EditBufferEvent<bool>
+  class LayerIIFBFromI
   {
    public:
-    void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
   };
 
   class ToFXIOver0 : public EditBufferEvent<bool>
@@ -198,6 +198,24 @@ namespace DescriptiveLayouts
   };
 
   class ToFXIIOver0 : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFBIToIIOnly : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFBIIToIOnly : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFBIToIIAndIIToI : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;

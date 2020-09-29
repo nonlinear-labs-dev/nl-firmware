@@ -15,6 +15,7 @@ namespace DescriptiveLayouts
     void setProperty(PrimitiveProperty key, std::experimental::any value) override;
     const PrimitiveInstance& getPrimitive() const override;
     bool redraw(FrameBuffer& fb) override;
+    void drawBackground(FrameBuffer& fb) override;
 
    protected:
     void setDirty() override;
