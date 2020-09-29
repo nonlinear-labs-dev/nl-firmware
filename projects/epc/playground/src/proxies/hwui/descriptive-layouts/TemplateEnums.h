@@ -53,7 +53,6 @@ namespace DescriptiveLayouts
        EditBufferNameWithSuffix,
 
        AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0,
-       LayerIFBToI, LayerIIFBToII, LayerIIFBToI, LayerIFBToII, LayerFBIToIIOnly, LayerFBIIToIOnly, LayerFBIToIIAndIIToI,
        LayerFBState, LayerFBOffset, LayerFXState, LayerFXOffset);
 
   ENUM(EventSinks, uint8_t, Swallow, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,

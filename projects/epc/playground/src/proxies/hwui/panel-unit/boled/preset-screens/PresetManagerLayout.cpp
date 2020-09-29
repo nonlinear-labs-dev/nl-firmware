@@ -30,7 +30,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankButton.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadToPartPresetList.h>
-#include <proxies/hwui/controls/PNGControl.h>
 #include "presets/Preset.h"
 #include "SelectVoiceGroupLayout.h"
 

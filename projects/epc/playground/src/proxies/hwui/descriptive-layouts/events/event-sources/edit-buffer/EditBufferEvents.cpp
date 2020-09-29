@@ -297,24 +297,6 @@ bool DescriptiveLayouts::LayerIFBFromII::check(const EditBuffer *eb)
   return oscFB || state;
 }
 
-void DescriptiveLayouts::LayerFBIToIIOnly::onChange(const EditBuffer *eb)
-{
-  auto b = LayerIFBFromII::check(eb) && !LayerIIFBFromI::check(eb);
-  setValue(b);
-}
-
-void DescriptiveLayouts::LayerFBIIToIOnly::onChange(const EditBuffer *eb)
-{
-  auto b = !LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb);
-  setValue(b);
-}
-
-void DescriptiveLayouts::LayerFBIToIIAndIIToI::onChange(const EditBuffer *eb)
-{
-  auto b = LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb);
-  setValue(b);
-}
-
 void DescriptiveLayouts::LayerFBState::onChange(const EditBuffer *eb)
 {
   if(!LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb))
@@ -349,7 +331,6 @@ void DescriptiveLayouts::LayerFBOffset::onChange(const EditBuffer *eb)
 
 void DescriptiveLayouts::LayerFXState::onChange(const EditBuffer *eb)
 {
-  //Layer_FX_A-C.png
   auto IToII = ToFXIIOver0::check(eb);
   auto IIToI = ToFXIOver0::check(eb);
 
