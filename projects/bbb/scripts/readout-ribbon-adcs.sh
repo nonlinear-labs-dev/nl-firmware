@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function leds() {
+leds() {
   printf "\xFF" > /dev/ribbon_led  # reset ribbon LED driver, just in case
   for i in {0..65}
   do
