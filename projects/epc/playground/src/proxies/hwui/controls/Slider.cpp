@@ -36,7 +36,7 @@ void Slider::setParameter(Parameter *param)
     else
       setValue(0, false);
 
-    setVisible(!m_param->isDisabled());
+    setVisible(m_param != nullptr && !m_param->isDisabled());
     setDirty();
   }
 }
