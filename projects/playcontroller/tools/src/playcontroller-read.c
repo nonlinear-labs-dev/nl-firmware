@@ -252,6 +252,11 @@ int main(int argc, char *argv[])
     else if (strncmp(argv[1], "+h", 2) == 0)
       displayFlags &= ~NO_HEARTBEAT;
 
+    else if (strncmp(argv[1], "-i", 2) == 0)
+      displayFlags |= NO_RIBBONS;
+    else if (strncmp(argv[1], "+i", 2) == 0)
+      displayFlags &= ~NO_RIBBONS;
+
     else if (strncmp(argv[1], "-k", 2) == 0)
       displayFlags |= NO_KEY_LOG;
     else if (strncmp(argv[1], "+k", 2) == 0)
