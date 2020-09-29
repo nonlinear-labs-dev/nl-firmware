@@ -120,6 +120,7 @@ namespace DescriptiveLayouts
         return std::pair<int, int> { x, y };
       }
 
+      case PrimitiveProperty::ImageTransparency:
       case PrimitiveProperty::Highlight:
       case PrimitiveProperty::Visibility:
       {

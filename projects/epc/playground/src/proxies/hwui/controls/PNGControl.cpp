@@ -33,6 +33,17 @@ bool PNGControl::redraw(FrameBuffer& fb)
 
   auto pos = getPosition();
 
+  if(!m_transparent && isVisible())
+  {
+    fb.setColor(FBC::C43);
+    fb.fillRect(getPosition());
+  }
+
+  if(m_imagePath.empty())
+  {
+    return true;
+  }
+
   for(auto y = 0; y < m_image.get_height(); y++)
   {
     for(auto x = 0; x < m_image.get_width(); x++)
@@ -56,8 +67,17 @@ bool PNGControl::redraw(FrameBuffer& fb)
   return true;
 }
 
+void PNGControl::drawBackground(FrameBuffer& fb)
+{
+}
+
 void PNGControl::loadImage(const std::string& l)
 {
+  if(l.empty())
+  {
+    m_imagePath = "";
+  }
+
   try
   {
     m_image.read(getResourcesDir() + "/png/" + l);
@@ -72,5 +92,11 @@ void PNGControl::loadImage(const std::string& l)
 void PNGControl::setColor(FrameBufferColors color)
 {
   m_color = color;
+  setDirty();
+}
+
+void PNGControl::setTransparent(bool transparent)
+{
+  m_transparent = transparent;
   setDirty();
 }

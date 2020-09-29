@@ -18,6 +18,8 @@ void DescriptiveLayouts::Image::setProperty(DescriptiveLayouts::PrimitivePropert
       loadImage(std::experimental::any_cast<std::string>(value));
     if(key == PrimitiveProperty::ImageOffset)
       setOffset(std::experimental::any_cast<std::pair<int, int>>(value));
+    if(key == PrimitiveProperty::ImageTransparency)
+      setTransparent(std::experimental::any_cast<bool>(value));
   }
   catch(...)
   {

@@ -235,14 +235,24 @@ void DescriptiveLayouts::ToFXIIUnder100::onChange(const EditBuffer *eb)
   setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() < 1.0);
 }
 
+bool DescriptiveLayouts::ToFXIOver0::check(const EditBuffer *eb)
+{
+  return eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II })->getControlPositionValue() > 0;
+}
+
 void DescriptiveLayouts::ToFXIOver0::onChange(const EditBuffer *eb)
 {
-  setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II })->getControlPositionValue() > 0);
+  setValue(check(eb));
+}
+
+bool DescriptiveLayouts::ToFXIIOver0::check(const EditBuffer *eb)
+{
+  return eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() > 0;
 }
 
 void DescriptiveLayouts::ToFXIIOver0::onChange(const EditBuffer *eb)
 {
-  setValue(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue() > 0);
+  setValue(check(eb));
 }
 
 bool DescriptiveLayouts::LayerIIFBFromI::check(const EditBuffer *eb)
@@ -303,4 +313,75 @@ void DescriptiveLayouts::LayerFBIToIIAndIIToI::onChange(const EditBuffer *eb)
 {
   auto b = LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb);
   setValue(b);
+}
+
+void DescriptiveLayouts::LayerFBState::onChange(const EditBuffer *eb)
+{
+  if(!LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb))
+  {
+    setValue("Layer_FB_A.png");
+  }
+  else if(LayerIFBFromII::check(eb) && !LayerIIFBFromI::check(eb))
+  {
+    setValue("Layer_FB_B.png");
+  }
+  else if(LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb))
+  {
+    setValue("Layer_FB_C.png");
+  }
+  else
+  {
+    setValue("");
+  }
+}
+
+void DescriptiveLayouts::LayerFBOffset::onChange(const EditBuffer *eb)
+{
+  if(LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb))
+  {
+    setValue({ 0, 0 });
+  }
+  else
+  {
+    setValue({ 5, 5 });
+  }
+}
+
+void DescriptiveLayouts::LayerFXState::onChange(const EditBuffer *eb)
+{
+  //Layer_FX_A-C.png
+  auto IToII = ToFXIIOver0::check(eb);
+  auto IIToI = ToFXIOver0::check(eb);
+
+  if(IToII && !IIToI)
+  {
+    setValue("Layer_FX_B.png");
+  }
+  else if(!IToII && IIToI)
+  {
+    setValue("Layer_FX_A.png");
+  }
+  else if(IToII && IIToI)
+  {
+    setValue("Layer_FX_C.png");
+  }
+  else
+  {
+    setValue("");
+  }
+}
+
+void DescriptiveLayouts::LayerFXOffset::onChange(const EditBuffer *eb)
+{
+  auto IToII = ToFXIIOver0::check(eb);
+  auto IIToI = ToFXIOver0::check(eb);
+
+  if(!IIToI && IToII)
+  {
+    setValue({ 0, 2 });
+  }
+  else
+  {
+    setValue({ 0, 0 });
+  }
 }

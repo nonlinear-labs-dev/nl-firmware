@@ -195,12 +195,14 @@ namespace DescriptiveLayouts
   {
    public:
     void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
   };
 
   class ToFXIIOver0 : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
   };
 
   class LayerFBIToIIOnly : public EditBufferEvent<bool>
@@ -216,6 +218,30 @@ namespace DescriptiveLayouts
   };
 
   class LayerFBIToIIAndIIToI : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFBState : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFBOffset : public EditBufferEvent<std::pair<int, int>>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFXState : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFXOffset : public EditBufferEvent<std::pair<int, int>>
   {
    public:
     void onChange(const EditBuffer *eb) override;

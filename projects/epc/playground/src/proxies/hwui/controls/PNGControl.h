@@ -12,8 +12,11 @@ class PNGControl : public Control
   void loadImage(const std::string& l);
   void setColor(FrameBufferColors color);
   void setOffset(const std::pair<int, int>& offset);
+  void setTransparent(bool transparent);
+  void drawBackground(FrameBuffer& fb) override;
 
  private:
+  bool m_transparent = true;
   int offsetX = 0;
   int offsetY = 0;
   FrameBufferColors m_color = FrameBufferColors::C128;
