@@ -27,9 +27,9 @@ bool PNGControl::redraw(FrameBuffer& fb)
 
   auto pos = getPosition();
 
-  for(auto y = 0; y < m_image.get_width(); y++)
+  for(auto y = 0; y < m_image.get_height(); y++)
   {
-    for(auto x = 0; x < m_image.get_height(); x++)
+    for(auto x = 0; x < m_image.get_width(); x++)
     {
       try
       {
