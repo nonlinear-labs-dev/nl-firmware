@@ -122,10 +122,12 @@ namespace DescriptiveLayouts
     m_map[EventSources::ToFXIOver0] = std::make_unique<ToFXIOver0>();
     m_map[EventSources::ToFXIIUnder100] = std::make_unique<ToFXIIUnder100>();
     m_map[EventSources::ToFXIIOver0] = std::make_unique<ToFXIIOver0>();
-    m_map[EventSources::LayerIFBToI] = std::make_unique<LayerOwnFB<VoiceGroup::I>>();
-    m_map[EventSources::LayerIFBToII] = std::make_unique<LayerIIFBFromI>();
-    m_map[EventSources::LayerIIFBToI] = std::make_unique<LayerIFBFromII>();
-    m_map[EventSources::LayerIIFBToII] = std::make_unique<LayerOwnFB<VoiceGroup::II>>();
+    
+    m_map[EventSources::LayerFBState] = std::make_unique<LayerFBState>();
+    m_map[EventSources::LayerFBOffset] = std::make_unique<LayerFBOffset>();
+
+    m_map[EventSources::LayerFXState] = std::make_unique<LayerFXState>();
+    m_map[EventSources::LayerFXOffset] = std::make_unique<LayerFXOffset>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

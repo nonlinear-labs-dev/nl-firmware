@@ -9,7 +9,8 @@ namespace DescriptiveLayouts
 {
   using ComponentID = Glib::ustring;
 
-  ENUM(PrimitiveProperty, uint8_t, None, Text, Range, Visibility, Highlight, ControlPosition);
+  ENUM(PrimitiveProperty, uint8_t, None, Text, ImagePath, ImageOffset, ImageTransparency, Range, Visibility, Highlight,
+       ControlPosition);
   ENUM(StyleKey, uint8_t, BackgroundColor, Color, TextAlign, FontSize, BorderStyle, FontDecoration, SuffixColor,
        BorderColor, HighlightBackgroundColor, HighlightColor);
   ENUM(ParameterType, uint8_t, Unipolar = 1 << 0, Bipolar = 1 << 1);
@@ -52,7 +53,7 @@ namespace DescriptiveLayouts
        EditBufferNameWithSuffix,
 
        AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0,
-       LayerIFBToI, LayerIIFBToII, LayerIIFBToI, LayerIFBToII);
+       LayerFBState, LayerFBOffset, LayerFXState, LayerFXOffset);
 
   ENUM(EventSinks, uint8_t, Swallow, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
@@ -68,7 +69,7 @@ namespace DescriptiveLayouts
        Left, Right, Up, Down, IncParam, DecParam, Commit);
 
   ENUM(EventProviders, uint8_t, None, Global, IndependentPresetSelectionEvents, PresetManagerEvents);
-  ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle);
+  ENUM(PrimitiveClasses, uint8_t, Any, Bar, Border, Text, Circle, Image);
 
   template <typename Derived> class StringId : public std::string
   {
