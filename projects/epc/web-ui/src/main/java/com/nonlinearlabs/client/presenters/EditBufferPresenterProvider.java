@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.presenters;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.nonlinearlabs.client.dataModel.Notifier;
@@ -148,8 +147,6 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             presenter.layerFBII = isLayerFB(VoiceGroup.II);
             presenter.layerFXToI = isLayerFX(VoiceGroup.II);
             presenter.layerFXToII = isLayerFX(VoiceGroup.I);
-            GWT.log("FBI: " + presenter.layerFBI);
-            GWT.log("FBII: " + presenter.layerFBII);
         } else {
             presenter.layerFBI = false;
             presenter.layerFBII = false;
