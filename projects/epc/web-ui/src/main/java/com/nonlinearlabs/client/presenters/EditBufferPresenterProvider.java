@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.nonlinearlabs.client.dataModel.Notifier;
@@ -13,7 +14,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ScaleOffsetParameterModel;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
-import com.nonlinearlabs.client.world.overlay.belt.parameters.MacroControlContextMenu;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 
 public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private static EditBufferPresenterProvider theProvider = new EditBufferPresenterProvider();
@@ -22,8 +23,10 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private int allParameterSubscription = 0;
     private int selectedParameterSubscription = 0;
 
+    private EditBufferModel model;
+
     private EditBufferPresenterProvider() {
-        EditBufferModel model = EditBufferModel.get();
+        model = EditBufferModel.get();
 
         model.voiceGroup.onChange(v -> {
             monitorSelectedParameter();
@@ -138,6 +141,53 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             presenter.allParametersLocked = allLocked;
             notifyChanges();
         }
+
+        boolean inLayer = model.soundType.getValue() == SoundType.Layer;
+        if(inLayer) {
+            presenter.layerFBI = isLayerFB(VoiceGroup.I);
+            presenter.layerFBII = isLayerFB(VoiceGroup.II);
+            presenter.layerFXToI = isLayerFX(VoiceGroup.II);
+            presenter.layerFXToII = isLayerFX(VoiceGroup.I);
+            GWT.log("FBI: " + presenter.layerFBI);
+            GWT.log("FBII: " + presenter.layerFBII);
+        } else {
+            presenter.layerFBI = false;
+            presenter.layerFBII = false;
+            presenter.layerFXToI = false;
+            presenter.layerFXToII = false;
+        }
+    }
+
+    private boolean cpNotZero(int num, VoiceGroup vg) {
+        BasicParameterModel param = model.getParameter(new ParameterId(num, vg));
+        return param.value.value.getValue() != 0;
+    }
+    
+    private boolean cpGreaterThanZero(int num, VoiceGroup vg) {
+        BasicParameterModel param = model.getParameter(new ParameterId(num, vg));
+        return param.value.value.getValue() > 0;
+    }
+
+    private boolean isLayerFB(VoiceGroup vg) {
+        boolean oscFB = cpNotZero(346 ,vg);
+        
+        boolean combMix = cpNotZero(156 ,vg);
+        boolean combSrc = cpNotZero(350 ,vg);
+        boolean comb = combMix && combSrc;
+
+        boolean svfMix = cpNotZero(158, vg);
+        boolean svfSrc = cpNotZero(352, vg);
+        boolean svf = svfMix && svfSrc;
+
+        boolean fxMix = cpNotZero(160, vg);
+        boolean fxSrc = cpNotZero(354, vg);
+        boolean fx = fxMix && fxSrc;
+
+        return oscFB || comb || svf || fx;
+    }
+
+    private boolean isLayerFX(VoiceGroup vg) {
+        return cpGreaterThanZero(362, vg);
     }
 
     private boolean isAnyParameterLocked() {
