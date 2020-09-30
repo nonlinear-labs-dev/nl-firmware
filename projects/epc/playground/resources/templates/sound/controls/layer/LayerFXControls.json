@@ -1,0 +1,22 @@
+{
+  "controls": {
+    "FXITOFXII": {
+      "FXITOFXII_image": {
+        "Class": "Image",
+        "Rect": "0, 0, 22, 19"
+      }
+    },
+    "LayerFBImage": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0, 0, 21, 17"
+      }
+    },
+    "LayerFBImageLarge": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0,0,26,23"
+      }
+    }
+  }
+}

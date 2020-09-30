@@ -4,6 +4,7 @@
 #include <nltools/Uncopyable.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <memory>
+#include <functional>
 
 class Application;
 class Layout;
@@ -25,6 +26,8 @@ class OLEDProxy : public Uncopyable
 
   virtual void reset(tLayoutPtr layout);
 
+  void onLayoutInstalled(std::function<void(Layout *)> cb);
+
   void setOverlay(Layout *layout);
   void setOverlay(tLayoutPtr layout);
 
@@ -38,6 +41,8 @@ class OLEDProxy : public Uncopyable
   const Rect &getPosInFrameBuffer() const;
 
  private:
+  std::function<void(Layout *)> m_onLayoutInstalledCB;
+
   tLayoutPtr m_layout;
   tLayoutPtr m_overlay;
   Rect m_posInFrameBuffer;
