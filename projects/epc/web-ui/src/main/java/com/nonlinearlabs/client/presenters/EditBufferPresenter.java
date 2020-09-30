@@ -10,6 +10,17 @@ public class EditBufferPresenter {
     public boolean isAnyParameterLocked = false;
     public boolean isAnyParameterChanged = false;
     public boolean isAnyScaleOffsetParameterNotDefault = false;
+
+    public boolean layerFBI = false;
+    public boolean layerFBII = false;
+
+    public boolean splitFXToI = false;
+    public boolean splitFXToII = false;
+
+    public boolean layerFXToI = false;
+    public boolean layerFXToII = false;
+
+
     public String loadedPresetUUID = "";
     public ParameterPresenter selectedParameter;
     public String voiceGroup = "";

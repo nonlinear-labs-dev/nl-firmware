@@ -34,8 +34,10 @@ public class LayerSoundLayout extends SoundLayout {
 	private class LayerSoundSettings extends OverlayLayout {
 		LayerSoundSettings(LayerSoundLayout parent) {
 			super(parent);
+			addChild(new LayerSoundFBIndicator(this));
 			addChild(new VoiceGroupSoundSettings(VoiceGroup.I, this));
 			addChild(new VoiceGroupSoundSettings(VoiceGroup.II, this));
+			addChild(new LayerSoundFXIndicator(this));
 		}
 
 		@Override
@@ -43,8 +45,19 @@ public class LayerSoundLayout extends SoundLayout {
 			super.doLayout(x, y, w, h);
 			double parts = 20;
 			double unit = h / parts;
-			getChildren().get(0).doLayout(0, 1.5 * unit, w, 8 * unit);
-			getChildren().get(1).doLayout(0, 10.5 * unit, w, 8 * unit);
+
+			getChildren().get(1).doLayout(0, 1.5 * unit, w, 8 * unit);
+			getChildren().get(2).doLayout(0, 10.5 * unit, w, 8 * unit);
+
+			LayerSoundFBIndicator fb = (LayerSoundFBIndicator)getChildren().get(0);
+			double fbW = fb.getSelectedImage().getImgWidth();
+			double fbH = fb.getSelectedImage().getImgHeight();
+			fb.doLayout(-fbW, h / 2 - (fbH / 2), fbW, fbH);
+
+			LayerSoundFXIndicator fx = (LayerSoundFXIndicator)getChildren().get(3);
+			double fxW = fb.getSelectedImage().getImgWidth();
+			double fxH = fb.getSelectedImage().getImgHeight();
+			fx.doLayout(w + 9, h / 2 - (fxH / 2), fxW, fxH);
 		}
 	}
 

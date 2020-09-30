@@ -301,11 +301,11 @@ void DescriptiveLayouts::LayerFBState::onChange(const EditBuffer *eb)
 {
   if(!LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb))
   {
-    setValue("Layer_FB_A.png");
+    setValue("Layer_FB_B.png");
   }
   else if(LayerIFBFromII::check(eb) && !LayerIIFBFromI::check(eb))
   {
-    setValue("Layer_FB_B.png");
+    setValue("Layer_FB_A.png");
   }
   else if(LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb))
   {
