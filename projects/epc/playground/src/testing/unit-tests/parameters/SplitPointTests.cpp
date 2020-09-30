@@ -36,9 +36,11 @@ TEST_CASE("Split Point Display Value")
 
 TEST_CASE("Note to Display")
 {
-  REQUIRE(SplitPointDimension::stringizeNote(0) == "C1");
-  REQUIRE(SplitPointDimension::stringizeNote(1) == "C#1");
-  REQUIRE(SplitPointDimension::stringizeNote(60) == "C6");
-  REQUIRE(SplitPointDimension::stringizeNote(30) == "F#3");
-  REQUIRE(SplitPointDimension::stringizeNote(29) == "F3");
+  SplitPointDimension dim;
+  REQUIRE(dim.stringizeNote(0) == "C1");
+  REQUIRE(dim.stringizeNote(1) == "C#1");
+
+  REQUIRE(dim.stringizeNote(60) == "C6");
+  REQUIRE(dim.stringizeNote(30) == "F#3");
+  REQUIRE(dim.stringizeNote(29) == "F3");
 }

@@ -141,7 +141,8 @@ TEST_CASE("Convert Split (II) to Single")
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Scale/MCM is unchanged")
@@ -284,7 +285,8 @@ TEST_CASE("Convert Layer (II) to Single")
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Scale/MCM is unchanged")
@@ -416,7 +418,8 @@ TEST_CASE("Convert Layer (I) to Single")
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Scale/MCM is unchanged")

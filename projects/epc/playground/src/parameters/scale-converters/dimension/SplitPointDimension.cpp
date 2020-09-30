@@ -1,20 +1,9 @@
-#include <cmath>
 #include "SplitPointDimension.h"
-
-Glib::ustring SplitPointDimension::stringizeSplitPointDisplay(tControlPositionValue value, VoiceGroup seenFrom)
-{
-  int note = std::round(value * 59);
-
-  if(seenFrom == VoiceGroup::II)
-    note++;
-
-  return KeyDimension::stringizeNote(note);
-}
 
 Glib::ustring SplitPointDimension::stringize(const tDisplayValue &displayValue) const
 {
-#warning TODO
-  return stringizeSplitPointDisplay(displayValue, VoiceGroup::I);
+  int note = std::round(displayValue * 59);
+  return KeyDimension::stringizeNote(note);
 }
 
 const SplitPointDimension &SplitPointDimension::get()

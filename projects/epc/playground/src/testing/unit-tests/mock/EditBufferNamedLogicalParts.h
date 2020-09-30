@@ -183,9 +183,9 @@ class EditBufferLogicalParts
     return TestHelper::getEditBuffer()->findParameterByID({ detail::FADE_RANGE, vg });
   }
 
-  static Parameter* getSplitPoint()
+  template <VoiceGroup vg> static Parameter* getSplitPoint()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ detail::SPLIT_POINT, VoiceGroup::Global });
+    return TestHelper::getEditBuffer()->findParameterByID({ detail::SPLIT_POINT, vg });
   }
 
   static ModulateableParameter* getMasterVolume()

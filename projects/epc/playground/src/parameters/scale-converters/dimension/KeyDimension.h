@@ -5,7 +5,7 @@ class KeyDimension : public Dimension
 {
  public:
   Glib::ustring stringize(const tDisplayValue& displayValue) const override;
-  static Glib::ustring stringizeNote(int note);
+  virtual Glib::ustring stringizeNote(int note) const;
   Glib::ustring getStingizerJS() const override;
 
   static KeyDimension& get();

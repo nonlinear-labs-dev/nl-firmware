@@ -91,7 +91,8 @@ TEST_CASE("Convert Single Sound to Split")
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Master is Default")
@@ -204,7 +205,8 @@ TEST_CASE("Convert Single Sound to Layer")
 
     THEN("Split is default")
     {
-      CHECK(EBL::getSplitPoint()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getSplitPoint<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
 
     THEN("Global Master is Default")

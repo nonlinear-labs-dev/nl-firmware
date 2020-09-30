@@ -11,7 +11,7 @@ Glib::ustring KeyDimension::getStingizerJS() const
   return "formatNote(cpValue)";
 }
 
-Glib::ustring KeyDimension::stringizeNote(int note)
+Glib::ustring KeyDimension::stringizeNote(int note) const
 {
   const std::array<const char*, KeysPerOctave> keyLabels
       = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };

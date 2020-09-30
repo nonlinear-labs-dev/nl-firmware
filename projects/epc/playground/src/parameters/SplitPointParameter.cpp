@@ -17,7 +17,6 @@ SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterI
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
                                               ScaleConverter::get<LinearBipolar59StScaleConverter>(), 0.5, 59, 59)
 {
-  m_syncSetting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>().get();
 }
 
 Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
@@ -39,30 +38,16 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
 {
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 
-  if(m_syncSetting->getState() && initiator != Initiator::INDIRECT_SPLIT_SYNC)
+  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>().get()->getState()
+     && initiator != Initiator::INDIRECT_SPLIT_SYNC)
   {
     getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, value, dosendToPlaycontroller);
   }
 }
 
-Glib::ustring SplitPointParameter::getDisplayString() const
-{
-  return SplitPointDimension::stringizeSplitPointDisplay(getValue().getRawValue(), getVoiceGroup());
-}
-
 Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionValue amount) const
 {
   return std::to_string(static_cast<int>(60 * amount)) + " st";
-}
-
-Glib::ustring SplitPointParameter::modulationValueToDisplayString(tControlPositionValue v) const
-{
-  return SplitPointDimension::stringizeSplitPointDisplay(v, getVoiceGroup());
-}
-
-Glib::ustring SplitPointParameter::getDisplayString(tControlPositionValue cp) const
-{
-  return SplitPointDimension::stringizeSplitPointDisplay(cp, getVoiceGroup());
 }
 
 SplitPointParameter* SplitPointParameter::getSibling()
