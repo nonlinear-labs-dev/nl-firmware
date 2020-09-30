@@ -48,19 +48,11 @@ bool PNGControl::redraw(FrameBuffer& fb)
   {
     for(auto x = 0; x < m_image.get_width(); x++)
     {
-      try
+      auto pixel = m_image.get_pixel(x, y);
+      if(pixel.alpha != 0)
       {
-        auto pixel = m_image.get_pixel(x, y);
-        if(pixel.alpha != 0)
-        {
-          fb.setColor(m_color);
-          fb.setPixel(pos.getLeft() + x + offsetX, pos.getTop() + y + offsetY);
-        }
-      }
-      catch(...)
-      {
-        auto eptr = std::current_exception();
-        nltools::Log::error(nltools::handle_eptr(eptr));
+        fb.setColor(m_color);
+        fb.setPixel(pos.getLeft() + x + offsetX, pos.getTop() + y + offsetY);
       }
     }
   }
