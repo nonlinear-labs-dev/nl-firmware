@@ -6,8 +6,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "playcontroller/playcontroller-defs.h"
-#include "version.h"
+#include "shared/playcontroller/playcontroller-defs.h"
+#include "shared/version.h"
 #include "globals.h"
 
 #include "linuxgpio.h"
@@ -230,44 +230,44 @@ int main(int argc, char const *argv[])
     }
     if (strncmp(argv[2], SW_VERSION, sizeof SW_VERSION) == 0)
     {
-      REQ_DATA[2] = LPC_REQUEST_ID_SW_VERSION;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_SW_VERSION;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
     if (strncmp(argv[2], MUTE_STATUS, sizeof MUTE_STATUS) == 0)
     {
-      REQ_DATA[2] = LPC_REQUEST_ID_UNMUTE_STATUS;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_UNMUTE_STATUS;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
     if (strncmp(argv[2], CLEAR_EEPROM, sizeof CLEAR_EEPROM) == 0)
     {
-      REQ_DATA[2] = LPC_REQUEST_ID_CLEAR_EEPROM;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_CLEAR_EEPROM;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
     if (strncmp(argv[2], STAT_DATA, sizeof STAT_DATA) == 0)
     {
-      REQ_DATA[2] = LPC_REQUEST_ID_STAT_DATA;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_STAT_DATA;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
     if (strncmp(argv[2], CLEAR_STAT, sizeof CLEAR_STAT) == 0)
     {
-      REQ_DATA[2] = LPC_REQUEST_ID_CLEAR_STAT;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_CLEAR_STAT;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
     if (strncmp(argv[2], EHC_SAVE_EEPROM, sizeof EHC_SAVE_EEPROM) == 0)
     {
-      REQ_DATA[2] = LPC_REQUEST_ID_EHC_EEPROMSAVE;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
 #if LPC_KEYBED_DIAG
     if (strncmp(argv[2], KEY_CNTRS, sizeof KEY_CNTRS) == 0)
     {
-      REQ_DATA[2] = LPC_REQUEST_ID_KEYCNTR_DATA;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_KEYCNTR_DATA;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }

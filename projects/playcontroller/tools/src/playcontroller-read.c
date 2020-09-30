@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <string.h>
 #include <errno.h>
-#include "version.h"
+#include "shared/version.h"
 
 #define VERSION_STRING "1.0"
 #define PROGNAME       "lpc-read"
@@ -161,13 +161,14 @@ void Usage(char const *const string, int const exitCode)
   puts("  @filename : specify input file rather than using /dev/lpc_bb_driver");
   puts("  <options> is a white-space seperated list of letters, preceeded");
   puts("            by either a + or -, turning the display on or off");
-  puts("  default is +a -d");
+  puts("  default is +a -d -i");
   puts(" a   All options");
   puts(" r   oveRlay messages of same type");
   puts(" c   diagnostiC status data");
   puts(" d   additional hex Dump, forces -r");
   puts(" e   EHC data");
   puts(" h   Heartbeat");
+  puts(" i   raw rIbbon values (use \"LPC set sensors on\")");
   puts(" k   Key logging and key counters");
   puts(" m   Mute status");
   puts(" n   Notificiation");
@@ -217,7 +218,7 @@ int main(int argc, char *argv[])
   flags = getDriverFlags(driverFileNo);
   makeDriverBlocking(driverFileNo, flags);
 
-  displayFlags = NO_HEXDUMP;
+  displayFlags = NO_HEXDUMP + NO_RIBBONS;
 
   while (argc > 1)
   {
@@ -250,6 +251,11 @@ int main(int argc, char *argv[])
       displayFlags |= NO_HEARTBEAT;
     else if (strncmp(argv[1], "+h", 2) == 0)
       displayFlags &= ~NO_HEARTBEAT;
+
+    else if (strncmp(argv[1], "-i", 2) == 0)
+      displayFlags |= NO_RIBBONS;
+    else if (strncmp(argv[1], "+i", 2) == 0)
+      displayFlags &= ~NO_RIBBONS;
 
     else if (strncmp(argv[1], "-k", 2) == 0)
       displayFlags |= NO_KEY_LOG;

@@ -302,10 +302,10 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
     switch (data[0])
     {
       case PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR:  // Play mode ribbon 1 behaviour
-        ADC_WORK_SetRibbon1Behaviour(data[1]);               // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
+        ADC_WORK_SetRibbon1Behaviour(data[1]);                          // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
         break;
       case PLAYCONTROLLER_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR:  // Play mode ribbon 2 behaviour
-        ADC_WORK_SetRibbon2Behaviour(data[1]);               // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
+        ADC_WORK_SetRibbon2Behaviour(data[1]);                          // 0: Abs + Non-Return, 1: Abs + Return, 2: Rel + Non-Return, 3: Rel + Return
         break;
       case PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE:
         ADC_WORK_SetRibbon1OutputValue(data[1]);
@@ -313,23 +313,23 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       case PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE:
         ADC_WORK_SetRibbon2OutputValue(data[1]);
         break;
-      case PLAYCONTROLLER_SETTING_ID_BASE_UNIT_UI_MODE:   // "Unit Mode" - Ribbon 1 can be switched between Edit and Play mode.
-        ADC_WORK_SetRibbon1EditMode(data[1]);  // 0: Play, 1: Parameter Edit
+      case PLAYCONTROLLER_SETTING_ID_BASE_UNIT_UI_MODE:  // "Unit Mode" - Ribbon 1 can be switched between Edit and Play mode.
+        ADC_WORK_SetRibbon1EditMode(data[1]);            // 0: Play, 1: Parameter Edit
         break;
       case PLAYCONTROLLER_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR:  // Parameter edit mode ribbon behaviour
-        ADC_WORK_SetRibbon1EditBehaviour(data[1]);     // 0: Rel, 1: Abs
+        ADC_WORK_SetRibbon1EditBehaviour(data[1]);                // 0: Rel, 1: Abs
         break;
-      case PLAYCONTROLLER_SETTING_ID_RIBBON_REL_FACTOR:   // Factor for the increments when a ribbon is in Relative mode
-        ADC_WORK_SetRibbonRelFactor(data[1]);  // factor = data[1] / 256
+      case PLAYCONTROLLER_SETTING_ID_RIBBON_REL_FACTOR:  // Factor for the increments when a ribbon is in Relative mode
+        ADC_WORK_SetRibbonRelFactor(data[1]);            // factor = data[1] / 256
         break;
       case PLAYCONTROLLER_SETTING_ID_VELOCITY_CURVE:  // Velocity Curve
-        POLY_Select_VelTable(data[1]);     // Parameter: 0 = very soft ... 4 = very hard
+        POLY_Select_VelTable(data[1]);                // Parameter: 0 = very soft ... 4 = very hard
         break;
-      case PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE:        // Aftertouch Curve
-        ADC_WORK_Select_AftertouchTable(data[1]);  // 0: soft, 1: normal, 2: hard
+      case PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE:  // Aftertouch Curve
+        ADC_WORK_Select_AftertouchTable(data[1]);       // 0: soft, 1: normal, 2: hard
         break;
-      case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:        // Bender Curve
-        ADC_WORK_Select_BenderTable(data[1]);  // 0: soft, 1: normal, 2: hard
+      case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:  // Bender Curve
+        ADC_WORK_Select_BenderTable(data[1]);       // 0: soft, 1: normal, 2: hard
         break;
       case PLAYCONTROLLER_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:
         SUP_SetMuteOverride(data[1]);  // enable/disable Software Mute Override and value
@@ -379,21 +379,21 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
   {
     switch (data[0])
     {
-      case LPC_REQUEST_ID_SW_VERSION:  // sending the firmware version to the BB
+      case PLAYCONTROLLER_REQUEST_ID_SW_VERSION:  // sending the firmware version to the BB
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_SW_VERSION, SW_VERSION);
         BB_MSG_SendTheBuffer();
         break;
-      case LPC_REQUEST_ID_UNMUTE_STATUS:  // sending the muting status to the BB
+      case PLAYCONTROLLER_REQUEST_ID_UNMUTE_STATUS:  // sending the muting status to the BB
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_UNMUTE_STATUS, SUP_GetUnmuteStatusBits());
         BB_MSG_SendTheBuffer();
         break;
-      case LPC_REQUEST_ID_EHC_DATA:  // send EHC data to BB
+      case PLAYCONTROLLER_REQUEST_ID_EHC_DATA:  // send EHC data to BB
         NL_EHC_RequestToSendEHCdata();
         break;
-      case LPC_REQUEST_ID_CLEAR_EEPROM:
+      case PLAYCONTROLLER_REQUEST_ID_CLEAR_EEPROM:
         NL_EEPROM_RequestFullErase();
         break;
-      case LPC_REQUEST_ID_STAT_DATA:
+      case PLAYCONTROLLER_REQUEST_ID_STAT_DATA:
       {
         uint16_t words = NL_STAT_GetDataSize();
         uint16_t buffer[words];
@@ -403,22 +403,22 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       }
-      case LPC_REQUEST_ID_CLEAR_STAT:
+      case PLAYCONTROLLER_REQUEST_ID_CLEAR_STAT:
         NL_STAT_ClearData();
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT, 1);
         BB_MSG_SendTheBuffer();
         break;
-      case LPC_REQUEST_ID_EHC_EEPROMSAVE:
+      case PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE:
         NL_EHC_ForceEepromUpdate();
         break;
 #if LPC_KEYBED_DIAG
-      case LPC_REQUEST_ID_KEYCNTR_DATA:
+      case PLAYCONTROLLER_REQUEST_ID_KEYCNTR_DATA:
       {
         uint16_t words = NL_STAT_GetKeyDataSize();
         uint16_t buffer[words];
         NL_STAT_GetKeyData(buffer);
-        BB_MSG_WriteMessage(LPC_BB_MSG_TYPE_KEYCNTR_DATA, words, buffer);
-        BB_MSG_WriteMessage2Arg(LPC_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_KEYCNTR_DATA, 1);
+        BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA, words, buffer);
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_KEYCNTR_DATA, 1);
         BB_MSG_SendTheBuffer();
         break;
       }

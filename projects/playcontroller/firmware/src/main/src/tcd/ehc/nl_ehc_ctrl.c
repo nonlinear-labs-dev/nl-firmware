@@ -907,7 +907,7 @@ void NL_EHC_SetEHCconfig(const uint16_t cmd, uint16_t data)
       setDeadZones(cmd & 0xFF, data);
       break;
     case PLAYCONTROLLER_EHC_COMMAND_RESET_DELETE:  // reset or full delete controller
-      if (data == 0)                    // reset
+      if (data == 0)                               // reset
         resetControllerById(cmd & 0xFF, 0);
       else  // full delete
       {
