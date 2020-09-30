@@ -17,6 +17,12 @@
         "Class": "Image",
         "Rect": "0,0,26,23"
       }
+    },
+    "SplitFBImage": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0,0,32,19"
+      }
     }
   }
 }
