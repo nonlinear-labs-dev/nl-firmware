@@ -152,52 +152,51 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override;
   };
 
-  template <VoiceGroup vg> class LayerOwnFB : public EditBufferEvent<bool>
+  class LayerIFBFromII
   {
    public:
-    void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
   };
 
-  template <VoiceGroup vg> void DescriptiveLayouts::LayerOwnFB<vg>::onChange(const EditBuffer *eb)
-  {
-    auto fbComb = eb->findParameterByID({ C15::PID::FB_Mix_Comb, vg });
-    auto svf = eb->findParameterByID({ C15::PID::FB_Mix_SVF, vg });
-    auto effects = eb->findParameterByID({ C15::PID::FB_Mix_FX, vg });
-
-    auto fromComb = eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, vg });
-    auto fromSvf = eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, vg });
-    auto fromFX = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, vg });
-
-    auto unequalsZero = [&](auto p) { return p->getControlPositionValue() != 0; };
-
-    auto unequals100 = [&](auto p) { return p->getControlPositionValue() != 1; };
-
-    auto combOwn = unequalsZero(fbComb) && unequals100(fromComb);
-    auto svfOwn = unequalsZero(svf) && unequals100(fromSvf);
-    auto fxOwn = unequalsZero(effects) && unequals100(fromFX);
-
-    setValue(combOwn || svfOwn || fxOwn);
-  }
-
-  class LayerIFBFromII : public EditBufferEvent<bool>
+  class LayerIIFBFromI
   {
    public:
-    void onChange(const EditBuffer *eb) override;
-  };
-
-  class LayerIIFBFromI : public EditBufferEvent<bool>
-  {
-   public:
-    void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
   };
 
   class ToFXIOver0 : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
   };
 
   class ToFXIIOver0 : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+    static bool check(const EditBuffer *eb);
+  };
+
+  class LayerFBState : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFBOffset : public EditBufferEvent<std::pair<int, int>>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFXState : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerFXOffset : public EditBufferEvent<std::pair<int, int>>
   {
    public:
     void onChange(const EditBuffer *eb) override;

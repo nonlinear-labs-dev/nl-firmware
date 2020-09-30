@@ -221,6 +221,7 @@ void PresetManagerLayout::setupPresetSelect()
   {
     setStoreModeData(nullptr);
   }
+
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumPresetsInBankLabel(Rect(192, 1, 64, 14)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
@@ -342,8 +343,9 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
           auto pm = Application::get().getPresetManager();
           auto oldPreset = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
           pm->autoLoadPresetAccordingToLoadType();
-          if(pm->getSelectedPreset()->getUuid() == oldPreset) {
-              animateSelectedPreset([] {});
+          if(pm->getSelectedPreset()->getUuid() == oldPreset)
+          {
+            animateSelectedPreset([] {});
           }
         }
     }

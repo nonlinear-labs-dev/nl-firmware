@@ -1,6 +1,6 @@
 #include "process-read-msgs.h"
-#include "playcontroller/playcontroller-defs.h"
-#include "playcontroller/playcontroller-converters.h"
+#include "shared/playcontroller/playcontroller-defs.h"
+#include "shared/playcontroller/playcontroller-converters.h"
 #include "globals.h"
 
 char paramNameTable[][NUM_HW_SOURCES] = {
@@ -175,7 +175,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       return;
 
 #if LPC_KEYBED_DIAG
-    case LPC_BB_MSG_TYPE_KEYCNTR_DATA:
+    case PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA:
       if (flags & NO_KEY_LOG)
         return;
       dump(cmd, len, data, flags);
@@ -362,7 +362,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       return;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_SENSORS_RAW:
-      if (flags & NO_SENSORSRAW)
+      if ((flags & NO_SENSORSRAW) && (flags & NO_RIBBONS))
         return;
       dump(cmd, len, data, flags);
       if (len != 13)
@@ -370,20 +370,56 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         printf("RAW SENSORS : wrong length of %d\n", len);
         return;
       }
-      if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
-        cursorUp(1);
-      displayCounter();
-      printf("RAW SENSORS: ");
-      for (int i = 3; i >= 0; i--)
-        printf("%c ", (data[0] & (1 << i)) ? '1' : '0');
-      printf(" ");
-      for (int i = 1; i < 13; i++)
+      if (!(flags & NO_SENSORSRAW))
       {
-        printf("%04hu ", data[i]);
-        if (i == 8 || i == 10)
-          printf("/ ");
+        if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+          cursorUp(1);
+        displayCounter();
+        printf("RAW SENSORS: ");
+        for (int i = 3; i >= 0; i--)
+          printf("%c ", (data[0] & (1 << i)) ? '1' : '0');
+        printf(" ");
+        for (int i = 1; i < 13; i++)
+        {
+          printf("%04hu ", data[i]);
+          if (i == 8 || i == 10)
+            printf("/ ");
+        }
+        printf("\n");
       }
-      printf("\n");
+      else
+      {
+#define RIB_ARY_SIZE (16)
+#define RIB_ARY_MASK (RIB_ARY_SIZE - 1)
+        static uint16_t lower[RIB_ARY_SIZE], upper[RIB_ARY_SIZE];
+        static uint16_t idx;
+        static int      armed;
+
+        lower[idx] = data[12];
+        upper[idx] = data[11];
+        idx        = (idx + 1) & RIB_ARY_MASK;
+
+        if (data[12] > 90 || data[11] > 90)
+        {
+          armed = 1;
+          if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+            cursorUp(1);
+          displayCounter();
+          uint32_t u = 0, l = 0;
+          for (uint16_t i = idx; i < idx + 8; i++)
+          {
+            u += upper[i & RIB_ARY_MASK];
+            l += lower[i & RIB_ARY_MASK];
+          }
+          printf("RAW RIBBONS: ");
+          printf("%5hu  %5hu\n", u / 8, l / 8);
+        }
+        else if (armed)
+        {
+          armed = 0;
+          printf("\n");
+        }
+      }
       lastMessage = cmd << 16;
       return;
 
@@ -869,22 +905,22 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       printf("REQUEST: ");
       switch (data[0])
       {
-        case LPC_REQUEST_ID_SW_VERSION:
+        case PLAYCONTROLLER_REQUEST_ID_SW_VERSION:
           printf("firmware version\n");
           break;
-        case LPC_REQUEST_ID_UNMUTE_STATUS:
+        case PLAYCONTROLLER_REQUEST_ID_UNMUTE_STATUS:
           printf("muting status\n");
           break;
-        case LPC_REQUEST_ID_EHC_DATA:
+        case PLAYCONTROLLER_REQUEST_ID_EHC_DATA:
           printf("EHC data\n");
           break;
-        case LPC_REQUEST_ID_CLEAR_EEPROM:
+        case PLAYCONTROLLER_REQUEST_ID_CLEAR_EEPROM:
           printf("clear EERPOM\n");
           break;
-        case LPC_REQUEST_ID_STAT_DATA:
+        case PLAYCONTROLLER_REQUEST_ID_STAT_DATA:
           printf("profiling data\n");
           break;
-        case LPC_REQUEST_ID_EHC_EEPROMSAVE:
+        case PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE:
           printf("save EHC data to EEPROM\n");
           break;
         default:

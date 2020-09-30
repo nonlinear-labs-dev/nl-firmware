@@ -5,10 +5,10 @@
 
 #pragma GCC diagnostic ignored "-Wunused-function"
 
-#include "playcontroller/playcontroller-defs.h"
-#include "playcontroller/playcontroller-converters.h"
-#include "playcontroller/EHC-pedal-presets.h"
-#include "version.h"
+#include "shared/playcontroller/playcontroller-defs.h"
+#include "shared/playcontroller/playcontroller-converters.h"
+#include "shared/playcontroller/EHC-pedal-presets.h"
+#include "shared/version.h"
 
 #define VERSION_STRING "1.0"
 #define PROGNAME       "ehc-preset"

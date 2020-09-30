@@ -1,4 +1,4 @@
-/* 
+/*
    ESPI Driver for Ribbon Strip LEDS
 
 LED ID layout (decimal)
@@ -12,16 +12,19 @@ LED intensity value (binary, only Bits 0..1 of value byte are used)
  01 : dim
  10 : normal
  11 : bright
- 
+
 Setting up a LED requires 2 bytes written to the driver:
  - LED ID
  - Intensity
- When writing an odd number of bytes, the last byte will be ignored to avoid going out
- of sync. But when sync is lost for other reasons, no attempt is made to resync !
- 
+The two bytes do not need to be inside the same data packet.
+
 The LEDs are force-updated in specific time intervals to care for ESD-induced upsets.
- 
- */
+
+RESET:
+Sending a single 0xFF resets the step chain so that the next byte received is interpreted as start
+of command (unless 0xFF again), containing the LED id.
+
+*/
 
 #include <linux/string.h>
 #include <linux/of_gpio.h>
@@ -41,34 +44,58 @@ static u64 lastUpdate = 0;
 static DEFINE_MUTEX(rbled_state_lock);
 static u8 force_update = 0;
 
+static void updateLedArray(u8 const led_id, u8 val)
+{
+  static const u8 rot[]     = { 0, 2, 1, 3 };  // mapping to the bit weighting the hardware requires
+  u32             led_index = (RIBBON_LED_STATES_SIZE - 1) - led_id / 4;
+  val                       = rot[val & 0x3];                       // get mapped bit weighting
+  rb_led_new_st[led_index] &= ~(0x3 << ((led_id % 4) * 2));         // clear the 2 bits for the selected LED
+  rb_led_new_st[led_index] |= val << ((led_id % 4) * 2);            // add in the state bits
+  force_update |= rb_led_new_st[led_index] ^ rb_led_st[led_index];  // mark any changes for update
+}
+
 // ---- write to driver function ----
 // writes requested LED states to "new" buffer
 static ssize_t rbled_write(struct file *filp, const char __user *buf_user, size_t count, loff_t *f_pos)
 {
-  char            buf[count];
-  ssize_t         status = 0;
-  u32             i, led_index;
-  u8              val, led_id;
-  static const u8 rot[] = { 0, 2, 1, 3 };  // mapping to the bit weighting the hardware requires
+  char      buf[count];
+  u32       i;
+  static u8 firstByte = 1;
+  static u8 led_id;
+  ssize_t   ret;
 
+  if (!count)
+    return 0;
   if (copy_from_user(buf, buf_user, count))
     return -EFAULT;
 
+  ret = count;
+  i   = 0;
   mutex_lock(&rbled_state_lock);  // keep espi_driver_rb_leds_poll() from interfering
-
-  for (i = 0; (i + 1) < count; i += 2)
+  while (count--)
   {
-    led_id    = buf[i];
-    val       = rot[buf[i + 1] & 0x3];  // get mapped bit weighting
-    led_index = (RIBBON_LED_STATES_SIZE - 1) - led_id / 4;
-    rb_led_new_st[led_index] &= ~(0x3 << ((led_id % 4) * 2));         // clear the 2 bits for the selected LED
-    rb_led_new_st[led_index] |= val << ((led_id % 4) * 2);            // add in the state bits
-    force_update |= rb_led_new_st[led_index] ^ rb_led_st[led_index];  // mark any changes for update
+    if (buf[i] == 0xFF)  // special to clear state machine
+    {
+      firstByte = 1;
+      i++;
+      if (count)   // more data to follow ?
+        continue;  // then skip the special byte
+      else
+        break;  // else quit parsing
+    }
+    if (firstByte)
+    {
+      firstByte = 0;
+      led_id    = buf[i++];
+    }
+    else
+    {
+      firstByte = 1;
+      updateLedArray(led_id, buf[i++]);
+    }
   }
   mutex_unlock(&rbled_state_lock);
-
-  status = count;
-  return status;
+  return ret;
 }
 
 // file operations structure

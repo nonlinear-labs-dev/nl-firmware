@@ -64,63 +64,18 @@
           },
           "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text], VGIIMuted => MuteIndication[Text]"
         },
-        "FB_L": {
-          "Class": "FX_Label_L",
-          "Position": "2, 20",
+        "FBBoth": {
+          "Class": "LayerFBImageLarge",
+          "Position": "29, 19",
           "Init": {
-            "TypeLabel[Text]": "FB",
-            "VGI[Text]": "I",
-            "VGII[Text]": "II"
-          }
+            "Image[ImagePath]": "Layer_FB_C.png"
+          },
+          "Events": "LayerFBState => Image[ImagePath], LayerFBOffset => Image[ImageOffset]"
         },
-        "FBToI": {
-          "Class": "StraightLineArrowLonger",
-          "Position": "25, 19",
-          "Events": "LayerIFBToI => ANY[Visibility]"
-        },
-        "FBToII": {
-          "Class": "StraightLineArrowLonger",
-          "Position": "25, 35",
-          "Events": "LayerIIFBToII => ANY[Visibility]"
-        },
-        "FBIToII": {
-          "Class": "DiagonalDownArrow",
-          "Position": "30, 19",
-          "Events": "LayerIFBToII => ANY[Visibility]"
-        },
-        "FBIIToI": {
-          "Class": "DiagonalUpArrow",
-          "Position": "30, 22",
-          "Events": "LayerIIFBToI => ANY[Visibility]"
-        },
-        "FX_R": {
-          "Class": "FX_Label_R",
-          "Position": "232, 20",
-          "Init": {
-            "TypeLabel[Text]": "FX",
-            "VGI[Text]": "I",
-            "VGII[Text]": "II"
-          }
-        },
-        "FXIToFXI": {
-          "Class": "StraightLineArrowLonger",
-          "Position": "201, 20",
-          "Events": "ToFXIIUnder100 => ANY[Visibility]"
-        },
-        "FXIIToFXII": {
-          "Class": "StraightLineArrowLonger",
-          "Position": "201, 36",
-          "Events": "ToFXIUnder100 => ANY[Visibility]"
-        },
-        "FXIToFXII": {
-          "Class": "DiagonalDownArrow",
-          "Position": "206, 20",
-          "Events": "ToFXIIOver0 => ANY[Visibility]"
-        },
-        "FXIIToFXI": {
-          "Class": "DiagonalUpArrow",
-          "Position": "206, 23",
-          "Events": "ToFXIOver0 => ANY[Visibility]"
+        "FX": {
+          "Class": "LayerFBImageLarge",
+          "Position": "202, 21",
+          "Events": "LayerFXState => Image[ImagePath], LayerFXOffset => Image[ImageOffset]"
         }
       },
       "EventSinks": {

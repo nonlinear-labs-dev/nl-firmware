@@ -104,6 +104,23 @@ namespace DescriptiveLayouts
         return Text::DisplayString(value.template get<std::string>(), 0);
       }
 
+      case PrimitiveProperty::ImagePath:
+      {
+        return std::string(value.template get<std::string>());
+      }
+
+      case PrimitiveProperty::ImageOffset:
+      {
+        auto str = value.template get<std::string>();
+        int x = 0;
+        int y = 0;
+        auto parts = StringTools::splitStringOnAnyDelimiter(str, ',');
+        x = std::stoi(parts.at(0));
+        y = std::stoi(parts.at(1));
+        return std::pair<int, int> { x, y };
+      }
+
+      case PrimitiveProperty::ImageTransparency:
       case PrimitiveProperty::Highlight:
       case PrimitiveProperty::Visibility:
       {
