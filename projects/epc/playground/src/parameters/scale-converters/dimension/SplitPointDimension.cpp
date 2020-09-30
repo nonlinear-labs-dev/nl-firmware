@@ -2,8 +2,7 @@
 
 Glib::ustring SplitPointDimension::stringize(const tDisplayValue &displayValue) const
 {
-  int note = std::round(displayValue * 59);
-  return KeyDimension::stringizeNote(note);
+  return KeyDimension::stringizeNote((int) displayValue);
 }
 
 const SplitPointDimension &SplitPointDimension::get()

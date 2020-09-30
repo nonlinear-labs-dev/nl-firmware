@@ -42,7 +42,7 @@ class EditBufferLogicalParts
     auto eb = TestHelper::getEditBuffer();
     std::vector<Parameter*> ret {};
 
-    auto ignore = std::vector { "Unison", "Mono", "Part" };
+    auto ignore = std::vector { "Unison", "Mono", "Part", "Split" };
     auto ignoreParams = std::vector { FB_OSC, FB_OSC_SRC, FB_COMB_FROM, FB_SVF_FROM, FB_FX_FROM, OUT_TO_FX };
 
     for(auto& g : eb->getParameterGroups(vg))

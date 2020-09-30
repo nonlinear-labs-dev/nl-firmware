@@ -20,8 +20,6 @@ TEST_CASE("Load Part I of Split into Split Part I")
 
   REQUIRE(preset->getType() == SoundType::Split);
 
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
-
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
@@ -63,8 +61,6 @@ TEST_CASE("Load Part I of Split into Split Part I")
   WHEN("Load")
   {
     const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-    const auto oldSplitCP
-        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -76,6 +72,9 @@ TEST_CASE("Load Part I of Split into Split Part I")
 
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
+
+    const auto presetSplitPos
+        = preset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }, true)->getValue();
 
     eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
 
@@ -108,10 +107,10 @@ TEST_CASE("Load Part I of Split into Split Part I")
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
     }
 
-    THEN("Split unchanged")
+    THEN("Split loaded from Part I")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
-                                        oldSplitCP);
+                                        presetSplitPos);
     }
 
     THEN("Unison and Mono of I Copied to I")
@@ -177,8 +176,6 @@ TEST_CASE("Load Part I of Split into Split Part II")
   auto preset = presets.getSplitPreset();
 
   REQUIRE(preset->getType() == SoundType::Split);
-
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
 
   {
     auto scope = TestHelper::createTestScope();
@@ -339,8 +336,6 @@ TEST_CASE("Load Part I of Layer into Split Part I")
 
   REQUIRE(preset->getType() == SoundType::Layer);
 
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
-
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
@@ -430,11 +425,7 @@ TEST_CASE("Load Part I of Layer into Split Part I")
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
     }
 
-    THEN("Split unchanged")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
-                                        oldSplitCP);
-    }
+#warning "TODO evaluate if layer fade will be translated to split"
 
     THEN("Unison and Mono I are copied From Unison/Mono I of Preset")
     {
@@ -491,8 +482,6 @@ TEST_CASE("Load Part II of Layer into Split Part II")
   auto preset = presets.getLayerPreset();
 
   REQUIRE(preset->getType() == SoundType::Layer);
-
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
 
   {
     auto scope = TestHelper::createTestScope();

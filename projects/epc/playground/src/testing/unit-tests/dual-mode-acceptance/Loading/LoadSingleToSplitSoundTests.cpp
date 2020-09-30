@@ -112,12 +112,6 @@ TEST_CASE("Load Single into Split Part I")
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
     }
 
-    THEN("Split unchanged")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
-                                        oldSplitCP);
-    }
-
     THEN("Unison and Mono Loaded from preset")
     {
       CHECK(oldVoicesIIHash == EBL::createHashOfVector(EBL::getVoices<VoiceGroup::II>()));

@@ -47,8 +47,6 @@ TEST_CASE("Load Single into Layer Part I")
     const auto localSpecialIIHash
         = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>());
     const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
-    const auto oldSplitCP
-        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -82,12 +80,6 @@ TEST_CASE("Load Single into Layer Part I")
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
-    }
-
-    THEN("Split unchanged")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
-                                        oldSplitCP);
     }
 
     THEN("Unison and Mono I Untouched")

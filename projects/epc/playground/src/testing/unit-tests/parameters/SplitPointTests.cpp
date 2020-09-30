@@ -22,16 +22,19 @@ TEST_CASE("Split Point Display Value")
   auto transaction = transScope->getTransaction();
 
   splitI->setCPFromHwui(transaction, 0);
+  splitII->setCPFromHwui(transaction, 0);
   REQUIRE(splitI->getDisplayString() == "C1");
-  REQUIRE(splitII->getDisplayString() == "C#1");
+  REQUIRE(splitII->getDisplayString() == "C1");
 
   splitI->setCPFromHwui(transaction, 0.5);
+  splitII->setCPFromHwui(transaction, 0.5);
   REQUIRE(splitI->getDisplayString() == "F#3");
-  REQUIRE(splitII->getDisplayString() == "G3");
+  REQUIRE(splitII->getDisplayString() == "F#3");
 
   splitI->setCPFromHwui(transaction, 1);
+  splitII->setCPFromHwui(transaction, 1);
   REQUIRE(splitI->getDisplayString() == "B5");
-  REQUIRE(splitII->getDisplayString() == "C6");
+  REQUIRE(splitII->getDisplayString() == "B5");
 }
 
 TEST_CASE("Note to Display")

@@ -57,8 +57,6 @@ TEST_CASE("Load Part I of Split into Layer Part I")
 
   WHEN("Load")
   {
-    const auto oldSplitCP
-        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -109,12 +107,6 @@ TEST_CASE("Load Part I of Split into Layer Part I")
     THEN("Local II untouched")
     {
       CHECK(localNormalIIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::II>()));
-    }
-
-    THEN("Split unchanged")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
-                                        oldSplitCP);
     }
 
     THEN("Unison and Mono II are default")
@@ -177,8 +169,6 @@ TEST_CASE("Load Part I of Split into Layer Part II")
   auto preset = presets.getSplitPreset();
 
   REQUIRE(preset->getType() == SoundType::Split);
-
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
 
   {
     auto scope = TestHelper::createTestScope();
@@ -326,8 +316,6 @@ TEST_CASE("Load Part I of Layer into Layer Part I")
   auto preset = presets.getLayerPreset();
 
   REQUIRE(preset->getType() == SoundType::Layer);
-
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
 
   {
     auto scope = TestHelper::createTestScope();
@@ -484,9 +472,7 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
   auto preset = presets.getLayerPreset();
 
   REQUIRE(preset->getType() == SoundType::Layer);
-
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
-
+  
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
