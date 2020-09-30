@@ -32,9 +32,11 @@ public class SplitSoundLayout extends SoundLayout {
 	private class SplitSoundSettings extends OverlayLayout {
 		SplitSoundSettings(SplitSoundLayout parent) {
 			super(parent);
+			addChild(new SplitFXIndicator(VoiceGroup.I, this));
 			addChild(new VoiceGroupSoundSettings(VoiceGroup.I, this));
 			addChild(new SplitPoint(this));
 			addChild(new VoiceGroupSoundSettings(VoiceGroup.II, this));
+			addChild(new SplitFXIndicator(VoiceGroup.II, this));
 		}
 
 		@Override
@@ -44,10 +46,23 @@ public class SplitSoundLayout extends SoundLayout {
 			double splitPointHeight = Math.min(h, Millimeter.toPixels(30));
 			double splitPointWidth = Math.min(w / 4, Millimeter.toPixels(40));
 			double settingWidth = (w - splitPointWidth - 2 * margin) / 2;
-			getChildren().get(0).doLayout(0, margin, settingWidth, h - 2 * margin);
-			getChildren().get(1).doLayout(settingWidth + margin, (h - splitPointHeight) / 2, splitPointWidth,
+
+			getChildren().get(1).doLayout(0, margin, settingWidth, h - 2 * margin);
+			getChildren().get(2).doLayout(settingWidth + margin, (h - splitPointHeight) / 2, splitPointWidth,
 					splitPointHeight);
-			getChildren().get(2).doLayout(w - settingWidth, margin, settingWidth, h - 2 * margin);
+			getChildren().get(3).doLayout(w - settingWidth, margin, settingWidth, h - 2 * margin);
+
+			SplitFXIndicator fxI = (SplitFXIndicator) getChildren().get(0);
+			SplitFXIndicator fxII = (SplitFXIndicator) getChildren().get(4);
+
+			double fxIW = fxI.getSelectedImage().getImgWidth();
+			double fxIH = fxI.getSelectedImage().getImgHeight();
+
+			double fxIIW = fxII.getSelectedImage().getImgWidth();
+			double fxIIH = fxII.getSelectedImage().getImgHeight();
+
+			fxI.doLayout(-fxIW, h / 2 - (fxIH / 2), fxIW, fxIH);
+			fxII.doLayout(w, h / 2 - (fxIIH / 2), fxIIW, fxIIH);
 		}
 	}
 

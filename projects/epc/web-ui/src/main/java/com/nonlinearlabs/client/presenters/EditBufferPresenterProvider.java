@@ -141,6 +141,15 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
+        boolean inSplit = model.soundType.getValue() == SoundType.Split;
+        if(inSplit) {
+            presenter.splitFXToI = isLayerFX(VoiceGroup.II);
+            presenter.splitFXToII = isLayerFX(VoiceGroup.I);
+        } else {
+            presenter.splitFXToI = false;
+            presenter.splitFXToII = false;
+        }
+
         boolean inLayer = model.soundType.getValue() == SoundType.Layer;
         if(inLayer) {
             presenter.layerFBI = isLayerFB(VoiceGroup.I);

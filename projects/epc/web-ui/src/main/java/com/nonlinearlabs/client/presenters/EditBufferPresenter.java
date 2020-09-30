@@ -14,6 +14,9 @@ public class EditBufferPresenter {
     public boolean layerFBI = false;
     public boolean layerFBII = false;
 
+    public boolean splitFXToI = false;
+    public boolean splitFXToII = false;
+
     public boolean layerFXToI = false;
     public boolean layerFXToII = false;
 
