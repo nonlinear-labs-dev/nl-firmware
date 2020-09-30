@@ -1369,6 +1369,8 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
   {
     findParameterByID({ C15::PID::Split_Split_Point, vg })->setCPFromHwui(transaction, meanFadeFrom);
   }
+
+  findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II })->stepCPFromHwui(transaction, 1, {});
 }
 
 void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset,

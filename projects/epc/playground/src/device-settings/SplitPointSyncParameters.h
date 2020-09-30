@@ -8,7 +8,7 @@ class SplitPointSyncParameters : public Setting
   void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
   Glib::ustring getDisplayString() const override;
-  bool persistent() const override;
+
   bool getState() const;
   void setState(bool s);
 

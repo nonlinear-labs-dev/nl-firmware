@@ -19,12 +19,7 @@ Glib::ustring SplitPointSyncParameters::save() const
 
 Glib::ustring SplitPointSyncParameters::getDisplayString() const
 {
-  return m_state ? "Active" : "Disabled";
-}
-
-bool SplitPointSyncParameters::persistent() const
-{
-  return false;
+  return m_state ? "On" : "Off";
 }
 
 bool SplitPointSyncParameters::getState() const

@@ -295,14 +295,14 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 
   for(auto i = 0; i < 2; i++)
   {
-    auto sp = dynamic_cast<ModulateableParameter *>(
-        eb.findParameterByID({ C15::PID::Split_Split_Point, i == 0 ? VoiceGroup::I : VoiceGroup::II }));
+    const auto vg = i == 0 ? VoiceGroup::I : VoiceGroup::II;
+    auto param = dynamic_cast<ModulateableParameter *>(eb.findParameterByID({ C15::PID::Split_Split_Point, vg }));
 
-    auto &t = msg.splitpoint[1];
-    t.id = sp->getID().getNumber();
-    t.controlPosition = sp->getControlPositionValue();
-    t.modulationAmount = sp->getModulationAmount();
-    t.mc = sp->getModulationSource();
+    auto &t = msg.splitpoint[i];
+    t.id = param->getID().getNumber();
+    t.controlPosition = param->getControlPositionValue();
+    t.modulationAmount = param->getModulationAmount();
+    t.mc = param->getModulationSource();
   }
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
