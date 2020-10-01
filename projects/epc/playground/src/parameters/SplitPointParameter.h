@@ -10,7 +10,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   Glib::ustring stringizeModulationAmount(tControlPositionValue amount) const override;
 
  protected:
-  SplitPointParameter* getSibling();
+  SplitPointParameter* getSibling() const;
 
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;

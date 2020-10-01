@@ -32,7 +32,7 @@ void SplitPointOverlapIndicator::onSplitIChanged(const Parameter* splitI)
   if(splitI)
   {
     m_splitICP = splitI->getControlPositionValue();
-    setText(m_splitICP > m_splitIICP ? "!" : "");
+    setText(m_splitICP >= m_splitIICP ? "!" : "");
   }
 }
 
@@ -46,6 +46,6 @@ void SplitPointOverlapIndicator::onSplitIIChanged(const Parameter* splitII)
   if(splitII)
   {
     m_splitIICP = splitII->getControlPositionValue();
-    setText(m_splitICP > m_splitIICP ? "!" : "");
+    setText(m_splitICP >= m_splitIICP ? "!" : "");
   }
 }

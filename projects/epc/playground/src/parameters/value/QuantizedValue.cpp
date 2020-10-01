@@ -109,6 +109,12 @@ Glib::ustring QuantizedValue::getDisplayString(tControlPositionValue cp) const
 
 tControlPositionValue QuantizedValue::getNextStepValue(int incs, ButtonModifiers modifiers) const
 {
+  return getNextStepValue(getRawValue(), incs, modifiers);
+}
+
+tControlPositionValue QuantizedValue::getNextStepValue(tControlPositionValue value, int incs,
+                                                       ButtonModifiers modifiers) const
+{
   bool fine = modifiers[ButtonModifier::FINE];
   bool shift = modifiers[ButtonModifier::SHIFT];
 
@@ -142,7 +148,7 @@ tControlPositionValue QuantizedValue::getNextStepValue(int incs, ButtonModifiers
     }
   }
 
-  auto controlVal = getClippedValue();
+  auto controlVal = getClippedValue(value);
   auto denominator = fine ? m_fineDenominator : m_coarseDenominator;
   auto unRounded = controlVal * denominator;
   auto rounded = std::round(unRounded);

@@ -5,5 +5,5 @@
 class SplitPointScaleConverter : public LinearScaleConverter
 {
  public:
-  SplitPointScaleConverter();;
+  SplitPointScaleConverter();
 };

@@ -37,11 +37,38 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
                                      bool dosendToPlaycontroller)
 {
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+  auto other = getSibling();
+  tControlPositionValue siblingValue = other->getControlPositionValue();
 
-  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>().get()->getState()
-     && initiator != Initiator::INDIRECT_SPLIT_SYNC)
+  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>().get()->getState())
   {
-    getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, value, dosendToPlaycontroller);
+    if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
+    {
+      siblingValue = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, {});
+      other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
+    }
+  }
+  else
+  {
+    auto siblingThreshold
+        = getValue().getNextStepValue(siblingValue, other->getVoiceGroup() == VoiceGroup::I ? 1 : -1, {});
+
+    siblingValue = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, {});
+
+    if(getVoiceGroup() == VoiceGroup::I)
+    {
+      if(value < siblingThreshold)
+      {
+        other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
+      }
+    }
+    else
+    {
+      if(value > siblingThreshold)
+      {
+        other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
+      }
+    }
   }
 }
 
@@ -50,8 +77,8 @@ Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionVal
   return std::to_string(static_cast<int>(60 * amount)) + " st";
 }
 
-SplitPointParameter* SplitPointParameter::getSibling()
+SplitPointParameter* SplitPointParameter::getSibling() const
 {
-  return dynamic_cast<SplitPointParameter*>(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+  return static_cast<SplitPointParameter*>(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
       { C15::PID::Split_Split_Point, getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I }));
 }

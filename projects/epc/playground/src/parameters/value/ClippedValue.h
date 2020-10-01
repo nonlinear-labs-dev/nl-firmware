@@ -12,6 +12,7 @@ class ClippedValue : public RawValue
   virtual ~ClippedValue();
 
   tValueType getClippedValue() const;
+  tValueType getClippedValue(tValueType t) const;
   tValueType clip(tValueType v) const;
   tValueType getUpperBorder() const;
   tValueType getLowerBorder() const;
