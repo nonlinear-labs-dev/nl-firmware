@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.presenters;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -13,6 +14,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ScaleOffsetParameterModel;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
+import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 
 public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
@@ -116,6 +118,18 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         }
     }
 
+    private boolean isPartLabelChanged(VoiceGroup vg) {
+        if (model.soundType.getValue() != SoundType.Single) {
+            Preset origin = NonMaps.get().getNonLinearWorld().getPresetManager()
+                    .findPreset(model.loadedPreset.getValue());
+            if (origin != null && origin.isDual()) {
+                String ogName = origin.getPartName(vg);
+                return !model.getPresetNameOfVoiceGroup(vg).equals(ogName);
+            }
+        }
+        return false;
+    }
+
     private void bruteForce() {
         boolean anyScaleNotDef = isAnyScaleOffsetParameterNotDefault();
         if (presenter.isAnyScaleOffsetParameterNotDefault != anyScaleNotDef) {
@@ -123,26 +137,27 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
-        boolean anyChanged = isAnyParameterChanged();
+        boolean anyChanged = isAnyParameterChanged() || isPartLabelChanged(VoiceGroup.I)
+                || isPartLabelChanged(VoiceGroup.II);
         if (presenter.isAnyParameterChanged != anyChanged) {
             presenter.isAnyParameterChanged = anyChanged;
             notifyChanges();
         }
 
         boolean anyLocked = isAnyParameterLocked();
-        if(anyLocked != presenter.isAnyParameterLocked) {
+        if (anyLocked != presenter.isAnyParameterLocked) {
             presenter.isAnyParameterLocked = anyLocked;
             notifyChanges();
         }
 
         boolean allLocked = areAllParametersLocked();
-        if(allLocked != presenter.allParametersLocked) {
+        if (allLocked != presenter.allParametersLocked) {
             presenter.allParametersLocked = allLocked;
             notifyChanges();
         }
 
         boolean inSplit = model.soundType.getValue() == SoundType.Split;
-        if(inSplit) {
+        if (inSplit) {
             presenter.splitFXToI = isLayerFX(VoiceGroup.II);
             presenter.splitFXToII = isLayerFX(VoiceGroup.I);
         } else {
@@ -151,7 +166,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         }
 
         boolean inLayer = model.soundType.getValue() == SoundType.Layer;
-        if(inLayer) {
+        if (inLayer) {
             presenter.layerFBI = isLayerFB(VoiceGroup.I);
             presenter.layerFBII = isLayerFB(VoiceGroup.II);
             presenter.layerFXToI = isLayerFX(VoiceGroup.II);
@@ -168,17 +183,17 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         BasicParameterModel param = model.getParameter(new ParameterId(num, vg));
         return param.value.value.getValue() != 0;
     }
-    
+
     private boolean cpGreaterThanZero(int num, VoiceGroup vg) {
         BasicParameterModel param = model.getParameter(new ParameterId(num, vg));
         return param.value.value.getValue() > 0;
     }
 
     private boolean isLayerFB(VoiceGroup vg) {
-        boolean oscFB = cpNotZero(346 ,vg);
-        
-        boolean combMix = cpNotZero(156 ,vg);
-        boolean combSrc = cpNotZero(350 ,vg);
+        boolean oscFB = cpNotZero(346, vg);
+
+        boolean combMix = cpNotZero(156, vg);
+        boolean combSrc = cpNotZero(350, vg);
         boolean comb = combMix && combSrc;
 
         boolean svfMix = cpNotZero(158, vg);
@@ -221,10 +236,9 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private boolean isAnyParameterChanged() {
         for (VoiceGroup g : VoiceGroup.values()) {
             for (BasicParameterModel param : EditBufferModel.get().byVoiceGroup[g.ordinal()].parameters.values()) {
-                if(param instanceof MacroControlParameterModel)
-                {
-                    MacroControlParameterModel mc = (MacroControlParameterModel)param;
-                    if(ParameterPresenterProvider.isMCMetaChanged(mc))
+                if (param instanceof MacroControlParameterModel) {
+                    MacroControlParameterModel mc = (MacroControlParameterModel) param;
+                    if (ParameterPresenterProvider.isMCMetaChanged(mc))
                         return true;
                 }
 
