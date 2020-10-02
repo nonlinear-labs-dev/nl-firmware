@@ -93,7 +93,10 @@ update(){
 }
 
 main() {
-    move_files
+    
+    if [ ! -z "$EPC_IP" ]; then
+        move_files
+    fi
     update
 
     return 0
