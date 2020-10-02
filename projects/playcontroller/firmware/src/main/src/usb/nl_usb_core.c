@@ -226,14 +226,16 @@ void USB_Core_Init(void)
       | USBMODE_SDIS
       | USBMODE_SLOM;
 
+#if 0
   /* set OTG transcever in proper state, device is present
 	on the port(CCS=1), port enable/disable status change(PES=1). */
   LPC_USB->OTGSC = (1 << 3) | (1 << 0) /*| (1<<16)| (1<<24)| (1<<25)| (1<<26)| (1<<27)| (1<<28)| (1<<29)| (1<<30)*/;
+#endif
 
 #if USB_POLLING
-  NVIC_DisableIRQ(USB0_IRQn);
+  NVIC_DisableIRQ(USB1_IRQn);
 #else
-  NVIC_EnableIRQ(USB0_IRQn);
+  NVIC_EnableIRQ(USB1_IRQn);
 #endif
 
   USB_Reset();
@@ -1280,7 +1282,7 @@ void USB_EndPoint0(uint32_t event)
 /******************************************************************************/
 /** @brief		USB Interrupt Service Routine
 *******************************************************************************/
-void USB0_IRQHandler(void)
+void USB1_IRQHandler(void)
 {
   uint32_t disr, val, n;
 

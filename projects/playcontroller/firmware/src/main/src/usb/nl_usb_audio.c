@@ -292,5 +292,5 @@ void USB_Audio_Init(AudioRcvCallback audrcv, LPC_TIMERn_Type* TIMx)
 *******************************************************************************/
 void USB_Audio_Poll(void)
 {
-  USB0_IRQHandler();
+  USB1_IRQHandler();
 }

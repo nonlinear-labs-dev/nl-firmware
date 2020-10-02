@@ -11,7 +11,7 @@
 #include "usb/nl_usbd.h"
 
 /** USB controller used by this driver */
-#define LPC_USB LPC_USB0
+#define LPC_USB LPC_USB1
 /** Total number of interfaces*/
 #define USB_IF_NUM 3
 /** Total physical endpoints*/
@@ -230,7 +230,7 @@ void USB_Core_Device_HS_Descriptor_Set(const uint8_t* hsdesc);
 void USB_Core_Device_String_Descriptor_Set(const uint8_t* strdesc);
 void USB_Core_Device_Device_Quali_Descriptor_Set(const uint8_t* dqdesc);
 
-void USB0_IRQHandler(void);
+void USB1_IRQHandler(void);
 
 uint32_t USB_WriteEP(uint32_t EPNum, uint8_t* pData, uint32_t cnt);
 uint32_t USB_ReadEP(uint32_t EPNum, uint8_t* pData);
