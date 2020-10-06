@@ -8,13 +8,19 @@ public abstract class DataModelEntity<T> extends Notifier<T> implements DataMode
 	}
 
 	public boolean setValue(T v) {
-		if (!v.equals(value)) {
+		if (!v.equals(value) || forceNotify) {
 			value = v;
 			notifyChanges();
 			return true;
 		}
 		return false;
 	}
+
+	public void notifyOnEachSet(boolean n) {
+		forceNotify = n;
+	}
+
+	private boolean forceNotify = false;
 
 	@Override
 	public T getValue() {

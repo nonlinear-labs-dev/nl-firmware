@@ -69,7 +69,21 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         });
 
         model.onChange(v -> {
+        
             monitorAllParameters();
+            return true;
+        });
+
+
+        model.loadedPresetInVG1.onChange(I -> {
+            notifyChanges();
+            scheduleBruteForce();
+            return true;
+        });
+
+        model.loadedPresetInVG2.onChange(II -> {
+            notifyChanges();
+            scheduleBruteForce();
             return true;
         });
 
@@ -77,6 +91,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             presenter.loadedPresetUUID = v;
             presenter.currentPartName = model.getPresetNameOfVoiceGroup(model.voiceGroup.getValue());
             notifyChanges();
+            scheduleBruteForce();
             return true;
         });
 
@@ -137,8 +152,12 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
-        boolean anyChanged = isAnyParameterChanged() || isPartLabelChanged(VoiceGroup.I)
-                || isPartLabelChanged(VoiceGroup.II);
+        
+        boolean anyChanged = isAnyParameterChanged();
+        if(model.soundType.getValue() != SoundType.Single) {
+            anyChanged |= isPartLabelChanged(VoiceGroup.I) || isPartLabelChanged(VoiceGroup.II);
+        }
+
         if (presenter.isAnyParameterChanged != anyChanged) {
             presenter.isAnyParameterChanged = anyChanged;
             notifyChanges();
