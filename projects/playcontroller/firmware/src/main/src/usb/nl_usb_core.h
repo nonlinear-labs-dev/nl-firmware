@@ -9,9 +9,18 @@
 #pragma once
 
 #include "usb/nl_usbd.h"
+#include "globals.h"
 
 /** USB controller used by this driver */
+#if LPC_DGB_USB1 == 1
 #define LPC_USB LPC_USB1
+void USB1_IRQHandler(void);
+#else
+#define LPC_USB LPC_USB0
+void USB0_IRQHandler(void);
+#endif
+
+
 /** Total number of interfaces*/
 #define USB_IF_NUM 3
 /** Total physical endpoints*/
@@ -229,8 +238,6 @@ void USB_Core_Device_FS_Descriptor_Set(const uint8_t* fsdesc);
 void USB_Core_Device_HS_Descriptor_Set(const uint8_t* hsdesc);
 void USB_Core_Device_String_Descriptor_Set(const uint8_t* strdesc);
 void USB_Core_Device_Device_Quali_Descriptor_Set(const uint8_t* dqdesc);
-
-void USB1_IRQHandler(void);
 
 uint32_t USB_WriteEP(uint32_t EPNum, uint8_t* pData, uint32_t cnt);
 uint32_t USB_ReadEP(uint32_t EPNum, uint8_t* pData);

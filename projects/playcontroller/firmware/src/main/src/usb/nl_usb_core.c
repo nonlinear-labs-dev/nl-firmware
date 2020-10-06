@@ -1282,7 +1282,11 @@ void USB_EndPoint0(uint32_t event)
 /******************************************************************************/
 /** @brief		USB Interrupt Service Routine
 *******************************************************************************/
+#if LPC_DGB_USB1 == 1
 void USB1_IRQHandler(void)
+#else
+void USB0_IRQHandler(void)
+#endif
 {
   uint32_t disr, val, n;
 
