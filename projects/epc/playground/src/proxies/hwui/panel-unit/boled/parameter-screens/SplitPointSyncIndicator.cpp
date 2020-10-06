@@ -14,5 +14,5 @@ SplitPointSyncIndicator::SplitPointSyncIndicator(const Rect& r)
 void SplitPointSyncIndicator::onChange(const Setting* s)
 {
   if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
-    setVisible(sync->getState());
+    setVisible(sync->get());
 }

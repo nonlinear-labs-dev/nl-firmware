@@ -22,7 +22,7 @@ Glib::ustring SplitPointSyncParameters::getDisplayString() const
   return m_state ? "On" : "Off";
 }
 
-bool SplitPointSyncParameters::getState() const
+bool SplitPointSyncParameters::get() const
 {
   return m_state;
 }

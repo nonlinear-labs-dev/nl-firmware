@@ -252,9 +252,13 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDimY) * 0.5, modulationButtonsDimX,
 				modulationButtonsDimY);
+
+		
 		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
+
+		syncSplitParameter.doLayout(w - editorModeLeft + buttonDim, (h - buttonDim) / 2, buttonDim, buttonDim);
 
 		final double clipW = 20;
 		mcLowerClip.doLayout(sliderLeft - clipW, third, clipW, third);
@@ -266,8 +270,6 @@ public class BeltParameterLayout extends OverlayLayout {
 		final double sliderWidth = slider.getRelativePosition().getWidth();
 		final double margin = Millimeter.toPixels(2.5);
 		final double modulationButtonWidth = 1.5 * mcPositionRadioButton.getSelectedImage().getImgWidth();
-
-		syncSplitParameter.doLayout(modulationButtonsLeft + (modulationButtonsDimX * 2) + sliderWidth, (h - modulationButtonsDimY) * 0.5, modulationButtonsDimX, modulationButtonsDimY);
 
 		final HarmonicLayouter layouter = new HarmonicLayouter();
 

@@ -17,15 +17,15 @@ class ModulateableParameter : public Parameter
   virtual size_t getHash() const override;
 
   tDisplayValue getModulationAmount() const;
-  void setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount);
+  virtual void setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount);
 
   MacroControls getModulationSource() const;
-  void setModulationSource(UNDO::Transaction *transaction, MacroControls src);
+  virtual void setModulationSource(UNDO::Transaction *transaction, MacroControls src);
 
-  void undoableSetMCAmountToDefault();
+  virtual void undoableSetMCAmountToDefault();
 
-  void undoableSelectModSource(UNDO::Transaction *transaction, MacroControls src);
-  void undoableSetModAmount(UNDO::Transaction *transaction, double amount);
+  virtual void undoableSelectModSource(UNDO::Transaction *transaction, MacroControls src);
+  virtual void undoableSetModAmount(UNDO::Transaction *transaction, double amount);
 
   void undoableIncrementMCSelect(int inc);
   virtual void undoableIncrementMCAmount(int inc, ButtonModifiers modifiers);

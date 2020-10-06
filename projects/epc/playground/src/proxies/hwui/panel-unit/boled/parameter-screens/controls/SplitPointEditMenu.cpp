@@ -8,7 +8,7 @@ void SplitPointEditMenu::addActions()
 {
   ParameterEditButtonMenu::addActions();
 
-  if(m_syncSetting->getState())
+  if(m_syncSetting->get())
   {
     addButton("Disable Sync", [this]() { m_syncSetting->setState(false); });
   }

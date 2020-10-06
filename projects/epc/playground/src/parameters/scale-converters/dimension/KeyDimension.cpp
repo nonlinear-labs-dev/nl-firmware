@@ -21,6 +21,7 @@ Glib::ustring KeyDimension::stringizeNote(int note) const
   auto octave = static_cast<int>(note / keyLabels.size()) + 1;
   return base + std::to_string(octave);
 }
+
 KeyDimension& KeyDimension::get()
 {
   static KeyDimension ret;

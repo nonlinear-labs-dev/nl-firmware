@@ -40,7 +40,7 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
   auto other = getSibling();
   tControlPositionValue siblingValue = other->getControlPositionValue();
 
-  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>().get()->getState())
+  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>().get()->get())
   {
     if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
     {
@@ -72,6 +72,18 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
   }
 }
 
+void SplitPointParameter::setModulationAmount(UNDO::Transaction* transaction, const tDisplayValue& amount)
+{
+  ModulateableParameter::setModulationAmount(transaction, amount);
+  getSibling()->setModulationAmountFromSibling(transaction, amount);
+}
+
+void SplitPointParameter::setModulationSource(UNDO::Transaction* transaction, MacroControls src)
+{
+  ModulateableParameter::setModulationSource(transaction, src);
+  getSibling()->setModulationSourceFromSibling(transaction, src);
+}
+
 Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionValue amount) const
 {
   return std::to_string(static_cast<int>(60 * amount)) + " st";
@@ -81,4 +93,14 @@ SplitPointParameter* SplitPointParameter::getSibling() const
 {
   return static_cast<SplitPointParameter*>(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
       { C15::PID::Split_Split_Point, getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I }));
+}
+
+void SplitPointParameter::setModulationAmountFromSibling(UNDO::Transaction* transaction, const tDisplayValue& amount)
+{
+  ModulateableParameter::setModulationAmount(transaction, amount);
+}
+
+void SplitPointParameter::setModulationSourceFromSibling(UNDO::Transaction* transaction, MacroControls src)
+{
+  ModulateableParameter::setModulationSource(transaction, src);
 }

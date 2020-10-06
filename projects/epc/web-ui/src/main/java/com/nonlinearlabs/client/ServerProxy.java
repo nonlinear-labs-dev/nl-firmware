@@ -498,14 +498,20 @@ public class ServerProxy {
 	public void setModulationAmount(double amount, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), new StaticURI.KeyValue("id", id));
-		queueJob(uri, true);
+		if(id.getNumber() == 356)
+			queueJob(uri, false);
+		else
+			queueJob(uri, true);
 	}
 
 	public void setModulationSource(ModSource src, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()),
 				new StaticURI.KeyValue("id", id));
-		queueJob(uri, true);
+		if(id.getNumber() == 356)
+			queueJob(uri, false);
+		else
+			queueJob(uri, true);
 	}
 
 	public void log(String message) {

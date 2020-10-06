@@ -1270,13 +1270,11 @@ EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
   return ret;
 }
 
-void EditBuffer::calculateFadeParamsFromSplitPoint(UNDO::Transaction *transaction)
+void EditBuffer::defaultFadeParameters(UNDO::Transaction *transaction)
 {
-
   for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    auto split = findParameterByID({ C15::PID::Split_Split_Point, vg })->getControlPositionValue();
-    findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })->setCPFromHwui(transaction, split);
+    findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })->loadDefault(transaction, Defaults::FactoryDefault);
     findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg })->loadDefault(transaction, Defaults::FactoryDefault);
   }
 }
@@ -1353,7 +1351,7 @@ void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
 {
   auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   copyVoicesGroups(transaction, currentVG, invert(currentVG));
-  calculateFadeParamsFromSplitPoint(transaction);
+  defaultFadeParameters(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
 }
@@ -1430,10 +1428,16 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
 
   {
     auto toFxParam = findParameterByID({ C15::PID::Out_Mix_To_FX, copyTo });
-
     ScopedLock locks(transaction);
+
     for(auto p : getCrossFBParameters(copyTo))
       locks.addLock(p);
+
+    if(preset->getType() == SoundType::Split)
+    {
+      for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+        locks.addLock(findParameterByID({ C15::PID::Split_Split_Point, vg }));
+    }
 
     if(!preset->isDual())
       locks.addLock(toFxParam);

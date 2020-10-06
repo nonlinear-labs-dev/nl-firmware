@@ -129,10 +129,10 @@ TEST_CASE("Convert Split (II) to Layer")
       }
     }
 
-    THEN("Fade is determined from Split and Range is Default")
+    THEN("Fade is Default")
     {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getFadeFrom<VoiceGroup::I>(), splitCP);
-      CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getFadeFrom<VoiceGroup::II>(), splitCP);
+      CHECK(EBL::getFadeFrom<VoiceGroup::I>()->isFactoryDefaultLoaded());
+      CHECK(EBL::getFadeFrom<VoiceGroup::II>()->isFactoryDefaultLoaded());
       CHECK(EBL::getFadeRange<VoiceGroup::I>()->isFactoryDefaultLoaded());
       CHECK(EBL::getFadeRange<VoiceGroup::II>()->isFactoryDefaultLoaded());
     }
@@ -281,8 +281,8 @@ TEST_CASE("Convert Layer I to Split")
     THEN("Split is mean of fade from I and II")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getSplitPoint<VoiceGroup::I>(), (oldFromI + oldFromII) / 2.0);
-      #warning "Todo Add check for vg 2 -> vg I + inc 1 step"
-
+      auto II = EBL::getSplitPoint<VoiceGroup::I>()->getValue().getNextStepValue((oldFromI + oldFromII) / 2.0, 1, {});
+      CHECK_PARAMETER_CP_EQUALS_FICTION(EBL::getSplitPoint<VoiceGroup::II>(), II);
     }
 
     THEN("Global Scale/MCM is unchanged")
