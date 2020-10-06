@@ -1,6 +1,9 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.world.Control;
+import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.Belt;
 
@@ -38,6 +41,12 @@ public class BeltSoundLayout extends OverlayLayout {
 			return new LayerSoundLayout(this);
 		}
 		return null;
+	}
+
+	@Override
+	public Control doubleClick(Position p) {
+		GWT.log("BeltLayout!");
+		return this;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
@@ -16,6 +17,7 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
+import com.nonlinearlabs.client.world.RenameDialog;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.ChoosePresetPartDialog;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
@@ -232,6 +234,36 @@ public class SplitSoundLayout extends SoundLayout {
 					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
 				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
 			}
+
+			//never seems to come here..
+			@Override
+			public Control doubleClick(Position pos) {
+				RenameDialog.open(new Renameable(){
+						
+					@Override
+					public void setName(String newName) {
+						EditBufferUseCases.get().renamePart(newName);								
+					}
+				
+					@Override
+					public String getTitleName() {
+						return EditBufferPresenterProvider.getPresenter().voiceGroup;
+					}
+				
+					@Override
+					public String getEntityName() {
+						return "Part";
+					}
+				
+					@Override
+					public String getCurrentName() {
+						return EditBufferPresenterProvider.getPresenter().currentPartName;
+					}
+				});
+				return super.doubleClick(pos);
+			}
+
+			
 		}
 
 		private class TuneLabel extends Label {
