@@ -122,7 +122,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         if (model.soundType.getValue() != SoundType.Single) {
             Preset origin = NonMaps.get().getNonLinearWorld().getPresetManager()
                     .findPreset(model.loadedPreset.getValue());
-            if (origin != null && origin.isDual()) {
+            if (origin != null) {
                 String ogName = origin.getPartName(vg);
                 return !model.getPresetNameOfVoiceGroup(vg).equals(ogName);
             }

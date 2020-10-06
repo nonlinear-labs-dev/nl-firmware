@@ -1651,10 +1651,7 @@ bool EditBuffer::isPartLabelChanged(VoiceGroup group) const
 {
   if(auto preset = getOrigin())
   {
-    if(preset->isDual())
-    {
-      return preset->getVoiceGroupName(group) != getVoiceGroupName(group);
-    }
+    return preset->getVoiceGroupName(group) != getVoiceGroupName(group);
   }
   return false;
 }
