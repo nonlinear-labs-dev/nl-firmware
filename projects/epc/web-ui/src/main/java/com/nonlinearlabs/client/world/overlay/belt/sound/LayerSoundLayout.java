@@ -268,6 +268,7 @@ public class LayerSoundLayout extends SoundLayout {
 		}
 
 		private class PresetName extends Label {
+
 			PresetName(VoiceGroupSoundSettings parent) {
 				super(parent);
 			}
@@ -281,6 +282,36 @@ public class LayerSoundLayout extends SoundLayout {
 			public void draw(Context2d ctx, int invalidationMask) {
 				getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(0.5), 1, new Gray(68), new Gray(86));
 				super.draw(ctx, invalidationMask);
+			}
+
+			@Override
+			public Control doubleClick(Position p) {
+				RenameDialog.open(new Renameable(){
+						
+					@Override
+					public void setName(String newName) {
+						EditBufferUseCases.get().renamePart(newName, group);								
+					}
+				
+					@Override
+					public String getTitleName() {
+						if(group == VoiceGroup.I)
+							return "\uE071";
+						else
+							return "\uE072";
+					}
+	
+					@Override
+					public String getEntityName() {
+						return "Part";
+					}
+				
+					@Override
+					public String getCurrentName() {
+						return EditBufferPresenterProvider.getPresenter().currentPartName;
+					}
+				});
+				return this;
 			}
 		}
 

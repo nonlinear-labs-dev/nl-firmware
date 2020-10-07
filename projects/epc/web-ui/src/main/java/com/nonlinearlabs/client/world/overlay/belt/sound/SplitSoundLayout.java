@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
@@ -234,36 +235,6 @@ public class SplitSoundLayout extends SoundLayout {
 					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
 				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
 			}
-
-			//never seems to come here..
-			@Override
-			public Control doubleClick(Position pos) {
-				RenameDialog.open(new Renameable(){
-						
-					@Override
-					public void setName(String newName) {
-						EditBufferUseCases.get().renamePart(newName);								
-					}
-				
-					@Override
-					public String getTitleName() {
-						return EditBufferPresenterProvider.getPresenter().voiceGroup;
-					}
-				
-					@Override
-					public String getEntityName() {
-						return "Part";
-					}
-				
-					@Override
-					public String getCurrentName() {
-						return EditBufferPresenterProvider.getPresenter().currentPartName;
-					}
-				});
-				return super.doubleClick(pos);
-			}
-
-			
 		}
 
 		private class TuneLabel extends Label {
@@ -298,6 +269,36 @@ public class SplitSoundLayout extends SoundLayout {
 			@Override
 			public String getDrawText(Context2d ctx) {
 				return EditBufferModel.get().getPresetNameOfVoiceGroup(group);
+			}
+
+			@Override
+			public Control doubleClick(Position p) {
+				RenameDialog.open(new Renameable(){
+						
+					@Override
+					public void setName(String newName) {
+						EditBufferUseCases.get().renamePart(newName, group);								
+					}
+				
+					@Override
+					public String getTitleName() {
+						if(group == VoiceGroup.I)
+							return "\uE071";
+						else
+							return "\uE072";
+					}
+	
+					@Override
+					public String getEntityName() {
+						return "Part";
+					}
+				
+					@Override
+					public String getCurrentName() {
+						return EditBufferPresenterProvider.getPresenter().currentPartName;
+					}
+				});
+				return this;
 			}
 
 			@Override
