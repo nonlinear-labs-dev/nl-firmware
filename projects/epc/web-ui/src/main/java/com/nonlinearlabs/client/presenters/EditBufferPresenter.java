@@ -26,6 +26,7 @@ public class EditBufferPresenter {
     public String voiceGroup = "";
     public RGB voiceGroupIndicationColor = RGBA.transparent();
     public VoiceGroup voiceGroupEnum = VoiceGroup.I;
+    public boolean splitOverlap = false;
 
     public RGB voiceGroupI_ForegroundColor = RGBA.transparent();
     public RGB voiceGroupII_ForegroundColor = RGBA.transparent();
