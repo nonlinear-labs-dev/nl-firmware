@@ -166,6 +166,8 @@ public class CompareDialog extends GWTDialog {
 			Element root = xml.getDocumentElement();
 			Node positionNode = ServerProxy.getChild(root, "position");
 			Node nameNode = ServerProxy.getChild(root, "name");
+			Node vgIName = ServerProxy.getChild(root, "vgI-name");
+			Node vgIIName = ServerProxy.getChild(root, "vgII-name");
 			Node commentNode = ServerProxy.getChild(root, "comment");
 			Node colorNode = ServerProxy.getChild(root, "color");
 
@@ -174,6 +176,26 @@ public class CompareDialog extends GWTDialog {
 			table.getElement().addClassName("compare-tree");
 
 			row = writeHeader(row, positionNode, nameNode);
+
+			if(vgIName != null && vgIIName != null) {
+				String vgIa = vgIName.getAttributes().getNamedItem("a").getNodeValue();
+				String vgIb = vgIName.getAttributes().getNamedItem("b").getNodeValue();
+				String vgIIa = vgIIName.getAttributes().getNamedItem("a").getNodeValue();
+				String vgIIb = vgIIName.getAttributes().getNamedItem("b").getNodeValue();
+				if(!vgIa.equals(vgIb)) {
+					table.setText(row, 0, "Name I");
+					table.setText(row, 1, vgIa);
+					table.setText(row, 2, vgIb);
+					row++;
+				}
+				
+				if(!vgIIa.equals(vgIIb)) {
+					table.setText(row, 0, "Name II");
+					table.setText(row, 1, vgIIa);
+					table.setText(row, 2, vgIIb);
+					row++;
+				}
+			}
 
 			if (commentNode != null) {
 				table.setText(row, 0, "Comment");
