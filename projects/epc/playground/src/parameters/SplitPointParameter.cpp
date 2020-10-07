@@ -1,5 +1,5 @@
 #include "SplitPointParameter.h"
-#include <parameters/scale-converters/LinearBipolar59StScaleConverter.h>
+#include <parameters/scale-converters/LinearBipolar60StScaleConverter.h>
 #include <parameters/scale-converters/SplitPointScaleConverter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
@@ -15,8 +15,8 @@
 
 SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterId& id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
-                                              ScaleConverter::get<LinearBipolar59StScaleConverter>(),
-                                              id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.516949153, 59, 59)
+                                              ScaleConverter::get<LinearBipolar60StScaleConverter>(),
+                                              id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.516666667, 60, 60)
 {
 }
 
@@ -37,9 +37,15 @@ Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                                      bool dosendToPlaycontroller)
 {
+  const auto syncActive = Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->get();
+  if(syncActive && isAtExtremes(value))
+  {
+    return;
+  }
+
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 
-  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->get())
+  if(syncActive)
   {
     if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
     {
@@ -111,4 +117,18 @@ void SplitPointParameter::setModulationAmountFromSibling(UNDO::Transaction* tran
 void SplitPointParameter::setModulationSourceFromSibling(UNDO::Transaction* transaction, MacroControls src)
 {
   ModulateableParameter::setModulationSource(transaction, src);
+}
+
+bool SplitPointParameter::isAtExtremes(tControlPositionValue value)
+{
+  if(getVoiceGroup() == VoiceGroup::I)
+  {
+    return value > getValue().getNextStepValue(1, -1, {});
+  }
+  else if(getVoiceGroup() == VoiceGroup::II)
+  {
+    return value < getValue().getNextStepValue(0, 1, {});
+  }
+
+  return false;
 }
