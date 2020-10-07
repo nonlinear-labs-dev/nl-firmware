@@ -448,6 +448,10 @@ public class EditBufferUseCases {
 	public void renamePart(String newName) {
 		NonMaps.get().getServerProxy().renamePart(EditBufferModel.get().voiceGroup.getValue(), newName);
 	}
+	
+	public void renamePart(String newName, VoiceGroup vg) {
+		NonMaps.get().getServerProxy().renamePart(vg, newName);
+	}
 
 	public void randomize() {
 		if (EditBufferModel.get().soundType.getValue() == SoundType.Single)

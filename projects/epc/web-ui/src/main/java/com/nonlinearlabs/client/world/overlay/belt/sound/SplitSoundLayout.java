@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
@@ -16,6 +17,7 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
+import com.nonlinearlabs.client.world.RenameDialog;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.ChoosePresetPartDialog;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
@@ -266,6 +268,36 @@ public class SplitSoundLayout extends SoundLayout {
 			@Override
 			public String getDrawText(Context2d ctx) {
 				return EditBufferModel.get().getPresetNameOfVoiceGroup(group);
+			}
+
+			@Override
+			public Control doubleClick(Position p) {
+				RenameDialog.open(new Renameable(){
+						
+					@Override
+					public void setName(String newName) {
+						EditBufferUseCases.get().renamePart(newName, group);								
+					}
+				
+					@Override
+					public String getTitleName() {
+						if(group == VoiceGroup.I)
+							return "\uE071";
+						else
+							return "\uE072";
+					}
+	
+					@Override
+					public String getEntityName() {
+						return "Part";
+					}
+				
+					@Override
+					public String getCurrentName() {
+						return EditBufferPresenterProvider.getPresenter().currentPartName;
+					}
+				});
+				return this;
 			}
 
 			@Override
