@@ -103,6 +103,7 @@ wait4epc() {
 }
 
 check_preconditions() {
+    [ $UPDATE_EPC == 0 ] && return 0
     if ! wait4epc 10; then
         if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
         if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
@@ -170,7 +171,11 @@ epc_update() {
 bbb_update() {
     pretty "" "$MSG_UPDATING_BBB" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_BBB" "$MSG_DO_NOT_SWITCH_OFF"
     chmod +x /update/BBB/bbb_update.sh
-    /bin/sh /update/BBB/bbb_update.sh $EPC_IP $BBB_IP
+    if [ $UPDATE_EPC -eq 1 ]; then
+        /bin/sh /update/BBB/bbb_update.sh $EPC_IP $BBB_IP
+    else
+        /bin/sh /update/BBB/bbb_update.sh
+    fi
 
     # error codes 50...59
     return_code=$?
