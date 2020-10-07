@@ -311,14 +311,13 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
     }
     return validity;
   }
-  inline bool setSplitPoint(const uint32_t _keyPos)
+  inline bool setSplitPoint(const uint32_t _keyPos, const uint32_t _layerIndex)
   {
-    /// SPLIT POINT TODO
     // validation - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     if(validity)
     {
-      m_splitPoint[0] = _keyPos;
+      m_splitPoint[_layerIndex] = _keyPos;
     }
     return validity;
   }
@@ -433,9 +432,98 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {}, m_splitPoint[2] = {};
   bool m_glideAllowance[GlobalVoices] = {};
   const AllocatorId m_layerId[2] = { AllocatorId::Local_I, AllocatorId::Local_II };
-  //  inline void keyDown_process_single() {}
-  //  inline void keyDown_process_split() {}
-  //  inline void keyDown_process_layer() {}
+  inline uint32_t keyDown_process_single(KeyAssignment* _keyState, uint32_t _unisonVoices)
+  {
+    uint32_t firstVoice;
+    if(m_global_mono.m_enabled)
+    {
+      // single mono keyDown
+      m_global_mono.keyDown(_keyState->m_key);
+      firstVoice = _keyState->setVoiceId(0, _unisonVoices);
+      _keyState->m_position = m_global_mono.m_key_position;
+      m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_global_mono.m_retrigger_env,
+                             m_global_mono.m_retrigger_glide);
+    }
+    else
+    {
+      // single poly keyDown
+      firstVoice = _keyState->setVoiceId(m_global.keyDown(), _unisonVoices);
+      m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
+      //clear stolen key first(all associated voices will be lost)
+      if(m_voiceState[firstVoice].m_active)
+      {
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
+      }
+    }
+    return firstVoice;
+  }
+  inline uint32_t keyDown_process_split(KeyAssignment* _keyState, uint32_t _unisonVoices, uint32_t _layerIndex,
+                                        bool _startEvent)
+  {
+    uint32_t firstVoice;
+    const uint32_t voiceOffset = _layerIndex * LocalVoices;
+    if(m_local_mono[_layerIndex].m_enabled)
+    {
+      // split[I/II] mono keyDown
+      m_local_mono[_layerIndex].keyDown(_keyState->m_key);
+      firstVoice = voiceOffset + _keyState->setVoiceId(0, _unisonVoices);
+      _keyState->m_position = m_local_mono[_layerIndex].m_key_position;
+      if(_startEvent)
+      {
+        m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[_layerIndex].m_retrigger_env,
+                               m_local_mono[_layerIndex].m_retrigger_glide);
+      }
+      else
+      {
+        m_traversal.addEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[_layerIndex].m_retrigger_env,
+                             m_local_mono[_layerIndex].m_retrigger_glide);
+      }
+    }
+    else
+    {
+      // split[I/II] poly keyDown
+      firstVoice = voiceOffset + _keyState->setVoiceId(m_local[_layerIndex].keyDown(), _unisonVoices);
+      if(_startEvent)
+      {
+        m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
+      }
+      else
+      {
+        m_traversal.addEvent(_keyState->m_position, _keyState->m_velocity, true, false);
+      }
+      // clear stolen key first (all associated voices will be lost)
+      if(m_voiceState[firstVoice].m_active)
+      {
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
+      }
+    }
+    return firstVoice;
+  }
+  inline uint32_t keyDown_process_layer(KeyAssignment* _keyState, uint32_t _unisonVoices)
+  {
+    uint32_t firstVoice;
+    if(m_local_mono[0].m_enabled)
+    {
+      // layer[I&II] mono keyDown
+      m_local_mono[0].keyDown(_keyState->m_key);
+      firstVoice = _keyState->setVoiceId(0, _unisonVoices);
+      _keyState->m_position = m_local_mono[0].m_key_position;
+      m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[0].m_retrigger_env,
+                             m_local_mono[0].m_retrigger_glide);
+    }
+    else
+    {
+      // layer[I&II] poly keyDown
+      firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), _unisonVoices);
+      m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
+      // clear stolen key first (all associated voices will be lost)
+      if(m_voiceState[firstVoice].m_active)
+      {
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
+      }
+    }
+    return firstVoice;
+  }
   inline void keyDown_apply(KeyAssignment* _keyState, LayerMode _currentMode)
   {
     m_traversal.init();
@@ -447,31 +535,12 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       case LayerMode::Single:
         _keyState->m_origin = AllocatorId::Global;
         unisonVoices = m_global.getUnison();
-        if(m_global_mono.m_enabled)
-        {
-          // single mono keyDown
-          m_global_mono.keyDown(_keyState->m_key);
-          firstVoice = _keyState->setVoiceId(0, unisonVoices);
-          _keyState->m_position = m_global_mono.m_key_position;
-          m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_global_mono.m_retrigger_env,
-                                 m_global_mono.m_retrigger_glide);
-        }
-        else
-        {
-          // single poly keyDown
-          firstVoice = _keyState->setVoiceId(m_global.keyDown(), unisonVoices);
-          m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-          //clear stolen key first(all associated voices will be lost)
-          if(m_voiceState[firstVoice].m_active)
-          {
-            keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-          }
-        }
+        // mono/poly process
+        firstVoice = keyDown_process_single(_keyState, unisonVoices);
         // unison loop
         keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         break;
       case LayerMode::Split:
-        /// SPLIT POINT TODO
         // we have to distinguish overlapping split points (AllocatorId::Dual) from non-overlapping ones (AllocatorId::Local_I / II)
         split_condition_lower = _keyState->m_position <= m_splitPoint[0];
         split_condition_upper = _keyState->m_position >= m_splitPoint[1];
@@ -479,32 +548,22 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         {
           // overlapping split
           _keyState->m_origin = AllocatorId::Dual;
+          // mono/poly process [I]
+          unisonVoices = m_local[0].getUnison();
+          firstVoice = keyDown_process_split(_keyState, unisonVoices, 0, true);
+          keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
+          // mono/poly process [II]
+          unisonVoices = m_local[1].getUnison();
+          firstVoice = keyDown_process_split(_keyState, unisonVoices, 1, false);
+          keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         }
         else if(split_condition_lower)
         {
           // non-overlapping split [I]
           _keyState->m_origin = AllocatorId::Local_I;
           unisonVoices = m_local[0].getUnison();
-          if(m_local_mono[0].m_enabled)
-          {
-            // split[I] mono keyDown
-            m_local_mono[0].keyDown(_keyState->m_key);
-            firstVoice = _keyState->setVoiceId(0, unisonVoices);
-            _keyState->m_position = m_local_mono[0].m_key_position;
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[0].m_retrigger_env,
-                                   m_local_mono[0].m_retrigger_glide);
-          }
-          else
-          {
-            // split[I] poly keyDown
-            firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-            // clear stolen key first (all associated voices will be lost)
-            if(m_voiceState[firstVoice].m_active)
-            {
-              keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-            }
-          }
+          // mono/poly process
+          firstVoice = keyDown_process_split(_keyState, unisonVoices, 0, true);
           // unison loop
           keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         }
@@ -513,81 +572,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
           // non-overlapping split [II]
           _keyState->m_origin = AllocatorId::Local_II;
           unisonVoices = m_local[1].getUnison();
-          if(m_local_mono[1].m_enabled)
-          {
-            // split[II] mono keyDown
-            m_local_mono[1].keyDown(_keyState->m_key);
-            firstVoice = LocalVoices + _keyState->setVoiceId(0, unisonVoices);
-            _keyState->m_position = m_local_mono[1].m_key_position;
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[1].m_retrigger_env,
-                                   m_local_mono[1].m_retrigger_glide);
-          }
-          else
-          {
-            // split[II] poly keyDown
-            firstVoice = LocalVoices + _keyState->setVoiceId(m_local[1].keyDown(), unisonVoices);
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-            // clear stolen key first (all associated voices will be lost)
-            if(m_voiceState[firstVoice].m_active)
-            {
-              keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-            }
-          }
-          // unison loop
-          keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
-        }
-        // determine split target
-        if(_keyState->m_position <= m_splitPoint[0])
-        {
-          _keyState->m_origin = AllocatorId::Local_I;
-          unisonVoices = m_local[0].getUnison();
-          if(m_local_mono[0].m_enabled)
-          {
-            // split[I] mono keyDown
-            m_local_mono[0].keyDown(_keyState->m_key);
-            firstVoice = _keyState->setVoiceId(0, unisonVoices);
-            _keyState->m_position = m_local_mono[0].m_key_position;
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[0].m_retrigger_env,
-                                   m_local_mono[0].m_retrigger_glide);
-          }
-          else
-          {
-            // split[I] poly keyDown
-            firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-            // clear stolen key first (all associated voices will be lost)
-            if(m_voiceState[firstVoice].m_active)
-            {
-              keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-            }
-          }
-          // unison loop
-          keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
-        }
-        else
-        {
-          _keyState->m_origin = AllocatorId::Local_II;
-          unisonVoices = m_local[1].getUnison();
-          if(m_local_mono[1].m_enabled)
-          {
-            // split[II] mono keyDown
-            m_local_mono[1].keyDown(_keyState->m_key);
-            firstVoice = LocalVoices + _keyState->setVoiceId(0, unisonVoices);
-            _keyState->m_position = m_local_mono[1].m_key_position;
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[1].m_retrigger_env,
-                                   m_local_mono[1].m_retrigger_glide);
-          }
-          else
-          {
-            // split[II] poly keyDown
-            firstVoice = LocalVoices + _keyState->setVoiceId(m_local[1].keyDown(), unisonVoices);
-            m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-            // clear stolen key first (all associated voices will be lost)
-            if(m_voiceState[firstVoice].m_active)
-            {
-              keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-            }
-          }
+          firstVoice = keyDown_process_split(_keyState, unisonVoices, 1, true);
           // unison loop
           keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         }
@@ -595,26 +580,8 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       case LayerMode::Layer:
         _keyState->m_origin = AllocatorId::Dual;
         unisonVoices = m_local[0].getUnison();
-        if(m_local_mono[0].m_enabled)
-        {
-          // layer[I&II] mono keyDown
-          m_local_mono[0].keyDown(_keyState->m_key);
-          firstVoice = _keyState->setVoiceId(0, unisonVoices);
-          _keyState->m_position = m_local_mono[0].m_key_position;
-          m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, m_local_mono[0].m_retrigger_env,
-                                 m_local_mono[0].m_retrigger_glide);
-        }
-        else
-        {
-          // layer[I&II] poly keyDown
-          firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), unisonVoices);
-          m_traversal.startEvent(_keyState->m_position, _keyState->m_velocity, true, false);
-          // clear stolen key first (all associated voices will be lost)
-          if(m_voiceState[firstVoice].m_active)
-          {
-            keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
-          }
-        }
+        // mono/poly process
+        firstVoice = keyDown_process_layer(_keyState, unisonVoices);
         // unison loop
         keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         keyDown_unisonLoop(_keyState->m_position, LocalVoices + firstVoice, unisonVoices);

@@ -30,7 +30,8 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   const float samplerate = static_cast<float>(C15::Config::clock_rates[upsampleIndex][0]);
   // init of crucial components: voiceAlloc, conversion, clock, time, fadepoint
   m_alloc.init();
-  m_alloc.setSplitPoint(30);  // temporary..?
+  m_alloc.setSplitPoint(30, 0);  // temporary..?
+  m_alloc.setSplitPoint(31, 1);  // temporary..?
   m_convert.init();
   m_clock.init(upsampleIndex);
   m_time.init(upsampleIndex);
@@ -2422,7 +2423,7 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::SplitPoint
     const uint32_t macroId = getMacroId(_param.mc);
     m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
-    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
+    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled), 0);
   }
   else if(LOG_FAIL)
   {
