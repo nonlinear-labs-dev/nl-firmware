@@ -73,6 +73,9 @@ public class EditBufferUseCases {
 	private void handleSplitExceptionalParameterChange(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
 		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
 			if(p.id.getVoiceGroup() == VoiceGroup.II && newValue <= 0.016666667) {
+
+				GWT.log("Split II new Val in Clamp! : " + p.value.value.getValue());
+
 				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
 				p.value.value.setValue(0.016666667);
 				other.value.value.setValue(0.0);
@@ -81,6 +84,7 @@ public class EditBufferUseCases {
 				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
 				return;
 			} else if(p.id.getVoiceGroup() == VoiceGroup.II){
+				GWT.log("Split II new Val: " + p.value.value.getValue() + " newVal " + newValue);
 				//Default synced!
 				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
 				other.value.value.setValue(p.value.value.getValue() - 0.016666667);
@@ -91,6 +95,9 @@ public class EditBufferUseCases {
 			}
 
 			if(p.id.getVoiceGroup() == VoiceGroup.I && newValue >= 1 - 0.016666667) {
+
+
+				GWT.log("Split I new Val in Clamp! : " + p.value.value.getValue());
 				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
 				p.value.value.setValue(1 - 0.016666667);
 				other.value.value.setValue(1.0);
@@ -99,6 +106,8 @@ public class EditBufferUseCases {
 				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
 				return;
 			} else if(p.id.getVoiceGroup() == VoiceGroup.I){
+
+				GWT.log("Split I new Val: " + p.value.value.getValue() + " newVal " + newValue);
 				//Default synced!
 				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
 				other.value.value.setValue(p.value.value.getValue() + 0.016666667);

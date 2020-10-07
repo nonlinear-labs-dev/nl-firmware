@@ -68,18 +68,10 @@ public class SplitSoundLayout extends SoundLayout {
 
 	private class SplitPoint extends OverlayLayout {
 
-		SplitPointValue currentValue = null;
-
 		public SplitPoint(OverlayLayout parent) {
 			super(parent);
 			addChild(new SplitPointLabel(this, "Split Point"));
-			
-			EditBufferModel.get().voiceGroup.onChange(vg -> {
-				if(currentValue != null)
-					removeChild(currentValue);			
-				currentValue = addChild(new SplitPointValue(this));
-				return true;
-			});
+			addChild(new SplitPointValue(this));
 		}
 
 		@Override

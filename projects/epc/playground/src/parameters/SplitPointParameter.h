@@ -23,4 +23,5 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   bool inModSrcSet = false;
   void preventNegativeOverlap(UNDO::Transaction* transaction, tControlPositionValue value, bool dosendToPlaycontroller);
   bool isAtExtremes(tControlPositionValue value);
+  void clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller);
 };
