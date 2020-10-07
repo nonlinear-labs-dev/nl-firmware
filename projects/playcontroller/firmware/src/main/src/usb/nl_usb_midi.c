@@ -118,10 +118,10 @@ void USB_MIDI_Config(MidiRcvCallback midircv)
 *******************************************************************************/
 void USB_MIDI_Poll(void)
 {
-#if LPC_DGB_USB1 == 1
-  USB1_IRQHandler();
-#else
+#if USB_PORT_FOR_MIDI == 0
   USB0_IRQHandler();
+#else
+  USB1_IRQHandler();
 #endif
 }
 

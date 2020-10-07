@@ -214,7 +214,7 @@ void USB_Core_Init(void)
   USB_P_EP[0] = USB_EndPoint0;
 
   /* Turn on the phy */
-#if LPC_DGB_USB1 == 0
+#if USB_PORT_FOR_MIDI == 0
   LPC_CREG->CREG0 &= ~(1 << 5);
 #else
   /*                USB_AIM    USB_ESEA   USB_EPD    USB_EPWR   USB_VBUS */
@@ -232,13 +232,13 @@ void USB_Core_Init(void)
       | USBMODE_SDIS
       | USBMODE_SLOM;
 
-#if LPC_DGB_USB1 == 0
+#if USB_PORT_FOR_MIDI == 0
   /* set OTG transcever in proper state, device is present
 	on the port(CCS=1), port enable/disable status change(PES=1). */
   LPC_USB->OTGSC = (1 << 3) | (1 << 0) /*| (1<<16)| (1<<24)| (1<<25)| (1<<26)| (1<<27)| (1<<28)| (1<<29)| (1<<30)*/;
 #endif
 
-#if LPC_DGB_USB1 == 0
+#if USB_PORT_FOR_MIDI == 0
 #if USB_POLLING
   NVIC_DisableIRQ(USB0_IRQn);
 #else
@@ -1295,10 +1295,10 @@ void USB_EndPoint0(uint32_t event)
 /******************************************************************************/
 /** @brief		USB Interrupt Service Routine
 *******************************************************************************/
-#if LPC_DGB_USB1 == 1
-void USB1_IRQHandler(void)
-#else
+#if USB_PORT_FOR_MIDI == 0
 void USB0_IRQHandler(void)
+#else
+void USB1_IRQHandler(void)
 #endif
 {
   uint32_t disr, val, n;

@@ -12,12 +12,12 @@
 #include "globals.h"
 
 /** USB controller used by this driver */
-#if LPC_DGB_USB1 == 1
-#define LPC_USB LPC_USB1
-void USB1_IRQHandler(void);
-#else
+#if USB_PORT_FOR_MIDI == 0
 #define LPC_USB LPC_USB0
 void USB0_IRQHandler(void);
+#else
+#define LPC_USB LPC_USB1
+void USB1_IRQHandler(void);
 #endif
 
 /** Total number of interfaces*/
