@@ -70,70 +70,83 @@ public class EditBufferUseCases {
 		return EditBufferModel.get().getParameter(new ParameterId(p.id.getNumber(), inverted));
 	}
 
+	private double splitDelta() {
+		return 0.016666667;
+	}
+
+	private double splitDeltaSigned(BasicParameterModel split) {
+		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+			return splitDelta();
+		} else {
+			return -splitDelta();
+		}
+	}
+
+	private double getSplitEdge(BasicParameterModel split) {
+		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+			return 1 - splitDelta();
+		} else {
+			return splitDelta();
+		}
+	}
+
+	private double getSplitMaxOfOther(BasicParameterModel split) {
+		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+			return 1.0;
+		} else {
+			return 0.0;
+		}
+	}
+
+
+	private boolean inEdge(BasicParameterModel p, double newVal) {
+		if(p.id.getVoiceGroup() == VoiceGroup.II && newVal <= getSplitEdge(p)) {
+			return true;
+		} else if(p.id.getVoiceGroup() == VoiceGroup.I && newVal >= getSplitEdge(p)) {
+			return true;
+		}
+		return false;
+	}
+
+	private void handleSplitSync(BasicParameterModel p, ParameterId id, double newValue) {
+		BasicParameterModel other = getSibling(p);
+
+		if(inEdge(p, newValue)) {
+			p.value.value.setValue(getSplitEdge(p));
+			other.value.value.setValue(getSplitMaxOfOther(p));
+			NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
+			NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+		} else {
+			other.value.value.setValue(p.value.value.getValue() + splitDeltaSigned(p));
+			NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+			NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
+		}
+	}
+
+	private boolean splitsHaveNegativeOverlap(double newValue, BasicParameterModel other) {
+		if(other.id.getVoiceGroup() == VoiceGroup.I)  {
+			return newValue > other.value.value.getValue(); 
+		} else {
+			return newValue < other.value.value.getValue();
+		}
+	}
+
+	private void preventNegativeOverlap(BasicParameterModel p, ParameterId id, double newValue) {
+		BasicParameterModel other = getSibling(p);
+		if(splitsHaveNegativeOverlap(newValue, other)) {
+			other.value.value.setValue(newValue + splitDeltaSigned(p));
+			NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+		}
+		
+	}
+
 	private void handleSplitExceptionalParameterChange(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
 		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
-			if(p.id.getVoiceGroup() == VoiceGroup.II && newValue <= 0.016666667) {
-
-				GWT.log("Split II new Val in Clamp! : " + p.value.value.getValue());
-
-				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
-				p.value.value.setValue(0.016666667);
-				other.value.value.setValue(0.0);
-
-				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
-				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
-				return;
-			} else if(p.id.getVoiceGroup() == VoiceGroup.II){
-				GWT.log("Split II new Val: " + p.value.value.getValue() + " newVal " + newValue);
-				//Default synced!
-				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
-				other.value.value.setValue(p.value.value.getValue() - 0.016666667);
-
-				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
-				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
-				return;
-			}
-
-			if(p.id.getVoiceGroup() == VoiceGroup.I && newValue >= 1 - 0.016666667) {
-
-
-				GWT.log("Split I new Val in Clamp! : " + p.value.value.getValue());
-				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
-				p.value.value.setValue(1 - 0.016666667);
-				other.value.value.setValue(1.0);
-
-				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
-				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
-				return;
-			} else if(p.id.getVoiceGroup() == VoiceGroup.I){
-
-				GWT.log("Split I new Val: " + p.value.value.getValue() + " newVal " + newValue);
-				//Default synced!
-				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
-				other.value.value.setValue(p.value.value.getValue() + 0.016666667);
-
-				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
-				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
-				return;
-			}
+			handleSplitSync(p, id, newValue);
 		} else {
-			//prevent negative overlap!
-			if(id.getVoiceGroup() == VoiceGroup.I) {
-				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
-				if(newValue < other.value.value.getValue()) {
-					other.value.value.setValue(newValue + 0.016666667);
-					NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
-				}
-			} else {
-				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
-				if(newValue < other.value.value.getValue()) {
-					other.value.value.setValue(newValue - 0.016666667);
-					NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
-				}
-			}
+			preventNegativeOverlap(p, id, newValue);
+			NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
 		}
-
-		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
 	}
 
 	private void startReturningAnimation(PhysicalControlParameterModel m) {
