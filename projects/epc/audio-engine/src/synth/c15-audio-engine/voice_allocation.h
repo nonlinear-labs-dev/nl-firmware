@@ -261,6 +261,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
 {
  public:
   PolyKeyPacket<GlobalVoices> m_traversal;
+  /// SPLIT POINT TODO
   uint32_t m_unison = {}, m_splitPoint = {};
   inline VoiceAllocation()
   {
@@ -313,6 +314,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   }
   inline bool setSplitPoint(const uint32_t _keyPos)
   {
+    /// SPLIT POINT TODO
     // validation - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     if(validity)
@@ -465,7 +467,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
         // unison loop
         keyDown_unisonLoop(_keyState->m_position, firstVoice, unisonVoices);
         break;
-      case LayerMode::Split:
+      case LayerMode::Split:  /// SPLIT POINT TODO
         // determine split target
         if(_keyState->m_position <= m_splitPoint)
         {

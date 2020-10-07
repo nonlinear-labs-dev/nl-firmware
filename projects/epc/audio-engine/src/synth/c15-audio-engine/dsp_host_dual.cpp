@@ -749,10 +749,11 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Modulat
       nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
     }
   }
-  if(_id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
-  {
-    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
-  }
+  /// SPLIT POINT TODO
+  //  if(_id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
+  //  {
+  //    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
+  //  }
 }
 
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -1554,10 +1555,11 @@ void dsp_host_dual::globalModChain(Macro_Param* _mc)
         param->m_position = clipped;
         param->m_scaled = scale(param->m_scaling, param->polarize(clipped));
         globalTransition(param, _mc->m_time.m_dx);
-        if(param->m_splitpoint)
-        {
-          m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
-        }
+        /// SPLIT POINT TODO
+        //        if(param->m_splitpoint)
+        //        {
+        //          m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
+        //        }
       }
     }
   }
@@ -2096,8 +2098,8 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
 
-  //TODO handle 2 split points?
-  globalParRcl(msg->splitpoint[0]);
+  /// SPLIT POINT TODO
+  //  globalParRcl(msg->splitpoint[0]);
   if(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
@@ -2402,7 +2404,9 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::SplitPoint& _param)
 {
   auto element = getParameter(_param.id);
-  if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
+  /// SPLIT POINT TODO
+  //  if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
+  if(false)
   {
     if(LOG_RECALL_DETAILS)
     {
@@ -2573,7 +2577,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]
