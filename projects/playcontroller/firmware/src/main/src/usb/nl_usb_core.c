@@ -1101,7 +1101,6 @@ uint32_t USB_ReqSetInterface(void)
 *******************************************************************************/
 void USB_EndPoint0(uint32_t event)
 {
-
   switch (event)
   {
     case USB_EVT_SETUP:
@@ -1344,7 +1343,6 @@ void USB0_IRQHandler(void)
   val = LPC_USB->ENDPTCOMPLETE;
   if (val)
   {
-
     LPC_USB->ENDPTNAK = val;
 
     /* EP 0 - OUT */

@@ -20,7 +20,6 @@ void USB1_IRQHandler(void);
 void USB0_IRQHandler(void);
 #endif
 
-
 /** Total number of interfaces*/
 #define USB_IF_NUM 3
 /** Total physical endpoints*/
