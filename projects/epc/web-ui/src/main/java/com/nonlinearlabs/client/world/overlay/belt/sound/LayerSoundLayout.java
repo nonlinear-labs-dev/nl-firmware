@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
@@ -197,35 +196,7 @@ public class LayerSoundLayout extends SoundLayout {
 				if (group == VoiceGroup.I)
 					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
 				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
-			}
-
-			//Why is this not working?!
-			@Override
-			public Control doubleClick(Position pos) {
-				RenameDialog.open(new Renameable(){
-						
-					@Override
-					public void setName(String newName) {
-						EditBufferUseCases.get().renamePart(newName);								
-					}
-				
-					@Override
-					public String getTitleName() {
-						return EditBufferPresenterProvider.getPresenter().voiceGroup;
-					}
-				
-					@Override
-					public String getEntityName() {
-						return "Part";
-					}
-				
-					@Override
-					public String getCurrentName() {
-						return EditBufferPresenterProvider.getPresenter().currentPartName;
-					}
-				});
-				return this;
-			}			
+			}	
 		}
 
 		private class PartMute extends SVGImage {
