@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.presenters;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -13,7 +14,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ScaleOffsetParameterModel;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
-import com.nonlinearlabs.client.world.overlay.belt.parameters.MacroControlContextMenu;
+import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 
 public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private static EditBufferPresenterProvider theProvider = new EditBufferPresenterProvider();
@@ -22,8 +24,10 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private int allParameterSubscription = 0;
     private int selectedParameterSubscription = 0;
 
+    private EditBufferModel model;
+
     private EditBufferPresenterProvider() {
-        EditBufferModel model = EditBufferModel.get();
+        model = EditBufferModel.get();
 
         model.voiceGroup.onChange(v -> {
             monitorSelectedParameter();
@@ -66,6 +70,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 
         model.onChange(v -> {
             monitorAllParameters();
+            return true;
+        });
+
+        model.loadedPresetInVG1.onChange(I -> {
+            scheduleBruteForce();
+            return true;
+        });
+
+        model.loadedPresetInVG2.onChange(II -> {
+            scheduleBruteForce();
             return true;
         });
 
@@ -114,6 +128,18 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         }
     }
 
+    private boolean isPartLabelChanged(VoiceGroup vg) {
+        if (model.soundType.getValue() != SoundType.Single) {
+            Preset origin = NonMaps.get().getNonLinearWorld().getPresetManager()
+                    .findPreset(model.loadedPreset.getValue());
+            if (origin != null) {
+                String ogName = origin.getPartName(vg);
+                return !model.getPresetNameOfVoiceGroup(vg).equals(ogName);
+            }
+        }
+        return false;
+    }
+
     private void bruteForce() {
         boolean anyScaleNotDef = isAnyScaleOffsetParameterNotDefault();
         if (presenter.isAnyScaleOffsetParameterNotDefault != anyScaleNotDef) {
@@ -121,23 +147,111 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
+        
         boolean anyChanged = isAnyParameterChanged();
+        if(model.soundType.getValue() != SoundType.Single) {
+            anyChanged |= isPartLabelChanged(VoiceGroup.I) || isPartLabelChanged(VoiceGroup.II);
+        }
+
         if (presenter.isAnyParameterChanged != anyChanged) {
             presenter.isAnyParameterChanged = anyChanged;
             notifyChanges();
         }
 
         boolean anyLocked = isAnyParameterLocked();
-        if(anyLocked != presenter.isAnyParameterLocked) {
+        if (anyLocked != presenter.isAnyParameterLocked) {
             presenter.isAnyParameterLocked = anyLocked;
             notifyChanges();
         }
 
         boolean allLocked = areAllParametersLocked();
-        if(allLocked != presenter.allParametersLocked) {
+        if (allLocked != presenter.allParametersLocked) {
             presenter.allParametersLocked = allLocked;
             notifyChanges();
         }
+
+        if(model.soundType.getValue() == SoundType.Split) {
+            BasicParameterModel sI = model.getParameter(new ParameterId(356, VoiceGroup.I));
+            BasicParameterModel sII = model.getParameter(new ParameterId(356, VoiceGroup.II));
+            boolean splitOverlap = sI.getValue().value.getValue().value.getValue() >= sII.getValue().value.getValue().value.getValue();
+            if(presenter.splitOverlap != splitOverlap) {
+                presenter.splitOverlap = splitOverlap;
+                notifyChanges();
+            }
+        } else if(presenter.splitOverlap != false) {
+            presenter.splitOverlap = false;
+            notifyChanges();
+        }
+
+        if (model.soundType.getValue() == SoundType.Split) {
+            boolean lfxI = isCrossFX(VoiceGroup.II);
+            boolean lfxII = isCrossFX(VoiceGroup.I);
+
+            if(lfxI != presenter.splitFXToI || lfxII != presenter.splitFXToII) {
+                presenter.splitFXToI = lfxI;
+                presenter.splitFXToII = lfxII;
+                notifyChanges();
+            }
+        } else if(presenter.splitFXToI != false || presenter.splitFXToII != false) {
+            presenter.splitFXToI = false;
+            presenter.splitFXToII = false;
+            notifyChanges();
+        }
+
+        if (model.soundType.getValue() == SoundType.Layer) {
+            boolean fbI = isLayerFB(VoiceGroup.I);
+            boolean fbII = isLayerFB(VoiceGroup.II);
+            boolean fxI = isCrossFX(VoiceGroup.II);
+            boolean fxII = isCrossFX(VoiceGroup.I);
+
+            if(fbI != presenter.layerFBI || fbII != presenter.layerFBII || 
+               fxI != presenter.layerFXToI || fxII != presenter.layerFXToII) {
+                presenter.layerFBI = fbI;
+                presenter.layerFBII = fbII;
+                presenter.layerFXToI = fxI;
+                presenter.layerFXToII = fxII;
+                notifyChanges();
+            }
+        } else if(presenter.layerFBI != false || presenter.layerFBII != false || 
+                  presenter.layerFXToI != false || presenter.layerFXToII != false) {
+            presenter.layerFBI = false;
+            presenter.layerFBII = false;
+            presenter.layerFXToI = false;
+            presenter.layerFXToII = false;
+            notifyChanges();
+        }
+    }
+
+    private boolean cpNotZero(int num, VoiceGroup vg) {
+        BasicParameterModel param = model.getParameter(new ParameterId(num, vg));
+        return param.value.value.getValue() != 0;
+    }
+
+    private boolean cpGreaterThanZero(int num, VoiceGroup vg) {
+        BasicParameterModel param = model.getParameter(new ParameterId(num, vg));
+        return param.value.value.getValue() > 0;
+    }
+
+    private boolean isLayerFB(VoiceGroup vg) {
+        boolean oscFB = cpNotZero(346, vg);
+
+        boolean combMix = cpNotZero(156, vg);
+        boolean combSrc = cpNotZero(350, vg);
+        boolean comb = combMix && combSrc;
+
+        boolean svfMix = cpNotZero(158, vg);
+        boolean svfSrc = cpNotZero(352, vg);
+        boolean svf = svfMix && svfSrc;
+
+        boolean fxMix = cpNotZero(160, vg);
+        boolean fxSrc = cpNotZero(354, vg);
+        boolean fx = fxMix && fxSrc;
+
+        return oscFB || comb || svf || fx;
+    }
+
+    private boolean isCrossFX(VoiceGroup vg) {
+        return cpGreaterThanZero(362, vg);
     }
 
     private boolean isAnyParameterLocked() {
@@ -165,10 +279,9 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     private boolean isAnyParameterChanged() {
         for (VoiceGroup g : VoiceGroup.values()) {
             for (BasicParameterModel param : EditBufferModel.get().byVoiceGroup[g.ordinal()].parameters.values()) {
-                if(param instanceof MacroControlParameterModel)
-                {
-                    MacroControlParameterModel mc = (MacroControlParameterModel)param;
-                    if(ParameterPresenterProvider.isMCMetaChanged(mc))
+                if (param instanceof MacroControlParameterModel) {
+                    MacroControlParameterModel mc = (MacroControlParameterModel) param;
+                    if (ParameterPresenterProvider.isMCMetaChanged(mc))
                         return true;
                 }
 

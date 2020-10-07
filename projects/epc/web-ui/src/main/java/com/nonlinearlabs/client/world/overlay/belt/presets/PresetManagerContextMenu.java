@@ -67,26 +67,30 @@ public class PresetManagerContextMenu extends ContextMenu {
 		PresetManager pm = NonMaps.get().getNonLinearWorld().getPresetManager();
 		Bank bank = pm.findBank(pm.getSelectedBank());
 
-		String name = "Export Bank (" + bank.getOrderNumber() + " - " + bank.getCurrentName() + ") to File ...";
+		if(bank != null) {
+			String name = "Export Bank (" + bank.getOrderNumber() + " - " + bank.getCurrentName() + ") to File ...";
+			addChild(new ContextMenuItem(this, name) {
+				@Override
+				public Control click(final Position eventPoint) {
+					String bankName = URL.encodePathSegment(bank.getCurrentName());
+					String uri = "/presets/banks/download-bank/" + bankName + ".xml?uuid=" + bank.getUUID();
+					Window.open(uri, "", "");
+					return super.click(eventPoint);
+				}
+			});
+		}
 
-		addChild(new ContextMenuItem(this, name) {
-			@Override
-			public Control click(final Position eventPoint) {
-				String bankName = URL.encodePathSegment(bank.getCurrentName());
-				String uri = "/presets/banks/download-bank/" + bankName + ".xml?uuid=" + bank.getUUID();
-				Window.open(uri, "", "");
-				return super.click(eventPoint);
-			}
-		});
 
-		addChild(new ContextMenuItem(this, "Save all Banks as Backup File ...") {
-			@Override
-			public Control click(Position eventPoint) {
-				String uri = "/presets/download-banks";
-				Window.open(uri, "", "");
-				return super.click(eventPoint);
-			}
-		});
+		if(!pm.getBanks().isEmpty()) {
+			addChild(new ContextMenuItem(this, "Save all Banks as Backup File ...") {
+				@Override
+				public Control click(Position eventPoint) {
+					String uri = "/presets/download-banks";
+					Window.open(uri, "", "");
+					return super.click(eventPoint);
+				}
+			});
+		}
 
 		addChild(new ContextMenuItem(this, "Restore all Banks from Backup File ...") {
 			@Override
@@ -127,15 +131,14 @@ public class PresetManagerContextMenu extends ContextMenu {
 
 		});
 
-		addChild(new ContextMenuItem(this, !pm.isInMoveAllBanks() ? "Move all Banks" : "Disable Move all Banks") {
-			@Override
-			public Control click(Position eventPoint) {
-				getNonMaps().getNonLinearWorld().getPresetManager().toggleMoveAllBanks();
-				return super.click(eventPoint);
-			}
-		});
-
-		if (!pm.getBanks().isEmpty()) {
+		if(!pm.getBanks().isEmpty()) {
+			addChild(new ContextMenuItem(this, !pm.isInMoveAllBanks() ? "Move all Banks" : "Disable Move all Banks") {
+				@Override
+				public Control click(Position eventPoint) {
+					getNonMaps().getNonLinearWorld().getPresetManager().toggleMoveAllBanks();
+					return super.click(eventPoint);
+				}
+			});
 
 			if (!pm.areAllBanksCollapsed()) {
 				addChild(new ContextMenuItem(this, "Collapse all Banks") {
@@ -156,16 +159,15 @@ public class PresetManagerContextMenu extends ContextMenu {
 					}
 				});
 			}
+
+			addChild(new ContextMenuItem(this, "Sort Bank Numbers") {
+				@Override
+				public Control click(Position eventPoint) {
+					getNonMaps().getServerProxy().sortBankNumbers();
+					return super.click(eventPoint);
+				}
+			});
 		}
-
-		addChild(new ContextMenuItem(this, "Sort Bank Numbers") {
-			@Override
-			public Control click(Position eventPoint) {
-				getNonMaps().getServerProxy().sortBankNumbers();
-				return super.click(eventPoint);
-			}
-		});
-
 	}
 
 	public static void createNewBank(final NonPosition pos) {

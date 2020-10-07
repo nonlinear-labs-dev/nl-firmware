@@ -15,7 +15,8 @@
 
 SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterId& id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
-                                              ScaleConverter::get<LinearBipolar59StScaleConverter>(), 0.5, 59, 59)
+                                              ScaleConverter::get<LinearBipolar59StScaleConverter>(),
+                                              id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.516949153, 59, 59)
 {
 }
 
@@ -37,37 +38,44 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
                                      bool dosendToPlaycontroller)
 {
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-  auto other = getSibling();
-  tControlPositionValue siblingValue = other->getControlPositionValue();
 
-  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>().get()->get())
+  if(Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->get())
   {
     if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
     {
-      siblingValue = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, {});
+      auto other = getSibling();
+      auto siblingValue = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, {});
       other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
     }
   }
   else
   {
-    auto siblingThreshold
-        = getValue().getNextStepValue(siblingValue, other->getVoiceGroup() == VoiceGroup::I ? 1 : -1, {});
+    preventNegativeOverlap(transaction, value, dosendToPlaycontroller);
+  }
+}
 
-    siblingValue = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, {});
+void SplitPointParameter::preventNegativeOverlap(UNDO::Transaction* transaction, tControlPositionValue value,
+                                                 bool dosendToPlaycontroller)
+{
+  auto sibling = getSibling();
+  auto siblingValue = sibling->getControlPositionValue();
+  auto inc = sibling->getVoiceGroup() == VoiceGroup::I ? 1 : -1;
 
-    if(getVoiceGroup() == VoiceGroup::I)
+  auto siblingThreshold = getValue().getNextStepValue(siblingValue, inc, {});
+  siblingValue = getValue().getNextStepValue(value, -inc, {});
+
+  if(getVoiceGroup() == VoiceGroup::I)
+  {
+    if(value < siblingThreshold)
     {
-      if(value < siblingThreshold)
-      {
-        other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
-      }
+      sibling->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
     }
-    else
+  }
+  else
+  {
+    if(value > siblingThreshold)
     {
-      if(value > siblingThreshold)
-      {
-        other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
-      }
+      sibling->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
     }
   }
 }

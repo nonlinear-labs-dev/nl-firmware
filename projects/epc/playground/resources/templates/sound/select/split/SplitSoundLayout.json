@@ -78,43 +78,21 @@
           "Position": "1, 14",
           "Events": "SyncSplitPointStatus => ANY[Visibility]"
         },
-        "FX_L": {
-          "Class": "FX_Label_L",
-          "Position": "2, 20",
-          "Init": {
-            "TypeLabel[Text]": "FX",
-            "VGI[Text]": "I",
-            "VGII[Text]": "II"
-          }
-        },
-        "I_TO_I": {
-          "Class": "StraightLineArrowLeft",
-          "Position": "25, 20",
-          "Events": "ToFXIIUnder100 => ANY[Visibility]"
-        },
         "I_TO_II": {
-          "Class": "StraightLineArrowLeft",
-          "Position": "25, 36",
+          "Class": "SplitFBImage",
+          "Position": "10, 23",
+          "Init": {
+            "Image[ImagePath]": "Split_FX_B.png"
+          },
           "Events": "ToFXIIOver0 => ANY[Visibility]"
         },
-        "FX_R": {
-          "Class": "FX_Label_R",
-          "Position": "232, 20",
-          "Init": {
-            "TypeLabel[Text]": "FX",
-            "VGI[Text]": "I",
-            "VGII[Text]": "II"
-          }
-        },
         "II_TO_I": {
-          "Class": "StraightLineArrowRight",
-          "Position": "215, 20",
+          "Class": "SplitFBImage",
+          "Position": "212, 21",
+          "Init": {
+            "Image[ImagePath]": "Split_FX_A.png"
+          },
           "Events": "ToFXIOver0 => ANY[Visibility]"
-        },
-        "II_TO_II": {
-          "Class": "StraightLineArrowRight",
-          "Position": "215, 36",
-          "Events": "ToFXIUnder100 => ANY[Visibility]"
         }
       },
       "EventSinks": {

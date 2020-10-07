@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="21" viewBox="0 0 32 21">
+  <defs>
+    <style>
+      .a {
+        fill: #4d4d4d;
+      }
+
+      .b {
+        fill: #666;
+      }
+
+      .c {
+        fill: #999;
+      }
+
+      .d {
+        fill: #333;
+      }
+    </style>
+  </defs>
+  <title>Layer_Fade_A_Test</title>
+  <g>
+    <rect class="a" x="0.5" y="0.5" width="31" height="20" rx="3.5" ry="3.5"/>
+    <path class="b" d="M28,1a3.00339,3.00339,0,0,1,3,3V17a3.00339,3.00339,0,0,1-3,3H4a3.00339,3.00339,0,0,1-3-3V4A3.00339,3.00339,0,0,1,4,1H28m0-1H4A4.01175,4.01175,0,0,0,0,4V17a4.01175,4.01175,0,0,0,4,4H28a4.01175,4.01175,0,0,0,4-4V4a4.01175,4.01175,0,0,0-4-4Z"/>
+  </g>
+  <rect class="c" x="7" y="5" width="18" height="11"/>
+  <polygon class="d" points="8 6 24 6 8 15 8 6"/>
+</svg>

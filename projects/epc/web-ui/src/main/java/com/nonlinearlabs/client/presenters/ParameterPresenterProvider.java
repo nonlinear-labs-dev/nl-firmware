@@ -140,14 +140,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.disabled = isParameterDisabled(e);
 		presenter.hidden = isParameterHidden(e);
 
-		if (e.id.getNumber() == 356 && EditBufferModel.get().voiceGroup.getValue() == EditBufferModel.VoiceGroup.II) {
-			double nextValue = e.value.getIncDecValue(false, 1);
-			presenter.displayValues = new String[] { e.value.getDecoratedValue(true, nextValue, true),
-					e.value.getDecoratedValue(false, nextValue, true) };
-		} else {
-			presenter.displayValues = new String[] { e.value.getDecoratedValue(true, true),
-					e.value.getDecoratedValue(false, true) };
-		}
+		presenter.displayValues = new String[] { e.value.getDecoratedValue(true, true),
+				e.value.getDecoratedValue(false, true) };
 		presenter.originalParameterValueDecoratedString = e.value.getDecoratedValue(true, e.originalValue.getValue(),
 				true);
 
