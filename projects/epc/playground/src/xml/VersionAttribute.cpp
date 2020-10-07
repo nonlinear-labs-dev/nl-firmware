@@ -22,8 +22,9 @@ int VersionAttribute::getCurrentFileVersion()
     Reaktor = 5,
     Version1_5 = 6,
     NAMM_2020 = 7,
-    FIX_UNISON_VOICES = 8
+    FIX_UNISON_VOICES = 8,
+    DUAL_SPLIT_POINT = 9
   };
 
-  return static_cast<int>(History::FIX_UNISON_VOICES);
+  return static_cast<int>(History::DUAL_SPLIT_POINT);
 }
