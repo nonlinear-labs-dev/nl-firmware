@@ -31,10 +31,11 @@
 #pragma message("make sure version string '" C15_VERSION_STRING "' is up-to date when building a release or beta")
 
 // do not change these two strings:
-#define C15_VERSION_STRING_IN_MEMORY_PREFIX  "\n\nC15 Version: "
+#define C15_VERSION_STRING_IN_MEMORY_PREFIX "\n\nC15 Version: "
 #define C15_VERSION_STRING_IN_MEMORY_POSTFIX "\0\n\n"
 
-static const char C15_VERSION_STRING_IN_MEMORY[] = C15_VERSION_STRING_IN_MEMORY_PREFIX C15_VERSION_STRING C15_VERSION_STRING_IN_MEMORY_POSTFIX;
+static const char C15_VERSION_STRING_IN_MEMORY[]
+    = C15_VERSION_STRING_IN_MEMORY_PREFIX C15_VERSION_STRING C15_VERSION_STRING_IN_MEMORY_POSTFIX;
 
 static inline const char* GetC15Version(void)
 {
@@ -48,7 +49,7 @@ static inline const char* GetC15Version(void)
 static const char C15_BUILD_STRING_IN_MEMORY[] = "\n\nthis C15 program was built on " __DATE__ " " __TIME__ "\0\n\n";
 
 static inline const char* GetC15Build(void)
-{                                            // TODO: fill with auto-generated content, concatenated string: branch name, commit date, commit ID
+{  // TODO: fill with auto-generated content, concatenated string: branch name, commit date, commit ID
   return &(C15_BUILD_STRING_IN_MEMORY[32]);  // extract date only
 }
 

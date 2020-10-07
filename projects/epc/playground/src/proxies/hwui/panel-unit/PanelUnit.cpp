@@ -71,7 +71,6 @@ PanelUnit::PanelUnit()
           {
             modParamLayout->installMcAmountScreen();
             m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
-            return true;
           }
         });
       }

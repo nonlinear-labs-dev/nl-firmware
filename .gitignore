@@ -54,3 +54,4 @@ projects/parameter-db/src/.~lock.ParameterList_1.7B.ods#
 projects/epc/web-ui/target
 projects/epc/web-ui/.classpath
 projects/epc/web-ui/.settings/
+projects/epc/web-ui/.vscode/settings.json

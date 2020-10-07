@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
@@ -17,6 +18,7 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
+import com.nonlinearlabs.client.world.RenameDialog;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.ChoosePresetPartDialog;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
@@ -49,12 +51,12 @@ public class LayerSoundLayout extends SoundLayout {
 			getChildren().get(1).doLayout(0, 1.5 * unit, w, 8 * unit);
 			getChildren().get(2).doLayout(0, 10.5 * unit, w, 8 * unit);
 
-			LayerSoundFBIndicator fb = (LayerSoundFBIndicator)getChildren().get(0);
+			LayerSoundFBIndicator fb = (LayerSoundFBIndicator) getChildren().get(0);
 			double fbW = fb.getSelectedImage().getImgWidth();
 			double fbH = fb.getSelectedImage().getImgHeight();
 			fb.doLayout(-fbW, h / 2 - (fbH / 2), fbW, fbH);
 
-			LayerSoundFXIndicator fx = (LayerSoundFXIndicator)getChildren().get(3);
+			LayerSoundFXIndicator fx = (LayerSoundFXIndicator) getChildren().get(3);
 			double fxW = fb.getSelectedImage().getImgWidth();
 			double fxH = fb.getSelectedImage().getImgHeight();
 			fx.doLayout(w + 9, h / 2 - (fxH / 2), fxW, fxH);
@@ -194,8 +196,7 @@ public class LayerSoundLayout extends SoundLayout {
 				if (group == VoiceGroup.I)
 					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
 				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
-			}
-
+			}	
 		}
 
 		private class PartMute extends SVGImage {
@@ -238,6 +239,7 @@ public class LayerSoundLayout extends SoundLayout {
 		}
 
 		private class PresetName extends Label {
+
 			PresetName(VoiceGroupSoundSettings parent) {
 				super(parent);
 			}
@@ -251,6 +253,36 @@ public class LayerSoundLayout extends SoundLayout {
 			public void draw(Context2d ctx, int invalidationMask) {
 				getPixRect().drawRoundedArea(ctx, Millimeter.toPixels(0.5), 1, new Gray(68), new Gray(86));
 				super.draw(ctx, invalidationMask);
+			}
+
+			@Override
+			public Control doubleClick(Position p) {
+				RenameDialog.open(new Renameable(){
+						
+					@Override
+					public void setName(String newName) {
+						EditBufferUseCases.get().renamePart(newName, group);								
+					}
+				
+					@Override
+					public String getTitleName() {
+						if(group == VoiceGroup.I)
+							return "\uE071";
+						else
+							return "\uE072";
+					}
+	
+					@Override
+					public String getEntityName() {
+						return "Part";
+					}
+				
+					@Override
+					public String getCurrentName() {
+						return EditBufferPresenterProvider.getPresenter().currentPartName;
+					}
+				});
+				return this;
 			}
 		}
 

@@ -410,6 +410,10 @@ void Preset::writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis,
 
     writer.writeTextElement("position", "", Attribute("a", posString(this)), Attribute("b", posString(other)));
     writer.writeTextElement("name", "", Attribute("a", getName()), Attribute("b", other->getName()));
+    writer.writeTextElement("vgI-name", "", Attribute("a", getVoiceGroupName(VoiceGroup::I)),
+                            Attribute("b", other->getVoiceGroupName(VoiceGroup::I)));
+    writer.writeTextElement("vgII-name", "", Attribute("a", getVoiceGroupName(VoiceGroup::II)),
+                            Attribute("b", other->getVoiceGroupName(VoiceGroup::II)));
     writer.writeTextElement("enabled", "", Attribute("a", buttonStates.first), Attribute("b", buttonStates.second));
 
     super::writeDiff(writer, other);
