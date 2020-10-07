@@ -90,11 +90,6 @@ namespace Engine
         param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
         param->m_position = param->depolarize(_element.m_initial);
         param->m_initial = _element.m_initial;
-        /// SPLIT POINT TODO
-        //        if(_element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
-        //        {
-        //          param->m_splitpoint = true;
-        //        }
       }
       inline void init_global_unmodulateable(const C15::ParameterDescriptor _element)
       {
@@ -122,6 +117,10 @@ namespace Engine
           param->m_scaling.m_offset = _element.m_ae.m_scaleOffset;
           param->m_position = param->depolarize(_element.m_initial);
           param->m_initial = _element.m_initial;
+          if(_element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Split_Split_Point))
+          {
+            param->m_splitpoint = true;
+          }
         }
       }
       inline void init_local_unmodulateable(const C15::ParameterDescriptor _element)
@@ -170,12 +169,6 @@ namespace Engine
       inline Target_Param* get_local_target(const uint32_t _layerId, const uint32_t _id)
       {
         return &m_layer[_layerId].m_target[_id];
-      }
-      inline Target_Param* get_global_split_point()
-      {
-        /// SPLIT POINT TODO
-        //        return &m_global.m_target[static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point)];
-        return &m_global.m_target[0];  // temp
       }
       inline Direct_Param* get_local_unison_voices(const Layer _layerId)
       {
