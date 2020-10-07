@@ -69,20 +69,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         });
 
         model.onChange(v -> {
-        
             monitorAllParameters();
             return true;
         });
 
-
         model.loadedPresetInVG1.onChange(I -> {
-            notifyChanges();
             scheduleBruteForce();
             return true;
         });
 
         model.loadedPresetInVG2.onChange(II -> {
-            notifyChanges();
             scheduleBruteForce();
             return true;
         });
@@ -91,7 +87,6 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             presenter.loadedPresetUUID = v;
             presenter.currentPartName = model.getPresetNameOfVoiceGroup(model.voiceGroup.getValue());
             notifyChanges();
-            scheduleBruteForce();
             return true;
         });
 
@@ -175,26 +170,42 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
-        boolean inSplit = model.soundType.getValue() == SoundType.Split;
-        if (inSplit) {
-            presenter.splitFXToI = isLayerFX(VoiceGroup.II);
-            presenter.splitFXToII = isLayerFX(VoiceGroup.I);
-        } else {
+        if (model.soundType.getValue() == SoundType.Split) {
+            boolean lfxI = isCrossFX(VoiceGroup.II);
+            boolean lfxII = isCrossFX(VoiceGroup.I);
+
+            if(lfxI != presenter.splitFXToI || lfxII != presenter.splitFXToII) {
+                presenter.splitFXToI = lfxI;
+                presenter.splitFXToII = lfxII;
+                notifyChanges();
+            }
+        } else if(presenter.splitFXToI != false || presenter.splitFXToII != false) {
             presenter.splitFXToI = false;
             presenter.splitFXToII = false;
+            notifyChanges();
         }
 
-        boolean inLayer = model.soundType.getValue() == SoundType.Layer;
-        if (inLayer) {
-            presenter.layerFBI = isLayerFB(VoiceGroup.I);
-            presenter.layerFBII = isLayerFB(VoiceGroup.II);
-            presenter.layerFXToI = isLayerFX(VoiceGroup.II);
-            presenter.layerFXToII = isLayerFX(VoiceGroup.I);
-        } else {
+        if (model.soundType.getValue() == SoundType.Layer) {
+            boolean fbI = isLayerFB(VoiceGroup.I);
+            boolean fbII = isLayerFB(VoiceGroup.II);
+            boolean fxI = isCrossFX(VoiceGroup.II);
+            boolean fxII = isCrossFX(VoiceGroup.I);
+
+            if(fbI != presenter.layerFBI || fbII != presenter.layerFBII || 
+               fxI != presenter.layerFXToI || fxII != presenter.layerFXToII) {
+                presenter.layerFBI = fbI;
+                presenter.layerFBII = fbII;
+                presenter.layerFXToI = fxI;
+                presenter.layerFXToII = fxII;
+                notifyChanges();
+            }
+        } else if(presenter.layerFBI != false || presenter.layerFBII != false || 
+                  presenter.layerFXToI != false || presenter.layerFXToII != false) {
             presenter.layerFBI = false;
             presenter.layerFBII = false;
             presenter.layerFXToI = false;
             presenter.layerFXToII = false;
+            notifyChanges();
         }
     }
 
@@ -226,7 +237,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         return oscFB || comb || svf || fx;
     }
 
-    private boolean isLayerFX(VoiceGroup vg) {
+    private boolean isCrossFX(VoiceGroup vg) {
         return cpGreaterThanZero(362, vg);
     }
 

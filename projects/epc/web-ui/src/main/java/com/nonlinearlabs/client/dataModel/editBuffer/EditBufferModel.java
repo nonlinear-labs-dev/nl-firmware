@@ -68,8 +68,6 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	public EnumDataModelEntity<VoiceGroup> sourceVGII = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(EditBufferModel.VoiceGroup.class, VoiceGroup.I);
 
 	private EditBufferModel() {
-		loadedPreset.notifyOnEachSet(true);
-
 		ParameterFactory.assertSorted();
 
 		for (String groupdId : ParameterFactory.getParameterGroups()) {
