@@ -240,10 +240,6 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
 				new StaticURI.KeyValue("value", v));
 
-		int splitNum = 356;		
-		if(id.getNumber() == splitNum)
-			oracle = false;
-
 		queueJob(uri, oracle);
 	}
 

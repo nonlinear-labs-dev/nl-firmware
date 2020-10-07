@@ -93,7 +93,14 @@ class ValueEdit extends OverlayLayout {
 		addChild(value = new ValueLabel(this, param));
 		addChild(left = new ValueArrow(this, true));
 		addChild(right = new ValueArrow(this, false));
+
+		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(param.getNumber(), p -> {
+			parameter = p.id;
+			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			return true;
+		});
 	}
+
 
 	@Override
 	public Control mouseDown(Position eventPoint) {

@@ -38,8 +38,9 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
                                      bool dosendToPlaycontroller)
 {
   const auto syncActive = Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->get();
-  if(syncActive && isAtExtremes(value))
+  if(syncActive && isAtExtremes(value) && initiator != Initiator::INDIRECT_SPLIT_SYNC)
   {
+    clampToExtremes(transaction, dosendToPlaycontroller);
     return;
   }
 
@@ -57,6 +58,24 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
   else
   {
     preventNegativeOverlap(transaction, value, dosendToPlaycontroller);
+  }
+}
+void SplitPointParameter::clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller)
+{
+  auto other = getSibling();
+  if(getVoiceGroup() == VoiceGroup::I)
+  {
+    auto myVal = getValue().getNextStepValue(1, -1, {});
+    auto otherVal = 1.0;
+    other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, otherVal, dosendToPlaycontroller);
+    setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, myVal, dosendToPlaycontroller);
+  }
+  else if(getVoiceGroup() == VoiceGroup::II)
+  {
+    auto myVal = getValue().getNextStepValue(0, 1, {});
+    auto otherVal = 0.0;
+    other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, otherVal, dosendToPlaycontroller);
+    setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, myVal, dosendToPlaycontroller);
   }
 }
 
