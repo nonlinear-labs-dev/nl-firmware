@@ -40,6 +40,7 @@
 #include <tools/StringTools.h>
 #include <parameter_declarations.h>
 #include <presets/SendEditBufferScopeGuard.h>
+#include <presets/Preset.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
@@ -311,7 +312,9 @@ bool EditBuffer::findAnyParameterChanged() const
   }
   else
   {
-    return findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::II)
+    auto labelChanged = isPartLabelChanged(VoiceGroup::I) || isPartLabelChanged(VoiceGroup::II);
+
+    return labelChanged || findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::II)
         || findAnyParameterChanged(VoiceGroup::Global);
   }
 }
@@ -1636,4 +1639,13 @@ int EditBuffer::getSelectedParameterNumber() const
 void EditBuffer::fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group)
 {
   m_signalSelectedParameter.send(getSelected(oldGroup), getSelected(group));
+}
+
+bool EditBuffer::isPartLabelChanged(VoiceGroup group) const
+{
+  if(auto preset = getOrigin())
+  {
+    return preset->getVoiceGroupName(group) != getVoiceGroupName(group);
+  }
+  return false;
 }

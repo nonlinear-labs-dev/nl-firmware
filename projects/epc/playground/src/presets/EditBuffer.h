@@ -230,4 +230,5 @@ class EditBuffer : public ParameterGroupSet
   size_t m_hashOnStore;
 
   mutable Preset *m_originCache { nullptr };
+  bool isPartLabelChanged(VoiceGroup group) const;
 };

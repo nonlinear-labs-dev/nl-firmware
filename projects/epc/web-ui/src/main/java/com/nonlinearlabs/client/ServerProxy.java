@@ -140,9 +140,6 @@ public class ServerProxy {
 			lastUpdateID = getUpdateID(world);
 
 
-			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
-							presetManagerNode, deviceInfo, undoNode);
-
 			if (!lastOmitOracles) {
 				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 				ebu.doUpdate();
@@ -152,6 +149,9 @@ public class ServerProxy {
 				PresetManagerUpdater pmu = new PresetManagerUpdater(presetManagerNode, PresetManagerModel.get());
 				pmu.doUpdate();
 			}
+
+			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
+							presetManagerNode, deviceInfo, undoNode);
 
 			documentFromPlayground.notifyChanges();
 		}
