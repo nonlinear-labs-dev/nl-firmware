@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.useCases;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.ServerProxy;
@@ -53,17 +54,75 @@ public class EditBufferUseCases {
 		if (p instanceof MacroControlParameterModel)
 			applyModulationToModulateableParameters(id, diff);
 
-		if (p.id.getNumber() == 356 && SetupModel.get().systemSettings.syncSplit.getBool()) {
-			if(p.id.getVoiceGroup() == VoiceGroup.II && newValue == 0) {
-				p.value.value.setValue(oldQ);
+		if (p.id.getNumber() == 356) {
+			handleSplitExceptionalParameterChange(p, id, newValue, oracle);
+			return;
+		}
+
+		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
+	}
+
+	private BasicParameterModel getSibling(BasicParameterModel p) {
+		if(p.id.getVoiceGroup() == VoiceGroup.Global)
+			return null;
+
+		VoiceGroup inverted = p.id.getVoiceGroup() == VoiceGroup.I ? VoiceGroup.II : VoiceGroup.I;
+		return EditBufferModel.get().getParameter(new ParameterId(p.id.getNumber(), inverted));
+	}
+
+	private void handleSplitExceptionalParameterChange(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
+		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
+			if(p.id.getVoiceGroup() == VoiceGroup.II && newValue <= 0.016666667) {
+				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
+				p.value.value.setValue(0.016666667);
+				other.value.value.setValue(0.0);
+
+				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
+				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+				return;
+			} else if(p.id.getVoiceGroup() == VoiceGroup.II){
+				//Default synced!
+				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
+				other.value.value.setValue(p.value.value.getValue() - 0.016666667);
+
+				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
 				return;
 			}
 
-			if(p.id.getVoiceGroup() == VoiceGroup.I && newValue == 1) {
-				p.value.value.setValue(oldQ);
+			if(p.id.getVoiceGroup() == VoiceGroup.I && newValue >= 1 - 0.016666667) {
+				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
+				p.value.value.setValue(1 - 0.016666667);
+				other.value.value.setValue(1.0);
+
+				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
+				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+				return;
+			} else if(p.id.getVoiceGroup() == VoiceGroup.I){
+				//Default synced!
+				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
+				other.value.value.setValue(p.value.value.getValue() + 0.016666667);
+
+				NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+				NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
 				return;
 			}
-		}	
+		} else {
+			//prevent negative overlap!
+			if(id.getVoiceGroup() == VoiceGroup.I) {
+				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.II));
+				if(newValue < other.value.value.getValue()) {
+					other.value.value.setValue(newValue + 0.016666667);
+					NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+				}
+			} else {
+				BasicParameterModel other = EditBufferModel.get().getParameter(new ParameterId(356, VoiceGroup.I));
+				if(newValue < other.value.value.getValue()) {
+					other.value.value.setValue(newValue - 0.016666667);
+					NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+				}
+			}
+		}
 
 		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
 	}
