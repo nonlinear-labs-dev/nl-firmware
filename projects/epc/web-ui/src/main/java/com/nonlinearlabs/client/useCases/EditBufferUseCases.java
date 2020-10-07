@@ -53,6 +53,18 @@ public class EditBufferUseCases {
 		if (p instanceof MacroControlParameterModel)
 			applyModulationToModulateableParameters(id, diff);
 
+		if (p.id.getNumber() == 356 && SetupModel.get().systemSettings.syncSplit.getBool()) {
+			if(p.id.getVoiceGroup() == VoiceGroup.II && newValue == 0) {
+				p.value.value.setValue(oldQ);
+				return;
+			}
+
+			if(p.id.getVoiceGroup() == VoiceGroup.I && newValue == 1) {
+				p.value.value.setValue(oldQ);
+				return;
+			}
+		}	
+
 		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
 	}
 
