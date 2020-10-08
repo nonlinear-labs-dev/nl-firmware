@@ -260,7 +260,8 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {
-      if(auto p = eb->findParameterByID({ 356, VoiceGroup::Global }))
+      auto currentVG = hwui->getCurrentVoiceGroup();
+      if(auto p = eb->findParameterByID({ 356, currentVG }))
       {
         auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
         p->stepCPFromHwui(scope->getTransaction(), 1, hwui->getButtonModifiers());
@@ -268,7 +269,8 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::DecSplitPoint, [hwui, eb]() {
-      if(auto p = eb->findParameterByID({ 356, VoiceGroup::Global }))
+      auto currentVG = hwui->getCurrentVoiceGroup();
+      if(auto p = eb->findParameterByID({ 356, currentVG }))
       {
         auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
         p->stepCPFromHwui(scope->getTransaction(), -1, hwui->getButtonModifiers());
