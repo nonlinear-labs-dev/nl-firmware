@@ -75,7 +75,6 @@ public class LayerSoundLayout extends SoundLayout {
 			addChild(new Volume(this));
 			addChild(new TuneReference(this));
 			addChild(new PartMute(this));
-			addChild(new PartFade(this));
 		}
 
 		@Override
@@ -198,7 +197,7 @@ public class LayerSoundLayout extends SoundLayout {
 				if (group == VoiceGroup.I)
 					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
 				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
-			}	
+			}
 		}
 
 		private class PartMute extends SVGImage {
@@ -210,7 +209,7 @@ public class LayerSoundLayout extends SoundLayout {
 			@Override
 			public int getSelectedPhase() {
 				return isMuted() ? 1 : 0;
-			} 
+			}
 
 			boolean isMuted() {
 				BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, group));
@@ -232,31 +231,12 @@ public class LayerSoundLayout extends SoundLayout {
 				if (isMuted())
 					EditBufferUseCases.get().unmutePart(group);
 				else if (isOtherPartMuted()) {
-					EditBufferUseCases.get().setMuteForPartAndUnmuteOther(group);					
+					EditBufferUseCases.get().setMuteForPartAndUnmuteOther(group);
 				} else {
 					EditBufferUseCases.get().mutePart(group);
 				}
 				return this;
 			}
-		}
-
-		private class PartFade extends SVGImage {
-
-			public PartFade(Control parent) {
-				super(parent, "Fade-Edit-Btn_Active.svg", "Fade-Edit-Btn_Enabled.svg", "Fade-Edit-Btn_Disabled.svg");
-			}
-
-			@Override
-			public int getSelectedPhase() {
-				return 0;
-			}
-
-			@Override
-			public Control click(Position p) {
-				NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().openTab(BeltTab.FadeEditor);
-				return this;
-			}
-
 		}
 
 		private class PresetName extends Label {
@@ -278,26 +258,26 @@ public class LayerSoundLayout extends SoundLayout {
 
 			@Override
 			public Control doubleClick(Position p) {
-				RenameDialog.open(new Renameable(){
-						
+				RenameDialog.open(new Renameable() {
+
 					@Override
 					public void setName(String newName) {
-						EditBufferUseCases.get().renamePart(newName, group);								
+						EditBufferUseCases.get().renamePart(newName, group);
 					}
-				
+
 					@Override
 					public String getTitleName() {
-						if(group == VoiceGroup.I)
+						if (group == VoiceGroup.I)
 							return "\uE071";
 						else
 							return "\uE072";
 					}
-	
+
 					@Override
 					public String getEntityName() {
 						return "Part";
 					}
-				
+
 					@Override
 					public String getCurrentName() {
 						return EditBufferPresenterProvider.getPresenter().currentPartName;

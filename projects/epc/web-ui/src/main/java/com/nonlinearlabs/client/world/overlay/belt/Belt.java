@@ -25,6 +25,7 @@ public class Belt extends OverlayLayout {
 	private BeltSoundLayout soundLayout;
 	private BeltFadeEditorLayout fadeLayout;
 	private Animator animator;
+	private BeltTab currentTab;
 
 	public enum BeltTab {
 		Parameter, Sound, Preset, FadeEditor
@@ -36,10 +37,13 @@ public class Belt extends OverlayLayout {
 		addChild(parameterLayout = new BeltParameterLayout(this));
 		addChild(presetLayout = new BeltPresetLayout(this));
 		addChild(fadeLayout = new BeltFadeEditorLayout(this));
+
 		setParameterView(false);
 	}
 
 	public void openTab(BeltTab tab) {
+		currentTab = tab;
+
 		switch (tab) {
 			case Parameter:
 				presetLayout.fadeOut();
@@ -161,6 +165,7 @@ public class Belt extends OverlayLayout {
 
 		soundLayout.fadeIn();
 		parameterLayout.fadeOut();
+		fadeLayout.fadeOut();
 		presetLayout.fadeOut();
 	}
 
