@@ -24,6 +24,7 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
+import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class LayerSoundLayout extends SoundLayout {
@@ -74,6 +75,7 @@ public class LayerSoundLayout extends SoundLayout {
 			addChild(new Volume(this));
 			addChild(new TuneReference(this));
 			addChild(new PartMute(this));
+			addChild(new PartFade(this));
 		}
 
 		@Override
@@ -236,6 +238,25 @@ public class LayerSoundLayout extends SoundLayout {
 				}
 				return this;
 			}
+		}
+
+		private class PartFade extends SVGImage {
+
+			public PartFade(Control parent) {
+				super(parent, "Fade-Edit-Btn_Active.svg", "Fade-Edit-Btn_Enabled.svg", "Fade-Edit-Btn_Disabled.svg");
+			}
+
+			@Override
+			public int getSelectedPhase() {
+				return 0;
+			}
+
+			@Override
+			public Control click(Position p) {
+				NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt().openTab(BeltTab.FadeEditor);
+				return this;
+			}
+
 		}
 
 		private class PresetName extends Label {
