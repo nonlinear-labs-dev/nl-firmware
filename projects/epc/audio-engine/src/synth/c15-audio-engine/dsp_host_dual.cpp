@@ -2500,7 +2500,7 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId, const nltools::msg::Par
     param->update_position(param->depolarize(static_cast<float>(_param.controlPosition)));
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
     const uint32_t macroId = getMacroId(_param.mc);
-    m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
+    m_params.m_layer[_layerId].m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
     m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled), _layerId);
   }
