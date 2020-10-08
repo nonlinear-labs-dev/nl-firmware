@@ -33,6 +33,17 @@ template <uint32_t Voices> class PolyKeyPacket
                          const bool _retrigger_glide)
   {
     // setting up common settings
+    m_propagation_from = 0;
+    m_data[m_length].m_position = _keyPos;
+    m_data[m_length].m_velocity = _vel;
+    m_data[m_length].m_tune = static_cast<float>(_keyPos) - static_cast<float>(C15::Config::key_center);
+    m_data[m_length].m_trigger_env = _retrigger_env;
+    m_data[m_length].m_trigger_glide = _retrigger_glide;
+  }
+  inline void addEvent(const uint32_t _keyPos, const float _vel, const bool _retrigger_env, const bool _retrigger_glide)
+  {
+    // setting up common settings
+    m_propagation_from = m_length;
     m_data[m_length].m_position = _keyPos;
     m_data[m_length].m_velocity = _vel;
     m_data[m_length].m_tune = static_cast<float>(_keyPos) - static_cast<float>(C15::Config::key_center);
@@ -74,13 +85,13 @@ template <uint32_t Voices> class PolyKeyPacket
  private:
   inline void propagateEvent()
   {
-    m_data[m_length].m_position = m_data[0].m_position;
-    m_data[m_length].m_velocity = m_data[0].m_velocity;
-    m_data[m_length].m_tune = m_data[0].m_tune;
-    m_data[m_length].m_trigger_env = m_data[0].m_trigger_env;
-    m_data[m_length].m_trigger_glide = m_data[0].m_trigger_glide;
+    m_data[m_length].m_position = m_data[m_propagation_from].m_position;
+    m_data[m_length].m_velocity = m_data[m_propagation_from].m_velocity;
+    m_data[m_length].m_tune = m_data[m_propagation_from].m_tune;
+    m_data[m_length].m_trigger_env = m_data[m_propagation_from].m_trigger_env;
+    m_data[m_length].m_trigger_glide = m_data[m_propagation_from].m_trigger_glide;
     m_length++;
   }
   PolyKeyEvent m_data[Voices];
-  uint32_t m_index = 0, m_length = 0;
+  uint32_t m_index = 0, m_length = 0, m_propagation_from = 0;
 };

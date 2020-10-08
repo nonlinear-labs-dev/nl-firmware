@@ -30,7 +30,8 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   const float samplerate = static_cast<float>(C15::Config::clock_rates[upsampleIndex][0]);
   // init of crucial components: voiceAlloc, conversion, clock, time, fadepoint
   m_alloc.init();
-  m_alloc.setSplitPoint(30);  // temporary..?
+  m_alloc.setSplitPoint(30, 0);  // temporary..?
+  m_alloc.setSplitPoint(31, 1);  // temporary..?
   m_convert.init();
   m_clock.init(upsampleIndex);
   m_time.init(upsampleIndex);
@@ -749,10 +750,6 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Modulat
       nltools::Log::info("global_target_edit(mc:", macroId, ", amt:", param->m_amount, ")");
     }
   }
-  if(_id == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
-  {
-    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
-  }
 }
 
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -827,6 +824,12 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
         else
         {
           localTransition(layerId, param, m_edit_time.m_dx);
+        }
+        break;
+      case C15::Parameters::Local_Modulateables::Split_Split_Point:
+        if(m_layer_mode == LayerMode::Split)
+        {
+          m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled), layerId);
         }
         break;
       default:
@@ -1554,10 +1557,6 @@ void dsp_host_dual::globalModChain(Macro_Param* _mc)
         param->m_position = clipped;
         param->m_scaled = scale(param->m_scaling, param->polarize(clipped));
         globalTransition(param, _mc->m_time.m_dx);
-        if(param->m_splitpoint)
-        {
-          m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
-        }
       }
     }
   }
@@ -1595,6 +1594,10 @@ void dsp_host_dual::localModChain(const uint32_t _layer, Macro_Param* _mc)
         param->m_position = clipped;
         param->m_scaled = scale(param->m_scaling, param->polarize(clipped));
         localTransition(_layer, param, _mc->m_time.m_dx);
+      }
+      if(param->m_splitpoint)
+      {
+        m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled), _layer);
       }
     }
   }
@@ -2095,9 +2098,6 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
-
-  //TODO handle 2 split points?
-  globalParRcl(msg->splitpoint[0]);
   if(LOG_RECALL)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
@@ -2109,7 +2109,8 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   // local updates (each layer)
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
-    // local updates: unison, mono - updating va
+    // local updates: split point, unison, mono - updating va
+    localParRcl(layerId, msg->splitpoint[layerId]);
     localPolyRcl(layerId, true, msg->unison[layerId], msg->mono[layerId]);
     // local updates: unmodulateables
     if(LOG_RECALL)
@@ -2399,33 +2400,6 @@ void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::Modulateab
   }
 }
 
-void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::SplitPoint& _param)
-{
-  auto element = getParameter(_param.id);
-  if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Global_Modulateables::Split_Split_Point))
-  {
-    if(LOG_RECALL_DETAILS)
-    {
-      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-                         ", initial:", element.m_initial, ")");
-    }
-    auto param = m_params.get_global_target(element.m_param.m_index);
-    param->update_source(getMacro(_param.mc));
-    param->update_amount(static_cast<float>(_param.modulationAmount));
-    param->update_position(param->depolarize(static_cast<float>(_param.controlPosition)));
-    param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-    const uint32_t macroId = getMacroId(_param.mc);
-    m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
-    param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
-    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled));
-  }
-  else if(LOG_FAIL)
-  {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Modulateable(id:", _param.id, ")");
-  }
-}
-
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter& _param)
 {
   auto element = getParameter(_param.id);
@@ -2509,6 +2483,33 @@ void dsp_host_dual::localParRcl(const uint32_t _layerId,
   }
 }
 
+void dsp_host_dual::localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::SplitPoint& _param)
+{
+  auto element = getParameter(_param.id);
+  if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Split_Split_Point))
+  {
+    if(LOG_RECALL_DETAILS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
+    }
+    auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
+    param->update_source(getMacro(_param.mc));
+    param->update_amount(static_cast<float>(_param.modulationAmount));
+    param->update_position(param->depolarize(static_cast<float>(_param.controlPosition)));
+    param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
+    const uint32_t macroId = getMacroId(_param.mc);
+    m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
+    param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
+    m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled), _layerId);
+  }
+  else if(LOG_FAIL)
+  {
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Modulateable(id:", _param.id, ")");
+  }
+}
+
 void dsp_host_dual::localParRcl(const uint32_t _layerId,
                                 const nltools::msg::ParameterGroups::UnmodulateableParameter& _param)
 {
@@ -2573,7 +2574,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]
