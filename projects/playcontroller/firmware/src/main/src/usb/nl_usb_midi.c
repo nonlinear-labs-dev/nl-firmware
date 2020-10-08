@@ -33,6 +33,7 @@
 #include "usb/nl_usb_midi.h"
 #include "usb/nl_usb_descmidi.h"
 #include "usb/nl_usb_core.h"
+#include "globals.h"
 
 static uint32_t endOfBuffer = 0;
 
@@ -117,7 +118,11 @@ void USB_MIDI_Config(MidiRcvCallback midircv)
 *******************************************************************************/
 void USB_MIDI_Poll(void)
 {
+#if USB_PORT_FOR_MIDI == 0
   USB0_IRQHandler();
+#else
+  USB1_IRQHandler();
+#endif
 }
 
 /******************************************************************************/
