@@ -12,10 +12,9 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   void setModulationAmountFromSibling(UNDO::Transaction* transaction, const tDisplayValue& amount);
   void setModulationSource(UNDO::Transaction* transaction, MacroControls src) override;
   void setModulationSourceFromSibling(UNDO::Transaction* transaction, MacroControls src);
-
- protected:
   SplitPointParameter* getSibling() const;
 
+ protected:
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;
 
