@@ -114,12 +114,10 @@ public class EditBufferUseCases {
 		if(inEdge(p, newValue)) {
 			p.value.value.setValue(getSplitEdge(p));
 			other.value.value.setValue(getSplitMaxOfOther(p));
-			NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
-			NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
+			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), true);
 		} else {
 			other.value.value.setValue(p.value.value.getValue() + splitDeltaSigned(p));
-			NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
-			NonMaps.get().getServerProxy().setParameter(p.id, p.value.value.getValue(), true);
+			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), true);
 		}
 	}
 
@@ -131,21 +129,20 @@ public class EditBufferUseCases {
 		}
 	}
 
-	private void preventNegativeOverlap(BasicParameterModel p, ParameterId id, double newValue) {
+	private void preventNegativeOverlap(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
 		BasicParameterModel other = getSibling(p);
 		if(splitsHaveNegativeOverlap(newValue, other)) {
 			other.value.value.setValue(newValue + splitDeltaSigned(p));
-			NonMaps.get().getServerProxy().setParameter(other.id, other.value.value.getValue(), true);
 		}
 		
+		NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), oracle);
 	}
 
 	private void handleSplitExceptionalParameterChange(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
 		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
 			handleSplitSync(p, id, newValue);
 		} else {
-			preventNegativeOverlap(p, id, newValue);
-			NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
+			preventNegativeOverlap(p, id, newValue, oracle);
 		}
 	}
 

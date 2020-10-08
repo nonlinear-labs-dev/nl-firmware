@@ -243,6 +243,14 @@ public class ServerProxy {
 		queueJob(uri, oracle);
 	}
 
+	public void setSplitPoints(ParameterId id, Double value, Double value2, boolean oracle) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-splits");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
+		new StaticURI.KeyValue("value", value), new StaticURI.KeyValue("other-value", value2));
+
+		queueJob(uri, oracle);
+	}
+
 	public void selectPreset(String uuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "select-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
@@ -1167,4 +1175,5 @@ public class ServerProxy {
 	public boolean lastDocumentCouldOmitOracles() {
 		return lastOmitOracles;
 	}
+
 }
