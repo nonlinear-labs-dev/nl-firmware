@@ -258,12 +258,12 @@ public class EditBufferUseCases {
 		incDecParameter(id, fine, -1);
 	}
 
-	private void incDecParameter(int paramNumber, boolean fine, int inc) {
+	public void incDecParameter(int paramNumber, boolean fine, int inc) {
 		ParameterId id = toParamId(paramNumber);
 		incDecParameter(id, fine, inc);
 	}
 
-	private void incDecParameter(ParameterId id, boolean fine, int inc) {
+	public void incDecParameter(ParameterId id, boolean fine, int inc) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
