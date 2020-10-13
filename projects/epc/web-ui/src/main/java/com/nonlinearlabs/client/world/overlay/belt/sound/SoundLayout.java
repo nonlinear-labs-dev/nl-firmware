@@ -46,7 +46,7 @@ public class SoundLayout extends OverlayLayout {
 		this.fade = addChild(new PartFade(this));
 	
 		EditBufferModel.get().soundType.onChange(type -> {
-			fade.setVisible(type == SoundType.Layer);
+			fade.setVisible(type == SoundType.Layer || type == SoundType.Split);
 			return true;
 		});
 	}
