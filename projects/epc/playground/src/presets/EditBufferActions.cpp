@@ -18,6 +18,7 @@
 #include <parameters/names/ParameterDB.h>
 #include <parameter_declarations.h>
 #include <http/SoupOutStream.h>
+#include <parameters/SplitPointParameter.h>
 
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);
@@ -38,6 +39,21 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto id = request->get("id");
     auto value = std::stod(request->get("value"));
     editBuffer->setParameter(ParameterId(id), value);
+  });
+
+  addAction("set-splits", [=](std::shared_ptr<NetworkRequest> request) mutable {
+    auto id = request->get("id");
+    auto value = std::stod(request->get("value"));
+    auto otherValue = std::stod(request->get("other-value"));
+
+    if(auto s = dynamic_cast<SplitPointParameter*>(editBuffer->findParameterByID(ParameterId(id))))
+    {
+      auto other = s->getSibling();
+      auto scope
+          = s->getUndoScope().startContinuousTransaction(s, "Set '%0'", s->getGroupAndParameterNameWithVoiceGroup());
+      s->setCPFromWebUI(scope->getTransaction(), value);
+      other->setCPFromWebUI(scope->getTransaction(), otherValue);
+    }
   });
 
   addAction("set-mod-amount", [=](std::shared_ptr<NetworkRequest> request) mutable {

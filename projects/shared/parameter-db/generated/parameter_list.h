@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2020-07-15, 13:57
-    @version    1.7B-7
+    @date       2020-10-07, 13:22
+    @version	1.7B-7
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
     @todo
@@ -1927,11 +1927,11 @@ namespace C15
       { 100, 1000, 100, 1000, "", "Feedback Mixer", "FB Mixer", "Effects - From @VG", "From @VG",
         "Crossfades to the Effects signal of the other Part. (Only available when using Layer mode.)" } },
     { None },
-    { Parameters::Global_Modulateables::Split_Split_Point,
+    { Parameters::Local_Modulateables::Split_Split_Point,
       PID::Split_Split_Point,
-      30.0f / 59.0f,
-      { None, None, Properties::SmootherScale::Linear, 59.0f, 0.05f, false },
-      { 59, 59, 59, 59, "", "Split", "Split", "Split Point", "Split Pnt",
+      30.0f / 60.0f,
+      { None, None, Properties::SmootherScale::Linear, 60.0f, 0.05f, false },
+      { 60, 60, 60, 60, "", "Split", "Split", "Split Point", "Split Pnt",
         "Determines the split position of a sound as a key number. Keys from the lower end up to the Split Point will "
         "be associated to Part I, keys from the Split Point up to the upper end will be associated to Part II." } },
     { None },

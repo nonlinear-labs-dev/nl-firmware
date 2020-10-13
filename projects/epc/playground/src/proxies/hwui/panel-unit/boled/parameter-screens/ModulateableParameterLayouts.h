@@ -32,7 +32,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   virtual Parameter *getCurrentEditParameter() const override;
   virtual void setDefault() override;
   virtual bool switchToNormalMode() override;
-void handlePresetValueRecall() override;
+  void handlePresetValueRecall() override;
 
  private:
   void handleSelectPartButton();
@@ -70,7 +70,7 @@ void handlePresetValueRecall() override;
   bool isCurrentParameterDisabled() const;
   void installModAspectRecall();
   void removeModAspectRecall();
-void cleanMode();
+  void cleanMode();
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2

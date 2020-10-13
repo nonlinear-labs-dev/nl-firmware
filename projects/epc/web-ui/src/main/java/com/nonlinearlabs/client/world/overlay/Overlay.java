@@ -449,7 +449,7 @@ public class Overlay extends OverlayLayout {
 	public void collapseGlobalMenu() {
 		for (OverlayControl c : getChildren()) {
 			if (c instanceof GlobalMenu) {
-				if (((GlobalMenu) c).getState() == GlobalMenu.State.Expanded) {
+				if (((GlobalMenu) c).get() == GlobalMenu.State.Expanded) {
 					((GlobalMenu) c).toggle();
 				}
 			}

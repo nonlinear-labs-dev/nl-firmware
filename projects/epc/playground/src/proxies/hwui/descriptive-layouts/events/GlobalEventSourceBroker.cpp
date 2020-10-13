@@ -90,6 +90,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::CanRight] = std::make_unique<PresetListEvents::PresetListHasBankRight>();
 
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
+    m_map[EventSources::SyncSplitPointStatus] = std::make_unique<SplitPointSyncStatus>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();
     m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
     m_map[EventSources::MonoEnabled] = std::make_unique<MonoEnabledBool>();

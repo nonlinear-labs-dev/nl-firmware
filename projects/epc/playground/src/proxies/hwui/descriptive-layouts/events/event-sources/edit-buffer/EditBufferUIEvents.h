@@ -2,6 +2,8 @@
 
 #include <parameters/SplitPointParameter.h>
 #include "EditBufferEvent.h"
+#include <proxies/hwui/HWUI.h>
+#include <presets/PresetManager.h>
 
 namespace DescriptiveLayouts
 {
@@ -148,12 +150,18 @@ namespace DescriptiveLayouts
   class SplitPointValueText : public EditBufferEvent<DisplayString>
   {
    public:
+    SplitPointValueText()
+        : EditBufferEvent()
+    {
+      Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+          [this](auto) { onChange(Application::get().getPresetManager()->getEditBuffer()); });
+    }
     void onChange(const EditBuffer *eb) override
     {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      if(auto splitPoint = eb->getSplitPoint())
+      if(auto splitPoint = eb->findParameterByID({ C15::PID::Split_Split_Point, vg }))
       {
-        setValue({ splitPoint->getDisplayString(vg), 0 });
+        setValue({ splitPoint->getDisplayString(), 0 });
       }
       else
       {

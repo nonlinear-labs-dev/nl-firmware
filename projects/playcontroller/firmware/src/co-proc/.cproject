@@ -27,6 +27,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.858875326" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="RELEASE"/>
 									<listOptionValue builtIn="false" value="CORE_M0"/>
+									<listOptionValue builtIn="false" value="__MULTICORE_M0APP"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.914627192" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1642412064" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-fno-common" valueType="string"/>
@@ -36,6 +37,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../main/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../shared&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../../../shared&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../..&quot;"/>
 								</option>
 								<option id="com.crt.advproject.gcc.exe.release.option.optimization.level.65360126" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.release.option.optimization.level" value="gnu.c.optimization.level.most" valueType="enumerated"/>
@@ -72,7 +74,7 @@
 								<option id="com.crt.advproject.link.toram.689978033" name="Link application to RAM" superClass="com.crt.advproject.link.toram" value="false" valueType="boolean"/>
 								<option id="com.crt.advproject.link.gcc.lto.1212945317" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.link.gcc.lto" value="true" valueType="boolean"/>
 								<option id="com.crt.advproject.link.gcc.lto.optmization.level.1710805816" name="Link-time optimization level" superClass="com.crt.advproject.link.gcc.lto.optmization.level" value="link.c.optimization.level.most" valueType="enumerated"/>
-								<option id="gnu.c.link.option.nodeflibs.1598848660" superClass="gnu.c.link.option.nodeflibs" value="true" valueType="boolean"/>
+								<option id="gnu.c.link.option.nodeflibs.1598848660" name="Do not use default libraries (-nodefaultlibs)" superClass="gnu.c.link.option.nodeflibs" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.289490617" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

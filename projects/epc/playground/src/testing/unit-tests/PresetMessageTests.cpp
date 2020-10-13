@@ -70,11 +70,11 @@ template <int vg, typename tMsg> void collectDual(const tMsg &msg)
   collectIDs(msg.mono[vg], count);
   collectIDs(msg.unmodulateables[vg], count);
   collectIDs(msg.modulateables[vg], count);
+  collectID(msg.splitpoint[vg], count);
   collectIDs(msg.hwamounts, count);
   collectIDs(msg.hwsources, count);
   collectIDs(msg.macros, count);
   collectIDs(msg.scale, count);
-  collectID(msg.splitpoint, count);
   assertMap(count);
 }
 

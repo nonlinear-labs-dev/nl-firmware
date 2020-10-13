@@ -102,7 +102,7 @@ public class SplitSoundLayout extends SoundLayout {
 		private class SplitPointValue extends ValueEdit {
 
 			public SplitPointValue(OverlayLayout parent) {
-				super(parent, new ParameterId(356, VoiceGroup.Global));
+				super(parent, new ParameterId(356, EditBufferModel.get().voiceGroup.getValue()));
 			}
 		}
 	}

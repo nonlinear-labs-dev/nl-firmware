@@ -243,6 +243,14 @@ public class ServerProxy {
 		queueJob(uri, oracle);
 	}
 
+	public void setSplitPoints(ParameterId id, Double value, Double value2, boolean oracle) {
+		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-splits");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
+		new StaticURI.KeyValue("value", value), new StaticURI.KeyValue("other-value", value2));
+
+		queueJob(uri, oracle);
+	}
+
 	public void selectPreset(String uuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "select-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
@@ -494,14 +502,20 @@ public class ServerProxy {
 	public void setModulationAmount(double amount, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), new StaticURI.KeyValue("id", id));
-		queueJob(uri, true);
+		if(id.getNumber() == 356)
+			queueJob(uri, false);
+		else
+			queueJob(uri, true);
 	}
 
 	public void setModulationSource(ModSource src, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()),
 				new StaticURI.KeyValue("id", id));
-		queueJob(uri, true);
+		if(id.getNumber() == 356)
+			queueJob(uri, false);
+		else
+			queueJob(uri, true);
 	}
 
 	public void log(String message) {
@@ -1161,4 +1175,5 @@ public class ServerProxy {
 	public boolean lastDocumentCouldOmitOracles() {
 		return lastOmitOracles;
 	}
+
 }

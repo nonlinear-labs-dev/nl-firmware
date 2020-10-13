@@ -73,6 +73,11 @@
           "Position": "116, 18",
           "Events": "SplitPointValue => Text[Text]"
         },
+        "SyncIndicator": {
+          "Class": "SyncSplitPointIndicator",
+          "Position": "1, 14",
+          "Events": "SyncSplitPointStatus => ANY[Visibility]"
+        },
         "I_TO_II": {
           "Class": "SplitFBImage",
           "Position": "10, 23",

@@ -1,10 +1,10 @@
 #pragma once
 #include "ParameterGroup.h"
 
-class GlobalParameterGroups : public ParameterGroup
+class SplitParameterGroups : public ParameterGroup
 {
  public:
-  GlobalParameterGroups(ParameterGroupSet *parent);
+  SplitParameterGroups(ParameterGroupSet *parent, VoiceGroup vg);
   void init() override;
 
   static bool isSplitPoint(const Parameter* p);

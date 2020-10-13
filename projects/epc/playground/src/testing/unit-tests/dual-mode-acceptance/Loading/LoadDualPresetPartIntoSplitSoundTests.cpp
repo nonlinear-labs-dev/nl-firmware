@@ -8,6 +8,7 @@
 #include "presets/PresetParameter.h"
 #include "parameters/SplitPointParameter.h"
 #include "parameters/scale-converters/ScaleConverter.h"
+#include <parameter_declarations.h>
 
 using EBL = EditBufferLogicalParts;
 
@@ -18,8 +19,6 @@ TEST_CASE("Load Part I of Split into Split Part I")
   auto preset = presets.getSplitPreset();
 
   REQUIRE(preset->getType() == SoundType::Split);
-
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
 
   {
     auto scope = TestHelper::createTestScope();
@@ -44,6 +43,12 @@ TEST_CASE("Load Part I of Split into Split Part I")
     auto unisonVoices = preset->findParameterByID({ 249, VoiceGroup::I }, true);
     unisonVoices->setValue(transaction, 0.25);  // <- setting cp in range 0..23
 
+    auto ebSplitI = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
+    auto presetSplitI = preset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }, false);
+
+    ebSplitI->setCPFromHwui(transaction, 0.2);
+    presetSplitI->setValue(transaction, 1);
+
     for(auto& p : EBL::getToFX<VoiceGroup::I>())
     {
       if(auto toFxP = preset->findParameterByID(p->getID(), false))
@@ -62,7 +67,6 @@ TEST_CASE("Load Part I of Split into Split Part I")
   WHEN("Load")
   {
     const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-    const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -75,11 +79,20 @@ TEST_CASE("Load Part I of Split into Split Part I")
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
+    const auto oldSplitPos
+        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
+
     eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("Type is Same")
     {
       CHECK(eb->getType() == SoundType::Split);
+    }
+
+    THEN("Split was ignored")
+    {
+      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
+                                        oldSplitPos);
     }
 
     THEN("toFX and local normal II untouched")
@@ -104,11 +117,6 @@ TEST_CASE("Load Part I of Split into Split Part I")
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
-    }
-
-    THEN("Split unchanged")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
     }
 
     THEN("Unison and Mono of I Copied to I")
@@ -175,8 +183,6 @@ TEST_CASE("Load Part I of Split into Split Part II")
 
   REQUIRE(preset->getType() == SoundType::Split);
 
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
-
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
@@ -191,6 +197,12 @@ TEST_CASE("Load Part I of Split into Split Part II")
 
     auto tune = preset->findParameterByID({ 248, VoiceGroup::Global }, true);
     tune->setValue(transaction, 0.265);
+
+    auto pSplit = preset->findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::I}, false);
+    pSplit->setValue(transaction, 1);
+
+    auto eSplit = eb->findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::I});
+    eSplit->setCPFromHwui(transaction, 0);
 
     auto partVolume = preset->findParameterByID({ 358, VoiceGroup::I }, true);
     partVolume->setField(transaction, PresetParameter::Fields::ModSource, "1");
@@ -217,7 +229,8 @@ TEST_CASE("Load Part I of Split into Split Part II")
   WHEN("Load")
   {
     const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
-    const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
+    const auto oldSplitCP
+        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -265,9 +278,10 @@ TEST_CASE("Load Part I of Split into Split Part II")
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::II }), 0.666);
     }
 
-    THEN("Split unchanged")
+    THEN("Split unchanged / not loaded")
     {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
+      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
+                                        oldSplitCP);
     }
 
     THEN("Unison and Mono of I Copied to II")
@@ -334,8 +348,6 @@ TEST_CASE("Load Part I of Layer into Split Part I")
 
   REQUIRE(preset->getType() == SoundType::Layer);
 
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
-
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
@@ -374,7 +386,8 @@ TEST_CASE("Load Part I of Layer into Split Part I")
   WHEN("Load")
   {
     const auto oldToFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-    const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
+    const auto oldSplitCP
+        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -422,11 +435,6 @@ TEST_CASE("Load Part I of Layer into Split Part I")
     {
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::I>()));
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getFade<VoiceGroup::II>()));
-    }
-
-    THEN("Split unchanged")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
     }
 
     THEN("Unison and Mono I are copied From Unison/Mono I of Preset")
@@ -485,8 +493,6 @@ TEST_CASE("Load Part II of Layer into Split Part II")
 
   REQUIRE(preset->getType() == SoundType::Layer);
 
-  REQUIRE_NOTHROW(preset->findParameterByID({ 356, VoiceGroup::Global }, true));
-
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
@@ -523,7 +529,8 @@ TEST_CASE("Load Part II of Layer into Split Part II")
   WHEN("Load")
   {
     const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
-    const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
+    const auto oldSplitCP
+        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -574,7 +581,8 @@ TEST_CASE("Load Part II of Layer into Split Part II")
 
     THEN("Split unchanged")
     {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
+      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
+                                        oldSplitCP);
     }
 
     THEN("Unison and Mono II are copied From Unison/Mono I of Preset")

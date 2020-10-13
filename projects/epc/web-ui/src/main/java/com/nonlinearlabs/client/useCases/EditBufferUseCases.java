@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.useCases;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.ServerProxy;
@@ -53,7 +54,96 @@ public class EditBufferUseCases {
 		if (p instanceof MacroControlParameterModel)
 			applyModulationToModulateableParameters(id, diff);
 
+		if (p.id.getNumber() == 356) {
+			handleSplitExceptionalParameterChange(p, id, newValue, oracle);
+			return;
+		}
+
 		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
+	}
+
+	private BasicParameterModel getSibling(BasicParameterModel p) {
+		if(p.id.getVoiceGroup() == VoiceGroup.Global)
+			return null;
+
+		VoiceGroup inverted = p.id.getVoiceGroup() == VoiceGroup.I ? VoiceGroup.II : VoiceGroup.I;
+		return EditBufferModel.get().getParameter(new ParameterId(p.id.getNumber(), inverted));
+	}
+
+	private double splitDelta() {
+		return 0.016666667;
+	}
+
+	private double splitDeltaSigned(BasicParameterModel split) {
+		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+			return splitDelta();
+		} else {
+			return -splitDelta();
+		}
+	}
+
+	private double getSplitEdge(BasicParameterModel split) {
+		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+			return 1 - splitDelta();
+		} else {
+			return splitDelta();
+		}
+	}
+
+	private double getSplitMaxOfOther(BasicParameterModel split) {
+		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+			return 1.0;
+		} else {
+			return 0.0;
+		}
+	}
+
+
+	private boolean inEdge(BasicParameterModel p, double newVal) {
+		if(p.id.getVoiceGroup() == VoiceGroup.II && newVal <= getSplitEdge(p)) {
+			return true;
+		} else if(p.id.getVoiceGroup() == VoiceGroup.I && newVal >= getSplitEdge(p)) {
+			return true;
+		}
+		return false;
+	}
+
+	private void handleSplitSync(BasicParameterModel p, ParameterId id, double newValue) {
+		BasicParameterModel other = getSibling(p);
+
+		if(inEdge(p, newValue)) {
+			p.value.value.setValue(getSplitEdge(p));
+			other.value.value.setValue(getSplitMaxOfOther(p));
+			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), true);
+		} else {
+			other.value.value.setValue(p.value.value.getValue() + splitDeltaSigned(p));
+			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), true);
+		}
+	}
+
+	private boolean splitsHaveNegativeOverlap(double newValue, BasicParameterModel other) {
+		if(other.id.getVoiceGroup() == VoiceGroup.I)  {
+			return newValue > other.value.value.getValue(); 
+		} else {
+			return newValue < other.value.value.getValue();
+		}
+	}
+
+	private void preventNegativeOverlap(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
+		BasicParameterModel other = getSibling(p);
+		if(splitsHaveNegativeOverlap(newValue, other)) {
+			other.value.value.setValue(newValue + splitDeltaSigned(p));
+		}
+		
+		NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), oracle);
+	}
+
+	private void handleSplitExceptionalParameterChange(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
+		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
+			handleSplitSync(p, id, newValue);
+		} else {
+			preventNegativeOverlap(p, id, newValue, oracle);
+		}
 	}
 
 	private void startReturningAnimation(PhysicalControlParameterModel m) {
@@ -426,6 +516,16 @@ public class EditBufferUseCases {
 		} else {
 			SetupModel.get().systemSettings.directLoad.setValue(true);
 			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "on");
+		}
+	}
+
+	public void toggleSyncSplit() {
+		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
+			SetupModel.get().systemSettings.syncSplit.setValue(false);
+			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "off");
+		} else {
+			SetupModel.get().systemSettings.syncSplit.setValue(true);
+			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "on");
 		}
 	}
 

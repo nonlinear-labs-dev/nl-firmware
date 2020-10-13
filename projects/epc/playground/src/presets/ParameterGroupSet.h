@@ -58,5 +58,5 @@ class ParameterGroupSet : public AttributesOwner
   std::array<tParamGroups, static_cast<size_t>(VoiceGroup::NumGroups)> m_parameterGroups;
   std::array<tParamMap, static_cast<size_t>(VoiceGroup::NumGroups)> m_idToParameterMap;
 
-  friend class VoiceGroupSerializer;
+  void copyGlobalSplitIntoDualSplit(UNDO::Transaction *transaction, const Preset *other);
 };

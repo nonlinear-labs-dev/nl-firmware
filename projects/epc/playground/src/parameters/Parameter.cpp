@@ -522,13 +522,15 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
     case 354:
     case 362:
       return VisualizationStyle::Dot;
-    case 396:  //Fade From II
+    case C15::PID::Voice_Grp_Fade_From:
+    {
       if(getID().getVoiceGroup() == VoiceGroup::II)
         return VisualizationStyle::BarFromRight;
-      else  //Fade From I
+      else
         return VisualizationStyle::Bar;
-    case 356:  //Split Point
-      if(Application::get().getHWUI()->getCurrentVoiceGroup() == VoiceGroup::II)
+    }
+    case C15::PID::Split_Split_Point:
+      if(getID().getVoiceGroup() == VoiceGroup::II)
         return VisualizationStyle::BarFromRight;
       else
         return VisualizationStyle::Bar;

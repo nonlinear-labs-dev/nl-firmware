@@ -60,21 +60,23 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
       return 0.5 + v / 1.99;
     });
 
-    registerMCAmountConverter(127, 4, [=](auto v, auto) { return v / 2.0; });
+    registerMCAmountConverter(C15::PID::Comb_Flt_AP_Res, 4, [=](auto v, auto) { return v / 2.0; });
 
-    registerConverter(238, 4, [=](auto v, auto) {
+    registerConverter(C15::PID::Reverb_Color, 4, [=](auto v, auto) {
       if(v > 0.5)
         return v;
 
       return v * v * v * 4.0;
     });
 
-    registerConverter(240, 4, [=](auto v, auto) { return 0.25 + v * 0.75; });
+    registerConverter(C15::PID::Reverb_Chorus, 4, [=](auto v, auto) { return 0.25 + v * 0.75; });
 
-    registerConverter(249, 5, [=](auto v, auto) { return voicesV5ToV6(v); });
-    registerConverter(249, 7, [=](auto v, auto soundType) { return voicesV7ToV8(v, soundType); });
+    registerConverter(C15::PID::Unison_Voices, 5, [=](auto v, auto) { return voicesV5ToV6(v); });
+    registerConverter(C15::PID::Unison_Voices, 7, [=](auto v, auto soundType) { return voicesV7ToV8(v, soundType); });
 
-    registerConverter(164, 5, [=](auto v, auto) { return driveV5ToV6(v); });
+    registerConverter(C15::PID::FB_Mix_Drive, 5, [=](auto v, auto) { return driveV5ToV6(v); });
+
+    registerConverter(C15::PID::Split_Split_Point, 8, [=](auto v, auto) { return splitV8ToV9(v); });
 
     registerConverter(C15::PID::MC_Time_A, 5, [=](auto v, auto) { return 0.442; });
     registerConverter(C15::PID::MC_Time_B, 5, [=](auto v, auto) { return 0.442; });
@@ -191,4 +193,10 @@ tControlPositionValue ParameterImportConversions::voicesV7ToV8(tControlPositionV
     return voicesV5ToV6(v);
 
   return v;
+}
+
+tControlPositionValue ParameterImportConversions::splitV8ToV9(tControlPositionValue split) const
+{
+  auto note = split * 59.0;
+  return note / 60.0;
 }

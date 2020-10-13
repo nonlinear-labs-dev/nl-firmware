@@ -106,9 +106,6 @@ class EditBuffer : public ParameterGroupSet
   void undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGroup vg);
   void undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup to);
 
-  const SplitPointParameter *getSplitPoint() const;
-  SplitPointParameter *getSplitPoint();
-
   static bool isDualParameterForSoundType(const Parameter *parameter, SoundType type);
 
   void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group, Defaults mode);
@@ -176,7 +173,7 @@ class EditBuffer : public ParameterGroupSet
                                                    VoiceGroup copyFrom, VoiceGroup copyTo);
   void initSplitPoint(UNDO::Transaction *transaction);
   void initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg);
-  void calculateFadeParamsFromSplitPoint(UNDO::Transaction *transaction);
+  void defaultFadeParameters(UNDO::Transaction *transaction);
   void copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
   void combineSplitPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);

@@ -62,6 +62,14 @@ void CPU_ConfigureClocks(void)
   CGU_EntityConnect(CGU_CLKSRC_PLL0, CGU_BASE_USB0);
   Delay300();  // delay at least 300 µs
 
+  /* connect USB1 to PLL0 (480MHz) via /8 divider to get the required 60MHz */
+  /*                     IDIV=4          AUTOBLOCK   CLK_SEL=PLL0USB */
+  LPC_CGU->IDIVA_CTRL = ((4 - 1) << 2) | (1 << 11) | (0x07 << 24);  // setup IDIVA divider for PLL0USB/2
+  /*                     IDIV=2          AUTOBLOCK   CLK_SEL=IDIVA */
+  LPC_CGU->IDIVB_CTRL = ((2 - 1) << 2) | (1 << 11) | (0x0C << 24);  // setup IDIVB divider for IDIVA/2
+  /*                       AUTOBLOCK   CLK_SEL=IDIVB */
+  LPC_CGU->BASE_USB1_CLK = (1 << 11) | (0x0D << 24);  //  connect USB1_CLK to IDIVB
+
   /* nni: connect SSP0 and SSP1 to the PLL1 */
   CGU_EntityConnect(CGU_CLKSRC_PLL1, CGU_BASE_SSP0);
   Delay300();  // delay at least 300 µs

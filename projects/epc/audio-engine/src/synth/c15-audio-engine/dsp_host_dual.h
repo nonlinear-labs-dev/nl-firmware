@@ -159,11 +159,11 @@ class dsp_host_dual
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::ModulateableParameter& _param);
-  void globalParRcl(const nltools::msg::ParameterGroups::SplitPoint& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter& _param);
   void globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter& _param);
   void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::ModulateableParameter& _param);
+  void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::SplitPoint& _param);
   void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::UnmodulateableParameter& _param);
   void localPolyRcl(const uint32_t _layerId, const bool _va_update,
                     const nltools::msg::ParameterGroups::UnisonGroup& _unison,

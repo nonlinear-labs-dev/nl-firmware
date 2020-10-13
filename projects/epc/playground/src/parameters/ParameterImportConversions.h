@@ -34,6 +34,7 @@ class ParameterImportConversions
   tControlPositionValue driveV5ToV6(tControlPositionValue in) const;
   tControlPositionValue voicesV5ToV6(tControlPositionValue unisonVoices) const;
   tControlPositionValue voicesV7ToV8(tControlPositionValue unisonVoices, SoundType type) const;
+  tControlPositionValue splitV8ToV9(tControlPositionValue split) const;
 
   struct ConvertersBySourceFileVersion
   {

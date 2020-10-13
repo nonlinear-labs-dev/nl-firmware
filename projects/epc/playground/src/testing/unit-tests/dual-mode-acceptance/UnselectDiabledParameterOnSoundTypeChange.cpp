@@ -352,7 +352,7 @@ TEST_CASE("Split Loaded")
 
   WHEN("Split Point selected")
   {
-    eb->undoableSelectParameter({ 356, VoiceGroup::Global });
+    eb->undoableSelectParameter({ 356, VoiceGroup::I });
 
     THEN("Single Preset Loaded")
     {

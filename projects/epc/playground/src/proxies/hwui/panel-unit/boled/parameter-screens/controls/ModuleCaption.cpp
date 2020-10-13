@@ -7,7 +7,7 @@
 #include <groups/MonoGroup.h>
 #include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
-#include <groups/GlobalParameterGroups.h>
+#include <groups/SplitParameterGroups.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"

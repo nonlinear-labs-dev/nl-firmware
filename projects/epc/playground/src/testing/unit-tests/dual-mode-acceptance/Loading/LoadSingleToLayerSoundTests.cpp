@@ -1,6 +1,7 @@
 #include <iostream>
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
+#include <parameter_declarations.h>
 #include "testing/TestHelper.h"
 #include "testing/unit-tests/mock/EditBufferNamedLogicalParts.h"
 #include "proxies/hwui/HWUI.h"
@@ -46,7 +47,6 @@ TEST_CASE("Load Single into Layer Part I")
     const auto localSpecialIIHash
         = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>());
     const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
-    const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -80,11 +80,6 @@ TEST_CASE("Load Single into Layer Part I")
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
-    }
-
-    THEN("Split unchanged")
-    {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
     }
 
     THEN("Unison and Mono I Untouched")
@@ -172,7 +167,8 @@ TEST_CASE("Load Single into Layer Part II")
     const auto localSpecialIHash
         = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>());
     const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-    const auto oldSplitCP = eb->getSplitPoint()->getControlPositionValue();
+    const auto oldSplitCP
+        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -213,7 +209,8 @@ TEST_CASE("Load Single into Layer Part II")
 
     THEN("Split unchanged")
     {
-      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->getSplitPoint(), oldSplitCP);
+      CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }),
+                                        oldSplitCP);
     }
 
     THEN("Unison and Mono I Untouched")
