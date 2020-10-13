@@ -64,27 +64,20 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
             int key = (int) (splitValue * totalKeys);
 
-            if(splitValue == 0 || splitValue == 1) {
+            if((splitValue == 0 || splitValue == 1) && EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
                 return (key * keyW) + (key * keyPadding);
             } else {
                 return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
             }
         }
 
-        public void drawSplit(Context2d ctx, int invalidationMask) {
-            RGB cI = new RGB(0x26, 0xb0, 0xff);
-            RGBA cIFill = new RGBA(cI, 0.5);
-            RGB cII = new RGB(0xff, 0x99, 0x33); 
-            RGBA cIIFill = new RGBA(cII, 0.5); 
-            
+        public void drawSplitPartI(Context2d ctx, RGB stroke, RGBA fill) {
             Rect pix = getPixRect().copy();
-
             double splitI = getDrawPositon(getSplitPoint(VoiceGroup.I));
-            double splitII = getDrawPositon(1.0 - getSplitPoint(VoiceGroup.II));
 
             ctx.beginPath();
-            ctx.setFillStyle(cIFill.toString());
-            ctx.setStrokeStyle(cI.toString());
+            ctx.setFillStyle(fill.toString());
+            ctx.setStrokeStyle(stroke.toString());
             ctx.moveTo(pix.getLeft(), pix.getTop());
             ctx.lineTo(pix.getLeft() + splitI, pix.getTop());
             ctx.lineTo(pix.getLeft() + splitI, pix.getBottom());
@@ -92,10 +85,15 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             ctx.lineTo(pix.getLeft(), pix.getTop());
             ctx.fill();
             ctx.stroke();
+        }
+
+        public void drawSplitPartII(Context2d ctx, RGB stroke, RGBA fill) {
+            Rect pix = getPixRect().copy();
+            double splitII = getDrawPositon(1.0 - getSplitPoint(VoiceGroup.II));
 
             ctx.beginPath();
-            ctx.setFillStyle(cIIFill.toString());
-            ctx.setStrokeStyle(cII.toString());
+            ctx.setFillStyle(fill.toString());
+            ctx.setStrokeStyle(stroke.toString());
             ctx.moveTo(pix.getRight(), pix.getTop());
             ctx.lineTo(pix.getRight(), pix.getBottom());
             ctx.lineTo(pix.getRight() - splitII, pix.getBottom());
@@ -103,6 +101,48 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             ctx.lineTo(pix.getRight(), pix.getTop());
             ctx.fill();
             ctx.stroke();
+        }
+
+        public Rect getSplitAnfasser(VoiceGroup vg) {
+            Rect pix = getPixRect();
+            double v = getSplitPoint(vg);
+            if(vg == VoiceGroup.II)
+             v = 1 - v;
+            double start = vg == VoiceGroup.I ? pix.getLeft() : pix.getRight();
+
+            return new Rect(start + v - 5, pix.getCenterPoint().getY(), 10, 10);
+        }
+
+        public void drawSplit(Context2d ctx, int invalidationMask) {
+
+            RGB cI = new RGB(0x26, 0xb0, 0xff);
+            RGBA cIFill = new RGBA(cI, 0.5);
+            RGB cII = new RGB(0xff, 0x99, 0x33); 
+            RGBA cIIFill = new RGBA(cII, 0.5); 
+
+            Rect anfasserI = getSplitAnfasser(VoiceGroup.I);
+            Rect anfasserII = getSplitAnfasser(VoiceGroup.II);
+
+            VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+
+            Rect selectedAnfasserRect; 
+
+            if(vg == VoiceGroup.I) {
+                drawSplitPartI(ctx, cI, cIFill);
+                drawSplitPartII(ctx, cII, cIIFill);
+                anfasserII.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, cII, RGB.black());
+                anfasserI.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, cI, RGB.black());
+                selectedAnfasserRect = anfasserI.copy().getReducedBy(-5);
+                selectedAnfasserRect.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, null, cI);
+            } else {
+                drawSplitPartII(ctx, cII, cIIFill);
+                drawSplitPartI(ctx, cI, cIFill);
+                anfasserI.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, cI, RGB.black());
+                anfasserII.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, cII, RGB.black());    
+                selectedAnfasserRect = anfasserII.copy().getReducedBy(-5);
+                selectedAnfasserRect.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, null, cII);
+            }
+        
         }
 
         public void drawLayer(Context2d ctx, int invalidationMask) {
