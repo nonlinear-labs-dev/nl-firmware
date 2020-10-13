@@ -10,10 +10,7 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.maps.presets.bank.preset.ColorTag.Color;
-import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Label;
-import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
@@ -35,6 +32,48 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         @Override
         public void draw(Context2d ctx, int invalidationMask) {
             super.draw(ctx, invalidationMask);
+            if(EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
+                drawLayer(ctx, invalidationMask);
+            } else if(EditBufferModel.get().soundType.getValue() == SoundType.Split) {
+                drawSplit(ctx, invalidationMask);
+            }
+        }
+
+        public void drawSplit(Context2d ctx, int invalidationMask) {
+            RGB cI = new RGB(0x26, 0xb0, 0xff);
+            RGBA cIFill = new RGBA(cI, 0.5);
+            RGB cII = new RGB(0xff, 0x99, 0x33); 
+            RGBA cIIFill = new RGBA(cII, 0.5); 
+            
+            Rect pix = getPixRect().copy();
+
+            double splitI = pix.getWidth() * getSplitPoint(VoiceGroup.I);
+            double splitII = pix.getWidth() * (1.0 - getSplitPoint(VoiceGroup.II));
+
+            ctx.beginPath();
+            ctx.setFillStyle(cIFill.toString());
+            ctx.setStrokeStyle(cI.toString());
+            ctx.moveTo(pix.getLeft(), pix.getTop());
+            ctx.lineTo(splitI, pix.getTop());
+            ctx.lineTo(splitI, pix.getBottom());
+            ctx.lineTo(pix.getLeft(), pix.getBottom());
+            ctx.lineTo(pix.getLeft(), pix.getTop());
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.setFillStyle(cIIFill.toString());
+            ctx.setStrokeStyle(cII.toString());
+            ctx.moveTo(pix.getRight(), pix.getTop());
+            ctx.lineTo(pix.getRight(), pix.getBottom());
+            ctx.lineTo(splitII, pix.getBottom());
+            ctx.lineTo(splitII, pix.getTop());
+            ctx.lineTo(pix.getRight(), pix.getTop());
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        public void drawLayer(Context2d ctx, int invalidationMask) {
             
             RGB cI = new RGB(0x26, 0xb0, 0xff);
             RGBA cIFill = new RGBA(cI, 0.5);
@@ -42,21 +81,19 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             RGBA cIIFill = new RGBA(cII, 0.5); 
             
             Rect pix = getPixRect().copy();
-            double diffH = pix.getHeight() - getPictureHeight();
-            double diffW = pix.getWidth() - getPictureWidth();
-            pix.setTop(pix.getTop() + (diffH / 2));
-            pix.setLeft(pix.getLeft() + (diffW / 2));
-            pix.setWidth(getPictureWidth());
-            pix.setHeight(getPictureHeight());
             
+            double fadeFromI = pix.getWidth() * getFadeFrom(VoiceGroup.I); 
+            double fadeRangeI = pix.getWidth() * getFadeRange(VoiceGroup.I);
+
+            double fadeFromII = pix.getWidth() * (1.0 - getFadeFrom(VoiceGroup.II)); 
+            double fadeRangeII = pix.getWidth() * getFadeRange(VoiceGroup.II);
+
             ctx.beginPath();
             ctx.setFillStyle(cIFill.toString());
             ctx.setStrokeStyle(cI.toString());
             ctx.moveTo(pix.getLeft(), pix.getTop());
-            double fadeFrom = pix.getWidth() * getFadeFrom(VoiceGroup.I); 
-            double fadeRange = pix.getWidth() * getFadeRange(VoiceGroup.I);
-            ctx.lineTo(pix.getLeft() + fadeFrom, pix.getTop());
-            double right = Math.min(pix.getLeft() + fadeFrom + fadeRange, pix.getRight());
+            ctx.lineTo(pix.getLeft() + fadeFromI, pix.getTop());
+            double right = Math.min(pix.getLeft() + fadeFromI + fadeRangeI, pix.getRight());
             ctx.lineTo(right, pix.getBottom());
             ctx.lineTo(pix.getLeft(), pix.getBottom());
             ctx.lineTo(pix.getLeft(), pix.getTop());
@@ -67,8 +104,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             ctx.setFillStyle(cIIFill.toString());
             ctx.setStrokeStyle(cII.toString());
             ctx.moveTo(pix.getRight(), pix.getTop());
-            double fadeFromII = pix.getWidth() * (1.0 - getFadeFrom(VoiceGroup.II)); 
-            double fadeRangeII = pix.getWidth() * getFadeRange(VoiceGroup.II);
             ctx.lineTo(pix.getRight() - fadeFromII, pix.getTop());
             double left = Math.max(pix.getRight() - fadeFromII - fadeRangeII, pix.getLeft());
             ctx.lineTo(left, pix.getBottom());
@@ -85,6 +120,11 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         private double getFadeRange(VoiceGroup vg) {
             double v =  EditBufferModel.get().getParameter(new ParameterId(397, vg)).value.value.getValue();
+            return Math.min(1.0, Math.max(v, 0));
+        }
+
+        private double getSplitPoint(VoiceGroup vg) {
+            double v = EditBufferModel.get().getParameter(new ParameterId(356, vg)).value.value.getValue();
             return Math.min(1.0, Math.max(v, 0));
         }
     }
