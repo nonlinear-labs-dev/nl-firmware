@@ -43,7 +43,6 @@ RecallParameter *RecallParameterGroups::findParameterByID(const ParameterId &id)
   if(it != m_parameters.end())
     return it->second.get();
 
-  nltools::throwException("Could not find Recall Parameter with id ", id.toString());
   return nullptr;
 }
 
