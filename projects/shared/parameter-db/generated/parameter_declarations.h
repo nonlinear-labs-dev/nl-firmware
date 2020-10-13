@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2020-07-15, 13:56
-    @version    1.7B-7
+    @date       2020-10-07, 13:22
+    @version	1.7B-7
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
     @todo
@@ -170,7 +170,6 @@ namespace C15
 
     enum class Global_Modulateables
     {
-      Split_Split_Point,
       Master_Volume,
       Master_Tune,
       _LENGTH_
@@ -196,6 +195,7 @@ namespace C15
 
     enum class Local_Modulateables
     {
+      Split_Split_Point,
       Unison_Detune,
       Voice_Grp_Volume,
       Voice_Grp_Tune,

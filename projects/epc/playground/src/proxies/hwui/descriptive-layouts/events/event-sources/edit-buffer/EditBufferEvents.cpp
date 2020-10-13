@@ -62,12 +62,9 @@ bool DescriptiveLayouts::SoundParamsButtonText::isChanged(const EditBuffer *eb)
     {
       auto vgI = eb->getParameterGroupByID({ "Part", VoiceGroup::I })->isAnyParameterChanged();
       auto vgII = eb->getParameterGroupByID({ "Part", VoiceGroup::II })->isAnyParameterChanged();
-      if(type == SoundType::Split)
-        return vgI || vgII || (eb->getSplitPoint() != nullptr && eb->getSplitPoint()->isChangedFromLoaded());
       return vgI || vgII;
     }
   }
-  return false;
 }
 
 void DescriptiveLayouts::SoundVoicesButtonText::onChange(const EditBuffer *eb)

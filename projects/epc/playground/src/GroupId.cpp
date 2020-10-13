@@ -72,7 +72,7 @@ VoiceGroup GroupId::getVoiceGroup() const
 
 bool GroupId::isGlobal(const std::string &name)
 {
-  static std::vector<std::string> globals = { "Split", "CS", "Scale", "Master", "MCs", "MCM" };
+  static std::vector<std::string> globals = { "CS", "Scale", "Master", "MCs", "MCM" };
 
   for(auto &a : globals)
     if(a == name)

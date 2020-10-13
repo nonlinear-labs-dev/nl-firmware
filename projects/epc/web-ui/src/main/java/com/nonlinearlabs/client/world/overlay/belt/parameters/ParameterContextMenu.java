@@ -1,6 +1,8 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
@@ -23,6 +25,17 @@ public class ParameterContextMenu extends ContextMenu {
 				return super.click(eventPoint);
 			}
 		});
+
+		if(param.getParameterNumber() == 356) {
+			boolean state = SetupModel.get().systemSettings.syncSplit.getBool();
+			addChild(new ContextMenuItem(this, state ? "Disable Sync" : "Enable Sync") {
+				@Override
+				public Control click(Position eventPoint) {
+					EditBufferUseCases.get().toggleSyncSplit();
+					return super.click(eventPoint);
+				}
+			});
+		}
 
 		Belt belt = NonMaps.get().getNonLinearWorld().getViewport().getOverlay().getBelt();
 		if (belt.isHidden() || !belt.isParameterView()) {

@@ -2,6 +2,4 @@
 #include "SplitPointScaleConverter.h"
 
 SplitPointScaleConverter::SplitPointScaleConverter()
-    : LinearScaleConverter(tTcdRange(0, 59), tDisplayRange(0, 59), SplitPointDimension::get())
-{
-}
+        : LinearScaleConverter(tTcdRange(0, 60), tDisplayRange(0, 60), SplitPointDimension::get()) {}

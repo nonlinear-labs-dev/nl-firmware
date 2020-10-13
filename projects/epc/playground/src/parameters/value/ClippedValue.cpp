@@ -15,6 +15,11 @@ RawValue::tValueType ClippedValue::getClippedValue() const
   return clip(getRawValue());
 }
 
+RawValue::tValueType ClippedValue::getClippedValue(RawValue::tValueType v) const
+{
+  return clip(v);
+}
+
 RawValue::tValueType ClippedValue::clip(RawValue::tValueType v) const
 {
   return std::min(getUpperBorder(), std::max(v, getLowerBorder()));

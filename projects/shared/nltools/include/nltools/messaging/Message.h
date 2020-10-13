@@ -539,7 +539,7 @@ namespace nltools
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
       std::array<ParameterGroups::GlobalParameter, 13> scale;
-      ParameterGroups::SplitPoint                      splitpoint;
+      std::array<ParameterGroups::SplitPoint, 2> splitpoint;
     };
 
     inline bool operator==(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)

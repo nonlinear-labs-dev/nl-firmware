@@ -170,6 +170,20 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
+        if(model.soundType.getValue() == SoundType.Split) {
+            BasicParameterModel sI = model.getParameter(new ParameterId(356, VoiceGroup.I));
+            BasicParameterModel sII = model.getParameter(new ParameterId(356, VoiceGroup.II));
+            boolean splitOverlap = sI.value.value.getValue() >= sII.value.value.getValue();
+
+            if(presenter.splitOverlap != splitOverlap) {
+                presenter.splitOverlap = splitOverlap;
+                notifyChanges();
+            }
+        } else if(presenter.splitOverlap != false) {
+            presenter.splitOverlap = false;
+            notifyChanges();
+        }
+
         if (model.soundType.getValue() == SoundType.Split) {
             boolean lfxI = isCrossFX(VoiceGroup.II);
             boolean lfxII = isCrossFX(VoiceGroup.I);

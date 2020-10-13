@@ -9,6 +9,28 @@
         "Class": "Bar",
         "Rect": "11, 2, 1, 22"
       }
+    },
+    "SyncSplitPointIndicator": {
+      "ArrowLine": {
+        "Class": "Bar",
+        "Rect": "0, 2, 7, 1"
+      },
+      "ArrowHead0": {
+        "Class": "Bar",
+        "Rect": "5, 1, 1, 2"
+      },
+      "ArrowHead1": {
+        "Class": "Bar",
+        "Rect": "4, 0, 1, 2"
+      },
+      "ArrowHead2": {
+        "Class": "Bar",
+        "Rect": "4, 3, 1, 2"
+      },
+      "ArrowHead3": {
+        "Class": "Bar",
+        "Rect": "5, 3, 1, 1"
+      }
     }
   },
   "styles": {

@@ -352,7 +352,7 @@ public class GlobalMenu extends OverlayLayout {
 		return this;
 	}
 
-	public State getState() {
+	public State get() {
 		return state;
 	}
 

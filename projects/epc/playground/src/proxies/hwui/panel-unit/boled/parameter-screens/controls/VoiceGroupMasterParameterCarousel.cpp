@@ -7,6 +7,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterModulateableParameter.h>
 #include <sigc++/sigc++.h>
+#include <parameter_declarations.h>
 
 VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect &r)
     : ParameterCarousel(r)
@@ -34,13 +35,18 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
   {
     default:
     case SoundType::Single:
-      setupMasterParameters({ { 358, vg }, { 360, vg } });
+      setupMasterParameters({ { C15::PID::Voice_Grp_Volume, vg }, { C15::PID::Voice_Grp_Tune, vg } });
       break;
     case SoundType::Split:
-      setupMasterParameters({ { 358, vg }, { 360, vg }, { 356, VoiceGroup::Global } });
+      setupMasterParameters({ { C15::PID::Voice_Grp_Volume, vg },
+                              { C15::PID::Voice_Grp_Tune, vg },
+                              { C15::PID::Split_Split_Point, vg } });
       break;
     case SoundType::Layer:
-      setupMasterParameters({ { 358, vg }, { 360, vg }, { 396, vg }, { 397, vg } });
+      setupMasterParameters({ { C15::PID::Voice_Grp_Volume, vg },
+                              { C15::PID::Voice_Grp_Tune, vg },
+                              { C15::PID::Voice_Grp_Fade_From, vg },
+                              { C15::PID::Voice_Grp_Fade_Range, vg } });
       break;
   }
 
