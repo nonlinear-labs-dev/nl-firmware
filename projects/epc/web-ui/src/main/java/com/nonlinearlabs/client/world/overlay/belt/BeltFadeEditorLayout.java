@@ -13,7 +13,6 @@ import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Label;
-import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
@@ -22,23 +21,6 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 
 public class BeltFadeEditorLayout extends OverlayLayout {
-
-    private class Anfasser extends OverlayControl {
-
-        VoiceGroup voiceGroup;
-
-        Anfasser(OverlayControl parent, VoiceGroup vg) {
-            super(parent);
-            voiceGroup = vg;
-        }
-
-        @Override
-        public void draw(Context2d ctx, int invalidationMask) {
-            RGB color = voiceGroup == VoiceGroup.I ? new RGB(0x26, 0xb0, 0xff) : new RGB(0xff, 0x99, 0x33);
-            Rect p = getPixRect();
-            p.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, color.withAlpha(0.4), color);
-        }
-    }
 
     enum SelectedAnfasser {
         SplitPointI, SplitPointII, FadePointI, FadePointII, FadeRangeI, FadeRangeII, None
@@ -82,6 +64,15 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             }
         }
 
+        private void drawSplitAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
+            Rect anfasser = getSplitPointRect(vg);
+            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
+            SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.SplitPointI : SelectedAnfasser.SplitPointII;
+            if (selection == focus) {
+                anfasser.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
+            }
+        }
+
         public void drawSplitPartI(Context2d ctx, RGB stroke, RGBA fill) {
             Rect pix = getPixRect().copy();
 
@@ -97,12 +88,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             ctx.lineTo(pix.getLeft(), pix.getTop());
             ctx.fill();
             ctx.stroke();
-
-            Rect anfasser = getSplitPointRect(VoiceGroup.I);
-            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
-            if (selection == SelectedAnfasser.SplitPointI) {
-                anfasser.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, stroke);
-            }
         }
 
         public void drawSplitPartII(Context2d ctx, RGB stroke, RGBA fill) {
@@ -120,12 +105,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             ctx.lineTo(pix.getRight(), pix.getTop());
             ctx.fill();
             ctx.stroke();
-
-            Rect anfasser = getSplitPointRect(VoiceGroup.II);
-            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
-            if (selection == SelectedAnfasser.SplitPointII) {
-                anfasser.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, stroke);
-            }
         }
 
         public void drawSplit(Context2d ctx, int invalidationMask) {
@@ -138,11 +117,17 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
 
             if (vg == VoiceGroup.I) {
-                drawSplitPartI(ctx, cI, cIFill);
                 drawSplitPartII(ctx, cII, cIIFill);
+                drawSplitPartI(ctx, cI, cIFill);
+
+                drawSplitAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
+                drawSplitAnfasser(ctx, VoiceGroup.I, cI, cIFill);
             } else {
-                drawSplitPartII(ctx, cII, cIIFill);
                 drawSplitPartI(ctx, cI, cIFill);
+                drawSplitPartII(ctx, cII, cIIFill);
+
+                drawSplitAnfasser(ctx, VoiceGroup.I, cI, cIFill);
+                drawSplitAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
             }
         }
 
@@ -207,6 +192,24 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             }
         }
 
+        private void drawFadeRangeAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
+            Rect anfasser = getLayerFadeRangeRect(vg);
+            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
+            SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.FadeRangeI : SelectedAnfasser.FadeRangeII;
+            if (selection == focus) {
+                anfasser.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
+            }
+        }
+
+        private void drawFadePointAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
+            Rect anfasser = getLayerFadePointRect(vg);
+            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
+            SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.FadePointI : SelectedAnfasser.FadePointII;
+            if (selection == focus) {
+                anfasser.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
+            }
+        }
+
         public void drawLayerI(Context2d ctx, RGB stroke, RGBA fill) {
             Rect pix = getPixRect().copy();
 
@@ -218,25 +221,13 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             double fPointX = getFadePointX(VoiceGroup.I);
             double fRangeX = getFadeRangeX(VoiceGroup.I);
 
-            ctx.lineTo(fPointX, pix.getTop()); // Fade Point Anfasser
-            ctx.lineTo(fRangeX, pix.getBottom()); // Fade Range Anfasser
+            ctx.lineTo(fPointX, pix.getTop());
+            ctx.lineTo(fRangeX, pix.getBottom());
 
             ctx.lineTo(pix.getLeft(), pix.getBottom());
             ctx.lineTo(pix.getLeft(), pix.getTop());
             ctx.fill();
             ctx.stroke();
-
-            Rect fadePoint = getLayerFadePointRect(VoiceGroup.I);
-            fadePoint.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
-            if (selection == SelectedAnfasser.FadePointI) {
-                fadePoint.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, stroke);
-            }
-
-            Rect fadeRange = getLayerFadeRangeRect(VoiceGroup.I);
-            fadeRange.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
-            if (selection == SelectedAnfasser.FadeRangeI) {
-                fadeRange.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, stroke);
-            }
         }
 
         public void drawLayerII(Context2d ctx, RGB stroke, RGBA fill) {
@@ -257,18 +248,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             ctx.lineTo(pix.getRight(), pix.getTop());
             ctx.fill();
             ctx.stroke();
-
-            Rect fadePoint = getLayerFadePointRect(VoiceGroup.II);
-            fadePoint.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
-            if (selection == SelectedAnfasser.FadePointII) {
-                fadePoint.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, stroke);
-            }
-
-            Rect fadeRange = getLayerFadeRangeRect(VoiceGroup.II);
-            fadeRange.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
-            if (selection == SelectedAnfasser.FadeRangeII) {
-                fadeRange.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, stroke);
-            }
         }
 
         public void drawLayer(Context2d ctx, int invalidationMask) {
@@ -281,10 +260,22 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
                 drawLayerII(ctx, cII, cIIFill);
                 drawLayerI(ctx, cI, cIFill);
+
+                drawFadePointAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
+                drawFadeRangeAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
+                drawFadePointAnfasser(ctx, VoiceGroup.I, cI, cIFill);
+                drawFadeRangeAnfasser(ctx, VoiceGroup.I, cI, cIFill);
             } else {
                 drawLayerI(ctx, cI, cIFill);
                 drawLayerII(ctx, cII, cIIFill);
+
+                drawFadePointAnfasser(ctx, VoiceGroup.I, cI, cIFill);
+                drawFadeRangeAnfasser(ctx, VoiceGroup.I, cI, cIFill);
+                drawFadePointAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
+                drawFadeRangeAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
             }
+
+
 
         }
 
@@ -309,6 +300,11 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         }
 
         void selectControl(SelectedAnfasser anfasser) {
+            if(anfasser == SelectedAnfasser.FadePointI || anfasser == SelectedAnfasser.FadeRangeI || anfasser == SelectedAnfasser.SplitPointI) {
+                EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.I);
+            } else if(anfasser == SelectedAnfasser.FadePointII || anfasser == SelectedAnfasser.FadeRangeII || anfasser == SelectedAnfasser.SplitPointII) {
+                EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.II);
+            }
             selection = anfasser;
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
         }
@@ -346,7 +342,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         public Control startDragging(Position pos) {
             Control c = handleMouseDownDragStart(pos);
             if (c == null) {
-                selectControl(SelectedAnfasser.None);
                 return super.startDragging(pos);
             }
             return c;
@@ -356,7 +351,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         public Control click(Position pos) {
             Control c = handleMouseDownDragStart(pos);
             if (c == null) {
-                selectControl(SelectedAnfasser.None);
                 return super.click(pos);
             }
             return c;
@@ -410,22 +404,22 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
                 switch (selection) {
                     case FadePointI:
-                        EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.I), cp, true);
+                        EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.I), cp, false);
                         break;
                     case FadePointII:
-                        EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.II), cp, true);
+                        EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.II), cp, false);
                         break;
                     case FadeRangeI:
-                        EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.I), cp, true);
+                        EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.I), cp, false);
                         break;
                     case FadeRangeII:
-                        EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.II), cp, true);
+                        EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.II), cp, false);
                         break;
                     case SplitPointI:
-                        EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.I), cp, true);
+                        EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.I), cp, false);
                         break;
                     case SplitPointII:
-                        EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.II), cp, true);
+                        EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.II), cp, false);
                         break;
                     case None:
                     default:
