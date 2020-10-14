@@ -5,7 +5,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
-import com.nonlinearlabs.client.presenters.FadeEditorPresenter.SelectedFadeControl;
 
 public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
     private static FadeEditorPresenterProvider theProvider = new FadeEditorPresenterProvider();
@@ -37,22 +36,6 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
                 return true;
             });
         }
-
-        EditBufferModel.get().selectedParameter.onChange(paramNum -> {
-            switch(paramNum) {
-                case 356:
-                    presenter.selectedControl = SelectedFadeControl.Split;
-                break;
-                case 396:
-                    presenter.selectedControl = SelectedFadeControl.FadePoint;
-                break;
-                case 397:
-                    presenter.selectedControl = SelectedFadeControl.FadeRange;
-                break;
-            }
-            notifyChanges();
-            return true;
-        });
     }
 
     private void update() {
@@ -67,13 +50,28 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
 
         presenter.splitRangeII.from = Math.max(0, Math.min((int)(61 * splitII.value.value.getValue()), 60));
         presenter.splitRangeII.to = 61;
-
         presenter.splitRangeII.indicator = presenter.splitRangeII.from;
+
 
         BasicParameterModel fadeI = model.getParameter(new ParameterId(396, VoiceGroup.I));
         BasicParameterModel fadeII = model.getParameter(new ParameterId(396, VoiceGroup.II));
-        presenter.fadePointI = Math.max(Math.min(fadeI.value.value.getValue(), 1), 0);
-        presenter.fadePointII = Math.max(Math.min(fadeII.value.value.getValue(), 1), 0);
+
+        presenter.fadePointRangeI.from = 0;
+        presenter.fadePointRangeI.to = (int)(61 * fadeI.value.value.getValue());
+        presenter.fadePointRangeI.indicator = presenter.fadePointRangeI.to;
+
+        presenter.fadePointRangeII.from = (int)(61 * fadeII.value.value.getValue());
+        presenter.fadePointRangeII.to = 61;
+        presenter.fadePointRangeII.indicator = presenter.fadePointRangeII.from;
+
+        BasicParameterModel rangeI = model.getParameter(new ParameterId(397, VoiceGroup.I));
+        BasicParameterModel rangeII = model.getParameter(new ParameterId(397, VoiceGroup.II));
+
+        double rI = Math.min(presenter.fadePointRangeI.to + (rangeI.value.value.getValue() * 61), 61);
+        double rII = Math.max(presenter.fadePointRangeII.from - (rangeII.value.value.getValue() * 61), 0);
+
+        presenter.fadeRangeI = rI;
+        presenter.fadeRangeII = rII;
 
         notifyChanges();
     }

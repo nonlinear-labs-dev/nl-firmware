@@ -65,6 +65,12 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             return note * (keyW + keyPadding);
         }
 
+        public double getXPosFadeRange(double noteF) {
+            int keyW = 13;
+            int keyPadding = 1;
+            return noteF * (keyW + keyPadding);
+        }
+
         public double quantizeToNoteBorder(double splitValue, VoiceGroup vg) {
             int totalKeys = 61;
 
@@ -134,9 +140,9 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             }
         }
 
-        public double getFadePointX(VoiceGroup vg) {
+        public double getFadePointIndicatorX(VoiceGroup vg) {
             Rect pix = getPixRect();
-            return pix.getLeft() + quantizeToNoteBorder(presenter.getFadePointValue(vg), vg);
+            return pix.getLeft() + quantizeToNoteBorder(presenter.getFadePointRange(vg).indicator, vg);
         }
 
         public double getFadeRangeX(VoiceGroup vg) {
@@ -156,9 +162,9 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
             Rect pix = getPixRect();
             if (vg == VoiceGroup.I) {
-                return new Rect(getFadePointX(VoiceGroup.I) - halfSize, pix.getTop() - halfSize, size, size);
+                return new Rect(getFadePointIndicatorX(VoiceGroup.I) - halfSize, pix.getTop() - halfSize, size, size);
             } else {
-                return new Rect(getFadePointX(VoiceGroup.II) - halfSize, pix.getTop() - halfSize, size, size);
+                return new Rect(getFadePointIndicatorX(VoiceGroup.II) - halfSize, pix.getTop() - halfSize, size, size);
             }
         }
 
@@ -194,45 +200,36 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             drawAnfasser(ctx, selection == focus, anfasser, stroke, fill);
         }
 
-        public void drawLayerI(Context2d ctx, RGB stroke, RGBA fill) {
+        private void drawLayerPart(Context2d ctx, VoiceGroup vg) {
             Rect pix = getPixRect().copy();
 
             ctx.beginPath();
-            ctx.setFillStyle(fill.toString());
-            ctx.setStrokeStyle(stroke.toString());
-            ctx.moveTo(pix.getLeft(), pix.getTop());
-
-            double fPointX = getFadePointX(VoiceGroup.I);
-            double fRangeX = getFadeRangeX(VoiceGroup.I);
-
-            ctx.lineTo(fPointX, pix.getTop());
-            ctx.lineTo(fRangeX, pix.getBottom());
-
-            ctx.lineTo(pix.getLeft(), pix.getBottom());
-            ctx.lineTo(pix.getLeft(), pix.getTop());
+            ctx.setFillStyle(presenter.getFillColor(vg).toString());
+            ctx.setStrokeStyle(presenter.getStrokeColor(vg).toString());
+            
+            KeyRange range = presenter.getFadePointRange(vg);
+            double from = getXPosForNote(range.from);
+            double to = getXPosForNote(range.to);
+            double toBottom = getXPosFadeRange(presenter.getFadeRangePos(vg)); 
+            
+            if(vg == VoiceGroup.I) {
+                ctx.moveTo(pix.getLeft() + from, pix.getTop());
+                ctx.lineTo(pix.getLeft() + to, pix.getTop());
+                ctx.lineTo(pix.getLeft() + toBottom, pix.getBottom());
+                ctx.lineTo(pix.getLeft() + to, pix.getBottom());
+                ctx.lineTo(pix.getLeft() + from, pix.getBottom());
+                ctx.lineTo(pix.getLeft() + from, pix.getTop());
+            } else {
+                ctx.moveTo(pix.getLeft() + from, pix.getTop());
+                ctx.lineTo(pix.getLeft() + toBottom, pix.getBottom());
+                ctx.lineTo(pix.getLeft() + to, pix.getBottom());
+                ctx.lineTo(pix.getLeft() + to, pix.getTop());
+                ctx.lineTo(pix.getLeft() + from, pix.getTop());
+            }
+            
             ctx.fill();
             ctx.stroke();
-        }
-
-        public void drawLayerII(Context2d ctx, RGB stroke, RGBA fill) {
-            Rect pix = getPixRect().copy();
-
-            double fPointX = getFadePointX(VoiceGroup.II);
-            double fRangeX = getFadeRangeX(VoiceGroup.II);
-
-            ctx.beginPath();
-            ctx.setFillStyle(fill.toString());
-            ctx.setStrokeStyle(stroke.toString());
-            ctx.moveTo(pix.getRight(), pix.getTop());
-
-            ctx.lineTo(fPointX, pix.getTop());
-            ctx.lineTo(fRangeX, pix.getBottom()); // Fade Range
-
-            ctx.lineTo(pix.getRight(), pix.getBottom());
-            ctx.lineTo(pix.getRight(), pix.getTop());
-            ctx.fill();
-            ctx.stroke();
-        }
+        }  
 
         public void drawLayer(Context2d ctx, int invalidationMask) {
 
@@ -242,16 +239,16 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             RGBA cIIFill = new RGBA(cII, 0.5);
 
             if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
-                drawLayerII(ctx, cII, cIIFill);
-                drawLayerI(ctx, cI, cIFill);
+                drawLayerPart(ctx, VoiceGroup.II);
+                drawLayerPart(ctx, VoiceGroup.I);
 
                 drawFadePointAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
                 drawFadeRangeAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
                 drawFadePointAnfasser(ctx, VoiceGroup.I, cI, cIFill);
                 drawFadeRangeAnfasser(ctx, VoiceGroup.I, cI, cIFill);
             } else {
-                drawLayerI(ctx, cI, cIFill);
-                drawLayerII(ctx, cII, cIIFill);
+                drawLayerPart(ctx, VoiceGroup.I);
+                drawLayerPart(ctx, VoiceGroup.II);
 
                 drawFadePointAnfasser(ctx, VoiceGroup.I, cI, cIFill);
                 drawFadeRangeAnfasser(ctx, VoiceGroup.I, cI, cIFill);
@@ -267,11 +264,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         private double getFadeRange(VoiceGroup vg) {
             double v = EditBufferModel.get().getParameter(new ParameterId(397, vg)).value.value.getValue();
-            return Math.min(1.0, Math.max(v, 0));
-        }
-
-        private double getSplitPoint(VoiceGroup vg) {
-            double v = EditBufferModel.get().getParameter(new ParameterId(356, vg)).value.value.getValue();
             return Math.min(1.0, Math.max(v, 0));
         }
 

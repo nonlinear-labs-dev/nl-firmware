@@ -6,11 +6,6 @@ import com.nonlinearlabs.client.world.RGBA;
 
 public class FadeEditorPresenter {
 
-    public double splitI;
-    public double splitII;
-
-    public double fadePointI;
-    public double fadePointII;
     public double fadeRangeI;
     public double fadeRangeII;
 
@@ -23,32 +18,13 @@ public class FadeEditorPresenter {
     public KeyRange splitRangeI = new KeyRange();
     public KeyRange splitRangeII = new KeyRange();
 
+    public KeyRange fadePointRangeI = new KeyRange();
+    public KeyRange fadePointRangeII = new KeyRange();
+
     public RGB colorVGI = new RGB(0x26, 0xb0, 0xff);
     public RGBA colorVGIFill = new RGBA(colorVGI, 0.5);
     public RGB colorVGII = new RGB(0xff, 0x99, 0x33);
     public RGBA colorVGIIFill = new RGBA(colorVGII, 0.5);
-
-    enum SelectedFadeControl {
-        FadePoint, FadeRange, Split
-    }
-
-    public SelectedFadeControl selectedControl;
-
-    public double getSplitValue(VoiceGroup vg) {
-        if(vg == VoiceGroup.I) {
-            return splitI;
-        } else {
-            return splitII;
-        }
-    }
-
-    public double getFadePointValue(VoiceGroup vg) {
-        if(vg == VoiceGroup.I) {
-            return fadePointI;
-        } else {
-            return fadePointII;
-        }
-    }
 
     public double getFadeRangeValue(VoiceGroup vg) {
         if(vg == VoiceGroup.I) {
@@ -63,6 +39,22 @@ public class FadeEditorPresenter {
             return splitRangeI;
         } else {
             return splitRangeII;
+        }
+    }
+
+    public FadeEditorPresenter.KeyRange getFadePointRange(VoiceGroup vg) {
+        if(vg == VoiceGroup.I) {
+            return fadePointRangeI;
+        } else {
+            return fadePointRangeII;
+        }
+    }
+
+    public double getFadeRangePos(VoiceGroup vg) {
+        if(vg == VoiceGroup.I) {
+            return fadeRangeI;
+        } else {
+            return fadeRangeII;
         }
     }
 
