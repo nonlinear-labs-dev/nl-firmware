@@ -62,7 +62,7 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
         BasicParameterModel splitII = model.getParameter(new ParameterId(356, VoiceGroup.II));
 
         presenter.splitRangeI.from = 0;
-        presenter.splitRangeI.to = Math.max(0, Math.min((int)(61 * splitI.value.value.getValue()) + 1, 61));
+        presenter.splitRangeI.to = Math.max(1, Math.min((int)(61 * splitI.value.value.getValue()) + 1, 61));
         presenter.splitRangeI.indicator = presenter.splitRangeI.to;
 
         presenter.splitRangeII.from = Math.max(0, Math.min((int)(61 * splitII.value.value.getValue()), 60));
