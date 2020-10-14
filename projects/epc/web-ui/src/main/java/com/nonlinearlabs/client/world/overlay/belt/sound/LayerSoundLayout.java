@@ -24,7 +24,6 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
-import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class LayerSoundLayout extends SoundLayout {

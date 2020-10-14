@@ -17,6 +17,7 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 import com.nonlinearlabs.client.presenters.*;
+import com.nonlinearlabs.client.presenters.FadeEditorPresenter.KeyRange;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 
@@ -30,8 +31,16 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         SelectedAnfasser selection = SelectedAnfasser.None;
 
+        FadeEditorPresenter presenter;
+
         public KeyBed(Control parent) {
             super(parent, "Keys-Fade-Range.svg");
+
+			FadeEditorPresenterProvider.get().onChange(p -> {
+                presenter = p;
+                invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
         }
 
         @Override
@@ -42,6 +51,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         @Override
         public void draw(Context2d ctx, int invalidationMask) {
             super.draw(ctx, invalidationMask);
+
             if (EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
                 drawLayer(ctx, invalidationMask);
             } else if (EditBufferModel.get().soundType.getValue() == SoundType.Split) {
@@ -49,7 +59,13 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             }
         }
 
-        public double getDrawPositon(double splitValue) {
+        public double getXPosForNote(int note) {
+            int keyW = 13;
+            int keyPadding = 1;
+            return note * (keyW + keyPadding);
+        }
+
+        public double quantizeToNoteBorder(double splitValue, VoiceGroup vg) {
             int totalKeys = 61;
 
             int keyW = 13;
@@ -57,11 +73,10 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
             int key = (int) (splitValue * totalKeys);
 
-            if ((splitValue == 0 || splitValue == 1)) {
+            if(vg == VoiceGroup.II && EditBufferModel.get().soundType.getValue() == SoundType.Split && key >= 60) {
                 return (key * keyW) + (key * keyPadding);
-            } else {
-                return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
             }
+            return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
         }
 
         private void drawAnfasser(Context2d ctx, boolean focus, Rect r, RGB stroke, RGBA fill) {
@@ -74,96 +89,63 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             }
         }
 
-        private void drawSplitAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
+        private void drawSplitAnfasser(Context2d ctx, VoiceGroup vg) {
             Rect anfasser = getSplitPointRect(vg);
             SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.SplitPointI : SelectedAnfasser.SplitPointII;
-            drawAnfasser(ctx, selection == focus, anfasser, stroke, fill);
+            drawAnfasser(ctx, selection == focus, anfasser, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
         }
 
-        public void drawSplitPartI(Context2d ctx, RGB stroke, RGBA fill) {
+        private void drawSplitPart(Context2d ctx, VoiceGroup vg) {
             Rect pix = getPixRect().copy();
-
-            double splitX = getSplitPointX(VoiceGroup.I);
-
+            
             ctx.beginPath();
-            ctx.setFillStyle(fill.toString());
-            ctx.setStrokeStyle(stroke.toString());
-            ctx.moveTo(pix.getLeft(), pix.getTop());
-            ctx.lineTo(splitX, pix.getTop());
-            ctx.lineTo(splitX, pix.getBottom());
-            ctx.lineTo(pix.getLeft(), pix.getBottom());
-            ctx.lineTo(pix.getLeft(), pix.getTop());
+            ctx.setFillStyle(presenter.getFillColor(vg).toString());
+            ctx.setStrokeStyle(presenter.getStrokeColor(vg).toString());
+            
+            KeyRange range = presenter.getSplitRange(vg);
+            double from = getXPosForNote(range.from);
+            double to = getXPosForNote(range.to);
+
+            ctx.moveTo(pix.getLeft() + from, pix.getTop());
+            ctx.lineTo(pix.getLeft() + to, pix.getTop());
+            ctx.lineTo(pix.getLeft() + to, pix.getBottom());
+            ctx.lineTo(pix.getLeft() + from, pix.getBottom());
+            ctx.lineTo(pix.getLeft() + from, pix.getTop());
+
             ctx.fill();
             ctx.stroke();
-        }
-
-        public void drawSplitPartII(Context2d ctx, RGB stroke, RGBA fill) {
-            Rect pix = getPixRect().copy();
-
-            double splitX = getSplitPointX(VoiceGroup.II);
-
-            ctx.beginPath();
-            ctx.setFillStyle(fill.toString());
-            ctx.setStrokeStyle(stroke.toString());
-            ctx.moveTo(pix.getRight(), pix.getTop());
-            ctx.lineTo(pix.getRight(), pix.getBottom());
-            ctx.lineTo(splitX, pix.getBottom());
-            ctx.lineTo(splitX, pix.getTop());
-            ctx.lineTo(pix.getRight(), pix.getTop());
-            ctx.fill();
-            ctx.stroke();
-        }
+        }  
 
         public void drawSplit(Context2d ctx, int invalidationMask) {
-
-            RGB cI = new RGB(0x26, 0xb0, 0xff);
-            RGBA cIFill = new RGBA(cI, 0.5);
-            RGB cII = new RGB(0xff, 0x99, 0x33);
-            RGBA cIIFill = new RGBA(cII, 0.5);
-
             VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
 
             if (vg == VoiceGroup.I) {
-                drawSplitPartII(ctx, cII, cIIFill);
-                drawSplitPartI(ctx, cI, cIFill);
+                drawSplitPart(ctx, VoiceGroup.II);
+                drawSplitPart(ctx, VoiceGroup.I);
 
-                drawSplitAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
-                drawSplitAnfasser(ctx, VoiceGroup.I, cI, cIFill);
+                drawSplitAnfasser(ctx, VoiceGroup.II);
+                drawSplitAnfasser(ctx, VoiceGroup.I);
             } else {
-                drawSplitPartI(ctx, cI, cIFill);
-                drawSplitPartII(ctx, cII, cIIFill);
+                drawSplitPart(ctx, VoiceGroup.I);
+                drawSplitPart(ctx, VoiceGroup.II);
 
-                drawSplitAnfasser(ctx, VoiceGroup.I, cI, cIFill);
-                drawSplitAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
-            }
-        }
-
-        public double getSplitPointX(VoiceGroup vg) {
-            Rect pix = getPixRect();
-            if (vg == VoiceGroup.I) {
-                return pix.getLeft() + getDrawPositon(getSplitPoint(VoiceGroup.I));
-            } else {
-                return pix.getRight() - getDrawPositon(1.0 - getSplitPoint(VoiceGroup.II));
+                drawSplitAnfasser(ctx, VoiceGroup.I);
+                drawSplitAnfasser(ctx, VoiceGroup.II);
             }
         }
 
         public double getFadePointX(VoiceGroup vg) {
             Rect pix = getPixRect();
-            if (vg == VoiceGroup.I) {
-                return pix.getLeft() + getDrawPositon(getFadeFrom(VoiceGroup.I));
-            } else {
-
-                return pix.getRight() - getDrawPositon(1.0 - getFadeFrom(VoiceGroup.II));
-            }
+            return pix.getLeft() + quantizeToNoteBorder(presenter.getFadePointValue(vg), vg);
         }
 
         public double getFadeRangeX(VoiceGroup vg) {
             Rect pix = getPixRect();
             if (vg == VoiceGroup.I) {
-                return Math.min(pix.getLeft() + getDrawPositon(getFadeFrom(VoiceGroup.I))
+                return Math.min(pix.getLeft() + quantizeToNoteBorder(getFadeFrom(VoiceGroup.I), vg)
                         + pix.getWidth() * getFadeRange(VoiceGroup.I), pix.getRight());
             } else {
-                return Math.max(pix.getRight() - getDrawPositon(1.0 - getFadeFrom(VoiceGroup.II))
+                return Math.max(pix.getRight() - quantizeToNoteBorder(1.0 - getFadeFrom(VoiceGroup.II), vg)
                         - pix.getWidth() * getFadeRange(VoiceGroup.II), pix.getLeft());
             }
         }
@@ -184,7 +166,8 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             double size = 20;
             double halfSize = size / 2;
             Rect pix = getPixRect();
-            return new Rect(getSplitPointX(vg) - halfSize, pix.getCenterPoint().getY() - halfSize, size, size);
+            double x = pix.getLeft() + getXPosForNote(presenter.getSplitRange(vg).indicator);
+            return new Rect(x - halfSize, pix.getCenterPoint().getY() - halfSize, size, size);
         }
 
         public Rect getLayerFadeRangeRect(VoiceGroup vg) {
@@ -275,9 +258,6 @@ public class BeltFadeEditorLayout extends OverlayLayout {
                 drawFadePointAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
                 drawFadeRangeAnfasser(ctx, VoiceGroup.II, cII, cIIFill);
             }
-
-
-
         }
 
         private double getFadeFrom(VoiceGroup vg) {
@@ -548,7 +528,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
                 keys.getPictureHeight());
 
         for (int i = 0; i < 6; i++) {
-            octaveLabels[i].doLayout(keys.getPixRect().getLeft() + keys.getDrawPositon(i * 12.0 * (1.0 / 61.0)) - 30,
+            octaveLabels[i].doLayout(keys.getPixRect().getLeft() + keys.quantizeToNoteBorder(i * 12.0 * (1.0 / 61.0), VoiceGroup.Global) - 30,
                     keys.getPictureHeight() * 1.6, 50, 40);
         }
 
