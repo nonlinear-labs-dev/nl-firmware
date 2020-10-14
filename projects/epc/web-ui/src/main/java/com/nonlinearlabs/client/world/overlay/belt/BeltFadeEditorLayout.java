@@ -57,20 +57,27 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
             int key = (int) (splitValue * totalKeys);
 
-            if ((splitValue == 0 || splitValue == 1) && EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
+            if ((splitValue == 0 || splitValue == 1)) {
                 return (key * keyW) + (key * keyPadding);
             } else {
                 return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
             }
         }
 
+        private void drawAnfasser(Context2d ctx, boolean focus, Rect r, RGB stroke, RGBA fill) {
+            r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, stroke, RGB.black());
+
+            if (focus) {
+                r.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 1, 1, null, RGB.black());
+                r.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
+                r.getReducedBy(-7).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, RGB.black());
+            }
+        }
+
         private void drawSplitAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
             Rect anfasser = getSplitPointRect(vg);
-            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
             SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.SplitPointI : SelectedAnfasser.SplitPointII;
-            if (selection == focus) {
-                anfasser.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
-            }
+            drawAnfasser(ctx, selection == focus, anfasser, stroke, fill);
         }
 
         public void drawSplitPartI(Context2d ctx, RGB stroke, RGBA fill) {
@@ -194,20 +201,14 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         private void drawFadeRangeAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
             Rect anfasser = getLayerFadeRangeRect(vg);
-            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
             SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.FadeRangeI : SelectedAnfasser.FadeRangeII;
-            if (selection == focus) {
-                anfasser.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
-            }
+            drawAnfasser(ctx, selection == focus, anfasser, stroke, fill);
         }
 
         private void drawFadePointAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
             Rect anfasser = getLayerFadePointRect(vg);
-            anfasser.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 2, fill, RGB.black());
             SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.FadePointI : SelectedAnfasser.FadePointII;
-            if (selection == focus) {
-                anfasser.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
-            }
+            drawAnfasser(ctx, selection == focus, anfasser, stroke, fill);
         }
 
         public void drawLayerI(Context2d ctx, RGB stroke, RGBA fill) {
@@ -374,12 +375,11 @@ public class BeltFadeEditorLayout extends OverlayLayout {
                 // calculate useable range! to left / right of fade point and determine how far
                 // the mouse has traveled -> new CP
                 case FadeRangeI: {
-                    double useableRange = Math.max(0,
-                            Math.min(pix.getWidth() - (pix.getWidth() * fadeI), pix.getWidth()));
+                    double useableRange = Math.max(0, Math.min(pix.getWidth() - (pix.getWidth() * fadeI), pix.getWidth()));
                     double usableRangePercent = useableRange / pix.getWidth();
                     return Math.max(0,
                             Math.min((p.getX() - (pix.getLeft() + (pix.getWidth() * fadeI))) / pix.getWidth(),
-                                    usableRangePercent));
+                            usableRangePercent));
                 }
 
                 case FadeRangeII: {
