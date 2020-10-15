@@ -1,4 +1,5 @@
 #include "dsp_host_dual.h"
+#include <nltools/messaging/Messaging.h>
 
 using namespace std::chrono_literals;
 
@@ -1240,6 +1241,14 @@ void dsp_host_dual::reset()
   {
     nltools::Log::info("DSP has been reset.");
   }
+}
+
+dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
+{
+  dsp_host_dual::HWSourceValues ret;
+  std::transform(m_params.m_global.m_source, m_params.m_global.m_source + ret.size(), ret.begin(),
+                 [](const auto& a) { return a.m_position; });
+  return ret;
 }
 
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehavior(const ReturnMode _mode)
@@ -2574,7 +2583,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]

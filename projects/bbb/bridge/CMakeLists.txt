@@ -43,6 +43,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${PROJECT_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/aseqnet.service.in ${PROJECT_BINARY_DIR}/systemd/aseqnet.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/midi-over-tcp.service.in ${PROJECT_BINARY_DIR}/systemd/midi-over-tcp.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/midi-devices-changed.path.in ${PROJECT_BINARY_DIR}/systemd/midi-devices-changed.path @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/install-update-from-usb.service.in ${PROJECT_BINARY_DIR}/systemd/install-update-from-usb.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/splash-screen.service.in ${PROJECT_BINARY_DIR}/systemd/splash-screen.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/gettimefromepc.service.in ${PROJECT_BINARY_DIR}/systemd/gettimefromepc.service @ONLY)
@@ -50,6 +53,9 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/chkphy.service.in ${PROJECT_BINARY_
 configure_file(${PROJECT_SOURCE_DIR}/systemd/reset-playcontroller.service.in ${PROJECT_BINARY_DIR}/systemd/reset-playcontroller.service @ONLY)
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/aseqnet.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/midi-over-tcp.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/midi-devices-changed.path DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/install-update-from-usb.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/splash-screen.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/gettimefromepc.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
@@ -64,6 +70,9 @@ install(CODE "execute_process(
     mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants
     mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants
     ln -sf ../${PROJECT_NAME}.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${PROJECT_NAME}.service
+    ln -sf ../aseqnet.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/aseqnet.service
+    ln -sf ../midi-over-tcp.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/midi-over-tcp.service
+    ln -sf ../midi-devices-changed.path $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/midi-devices-changed.path
     ln -sf ../install-update-from-usb.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/install-update-from-usb.service
     ln -sf ../splash-screen.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/splash-screen.service
     ln -sf ../gettimefromepc.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/gettimefromepc.service

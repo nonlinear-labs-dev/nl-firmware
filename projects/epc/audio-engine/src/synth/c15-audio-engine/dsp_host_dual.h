@@ -99,6 +99,9 @@ class dsp_host_dual
   void render();
   void reset();
 
+  using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
+  HWSourceValues getHWSourceValues() const;
+
  private:
   // parameters
   Engine::Param_Handle m_params;

@@ -33,18 +33,28 @@ class Synth
 
  protected:
   virtual void doMidi(const MidiEvent &event) = 0;
+  virtual void doTcd(const MidiEvent &event) = 0;
   virtual void doAudio(SampleFrame *target, size_t numFrames) = 0;
   virtual void resetDSP();
 
  private:
   void process(SampleFrame *target, size_t numFrames);
   void processAudioWithoutTimestampedMidi(SampleFrame *target, size_t numFrames);
+
+  void processAudioWithTimestampedTcd(SampleFrame *target, size_t numFrames);
   void processAudioWithTimestampedMidi(SampleFrame *target, size_t numFrames);
 
-  void pushMidiEvent(const MidiEvent &event);
+  template <typename Buffer, typename AudioCB, typename EventCB>
+  void processAudioWithTimestampedEvents(SampleFrame *target, size_t numFrames, Buffer &buffer, const AudioCB &onAudio,
+                                         const EventCB &onEvent);
 
-  std::unique_ptr<MidiInput> m_in;
+  void pushMidiEvent(const MidiEvent &event);
+  void pushTcdEvent(const MidiEvent &event);
+
+  std::unique_ptr<MidiInput> m_midiIn;
+  std::unique_ptr<MidiInput> m_tcdIn;
   std::unique_ptr<AudioOutput> m_out;
   RingBuffer<MidiEvent, 2048> m_midiRingBuffer;
+  RingBuffer<MidiEvent, 2048> m_tcdRingBuffer;
   const AudioEngineOptions *m_options;
 };

@@ -29,7 +29,10 @@ AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
 
   add(mainGroup, m_rate, "sample-rate", 'r', "Audio samplerate");
   add(mainGroup, m_polyphony, "polyphony", 'p', "Number of voices");
-  add(mainGroup, m_midiInputDeviceName, "midi-in", 'm', "Name of the alsa midi input device");
+
+  add(mainGroup, m_midiInputDeviceName, "midi-in", 'm', "Name of the alsa midi input device for raw midi input");
+  add(mainGroup, m_tcdInputDeviceName, "tcd-in", 't', "Name of the alsa midi input device for tcd input");
+
   add(mainGroup, m_heartBeatDeviceName, "heartbeat", 'h',
       "Name of the alsa midi output device used to send heartbeats");
   add(mainGroup, m_audioOutputDeviceName, "audio-out", 'a', "Name of the alsa audio output device");
@@ -81,6 +84,11 @@ bool AudioEngineOptions::areXRunsFatal() const
 std::string AudioEngineOptions::getMidiInputDeviceName() const
 {
   return m_midiInputDeviceName;
+}
+
+std::string AudioEngineOptions::getTcdInputDeviceName() const
+{
+  return m_tcdInputDeviceName;
 }
 
 std::chrono::nanoseconds AudioEngineOptions::getAdditionalMidiDelay() const

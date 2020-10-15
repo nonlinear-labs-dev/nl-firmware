@@ -1,0 +1,10 @@
+[Unit] 
+Description=Nonlinear Labs midi device monitor
+After=network-online.target
+
+[Path] 
+PathChanged=/proc/asound
+Unit=midi-over-tcp.service
+
+[Install]
+WantedBy=multi-user.target
