@@ -82,7 +82,8 @@
           "Class": "SplitFBImage",
           "Position": "10, 23",
           "Init": {
-            "Image[ImagePath]": "Split_FX_B.png"
+            "Image[ImagePath]": "Split_FX_B.png",
+            "Image[Visibility]": "false"
           },
           "Events": "ToFXIIOver0 => ANY[Visibility]"
         },
@@ -90,7 +91,8 @@
           "Class": "SplitFBImage",
           "Position": "212, 21",
           "Init": {
-            "Image[ImagePath]": "Split_FX_A.png"
+            "Image[ImagePath]": "Split_FX_A.png",
+            "Image[Visibility]": "false"
           },
           "Events": "ToFXIOver0 => ANY[Visibility]"
         }
