@@ -318,7 +318,6 @@ public class KeyBed extends SVGImage {
                 return Math.max(0, Math.min((p.getX() - (pix.getLeft() + (pix.getWidth() * fadeI))) / pix.getWidth(),
                         usableRangePercent));
             }
-
             case FadeRangeII: {
                 double useableRange = Math.max(0, Math.min((pix.getWidth() * fadeII), pix.getWidth()));
                 double usableRangePercent = useableRange / pix.getWidth();

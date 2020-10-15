@@ -72,6 +72,7 @@ public class LayerSoundLayout extends SoundLayout {
 			addChild(new VoiceGroupLabel(this));
 			addChild(new PresetName(this));
 			addChild(new Volume(this));
+			addChild(new FadeIndicator(this, g));
 			addChild(new TuneReference(this));
 			addChild(new PartMute(this));
 		}
@@ -92,13 +93,14 @@ public class LayerSoundLayout extends SoundLayout {
 			double voiceGroupWidth = Math.max(1.5 * unit - 2 * margin, Millimeter.toPixels(7));
 
 			getChildren().get(0).doLayout(margin * 1.5, margin * 1.2, voiceGroupWidth, h - 2 * margin);
-			getChildren().get(1).doLayout(margin + 1.5 * unit + margin, margin, 8.5 * unit - 2 * margin,
+			getChildren().get(1).doLayout(margin + 1.5 * unit + margin, margin, 7.5 * unit - 2 * margin,
 					h - 2 * margin);
-			getChildren().get(2).doLayout(margin + 10 * unit + margin, margin, 4.25 * unit - 2 * margin,
+			getChildren().get(2).doLayout(margin + 9 * unit + margin, margin, 4.25 * unit - 2 * margin,
 					h - 2 * margin);
-			getChildren().get(3).doLayout(margin + 14.25 * unit + margin, margin, 4.25 * unit - 2 * margin,
+			getChildren().get(3).doLayout(margin + 13 * unit + margin, margin, unit, h - 2 * margin);
+			getChildren().get(4).doLayout(margin + 14.25 * unit + margin, margin, 4.25 * unit - 2 * margin,
 					h - 2 * margin);
-			getChildren().get(4).doLayout(margin + 18.5 * unit + margin, margin, 1.5 * unit - 2 * margin,
+			getChildren().get(5).doLayout(margin + 18.5 * unit + margin, margin, 1.5 * unit - 2 * margin,
 					h - 2 * margin);
 		}
 

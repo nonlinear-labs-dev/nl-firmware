@@ -188,6 +188,8 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         if (leftControls != null || rightControls != null) {
             removeChild(leftControls);
             removeChild(rightControls);
+            leftControls = null;
+            rightControls = null;
         }
 
         if (type == SoundType.Split) {
@@ -220,7 +222,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         double pw = toggle.getPictureWidth();
         double ph = toggle.getPictureHeight();
-        toggle.doLayout(w - partWidth * 2, h / 2 - (ph / 2), pw, ph);
+        toggle.doLayout(keys.getRelativePosition().getRight() + partWidth * 2, h / 2 - (ph / 2), pw, ph);
 
         if (leftControls != null)
             leftControls.doLayout(keys.getRelativePosition().getLeft() - partWidth * 1.5, baseLine, partWidth, h);
