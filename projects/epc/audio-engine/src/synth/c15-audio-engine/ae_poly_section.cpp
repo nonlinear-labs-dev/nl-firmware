@@ -196,13 +196,14 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
   }
   m_soundgenerator.resetPhase(_event->m_voiceId, rstA, rstB);
   updateNotePitch(_event->m_voiceId);
-  postProcess_poly_key(_event->m_voiceId);
-  setSlowFilterCoefs(_event->m_voiceId);
   if(_event->m_trigger_env)
   {
     m_combfilter.setDelaySmoother(_event->m_voiceId);
     startEnvelopes(_event->m_voiceId, m_note_pitch[_event->m_voiceId], _event->m_velocity);
   }
+  // process signals after starting envelopes
+  postProcess_poly_key(_event->m_voiceId);
+  setSlowFilterCoefs(_event->m_voiceId);
   m_key_active++;
   return retrigger_mono;
 }
