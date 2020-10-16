@@ -92,6 +92,7 @@ class PolySection
   void postProcess_mono_fast();
   void postProcess_poly_slow(const uint32_t _voiceId);
   void postProcess_mono_slow();
+  void postProcess_poly_pitch(const uint32_t _voiceId);
   void postProcess_poly_key(const uint32_t _voiceId);
   void startEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
   void stopEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
