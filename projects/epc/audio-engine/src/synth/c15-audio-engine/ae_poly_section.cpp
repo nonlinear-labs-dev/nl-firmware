@@ -659,21 +659,27 @@ void PolySection::postProcess_mono_slow()
 
 void PolySection::postProcess_poly_pitch(const uint32_t _voiceId)
 {
-  const float notePitch = m_note_pitch[_voiceId];
+  // we'd like to have envelope c immediately affect pitches if necessary (before next clock)
+  const bool envC_override = (m_env_c.m_body[_voiceId].m_state == 4)
+      && (m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att)
+          < 0.005f);  // override condition: env-c phase is attack, attack time is close enough zero
+  const float notePitch = m_note_pitch[_voiceId],
+              envC = envC_override
+      ? m_env_c.m_levelFactor[_voiceId]  // unclipped envC is peak immediately on override condition ...
+      : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl,
+                      _voiceId);  // ... or current signal
   float keyTracking, unitPitch, envMod, unitValue, unitSpread, unitMod;
   // osc a (pitch only)
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Pitch_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Pitch);
-  envMod = m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId)
-      * m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Pitch_Env_C);
+  envMod = envC * m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Pitch_Env_C);
   m_signals.set(
       C15::Signals::Truepoly_Signals::Osc_A_Freq, _voiceId,
       evalNyquist((*m_reference) * m_convert->eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
   // osc b (pitch only)
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch_KT);
   unitPitch = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch);
-  envMod = m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId)
-      * m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch_Env_C);
+  envMod = envC * m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Pitch_Env_C);
   m_signals.set(
       C15::Signals::Truepoly_Signals::Osc_B_Freq, _voiceId,
       evalNyquist((*m_reference) * m_convert->eval_osc_pitch(unitPitch + (notePitch * keyTracking) + envMod)));
@@ -686,8 +692,7 @@ void PolySection::postProcess_poly_pitch(const uint32_t _voiceId)
                 unitPitch > dsp_comb_max_freqFactor ? 1.0f : 0.0f);
   // state variable filter (lower and upper cut and fm only)
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::SV_Flt_Cut_KT);
-  envMod = m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId)
-      * m_smoothers.get(C15::Smoothers::Poly_Slow::SV_Flt_Cut_Env_C);
+  envMod = envC * m_smoothers.get(C15::Smoothers::Poly_Slow::SV_Flt_Cut_Env_C);
   unitPitch = (*m_reference) * m_smoothers.get(C15::Smoothers::Poly_Slow::SV_Flt_Cut);
   unitSpread = m_smoothers.get(C15::Smoothers::Poly_Slow::SV_Flt_Spread);
   unitMod = m_smoothers.get(C15::Smoothers::Poly_Slow::SV_Flt_FM);
