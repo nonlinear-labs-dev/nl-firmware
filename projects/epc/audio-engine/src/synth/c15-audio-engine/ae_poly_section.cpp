@@ -711,9 +711,8 @@ void PolySection::postProcess_poly_pitch(const uint32_t _voiceId, const float _e
 void PolySection::postProcess_poly_key(const uint32_t _voiceId)
 {
   // we'd like to have envelope c immediately affect pitches if necessary (before next clock)
-  const bool envC_override = (m_env_c.m_body[_voiceId].m_state == 4)
-      && (m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att)
-          < 0.005f);  // override condition: env-c phase is attack, attack time is close enough zero
+  const bool envC_override = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att)
+      < 0.005f;  // override condition: env-c phase is attack (as only triggered by key events), attack time is close enough zero
   postProcess_poly_pitch(_voiceId,
                          envC_override ? m_env_c.m_levelFactor[_voiceId]
                                        : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId));
