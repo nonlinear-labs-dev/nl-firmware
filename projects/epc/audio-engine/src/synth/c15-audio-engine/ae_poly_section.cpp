@@ -171,7 +171,6 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
       = (m_key_active == 0),
       rstA = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Reset)),
       rstB = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Reset));
-  m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
   m_shift[_event->m_voiceId] = m_note_shift;
   m_unison_index[_event->m_voiceId] = _event->m_unisonIndex;
   m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
@@ -196,8 +195,10 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
   }
   m_soundgenerator.resetPhase(_event->m_voiceId, rstA, rstB);
   updateNotePitch(_event->m_voiceId);
+  // envelope (re)starts and new voice levels only in non-legato cases
   if(_event->m_trigger_env)
   {
+    m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
     m_combfilter.setDelaySmoother(_event->m_voiceId);
     startEnvelopes(_event->m_voiceId, m_note_pitch[_event->m_voiceId], _event->m_velocity);
   }
