@@ -189,10 +189,10 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
     }
     postProcess_mono_slow();
   }
-  if(_event->m_stolen)
-  {
-    // case NoteSteal (currently nothing)
-  }
+  //  if(_event->m_stolen)
+  //  {
+  //    /* case NoteSteal (currently nothing) */
+  //  }
   m_soundgenerator.resetPhase(_event->m_voiceId, rstA, rstB);
   updateNotePitch(_event->m_voiceId);
   // envelope (re)starts and new voice levels only in non-legato cases
