@@ -79,6 +79,10 @@ class PolySection
   NlToolbox::Curves::Shaper_2_BP m_svf_resCurve;
   ProtoSmoother<1> m_mono_glide;
   PolyValue m_comb_decay_times[2] = {}, m_voice_level = {};
+#if POTENTIAL_IMPROVEMENT_VOICELEVEL_LP == __POTENTIAL_IMPROVEMENT_ENABLED__
+  PolyValue m_voice_level_stateVar = {};
+  float m_voice_level_b0 = 0.0f;
+#endif
   const float m_svf_resFactor = 1.0f / 60.0f;
   float m_note_pitch[C15::Config::local_polyphony] = {}, m_base_pitch[C15::Config::local_polyphony] = {},
         m_shift[C15::Config::local_polyphony] = {}, m_key_tune[C15::Config::local_polyphony] = {},

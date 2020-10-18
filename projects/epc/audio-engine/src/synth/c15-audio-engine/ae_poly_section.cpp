@@ -43,6 +43,10 @@ void PolySection::init(GlobalSignals* _globalsignals, exponentiator* _convert, E
   m_outputmixer.init(_samplerate, C15::Config::local_polyphony);
   //
   resetVoiceFade();
+#if POTENTIAL_IMPROVEMENT_VOICELEVEL_LP == __POTENTIAL_IMPROVEMENT_ENABLED__
+  m_voice_level_b0 = std::min(POTENTIAL_SETTING_GAIN_LP_FREQ * (NlToolbox::Constants::twopi / _samplerate), 1.9f);
+  m_voice_level_stateVar = 0.0f;
+#endif
 }
 
 void PolySection::add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId)
@@ -101,12 +105,27 @@ void PolySection::render_audio(const float _mute)
   {
     postProcess_poly_audio(v, _mute);
   }
+#if POTENTIAL_IMPROVEMENT_VOICELEVEL_LP == __POTENTIAL_IMPROVEMENT_ENABLED__
+  // render voice level
+  PolyValue tmp_voice_level = m_voice_level - m_voice_level_stateVar;
+  tmp_voice_level = tmp_voice_level * m_voice_level_b0 + m_voice_level_stateVar;
+#if POTENTIAL_IMPROVEMENT_DNC_OMIT_POLYPHONIC
+  m_voice_level_stateVar = tmp_voice_level;
+#else
+  m_voice_level_stateVar = tmp_voice_level + NlToolbox::Constants::DNC_const;
+#endif
+#endif
   // render dsp components (former makepolysound)
   m_soundgenerator.generate(m_signals, m_feedbackmixer.m_out);
   m_combfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B);
   m_svfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out);
+#if POTENTIAL_IMPROVEMENT_VOICELEVEL_LP == __POTENTIAL_IMPROVEMENT_DISABLED__
   m_outputmixer.combine(m_signals, m_voice_level, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B,
                         m_combfilter.m_out, m_svfilter.m_out);
+#elif POTENTIAL_IMPROVEMENT_VOICELEVEL_LP == __POTENTIAL_IMPROVEMENT_ENABLED__
+  m_outputmixer.combine(m_signals, tmp_voice_level, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B,
+                        m_combfilter.m_out, m_svfilter.m_out);
+#endif
   m_outputmixer.filter_level(m_signals);
   // capture z samples
   m_z_self->m_osc_a = m_soundgenerator.m_out_A;

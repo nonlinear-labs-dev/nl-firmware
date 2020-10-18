@@ -57,7 +57,29 @@
 #define POTENTIAL_IMPROVEMENT_PARALLEL_DATA_THREE_RANGES __POTENTIAL_IMPROVEMENT_PROPOSAL__
 // - at least in theory, all provided methods of ParallelData.h should perform SIMD compliant
 
+/******************************************************************************/
+/** @date       2020-10-18
+    @version    1.7B-7
+    @author     M. Seeber
+
+    @brief      further dsp-related improvements
+
+    @todo
+*******************************************************************************/
+
 // PROCESSING IMPROVEMENTS
 
 #define POTENTIAL_IMPROVEMENT_FAST_PITCH_PROCESSING __POTENTIAL_IMPROVEMENT_DISABLED__
+// - disabled: slow clock / enabled: fast clock for pitches
+
+// FILTER SIMPLIFICATION
+
 #define POTENTIAL_IMPROVEMENT_OUTMIX_SIMPLE_HP __POTENTIAL_IMPROVEMENT_DISABLED__
+// - replaces final static mono hp filter in output mix by simpler variation
+
+// GAIN-RELATED SMOOTHING (avoiding clicks)
+
+#define POTENTIAL_IMPROVEMENT_VOICELEVEL_LP __POTENTIAL_IMPROVEMENT_DISABLED__
+constexpr float POTENTIAL_SETTING_GAIN_LP_FREQ = 500.0f;  // later: migrate to parameter-db
+// - proof of concecpt: smoothing voice_level ([layer] fade range > 0) by 500Hz LP
+// - the simple static filter solution may not be suited for the intended cutoff frequency?
