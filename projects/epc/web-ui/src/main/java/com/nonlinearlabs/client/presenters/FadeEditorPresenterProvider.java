@@ -57,10 +57,10 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
         BasicParameterModel fadeII = model.getParameter(new ParameterId(396, VoiceGroup.II));
 
         presenter.fadePointI.from = 0;
-        presenter.fadePointI.to = Math.max(0, Math.min((int)(61 * fadeI.value.value.getValue()), 61));
+        presenter.fadePointI.to = Math.max(1, Math.min((int)(61 * fadeI.value.value.getValue()) + 1, 61));
         presenter.fadePointI.indicator = presenter.fadePointI.to;
 
-        presenter.fadePointII.from = Math.max(0, Math.min((int)(61 * fadeII.value.value.getValue()), 61));
+        presenter.fadePointII.from = Math.max(0, Math.min((int)(61 * fadeII.value.value.getValue()), 60));
         presenter.fadePointII.to = 61;
         presenter.fadePointII.indicator = presenter.fadePointII.from;
 
@@ -74,14 +74,14 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
         presenter.fadeRangeII = rII;
 
 
-        presenter.fadePointTextI = fadeI.value.getDecoratedValue(true, false);
-        presenter.fadePointTextII = fadeII.value.getDecoratedValue(true, false);
+        presenter.fadePointTextI = fadeI.value.getDecoratedValue(true, true);
+        presenter.fadePointTextII = fadeII.value.getDecoratedValue(true, true);
 
-        presenter.fadeRangeTextI = rangeI.value.getDecoratedValue(true, false);
-        presenter.fadeRangeTextII = rangeII.value.getDecoratedValue(true, false);
+        presenter.fadeRangeTextI = rangeI.value.getDecoratedValue(true, true);
+        presenter.fadeRangeTextII = rangeII.value.getDecoratedValue(true, true);
 
-        presenter.splitPointTextI = splitI.value.getDecoratedValue(true, false);
-        presenter.splitPointTextII = splitII.value.getDecoratedValue(true, false);
+        presenter.splitPointTextI = splitI.value.getDecoratedValue(true, true);
+        presenter.splitPointTextII = splitII.value.getDecoratedValue(true, true);
 
         notifyChanges();
     }

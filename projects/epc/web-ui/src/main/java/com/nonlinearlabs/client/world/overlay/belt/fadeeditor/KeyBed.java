@@ -278,6 +278,9 @@ public class KeyBed extends SVGImage {
                 }
             }
         }
+
+        selectControl(SelectedAnfasser.None);
+
         return null;
     }
 
@@ -339,22 +342,22 @@ public class KeyBed extends SVGImage {
 
             switch (selection) {
                 case FadePointI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.I), cp, false);
+                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.I), cp, true);
                     break;
                 case FadePointII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.II), cp, false);
+                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.II), cp, true);
                     break;
                 case FadeRangeI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.I), cp, false);
+                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.I), cp, true);
                     break;
                 case FadeRangeII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.II), cp, false);
+                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.II), cp, true);
                     break;
                 case SplitPointI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.I), cp, false);
+                    EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.I), cp, true);
                     break;
                 case SplitPointII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.II), cp, false);
+                    EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.II), cp, true);
                     break;
                 case None:
                 default:

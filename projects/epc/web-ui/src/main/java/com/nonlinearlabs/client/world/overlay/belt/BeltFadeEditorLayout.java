@@ -15,6 +15,7 @@ import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Label;
+import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
@@ -99,6 +100,12 @@ public class BeltFadeEditorLayout extends OverlayLayout {
                 public String getDrawText(Context2d ctx) {
                     return presenter.getFadePointText(voiceGroup);
                 }
+
+                @Override
+                public Control doubleClick(Position p) {
+                    EditBufferUseCases.get().setToDefault(new ParameterId(396, voiceGroup));
+                    return this;
+                }
             });
 
             fadeRange = addChild(new ValueDisplay(this, vg) {
@@ -112,6 +119,13 @@ public class BeltFadeEditorLayout extends OverlayLayout {
                     Rect r = super.getTextRect().copy();
                     r.reduceWidthBy(Millimeter.toPixels(5));
                     return r;
+                }
+
+
+                @Override
+                public Control doubleClick(Position p) {
+                    EditBufferUseCases.get().setToDefault(new ParameterId(397, voiceGroup));
+                    return this;
                 }
             });
         }
@@ -138,6 +152,12 @@ public class BeltFadeEditorLayout extends OverlayLayout {
                 @Override
                 public String getDrawText(Context2d ctx) {
                     return presenter.getSplitPointText(voiceGroup);
+                }
+
+                @Override
+                public Control doubleClick(Position p) {
+                    EditBufferUseCases.get().setToDefault(new ParameterId(356, voiceGroup));
+                    return this;
                 }
             });
         }
@@ -198,6 +218,11 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         } else if (type == SoundType.Layer) {
             leftControls = addChild(new LayerPartIndicators(this, VoiceGroup.I));
             rightControls = addChild(new LayerPartIndicators(this, VoiceGroup.II));
+        } else if (type == SoundType.Single) {
+            Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
+            if (o != null) {
+                o.getBelt().openTab(BeltTab.Sound);
+            }
         }
 
         requestLayout();
@@ -207,8 +232,9 @@ public class BeltFadeEditorLayout extends OverlayLayout {
     public void doLayout(double x, double y, double w, double h) {
         super.doLayout(x, y, w, h);
 
-        double parts = 15;
+        int parts = 8;
         double partWidth = w / parts;
+
         double baseLine = y + (keys.getPictureHeight() / 2);
         keys.doLayout((w - keys.getPictureWidth()) / 2, (keys.getPictureHeight() / 2), keys.getPictureWidth(),
                 keys.getPictureHeight());
@@ -222,13 +248,16 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         double pw = toggle.getPictureWidth();
         double ph = toggle.getPictureHeight();
-        toggle.doLayout(keys.getRelativePosition().getRight() + partWidth * 2, h / 2 - (ph / 2), pw, ph);
+
+        toggle.doLayout(7 * partWidth - pw / 2 + pw * 1.5, h / 2 - ph / 2, pw, ph);
+
+        double valueWidth = partWidth / 2;
 
         if (leftControls != null)
-            leftControls.doLayout(keys.getRelativePosition().getLeft() - partWidth * 1.5, baseLine, partWidth, h);
+            leftControls.doLayout(keys.getRelativePosition().getLeft() - valueWidth * 1.5, baseLine, valueWidth, h);
 
         if (rightControls != null)
-            rightControls.doLayout(keys.getRelativePosition().getRight() + partWidth * 0.5, baseLine, partWidth, h);
+            rightControls.doLayout(keys.getRelativePosition().getRight() + valueWidth * 0.5, baseLine, valueWidth, h);
     }
 
     // Handle overlapping Anfasser inside KeyBed
