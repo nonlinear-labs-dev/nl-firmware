@@ -338,7 +338,7 @@ public class KeyBed extends SVGImage {
                     return Math.max(0, Math.min(
                             ((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(), usableRangePercent));
                 } else {
-                    return xPercent;
+                    return 1.0 - xPercent;
                 }
                 
             }
