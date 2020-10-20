@@ -78,8 +78,3 @@
 // - replaces final static mono hp filter in output mix by simpler variation
 
 // GAIN-RELATED SMOOTHING (avoiding clicks)
-
-#define POTENTIAL_IMPROVEMENT_VOICELEVEL_LP __POTENTIAL_IMPROVEMENT_DISABLED__
-constexpr float POTENTIAL_SETTING_GAIN_LP_FREQ = 500.0f;  // later: migrate to parameter-db
-// - proof of concecpt: smoothing voice_level ([layer] fade range > 0) by 500Hz LP
-// - the simple static filter solution may not be suited for the intended cutoff frequency?
