@@ -4,8 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
@@ -125,7 +123,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	private final class SplitPointOverlapIndicator extends Label {
 		public SplitPointOverlapIndicator(OverlayLayout parent) {
 			super(parent);
-		
+
 			EditBufferPresenterProvider.get().onChange(presenter -> {
 				setVisible(presenter.splitOverlap && presenter.selectedParameter.id.getNumber() == 356);
 				return true;
@@ -147,6 +145,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	private OverlayControl mcSourceDisplay;
 	private OverlayControl editorMode;
 	private OverlayControl valueDisplay;
+	private OverlayControl splitValueDisplay;
 	private OverlayControl parameterName;
 	private OverlayControl dottedLine;
 	private OverlayControl infoButton;
@@ -171,6 +170,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		addChild(slider = new Sliders(this));
 		addChild(editorMode = new EditorModeButton(this));
 		addChild(valueDisplay = new ValueDisplay(this));
+		addChild(splitValueDisplay = new SplitValueDisplay(this));
 		addChild(parameterName = new CurrentValuesName(this));
 		addChild(dottedLine = new DottedLine(this));
 		addChild(infoButton = new InfoButton(this));
@@ -193,8 +193,6 @@ public class BeltParameterLayout extends OverlayLayout {
 		EditBufferPresenterProvider.get().onChange(p -> {
 			if (p.selectedParameter.id.getNumber() != lastSelectedParameterNumber) {
 				lastSelectedParameterNumber = p.selectedParameter.id.getNumber();
-
-				syncSplitParameter.setVisible(p.selectedParameter.id.getNumber() == 356);
 
 				if (p.selectedParameter.modulation.isModulateable)
 					setMode(Mode.modulateableParameter);
@@ -271,7 +269,6 @@ public class BeltParameterLayout extends OverlayLayout {
 		modulationButtons.doLayout(modulationButtonsLeft, (h - modulationButtonsDimY) * 0.5, modulationButtonsDimX,
 				modulationButtonsDimY);
 
-		
 		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
 		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
@@ -316,6 +313,9 @@ public class BeltParameterLayout extends OverlayLayout {
 			if (r.record.attached != null) {
 				final OverlayControl c = (OverlayControl) r.record.attached;
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
+				if (c == valueDisplay) {
+					splitValueDisplay.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
+				}
 			}
 			walkerX += r.width;
 		}
@@ -364,8 +364,13 @@ public class BeltParameterLayout extends OverlayLayout {
 				&& isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper, Mode.paramValue)
 				&& isEnabled);
 
-		valueDisplay.setVisible(isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper,
-				Mode.paramValue, Mode.modulateableParameter, Mode.unmodulateableParameter) && isEnabled);
+		boolean isSplitPoint = isParameterSplitPoint();
+		boolean valueDisplayEnabled = isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper,
+				Mode.paramValue, Mode.modulateableParameter, Mode.unmodulateableParameter) && isEnabled;
+
+		syncSplitParameter.setVisible(isSplitPoint);
+		splitValueDisplay.setVisible(isSplitPoint && valueDisplayEnabled);
+		valueDisplay.setVisible(!isSplitPoint && valueDisplayEnabled);
 
 		dottedLine.setVisible(isOneOf(Mode.modulateableParameter) && isEnabled);
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));
@@ -424,6 +429,11 @@ public class BeltParameterLayout extends OverlayLayout {
 			showAndHideChildren();
 			requestLayout();
 		}
+	}
+
+	public boolean isParameterSplitPoint() {
+		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
+		return p.id.getNumber() == 356;
 	}
 
 	public boolean isModulationAssigned() {
