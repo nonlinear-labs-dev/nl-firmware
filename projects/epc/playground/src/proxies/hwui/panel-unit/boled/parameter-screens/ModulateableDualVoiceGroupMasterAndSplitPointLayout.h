@@ -27,6 +27,8 @@ class UnmodulateableDualVoiceGroupMasterAndSplitPointLayout : public Unmodulatea
 class SplitPointParameterLayout : public ModulateableDualVoiceGroupMasterAndSplitPointLayout
 {
  protected:
+  Control* createParameterValueControl() override;
+
  public:
   SplitPointParameterLayout();
 };
@@ -39,5 +41,6 @@ class SplitPointParameterEditLayout : public ModulateableParameterEditLayout2
   ButtonMenu* createMenu(const Rect& rect) override;
 
  protected:
+  Control* createParameterValueControl() override;
   ModuleCaption* createModuleCaption() const override;
 };

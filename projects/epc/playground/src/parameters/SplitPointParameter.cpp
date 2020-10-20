@@ -12,12 +12,33 @@
 #include <device-settings/Settings.h>
 #include <device-settings/SplitPointSyncParameters.h>
 #include <parameter_declarations.h>
+#include <libundo/undo/Scope.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterId& id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
                                               ScaleConverter::get<LinearBipolar60StScaleConverter>(),
                                               id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.516666667, 60, 60)
 {
+  Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
+      sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChanged));
+}
+
+void SplitPointParameter::onSyncSettingChanged(const Setting* s)
+{
+  if(getVoiceGroup() == VoiceGroup::I)
+  {
+    if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
+    {
+      if(!sync->get())
+      {
+        auto scope = getUndoScope().startTransaction("Disable Split Sync");
+        auto transaction = scope->getTransaction();
+        auto myCP = getControlPositionValue();
+        getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, getValue().getNextStepValue(myCP, 1, {}),
+                                 true);
+      }
+    }
+  }
 }
 
 Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const

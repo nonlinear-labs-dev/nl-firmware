@@ -1,6 +1,8 @@
 #pragma once
 #include "ModulateableParameterWithUnusualModUnit.h"
 
+class Setting;
+
 class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
 {
  public:
@@ -15,6 +17,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   SplitPointParameter* getSibling() const;
 
  protected:
+  void onSyncSettingChanged(const Setting* s);
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;
 

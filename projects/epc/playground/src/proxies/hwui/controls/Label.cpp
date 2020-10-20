@@ -22,6 +22,11 @@ void Label::setFontColor(FrameBufferColors color)
   m_fontColor = color;
 }
 
+FrameBufferColors Label::getFontColor() const
+{
+  return m_fontColor;
+}
+
 void Label::setFontColor(FrameBuffer &fb) const
 {
   if(m_fontColor != FrameBufferColors::Undefined)

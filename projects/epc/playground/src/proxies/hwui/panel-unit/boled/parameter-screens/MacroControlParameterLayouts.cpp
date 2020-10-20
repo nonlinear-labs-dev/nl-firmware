@@ -237,7 +237,7 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
   switch(m_mode)
   {
     case Mode::MacroControlValue:
-      m_modeOverlay->addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+      m_modeOverlay->addControl(createParameterValueControl());
       m_modeOverlay->addControl(new MCAssignedIndicator(Rect(35, 15, 38, 24), getCurrentParameter()));
       setButtonAText(isDual ? "I / II" : "");
       setButtonText(Buttons::BUTTON_B, "HW Sel");

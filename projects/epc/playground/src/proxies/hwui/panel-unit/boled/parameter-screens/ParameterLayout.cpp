@@ -28,6 +28,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
 #include <glibmm/main.h>
 #include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/controls/SelectedParameterValue.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -160,6 +161,11 @@ void ParameterLayout2::handlePresetValueRecall()
         getOLEDProxy().setOverlay(new ParameterRecallLayout2());
     }
   }
+}
+
+Control *ParameterLayout2::createParameterValueControl()
+{
+  return new SelectedParameterValue(Rect(90, 33, 76, 12));
 }
 
 ParameterSelectLayout2::ParameterSelectLayout2()
