@@ -699,15 +699,6 @@ void PolySection::postProcess_mono_slow()
 
 void PolySection::postProcess_poly_pitch(const uint32_t _voiceId, const float _envC)
 {
-  // we'd like to have envelope c immediately affect pitches if necessary (before next clock)
-  //  const bool envC_override = (m_env_c.m_body[_voiceId].m_state == 4)
-  //      && (m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att)
-  //          < 0.005f);  // override condition: env-c phase is attack, attack time is close enough zero
-  //  const float notePitch = m_note_pitch[_voiceId],
-  //              envC = envC_override
-  //      ? m_env_c.m_levelFactor[_voiceId]  // unclipped envC is peak immediately on override condition ...
-  //      : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl,
-  //                      _voiceId);  // ... or current signal
   const float notePitch = m_note_pitch[_voiceId];
   float keyTracking, unitPitch, envMod, unitValue, unitSpread, unitMod;
   // osc a (pitch only)
@@ -757,6 +748,7 @@ void PolySection::postProcess_poly_key(const uint32_t _voiceId)
                          envC_override ? m_env_c.m_levelFactor[_voiceId]
                                        : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId));
   // - key override event now fully separated from clock, env c peak level is active immediately when attack == 0
+  // LATER: consider re-formulating envelopes (keydown already affects signal) and rendering them after everything else (avoiding this override)
   // pitch, unison, temporary variables
   const uint32_t uIndex = m_unison_index[_voiceId];
   const float basePitch = m_base_pitch[_voiceId], notePitch = m_note_pitch[_voiceId];
