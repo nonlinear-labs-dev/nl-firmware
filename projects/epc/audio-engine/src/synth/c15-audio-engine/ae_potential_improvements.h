@@ -78,3 +78,6 @@
 // - replaces final static mono hp filter in output mix by simpler variation
 
 // GAIN-RELATED SMOOTHING (avoiding clicks)
+#define POTENTIAL_IMPROVEMENT_GAIN_CURVE __POTENTIAL_IMPROVEMENT_ENABLED__
+constexpr float POTENTIAL_SETTING_GAIN_CURVE_TIME_MS = 1.0f;  // later: migrate to parameter-db
+// - introduces a lookup-based s-curve smoothing of gain-related signals (currently at 1ms, smoothing only voice_level for now)

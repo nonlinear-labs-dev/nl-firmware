@@ -43,6 +43,18 @@ void PolySection::init(GlobalSignals* _globalsignals, exponentiator* _convert, E
   m_outputmixer.init(_samplerate, C15::Config::local_polyphony);
   //
   resetVoiceFade();
+#if POTENTIAL_IMPROVEMENT_GAIN_CURVE == __POTENTIAL_IMPROVEMENT_ENABLED__
+  m_gain_curve_size = static_cast<uint32_t>(POTENTIAL_SETTING_GAIN_CURVE_TIME_MS * _ms);
+  m_gain_curve_size_m1 = m_gain_curve_size - 1;
+  m_gain_curve_buffer.resize(m_gain_curve_size);
+  const float curve_norm = 1.0f / (static_cast<float>(m_gain_curve_size_m1));
+  for(uint32_t curve_idx = 0; curve_idx < m_gain_curve_size; curve_idx++)
+  {
+    const float curve_phase = NlToolbox::Constants::pi * ((curve_norm * static_cast<float>(curve_idx)) - 0.5f),
+                curve_val = std::sin(curve_phase);
+    m_gain_curve_buffer[curve_idx] = 0.5f + (0.5f * curve_val);  // sine-based crossfade
+  }
+#endif
 }
 
 void PolySection::add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId)
@@ -97,6 +109,7 @@ void PolySection::render_audio(const float _mute)
   {
     m_signals.set_mono(traversal->m_signalId[i], m_smoothers.get_audio(traversal->m_smootherId[i]));
   }
+#if POTENTIAL_IMPROVEMENT_GAIN_CURVE == __POTENTIAL_IMPROVEMENT_DISABLED__
   for(uint32_t v = 0; v < m_voices; v++)
   {
     postProcess_poly_audio(v, _mute);
@@ -107,6 +120,26 @@ void PolySection::render_audio(const float _mute)
   m_svfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out);
   m_outputmixer.combine(m_signals, m_voice_level, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B,
                         m_combfilter.m_out, m_svfilter.m_out);
+#elif POTENTIAL_IMPROVEMENT_GAIN_CURVE == __POTENTIAL_IMPROVEMENT_ENABLED__
+  PolyValue tmp_voice_level;
+  for(uint32_t v = 0; v < m_voices; v++)
+  {
+    postProcess_poly_audio(v, _mute);
+    const uint32_t v_index = m_gain_curve_index[v];
+    const float v_fade = m_gain_curve_buffer[v_index];
+    tmp_voice_level[v] = ((1.0f - v_fade) * m_voice_level_old[v]) + (v_fade * m_voice_level[v]);
+    if(v_index < m_gain_curve_size_m1)
+    {
+      m_gain_curve_index[v] = v_index + 1;
+    }
+  }
+  // render dsp components (former makepolysound)
+  m_soundgenerator.generate(m_signals, m_feedbackmixer.m_out);
+  m_combfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B);
+  m_svfilter.apply(m_signals, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B, m_combfilter.m_out);
+  m_outputmixer.combine(m_signals, tmp_voice_level, m_soundgenerator.m_out_A, m_soundgenerator.m_out_B,
+                        m_combfilter.m_out, m_svfilter.m_out);
+#endif
   m_outputmixer.filter_level(m_signals);
   // capture z samples
   m_z_self->m_osc_a = m_soundgenerator.m_out_A;
@@ -198,7 +231,13 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
   // envelope (re)starts and new voice levels only in non-legato cases
   if(_event->m_trigger_env)
   {
+#if POTENTIAL_IMPROVEMENT_GAIN_CURVE == __POTENTIAL_IMPROVEMENT_DISABLED__
     m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
+#elif POTENTIAL_IMPROVEMENT_GAIN_CURVE == __POTENTIAL_IMPROVEMENT_ENABLED__
+    m_voice_level_old[_event->m_voiceId] = m_voice_level[_event->m_voiceId];
+    m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
+    m_gain_curve_index[_event->m_voiceId] = 0;
+#endif
     m_combfilter.setDelaySmoother(_event->m_voiceId);
     startEnvelopes(_event->m_voiceId, m_note_pitch[_event->m_voiceId], _event->m_velocity);
   }
