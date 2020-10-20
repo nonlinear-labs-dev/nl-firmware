@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -309,6 +310,9 @@ public class KeyBed extends SVGImage {
         double fadeI = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.I)).value.value.getValue();
         double fadeII = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.II)).value.value.getValue();
 
+        boolean fadeIMin = fadeI <= 0;
+        boolean fadeIIMax = fadeII >= 1;
+
         switch (selection) {
             case FadePointI:
             case FadePointII:
@@ -316,16 +320,27 @@ public class KeyBed extends SVGImage {
             case SplitPointII:
                 return xPercent;
             case FadeRangeI: {
-                double useableRange = Math.max(0, Math.min(pix.getWidth() - (pix.getWidth() * fadeI), pix.getWidth()));
-                double usableRangePercent = useableRange / pix.getWidth();
-                return Math.max(0, Math.min((p.getX() - (pix.getLeft() + (pix.getWidth() * fadeI))) / pix.getWidth(),
-                        usableRangePercent));
+                if (!fadeIMin) {
+                    double useableRange = Math.max(0,
+                            Math.min(pix.getWidth() - (pix.getWidth() * fadeI), pix.getWidth()));
+                    double usableRangePercent = useableRange / pix.getWidth();
+                    return Math.max(0,
+                            Math.min((p.getX() - (pix.getLeft() + (pix.getWidth() * fadeI))) / pix.getWidth(),
+                                    usableRangePercent));
+                } else {
+                    return xPercent;
+                }
             }
             case FadeRangeII: {
-                double useableRange = Math.max(0, Math.min((pix.getWidth() * fadeII), pix.getWidth()));
-                double usableRangePercent = useableRange / pix.getWidth();
-                return Math.max(0, Math.min(((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(),
-                        usableRangePercent));
+                if(!fadeIIMax) {
+                    double useableRange = Math.max(0, Math.min((pix.getWidth() * fadeII), pix.getWidth()));
+                    double usableRangePercent = useableRange / pix.getWidth();
+                    return Math.max(0, Math.min(
+                            ((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(), usableRangePercent));
+                } else {
+                    return xPercent;
+                }
+                
             }
             case None:
             default:

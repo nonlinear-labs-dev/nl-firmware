@@ -32,7 +32,10 @@ public class EditBufferUseCases {
 	private void setParameterValue(ParameterId id, double newValue, boolean oracle, boolean setAnimationTimeout) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
 		double oldQ = p.value.getQuantizedAndClipped(true);
-		p.value.value.setValue(newValue);
+
+		double clippedValue = p.value.getQuantizedAndClipped(newValue, true);
+		p.value.value.setValue(clippedValue);
+		
 		double newQ = p.value.getQuantizedAndClipped(true);
 		double diff = newQ - oldQ;
 
@@ -52,11 +55,11 @@ public class EditBufferUseCases {
 			applyModulationToModulateableParameters(id, diff);
 
 		if (p.id.getNumber() == 356) {
-			handleSplitExceptionalParameterChange(p, id, newValue, oracle);
+			handleSplitExceptionalParameterChange(p, id, clippedValue, oracle);
 			return;
 		}
 
-		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
+		NonMaps.get().getServerProxy().setParameter(id, clippedValue, oracle);
 	}
 
 	private BasicParameterModel getSibling(BasicParameterModel p) {

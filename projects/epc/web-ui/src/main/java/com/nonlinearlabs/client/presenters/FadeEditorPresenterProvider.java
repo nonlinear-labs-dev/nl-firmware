@@ -67,8 +67,8 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
         BasicParameterModel rangeI = model.getParameter(new ParameterId(397, VoiceGroup.I));
         BasicParameterModel rangeII = model.getParameter(new ParameterId(397, VoiceGroup.II));
 
-        double rI = Math.min(presenter.fadePointI.to + (rangeI.value.value.getValue() * 61), 61);
-        double rII = Math.max(presenter.fadePointII.from - (rangeII.value.value.getValue() * 61), 0);
+        double rI = Math.max(Math.min(presenter.fadePointI.to + (rangeI.value.value.getValue() * 61), 61), 0);
+        double rII = Math.min(Math.max(presenter.fadePointII.from - (rangeII.value.value.getValue() * 61), 0), 61);
 
         presenter.fadeRangeI = rI;
         presenter.fadeRangeII = rII;

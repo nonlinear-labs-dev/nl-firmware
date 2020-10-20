@@ -26,6 +26,7 @@ import com.nonlinearlabs.client.presenters.*;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter.KeyRange;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.world.overlay.belt.sound.ValueEdit;
 
 public class BeltFadeEditorLayout extends OverlayLayout {
 
@@ -47,14 +48,13 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         }
     }
 
-    private abstract class ValueDisplay extends Label {
+    private class ValueDisplay extends ValueEdit {
 
         private VoiceGroup voiceGroup;
 
-        ValueDisplay(OverlayLayout parent, VoiceGroup vg) {
-            super(parent);
-            voiceGroup = vg;
-            setFontHeightInMM(5);
+        ValueDisplay(OverlayLayout parent, ParameterId id) {
+            super(parent, id);
+            voiceGroup = id.getVoiceGroup();
         }
 
         @Override
@@ -95,39 +95,8 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             super(p);
             voiceGroup = vg;
 
-            fadePoint = addChild(new ValueDisplay(this, vg) {
-                @Override
-                public String getDrawText(Context2d ctx) {
-                    return presenter.getFadePointText(voiceGroup);
-                }
-
-                @Override
-                public Control doubleClick(Position p) {
-                    EditBufferUseCases.get().setToDefault(new ParameterId(396, voiceGroup));
-                    return this;
-                }
-            });
-
-            fadeRange = addChild(new ValueDisplay(this, vg) {
-                @Override
-                public String getDrawText(Context2d ctx) {
-                    return presenter.getFadeRangeText(voiceGroup);
-                }
-
-                @Override
-                protected Rect getTextRect() {
-                    Rect r = super.getTextRect().copy();
-                    r.reduceWidthBy(Millimeter.toPixels(5));
-                    return r;
-                }
-
-
-                @Override
-                public Control doubleClick(Position p) {
-                    EditBufferUseCases.get().setToDefault(new ParameterId(397, voiceGroup));
-                    return this;
-                }
-            });
+            fadePoint = addChild(new ValueDisplay(this, new ParameterId(396, vg)));
+            fadeRange = addChild(new ValueDisplay(this, new ParameterId(397, voiceGroup)));
         }
 
         @Override
@@ -148,18 +117,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         SplitPartIndicators(OverlayLayout p, VoiceGroup vg) {
             super(p);
             voiceGroup = vg;
-            split = addChild(new ValueDisplay(this, vg) {
-                @Override
-                public String getDrawText(Context2d ctx) {
-                    return presenter.getSplitPointText(voiceGroup);
-                }
-
-                @Override
-                public Control doubleClick(Position p) {
-                    EditBufferUseCases.get().setToDefault(new ParameterId(356, voiceGroup));
-                    return this;
-                }
-            });
+            split = addChild(new ValueDisplay(this, new ParameterId(356, voiceGroup)));
         }
 
         @Override
