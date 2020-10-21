@@ -29,9 +29,9 @@ void SplitPointParameter::onSyncSettingChanged(const Setting* s)
   {
     if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
     {
-      if(!sync->get())
+      if(sync->get())
       {
-        auto scope = getUndoScope().startTransaction("Disable Split Sync");
+        auto scope = getUndoScope().startTransaction("Enable Split Sync");
         auto transaction = scope->getTransaction();
         auto myCP = getControlPositionValue();
         getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, getValue().getNextStepValue(myCP, 1, {}),

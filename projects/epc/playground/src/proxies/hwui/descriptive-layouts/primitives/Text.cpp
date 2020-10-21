@@ -31,7 +31,7 @@ namespace DescriptiveLayouts
     }
     else
     {
-      fb.setColor(FrameBufferColors::C43);
+      fb.setColor(FrameBufferColors::Transparent);
       fb.fillRect(getPosition());
     }
   }

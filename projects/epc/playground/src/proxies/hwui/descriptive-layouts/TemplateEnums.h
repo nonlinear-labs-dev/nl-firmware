@@ -38,7 +38,8 @@ namespace DescriptiveLayouts
        VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText, MonoPrioText, MonoLegatoText,
        MonoGlideText, UnisonVoicesText, UnisonDetuneText, UnisonPhaseText, UnisonPanText, MonoEnabled, UnisonEnabled,
        CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText, SoundMasterButtonText, MonoButtonText,
-       UnisonButtonText, VGIMuted, VGIIMuted, IsSingleSound, IsLayerSound, IsSplitSound,
+       UnisonButtonText, VGIMuted, VGIIMuted, IsSingleSound, IsLayerSound, IsSplitSound, SplitPointIValue,
+       SplitPointIIValue,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Edit, Fine, Locked, Position, NumItems,
@@ -50,7 +51,7 @@ namespace DescriptiveLayouts
        CurrentNumber, CurrentName, CurrentSelected, CurrentLoaded,
 
        NextNumber, NextName, NextSelected, NextLoaded, PreviousType, NextType, CurrentType, CurrentVoiceGroupText,
-       EditBufferNameWithSuffix, SyncSplitPointStatus,
+       EditBufferNameWithSuffix, SyncSplitEnabled, SyncSplitDisabled,
 
        AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0,
        LayerFBState, LayerFBOffset, LayerFXState, LayerFXOffset);

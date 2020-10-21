@@ -32,4 +32,31 @@ namespace DescriptiveLayouts
    protected:
     sigc::connection m_settingConnection;
   };
+
+  template <typename T, class tSetting> class ReverseSettingEvent : public EventSource<T>
+  {
+   public:
+    ReverseSettingEvent()
+    {
+      auto setting = Application::get().getSettings()->getSetting<tSetting>();
+      assert(setting.get() != nullptr);
+      m_settingConnection = setting->onChange(sigc::mem_fun(this, &ReverseSettingEvent<T, tSetting>::onSettingChanged));
+    }
+
+    ~ReverseSettingEvent()
+    {
+      m_settingConnection.disconnect();
+    }
+
+    virtual void onSettingChanged(const Setting* s)
+    {
+      if(auto ss = dynamic_cast<const tSetting*>(s))
+      {
+        EventSource<T>::setValue((T) !ss->get());
+      }
+    }
+
+   protected:
+    sigc::connection m_settingConnection;
+  };
 }

@@ -3,11 +3,27 @@
     "SplitPoint": {
       "Text": {
         "Class": "Text",
-        "Rect": "0, 10, 24, 8"
+        "Rect": "0, 0, 20, 10"
+      }
+    },
+    "SplitPointI": {
+      "Text": {
+        "Class": "Text",
+        "Rect": "6, 0, 20, 10"
       },
-      "Line": {
+      "Arrow": {
         "Class": "Bar",
-        "Rect": "11, 2, 1, 22"
+        "Rect": "0, 4, 5, 1"
+      }
+    },
+    "SplitPointII": {
+      "Text": {
+        "Class": "Text",
+        "Rect": "0, 0, 20, 10"
+      },
+      "Arrow": {
+        "Class": "Bar",
+        "Rect": "20, 4, 5, 1"
       }
     },
     "SyncSplitPointIndicator": {
@@ -41,7 +57,7 @@
       },
       "styles": {
         "Color": "C255",
-        "BackgroundColor": "C43"
+        "BackgroundColor": "Transparent"
       }
     }
   }

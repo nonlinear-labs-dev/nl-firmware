@@ -72,6 +72,8 @@ namespace DescriptiveLayouts
     m_map[EventSources::CurrentVoiceGroupText] = std::make_unique<CurrentVoiceGroupText>();
 
     m_map[EventSources::SplitPointValue] = std::make_unique<SplitPointValueText>();
+    m_map[EventSources::SplitPointIValue] = std::make_unique<SplitPointPartValueText<VoiceGroup::I>>();
+    m_map[EventSources::SplitPointIIValue] = std::make_unique<SplitPointPartValueText<VoiceGroup::II>>();
     m_map[EventSources::SelectVGButtonText] = std::make_unique<SelectVGButtonText>();
     m_map[EventSources::SoundEditHeading] = std::make_unique<SoundEditHeading>();
 
@@ -90,7 +92,8 @@ namespace DescriptiveLayouts
     m_map[EventSources::CanRight] = std::make_unique<PresetListEvents::PresetListHasBankRight>();
 
     m_map[EventSources::DirectLoadStatus] = std::make_unique<DirectLoadStatus>();
-    m_map[EventSources::SyncSplitPointStatus] = std::make_unique<SplitPointSyncStatus>();
+    m_map[EventSources::SyncSplitEnabled] = std::make_unique<SplitSyncEnabled>();
+    m_map[EventSources::SyncSplitDisabled] = std::make_unique<SplitSyncDisabled>();
     m_map[EventSources::isFineActive] = std::make_unique<HWUIEvents::isFineEventSource>();
     m_map[EventSources::MonoEnabledText] = std::make_unique<MonoEnabledText>();
     m_map[EventSources::MonoEnabled] = std::make_unique<MonoEnabledBool>();
@@ -123,7 +126,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::ToFXIOver0] = std::make_unique<ToFXIOver0>();
     m_map[EventSources::ToFXIIUnder100] = std::make_unique<ToFXIIUnder100>();
     m_map[EventSources::ToFXIIOver0] = std::make_unique<ToFXIIOver0>();
-    
+
     m_map[EventSources::LayerFBState] = std::make_unique<LayerFBState>();
     m_map[EventSources::LayerFBOffset] = std::make_unique<LayerFBOffset>();
 
