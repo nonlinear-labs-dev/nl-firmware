@@ -201,6 +201,13 @@ public class BeltParameterLayout extends OverlayLayout {
 			} else {
 				fixMode();
 			}
+
+			showAndHideChildren();
+			return true;
+		});
+
+		SetupModel.get().systemSettings.syncSplit.onChange(b -> {
+			showAndHideChildren();
 			return true;
 		});
 	}
@@ -368,9 +375,11 @@ public class BeltParameterLayout extends OverlayLayout {
 		boolean valueDisplayEnabled = isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcLower, Mode.mcUpper,
 				Mode.paramValue, Mode.modulateableParameter, Mode.unmodulateableParameter) && isEnabled;
 
+		boolean dualSplitPointDisplay = isSplitPoint && isSyncDisabled();
+
 		syncSplitParameter.setVisible(isSplitPoint);
-		splitValueDisplay.setVisible(isSplitPoint && valueDisplayEnabled);
-		valueDisplay.setVisible(!isSplitPoint && valueDisplayEnabled);
+		splitValueDisplay.setVisible(dualSplitPointDisplay && valueDisplayEnabled);
+		valueDisplay.setVisible(!dualSplitPointDisplay && valueDisplayEnabled);
 
 		dottedLine.setVisible(isOneOf(Mode.modulateableParameter) && isEnabled);
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));
@@ -434,6 +443,10 @@ public class BeltParameterLayout extends OverlayLayout {
 	public boolean isParameterSplitPoint() {
 		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		return p.id.getNumber() == 356;
+	}
+
+	public boolean isSyncDisabled() {
+		return !SetupModel.get().systemSettings.syncSplit.getBool();
 	}
 
 	public boolean isModulationAssigned() {
