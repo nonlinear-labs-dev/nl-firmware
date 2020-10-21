@@ -288,13 +288,13 @@ public class LayerSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				super(parent, new ParameterId(360, group));
+				super(parent, new ParameterId(360, group), false);
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				super(parent, new ParameterId(358, group));
+				super(parent, new ParameterId(358, group), false);
 			}
 		}
 	}

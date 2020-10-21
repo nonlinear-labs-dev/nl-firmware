@@ -3,6 +3,8 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
@@ -44,23 +46,23 @@ public class SoundSettingsButton extends SVGImage {
 				addChild(new ContextMenuItem(this, "Rename Part") {
 					@Override
 					public Control click(Position eventPoint) {
-						RenameDialog.open(new Renameable(){
-						
+						RenameDialog.open(new Renameable() {
+
 							@Override
 							public void setName(String newName) {
-								EditBufferUseCases.get().renamePart(newName);								
+								EditBufferUseCases.get().renamePart(newName);
 							}
-						
+
 							@Override
 							public String getTitleName() {
 								return EditBufferPresenterProvider.getPresenter().voiceGroup;
 							}
-						
+
 							@Override
 							public String getEntityName() {
 								return "Part";
 							}
-						
+
 							@Override
 							public String getCurrentName() {
 								return EditBufferPresenterProvider.getPresenter().currentPartName;
@@ -93,6 +95,17 @@ public class SoundSettingsButton extends SVGImage {
 						return super.click(eventPoint);
 					}
 				});
+
+				if (currentSetting == SoundType.Split) {
+					boolean syncEnabled = SetupModel.get().systemSettings.syncSplit.isTrue();
+					addChild(new ContextMenuItem(this, syncEnabled ? "Disable Sync" : "Enable Sync") {
+						@Override
+						public Control click(Position eventPoint) {
+							EditBufferUseCases.get().toggleSyncSplit();
+							return super.click(eventPoint);
+						}
+					});
+				}
 			}
 		}
 	}

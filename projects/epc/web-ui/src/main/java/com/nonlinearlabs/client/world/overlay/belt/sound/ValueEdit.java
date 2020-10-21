@@ -23,14 +23,22 @@ class ValueEdit extends OverlayLayout {
 
 		private ParameterPresenter presenter;
 
-		ValueLabel(OverlayLayout parent, ParameterId id) {
+		ValueLabel(OverlayLayout parent, ParameterId id, boolean registerForCurrent) {
 			super(parent);
 
-			ParameterPresenterProviders.get().registerForCurrentVoiceGroup(id.getNumber(), p -> {
-				presenter = p;
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
+			if (registerForCurrent) {
+				ParameterPresenterProviders.get().registerForCurrentVoiceGroup(id.getNumber(), p -> {
+					presenter = p;
+					invalidate(INVALIDATION_FLAG_UI_CHANGED);
+					return true;
+				});
+			} else {
+				ParameterPresenterProviders.get().register(id, p -> {
+					presenter = p;
+					invalidate(INVALIDATION_FLAG_UI_CHANGED);
+					return true;
+				});
+			}
 		}
 
 		@Override
@@ -86,21 +94,28 @@ class ValueEdit extends OverlayLayout {
 	private ValueArrow left = null;
 	private ValueArrow right = null;
 
-	ValueEdit(OverlayLayout parent, ParameterId param) {
+	ValueEdit(OverlayLayout parent, ParameterId param, boolean registerForCurrent) {
 		super(parent);
 		this.parameter = param;
 
-		addChild(value = new ValueLabel(this, param));
+		addChild(value = new ValueLabel(this, param, registerForCurrent));
 		addChild(left = new ValueArrow(this, true));
 		addChild(right = new ValueArrow(this, false));
 
-		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(param.getNumber(), p -> {
-			parameter = p.id;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			return true;
-		});
+		if (registerForCurrent) {
+			ParameterPresenterProviders.get().registerForCurrentVoiceGroup(param.getNumber(), p -> {
+				parameter = p.id;
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		} else {
+			ParameterPresenterProviders.get().register(param, p -> {
+				parameter = p.id;
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
 	}
-
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
@@ -152,7 +167,7 @@ class ValueEdit extends OverlayLayout {
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
 		value.doLayout(0, 0, w, h);
-	
+
 		double arrowWidth = w / 5;
 		left.doLayout(0, 0, arrowWidth, h);
 		right.doLayout(0 + w - arrowWidth, 0, arrowWidth, h);

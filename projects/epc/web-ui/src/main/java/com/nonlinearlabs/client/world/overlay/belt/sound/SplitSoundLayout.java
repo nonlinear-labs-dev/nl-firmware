@@ -1,11 +1,14 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -66,22 +69,85 @@ public class SplitSoundLayout extends SoundLayout {
 			fxI.doLayout(-fxIW, h / 2 - (fxIH / 2), fxIW, fxIH);
 			fxII.doLayout(w, h / 2 - (fxIIH / 2), fxIIW, fxIIH);
 		}
+
+		@Override
+		public void draw(Context2d ctx, int flags) {
+			if(SetupModel.get().systemSettings.syncSplit.isFalse()) {
+				SplitPoint splits = (SplitPoint)getChildren().get(2);
+				Rect left = splits.getRectOfVG(VoiceGroup.I);
+				Rect right = splits.getRectOfVG(VoiceGroup.II);
+
+				Rect startLeft = getChildren().get(1).getPixRect();
+				Rect endRight = getChildren().get(3).getPixRect();
+
+				RGB bgI = EditBufferPresenterProvider.getPresenter().voiceGroupI_BackgroundColor;
+				RGB bgII = EditBufferPresenterProvider.getPresenter().voiceGroupII_BackgroundColor;
+			
+				ctx.setFillStyle(bgI.toString());
+				ctx.fillRect(startLeft.getRight(), left.getCenterPoint().getY() - 2, left.getLeft() - startLeft.getRight(), 4);
+
+				ctx.setFillStyle(bgII.toString());
+				ctx.fillRect(right.getRight(), right.getCenterPoint().getY() - 2, endRight.getLeft() - right.getRight(), 4);
+
+			}
+			super.draw(ctx, flags);
+		}
 	}
 
 	private class SplitPoint extends OverlayLayout {
 
+		private boolean syncEnabled = false;
+
 		public SplitPoint(OverlayLayout parent) {
 			super(parent);
-			addChild(new SplitPointLabel(this, "Split Point"));
-			addChild(new SplitPointValue(this));
+
+			SetupModel.get().systemSettings.syncSplit.onChange(enabled -> {
+				onSettingChanged(enabled.equals(BooleanValues.on));
+				return true;
+			});
+
+		}
+
+		public Rect getRectOfVG(VoiceGroup vg) {
+			if(!syncEnabled) {
+				if(vg == VoiceGroup.I) {
+					return getChildren().get(1).getPixRect();
+				} else {
+					return getChildren().get(2).getPixRect();
+				}
+			} else {
+				return getChildren().get(1).getPixRect();
+			}
+		}
+
+		private void onSettingChanged(boolean isSyncEnabled) {
+			syncEnabled = isSyncEnabled;
+			
+			removeAll();
+
+			if(isSyncEnabled) {
+				addChild(new SplitPointLabel(this, "Split Point"));
+				addChild(new SplitPointValue(this));
+			} else {
+				addChild(new SplitPointLabel(this, "Split Points"));
+				addChild(new SplitPointValue(this, VoiceGroup.I));
+				addChild(new SplitPointValue(this, VoiceGroup.II));
+			}
 		}
 
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 			double quarterHeight = h / 4;
-			getChildren().get(0).doLayout(0, 0, w, quarterHeight * 2);
-			getChildren().get(1).doLayout(0, quarterHeight * 2, w, quarterHeight * 1.1);
+			
+			if(syncEnabled) {
+				getChildren().get(0).doLayout(0, 0, w, quarterHeight * 1);
+				getChildren().get(1).doLayout(0, quarterHeight * 1.5, w, quarterHeight);
+			} else {
+				getChildren().get(0).doLayout(0, 0, w, quarterHeight * 1);
+				getChildren().get(1).doLayout(0, quarterHeight * 1, w, quarterHeight);
+				getChildren().get(2).doLayout(0, quarterHeight * 3, w, quarterHeight);
+			}
 		}
 
 		private class SplitPointLabel extends Label {
@@ -102,7 +168,11 @@ public class SplitSoundLayout extends SoundLayout {
 		private class SplitPointValue extends ValueEdit {
 
 			public SplitPointValue(OverlayLayout parent) {
-				super(parent, new ParameterId(356, EditBufferModel.get().voiceGroup.getValue()));
+				super(parent, new ParameterId(356, EditBufferModel.get().voiceGroup.getValue()), true);
+			}
+
+			public SplitPointValue(OverlayLayout parent, VoiceGroup vg) {
+				super(parent, new ParameterId(356, vg), false);
 			}
 		}
 	}
@@ -272,26 +342,26 @@ public class SplitSoundLayout extends SoundLayout {
 
 			@Override
 			public Control doubleClick(Position p) {
-				RenameDialog.open(new Renameable(){
-						
+				RenameDialog.open(new Renameable() {
+
 					@Override
 					public void setName(String newName) {
-						EditBufferUseCases.get().renamePart(newName, group);								
+						EditBufferUseCases.get().renamePart(newName, group);
 					}
-				
+
 					@Override
 					public String getTitleName() {
-						if(group == VoiceGroup.I)
+						if (group == VoiceGroup.I)
 							return "\uE071";
 						else
 							return "\uE072";
 					}
-	
+
 					@Override
 					public String getEntityName() {
 						return "Part";
 					}
-				
+
 					@Override
 					public String getCurrentName() {
 						return EditBufferPresenterProvider.getPresenter().currentPartName;
@@ -309,13 +379,13 @@ public class SplitSoundLayout extends SoundLayout {
 
 		private class TuneReference extends ValueEdit {
 			TuneReference(VoiceGroupSoundSettings parent) {
-				super(parent, new ParameterId(360, group));
+				super(parent, new ParameterId(360, group), false);
 			}
 		}
 
 		private class Volume extends ValueEdit {
 			Volume(VoiceGroupSoundSettings parent) {
-				super(parent, new ParameterId(358, group));
+				super(parent, new ParameterId(358, group), false);
 			}
 		}
 

@@ -25,17 +25,32 @@ SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterI
 
 void SplitPointParameter::onSyncSettingChanged(const Setting* s)
 {
-  if(getVoiceGroup() == VoiceGroup::I)
+  if(!m_settingGuard.isLocked())
   {
-    if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
+    if(getVoiceGroup() == VoiceGroup::I)
     {
-      if(sync->get())
+      if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
       {
-        auto scope = getUndoScope().startTransaction("Enable Split Sync");
-        auto transaction = scope->getTransaction();
-        auto myCP = getControlPositionValue();
-        getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, getValue().getNextStepValue(myCP, 1, {}),
-                                 true);
+        if(sync->get())
+        {
+          auto scope = getUndoScope().startTransaction("Enable Split Sync");
+          auto transaction = scope->getTransaction();
+          auto myCP = getControlPositionValue();
+          getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC,
+                                   getValue().getNextStepValue(myCP, 1, {}), true);
+          transaction->addSimpleCommand(
+              [this](UNDO::Transaction::State s) {
+                if(s == UNDO::Transaction::State::REDOING)
+                {
+                  auto l = m_settingGuard.lock();
+                  Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(true);
+                }
+              },
+              [this](UNDO::Transaction::State) {
+                auto l = m_settingGuard.lock();
+                Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(false);
+              });
+        }
       }
     }
   }

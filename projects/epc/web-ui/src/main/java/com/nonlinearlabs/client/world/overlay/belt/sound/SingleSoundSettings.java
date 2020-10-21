@@ -45,7 +45,7 @@ public class SingleSoundSettings extends OverlayLayout {
 				}
 			});
 
-			edit = addChild(new ValueEdit(this, param));
+			edit = addChild(new ValueEdit(this, param, true));
 		}
 
 		@Override
