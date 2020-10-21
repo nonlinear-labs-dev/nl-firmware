@@ -125,13 +125,14 @@ void PolySection::render_audio(const float _mute)
   for(uint32_t v = 0; v < m_voices; v++)
   {
     postProcess_poly_audio(v, _mute);
+  }
+  // as a separate voice loop without control flow branches, this loop should be SIMD-compliant
+  for(uint32_t v = 0; v < m_voices; v++)
+  {
     const uint32_t v_index = m_gain_curve_index[v];
     const float v_fade = m_gain_curve_buffer[v_index];
     tmp_voice_level[v] = ((1.0f - v_fade) * m_voice_level_old[v]) + (v_fade * m_voice_level[v]);
-    if(v_index < m_gain_curve_size_m1)
-    {
-      m_gain_curve_index[v] = v_index + 1;
-    }
+    m_gain_curve_index[v] = std::min(m_gain_curve_size_m1, v_index + 1);
   }
   // render dsp components (former makepolysound)
   m_soundgenerator.generate(m_signals, m_feedbackmixer.m_out);
