@@ -20,7 +20,6 @@ public class EditBufferPresenter {
     public boolean layerFXToI = false;
     public boolean layerFXToII = false;
 
-
     public String loadedPresetUUID = "";
     public ParameterPresenter selectedParameter;
     public String voiceGroup = "";

@@ -68,13 +68,16 @@
           "Class": "LayerFBImageLarge",
           "Position": "29, 19",
           "Init": {
-            "Image[ImagePath]": "Layer_FB_C.png"
+            "Image[ImagePath]": ""
           },
           "Events": "LayerFBState => Image[ImagePath], LayerFBOffset => Image[ImageOffset]"
         },
         "FX": {
           "Class": "LayerFBImageLarge",
           "Position": "202, 21",
+          "Init": {
+            "Image[ImagePath]": ""
+          },
           "Events": "LayerFXState => Image[ImagePath], LayerFXOffset => Image[ImageOffset]"
         }
       },

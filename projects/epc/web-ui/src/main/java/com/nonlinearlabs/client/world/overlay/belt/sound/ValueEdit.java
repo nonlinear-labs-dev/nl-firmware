@@ -14,7 +14,7 @@ import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
-class ValueEdit extends OverlayLayout {
+public class ValueEdit extends OverlayLayout {
 
 	private IncrementalChanger changer;
 	private ParameterId parameter;
@@ -26,7 +26,7 @@ class ValueEdit extends OverlayLayout {
 		ValueLabel(OverlayLayout parent, ParameterId id) {
 			super(parent);
 
-			ParameterPresenterProviders.get().registerForCurrentVoiceGroup(id.getNumber(), p -> {
+			ParameterPresenterProviders.get().register(id, p -> {
 				presenter = p;
 				invalidate(INVALIDATION_FLAG_UI_CHANGED);
 				return true;
@@ -86,15 +86,15 @@ class ValueEdit extends OverlayLayout {
 	private ValueArrow left = null;
 	private ValueArrow right = null;
 
-	ValueEdit(OverlayLayout parent, ParameterId param) {
+	public ValueEdit(OverlayLayout parent, ParameterId param) {
 		super(parent);
 		this.parameter = param;
 
-		addChild(value = new ValueLabel(this, param));
-		addChild(left = new ValueArrow(this, true));
-		addChild(right = new ValueArrow(this, false));
+		value = addChild(new ValueLabel(this, param));
+		left = addChild(new ValueArrow(this, true));
+		right = addChild(new ValueArrow(this, false));
 
-		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(param.getNumber(), p -> {
+		ParameterPresenterProviders.get().register(param, p -> {
 			parameter = p.id;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
 			return true;

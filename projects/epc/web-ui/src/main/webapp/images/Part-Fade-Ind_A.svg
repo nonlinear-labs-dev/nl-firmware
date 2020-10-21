@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="13" viewBox="0 0 22 13">
+  <defs>
+    <style>
+      .a {
+        fill: #4d4d4d;
+      }
+
+      .b {
+        fill: #b3b3b3;
+      }
+    </style>
+  </defs>
+  <title>Part-Fade-Ind_A</title>
+  <rect class="a" y="2" width="22" height="11"/>
+  <rect class="b" width="22" height="2"/>
+</svg>

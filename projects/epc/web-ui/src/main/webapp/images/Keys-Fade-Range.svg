@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="855" height="71" viewBox="0 0 855 71">
+  <defs>
+    <style>
+      .a {
+        fill: #fff;
+      }
+
+      .a, .b {
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <title>Keys-Fade-Range</title>
+  <rect class="a" x="0.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="28.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="56.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="70.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="98.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="14.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="42.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="84.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="126.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="112.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="154.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="140.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="168.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="196.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="224.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="238.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="266.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="182.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="210.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="252.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="294.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="280.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="322.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="308.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="336.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="364.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="392.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="406.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="434.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="350.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="378.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="420.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="462.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="448.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="490.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="476.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="504.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="532.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="560.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="574.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="602.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="518.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="546.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="588.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="630.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="616.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="658.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="644.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="672.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="700.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="728.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="742.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="770.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="686.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="714.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="756.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="798.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="784.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="826.5" y="0.5" width="14" height="70"/>
+  <rect class="a" x="840.5" y="0.5" width="14" height="70"/>
+  <rect class="b" x="812.5" y="0.5" width="14" height="70"/>
+</svg>

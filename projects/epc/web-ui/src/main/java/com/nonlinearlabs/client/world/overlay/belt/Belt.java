@@ -23,10 +23,12 @@ public class Belt extends OverlayLayout {
 	private BeltParameterLayout parameterLayout;
 	private BeltPresetLayout presetLayout;
 	private BeltSoundLayout soundLayout;
+	private BeltFadeEditorLayout fadeLayout;
 	private Animator animator;
+	private BeltTab currentTab;
 
 	public enum BeltTab {
-		Parameter, Sound, Preset
+		Parameter, Sound, Preset, FadeEditor
 	}
 
 	public Belt(Overlay parent, NonMaps nonMaps) {
@@ -34,25 +36,38 @@ public class Belt extends OverlayLayout {
 		addChild(soundLayout = new BeltSoundLayout(this));
 		addChild(parameterLayout = new BeltParameterLayout(this));
 		addChild(presetLayout = new BeltPresetLayout(this));
+		addChild(fadeLayout = new BeltFadeEditorLayout(this));
+
 		setParameterView(false);
 	}
 
 	public void openTab(BeltTab tab) {
+		currentTab = tab;
+
 		switch (tab) {
 			case Parameter:
-				parameterLayout.fadeIn();
 				presetLayout.fadeOut();
 				soundLayout.fadeOut();
+				fadeLayout.fadeOut();
+				parameterLayout.fadeIn();
 				break;
 			case Sound:
-				soundLayout.fadeIn();
 				parameterLayout.fadeOut();
 				presetLayout.fadeOut();
+				fadeLayout.fadeOut();
+				soundLayout.fadeIn();
 				break;
 			case Preset:
 				soundLayout.fadeOut();
 				parameterLayout.fadeOut();
+				fadeLayout.fadeOut();
 				presetLayout.fadeIn();
+				break;
+			case FadeEditor:
+				soundLayout.fadeOut();
+				parameterLayout.fadeOut();
+				presetLayout.fadeOut();
+				fadeLayout.fadeIn();
 				break;
 		}
 	}
@@ -70,6 +85,7 @@ public class Belt extends OverlayLayout {
 		soundLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
 		parameterLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
 		presetLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
+		fadeLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
 	}
 
 	@Override
@@ -129,6 +145,7 @@ public class Belt extends OverlayLayout {
 
 		parameterLayout.fadeOut();
 		soundLayout.fadeOut();
+		fadeLayout.fadeOut();
 		presetLayout.fadeIn();
 	}
 
@@ -138,6 +155,7 @@ public class Belt extends OverlayLayout {
 
 		parameterLayout.fadeIn();
 		presetLayout.fadeOut();
+		fadeLayout.fadeOut();
 		soundLayout.fadeOut();
 	}
 
@@ -147,6 +165,7 @@ public class Belt extends OverlayLayout {
 
 		soundLayout.fadeIn();
 		parameterLayout.fadeOut();
+		fadeLayout.fadeOut();
 		presetLayout.fadeOut();
 	}
 

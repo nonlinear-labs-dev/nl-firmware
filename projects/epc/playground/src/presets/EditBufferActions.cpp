@@ -331,8 +331,13 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto part = to<VoiceGroup>(request->get("part"));
     auto hwui = Application::get().getHWUI();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
-    auto scope = eb->getUndoScope().startTransaction("Select Part " + to_string(part));
-    hwui->setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
+
+    if(hwui->getCurrentVoiceGroup() != part)
+    {
+      auto str = toString(part);
+      auto scope = eb->getUndoScope().startTransaction("Select Part " + str);
+      hwui->setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
+    }
   });
 
   addAction("default-param", [=](auto request) {

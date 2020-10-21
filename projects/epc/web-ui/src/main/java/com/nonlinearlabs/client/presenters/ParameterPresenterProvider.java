@@ -67,7 +67,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			});
 		}
 
-		EditBufferModel.get().voiceGroup.onChange(vg -> { 
+		EditBufferModel.get().voiceGroup.onChange(vg -> {
 			updatePresenter(p);
 			return true;
 		});
@@ -135,10 +135,12 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.modulation.lowerClipping = false;
 		presenter.modulation.upperClipping = false;
 		presenter.controlPosition = e.value.getQuantizedAndClipped(true);
+		presenter.defaultPosition = e.value.getQuantizedAndClipped(e.value.metaData.defaultValue.getValue(), true);
 		presenter.bipolar = e.value.metaData.bipolar.getValue() == BooleanValues.on;
 		presenter.fillFromRightEnabled = isFillFromRightParameter(e);
 		presenter.disabled = isParameterDisabled(e);
 		presenter.hidden = isParameterHidden(e);
+		presenter.isDefault = presenter.controlPosition == presenter.defaultPosition;
 
 		presenter.displayValues = new String[] { e.value.getDecoratedValue(true, true),
 				e.value.getDecoratedValue(false, true) };
@@ -162,12 +164,10 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		boolean McMetaChanged = false;
 
-		if (e instanceof MacroControlParameterModel)
-		{
+		if (e instanceof MacroControlParameterModel) {
 			updatePresenter((MacroControlParameterModel) e);
-			McMetaChanged = isMCMetaChanged((MacroControlParameterModel)e);
+			McMetaChanged = isMCMetaChanged((MacroControlParameterModel) e);
 		}
-
 
 		if (e instanceof ModulationRouterParameterModel)
 			updatePresenter((ModulationRouterParameterModel) e);
@@ -204,11 +204,11 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	static public boolean isValueChanged(ModulateableParameterModel mod) {
-		boolean val = isValueChanged((BasicParameterModel)mod);
+		boolean val = isValueChanged((BasicParameterModel) mod);
 		boolean modAmt = mod.ogModAmount.getValue() != mod.modAmount.getValue().value.getValue();
 		boolean modSrc = mod.ogModSource.getValue() != mod.modSource.getValue();
 		return val || modAmt || modSrc;
-	} 
+	}
 
 	static public boolean isMCMetaChanged(MacroControlParameterModel mc) {
 		boolean info = mc.info.getValue() != mc.ogInfo.getValue();
@@ -229,7 +229,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			BasicParameterModel mcBPM = EditBufferModel.get().getParameter(new ParameterId(p.modSource.getValue()));
 			if (mcBPM != null && mcBPM instanceof MacroControlParameterModel) {
 				presenter.modulation.isMCPosChanged = isValueChanged(mcBPM);
-				presenter.changed = isValueChanged((MacroControlParameterModel)mcBPM);
+				presenter.changed = isValueChanged((MacroControlParameterModel) mcBPM);
 			}
 		}
 

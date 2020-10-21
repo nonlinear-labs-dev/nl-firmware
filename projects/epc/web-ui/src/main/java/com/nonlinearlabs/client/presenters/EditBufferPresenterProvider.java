@@ -147,9 +147,8 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
-        
         boolean anyChanged = isAnyParameterChanged();
-        if(model.soundType.getValue() != SoundType.Single) {
+        if (model.soundType.getValue() != SoundType.Single) {
             anyChanged |= isPartLabelChanged(VoiceGroup.I) || isPartLabelChanged(VoiceGroup.II);
         }
 
@@ -170,16 +169,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
         }
 
-        if(model.soundType.getValue() == SoundType.Split) {
+        if (model.soundType.getValue() == SoundType.Split) {
             BasicParameterModel sI = model.getParameter(new ParameterId(356, VoiceGroup.I));
             BasicParameterModel sII = model.getParameter(new ParameterId(356, VoiceGroup.II));
             boolean splitOverlap = sI.value.value.getValue() >= sII.value.value.getValue();
 
-            if(presenter.splitOverlap != splitOverlap) {
+            if (presenter.splitOverlap != splitOverlap) {
                 presenter.splitOverlap = splitOverlap;
                 notifyChanges();
             }
-        } else if(presenter.splitOverlap != false) {
+        } else if (presenter.splitOverlap != false) {
             presenter.splitOverlap = false;
             notifyChanges();
         }
@@ -188,12 +187,12 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             boolean lfxI = isCrossFX(VoiceGroup.II);
             boolean lfxII = isCrossFX(VoiceGroup.I);
 
-            if(lfxI != presenter.splitFXToI || lfxII != presenter.splitFXToII) {
+            if (lfxI != presenter.splitFXToI || lfxII != presenter.splitFXToII) {
                 presenter.splitFXToI = lfxI;
                 presenter.splitFXToII = lfxII;
                 notifyChanges();
             }
-        } else if(presenter.splitFXToI != false || presenter.splitFXToII != false) {
+        } else if (presenter.splitFXToI != false || presenter.splitFXToII != false) {
             presenter.splitFXToI = false;
             presenter.splitFXToII = false;
             notifyChanges();
@@ -205,16 +204,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             boolean fxI = isCrossFX(VoiceGroup.II);
             boolean fxII = isCrossFX(VoiceGroup.I);
 
-            if(fbI != presenter.layerFBI || fbII != presenter.layerFBII || 
-               fxI != presenter.layerFXToI || fxII != presenter.layerFXToII) {
+            if (fbI != presenter.layerFBI || fbII != presenter.layerFBII || fxI != presenter.layerFXToI
+                    || fxII != presenter.layerFXToII) {
                 presenter.layerFBI = fbI;
                 presenter.layerFBII = fbII;
                 presenter.layerFXToI = fxI;
                 presenter.layerFXToII = fxII;
                 notifyChanges();
             }
-        } else if(presenter.layerFBI != false || presenter.layerFBII != false || 
-                  presenter.layerFXToI != false || presenter.layerFXToII != false) {
+        } else if (presenter.layerFBI != false || presenter.layerFBII != false || presenter.layerFXToI != false
+                || presenter.layerFXToII != false) {
             presenter.layerFBI = false;
             presenter.layerFBII = false;
             presenter.layerFXToI = false;
