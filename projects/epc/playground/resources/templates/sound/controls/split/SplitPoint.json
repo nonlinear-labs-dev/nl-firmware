@@ -23,7 +23,7 @@
       },
       "Arrow": {
         "Class": "Bar",
-        "Rect": "20, 4, 5, 1"
+        "Rect": "20, 4, 4, 1"
       }
     },
     "SyncSplitPointIndicator": {
@@ -57,7 +57,7 @@
       },
       "styles": {
         "Color": "C255",
-        "BackgroundColor": "Transparent"
+        "BackgroundColor": "C43"
       }
     }
   }
