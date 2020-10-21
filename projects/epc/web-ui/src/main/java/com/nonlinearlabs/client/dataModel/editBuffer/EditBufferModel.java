@@ -151,7 +151,11 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	}
 
 	public List<ModulateableParameterModel> getAllModulateableParameters() {
-		return byVoiceGroup[voiceGroup.getValue().ordinal()].modulateableParametersCache;
+		List<ModulateableParameterModel> ret = new ArrayList<ModulateableParameterModel>();
+		for(VoiceGroup vg: new VoiceGroup[]{VoiceGroup.I, VoiceGroup.II, VoiceGroup.Global}) {
+			ret.addAll(byVoiceGroup[vg.ordinal()].modulateableParametersCache);
+		}
+		return ret;
 	}
 
 	public ParameterGroupModel getAnyGroup(String id) {

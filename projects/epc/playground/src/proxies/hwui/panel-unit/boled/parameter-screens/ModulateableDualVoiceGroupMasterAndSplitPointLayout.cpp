@@ -7,7 +7,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/SplitPointOverlapIndicator.h>
 #include "ModulateableDualVoiceGroupMasterAndSplitPointLayout.h"
-#include "SplitPointSyncIndicator.h"
 #include <proxies/hwui/controls/Slider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SplitPointEditMenu.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SplitParameterValue.h>
@@ -40,7 +39,6 @@ SplitPointParameterLayout::SplitPointParameterLayout()
     : ModulateableDualVoiceGroupMasterAndSplitPointLayout()
 {
   addControl(new SplitPointOverlapIndicator({ BIG_SLIDER_X - 4, 23, 1, 8 }));
-  addControl(new SplitPointSyncIndicator({ BIG_SLIDER_X + BIG_SLIDER_WIDTH + 1, 23, 9, 8 }));
   setMode(Mode::ParameterValue);
 }
 
