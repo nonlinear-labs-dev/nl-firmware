@@ -20,11 +20,11 @@ import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public class KeyBed extends SVGImage {
 
-    enum SelectedAnfasser {
+    enum SelectedHandle {
         SplitPointI, SplitPointII, FadePointI, FadePointII, FadeRangeI, FadeRangeII, None
     }
 
-    SelectedAnfasser selection = SelectedAnfasser.None;
+    SelectedHandle selection = SelectedHandle.None;
 
     FadeEditorPresenter presenter;
 
@@ -80,7 +80,7 @@ public class KeyBed extends SVGImage {
         return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
     }
 
-    private void drawAnfasser(Context2d ctx, boolean focus, Rect r, RGB stroke) {
+    private void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
         r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, stroke, RGB.black());
 
         if (focus) {
@@ -90,10 +90,10 @@ public class KeyBed extends SVGImage {
         }
     }
 
-    private void drawSplitAnfasser(Context2d ctx, VoiceGroup vg) {
-        Rect anfasser = getSplitPointAnfasserRect(vg);
-        SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.SplitPointI : SelectedAnfasser.SplitPointII;
-        drawAnfasser(ctx, selection == focus, anfasser, presenter.getStrokeColor(vg));
+    private void drawSplitHandle(Context2d ctx, VoiceGroup vg) {
+        Rect handle = getSplitPointHandleRect(vg);
+        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.SplitPointI : SelectedHandle.SplitPointII;
+        drawHandle(ctx, selection == focus, handle, presenter.getStrokeColor(vg));
     }
 
     private void drawSplitPart(Context2d ctx, VoiceGroup vg) {
@@ -124,23 +124,23 @@ public class KeyBed extends SVGImage {
             drawSplitPart(ctx, VoiceGroup.II);
             drawSplitPart(ctx, VoiceGroup.I);
 
-            drawSplitAnfasser(ctx, VoiceGroup.II);
-            drawSplitAnfasser(ctx, VoiceGroup.I);
+            drawSplitHandle(ctx, VoiceGroup.II);
+            drawSplitHandle(ctx, VoiceGroup.I);
         } else {
             drawSplitPart(ctx, VoiceGroup.I);
             drawSplitPart(ctx, VoiceGroup.II);
 
-            drawSplitAnfasser(ctx, VoiceGroup.I);
-            drawSplitAnfasser(ctx, VoiceGroup.II);
+            drawSplitHandle(ctx, VoiceGroup.I);
+            drawSplitHandle(ctx, VoiceGroup.II);
         }
     }
 
-    public double getFadePointAnfasserX(VoiceGroup vg) {
+    public double getFadePointHandleX(VoiceGroup vg) {
         Rect pix = getPixRect();
         return pix.getLeft() + getXPosForNote(presenter.getFadePointRange(vg).indicator);
     }
 
-    public double getFadeRangeAnfasserX(VoiceGroup vg) {
+    public double getFadeRangeHandleX(VoiceGroup vg) {
         Rect pix = getPixRect();
         return pix.getLeft() + getXPosFadeRange(presenter.getFadeRangePos(vg));
     }
@@ -149,10 +149,10 @@ public class KeyBed extends SVGImage {
         double size = 20;
         double halfSize = size / 2;
         Rect pix = getPixRect();
-        return new Rect(getFadePointAnfasserX(vg) - halfSize, pix.getTop() - halfSize, size, size);
+        return new Rect(getFadePointHandleX(vg) - halfSize, pix.getTop() - halfSize, size, size);
     }
 
-    private Rect getSplitPointAnfasserRect(VoiceGroup vg) {
+    private Rect getSplitPointHandleRect(VoiceGroup vg) {
         double size = 20;
         double halfSize = size / 2;
         Rect pix = getPixRect();
@@ -160,23 +160,23 @@ public class KeyBed extends SVGImage {
         return new Rect(x - halfSize, pix.getCenterPoint().getY() - halfSize, size, size);
     }
 
-    private Rect getLayerFadeRangeAnfasserRect(VoiceGroup vg) {
+    private Rect getLayerFadeRangeHandleRect(VoiceGroup vg) {
         double size = 20;
         double halfSize = size / 2;
         Rect pix = getPixRect();
-        return new Rect(getFadeRangeAnfasserX(vg) - halfSize, pix.getBottom() - halfSize, size, size);
+        return new Rect(getFadeRangeHandleX(vg) - halfSize, pix.getBottom() - halfSize, size, size);
     }
 
-    private void drawFadeRangeAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
-        Rect anfasser = getLayerFadeRangeAnfasserRect(vg);
-        SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.FadeRangeI : SelectedAnfasser.FadeRangeII;
-        drawAnfasser(ctx, selection == focus, anfasser, stroke);
+    private void drawFadeRangeHandle(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
+        Rect handle = getLayerFadeRangeHandleRect(vg);
+        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.FadeRangeI : SelectedHandle.FadeRangeII;
+        drawHandle(ctx, selection == focus, handle, stroke);
     }
 
-    private void drawFadePointAnfasser(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
-        Rect anfasser = getLayerFadePointRect(vg);
-        SelectedAnfasser focus = vg == VoiceGroup.I ? SelectedAnfasser.FadePointI : SelectedAnfasser.FadePointII;
-        drawAnfasser(ctx, selection == focus, anfasser, stroke);
+    private void drawFadePointHandle(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
+        Rect handle = getLayerFadePointRect(vg);
+        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.FadePointI : SelectedHandle.FadePointII;
+        drawHandle(ctx, selection == focus, handle, stroke);
     }
 
     private void drawLayerPart(Context2d ctx, VoiceGroup vg) {
@@ -210,10 +210,10 @@ public class KeyBed extends SVGImage {
         ctx.stroke();
     }
 
-    public void drawFadeAnfasser(Context2d ctx, VoiceGroup[] vgs) {
+    public void drawFadeHandle(Context2d ctx, VoiceGroup[] vgs) {
         for (VoiceGroup vg : vgs) {
-            drawFadePointAnfasser(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
-            drawFadeRangeAnfasser(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
+            drawFadePointHandle(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
+            drawFadeRangeHandle(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
         }
     }
 
@@ -221,11 +221,11 @@ public class KeyBed extends SVGImage {
         if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
             drawLayerPart(ctx, VoiceGroup.II);
             drawLayerPart(ctx, VoiceGroup.I);
-            drawFadeAnfasser(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
+            drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
         } else {
             drawLayerPart(ctx, VoiceGroup.I);
             drawLayerPart(ctx, VoiceGroup.II);
-            drawFadeAnfasser(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
+            drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
         }
     }
 
@@ -234,23 +234,23 @@ public class KeyBed extends SVGImage {
         return super.drag(pos, dragProxy);
     }
 
-    private boolean isSelectedAnfasserOfVoiceGroup(VoiceGroup vg, SelectedAnfasser anfasser) {
+    private boolean isSelectedHandleOfVoiceGroup(VoiceGroup vg, SelectedHandle handle) {
         if (vg == VoiceGroup.I) {
-            return anfasser == SelectedAnfasser.FadePointI || anfasser == SelectedAnfasser.FadeRangeI
-                    || anfasser == SelectedAnfasser.SplitPointI;
+            return handle == SelectedHandle.FadePointI || handle == SelectedHandle.FadeRangeI
+                    || handle == SelectedHandle.SplitPointI;
         } else {
-            return anfasser == SelectedAnfasser.FadePointII || anfasser == SelectedAnfasser.FadeRangeII
-                    || anfasser == SelectedAnfasser.SplitPointII;
+            return handle == SelectedHandle.FadePointII || handle == SelectedHandle.FadeRangeII
+                    || handle == SelectedHandle.SplitPointII;
         }
     }
 
-    void selectControl(SelectedAnfasser anfasser) {
-        if (isSelectedAnfasserOfVoiceGroup(VoiceGroup.I, anfasser)) {
+    void selectControl(SelectedHandle handle) {
+        if (isSelectedHandleOfVoiceGroup(VoiceGroup.I, handle)) {
             EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.I);
-        } else if (isSelectedAnfasserOfVoiceGroup(VoiceGroup.II, anfasser)) {
+        } else if (isSelectedHandleOfVoiceGroup(VoiceGroup.II, handle)) {
             EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.II);
         }
-        selection = anfasser;
+        selection = handle;
         invalidate(INVALIDATION_FLAG_UI_CHANGED);
     }
 
@@ -264,23 +264,23 @@ public class KeyBed extends SVGImage {
         for (VoiceGroup vg : vgs) {
             if (type == SoundType.Layer) {
                 if (getLayerFadePointRect(vg).contains(pos)) {
-                    selectControl(vg == VoiceGroup.I ? SelectedAnfasser.FadePointI : SelectedAnfasser.FadePointII);
+                    selectControl(vg == VoiceGroup.I ? SelectedHandle.FadePointI : SelectedHandle.FadePointII);
                     return this;
                 }
 
-                if (getLayerFadeRangeAnfasserRect(vg).contains(pos)) {
-                    selectControl(vg == VoiceGroup.I ? SelectedAnfasser.FadeRangeI : SelectedAnfasser.FadeRangeII);
+                if (getLayerFadeRangeHandleRect(vg).contains(pos)) {
+                    selectControl(vg == VoiceGroup.I ? SelectedHandle.FadeRangeI : SelectedHandle.FadeRangeII);
                     return this;
                 }
             } else {
-                if (getSplitPointAnfasserRect(vg).contains(pos)) {
-                    selectControl(vg == VoiceGroup.I ? SelectedAnfasser.SplitPointI : SelectedAnfasser.SplitPointII);
+                if (getSplitPointHandleRect(vg).contains(pos)) {
+                    selectControl(vg == VoiceGroup.I ? SelectedHandle.SplitPointI : SelectedHandle.SplitPointII);
                     return this;
                 }
             }
         }
 
-        selectControl(SelectedAnfasser.None);
+        selectControl(SelectedHandle.None);
 
         return null;
     }
@@ -332,15 +332,16 @@ public class KeyBed extends SVGImage {
                 }
             }
             case FadeRangeII: {
-                if(!fadeIIMax) {
+                if (!fadeIIMax) {
                     double useableRange = Math.max(0, Math.min((pix.getWidth() * fadeII), pix.getWidth()));
                     double usableRangePercent = useableRange / pix.getWidth();
-                    return Math.max(0, Math.min(
-                            ((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(), usableRangePercent));
+                    return Math.max(0,
+                            Math.min(((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(),
+                                    usableRangePercent));
                 } else {
                     return 1.0 - xPercent;
                 }
-                
+
             }
             case None:
             default:
@@ -385,7 +386,7 @@ public class KeyBed extends SVGImage {
 
     @Override
     public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-        if (selection != SelectedAnfasser.None) {
+        if (selection != SelectedHandle.None) {
             updateCP(newPoint);
             return this;
         }

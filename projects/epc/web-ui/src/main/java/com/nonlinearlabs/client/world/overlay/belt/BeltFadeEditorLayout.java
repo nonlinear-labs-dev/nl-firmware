@@ -1,19 +1,14 @@
 package com.nonlinearlabs.client.world.overlay.belt;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.ValueLabel;
-import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
-import com.nonlinearlabs.client.world.RGBA;
-import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
@@ -21,11 +16,8 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 import com.nonlinearlabs.client.world.overlay.belt.fadeeditor.KeyBed;
-import com.nonlinearlabs.client.world.overlay.belt.parameters.ValueDisplay;
-import com.nonlinearlabs.client.presenters.*;
-import com.nonlinearlabs.client.presenters.FadeEditorPresenter.KeyRange;
-import com.nonlinearlabs.client.useCases.EditBufferUseCases;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.FadeEditorPresenter;
+import com.nonlinearlabs.client.presenters.FadeEditorPresenterProvider;
 import com.nonlinearlabs.client.world.overlay.belt.sound.ValueEdit;
 
 public class BeltFadeEditorLayout extends OverlayLayout {
@@ -218,7 +210,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             rightControls.doLayout(keys.getRelativePosition().getRight() + valueWidth * 0.5, baseLine, valueWidth, h);
     }
 
-    // Handle overlapping Anfasser inside KeyBed
+    // Handle overlapping Handles inside KeyBed
     @Override
     public Control startDragging(Position pos) {
         Control c = keys.startDragging(pos);
