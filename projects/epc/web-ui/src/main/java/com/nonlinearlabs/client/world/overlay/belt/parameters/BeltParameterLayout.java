@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.FadeEditorPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.IncrementalChanger;

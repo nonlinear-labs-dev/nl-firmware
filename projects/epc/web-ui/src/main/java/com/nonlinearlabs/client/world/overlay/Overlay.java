@@ -194,12 +194,18 @@ public class Overlay extends OverlayLayout {
 	}
 
 	private void drawBackground(Context2d ctx) {
+
+
 		Rect r = belt.getPixRect();
 
 		double corner = Millimeter.toPixels(1);
 		double activeButtonLeft = buttons.getLeftOfActiveButton();
 		double activeButtonRight = buttons.getRightOfActiveButton();
 		double activeButtonTop = buttons.getPixRect().getTop();
+
+		if(!buttons.isAnyActive()) {
+			activeButtonTop = buttons.getPixRect().getBottom();
+		}
 
 		ctx.beginPath();
 		ctx.moveTo(r.getLeft(), r.getBottom());

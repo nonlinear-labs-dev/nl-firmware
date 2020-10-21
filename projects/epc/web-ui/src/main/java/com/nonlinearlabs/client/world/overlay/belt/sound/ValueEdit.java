@@ -14,7 +14,7 @@ import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
-class ValueEdit extends OverlayLayout {
+public class ValueEdit extends OverlayLayout {
 
 	private IncrementalChanger changer;
 	private ParameterId parameter;
@@ -94,7 +94,7 @@ class ValueEdit extends OverlayLayout {
 	private ValueArrow left = null;
 	private ValueArrow right = null;
 
-	ValueEdit(OverlayLayout parent, ParameterId param, boolean registerForCurrent) {
+	public ValueEdit(OverlayLayout parent, ParameterId param, boolean registerForCurrent) {
 		super(parent);
 		this.parameter = param;
 

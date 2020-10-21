@@ -15,6 +15,7 @@ public class ParameterPresenter {
 	public ParameterId id = new ParameterId(0, VoiceGroup.Global);
 	public String[] displayValues = new String[] { "" };
 	public double controlPosition = 0;
+	public double defaultPosition = 0;
 	public boolean bipolar = false;
 	public boolean selected = false;
 	public boolean locked = false;
@@ -27,6 +28,7 @@ public class ParameterPresenter {
 	public boolean fillFromRightEnabled = false;
 	public boolean disabled = false;
 	public boolean hidden = false;
+	public boolean isDefault = false;
 
 	public long hash = 0;
 
@@ -75,6 +77,8 @@ public class ParameterPresenter {
 		c.eat(id.getVoiceGroup().ordinal());
 		c.eat(displayValues);
 		c.eat(controlPosition);
+		c.eat(defaultPosition);
+		c.eat(isDefault);
 		c.eat(bipolar);
 		c.eat(selected);
 		c.eat(locked);

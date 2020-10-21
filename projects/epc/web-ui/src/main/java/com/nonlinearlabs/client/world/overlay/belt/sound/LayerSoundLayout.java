@@ -72,6 +72,7 @@ public class LayerSoundLayout extends SoundLayout {
 			addChild(new VoiceGroupLabel(this));
 			addChild(new PresetName(this));
 			addChild(new Volume(this));
+			addChild(new FadeIndicator(this, g));
 			addChild(new TuneReference(this));
 			addChild(new PartMute(this));
 		}
@@ -92,13 +93,14 @@ public class LayerSoundLayout extends SoundLayout {
 			double voiceGroupWidth = Math.max(1.5 * unit - 2 * margin, Millimeter.toPixels(7));
 
 			getChildren().get(0).doLayout(margin * 1.5, margin * 1.2, voiceGroupWidth, h - 2 * margin);
-			getChildren().get(1).doLayout(margin + 1.5 * unit + margin, margin, 8.5 * unit - 2 * margin,
+			getChildren().get(1).doLayout(margin + 1.5 * unit + margin, margin, 7.5 * unit - 2 * margin,
 					h - 2 * margin);
-			getChildren().get(2).doLayout(margin + 10 * unit + margin, margin, 4.25 * unit - 2 * margin,
+			getChildren().get(2).doLayout(margin + 9 * unit + margin, margin, 4.25 * unit - 2 * margin,
 					h - 2 * margin);
-			getChildren().get(3).doLayout(margin + 14.25 * unit + margin, margin, 4.25 * unit - 2 * margin,
+			getChildren().get(3).doLayout(margin + 13 * unit + margin, margin, unit, h - 2 * margin);
+			getChildren().get(4).doLayout(margin + 14.25 * unit + margin, margin, 4.25 * unit - 2 * margin,
 					h - 2 * margin);
-			getChildren().get(4).doLayout(margin + 18.5 * unit + margin, margin, 1.5 * unit - 2 * margin,
+			getChildren().get(5).doLayout(margin + 18.5 * unit + margin, margin, 1.5 * unit - 2 * margin,
 					h - 2 * margin);
 		}
 
@@ -196,7 +198,7 @@ public class LayerSoundLayout extends SoundLayout {
 				if (group == VoiceGroup.I)
 					return EditBufferPresenterProvider.getPresenter().voiceGroupI_ForegroundColor;
 				return EditBufferPresenterProvider.getPresenter().voiceGroupII_ForegroundColor;
-			}	
+			}
 		}
 
 		private class PartMute extends SVGImage {
@@ -208,7 +210,7 @@ public class LayerSoundLayout extends SoundLayout {
 			@Override
 			public int getSelectedPhase() {
 				return isMuted() ? 1 : 0;
-			} 
+			}
 
 			boolean isMuted() {
 				BasicParameterModel param = EditBufferModel.get().getParameter(new ParameterId(395, group));
@@ -230,7 +232,7 @@ public class LayerSoundLayout extends SoundLayout {
 				if (isMuted())
 					EditBufferUseCases.get().unmutePart(group);
 				else if (isOtherPartMuted()) {
-					EditBufferUseCases.get().setMuteForPartAndUnmuteOther(group);					
+					EditBufferUseCases.get().setMuteForPartAndUnmuteOther(group);
 				} else {
 					EditBufferUseCases.get().mutePart(group);
 				}
@@ -257,26 +259,26 @@ public class LayerSoundLayout extends SoundLayout {
 
 			@Override
 			public Control doubleClick(Position p) {
-				RenameDialog.open(new Renameable(){
-						
+				RenameDialog.open(new Renameable() {
+
 					@Override
 					public void setName(String newName) {
-						EditBufferUseCases.get().renamePart(newName, group);								
+						EditBufferUseCases.get().renamePart(newName, group);
 					}
-				
+
 					@Override
 					public String getTitleName() {
-						if(group == VoiceGroup.I)
+						if (group == VoiceGroup.I)
 							return "\uE071";
 						else
 							return "\uE072";
 					}
-	
+
 					@Override
 					public String getEntityName() {
 						return "Part";
 					}
-				
+
 					@Override
 					public String getCurrentName() {
 						return EditBufferPresenterProvider.getPresenter().currentPartName;

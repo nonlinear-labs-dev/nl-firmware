@@ -111,6 +111,8 @@ public class ServerProxy {
 		try (StopWatchState s = new StopWatchState("ServerProxy::applyChanges")) {
 
 			Document xml = XMLParser.parse(responseText);
+
+
 			Node webUIHelper = xml.getElementsByTagName("webui-helper").item(0);
 			updateSyncedPart(webUIHelper);
 
@@ -1115,7 +1117,7 @@ public class ServerProxy {
 		VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-part-from-webui");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", vg.toString()));
-		queueJob(uri, false);
+		queueJob(uri, true);
 	}
 
 	public void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {

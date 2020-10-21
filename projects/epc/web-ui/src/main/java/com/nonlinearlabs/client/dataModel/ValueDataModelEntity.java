@@ -20,7 +20,7 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 
 			defaultValue.onChange(e -> notifyChanges());
 			scaling.onChange(e -> {
-				if(!e.isEmpty())
+				if (!e.isEmpty())
 					updateStringizer(e);
 				return notifyChanges();
 			});
@@ -93,6 +93,10 @@ public class ValueDataModelEntity extends Notifier<ValueDataModelEntity> impleme
 
 	public double getQuantizedAndClipped(boolean fine) {
 		return metaData.clip(metaData.quantize(value.getValue(), fine));
+	}
+
+	public double getQuantizedAndClipped(double v, boolean b) {
+		return metaData.clip(metaData.quantize(v, b));
 	}
 
 	public double getQuantized(boolean fine) {

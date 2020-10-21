@@ -58,6 +58,14 @@ public abstract class SVGImage extends OverlayControl {
 		return true;
 	}
 
+	public double getPictureWidth() {
+		return getPhase(getSelectedPhase()).getImgWidth();
+	}
+	
+	public double getPictureHeight() {
+		return getPhase(getSelectedPhase()).getImgHeight();
+	}
+
 	private static native String base64Encode(String v) /*-{
 														return btoa(v);
 														}-*/;

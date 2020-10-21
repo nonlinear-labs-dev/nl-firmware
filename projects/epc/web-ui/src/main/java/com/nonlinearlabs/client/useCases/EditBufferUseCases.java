@@ -1,9 +1,7 @@
 package com.nonlinearlabs.client.useCases;
 
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -18,7 +16,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterMod
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.tools.NLMath;
-import com.nonlinearlabs.client.world.maps.parameters.ModulationRoutingParameter;
 
 public class EditBufferUseCases {
 	private static EditBufferUseCases theInstance = new EditBufferUseCases();
@@ -266,12 +263,12 @@ public class EditBufferUseCases {
 		incDecParameter(id, fine, -1);
 	}
 
-	private void incDecParameter(int paramNumber, boolean fine, int inc) {
+	public void incDecParameter(int paramNumber, boolean fine, int inc) {
 		ParameterId id = toParamId(paramNumber);
 		incDecParameter(id, fine, inc);
 	}
 
-	private void incDecParameter(ParameterId id, boolean fine, int inc) {
+	public void incDecParameter(ParameterId id, boolean fine, int inc) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
@@ -485,6 +482,9 @@ public class EditBufferUseCases {
 
 	public void selectVoiceGroup(VoiceGroup group) {
 		EditBufferModel.get().voiceGroup.setValue(group);
+		if(SetupModel.get().systemSettings.syncVoiceGroups.getBool()) {
+			NonMaps.theMaps.getServerProxy().syncVoiceGroup();
+		}
 	}
 
 	public void toggleVoiceGroup() {
