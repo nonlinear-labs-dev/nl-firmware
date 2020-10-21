@@ -46,6 +46,12 @@ SplitPointParameterLayout::SplitPointParameterLayout()
 
 SplitPointParameterEditLayout::SplitPointParameterEditLayout()
 {
+  m_settingConnection = Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
+      [this](const Setting *s) { fixValueControl(); });
+}
+
+void SplitPointParameterEditLayout::fixValueControl()
+{
   auto selectedSynced = findControlOfType<SelectedParameterValue>();
   auto selectedNonSynced = findControlOfType<SplitParameterValue>();
 
@@ -86,4 +92,9 @@ Control *SplitPointParameterEditLayout::createParameterValueControl()
     return new SplitParameterValue(Rect(90, 33, 76, 12));
   else
     return ParameterLayout2::createParameterValueControl();
+}
+
+SplitPointParameterEditLayout::~SplitPointParameterEditLayout()
+{
+  m_settingConnection.disconnect();
 }

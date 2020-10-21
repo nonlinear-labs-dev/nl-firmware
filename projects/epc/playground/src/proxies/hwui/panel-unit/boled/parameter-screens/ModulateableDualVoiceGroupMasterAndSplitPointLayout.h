@@ -38,9 +38,12 @@ class SplitPointParameterEditLayout : public ModulateableParameterEditLayout2
  protected:
  public:
   SplitPointParameterEditLayout();
+  ~SplitPointParameterEditLayout() override;
   ButtonMenu* createMenu(const Rect& rect) override;
 
  protected:
   Control* createParameterValueControl() override;
   ModuleCaption* createModuleCaption() const override;
+  void fixValueControl();
+  sigc::connection m_settingConnection;
 };

@@ -133,6 +133,8 @@ public class SplitSoundLayout extends SoundLayout {
 				addChild(new SplitPointValue(this, VoiceGroup.I));
 				addChild(new SplitPointValue(this, VoiceGroup.II));
 			}
+
+			requestLayout();
 		}
 
 		@Override
