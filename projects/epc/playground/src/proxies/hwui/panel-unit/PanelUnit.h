@@ -34,6 +34,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
 
  private:
+  void onScreenSaverStateChanged(bool state);
   void installUsageMode(FocusAndMode focusAndMode);
   ParameterId choseHWBestSourceForMC(const ParameterId &mcParamId) const;
   void onBBBBConnected();
@@ -41,4 +42,6 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   EditPanel m_editPanel;
   std::vector<tLed> m_leds;
   MacroControlAssignmentStateMachine m_macroControlAssignmentStateMachine;
+
+  std::shared_ptr<UsageMode> m_stashedUsageMode = nullptr;
 };

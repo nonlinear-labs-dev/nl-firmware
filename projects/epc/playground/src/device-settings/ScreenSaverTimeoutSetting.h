@@ -15,10 +15,12 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   bool persistent() const override;
 
   void incDec(int inc);
+  void sendState(bool state);
 
  private:
   std::unique_ptr<Expiration> m_expiration = nullptr;
   Signal<void, bool> m_screenSaverSignal;
 
   std::chrono::minutes m_timeout;
+  const std::array<int, 6> s_logTimeOuts = { 0, 1, 5, 20, 60, 180 };
 };
