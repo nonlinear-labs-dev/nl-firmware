@@ -52,7 +52,7 @@ void UnmodulateableParameterSelectLayout2::init()
     }
   }
 
-  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+  addControl(createParameterValueControl());
 
   highlight<SelectedParameterBarSlider>();
   highlight<SelectedParameterValue>();
@@ -85,7 +85,7 @@ void UnmodulateableParameterEditLayout2::init()
     }
   }
 
-  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+  addControl(createParameterValueControl());
 
   highlight<SelectedParameterBarSlider>();
   highlight<SelectedParameterValue>();

@@ -6,5 +6,6 @@
 namespace DescriptiveLayouts
 {
   using DirectLoadStatus = SettingEvent<bool, DirectLoadSetting>;
-  using SplitPointSyncStatus = SettingEvent<bool, SplitPointSyncParameters>;
+  using SplitSyncEnabled = SettingEvent<bool, SplitPointSyncParameters>;
+  using SplitSyncDisabled = ReverseSettingEvent<bool, SplitPointSyncParameters>;
 }

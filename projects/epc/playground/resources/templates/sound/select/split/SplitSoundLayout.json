@@ -68,15 +68,20 @@
           },
           "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => LowerText[Text], VGIIMasterVolumeText => UpperText[Text]"
         },
-        "Split": {
-          "Class": "SplitPoint",
-          "Position": "116, 18",
-          "Events": "SplitPointValue => Text[Text]"
+        "SplitI": {
+          "Class": "SplitPointI",
+          "Position": "112, 20",
+          "Events": "SplitPointIValue => Text[Text], SyncSplitDisabled => ANY[Visibility], isCurrentVGI => ANY[Highlight]"
         },
-        "SyncIndicator": {
-          "Class": "SyncSplitPointIndicator",
-          "Position": "1, 14",
-          "Events": "SyncSplitPointStatus => ANY[Visibility]"
+        "SplitII": {
+          "Class": "SplitPointII",
+          "Position": "118, 33",
+          "Events": "SplitPointIIValue => Text[Text], SyncSplitDisabled => ANY[Visibility], isCurrentVGII => ANY[Highlight]"
+        },
+        "SplitSynced": {
+          "Class": "SplitPoint",
+          "Position": "113, 17",
+          "Events": "SplitPointValue => Text[Text], SyncSplitEnabled => ANY[Visibility]"
         },
         "I_TO_II": {
           "Class": "SplitFBImage",

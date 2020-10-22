@@ -45,7 +45,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         private VoiceGroup voiceGroup;
 
         ValueDisplay(OverlayLayout parent, ParameterId id) {
-            super(parent, id);
+            super(parent, id, false);
             voiceGroup = id.getVoiceGroup();
         }
 
@@ -87,7 +87,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             super(p);
             voiceGroup = vg;
 
-            fadePoint = addChild(new ValueDisplay(this, new ParameterId(396, vg)));
+            fadePoint = addChild(new ValueDisplay(this, new ParameterId(396, voiceGroup)));
             fadeRange = addChild(new ValueDisplay(this, new ParameterId(397, voiceGroup)));
         }
 

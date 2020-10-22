@@ -21,6 +21,7 @@ namespace DescriptiveLayouts
     bool onButton(Buttons i, bool down, ::ButtonModifiers modifiers) override;
     bool onRotary(int inc, ::ButtonModifiers modifiers) override;
     const LayoutClass& getPrototype() const;
+    bool redraw(FrameBuffer& fb) override;
 
    private:
     bool handleEventSink(EventSinks s);

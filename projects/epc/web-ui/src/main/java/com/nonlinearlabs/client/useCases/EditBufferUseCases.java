@@ -60,7 +60,7 @@ public class EditBufferUseCases {
 	}
 
 	private BasicParameterModel getSibling(BasicParameterModel p) {
-		if(p.id.getVoiceGroup() == VoiceGroup.Global)
+		if (p.id.getVoiceGroup() == VoiceGroup.Global)
 			return null;
 
 		VoiceGroup inverted = p.id.getVoiceGroup() == VoiceGroup.I ? VoiceGroup.II : VoiceGroup.I;
@@ -72,7 +72,7 @@ public class EditBufferUseCases {
 	}
 
 	private double splitDeltaSigned(BasicParameterModel split) {
-		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+		if (split.id.getVoiceGroup() == VoiceGroup.I) {
 			return splitDelta();
 		} else {
 			return -splitDelta();
@@ -80,7 +80,7 @@ public class EditBufferUseCases {
 	}
 
 	private double getSplitEdge(BasicParameterModel split) {
-		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+		if (split.id.getVoiceGroup() == VoiceGroup.I) {
 			return 1 - splitDelta();
 		} else {
 			return splitDelta();
@@ -88,18 +88,17 @@ public class EditBufferUseCases {
 	}
 
 	private double getSplitMaxOfOther(BasicParameterModel split) {
-		if(split.id.getVoiceGroup() == VoiceGroup.I) {
+		if (split.id.getVoiceGroup() == VoiceGroup.I) {
 			return 1.0;
 		} else {
 			return 0.0;
 		}
 	}
 
-
 	private boolean inEdge(BasicParameterModel p, double newVal) {
-		if(p.id.getVoiceGroup() == VoiceGroup.II && newVal <= getSplitEdge(p)) {
+		if (p.id.getVoiceGroup() == VoiceGroup.II && newVal <= getSplitEdge(p)) {
 			return true;
-		} else if(p.id.getVoiceGroup() == VoiceGroup.I && newVal >= getSplitEdge(p)) {
+		} else if (p.id.getVoiceGroup() == VoiceGroup.I && newVal >= getSplitEdge(p)) {
 			return true;
 		}
 		return false;
@@ -108,35 +107,44 @@ public class EditBufferUseCases {
 	private void handleSplitSync(BasicParameterModel p, ParameterId id, double newValue) {
 		BasicParameterModel other = getSibling(p);
 
-		if(inEdge(p, newValue)) {
+		if (inEdge(p, newValue)) {
 			p.value.value.setValue(getSplitEdge(p));
 			other.value.value.setValue(getSplitMaxOfOther(p));
-			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), true);
+			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(),
+					true);
 		} else {
 			other.value.value.setValue(p.value.value.getValue() + splitDeltaSigned(p));
-			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), true);
+			NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(),
+					true);
 		}
 	}
 
 	private boolean splitsHaveNegativeOverlap(double newValue, BasicParameterModel other) {
-		if(other.id.getVoiceGroup() == VoiceGroup.I)  {
-			return newValue > other.value.value.getValue(); 
+		boolean isNewValueOfI = other.id.getVoiceGroup() == VoiceGroup.II;
+
+		int compI = (int) (newValue * 1000);
+		int compII = (int) (other.value.value.getValue() * 1000);
+
+		if (isNewValueOfI) {
+			return compI < compII;
 		} else {
-			return newValue < other.value.value.getValue();
+			return compI > compII;
 		}
 	}
 
 	private void preventNegativeOverlap(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
 		BasicParameterModel other = getSibling(p);
-		if(splitsHaveNegativeOverlap(newValue, other)) {
+
+		if (splitsHaveNegativeOverlap(newValue, other)) {
 			other.value.value.setValue(newValue + splitDeltaSigned(p));
 		}
-		
-		NonMaps.get().getServerProxy().setSplitPoints(p.id, p.value.value.getValue(), other.value.value.getValue(), oracle);
+
+		NonMaps.get().getServerProxy().setSplitPoints(p.id, newValue, other.value.value.getValue(), oracle);
 	}
 
-	private void handleSplitExceptionalParameterChange(BasicParameterModel p, ParameterId id, double newValue, boolean oracle) {
-		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
+	private void handleSplitExceptionalParameterChange(BasicParameterModel p, ParameterId id, double newValue,
+			boolean oracle) {
+		if (SetupModel.get().systemSettings.syncSplit.getBool()) {
 			handleSplitSync(p, id, newValue);
 		} else {
 			preventNegativeOverlap(p, id, newValue, oracle);
@@ -364,7 +372,7 @@ public class EditBufferUseCases {
 	}
 
 	private void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
-		ModulateableParameterModel p = (ModulateableParameterModel)EditBufferModel.get().getParameter(id);
+		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		p.modAmount.value.setValue(newAmount);
 		p.value.value.setValue(newParameterValue);
 		NonMaps.get().getServerProxy().setModulationBounds(id, newAmount, newParameterValue);
@@ -520,7 +528,7 @@ public class EditBufferUseCases {
 	}
 
 	public void toggleSyncSplit() {
-		if(SetupModel.get().systemSettings.syncSplit.getBool()) {
+		if (SetupModel.get().systemSettings.syncSplit.getBool()) {
 			SetupModel.get().systemSettings.syncSplit.setValue(false);
 			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "off");
 		} else {
@@ -548,7 +556,7 @@ public class EditBufferUseCases {
 	public void renamePart(String newName) {
 		NonMaps.get().getServerProxy().renamePart(EditBufferModel.get().voiceGroup.getValue(), newName);
 	}
-	
+
 	public void renamePart(String newName, VoiceGroup vg) {
 		NonMaps.get().getServerProxy().renamePart(vg, newName);
 	}

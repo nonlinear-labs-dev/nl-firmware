@@ -3,11 +3,27 @@
     "SplitPoint": {
       "Text": {
         "Class": "Text",
-        "Rect": "0, 10, 24, 8"
-      },
-      "Line": {
+        "Rect": "5, 10, 20, 10"
+      }
+    },
+    "SplitPointI": {
+      "Arrow": {
         "Class": "Bar",
-        "Rect": "11, 2, 1, 22"
+        "Rect": "0, 4, 5, 1"
+      },
+      "Text": {
+        "Class": "Text",
+        "Rect": "6, 0, 20, 10"
+      }
+    },
+    "SplitPointII": {
+      "Text": {
+        "Class": "Text",
+        "Rect": "0, 0, 20, 10"
+      },
+      "Arrow": {
+        "Class": "Bar",
+        "Rect": "20, 4, 4, 1"
       }
     },
     "SyncSplitPointIndicator": {

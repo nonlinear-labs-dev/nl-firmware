@@ -21,7 +21,7 @@ ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2()
   addControl(new Button("MC..", Buttons::BUTTON_D));
 
   addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+  addControl(createParameterValueControl());
 
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterBarSlider>();
@@ -70,7 +70,7 @@ ModulationRouterParameterEditLayout2::ModulationRouterParameterEditLayout2()
   addControl(new Button("", Buttons::BUTTON_C));
 
   addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+  addControl(createParameterValueControl());
 
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterBarSlider>();

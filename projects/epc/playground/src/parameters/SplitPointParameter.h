@@ -1,5 +1,8 @@
 #pragma once
+#include <tools/RecursionGuard.h>
 #include "ModulateableParameterWithUnusualModUnit.h"
+
+class Setting;
 
 class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
 {
@@ -15,6 +18,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   SplitPointParameter* getSibling() const;
 
  protected:
+  void onSyncSettingChanged(const Setting* s);
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;
 
@@ -23,4 +27,6 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   void preventNegativeOverlap(UNDO::Transaction* transaction, tControlPositionValue value, bool dosendToPlaycontroller);
   bool isAtExtremes(tControlPositionValue value);
   void clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller);
+
+  RecursionGuard m_settingGuard;
 };

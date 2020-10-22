@@ -152,7 +152,7 @@ PitchbendParameterEditLayout2::PitchbendParameterEditLayout2()
 {
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("", Buttons::BUTTON_C));
-  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+  addControl(createParameterValueControl());
 }
 
 ButtonMenu *PitchbendParameterEditLayout2::createMenu(const Rect &rect)
@@ -202,7 +202,7 @@ AftertouchParameterEditLayout2::AftertouchParameterEditLayout2()
 {
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("", Buttons::BUTTON_C));
-  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+  addControl(createParameterValueControl());
 }
 
 ButtonMenu *AftertouchParameterEditLayout2::createMenu(const Rect &rect)
@@ -265,7 +265,7 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
 {
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("HW Amt..", Buttons::BUTTON_C));
-  addControl(new SelectedParameterValue(Rect(90, 33, 76, 12)));
+  addControl(createParameterValueControl());
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterValue>();
 }

@@ -29,11 +29,6 @@ namespace DescriptiveLayouts
         fb.fillRect(getPosition());
       }
     }
-    else
-    {
-      fb.setColor(FrameBufferColors::C43);
-      fb.fillRect(getPosition());
-    }
   }
 
   void Text::setFontColor(FrameBuffer &fb) const

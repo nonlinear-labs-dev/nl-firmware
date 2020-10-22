@@ -56,6 +56,7 @@ bool DescriptiveLayouts::SoundParamsButtonText::isChanged(const EditBuffer *eb)
   {
     case SoundType::Invalid:
     case SoundType::Single:
+    default:
       return false;
     case SoundType::Layer:
     case SoundType::Split:

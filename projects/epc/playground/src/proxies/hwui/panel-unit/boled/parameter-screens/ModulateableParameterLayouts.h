@@ -41,6 +41,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   void onCurrentParameterChanged(const Parameter *p);
   void fixModeIfNecessary(const Parameter *p);
 
+ protected:
   enum class Mode
   {
     ParameterValue,
@@ -57,6 +58,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   void toggleMode(Mode desiredMode);
   bool isModeOf(std::vector<Mode> modes) const;
 
+ private:
   bool hasModulationSource() const;
   Button *m_mcPosButton, *m_mcSelButton, *m_mcAmtButton;
 

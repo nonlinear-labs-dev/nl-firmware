@@ -141,14 +141,6 @@ public class ServerProxy {
 			lastOmitOracles = omitOracles(world);
 			lastUpdateID = getUpdateID(world);
 
-
-			if(lastOmitOracles) {
-				GWT.log("Omiting Oracles!");
-			} else {
-				GWT.log("Not Omiting Oracles!");
-				//GWT.log(responseText);
-			}
-
 			if (!lastOmitOracles) {
 				EditBufferModelUpdater ebu = new EditBufferModelUpdater(editBufferNode);
 				ebu.doUpdate();
@@ -160,7 +152,7 @@ public class ServerProxy {
 			}
 
 			nonMaps.getNonLinearWorld().getViewport().getOverlay().update(settingsNode, editBufferNode,
-							presetManagerNode, deviceInfo, undoNode);
+					presetManagerNode, deviceInfo, undoNode);
 
 			documentFromPlayground.notifyChanges();
 		}
@@ -255,7 +247,7 @@ public class ServerProxy {
 	public void setSplitPoints(ParameterId id, Double value, Double value2, boolean oracle) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-splits");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
-		new StaticURI.KeyValue("value", value), new StaticURI.KeyValue("other-value", value2));
+				new StaticURI.KeyValue("value", value), new StaticURI.KeyValue("other-value", value2));
 
 		queueJob(uri, oracle);
 	}
@@ -511,7 +503,7 @@ public class ServerProxy {
 	public void setModulationAmount(double amount, ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), new StaticURI.KeyValue("id", id));
-		if(id.getNumber() == 356)
+		if (id.getNumber() == 356)
 			queueJob(uri, false);
 		else
 			queueJob(uri, true);
@@ -521,7 +513,7 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()),
 				new StaticURI.KeyValue("id", id));
-		if(id.getNumber() == 356)
+		if (id.getNumber() == 356)
 			queueJob(uri, false);
 		else
 			queueJob(uri, true);
@@ -534,7 +526,11 @@ public class ServerProxy {
 	}
 
 	public void setSetting(final String key, final String value) {
-		setSetting(key, value, false);
+		boolean oracle = false;
+		if (key.equals("syncSplit"))
+			oracle = true;
+
+		setSetting(key, value, oracle);
 	}
 
 	public void setSetting(final String key, final String value, boolean isOracle) {
@@ -1126,7 +1122,8 @@ public class ServerProxy {
 
 	public void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modulation-limit");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()), new StaticURI.KeyValue("mod-amt", newAmount), new StaticURI.KeyValue("param-val", newParameterValue));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
+				new StaticURI.KeyValue("mod-amt", newAmount), new StaticURI.KeyValue("param-val", newParameterValue));
 		queueJob(uri, false);
 	}
 
@@ -1135,7 +1132,6 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
 		queueJob(uri, false);
 	}
-
 
 	public void exportSoled() {
 		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {

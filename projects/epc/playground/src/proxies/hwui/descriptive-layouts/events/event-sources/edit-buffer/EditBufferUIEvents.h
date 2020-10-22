@@ -169,4 +169,25 @@ namespace DescriptiveLayouts
       }
     }
   };
+
+  template <VoiceGroup vg> class SplitPointPartValueText : public EditBufferEvent<DisplayString>
+  {
+   public:
+    SplitPointPartValueText()
+        : EditBufferEvent()
+    {
+    }
+
+    void onChange(const EditBuffer *eb) override
+    {
+      if(auto splitPoint = eb->findParameterByID({ C15::PID::Split_Split_Point, vg }))
+      {
+        setValue({ splitPoint->getDisplayString(), 0 });
+      }
+      else
+      {
+        setValue({ "", 0 });
+      }
+    }
+  };
 }
