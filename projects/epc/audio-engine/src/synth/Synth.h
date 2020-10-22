@@ -37,6 +37,9 @@ class Synth
   virtual void doAudio(SampleFrame *target, size_t numFrames) = 0;
   virtual void resetDSP();
 
+  void pushMidiEvent(const MidiEvent &event);
+  void pushTcdEvent(const MidiEvent &event);
+
  private:
   void process(SampleFrame *target, size_t numFrames);
   void processAudioWithoutTimestampedMidi(SampleFrame *target, size_t numFrames);
@@ -47,9 +50,6 @@ class Synth
   template <typename Buffer, typename AudioCB, typename EventCB>
   void processAudioWithTimestampedEvents(SampleFrame *target, size_t numFrames, Buffer &buffer, const AudioCB &onAudio,
                                          const EventCB &onEvent);
-
-  void pushMidiEvent(const MidiEvent &event);
-  void pushTcdEvent(const MidiEvent &event);
 
   std::unique_ptr<MidiInput> m_midiIn;
   std::unique_ptr<MidiInput> m_tcdIn;

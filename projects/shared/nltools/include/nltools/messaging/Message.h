@@ -9,6 +9,29 @@ namespace nltools
 {
   namespace msg
   {
+    namespace Midi
+    {
+      struct SimpleMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiSimpleMessage;
+        }
+
+        uint64_t id = 0;
+        uint8_t rawBytes[3];
+      };
+
+      struct MessageAcknowledge
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiAck;
+        }
+
+        uint64_t id = 0;
+      };
+    }
 
     using tID = int;
     using tControlPosition = double;

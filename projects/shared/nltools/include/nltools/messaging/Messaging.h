@@ -17,7 +17,7 @@ namespace nltools
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 
     ENUM(EndPoint, uint16_t, None, Playcontroller, Oled, PanelLed, RibbonLed, AudioEngine, Playground, BeagleBone,
-         TestEndPoint);
+         ExternalMidiOverIP, TestEndPoint);
 
     uint getPortFor(EndPoint p);
 
@@ -39,6 +39,8 @@ namespace nltools
          WiFiPasswordChanged, WiFiSSIDChanged, WiFiSetSSID, WiFiSetPassword,
 
          NotifyHardwareSourceChanged,
+
+         MidiSimpleMessage, MidiAck,
 
          SyncFS);
 

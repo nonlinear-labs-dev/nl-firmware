@@ -47,6 +47,16 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
     m_dsp->onRawMidiMessage(100, static_cast<uint32_t>(noteDown.m_keyPos), 0);
   });
 
+  receive<nltools::msg::Midi::SimpleMessage>(EndPoint::AudioEngine, [&](const auto& msg) {
+    MidiEvent e;
+    std::copy(msg.rawBytes, msg.rawBytes + 3, e.raw);
+    pushMidiEvent(e);
+
+    nltools::msg::Midi::MessageAcknowledge ack;
+    ack.id = msg.id;
+    send(nltools::msg::EndPoint::ExternalMidiOverIP, ack);
+  });
+
   Glib::MainContext::get_default()->signal_idle().connect(sigc::mem_fun(this, &C15Synth::doIdle));
 }
 

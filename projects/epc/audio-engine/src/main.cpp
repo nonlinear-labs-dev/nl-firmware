@@ -46,7 +46,8 @@ void setupMessaging(const AudioEngineOptions *o)
   using namespace nltools::msg;
   Configuration conf;
   conf.offerEndpoints = { EndPoint::AudioEngine };
-  conf.useEndpoints = { { EndPoint::Playground, o->getPlaygroundHost() } };
+  conf.useEndpoints
+      = { { EndPoint::Playground, o->getPlaygroundHost() }, { EndPoint::ExternalMidiOverIP, "192.168.10.11" } };
   nltools::msg::init(conf);
 }
 
