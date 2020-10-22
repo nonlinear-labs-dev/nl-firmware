@@ -39,7 +39,7 @@ public class ParameterInfoDialog extends GWTDialog {
 	private static float infoBoxHeight = 0;
 
 	ParameterPresenter presenter;
- 
+
 	private TextArea infoField;
 	private Label parameterNameView;
 	private Label paramNameEditView;
@@ -187,20 +187,15 @@ public class ParameterInfoDialog extends GWTDialog {
 	}
 
 	protected void update(ParameterPresenter selectedParameter) {
-		if (focusOwner != null) {
-			return;
-		}
-
 		presenter = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		boolean isMC = presenter.isMacroControl;
 
 		BasicParameterModel bm = EditBufferModel.get().getSelectedParameter();
-		if(bm instanceof MacroControlParameterModel) {
-			MacroControlParameterModel mc = (MacroControlParameterModel)bm;
+		if (bm instanceof MacroControlParameterModel) {
+			MacroControlParameterModel mc = (MacroControlParameterModel) bm;
 			GWT.log(mc.givenName.getValue());
 			GWT.log(mc.info.getValue());
 		}
-
 
 		infoField.setEnabled(isMC);
 		paramNameEditor.setVisible(isMC);
@@ -218,7 +213,8 @@ public class ParameterInfoDialog extends GWTDialog {
 
 		if (isMC) {
 			int mcNum = presenter.id.getNumber();
-			String mcLabel = ModulateableParameterModel.ModSource.fromParameterId(new ParameterId(mcNum, VoiceGroup.Global)).toString();
+			String mcLabel = ModulateableParameterModel.ModSource
+					.fromParameterId(new ParameterId(mcNum, VoiceGroup.Global)).toString();
 			paramNameEditView.setText("Macro Controls   \u2013   " + mcLabel);
 
 			if (focusOwner != paramNameEditEditor)
