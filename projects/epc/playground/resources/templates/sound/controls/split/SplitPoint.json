@@ -3,17 +3,17 @@
     "SplitPoint": {
       "Text": {
         "Class": "Text",
-        "Rect": "0, 0, 20, 10"
+        "Rect": "5, 10, 20, 10"
       }
     },
     "SplitPointI": {
-      "Text": {
-        "Class": "Text",
-        "Rect": "6, 0, 20, 10"
-      },
       "Arrow": {
         "Class": "Bar",
         "Rect": "0, 4, 5, 1"
+      },
+      "Text": {
+        "Class": "Text",
+        "Rect": "6, 0, 20, 10"
       }
     },
     "SplitPointII": {

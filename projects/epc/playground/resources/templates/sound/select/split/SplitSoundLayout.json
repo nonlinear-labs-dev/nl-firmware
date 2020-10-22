@@ -80,7 +80,7 @@
         },
         "SplitSynced": {
           "Class": "SplitPoint",
-          "Position": "118, 26",
+          "Position": "113, 17",
           "Events": "SplitPointValue => Text[Text], SyncSplitEnabled => ANY[Visibility]"
         },
         "I_TO_II": {

@@ -1,5 +1,4 @@
 #include <utility>
-
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationCarousel.h>
 #include <proxies/hwui/panel-unit/ButtonReceiver.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -273,5 +272,11 @@ namespace DescriptiveLayouts
       hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });
     else
       hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Edit, UIDetail::Init });
+  }
+
+  bool GenericLayout::redraw(FrameBuffer &fb)
+  {
+    getOLEDProxy().clear();
+    return ControlOwner::redraw(fb);
   }
 }
