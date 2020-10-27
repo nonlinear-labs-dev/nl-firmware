@@ -44,15 +44,54 @@ bool PNGControl::redraw(FrameBuffer& fb)
     return true;
   }
 
+  static std::vector<std::pair<int, FBC>> colors
+      = { { 43, FBC::C43 },   { 77, FBC::C77 },   { 103, FBC::C103 }, { 128, FBC::C128 },
+          { 179, FBC::C179 }, { 204, FBC::C204 }, { 255, FBC::C255 } };
+
+  auto nearestColorForGrey = [&](int grey) {
+    auto minDiff = std::numeric_limits<int>::max();
+    auto nearestColor = FBC::C43;
+
+    for(auto c : colors)
+    {
+      auto diff = std::abs(c.first - grey);
+      if(diff < minDiff)
+      {
+        minDiff = diff;
+        nearestColor = c.second;
+      }
+    }
+
+    return nearestColor;
+  };
+
+  if(!isVisible())
+  {
+    return true;
+  }
+
   for(auto y = 0; y < m_image.get_height(); y++)
   {
     for(auto x = 0; x < m_image.get_width(); x++)
     {
       auto pixel = m_image.get_pixel(x, y);
-      if(pixel.alpha != 0)
+      if(m_useColors)
       {
-        fb.setColor(m_color);
-        fb.setPixel(pos.getLeft() + x + offsetX, pos.getTop() + y + offsetY);
+        auto greyRaw = pixel.red;
+
+        if(pixel.alpha != 0)
+        {
+          fb.setColor(nearestColorForGrey(greyRaw));
+          fb.setPixel(pos.getLeft() + x + offsetX, pos.getTop() + y + offsetY);
+        }
+      }
+      else
+      {
+        if(pixel.alpha != 0)
+        {
+          fb.setColor(m_color);
+          fb.setPixel(pos.getLeft() + x + offsetX, pos.getTop() + y + offsetY);
+        }
       }
     }
   }
@@ -90,5 +129,11 @@ void PNGControl::setColor(FrameBufferColors color)
 void PNGControl::setTransparent(bool transparent)
 {
   m_transparent = transparent;
+  setDirty();
+}
+
+void PNGControl::useImageColors(bool useColors)
+{
+  m_useColors = useColors;
   setDirty();
 }

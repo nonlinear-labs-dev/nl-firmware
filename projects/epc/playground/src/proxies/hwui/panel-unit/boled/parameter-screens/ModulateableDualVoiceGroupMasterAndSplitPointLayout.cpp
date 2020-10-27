@@ -5,7 +5,6 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterValueLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
-#include <proxies/hwui/panel-unit/boled/preset-screens/controls/SplitPointOverlapIndicator.h>
 #include "ModulateableDualVoiceGroupMasterAndSplitPointLayout.h"
 #include <proxies/hwui/controls/Slider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SplitPointEditMenu.h>
@@ -38,7 +37,6 @@ ModuleCaption *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createModu
 SplitPointParameterLayout::SplitPointParameterLayout()
     : ModulateableDualVoiceGroupMasterAndSplitPointLayout()
 {
-  addControl(new SplitPointOverlapIndicator({ BIG_SLIDER_X - 4, 23, 1, 8 }));
   setMode(Mode::ParameterValue);
 }
 
