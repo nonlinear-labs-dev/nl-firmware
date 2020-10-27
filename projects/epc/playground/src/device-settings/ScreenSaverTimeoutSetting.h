@@ -18,9 +18,11 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   void sendState(bool state);
 
  private:
+  void endAndReschedule();
   std::unique_ptr<Expiration> m_expiration = nullptr;
   Signal<void, bool> m_screenSaverSignal;
 
+  size_t selectedIndex;
   std::chrono::minutes m_timeout;
   const std::array<int, 6> s_logTimeOuts = { 0, 1, 5, 20, 60, 180 };
 };

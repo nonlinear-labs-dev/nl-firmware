@@ -3,7 +3,10 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
-
+#include <proxies/hwui/panel-unit/PanelUnit.h>
+#include <proxies/hwui/panel-unit/EditPanel.h>
+#include <proxies/hwui/panel-unit/boled/BOLED.h>
+#include <proxies/hwui/panel-unit/boled/BOLEDScreenSaver.h>
 #include "ScreenSaverTimeoutSetting.h"
 
 ScreenSaverTimeoutSetting::ScreenSaverTimeoutSetting(UpdateDocumentContributor& parent)
@@ -13,7 +16,29 @@ ScreenSaverTimeoutSetting::ScreenSaverTimeoutSetting(UpdateDocumentContributor& 
 
 void ScreenSaverTimeoutSetting::load(const Glib::ustring& text, Initiator initiator)
 {
-  m_timeout = std::chrono::minutes(std::stoi(text));
+  try
+  {
+    auto loadedValue = std::stoi(text);
+
+    selectedIndex = 0;
+
+    for(auto i = 0; i < s_logTimeOuts.size(); i++)
+    {
+      auto v = s_logTimeOuts[i];
+      if(loadedValue == v)
+      {
+        selectedIndex = i;
+        break;
+      }
+    }
+
+    m_timeout = std::chrono::minutes(s_logTimeOuts[selectedIndex]);
+  }
+  catch(...)
+  {
+    m_timeout = std::chrono::minutes(0);
+    selectedIndex = 0;
+  }
 }
 
 Glib::ustring ScreenSaverTimeoutSetting::save() const
@@ -49,15 +74,18 @@ void ScreenSaverTimeoutSetting::init()
 {
   if(m_timeout.count() > 0)
   {
-    m_expiration = std::make_unique<Expiration>([&] { m_screenSaverSignal.send(true); }, m_timeout);
+    m_expiration = std::make_unique<Expiration>([&] { sendState(true); }, m_timeout);
   }
 
-  //TODO subscribe to real events...
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      [this](auto* n, auto* old) { endAndReschedule(); }, std::nullopt);
 
-  Application::get().getHWUI()->onHWUIChanged([&]() {
-    if(m_expiration)
+  Application::get().getPresetManager()->getEditBuffer()->onChange([this]() { endAndReschedule(); }, false);
+
+  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled([this](Layout* l) {
+    if(dynamic_cast<BOLEDScreenSaver*>(l) == nullptr)
     {
-      m_expiration->refresh(m_timeout);
+      endAndReschedule();
     }
   });
 }
@@ -67,23 +95,26 @@ void ScreenSaverTimeoutSetting::sendState(bool state)
   m_screenSaverSignal.send(state);
 }
 
+void ScreenSaverTimeoutSetting::endAndReschedule()
+{
+  sendState(false);
+
+  if(m_expiration)
+  {
+    m_expiration->refresh(m_timeout);
+  }
+}
+
 void ScreenSaverTimeoutSetting::incDec(int inc)
 {
 
-  //  auto currentIndex = std::find(s_logTimeOuts.begin(), s_logTimeOuts.end(), m_timeout.count());
-  //  if(currentIndex != s_logTimeOuts.end())
-  //  {
-  //    currentIndex = std::max(0, std::min<int>(currentIndex + inc, s_logTimeOuts.size() - 1));
-  //  }
+  selectedIndex = std::min<int>(std::max<int>(selectedIndex + inc, 0), s_logTimeOuts.size() - 1);
+  m_timeout = std::chrono::minutes(s_logTimeOuts[selectedIndex]);
 
-  auto n = m_timeout.count() + inc;
-  n = std::min<int>(std::max<int>(n, 0), 30);
-  m_timeout = std::chrono::minutes(n);
-
-  if(n == 0)
+  if(m_timeout.count() == 0)
   {
     m_expiration.reset(nullptr);
-    m_screenSaverSignal.send(false);
+    sendState(false);
   }
   else
   {
@@ -93,7 +124,7 @@ void ScreenSaverTimeoutSetting::incDec(int inc)
     }
     else
     {
-      m_expiration = std::make_unique<Expiration>([&] { m_screenSaverSignal.send(true); }, m_timeout);
+      m_expiration = std::make_unique<Expiration>([&] { sendState(true); }, m_timeout);
     }
   }
 
