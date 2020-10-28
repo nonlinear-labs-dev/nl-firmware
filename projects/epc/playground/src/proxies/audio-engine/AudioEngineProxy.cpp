@@ -388,3 +388,24 @@ void AudioEngineProxy::thawParameterMessages()
   if(m_suppressParamChanges == 0)
     sendEditBuffer();
 }
+
+void AudioEngineProxy::updateLastSentEditBufferMessage()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  switch(eb->getType())
+  {
+    case SoundType::Single:
+      lastSentType = SoundType::Single;
+      lastSentSingleMessage = createSingleEditBufferMessage(*eb);
+      break;
+    case SoundType::Layer:
+      lastSentType = SoundType::Layer;
+      lastSentLayerMessage = createLayerEditBufferMessage(*eb);
+      break;
+    case SoundType::Split:
+      lastSentType = SoundType::Split;
+      lastSentSplitMessage = createSplitEditBufferMessage(*eb);
+      break;
+  }
+}

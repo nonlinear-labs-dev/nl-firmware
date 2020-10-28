@@ -21,6 +21,8 @@ class AudioEngineProxy
   {
     if(!m_suppressParamChanges)
       sendParameterMessage(createMessage<tParameter>(parameter));
+
+    updateLastSentEditBufferMessage();
   }
 
   template <typename tParameter> auto createMessage(const tParameter* parameter)
@@ -49,6 +51,8 @@ class AudioEngineProxy
   static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
+  void updateLastSentEditBufferMessage();
+
   uint m_suppressParamChanges = 0;
 
   SoundType lastSentType = SoundType::Invalid;
