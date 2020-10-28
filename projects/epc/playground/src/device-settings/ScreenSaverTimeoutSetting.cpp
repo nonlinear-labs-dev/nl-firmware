@@ -1,5 +1,4 @@
 #include <Application.h>
-
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
@@ -83,10 +82,7 @@ void ScreenSaverTimeoutSetting::init()
 
   Application::get().getPresetManager()->getEditBuffer()->onChange([this]() { endAndReschedule(); }, false);
 
-  Application::get().getPlaycontrollerProxy()->onLastKeyChanged([this](int key) {
-    nltools::Log::info(__LINE__, __FILE__, __PRETTY_FUNCTION__, "Received last Key from Playcontroller:", key);
-    endAndReschedule();
-  });
+  Application::get().getPlaycontrollerProxy()->onLastKeyChanged([this](int key) { endAndReschedule(); });
 
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled([this](Layout* l) {
     if(dynamic_cast<BOLEDScreenSaver*>(l) == nullptr)
