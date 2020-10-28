@@ -34,7 +34,8 @@ inline constexpr bool VOICE_FADE_INTERPOLATION = true;
 inline constexpr bool LOG_MISSING = false;
 inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
-inline constexpr bool LOG_MIDI = false;
+inline constexpr bool LOG_MIDI_TCD = false;
+inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
@@ -74,9 +75,8 @@ class dsp_host_dual
   using SimpleRawMidiMessage = std::array<uint8_t, 3>;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
-  void onTcdMessage(
-      const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
-      const MidiOut& out = [](const SimpleRawMidiMessage&) {});
+  void onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
+                    const MidiOut& out = [](const SimpleRawMidiMessage&) {});
 
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   // event bindings: Preset Messages

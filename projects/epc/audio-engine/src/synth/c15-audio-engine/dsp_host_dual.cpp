@@ -372,11 +372,11 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
                                  const MidiOut& out)
 {
 
-  if(LOG_MIDI)
-  {
-    nltools::Log::info("midiMsg(status:", _status, ", data0:", _data0, ", data1:", _data1, ")");
-  }
   const uint32_t ch = _status & 15, st = (_status & 127) >> 4;
+  if(LOG_MIDI_TCD)
+  {
+    nltools::Log::info("midiMsg(chan:", ch, ", st:", st, ", data0:", _data0, ", data1:", _data1, ")");
+  }
   uint32_t arg = 0;
   // Playcontroller MIDI Protocol 1.7 transmits every Playcontroller Message as MIDI PitchBend Message! (avoiding TCD Protocol collisions)
   if(st == 6)
@@ -512,6 +512,10 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
   const uint32_t type = (_status & 127) >> 4;
+  if(LOG_MIDI_RAW)
+  {
+    nltools::Log::info("rawMidi(chan:", _status & 15, ", type:", type, ", data0:", _data0, ", data1:", _data1, ")");
+  }
   uint32_t arg = 0;
   switch(type)
   {
@@ -2596,7 +2600,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]
