@@ -33,22 +33,22 @@ bool BOLEDScreenSaver::animate()
 {
   auto old = m_label->getPosition();
 
-  if(old.getRight() > 256)
+  if(old.getRight() >= 256)
   {
     m_vel.first = -1;
   }
 
-  if(old.getLeft() < 0)
+  if(old.getLeft() <= 0)
   {
     m_vel.first = 1;
   }
 
-  if(old.getBottom() > 64)
+  if(old.getBottom() >= 64)
   {
     m_vel.second = -1;
   }
 
-  if(old.getTop() < 0)
+  if(old.getTop() <= 0)
   {
     m_vel.second = 1;
   }

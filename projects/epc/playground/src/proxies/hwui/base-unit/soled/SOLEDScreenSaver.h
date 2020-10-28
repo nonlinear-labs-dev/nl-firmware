@@ -11,7 +11,7 @@ class SOLEDScreenSaver : public Layout
   void init() override;
 
  private:
-  int velocity = 1;
+  std::pair<int, int> velocity = { 1, 1 };
   Label* m_scrollingLabel = nullptr;
   sigc::connection m_animationConnection;
   sigc::connection m_editbufferConnection;
