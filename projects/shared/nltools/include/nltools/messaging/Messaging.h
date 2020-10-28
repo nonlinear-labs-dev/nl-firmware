@@ -6,6 +6,7 @@
 #include <sigc++/connection.h>
 #include <nltools/logging/Log.h>
 #include <nltools/enums/EnumTools.h>
+#include <nltools/threading/Threading.h>
 #include <glibmm/bytes.h>
 #include <string.h>
 
@@ -17,7 +18,7 @@ namespace nltools
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 
     ENUM(EndPoint, uint16_t, None, Playcontroller, Oled, PanelLed, RibbonLed, AudioEngine, Playground, BeagleBone,
-         ExternalMidiOverIP, TestEndPoint);
+         ExternalMidiOverIPBridge, ExternalMidiOverIPClient, TestEndPoint);
 
     uint getPortFor(EndPoint p);
 
@@ -86,10 +87,14 @@ namespace nltools
 
     struct ChannelConfiguration
     {
-      ChannelConfiguration(EndPoint p = EndPoint::None);
-      ChannelConfiguration(EndPoint p, const std::string &hostName);
+      ChannelConfiguration(EndPoint p = EndPoint::None, const std::string &hostName = "localhost",
+                           threading::Priority prio = threading::Priority::Normal);
+
+      ChannelConfiguration(EndPoint p, threading::Priority prio);
+
       EndPoint peer;
       std::string uri;
+      threading::Priority prio = threading::Priority::Normal;
     };
 
     struct Configuration

@@ -40,21 +40,21 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
   receive<Setting::TuneReference>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onTuneReferenceMessage));
 
   receive<Keyboard::NoteUp>(EndPoint::AudioEngine, [this](const Keyboard::NoteUp& noteUp) {
-    m_dsp->onRawMidiMessage(0, static_cast<uint32_t>(noteUp.m_keyPos), 0);
+    m_dsp->onMidiMessage(0, static_cast<uint32_t>(noteUp.m_keyPos), 0);
   });
 
   receive<Keyboard::NoteDown>(EndPoint::AudioEngine, [this](const Keyboard::NoteDown& noteDown) {
-    m_dsp->onRawMidiMessage(100, static_cast<uint32_t>(noteDown.m_keyPos), 0);
+    m_dsp->onMidiMessage(100, static_cast<uint32_t>(noteDown.m_keyPos), 0);
   });
 
-  receive<nltools::msg::Midi::SimpleMessage>(EndPoint::AudioEngine, [&](const auto& msg) {
+  receive<nltools::msg::Midi::SimpleMessage>(EndPoint::ExternalMidiOverIPClient, [&](const auto& msg) {
     MidiEvent e;
     std::copy(msg.rawBytes, msg.rawBytes + 3, e.raw);
     pushMidiEvent(e);
 
     nltools::msg::Midi::MessageAcknowledge ack;
     ack.id = msg.id;
-    send(nltools::msg::EndPoint::ExternalMidiOverIP, ack);
+    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, ack);
   });
 
   Glib::MainContext::get_default()->signal_idle().connect(sigc::mem_fun(this, &C15Synth::doIdle));
@@ -64,24 +64,29 @@ C15Synth::~C15Synth() = default;
 
 void C15Synth::doMidi(const MidiEvent& event)
 {
-  m_dsp->onRawMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
+  m_dsp->onMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
 }
 
 void C15Synth::doTcd(const MidiEvent& event)
 {
-  m_dsp->onMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
+  m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2], [=](auto outgoingMidiMessage) {
+    nltools::msg::Midi::SimpleMessage msg;
+    msg.id = 0;
+    std::copy(outgoingMidiMessage.begin(), outgoingMidiMessage.end(), msg.rawBytes);
+    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, msg);
+  });
 }
 
 void C15Synth::simulateKeyDown(int key)
 {
-  m_dsp->onMidiMessage(0xED, 0, static_cast<uint32_t>(key));  // playcontroller keyPos
-  m_dsp->onMidiMessage(0xEE, 127, 127);                       // playcontroller keyDown (vel: 100%)
+  m_dsp->onTcdMessage(0xED, 0, static_cast<uint32_t>(key));  // playcontroller keyPos
+  m_dsp->onTcdMessage(0xEE, 127, 127);                       // playcontroller keyDown (vel: 100%)
 }
 
 void C15Synth::simulateKeyUp(int key)
 {
-  m_dsp->onMidiMessage(0xED, 0, static_cast<uint32_t>(key));  // playcontroller keyPos
-  m_dsp->onMidiMessage(0xEF, 127, 127);                       // playcontroller keyUp (vel: 100%)
+  m_dsp->onTcdMessage(0xED, 0, static_cast<uint32_t>(key));  // playcontroller keyPos
+  m_dsp->onTcdMessage(0xEF, 127, 127);                       // playcontroller keyUp (vel: 100%)
 }
 
 unsigned int C15Synth::getRenderedSamples()

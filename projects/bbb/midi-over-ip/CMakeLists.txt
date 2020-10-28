@@ -26,5 +26,15 @@ endforeach(lib)
 target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+configure_file(${PROJECT_SOURCE_DIR}/systemd/midi-over-ip.service.in ${PROJECT_BINARY_DIR}/systemd/midi-over-ip.service @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/midi-over-ip.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(TARGETS ${PROJECT_NAME} DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
+
+install(CODE "execute_process(
+    COMMAND bash -c \"set -e
+    mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants
+    mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sound.target.wants
+    mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants
+    ln -sf ../midi-over-ip.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sound.target.wants/midi-over-ip.service
+    \")")
 

@@ -1,17 +1,22 @@
 #include "Options.h"
 #include <nltools/messaging/Message.h>
 #include <nltools/messaging/Messaging.h>
+#include <nltools/threading/Threading.h>
 #include <alsa/asoundlib.h>
 #include <stdlib.h>
 #include <thread>
 #include <chrono>
-#include <vector>
+#include <array>
 #include <glibmm.h>
 
 static bool quitApp = false;
 static Glib::RefPtr<Glib::MainLoop> loop;
 static int cancelPipe[2];
-static std::vector<std::chrono::high_resolution_clock::time_point> sendTime;
+static std::array<std::chrono::high_resolution_clock::time_point, 32> sendTime;
+static size_t sendTimeIdx = 0;
+
+static std::chrono::microseconds minRTT = std::chrono::microseconds::max();
+static std::chrono::microseconds maxRTT = std::chrono::microseconds::min();
 
 void quit(int)
 {
@@ -24,6 +29,8 @@ void quit(int)
 void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
 {
   using namespace nltools::msg;
+
+  nltools::threading::setThisThreadPrio(nltools::threading::Priority::AlmostRealtime);
 
   while(!quitApp)
   {
@@ -76,9 +83,10 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
             {
               Midi::SimpleMessage msg;
               snd_midi_event_decode(decoder, msg.rawBytes, sizeof(msg.rawBytes), &event);
-              sendTime.push_back(std::chrono::high_resolution_clock::now());
-              msg.id = sendTime.size() - 1;
-              send(EndPoint::AudioEngine, msg);
+              auto idx = sendTimeIdx++ % sendTime.size();
+              sendTime[idx] = std::chrono::high_resolution_clock::now();
+              msg.id = idx;
+              send(EndPoint::ExternalMidiOverIPClient, msg);
               break;
             }
           }
@@ -93,20 +101,54 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
   }
 }
 
+void configureMessaging(const Options &options)
+{
+  using namespace nltools::msg;
+  using nltools::threading::Priority;
+
+  auto aeHost = options.getAudioEngineHost();
+
+  Configuration conf;
+  conf.offerEndpoints = { { EndPoint::ExternalMidiOverIPBridge, Priority::AlmostRealtime } };
+  conf.useEndpoints = { { EndPoint::ExternalMidiOverIPClient, aeHost, Priority::AlmostRealtime } };
+  nltools::msg::init(conf);
+}
+
+void sendToExternalDevice(snd_rawmidi_t *outputHandle, const nltools::msg::Midi::SimpleMessage &msg)
+{
+  if(auto res = snd_rawmidi_write(outputHandle, msg.rawBytes, sizeof(msg.rawBytes)))
+    if(size_t(res) != sizeof(msg.rawBytes))
+      nltools::Log::error("Could not write message into midi output device");
+
+  snd_rawmidi_drain(outputHandle);
+}
+
+void measureRoundTripTime(const nltools::msg::Midi::MessageAcknowledge &msg)
+{
+  auto flightTime = std::chrono::high_resolution_clock::now() - sendTime[msg.id];
+  auto us = std::chrono::duration_cast<std::chrono::microseconds>(flightTime);
+  minRTT = std::min(minRTT, us);
+  maxRTT = std::max(maxRTT, us);
+}
+
+void runMainLoop()
+{
+  loop = Glib::MainLoop::create();
+  loop->run();
+}
+
 int main(int args, char *argv[])
 {
   using namespace nltools::msg;
+  using namespace nltools::msg::Midi;
+  using namespace std::chrono;
 
   signal(SIGINT, quit);
   signal(SIGQUIT, quit);
   signal(SIGTERM, quit);
 
   Options options(args, argv);
-
-  Configuration conf;
-  conf.offerEndpoints = { EndPoint::ExternalMidiOverIP };
-  conf.useEndpoints = { { EndPoint::AudioEngine, options.getAudioEngineHost() } };
-  nltools::msg::init(conf);
+  configureMessaging(options);
 
   snd_rawmidi_t *inputHandle = nullptr;
   snd_rawmidi_t *outputHandle = nullptr;
@@ -117,30 +159,14 @@ int main(int args, char *argv[])
     return EXIT_FAILURE;
   }
 
-  auto msg = receive<nltools::msg::Midi::SimpleMessage>(EndPoint::ExternalMidiOverIP, [&](const auto &msg) {
-    if(auto res = snd_rawmidi_write(outputHandle, msg.rawBytes, sizeof(msg.rawBytes)))
-      if(size_t(res) != sizeof(msg.rawBytes))
-        nltools::Log::error("Could not write message into midi output device");
+  constexpr auto endPoint = EndPoint::ExternalMidiOverIPBridge;
+  auto msg = receive<SimpleMessage>(endPoint, [&](const auto &msg) { sendToExternalDevice(outputHandle, msg); });
+  auto ack = receive<MessageAcknowledge>(endPoint, [&](const auto &msg) { measureRoundTripTime(msg); });
 
-    snd_rawmidi_drain(outputHandle);
-  });
-
-  auto ack = receive<nltools::msg::Midi::MessageAcknowledge>(EndPoint::ExternalMidiOverIP, [&](const auto &msg) {
-    auto flightTime = std::chrono::high_resolution_clock::now() - sendTime[msg.id];
-    auto micros = std::chrono::duration_cast<std::chrono::microseconds>(flightTime);
-    nltools::Log::warning("Received ack to event", msg.id, "after", micros.count(), "us");
-  });
-
-  if(pipe(cancelPipe) < 0)
-  {
-    nltools::Log::error("Could not create pipe for cancellation of the Midi thread");
-    return EXIT_FAILURE;
-  }
-
+  pipe(cancelPipe);
   auto sender = std::thread([&] { readMidi(cancelPipe[0], inputHandle); });
 
-  loop = Glib::MainLoop::create();
-  loop->run();
+  runMainLoop();
 
   if(sender.joinable())
     sender.join();
@@ -150,5 +176,8 @@ int main(int args, char *argv[])
 
   snd_rawmidi_close(outputHandle);
   snd_rawmidi_close(inputHandle);
+
+  nltools::Log::warning("MidiOverIP, round trip time:", minRTT.count(), " ... ", maxRTT.count(), "us");
+
   return EXIT_SUCCESS;
 }

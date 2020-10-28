@@ -1,6 +1,6 @@
 [Unit]
 Description=Nonlinear-Labs C15 Audio Engine
-After=systemd-modules-load.service sound.target fixCpuBindings.service external-midi.service
+After=systemd-modules-load.service sound.target fixCpuBindings.service
 StartLimitIntervalSec=0
 StartLimitInterval=0
 

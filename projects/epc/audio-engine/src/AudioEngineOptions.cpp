@@ -43,6 +43,7 @@ AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
   add(mainGroup, m_numPeriods, "num-periods", 'n', "alsa audio input number of periods");
   add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "alsa audio input ring buffer size");
   add(mainGroup, m_playgroundHost, "playground-host", 'x', "Where to find the playground");
+  add(mainGroup, m_midiBridgeHost, "midi-bridge-host", 'd', "Where to find the midi bridge");
   add(mainGroup, m_cpuBurningSines, "num-sines", 'u',
       "Do not run the c15 synth, but run a lot of sines in order to burn CPU.");
 
@@ -124,6 +125,11 @@ int AudioEngineOptions::getAlsaRingBufferSize() const
 std::string AudioEngineOptions::getPlaygroundHost() const
 {
   return m_playgroundHost;
+}
+
+std::string AudioEngineOptions::getMidiBridgeHost() const
+{
+  return m_midiBridgeHost;
 }
 
 int AudioEngineOptions::getSampleRate() const

@@ -44,10 +44,14 @@ void runMainLoop()
 void setupMessaging(const AudioEngineOptions *o)
 {
   using namespace nltools::msg;
+
+  auto highPrio = nltools::threading::Priority::AlmostRealtime;
+
   Configuration conf;
-  conf.offerEndpoints = { EndPoint::AudioEngine };
-  conf.useEndpoints
-      = { { EndPoint::Playground, o->getPlaygroundHost() }, { EndPoint::ExternalMidiOverIP, "192.168.10.11" } };
+  conf.offerEndpoints = { { EndPoint::AudioEngine }, { EndPoint::ExternalMidiOverIPClient, highPrio } };
+  conf.useEndpoints = { { EndPoint::Playground, o->getPlaygroundHost() },
+                        { EndPoint::ExternalMidiOverIPBridge, o->getMidiBridgeHost(), highPrio } };
+
   nltools::msg::init(conf);
 }
 

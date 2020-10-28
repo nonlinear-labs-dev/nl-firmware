@@ -26,6 +26,7 @@ class AudioEngineOptions
   int getAlsaRingBufferSize() const;
 
   std::string getPlaygroundHost() const;
+  std::string getMidiBridgeHost() const;
   int getNumCpuBurningSines() const;
 
  private:
@@ -35,6 +36,7 @@ class AudioEngineOptions
   bool m_measurePerformance = false;
 
   Glib::ustring m_playgroundHost = "localhost";
+  Glib::ustring m_midiBridgeHost = "192.168.10.11";
 
   Glib::ustring m_midiInputDeviceName;
   Glib::ustring m_tcdInputDeviceName;
