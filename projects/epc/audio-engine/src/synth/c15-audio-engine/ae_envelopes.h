@@ -81,6 +81,7 @@ namespace Engine
         body->m_state = m_segment[m_startIndex].m_state;
         body->m_index = m_startIndex;
         body->m_next = m_segment[m_startIndex].m_next;
+        tick(_voiceId, 1.0f);
       }
       inline void stop(const uint32_t _voiceId)
       {
@@ -257,6 +258,7 @@ namespace Engine
         body->m_state = m_segment[m_startIndex].m_state;
         body->m_index = m_startIndex;
         body->m_next = m_segment[m_startIndex].m_next;
+        tick(_voiceId, 1.0f);
       }
       inline void stop(const uint32_t _voiceId)
       {
@@ -403,6 +405,7 @@ namespace Engine
         body->m_state = m_segment[m_startIndex].m_state;
         body->m_index = m_startIndex;
         body->m_next = m_segment[m_startIndex].m_next;
+        tick(_voiceId);
       }
       inline void stop(const uint32_t _voiceId)
       {

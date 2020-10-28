@@ -156,6 +156,14 @@ void PolySection::render_audio(const float _mute)
       * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);  // apply part mute to send other
   m_send_other_l = m_outputmixer.m_out_l * send;
   m_send_other_r = m_outputmixer.m_out_r * send;
+  // env rendering (unfortunately another voice loop)
+  for(uint32_t v = 0; v < m_voices; v++)
+  {
+    m_env_a.tick(v, _mute);
+    m_env_b.tick(v, _mute);
+    m_env_c.tick(v, _mute);
+    m_env_g.tick(v);
+  }
 }
 
 void PolySection::render_feedback(const LayerSignalCollection& _z_other)
@@ -470,11 +478,6 @@ float PolySection::evalScale(const uint32_t _voiceId)
 
 void PolySection::postProcess_poly_audio(const uint32_t _voiceId, const float _mute)
 {
-  // env rendering
-  m_env_a.tick(_voiceId, _mute);
-  m_env_b.tick(_voiceId, _mute);
-  m_env_c.tick(_voiceId, _mute);
-  m_env_g.tick(_voiceId);
   // provide poly env signals
   float gain = m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Gain);
   m_signals.set_poly(C15::Signals::Truepoly_Signals::Env_A_Mag, _voiceId,
@@ -742,12 +745,7 @@ void PolySection::postProcess_poly_pitch(const uint32_t _voiceId, const float _e
 
 void PolySection::postProcess_poly_key(const uint32_t _voiceId)
 {
-  // we'd like to have envelope c immediately affect pitches if necessary (before next clock)
-  const bool envC_override = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att)
-      < 0.005f;  // override condition: env-c phase is attack (as only triggered by key events), attack time is close enough zero
-  postProcess_poly_pitch(_voiceId,
-                         envC_override ? m_env_c.m_levelFactor[_voiceId]
-                                       : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId));
+  postProcess_poly_pitch(_voiceId, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId));
   // - key override event now fully separated from clock, env c peak level is active immediately when attack == 0
   // LATER: consider re-formulating envelopes (keydown already affects signal) and rendering them after everything else (avoiding this override)
   // pitch, unison, temporary variables
