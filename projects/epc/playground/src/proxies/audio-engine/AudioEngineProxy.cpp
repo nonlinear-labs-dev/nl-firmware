@@ -338,20 +338,41 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
   return msg;
 }
 
+template <SoundType tSoundType, typename tMsgType>
+void sendIfChanged(tMsgType &lastSentMessage, tMsgType &msg, SoundType &lastSentType)
+{
+  if(msg != lastSentMessage || lastSentType != tSoundType)
+  {
+    lastSentType = tSoundType;
+    lastSentMessage = msg;
+    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  }
+}
+
 void AudioEngineProxy::sendEditBuffer()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+
   switch(eb->getType())
   {
     case SoundType::Single:
-      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSingleEditBufferMessage(*eb));
+    {
+      auto single = createSingleEditBufferMessage(*eb);
+      sendIfChanged<SoundType::Single>(lastSentSingleMessage, single, lastSentType);
       break;
+    }
     case SoundType::Split:
-      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSplitEditBufferMessage(*eb));
+    {
+      auto split = createSplitEditBufferMessage(*eb);
+      sendIfChanged<SoundType::Split>(lastSentSplitMessage, split, lastSentType);
       break;
+    }
     case SoundType::Layer:
-      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage(*eb));
+    {
+      auto layer = createLayerEditBufferMessage(*eb);
+      sendIfChanged<SoundType::Layer>(lastSentLayerMessage, layer, lastSentType);
       break;
+    }
   }
 }
 

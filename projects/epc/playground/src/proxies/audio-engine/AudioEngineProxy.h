@@ -51,6 +51,11 @@ class AudioEngineProxy
  private:
   uint m_suppressParamChanges = 0;
 
+  SoundType lastSentType = SoundType::Invalid;
+  nltools::msg::LayerPresetMessage lastSentLayerMessage;
+  nltools::msg::SplitPresetMessage lastSentSplitMessage;
+  nltools::msg::SinglePresetMessage lastSentSingleMessage;
+
   static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
   static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
 };
