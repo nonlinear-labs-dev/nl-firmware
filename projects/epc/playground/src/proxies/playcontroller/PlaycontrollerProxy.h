@@ -69,6 +69,8 @@ class PlaycontrollerProxy
   sigc::connection onLastKeyChanged(sigc::slot<void, int> s);
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;
+  Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
+  void notifyRibbonTouch(int ribbonsParameterID);
 
  private:
   void onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg);
@@ -80,7 +82,6 @@ class PlaycontrollerProxy
   gint16 separateSignedBitToComplementary(uint16_t v) const;
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
 
-  void notifyRibbonTouch(int ribbonsParameterID);
   void onHardwareSourceReceived(const MessageParser::NLMessage &msg);
   void onEditControlMessageReceived(const MessageParser::NLMessage &msg);
   void onRelativeEditControlMessageReceived(Parameter *p, gint16 value);
@@ -91,8 +92,6 @@ class PlaycontrollerProxy
   void onPlaycontrollerConnected();
   void onHeartbeatReceived(const MessageParser::NLMessage &msg);
   void sendCalibrationData();
-
-  Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
 
   std::shared_ptr<MessageParser> m_msgParser;
 

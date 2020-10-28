@@ -1,4 +1,5 @@
 #include "dsp_host_dual.h"
+#include <nltools/messaging/Messaging.h>
 
 using namespace std::chrono_literals;
 
@@ -367,7 +368,8 @@ void dsp_host_dual::logStatus()
   }
 }
 
-void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
+void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
+                                 const MidiOut& out)
 {
 
   if(LOG_MIDI)
@@ -469,7 +471,13 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         arg = _data1 + (_data0 << 7);
         if(m_key_valid)
         {
-          keyDown(static_cast<float>(arg) * m_norm_vel);
+          auto vel = static_cast<float>(arg) * m_norm_vel;
+          keyDown(vel);
+
+          uint8_t statusByte = static_cast<uint8_t>(0x90);
+          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
+          uint8_t velByte = static_cast<uint8_t>(vel * 127);
+          out({ statusByte, keyByte, velByte });
         }
         else if(LOG_FAIL)
         {
@@ -482,7 +490,13 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
         arg = _data1 + (_data0 << 7);
         if(m_key_valid)
         {
-          keyUp(static_cast<float>(arg) * m_norm_vel);
+          auto vel = static_cast<float>(arg) * m_norm_vel;
+          keyUp(vel);
+
+          uint8_t statusByte = static_cast<uint8_t>(0x80);
+          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
+          uint8_t velByte = static_cast<uint8_t>(vel * 127);
+          out({ statusByte, keyByte, velByte });
         }
         else if(LOG_FAIL)
         {
@@ -495,7 +509,7 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
   }
 }
 
-void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
+void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
   const uint32_t type = (_status & 127) >> 4;
   uint32_t arg = 0;
@@ -504,20 +518,20 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
     case 0:
       // note off
       arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
-      onMidiMessage(0xED, 0, _data0);            // keyPos
-      onMidiMessage(0xEF, arg >> 7, arg & 127);  // keyUp
+      onTcdMessage(0xED, 0, _data0);            // keyPos
+      onTcdMessage(0xEF, arg >> 7, arg & 127);  // keyUp
       break;
     case 1:
       // note on
       arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
-      onMidiMessage(0xED, 0, _data0);  // keyPos
+      onTcdMessage(0xED, 0, _data0);  // keyPos
       if(arg != 0)
       {
-        onMidiMessage(0xEE, arg >> 7, arg & 127);  // keyDown
+        onTcdMessage(0xEE, arg >> 7, arg & 127);  // keyDown
       }
       else
       {
-        onMidiMessage(0xEF, 0, 0);  // keyUp
+        onTcdMessage(0xEF, 0, 0);  // keyUp
       }
       break;
     case 3:
@@ -527,27 +541,27 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
       {
         case 61:
           // Pedal 1
-          onMidiMessage(0xE0, arg >> 7, arg & 127);
+          onTcdMessage(0xE0, arg >> 7, arg & 127);
           break;
         case 62:
           // Pedal 2
-          onMidiMessage(0xE1, arg >> 7, arg & 127);
+          onTcdMessage(0xE1, arg >> 7, arg & 127);
           break;
         case 63:
           // Pedal 3
-          onMidiMessage(0xE2, arg >> 7, arg & 127);
+          onTcdMessage(0xE2, arg >> 7, arg & 127);
           break;
         case 64:
           // Pedal 4
-          onMidiMessage(0xE3, arg >> 7, arg & 127);
+          onTcdMessage(0xE3, arg >> 7, arg & 127);
           break;
         case 67:
           // Ribbon 1
-          onMidiMessage(0xE6, arg >> 7, arg & 127);
+          onTcdMessage(0xE6, arg >> 7, arg & 127);
           break;
         case 68:
           // Ribbon 2
-          onMidiMessage(0xE7, arg >> 7, arg & 127);
+          onTcdMessage(0xE7, arg >> 7, arg & 127);
           break;
         default:
           break;
@@ -556,12 +570,12 @@ void dsp_host_dual::onRawMidiMessage(const uint32_t _status, const uint32_t _dat
     case 5:
       // mono at (hw source)
       arg = static_cast<uint32_t>(static_cast<float>(_data0) * m_format_hw);
-      onMidiMessage(0xE5, arg >> 7, arg & 127);  // hw_at
+      onTcdMessage(0xE5, arg >> 7, arg & 127);  // hw_at
       break;
     case 6:
       // bend (hw source)
       arg = static_cast<uint32_t>(static_cast<float>(_data0 + (_data1 << 7)) * m_format_pb);
-      onMidiMessage(0xE4, arg >> 7, arg & 127);  // hw_bend
+      onTcdMessage(0xE4, arg >> 7, arg & 127);  // hw_bend
       break;
     default:
       break;
@@ -1240,6 +1254,14 @@ void dsp_host_dual::reset()
   {
     nltools::Log::info("DSP has been reset.");
   }
+}
+
+dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
+{
+  dsp_host_dual::HWSourceValues ret;
+  std::transform(m_params.m_global.m_source, m_params.m_global.m_source + ret.size(), ret.begin(),
+                 [](const auto& a) { return a.m_position; });
+  return ret;
 }
 
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehavior(const ReturnMode _mode)
@@ -2574,7 +2596,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]

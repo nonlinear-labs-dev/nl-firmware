@@ -29,7 +29,10 @@ AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
 
   add(mainGroup, m_rate, "sample-rate", 'r', "Audio samplerate");
   add(mainGroup, m_polyphony, "polyphony", 'p', "Number of voices");
-  add(mainGroup, m_midiInputDeviceName, "midi-in", 'm', "Name of the alsa midi input device");
+
+  add(mainGroup, m_midiInputDeviceName, "midi-in", 'm', "Name of the alsa midi input device for raw midi input");
+  add(mainGroup, m_tcdInputDeviceName, "tcd-in", 't', "Name of the alsa midi input device for tcd input");
+
   add(mainGroup, m_heartBeatDeviceName, "heartbeat", 'h',
       "Name of the alsa midi output device used to send heartbeats");
   add(mainGroup, m_audioOutputDeviceName, "audio-out", 'a', "Name of the alsa audio output device");
@@ -40,6 +43,7 @@ AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
   add(mainGroup, m_numPeriods, "num-periods", 'n', "alsa audio input number of periods");
   add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "alsa audio input ring buffer size");
   add(mainGroup, m_playgroundHost, "playground-host", 'x', "Where to find the playground");
+  add(mainGroup, m_midiBridgeHost, "midi-bridge-host", 'd', "Where to find the midi bridge");
   add(mainGroup, m_cpuBurningSines, "num-sines", 'u',
       "Do not run the c15 synth, but run a lot of sines in order to burn CPU.");
 
@@ -83,6 +87,11 @@ std::string AudioEngineOptions::getMidiInputDeviceName() const
   return m_midiInputDeviceName;
 }
 
+std::string AudioEngineOptions::getTcdInputDeviceName() const
+{
+  return m_tcdInputDeviceName;
+}
+
 std::chrono::nanoseconds AudioEngineOptions::getAdditionalMidiDelay() const
 {
   return m_additionalMidiDelay;
@@ -116,6 +125,11 @@ int AudioEngineOptions::getAlsaRingBufferSize() const
 std::string AudioEngineOptions::getPlaygroundHost() const
 {
   return m_playgroundHost;
+}
+
+std::string AudioEngineOptions::getMidiBridgeHost() const
+{
+  return m_midiBridgeHost;
 }
 
 int AudioEngineOptions::getSampleRate() const

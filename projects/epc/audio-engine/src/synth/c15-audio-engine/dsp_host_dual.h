@@ -22,6 +22,8 @@
 #include "ae_mono_section.h"
 #include "ae_poly_section.h"
 
+#include <array>
+
 // developer switches
 inline constexpr unsigned int SAMPLE_COUNT = 0;  // 0: normal, 1: acceptance-test: does host really render?
 
@@ -68,8 +70,15 @@ class dsp_host_dual
   // event bindings: debug
   void logStatus();
   // event bindings: Playcontroller or MIDI Device (in Dev_PC mode)
+
+  using SimpleRawMidiMessage = std::array<uint8_t, 3>;
+  using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
+
+  void onTcdMessage(
+      const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
+      const MidiOut& out = [](const SimpleRawMidiMessage&) {});
+
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
-  void onRawMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   // event bindings: Preset Messages
   void onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
   void onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
@@ -98,6 +107,9 @@ class dsp_host_dual
   // dsp-related
   void render();
   void reset();
+
+  using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
+  HWSourceValues getHWSourceValues() const;
 
  private:
   // parameters

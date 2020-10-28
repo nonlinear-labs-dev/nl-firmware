@@ -9,8 +9,31 @@ namespace nltools
 {
   namespace msg
   {
+    namespace Midi
+    {
+      struct SimpleMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiSimpleMessage;
+        }
 
-    using tID              = int;
+        uint64_t id = 0;
+        uint8_t rawBytes[3];
+      };
+
+      struct MessageAcknowledge
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiAck;
+        }
+
+        uint64_t id = 0;
+      };
+    }
+
+    using tID = int;
     using tControlPosition = double;
 
     namespace Keyboard
@@ -66,8 +89,7 @@ namespace nltools
 
       namespace Helper
       {
-        template <size_t tSize>
-        struct StringWrapper
+        template <size_t tSize> struct StringWrapper
         {
           StringWrapper()
           {
@@ -100,8 +122,7 @@ namespace nltools
         {
         }
 
-        template <typename T>
-        SetWiFiSSIDMessage(const T& ssid)
+        template <typename T> SetWiFiSSIDMessage(const T& ssid)
         {
           m_ssid.set(ssid);
         }
@@ -120,8 +141,7 @@ namespace nltools
         {
         }
 
-        template <typename T>
-        SetWiFiPasswordMessage(const T& password)
+        template <typename T> SetWiFiPasswordMessage(const T& password)
         {
           m_password.set(password);
         }
@@ -190,9 +210,9 @@ namespace nltools
         return MessageType::HWSourceParameter;
       }
 
-      tID              parameterId;
+      tID parameterId;
       tControlPosition controlPosition;
-      ReturnMode       returnMode;
+      ReturnMode returnMode;
     };
 
     struct HWAmountChangedMessage
@@ -202,7 +222,7 @@ namespace nltools
         return MessageType::HWAmountParameter;
       }
 
-      tID              parameterId;
+      tID parameterId;
       tControlPosition controlPosition;
     };
 
@@ -213,7 +233,7 @@ namespace nltools
         return MessageType::MacroControlParameter;
       }
 
-      tID              parameterId;
+      tID parameterId;
       tControlPosition controlPosition;
     };
 
@@ -224,9 +244,9 @@ namespace nltools
         return MessageType::UnmodulateableParameter;
       }
 
-      tID              parameterId;
+      tID parameterId;
       tControlPosition controlPosition;
-      VoiceGroup       voiceGroup;
+      VoiceGroup voiceGroup;
     };
 
     struct ModulateableParameterChangedMessage
@@ -236,13 +256,13 @@ namespace nltools
         return MessageType::ModulateableParameter;
       }
 
-      tID              parameterId;
+      tID parameterId;
       tControlPosition controlPosition;
-      MacroControls    sourceMacro;
+      MacroControls sourceMacro;
       tControlPosition mcAmount;
       tControlPosition mcUpper;
       tControlPosition mcLower;
-      VoiceGroup       voiceGroup;
+      VoiceGroup voiceGroup;
     };
 
     struct RotaryChangedMessage
@@ -262,7 +282,7 @@ namespace nltools
         return MessageType::TimestampedRotaryChanged;
       }
 
-      int8_t   increment;
+      int8_t increment;
       uint64_t timestamp;
     };
 
@@ -274,7 +294,7 @@ namespace nltools
       }
 
       int8_t buttonId;
-      bool   pressed;
+      bool pressed;
     };
 
     struct SetRibbonLEDMessage
@@ -296,7 +316,7 @@ namespace nltools
       }
 
       uint8_t id;
-      bool    on;
+      bool on;
     };
 
     struct SetOLEDMessage
@@ -317,7 +337,7 @@ namespace nltools
       }
 
       SetOLEDMessage m_oledMessage;
-      int64_t        m_timestamp;
+      int64_t m_timestamp;
     };
 
     struct PlaycontrollerMessage
@@ -338,25 +358,34 @@ namespace nltools
       }
     };
 
+    struct HardwareSourceChangedNotification
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::NotifyHardwareSourceChanged;
+      }
+
+      size_t hwSource = 0;  // 0...7
+      double position = 0;  // -1...1
+    };
+
     namespace detail
     {
-      template <>
-      inline PlaycontrollerMessage deserialize<PlaycontrollerMessage>(const SerializedMessage& s)
+      template <> inline PlaycontrollerMessage deserialize<PlaycontrollerMessage>(const SerializedMessage& s)
       {
         PlaycontrollerMessage ret;
-        gsize                 numBytes = 0;
-        auto                  data     = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
-        ret.message                    = Glib::Bytes::create(data + 2, numBytes - 2);
+        gsize numBytes = 0;
+        auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
+        ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
         return ret;
       }
 
-      template <>
-      inline SerializedMessage serialize<PlaycontrollerMessage>(const PlaycontrollerMessage& msg)
+      template <> inline SerializedMessage serialize<PlaycontrollerMessage>(const PlaycontrollerMessage& msg)
       {
         gsize numBytes = 0;
-        auto  data     = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
-        auto  scratch  = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
-        scratch[0]     = static_cast<uint16_t>(MessageType::Playcontroller);
+        auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
+        auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
+        scratch[0] = static_cast<uint16_t>(MessageType::Playcontroller);
         std::memcpy(&scratch[1], data, numBytes);
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
         return Glib::wrap(bytes);
@@ -368,13 +397,13 @@ namespace nltools
       struct Parameter
       {
         uint16_t id {};
-        double   controlPosition = 0;
+        double controlPosition = 0;
       };
 
       struct RibbonParameter : Parameter
       {
         RibbonTouchBehaviour ribbonTouchBehaviour {};
-        RibbonReturnMode     ribbonReturnMode {};
+        RibbonReturnMode ribbonReturnMode {};
       };
 
       struct PedalParameter : Parameter
@@ -389,8 +418,8 @@ namespace nltools
 
       struct ModulateableParameter : Parameter
       {
-        MacroControls mc               = MacroControls::NONE;
-        double        modulationAmount = 0;
+        MacroControls mc = MacroControls::NONE;
+        double modulationAmount = 0;
       };
 
       struct UnmodulateableParameter : Parameter
@@ -417,7 +446,7 @@ namespace nltools
       struct UnisonGroup
       {
         ParameterGroups::UnmodulateableParameter unisonVoices;
-        ParameterGroups::ModulateableParameter   detune;
+        ParameterGroups::ModulateableParameter detune;
         ParameterGroups::UnmodulateableParameter phase;
         ParameterGroups::UnmodulateableParameter pan;
       };
@@ -427,7 +456,7 @@ namespace nltools
         ParameterGroups::UnmodulateableParameter monoEnable;
         ParameterGroups::UnmodulateableParameter legato;
         ParameterGroups::UnmodulateableParameter priority;
-        ParameterGroups::ModulateableParameter   glide;
+        ParameterGroups::ModulateableParameter glide;
       };
 
       struct MasterGroup
@@ -485,17 +514,17 @@ namespace nltools
         return MessageType::SinglePreset;
       }
 
-      std::array<ParameterGroups::MacroParameter, 6>          macros;
+      std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<ParameterGroups::ModulateableParameter, 101>  modulateables;
+      std::array<ParameterGroups::ModulateableParameter, 101> modulateables;
       std::array<ParameterGroups::UnmodulateableParameter, 94> unmodulateables;
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8>  hwsources;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
 
       ParameterGroups::UnisonGroup unison;
-      ParameterGroups::MonoGroup   mono;
+      ParameterGroups::MonoGroup mono;
 
       ParameterGroups::MasterGroup master;
 
@@ -524,18 +553,18 @@ namespace nltools
         return MessageType::SplitPreset;
       }
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2>  modulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnisonGroup, 2> unison;
-      std::array<ParameterGroups::MonoGroup, 2>   mono;
+      std::array<ParameterGroups::MonoGroup, 2> mono;
 
       ParameterGroups::MasterGroup master;
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8>  hwsources;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
 
-      std::array<ParameterGroups::MacroParameter, 6>          macros;
+      std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
       std::array<ParameterGroups::GlobalParameter, 13> scale;
@@ -565,17 +594,17 @@ namespace nltools
         return MessageType::LayerPreset;
       }
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8>  hwsources;
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
 
-      std::array<ParameterGroups::MacroParameter, 6>          macros;
+      std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2>  modulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
 
       ParameterGroups::UnisonGroup unison;
-      ParameterGroups::MonoGroup   mono;
+      ParameterGroups::MonoGroup mono;
 
       ParameterGroups::MasterGroup master;
 

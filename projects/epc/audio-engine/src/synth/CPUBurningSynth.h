@@ -8,6 +8,7 @@ class CPUBurningSynth : public Synth
   CPUBurningSynth(const AudioEngineOptions *options);
 
   void doMidi(const MidiEvent &event) override;
+  void doTcd(const MidiEvent &event) override;
   void doAudio(SampleFrame *target, size_t numFrames) override;
 
  private:
