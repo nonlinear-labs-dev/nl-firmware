@@ -844,7 +844,6 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   {
     peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
   }
-  m_env_a.m_levelFactor[_voiceId] = peak;
   m_env_a.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
@@ -877,7 +876,6 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   {
     peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
   }
-  m_env_b.m_levelFactor[_voiceId] = peak;
   m_env_b.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
@@ -910,12 +908,12 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   }
   peak = std::min(unclipped, env_clip_peak);
   m_env_c.m_clipFactor[_voiceId] = unclipped / peak;
-  m_env_c.m_levelFactor[_voiceId] = peak;
   m_env_c.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_c.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_c.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
   m_env_c.setAttackCurve(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Curve));
   m_env_c.setRetriggerHardness(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Retr_H));
+  m_env_c.setPeakLevel(_voiceId, peak);
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att) * m_env_c.m_timeFactor[_voiceId][0];
   m_env_c.setSegmentDx(_voiceId, 1, 1.0f / (time + 1.0f));
   m_env_c.setSegmentDest(_voiceId, 1, peak);

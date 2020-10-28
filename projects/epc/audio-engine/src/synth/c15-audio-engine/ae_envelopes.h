@@ -358,6 +358,10 @@ namespace Engine
       {
         m_retriggerHardness = _value;
       }
+      inline void setPeakLevel(const uint32_t _voiceId, const float _value)
+      {
+        m_levelFactor[_voiceId] = _value;
+      }
       inline void reset()
       {
         for(uint32_t v = 0; v < Size; v++)
