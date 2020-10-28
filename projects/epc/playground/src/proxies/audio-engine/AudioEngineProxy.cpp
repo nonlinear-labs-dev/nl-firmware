@@ -338,17 +338,6 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
   return msg;
 }
 
-template <SoundType tSoundType, typename tMsgType>
-void sendIfChanged(tMsgType &lastSentMessage, tMsgType &msg, SoundType &lastSentType)
-{
-  if(msg != lastSentMessage || lastSentType != tSoundType)
-  {
-    lastSentType = tSoundType;
-    lastSentMessage = msg;
-    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
-  }
-}
-
 void AudioEngineProxy::sendEditBuffer()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -356,23 +345,14 @@ void AudioEngineProxy::sendEditBuffer()
   switch(eb->getType())
   {
     case SoundType::Single:
-    {
-      auto single = createSingleEditBufferMessage(*eb);
-      sendIfChanged<SoundType::Single>(lastSentSingleMessage, single, lastSentType);
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSingleEditBufferMessage(*eb));
       break;
-    }
     case SoundType::Split:
-    {
-      auto split = createSplitEditBufferMessage(*eb);
-      sendIfChanged<SoundType::Split>(lastSentSplitMessage, split, lastSentType);
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSplitEditBufferMessage(*eb));
       break;
-    }
     case SoundType::Layer:
-    {
-      auto layer = createLayerEditBufferMessage(*eb);
-      sendIfChanged<SoundType::Layer>(lastSentLayerMessage, layer, lastSentType);
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage(*eb));
       break;
-    }
   }
 }
 
@@ -381,31 +361,10 @@ void AudioEngineProxy::freezeParameterMessages()
   m_suppressParamChanges++;
 }
 
-void AudioEngineProxy::thawParameterMessages()
+void AudioEngineProxy::thawParameterMessages(bool send)
 {
   m_suppressParamChanges--;
 
-  if(m_suppressParamChanges == 0)
+  if(m_suppressParamChanges == 0 && send)
     sendEditBuffer();
-}
-
-void AudioEngineProxy::updateLastSentEditBufferMessage()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-
-  switch(eb->getType())
-  {
-    case SoundType::Single:
-      lastSentType = SoundType::Single;
-      lastSentSingleMessage = createSingleEditBufferMessage(*eb);
-      break;
-    case SoundType::Layer:
-      lastSentType = SoundType::Layer;
-      lastSentLayerMessage = createLayerEditBufferMessage(*eb);
-      break;
-    case SoundType::Split:
-      lastSentType = SoundType::Split;
-      lastSentSplitMessage = createSplitEditBufferMessage(*eb);
-      break;
-  }
 }

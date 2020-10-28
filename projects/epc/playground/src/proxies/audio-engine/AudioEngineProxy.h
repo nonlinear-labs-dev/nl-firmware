@@ -21,8 +21,6 @@ class AudioEngineProxy
   {
     if(!m_suppressParamChanges)
       sendParameterMessage(createMessage<tParameter>(parameter));
-
-    updateLastSentEditBufferMessage();
   }
 
   template <typename tParameter> auto createMessage(const tParameter* parameter)
@@ -44,21 +42,14 @@ class AudioEngineProxy
   void sendEditBuffer();
 
   void freezeParameterMessages();
-  void thawParameterMessages();
+  void thawParameterMessages(bool send);
 
   static nltools::msg::LayerPresetMessage createLayerEditBufferMessage(const EditBuffer& eb);
   static nltools::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);
   static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
-  void updateLastSentEditBufferMessage();
-
   uint m_suppressParamChanges = 0;
-
-  SoundType lastSentType = SoundType::Invalid;
-  nltools::msg::LayerPresetMessage lastSentLayerMessage;
-  nltools::msg::SplitPresetMessage lastSentSplitMessage;
-  nltools::msg::SinglePresetMessage lastSentSingleMessage;
 
   static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
   static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);

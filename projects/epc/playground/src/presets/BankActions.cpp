@@ -470,7 +470,7 @@ BankActions::BankActions(PresetManager &presetManager)
       {
         auto scope = m_presetManager.getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
         auto transaction = scope->getTransaction();
-        m_presetManager.getEditBuffer()->undoableLoad(transaction, preset);
+        m_presetManager.getEditBuffer()->undoableLoad(transaction, preset, true);
         bank->selectPreset(transaction, preset->getUuid());
       }
     }

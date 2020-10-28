@@ -422,7 +422,7 @@ Preset *Bank::appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Prese
 Preset *Bank::appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   auto newPreset = appendPreset(transaction, std::move(preset));
-  getEditBuffer()->undoableLoad(transaction, newPreset);
+  getEditBuffer()->undoableLoad(transaction, newPreset, false);
   return newPreset;
 }
 
@@ -435,7 +435,7 @@ Preset *Bank::prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Pres
 Preset *Bank::prependAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   auto newPreset = prependPreset(transaction, std::move(preset));
-  getEditBuffer()->undoableLoad(transaction, newPreset);
+  getEditBuffer()->undoableLoad(transaction, newPreset, false);
   return newPreset;
 }
 
@@ -448,7 +448,7 @@ Preset *Bank::insertPreset(UNDO::Transaction *transaction, size_t pos, std::uniq
 Preset *Bank::insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
 {
   auto newPreset = insertPreset(transaction, pos, std::move(preset));
-  getEditBuffer()->undoableLoad(transaction, newPreset);
+  getEditBuffer()->undoableLoad(transaction, newPreset, false);
   return newPreset;
 }
 

@@ -869,7 +869,7 @@ void PresetManager::stressLoad(int numTransactions)
         {
           forEachBank([&](auto b) {
             b->forEachPreset([&](auto p) {
-              m_editBuffer->undoableLoad(transaction, p);
+              m_editBuffer->undoableLoad(transaction, p, true);
               numSteps--;
             });
           });
