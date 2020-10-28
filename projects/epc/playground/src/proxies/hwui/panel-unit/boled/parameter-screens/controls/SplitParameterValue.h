@@ -20,12 +20,13 @@ class SplitParameterValue : public Label
   void onSplitIChanged(const Parameter* splitI);
   void onSplitIIChanged(const Parameter* splitII);
   void onSplitValuesChanged();
+  void onSyncSettingChanged(const Setting* s);
 
   double m_splitICP;
   double m_splitIICP;
 
-  sigc::connection splitIConnection;
-  sigc::connection splitIIConnection;
+  bool m_splitParametersHaveOverlap = false;
+  bool m_syncSettingState = false;
 
  protected:
   virtual FrameBufferColors getColorForSplit(int i);

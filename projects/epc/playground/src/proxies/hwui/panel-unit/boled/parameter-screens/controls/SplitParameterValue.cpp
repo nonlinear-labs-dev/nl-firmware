@@ -10,6 +10,8 @@
 #include <proxies/hwui/controls/PNGControl.h>
 #include "SplitParameterValue.h"
 #include "proxies/hwui/controls/Label.h"
+#include "device-settings/Settings.h"
+#include "device-settings/SplitPointSyncParameters.h"
 
 SplitParameterValue::SplitParameterValue(const Rect& pos)
     : Label(pos)
@@ -33,16 +35,19 @@ void SplitParameterValue::init()
   auto split1 = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto split2 = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
 
+  auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  setting->onChange(sigc::mem_fun(this, &SplitParameterValue::onSyncSettingChanged));
+
   auto pos = getPosition();
   pos.setWidth(9);
-  pos.setLeft(pos.getRight() - 9);
+  pos.setLeft(pos.getRight() - 8);
   pos.setTop(pos.getTop() + 2);
 
   overlapIndicator = std::make_shared<PNGControl>(pos, "overlap-a.png");
   overlapIndicator->useImageColors(true);
 
-  splitIConnection = split1->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIChanged));
-  splitIIConnection = split2->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIIChanged));
+  split1->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIChanged));
+  split2->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIIChanged));
 }
 
 void SplitParameterValue::onSplitIChanged(const Parameter* splitI)
@@ -60,7 +65,17 @@ void SplitParameterValue::onSplitIIChanged(const Parameter* splitII)
 void SplitParameterValue::onSplitValuesChanged()
 {
   auto overlap = m_splitICP >= m_splitIICP;
-  overlapIndicator->setVisible(overlap);
+  m_splitParametersHaveOverlap = overlap;
+  overlapIndicator->setVisible(m_splitParametersHaveOverlap && !m_syncSettingState);
+}
+
+void SplitParameterValue::onSyncSettingChanged(const Setting* s)
+{
+  if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
+  {
+    m_syncSettingState = sync->get();
+    overlapIndicator->setVisible(m_splitParametersHaveOverlap && !m_syncSettingState);
+  }
 }
 
 void SplitParameterValue::drawParts(FrameBuffer& fb, const std::vector<Glib::ustring>& parts)
