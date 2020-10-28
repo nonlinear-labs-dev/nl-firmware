@@ -53,8 +53,7 @@ namespace Engine
     {
       Proto::EnvBody_Split m_body[Size];
       Proto::SplitSegment<Size> m_segment[Proto::SegSize];
-      float m_timeFactor[Size][Proto::SegSize - 1] = {}, m_levelFactor[Size] = {};
-      float m_peakLevels[Size] = {}, m_splitValues[2] = {};
+      float m_timeFactor[Size][Proto::SegSize - 1] = {}, m_levelFactor[Size] = {}, m_splitValues[2] = {};
       const uint32_t m_startIndex = 1, m_stopIndex = 4;
       inline SplitEnvelope()
       {
@@ -188,9 +187,9 @@ namespace Engine
         if(_splitMode)
         {
           m_segment[_segmentId].m_dest_magnitude[_voiceId]
-              = NlToolbox::Crossfades::unipolarCrossFade(_value, m_peakLevels[_voiceId], m_splitValues[0]);
+              = NlToolbox::Crossfades::unipolarCrossFade(_value, m_levelFactor[_voiceId], m_splitValues[0]);
           m_segment[_segmentId].m_dest_timbre[_voiceId]
-              = NlToolbox::Crossfades::unipolarCrossFade(_value, m_peakLevels[_voiceId], m_splitValues[1]);
+              = NlToolbox::Crossfades::unipolarCrossFade(_value, m_levelFactor[_voiceId], m_splitValues[1]);
         }
         else
         {
@@ -209,7 +208,7 @@ namespace Engine
       }
       inline void setPeakLevel(const uint32_t _voiceId, const float _value)
       {
-        m_peakLevels[_voiceId] = _value;
+        m_levelFactor[_voiceId] = _value;
       }
       inline void reset()
       {
