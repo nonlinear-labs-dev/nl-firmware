@@ -201,7 +201,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         toggle.doLayout(7 * partWidth - pw / 2 + pw * 1.5, h / 2 - ph / 2, pw, ph);
 
-        double valueWidth = partWidth / 2;
+        double valueWidth = partWidth * 0.75;
 
         if (leftControls != null)
             leftControls.doLayout(keys.getRelativePosition().getLeft() - valueWidth * 1.5, baseLine, valueWidth, h);
