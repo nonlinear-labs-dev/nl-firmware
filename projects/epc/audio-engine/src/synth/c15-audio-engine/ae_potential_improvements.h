@@ -74,7 +74,7 @@
 
 // FILTER SIMPLIFICATION
 
-#define POTENTIAL_IMPROVEMENT_OUTMIX_SIMPLE_HP __POTENTIAL_IMPROVEMENT_DISABLED__
+#define POTENTIAL_IMPROVEMENT_OUTMIX_SIMPLE_HP __POTENTIAL_IMPROVEMENT_ENABLED__
 // - replaces final static mono hp filter in output mix by simpler variation
 
 // GAIN-RELATED SMOOTHING (avoiding clicks)
