@@ -423,6 +423,7 @@ Preset *Bank::appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_pt
 {
   auto newPreset = appendPreset(transaction, std::move(preset));
   getEditBuffer()->undoableLoad(transaction, newPreset, false);
+  getPresetManager()->onPresetStored(newPreset);
   return newPreset;
 }
 
@@ -449,6 +450,7 @@ Preset *Bank::insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, st
 {
   auto newPreset = insertPreset(transaction, pos, std::move(preset));
   getEditBuffer()->undoableLoad(transaction, newPreset, false);
+  getPresetManager()->onPresetStored(newPreset);
   return newPreset;
 }
 
@@ -485,6 +487,11 @@ void Bank::deletePreset(UNDO::Transaction *transaction, const Uuid &uuid)
 sigc::connection Bank::onBankChanged(sigc::slot<void> cb)
 {
   return m_sigBankChanged.connectAndInit(cb);
+}
+
+PresetManager *Bank::getPresetManager() const
+{
+  return static_cast<PresetManager *>(getParent());
 }
 
 void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const

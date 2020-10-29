@@ -4,7 +4,7 @@
 
 class Setting;
 
-class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
+class SplitPointParameter : public ModulateableParameterWithUnusualModUnit, public sigc::trackable
 {
  public:
   SplitPointParameter(ParameterGroup* group, const ParameterId& id);

@@ -176,7 +176,7 @@ BankActions::BankActions(PresetManager &presetManager)
       useCases->createBankAndStoreEditBuffer();
     }
   });
-  
+
   addAction("copy-preset-above", [&](std::shared_ptr<NetworkRequest> request) {
     auto presetToMove = request->get("presetToCopy");
     auto presetAnchor = request->get("anchor");
@@ -296,22 +296,11 @@ BankActions::BankActions(PresetManager &presetManager)
     auto bankToAppendTo = request->get("bank-uuid", fallBack);
     auto uuid = request->get("uuid");
 
+    auto useCases = Application::get().getPresetManagerUseCases();
+
     if(auto bank = m_presetManager.findBank(bankToAppendTo))
     {
-      auto &undoScope = m_presetManager.getUndoScope();
-      auto scope = undoScope.startTransaction("Append Preset to Bank '%0'", bank->getName(true));
-      auto transaction = scope->getTransaction();
-      auto newName = guessNameBasedOnEditBuffer();
-      auto newPreset = std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer());
-      auto tgtPreset = bank->appendAndLoadPreset(transaction, std::move(newPreset));
-
-      tgtPreset->setName(transaction, newName);
-
-      if(!uuid.empty())
-        tgtPreset->setUuid(transaction, uuid);
-
-      bank->selectPreset(transaction, tgtPreset->getUuid());
-      m_presetManager.selectBank(transaction, bank->getUuid());
+      useCases->appendPresetWithUUID(bank, uuid);
     }
   });
 

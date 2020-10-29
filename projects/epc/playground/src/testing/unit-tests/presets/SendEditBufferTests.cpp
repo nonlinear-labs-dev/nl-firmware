@@ -1,5 +1,6 @@
 #include "testing/TestHelper.h"
 #include "presets/Preset.h"
+#include "presets/PresetManager.h"
 #include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
 #include <testing/unit-tests/mock/PreDualModePresetBank.h>
@@ -8,7 +9,7 @@
 
 struct ScopedMessagingConfiguration
 {
-  ScopedMessagingConfiguration(nltools::msg::Configuration config)
+  explicit ScopedMessagingConfiguration(const nltools::msg::Configuration &config)
   {
     m_oldConfig = nltools::msg::getConfig();
     nltools::msg::init(config);
@@ -53,7 +54,6 @@ TEST_CASE("Preset Load sends EditBuffer")
 
 TEST_CASE("Preset Store does not send EditBuffer")
 {
-
   using namespace nltools::msg;
   using namespace std::chrono;
 
@@ -63,16 +63,29 @@ TEST_CASE("Preset Store does not send EditBuffer")
 
   ScopedMessagingConfiguration scopeEndPoint { configuration };
 
-  bool singleMessageRecieved = false;
+  auto pm = TestHelper::getPresetManager();
+  auto oldNumBanks = pm->getNumBanks();
+
+  bool singleMessageReceived = false;
+
+  {
+    auto scope = TestHelper::createTestScope();
+    TestHelper::initSingleEditBuffer(scope->getTransaction());
+  }
 
   CHECK(waitForConnection(EndPoint::AudioEngine));
   auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,
-                                        [&](const auto &singleEditMessage) { singleMessageRecieved = true; });
+                                        [&](const auto &singleEditMessage) { singleMessageReceived = true; });
 
-  auto eb = TestHelper::getEditBuffer();
   auto useCases = Application::get().getPresetManagerUseCases();
   useCases->createBankAndStoreEditBuffer();
 
-  TestHelper::doMainLoop(1s, 1s, [&] { return !singleMessageRecieved; });
+  auto newNumBanks = pm->getNumBanks();
+
+  TestHelper::doMainLoopIteration();
+
+  CHECK(newNumBanks > oldNumBanks);
+  CHECK(!singleMessageReceived);
+
   c.disconnect();
 }

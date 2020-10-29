@@ -80,7 +80,7 @@ namespace nltools
         }
         catch(...)
         {
-          nltools::Log::error("no such receiver:", toString(receiver));
+          nltools::Log::warning("no such receiver:", toString(receiver));
           return false;
         }
       }
