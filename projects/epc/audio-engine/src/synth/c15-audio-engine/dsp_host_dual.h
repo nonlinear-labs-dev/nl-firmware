@@ -64,6 +64,8 @@ namespace MSB
     Ped2 = 1 << 8 | 21,
     Ped3 = 2 << 8 | 22,
     Ped4 = 3 << 8 | 23,
+    Bender = 4 << 8 | 0,
+    Aftertouch = 5 << 8 | 0,
     Rib1 = 6 << 8 | 24,
     Rib2 = 7 << 8 | 25
   };

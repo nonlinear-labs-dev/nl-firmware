@@ -491,9 +491,9 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           out({ highResolutionVelocityStatusByte, 88, lsbValByte });
 
           uint8_t statusByte = static_cast<uint8_t>(0x90);
-          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
-          uint8_t velByte = static_cast<uint8_t>(vel * 127);
-          out({ statusByte, keyByte, velByte });
+          uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
+          uint8_t msbVelByte = static_cast<uint8_t>(vel * 127);
+          out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
         {
@@ -509,10 +509,15 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           auto vel = static_cast<float>(arg) * m_norm_vel;
           keyUp(vel);
 
+          uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
+          uint16_t fullResolutionValue = vel * (1 << 13);
+          uint8_t lsbValByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+          out({ highResolutionVelocityStatusByte, 88, lsbValByte });
+
           uint8_t statusByte = static_cast<uint8_t>(0x80);
-          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
-          uint8_t velByte = static_cast<uint8_t>(vel * 127);
-          out({ statusByte, keyByte, velByte });
+          uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
+          uint8_t msbVelByte = static_cast<uint8_t>(vel * 127);
+          out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
         {
@@ -534,8 +539,8 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
     case 0:
       // note off
       arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
-      onTcdMessage(0xED, 0, _data0);            // keyPos
-      onTcdMessage(0xEF, arg >> 7, arg & 127);  // keyUp
+      onTcdMessage(0xED, 0, _data0);                                  // keyPos
+      onTcdMessage(0xEF, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyUp
       break;
     case 1:
       // note on
@@ -1533,7 +1538,7 @@ void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut
       sendCCOut<MSB::Rib2, LSB::Rib2>(out, value);
       break;
 
-    case 4:  // Pitch
+    case getHWSourceId<MSB::Bender>():
     {
       uint8_t statusByte = static_cast<uint8_t>(0xE0);
       uint16_t v = static_cast<uint16_t>(value * (1 << 13));
@@ -1543,7 +1548,7 @@ void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut
       break;
     }
 
-    case 5:  // Aftertouch
+    case getHWSourceId<MSB::Aftertouch>():
     {
       uint8_t statusByte = static_cast<uint8_t>(0xD0);
       uint8_t v = static_cast<uint8_t>(value * 127);
