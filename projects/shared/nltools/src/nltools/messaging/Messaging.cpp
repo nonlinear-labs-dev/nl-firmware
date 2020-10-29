@@ -19,6 +19,7 @@ namespace nltools
       using Signals = std::map<std::pair<MessageType, EndPoint>, sigc::signal<void, const SerializedMessage &>>;
       using ConnectionSignals = std::map<EndPoint, sigc::signal<void>>;
 
+      static Configuration currentConfig;
       static std::vector<ChannelConfiguration> inChannelConfig;
       static std::vector<ChannelConfiguration> outChannelConfig;
       static OutChannels outChannels;
@@ -111,16 +112,23 @@ namespace nltools
     void init(const Configuration &conf)
     {
       deInit();
+      detail::currentConfig = conf;
       detail::createInChannels(conf);
       detail::createOutChannels(conf);
     }
 
     void deInit()
     {
+      detail::currentConfig = {};
       detail::outChannels.clear();
       detail::inChannels.clear();
       detail::signals.clear();
       detail::connectionSignals.clear();
+    }
+
+    const Configuration &getConfig()
+    {
+      return detail::currentConfig;
     }
 
     uint getPortFor(EndPoint p)

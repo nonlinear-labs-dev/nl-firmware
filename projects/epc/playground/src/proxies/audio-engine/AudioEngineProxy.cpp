@@ -345,13 +345,13 @@ void AudioEngineProxy::sendEditBuffer()
   switch(eb->getType())
   {
     case SoundType::Single:
-      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSingleEditBufferMessage(*eb));
+      nltools::msg::send(sendToEndPoint, createSingleEditBufferMessage(*eb));
       break;
     case SoundType::Split:
-      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createSplitEditBufferMessage(*eb));
+      nltools::msg::send(sendToEndPoint, createSplitEditBufferMessage(*eb));
       break;
     case SoundType::Layer:
-      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage(*eb));
+      nltools::msg::send(sendToEndPoint, createLayerEditBufferMessage(*eb));
       break;
   }
 }
@@ -367,4 +367,9 @@ void AudioEngineProxy::thawParameterMessages(bool send)
 
   if(m_suppressParamChanges == 0 && send)
     sendEditBuffer();
+}
+
+void AudioEngineProxy::setReceiver(nltools::msg::EndPoint endPoint)
+{
+  sendToEndPoint = endPoint;
 }

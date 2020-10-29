@@ -31,15 +31,17 @@ class AudioEngineProxy
   template <class tMessage> void sendParameterMessage(const tMessage& msg)
   {
     if(!m_suppressParamChanges)
-      send(nltools::msg::EndPoint::AudioEngine, msg);
+      send(sendToEndPoint, msg);
   }
 
   template <typename tSettingMessage> void sendSettingMessage(const tSettingMessage& msg)
   {
-    send(nltools::msg::EndPoint::AudioEngine, msg);
+    send(sendToEndPoint, msg);
   }
 
   void sendEditBuffer();
+
+  void setReceiver(nltools::msg::EndPoint endPoint);
 
   void freezeParameterMessages();
   void thawParameterMessages(bool send);
@@ -49,6 +51,7 @@ class AudioEngineProxy
   static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
+  nltools::msg::EndPoint sendToEndPoint = nltools::msg::EndPoint::AudioEngine;
   uint m_suppressParamChanges = 0;
 
   static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
