@@ -5,6 +5,8 @@
 #include <sigc++/trackable.h>
 #include <glibmm/refptr.h>
 #include <atomic>
+#include <memory>
+#include <list>
 
 namespace nltools
 {
@@ -23,6 +25,10 @@ namespace nltools
      private:
       Glib::RefPtr<Glib::MainContext> m_context;
       std::atomic<uint32_t> m_pendingCalls {};
+
+      using Job = std::function<void()>;
+      using tJob = std::shared_ptr<Job>;
+      std::list<tJob> m_jobs;
     };
   }
 }

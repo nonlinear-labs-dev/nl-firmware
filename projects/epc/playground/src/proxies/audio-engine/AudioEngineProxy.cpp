@@ -22,11 +22,24 @@
 #include <device-settings/Settings.h>
 #include <parameter_declarations.h>
 #include <groups/SplitParameterGroups.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
   using namespace nltools::msg;
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
+
+  receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
+    auto playController = Application::get().getPlaycontrollerProxy();
+    auto id = msg.hwSource;
+    auto value = msg.position;
+    auto param = playController->findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
+    if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+    {
+      playController->notifyRibbonTouch(p->getID().getNumber());
+      p->onChangeFromPlaycontroller(value);
+    }
+  });
 }
 
 constexpr auto cUnisonVoicesParameterNumber = 249;

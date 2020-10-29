@@ -15,11 +15,24 @@ namespace nltools
 
     void ContextBoundMessageQueue::pushMessage(tMessage &&m)
     {
+      m_jobs.remove_if([&](const auto &a) { return a.unique(); });
+
       m_pendingCalls++;
 
-      m_context->invoke([this, m = std::move(m)]() {
+      auto job = std::make_shared<Job>([this, m = std::move(m)]() {
         m_pendingCalls--;
         m();
+      });
+
+      m_jobs.push_back(job);
+
+      m_context->invoke([jobCopy = job] {
+        auto closureIsOnlyOwner = jobCopy.unique();
+        auto owningQueueStillExists = !closureIsOnlyOwner;
+
+        if(owningQueueStillExists)
+          (*jobCopy)();
+
         return false;
       });
     }

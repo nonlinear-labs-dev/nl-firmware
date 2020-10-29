@@ -15,6 +15,7 @@ class AudioEngineOptions
 
   // alsa midi
   std::string getMidiInputDeviceName() const;
+  std::string getTcdInputDeviceName() const;
   std::chrono::nanoseconds getAdditionalMidiDelay() const;
   std::string getHeartBeatDeviceName() const;
 
@@ -25,6 +26,7 @@ class AudioEngineOptions
   int getAlsaRingBufferSize() const;
 
   std::string getPlaygroundHost() const;
+  std::string getMidiBridgeHost() const;
   int getNumCpuBurningSines() const;
 
  private:
@@ -34,7 +36,11 @@ class AudioEngineOptions
   bool m_measurePerformance = false;
 
   Glib::ustring m_playgroundHost = "localhost";
+  Glib::ustring m_midiBridgeHost = "192.168.10.11";
+
   Glib::ustring m_midiInputDeviceName;
+  Glib::ustring m_tcdInputDeviceName;
+
   std::chrono::nanoseconds m_additionalMidiDelay = std::chrono::nanoseconds::zero();
   Glib::ustring m_heartBeatDeviceName;
 

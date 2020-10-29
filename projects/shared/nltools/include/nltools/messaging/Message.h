@@ -9,6 +9,29 @@ namespace nltools
 {
   namespace msg
   {
+    namespace Midi
+    {
+      struct SimpleMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiSimpleMessage;
+        }
+
+        uint64_t id = 0;
+        uint8_t rawBytes[3];
+      };
+
+      struct MessageAcknowledge
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiAck;
+        }
+        
+        uint64_t id = 0;
+      };
+    }
 
     using tID = int;
     using tControlPosition = double;
@@ -333,6 +356,17 @@ namespace nltools
       {
         return MessageType::Ping;
       }
+    };
+
+    struct HardwareSourceChangedNotification
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::NotifyHardwareSourceChanged;
+      }
+
+      size_t hwSource = 0;  // 0...7
+      double position = 0;  // -1...1
     };
 
     namespace detail

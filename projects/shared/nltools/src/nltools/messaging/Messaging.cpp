@@ -46,7 +46,7 @@ namespace nltools
 
           parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
             nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
-            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port);
+            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port, c.prio);
             signals[std::make_pair(MessageType::Ping, c.peer)];
           });
         }
@@ -59,7 +59,7 @@ namespace nltools
         {
           parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
             nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
-            outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port);
+            outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(host, port, c.prio);
             outChannels[c.peer]->onConnectionEstablished([peer = c.peer] { connectionSignals[peer](); });
           });
         }
@@ -97,15 +97,15 @@ namespace nltools
       return detail::outChannels.at(receiver)->waitForConnection(timeOut);
     }
 
-    ChannelConfiguration::ChannelConfiguration(EndPoint p)
+    ChannelConfiguration::ChannelConfiguration(EndPoint p, const std::string &hostName, threading::Priority prio)
         : peer(p)
-        , uri(nltools::string::concat("ws://", "localhost", ":", getPortFor(p)))
+        , uri(nltools::string::concat("ws://", hostName, ":", getPortFor(p)))
+        , prio(prio)
     {
     }
 
-    ChannelConfiguration::ChannelConfiguration(EndPoint p, const std::string &hostName)
-        : peer(p)
-        , uri(nltools::string::concat("ws://", hostName, ":", getPortFor(p)))
+    ChannelConfiguration::ChannelConfiguration(EndPoint p, threading::Priority prio)
+        : ChannelConfiguration(p, "localhost", prio)
     {
     }
 

@@ -23,6 +23,7 @@ class C15Synth : public Synth, public sigc::trackable
   ~C15Synth() override;
 
   void doMidi(const MidiEvent& event) override;
+  void doTcd(const MidiEvent& event) override;
   void doAudio(SampleFrame* target, size_t numFrames) override;
 
   void resetDSP() override;
@@ -57,6 +58,9 @@ class C15Synth : public Synth, public sigc::trackable
   dsp_host_dual* getDsp();
 
  private:
+  bool doIdle();
+
   std::unique_ptr<dsp_host_dual> m_dsp;
+  std::array<float, 8> m_hwSourceValues;
   const AudioEngineOptions* m_options;
 };

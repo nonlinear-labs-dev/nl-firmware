@@ -20,12 +20,21 @@ bool SOLEDScreenSaver::animate()
 {
   auto old = m_scrollingLabel->getPosition();
 
-  old.setLeft(old.getLeft() + velocity);
+  auto& velX = velocity.first;
+  auto& velY = velocity.second;
 
-  if(old.getLeft() <= 1)
-    velocity = 1;
+  old.setLeft(old.getLeft() + velX);
+  old.setTop(old.getTop() + velY);
+
+  if(old.getLeft() <= 0)
+    velX = 1;
   else if(old.getRight() >= 127)
-    velocity = -1;
+    velX = -1;
+
+  if(old.getTop() <= 0)
+    velY = 1;
+  else if(old.getBottom() >= 32)
+    velY = -1;
 
   m_scrollingLabel->setPosition(old);
   return true;
@@ -40,7 +49,7 @@ bool SOLEDScreenSaver::redraw(FrameBuffer& fb)
 
 void SOLEDScreenSaver::init()
 {
-  m_scrollingLabel = addControl(new Label({ "Nonlinear Labs - C15", 0 }, { 1, 0, 93, 32 }));
+  m_scrollingLabel = addControl(new Label({ "Nonlinear Labs - C15", 0 }, { 1, 0, 93, 9 }));
 }
 
 void SOLEDScreenSaver::destroy()

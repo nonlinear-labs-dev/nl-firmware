@@ -44,9 +44,13 @@ void AlsaMidiInput::close()
 void AlsaMidiInput::doBackgroundWork()
 {
   uint8_t byte;
-  snd_midi_event_t *parser = nullptr;
 
-  snd_midi_event_new(128, &parser);
+  snd_midi_event_t *encoder = nullptr;
+  snd_midi_event_new(128, &encoder);
+
+  snd_midi_event_t *decoder = nullptr;
+  snd_midi_event_new(128, &decoder);
+  snd_midi_event_no_status(decoder, 1);
 
   int numPollFDs = snd_rawmidi_poll_descriptors_count(m_handle);
 
@@ -73,8 +77,7 @@ void AlsaMidiInput::doBackgroundWork()
     if(!m_run)
       break;
 
-    MidiEvent e;
-    int rawIdx = 0;
+    snd_seq_event_t event;
 
     while(m_run)
     {
@@ -82,20 +85,15 @@ void AlsaMidiInput::doBackgroundWork()
 
       if(readResult == 1)
       {
-        if(rawIdx < 3)
-          e.raw[rawIdx++] = byte;
-
-        snd_seq_event_t event;
-
-        if(snd_midi_event_encode_byte(parser, byte, &event) == 1)
+        if(snd_midi_event_encode_byte(encoder, byte, &event) == 1)
         {
           if(event.type != SND_SEQ_EVENT_NONE)
           {
+            MidiEvent e;
+            snd_midi_event_decode(decoder, e.raw, sizeof(e.raw), &event);
             getCallback()(e);
             break;
           }
-
-          rawIdx = 0;
         }
       }
       else if(readResult == -19)

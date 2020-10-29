@@ -18,6 +18,8 @@
 #include <groups/MacroControlsGroup.h>
 #include <http/UndoScope.h>
 #include <nltools/messaging/Message.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
+#include "ScreenSaverUsageMode.h"
 
 PanelUnit::PanelUnit()
 {
@@ -87,6 +89,9 @@ PanelUnit::PanelUnit()
     return true;
   });
 
+  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
+      sigc::mem_fun(this, &PanelUnit::onScreenSaverStateChanged));
+
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::PanelLed,
                                         sigc::mem_fun(this, &PanelUnit::onBBBBConnected));
 }
@@ -102,6 +107,20 @@ ParameterId PanelUnit::choseHWBestSourceForMC(const ParameterId &mcParamId) cons
   }
 
   return mcParamId;
+}
+
+void PanelUnit::onScreenSaverStateChanged(bool state)
+{
+  if(state)
+  {
+    m_stashedUsageMode = getUsageMode();
+    setUsageMode(new ScreenSaverUsageMode());
+  }
+  else if(m_stashedUsageMode)
+  {
+    restoreUsageMode(m_stashedUsageMode);
+    m_stashedUsageMode = nullptr;
+  }
 }
 
 void PanelUnit::init()
