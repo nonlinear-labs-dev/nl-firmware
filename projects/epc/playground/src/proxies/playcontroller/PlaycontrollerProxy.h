@@ -66,6 +66,7 @@ class PlaycontrollerProxy
 
   sigc::connection onRibbonTouched(sigc::slot<void, int> s);
   sigc::connection onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s);
+  sigc::connection onLastKeyChanged(sigc::slot<void, int> s);
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;
   Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
@@ -97,6 +98,7 @@ class PlaycontrollerProxy
   int m_lastTouchedRibbon;
   Signal<void, int> m_signalRibbonTouched;
   Signal<void, int> m_signalPlaycontrollerSoftwareVersionChanged;
+  Signal<void, int> m_lastKeyChanged;
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
@@ -112,4 +114,5 @@ class PlaycontrollerProxy
 
   void onHeartbeatStumbled();
   void requestPlaycontrollerSoftwareVersion();
+  void notifyLastKey(gint16 key);
 };

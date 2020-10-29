@@ -56,3 +56,28 @@
 #define POTENTIAL_IMPROVEMENT_PARALLEL_DATA_SINP3_NOWRAP __POTENTIAL_IMPROVEMENT_PROPOSAL__
 #define POTENTIAL_IMPROVEMENT_PARALLEL_DATA_THREE_RANGES __POTENTIAL_IMPROVEMENT_PROPOSAL__
 // - at least in theory, all provided methods of ParallelData.h should perform SIMD compliant
+
+/******************************************************************************/
+/** @date       2020-10-18
+    @version    1.7B-7
+    @author     M. Seeber
+
+    @brief      further dsp-related improvements
+
+    @todo
+*******************************************************************************/
+
+// PROCESSING IMPROVEMENTS
+
+#define POTENTIAL_IMPROVEMENT_FAST_PITCH_PROCESSING __POTENTIAL_IMPROVEMENT_DISABLED__
+// - disabled: slow clock / enabled: fast clock for pitches
+
+// FILTER SIMPLIFICATION
+
+#define POTENTIAL_IMPROVEMENT_OUTMIX_SIMPLE_HP __POTENTIAL_IMPROVEMENT_ENABLED__
+// - replaces final static mono hp filter in output mix by simpler variation
+
+// GAIN-RELATED SMOOTHING (avoiding clicks)
+#define POTENTIAL_IMPROVEMENT_GAIN_CURVE __POTENTIAL_IMPROVEMENT_DISABLED__
+constexpr float POTENTIAL_SETTING_GAIN_CURVE_TIME_MS = 1.0f;  // later: migrate to parameter-db
+// - introduces a lookup-based s-curve smoothing of gain-related signals (currently at 1ms, smoothing only voice_level for now)
