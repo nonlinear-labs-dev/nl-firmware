@@ -9,6 +9,7 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
     : Synth(options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
+    , m_externalMidiOutThread([this] { sendExternalMidiOut(); })
 {
   m_hwSourceValues.fill(0);
 
@@ -60,7 +61,14 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
   Glib::MainContext::get_default()->signal_idle().connect(sigc::mem_fun(this, &C15Synth::doIdle));
 }
 
-C15Synth::~C15Synth() = default;
+C15Synth::~C15Synth()
+{
+  m_quit = true;
+  m_externalMidiOutThreadWaiter.notify();
+
+  if(m_externalMidiOutThread.joinable())
+    m_externalMidiOutThread.join();
+}
 
 void C15Synth::doMidi(const MidiEvent& event)
 {
@@ -71,9 +79,9 @@ void C15Synth::doTcd(const MidiEvent& event)
 {
   m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2], [=](auto outgoingMidiMessage) {
     nltools::msg::Midi::SimpleMessage msg;
-    msg.id = 0;
     std::copy(outgoingMidiMessage.begin(), outgoingMidiMessage.end(), msg.rawBytes);
-    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, msg);
+    m_externalMidiOutBuffer.push(msg);
+    m_externalMidiOutThreadWaiter.notifyUnlocked();
   });
 }
 
@@ -109,12 +117,26 @@ bool C15Synth::doIdle()
   {
     if(std::exchange(m_hwSourceValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
     {
-      nltools::msg::send(nltools::msg::EndPoint::Playground,
-                         nltools::msg::HardwareSourceChangedNotification { i, engineHWSourceValues[i] });
+      nltools::msg::send(
+          nltools::msg::EndPoint::Playground,
+          nltools::msg::HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
 
   return true;
+}
+
+void C15Synth::sendExternalMidiOut()
+{
+  while(!m_quit)
+  {
+    m_externalMidiOutThreadWaiter.wait();
+
+    while(!m_quit && !m_externalMidiOutBuffer.empty())
+    {
+      send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, m_externalMidiOutBuffer.pop());
+    }
+  }
 }
 
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)

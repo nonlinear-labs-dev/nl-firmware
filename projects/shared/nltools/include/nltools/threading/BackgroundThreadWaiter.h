@@ -35,6 +35,12 @@ namespace nltools
       m_condition.notify_all();
     }
 
+    void notifyUnlocked()
+    {
+      m_flag = true;
+      m_condition.notify_all();
+    }
+
     bool isNotified() const
     {
       return m_flag;

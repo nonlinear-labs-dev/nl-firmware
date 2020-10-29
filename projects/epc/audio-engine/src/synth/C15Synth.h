@@ -3,6 +3,10 @@
 #include "Synth.h"
 #include <nltools/messaging/Message.h>
 #include <sigc++/sigc++.h>
+#include <thread>
+#include <condition_variable>
+#include <mutex>
+#include <nltools/threading/BackgroundThreadWaiter.h>
 
 namespace nltools
 {
@@ -59,8 +63,14 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   bool doIdle();
+  void sendExternalMidiOut();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
   std::array<float, 8> m_hwSourceValues;
   const AudioEngineOptions* m_options;
+
+  RingBuffer<nltools::msg::Midi::SimpleMessage, 2048> m_externalMidiOutBuffer;
+  std::thread m_externalMidiOutThread;
+  nltools::BackgroundThreadWaiter m_externalMidiOutThreadWaiter;
+  std::atomic<bool> m_quit { false };
 };

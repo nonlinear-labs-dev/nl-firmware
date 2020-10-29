@@ -12,8 +12,19 @@ using namespace std::chrono_literals;
     @todo
 *******************************************************************************/
 
+template <int EnumValue> inline constexpr uint32_t getHWSourceId()
+{
+  return EnumValue >> 8;
+}
+
+template <int EnumValue> inline constexpr uint32_t getMidiCC()
+{
+  return EnumValue & 0xFF;
+}
+
 dsp_host_dual::dsp_host_dual()
 {
+  m_hwSourcesMidiLSB.fill(0);
   m_mainOut_L = m_mainOut_R = 0.0f;
   m_layer_mode = C15::Properties::LayerMode::Single;
 }
@@ -390,7 +401,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Pedal1, raw:", arg, ")");
         }
-        updateHW(0, static_cast<float>(arg));
+        updateHW(0, static_cast<float>(arg), out);
         break;
       case 1:
         // Pedal 2
@@ -399,7 +410,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Pedal2, raw:", arg, ")");
         }
-        updateHW(1, static_cast<float>(arg));
+        updateHW(1, static_cast<float>(arg), out);
         break;
       case 2:
         // Pedal 3
@@ -408,7 +419,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Pedal3, raw:", arg, ")");
         }
-        updateHW(2, static_cast<float>(arg));
+        updateHW(2, static_cast<float>(arg), out);
         break;
       case 3:
         // Pedal 4
@@ -417,7 +428,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Pedal4, raw:", arg, ")");
         }
-        updateHW(3, static_cast<float>(arg));
+        updateHW(3, static_cast<float>(arg), out);
         break;
       case 4:
         // Bender
@@ -426,7 +437,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Bender, raw:", arg, ")");
         }
-        updateHW(4, static_cast<float>(arg));
+        updateHW(4, static_cast<float>(arg), out);
         break;
       case 5:
         // Aftertouch
@@ -435,7 +446,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Aftertouch, raw:", arg, ")");
         }
-        updateHW(5, static_cast<float>(arg));
+        updateHW(5, static_cast<float>(arg), out);
         break;
       case 6:
         // Ribbon 1
@@ -444,7 +455,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Ribbon1, raw:", arg, ")");
         }
-        updateHW(6, static_cast<float>(arg));
+        updateHW(6, static_cast<float>(arg), out);
         break;
       case 7:
         // Ribbon 2
@@ -453,7 +464,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
         {
           nltools::Log::info("midiMsg(source:Ribbon2, raw:", arg, ")");
         }
-        updateHW(7, static_cast<float>(arg));
+        updateHW(7, static_cast<float>(arg), out);
         break;
       case 13:
         // Key Pos (down or up)
@@ -474,10 +485,15 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           auto vel = static_cast<float>(arg) * m_norm_vel;
           keyDown(vel);
 
+          uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
+          uint16_t fullResolutionValue = vel * (1 << 13);
+          uint8_t lsbValByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+          out({ highResolutionVelocityStatusByte, 88, lsbValByte });
+
           uint8_t statusByte = static_cast<uint8_t>(0x90);
-          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
-          uint8_t velByte = static_cast<uint8_t>(vel * 127);
-          out({ statusByte, keyByte, velByte });
+          uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
+          uint8_t msbVelByte = static_cast<uint8_t>(vel * 127);
+          out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
         {
@@ -493,10 +509,15 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           auto vel = static_cast<float>(arg) * m_norm_vel;
           keyUp(vel);
 
+          uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
+          uint16_t fullResolutionValue = vel * (1 << 13);
+          uint8_t lsbValByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+          out({ highResolutionVelocityStatusByte, 88, lsbValByte });
+
           uint8_t statusByte = static_cast<uint8_t>(0x80);
-          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
-          uint8_t velByte = static_cast<uint8_t>(vel * 127);
-          out({ statusByte, keyByte, velByte });
+          uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
+          uint8_t msbVelByte = static_cast<uint8_t>(vel * 127);
+          out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
         {
@@ -522,8 +543,8 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
     case 0:
       // note off
       arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
-      onTcdMessage(0xED, 0, _data0);            // keyPos
-      onTcdMessage(0xEF, arg >> 7, arg & 127);  // keyUp
+      onTcdMessage(0xED, 0, _data0);                                  // keyPos
+      onTcdMessage(0xEF, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyUp
       break;
     case 1:
       // note on
@@ -531,7 +552,7 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       onTcdMessage(0xED, 0, _data0);  // keyPos
       if(arg != 0)
       {
-        onTcdMessage(0xEE, arg >> 7, arg & 127);  // keyDown
+        onTcdMessage(0xEE, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyDown
       }
       else
       {
@@ -539,40 +560,67 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       }
       break;
     case 3:
-      // ctrl chg (hw sources: pedals, ribbons) - hard coded ReMOTE template "MSE 2"
       arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_hw);
       switch(_data0)
       {
-        case 61:
-          // Pedal 1
-          onTcdMessage(0xE0, arg >> 7, arg & 127);
+        case getMidiCC<MSB::Ped1>():
+          onTcdMessage(0xE0, arg >> 7, std::exchange(m_hwSourcesMidiLSB[0], 0));
           break;
-        case 62:
-          // Pedal 2
-          onTcdMessage(0xE1, arg >> 7, arg & 127);
+
+        case getMidiCC<MSB::Ped2>():
+          onTcdMessage(0xE1, arg >> 7, std::exchange(m_hwSourcesMidiLSB[1], 0));
           break;
-        case 63:
-          // Pedal 3
-          onTcdMessage(0xE2, arg >> 7, arg & 127);
+
+        case getMidiCC<MSB::Ped3>():
+          onTcdMessage(0xE2, arg >> 7, std::exchange(m_hwSourcesMidiLSB[2], 0));
           break;
-        case 64:
-          // Pedal 4
-          onTcdMessage(0xE3, arg >> 7, arg & 127);
+
+        case getMidiCC<MSB::Ped4>():
+          onTcdMessage(0xE3, arg >> 7, std::exchange(m_hwSourcesMidiLSB[3], 0));
           break;
-        case 67:
-          // Ribbon 1
-          onTcdMessage(0xE6, arg >> 7, arg & 127);
+
+        case getMidiCC<MSB::Rib1>():
+          onTcdMessage(0xE6, arg >> 7, std::exchange(m_hwSourcesMidiLSB[6], 0));
           break;
-        case 68:
-          // Ribbon 2
-          onTcdMessage(0xE7, arg >> 7, arg & 127);
+
+        case getMidiCC<MSB::Rib2>():
+          onTcdMessage(0xE7, arg >> 7, std::exchange(m_hwSourcesMidiLSB[7], 0));
           break;
+
+        case getMidiCC<LSB::Ped1>():
+          m_hwSourcesMidiLSB[0] = arg & 0x7F;
+          break;
+
+        case getMidiCC<LSB::Ped2>():
+          m_hwSourcesMidiLSB[1] = arg & 0x7F;
+          break;
+
+        case getMidiCC<LSB::Ped3>():
+          m_hwSourcesMidiLSB[2] = arg & 0x7F;
+          break;
+
+        case getMidiCC<LSB::Ped4>():
+          m_hwSourcesMidiLSB[3] = arg & 0x7F;
+          break;
+
+        case getMidiCC<LSB::Rib1>():
+          m_hwSourcesMidiLSB[6] = arg & 0x7F;
+          break;
+
+        case getMidiCC<LSB::Rib2>():
+          m_hwSourcesMidiLSB[7] = arg & 0x7F;
+          break;
+
+        case getMidiCC<LSB::Vel>():
+          m_velocityLSB = arg & 0x7F;
+          break;
+
         default:
           break;
       }
       break;
     case 5:
-      // mono at (hw source)
+      // mono aftertouch (hw source)
       arg = static_cast<uint32_t>(static_cast<float>(_data0) * m_format_hw);
       onTcdMessage(0xE5, arg >> 7, arg & 127);  // hw_at
       break;
@@ -1451,14 +1499,77 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
   return result;
 }
 
-void dsp_host_dual::updateHW(const uint32_t _id, const float _raw)
+template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb, typename Out> void sendCCOut(const Out& out, float value)
+{
+  uint8_t statusByte = static_cast<uint8_t>(0xB0);
+  uint16_t fullResolutionValue = value * (1 << 13);
+
+  uint8_t lsbValByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+  out({ statusByte, getMidiCC<lsb>(), lsbValByte });
+
+  uint8_t msbValByte = static_cast<uint8_t>(fullResolutionValue >> 7 & 0x7F);
+  out({ statusByte, getMidiCC<msb>(), msbValByte });
+}
+
+void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut& out)
 {
   auto source = m_params.get_hw_src(_id);
   float value = _raw * m_norm_hw;
+
+  switch(_id)
+  {
+    case getHWSourceId<MSB::Ped1>():
+      sendCCOut<MSB::Ped1, LSB::Ped1>(out, value);
+      break;
+
+    case getHWSourceId<MSB::Ped2>():
+      sendCCOut<MSB::Ped2, LSB::Ped2>(out, value);
+      break;
+
+    case getHWSourceId<MSB::Ped3>():
+      sendCCOut<MSB::Ped3, LSB::Ped3>(out, value);
+      break;
+
+    case getHWSourceId<MSB::Ped4>():
+      sendCCOut<MSB::Ped4, LSB::Ped4>(out, value);
+      break;
+
+    case getHWSourceId<MSB::Rib1>():
+      sendCCOut<MSB::Rib1, LSB::Rib1>(out, value);
+      break;
+
+    case getHWSourceId<MSB::Rib2>():
+      sendCCOut<MSB::Rib2, LSB::Rib2>(out, value);
+      break;
+
+    case getHWSourceId<MSB::Bender>():
+    {
+      uint8_t statusByte = static_cast<uint8_t>(0xE0);
+      uint16_t v = static_cast<uint16_t>(value * (1 << 13));
+      uint8_t valByte1 = static_cast<uint8_t>(v & 0x7F);
+      uint8_t valByte2 = static_cast<uint8_t>((v >> 7) & 0x7F);
+      out({ statusByte, valByte1, valByte2 });
+      break;
+    }
+
+    case getHWSourceId<MSB::Aftertouch>():
+    {
+      uint8_t statusByte = static_cast<uint8_t>(0xD0);
+      uint8_t v = static_cast<uint8_t>(value * 127);
+      uint8_t valByte = static_cast<uint8_t>(0x7F & v);
+      out({ statusByte, valByte, 0 });
+      break;
+    }
+
+    default:
+      break;
+  }
+
   if(source->m_behavior == C15::Properties::HW_Return_Behavior::Center)
   {
     value = (2.0f * value) - 1.0f;  // make return_to_center sources bipolar
   }
+
   const float inc = value - source->m_position;
   source->m_position = value;
   hwModChain(source, _id, inc);
