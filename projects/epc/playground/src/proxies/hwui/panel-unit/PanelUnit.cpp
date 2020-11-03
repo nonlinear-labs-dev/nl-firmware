@@ -19,7 +19,7 @@
 #include <http/UndoScope.h>
 #include <nltools/messaging/Message.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
-#include "PanelUnitScreenSaverUsageMode.h"
+#include "ScreenSaverUsageMode.h"
 
 PanelUnit::PanelUnit()
 {
@@ -114,7 +114,7 @@ void PanelUnit::onScreenSaverStateChanged(bool state)
   if(state)
   {
     m_stashedUsageMode = getUsageMode();
-    setUsageMode(new PanelUnitScreenSaverUsageMode());
+    setUsageMode(new ScreenSaverUsageMode());
   }
   else if(m_stashedUsageMode)
   {

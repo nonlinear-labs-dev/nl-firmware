@@ -1,10 +1,10 @@
 #pragma once
 #include <proxies/hwui/UsageMode.h>
 
-class PanelUnitScreenSaverUsageMode : public UsageMode
+class ScreenSaverUsageMode : public UsageMode
 {
  public:
-  PanelUnitScreenSaverUsageMode();
+  ScreenSaverUsageMode();
   bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state) override;
   void setup() override;
 
