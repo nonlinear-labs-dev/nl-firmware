@@ -17,8 +17,8 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   virtual ~BaseUnit();
 
   void onTimeout();
-  int getLastTouchedRibbon();
   void indicateBlockingMainThread(bool onOff);
+  void onScreenSaverStateChanged(bool state);
 
   void init();
 
@@ -27,6 +27,7 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
  private:
   void respectUsageMode(const Setting *s);
   void onBBBBConnected();
+  std::shared_ptr<UsageMode> m_stashedUsageMode;
 
   PlayPanel m_playPanel;
   UpperRibbon m_upperRibbon;
