@@ -355,8 +355,6 @@ void AudioEngineProxy::sendEditBuffer()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  nltools::Log::error("Sending EditBuffer to AE!");
-  
   switch(eb->getType())
   {
     case SoundType::Single:

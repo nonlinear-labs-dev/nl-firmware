@@ -17,7 +17,6 @@ struct ScopedMessagingConfiguration
 
   ~ScopedMessagingConfiguration()
   {
-
     nltools::msg::init(m_oldConfig);
   }
 
@@ -52,7 +51,7 @@ TEST_CASE("Preset Load sends EditBuffer")
   CHECK(eb->getUUIDOfLastLoadedPreset() == presets.getSinglePreset()->getUuid());
 }
 
-TEST_CASE("Preset Store does not send EditBuffer")
+TEST_CASE("Store Action do not send EditBuffer")
 {
   using namespace nltools::msg;
   using namespace std::chrono;
@@ -64,7 +63,6 @@ TEST_CASE("Preset Store does not send EditBuffer")
   ScopedMessagingConfiguration scopeEndPoint { configuration };
 
   auto pm = TestHelper::getPresetManager();
-  auto oldNumBanks = pm->getNumBanks();
 
   bool singleMessageReceived = false;
 
@@ -78,14 +76,30 @@ TEST_CASE("Preset Store does not send EditBuffer")
                                         [&](const auto &singleEditMessage) { singleMessageReceived = true; });
 
   auto useCases = Application::get().getPresetManagerUseCases();
-  useCases->createBankAndStoreEditBuffer();
 
+  //Store EditBuffer as new Bank
+  auto oldNumBanks = pm->getNumBanks();
+  useCases->createBankAndStoreEditBuffer();
   auto newNumBanks = pm->getNumBanks();
+  TestHelper::doMainLoopIteration();
+  CHECK(newNumBanks > oldNumBanks);
+
+  auto bank = pm->getSelectedBank();
+
+  //Append preset into bank
+  auto oldNumPresets = bank->getNumPresets();
+  useCases->appendPreset(bank);
+  auto newNumPresets = bank->getNumPresets();
+  CHECK(newNumPresets > oldNumPresets);
+
+  //Insert preset into bank at pos 0
+  oldNumPresets = bank->getNumPresets();
+  useCases->insertPreset(bank, 0);
+  newNumPresets = bank->getNumPresets();
+  CHECK(newNumPresets > oldNumPresets);
 
   TestHelper::doMainLoopIteration();
-
-  CHECK(newNumBanks > oldNumBanks);
+  //No preset message was send!
   CHECK(!singleMessageReceived);
-
   c.disconnect();
 }
