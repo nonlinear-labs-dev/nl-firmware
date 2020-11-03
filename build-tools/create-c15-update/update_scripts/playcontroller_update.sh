@@ -68,8 +68,8 @@ ISP2=51
 
 RESET=50
 PROGMODE=115
-export_gpio $ISP1
-export_gpio $ISP2
+export_gpio $ISP1 2> /dev/null
+export_gpio $ISP2 2> /dev/null
 export_gpio $RESET
 export_gpio $PROGMODE
 write_to_gpio $ISP1 1
@@ -91,8 +91,10 @@ write_to_gpio $RESET 0
 write_to_gpio $RESET 1
 unexport_gpio $PROGMODE
 unexport_gpio $RESET
-unexport_gpio $ISP1
-unexport_gpio $ISP2
+
+#we must not unexport ISP lines in order to keep their state
+# unexport_gpio $ISP1
+# unexport_gpio $ISP2
 
 if [ $return_code -eq 0 ] ; then
 	exit 0
