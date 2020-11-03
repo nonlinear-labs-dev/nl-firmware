@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.canvas.dom.client.FillStrokeStyle;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
@@ -72,8 +71,8 @@ public class SplitSoundLayout extends SoundLayout {
 
 		@Override
 		public void draw(Context2d ctx, int flags) {
-			if(SetupModel.get().systemSettings.syncSplit.isFalse()) {
-				SplitPoint splits = (SplitPoint)getChildren().get(2);
+			if (SetupModel.get().systemSettings.syncSplit.isFalse()) {
+				SplitPoint splits = (SplitPoint) getChildren().get(2);
 				Rect left = splits.getRectOfVG(VoiceGroup.I);
 				Rect right = splits.getRectOfVG(VoiceGroup.II);
 
@@ -82,12 +81,14 @@ public class SplitSoundLayout extends SoundLayout {
 
 				RGB bgI = EditBufferPresenterProvider.getPresenter().voiceGroupI_BackgroundColor;
 				RGB bgII = EditBufferPresenterProvider.getPresenter().voiceGroupII_BackgroundColor;
-			
+
 				ctx.setFillStyle(bgI.toString());
-				ctx.fillRect(startLeft.getRight(), left.getCenterPoint().getY() - 2, left.getLeft() - startLeft.getRight(), 4);
+				ctx.fillRect(startLeft.getRight(), left.getCenterPoint().getY() - 2,
+						left.getLeft() - startLeft.getRight(), 4);
 
 				ctx.setFillStyle(bgII.toString());
-				ctx.fillRect(right.getRight(), right.getCenterPoint().getY() - 2, endRight.getLeft() - right.getRight(), 4);
+				ctx.fillRect(right.getRight(), right.getCenterPoint().getY() - 2, endRight.getLeft() - right.getRight(),
+						4);
 
 			}
 			super.draw(ctx, flags);
@@ -109,8 +110,8 @@ public class SplitSoundLayout extends SoundLayout {
 		}
 
 		public Rect getRectOfVG(VoiceGroup vg) {
-			if(!syncEnabled) {
-				if(vg == VoiceGroup.I) {
+			if (!syncEnabled) {
+				if (vg == VoiceGroup.I) {
 					return getChildren().get(1).getPixRect();
 				} else {
 					return getChildren().get(2).getPixRect();
@@ -122,10 +123,10 @@ public class SplitSoundLayout extends SoundLayout {
 
 		private void onSettingChanged(boolean isSyncEnabled) {
 			syncEnabled = isSyncEnabled;
-			
+
 			removeAll();
 
-			if(isSyncEnabled) {
+			if (isSyncEnabled) {
 				addChild(new SplitPointLabel(this, "Split Point"));
 				addChild(new SplitPointValue(this));
 			} else {
@@ -141,8 +142,8 @@ public class SplitSoundLayout extends SoundLayout {
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 			double quarterHeight = h / 4;
-			
-			if(syncEnabled) {
+
+			if (syncEnabled) {
 				getChildren().get(0).doLayout(0, 0, w, quarterHeight * 1);
 				getChildren().get(1).doLayout(0, quarterHeight * 1.5, w, quarterHeight);
 			} else {
@@ -339,7 +340,7 @@ public class SplitSoundLayout extends SoundLayout {
 
 			@Override
 			public String getDrawText(Context2d ctx) {
-				return EditBufferModel.get().getPresetNameOfVoiceGroup(group);
+				return EditBufferModel.get().getPresetNameOfVoiceGroupWithSuffix(group);
 			}
 
 			@Override
