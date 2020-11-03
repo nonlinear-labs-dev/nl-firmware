@@ -83,6 +83,6 @@ constexpr float POTENTIAL_SETTING_GAIN_CURVE_TIME_MS = 1.0f;  // later: migrate 
 // - introduces a lookup-based s-curve smoothing of gain-related signals (currently at 1ms, smoothing only voice_level for now)
 
 // PART-MUTING ON OUT MIX "TO FX"?
-#define POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL __POTENTIAL_IMPROVEMENT_DISABLED__
+#define POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL __POTENTIAL_IMPROVEMENT_ENABLED__
 // - disabled: output mixer "to fx" still is affected by part muting
 // - enabled: reduce Part Muting fully to only affect final Part Volume
