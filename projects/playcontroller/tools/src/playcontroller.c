@@ -166,7 +166,7 @@ int purgeBuffer(int driver)
 
 #define LPC_RESET_PIN (50u)                      // port number of the RESET pin GPIO
 #define LPC_ISP1_PIN  (48u)                      // port number of the first ISP pin GPIO
-#define LPC_ISP2_PIN  (48u)                      // port number of the first ISP pin GPIO
+#define LPC_ISP2_PIN  (51u)                      // port number of the second (alternate) ISP pin GPIO
 #define WAIT_TIME_US  (200000u)                  // 200ms wait time after any port access
 #define POLL_DELAY_US (1000000u - WAIT_TIME_US)  // 1 second total delay until polling for LPC response
 
