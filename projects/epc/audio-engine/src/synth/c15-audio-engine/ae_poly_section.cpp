@@ -148,13 +148,16 @@ void PolySection::render_audio(const float _mute)
   m_z_self->m_comb = m_combfilter.m_out;
   m_z_self->m_svf = m_svfilter.m_out;
   // eval sends
-  float send = (1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX));  // send self stays unmuted
-  m_send_self_l = m_outputmixer.m_out_l * send;
-  m_send_self_r = m_outputmixer.m_out_r * send;
-  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX)
-      * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);  // apply part mute to send other
-  m_send_other_l = m_outputmixer.m_out_l * send;
-  m_send_other_r = m_outputmixer.m_out_r * send;
+#if POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_DISABLED__
+  const float send_self = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX),
+              send_other = (1.0f - send_self) * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
+#elif POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_ENABLED__
+  const float send_other = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX), send_self = 1.0f - send_other;
+#endif
+  m_send_self_l = m_outputmixer.m_out_l * send_self;
+  m_send_self_r = m_outputmixer.m_out_r * send_self;
+  m_send_other_l = m_outputmixer.m_out_l * send_other;
+  m_send_other_r = m_outputmixer.m_out_r * send_other;
   // env rendering (unfortunately another voice loop)
   for(uint32_t v = 0; v < m_voices; v++)
   {
