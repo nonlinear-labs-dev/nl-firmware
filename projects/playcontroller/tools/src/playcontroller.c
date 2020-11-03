@@ -164,7 +164,9 @@ int purgeBuffer(int driver)
   return ret;
 }
 
-#define LPC_RESET_PIN (50u)                      // port number of the toggle pin GPIO
+#define LPC_RESET_PIN (50u)                      // port number of the RESET pin GPIO
+#define LPC_ISP1_PIN  (48u)                      // port number of the first ISP pin GPIO
+#define LPC_ISP2_PIN  (48u)                      // port number of the first ISP pin GPIO
 #define WAIT_TIME_US  (200000u)                  // 200ms wait time after any port access
 #define POLL_DELAY_US (1000000u - WAIT_TIME_US)  // 1 second total delay until polling for LPC response
 
@@ -173,17 +175,31 @@ int lpcReset(int driver)
   int fd;
 
   linuxgpio_export(LPC_RESET_PIN);
+  linuxgpio_export(LPC_ISP1_PIN);
+  linuxgpio_export(LPC_ISP2_PIN);
   linuxgpio_dir_out(LPC_RESET_PIN);
-  fd = linuxgpio_openfd(LPC_RESET_PIN);
+  linuxgpio_dir_out(LPC_ISP1_PIN);
+  linuxgpio_dir_out(LPC_ISP2_PIN);
 
+  fd = linuxgpio_openfd(LPC_ISP1_PIN);
+  write(fd, "1", 1);  // pull ISP1 line high
+  usleep(WAIT_TIME_US);
+  close(fd);
+
+  fd = linuxgpio_openfd(LPC_ISP2_PIN);
+  write(fd, "1", 1);  // pull ISP2 line high
+  usleep(WAIT_TIME_US);
+  close(fd);
+
+  fd = linuxgpio_openfd(LPC_RESET_PIN);
   write(fd, "0", 1);  // pull RESET line low --> reset
   purgeBuffer(driver);
   usleep(WAIT_TIME_US);
   write(fd, "1", 1);
   usleep(WAIT_TIME_US);
-
   close(fd);
-  linuxgpio_dir_in(LPC_RESET_PIN);
+  
+	linuxgpio_dir_in(LPC_RESET_PIN);
   linuxgpio_unexport(LPC_RESET_PIN);
 
   usleep(POLL_DELAY_US);
