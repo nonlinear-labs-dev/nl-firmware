@@ -198,8 +198,8 @@ int lpcReset(int driver)
   write(fd, "1", 1);
   usleep(WAIT_TIME_US);
   close(fd);
-  
-	linuxgpio_dir_in(LPC_RESET_PIN);
+
+  linuxgpio_dir_in(LPC_RESET_PIN);
   linuxgpio_unexport(LPC_RESET_PIN);
 
   usleep(POLL_DELAY_US);

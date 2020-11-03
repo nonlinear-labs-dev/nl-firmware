@@ -56,7 +56,7 @@ write_blob() {
 
 # we handle 2 GPIO pins for the ISP signal so that it works
 # with new uniboard revisions where ISP is wired differently.
-# Root cause of rewiring is that no all BBB hardware implementation
+# Root cause of rewiring is that no all BBB hardware implementations
 # correctly handle the GPIOs with our specific device tree and
 # a new pin has been choosen that seemingly works with the affected
 # BBB hardware implementation
