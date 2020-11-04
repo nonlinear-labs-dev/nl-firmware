@@ -202,14 +202,18 @@ int main(int args, char *argv[])
     sender = std::thread([&] { readMidi(cancelPipe[0], inputHandle); });
   }
 
-  runMainLoop();
+  if(inputHandle || outputHandle)
+  {
+    runMainLoop();
 
-  if(sender.joinable())
-    sender.join();
+    if(sender.joinable())
+      sender.join();
 
-  snd_rawmidi_close(outputHandle);
-  snd_rawmidi_close(inputHandle);
+    snd_rawmidi_close(outputHandle);
+    snd_rawmidi_close(inputHandle);
 
-  nltools::Log::warning("MidiOverIP, round trip time:", minRTT.count(), " ... ", maxRTT.count(), "us");
+    nltools::Log::warning("MidiOverIP, round trip time:", minRTT.count(), " ... ", maxRTT.count(), "us");
+  }
+
   return EXIT_SUCCESS;
 }

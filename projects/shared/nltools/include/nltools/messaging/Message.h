@@ -31,6 +31,16 @@ namespace nltools
 
         uint64_t id = 0;
       };
+
+      struct ProgramChangeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiProgramChange;
+        }
+
+        uint8_t program;
+      };
     }
 
     using tID = int;

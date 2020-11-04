@@ -2,6 +2,7 @@
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
+#include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
@@ -24,6 +25,9 @@
 #include <groups/SplitParameterGroups.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 
+constexpr auto cUnisonVoicesParameterNumber = 249;
+constexpr auto cMonoEnableParameterNumber = 364;
+
 AudioEngineProxy::AudioEngineProxy()
 {
   using namespace nltools::msg;
@@ -40,10 +44,17 @@ AudioEngineProxy::AudioEngineProxy()
       p->onChangeFromPlaycontroller(value);
     }
   });
-}
 
-constexpr auto cUnisonVoicesParameterNumber = 249;
-constexpr auto cMonoEnableParameterNumber = 364;
+  const auto &pm = Application::get().getPresetManager();
+
+  receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
+    if(auto bank = pm->getSelectedBank())
+      if(msg.program < bank->getNumPresets())
+        bank->selectPreset(msg.program);
+  });
+
+  pm->onBankSelection(sigc::mem_fun(this, &AudioEngineProxy::onBankSelectionChanged));
+}
 
 template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditBuffer &editBuffer)
 {
@@ -365,6 +376,8 @@ void AudioEngineProxy::sendEditBuffer()
     case SoundType::Layer:
       nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage(*eb));
       break;
+    case SoundType::Invalid:
+      break;
   }
 }
 
@@ -379,4 +392,32 @@ void AudioEngineProxy::thawParameterMessages()
 
   if(m_suppressParamChanges == 0)
     sendEditBuffer();
+}
+
+void AudioEngineProxy::onBankSelectionChanged(const Uuid &uuid)
+{
+  const auto &pm = Application::get().getPresetManager();
+
+  m_presetSelectionConnection.disconnect();
+
+  if(auto bank = pm->getSelectedBank())
+  {
+    m_presetSelectionConnection = bank->onBankChanged(sigc::mem_fun(this, &AudioEngineProxy::onBankChanged));
+  }
+}
+
+void AudioEngineProxy::onBankChanged()
+{
+  const auto &pm = Application::get().getPresetManager();
+
+  if(auto bank = pm->getSelectedBank())
+  {
+    if(auto preset = bank->getSelectedPreset())
+    {
+      uint8_t pos = bank->getPresetPosition(preset);
+
+      if(pos < 128)
+        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, nltools::msg::Midi::ProgramChangeMessage { pos });
+    }
+  }
 }

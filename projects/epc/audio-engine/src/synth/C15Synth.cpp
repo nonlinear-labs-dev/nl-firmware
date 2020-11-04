@@ -48,14 +48,30 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
     m_dsp->onMidiMessage(100, static_cast<uint32_t>(noteDown.m_keyPos), 0);
   });
 
+  // receive program changes from playground and dispatch it to midi-over-ip
+  receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
+    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { 0xC0, pc.program, 0 });
+    m_externalMidiOutThreadWaiter.notifyUnlocked();
+  });
+
   receive<nltools::msg::Midi::SimpleMessage>(EndPoint::ExternalMidiOverIPClient, [&](const auto& msg) {
     MidiEvent e;
     std::copy(msg.rawBytes, msg.rawBytes + 3, e.raw);
-    pushMidiEvent(e);
 
-    nltools::msg::Midi::MessageAcknowledge ack;
-    ack.id = msg.id;
-    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, ack);
+    if((e.raw[0] & 0xF0) == 0xC0)
+    {
+      // receive program changes midi-over-ip and dispatch it to playground
+      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+    }
+    else
+    {
+      pushMidiEvent(e);
+
+      // TODO: after successfull evaluation of round trip times, remove this messages
+      nltools::msg::Midi::MessageAcknowledge ack;
+      ack.id = msg.id;
+      send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, ack);
+    }
   });
 
   Glib::MainContext::get_default()->signal_idle().connect(sigc::mem_fun(this, &C15Synth::doIdle));
