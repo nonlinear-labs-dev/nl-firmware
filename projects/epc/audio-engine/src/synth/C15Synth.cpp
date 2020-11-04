@@ -50,7 +50,7 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
-    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { 0xC0, pc.program, 0 });
+    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage{ 0, 0xC0, pc.program, 0 });
     m_externalMidiOutThreadWaiter.notifyUnlocked();
   });
 
@@ -61,7 +61,7 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
     if((e.raw[0] & 0xF0) == 0xC0)
     {
       // receive program changes midi-over-ip and dispatch it to playground
-      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage{ e.raw[1] });
     }
     else
     {
@@ -135,7 +135,7 @@ bool C15Synth::doIdle()
     {
       nltools::msg::send(
           nltools::msg::EndPoint::Playground,
-          nltools::msg::HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
+          nltools::msg::HardwareSourceChangedNotification{ i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
 
@@ -150,7 +150,14 @@ void C15Synth::sendExternalMidiOut()
 
     while(!m_quit && !m_externalMidiOutBuffer.empty())
     {
-      send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, m_externalMidiOutBuffer.pop());
+      auto msg = m_externalMidiOutBuffer.pop();
+      send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, msg);
+      if(LOG_MIDI_OUT)
+      {
+        nltools::Log::info("midiOut(status: ", static_cast<uint16_t>(msg.rawBytes[0]),
+                           ", data0: ", static_cast<uint16_t>(msg.rawBytes[1]),
+                           ", data1: ", static_cast<uint16_t>(msg.rawBytes[2]), ")");
+      }
     }
   }
 }
