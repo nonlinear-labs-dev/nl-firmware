@@ -752,8 +752,8 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
 
     case 6:
       // bender
-      m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
-      processBipolarMidiController<Midi::BenderRange>(0xE6, _data0, 6);
+      m_hwSourcesMidiLSB[4] = _data1 & 0x7F;
+      processBipolarMidiController<Midi::BenderRange>(0xE6, _data0, 4);
       break;
 
     default:
