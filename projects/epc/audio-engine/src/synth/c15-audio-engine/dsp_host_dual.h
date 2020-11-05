@@ -37,7 +37,7 @@ inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI_TCD = false;
 inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
-inline constexpr bool LOG_MIDI_OUT = true;
+inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
@@ -62,7 +62,7 @@ namespace MSB
   // encode HW source number and MSB CC
   enum HWSourceMidiCC
   {
-    Ped1 = 0 << 8 | 64,
+    Ped1 = 0 << 8 | 20,
     Ped2 = 1 << 8 | 21,
     Ped3 = 2 << 8 | 22,
     Ped4 = 3 << 8 | 23,
