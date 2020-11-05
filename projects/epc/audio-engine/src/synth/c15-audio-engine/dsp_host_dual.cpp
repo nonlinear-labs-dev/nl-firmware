@@ -1,5 +1,6 @@
 #include "dsp_host_dual.h"
 #include <nltools/messaging/Messaging.h>
+#include <assert.h>
 
 using namespace std::chrono_literals;
 
@@ -12,6 +13,28 @@ using namespace std::chrono_literals;
     @todo
 *******************************************************************************/
 
+namespace Midi
+{
+  struct BipolarCCRange
+  {
+    constexpr static uint16_t min = 0x0000;
+    constexpr static uint16_t center = 0x2000;
+    constexpr static uint16_t max = 0x3F80;
+  };
+
+  struct BenderRange
+  {
+    constexpr static uint16_t min = 0x0000;
+    constexpr static uint16_t center = 0x2000;
+    constexpr static uint16_t max = 0x3FFF;
+  };
+
+  struct UnipolarCCRange
+  {
+    constexpr static uint16_t max = 0x3F80;
+  };
+}
+
 template <int EnumValue> inline constexpr uint32_t getHWSourceId()
 {
   return EnumValue >> 8;
@@ -22,11 +45,82 @@ template <int EnumValue> inline constexpr uint32_t getMidiCC()
   return EnumValue & 0xFF;
 }
 
+template <typename Range> uint16_t encode14BitBipolarMidiValue(float controlPosition)
+{
+  auto numPositiveSteps = Range::max - Range::center;
+  auto numNegativeSteps = Range::center - Range::min;
+
+  if(controlPosition > 0)
+    return std::min<int32_t>(Range::max, Range::center + controlPosition * numPositiveSteps);
+  else if(controlPosition < 0)
+    return std::max<int32_t>(Range::min, Range::center + controlPosition * numNegativeSteps);
+
+  return Range::center;
+}
+
+template <typename Range> uint16_t encode14BitUnipolarMidiValue(float controlPosition)
+{
+  return std::clamp(controlPosition, 0.0f, 1.0f) * Range::max;
+}
+
+template <typename Range> float decode14BitBipolarMidiValue(uint16_t midiValue)
+{
+  auto fMidiValue = static_cast<float>(midiValue);
+  auto numPositiveSteps = Range::max - Range::center;
+  auto numNegativeSteps = Range::center - Range::min;
+
+  if(midiValue > Range::center)
+    return std::clamp((fMidiValue - Range::center) / numPositiveSteps, -1.f, 1.f);
+  else if(midiValue < Range::center)
+    return std::clamp((fMidiValue - Range::center) / numNegativeSteps, -1.f, 1.f);
+
+  return 0.0f;
+}
+
+template <typename Range> float decode14BitUnipolarMidiValue(uint16_t midiValue)
+{
+  auto fMidiValue = static_cast<float>(midiValue);
+  return std::clamp(fMidiValue / Range::max, -1.f, 1.f);
+}
+
 dsp_host_dual::dsp_host_dual()
 {
   m_hwSourcesMidiLSB.fill(0);
   m_mainOut_L = m_mainOut_R = 0.0f;
   m_layer_mode = C15::Properties::LayerMode::Single;
+
+  // pitch bend
+  assert(encode14BitBipolarMidiValue<Midi::BenderRange>(-1.5) == 0x0000);
+  assert(encode14BitBipolarMidiValue<Midi::BenderRange>(-1) == 0x0000);
+  assert(encode14BitBipolarMidiValue<Midi::BenderRange>(0) == 0x2000);
+  assert(encode14BitBipolarMidiValue<Midi::BenderRange>(1) == 0x3FFF);
+  assert(encode14BitBipolarMidiValue<Midi::BenderRange>(1.5) == 0x3FFF);
+
+  assert(decode14BitBipolarMidiValue<Midi::BenderRange>(0x0000) == -1.0f);
+  assert(decode14BitBipolarMidiValue<Midi::BenderRange>(0x2000) == 0.0f);
+  assert(decode14BitBipolarMidiValue<Midi::BenderRange>(0x3FFF) == 1.0f);
+
+  // 14 bit bipolar controllers
+  assert(encode14BitBipolarMidiValue<Midi::BipolarCCRange>(-1.5) == 0x0000);
+  assert(encode14BitBipolarMidiValue<Midi::BipolarCCRange>(-1) == 0x0000);
+  assert(encode14BitBipolarMidiValue<Midi::BipolarCCRange>(0) == 0x2000);
+  assert(encode14BitBipolarMidiValue<Midi::BipolarCCRange>(1) == 0x3F80);
+  assert(encode14BitBipolarMidiValue<Midi::BipolarCCRange>(1.5) == 0x3F80);
+
+  assert(decode14BitBipolarMidiValue<Midi::BipolarCCRange>(0x0000) == -1.0f);
+  assert(decode14BitBipolarMidiValue<Midi::BipolarCCRange>(0x2000) == 0.0f);
+  assert(decode14BitBipolarMidiValue<Midi::BipolarCCRange>(0x3F80) == 1.0f);
+
+  // 14 bit unipolar controllers
+  assert(encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(-0.5) == 0x0000);
+  assert(encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(0) == 0x0000);
+  assert(encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(0.5) == 0x1FC0);
+  assert(encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(1) == 0x3F80);
+  assert(encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(1.5) == 0x3F80);
+
+  assert(decode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(0x0000) == 0.0f);
+  assert(decode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(0x1FC0) == 0.5f);
+  assert(decode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(0x3F80) == 1.0f);
 }
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
@@ -530,6 +624,38 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
   }
 }
 
+template <typename Range>
+void dsp_host_dual::processBipolarMidiController(uint32_t status, const uint32_t dataByte, int id)
+{
+  auto source = m_params.get_hw_src(id);
+  auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
+  auto value = decode14BitBipolarMidiValue<Range>(midiVal);
+
+  const float inc = value - source->m_position;
+  source->m_position = value;
+  hwModChain(source, id, inc);
+}
+
+template <typename Range>
+void dsp_host_dual::processUnipolarMidiController(uint32_t status, const uint32_t dataByte, int id)
+{
+  auto source = m_params.get_hw_src(id);
+  auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
+  auto value = decode14BitUnipolarMidiValue<Range>(midiVal);
+
+  const float inc = value - source->m_position;
+  source->m_position = value;
+  hwModChain(source, id, inc);
+}
+
+void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
+{
+  if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
+    processBipolarMidiController<Midi::BipolarCCRange>(0xE0 + id, _data, id);
+  else
+    processUnipolarMidiController<Midi::UnipolarCCRange>(0xE0 + id, _data, id);
+}
+
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
   const uint32_t type = (_status & 127) >> 4;
@@ -560,59 +686,58 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       }
       break;
     case 3:
-      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_hw);
       switch(_data0)
       {
         case getMidiCC<MSB::Ped1>():
-          onTcdMessage(0xE0, arg >> 7, std::exchange(m_hwSourcesMidiLSB[0], 0));
+          processMidiForHWSource(0, _data1);
           break;
 
         case getMidiCC<MSB::Ped2>():
-          onTcdMessage(0xE1, arg >> 7, std::exchange(m_hwSourcesMidiLSB[1], 0));
+          processMidiForHWSource(1, _data1);
           break;
 
         case getMidiCC<MSB::Ped3>():
-          onTcdMessage(0xE2, arg >> 7, std::exchange(m_hwSourcesMidiLSB[2], 0));
+          processMidiForHWSource(2, _data1);
           break;
 
         case getMidiCC<MSB::Ped4>():
-          onTcdMessage(0xE3, arg >> 7, std::exchange(m_hwSourcesMidiLSB[3], 0));
+          processMidiForHWSource(3, _data1);
           break;
 
         case getMidiCC<MSB::Rib1>():
-          onTcdMessage(0xE6, arg >> 7, std::exchange(m_hwSourcesMidiLSB[6], 0));
+          processMidiForHWSource(6, _data1);
           break;
 
         case getMidiCC<MSB::Rib2>():
-          onTcdMessage(0xE7, arg >> 7, std::exchange(m_hwSourcesMidiLSB[7], 0));
+          processMidiForHWSource(7, _data1);
           break;
 
         case getMidiCC<LSB::Ped1>():
-          m_hwSourcesMidiLSB[0] = arg & 0x7F;
+          m_hwSourcesMidiLSB[0] = _data1 & 0x7F;
           break;
 
         case getMidiCC<LSB::Ped2>():
-          m_hwSourcesMidiLSB[1] = arg & 0x7F;
+          m_hwSourcesMidiLSB[1] = _data1 & 0x7F;
           break;
 
         case getMidiCC<LSB::Ped3>():
-          m_hwSourcesMidiLSB[2] = arg & 0x7F;
+          m_hwSourcesMidiLSB[2] = _data1 & 0x7F;
           break;
 
         case getMidiCC<LSB::Ped4>():
-          m_hwSourcesMidiLSB[3] = arg & 0x7F;
+          m_hwSourcesMidiLSB[3] = _data1 & 0x7F;
           break;
 
         case getMidiCC<LSB::Rib1>():
-          m_hwSourcesMidiLSB[6] = arg & 0x7F;
+          m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
           break;
 
         case getMidiCC<LSB::Rib2>():
-          m_hwSourcesMidiLSB[7] = arg & 0x7F;
+          m_hwSourcesMidiLSB[7] = _data1 & 0x7F;
           break;
 
         case getMidiCC<LSB::Vel>():
-          m_velocityLSB = arg & 0x7F;
+          m_velocityLSB = _data1 & 0x7F;
           break;
 
         default:
@@ -621,14 +746,16 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
       break;
     case 5:
       // mono aftertouch (hw source)
-      arg = static_cast<uint32_t>(static_cast<float>(_data0) * m_format_hw);
-      onTcdMessage(0xE5, arg >> 7, arg & 127);  // hw_at
+      m_hwSourcesMidiLSB[5] = 0;
+      processUnipolarMidiController<Midi::UnipolarCCRange>(0xE5, _data0, 5);
       break;
+
     case 6:
-      // bend (hw source)
-      arg = static_cast<uint32_t>(static_cast<float>(_data0 + (_data1 << 7)) * m_format_pb);
-      onTcdMessage(0xE4, arg >> 7, arg & 127);  // hw_bend
+      // bender
+      m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
+      processBipolarMidiController<Midi::BenderRange>(0xE6, _data0, 6);
       break;
+
     default:
       break;
   }
@@ -1499,55 +1626,62 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
   return result;
 }
 
-template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb, typename Out> void sendCCOut(const Out& out, float value)
+template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb, typename Out>
+void doSendCCOut(const Out& out, uint16_t value)
 {
   uint8_t statusByte = static_cast<uint8_t>(0xB0);
-  uint16_t fullResolutionValue = value * (1 << 13);
-
-  uint8_t lsbValByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+  uint8_t lsbValByte = static_cast<uint8_t>(value & 0x7F);
   out({ statusByte, getMidiCC<lsb>(), lsbValByte });
 
-  uint8_t msbValByte = static_cast<uint8_t>(fullResolutionValue >> 7 & 0x7F);
+  uint8_t msbValByte = static_cast<uint8_t>(value >> 7 & 0x7F);
   out({ statusByte, getMidiCC<msb>(), msbValByte });
 }
 
-void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut& out)
+template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb>
+void dsp_host_dual::sendCCOut(int id, float controlPosition, const MidiOut& out)
 {
-  auto source = m_params.get_hw_src(_id);
-  float value = _raw * m_norm_hw;
+  if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
+    doSendCCOut<msb, lsb>(out, encode14BitBipolarMidiValue<Midi::BipolarCCRange>(controlPosition));
+  else
+    doSendCCOut<msb, lsb>(out, encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(controlPosition));
+}
 
-  switch(_id)
+void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out)
+{
+  auto bipolar = m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center;
+
+  switch(id)
   {
     case getHWSourceId<MSB::Ped1>():
-      sendCCOut<MSB::Ped1, LSB::Ped1>(out, value);
+      sendCCOut<MSB::Ped1, LSB::Ped1>(0, controlPosition, out);
       break;
 
     case getHWSourceId<MSB::Ped2>():
-      sendCCOut<MSB::Ped2, LSB::Ped2>(out, value);
+      sendCCOut<MSB::Ped2, LSB::Ped2>(1, controlPosition, out);
       break;
 
     case getHWSourceId<MSB::Ped3>():
-      sendCCOut<MSB::Ped3, LSB::Ped3>(out, value);
+      sendCCOut<MSB::Ped3, LSB::Ped3>(2, controlPosition, out);
       break;
 
     case getHWSourceId<MSB::Ped4>():
-      sendCCOut<MSB::Ped4, LSB::Ped4>(out, value);
+      sendCCOut<MSB::Ped4, LSB::Ped4>(3, controlPosition, out);
       break;
 
     case getHWSourceId<MSB::Rib1>():
-      sendCCOut<MSB::Rib1, LSB::Rib1>(out, value);
+      sendCCOut<MSB::Rib1, LSB::Rib1>(6, controlPosition, out);
       break;
 
     case getHWSourceId<MSB::Rib2>():
-      sendCCOut<MSB::Rib2, LSB::Rib2>(out, value);
+      sendCCOut<MSB::Rib2, LSB::Rib2>(7, controlPosition, out);
       break;
 
     case getHWSourceId<MSB::Bender>():
     {
+      auto value = encode14BitBipolarMidiValue<Midi::BenderRange>(controlPosition);
       uint8_t statusByte = static_cast<uint8_t>(0xE0);
-      uint16_t v = static_cast<uint16_t>(value * (1 << 13));
-      uint8_t valByte1 = static_cast<uint8_t>(v & 0x7F);
-      uint8_t valByte2 = static_cast<uint8_t>((v >> 7) & 0x7F);
+      uint8_t valByte1 = static_cast<uint8_t>(value & 0x7F);
+      uint8_t valByte2 = static_cast<uint8_t>((value >> 7) & 0x7F);
       out({ statusByte, valByte1, valByte2 });
       break;
     }
@@ -1555,7 +1689,7 @@ void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut
     case getHWSourceId<MSB::Aftertouch>():
     {
       uint8_t statusByte = static_cast<uint8_t>(0xD0);
-      uint8_t v = static_cast<uint8_t>(value * 127);
+      uint8_t v = static_cast<uint8_t>(controlPosition * 127);
       uint8_t valByte = static_cast<uint8_t>(0x7F & v);
       out({ statusByte, valByte, 0 });
       break;
@@ -1564,11 +1698,19 @@ void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut
     default:
       break;
   }
+}
+
+void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut& out)
+{
+  auto source = m_params.get_hw_src(_id);
+  float value = _raw * m_norm_hw;
 
   if(source->m_behavior == C15::Properties::HW_Return_Behavior::Center)
   {
     value = (2.0f * value) - 1.0f;  // make return_to_center sources bipolar
   }
+
+  hwSourceToMidi(_id, value, out);
 
   const float inc = value - source->m_position;
   source->m_position = value;
@@ -2711,7 +2853,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]

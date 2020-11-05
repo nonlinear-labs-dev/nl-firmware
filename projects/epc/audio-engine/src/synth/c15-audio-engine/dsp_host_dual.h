@@ -141,6 +141,7 @@ class dsp_host_dual
 
   using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
   HWSourceValues getHWSourceValues() const;
+  void hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out);
 
  private:
   // parameters
@@ -223,4 +224,10 @@ class dsp_host_dual
   {
     return [](const SimpleRawMidiMessage&) {};
   }
+
+  template <typename Range> void processBipolarMidiController(uint32_t status, const uint32_t dataByte, int id);
+  template <typename Range> void processUnipolarMidiController(uint32_t status, const uint32_t dataByte, int id);
+  template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb>
+  void sendCCOut(int id, float controlPosition, const MidiOut& out);
+  void processMidiForHWSource(int id, uint32_t _data);
 };

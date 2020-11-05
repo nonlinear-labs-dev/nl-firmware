@@ -50,7 +50,7 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
-    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { 0xC0, pc.program, 0 });
+    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { 0, 0xC0, pc.program, 0 });
     m_externalMidiOutThreadWaiter.notifyUnlocked();
   });
 
@@ -93,12 +93,8 @@ void C15Synth::doMidi(const MidiEvent& event)
 
 void C15Synth::doTcd(const MidiEvent& event)
 {
-  m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2], [=](auto outgoingMidiMessage) {
-    nltools::msg::Midi::SimpleMessage msg;
-    std::copy(outgoingMidiMessage.begin(), outgoingMidiMessage.end(), msg.rawBytes);
-    m_externalMidiOutBuffer.push(msg);
-    m_externalMidiOutThreadWaiter.notifyUnlocked();
-  });
+  m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2],
+                      [=](auto outgoingMidiMessage) { queueExternalMidiOut(outgoingMidiMessage); });
 }
 
 void C15Synth::simulateKeyDown(int key)
@@ -316,11 +312,22 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
     m_dsp->globalParChg(element.m_param.m_index, msg);
+    m_dsp->hwSourceToMidi(element.m_param.m_index, msg.controlPosition,
+                          [this](const auto& msg) { queueExternalMidiOut(msg); });
+
     return;
   }
 #if LOG_FAIL
   nltools::Log::warning("invalid HW_Source ID:", msg.parameterId);
 #endif
+}
+
+void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)
+{
+  nltools::msg::Midi::SimpleMessage msg;
+  std::copy(m.begin(), m.end(), msg.rawBytes);
+  m_externalMidiOutBuffer.push(msg);
+  m_externalMidiOutThreadWaiter.notifyUnlocked();
 }
 
 void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg)

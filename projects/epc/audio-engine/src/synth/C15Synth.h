@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Synth.h"
+#include "c15-audio-engine/dsp_host_dual.h"
 #include <nltools/messaging/Message.h>
 #include <sigc++/sigc++.h>
 #include <thread>
@@ -63,6 +64,7 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   bool doIdle();
+  void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
   void sendExternalMidiOut();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
