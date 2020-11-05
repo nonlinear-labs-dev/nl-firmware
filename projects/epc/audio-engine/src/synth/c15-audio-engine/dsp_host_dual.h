@@ -37,7 +37,7 @@ inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI_TCD = false;
 inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
-inline constexpr bool LOG_MIDI_OUT = false;
+inline constexpr bool LOG_MIDI_OUT = true;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
@@ -62,7 +62,7 @@ namespace MSB
   // encode HW source number and MSB CC
   enum HWSourceMidiCC
   {
-    Ped1 = 0 << 8 | 20,
+    Ped1 = 0 << 8 | 64,
     Ped2 = 1 << 8 | 21,
     Ped3 = 2 << 8 | 22,
     Ped4 = 3 << 8 | 23,
@@ -226,8 +226,8 @@ class dsp_host_dual
     return [](const SimpleRawMidiMessage&) {};
   }
 
-  template <typename Range> void processBipolarMidiController(uint32_t status, const uint32_t dataByte, int id);
-  template <typename Range> void processUnipolarMidiController(uint32_t status, const uint32_t dataByte, int id);
+  template <typename Range> void processBipolarMidiController(const uint32_t dataByte, int id);
+  template <typename Range> void processUnipolarMidiController(const uint32_t dataByte, int id);
   template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb>
   void sendCCOut(int id, float controlPosition, const MidiOut& out);
   void processMidiForHWSource(int id, uint32_t _data);

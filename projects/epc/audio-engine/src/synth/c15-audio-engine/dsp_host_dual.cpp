@@ -624,8 +624,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
   }
 }
 
-template <typename Range>
-void dsp_host_dual::processBipolarMidiController(uint32_t status, const uint32_t dataByte, int id)
+template <typename Range> void dsp_host_dual::processBipolarMidiController(const uint32_t dataByte, int id)
 {
   auto source = m_params.get_hw_src(id);
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
@@ -636,8 +635,7 @@ void dsp_host_dual::processBipolarMidiController(uint32_t status, const uint32_t
   hwModChain(source, id, inc);
 }
 
-template <typename Range>
-void dsp_host_dual::processUnipolarMidiController(uint32_t status, const uint32_t dataByte, int id)
+template <typename Range> void dsp_host_dual::processUnipolarMidiController(const uint32_t dataByte, int id)
 {
   auto source = m_params.get_hw_src(id);
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
@@ -651,9 +649,9 @@ void dsp_host_dual::processUnipolarMidiController(uint32_t status, const uint32_
 void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
 {
   if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
-    processBipolarMidiController<Midi::BipolarCCRange>(0xE0 + id, _data, id);
+    processBipolarMidiController<Midi::BipolarCCRange>(_data, id);
   else
-    processUnipolarMidiController<Midi::UnipolarCCRange>(0xE0 + id, _data, id);
+    processUnipolarMidiController<Midi::UnipolarCCRange>(_data, id);
 }
 
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
@@ -747,13 +745,14 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
     case 5:
       // mono aftertouch (hw source)
       m_hwSourcesMidiLSB[5] = 0;
-      processUnipolarMidiController<Midi::UnipolarCCRange>(0xE5, _data0, 5);
+      processUnipolarMidiController<Midi::UnipolarCCRange>(_data0, 5);
       break;
 
     case 6:
       // bender
-      m_hwSourcesMidiLSB[4] = _data1 & 0x7F;
-      processBipolarMidiController<Midi::BenderRange>(0xE6, _data0, 4);
+      // pitch bend messages are: STATUS LSB MSB
+      m_hwSourcesMidiLSB[4] = _data0 & 0x7F;
+      processBipolarMidiController<Midi::BenderRange>(_data1, 4);
       break;
 
     default:
@@ -1682,6 +1681,7 @@ void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPositio
       uint8_t statusByte = static_cast<uint8_t>(0xE0);
       uint8_t valByte1 = static_cast<uint8_t>(value & 0x7F);
       uint8_t valByte2 = static_cast<uint8_t>((value >> 7) & 0x7F);
+      // Pitch Bend Messages are: Status LSB MSB
       out({ statusByte, valByte1, valByte2 });
       break;
     }
