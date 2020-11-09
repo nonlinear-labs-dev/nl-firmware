@@ -22,6 +22,8 @@
 #include "ae_mono_section.h"
 #include "ae_poly_section.h"
 
+#include "midi_handle.h"
+
 #include <array>
 
 // developer switches
@@ -56,37 +58,6 @@ inline constexpr bool LOG_ENGINE_EDITS = false;
 inline constexpr uint32_t LOG_PARAMS_LENGTH = 3;
 // use tcd ids here (currently: Split Point, Unison Detune)
 static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
-
-namespace MSB
-{
-  // encode HW source number and MSB CC
-  enum HWSourceMidiCC
-  {
-    Ped1 = 0 << 8 | 20,
-    Ped2 = 1 << 8 | 21,
-    Ped3 = 2 << 8 | 22,
-    Ped4 = 3 << 8 | 23,
-    Bender = 4 << 8 | 0,
-    Aftertouch = 5 << 8 | 0,
-    Rib1 = 6 << 8 | 24,
-    Rib2 = 7 << 8 | 25
-  };
-}
-
-namespace LSB
-{
-  // encode HW source number and LSB CC
-  enum HWSourceMidiCC
-  {
-    Ped1 = 0 << 8 | 52,
-    Ped2 = 1 << 8 | 53,
-    Ped3 = 2 << 8 | 54,
-    Ped4 = 3 << 8 | 55,
-    Rib1 = 6 << 8 | 56,
-    Rib2 = 7 << 8 | 57,
-    Vel = 0xFF << 8 | 88
-  };
-}
 
 class dsp_host_dual
 {
@@ -143,6 +114,10 @@ class dsp_host_dual
   using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
   HWSourceValues getHWSourceValues() const;
   void hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out);
+
+  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
+  using CC_Range_14_Bit = Midi::clipped14BitCCRange;
+  using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
 
  private:
   // parameters
@@ -228,7 +203,8 @@ class dsp_host_dual
 
   template <typename Range> void processBipolarMidiController(const uint32_t dataByte, int id);
   template <typename Range> void processUnipolarMidiController(const uint32_t dataByte, int id);
-  template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb>
+  void processNormalizedMidiController(const uint32_t _id, const float _controlPosition);
+  template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb>
   void sendCCOut(int id, float controlPosition, const MidiOut& out);
   void processMidiForHWSource(int id, uint32_t _data);
 };
