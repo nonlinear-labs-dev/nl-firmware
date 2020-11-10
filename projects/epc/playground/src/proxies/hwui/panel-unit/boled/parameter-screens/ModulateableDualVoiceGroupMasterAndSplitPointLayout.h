@@ -31,9 +31,11 @@ class SplitPointParameterLayout : public ModulateableDualVoiceGroupMasterAndSpli
   ~SplitPointParameterLayout() override;
 
  protected:
+  Control* createParameterValueControl() override;
+  void fixValueControl();
+
   sigc::connection m_connection;
   sigc::connection m_connectionWithTransaction;
-  Control* createParameterValueControl() override;
 };
 
 class SplitPointParameterEditLayout : public ModulateableParameterEditLayout2

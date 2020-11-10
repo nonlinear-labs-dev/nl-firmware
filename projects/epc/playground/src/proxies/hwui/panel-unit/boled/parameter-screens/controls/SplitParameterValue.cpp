@@ -7,20 +7,49 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <parameter_declarations.h>
+#include <proxies/hwui/controls/PNGControl.h>
 #include "SplitParameterValue.h"
 #include "proxies/hwui/controls/Label.h"
 #include "parameters/SplitPointParameter.h"
+#include "device-settings/Settings.h"
+#include "device-settings/SplitPointSyncParameters.h"
 
 SplitParameterValue::SplitParameterValue(const Rect& pos)
     : Label(pos)
 {
   setFontColor(FrameBufferColors::C179);
+
+  init();
 }
 
 SplitParameterValue::SplitParameterValue(const Label::StringAndSuffix& text, const Rect& pos)
     : Label(text, pos)
 {
   setFontColor(FrameBufferColors::C179);
+
+  init();
+}
+
+void SplitParameterValue::init()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto split1 = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
+  auto split2 = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
+
+  split1->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIChanged));
+  split2->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIIChanged));
+}
+
+void SplitParameterValue::onSplitIChanged(const Parameter* splitI)
+{
+  m_splitICP = splitI->getControlPositionValue();
+  setDirty();
+}
+
+void SplitParameterValue::onSplitIIChanged(const Parameter* splitII)
+{
+  m_splitIICP = splitII->getControlPositionValue();
+  setDirty();
 }
 
 void SplitParameterValue::drawParts(FrameBuffer& fb, const std::vector<Glib::ustring>& parts)

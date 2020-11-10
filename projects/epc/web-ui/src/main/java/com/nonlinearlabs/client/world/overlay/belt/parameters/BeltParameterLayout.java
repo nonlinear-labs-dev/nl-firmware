@@ -1,6 +1,8 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
+import com.gargoylesoftware.htmlunit.svg.SvgImage;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
@@ -106,7 +108,7 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	private final class SyncParameterButton extends SVGImage {
 		public SyncParameterButton(OverlayLayout parent) {
-			super(parent, "Morph_Tab_Disabled.svg", "Morph_Tab_Enabled.svg");
+			super(parent, "Sync_Disabled.svg", "Sync_Enabled.svg");
 		}
 
 		@Override
@@ -121,9 +123,9 @@ public class BeltParameterLayout extends OverlayLayout {
 		}
 	}
 
-	private final class SplitPointOverlapIndicator extends Label {
+	private final class SplitPointOverlapIndicator extends SVGImage {
 		public SplitPointOverlapIndicator(OverlayLayout parent) {
-			super(parent);
+			super(parent, "Overlap-Indicator.svg");
 
 			EditBufferPresenterProvider.get().onChange(presenter -> {
 				setVisible(presenter.splitOverlap && presenter.selectedParameter.id.getNumber() == 356);
@@ -132,8 +134,8 @@ public class BeltParameterLayout extends OverlayLayout {
 		}
 
 		@Override
-		public String getDrawText(Context2d ctx) {
-			return "!";
+		public int getSelectedPhase() {
+			return 0;
 		}
 	}
 
@@ -146,7 +148,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	private OverlayControl mcSourceDisplay;
 	private OverlayControl editorMode;
 	private OverlayControl valueDisplay;
-	private OverlayControl splitValueDisplay;
+	private SplitValueDisplay splitValueDisplay;
 	private OverlayControl parameterName;
 	private OverlayControl dottedLine;
 	private OverlayControl infoButton;
@@ -277,9 +279,14 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		mcSourceDisplay.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
-		editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
 
-		syncSplitParameter.doLayout(w - editorModeLeft + buttonDim, (h - buttonDim) / 2, buttonDim, buttonDim);
+		if (isParameterSplitPoint()) {
+			editorMode.doLayout(w - editorModeLeft - (buttonDim * 0.5), (h - buttonDim) / 2, buttonDim, buttonDim);
+			syncSplitParameter.doLayout(w - editorModeLeft + (buttonDim * 0.6), (h - buttonDim) / 2, buttonDim,
+					buttonDim);
+		} else {
+			editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
+		}
 
 		final double clipW = 20;
 		mcLowerClip.doLayout(sliderLeft - clipW, third, clipW, third);
