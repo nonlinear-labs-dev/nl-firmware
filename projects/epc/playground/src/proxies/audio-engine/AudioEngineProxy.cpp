@@ -140,7 +140,7 @@ void forEachParameterInGroup(const EditBuffer *eb, const GroupId &group, tParame
 
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::SinglePresetMessage msg{};
+  nltools::msg::SinglePresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
 
   size_t mc = 0;
@@ -311,7 +311,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, const EditBuffer &editB
 
 nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::SplitPresetMessage msg{};
+  nltools::msg::SplitPresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
@@ -347,7 +347,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 
 nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::LayerPresetMessage msg{};
+  nltools::msg::LayerPresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
@@ -363,6 +363,7 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
 void AudioEngineProxy::sendEditBuffer()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+
   switch(eb->getType())
   {
     case SoundType::Single:
@@ -384,11 +385,11 @@ void AudioEngineProxy::freezeParameterMessages()
   m_suppressParamChanges++;
 }
 
-void AudioEngineProxy::thawParameterMessages()
+void AudioEngineProxy::thawParameterMessages(bool send)
 {
   m_suppressParamChanges--;
 
-  if(m_suppressParamChanges == 0)
+  if(m_suppressParamChanges == 0 && send)
     sendEditBuffer();
 }
 
@@ -415,7 +416,7 @@ void AudioEngineProxy::onBankChanged()
       uint8_t pos = bank->getPresetPosition(preset);
 
       if(pos < 128)
-        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, nltools::msg::Midi::ProgramChangeMessage{ pos });
+        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, nltools::msg::Midi::ProgramChangeMessage { pos });
     }
   }
 }

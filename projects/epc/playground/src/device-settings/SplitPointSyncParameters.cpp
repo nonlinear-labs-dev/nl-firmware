@@ -44,3 +44,13 @@ sigc::connection SplitPointSyncParameters::onChangeWithTransaction(const tSlot& 
 {
   return m_signalWithTransaction.connect(cb);
 }
+
+sigc::connection SplitPointSyncParameters::onPresetStored(const sigc::slot<void, UNDO::Transaction*, Preset*>& cb)
+{
+  return m_signalStore.connect(cb);
+}
+
+void SplitPointSyncParameters::onStoreHappened(UNDO::Transaction* transaction, Preset* preset)
+{
+  m_signalStore.emit(transaction, preset);
+}

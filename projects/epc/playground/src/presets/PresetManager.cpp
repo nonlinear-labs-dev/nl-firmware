@@ -869,7 +869,7 @@ void PresetManager::stressLoad(int numTransactions)
         {
           forEachBank([&](auto b) {
             b->forEachPreset([&](auto p) {
-              m_editBuffer->undoableLoad(transaction, p);
+              m_editBuffer->undoableLoad(transaction, p, true);
               numSteps--;
             });
           });
@@ -998,4 +998,14 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
       }
     }
   }
+}
+
+void PresetManager::onPresetStored(const Preset *storedPreset)
+{
+  m_presetStoreHappened.deferedSend(storedPreset);
+}
+
+sigc::connection PresetManager::onPresetStoreHappened(sigc::slot<void, const Preset *> cb)
+{
+  return m_presetStoreHappened.connect(cb);
 }

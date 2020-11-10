@@ -23,6 +23,7 @@ SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterI
 
   sync->onChange(sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChanged));
   sync->onChangeWithTransaction(sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChangedWithTransaction));
+  sync->onPresetStored(sigc::mem_fun(this, &SplitPointParameter::onStoreHappened));
 }
 
 void SplitPointParameter::onSyncSettingChanged(const Setting* s)
@@ -65,6 +66,38 @@ void SplitPointParameter::onSyncSettingChangedWithTransaction(const Setting* s, 
               });
         }
       }
+    }
+  }
+}
+
+void SplitPointParameter::onStoreHappened(UNDO::Transaction* transaction, Preset* newPreset)
+{
+  //disable sync when no overlap is present and some preset got stored
+  if(getVoiceGroup() == VoiceGroup::I)
+  {
+    auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+    //no Overlap
+    if(!hasOverlap())
+    {
+      const auto oldState = setting->get();
+
+      {
+        auto l = m_settingGuard.lock();
+        setting->setState(true);
+      }
+
+      transaction->addSimpleCommand(
+          [this](UNDO::Transaction::State s) {
+            if(s == UNDO::Transaction::State::REDOING)
+            {
+              auto l = m_settingGuard.lock();
+              Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(true);
+            }
+          },
+          [this, oldState](UNDO::Transaction::State) {
+            auto l = m_settingGuard.lock();
+            Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(oldState);
+          });
     }
   }
 }
@@ -200,4 +233,16 @@ bool SplitPointParameter::isAtExtremes(tControlPositionValue value)
   }
 
   return false;
+}
+
+bool SplitPointParameter::hasOverlap()
+{
+  if(getVoiceGroup() == VoiceGroup::I)
+  {
+    return getControlPositionValue() >= getSibling()->getControlPositionValue();
+  }
+  else
+  {
+    return getControlPositionValue() <= getSibling()->getControlPositionValue();
+  }
 }
