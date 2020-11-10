@@ -38,7 +38,6 @@ ModuleCaption *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createModu
 SplitPointParameterLayout::SplitPointParameterLayout()
     : ModulateableDualVoiceGroupMasterAndSplitPointLayout()
 {
-  addControl(new SplitPointOverlapIndicator({ BIG_SLIDER_X - 4, 23, 1, 8 }));
   setMode(Mode::ParameterValue);
 
   auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();

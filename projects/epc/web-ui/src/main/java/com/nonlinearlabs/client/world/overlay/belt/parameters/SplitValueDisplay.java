@@ -1,7 +1,9 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
@@ -20,12 +22,22 @@ public class SplitValueDisplay extends Label {
     public String getDrawText(Context2d ctx) {
         final ParameterPresenter sI = ParameterPresenterProviders.get().getParameterPresenter(VoiceGroup.I, 356);
         final ParameterPresenter sII = ParameterPresenterProviders.get().getParameterPresenter(VoiceGroup.II, 356);
-        return sI.displayValues[0] + "\t - \t" + sII.displayValues[0];
+        char delim = hasOverlap() ? '-' : '|';
+
+        if(getLargerPart() == VoiceGroup.I) {
+            return sII.displayValues[0] + "\t " + delim + " \t" + sI.displayValues[0];
+        } else {
+            return sI.displayValues[0] + "\t " + delim + " \t" + sII.displayValues[0];
+        }
     }
 
     // split 0 == VoiceGroup I
     // split 1 == '-'
     // split 2 == VoiceGroup II
+
+    private boolean hasOverlap() {
+        return getSplit(VoiceGroup.I).value.value.getValue() > getSplit(VoiceGroup.II).value.value.getValue();
+    }
 
     private RGB getVoiceGroupColorFont(VoiceGroup vg) {
         VoiceGroup selectedVG = EditBufferModel.get().voiceGroup.getValue();
@@ -34,6 +46,18 @@ public class SplitValueDisplay extends Label {
         } else {
             return getColorFont().darker(50);
         }
+    }
+
+    private BasicParameterModel getSplit(VoiceGroup vg) {
+        return EditBufferModel.get().getParameter(new ParameterId(356, vg));
+    }
+
+    private VoiceGroup getLargerPart() {
+        return getSplit(VoiceGroup.I).value.value.getValue() > getSplit(VoiceGroup.II).value.value.getValue() ? VoiceGroup.I : VoiceGroup.II;
+    }
+
+    private VoiceGroup getSmallerPart() {
+        return getSplit(VoiceGroup.I).value.value.getValue() < getSplit(VoiceGroup.II).value.value.getValue() ? VoiceGroup.I : VoiceGroup.II;
     }
 
     @Override
