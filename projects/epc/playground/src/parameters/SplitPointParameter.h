@@ -19,6 +19,8 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
 
  protected:
   void onSyncSettingChanged(const Setting* s);
+  void onSyncSettingChangedWithTransaction(const Setting* s, UNDO::Transaction* transaction);
+
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;
 

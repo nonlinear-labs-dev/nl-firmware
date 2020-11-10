@@ -19,11 +19,18 @@ SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterI
                                               ScaleConverter::get<LinearBipolar60StScaleConverter>(),
                                               id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.516666667, 60, 60)
 {
-  Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
-      sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChanged));
+  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+
+  sync->onChange(sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChanged));
+  sync->onChangeWithTransaction(sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChangedWithTransaction));
 }
 
 void SplitPointParameter::onSyncSettingChanged(const Setting* s)
+{
+  onSyncSettingChangedWithTransaction(s, nullptr);
+}
+
+void SplitPointParameter::onSyncSettingChangedWithTransaction(const Setting* s, UNDO::Transaction* transaction)
 {
   if(!m_settingGuard.isLocked())
   {
@@ -33,8 +40,14 @@ void SplitPointParameter::onSyncSettingChanged(const Setting* s)
       {
         if(sync->get())
         {
-          auto scope = getUndoScope().startTransaction("Enable Split Sync");
-          auto transaction = scope->getTransaction();
+          std::unique_ptr<UNDO::TransactionCreationScope> scope = nullptr;
+
+          if(transaction == nullptr)
+          {
+            scope = getUndoScope().startTransaction("Enable Split Sync");
+            transaction = scope->getTransaction();
+          }
+
           auto myCP = getControlPositionValue();
           getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC,
                                    getValue().getNextStepValue(myCP, 1, {}), true);
@@ -96,6 +109,7 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
     preventNegativeOverlap(transaction, value, dosendToPlaycontroller);
   }
 }
+
 void SplitPointParameter::clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller)
 {
   auto other = getSibling();

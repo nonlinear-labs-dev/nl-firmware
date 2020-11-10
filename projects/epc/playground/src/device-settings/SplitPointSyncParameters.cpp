@@ -32,3 +32,15 @@ void SplitPointSyncParameters::setState(bool s)
   m_state = s;
   notify();
 }
+
+void SplitPointSyncParameters::setState(bool s, UNDO::Transaction* t)
+{
+  m_state = s;
+  m_signalWithTransaction.emit(this, t);
+  UpdateDocumentContributor::onChange(ChangeFlags::Generic);
+}
+
+sigc::connection SplitPointSyncParameters::onChangeWithTransaction(const tSlot& cb)
+{
+  return m_signalWithTransaction.connect(cb);
+}

@@ -40,12 +40,23 @@ SplitPointParameterLayout::SplitPointParameterLayout()
 {
   addControl(new SplitPointOverlapIndicator({ BIG_SLIDER_X - 4, 23, 1, 8 }));
   setMode(Mode::ParameterValue);
+
+  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  m_connection = sync->onChange([this](const Setting *s) { setMode(getMode()); });
+  m_connectionWithTransaction = sync->onChangeWithTransaction([this](const Setting *s, auto) { setMode(getMode()); });
+}
+
+SplitPointParameterLayout::~SplitPointParameterLayout()
+{
+  m_connectionWithTransaction.disconnect();
+  m_connection.disconnect();
 }
 
 SplitPointParameterEditLayout::SplitPointParameterEditLayout()
 {
-  m_settingConnection = Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
-      [this](const Setting *s) { fixValueControl(); });
+  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  m_connection = sync->onChange([this](const Setting *s) { fixValueControl(); });
+  m_connectionWithTransaction = sync->onChangeWithTransaction([this](const Setting *s, auto) { fixValueControl(); });
 }
 
 void SplitPointParameterEditLayout::fixValueControl()
@@ -94,5 +105,6 @@ Control *SplitPointParameterEditLayout::createParameterValueControl()
 
 SplitPointParameterEditLayout::~SplitPointParameterEditLayout()
 {
-  m_settingConnection.disconnect();
+  m_connection.disconnect();
+  m_connectionWithTransaction.disconnect();
 }
