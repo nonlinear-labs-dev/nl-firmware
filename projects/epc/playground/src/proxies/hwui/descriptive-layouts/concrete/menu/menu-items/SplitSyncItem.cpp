@@ -15,7 +15,7 @@ SplitSyncItem::SplitSyncItem(const Rect& r)
     : BasicItemWithValueText("Sync Split", "", r)
 {
 
-  m_connection = Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
+  Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
       sigc::mem_fun(this, &SplitSyncItem::onSettingChanged));
 
   m_enterLabel->setText({ "" });

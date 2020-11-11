@@ -12,6 +12,4 @@ class SplitSyncItem : public BasicItemWithValueText
 
  private:
   void onSettingChanged(const Setting* s);
-
-  sigc::connection m_connection;
 };
