@@ -249,12 +249,17 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
     m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
     m_gain_curve_index[_event->m_voiceId] = 0;
 #endif
-    m_combfilter.setDelaySmoother(_event->m_voiceId);
     startEnvelopes(_event->m_voiceId, m_note_pitch[_event->m_voiceId], _event->m_velocity);
   }
   // process signals after starting envelopes
   postProcess_poly_key(_event->m_voiceId);
   setSlowFilterCoefs(_event->m_voiceId);
+  // set comb delay smoother after pitch processing (unfortunately separate if statement)
+  // is this legato-dependant?
+  if(_event->m_trigger_env)
+  {
+    m_combfilter.setDelaySmoother(_event->m_voiceId);
+  }
   m_key_active++;
   return retrigger_mono;
 }
