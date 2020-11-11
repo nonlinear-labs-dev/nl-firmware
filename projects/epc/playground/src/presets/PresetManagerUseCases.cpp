@@ -25,7 +25,7 @@ void PresetManagerUseCases::overwritePreset(Preset* preset)
     bank->selectPreset(transaction, preset->getUuid());
     m_presetManager->selectBank(transaction, bank->getUuid());
 
-    m_presetManager->onPresetStored(preset);
+    m_presetManager->onPresetStored();
 
     assert(m_presetManager->getSelectedBank() == bank);
     assert(bank->getSelectedPreset() == preset);
@@ -66,7 +66,7 @@ void PresetManagerUseCases::insertPresetWithUUID(Bank* bank, size_t pos, const s
   auto scope = Application::get().getUndoScope()->startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
   auto ebIsModified = m_presetManager->getEditBuffer()->isModified();
-  
+
   auto preset = bank->insertAndLoadPreset(transaction, pos, std::make_unique<Preset>(bank, *pm->getEditBuffer(), id));
 
   m_presetManager->selectBank(transaction, bank->getUuid());

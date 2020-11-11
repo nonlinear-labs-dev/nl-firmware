@@ -1000,12 +1000,12 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
   }
 }
 
-void PresetManager::onPresetStored(const Preset *storedPreset)
+void PresetManager::onPresetStored()
 {
-  m_presetStoreHappened.deferedSend(storedPreset);
+  m_presetStoreHappened.deferedSend();
 }
 
-sigc::connection PresetManager::onPresetStoreHappened(sigc::slot<void, const Preset *> cb)
+sigc::connection PresetManager::onPresetStoreHappened(sigc::slot<void> cb)
 {
   return m_presetStoreHappened.connect(cb);
 }
