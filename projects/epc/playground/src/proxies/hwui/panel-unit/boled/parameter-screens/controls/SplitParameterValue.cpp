@@ -86,6 +86,7 @@ FrameBufferColors SplitParameterValue::getColorForSplit(int i)
 {
   VoiceGroup selectedVg = Application::get().getHWUI()->getCurrentVoiceGroup();
   const FrameBufferColors highlighted = FrameBufferColors::C255;
+  const FrameBufferColors unhighlighted = FrameBufferColors::C128;
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto sI = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
@@ -96,12 +97,12 @@ FrameBufferColors SplitParameterValue::getColorForSplit(int i)
   switch(i)
   {
     case 0:
-      return selectedVg == invert(biggerPart) ? highlighted : getFontColor();
+      return selectedVg == invert(biggerPart) ? highlighted : unhighlighted;
     case 2:
-      return selectedVg == biggerPart ? highlighted : getFontColor();
+      return selectedVg == biggerPart ? highlighted : unhighlighted;
     default:
     case 1:
-      return getFontColor();
+      return unhighlighted;
   }
 }
 
