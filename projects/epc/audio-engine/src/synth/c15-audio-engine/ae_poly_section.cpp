@@ -226,6 +226,7 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
     {
       m_mono_glide.sync(0, 0.0f);
       m_mono_glide.start(0, m_time->eval_ms(3, m_smoothers.get(C15::Smoothers::Poly_Slow::Mono_Grp_Glide)), 1.0f);
+      m_mono_glide.render();
     }
     else
     {
