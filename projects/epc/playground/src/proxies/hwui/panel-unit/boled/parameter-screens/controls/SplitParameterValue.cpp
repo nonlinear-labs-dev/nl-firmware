@@ -7,19 +7,75 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <parameter_declarations.h>
+#include <proxies/hwui/controls/PNGControl.h>
 #include "SplitParameterValue.h"
 #include "proxies/hwui/controls/Label.h"
+#include "device-settings/Settings.h"
+#include "device-settings/SplitPointSyncParameters.h"
 
 SplitParameterValue::SplitParameterValue(const Rect& pos)
     : Label(pos)
 {
   setFontColor(FrameBufferColors::C179);
+
+  init();
 }
 
 SplitParameterValue::SplitParameterValue(const Label::StringAndSuffix& text, const Rect& pos)
     : Label(text, pos)
 {
   setFontColor(FrameBufferColors::C179);
+
+  init();
+}
+
+void SplitParameterValue::init()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto split1 = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
+  auto split2 = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
+
+  auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  setting->onChange(sigc::mem_fun(this, &SplitParameterValue::onSyncSettingChanged));
+
+  auto pos = getPosition();
+  pos.setWidth(9);
+  pos.setLeft(pos.getRight() - 8);
+  pos.setTop(pos.getTop() + 2);
+
+  overlapIndicator = std::make_shared<PNGControl>(pos, "overlap-a.png");
+  overlapIndicator->useImageColors(true);
+
+  split1->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIChanged));
+  split2->onParameterChanged(sigc::mem_fun(this, &SplitParameterValue::onSplitIIChanged));
+}
+
+void SplitParameterValue::onSplitIChanged(const Parameter* splitI)
+{
+  m_splitICP = splitI->getControlPositionValue();
+  onSplitValuesChanged();
+}
+
+void SplitParameterValue::onSplitIIChanged(const Parameter* splitII)
+{
+  m_splitIICP = splitII->getControlPositionValue();
+  onSplitValuesChanged();
+}
+
+void SplitParameterValue::onSplitValuesChanged()
+{
+  auto overlap = m_splitICP >= m_splitIICP;
+  m_splitParametersHaveOverlap = overlap;
+  overlapIndicator->setVisible(m_splitParametersHaveOverlap && !m_syncSettingState);
+}
+
+void SplitParameterValue::onSyncSettingChanged(const Setting* s)
+{
+  if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
+  {
+    m_syncSettingState = sync->get();
+    overlapIndicator->setVisible(m_splitParametersHaveOverlap && !m_syncSettingState);
+  }
 }
 
 void SplitParameterValue::drawParts(FrameBuffer& fb, const std::vector<Glib::ustring>& parts)
@@ -71,6 +127,9 @@ bool SplitParameterValue::redraw(FrameBuffer& fb)
   {
     Label::redraw(fb);
   }
+
+  overlapIndicator->redraw(fb);
+
   return true;
 }
 
@@ -79,5 +138,5 @@ Label::StringAndSuffix SplitParameterValue::getText() const
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto sI = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto sII = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
-  return { sI->getDisplayString() + "\t-\t" + sII->getDisplayString(), "" };
+  return { sI->getDisplayString() + "\t|\t" + sII->getDisplayString(), "" };
 }
