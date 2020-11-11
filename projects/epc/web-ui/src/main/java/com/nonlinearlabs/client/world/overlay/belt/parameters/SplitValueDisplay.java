@@ -64,9 +64,9 @@ public class SplitValueDisplay extends Label {
     protected RGB getColorFontForSplit(int i) {
         switch (i) {
             case 0:
-                return getVoiceGroupColorFont(VoiceGroup.I);
+                return getVoiceGroupColorFont(getSmallerPart());
             case 2:
-                return getVoiceGroupColorFont(VoiceGroup.II);
+                return getVoiceGroupColorFont(getLargerPart());
             case 1:
             default:
                 return getColorFont().darker(50);

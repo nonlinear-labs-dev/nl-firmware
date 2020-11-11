@@ -51,7 +51,7 @@ namespace DescriptiveLayouts
        CurrentNumber, CurrentName, CurrentSelected, CurrentLoaded,
 
        NextNumber, NextName, NextSelected, NextLoaded, PreviousType, NextType, CurrentType, CurrentVoiceGroupText,
-       EditBufferNameWithSuffix, SyncSplitEnabled, SyncSplitDisabled,
+       EditBufferNameWithSuffix, SyncSplitEnabled, SyncSplitDisabled, SplitPointDefaultBehaviourWithoutSync,
 
        AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0,
        LayerFBState, LayerFBOffset, LayerFXState, LayerFXOffset);

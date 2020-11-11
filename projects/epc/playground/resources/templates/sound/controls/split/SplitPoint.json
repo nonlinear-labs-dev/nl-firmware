@@ -9,7 +9,7 @@
     "SplitPointI": {
       "Arrow": {
         "Class": "Bar",
-        "Rect": "0, 4, 5, 1"
+        "Rect": "0, 4, 4, 1"
       },
       "Text": {
         "Class": "Text",
@@ -24,6 +24,12 @@
       "Arrow": {
         "Class": "Bar",
         "Rect": "20, 4, 4, 1"
+      }
+    },
+    "SplitPointLine": {
+      "Line": {
+        "Class": "Bar",
+        "Rect": "0, 0, 1, 4"
       }
     },
     "SyncSplitPointIndicator": {

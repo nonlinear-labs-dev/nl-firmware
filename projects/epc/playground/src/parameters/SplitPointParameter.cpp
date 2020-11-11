@@ -239,10 +239,24 @@ bool SplitPointParameter::hasOverlap()
 {
   if(getVoiceGroup() == VoiceGroup::I)
   {
-    return getControlPositionValue() >= getSibling()->getControlPositionValue();
+    return getControlPositionValue() > getSibling()->getControlPositionValue();
   }
   else
   {
-    return getControlPositionValue() <= getSibling()->getControlPositionValue();
+    return getSibling()->hasOverlap();
+  }
+}
+
+bool SplitPointParameter::inDefaultSplitBehaviour() const
+{
+  auto sib = getSibling();
+  if(getVoiceGroup() == VoiceGroup::I)
+  {
+    auto sibPrev = sib->getNextStepValue(-1, {});
+    return getValue().getQuantizedClipped() == sibPrev;
+  }
+  else
+  {
+    return sib->inDefaultSplitBehaviour();
   }
 }

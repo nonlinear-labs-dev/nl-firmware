@@ -18,6 +18,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit, publ
   void setModulationSourceFromSibling(UNDO::Transaction* transaction, MacroControls src);
   SplitPointParameter* getSibling() const;
   bool hasOverlap();
+  bool inDefaultSplitBehaviour() const;
 
  protected:
   void onSyncSettingChanged(const Setting* s);

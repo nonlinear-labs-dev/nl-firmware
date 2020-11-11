@@ -4,7 +4,10 @@
 #include "testing/TestRootDocument.h"
 #include "parameters/SplitPointParameter.h"
 #include "testing/TestHelper.h"
+#include "device-settings/Settings.h"
+#include "device-settings/SplitPointSyncParameters.h"
 #include <catch.hpp>
+#include <parameter_declarations.h>
 
 TEST_CASE("Split Point Display Value")
 {
@@ -21,6 +24,9 @@ TEST_CASE("Split Point Display Value")
   auto transScope = UNDO::Scope::startTrashTransaction();
   auto transaction = transScope->getTransaction();
 
+  auto syncSetting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  syncSetting->setState(false, transaction);
+
   splitI->setCPFromHwui(transaction, 0);
   splitII->setCPFromHwui(transaction, 0);
   CHECK(splitI->getDisplayString() == "C1");
@@ -35,6 +41,39 @@ TEST_CASE("Split Point Display Value")
   splitII->setCPFromHwui(transaction, 1);
   CHECK(splitI->getDisplayString() == "C6");
   CHECK(splitII->getDisplayString() == "C6");
+}
+
+TEST_CASE("Split Point Helper Functions")
+{
+  auto eb = TestHelper::getEditBuffer();
+  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
+  auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
+
+  WHEN("Init")
+  {
+    TestHelper::initDualEditBuffer<SoundType::Split>();
+    THEN("Default Split Behaviour I|II")
+    {
+      CHECK(sI->inDefaultSplitBehaviour());
+      CHECK(sII->inDefaultSplitBehaviour());
+    }
+
+    WHEN("Sync Off and Overlap set")
+    {
+      auto scope = TestHelper::createTestScope();
+      auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+      setting->setState(false, scope->getTransaction());
+      sI->stepCPFromHwui(scope->getTransaction(), 2, {});
+      THEN("Split Behaviour has Overlap and not Default")
+      {
+        CHECK(sI->hasOverlap());
+        CHECK(sII->hasOverlap());
+
+        CHECK_FALSE(sI->inDefaultSplitBehaviour());
+        CHECK_FALSE(sII->inDefaultSplitBehaviour());
+      }
+    }
+  }
 }
 
 TEST_CASE("Note to Display")

@@ -132,6 +132,8 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::LayerFXState] = std::make_unique<LayerFXState>();
     m_map[EventSources::LayerFXOffset] = std::make_unique<LayerFXOffset>();
+
+    m_map[EventSources::SplitPointDefaultBehaviourWithoutSync] = std::make_unique<SplitPointBehaviourIsDefaultWithoutSync>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

@@ -201,4 +201,10 @@ namespace DescriptiveLayouts
    public:
     void onChange(const EditBuffer *eb) override;
   };
+
+  class SplitPointBehaviourIsDefaultWithoutSync : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
 }
