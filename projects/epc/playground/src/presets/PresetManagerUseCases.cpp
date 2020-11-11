@@ -123,5 +123,5 @@ void PresetManagerUseCases::onStore(UNDO::Transaction* transaction, Preset* pres
     setting->onStoreHappened(transaction, preset);
   }
 
-  m_presetManager->onPresetStored(preset);
+  m_presetManager->onPresetStored();
 }

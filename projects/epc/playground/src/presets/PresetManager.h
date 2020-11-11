@@ -77,7 +77,7 @@ class PresetManager : public ContentSection
   void selectPreviousBank();
   void selectNextBank();
   void onPresetSelectionChanged();
-  void onPresetStored(const Preset *p);
+  void onPresetStored();
 
   std::shared_ptr<ScopedGuard::Lock> lockLoading();
 
@@ -115,7 +115,7 @@ class PresetManager : public ContentSection
   sigc::connection onBankSelection(sigc::slot<void, Uuid> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
-  sigc::connection onPresetStoreHappened(sigc::slot<void, const Preset *> cb);
+  sigc::connection onPresetStoreHappened(sigc::slot<void> cb);
 
   const Preset *getSelectedPreset() const;
   Preset *getSelectedPreset();
@@ -160,7 +160,7 @@ class PresetManager : public ContentSection
   SignalWithCache<void, Uuid> m_sigBankSelection;
   SignalWithCache<void, size_t> m_sigNumBanksChanged;
   Signal<void> m_sigRestoreHappened;
-  Signal<void, const Preset *> m_presetStoreHappened;
+  Signal<void> m_presetStoreHappened;
 
   std::atomic_bool m_autoLoadScheduled { false };
 

@@ -401,7 +401,7 @@ void PresetManagerLayout::setStoreModeData(std::unique_ptr<StoreModeData> ptr)
   getStoreModePtr() = std::move(ptr);
 }
 
-void PresetManagerLayout::onPresetStoreHappened(const Preset *preset)
+void PresetManagerLayout::onPresetStoreHappened()
 {
   auto hwui = Application::get().getHWUI();
   if(hwui->getFocusAndMode().mode == UIMode::Store)
