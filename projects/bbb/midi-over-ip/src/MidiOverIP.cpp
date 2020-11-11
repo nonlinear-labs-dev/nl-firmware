@@ -101,7 +101,7 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
   }
 }
 
-void configureMessaging(const Options &options)
+void configureMessaging(const Options &options, bool hasInput, bool hasOutput)
 {
   using namespace nltools::msg;
   using nltools::threading::Priority;
@@ -109,8 +109,13 @@ void configureMessaging(const Options &options)
   auto aeHost = options.getAudioEngineHost();
 
   Configuration conf;
-  conf.offerEndpoints = { { EndPoint::ExternalMidiOverIPBridge, Priority::AlmostRealtime } };
-  conf.useEndpoints = { { EndPoint::ExternalMidiOverIPClient, aeHost, Priority::AlmostRealtime } };
+
+  if(hasOutput)
+    conf.offerEndpoints = { { EndPoint::ExternalMidiOverIPBridge, Priority::AlmostRealtime } };
+
+  if(hasInput)
+    conf.useEndpoints = { { EndPoint::ExternalMidiOverIPClient, aeHost, Priority::AlmostRealtime } };
+
   nltools::msg::init(conf);
 }
 
@@ -137,6 +142,29 @@ void runMainLoop()
   loop->run();
 }
 
+int openMidiDevices(const Options &options, snd_rawmidi_t *&inputHandle, snd_rawmidi_t *&outputHandle)
+{
+  if(!options.getMidiInDevice().empty())
+  {
+    if(snd_rawmidi_open(&inputHandle, nullptr, options.getMidiInDevice().c_str(), SND_RAWMIDI_NONBLOCK))
+    {
+      nltools::Log::error("Could not open midi in device");
+      return EXIT_FAILURE;
+    }
+  }
+
+  if(!options.getMidiOutDevice().empty())
+  {
+    if(snd_rawmidi_open(nullptr, &outputHandle, options.getMidiOutDevice().c_str(), SND_RAWMIDI_NONBLOCK))
+    {
+      nltools::Log::error("Could not open midi out device");
+      return EXIT_FAILURE;
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
+
 int main(int args, char *argv[])
 {
   using namespace nltools::msg;
@@ -148,36 +176,44 @@ int main(int args, char *argv[])
   signal(SIGTERM, quit);
 
   Options options(args, argv);
-  configureMessaging(options);
 
   snd_rawmidi_t *inputHandle = nullptr;
   snd_rawmidi_t *outputHandle = nullptr;
 
-  if(snd_rawmidi_open(&inputHandle, &outputHandle, options.getMidiDevice().c_str(), SND_RAWMIDI_NONBLOCK))
-  {
-    nltools::Log::error("Could not open midi device");
+  if(openMidiDevices(options, inputHandle, outputHandle) != EXIT_SUCCESS)
     return EXIT_FAILURE;
-  }
+
+  configureMessaging(options, inputHandle, outputHandle);
 
   constexpr auto endPoint = EndPoint::ExternalMidiOverIPBridge;
-  auto msg = receive<SimpleMessage>(endPoint, [&](const auto &msg) { sendToExternalDevice(outputHandle, msg); });
-  auto ack = receive<MessageAcknowledge>(endPoint, [&](const auto &msg) { measureRoundTripTime(msg); });
+
+  std::thread sender;
+
+  if(outputHandle)
+  {
+    receive<SimpleMessage>(endPoint, [=](const auto &msg) { sendToExternalDevice(outputHandle, msg); });
+  }
 
   pipe(cancelPipe);
-  auto sender = std::thread([&] { readMidi(cancelPipe[0], inputHandle); });
 
-  runMainLoop();
+  if(inputHandle)
+  {
+    receive<MessageAcknowledge>(endPoint, [](const auto &msg) { measureRoundTripTime(msg); });
+    sender = std::thread([&] { readMidi(cancelPipe[0], inputHandle); });
+  }
 
-  if(sender.joinable())
-    sender.join();
+  if(inputHandle || outputHandle)
+  {
+    runMainLoop();
 
-  msg.disconnect();
-  ack.disconnect();
+    if(sender.joinable())
+      sender.join();
 
-  snd_rawmidi_close(outputHandle);
-  snd_rawmidi_close(inputHandle);
+    snd_rawmidi_close(outputHandle);
+    snd_rawmidi_close(inputHandle);
 
-  nltools::Log::warning("MidiOverIP, round trip time:", minRTT.count(), " ... ", maxRTT.count(), "us");
+    nltools::Log::warning("MidiOverIP, round trip time:", minRTT.count(), " ... ", maxRTT.count(), "us");
+  }
 
   return EXIT_SUCCESS;
 }

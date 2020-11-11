@@ -9,6 +9,7 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
     : Synth(options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
+    , m_externalMidiOutThread([this] { sendExternalMidiOut(); })
 {
   m_hwSourceValues.fill(0);
 
@@ -47,20 +48,43 @@ C15Synth::C15Synth(const AudioEngineOptions* options)
     m_dsp->onMidiMessage(100, static_cast<uint32_t>(noteDown.m_keyPos), 0);
   });
 
+  // receive program changes from playground and dispatch it to midi-over-ip
+  receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
+    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage{ 0, 0xC0, pc.program, 0 });
+    m_externalMidiOutThreadWaiter.notifyUnlocked();
+  });
+
   receive<nltools::msg::Midi::SimpleMessage>(EndPoint::ExternalMidiOverIPClient, [&](const auto& msg) {
     MidiEvent e;
     std::copy(msg.rawBytes, msg.rawBytes + 3, e.raw);
-    pushMidiEvent(e);
 
-    nltools::msg::Midi::MessageAcknowledge ack;
-    ack.id = msg.id;
-    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, ack);
+    if((e.raw[0] & 0xF0) == 0xC0)
+    {
+      // receive program changes midi-over-ip and dispatch it to playground
+      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage{ e.raw[1] });
+    }
+    else
+    {
+      pushMidiEvent(e);
+
+      // TODO: after successfull evaluation of round trip times, remove this messages
+      nltools::msg::Midi::MessageAcknowledge ack;
+      ack.id = msg.id;
+      send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, ack);
+    }
   });
 
   Glib::MainContext::get_default()->signal_idle().connect(sigc::mem_fun(this, &C15Synth::doIdle));
 }
 
-C15Synth::~C15Synth() = default;
+C15Synth::~C15Synth()
+{
+  m_quit = true;
+  m_externalMidiOutThreadWaiter.notify();
+
+  if(m_externalMidiOutThread.joinable())
+    m_externalMidiOutThread.join();
+}
 
 void C15Synth::doMidi(const MidiEvent& event)
 {
@@ -71,9 +95,9 @@ void C15Synth::doTcd(const MidiEvent& event)
 {
   m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2], [=](auto outgoingMidiMessage) {
     nltools::msg::Midi::SimpleMessage msg;
-    msg.id = 0;
     std::copy(outgoingMidiMessage.begin(), outgoingMidiMessage.end(), msg.rawBytes);
-    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, msg);
+    m_externalMidiOutBuffer.push(msg);
+    m_externalMidiOutThreadWaiter.notifyUnlocked();
   });
 }
 
@@ -109,12 +133,33 @@ bool C15Synth::doIdle()
   {
     if(std::exchange(m_hwSourceValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
     {
-      nltools::msg::send(nltools::msg::EndPoint::Playground,
-                         nltools::msg::HardwareSourceChangedNotification { i, engineHWSourceValues[i] });
+      nltools::msg::send(
+          nltools::msg::EndPoint::Playground,
+          nltools::msg::HardwareSourceChangedNotification{ i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
 
   return true;
+}
+
+void C15Synth::sendExternalMidiOut()
+{
+  while(!m_quit)
+  {
+    m_externalMidiOutThreadWaiter.wait();
+
+    while(!m_quit && !m_externalMidiOutBuffer.empty())
+    {
+      auto msg = m_externalMidiOutBuffer.pop();
+      send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, msg);
+      if(LOG_MIDI_OUT)
+      {
+        nltools::Log::info("midiOut(status: ", static_cast<uint16_t>(msg.rawBytes[0]),
+                           ", data0: ", static_cast<uint16_t>(msg.rawBytes[1]),
+                           ", data1: ", static_cast<uint16_t>(msg.rawBytes[2]), ")");
+      }
+    }
+  }
 }
 
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)

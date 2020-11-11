@@ -34,8 +34,10 @@ inline constexpr bool VOICE_FADE_INTERPOLATION = true;
 inline constexpr bool LOG_MISSING = false;
 inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
-inline constexpr bool LOG_MIDI = false;
+inline constexpr bool LOG_MIDI_TCD = false;
+inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
+inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
@@ -54,6 +56,37 @@ inline constexpr bool LOG_ENGINE_EDITS = false;
 inline constexpr uint32_t LOG_PARAMS_LENGTH = 3;
 // use tcd ids here (currently: Split Point, Unison Detune)
 static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
+
+namespace MSB
+{
+  // encode HW source number and MSB CC
+  enum HWSourceMidiCC
+  {
+    Ped1 = 0 << 8 | 20,
+    Ped2 = 1 << 8 | 21,
+    Ped3 = 2 << 8 | 22,
+    Ped4 = 3 << 8 | 23,
+    Bender = 4 << 8 | 0,
+    Aftertouch = 5 << 8 | 0,
+    Rib1 = 6 << 8 | 24,
+    Rib2 = 7 << 8 | 25
+  };
+}
+
+namespace LSB
+{
+  // encode HW source number and LSB CC
+  enum HWSourceMidiCC
+  {
+    Ped1 = 0 << 8 | 52,
+    Ped2 = 1 << 8 | 53,
+    Ped3 = 2 << 8 | 54,
+    Ped4 = 3 << 8 | 55,
+    Rib1 = 6 << 8 | 56,
+    Rib2 = 7 << 8 | 57,
+    Vel = 0xFF << 8 | 88
+  };
+}
 
 class dsp_host_dual
 {
@@ -74,9 +107,8 @@ class dsp_host_dual
   using SimpleRawMidiMessage = std::array<uint8_t, 3>;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
-  void onTcdMessage(
-      const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
-      const MidiOut& out = [](const SimpleRawMidiMessage&) {});
+  void onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
+                    const MidiOut& out = getNullMidiOut());
 
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   // event bindings: Preset Messages
@@ -137,6 +169,9 @@ class dsp_host_dual
   uint32_t m_key_pos = 0, m_tone_state = 0;
   bool m_key_valid = false, m_glitch_suppression = false;
 
+  std::array<uint8_t, 8> m_hwSourcesMidiLSB;
+  uint8_t m_velocityLSB = 0;
+
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
   C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
@@ -149,7 +184,7 @@ class dsp_host_dual
   void keyUp(const float _vel);
   float scale(const Scale_Aspect _scl, float _value);
   // inner event flow
-  void updateHW(const uint32_t _id, const float _raw);
+  void updateHW(const uint32_t _id, const float _raw, const MidiOut& out);
   void updateTime(Time_Aspect* _param, const float _ms);
   void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);
   void globalModChain(Macro_Param* _mc);
@@ -184,4 +219,9 @@ class dsp_host_dual
 #if __POTENTIAL_IMPROVEMENT_NUMERIC_TESTS__
   void PotentialImprovements_RunNumericTests();
 #endif
+
+  static inline MidiOut getNullMidiOut()
+  {
+    return [](const SimpleRawMidiMessage&) {};
+  }
 };

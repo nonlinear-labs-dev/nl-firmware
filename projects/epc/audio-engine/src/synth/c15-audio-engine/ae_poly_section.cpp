@@ -147,15 +147,25 @@ void PolySection::render_audio(const float _mute)
   m_z_self->m_osc_b = m_soundgenerator.m_out_B;
   m_z_self->m_comb = m_combfilter.m_out;
   m_z_self->m_svf = m_svfilter.m_out;
-  m_z_self->m_mute_factor = m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);  // track part mute for fb mixer
   // eval sends
-  float send = (1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX));  // send self stays unmuted
-  m_send_self_l = m_outputmixer.m_out_l * send;
-  m_send_self_r = m_outputmixer.m_out_r * send;
-  send = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX)
-      * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);  // apply part mute to send other
-  m_send_other_l = m_outputmixer.m_out_l * send;
-  m_send_other_r = m_outputmixer.m_out_r * send;
+#if POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_DISABLED__
+  const float send_self = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX),
+              send_other = (1.0f - send_self) * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
+#elif POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_ENABLED__
+  const float send_other = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX), send_self = 1.0f - send_other;
+#endif
+  m_send_self_l = m_outputmixer.m_out_l * send_self;
+  m_send_self_r = m_outputmixer.m_out_r * send_self;
+  m_send_other_l = m_outputmixer.m_out_l * send_other;
+  m_send_other_r = m_outputmixer.m_out_r * send_other;
+  // env rendering (unfortunately another voice loop)
+  for(uint32_t v = 0; v < m_voices; v++)
+  {
+    m_env_a.tick(v, _mute);
+    m_env_b.tick(v, _mute);
+    m_env_c.tick(v, _mute);
+    m_env_g.tick(v);
+  }
 }
 
 void PolySection::render_feedback(const LayerSignalCollection& _z_other)
@@ -470,11 +480,6 @@ float PolySection::evalScale(const uint32_t _voiceId)
 
 void PolySection::postProcess_poly_audio(const uint32_t _voiceId, const float _mute)
 {
-  // env rendering
-  m_env_a.tick(_voiceId, _mute);
-  m_env_b.tick(_voiceId, _mute);
-  m_env_c.tick(_voiceId, _mute);
-  m_env_g.tick(_voiceId);
   // provide poly env signals
   float gain = m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Gain);
   m_signals.set_poly(C15::Signals::Truepoly_Signals::Env_A_Mag, _voiceId,
@@ -742,12 +747,7 @@ void PolySection::postProcess_poly_pitch(const uint32_t _voiceId, const float _e
 
 void PolySection::postProcess_poly_key(const uint32_t _voiceId)
 {
-  // we'd like to have envelope c immediately affect pitches if necessary (before next clock)
-  const bool envC_override = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att)
-      < 0.005f;  // override condition: env-c phase is attack (as only triggered by key events), attack time is close enough zero
-  postProcess_poly_pitch(_voiceId,
-                         envC_override ? m_env_c.m_levelFactor[_voiceId]
-                                       : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId));
+  postProcess_poly_pitch(_voiceId, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId));
   // - key override event now fully separated from clock, env c peak level is active immediately when attack == 0
   // LATER: consider re-formulating envelopes (keydown already affects signal) and rendering them after everything else (avoiding this override)
   // pitch, unison, temporary variables
@@ -847,7 +847,6 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   {
     peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
   }
-  m_env_a.m_levelFactor[_voiceId] = peak;
   m_env_a.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_a.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
@@ -880,7 +879,6 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   {
     peak = std::min(m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT), env_clip_peak);
   }
-  m_env_b.m_levelFactor[_voiceId] = peak;
   m_env_b.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_b.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
@@ -913,12 +911,12 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   }
   peak = std::min(unclipped, env_clip_peak);
   m_env_c.m_clipFactor[_voiceId] = unclipped / peak;
-  m_env_c.m_levelFactor[_voiceId] = peak;
   m_env_c.m_timeFactor[_voiceId][0] = m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_c.m_timeFactor[_voiceId][1] = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
   m_env_c.m_timeFactor[_voiceId][2] = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
   m_env_c.setAttackCurve(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Curve));
   m_env_c.setRetriggerHardness(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Retr_H));
+  m_env_c.setPeakLevel(_voiceId, peak);
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att) * m_env_c.m_timeFactor[_voiceId][0];
   m_env_c.setSegmentDx(_voiceId, 1, 1.0f / (time + 1.0f));
   m_env_c.setSegmentDest(_voiceId, 1, peak);

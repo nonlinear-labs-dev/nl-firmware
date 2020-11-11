@@ -11,8 +11,9 @@ namespace UNDO
 }
 
 class EditBuffer;
+class Uuid;
 
-class AudioEngineProxy
+class AudioEngineProxy : public sigc::trackable
 {
  public:
   AudioEngineProxy();
@@ -31,12 +32,12 @@ class AudioEngineProxy
   template <class tMessage> void sendParameterMessage(const tMessage& msg)
   {
     if(!m_suppressParamChanges)
-      send(sendToEndPoint, msg);
+      send(nltools::msg::EndPoint::AudioEngine, msg);
   }
 
   template <typename tSettingMessage> void sendSettingMessage(const tSettingMessage& msg)
   {
-    send(sendToEndPoint, msg);
+    send(nltools::msg::EndPoint::AudioEngine, msg);
   }
 
   void sendEditBuffer();
@@ -51,9 +52,12 @@ class AudioEngineProxy
   static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
-  nltools::msg::EndPoint sendToEndPoint = nltools::msg::EndPoint::AudioEngine;
-  uint m_suppressParamChanges = 0;
-
   static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
   static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
+
+  void onBankSelectionChanged(const Uuid& uuid);
+  void onBankChanged();
+
+  uint m_suppressParamChanges = 0;
+  sigc::connection m_presetSelectionConnection;
 };

@@ -1,12 +1,12 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file       parameter_list.h
-    @date       2020-10-07, 13:22
-    @version	1.7B-7
-    @author     M. Seeber
-    @brief      complete list of parameters (and their properties) in TCD order
-    @todo
+/**	@file	parameter_list.h
+	@date	2020-11-03, 06:44
+	@version	1.7B-7
+	@author	M. Seeber
+	@brief	complete list of parameters (and their properties) in TCD order
+	@todo
 *******************************************************************************/
 
 #include "c15_config.h"
@@ -1814,7 +1814,7 @@ namespace C15
       PID::Env_A_Dec_1_Vel,
       0.0f,
       { Smoothers::Poly_Sync::Env_A_Dec_1_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
-      { 60, 600, None, None, "", "Envelope A", "Envelope A", "Decay 1 Velocity", "Dec 1 Vel",
+      { 60, 600, None, None, "", "Envelope A", "Envelope A", "Decay 1 Velocity", "Velocity",
         "Velocity influence on the Decay 1 time. The value represents the logarithmic amount of the reduction "
         "(negative values) or gain (positive values) of the Decay 1 time by high Note-On velocities." } },
     { None },
@@ -1822,7 +1822,7 @@ namespace C15
       PID::Env_A_Dec_2_Vel,
       0.0f,
       { Smoothers::Poly_Sync::Env_A_Dec_2_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
-      { 60, 600, None, None, "", "Envelope A", "Envelope A", "Decay 2 Velocity", "Dec 2 Vel",
+      { 60, 600, None, None, "", "Envelope A", "Envelope A", "Decay 2 Velocity", "Velocity",
         "Velocity influence on the Decay 2 time. The value represents the logarithmic amount of the reduction "
         "(negative values) or gain (positive values) of the Decay 2 time by high Note-On velocities." } },
     { None },
@@ -1839,7 +1839,7 @@ namespace C15
       PID::Env_B_Dec_1_Vel,
       0.0f,
       { Smoothers::Poly_Sync::Env_B_Dec_1_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
-      { 60, 600, None, None, "", "Envelope B", "Envelope B", "Decay 1 Velocity", "Dec 1 Vel",
+      { 60, 600, None, None, "", "Envelope B", "Envelope B", "Decay 1 Velocity", "Velocity",
         "Velocity influence on the Decay 1 time. The value represents the logarithmic amount of the reduction "
         "(negative values) or gain (positive values) of the Decay 1 time by high Note-On velocities." } },
     { None },
@@ -1847,7 +1847,7 @@ namespace C15
       PID::Env_B_Dec_2_Vel,
       0.0f,
       { Smoothers::Poly_Sync::Env_B_Dec_2_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
-      { 60, 600, None, None, "", "Envelope B", "Envelope B", "Decay 2 Velocity", "Dec 2 Vel",
+      { 60, 600, None, None, "", "Envelope B", "Envelope B", "Decay 2 Velocity", "Velocity",
         "Velocity influence on the Decay 2 time. The value represents the logarithmic amount of the reduction "
         "(negative values) or gain (positive values) of the Decay 2 time by high Note-On velocities." } },
     { None },
