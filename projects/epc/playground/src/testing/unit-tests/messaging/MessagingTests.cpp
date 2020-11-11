@@ -1,8 +1,9 @@
 #include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
 #include <nltools/logging/Log.h>
-#include <glib.h>
+#include <glibmm.h>
 #include <nltools/threading/Expiration.h>
+#include <nltools/threading/ContextBoundMessageQueue.h>
 #include <testing/TestHelper.h>
 
 using namespace nltools::msg;
@@ -60,4 +61,20 @@ TEST_CASE("No packet doubles", "[Messaging][nltools]")
 
   TestHelper::doMainLoop(1s, 1s, [&] { return numRecMessages <= numSendMessages; });
   c.disconnect();
+}
+
+TEST_CASE("ContextBoundMessageQueue - no send after destruction")
+{
+  auto ctx = Glib::MainContext::create();
+  auto queue = std::make_unique<nltools::threading::ContextBoundMessageQueue>(ctx);
+  bool firstCBReached = false;
+  bool secondCBReached = false;
+  queue->pushMessage([&] { firstCBReached = true; });
+  ctx->iteration(FALSE);
+  queue->pushMessage([&] { secondCBReached = true; });
+  queue.reset();
+  ctx->iteration(FALSE);
+
+  CHECK(firstCBReached);
+  CHECK(!secondCBReached);
 }

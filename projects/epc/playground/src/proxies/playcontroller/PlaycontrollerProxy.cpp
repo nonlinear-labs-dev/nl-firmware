@@ -212,6 +212,10 @@ void PlaycontrollerProxy::onHardwareSourceReceived(const MessageParser::NLMessag
     DebugLevel::info("physical control parameter:", param->getMiniParameterEditorName(), ": ", value);
     applyParamMessageAbsolutely(param, value);
   }
+  else if(id == HW_SOURCE_ID_LAST_KEY)
+  {
+    notifyLastKey(value);
+  }
   else
   {
     DebugLevel::info("could not parse hw id", id, " to physical control parameter");
@@ -391,6 +395,11 @@ sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(con
   return m_signalPlaycontrollerSoftwareVersionChanged.connectAndInit(s, m_playcontrollerSoftwareVersion);
 }
 
+sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void, int> s)
+{
+  return m_lastKeyChanged.connect(s);
+}
+
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
   tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
@@ -404,4 +413,9 @@ void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
 {
   return (m_playcontrollerSoftwareVersion == -1) ? "-" : std::to_string(m_playcontrollerSoftwareVersion);
+}
+
+void PlaycontrollerProxy::notifyLastKey(gint16 key)
+{
+  m_lastKeyChanged.send(key);
 }

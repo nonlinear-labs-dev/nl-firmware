@@ -12,14 +12,15 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port)
+      WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port,
+                                               nltools::threading::Priority p)
           : m_uri(nltools::string::concat("http://", targetMachine, ":", port))
           , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)
           , m_mainThreadContextQueue(
                 std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
-          , m_contextThread(std::bind(&WebSocketOutChannel::backgroundThread, this))
+          , m_contextThread([=] { this->backgroundThread(p); })
       {
       }
 
@@ -99,9 +100,10 @@ namespace nltools
         return m_connectionEstablishedWaiter.isNotified();
       }
 
-      void WebSocketOutChannel::backgroundThread()
+      void WebSocketOutChannel::backgroundThread(nltools::threading::Priority p)
       {
         pthread_setname_np(pthread_self(), "WebSockOut");
+        threading::setThisThreadPrio(p);
 
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());

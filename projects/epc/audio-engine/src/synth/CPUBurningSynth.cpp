@@ -11,6 +11,10 @@ void CPUBurningSynth::doMidi(const MidiEvent &)
 {
 }
 
+void CPUBurningSynth::doTcd(const MidiEvent &event)
+{
+}
+
 void CPUBurningSynth::doAudio(SampleFrame *target, size_t numFrames)
 {
   for(size_t i = 0; i < numFrames; i++)

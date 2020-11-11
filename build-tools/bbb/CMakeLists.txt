@@ -1,6 +1,6 @@
 SET(USER $ENV{USER})
 SET(DOCKERNAME nl-cross-build-environment)
-SET(NONLINUX nonlinear_2020.30)
+SET(NONLINUX nonlinear_2020.43)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 

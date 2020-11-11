@@ -3,6 +3,7 @@
 #include <nltools/GlibFwd.h>
 #include <nltools/messaging/InChannel.h>
 #include <nltools/threading/BackgroundThreadWaiter.h>
+#include <nltools/threading/Threading.h>
 #include <libsoup/soup.h>
 #include <memory>
 #include <list>
@@ -23,11 +24,11 @@ namespace nltools
       class WebSocketInChannel : public InChannel
       {
        public:
-        WebSocketInChannel(Callback cb, guint port);
+        WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p);
         ~WebSocketInChannel() override;
 
        private:
-        void backgroundThread();
+        void backgroundThread(nltools::threading::Priority p);
 
         static void webSocket(SoupServer *server, SoupWebsocketConnection *connection, const char *pathStr,
                               SoupClientContext *client, WebSocketInChannel *pThis);

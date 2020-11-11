@@ -3,6 +3,7 @@
 #include <nltools/messaging/OutChannel.h>
 #include <nltools/threading/ContextBoundMessageQueue.h>
 #include <nltools/threading/BackgroundThreadWaiter.h>
+#include <nltools/threading/Threading.h>
 
 #include <memory>
 #include <thread>
@@ -19,7 +20,7 @@ namespace nltools
       class WebSocketOutChannel : public OutChannel
       {
        public:
-        WebSocketOutChannel(const std::string &targetMachine, guint port);
+        WebSocketOutChannel(const std::string &targetMachine, guint port, nltools::threading::Priority p);
 
         ~WebSocketOutChannel() override;
 
@@ -37,7 +38,7 @@ namespace nltools
         static void onWebSocketConnected(SoupSession *session, GAsyncResult *res, WebSocketOutChannel *pThis);
 
         void reconnect();
-        void backgroundThread();
+        void backgroundThread(nltools::threading::Priority p);
         bool ping();
 
         using tSessionPtr = std::unique_ptr<SoupSession, decltype(*g_object_unref)>;

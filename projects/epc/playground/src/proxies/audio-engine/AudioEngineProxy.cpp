@@ -2,6 +2,7 @@
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
+#include <presets/Bank.h>
 #include <presets/EditBuffer.h>
 #include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
@@ -22,15 +23,35 @@
 #include <device-settings/Settings.h>
 #include <parameter_declarations.h>
 #include <groups/SplitParameterGroups.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
   using namespace nltools::msg;
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
-}
 
-constexpr auto cUnisonVoicesParameterNumber = 249;
-constexpr auto cMonoEnableParameterNumber = 364;
+  receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
+    auto playController = Application::get().getPlaycontrollerProxy();
+    auto id = msg.hwSource;
+    auto value = msg.position;
+    auto param = playController->findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
+    if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+    {
+      playController->notifyRibbonTouch(p->getID().getNumber());
+      p->onChangeFromPlaycontroller(value);
+    }
+  });
+
+  const auto &pm = Application::get().getPresetManager();
+
+  receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
+    if(auto bank = pm->getSelectedBank())
+      if(msg.program < bank->getNumPresets())
+        bank->selectPreset(msg.program);
+  });
+
+  pm->onBankSelection(sigc::mem_fun(this, &AudioEngineProxy::onBankSelectionChanged));
+}
 
 template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditBuffer &editBuffer)
 {
@@ -40,16 +61,16 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
   size_t mcT = 0;
   size_t modR = 0;
 
-  auto masterParameter
-      = dynamic_cast<const ModulateableParameter *>(editBuffer.findParameterByID({ 247, VoiceGroup::Global }));
+  auto masterParameter = dynamic_cast<const ModulateableParameter *>(
+      editBuffer.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global }));
   auto &master = msg.master.volume;
   master.id = masterParameter->getID().getNumber();
   master.controlPosition = masterParameter->getControlPositionValue();
   master.modulationAmount = masterParameter->getModulationAmount();
   master.mc = masterParameter->getModulationSource();
 
-  auto tuneParameter
-      = dynamic_cast<const ModulateableParameter *>(editBuffer.findParameterByID({ 248, VoiceGroup::Global }));
+  auto tuneParameter = dynamic_cast<const ModulateableParameter *>(
+      editBuffer.findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global }));
   auto &tune = msg.master.tune;
   tune.id = tuneParameter->getID().getNumber();
   tune.controlPosition = tuneParameter->getControlPositionValue();
@@ -119,7 +140,7 @@ void forEachParameterInGroup(const EditBuffer *eb, const GroupId &group, tParame
 
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::SinglePresetMessage msg {};
+  nltools::msg::SinglePresetMessage msg{};
   fillMessageWithGlobalParams(msg, eb);
 
   size_t mc = 0;
@@ -177,31 +198,31 @@ void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &mo
 {
   auto from = g->getVoiceGroup();
 
-  if(auto enable = g->findParameterByID({ cMonoEnableParameterNumber, from }))
+  if(auto enable = g->findParameterByID({ C15::PID::Mono_Grp_Enable, from }))
   {
     auto &monoEnable = monoGroup.monoEnable;
-    monoEnable.id = cMonoEnableParameterNumber;
+    monoEnable.id = C15::PID::Mono_Grp_Enable;
     monoEnable.controlPosition = enable->getControlPositionValue();
   }
 
-  if(auto prio = g->findParameterByID({ 365, from }))
+  if(auto prio = g->findParameterByID({ C15::PID::Mono_Grp_Prio, from }))
   {
     auto &item = monoGroup.priority;
-    item.id = 365;
+    item.id = C15::PID::Mono_Grp_Prio;
     item.controlPosition = prio->getControlPositionValue();
   }
 
-  if(auto legato = g->findParameterByID({ 366, from }))
+  if(auto legato = g->findParameterByID({ C15::PID::Mono_Grp_Legato, from }))
   {
     auto &item = monoGroup.legato;
-    item.id = 366;
+    item.id = C15::PID::Mono_Grp_Legato;
     item.controlPosition = legato->getControlPositionValue();
   }
 
-  if(auto glide = dynamic_cast<ModulateableParameter *>(g->findParameterByID({ 367, from })))
+  if(auto glide = dynamic_cast<ModulateableParameter *>(g->findParameterByID({ C15::PID::Mono_Grp_Glide, from })))
   {
     auto &item = monoGroup.glide;
-    item.id = 367;
+    item.id = C15::PID::Mono_Grp_Glide;
     item.controlPosition = glide->getControlPositionValue();
     item.mc = glide->getModulationSource();
     item.modulationAmount = glide->getModulationAmount();
@@ -212,14 +233,14 @@ void AudioEngineProxy::fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup
 {
   auto from = g->getVoiceGroup();
 
-  if(auto unisonParam = g->getParameterByID({ cUnisonVoicesParameterNumber, from }))
+  if(auto unisonParam = g->getParameterByID({ C15::PID::Unison_Voices, from }))
   {
     auto &unisonVoices = unisonGroup.unisonVoices;
-    unisonVoices.id = cUnisonVoicesParameterNumber;
+    unisonVoices.id = C15::PID::Unison_Voices;
     unisonVoices.controlPosition = unisonParam->getControlPositionValue();
   }
 
-  if(auto unisonDetune = dynamic_cast<ModulateableParameter *>(g->getParameterByID({ 250, from })))
+  if(auto unisonDetune = dynamic_cast<ModulateableParameter *>(g->getParameterByID({ C15::PID::Unison_Detune, from })))
   {
     auto &detune = unisonGroup.detune;
     detune.id = unisonDetune->getID().getNumber();
@@ -228,14 +249,16 @@ void AudioEngineProxy::fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup
     detune.modulationAmount = unisonDetune->getModulationAmount();
   }
 
-  if(auto unisonPan = g->getParameterByID({ 252, from }))
+  if(auto unisonPan = g->getParameterByID(
+         { C15::PID::Unison_Pan, from }))  // previously was 252: Unison Phase (seems like a bugfix..?)
   {
     auto &pan = unisonGroup.pan;
     pan.id = unisonPan->getID().getNumber();
     pan.controlPosition = unisonPan->getControlPositionValue();
   }
 
-  if(auto unisonPhase = g->getParameterByID({ 253, from }))
+  if(auto unisonPhase = g->getParameterByID(
+         { C15::PID::Unison_Phase, from }))  // previously was 253: Unison Pan (seems like a bugfix..?)
   {
     auto &phase = unisonGroup.phase;
     phase.id = unisonPhase->getID().getNumber();
@@ -271,8 +294,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, const EditBuffer &editB
         }
         else
         {
-          if(p->getID().getNumber() != cUnisonVoicesParameterNumber
-             && p->getID().getNumber() != cMonoEnableParameterNumber)
+          if(p->getID().getNumber() != C15::PID::Unison_Voices && p->getID().getNumber() != C15::PID::Mono_Grp_Enable)
           {
             auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
             unModulateable.id = p->getID().getNumber();
@@ -289,7 +311,7 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, const EditBuffer &editB
 
 nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::SplitPresetMessage msg {};
+  nltools::msg::SplitPresetMessage msg{};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
@@ -325,7 +347,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 
 nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::LayerPresetMessage msg {};
+  nltools::msg::LayerPresetMessage msg{};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
@@ -352,6 +374,8 @@ void AudioEngineProxy::sendEditBuffer()
     case SoundType::Layer:
       nltools::msg::send(nltools::msg::EndPoint::AudioEngine, createLayerEditBufferMessage(*eb));
       break;
+    case SoundType::Invalid:
+      break;
   }
 }
 
@@ -366,4 +390,32 @@ void AudioEngineProxy::thawParameterMessages()
 
   if(m_suppressParamChanges == 0)
     sendEditBuffer();
+}
+
+void AudioEngineProxy::onBankSelectionChanged(const Uuid &uuid)
+{
+  const auto &pm = Application::get().getPresetManager();
+
+  m_presetSelectionConnection.disconnect();
+
+  if(auto bank = pm->getSelectedBank())
+  {
+    m_presetSelectionConnection = bank->onBankChanged(sigc::mem_fun(this, &AudioEngineProxy::onBankChanged));
+  }
+}
+
+void AudioEngineProxy::onBankChanged()
+{
+  const auto &pm = Application::get().getPresetManager();
+
+  if(auto bank = pm->getSelectedBank())
+  {
+    if(auto preset = bank->getSelectedPreset())
+    {
+      uint8_t pos = bank->getPresetPosition(preset);
+
+      if(pos < 128)
+        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, nltools::msg::Midi::ProgramChangeMessage{ pos });
+    }
+  }
 }

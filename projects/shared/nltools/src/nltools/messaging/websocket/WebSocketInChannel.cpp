@@ -13,12 +13,12 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port)
+      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p)
           : InChannel(std::move(cb))
           , m_port(port)
           , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
           , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
-          , m_contextThread(std::bind(&WebSocketInChannel::backgroundThread, this))
+          , m_contextThread([=] { this->backgroundThread(p); })
       {
         m_conditionEstablishedThreadWaiter.wait();
       }
@@ -32,9 +32,10 @@ namespace nltools
           m_contextThread.join();
       }
 
-      void WebSocketInChannel::backgroundThread()
+      void WebSocketInChannel::backgroundThread(nltools::threading::Priority p)
       {
         pthread_setname_np(pthread_self(), "WebSockIn");
+        threading::setThisThreadPrio(p);
 
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());

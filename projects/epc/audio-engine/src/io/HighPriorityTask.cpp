@@ -1,5 +1,6 @@
 #include "HighPriorityTask.h"
 #include <nltools/logging/Log.h>
+#include <nltools/threading/Threading.h>
 #include <mutex>
 
 HighPriorityTask::HighPriorityTask(int bindToCore, std::function<void()> cb)
@@ -29,13 +30,7 @@ void HighPriorityTask::setupPrios(int bindToCore)
 
 void HighPriorityTask::prioritizeThread()
 {
-  sched_param p;
-  auto scheduler = SCHED_FIFO;
-  p.sched_priority = sched_get_priority_max(scheduler);
-  nltools::Log::info("scheduling priority of", p.sched_priority);
-
-  if(auto r = pthread_setschedparam(pthread_self(), scheduler, &p))
-    nltools::Log::warning("Could not set thread priority - consider 'sudo setcap 'cap_sys_nice=eip' <application>'", r);
+  nltools::threading::setThisThreadPrio(nltools::threading::Priority::Realtime);
 }
 
 void HighPriorityTask::setThreadAffinity(int bindToCore)
