@@ -13,32 +13,7 @@ using namespace std::chrono_literals;
     @todo
 *******************************************************************************/
 
-namespace Midi
-{
-  struct BipolarCCRange
-  {
-    constexpr static uint16_t min = 0x0000;
-    constexpr static uint16_t center = 0x2000;
-    constexpr static uint16_t max = 0x3F80;
-  };
-
-  struct BenderRange
-  {
-    constexpr static uint16_t min = 0x0000;
-    constexpr static uint16_t center = 0x2000;
-    constexpr static uint16_t max = 0x3FFF;
-  };
-
-  struct UnipolarCCRange
-  {
-    constexpr static uint16_t max = 0x3F80;
-  };
-}
-
-template <int EnumValue> inline constexpr uint32_t getHWSourceId()
-{
-  return EnumValue >> 8;
-}
+// legacy (todo: cleanup) ...
 
 template <int EnumValue> inline constexpr uint32_t getMidiCC()
 {
@@ -351,6 +326,22 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     //nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
     //nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
   }
+
+  nltools::Log::info("MSB::Ped1:", getMidiCC<Midi::MSB::Ped1>(), Midi::getMSB::getCC<Midi::MSB::Ped1>());
+  nltools::Log::info("MSB::Ped2:", getMidiCC<Midi::MSB::Ped2>(), Midi::getMSB::getCC<Midi::MSB::Ped2>());
+  nltools::Log::info("MSB::Ped3:", getMidiCC<Midi::MSB::Ped3>(), Midi::getMSB::getCC<Midi::MSB::Ped3>());
+  nltools::Log::info("MSB::Ped4:", getMidiCC<Midi::MSB::Ped4>(), Midi::getMSB::getCC<Midi::MSB::Ped4>());
+  nltools::Log::info("MSB::Bend:", getMidiCC<Midi::MSB::Bender>(), Midi::getMSB::getCC<Midi::MSB::Bender>());
+  nltools::Log::info("MSB::Aftr:", getMidiCC<Midi::MSB::Aftertouch>(), Midi::getMSB::getCC<Midi::MSB::Aftertouch>());
+  nltools::Log::info("MSB::Rib1:", getMidiCC<Midi::MSB::Rib1>(), Midi::getMSB::getCC<Midi::MSB::Rib1>());
+  nltools::Log::info("MSB::Rib2:", getMidiCC<Midi::MSB::Rib2>(), Midi::getMSB::getCC<Midi::MSB::Rib2>());
+
+  nltools::Log::info("LSB::Ped1:", getMidiCC<Midi::LSB::Ped1>(), Midi::getLSB::getCC<Midi::LSB::Ped1>());
+  nltools::Log::info("LSB::Ped2:", getMidiCC<Midi::LSB::Ped2>(), Midi::getLSB::getCC<Midi::LSB::Ped2>());
+  nltools::Log::info("LSB::Ped3:", getMidiCC<Midi::LSB::Ped3>(), Midi::getLSB::getCC<Midi::LSB::Ped3>());
+  nltools::Log::info("LSB::Ped4:", getMidiCC<Midi::LSB::Ped4>(), Midi::getLSB::getCC<Midi::LSB::Ped4>());
+  nltools::Log::info("LSB::Rib1:", getMidiCC<Midi::LSB::Rib1>(), Midi::getLSB::getCC<Midi::LSB::Rib1>());
+  nltools::Log::info("LSB::Rib2:", getMidiCC<Midi::LSB::Rib2>(), Midi::getLSB::getCC<Midi::LSB::Rib2>());
 }
 
 C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
@@ -626,24 +617,26 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
 
 template <typename Range> void dsp_host_dual::processBipolarMidiController(const uint32_t dataByte, int id)
 {
-  auto source = m_params.get_hw_src(id);
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
-  auto value = decode14BitBipolarMidiValue<Range>(midiVal);
-
-  const float inc = value - source->m_position;
-  source->m_position = value;
-  hwModChain(source, id, inc);
+  //  auto value = decode14BitBipolarMidiValue<Range>(midiVal);
+  auto value = CC_Range_14_Bit::decodeBipolarMidiValue(midiVal);
+  processNormalizedMidiController(id, value);
 }
 
 template <typename Range> void dsp_host_dual::processUnipolarMidiController(const uint32_t dataByte, int id)
 {
-  auto source = m_params.get_hw_src(id);
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
-  auto value = decode14BitUnipolarMidiValue<Range>(midiVal);
+  //  auto value = decode14BitUnipolarMidiValue<Range>(midiVal);
+  auto value = CC_Range_14_Bit::decodeUnipolarMidiValue(midiVal);
+  processNormalizedMidiController(id, value);
+}
 
-  const float inc = value - source->m_position;
-  source->m_position = value;
-  hwModChain(source, id, inc);
+void dsp_host_dual::processNormalizedMidiController(const uint32_t _id, const float _controlPosition)
+{
+  auto source = m_params.get_hw_src(_id);
+  const float inc = _controlPosition - source->m_position;
+  source->m_position = _controlPosition;
+  hwModChain(source, _id, inc);
 }
 
 void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
@@ -686,55 +679,55 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
     case 3:
       switch(_data0)
       {
-        case getMidiCC<MSB::Ped1>():
+        case Midi::getMSB::getCC<Midi::MSB::Ped1>():
           processMidiForHWSource(0, _data1);
           break;
 
-        case getMidiCC<MSB::Ped2>():
+        case Midi::getMSB::getCC<Midi::MSB::Ped2>():
           processMidiForHWSource(1, _data1);
           break;
 
-        case getMidiCC<MSB::Ped3>():
+        case Midi::getMSB::getCC<Midi::MSB::Ped3>():
           processMidiForHWSource(2, _data1);
           break;
 
-        case getMidiCC<MSB::Ped4>():
+        case Midi::getMSB::getCC<Midi::MSB::Ped4>():
           processMidiForHWSource(3, _data1);
           break;
 
-        case getMidiCC<MSB::Rib1>():
+        case Midi::getMSB::getCC<Midi::MSB::Rib1>():
           processMidiForHWSource(6, _data1);
           break;
 
-        case getMidiCC<MSB::Rib2>():
+        case Midi::getMSB::getCC<Midi::MSB::Rib2>():
           processMidiForHWSource(7, _data1);
           break;
 
-        case getMidiCC<LSB::Ped1>():
+        case Midi::getLSB::getCC<Midi::LSB::Ped1>():
           m_hwSourcesMidiLSB[0] = _data1 & 0x7F;
           break;
 
-        case getMidiCC<LSB::Ped2>():
+        case Midi::getLSB::getCC<Midi::LSB::Ped2>():
           m_hwSourcesMidiLSB[1] = _data1 & 0x7F;
           break;
 
-        case getMidiCC<LSB::Ped3>():
+        case Midi::getLSB::getCC<Midi::LSB::Ped3>():
           m_hwSourcesMidiLSB[2] = _data1 & 0x7F;
           break;
 
-        case getMidiCC<LSB::Ped4>():
+        case Midi::getLSB::getCC<Midi::LSB::Ped4>():
           m_hwSourcesMidiLSB[3] = _data1 & 0x7F;
           break;
 
-        case getMidiCC<LSB::Rib1>():
+        case Midi::getLSB::getCC<Midi::LSB::Rib1>():
           m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
           break;
 
-        case getMidiCC<LSB::Rib2>():
+        case Midi::getLSB::getCC<Midi::LSB::Rib2>():
           m_hwSourcesMidiLSB[7] = _data1 & 0x7F;
           break;
 
-        case getMidiCC<LSB::Vel>():
+        case Midi::getLSB::getCC<Midi::LSB::Vel>():
           m_velocityLSB = _data1 & 0x7F;
           break;
 
@@ -745,14 +738,17 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
     case 5:
       // mono aftertouch (hw source)
       m_hwSourcesMidiLSB[5] = 0;
-      processUnipolarMidiController<Midi::UnipolarCCRange>(_data0, 5);
+      //      processUnipolarMidiController<Midi::UnipolarCCRange>(_data0, 5);
+      processNormalizedMidiController(5, CC_Range_7_Bit::decodeUnipolarMidiValue(_data0));
       break;
 
     case 6:
       // bender
       // pitch bend messages are: STATUS LSB MSB
       m_hwSourcesMidiLSB[4] = _data0 & 0x7F;
-      processBipolarMidiController<Midi::BenderRange>(_data1, 4);
+      //      processBipolarMidiController<Midi::BenderRange>(_data1, 4);
+      processNormalizedMidiController(
+          4, CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_hwSourcesMidiLSB[4], 0)));
       break;
 
     default:
@@ -1625,59 +1621,62 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
   return result;
 }
 
-template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb, typename Out>
+template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb, typename Out>
 void doSendCCOut(const Out& out, uint16_t value)
 {
   uint8_t statusByte = static_cast<uint8_t>(0xB0);
   uint8_t lsbValByte = static_cast<uint8_t>(value & 0x7F);
-  out({ statusByte, getMidiCC<lsb>(), lsbValByte });
+  out({ statusByte, Midi::getLSB::getCC<lsb>(), lsbValByte });
 
   uint8_t msbValByte = static_cast<uint8_t>(value >> 7 & 0x7F);
-  out({ statusByte, getMidiCC<msb>(), msbValByte });
+  out({ statusByte, Midi::getMSB::getCC<msb>(), msbValByte });
 }
 
-template <MSB::HWSourceMidiCC msb, LSB::HWSourceMidiCC lsb>
+template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb>
 void dsp_host_dual::sendCCOut(int id, float controlPosition, const MidiOut& out)
 {
   if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
-    doSendCCOut<msb, lsb>(out, encode14BitBipolarMidiValue<Midi::BipolarCCRange>(controlPosition));
+    //    doSendCCOut<msb, lsb>(out, encode14BitBipolarMidiValue<Midi::BipolarCCRange>(controlPosition));
+    doSendCCOut<msb, lsb>(out, CC_Range_14_Bit::encodeBipolarMidiValue(controlPosition));
   else
-    doSendCCOut<msb, lsb>(out, encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(controlPosition));
+    //    doSendCCOut<msb, lsb>(out, encode14BitUnipolarMidiValue<Midi::UnipolarCCRange>(controlPosition));
+    doSendCCOut<msb, lsb>(out, CC_Range_14_Bit::encodeUnipolarMidiValue(controlPosition));
 }
 
 void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out)
 {
-  auto bipolar = m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center;
+  //  auto bipolar = m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center;
 
-  switch(id)
+  switch(static_cast<C15::Parameters::Hardware_Sources>(id))
   {
-    case getHWSourceId<MSB::Ped1>():
-      sendCCOut<MSB::Ped1, LSB::Ped1>(0, controlPosition, out);
+    case C15::Parameters::Hardware_Sources::Pedal_1:
+      sendCCOut<Midi::MSB::Ped1, Midi::LSB::Ped1>(0, controlPosition, out);
       break;
 
-    case getHWSourceId<MSB::Ped2>():
-      sendCCOut<MSB::Ped2, LSB::Ped2>(1, controlPosition, out);
+    case C15::Parameters::Hardware_Sources::Pedal_2:
+      sendCCOut<Midi::MSB::Ped2, Midi::LSB::Ped2>(1, controlPosition, out);
       break;
 
-    case getHWSourceId<MSB::Ped3>():
-      sendCCOut<MSB::Ped3, LSB::Ped3>(2, controlPosition, out);
+    case C15::Parameters::Hardware_Sources::Pedal_3:
+      sendCCOut<Midi::MSB::Ped3, Midi::LSB::Ped3>(2, controlPosition, out);
       break;
 
-    case getHWSourceId<MSB::Ped4>():
-      sendCCOut<MSB::Ped4, LSB::Ped4>(3, controlPosition, out);
+    case C15::Parameters::Hardware_Sources::Pedal_4:
+      sendCCOut<Midi::MSB::Ped4, Midi::LSB::Ped4>(3, controlPosition, out);
       break;
 
-    case getHWSourceId<MSB::Rib1>():
-      sendCCOut<MSB::Rib1, LSB::Rib1>(6, controlPosition, out);
+    case C15::Parameters::Hardware_Sources::Ribbon_1:
+      sendCCOut<Midi::MSB::Rib1, Midi::LSB::Rib1>(6, controlPosition, out);
       break;
 
-    case getHWSourceId<MSB::Rib2>():
-      sendCCOut<MSB::Rib2, LSB::Rib2>(7, controlPosition, out);
+    case C15::Parameters::Hardware_Sources::Ribbon_2:
+      sendCCOut<Midi::MSB::Rib2, Midi::LSB::Rib2>(7, controlPosition, out);
       break;
 
-    case getHWSourceId<MSB::Bender>():
+    case C15::Parameters::Hardware_Sources::Bender:
     {
-      auto value = encode14BitBipolarMidiValue<Midi::BenderRange>(controlPosition);
+      //      auto value = encode14BitBipolarMidiValue<Midi::BenderRange>(controlPosition);
+      auto value = CC_Range_Bender::encodeBipolarMidiValue(controlPosition);
       uint8_t statusByte = static_cast<uint8_t>(0xE0);
       uint8_t valByte1 = static_cast<uint8_t>(value & 0x7F);
       uint8_t valByte2 = static_cast<uint8_t>((value >> 7) & 0x7F);
@@ -1686,11 +1685,12 @@ void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPositio
       break;
     }
 
-    case getHWSourceId<MSB::Aftertouch>():
+    case C15::Parameters::Hardware_Sources::Aftertouch:
     {
       uint8_t statusByte = static_cast<uint8_t>(0xD0);
-      uint8_t v = static_cast<uint8_t>(controlPosition * 127);
-      uint8_t valByte = static_cast<uint8_t>(0x7F & v);
+      //      uint8_t v = static_cast<uint8_t>(controlPosition * 127);
+      //      uint8_t valByte = static_cast<uint8_t>(0x7F & v);
+      uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(controlPosition);
       out({ statusByte, valByte, 0 });
       break;
     }
@@ -2853,7 +2853,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]
