@@ -28,7 +28,7 @@ namespace nltools
         {
           return MessageType::MidiAck;
         }
-
+        
         uint64_t id = 0;
       };
 
@@ -556,6 +556,11 @@ namespace nltools
       return ret;
     }
 
+    inline bool operator!=(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
+    {
+      return !(lhs == rhs);
+    }
+
     struct SplitPresetMessage
     {
       constexpr static MessageType getType()
@@ -597,6 +602,11 @@ namespace nltools
       return ret;
     }
 
+    inline bool operator!=(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
+    {
+      return !(lhs == rhs);
+    }
+
     struct LayerPresetMessage
     {
       constexpr static MessageType getType()
@@ -634,6 +644,11 @@ namespace nltools
       ret &= lhs.macros == rhs.macros;
       ret &= lhs.macrotimes == rhs.macrotimes;
       return ret;
+    }
+
+    inline bool operator!=(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
+    {
+      return !(lhs == rhs);
     }
   }
 }

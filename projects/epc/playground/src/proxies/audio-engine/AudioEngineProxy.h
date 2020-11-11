@@ -42,8 +42,10 @@ class AudioEngineProxy : public sigc::trackable
 
   void sendEditBuffer();
 
+  void setReceiver(nltools::msg::EndPoint endPoint);
+
   void freezeParameterMessages();
-  void thawParameterMessages();
+  void thawParameterMessages(bool send);
 
   static nltools::msg::LayerPresetMessage createLayerEditBufferMessage(const EditBuffer& eb);
   static nltools::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);

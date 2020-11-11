@@ -363,6 +363,7 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
 void AudioEngineProxy::sendEditBuffer()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+
   switch(eb->getType())
   {
     case SoundType::Single:
@@ -384,11 +385,11 @@ void AudioEngineProxy::freezeParameterMessages()
   m_suppressParamChanges++;
 }
 
-void AudioEngineProxy::thawParameterMessages()
+void AudioEngineProxy::thawParameterMessages(bool send)
 {
   m_suppressParamChanges--;
 
-  if(m_suppressParamChanges == 0)
+  if(m_suppressParamChanges == 0 && send)
     sendEditBuffer();
 }
 
