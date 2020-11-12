@@ -41,13 +41,11 @@ SplitPointParameterLayout::SplitPointParameterLayout()
   setMode(Mode::ParameterValue);
 
   auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
-  m_connection = sync->onChange([this](const Setting *s) { setMode(getMode()); });
-  m_connectionWithTransaction = sync->onChangeWithTransaction([this](const Setting *s, auto) { setMode(getMode()); });
+  m_connection = sync->onChange([this](const Setting *s) { fixValueControl(); });
 }
 
 SplitPointParameterLayout::~SplitPointParameterLayout()
 {
-  m_connectionWithTransaction.disconnect();
   m_connection.disconnect();
 }
 
@@ -55,7 +53,6 @@ SplitPointParameterEditLayout::SplitPointParameterEditLayout()
 {
   auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
   m_connection = sync->onChange([this](const Setting *s) { fixValueControl(); });
-  m_connectionWithTransaction = sync->onChangeWithTransaction([this](const Setting *s, auto) { fixValueControl(); });
 }
 
 Control *SplitPointParameterLayout::createParameterValueControl()
@@ -123,5 +120,4 @@ Control *SplitPointParameterEditLayout::createParameterValueControl()
 SplitPointParameterEditLayout::~SplitPointParameterEditLayout()
 {
   m_connection.disconnect();
-  m_connectionWithTransaction.disconnect();
 }

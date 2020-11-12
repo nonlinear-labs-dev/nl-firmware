@@ -232,5 +232,5 @@ class EditBuffer : public ParameterGroupSet
   mutable Preset *m_originCache { nullptr };
   bool isPartLabelChanged(VoiceGroup group) const;
   void cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset* p);
-  void updateSyncSplitSetting(UNDO::Transaction *transaction);
+  void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
 };

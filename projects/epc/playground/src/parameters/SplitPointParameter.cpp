@@ -19,87 +19,6 @@ SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterI
                                               ScaleConverter::get<LinearBipolar60StScaleConverter>(),
                                               id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.516666667, 60, 60)
 {
-  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
-
-  sync->onChange(sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChanged));
-  sync->onChangeWithTransaction(sigc::mem_fun(this, &SplitPointParameter::onSyncSettingChangedWithTransaction));
-  sync->onPresetStored(sigc::mem_fun(this, &SplitPointParameter::onStoreHappened));
-}
-
-void SplitPointParameter::onSyncSettingChanged(const Setting* s)
-{
-  onSyncSettingChangedWithTransaction(s, nullptr);
-}
-
-void SplitPointParameter::onSyncSettingChangedWithTransaction(const Setting* s, UNDO::Transaction* transaction)
-{
-  if(!m_settingGuard.isLocked())
-  {
-    if(getVoiceGroup() == VoiceGroup::I)
-    {
-      if(auto sync = dynamic_cast<const SplitPointSyncParameters*>(s))
-      {
-        if(sync->get())
-        {
-          std::unique_ptr<UNDO::TransactionCreationScope> scope = nullptr;
-
-          if(transaction == nullptr)
-          {
-            scope = getUndoScope().startTransaction("Enable Split Sync");
-            transaction = scope->getTransaction();
-          }
-
-          auto myCP = getControlPositionValue();
-          getSibling()->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC,
-                                   getValue().getNextStepValue(myCP, 1, {}), true);
-          transaction->addSimpleCommand(
-              [this](UNDO::Transaction::State s) {
-                if(s == UNDO::Transaction::State::REDOING)
-                {
-                  auto l = m_settingGuard.lock();
-                  Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(true);
-                }
-              },
-              [this](UNDO::Transaction::State) {
-                auto l = m_settingGuard.lock();
-                Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(false);
-              });
-        }
-      }
-    }
-  }
-}
-
-void SplitPointParameter::onStoreHappened(UNDO::Transaction* transaction, Preset* newPreset)
-{
-  //disable sync when no overlap is present and some preset got stored
-  if(getVoiceGroup() == VoiceGroup::I)
-  {
-    auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
-    //no Overlap
-    if(!hasOverlap())
-    {
-      const auto oldState = setting->get();
-
-      {
-        auto l = m_settingGuard.lock();
-        setting->setState(true);
-      }
-
-      transaction->addSimpleCommand(
-          [this](UNDO::Transaction::State s) {
-            if(s == UNDO::Transaction::State::REDOING)
-            {
-              auto l = m_settingGuard.lock();
-              Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(true);
-            }
-          },
-          [this, oldState](UNDO::Transaction::State) {
-            auto l = m_settingGuard.lock();
-            Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->setState(oldState);
-          });
-    }
-  }
 }
 
 Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
@@ -259,4 +178,9 @@ bool SplitPointParameter::inDefaultSplitBehaviour() const
   {
     return sib->inDefaultSplitBehaviour();
   }
+}
+
+void SplitPointParameter::updateCPFromSyncChange(UNDO::Transaction* transaction, double cp)
+{
+  setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, cp, true);
 }

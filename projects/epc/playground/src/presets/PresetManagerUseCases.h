@@ -22,4 +22,5 @@ class PresetManagerUseCases
  private:
   PresetManager* m_presetManager;
   void onStore(UNDO::Transaction* transaction, Preset* preset);
+  void updateSyncSettingOnPresetStore(UNDO::Transaction* transaction) const;
 };

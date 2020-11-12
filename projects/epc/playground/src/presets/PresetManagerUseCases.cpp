@@ -1,4 +1,6 @@
 #include <Application.h>
+#include <parameter_declarations.h>
+#include <device-settings/SyncSplitSettingUseCases.h>
 #include "PresetManagerUseCases.h"
 #include "presets/PresetManager.h"
 #include "presets/Preset.h"
@@ -9,6 +11,7 @@
 #include "libundo/undo/Transaction.h"
 #include "device-settings/Settings.h"
 #include "device-settings/SplitPointSyncParameters.h"
+#include "parameters/SplitPointParameter.h"
 
 PresetManagerUseCases::PresetManagerUseCases(PresetManager* pm)
     : m_presetManager { pm }
@@ -119,9 +122,24 @@ void PresetManagerUseCases::onStore(UNDO::Transaction* transaction, Preset* pres
 {
   if(preset->getType() == SoundType::Split)
   {
-    auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
-    setting->onStoreHappened(transaction, preset);
+    updateSyncSettingOnPresetStore(transaction);
   }
 
   m_presetManager->onPresetStored();
+}
+
+void PresetManagerUseCases::updateSyncSettingOnPresetStore(UNDO::Transaction* transaction) const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  if(auto s = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I }))
+  {
+    if(s->hasOverlap())
+    {
+      SyncSplitSettingUseCases::get().disableSyncSetting(transaction);
+    }
+    else
+    {
+      SyncSplitSettingUseCases::get().enableSyncSetting(transaction);
+    }
+  }
 }

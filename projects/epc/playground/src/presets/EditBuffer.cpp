@@ -42,6 +42,7 @@
 #include <presets/SendEditBufferScopeGuard.h>
 #include <presets/Preset.h>
 #include <device-settings/SplitPointSyncParameters.h>
+#include <device-settings/SyncSplitSettingUseCases.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
@@ -555,7 +556,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset, bo
     pm->selectBank(transaction, bank->getUuid());
   }
 
-  updateSyncSplitSetting(transaction);
+  setSyncSplitSettingAccordingToLoadedPreset(transaction);
   cleanupParameterSelection(transaction, oldType, preset->getType());
   resetModifiedIndicator(transaction, getHash());
 }
@@ -1669,23 +1670,19 @@ void EditBuffer::cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, co
   }
 }
 
-void EditBuffer::updateSyncSplitSetting(UNDO::Transaction *transaction)
+void EditBuffer::setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction)
 {
-
   if(getType() == SoundType::Split)
   {
-    const auto sI = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
-    const auto sII = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
+    const auto sI = findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
 
-    auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
-
-    if(sII->getControlPositionValue() >= sI->getControlPositionValue())
+    if(sI->hasOverlap())
     {
-      setting->setState(true, transaction);
+      SyncSplitSettingUseCases::get().disableSyncSetting(transaction);
     }
-    else if(sII->getControlPositionValue() < sI->getControlPositionValue())
+    else
     {
-      setting->setState(false, transaction);
+      SyncSplitSettingUseCases::get().enableSyncSetting(transaction);
     }
   }
 }
