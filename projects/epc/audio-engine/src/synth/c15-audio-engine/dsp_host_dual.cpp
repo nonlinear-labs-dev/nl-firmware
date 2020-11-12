@@ -20,47 +20,48 @@ dsp_host_dual::dsp_host_dual()
   m_layer_mode = C15::Properties::LayerMode::Single;
 
   // pitch bend
-  assert(CC_Range_Bender::encodeBipolarMidiValue(-1.5) == 0x0000);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(-1) == 0x0000);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(0) == 0x2000);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(1) == 0x3FFF);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(1.5) == 0x3FFF);
+  assert(CC_Range_Bender::encodeBipolarMidiValue(-1.5f) == 0x0000);
+  assert(CC_Range_Bender::encodeBipolarMidiValue(-1.0f) == 0x0000);
+  assert(CC_Range_Bender::encodeBipolarMidiValue(0.0f) == 0x2000);
+  assert(CC_Range_Bender::encodeBipolarMidiValue(1.0f) == 0x3FFF);
+  assert(CC_Range_Bender::encodeBipolarMidiValue(1.5f) == 0x3FFF);
 
   assert(CC_Range_Bender::decodeBipolarMidiValue(0x0000) == -1.0f);
   assert(CC_Range_Bender::decodeBipolarMidiValue(0x2000) == 0.0f);
   assert(CC_Range_Bender::decodeBipolarMidiValue(0x3FFF) == 1.0f);
 
   // 14 bit bipolar controllers
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(-1.5) == 0x0000);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(-1) == 0x0000);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(0) == 0x2000);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(1) == 0x3F80);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(1.5) == 0x3F80);
+  assert(CC_Range_14_Bit::encodeBipolarMidiValue(-1.5f) == 0x0000);
+  assert(CC_Range_14_Bit::encodeBipolarMidiValue(-1.0f) == 0x0000);
+  assert(CC_Range_14_Bit::encodeBipolarMidiValue(0.0f) == 0x2000);
+  assert(CC_Range_14_Bit::encodeBipolarMidiValue(1.0f) == 0x3F80);
+  assert(CC_Range_14_Bit::encodeBipolarMidiValue(1.5f) == 0x3F80);
 
   assert(CC_Range_14_Bit::decodeBipolarMidiValue(0x0000) == -1.0f);
   assert(CC_Range_14_Bit::decodeBipolarMidiValue(0x2000) == 0.0f);
   assert(CC_Range_14_Bit::decodeBipolarMidiValue(0x3F80) == 1.0f);
 
   // 14 bit unipolar controllers
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(-0.5) == 0x0000);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(0) == 0x0000);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(0.5) == 0x1FC0);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(1) == 0x3F80);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(1.5) == 0x3F80);
+  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(-0.5f) == 0x0000);
+  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(0.0f) == 0x0000);
+  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(0.5f) == 0x2000);
+  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(1.0f) == 0x3F80);
+  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(1.5f) == 0x3F80);
 
   assert(CC_Range_14_Bit::decodeUnipolarMidiValue(0x0000) == 0.0f);
-  assert(CC_Range_14_Bit::decodeUnipolarMidiValue(0x1FC0) == 0.5f);
+  assert(CC_Range_14_Bit::decodeUnipolarMidiValue(0x2000) == 0.5f);
   assert(CC_Range_14_Bit::decodeUnipolarMidiValue(0x3F80) == 1.0f);
 
   // 7 bit unipolar controllers
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(-0.5) == 0x00);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(0) == 0x00);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(0.5) == 0x40);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(1) == 0xFF);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(1.5) == 0xFF);
+  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(-0.5f) == 0x00);
+  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(0.0f) == 0x00);
+  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(0.5f) == 0x40);
+  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(1.0f) == 0x7F);
+  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(1.5f) == 0x7F);
 
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x00) == 0.0f);
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x40) == 0.5f);
+  assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x7F) == 1.0f);
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0xFF) == 1.0f);
 }
 
