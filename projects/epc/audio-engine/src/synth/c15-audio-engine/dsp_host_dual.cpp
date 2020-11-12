@@ -1630,7 +1630,7 @@ void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPositio
     {
       uint8_t statusByte = static_cast<uint8_t>(0xD0);
       uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(controlPosition);
-      out({ statusByte, valByte, 0 });
+      out({ statusByte, valByte });
       break;
     }
 
@@ -2792,7 +2792,7 @@ void dsp_host_dual::PotentialImprovements_RunNumericTests()
   nltools::Log::info(__PRETTY_FUNCTION__, "starting tests (proposal_enabled:", __POTENTIAL_IMPROVEMENT_PROPOSAL__, ")");
   const float TestGroup_Pattern_data[12]
       = { -1.0f, -0.99f, -0.75f, -0.5f, -0.3f, -0.0f, 0.0f, 0.3f, 0.5f, 0.75f, 0.99f, 1.0f };
-  const PolyValue TestGroup_Pattern{ TestGroup_Pattern_data };
+  const PolyValue TestGroup_Pattern { TestGroup_Pattern_data };
   const size_t TestGroups = 4;
   const char* RunInfo[TestGroups] = { "big", "unclamped", "clamped", "small" };
   const PolyValue TestGroup[TestGroups]

@@ -75,7 +75,8 @@ class dsp_host_dual
   void logStatus();
   // event bindings: Playcontroller or MIDI Device (in Dev_PC mode)
 
-  using SimpleRawMidiMessage = std::array<uint8_t, 3>;
+  using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
+
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
