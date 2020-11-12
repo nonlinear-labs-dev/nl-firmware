@@ -62,7 +62,6 @@ dsp_host_dual::dsp_host_dual()
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x00) == 0.0f);
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x40) == 0.5f);
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x7F) == 1.0f);
-  assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0xFF) == 1.0f);
 }
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
