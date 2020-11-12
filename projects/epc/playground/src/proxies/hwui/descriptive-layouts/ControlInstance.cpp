@@ -19,6 +19,7 @@
 
 #include "proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h"
 #include "ControlRegistry.h"
+#include "PropertyOwner.h"
 
 namespace DescriptiveLayouts
 {

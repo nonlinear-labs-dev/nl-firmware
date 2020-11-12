@@ -77,7 +77,7 @@ void PNGControl::loadImage(const std::string& l)
   }
   catch(const std::runtime_error& err)
   {
-    nltools::Log::error(__LINE__, __FILE__, err.what());
+    nltools::Log::error(__LINE__, __FILE__, err.what(), "File: ", l);
   }
 }
 
