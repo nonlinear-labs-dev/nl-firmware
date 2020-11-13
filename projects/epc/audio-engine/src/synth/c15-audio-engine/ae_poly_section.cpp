@@ -148,12 +148,7 @@ void PolySection::render_audio(const float _mute)
   m_z_self->m_comb = m_combfilter.m_out;
   m_z_self->m_svf = m_svfilter.m_out;
   // eval sends
-#if POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_DISABLED__
-  const float send_self = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX),
-              send_other = (1.0f - send_self) * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
-#elif POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_ENABLED__
   const float send_other = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX), send_self = 1.0f - send_other;
-#endif
   m_send_self_l = m_outputmixer.m_out_l * send_self;
   m_send_self_r = m_outputmixer.m_out_r * send_self;
   m_send_other_l = m_outputmixer.m_out_l * send_other;
