@@ -29,7 +29,6 @@ namespace NlToolbox
     const float pi = 3.14159265f;         // PI as a (single precision) float
     const float twopi = 2.f * pi;         // two PI as a (single precision) float
     const float halfpi = 0.5f * pi;       // half PI as a (single precision) float
-    const float DNC_const = 1.e-18f;      // the DNC contant as a (single precision) float
     const float sqrt_two = 1.414213562f;  // squareroot of two as a (single precision) float;
 
   }  // namespace Constants
