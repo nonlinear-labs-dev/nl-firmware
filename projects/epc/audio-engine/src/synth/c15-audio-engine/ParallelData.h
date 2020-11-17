@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pe_defines_config.h"
-#include "nltoolbox.h"
 #include <stdlib.h>
 #include <type_traits>
 #include <array>
@@ -56,10 +54,6 @@ template <typename T, size_t size> class ParallelData
 
   alignas(32) T m_data[size];
 };
-
-using FloatVector = ParallelData<float, dsp_number_of_voices>;
-using Int32Vector = ParallelData<int32_t, dsp_number_of_voices>;
-using UInt32Vector = ParallelData<uint32_t, dsp_number_of_voices>;
 
 #define BINARY_P_P_OPERATOR(operation)                                                                                 \
   template <typename T, size_t size>                                                                                   \
