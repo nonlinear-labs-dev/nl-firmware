@@ -192,9 +192,6 @@ class dsp_host_dual
                     const nltools::msg::ParameterGroups::UnisonGroup& _unison,
                     const nltools::msg::ParameterGroups::MonoGroup& _mono);
   void debugLevels();
-#if __POTENTIAL_IMPROVEMENT_NUMERIC_TESTS__
-  void PotentialImprovements_RunNumericTests();
-#endif
 
   static inline MidiOut getNullMidiOut()
   {

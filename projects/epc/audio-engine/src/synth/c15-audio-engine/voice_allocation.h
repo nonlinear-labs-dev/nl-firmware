@@ -16,7 +16,7 @@
     @todo
 *******************************************************************************/
 
-#include "../../parameter-db/generated/parameter_info.h"
+#include <parameter_info.h>
 #include "key_event.h"
 #include "mappable_list.h"
 
