@@ -41,6 +41,8 @@
 #include <parameter_declarations.h>
 #include <presets/SendEditBufferScopeGuard.h>
 #include <presets/Preset.h>
+#include <device-settings/SplitPointSyncParameters.h>
+#include <device-settings/SyncSplitSettingUseCases.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
@@ -542,6 +544,11 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset, bo
   copyFrom(transaction, preset);
   undoableSetLoadedPresetInfo(transaction, preset);
 
+  if(preset->getType() == SoundType::Split)
+  {
+    cleanupSplitPointIfOldPreset(transaction, preset);
+  }
+
   if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
     auto pm = static_cast<PresetManager *>(getParent());
@@ -549,6 +556,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset, bo
     pm->selectBank(transaction, bank->getUuid());
   }
 
+  setSyncSplitSettingAccordingToLoadedPreset(transaction);
   cleanupParameterSelection(transaction, oldType, preset->getType());
   resetModifiedIndicator(transaction, getHash());
 }
@@ -1651,4 +1659,30 @@ bool EditBuffer::isPartLabelChanged(VoiceGroup group) const
     return preset->getVoiceGroupName(group) != getVoiceGroupName(group);
   }
   return false;
+}
+
+void EditBuffer::cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset *p)
+{
+  //if global split point is present we have loaded an old preset -> split II should be incremented by one
+  if(p->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }, false))
+  {
+    findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II })->stepCPFromHwui(transaction, 1, {});
+  }
+}
+
+void EditBuffer::setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction)
+{
+  if(getType() == SoundType::Split)
+  {
+    const auto sI = findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
+
+    if(sI->hasOverlap())
+    {
+      SyncSplitSettingUseCases::get().disableSyncSetting(transaction);
+    }
+    else
+    {
+      SyncSplitSettingUseCases::get().enableSyncSetting(transaction);
+    }
+  }
 }

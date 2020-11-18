@@ -6,6 +6,8 @@
 #include <parameters/SplitPointParameter.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
+#include <device-settings/Settings.h>
+#include <device-settings/SplitPointSyncParameters.h>
 
 void DescriptiveLayouts::EditBufferTypeStringEvent::onChange(const EditBuffer *eb)
 {
@@ -363,6 +365,13 @@ void DescriptiveLayouts::LayerFXOffset::onChange(const EditBuffer *eb)
   {
     setValue({ 0, 0 });
   }
+}
+
+void DescriptiveLayouts::SplitPointBehaviourIsDefaultWithoutSync::onChange(const EditBuffer *eb)
+{
+  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
+  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  setValue((!sync->get()) && sI->inDefaultSplitBehaviour());
 }
 
 void DescriptiveLayouts::VGIIsMuted::onChange(const EditBuffer *eb)

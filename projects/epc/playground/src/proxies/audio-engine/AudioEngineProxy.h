@@ -43,8 +43,6 @@ class AudioEngineProxy : public sigc::trackable
 
   void sendEditBuffer();
 
-  void setReceiver(nltools::msg::EndPoint endPoint);
-
   void freezeParameterMessages();
   void thawParameterMessages(bool send);
 

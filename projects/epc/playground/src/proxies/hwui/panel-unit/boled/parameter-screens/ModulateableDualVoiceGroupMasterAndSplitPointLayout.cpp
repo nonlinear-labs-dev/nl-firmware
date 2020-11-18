@@ -39,15 +39,20 @@ SplitPointParameterLayout::SplitPointParameterLayout()
     : ModulateableDualVoiceGroupMasterAndSplitPointLayout()
 {
   setMode(Mode::ParameterValue);
- 
-  Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
-      sigc::hide(sigc::mem_fun(this, &SplitPointParameterLayout::fixValueControl)));
+
+  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  m_connection = sync->onChange([this](const Setting *s) { fixValueControl(); });
+}
+
+SplitPointParameterLayout::~SplitPointParameterLayout()
+{
+  m_connection.disconnect();
 }
 
 SplitPointParameterEditLayout::SplitPointParameterEditLayout()
 {
-  Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
-      sigc::hide(sigc::mem_fun(this, &SplitPointParameterEditLayout::fixValueControl)));
+  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  m_connection = sync->onChange([this](const Setting *s) { fixValueControl(); });
 }
 
 Control *SplitPointParameterLayout::createParameterValueControl()
@@ -110,4 +115,9 @@ Control *SplitPointParameterEditLayout::createParameterValueControl()
     return new SplitParameterValue(Rect(90, 33, 76, 12));
   else
     return ParameterLayout2::createParameterValueControl();
+}
+
+SplitPointParameterEditLayout::~SplitPointParameterEditLayout()
+{
+  m_connection.disconnect();
 }

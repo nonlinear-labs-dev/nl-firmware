@@ -163,7 +163,6 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	private RecallArea currentRecall;
 	private SyncParameterButton syncSplitParameter;
-	private SplitPointOverlapIndicator splitOverlap;
 
 	public BeltParameterLayout(final Belt parent) {
 		super(parent);
@@ -191,7 +190,6 @@ public class BeltParameterLayout extends OverlayLayout {
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
 		addChild(currentRecall = new ParameterRecallArea(this));
 		addChild(syncSplitParameter = new SyncParameterButton(this));
-		addChild(splitOverlap = new SplitPointOverlapIndicator(this));
 
 		EditBufferPresenterProvider.get().onChange(p -> {
 			if (p.selectedParameter.id.getNumber() != lastSelectedParameterNumber) {
@@ -329,9 +327,6 @@ public class BeltParameterLayout extends OverlayLayout {
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 				if (c == valueDisplay) {
 					splitValueDisplay.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
-					splitOverlap.doLayout(valueDisplay.getRelativePosition().getCenterPoint().getX() + 60,
-							(modAndParamValueYValue / 2) - (splitOverlap.getPictureHeight() / 2),
-							splitOverlap.getPictureWidth(), splitOverlap.getPictureHeight());
 				}
 			}
 			walkerX += r.width;
