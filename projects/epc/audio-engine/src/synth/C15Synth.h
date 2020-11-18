@@ -7,6 +7,7 @@
 #include <thread>
 #include <condition_variable>
 #include <mutex>
+#include <future>
 #include <nltools/threading/BackgroundThreadWaiter.h>
 
 namespace nltools
@@ -72,7 +73,9 @@ class C15Synth : public Synth, public sigc::trackable
   const AudioEngineOptions* m_options;
 
   RingBuffer<nltools::msg::Midi::SimpleMessage, 2048> m_externalMidiOutBuffer;
-  std::thread m_externalMidiOutThread;
-  nltools::BackgroundThreadWaiter m_externalMidiOutThreadWaiter;
+
+  std::mutex m_externalMidiOutMutex;
+  std::condition_variable m_externalMidiOutThreadWaiter;
   std::atomic<bool> m_quit { false };
+  std::future<void> m_externalMidiOutThread;
 };

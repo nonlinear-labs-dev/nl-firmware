@@ -1626,7 +1626,7 @@ void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPositio
     {
       uint8_t statusByte = static_cast<uint8_t>(0xD0);
       uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(controlPosition);
-      out({ statusByte, valByte, 0 });
+      out({ statusByte, valByte });
       break;
     }
 

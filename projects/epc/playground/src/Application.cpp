@@ -30,6 +30,9 @@ Application *Application::theApp = nullptr;
 
 void setupMessaging(const Options *options)
 {
+  if(Options::s_acceptanceTests)
+    return;
+
   using namespace nltools::msg;
 
   const auto &bbbb = options->getBBBB();
@@ -65,7 +68,7 @@ void quitApp(int sig)
 
 Application::Application(int numArgs, char **argv)
     : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
-    , m_theMainLoop(Glib::MainLoop::create())
+    , m_theMainLoop(Glib::MainLoop::create(Glib::MainContext::get_default()))
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))

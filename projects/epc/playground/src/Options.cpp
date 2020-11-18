@@ -6,6 +6,8 @@
 #include <giomm.h>
 #include <nltools/ErrorCodes.h>
 
+bool Options::s_acceptanceTests = false;
+
 Options::Options(int &argc, char **&argv)
 {
   setDefaults();
