@@ -45,9 +45,10 @@ AudioEngineProxy::AudioEngineProxy()
   const auto &pm = Application::get().getPresetManager();
 
   receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
-    if(auto bank = pm->getSelectedBank())
-      if(msg.program < bank->getNumPresets())
-        bank->selectPreset(msg.program);
+    if(auto lock = m_programChangeRecursion.lock())
+      if(auto bank = pm->getSelectedBank())
+        if(msg.program < bank->getNumPresets())
+          bank->selectPreset(msg.program);
   });
 
   pm->onBankSelection(sigc::mem_fun(this, &AudioEngineProxy::onBankSelectionChanged));
@@ -407,16 +408,19 @@ void AudioEngineProxy::onBankSelectionChanged(const Uuid &uuid)
 
 void AudioEngineProxy::onBankChanged()
 {
-  const auto &pm = Application::get().getPresetManager();
-
-  if(auto bank = pm->getSelectedBank())
+  if(auto lock = m_programChangeRecursion.lock())
   {
-    if(auto preset = bank->getSelectedPreset())
-    {
-      uint8_t pos = bank->getPresetPosition(preset);
+    const auto &pm = Application::get().getPresetManager();
 
-      if(pos < 128)
-        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, nltools::msg::Midi::ProgramChangeMessage { pos });
+    if(auto bank = pm->getSelectedBank())
+    {
+      if(auto preset = bank->getSelectedPreset())
+      {
+        uint8_t pos = bank->getPresetPosition(preset);
+
+        if(pos < 128)
+          nltools::msg::send(nltools::msg::EndPoint::AudioEngine, nltools::msg::Midi::ProgramChangeMessage { pos });
+      }
     }
   }
 }

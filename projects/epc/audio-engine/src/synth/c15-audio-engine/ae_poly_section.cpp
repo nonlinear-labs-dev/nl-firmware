@@ -148,12 +148,7 @@ void PolySection::render_audio(const float _mute)
   m_z_self->m_comb = m_combfilter.m_out;
   m_z_self->m_svf = m_svfilter.m_out;
   // eval sends
-#if POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_DISABLED__
-  const float send_self = 1.0f - m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX),
-              send_other = (1.0f - send_self) * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
-#elif POTENTIAL_IMPROVEMENT_PART_MUTE_ONLY_ON_PART_VOL == __POTENTIAL_IMPROVEMENT_ENABLED__
   const float send_other = m_smoothers.get(C15::Smoothers::Poly_Fast::Out_Mix_To_FX), send_self = 1.0f - send_other;
-#endif
   m_send_self_l = m_outputmixer.m_out_l * send_self;
   m_send_self_r = m_outputmixer.m_out_r * send_self;
   m_send_other_l = m_outputmixer.m_out_l * send_other;
@@ -226,6 +221,7 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
     {
       m_mono_glide.sync(0, 0.0f);
       m_mono_glide.start(0, m_time->eval_ms(3, m_smoothers.get(C15::Smoothers::Poly_Slow::Mono_Grp_Glide)), 1.0f);
+      m_mono_glide.render();
     }
     else
     {
@@ -249,12 +245,17 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
     m_voice_level[_event->m_voiceId] = m_key_levels[_event->m_position];
     m_gain_curve_index[_event->m_voiceId] = 0;
 #endif
-    m_combfilter.setDelaySmoother(_event->m_voiceId);
     startEnvelopes(_event->m_voiceId, m_note_pitch[_event->m_voiceId], _event->m_velocity);
   }
   // process signals after starting envelopes
   postProcess_poly_key(_event->m_voiceId);
   setSlowFilterCoefs(_event->m_voiceId);
+  // set comb delay smoother after pitch processing (unfortunately separate if statement)
+  // is this legato-dependant?
+  if(_event->m_trigger_env)
+  {
+    m_combfilter.setDelaySmoother(_event->m_voiceId);
+  }
   m_key_active++;
   return retrigger_mono;
 }

@@ -54,6 +54,10 @@
           },
           "Events": "isCurrentVGI => ANY[Highlight], VGIMasterTuneText => Unison[Text], VGIMasterVolumeText => Master[Text], VGIMuted => MuteIndication[Text]"
         },
+        "UpperFade": {
+          "Class": "FadeIndicatorI",
+          "Position": "128, 20"
+        },
         "Lower": {
           "Class": "LayerVoiceGroupII",
           "Position": "57, 32",
@@ -63,6 +67,10 @@
             "Master[Text]": ""
           },
           "Events": "isCurrentVGII => ANY[Highlight], VGIIMasterTuneText => Unison[Text], VGIIMasterVolumeText => Master[Text], VGIIMuted => MuteIndication[Text]"
+        },
+        "LowerFade": {
+          "Class": "FadeIndicatorII",
+          "Position": "128, 36"
         },
         "FBBoth": {
           "Class": "LayerFBImageLarge",

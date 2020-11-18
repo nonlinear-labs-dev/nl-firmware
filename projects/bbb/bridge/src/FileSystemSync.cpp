@@ -20,14 +20,12 @@ FileSystemSync::FileSystemSync()
 
 FileSystemSync::~FileSystemSync()
 {
-  nltools::Log::warning(__PRETTY_FUNCTION__, __LINE__);
   {
     std::unique_lock<std::mutex> l(m_mutex);
     m_cancel = true;
   }
   m_cond.notify_all();
   m_task.wait();
-  nltools::Log::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 void FileSystemSync::doBackgroundSyncing()
