@@ -1,8 +1,7 @@
 SET(DOCKERNAME nl-epc2-${ARCH_VERSION}-host-os)
 SET(USER $ENV{USER})
-SET(INSTALL_PACKAGES ${HOST_PACKAGES} ${SHARED_PACKAGES})
 
-SET(DOCKER_BUILD docker build --no-cache=true  --build-arg arch_version=${ARCH_VERSION} -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR})
+SET(DOCKER_BUILD docker build --no-cache=true  --build-arg arch_version=${ARCH_VERSION} --build-arg packages=${SHARED_PACKAGES} -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR})
 SET(ARCH_PACKAGES packages_${ARCH_VERSION}.tar.gz)
 
 ADD_CUSTOM_COMMAND(
@@ -33,6 +32,7 @@ ADD_CUSTOM_COMMAND(
     COMMENT "Create a new NonLinux release (a tar of packages to use) using the latest versions of ARCH packages"
     OUTPUT .fetch-upstream-packages
     DEPENDS .${DOCKERNAME}-created
+    DEPENDS createNonLinuxRelease.sh 
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createNonLinuxRelease.sh 
         ${DOCKERNAME} 
         ${CMAKE_CURRENT_BINARY_DIR}/${ARCH_PACKAGES}
