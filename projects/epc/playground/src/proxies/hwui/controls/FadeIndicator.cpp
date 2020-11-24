@@ -20,21 +20,43 @@ bool FadeIndicator::redraw(FrameBuffer& fb)
 {
   if(isVisible())
   {
-
     auto y = getPosition().getTop();
+
+    if(m_voiceGroup == VoiceGroup::II)
+      y = getPosition().getBottom() + 1;
+
     for(auto x = getPosition().getX(); x < getPosition().getX() + getWidth(); x++)
     {
-      if(x > getPosition().getX() + (getPosition().getWidth() / 2))
+      if(m_voiceGroup == VoiceGroup::I)
       {
-        y = std::min(getPosition().getBottom(), ++y);
-      }
 
-      fb.setColor(FrameBufferColors::C179);
-      fb.setPixel(x, y);
-      fb.setColor(FrameBufferColors::C128);
-      for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
+        if(x > getPosition().getX() + (getPosition().getWidth() / 2))
+        {
+          y++;
+        }
+
+        fb.setColor(FrameBufferColors::C179);
+        fb.setPixel(x, y);
+        fb.setColor(FrameBufferColors::C128);
+        for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
+        {
+          fb.setPixel(x, dy);
+        }
+      }
+      else
       {
-        fb.setPixel(x, dy);
+        if(x < getPosition().getX() + (getPosition().getWidth() / 2))
+        {
+          --y;
+        }
+
+        fb.setColor(FrameBufferColors::C179);
+        fb.setPixel(x, y);
+        fb.setColor(FrameBufferColors::C128);
+        for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
+        {
+          fb.setPixel(x, dy);
+        }
       }
     }
   }
