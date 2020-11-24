@@ -4,6 +4,7 @@ ADD_CUSTOM_COMMAND(
     OUTPUT nonlinux-${ARCH_VERSION}.iso
     DEPENDS epc2-setup-target-os
     DEPENDS createInstallMedium.sh
+    DEPENDS createInstallMediumDockerCommands.sh
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/../target-os
 )
 

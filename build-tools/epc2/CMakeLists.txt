@@ -1,7 +1,7 @@
 SET(ARCH_VERSION 20200908) # the ARCH version our distribution depens on
 
 SET(SHARED_PACKAGES sudo glibmm libsoup freetype2 libpng png++ boost alsa) 
-SET(TARGET_PACKAGES cpupower base linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr)
+SET(TARGET_PACKAGES cpupower base linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr alsa-tools linux-firmware)
 SET(ALL_PACKAGES ${TARGET_PACKAGES} ${SHARED_PACKAGES})
 
 string(REPLACE ";" " " SHARED_PACKAGES "${SHARED_PACKAGES}")
