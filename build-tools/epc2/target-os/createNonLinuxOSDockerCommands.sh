@@ -1,4 +1,6 @@
-pacman --noconfirm --overwrite '\\\*' -S ${INSTALL_PACKAGES}
+set -e
+
+pacman --noconfirm --overwrite '*' -S ${INSTALL_PACKAGES}
 yes | truncate -s 8G /out/rootfs.ext4
 yes | truncate -s 512M /out/bootfs.fat
 yes | mkfs.ext4 /out/rootfs.ext4
@@ -10,6 +12,7 @@ mount -o loop /out/bootfs.fat /mnt/boot/
 echo Server\ =\ file:///var/lib/pacman/sync > /etc/pacman.d/mirrorlist
 echo [dvzrv] >> /etc/pacman.d/mirrorlist
 echo Server\ =\ file:///var/lib/pacman/sync >> /etc/pacman.d/mirrorlist
+
 pacstrap -c /mnt base ${INSTALL_PACKAGES}
 
 cp /in/install/nlhook /mnt/lib/initcpio/install/nlhook
@@ -31,6 +34,5 @@ arch-chroot /mnt /bin/bash -c "systemctl enable sshd"
 
 arch-chroot /mnt bash -c "useradd -m sscl"
 echo "sscl:sscl" | chpasswd -R /mnt
-set -x
 echo "sscl   ALL=(ALL) NOPASSWD:ALL" >> /mnt/etc/sudoers
 arch-chroot /mnt bash -c "mkinitcpio -p linux-rt"
