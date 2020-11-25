@@ -6,6 +6,7 @@
 #include <omp.h>
 #include <x86intrin.h>
 #include <vector>
+#include <cstdint>
 
 template <typename T, size_t size> class ParallelData
 {
@@ -256,7 +257,7 @@ namespace std
   {
     const ParallelData<float, size> wrap = 0.5f
         + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
-              (in < 0.0f)));  // negative: -0.5, positive: 0.5
+            (in < 0.0f)));  // negative: -0.5, positive: 0.5
     ParallelData<TOut, size> ret = static_cast<ParallelData<TOut, size>>(in + wrap);
     return ret;
   }
@@ -275,7 +276,7 @@ template <size_t size> inline ParallelData<float, size> keepFractional(const Par
 {
   const ParallelData<float, size> wrap = 0.5f
       + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
-            (in < 0.0f)));  // negative: -0.5, positive: 0.5
+          (in < 0.0f)));  // negative: -0.5, positive: 0.5
   ParallelData<float, size> ret
       = in - static_cast<ParallelData<float, size>>(static_cast<ParallelData<int32_t, size>>(in + wrap));
   return ret;
@@ -286,7 +287,7 @@ template <size_t size> inline ParallelData<float, size> sinP3_wrap(ParallelData<
   _x += -0.25f;
   const ParallelData<float, size> wrap = 0.5f
       + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
-            (_x < 0.0f)));  // negative: -0.5, positive: 0.5
+          (_x < 0.0f)));  // negative: -0.5, positive: 0.5
   _x -= static_cast<ParallelData<float, size>>(static_cast<ParallelData<int32_t, size>>(_x + wrap));
   // similar to sinP3_noWrap now...
   const ParallelData<float, size> x = 0.5f - std::abs(_x + _x), squared = x * x;
