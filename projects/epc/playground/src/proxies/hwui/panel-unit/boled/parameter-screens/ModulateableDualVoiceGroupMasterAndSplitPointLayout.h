@@ -33,6 +33,7 @@ class SplitPointParameterLayout : public ModulateableDualVoiceGroupMasterAndSpli
  protected:
   Control* createParameterValueControl() override;
   void fixValueControl();
+  void setMode(Mode desiredMode) override;
 
   sigc::connection m_connection;
 };
