@@ -21,30 +21,19 @@ bool FadeIndicator::redraw(FrameBuffer& fb)
   if(isVisible())
   {
     auto y = getPosition().getTop();
+    auto center = getPosition().getCenter().getX();
 
     if(m_voiceGroup == VoiceGroup::II)
       y = getPosition().getBottom() + 1;
 
-    auto updateY = [this](const auto x, auto& y) {
-      if(m_voiceGroup == VoiceGroup::I)
-      {
-        if(x > getPosition().getX() + (getPosition().getWidth() / 2))
-        {
-          y++;
-        }
-      }
-      else
-      {
-        if(x < getPosition().getX() + (getPosition().getWidth() / 2))
-        {
-          y--;
-        }
-      }
-    };
-
-    for(auto x = getPosition().getX(); x < getPosition().getX() + getWidth(); x++)
+    for(auto x = getPosition().getLeft(); x < getPosition().getRight(); x++)
     {
-      updateY(x, y);
+      if(m_voiceGroup == VoiceGroup::I && x >= center)
+        y++;
+
+      if(m_voiceGroup == VoiceGroup::II && x < center)
+        y--;
+
       drawColumn(fb, x, y);
     }
   }
