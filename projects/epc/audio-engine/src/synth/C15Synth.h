@@ -64,9 +64,11 @@ class C15Synth : public Synth, public sigc::trackable
   dsp_host_dual* getDsp();
 
  private:
-  bool doIdle();
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
-  void sendExternalMidiOut();
+
+  void syncExternals();
+  void syncExternalMidiBridge();
+  void syncPlayground();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
   std::array<float, 8> m_hwSourceValues;
@@ -74,8 +76,8 @@ class C15Synth : public Synth, public sigc::trackable
 
   RingBuffer<nltools::msg::Midi::SimpleMessage, 2048> m_externalMidiOutBuffer;
 
-  std::mutex m_externalMidiOutMutex;
-  std::condition_variable m_externalMidiOutThreadWaiter;
+  std::mutex m_syncExternalsMutex;
+  std::condition_variable m_syncExternalsWaiter;
   std::atomic<bool> m_quit { false };
-  std::future<void> m_externalMidiOutThread;
+  std::future<void> m_syncExternalsTask;
 };
