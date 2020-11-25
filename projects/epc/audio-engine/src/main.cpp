@@ -1,5 +1,4 @@
 #include "AudioEngineOptions.h"
-#include "synth/SimpleSynth.h"
 #include "synth/C15Synth.h"
 #include "synth/CPUBurningSynth.h"
 #include "ui/CommandlinePerformanceWatch.h"

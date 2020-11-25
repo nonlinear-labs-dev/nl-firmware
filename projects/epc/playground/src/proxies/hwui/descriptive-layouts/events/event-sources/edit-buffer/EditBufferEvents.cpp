@@ -6,6 +6,8 @@
 #include <parameters/SplitPointParameter.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
+#include <device-settings/Settings.h>
+#include <device-settings/SplitPointSyncParameters.h>
 
 void DescriptiveLayouts::EditBufferTypeStringEvent::onChange(const EditBuffer *eb)
 {
@@ -171,13 +173,13 @@ void DescriptiveLayouts::CurrentVoiceGroupText::onChange(VoiceGroup newSelection
 
 void DescriptiveLayouts::VGIMuted::onChange(const EditBuffer *eb)
 {
-  auto muteI = eb->findParameterByID({ 395, VoiceGroup::I })->getControlPositionValue() != 0;
+  auto muteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->getControlPositionValue() != 0;
   setValue({ muteI ? "\uE0BA" : "", 0 });
 }
 
 void DescriptiveLayouts::VGIIMuted::onChange(const EditBuffer *eb)
 {
-  auto muteII = eb->findParameterByID({ 395, VoiceGroup::II })->getControlPositionValue() != 0;
+  auto muteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->getControlPositionValue() != 0;
   setValue({ muteII ? "\uE0BA" : "", 0 });
 }
 
@@ -363,4 +365,21 @@ void DescriptiveLayouts::LayerFXOffset::onChange(const EditBuffer *eb)
   {
     setValue({ 0, 0 });
   }
+}
+
+void DescriptiveLayouts::SplitPointBehaviourIsDefaultWithoutSync::onChange(const EditBuffer *eb)
+{
+  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
+  auto sync = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  setValue((!sync->get()) && sI->inDefaultSplitBehaviour());
+}
+
+void DescriptiveLayouts::VGIIsMuted::onChange(const EditBuffer *eb)
+{
+  setValue(eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->isValueDifferentFrom(0));
+}
+
+void DescriptiveLayouts::VGIIIsMuted::onChange(const EditBuffer *eb)
+{
+  setValue(eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->isValueDifferentFrom(0));
 }

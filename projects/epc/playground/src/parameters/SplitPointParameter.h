@@ -3,8 +3,9 @@
 #include "ModulateableParameterWithUnusualModUnit.h"
 
 class Setting;
+class Preset;
 
-class SplitPointParameter : public ModulateableParameterWithUnusualModUnit, public sigc::trackable
+class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
 {
  public:
   SplitPointParameter(ParameterGroup* group, const ParameterId& id);
@@ -16,9 +17,11 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit, publ
   void setModulationSource(UNDO::Transaction* transaction, MacroControls src) override;
   void setModulationSourceFromSibling(UNDO::Transaction* transaction, MacroControls src);
   SplitPointParameter* getSibling() const;
+  bool hasOverlap();
+  bool inDefaultSplitBehaviour() const;
+  void updateCPFromSyncChange(UNDO::Transaction* transaction, double cp);
 
  protected:
-  void onSyncSettingChanged(const Setting* s);
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;
 
@@ -26,7 +29,6 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit, publ
   bool inModSrcSet = false;
   void preventNegativeOverlap(UNDO::Transaction* transaction, tControlPositionValue value, bool dosendToPlaycontroller);
   bool isAtExtremes(tControlPositionValue value);
-  void clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller);
 
-  RecursionGuard m_settingGuard;
+  void clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller);
 };

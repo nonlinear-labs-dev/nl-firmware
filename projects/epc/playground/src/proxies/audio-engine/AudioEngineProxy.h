@@ -3,6 +3,7 @@
 #include <nltools/messaging/Message.h>
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <groups/MonoGroup.h>
+#include <tools/RecursionGuard.h>
 #include "playground.h"
 
 namespace UNDO
@@ -42,8 +43,6 @@ class AudioEngineProxy : public sigc::trackable
 
   void sendEditBuffer();
 
-  void setReceiver(nltools::msg::EndPoint endPoint);
-
   void freezeParameterMessages();
   void thawParameterMessages(bool send);
 
@@ -60,4 +59,5 @@ class AudioEngineProxy : public sigc::trackable
 
   uint m_suppressParamChanges = 0;
   sigc::connection m_presetSelectionConnection;
+  RecursionGuard m_programChangeRecursion;
 };

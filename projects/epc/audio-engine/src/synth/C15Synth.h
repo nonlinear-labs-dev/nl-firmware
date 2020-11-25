@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Synth.h"
+#include "c15-audio-engine/dsp_host_dual.h"
 #include <nltools/messaging/Message.h>
 #include <sigc++/sigc++.h>
 #include <thread>
 #include <condition_variable>
 #include <mutex>
+#include <future>
 #include <nltools/threading/BackgroundThreadWaiter.h>
 
 namespace nltools
@@ -63,6 +65,7 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   bool doIdle();
+  void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
   void sendExternalMidiOut();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
@@ -70,7 +73,9 @@ class C15Synth : public Synth, public sigc::trackable
   const AudioEngineOptions* m_options;
 
   RingBuffer<nltools::msg::Midi::SimpleMessage, 2048> m_externalMidiOutBuffer;
-  std::thread m_externalMidiOutThread;
-  nltools::BackgroundThreadWaiter m_externalMidiOutThreadWaiter;
+
+  std::mutex m_externalMidiOutMutex;
+  std::condition_variable m_externalMidiOutThreadWaiter;
   std::atomic<bool> m_quit { false };
+  std::future<void> m_externalMidiOutThread;
 };

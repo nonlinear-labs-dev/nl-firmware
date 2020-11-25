@@ -53,6 +53,18 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override;
   };
 
+  class VGIIsMuted : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class VGIIIsMuted : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
   class IsSingleSound : public EditBufferEvent<bool>
   {
    public:
@@ -197,6 +209,12 @@ namespace DescriptiveLayouts
   };
 
   class LayerFXOffset : public EditBufferEvent<std::pair<int, int>>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class SplitPointBehaviourIsDefaultWithoutSync : public EditBufferEvent<bool>
   {
    public:
     void onChange(const EditBuffer *eb) override;

@@ -5,6 +5,8 @@
 class Options
 {
  public:
+  static bool s_acceptanceTests;
+
   Options(int &argc, char **&argv);
 
   const Glib::ustring &getPresetManagerPath() const;

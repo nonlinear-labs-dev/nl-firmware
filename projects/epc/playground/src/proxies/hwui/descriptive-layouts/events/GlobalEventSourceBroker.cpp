@@ -68,6 +68,8 @@ namespace DescriptiveLayouts
     m_map[EventSources::isCurrentVGII] = std::make_unique<IsCurrentVGII>();
     m_map[EventSources::VGIMuted] = std::make_unique<VGIMuted>();
     m_map[EventSources::VGIIMuted] = std::make_unique<VGIIMuted>();
+    m_map[EventSources::VGIIIsMuted] = std::make_unique<VGIIsMuted>();
+    m_map[EventSources::VGIIsMuted] = std::make_unique<VGIIIsMuted>();
 
     m_map[EventSources::CurrentVoiceGroupText] = std::make_unique<CurrentVoiceGroupText>();
 
@@ -132,6 +134,8 @@ namespace DescriptiveLayouts
 
     m_map[EventSources::LayerFXState] = std::make_unique<LayerFXState>();
     m_map[EventSources::LayerFXOffset] = std::make_unique<LayerFXOffset>();
+
+    m_map[EventSources::SplitPointDefaultBehaviourWithoutSync] = std::make_unique<SplitPointBehaviourIsDefaultWithoutSync>();
   }
 
   GlobalEventSourceBroker::~GlobalEventSourceBroker() = default;

@@ -75,10 +75,8 @@ public class SplitSoundLayout extends SoundLayout {
 				SplitPoint splits = (SplitPoint) getChildren().get(2);
 				Rect left = splits.getRectOfVG(VoiceGroup.I);
 				Rect right = splits.getRectOfVG(VoiceGroup.II);
-
 				Rect startLeft = getChildren().get(1).getPixRect();
 				Rect endRight = getChildren().get(3).getPixRect();
-
 				RGB bgI = EditBufferPresenterProvider.getPresenter().voiceGroupI_BackgroundColor;
 				RGB bgII = EditBufferPresenterProvider.getPresenter().voiceGroupII_BackgroundColor;
 
@@ -89,7 +87,6 @@ public class SplitSoundLayout extends SoundLayout {
 				ctx.setFillStyle(bgII.toString());
 				ctx.fillRect(right.getRight(), right.getCenterPoint().getY() - 2, endRight.getLeft() - right.getRight(),
 						4);
-
 			}
 			super.draw(ctx, flags);
 		}
