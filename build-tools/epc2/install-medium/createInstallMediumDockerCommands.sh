@@ -1,3 +1,5 @@
+set -e
+
 pacman --noconfirm -Syy
 pacman --noconfirm -S archiso
 cp -r /usr/share/archiso/configs/baseline/ /archlive

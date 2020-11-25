@@ -1,23 +1,66 @@
-set -x
+set -e
 
+UPDATE_PACKAGE_SERVERS="https://nonlinearlabs.s3.eu-central-1.amazonaws.com/ https://ind.mirror.pkgbuild.com/community/os/x86_64/ https://sgp.mirror.pkgbuild.com/extra/os/x86_64/"
 BUILD_SWITCHES="-DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On"
 
-mount -o loop /in/rootfs.ext4 /mnt
-mkdir -p /mnt/boot
-mount -o loop /in/bootfs.fat /mnt/boot/
+setup_overlay() {
+    mount -o loop /in/rootfs.ext4 /mnt
+    mkdir -p /mnt/boot
+    mount -o loop /in/bootfs.fat /mnt/boot/
+    
+    mkdir -p /overlay-scratch
+    mkdir -p /overlay-workdir
+    mkdir -p /overlay-fs
+    
+    fuse-overlayfs -o lowerdir=/mnt -o upperdir=/overlay-scratch -o workdir=/overlay-workdir /overlay-fs || error "fuse-overlay failed."
+}
 
-mkdir -p /overlay-scratch
-mkdir -p /overlay-workdir
-mkdir -p /overlay-fs
+download_package() {
+    if find ./$1 > /dev/null; then
+        return 0
+    fi
 
-fuse-overlayfs -o lowerdir=/mnt -o upperdir=/overlay-scratch -o workdir=/overlay-workdir /overlay-fs || error "fuse-overlay failed."
+    for server in $UPDATE_PACKAGE_SERVERS; do
+        URL="${server}$1"
+        if wget $URL; then
+            return 0
+        fi
+    done
 
-DESTDIR=/overlay-fs cmake -DCMAKE_BUILD_TYPE=Release ${BUILD_SWITCHES} -S /source -B /build
-make -j8 -C /build
-DESTDIR=/overlay-fs make -C /build install 
+    return 1
+}
 
-mkdir -p /update
+download_packages() {
+    for package in $UPDATE_PACKAGES; do
+        if ! download_package ${package}; then
+            return 1
+        fi
+    done
+    return 0
+}
 
-tar -C /overlay-scratch --exclude=.wh..wh..opq -czf /update/NonLinuxOverlay.tar.gz .
-touch /update/$(sha256sum /update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
-tar -cf /out/update.tar ./update
+
+install_packages() {
+    for package in $UPDATE_PACKAGES; do
+        pacstrap -c -U /overlay-fs $package
+    done
+}
+
+build_binaries() {
+    DESTDIR=/overlay-fs cmake -DCMAKE_BUILD_TYPE=Release ${BUILD_SWITCHES} -S /source -B /build
+    make -j8 -C /build
+    DESTDIR=/overlay-fs make -C /build install 
+}
+
+create_update() {
+    mkdir -p /update
+    tar -C /overlay-scratch --exclude=.wh..wh..opq -czf /update/NonLinuxOverlay.tar.gz .
+    touch /update/$(sha256sum /update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
+    tar -cf /out/update.tar ./update
+}
+
+setup_overlay
+download_packages
+install_packages
+build_binaries
+create_update

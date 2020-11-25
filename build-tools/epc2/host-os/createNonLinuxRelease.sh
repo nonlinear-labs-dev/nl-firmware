@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DOCKERNAME="$1"
 OUT_FILE=$(realpath $2)
 OUT_DIR=$(dirname $2)

@@ -1,7 +1,9 @@
 SET(DOCKERNAME nl-epc2-${ARCH_VERSION}-host-os)
 SET(USER $ENV{USER})
 
-SET(DOCKER_BUILD docker build --no-cache=true  --build-arg arch_version=${ARCH_VERSION} --build-arg packages=${SHARED_PACKAGES} -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR})
+message("Arch is ${ARCH_VERSION}")
+
+SET(DOCKER_BUILD docker build --no-cache=true --build-arg arch_version=${ARCH_VERSION} --build-arg packages=${SHARED_PACKAGES} -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR})
 SET(ARCH_PACKAGES packages_${ARCH_VERSION}.tar.gz)
 
 ADD_CUSTOM_COMMAND(
