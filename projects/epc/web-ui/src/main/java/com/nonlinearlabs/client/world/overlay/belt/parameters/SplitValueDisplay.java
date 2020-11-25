@@ -36,7 +36,7 @@ public class SplitValueDisplay extends Label {
     // split 2 == VoiceGroup II
 
     private boolean hasOverlap() {
-        return getSplit(VoiceGroup.I).value.value.getValue() > getSplit(VoiceGroup.II).value.value.getValue();
+        return getSplit(VoiceGroup.I).value.value.getValue() >= getSplit(VoiceGroup.II).value.value.getValue();
     }
 
     private RGB getVoiceGroupColorFont(VoiceGroup vg) {
@@ -57,7 +57,7 @@ public class SplitValueDisplay extends Label {
     }
 
     private VoiceGroup getSmallerPart() {
-        return getSplit(VoiceGroup.I).value.value.getValue() < getSplit(VoiceGroup.II).value.value.getValue() ? VoiceGroup.I : VoiceGroup.II;
+        return getSplit(VoiceGroup.I).value.value.getValue() <= getSplit(VoiceGroup.II).value.value.getValue() ? VoiceGroup.I : VoiceGroup.II;
     }
 
     @Override

@@ -158,7 +158,7 @@ bool SplitPointParameter::hasOverlap()
 {
   if(getVoiceGroup() == VoiceGroup::I)
   {
-    return getControlPositionValue() > getSibling()->getControlPositionValue();
+    return getControlPositionValue() >= getSibling()->getControlPositionValue();
   }
   else
   {
