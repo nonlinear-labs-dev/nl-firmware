@@ -234,22 +234,7 @@ public class KeyBed extends SVGImage {
         return super.drag(pos, dragProxy);
     }
 
-    private boolean isSelectedHandleOfVoiceGroup(VoiceGroup vg, SelectedHandle handle) {
-        if (vg == VoiceGroup.I) {
-            return handle == SelectedHandle.FadePointI || handle == SelectedHandle.FadeRangeI
-                    || handle == SelectedHandle.SplitPointI;
-        } else {
-            return handle == SelectedHandle.FadePointII || handle == SelectedHandle.FadeRangeII
-                    || handle == SelectedHandle.SplitPointII;
-        }
-    }
-
     void selectControl(SelectedHandle handle) {
-        if (isSelectedHandleOfVoiceGroup(VoiceGroup.I, handle)) {
-            EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.I);
-        } else if (isSelectedHandleOfVoiceGroup(VoiceGroup.II, handle)) {
-            EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.II);
-        }
         selection = handle;
         invalidate(INVALIDATION_FLAG_UI_CHANGED);
     }
