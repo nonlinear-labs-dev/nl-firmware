@@ -25,42 +25,40 @@ bool FadeIndicator::redraw(FrameBuffer& fb)
     if(m_voiceGroup == VoiceGroup::II)
       y = getPosition().getBottom() + 1;
 
-    for(auto x = getPosition().getX(); x < getPosition().getX() + getWidth(); x++)
-    {
+    auto updateY = [this](const auto x, auto& y) {
       if(m_voiceGroup == VoiceGroup::I)
       {
-
         if(x > getPosition().getX() + (getPosition().getWidth() / 2))
         {
           y++;
-        }
-
-        fb.setColor(FrameBufferColors::C179);
-        fb.setPixel(x, y);
-        fb.setColor(FrameBufferColors::C128);
-        for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
-        {
-          fb.setPixel(x, dy);
         }
       }
       else
       {
         if(x < getPosition().getX() + (getPosition().getWidth() / 2))
         {
-          --y;
-        }
-
-        fb.setColor(FrameBufferColors::C179);
-        fb.setPixel(x, y);
-        fb.setColor(FrameBufferColors::C128);
-        for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
-        {
-          fb.setPixel(x, dy);
+          y--;
         }
       }
+    };
+
+    for(auto x = getPosition().getX(); x < getPosition().getX() + getWidth(); x++)
+    {
+      updateY(x, y);
+      drawColumn(fb, x, y);
     }
   }
   return true;
+}
+void FadeIndicator::drawColumn(FrameBuffer& fb, int x, int y) const
+{
+  fb.setColor(FrameBufferColors::C179);
+  fb.setPixel(x, y);
+  fb.setColor(FrameBufferColors::C128);
+  for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
+  {
+    fb.setPixel(x, dy);
+  }
 }
 
 void FadeIndicator::drawBackground(FrameBuffer& fb)
