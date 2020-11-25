@@ -1,26 +1,32 @@
 #!/bin/bash
 #
-# Author:       Anton Schmied
 # Date:         12.02.2020
 # vom Cmake übergebene Pfade zu den .tarS
 
 EPC_UPDATE=$1
-BBB_UPDATE=$2
-PLAYCONTROLLER_UPDATE=$3
-BINARY_DIR=$4
-SOURCE_DIR=$5/build-tools/create-c15-update
-OUTNAME=$6
-ASPECTS=$7
+EPC_2_UPDATE=$2
+BBB_UPDATE=$3
+PLAYCONTROLLER_UPDATE=$4
+BINARY_DIR=$5
+SOURCE_DIR=$6/build-tools/create-c15-update
+OUTNAME=$7
+ASPECTS=$8
 OUT_DIRECTORY=$BINARY_DIR/$OUTNAME
 OUT_TAR=$BINARY_DIR/$OUTNAME.tar
 
 UPDATE_BBB=0
 UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
+UPDATE_EPC_2=0
 
 if [[ $ASPECTS = *epc* ]]
 then
     UPDATE_EPC=1
+fi
+
+if [[ $ASPECTS = *epc2* ]]
+then
+    UPDATE_EPC_2=1
 fi
 
 if [[ $ASPECTS = *playcontroller* ]]
@@ -40,6 +46,7 @@ fail_and_exit() {
 
 check_preconditions () {
     if [ -z "$EPC_UPDATE" -a $UPDATE_EPC == 1 ]; then echo "ePC update missing..." && return 1; fi
+    if [ -z "$EPC_2_UPDATE" -a $UPDATE_EPC_2 == 1 ]; then echo "ePC 2 update missing..." && return 1; fi
     if [ -z "$BBB_UPDATE" -a $UPDATE_BBB == 1 ]; then echo "BBB update missing..." && return 1; fi
     if [ -z "$PLAYCONTROLLER_UPDATE" -a $UPDATE_PLAYCONTROLLER == 1 ]; then echo "playcontroller update missing..." && return 1; fi
     return 0
@@ -50,7 +57,7 @@ create_update_file_structure() {
     rm -rf $OUT_DIRECTORY
     mkdir $OUT_DIRECTORY || fail_and_exit
     if [ $UPDATE_BBB == 1 ]; then mkdir $OUT_DIRECTORY/BBB || fail_and_exit; fi
-    if [ $UPDATE_EPC == 1 ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
+    if [ $UPDATE_EPC == 1 ] || [ $UPDATE_EPC_2 == 1 ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
     if [ $UPDATE_PLAYCONTROLLER == 1 ]; then mkdir $OUT_DIRECTORY/playcontroller || fail_and_exit; fi
     mkdir $OUT_DIRECTORY/utilities || fail_and_exit
     echo "Creating Update Structure done."
@@ -66,6 +73,10 @@ deploy_updates() {
 
     if [ $UPDATE_EPC == 1 ]; then
         cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update.tar && chmod 666 $OUT_DIRECTORY/EPC/update.tar || fail_and_exit;
+    fi
+
+    if [ $UPDATE_EPC_2 == 1 ]; then
+        cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update.tar && chmod 666 $OUT_DIRECTORY/EPC/update.tar || fail_and_exit;
     fi
 
     if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
