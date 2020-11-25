@@ -2,6 +2,8 @@ package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
+import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -295,8 +297,13 @@ public class KeyBed extends SVGImage {
         double fadeI = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.I)).value.value.getValue();
         double fadeII = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.II)).value.value.getValue();
 
+        BasicParameterModel fadeRangeI = EditBufferModel.get().getParameter(new ParameterId(397, VoiceGroup.I));
+        BasicParameterModel fadeRangeII = EditBufferModel.get().getParameter(new ParameterId(397, VoiceGroup.II));
+
         boolean fadeIMin = fadeI <= 0;
         boolean fadeIIMax = fadeII >= 1;
+
+        boolean fine = NonMaps.get().getNonLinearWorld().isShiftDown();
 
         switch (selection) {
             case FadePointI:
@@ -309,9 +316,14 @@ public class KeyBed extends SVGImage {
                     double useableRange = Math.max(0,
                             Math.min(pix.getWidth() - (pix.getWidth() * fadeI), pix.getWidth()));
                     double usableRangePercent = useableRange / pix.getWidth();
-                    return Math.max(0,
+                    double newCp = Math.max(0,
                             Math.min((p.getX() - (pix.getLeft() + (pix.getWidth() * fadeI))) / pix.getWidth(),
                                     usableRangePercent));
+                    if(fine) {
+                        return newCp;
+                    } else {
+                        return fadeRangeI.value.getQuantizedAndClipped(newCp, false);
+                    }        
                 } else {
                     return xPercent;
                 }
@@ -320,9 +332,14 @@ public class KeyBed extends SVGImage {
                 if (!fadeIIMax) {
                     double useableRange = Math.max(0, Math.min((pix.getWidth() * fadeII), pix.getWidth()));
                     double usableRangePercent = useableRange / pix.getWidth();
-                    return Math.max(0,
+                    double newCp = Math.max(0,
                             Math.min(((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(),
                                     usableRangePercent));
+                    if(fine) {
+                        return newCp;
+                    } else {
+                        return fadeRangeII.value.getQuantizedAndClipped(newCp, false);
+                    }        
                 } else {
                     return 1.0 - xPercent;
                 }
@@ -340,7 +357,6 @@ public class KeyBed extends SVGImage {
     public void updateCP(Position p) {
         try {
             double cp = getCPForPosition(p);
-
             switch (selection) {
                 case FadePointI:
                     EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.I), cp, true);
