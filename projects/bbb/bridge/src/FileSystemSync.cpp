@@ -30,6 +30,8 @@ FileSystemSync::~FileSystemSync()
 
 void FileSystemSync::doBackgroundSyncing()
 {
+  pthread_setname_np(pthread_self(), "FSSync");
+
   std::unique_lock<std::mutex> l(m_mutex);
 
   while(!m_cancel)
