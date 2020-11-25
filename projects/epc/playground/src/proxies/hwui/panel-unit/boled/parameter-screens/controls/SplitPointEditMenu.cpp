@@ -10,11 +10,11 @@ void SplitPointEditMenu::addActions()
 
   if(m_syncSetting->get())
   {
-    addButton("Disable Sync", [this]() { m_syncSetting->setState(false); });
+    addButton("Unlink Splitp.", [this]() { m_syncSetting->setState(false); });
   }
   else
   {
-    addButton("Enable Sync", [this]() { m_syncSetting->setState(true); });
+    addButton("Link Splitp.", [this]() { m_syncSetting->setState(true); });
   }
 }
 

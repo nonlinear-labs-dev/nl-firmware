@@ -12,7 +12,7 @@ void SplitSyncItem::doAction()
 }
 
 SplitSyncItem::SplitSyncItem(const Rect& r)
-    : BasicItemWithValueText("Sync Split", "", r)
+    : BasicItemWithValueText("Link Splitpoints", "", r)
 {
 
   Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->onChange(
