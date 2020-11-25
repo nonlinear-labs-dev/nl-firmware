@@ -205,16 +205,16 @@ public class BeltFadeEditorLayout extends OverlayLayout {
         double toggleW = toggle.getPictureWidth();
         double toggleH = toggle.getPictureHeight();
         
+        button.doLayout(7 * partWidth - toggleW / 2, h / 2 - toggleH / 2, toggleW, toggleH);
         toggle.doLayout(7 * partWidth - toggleW / 2 + toggleW * 1.5, h / 2 - toggleH / 2, toggleW, toggleH);
-        button.doLayout(7 * partWidth - toggleW / 2 + toggleW * 3, h / 2 - toggleH / 2, toggleW, toggleH);
 
         double valueWidth = partWidth * 0.75;
 
         if (leftControls != null)
-            leftControls.doLayout(keys.getRelativePosition().getLeft() - valueWidth * 1.5, baseLine, valueWidth, h);
+            leftControls.doLayout(keys.getRelativePosition().getLeft() - valueWidth * 1.25, baseLine, valueWidth, h);
 
         if (rightControls != null)
-            rightControls.doLayout(keys.getRelativePosition().getRight() + valueWidth * 0.5, baseLine, valueWidth, h);
+            rightControls.doLayout(keys.getRelativePosition().getRight() + valueWidth * 0.25, baseLine, valueWidth, h);
     }
 
     // Handle overlapping Handles inside KeyBed
