@@ -55,11 +55,28 @@ SplitPointParameterEditLayout::SplitPointParameterEditLayout()
   m_connection = sync->onChange([this](const Setting *s) { fixValueControl(); });
 }
 
+void SplitPointParameterLayout::setMode(ModulateableParameterSelectLayout2::Mode desiredMode)
+{
+  ModulateableParameterSelectLayout2::setMode(desiredMode);
+  if(desiredMode == Mode::ParameterValue)
+  {
+    fixValueControl();
+  }
+  else
+  {
+    if(auto selectedSynced = findControlOfType<SelectedParameterValue>())
+      remove(selectedSynced.get());
+
+    if(auto selectedNonSynced = findControlOfType<SplitParameterValue>())
+      remove(selectedNonSynced.get());
+  }
+}
+
 Control *SplitPointParameterLayout::createParameterValueControl()
 {
   auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
 
-  if(!setting->get())
+  if(!setting->get() && getMode() == Mode::ParameterValue)
     return new SplitParameterValue(Rect(90, 33, 76, 12));
   else
     return ParameterLayout2::createParameterValueControl();
