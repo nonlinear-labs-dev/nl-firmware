@@ -119,7 +119,7 @@ check_preconditions() {
     fi
 
     if [ "$(executeAsRoot "uname -r")" = "4.9.9-rt6-1-rt" ]; then
-        ln -s /update/EPC/update_7i3.tar /update/EPC/update.tar
+        ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar
         FIX_EPC=true
     else
         ln -s /update/EPC/update_10i3.tar /update/EPC/update.tar
@@ -144,8 +144,6 @@ epc_pull_update() {
 epc_fix() {
     /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_fix.sh sscl@192.168.10.10:/tmp
     executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh"
-    executeAsRoot "reboot"
-    wait4epc 60
     return $?
 }
 
@@ -171,6 +169,8 @@ epc_update() {
             sleep 2
             return 1
         fi
+        executeAsRoot "reboot"
+        wait4epc 60
     fi
 
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
