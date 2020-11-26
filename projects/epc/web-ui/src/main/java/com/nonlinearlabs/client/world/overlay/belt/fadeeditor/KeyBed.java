@@ -1,5 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
+import java.util.ArrayList;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.NonMaps;
@@ -8,6 +10,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenterProvider;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter.KeyRange;
@@ -38,6 +41,39 @@ public class KeyBed extends SVGImage {
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
             return true;
         });
+
+
+        //Connect to parameter Changes:
+        //Fade I and Range I and Split I
+        
+        ArrayList<VoiceGroup> vgs = new ArrayList<VoiceGroup>();
+        vgs.add(VoiceGroup.I);
+        vgs.add(VoiceGroup.II); 
+        
+        EditBufferModel ebm = EditBufferModel.get();
+
+        for(VoiceGroup vg: vgs) {
+            BasicParameterModel fadePoint = ebm.getParameter(new ParameterId(396, vg));
+            BasicParameterModel fadeRange = ebm.getParameter(new ParameterId(397, vg));
+            BasicParameterModel split = ebm.getParameter(new ParameterId(356, vg));
+
+            fadePoint.value.onChange(v -> {
+                selectPart(vg);
+                return true;
+            });
+
+
+            fadeRange.value.onChange(v -> {
+                selectPart(vg);
+                return true;
+            });
+
+
+            split.value.onChange(v -> {
+                selectPart(vg);
+                return true;
+            });
+        }
     }
 
     @Override
@@ -84,12 +120,6 @@ public class KeyBed extends SVGImage {
 
     private void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
         r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, stroke, RGB.black());
-
-        if (focus) {
-            r.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 1, 1, null, RGB.black());
-            r.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
-            r.getReducedBy(-7).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, RGB.black());
-        }
     }
 
     private void drawSplitHandle(Context2d ctx, VoiceGroup vg) {
@@ -119,8 +149,14 @@ public class KeyBed extends SVGImage {
         ctx.stroke();
     }
 
+    private VoiceGroup lastVG = VoiceGroup.I;
+
+    private VoiceGroup selectedVoiceGroup() {
+        return lastVG;
+    }
+
     public void drawSplit(Context2d ctx) {
-        VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+        VoiceGroup vg = selectedVoiceGroup();
 
         if (vg == VoiceGroup.I) {
             drawSplitPart(ctx, VoiceGroup.II);
@@ -220,7 +256,7 @@ public class KeyBed extends SVGImage {
     }
 
     public void drawLayer(Context2d ctx) {
-        if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
+        if (selectedVoiceGroup() == VoiceGroup.I) {
             drawLayerPart(ctx, VoiceGroup.II);
             drawLayerPart(ctx, VoiceGroup.I);
             drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
@@ -238,6 +274,18 @@ public class KeyBed extends SVGImage {
 
     void selectControl(SelectedHandle handle) {
         selection = handle;
+
+        if(handle == SelectedHandle.FadePointI || handle == SelectedHandle.FadeRangeI || handle == SelectedHandle.SplitPointI) {
+            lastVG = VoiceGroup.I;
+        } else if(handle == SelectedHandle.FadePointII || handle == SelectedHandle.FadeRangeII || handle == SelectedHandle.SplitPointII) {
+            lastVG = VoiceGroup.II;
+        }
+
+        invalidate(INVALIDATION_FLAG_UI_CHANGED);
+    }
+
+    private void selectPart(VoiceGroup vg) {
+        lastVG = vg;
         invalidate(INVALIDATION_FLAG_UI_CHANGED);
     }
 
