@@ -31,13 +31,3 @@ arch-chroot /mnt /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=
 arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
 arch-chroot /mnt /bin/bash -c "mkdir /boot/EFI/BOOT && cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI"
 genfstab -U /mnt >> /mnt/etc/fstab
-
-# check cpupoer configuration : sed -i "s/#governor=.*$/governor='performance'/" /mnt/etc/default/cpupower
-# is cpupower enabled? systemctl enable cpupower
-# check:
-# arch-chroot /mnt /bin/bash -c "systemctl mask systemd-backlight@"
-# arch-chroot /mnt /bin/bash -c "systemctl mask systemd-random-seed"
-# arch-chroot /mnt /bin/bash -c "systemctl mask systemd-tmpfiles-setup"
-# arch-chroot /mnt /bin/bash -c "systemctl mask systemd-tmpfiles-clean"
-# arch-chroot /mnt /bin/bash -c "systemctl mask systemd-tmpfiles-setup-dev"
-# shutdown -P now

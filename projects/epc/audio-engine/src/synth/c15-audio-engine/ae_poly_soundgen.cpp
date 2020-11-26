@@ -61,24 +61,8 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue
   oscSampleA = keepFractional(oscSampleA);
 
   // edge detection, fluctuation a
-
-  ParallelData<uint32_t, 12> r = (std::abs(m_oscA_phase_stateVar - oscSampleA) > 0.5f);
-  PolyInt a;
-
-  for(int i = 0; i < C15::Config::local_polyphony; i++)
-  {
-    if(r[i] == 0)
-      a[i] = 0;
-    else if(r[i] == 0xFFFFFFFF)
-      a[i] = -1;
-    else
-    {
-      nltools::Log::error("asdf;kljdfsglk;j");
-      throw "what the fuck";
-    }
-  }
-
-  m_OscA_randVal_int -= a * ((m_OscA_randVal_int * 1103515244) + 12345);  // ... so: subtract instead of add
+  const PolyInt edgeA((std::abs(m_oscA_phase_stateVar - oscSampleA) > 0.5f));  // contains 0 or -1 (instead of +1) ...
+  m_OscA_randVal_int -= edgeA * ((m_OscA_randVal_int * 1103515244) + 12345);   // ... so: subtract instead of add
   m_OscA_randVal_float = static_cast<PolyValue>(m_OscA_randVal_int) * 4.5657e-10f;
 
   auto osc_freq = _signals.get(C15::Signals::Truepoly_Signals::Osc_A_Freq);

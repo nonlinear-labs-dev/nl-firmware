@@ -37,7 +37,3 @@ echo "sscl:sscl" | chpasswd -R /mnt
 echo "sscl   ALL=(ALL) NOPASSWD:ALL" >> /mnt/etc/sudoers
 
 arch-chroot /mnt bash -c "mkinitcpio -p linux-rt"
-
-
-
-   

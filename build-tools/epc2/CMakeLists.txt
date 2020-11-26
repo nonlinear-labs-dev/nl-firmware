@@ -1,4 +1,4 @@
-SET(ARCH_VERSION 20200908) # the ARCH version our distribution depens on
+SET(ARCH_VERSION 20200908) # the ARCH version our distribution depends on
 
 SET(SHARED_PACKAGES sudo glibmm libsoup freetype2 libpng png++ boost alsa) 
 SET(TARGET_PACKAGES cpupower base linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr alsa-tools alsa-utils linux-firmware shared-mime-info)
