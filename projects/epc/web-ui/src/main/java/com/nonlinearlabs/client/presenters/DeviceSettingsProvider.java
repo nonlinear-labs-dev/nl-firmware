@@ -135,6 +135,12 @@ public class DeviceSettingsProvider {
 			notifyClients();
 			return true;
 		});
+
+		SetupModel.get().systemSettings.syncSplit.onChange(t -> {
+			settings.syncSplitsEnabled = t.equals(BooleanValues.on);
+			notifyClients();
+			return true;
+		});
 	}
 
 	public void connectToPedal(int id, Pedal target) {
