@@ -20,25 +20,34 @@ bool FadeIndicator::redraw(FrameBuffer& fb)
 {
   if(isVisible())
   {
-
     auto y = getPosition().getTop();
-    for(auto x = getPosition().getX(); x < getPosition().getX() + getWidth(); x++)
-    {
-      if(x > getPosition().getX() + (getPosition().getWidth() / 2))
-      {
-        y = std::min(getPosition().getBottom(), ++y);
-      }
+    auto center = getPosition().getCenter().getX();
 
-      fb.setColor(FrameBufferColors::C179);
-      fb.setPixel(x, y);
-      fb.setColor(FrameBufferColors::C128);
-      for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
-      {
-        fb.setPixel(x, dy);
-      }
+    if(m_voiceGroup == VoiceGroup::II)
+      y = getPosition().getBottom() + 1;
+
+    for(auto x = getPosition().getLeft(); x < getPosition().getRight(); x++)
+    {
+      if(m_voiceGroup == VoiceGroup::I && x >= center)
+        y++;
+
+      if(m_voiceGroup == VoiceGroup::II && x < center)
+        y--;
+
+      drawColumn(fb, x, y);
     }
   }
   return true;
+}
+void FadeIndicator::drawColumn(FrameBuffer& fb, int x, int y) const
+{
+  fb.setColor(FrameBufferColors::C179);
+  fb.setPixel(x, y);
+  fb.setColor(FrameBufferColors::C128);
+  for(auto dy = y + 1; dy <= getPosition().getBottom(); dy++)
+  {
+    fb.setPixel(x, dy);
+  }
 }
 
 void FadeIndicator::drawBackground(FrameBuffer& fb)

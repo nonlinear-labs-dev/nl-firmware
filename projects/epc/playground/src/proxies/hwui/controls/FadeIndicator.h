@@ -14,4 +14,5 @@ class FadeIndicator : public Control
   void onEditBufferChanged(const EditBuffer* eb);
  private:
   const VoiceGroup m_voiceGroup;
+  void drawColumn(FrameBuffer& fb, int x, int y) const;
 };
