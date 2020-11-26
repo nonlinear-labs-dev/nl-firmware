@@ -41,4 +41,4 @@ ADD_CUSTOM_COMMAND(
         ${ALL_PACKAGES})
 
 ADD_CUSTOM_TARGET(epc2-fetch-upstream-packages DEPENDS .fetch-upstream-packages)
-ADD_CUSTOM_TARGET(epc2-setup-host-os DEPENDS .${DOCKERNAME}-created)
+ADD_CUSTOM_TARGET(epc2-setup-host-os DEPENDS .${DOCKERNAME}-created DEPENDS .${DOCKERNAME}-packages)
