@@ -63,4 +63,6 @@ public class DeviceSettings {
 
 	public double tuneReferenceValue = 0;
 	public String tuneReferenceDisplayString = "";
+
+	public boolean syncSplitsEnabled = false;
 }
