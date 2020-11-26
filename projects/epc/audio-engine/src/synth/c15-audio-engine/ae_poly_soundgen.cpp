@@ -1,6 +1,4 @@
 #include "ae_poly_soundgen.h"
-#include <nltools/logging/Log.h>
-#include <glibmm.h>
 
 /******************************************************************************/
 /** @file       ae_poly_soundgen.cpp
@@ -59,12 +57,10 @@ void Engine::PolySoundGenerator::generate(PolySignals &_signals, const PolyValue
       + _signals.get(C15::Signals::Truepoly_Signals::Unison_PolyPhase);
   oscSampleA += (-0.25f);  // wrap
   oscSampleA = keepFractional(oscSampleA);
-
   // edge detection, fluctuation a
   const PolyInt edgeA((std::abs(m_oscA_phase_stateVar - oscSampleA) > 0.5f));  // contains 0 or -1 (instead of +1) ...
   m_OscA_randVal_int -= edgeA * ((m_OscA_randVal_int * 1103515244) + 12345);   // ... so: subtract instead of add
   m_OscA_randVal_float = static_cast<PolyValue>(m_OscA_randVal_int) * 4.5657e-10f;
-
   auto osc_freq = _signals.get(C15::Signals::Truepoly_Signals::Osc_A_Freq);
   m_oscA_phaseInc
       = ((m_OscA_randVal_float * _signals.get(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C) * osc_freq) + osc_freq)
