@@ -68,18 +68,22 @@ deploy_updates() {
     echo "Deploying updates..."
 
     if [ $UPDATE_BBB == 1 ]; then
+        echo "Will deploy BBB update."
         cp $BBB_UPDATE $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/rootfs.tar.gz || fail_and_exit;
     fi
 
     if [ $UPDATE_EPC == 1 ]; then
-        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update.tar && chmod 666 $OUT_DIRECTORY/EPC/update.tar || fail_and_exit;
+        echo "Will deploy ePC_1 update."
+        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update_7i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_7i3.tar || fail_and_exit;
     fi
 
     if [ $UPDATE_EPC_2 == 1 ]; then
-        cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update.tar && chmod 666 $OUT_DIRECTORY/EPC/update.tar || fail_and_exit;
+        echo "Will deploy ePC_2 update."
+        cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update_10i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_10i3.tar || fail_and_exit;
     fi
 
     if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
+        echo "Will deploy playcontroller update."
         cp $PLAYCONTROLLER_UPDATE $OUT_DIRECTORY/playcontroller/main.bin && chmod 666 $OUT_DIRECTORY/playcontroller/main.bin || fail_and_exit;
     fi
 
@@ -99,7 +103,7 @@ deploy_scripts() {
             fail_and_exit;
     fi
 
-    if [ $UPDATE_EPC == 1 ]; then
+    if [ $UPDATE_EPC == 1 ] || [ $UPDATE_EPC_2 == 1 ]; then
         cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh && \
             cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ && \

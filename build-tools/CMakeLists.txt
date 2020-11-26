@@ -25,7 +25,7 @@ add_custom_command(
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         nonlinear-c15-update
-        "playcontroller epc2 bbb"
+        "playcontroller epc epc2 bbb"
 )
 
 add_custom_target(c15-update DEPENDS ${CMAKE_BINARY_DIR}/nonlinear-c15-update.tar)

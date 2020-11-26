@@ -83,7 +83,7 @@ report() {
 }
 
 executeAsRoot() {
-    echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP "sudo -S /bin/bash -c '$1' 1>&2 > /dev/null"
+    echo "sscl" | /update/utilities/sshpass -p 'sscl' ssh -o ConnectionAttempts=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no sscl@$EPC_IP "sudo -S /bin/bash -c '$1'"
     return $?
 }
 
@@ -117,6 +117,15 @@ check_preconditions() {
         fi
         report "" "Something went wrong!" "Please retry update!" && return 1
     fi
+
+    if [ "$(executeAsRoot "uname -r")" = "4.9.9-rt6-1-rt" ]; then
+        ln -s /update/EPC/update_7i3.tar /update/EPC/update.tar
+        FIX_EPC=true
+    else
+        ln -s /update/EPC/update_10i3.tar /update/EPC/update.tar
+        FIX_EPC=false
+    fi
+
     return 0
 }
 
@@ -135,6 +144,8 @@ epc_pull_update() {
 epc_fix() {
     /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_fix.sh sscl@192.168.10.10:/tmp
     executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh"
+    executeAsRoot "reboot"
+    wait4epc 60
     return $?
 }
 
@@ -151,17 +162,16 @@ epc_update() {
         fi
     fi
 
-    epc_fix
-    return_code=$?
-    if [ $return_code -ne 0 ]; then
-        /update/utilities/sshpass -p "sscl" scp -r sscl@192.168.10.10:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
-        pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
-        sleep 2
-        return 1
+    if [ "$FIX_EPC" = "true" ]; then
+        epc_fix
+        return_code=$?
+        if [ $return_code -ne 0 ]; then
+            /update/utilities/sshpass -p "sscl" scp -r sscl@192.168.10.10:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
+            pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
+            sleep 2
+            return 1
+        fi
     fi
-
-    executeAsRoot "reboot"
-    wait4epc 60
 
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
     sleep 2
