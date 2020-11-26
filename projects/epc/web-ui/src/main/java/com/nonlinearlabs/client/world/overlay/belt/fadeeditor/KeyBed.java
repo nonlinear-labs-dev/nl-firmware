@@ -1,16 +1,12 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
-import java.util.ArrayList;
-
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
-import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenterProvider;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter.KeyRange;
@@ -42,17 +38,9 @@ public class KeyBed extends SVGImage {
             return true;
         });
 
-
-        //Connect to parameter Changes:
-        //Fade I and Range I and Split I
-        
-        ArrayList<VoiceGroup> vgs = new ArrayList<VoiceGroup>();
-        vgs.add(VoiceGroup.I);
-        vgs.add(VoiceGroup.II); 
         
         EditBufferModel ebm = EditBufferModel.get();
-
-        for(VoiceGroup vg: vgs) {
+        for(VoiceGroup vg: new VoiceGroup[]{VoiceGroup.I, VoiceGroup.II}) {
             BasicParameterModel fadePoint = ebm.getParameter(new ParameterId(396, vg));
             BasicParameterModel fadeRange = ebm.getParameter(new ParameterId(397, vg));
             BasicParameterModel split = ebm.getParameter(new ParameterId(356, vg));
