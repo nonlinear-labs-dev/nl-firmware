@@ -8,29 +8,34 @@
 #include <vector>
 #include <cstdint>
 
+void testParallelData();
+
 template <typename T, size_t size> class ParallelData
 {
  public:
+  static constexpr auto parallelizm = 4;
+  static constexpr auto simdSize = (size % parallelizm) ? (1 + size / parallelizm) : size / parallelizm;
+
   inline ParallelData(const T *d)
   {
-    for(size_t i = 0; i < size; i++)
+    for(size_t i = 0; i < simdSize; i++)
       m_data[i] = d[i];
   }
 
   inline ParallelData(T d = {})
   {
     for(size_t i = 0; i < size; i++)
-      m_data[i] = d;
+      (*this)[i] = d;
   }
 
   inline const T &operator[](size_t i) const
   {
-    return m_data[i];
+    return m_data.raw[i];
   }
 
   inline T &operator[](size_t i)
   {
-    return m_data[i];
+    return m_data.raw[i];
   }
 
   template <typename TOut> inline explicit operator ParallelData<TOut, size>() const
@@ -38,22 +43,19 @@ template <typename T, size_t size> class ParallelData
     ParallelData<TOut, size> ret;
 
     for(size_t i = 0; i < size; i++)
-      ret[i] = static_cast<TOut>(m_data[i]);
+      ret[i] = static_cast<TOut>((*this)[i]);
 
     return ret;
   }
 
-  inline const T *getDataPtr() const
+  typedef union
   {
-    return m_data;
-  }
+    __m128i mmi[simdSize];
+    __m128 mmf[simdSize];
+    T raw[simdSize * parallelizm];
+  } v128;
 
-  inline T *getDataPtr()
-  {
-    return m_data;
-  }
-
-  alignas(32) T m_data[size];
+  v128 m_data;
 };
 
 #define BINARY_P_P_OPERATOR(operation)                                                                                 \
@@ -123,11 +125,7 @@ template <typename T, size_t size> class ParallelData
     __m128 b = { r, r, r, r };                                                                                         \
                                                                                                                        \
     for(size_t i = 0; i < iterations; i++)                                                                             \
-    {                                                                                                                  \
-      auto a = reinterpret_cast<const __m128 *>(l.getDataPtr() + parallelism * i);                                     \
-      auto t = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);                                         \
-      *t = _mm_cmp_ps(*a, b, imm);                                                                                     \
-    }                                                                                                                  \
+      ret.m_data.mmf[i] = _mm_cmp_ps(l.m_data.mmf[i], b, imm);                                                         \
                                                                                                                        \
     return ret;                                                                                                        \
   }
@@ -157,14 +155,13 @@ VECTOR_P_S_CMP_OPERATOR(>=, _CMP_GE_OS)
 template <typename T1, typename T2, size_t size>
 inline ParallelData<T1, size> operator&(const ParallelData<T1, size> &l, const ParallelData<T2, size> &r)
 {
+  constexpr auto parallelism = 4;
+  constexpr auto iterations = size / parallelism;
+
   ParallelData<T1, size> ret;
 
-  auto intL = reinterpret_cast<const uint32_t *>(l.getDataPtr());
-  auto intR = reinterpret_cast<const uint32_t *>(r.getDataPtr());
-  auto retPtr = reinterpret_cast<uint32_t *>(ret.getDataPtr());
-
-  for(size_t i = 0; i < size; i++)
-    retPtr[i] = intL[i] & intR[i];
+  for(size_t i = 0; i < iterations; i++)
+    ret.m_data.mmi[i] = l.m_data.mmi[i] & r.m_data.mmi[i];
 
   return ret;
 }
@@ -196,11 +193,7 @@ namespace std
     __m128 cmp = { a, a, a, a };
 
     for(size_t i = 0; i < iterations; i++)
-    {
-      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
-      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
-      *tmp = _mm_min_ps(*val, cmp);
-    }
+      ret.m_data.mmf[i] = _mm_min_ps(in.m_data.mmf[i], cmp);
 
     return ret;
   }
@@ -214,11 +207,7 @@ namespace std
     __m128 cmp = { a, a, a, a };
 
     for(size_t i = 0; i < iterations; i++)
-    {
-      auto val = reinterpret_cast<const __m128 *>(in.getDataPtr() + parallelism * i);
-      auto tmp = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
-      *tmp = _mm_max_ps(*val, cmp);
-    }
+      ret.m_data.mmf[i] = _mm_max_ps(in.m_data.mmf[i], cmp);
 
     return ret;
   }
@@ -226,11 +215,7 @@ namespace std
   template <size_t size>
   inline ParallelData<float, size> clamp(const ParallelData<float, size> &in, float _min, float _max)
   {
-    ParallelData<float, size> ret;
-
-    ret = max(min(in, _max), _min);
-
-    return ret;
+    return max(min(in, _max), _min);
   }
 
   // with the new state variable filter, we need a parallel vector max
@@ -244,22 +229,16 @@ namespace std
     ParallelData<float, size> ret = max(in, _min);
 
     for(size_t i = 0; i < iterations; i++)
-    {
-      auto val = reinterpret_cast<__m128 *>(ret.getDataPtr() + parallelism * i);
-      auto cmpMax = reinterpret_cast<const __m128 *>(_max.getDataPtr() + parallelism * i);
-      *val = _mm_min_ps(*val, *cmpMax);
-    }
+      ret.m_data.mmf[i] = _mm_min_ps(ret.m_data.mmf[i], _max.m_data.mmf[i]);
 
     return ret;
   }
 
   template <typename TOut, size_t size> inline ParallelData<TOut, size> round(const ParallelData<float, size> &in)
   {
-    const ParallelData<float, size> wrap = 0.5f
-        + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
-            (in < 0.0f)));  // negative: -0.5, positive: 0.5
-    ParallelData<TOut, size> ret = static_cast<ParallelData<TOut, size>>(in + wrap);
-    return ret;
+    ParallelData<float, size> one(1.0f);
+    auto wrap = (one & (in > 0.0f)) - 0.5f;
+    return static_cast<ParallelData<TOut, size>>(in + wrap);
   }
 }
 

@@ -21,7 +21,7 @@ cp /in/hook/nlhook /mnt/lib/initcpio/hooks/nlhook
 cp /in/hook/oroot /mnt/lib/initcpio/hooks/oroot
 
 sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=1/' /mnt/etc/default/grub
-sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT="quiet ip=192.168.10.10:::::eth0:none"/' /mnt/etc/default/grub
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT="quiet ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2"/' /mnt/etc/default/grub
 sed -i 's/^HOOKS=.*$/HOOKS=\"base udev oroot block filesystems autodetect modconf keyboard net nlhook\"/' /mnt/etc/mkinitcpio.conf
 sed -i 's/^BINARIES=.*$/BINARIES=\"tar rsync gzip lsblk udevadm\"/' /mnt/etc/mkinitcpio.conf
 sed -i 's/^MODULES=.*$/MODULES=\"e1000e\"/' /mnt/etc/mkinitcpio.conf
@@ -35,4 +35,9 @@ arch-chroot /mnt /bin/bash -c "systemctl enable sshd"
 arch-chroot /mnt bash -c "useradd -m sscl"
 echo "sscl:sscl" | chpasswd -R /mnt
 echo "sscl   ALL=(ALL) NOPASSWD:ALL" >> /mnt/etc/sudoers
+
 arch-chroot /mnt bash -c "mkinitcpio -p linux-rt"
+
+
+
+   
