@@ -694,6 +694,10 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/MCView/index.html", "", "");
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ONE || keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_ONE) {
+			EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.I);
+		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_TWO || keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_TWO) {
+			EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.II);
 		} else {
 			return null;
 		}
