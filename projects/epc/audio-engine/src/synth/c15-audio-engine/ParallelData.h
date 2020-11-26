@@ -12,34 +12,34 @@ void testParallelData();
 
 namespace parallel_data_detail
 {
-  template <typename T, size_t simdSize, size_t parallelizm> union v128
+  template <typename T, size_t simdSize, size_t parallelism> union v128
   {
     __m128i mmi[simdSize];
     __m128 mmf[simdSize];
-    T raw[simdSize * parallelizm];
+    T raw[simdSize * parallelism];
   };
 
-  template <size_t simdSize, size_t parallelizm> struct Copy
+  template <size_t simdSize, size_t parallelism> struct Copy
   {
-    static void copy(v128<int32_t, simdSize, parallelizm> &out, const v128<float, simdSize, parallelizm> &in)
+    static void copy(v128<int32_t, simdSize, parallelism> &out, const v128<float, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
         out.mmi[i] = _mm_cvttps_epi32(in.mmf[i]);
     }
 
-    static void copy(v128<float, simdSize, parallelizm> &out, const v128<int32_t, simdSize, parallelizm> &in)
+    static void copy(v128<float, simdSize, parallelism> &out, const v128<int32_t, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
         out.mmf[i] = _mm_cvtepi32_ps(in.mmi[i]);
     }
 
-    static void copy(v128<uint32_t, simdSize, parallelizm> &out, const v128<int32_t, simdSize, parallelizm> &in)
+    static void copy(v128<uint32_t, simdSize, parallelism> &out, const v128<int32_t, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
         out.mmi[i] = in.mmi[i];
     }
 
-    static void copy(v128<int32_t, simdSize, parallelizm> &out, const v128<uint32_t, simdSize, parallelizm> &in)
+    static void copy(v128<int32_t, simdSize, parallelism> &out, const v128<uint32_t, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
         out.mmi[i] = in.mmi[i];
@@ -50,8 +50,8 @@ namespace parallel_data_detail
 template <typename T, size_t size> class ParallelData
 {
  public:
-  static constexpr auto parallelizm = 4;
-  static constexpr auto simdSize = (size % parallelizm) ? (1 + size / parallelizm) : size / parallelizm;
+  static constexpr auto parallelism = 4;
+  static constexpr auto simdSize = (size % parallelism) ? (1 + size / parallelism) : size / parallelism;
 
   inline ParallelData(const std::array<T, size> &d)
   {
@@ -83,11 +83,11 @@ template <typename T, size_t size> class ParallelData
   template <typename TOut> inline explicit operator ParallelData<TOut, size>() const
   {
     ParallelData<TOut, size> ret;
-    parallel_data_detail::Copy<simdSize, parallelizm>::copy(ret.m_data, this->m_data);
+    parallel_data_detail::Copy<simdSize, parallelism>::copy(ret.m_data, this->m_data);
     return ret;
   }
 
-  parallel_data_detail::v128<T, simdSize, parallelizm> m_data;
+  parallel_data_detail::v128<T, simdSize, parallelism> m_data;
 };
 
 #define BINARY_P_P_OPERATOR(operation)                                                                                 \
