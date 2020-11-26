@@ -93,7 +93,7 @@ void Engine::PolyCombFilter::apply(PolySignals &_signals, const PolyValue &_samp
   /// hier kommt voicestealing hin!!
   tmpSmooth -= 1.0f;
   tmpSmooth = std::clamp(tmpSmooth, 1.0f, 8189.f);
-  auto ind_t0 = std::round<int32_t>(tmpSmooth - 0.5f);
+  auto ind_t0 = std::round(tmpSmooth - 0.5f);
   tmpSmooth = tmpSmooth - static_cast<PolyValue>(ind_t0);
   auto ind_tm1 = ind_t0 - 1;
   auto ind_tp1 = ind_t0 + 1;
