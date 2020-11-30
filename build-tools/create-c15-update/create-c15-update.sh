@@ -19,22 +19,22 @@ UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
 UPDATE_EPC_2=0
 
-if [[ "$ASPECTS" == "epc_5-7i3" ]]
+if [[ $ASPECTS = *epc_5-7i3* ]]
 then
     UPDATE_EPC=1
 fi
 
-if [[ "$ASPECTS" == "epc_10i3" ]]
+if [[ $ASPECTS = *epc_10i3* ]]
 then
     UPDATE_EPC_2=1
 fi
 
-if [[ "$ASPECTS" == "playcontroller" ]]
+if [[ $ASPECTS = *playcontroller* ]]
 then
     UPDATE_PLAYCONTROLLER=1
 fi
 
-if [[ "$ASPECTS" == "bbb" ]]
+if [[ $ASPECTS = *bbb* ]]
 then
     UPDATE_BBB=1
 fi
