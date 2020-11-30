@@ -17,16 +17,10 @@ OUT_TAR=$BINARY_DIR/$OUTNAME.tar
 UPDATE_BBB=0
 UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
-UPDATE_EPC_2=0
 
-if [[ $ASPECTS = *epc_5-7i3* ]]
+if [[ $ASPECTS = *epc* ]]
 then
     UPDATE_EPC=1
-fi
-
-if [[ $ASPECTS = *epc_10i3* ]]
-then
-    UPDATE_EPC_2=1
 fi
 
 if [[ $ASPECTS = *playcontroller* ]]
@@ -46,7 +40,6 @@ fail_and_exit() {
 
 check_preconditions () {
     if [ -z "$EPC_UPDATE" -a $UPDATE_EPC == 1 ]; then echo "ePC update missing..." && return 1; fi
-    if [ -z "$EPC_2_UPDATE" -a $UPDATE_EPC_2 == 1 ]; then echo "ePC 2 update missing..." && return 1; fi
     if [ -z "$BBB_UPDATE" -a $UPDATE_BBB == 1 ]; then echo "BBB update missing..." && return 1; fi
     if [ -z "$PLAYCONTROLLER_UPDATE" -a $UPDATE_PLAYCONTROLLER == 1 ]; then echo "playcontroller update missing..." && return 1; fi
     return 0
@@ -57,7 +50,7 @@ create_update_file_structure() {
     rm -rf $OUT_DIRECTORY
     mkdir $OUT_DIRECTORY || fail_and_exit
     if [ $UPDATE_BBB == 1 ]; then mkdir $OUT_DIRECTORY/BBB || fail_and_exit; fi
-    if [ $UPDATE_EPC == 1 ] || [ $UPDATE_EPC_2 == 1 ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
+    if [ $UPDATE_EPC == 1 ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
     if [ $UPDATE_PLAYCONTROLLER == 1 ]; then mkdir $OUT_DIRECTORY/playcontroller || fail_and_exit; fi
     mkdir $OUT_DIRECTORY/utilities || fail_and_exit
     echo "Creating Update Structure done."
@@ -73,12 +66,8 @@ deploy_updates() {
     fi
 
     if [ $UPDATE_EPC == 1 ]; then
-        echo "Will deploy ePC_1 update."
+        echo "Will deploy ePC updates."
         cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update_5-7i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_5-7i3.tar || fail_and_exit;
-    fi
-
-    if [ $UPDATE_EPC_2 == 1 ]; then
-        echo "Will deploy ePC_2 update."
         cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update_10i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_10i3.tar || fail_and_exit;
     fi
 
@@ -103,7 +92,7 @@ deploy_scripts() {
             fail_and_exit;
     fi
 
-    if [ $UPDATE_EPC == 1 ] || [ $UPDATE_EPC_2 == 1 ]; then
+    if [ $UPDATE_EPC == 1 ]; then
         cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh && \
             cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ && \
