@@ -8,6 +8,7 @@ class SyncSplitSettingUseCases
  public:
   static SyncSplitSettingUseCases& get();
 
+  void updateFromWebUI(const Glib::ustring &value);
   void enableSyncSetting();
   void disableSyncSetting();
   void enableSyncSetting(UNDO::Transaction*);

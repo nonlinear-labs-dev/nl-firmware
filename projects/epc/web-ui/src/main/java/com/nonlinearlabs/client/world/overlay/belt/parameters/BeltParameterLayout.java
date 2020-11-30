@@ -106,39 +106,6 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	}
 
-	private final class SyncParameterButton extends SVGImage {
-		public SyncParameterButton(OverlayLayout parent) {
-			super(parent, "Sync_Disabled.svg", "Sync_Enabled.svg");
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return SetupModel.get().systemSettings.syncSplit.getBool() ? 1 : 0;
-		}
-
-		@Override
-		public Control click(Position eventPoint) {
-			EditBufferUseCases.get().toggleSyncSplit();
-			return this;
-		}
-	}
-
-	private final class SplitPointOverlapIndicator extends SVGImage {
-		public SplitPointOverlapIndicator(OverlayLayout parent) {
-			super(parent, "Overlap-Indicator.svg");
-
-			EditBufferPresenterProvider.get().onChange(presenter -> {
-				setVisible(presenter.splitOverlap && presenter.selectedParameter.id.getNumber() == 356);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return 0;
-		}
-	}
-
 	private Mode mode = Mode.modulateableParameter;
 	private IncrementalChanger currentIncrementalChanger;
 
@@ -282,8 +249,6 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		if (isParameterSplitPoint()) {
 			editorMode.doLayout(w - editorModeLeft - (buttonDim * 0.5), (h - buttonDim) / 2, buttonDim, buttonDim);
-			syncSplitParameter.doLayout(w - editorModeLeft + (buttonDim * 0.6), (h - buttonDim) / 2, buttonDim,
-					buttonDim);
 		} else {
 			editorMode.doLayout(w - editorModeLeft, (h - buttonDim) / 2, buttonDim, buttonDim);
 		}
@@ -327,6 +292,7 @@ public class BeltParameterLayout extends OverlayLayout {
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 				if (c == valueDisplay) {
 					splitValueDisplay.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
+					syncSplitParameter.doLayout(walkerX + r.width, splitValueDisplay.getRelativePosition().getCenterPoint().getY() - (buttonDim / 1.8), buttonDim, buttonDim);
 				}
 			}
 			walkerX += r.width;

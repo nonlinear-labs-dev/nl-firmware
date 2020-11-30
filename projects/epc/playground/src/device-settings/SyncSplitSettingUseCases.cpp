@@ -61,3 +61,15 @@ void SyncSplitSettingUseCases::disableSyncSetting()
   auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Disable Split Sync");
   disableSyncSetting(scope->getTransaction());
 }
+
+void SyncSplitSettingUseCases::updateFromWebUI(const Glib::ustring& value)
+{
+  if(value == "on")
+  {
+    enableSyncSetting();
+  }
+  else
+  {
+    disableSyncSetting();
+  }
+}

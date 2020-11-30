@@ -10,22 +10,64 @@
 
 void testParallelData();
 
+namespace parallel_data_detail
+{
+  template <typename T, size_t simdSize, size_t parallelism> union v128
+  {
+    __m128i mmi[simdSize];
+    __m128 mmf[simdSize];
+    T raw[simdSize * parallelism];
+  };
+
+  template <size_t simdSize, size_t parallelism> struct Copy
+  {
+    static void copy(v128<int32_t, simdSize, parallelism> &out, const v128<float, simdSize, parallelism> &in)
+    {
+      for(int i = 0; i < simdSize; i++)
+        out.mmi[i] = _mm_cvttps_epi32(in.mmf[i]);
+    }
+
+    static void copy(v128<float, simdSize, parallelism> &out, const v128<int32_t, simdSize, parallelism> &in)
+    {
+      for(int i = 0; i < simdSize; i++)
+        out.mmf[i] = _mm_cvtepi32_ps(in.mmi[i]);
+    }
+
+    static void copy(v128<uint32_t, simdSize, parallelism> &out, const v128<int32_t, simdSize, parallelism> &in)
+    {
+      for(int i = 0; i < simdSize; i++)
+        out.mmi[i] = in.mmi[i];
+    }
+
+    static void copy(v128<int32_t, simdSize, parallelism> &out, const v128<uint32_t, simdSize, parallelism> &in)
+    {
+      for(int i = 0; i < simdSize; i++)
+        out.mmi[i] = in.mmi[i];
+    }
+  };
+}
+
 template <typename T, size_t size> class ParallelData
 {
  public:
-  static constexpr auto parallelizm = 4;
-  static constexpr auto simdSize = (size % parallelizm) ? (1 + size / parallelizm) : size / parallelizm;
+  static constexpr auto parallelism = 4;
+  static constexpr auto simdSize = (size % parallelism) ? (1 + size / parallelism) : size / parallelism;
+
+  inline ParallelData(const std::array<T, size> &d)
+  {
+    std::copy(d.begin(), d.end(), m_data.raw);
+  }
 
   inline ParallelData(const T *d)
   {
-    for(size_t i = 0; i < simdSize; i++)
-      m_data[i] = d[i];
+    for(size_t i = 0; i < size; i++)
+      m_data.raw[i] = d[i];
   }
 
   inline ParallelData(T d = {})
   {
     for(size_t i = 0; i < size; i++)
-      (*this)[i] = d;
+      m_data.raw[i] = d;
   }
 
   inline const T &operator[](size_t i) const
@@ -41,21 +83,11 @@ template <typename T, size_t size> class ParallelData
   template <typename TOut> inline explicit operator ParallelData<TOut, size>() const
   {
     ParallelData<TOut, size> ret;
-
-    for(size_t i = 0; i < size; i++)
-      ret[i] = static_cast<TOut>((*this)[i]);
-
+    parallel_data_detail::Copy<simdSize, parallelism>::copy(ret.m_data, this->m_data);
     return ret;
   }
 
-  typedef union
-  {
-    __m128i mmi[simdSize];
-    __m128 mmf[simdSize];
-    T raw[simdSize * parallelizm];
-  } v128;
-
-  v128 m_data;
+  parallel_data_detail::v128<T, simdSize, parallelism> m_data;
 };
 
 #define BINARY_P_P_OPERATOR(operation)                                                                                 \
@@ -118,13 +150,10 @@ template <typename T, size_t size> class ParallelData
   template <typename T, size_t size>                                                                                   \
   inline ParallelData<uint32_t, size> operator operation(const ParallelData<T, size> &l, T r)                          \
   {                                                                                                                    \
-    constexpr auto parallelism = 4;                                                                                    \
-    constexpr auto iterations = size / parallelism;                                                                    \
-    static_assert((size % parallelism) == 0, "Cannot use this operator with this type!");                              \
     ParallelData<uint32_t, size> ret;                                                                                  \
     __m128 b = { r, r, r, r };                                                                                         \
                                                                                                                        \
-    for(size_t i = 0; i < iterations; i++)                                                                             \
+    for(size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                        \
       ret.m_data.mmf[i] = _mm_cmp_ps(l.m_data.mmf[i], b, imm);                                                         \
                                                                                                                        \
     return ret;                                                                                                        \
@@ -155,12 +184,9 @@ VECTOR_P_S_CMP_OPERATOR(>=, _CMP_GE_OS)
 template <typename T1, typename T2, size_t size>
 inline ParallelData<T1, size> operator&(const ParallelData<T1, size> &l, const ParallelData<T2, size> &r)
 {
-  constexpr auto parallelism = 4;
-  constexpr auto iterations = size / parallelism;
-
   ParallelData<T1, size> ret;
 
-  for(size_t i = 0; i < iterations; i++)
+  for(size_t i = 0; i < ParallelData<T1, size>::simdSize; i++)
     ret.m_data.mmi[i] = l.m_data.mmi[i] & r.m_data.mmi[i];
 
   return ret;
@@ -169,9 +195,7 @@ inline ParallelData<T1, size> operator&(const ParallelData<T1, size> &l, const P
 template <typename T1, typename T2, size_t size>
 inline ParallelData<T1, size> &operator&=(ParallelData<T1, size> &l, const ParallelData<T2, size> &r)
 {
-  for(size_t i = 0; i < size; i++)
-    l[i] &= r[i];
-
+  l = l & r;
   return l;
 }
 
@@ -180,19 +204,15 @@ namespace std
 {
   template <size_t size> inline ParallelData<float, size> abs(const ParallelData<float, size> &in)
   {
-    ParallelData<float, size> ret = in & ParallelData<uint32_t, size>(0x7FFFFFFF);  // masking sign bit
-    return ret;
+    return in & ParallelData<uint32_t, size>(0x7FFFFFFF);  // masking sign bit
   }
 
   template <size_t size> inline ParallelData<float, size> min(const ParallelData<float, size> &in, float a)
   {
-    constexpr auto parallelism = 4;
-    constexpr auto iterations = size / parallelism;
-    static_assert((size % parallelism) == 0, "Cannot use std::min with this type!");
     ParallelData<float, size> ret;
     __m128 cmp = { a, a, a, a };
 
-    for(size_t i = 0; i < iterations; i++)
+    for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
       ret.m_data.mmf[i] = _mm_min_ps(in.m_data.mmf[i], cmp);
 
     return ret;
@@ -200,13 +220,10 @@ namespace std
 
   template <size_t size> inline ParallelData<float, size> max(const ParallelData<float, size> &in, float a)
   {
-    constexpr auto parallelism = 4;
-    constexpr auto iterations = size / parallelism;
-    static_assert((size % parallelism) == 0, "Cannot use std::max with this type!");
     ParallelData<float, size> ret;
     __m128 cmp = { a, a, a, a };
 
-    for(size_t i = 0; i < iterations; i++)
+    for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
       ret.m_data.mmf[i] = _mm_max_ps(in.m_data.mmf[i], cmp);
 
     return ret;
@@ -223,23 +240,22 @@ namespace std
   inline ParallelData<float, size> clamp(const ParallelData<float, size> &in, float _min,
                                          const ParallelData<float, size> &_max)
   {
-    constexpr auto parallelism = 4;
-    constexpr auto iterations = size / parallelism;
-    static_assert((size % parallelism) == 0, "Cannot use std::clamp with this type!");
     ParallelData<float, size> ret = max(in, _min);
 
-    for(size_t i = 0; i < iterations; i++)
+    for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
       ret.m_data.mmf[i] = _mm_min_ps(ret.m_data.mmf[i], _max.m_data.mmf[i]);
 
     return ret;
   }
 
-  template <typename TOut, size_t size> inline ParallelData<TOut, size> round(const ParallelData<float, size> &in)
+  template <size_t size> inline ParallelData<int32_t, size> round(const ParallelData<float, size> &in)
   {
-    ParallelData<float, size> one(1.0f);
-    auto wrap = (one & (in > 0.0f)) - 0.5f;
-    return static_cast<ParallelData<TOut, size>>(in + wrap);
+    ParallelData<int32_t, size> ret;
+    for(int i = 0; i < ParallelData<int32_t, size>::simdSize; i++)
+      ret.m_data.mmi[i] = _mm_cvtps_epi32(in.m_data.mmf[i]);
+    return ret;
   }
+
 }
 
 // the following (unipolarCrossFade, keepFractional, sinP3_wrap, sinP3_noWrap, threeRanges, parAsym, bipolarCrossFade, interpolRT) ...
@@ -253,12 +269,9 @@ inline ParallelData<float, size> unipolarCrossFade(const ParallelData<float, siz
 
 template <size_t size> inline ParallelData<float, size> keepFractional(const ParallelData<float, size> &in)
 {
-  const ParallelData<float, size> wrap = 0.5f
-      + static_cast<ParallelData<float, size>>(ParallelData<int32_t, size>(
-          (in < 0.0f)));  // negative: -0.5, positive: 0.5
-  ParallelData<float, size> ret
-      = in - static_cast<ParallelData<float, size>>(static_cast<ParallelData<int32_t, size>>(in + wrap));
-  return ret;
+  ParallelData<float, size> one(1.0f);
+  auto wrap = (one & (in > 0.0f)) - 0.5f;
+  return in - static_cast<ParallelData<float, size>>(static_cast<ParallelData<int32_t, size>>(in + wrap));
 }
 
 template <size_t size> inline ParallelData<float, size> sinP3_wrap(ParallelData<float, size> _x)
@@ -347,9 +360,7 @@ inline ParallelData<TScalar, size> polyVectorIndex(const std::vector<ParallelDat
   ParallelData<TScalar, size> ret;
 
   for(size_t i = 0; i < size; i++)
-  {
     ret[i] = _vector[_index[i]][i];
-  }
 
   return ret;
 }
