@@ -19,22 +19,22 @@ UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
 UPDATE_EPC_2=0
 
-if [[ $ASPECTS = epc_5-7i3 ]]
+if [[ "$ASPECTS" == "epc_5-7i3" ]]
 then
     UPDATE_EPC=1
 fi
 
-if [[ $ASPECTS = epc_10i3 ]]
+if [[ "$ASPECTS" == "epc_10i3" ]]
 then
     UPDATE_EPC_2=1
 fi
 
-if [[ $ASPECTS = *playcontroller* ]]
+if [[ "$ASPECTS" == "playcontroller" ]]
 then
     UPDATE_PLAYCONTROLLER=1
 fi
 
-if [[ $ASPECTS = *bbb* ]]
+if [[ "$ASPECTS" == "bbb" ]]
 then
     UPDATE_BBB=1
 fi
@@ -74,7 +74,7 @@ deploy_updates() {
 
     if [ $UPDATE_EPC == 1 ]; then
         echo "Will deploy ePC_1 update."
-        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update_7i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_5-7i3.tar || fail_and_exit;
+        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update_5-7i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_5-7i3.tar || fail_and_exit;
     fi
 
     if [ $UPDATE_EPC_2 == 1 ]; then

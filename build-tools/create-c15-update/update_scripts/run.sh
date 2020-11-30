@@ -118,13 +118,21 @@ check_preconditions() {
         report "" "Something went wrong!" "Please retry update!" && return 1
     fi
 
-    if [ "$(executeAsRoot "uname -r")" = "4.9.9-rt6-1-rt" ]; then
-        ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar
+    if [[ "$(executeAsRoot "uname -r")" == "4.9.9-rt6-1-rt" ]]; then
+        if ! ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar; then
+            report "E86: ePC update missing" "Please retry download!" && return 1
+        fi
         FIX_EPC=true
     else
-        ln -s /update/EPC/update_10i3.tar /update/EPC/update.tar
+        if ! ln -s /update/EPC/update_10i3.tar /update/EPC/update.tar; then
+            report "E86: ePC update missing" "Please retry download!" && return 1
+        fi
         FIX_EPC=false
     fi
+
+    [ -f "$/update/BBB/rootfs.tar.gz" ] || report "E87: BBB update missing" "Please retry download!" && return 1
+
+    [ -f "$/update/playcontroller/main.bin" ] || report "E88: playcontroller update missing" "Please retry download!" && return 1
 
     return 0
 }
@@ -160,7 +168,7 @@ epc_update() {
         fi
     fi
 
-    if [ "$FIX_EPC" = "true" ]; then
+    if [[ "$FIX_EPC" == "true" ]]; then
         epc_fix
         return_code=$?
         if [ $return_code -ne 0 ]; then
