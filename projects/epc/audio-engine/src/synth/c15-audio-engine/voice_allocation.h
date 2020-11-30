@@ -253,7 +253,6 @@ template <uint32_t Voices> class PolyVoiceAllocator
   uint32_t m_previous_assigned[Voices] = {}, m_next_assigned[Voices] = {}, m_next_released[Voices] = {},
            m_assignable = {}, m_num_assigned = {}, m_oldest_assigned = {}, m_youngest_assigned = {},
            m_oldest_released = {}, m_youngest_released = {}, m_unison = {};
-  // m_mono_keys[Voices] = {}, m_mono_latest = {}
 };
 
 // Main Voice Allocation Structure
