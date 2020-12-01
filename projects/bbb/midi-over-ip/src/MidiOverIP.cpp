@@ -9,7 +9,7 @@
 #include <glibmm.h>
 
 static bool quitApp = false;
-static bool enableMidi = true;
+static bool enableMidi = false;
 static Glib::RefPtr<Glib::MainLoop> loop;
 static int cancelPipe[2];
 
