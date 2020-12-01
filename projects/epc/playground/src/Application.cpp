@@ -37,6 +37,7 @@ void setupMessaging(const Options *options)
 
   const auto &bbbb = options->getBBBB();
   const auto &ae = options->getAudioEngineHost();
+  const auto &midi = options->getMidiBridge();
 
   Configuration conf;
 #ifdef _DEVELOPMENT_PC
@@ -44,12 +45,16 @@ void setupMessaging(const Options *options)
 #else
   conf.offerEndpoints = { EndPoint::Playground };
 #endif
-  conf.useEndpoints = { { EndPoint::Playcontroller, bbbb }, { EndPoint::Oled, bbbb },
+  conf.useEndpoints = { { EndPoint::Playcontroller, bbbb },
+                        { EndPoint::Oled, bbbb },
+                        { EndPoint::ExternalMidiOverIPBridgeSettings, midi },
 #ifdef _DEVELOPMENT_PC
                         { EndPoint::TestEndPoint },
 #endif
-                        { EndPoint::PanelLed, bbbb },       { EndPoint::RibbonLed, bbbb },
-                        { EndPoint::AudioEngine, ae },      { EndPoint::BeagleBone, bbbb } };
+                        { EndPoint::PanelLed, bbbb },
+                        { EndPoint::RibbonLed, bbbb },
+                        { EndPoint::AudioEngine, ae },
+                        { EndPoint::BeagleBone, bbbb } };
   nltools::msg::init(conf);
 }
 
