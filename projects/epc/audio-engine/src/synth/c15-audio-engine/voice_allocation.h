@@ -491,10 +491,10 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       {
         m_traversal.addEvent(_keyState->m_keyNumber, _keyState->m_velocity, true, false);
       }
-      // clear stolen key first (all associated voices will be lost)
+      // clear stolen key first (all associated voices of the corresp. part will be lost)
       if(m_voiceState[firstVoice].m_active)
       {
-        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId], _layerIndex);
       }
     }
     return firstVoice;
@@ -696,6 +696,12 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
   {
     _keyState->m_origin = AllocatorId::None;
     _keyState->m_active = false;
+  }
+  // for overlapping split points, we have to be a little more careful
+  inline void keyUp_confirm(KeyAssignment* _keyState, const uint32_t _layerIndex)
+  {
+    _keyState->m_origin = m_layerId[1 - _layerIndex];
+    // the key is still pressed in the other part and has been exclusively allocated to it
   }
   inline void keyDown_unisonLoop(const uint32_t _keyId, const uint32_t _firstVoice, const uint32_t _unisonVoices)
   {
