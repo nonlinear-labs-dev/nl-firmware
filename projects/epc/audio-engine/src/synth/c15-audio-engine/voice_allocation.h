@@ -63,7 +63,7 @@ struct KeyAssignment
 
 struct VoiceAssignment
 {
-  uint32_t m_keyId = 0;
+  uint32_t m_keyNumber = 0;
   bool m_active = false, m_stolen = false;
 };
 
@@ -452,7 +452,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       //clear stolen key first(all associated voices will be lost)
       if(m_voiceState[firstVoice].m_active)
       {
-        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyNumber]);
       }
     }
     return firstVoice;
@@ -494,7 +494,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       // clear stolen key first (all associated voices of the corresp. part will be lost)
       if(m_voiceState[firstVoice].m_active)
       {
-        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId], _layerIndex);
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyNumber], _layerIndex);
       }
     }
     return firstVoice;
@@ -519,7 +519,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       // clear stolen key first (all associated voices will be lost)
       if(m_voiceState[firstVoice].m_active)
       {
-        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyId]);
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyNumber]);
       }
     }
     return firstVoice;
@@ -711,7 +711,7 @@ template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class Voic
       // glide is allowed for: first unison voice and: first unison voice of second voice group (important for single-sound cases)
       const bool allow_glide = unisonIndex == 0 ? true : m_glideAllowance[voiceId];
       VoiceAssignment* voiceState = &m_voiceState[voiceId];
-      voiceState->m_keyId = _keyId;
+      voiceState->m_keyNumber = _keyId;
       voiceState->m_stolen = voiceState->m_active;
       voiceState->m_active = true;
       m_traversal.add(m_localIndex[voiceId], m_localVoice[voiceId], unisonIndex, voiceState->m_active,
