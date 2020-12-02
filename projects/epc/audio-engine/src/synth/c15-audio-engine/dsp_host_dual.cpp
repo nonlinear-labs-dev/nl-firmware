@@ -524,7 +524,8 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
 
           uint8_t statusByte = static_cast<uint8_t>(0x90);
           uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
-          uint8_t msbVelByte = static_cast<uint8_t>(vel * 127);
+          uint8_t msbVelByte = static_cast<uint8_t>(
+              vel * 127);  // since msb is not generated from highRes value, the error only arises within lsb
           out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
@@ -549,7 +550,8 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
 
           uint8_t statusByte = static_cast<uint8_t>(0x80);
           uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
-          uint8_t msbVelByte = static_cast<uint8_t>(vel * 127);
+          uint8_t msbVelByte = static_cast<uint8_t>(
+              vel * 127);  // since msb is not generated from highRes value, the error only arises within lsb
           out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
