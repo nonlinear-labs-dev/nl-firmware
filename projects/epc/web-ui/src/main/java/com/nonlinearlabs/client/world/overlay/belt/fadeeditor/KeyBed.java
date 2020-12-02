@@ -37,31 +37,6 @@ public class KeyBed extends SVGImage {
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
             return true;
         });
-
-        
-        EditBufferModel ebm = EditBufferModel.get();
-        for(VoiceGroup vg: new VoiceGroup[]{VoiceGroup.I, VoiceGroup.II}) {
-            BasicParameterModel fadePoint = ebm.getParameter(new ParameterId(396, vg));
-            BasicParameterModel fadeRange = ebm.getParameter(new ParameterId(397, vg));
-            BasicParameterModel split = ebm.getParameter(new ParameterId(356, vg));
-
-            fadePoint.value.onChange(v -> {
-                selectPart(vg);
-                return true;
-            });
-
-
-            fadeRange.value.onChange(v -> {
-                selectPart(vg);
-                return true;
-            });
-
-
-            split.value.onChange(v -> {
-                selectPart(vg);
-                return true;
-            });
-        }
     }
 
     @Override
@@ -106,8 +81,15 @@ public class KeyBed extends SVGImage {
         return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
     }
 
+    private boolean mouseIsDown = false;
+
     private void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
-        r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, stroke, RGB.black());
+        RGB color = stroke;
+
+        if(mouseIsDown && focus)
+            color = stroke.brighter(20);
+
+        r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, color, RGB.black());
     }
 
     private void drawSplitHandle(Context2d ctx, VoiceGroup vg) {
@@ -137,10 +119,8 @@ public class KeyBed extends SVGImage {
         ctx.stroke();
     }
 
-    private VoiceGroup lastVG = VoiceGroup.I;
-
     private VoiceGroup selectedVoiceGroup() {
-        return lastVG;
+        return presenter.lastSelectedPart;
     }
 
     public void drawSplit(Context2d ctx) {
@@ -262,18 +242,6 @@ public class KeyBed extends SVGImage {
 
     void selectControl(SelectedHandle handle) {
         selection = handle;
-
-        if(handle == SelectedHandle.FadePointI || handle == SelectedHandle.FadeRangeI || handle == SelectedHandle.SplitPointI) {
-            lastVG = VoiceGroup.I;
-        } else if(handle == SelectedHandle.FadePointII || handle == SelectedHandle.FadeRangeII || handle == SelectedHandle.SplitPointII) {
-            lastVG = VoiceGroup.II;
-        }
-
-        invalidate(INVALIDATION_FLAG_UI_CHANGED);
-    }
-
-    private void selectPart(VoiceGroup vg) {
-        lastVG = vg;
         invalidate(INVALIDATION_FLAG_UI_CHANGED);
     }
 
@@ -304,7 +272,6 @@ public class KeyBed extends SVGImage {
         }
 
         selectControl(SelectedHandle.None);
-
         return null;
     }
 
@@ -318,7 +285,7 @@ public class KeyBed extends SVGImage {
     }
 
     @Override
-    public Control click(Position pos) {
+    public Control click(Position pos) {        
         Control c = handleMouseDownDragStart(pos);
         if (c == null) {
             return super.click(pos);
@@ -428,5 +395,22 @@ public class KeyBed extends SVGImage {
             return this;
         }
         return super.mouseDrag(oldPoint, newPoint, fine);
+    }
+
+    @Override
+    public Control mouseDown(Position p) {
+        mouseIsDown = true;
+        return this;
+    }
+
+	@Override
+	public Control mouseUp(Position eventPoint) {
+        mouseIsDown = false;
+        return this;
+    }
+   
+    @Override
+    public void onMouseLost() {
+        mouseIsDown = false;
     }
 }
