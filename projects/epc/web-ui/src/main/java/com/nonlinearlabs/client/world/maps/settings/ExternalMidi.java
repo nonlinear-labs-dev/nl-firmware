@@ -1,7 +1,7 @@
 package com.nonlinearlabs.client.world.maps.settings;
 
-import com.nonlinearlabs.client.dataModel.setup.SetupModel;
-import com.nonlinearlabs.client.useCases.SystemSettings;
+import com.nonlinearlabs.client.presenters.DeviceSettingsProvider;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.maps.IContextMenu;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
@@ -13,13 +13,12 @@ public class ExternalMidi extends Setting {
 
 	protected ExternalMidi(MapsLayout parent) {
 		super(parent, "Enable External Midi", "Off");
-    
-        SetupModel.get().systemSettings.externalMidi.onChange(t -> {
-            setCurrentValue(t == SetupModel.BooleanValues.on);
-            return true;
-        });
+	
+		DeviceSettingsProvider.get().register(t -> {
+			setCurrentValue(t.externalMidiEnabled);
+			return true;
+		});
     }
-
 
 	@Override
 	public IContextMenu createMenu(NonPosition pos) {
@@ -28,7 +27,7 @@ public class ExternalMidi extends Setting {
 
 			@Override
 			public void setValue(Items item) {
-				SystemSettings.get().setExternalMidi(item == Items.ON);
+				EditBufferUseCases.get().setExternalMidiSetting(item == Items.ON);
 			}
 		}, world), pos);
 	}
