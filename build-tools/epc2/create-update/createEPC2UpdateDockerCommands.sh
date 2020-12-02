@@ -1,6 +1,7 @@
 set -e
+set -x
 
-UPDATE_PACKAGE_SERVERS="https://nonlinearlabs.s3.eu-central-1.amazonaws.com/ https://ind.mirror.pkgbuild.com/community/os/x86_64/ https://sgp.mirror.pkgbuild.com/extra/os/x86_64/"
+UPDATE_PACKAGE_SERVERS="https://archive.archlinux.org/packages/"
 BUILD_SWITCHES="-DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On"
 
 setup_overlay() {
@@ -19,12 +20,18 @@ download_package() {
     if find ./$1 > /dev/null; then
         return 0
     fi
-
+    
     for server in $UPDATE_PACKAGE_SERVERS; do
-        URL="${server}$1"
-        if wget $URL; then
-            return 0
-        fi
+        FIRSTCHAR=$(echo "$1" | cut -b1)
+        NAME=$(echo "$1" | cut -d'.' -f1)
+        
+        while [ ! -z $NAME ]; do
+            URL="${server}/$FIRSTCHAR/$NAME/$1"
+            if wget $URL; then
+                return 0
+            fi
+            $NAME=${$NAME::-1}
+        done
     done
 
     return 1
@@ -32,9 +39,11 @@ download_package() {
 
 download_packages() {
     for package in $UPDATE_PACKAGES; do
-        if ! download_package ${package}; then
-            return 1
-        fi
+        for subpackage in $(pacman -Sp $package); do
+            if ! download_package $(basename ${subpackage}); then
+                return 1
+            fi
+        done
     done
     return 0
 }
@@ -42,7 +51,9 @@ download_packages() {
 
 install_packages() {
     for package in $UPDATE_PACKAGES; do
-        pacstrap -c -U /overlay-fs $package
+        for subpackage in $(pacman -Sp $package); do
+            pacstrap -c -U /overlay-fs $(basename ${subpackage})
+        done
     done
 }
 
