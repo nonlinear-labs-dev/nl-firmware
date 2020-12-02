@@ -121,6 +121,7 @@ class dsp_host_dual
   using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
 
  private:
+  using LayerMode = C15::Properties::LayerMode;
   // parameters
   Engine::Param_Handle m_params;
   Time_Param m_edit_time, m_transition_time;
@@ -131,10 +132,12 @@ class dsp_host_dual
   Engine::Handle::Clock_Handle m_clock;
   Engine::Handle::Time_Handle m_time;
   // layer handling
-  C15::Properties::LayerMode m_layer_mode;
+  LayerMode m_layer_mode;
   // global dsp components
   GlobalSection m_global;
-  VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;
+  VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count,
+                  C15::Config::key_center, LayerMode>
+      m_alloc;
   // dsp components
   atomic_fade_table m_fade;
   PolySection m_poly[2];

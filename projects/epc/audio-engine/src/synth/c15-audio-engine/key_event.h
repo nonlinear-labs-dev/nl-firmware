@@ -10,7 +10,7 @@
     @todo
 *******************************************************************************/
 
-#include <c15_config.h>
+#include <stdint.h>
 
 struct PolyKeyEvent
 {
@@ -19,8 +19,10 @@ struct PolyKeyEvent
   bool m_active = false, m_stolen = false, m_trigger_env = false, m_trigger_glide = false, m_allow_glide = false;
 };
 
-template <uint32_t Voices> class PolyKeyPacket
+template <uint32_t Voices, uint32_t CenterKey> class PolyKeyPacket
 {
+  static constexpr float CenterTune = static_cast<float>(CenterKey);
+
  public:
   inline PolyKeyPacket()
   {
@@ -36,7 +38,7 @@ template <uint32_t Voices> class PolyKeyPacket
     m_propagation_from = 0;
     m_data[m_length].m_position = _keyPos;
     m_data[m_length].m_velocity = _vel;
-    m_data[m_length].m_tune = static_cast<float>(_keyPos) - static_cast<float>(C15::Config::key_center);
+    m_data[m_length].m_tune = static_cast<float>(_keyPos) - CenterTune;
     m_data[m_length].m_trigger_env = _retrigger_env;
     m_data[m_length].m_trigger_glide = _retrigger_glide;
   }
@@ -46,7 +48,7 @@ template <uint32_t Voices> class PolyKeyPacket
     m_propagation_from = m_length;
     m_data[m_length].m_position = _keyPos;
     m_data[m_length].m_velocity = _vel;
-    m_data[m_length].m_tune = static_cast<float>(_keyPos) - static_cast<float>(C15::Config::key_center);
+    m_data[m_length].m_tune = static_cast<float>(_keyPos) - CenterTune;
     m_data[m_length].m_trigger_env = _retrigger_env;
     m_data[m_length].m_trigger_glide = _retrigger_glide;
   }

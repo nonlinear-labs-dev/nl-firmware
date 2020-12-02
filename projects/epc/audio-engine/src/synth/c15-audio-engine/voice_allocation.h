@@ -16,13 +16,10 @@
     @todo
 *******************************************************************************/
 
-#include <parameter_info.h>
 #include "key_event.h"
 #include "mappable_list.h"
 
 // Descriptors
-
-using LayerMode = C15::Properties::LayerMode;
 
 enum class AllocatorId
 {
@@ -256,10 +253,11 @@ template <uint32_t Voices> class PolyVoiceAllocator
 
 // Main Voice Allocation Structure
 
-template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys> class VoiceAllocation
+template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys, uint32_t CenterKey, typename LayerMode>
+class VoiceAllocation
 {
  public:
-  PolyKeyPacket<GlobalVoices> m_traversal;
+  PolyKeyPacket<GlobalVoices, CenterKey> m_traversal;
   uint32_t m_unison = {};
   inline VoiceAllocation()
   {
