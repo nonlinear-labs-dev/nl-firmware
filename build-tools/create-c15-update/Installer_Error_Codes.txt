@@ -34,6 +34,9 @@ List of current Error Messages
 - 83 :: "E83: Can't logon to ePC OS ..."
 - 84 :: "E84: Upgrade OS first!"
 - 85 :: "E85: OS too old for update!"
+- 86 :: "E86: ePC update missing" "Please retry download!"
+- 87 :: "E87: BBB update missing" "Please retry download!"
+- 88 :: "E88: playcontroller update missing" "Please retry download!"
 
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------
