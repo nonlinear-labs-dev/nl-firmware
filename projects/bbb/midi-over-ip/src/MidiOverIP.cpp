@@ -182,10 +182,8 @@ int main(int args, char *argv[])
 
   std::thread sender;
 
-  receive<Setting::MidiEnabled>(EndPoint::ExternalMidiOverIPBridgeSettings, [&](const Setting::MidiEnabled &msg) {
-    enableMidi = msg.enable;
-    nltools::Log::error(msg.enable ? "Enabled External Midi" : "Disabled External Midi");
-  });
+  receive<Setting::MidiEnabled>(EndPoint::ExternalMidiOverIPBridgeSettings,
+                                [&](const Setting::MidiEnabled &msg) { enableMidi = msg.enable; });
 
   if(outputHandle)
   {
