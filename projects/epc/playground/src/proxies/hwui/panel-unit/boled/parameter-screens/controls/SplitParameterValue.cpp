@@ -89,10 +89,9 @@ FrameBufferColors SplitParameterValue::getColorForSplit(int i)
   const FrameBufferColors unhighlighted = FrameBufferColors::C128;
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto sI = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
-  auto sII = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
+  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
 
-  auto biggerPart = sI->getControlPositionValue() > sII->getControlPositionValue() ? VoiceGroup::I : VoiceGroup::II;
+  auto biggerPart = sI->hasOverlap() ? VoiceGroup::I : VoiceGroup::II;
 
   switch(i)
   {
