@@ -65,4 +65,5 @@ public class DeviceSettings {
 	public String tuneReferenceDisplayString = "";
 
 	public boolean syncSplitsEnabled = false;
+	public boolean externalMidiEnabled = false;
 }

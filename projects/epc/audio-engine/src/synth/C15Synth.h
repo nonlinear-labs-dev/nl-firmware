@@ -25,7 +25,7 @@ class AudioEngineOptions;
 class C15Synth : public Synth, public sigc::trackable
 {
  public:
-  C15Synth(const AudioEngineOptions* options);
+  explicit C15Synth(AudioEngineOptions* options);
   ~C15Synth() override;
 
   void doMidi(const MidiEvent& event) override;
@@ -72,7 +72,7 @@ class C15Synth : public Synth, public sigc::trackable
 
   std::unique_ptr<dsp_host_dual> m_dsp;
   std::array<float, 8> m_hwSourceValues;
-  const AudioEngineOptions* m_options;
+  AudioEngineOptions* m_options;
 
   RingBuffer<nltools::msg::Midi::SimpleMessage, 2048> m_externalMidiOutBuffer;
 

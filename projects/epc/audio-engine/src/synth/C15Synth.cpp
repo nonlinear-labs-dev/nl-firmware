@@ -5,7 +5,7 @@
 #include <nltools/logging/Log.h>
 #include <nltools/messaging/Message.h>
 
-C15Synth::C15Synth(const AudioEngineOptions* options)
+C15Synth::C15Synth(AudioEngineOptions* options)
     : Synth(options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
