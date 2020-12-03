@@ -400,12 +400,14 @@ public class KeyBed extends SVGImage {
     @Override
     public Control mouseDown(Position p) {
         mouseIsDown = true;
+        invalidate(INVALIDATION_FLAG_UI_CHANGED);
         return this;
     }
 
 	@Override
 	public Control mouseUp(Position eventPoint) {
         mouseIsDown = false;
+        invalidate(INVALIDATION_FLAG_UI_CHANGED);
         return this;
     }
    
