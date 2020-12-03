@@ -1,7 +1,7 @@
 set -e
 set -x
 
-UPDATE_PACKAGE_SERVERS="https://archive.archlinux.org/packages/"
+UPDATE_PACKAGE_SERVERS="https://nonlinearlabs.s3.eu-central-1.amazonaws.com https://archive.archlinux.org/packages"
 BUILD_SWITCHES="-DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On"
 
 setup_overlay() {
@@ -21,17 +21,13 @@ download_package() {
         return 0
     fi
     
-    for server in $UPDATE_PACKAGE_SERVERS; do
-        FIRSTCHAR=$(echo "$1" | cut -b1)
-        NAME=$(echo "$1" | cut -d'.' -f1)
+    FIRSTCHAR=$(echo "$1" | cut -b1)
         
-        while [ ! -z $NAME ]; do
-            URL="${server}/$FIRSTCHAR/$NAME/$1"
-            if wget $URL; then
-                return 0
-            fi
-            $NAME=${$NAME::-1}
-        done
+    for server in $UPDATE_PACKAGE_SERVERS; do
+        URL="${server}/$FIRSTCHAR/$1"
+        if wget $URL; then
+            return 0
+        fi
     done
 
     return 1
