@@ -134,3 +134,44 @@ TEST_CASE("Overwrite Presets")
     EditBufferHelper::overwritePresetWithEditBuffer(presets.getSplitPreset());
   }
 }
+
+TEST_CASE("Midi Selection Sends Signals Appropriately")
+{
+  Helper::clearPresetManager();
+  MockPresetStorage presets;
+  MockPresetStorage presets2;
+  auto pm = TestHelper::getPresetManager();
+
+  CHECK(pm->getNumBanks() == 2);
+
+  WHEN("Midi Bank Selected")
+  {
+    const auto oldMidiUuid = pm->getMidiSelectedBank();
+    Uuid receivedMidiUuid;
+
+    auto c = pm->onMidiBankSelectionHappened([&](Uuid id) { receivedMidiUuid = id; });
+
+    {
+      auto scope = TestHelper::createTestScope();
+      auto transaction = scope->getTransaction();
+      pm->selectMidiBank(transaction, presets.getBank()->getUuid());
+    }
+
+    CHECK(presets.getBank()->getUuid() == receivedMidiUuid);
+
+    THEN("UNDO")
+    {
+      pm->getUndoScope().undo();
+      CHECK(oldMidiUuid == receivedMidiUuid);
+
+      THEN("REDO")
+      {
+        pm->getUndoScope().redo();
+        CHECK(presets.getBank()->getUuid() == receivedMidiUuid);
+        CHECK(pm->findMidiSelectedBank() != nullptr);
+      }
+    }
+
+    c.disconnect();
+  }
+}
