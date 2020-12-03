@@ -249,7 +249,13 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         boolean fxSrc = cpNotZero(354, vg);
         boolean fx = fxMix && fxSrc;
 
-        return oscFB || comb || svf || fx;
+        boolean pfbl = cpNotZero(299, vg);
+        boolean shaperFB = cpNotZero(68, vg) || cpNotZero(98, vg);
+        boolean oscPM = cpGreaterThanZero(78, vg) || cpGreaterThanZero(108, vg);
+
+        boolean other = pfbl && (shaperFB || oscPM);
+
+        return (oscFB || comb || svf || fx) && other;
     }
 
     private boolean isCrossFX(VoiceGroup vg) {

@@ -48,6 +48,7 @@ import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.client.world.overlay.belt.EditBufferDraggingButton;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDialog;
+import com.nonlinearlabs.client.world.pointer.PointerState;
 
 public class PresetManager extends MapsLayout {
 
@@ -557,7 +558,6 @@ public class PresetManager extends MapsLayout {
 
 			return this;
 		} else if (dragProxy.getOrigin() instanceof IPreset) {
-
 			IPreset p = (IPreset) dragProxy.getOrigin();
 
 			if (p instanceof Preset) {
@@ -690,6 +690,8 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
+			getNonMaps().getNonLinearWorld().getViewport().getOverlay().cancelDragging();
+			PointerState.get().removeReceiver();
 			closeMultiSelection();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {

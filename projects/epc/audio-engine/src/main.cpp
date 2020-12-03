@@ -74,6 +74,9 @@ int main(int args, char *argv[])
 {
   Glib::init();
   connectSignals();
+
+  testParallelData();
+
   theOptions = std::make_unique<AudioEngineOptions>(args, argv);
   setupMessaging(theOptions.get());
 
