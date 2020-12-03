@@ -9,7 +9,6 @@ class AudioEngineOptions
   AudioEngineOptions(int &argc, char **&argv);
 
   bool areXRunsFatal() const;
-  bool isExternalMidiEnabled() const;
   int getSampleRate() const;
   int getPolyphony() const;
   bool doMeasurePerformance();
