@@ -45,16 +45,14 @@ void setupMessaging(const Options *options)
 #else
   conf.offerEndpoints = { EndPoint::Playground };
 #endif
-  conf.useEndpoints = { { EndPoint::Playcontroller, bbbb },
-                        { EndPoint::Oled, bbbb },
-                        { EndPoint::ExternalMidiOverIPBridgeSettings, midi },
+  conf.useEndpoints = {
+    { EndPoint::Playcontroller, bbbb }, { EndPoint::Oled, bbbb },      { EndPoint::ExternalMidiOverIPBridge, midi },
 #ifdef _DEVELOPMENT_PC
-                        { EndPoint::TestEndPoint },
+    { EndPoint::TestEndPoint },
 #endif
-                        { EndPoint::PanelLed, bbbb },
-                        { EndPoint::RibbonLed, bbbb },
-                        { EndPoint::AudioEngine, ae },
-                        { EndPoint::BeagleBone, bbbb } };
+    { EndPoint::PanelLed, bbbb },       { EndPoint::RibbonLed, bbbb }, { EndPoint::AudioEngine, ae },
+    { EndPoint::BeagleBone, bbbb }
+  };
   nltools::msg::init(conf);
 }
 

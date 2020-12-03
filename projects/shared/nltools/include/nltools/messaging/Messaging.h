@@ -18,7 +18,7 @@ namespace nltools
     using SerializedMessage = Glib::RefPtr<Glib::Bytes>;
 
     ENUM(EndPoint, uint16_t, None, Playcontroller, Oled, PanelLed, RibbonLed, AudioEngine, Playground, BeagleBone,
-         ExternalMidiOverIPBridge, ExternalMidiOverIPBridgeSettings, ExternalMidiOverIPClient, TestEndPoint);
+         ExternalMidiOverIPBridge, ExternalMidiOverIPClient, TestEndPoint);
 
     uint getPortFor(EndPoint p);
 
@@ -41,7 +41,7 @@ namespace nltools
 
          NotifyHardwareSourceChanged,
 
-         MidiSimpleMessage, MidiAck, MidiProgramChange, MidiEnable,
+         MidiSimpleMessage, MidiAck, MidiProgramChange, MidiBridgeSettings,
 
          SyncFS);
 
