@@ -517,14 +517,13 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           keyDown(vel);
 
           uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue = vel * (1 << 13);  // shouldn't this be (1 << 14) - 1 = 16383 ?
+          uint16_t fullResolutionValue = vel * ((1 << 14) - 1);
           uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
           out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
 
           uint8_t statusByte = static_cast<uint8_t>(0x90);
           uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
-          uint8_t msbVelByte = static_cast<uint8_t>(
-              vel * 127);  // since msb is not generated from highRes value, the error only arises within lsb
+          uint8_t msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
           out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
@@ -542,14 +541,13 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           keyUp(vel);
 
           uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue = vel * (1 << 13);  // shouldn't this be (1 << 14) - 1 = 16383 ?
+          uint16_t fullResolutionValue = vel * ((1 << 14) - 1);
           uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
           out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
 
           uint8_t statusByte = static_cast<uint8_t>(0x80);
           uint8_t keyByte = static_cast<uint8_t>(m_key_pos + C15::Config::key_from) & 0x7F;
-          uint8_t msbVelByte = static_cast<uint8_t>(
-              vel * 127);  // since msb is not generated from highRes value, the error only arises within lsb
+          uint8_t msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
           out({ statusByte, keyByte, msbVelByte });
         }
         else if(LOG_FAIL)
