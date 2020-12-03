@@ -201,11 +201,11 @@ namespace nltools
         double m_tuneReference;
       };
 
-      struct MidiEnabled
+      struct MidiBridgeSettings
       {
         constexpr static MessageType getType()
         {
-          return MessageType::MidiEnable;
+          return MessageType::MidiBridgeSettings;
         }
 
         bool enable = false;

@@ -105,14 +105,10 @@ void configureMessaging(const Options &options, bool hasInput, bool hasOutput)
 
   Configuration conf;
 
-  if(hasOutput)
-    conf.offerEndpoints = { { EndPoint::ExternalMidiOverIPBridge, Priority::AlmostRealtime } };
+  conf.offerEndpoints = { { EndPoint::ExternalMidiOverIPBridge, Priority::AlmostRealtime } };
 
   if(hasInput)
     conf.useEndpoints = { { EndPoint::ExternalMidiOverIPClient, aeHost, Priority::AlmostRealtime } };
-
-  conf.offerEndpoints.emplace_back(
-      ChannelConfiguration { EndPoint::ExternalMidiOverIPBridgeSettings, Priority::Normal });
 
   nltools::msg::init(conf);
 }
@@ -182,8 +178,8 @@ int main(int args, char *argv[])
 
   std::thread sender;
 
-  receive<Setting::MidiEnabled>(EndPoint::ExternalMidiOverIPBridgeSettings,
-                                [&](const Setting::MidiEnabled &msg) { enableMidi = msg.enable; });
+  receive<Setting::MidiBridgeSettings>(EndPoint::ExternalMidiOverIPBridge,
+                                       [&](const Setting::MidiBridgeSettings &msg) { enableMidi = msg.enable; });
 
   if(outputHandle)
   {

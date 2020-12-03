@@ -112,7 +112,8 @@ namespace nltools
         m_messageLoop = Glib::MainLoop::create(m);
         m_backgroundContextQueue->pushMessage(std::bind(&WebSocketOutChannel::connect, this));
 
-        auto c = m->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
+        auto c = Glib::MainContext::get_default()->signal_timeout().connect_seconds(
+            sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
         m_messageLoop->run();
         c.disconnect();
       }
