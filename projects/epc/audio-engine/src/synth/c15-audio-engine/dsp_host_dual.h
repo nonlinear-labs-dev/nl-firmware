@@ -120,6 +120,7 @@ class dsp_host_dual
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
   using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
+  using CC_Range_Vel = Midi::clipped14BitVelRange;
 
  private:
   using LayerMode = C15::Properties::LayerMode;

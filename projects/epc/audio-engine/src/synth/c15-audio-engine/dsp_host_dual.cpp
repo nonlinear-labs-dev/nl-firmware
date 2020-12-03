@@ -62,6 +62,19 @@ dsp_host_dual::dsp_host_dual()
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x00) == 0.0f);
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x40) == 0.5f);
   assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x7F) == 1.0f);
+
+  // velocity control
+  assert(CC_Range_Vel::encodeUnipolarMidiValue(-0.5f) == 0x0000);
+  assert(CC_Range_Vel::encodeUnipolarMidiValue(0.0f) == 0x0000);
+  assert(CC_Range_Vel::encodeUnipolarMidiValue(0.5f) == 0x2000);
+  assert(CC_Range_Vel::encodeUnipolarMidiValue(1.0f) == 0x3F80);
+  assert(CC_Range_Vel::encodeUnipolarMidiValue(1.5f) == 0x3F80);
+
+  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x0000) == 0.0f);
+  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x0080) == 0.0f);
+  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x2000) == 0.5f);
+  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x3F80) == 1.0f);
+  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x3FFF) == 1.0f);
 }
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
@@ -517,7 +530,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           keyDown(vel);
 
           uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue = vel * ((1 << 14) - 1);
+          uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(vel);
           uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
           out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
 
@@ -541,7 +554,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           keyUp(vel);
 
           uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue = vel * ((1 << 14) - 1);
+          uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(vel);
           uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
           out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
 
@@ -598,44 +611,30 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
   {
     nltools::Log::info("rawMidi(chan:", _status & 15, ", type:", type, ", data0:", _data0, ", data1:", _data1, ")");
   }
-  uint32_t arg = 0;
   switch(type)
   {
     case 0:
       // note off
-      // todo: cleanup
-      //      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel); // weird: this alone blows up to 16383...
-      //      onTcdMessage(0xED, 0, _data0);                                  // keyPos
-      //      onTcdMessage(0xEF, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyUp
       {
-        const float vel = static_cast<float>((_data1 << 7) + std::exchange(m_velocityLSB, 0)) * m_norm_vel;
+        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
+        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
         m_key_pos = _data0;
-        keyDown(vel);
+        keyUp(vel);
       }
       break;
     case 1:
       // note on
-      // todo: cleanup
-      //      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel); // weird: this alone blows up to 16383...
-      //      onTcdMessage(0xED, 0, _data0);  // keyPos
-      //      if(arg != 0)
-      //      {
-      //        onTcdMessage(0xEE, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyDown
-      //      }
-      //      else
-      //      {
-      //        onTcdMessage(0xEF, 0, 0);  // keyUp
-      //      }
       {
-        const float vel = static_cast<float>((_data1 << 7) + std::exchange(m_velocityLSB, 0)) * m_norm_vel;
+        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
+        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
         m_key_pos = _data0;
-        if(_data1 != 0)
+        if(CC_Range_Vel::isValidNoteOnVelocity(fullResVel))
         {
           keyDown(vel);
         }
         else
         {
-          keyUp(vel);
+          keyUp(0.0f);
         }
       }
       break;
