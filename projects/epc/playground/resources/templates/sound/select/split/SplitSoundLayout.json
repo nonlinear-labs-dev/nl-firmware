@@ -80,7 +80,7 @@
         },
         "SplitII": {
           "Class": "SplitPointII",
-          "Position": "119, 33",
+          "Position": "119, 34",
           "Events": "SplitPointIIValue => Text[Text], SyncSplitDisabled => ANY[Visibility], isCurrentVGII => ANY[Highlight]"
         },
         "SplitSynced": {

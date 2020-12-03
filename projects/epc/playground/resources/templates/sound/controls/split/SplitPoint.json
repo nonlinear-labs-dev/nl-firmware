@@ -33,7 +33,7 @@
     "SplitPointLine": {
       "Line": {
         "Class": "Bar",
-        "Rect": "0, 0, 1, 4"
+        "Rect": "0, 0, 1, 5"
       }
     },
     "SyncSplitPointIndicator": {
