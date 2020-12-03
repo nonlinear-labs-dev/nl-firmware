@@ -336,14 +336,7 @@ void DescriptiveLayouts::LayerFBState::onChange(const EditBuffer *eb)
 
 void DescriptiveLayouts::LayerFBOffset::onChange(const EditBuffer *eb)
 {
-  if(LayerIFBFromII::check(eb) && LayerIIFBFromI::check(eb))
-  {
-    setValue({ 0, 0 });
-  }
-  else
-  {
-    setValue({ 5, 5 });
-  }
+  setValue({ 0, 0 });
 }
 
 void DescriptiveLayouts::LayerFXState::onChange(const EditBuffer *eb)

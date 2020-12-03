@@ -82,7 +82,7 @@
         },
         "FX": {
           "Class": "LayerFBImageLarge",
-          "Position": "202, 21",
+          "Position": "201, 21",
           "Init": {
             "Image[ImagePath]": ""
           },
