@@ -5,6 +5,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.world.RGB;
@@ -36,7 +37,7 @@ public class SplitValueDisplay extends Label {
     // split 2 == VoiceGroup II
 
     private boolean hasOverlap() {
-        return getSplit(VoiceGroup.I).value.value.getValue() >= getSplit(VoiceGroup.II).value.value.getValue();
+        return EditBufferPresenterProvider.getPresenter().splitOverlap;
     }
 
     private RGB getVoiceGroupColorFont(VoiceGroup vg) {
@@ -48,16 +49,12 @@ public class SplitValueDisplay extends Label {
         }
     }
 
-    private BasicParameterModel getSplit(VoiceGroup vg) {
-        return EditBufferModel.get().getParameter(new ParameterId(356, vg));
-    }
-
     private VoiceGroup getLargerPart() {
-        return getSplit(VoiceGroup.I).value.value.getValue() > getSplit(VoiceGroup.II).value.value.getValue() ? VoiceGroup.I : VoiceGroup.II;
+        return hasOverlap() ? VoiceGroup.I : VoiceGroup.II;
     }
 
     private VoiceGroup getSmallerPart() {
-        return getSplit(VoiceGroup.I).value.value.getValue() <= getSplit(VoiceGroup.II).value.value.getValue() ? VoiceGroup.I : VoiceGroup.II;
+        return !hasOverlap() ? VoiceGroup.I : VoiceGroup.II;
     }
 
     @Override
