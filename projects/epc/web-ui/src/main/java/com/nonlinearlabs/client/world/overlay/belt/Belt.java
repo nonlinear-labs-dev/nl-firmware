@@ -6,6 +6,8 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Animator;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IPreset;
@@ -16,6 +18,7 @@ import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.BeltParameterLayout;
 import com.nonlinearlabs.client.world.overlay.belt.presets.BeltPresetLayout;
+import com.nonlinearlabs.client.world.overlay.belt.sound.BeltKeyBedEditorsLayout;
 import com.nonlinearlabs.client.world.overlay.belt.sound.BeltSoundLayout;
 
 public class Belt extends OverlayLayout {
@@ -23,7 +26,7 @@ public class Belt extends OverlayLayout {
 	private BeltParameterLayout parameterLayout;
 	private BeltPresetLayout presetLayout;
 	private BeltSoundLayout soundLayout;
-	private BeltFadeEditorLayout fadeLayout;
+	private BeltKeyBedEditorsLayout keybedLayout;
 	private Animator animator;
 	private BeltTab currentTab;
 
@@ -36,9 +39,15 @@ public class Belt extends OverlayLayout {
 		addChild(soundLayout = new BeltSoundLayout(this));
 		addChild(parameterLayout = new BeltParameterLayout(this));
 		addChild(presetLayout = new BeltPresetLayout(this));
-		addChild(fadeLayout = new BeltFadeEditorLayout(this));
+		addChild(keybedLayout = new BeltKeyBedEditorsLayout(this));
 
 		setParameterView(false);
+
+		EditBufferModel.get().soundType.onChange(type -> {
+			if (currentTab == BeltTab.FadeEditor && type == SoundType.Single)
+				openTab(BeltTab.Sound);
+			return true;
+		});
 	}
 
 	public void openTab(BeltTab tab) {
@@ -48,26 +57,26 @@ public class Belt extends OverlayLayout {
 			case Parameter:
 				presetLayout.fadeOut();
 				soundLayout.fadeOut();
-				fadeLayout.fadeOut();
+				keybedLayout.fadeOut();
 				parameterLayout.fadeIn();
 				break;
 			case Sound:
 				parameterLayout.fadeOut();
 				presetLayout.fadeOut();
-				fadeLayout.fadeOut();
+				keybedLayout.fadeOut();
 				soundLayout.fadeIn();
 				break;
 			case Preset:
 				soundLayout.fadeOut();
 				parameterLayout.fadeOut();
-				fadeLayout.fadeOut();
+				keybedLayout.fadeOut();
 				presetLayout.fadeIn();
 				break;
 			case FadeEditor:
 				soundLayout.fadeOut();
 				parameterLayout.fadeOut();
 				presetLayout.fadeOut();
-				fadeLayout.fadeIn();
+				keybedLayout.fadeIn();
 				break;
 		}
 	}
@@ -85,7 +94,7 @@ public class Belt extends OverlayLayout {
 		soundLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
 		parameterLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
 		presetLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
-		fadeLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
+		keybedLayout.doLayout(0, 0, getRelativePosition().getWidth(), h);
 	}
 
 	@Override
@@ -140,7 +149,7 @@ public class Belt extends OverlayLayout {
 	}
 
 	public boolean isFadeView() {
-		return fadeLayout.getOpacity() != 0.0 && !isHidden();
+		return keybedLayout.getOpacity() != 0.0 && !isHidden();
 	}
 
 	void setPresetView(boolean toggleIfHidden) {
@@ -149,7 +158,7 @@ public class Belt extends OverlayLayout {
 
 		parameterLayout.fadeOut();
 		soundLayout.fadeOut();
-		fadeLayout.fadeOut();
+		keybedLayout.fadeOut();
 		presetLayout.fadeIn();
 	}
 
@@ -159,7 +168,7 @@ public class Belt extends OverlayLayout {
 
 		parameterLayout.fadeIn();
 		presetLayout.fadeOut();
-		fadeLayout.fadeOut();
+		keybedLayout.fadeOut();
 		soundLayout.fadeOut();
 	}
 
@@ -169,7 +178,7 @@ public class Belt extends OverlayLayout {
 
 		soundLayout.fadeIn();
 		parameterLayout.fadeOut();
-		fadeLayout.fadeOut();
+		keybedLayout.fadeOut();
 		presetLayout.fadeOut();
 	}
 

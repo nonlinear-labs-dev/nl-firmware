@@ -1,31 +1,19 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenterProvider;
-import com.nonlinearlabs.client.presenters.FadeEditorPresenter.KeyRange;
-import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
-import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
-import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
-public class KeyBed extends SVGImage {
+public abstract class KeyBed extends SVGImage {
 
-    enum SelectedHandle {
-        SplitPointI, SplitPointII, FadePointI, FadePointII, FadeRangeI, FadeRangeII, None
-    }
-
-    SelectedHandle selection = SelectedHandle.None;
+    static public double HANDLE_SIZE = 20;
 
     FadeEditorPresenter presenter;
 
@@ -37,22 +25,6 @@ public class KeyBed extends SVGImage {
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
             return true;
         });
-    }
-
-    @Override
-    public int getSelectedPhase() {
-        return 0;
-    }
-
-    @Override
-    public void draw(Context2d ctx, int invalidationMask) {
-        super.draw(ctx, invalidationMask);
-
-        if (EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
-            drawLayer(ctx);
-        } else if (EditBufferModel.get().soundType.getValue() == SoundType.Split) {
-            drawSplit(ctx);
-        }
     }
 
     public double getXPosForNote(int note) {

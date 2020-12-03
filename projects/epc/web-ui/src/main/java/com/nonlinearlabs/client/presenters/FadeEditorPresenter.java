@@ -15,11 +15,12 @@ public class FadeEditorPresenter {
     public KeyRange splitI = new KeyRange();
     public KeyRange splitII = new KeyRange();
 
-    public KeyRange fadePointI = new KeyRange();
-    public KeyRange fadePointII = new KeyRange();
+    public KeyRange fadePointI = new KeyRange(); // [0..61) => 5 means the space between key #5 and key #6, meaning key
+                                                 // with index 4 and index 5
+    public KeyRange fadePointII = new KeyRange(); // [0..61)
 
-    public double fadeRangeI;
-    public double fadeRangeII;
+    public double fadeRangeI; // [0..60]
+    public double fadeRangeII; // [0..60]
 
     public RGB colorVGI = new RGB(0x26, 0xb0, 0xff);
     public RGBA colorVGIFill = new RGBA(colorVGI, 0.5);
