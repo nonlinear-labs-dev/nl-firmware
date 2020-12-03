@@ -517,8 +517,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           keyDown(vel);
 
           uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue
-              = vel * (1 << 13);  // shouldn't this be (1 << 14) - 1 = 16383 ? (m_format_vel can be used for that)
+          uint16_t fullResolutionValue = vel * (1 << 13);  // shouldn't this be (1 << 14) - 1 = 16383 ?
           uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
           out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
 
@@ -543,8 +542,7 @@ void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, 
           keyUp(vel);
 
           uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue
-              = vel * (1 << 13);  // shouldn't this be (1 << 14) - 1 = 16383 ? (m_format_vel can be used for that)
+          uint16_t fullResolutionValue = vel * (1 << 13);  // shouldn't this be (1 << 14) - 1 = 16383 ?
           uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
           out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
 
@@ -607,21 +605,40 @@ void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0,
   {
     case 0:
       // note off
-      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
-      onTcdMessage(0xED, 0, _data0);                                  // keyPos
-      onTcdMessage(0xEF, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyUp
+      // todo: cleanup
+      //      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel); // weird: this alone blows up to 16383...
+      //      onTcdMessage(0xED, 0, _data0);                                  // keyPos
+      //      onTcdMessage(0xEF, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyUp
+      {
+        const float vel = static_cast<float>((_data1 << 7) + std::exchange(m_velocityLSB, 0)) * m_norm_vel;
+        m_key_pos = _data0;
+        keyDown(vel);
+      }
       break;
     case 1:
       // note on
-      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel);
-      onTcdMessage(0xED, 0, _data0);  // keyPos
-      if(arg != 0)
+      // todo: cleanup
+      //      arg = static_cast<uint32_t>(static_cast<float>(_data1) * m_format_vel); // weird: this alone blows up to 16383...
+      //      onTcdMessage(0xED, 0, _data0);  // keyPos
+      //      if(arg != 0)
+      //      {
+      //        onTcdMessage(0xEE, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyDown
+      //      }
+      //      else
+      //      {
+      //        onTcdMessage(0xEF, 0, 0);  // keyUp
+      //      }
       {
-        onTcdMessage(0xEE, arg >> 7, std::exchange(m_velocityLSB, 0));  // keyDown
-      }
-      else
-      {
-        onTcdMessage(0xEF, 0, 0);  // keyUp
+        const float vel = static_cast<float>((_data1 << 7) + std::exchange(m_velocityLSB, 0)) * m_norm_vel;
+        m_key_pos = _data0;
+        if(_data1 != 0)
+        {
+          keyDown(vel);
+        }
+        else
+        {
+          keyUp(vel);
+        }
       }
       break;
     case 3:
@@ -1159,9 +1176,19 @@ void dsp_host_dual::onSettingTransitionTime(const float _position)
   }
 }
 
+//todo: remove
 void dsp_host_dual::onSettingNoteShift(const float _shift)
 {
   m_poly[0].m_note_shift = m_poly[1].m_note_shift = _shift;
+  if(LOG_SETTINGS)
+  {
+    nltools::Log::info("note_shift:", _shift);
+  }
+}
+
+void dsp_host_dual::onSettingNoteShift(const int& _shift)
+{
+  m_shifteable_keys.setNoteShift(_shift);
   if(LOG_SETTINGS)
   {
     nltools::Log::info("note_shift:", _shift);

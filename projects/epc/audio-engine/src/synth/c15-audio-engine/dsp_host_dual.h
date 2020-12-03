@@ -104,6 +104,7 @@ class dsp_host_dual
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
   void onSettingNoteShift(const float _shift);
+  void onSettingNoteShift(const int& _shift);
   void onSettingGlitchSuppr(const bool _enabled);
   void onSettingTuneReference(const float _position);
   void onSettingInitialSinglePreset();
@@ -138,6 +139,7 @@ class dsp_host_dual
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count,
                   C15::Config::key_center, LayerMode>
       m_alloc;
+  ShifteableKeys<C15::Config::key_from, C15::Config::key_to> m_shifteable_keys;
   // dsp components
   atomic_fade_table m_fade;
   PolySection m_poly[2];
@@ -146,7 +148,8 @@ class dsp_host_dual
   // helper values
   const float m_format_vel = 16383.0f / 127.0f, m_format_hw = 16000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
               m_norm_vel = 1.0f / 16383.0f, m_norm_hw = 1.0f / 16000.0f;
-  uint32_t m_key_pos = 0, m_tone_state = 0;
+  int32_t m_key_pos = 0;
+  uint32_t m_tone_state = 0;
   bool m_key_valid = false, m_glitch_suppression = false;
 
   std::array<uint8_t, 8> m_hwSourcesMidiLSB;
