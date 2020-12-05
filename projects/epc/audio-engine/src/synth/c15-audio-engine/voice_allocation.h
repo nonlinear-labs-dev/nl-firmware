@@ -253,11 +253,11 @@ template <uint32_t Voices> class PolyVoiceAllocator
 
 // Main Voice Allocation Structure
 
-template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys, uint32_t CenterKey, typename LayerMode>
+template <uint32_t GlobalVoices, uint32_t LocalVoices, uint32_t Keys, uint32_t PivotKey, typename LayerMode>
 class VoiceAllocation
 {
  public:
-  PolyKeyPacket<GlobalVoices, CenterKey> m_traversal;
+  PolyKeyPacket<GlobalVoices, PivotKey> m_traversal;
   uint32_t m_unison = {};
   inline VoiceAllocation()
   {
