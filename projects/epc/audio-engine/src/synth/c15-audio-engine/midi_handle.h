@@ -186,8 +186,15 @@ namespace Midi
     }
     static uint16_t encodeUnipolarMidiValue(const float& _controlPosition)
     {
-      const float val = _controlPosition < 0.0f ? 0.0f : (_controlPosition > 1.0f ? 1.0f : _controlPosition);
-      return BottomOffset + static_cast<uint16_t>(val * static_cast<float>(ValidRange));
+      if(_controlPosition < 0.0f)
+      {
+        return 0;
+      }
+      else
+      {
+        const float val = _controlPosition > 1.0f ? 1.0f : _controlPosition;
+        return BottomOffset + static_cast<uint16_t>(val * static_cast<float>(ValidRange));
+      }
     }
   };
 

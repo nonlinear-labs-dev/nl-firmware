@@ -65,7 +65,7 @@ dsp_host_dual::dsp_host_dual()
 
   // velocity control
   assert(CC_Range_Vel::encodeUnipolarMidiValue(-0.5f) == 0x0000);
-  assert(CC_Range_Vel::encodeUnipolarMidiValue(0.0f) == 0x0000);
+  assert(CC_Range_Vel::encodeUnipolarMidiValue(0.0f) == 0x0080);
   assert(CC_Range_Vel::encodeUnipolarMidiValue(0.5f) == 0x2000);
   assert(CC_Range_Vel::encodeUnipolarMidiValue(1.0f) == 0x3F80);
   assert(CC_Range_Vel::encodeUnipolarMidiValue(1.5f) == 0x3F80);
