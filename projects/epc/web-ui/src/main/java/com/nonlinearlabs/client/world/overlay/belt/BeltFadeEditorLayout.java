@@ -158,13 +158,14 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
     private void installType(SoundType type) {
 
+        Belt b = (Belt) getParent();
+
         if (leftControls != null || rightControls != null) {
             removeChild(leftControls);
             removeChild(rightControls);
             leftControls = null;
             rightControls = null;
         }
-
 
         button.setVisible(type == SoundType.Split);
 
@@ -176,7 +177,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             rightControls = addChild(new LayerPartIndicators(this, VoiceGroup.II));
         } else if (type == SoundType.Single) {
             Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
-            if (o != null) {
+            if (o != null && o.getBelt().isSoundView()) {
                 o.getBelt().openTab(BeltTab.Sound);
             }
         }
@@ -204,7 +205,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
 
         double toggleW = toggle.getPictureWidth();
         double toggleH = toggle.getPictureHeight();
-        
+
         button.doLayout(7 * partWidth - toggleW / 2, h / 2 - toggleH / 2, toggleW, toggleH);
         toggle.doLayout(7 * partWidth - toggleW / 2 + toggleW * 1.5, h / 2 - toggleH / 2, toggleW, toggleH);
 
