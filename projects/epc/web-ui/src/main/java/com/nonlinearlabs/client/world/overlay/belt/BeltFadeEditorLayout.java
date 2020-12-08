@@ -157,9 +157,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
     }
 
     private void installType(SoundType type) {
-
-        Belt b = (Belt) getParent();
-
+        
         if (leftControls != null || rightControls != null) {
             removeChild(leftControls);
             removeChild(rightControls);
@@ -177,7 +175,7 @@ public class BeltFadeEditorLayout extends OverlayLayout {
             rightControls = addChild(new LayerPartIndicators(this, VoiceGroup.II));
         } else if (type == SoundType.Single) {
             Overlay o = NonMaps.get().getNonLinearWorld().getViewport().getOverlay();
-            if (o != null && o.getBelt().isSoundView()) {
+            if (o != null && o.getBelt().isFadeView()) {
                 o.getBelt().openTab(BeltTab.Sound);
             }
         }
