@@ -19,6 +19,8 @@ PresetList::PresetList(const Rect& pos, bool showBankArrows)
   Application::get().getPresetManager()->onRestoreHappened(mem_fun(this, &PresetList::onBankChanged));
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       mem_fun(this, &PresetList::onEditBufferChanged));
+  Application::get().getPresetManager()->onMidiBankSelectionHappened(
+      sigc::mem_fun(this, &PresetList::onMidiBankChanged));
 }
 
 PresetList::~PresetList() = default;
@@ -46,6 +48,11 @@ void PresetList::onEditBufferChanged()
     m_uuidOfLastLoadedPreset = eb->getUUIDOfLastLoadedPreset();
     onBankChanged();
   }
+}
+
+void PresetList::onMidiBankChanged(const Uuid& midiBank)
+{
+  onBankChanged();
 }
 
 void PresetList::onBankChanged()

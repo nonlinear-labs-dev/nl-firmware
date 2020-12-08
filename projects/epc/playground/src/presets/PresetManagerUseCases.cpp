@@ -153,6 +153,13 @@ void PresetManagerUseCases::selectMidiBank(Bank* b)
     auto transaction = transactionScope->getTransaction();
     m_presetManager->selectMidiBank(transaction, b->getUuid());
   }
+  else
+  {
+    auto& scope = m_presetManager->getUndoScope();
+    auto transactionScope = scope.startTransaction("Remove Bank for Midi Program-Changes");
+    auto transaction = transactionScope->getTransaction();
+    m_presetManager->selectMidiBank(transaction, "");
+  }
 }
 
 void PresetManagerUseCases::deleteBank(Bank* b)

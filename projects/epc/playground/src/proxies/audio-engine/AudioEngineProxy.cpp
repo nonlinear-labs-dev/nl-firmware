@@ -46,7 +46,7 @@ AudioEngineProxy::AudioEngineProxy()
 
   receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
     if(auto lock = m_programChangeRecursion.lock())
-      if(auto bank = pm->getSelectedBank())
+      if(auto bank = pm->findMidiSelectedBank())
         if(msg.program < bank->getNumPresets())
           bank->selectPreset(msg.program);
   });

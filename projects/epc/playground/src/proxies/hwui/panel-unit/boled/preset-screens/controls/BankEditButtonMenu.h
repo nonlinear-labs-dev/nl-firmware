@@ -61,6 +61,7 @@ class BankEditButtonMenu : public ButtonMenu
   void moveLeft();
   void moveRight();
   void selectMidi();
+  void removeMidi();
 
   static Glib::ustring createValidOutputPath(const Glib::ustring& bankName);
 

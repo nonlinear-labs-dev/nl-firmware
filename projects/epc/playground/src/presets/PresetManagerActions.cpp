@@ -199,10 +199,8 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   addAction("select-midi-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto useCases = Application::get().getPresetManagerUseCases();
     auto bankUuid = request->get("bank", "");
-    if(auto bank = Application::get().getPresetManager()->findBank(bankUuid))
-    {
-      useCases->selectMidiBank(bank);
-    }
+    auto bank = Application::get().getPresetManager()->findBank(bankUuid);
+    useCases->selectMidiBank(bank);
   });
 }
 

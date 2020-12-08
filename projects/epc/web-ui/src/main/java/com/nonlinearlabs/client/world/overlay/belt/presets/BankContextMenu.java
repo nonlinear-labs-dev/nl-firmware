@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.ClipboardManager.ClipboardContent;
+import com.nonlinearlabs.client.presenters.DeviceSettingsProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
@@ -70,14 +71,24 @@ public abstract class BankContextMenu extends ContextMenu {
 		}
 
 		if (bank != null) {
-			if (!bank.isMidiBank()) {
-				addChild(new ContextMenuItem(this, "Select Bank as Midi PC Receiver") {
-					@Override
-					public Control click(Position eventPoint) {
-						EditBufferUseCases.get().selectMidiBank(bank);
-						return super.click(eventPoint);
-					}
-				});
+			if (DeviceSettingsProvider.get().getPresenter().externalMidiEnabled) {
+				if (!bank.isMidiBank()) {
+					addChild(new ContextMenuItem(this, "Select Bank as Midi PC Receiver") {
+						@Override
+						public Control click(Position eventPoint) {
+							EditBufferUseCases.get().selectMidiBank(bank);
+							return super.click(eventPoint);
+						}
+					});
+				} else {
+					addChild(new ContextMenuItem(this, "Remove Bank as Midi PC Receiver") {
+						@Override
+						public Control click(Position eventPoint) {
+							EditBufferUseCases.get().selectMidiBank(null);
+							return super.click(eventPoint);
+						}
+					});
+				}
 			}
 
 			addChild(new ContextMenuItem(this, "Export Bank as File ...") {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 
 public class PresetManagerPresenter {
@@ -27,11 +28,9 @@ public class PresetManagerPresenter {
 			});
 
 			bank.isMidiBank.onChange(midi -> {
-				isMidi = midi;
+				isMidi = midi.equals(SetupModel.BooleanValues.on);
 				return true;
 			});
-
-			bank.
 		}
 
 		public String name = "";

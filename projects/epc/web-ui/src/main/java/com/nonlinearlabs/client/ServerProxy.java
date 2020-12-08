@@ -112,7 +112,6 @@ public class ServerProxy {
 
 			Document xml = XMLParser.parse(responseText);
 
-
 			Node webUIHelper = xml.getElementsByTagName("webui-helper").item(0);
 			updateSyncedPart(webUIHelper);
 
@@ -1130,11 +1129,16 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-
 	public void selectMidiBank(Bank bank) {
+		String uuid = "";
+
+		if (bank != null) {
+			uuid = bank.getUUID();
+		}
+
 		StaticURI.Path path = new StaticURI.Path("presets", "select-midi-bank");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()));
-		queueJob(uri, false);	
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", uuid));
+		queueJob(uri, false);
 	}
 
 	public void exportSoled() {
@@ -1184,6 +1188,5 @@ public class ServerProxy {
 	public boolean lastDocumentCouldOmitOracles() {
 		return lastOmitOracles;
 	}
-
 
 }
