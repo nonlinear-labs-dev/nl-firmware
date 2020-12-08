@@ -18,6 +18,8 @@ class PresetManagerUseCases
   void appendPreset(Bank* bank);
   void appendPresetWithUUID(Bank* bank, const std::string& uuid);
   void createBankAndStoreEditBuffer();
+  void selectMidiBank(Bank* b);
+  void deleteBank(Bank* b);
 
  private:
   PresetManager* m_presetManager;

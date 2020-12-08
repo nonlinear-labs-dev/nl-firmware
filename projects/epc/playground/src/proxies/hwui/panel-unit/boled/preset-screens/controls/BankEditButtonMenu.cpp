@@ -213,11 +213,10 @@ void BankEditButtonMenu::pasteBank()
 void BankEditButtonMenu::deleteBank()
 {
   auto pm = Application::get().getPresetManager();
-
+  auto useCases = Application::get().getPresetManagerUseCases();
   if(auto bank = pm->getSelectedBank())
   {
-    auto scope = bank->getUndoScope().startTransaction("Delete bank '%0'", bank->getName(true));
-    pm->deleteBank(scope->getTransaction(), pm->getSelectedBankUuid());
+    useCases->deleteBank(bank);
   }
 
   auto hwui = Application::get().getHWUI();

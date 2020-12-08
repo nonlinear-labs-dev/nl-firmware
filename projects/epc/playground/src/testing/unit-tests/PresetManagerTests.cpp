@@ -171,7 +171,30 @@ TEST_CASE("Midi Selection Sends Signals Appropriately")
         CHECK(pm->findMidiSelectedBank() != nullptr);
       }
     }
-
     c.disconnect();
+  }
+}
+
+TEST_CASE("Delete Current Midi Bank resets attribute")
+{
+  Helper::clearPresetManager();
+  auto pm = TestHelper::getPresetManager();
+  auto useCases = Application::get().getPresetManagerUseCases();
+
+  //Create bank to use
+  useCases->createBankAndStoreEditBuffer();
+  auto b = pm->getSelectedBank();
+  CHECK(pm->getNumBanks() == 1);
+  CHECK(b != nullptr);
+
+  //select bank as midi target
+  useCases->selectMidiBank(b);
+  CHECK(pm->getMidiSelectedBank() == b->getUuid());
+
+  WHEN("Bank Deleted")
+  {
+    useCases->deleteBank(b);
+    CHECK(pm->getNumBanks() == 0);
+    CHECK(pm->getMidiSelectedBank() == Uuid::none());
   }
 }

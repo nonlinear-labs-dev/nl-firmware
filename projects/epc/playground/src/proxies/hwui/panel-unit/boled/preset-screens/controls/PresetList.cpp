@@ -70,8 +70,6 @@ bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down)
   {
-    nltools::Log::warning("PresetList -> onButton");
-
     auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
     auto pm = Application::get().getPresetManager();
 

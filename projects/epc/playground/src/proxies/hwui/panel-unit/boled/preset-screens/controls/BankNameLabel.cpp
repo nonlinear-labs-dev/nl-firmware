@@ -18,9 +18,14 @@ void BankNameLabel::updateLabel(Bank *newBank)
 {
   if(newBank)
   {
+    auto pm = Application::get().getPresetManager();
     auto bankName = newBank->getName(true);
-    auto pos = Application::get().getPresetManager()->getBankPosition(newBank->getUuid()) + 1;
+    auto pos = pm->getBankPosition(newBank->getUuid()) + 1;
     auto s = to_string(pos) + ": " + bankName;
+    if(pm->findMidiSelectedBank() == newBank)
+    {
+      s += "^"; //TODO Fix Midi Symbol
+    }
     setText({ s });
   }
   else

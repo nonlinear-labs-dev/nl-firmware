@@ -762,7 +762,8 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
                         forEachBank([&](Bank *bank) { anyBankChanged |= (bank->didChangeSince(knownRevision)); });
 
                       writer.writeTag("banks", Attribute("changed", anyBankChanged),
-                                      Attribute("selected-bank", getSelectedBankUuid().raw()), [&]() {
+                                      Attribute("selected-bank", getSelectedBankUuid().raw()),
+                                      Attribute("selected-midi-bank", getMidiSelectedBank().raw()), [&]() {
                                         if(anyBankChanged)
                                           forEachBank([&](auto bank) { bank->writeDocument(writer, knownRevision); });
                                       });
