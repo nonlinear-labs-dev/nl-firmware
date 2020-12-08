@@ -8,6 +8,8 @@
 BankNameLabel::BankNameLabel(const Rect &pos)
     : super(pos)
 {
+  Application::get().getPresetManager()->onMidiBankSelectionHappened(
+      sigc::mem_fun(this, &BankNameLabel::onMidiSelectionHappened));
 }
 
 BankNameLabel::~BankNameLabel()
@@ -22,15 +24,28 @@ void BankNameLabel::updateLabel(Bank *newBank)
     auto bankName = newBank->getName(true);
     auto pos = pm->getBankPosition(newBank->getUuid()) + 1;
     auto s = to_string(pos) + ": " + bankName;
+    lastBank = newBank;
+    
     if(pm->findMidiSelectedBank() == newBank)
     {
-      s += "^"; //TODO Fix Midi Symbol
+      s += "^";  //TODO Fix Midi Symbol
     }
     setText({ s });
   }
   else
   {
     setText("");
+  }
+}
+
+void BankNameLabel::onMidiSelectionHappened(const Uuid &uuid)
+{
+  if(auto midiBank = Application::get().getPresetManager()->findMidiSelectedBank())
+  {
+    if(midiBank == lastBank)
+    {
+      updateLabel(midiBank);
+    }
   }
 }
 

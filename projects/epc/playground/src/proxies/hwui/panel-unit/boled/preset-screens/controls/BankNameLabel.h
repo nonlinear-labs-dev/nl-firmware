@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tools/Uuid.h>
 #include "proxies/hwui/controls/Label.h"
 
 class Application;
@@ -23,4 +24,7 @@ class BankNameLabel : public Label
   int getXOffset() const override;
   virtual StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font,
                                                     const StringAndSuffix &text) const override;
+  void onMidiSelectionHappened(const Uuid &uuid);
+
+  Bank *lastBank = nullptr;
 };

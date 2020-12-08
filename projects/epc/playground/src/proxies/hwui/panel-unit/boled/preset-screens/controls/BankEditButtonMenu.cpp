@@ -67,6 +67,13 @@ void BankEditButtonMenu::rebuildFullMenu()
   }
 
   addButton("Delete", std::bind(&BankEditButtonMenu::deleteBank, this));
+
+  if(Application::get().getPresetManager()->findMidiSelectedBank()
+     != Application::get().getPresetManager()->getSelectedBank())
+  {
+    addButton("Rec. Midi PC", std::bind(&BankEditButtonMenu::selectMidi, this));
+  }
+
   addButton("Move Left", std::bind(&BankEditButtonMenu::moveLeft, this));
   addButton("Move Right", std::bind(&BankEditButtonMenu::moveRight, this));
 }
@@ -252,6 +259,13 @@ void BankEditButtonMenu::moveRight()
       pm->setOrderNumber(scope->getTransaction(), bank->getUuid(), pos);
     }
   }
+}
+
+void BankEditButtonMenu::selectMidi()
+{
+  auto bank = Application::get().getPresetManager()->getSelectedBank();
+  auto useCases = Application::get().getPresetManagerUseCases();
+  useCases->selectMidiBank(bank);
 }
 
 void BankEditButtonMenu::correctMenuSelection()

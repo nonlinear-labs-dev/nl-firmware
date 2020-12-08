@@ -60,6 +60,7 @@ class BankEditButtonMenu : public ButtonMenu
   void deleteBank();
   void moveLeft();
   void moveRight();
+  void selectMidi();
 
   static Glib::ustring createValidOutputPath(const Glib::ustring& bankName);
 

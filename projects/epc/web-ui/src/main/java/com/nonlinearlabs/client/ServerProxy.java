@@ -1130,6 +1130,13 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+
+	public void selectMidiBank(Bank bank) {
+		StaticURI.Path path = new StaticURI.Path("presets", "select-midi-bank");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()));
+		queueJob(uri, false);	
+	}
+
 	public void exportSoled() {
 		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {
 
@@ -1177,5 +1184,6 @@ public class ServerProxy {
 	public boolean lastDocumentCouldOmitOracles() {
 		return lastOmitOracles;
 	}
+
 
 }
