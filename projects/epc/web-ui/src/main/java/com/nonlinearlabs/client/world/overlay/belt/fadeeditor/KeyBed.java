@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
@@ -16,7 +17,7 @@ import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public abstract class KeyBed extends SVGImage {
 
-    static public double HANDLE_SIZE = 20;
+    static public double HANDLE_SIZE = 20 * NonMaps.devicePixelRatio;
 
     FadeEditorPresenter presenter;
 
@@ -33,13 +34,13 @@ public abstract class KeyBed extends SVGImage {
     public double getXPosForNote(int note) {
         int keyW = 13;
         int keyPadding = 1;
-        return note * (keyW + keyPadding);
+        return note * (keyW + keyPadding) * NonMaps.devicePixelRatio;
     }
 
     public double getXPosFadeRange(double noteF) {
         int keyW = 13;
         int keyPadding = 1;
-        return noteF * (keyW + keyPadding);
+        return noteF * (keyW + keyPadding) * NonMaps.devicePixelRatio;
     }
 
     public double quantizeToNoteBorder(double splitValue, VoiceGroup vg) {
@@ -53,7 +54,7 @@ public abstract class KeyBed extends SVGImage {
         if (vg == VoiceGroup.II && EditBufferModel.get().soundType.getValue() == SoundType.Split && key >= 60) {
             return (key * keyW) + (key * keyPadding);
         }
-        return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
+        return NonMaps.devicePixelRatio * ((key * keyW) + (key * keyPadding) + keyW + keyPadding);
     }
 
     protected void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
@@ -70,7 +71,7 @@ public abstract class KeyBed extends SVGImage {
 
         for (int i = 0; i < 6; i++) {
             Rect r = getPixRect().copy();
-            r.moveBy(i * 13 * 12.93, 0);
+            r.moveBy(i * 13 * 12.93 * NonMaps.devicePixelRatio, 0);
             r.setWidth(13);
             r.setTop(getSelectedImage().getPixRect().getBottom());
             ctx.fillText("C" + (i + 1), r.getLeft() + 3, r.getTop() + Millimeter.toPixels(3));

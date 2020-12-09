@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ClipContext;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
