@@ -103,7 +103,7 @@ class dsp_host_dual
   // evend bindings: Settings
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
-  void onSettingNoteShift(const float _shift);
+  void onSettingNoteShift(const int& _shift);
   void onSettingGlitchSuppr(const bool _enabled);
   void onSettingTuneReference(const float _position);
   void onSettingInitialSinglePreset();
@@ -119,8 +119,10 @@ class dsp_host_dual
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
   using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
+  using CC_Range_Vel = Midi::clipped14BitVelRange;
 
  private:
+  using LayerMode = C15::Properties::LayerMode;
   // parameters
   Engine::Param_Handle m_params;
   Time_Param m_edit_time, m_transition_time;
@@ -131,10 +133,13 @@ class dsp_host_dual
   Engine::Handle::Clock_Handle m_clock;
   Engine::Handle::Time_Handle m_time;
   // layer handling
-  C15::Properties::LayerMode m_layer_mode;
+  LayerMode m_layer_mode;
   // global dsp components
   GlobalSection m_global;
-  VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::key_count> m_alloc;
+  VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::virtual_key_count,
+                  C15::Config::generic_key_pivot, LayerMode>
+      m_alloc;
+  ShifteableKeys<C15::Config::physical_key_from, C15::Config::physical_key_to> m_shifteable_keys;
   // dsp components
   atomic_fade_table m_fade;
   PolySection m_poly[2];
@@ -143,8 +148,9 @@ class dsp_host_dual
   // helper values
   const float m_format_vel = 16383.0f / 127.0f, m_format_hw = 16000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
               m_norm_vel = 1.0f / 16383.0f, m_norm_hw = 1.0f / 16000.0f;
-  uint32_t m_key_pos = 0, m_tone_state = 0;
-  bool m_key_valid = false, m_glitch_suppression = false;
+  int32_t m_key_pos = 0;
+  uint32_t m_tone_state = 0;
+  bool m_glitch_suppression = false;
 
   std::array<uint8_t, 8> m_hwSourcesMidiLSB;
   uint8_t m_velocityLSB = 0;

@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 #include <cmath>
+#include <nltools/logging/Log.h>
 
 PolySection::PolySection()
 {
@@ -210,7 +211,6 @@ bool PolySection::keyDown(PolyKeyEvent* _event)
       = (m_key_active == 0),
       rstA = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Reset)),
       rstB = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Reset));
-  m_shift[_event->m_voiceId] = m_note_shift;
   m_unison_index[_event->m_voiceId] = _event->m_unisonIndex;
   m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
   m_key_tune[_event->m_voiceId] = _event->m_tune;
@@ -331,7 +331,7 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
   // phase 1: 100%
   for(int32_t i = start; i != fadeStart; i += m_fadeIncrement)
   {
-    if((i < 0) || (i >= C15::Config::key_count))
+    if((i < 0) || (i >= C15::Config::virtual_key_count))
       break;  // safety mechanism
 
     m_key_levels[i] = 1.0f;
@@ -340,7 +340,7 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
   // phase 2: fade out
   for(int32_t i = fadeStart; i != fadeEnd; i += m_fadeIncrement)
   {
-    if((i < 0) || (i >= C15::Config::key_count))
+    if((i < 0) || (i >= C15::Config::virtual_key_count))
       break;  // safety mechanism
 
     fade -= slope;
@@ -368,11 +368,12 @@ void PolySection::evalVoiceFade(const float _from, const float _range)
   // phase 3: 0%
   for(int32_t i = fadeEnd; i != m_fadeEnd + m_fadeIncrement; i += m_fadeIncrement)
   {
-    if((i < 0) || (i >= C15::Config::key_count))
+    if((i < 0) || (i >= C15::Config::virtual_key_count))
       break;  // safety mechanism
 
     m_key_levels[i] = 0.0f;
   }
+  //  testVoiceFadeTable();
 }
 
 void PolySection::evalVoiceFadeInterpolated(const float _from, const float _range)
@@ -398,7 +399,7 @@ void PolySection::evalVoiceFadeInterpolated(const float _from, const float _rang
   // phase 1: 100%
   for(int32_t i = start; i != fadeStart; i += m_fadeIncrement)
   {
-    if((i < 0) || (i >= C15::Config::key_count))
+    if((i < 0) || (i >= C15::Config::virtual_key_count))
       break;  // safety mechanism
 
     m_key_levels[i] = 1.0f;
@@ -407,7 +408,7 @@ void PolySection::evalVoiceFadeInterpolated(const float _from, const float _rang
   // phase 2: fade out
   for(int32_t i = fadeStart; i != fadeEnd; i += m_fadeIncrement)
   {
-    if((i < 0) || (i >= C15::Config::key_count))
+    if((i < 0) || (i >= C15::Config::virtual_key_count))
       break;  // safety mechanism
 
     fade[0] -= slope[0];
@@ -440,16 +441,17 @@ void PolySection::evalVoiceFadeInterpolated(const float _from, const float _rang
   // phase 3: 0%
   for(int32_t i = fadeEnd; i != m_fadeEnd + m_fadeIncrement; i += m_fadeIncrement)
   {
-    if((i < 0) || (i >= C15::Config::key_count))
+    if((i < 0) || (i >= C15::Config::virtual_key_count))
       break;  // safety mechanism
 
     m_key_levels[i] = 0.0f;
   }
+  //  testVoiceFadeTable();
 }
 
 void PolySection::resetVoiceFade()
 {
-  for(uint32_t i = 0; i < C15::Config::key_count; i++)
+  for(uint32_t i = 0; i < C15::Config::virtual_key_count; i++)
   {
     m_key_levels[i] = 1.0f;
   }
@@ -1078,7 +1080,7 @@ void PolySection::updateNotePitch(const uint32_t _voiceId)
       + (m_smoothers.get(C15::Smoothers::Poly_Slow::Unison_Detune)
          * m_spread.m_detune[m_uVoice][m_unison_index[_voiceId]])
       + m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune)
-      + m_globalsignals->get(C15::Signals::Global_Signals::Master_Tune) + m_shift[_voiceId];
+      + m_globalsignals->get(C15::Signals::Global_Signals::Master_Tune);
 }
 
 void PolySection::setSlowFilterCoefs(const uint32_t _voiceId)
@@ -1086,4 +1088,14 @@ void PolySection::setSlowFilterCoefs(const uint32_t _voiceId)
   m_soundgenerator.set(m_signals, _voiceId);
   m_combfilter.set(m_signals, m_samplerate, _voiceId);
   m_feedbackmixer.set(m_signals, _voiceId);
+}
+
+void PolySection::testVoiceFadeTable()
+{
+  nltools::Log::info("VoiceFadeTable:");
+  for(int32_t i = 0; i < C15::Config::virtual_key_count; i += 16)
+  {
+    nltools::Log::info("[", i, "..", i + 15, "]:", m_key_levels[i], "..", m_key_levels[i + 7], "..",
+                       m_key_levels[i + 15]);
+  }
 }

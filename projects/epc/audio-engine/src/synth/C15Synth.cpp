@@ -52,7 +52,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
-    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { 0xC0, pc.program });
+    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage{ 0xC0, pc.program });
     m_syncExternalsWaiter.notify_all();
   });
 
@@ -63,7 +63,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     if((e.raw[0] & 0xF0) == 0xC0)
     {
       // receive program changes midi-over-ip and dispatch it to playground
-      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage{ e.raw[1] });
     }
     else
     {
@@ -120,7 +120,7 @@ void C15Synth::syncPlayground()
     using namespace nltools::msg;
     if(std::exchange(m_hwSourceValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
+      send(EndPoint::Playground, HardwareSourceChangedNotification{ i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
 }
@@ -354,7 +354,7 @@ void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 
 void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg)
 {
-  m_dsp->onSettingNoteShift(static_cast<float>(msg.m_shift));
+  m_dsp->onSettingNoteShift(msg.m_shift);
 }
 
 void C15Synth::onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage& msg)

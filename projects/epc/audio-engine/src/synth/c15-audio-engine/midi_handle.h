@@ -164,4 +164,38 @@ namespace Midi
     }
   };
 
+  struct clipped14BitVelRange
+  {
+    static constexpr uint16_t BottomOffset = 128;
+    static constexpr uint16_t TopOffset = 128;
+    static constexpr uint16_t ValidRange = (1 << static_cast<uint16_t>(Formats::_14_Bits_)) - BottomOffset - TopOffset;
+    static constexpr float Denom = 1.0f / (static_cast<float>(ValidRange));
+
+    static bool isValidNoteOnVelocity(const uint16_t& _midiValue)
+    {
+      return !(_midiValue < BottomOffset);
+    }
+    static float decodeUnipolarMidiValue(const uint16_t& _midiValue)
+    {
+      if(isValidNoteOnVelocity(_midiValue))
+      {
+        const uint16_t val = _midiValue - BottomOffset;
+        return val < ValidRange ? (static_cast<float>(val) * Denom) : 1.0f;
+      }
+      return 0.0f;
+    }
+    static uint16_t encodeUnipolarMidiValue(const float& _controlPosition)
+    {
+      if(_controlPosition < 0.0f)
+      {
+        return 0;
+      }
+      else
+      {
+        const float val = _controlPosition > 1.0f ? 1.0f : _controlPosition;
+        return BottomOffset + static_cast<uint16_t>(val * static_cast<float>(ValidRange));
+      }
+    }
+  };
+
 }  // namespace Midi
