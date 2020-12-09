@@ -1019,9 +1019,16 @@ Uuid PresetManager::getMidiSelectedBank() const
 void PresetManager::selectMidiBank(UNDO::Transaction *trans, const Uuid &uuid)
 {
   const auto oldUuid = m_midiSelectedBank;
-  trans->addUndoSwap(this, m_midiSelectedBank, uuid);
-  trans->addSimpleCommand([&, newuuid = uuid](auto state) { m_sigMidiBankSelection.send(newuuid); },
-                          [&, olduuid = oldUuid](auto state) { m_sigMidiBankSelection.send(olduuid); });
+
+  trans->addSimpleCommand(
+      [&, newuuid = uuid](auto state) {
+        m_midiSelectedBank = newuuid;
+        m_sigMidiBankSelection.send(newuuid);
+      },
+      [&, olduuid = oldUuid](auto state) {
+        m_midiSelectedBank = olduuid;
+        m_sigMidiBankSelection.send(olduuid);
+      });
 }
 
 sigc::connection PresetManager::onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb)
