@@ -28,6 +28,8 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   virtual void setMode(Mode desiredMode);
   Mode getMode() const;
 
+  Overlay *getModeOverlay();
+
  protected:
   void setButtonText(Buttons b, const std::string &s);
   std::string getButtonText(Buttons b) const;
@@ -75,4 +77,5 @@ class MacroControlParameterEditLayout2 : public ParameterEditLayout2, public Mac
   virtual void setMode(Mode desiredMode) override;
   virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   virtual ButtonMenu *createMenu(const Rect &rect) override;
+  void removeMCAssignmentIndication();
 };

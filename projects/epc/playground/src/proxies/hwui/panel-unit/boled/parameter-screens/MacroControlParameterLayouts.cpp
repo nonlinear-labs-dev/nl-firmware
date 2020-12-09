@@ -183,6 +183,11 @@ MacroControlParameterLayout2::Mode MacroControlParameterLayout2::getMode() const
   return m_mode;
 }
 
+Overlay *MacroControlParameterLayout2::getModeOverlay()
+{
+  return m_modeOverlay;
+}
+
 void MacroControlParameterLayout2::setButtonA(Button *a)
 {
   m_buttonA = a;
@@ -367,6 +372,7 @@ MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()
     , super1()
     , super2()
 {
+  removeMCAssignmentIndication();
 }
 
 ButtonMenu *MacroControlParameterEditLayout2::createMenu(const Rect &rect)
@@ -390,6 +396,8 @@ void MacroControlParameterEditLayout2::setMode(Mode desiredMode)
 
   if(auto vgIndi = findControlOfType<VoiceGroupIndicator>())
     remove(vgIndi.get());
+
+  removeMCAssignmentIndication();
 }
 
 bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
@@ -401,4 +409,10 @@ bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModi
     return true;
 
   return super2::onButton(i, down, modifiers);
+}
+
+void MacroControlParameterEditLayout2::removeMCAssignmentIndication()
+{
+  if(auto mcInd = getModeOverlay()->findControlOfType<MCAssignedIndicator>())
+    getModeOverlay()->remove(mcInd.get());
 }
