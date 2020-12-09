@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -82,14 +81,15 @@ public class KeyBed extends SVGImage {
         return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
     }
 
-    private void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
-        r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, stroke, RGB.black());
+    private boolean mouseIsDown = false;
 
-        if (focus) {
-            r.getReducedBy(-4).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 1, 1, null, RGB.black());
-            r.getReducedBy(-6).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 3, null, stroke);
-            r.getReducedBy(-7).drawRoundedRect(ctx, Rect.ROUNDING_ALL, 3, 1, null, RGB.black());
-        }
+    private void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
+        RGB color = stroke;
+
+        if(mouseIsDown && focus)
+            color = stroke.brighter(20);
+
+        r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, color, RGB.black());
     }
 
     private void drawSplitHandle(Context2d ctx, VoiceGroup vg) {
@@ -119,8 +119,12 @@ public class KeyBed extends SVGImage {
         ctx.stroke();
     }
 
+    private VoiceGroup selectedVoiceGroup() {
+        return presenter.lastSelectedPart;
+    }
+
     public void drawSplit(Context2d ctx) {
-        VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
+        VoiceGroup vg = selectedVoiceGroup();
 
         if (vg == VoiceGroup.I) {
             drawSplitPart(ctx, VoiceGroup.II);
@@ -220,7 +224,7 @@ public class KeyBed extends SVGImage {
     }
 
     public void drawLayer(Context2d ctx) {
-        if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
+        if (selectedVoiceGroup() == VoiceGroup.I) {
             drawLayerPart(ctx, VoiceGroup.II);
             drawLayerPart(ctx, VoiceGroup.I);
             drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
@@ -268,7 +272,6 @@ public class KeyBed extends SVGImage {
         }
 
         selectControl(SelectedHandle.None);
-
         return null;
     }
 
@@ -282,7 +285,7 @@ public class KeyBed extends SVGImage {
     }
 
     @Override
-    public Control click(Position pos) {
+    public Control click(Position pos) {        
         Control c = handleMouseDownDragStart(pos);
         if (c == null) {
             return super.click(pos);
@@ -392,5 +395,24 @@ public class KeyBed extends SVGImage {
             return this;
         }
         return super.mouseDrag(oldPoint, newPoint, fine);
+    }
+
+    @Override
+    public Control mouseDown(Position p) {
+        mouseIsDown = true;
+        invalidate(INVALIDATION_FLAG_UI_CHANGED);
+        return this;
+    }
+
+	@Override
+	public Control mouseUp(Position eventPoint) {
+        mouseIsDown = false;
+        invalidate(INVALIDATION_FLAG_UI_CHANGED);
+        return this;
+    }
+   
+    @Override
+    public void onMouseLost() {
+        mouseIsDown = false;
     }
 }

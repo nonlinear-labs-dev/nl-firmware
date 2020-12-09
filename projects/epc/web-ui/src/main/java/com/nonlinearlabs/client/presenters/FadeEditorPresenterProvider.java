@@ -21,17 +21,21 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
     
     public FadeEditorPresenterProvider() {
         for(VoiceGroup vg: new VoiceGroup[]{VoiceGroup.I, VoiceGroup.II}) {
+            
             EditBufferModel.get().getParameter(new ParameterId(396, vg)).onChange(p -> {
+                presenter.lastSelectedPart = vg;
                 update();
                 return true;
             });
 
             EditBufferModel.get().getParameter(new ParameterId(397, vg)).onChange(p -> {
+                presenter.lastSelectedPart = vg;
                 update();
                 return true;
             });
 
             EditBufferModel.get().getParameter(new ParameterId(356, vg)).onChange(p -> {
+                presenter.lastSelectedPart = vg;
                 update();
                 return true;
             });
