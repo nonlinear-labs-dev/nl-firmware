@@ -334,11 +334,6 @@ void DescriptiveLayouts::LayerFBState::onChange(const EditBuffer *eb)
   }
 }
 
-void DescriptiveLayouts::LayerFBOffset::onChange(const EditBuffer *eb)
-{
-  setValue({ 0, 0 });
-}
-
 void DescriptiveLayouts::LayerFXState::onChange(const EditBuffer *eb)
 {
   auto IToII = ToFXIIOver0::check(eb);
