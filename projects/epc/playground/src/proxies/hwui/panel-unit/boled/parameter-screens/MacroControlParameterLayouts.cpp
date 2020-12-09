@@ -183,11 +183,6 @@ MacroControlParameterLayout2::Mode MacroControlParameterLayout2::getMode() const
   return m_mode;
 }
 
-Overlay *MacroControlParameterLayout2::getModeOverlay()
-{
-  return m_modeOverlay;
-}
-
 void MacroControlParameterLayout2::setButtonA(Button *a)
 {
   m_buttonA = a;
@@ -243,7 +238,7 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
   {
     case Mode::MacroControlValue:
       m_modeOverlay->addControl(createParameterValueControl());
-      m_modeOverlay->addControl(new MCAssignedIndicator(Rect(25, 15, 52, 24), getCurrentParameter()));
+      m_modeOverlay->addControl(createMCAssignmentIndicator());
       setButtonAText(isDual ? "I / II" : "");
       setButtonText(Buttons::BUTTON_B, "HW Sel");
       setButtonText(Buttons::BUTTON_C, "more..");
@@ -314,6 +309,11 @@ void MacroControlParameterLayout2::selectSmoothingParameterForMC()
   }
 }
 
+Control *MacroControlParameterLayout2::createMCAssignmentIndicator()
+{
+  return new MCAssignedIndicator(Rect(25, 15, 52, 24), getCurrentParameter());
+}
+
 MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     : virtual_base()
     , super1()
@@ -372,7 +372,6 @@ MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()
     , super1()
     , super2()
 {
-  removeMCAssignmentIndication();
 }
 
 ButtonMenu *MacroControlParameterEditLayout2::createMenu(const Rect &rect)
@@ -396,8 +395,11 @@ void MacroControlParameterEditLayout2::setMode(Mode desiredMode)
 
   if(auto vgIndi = findControlOfType<VoiceGroupIndicator>())
     remove(vgIndi.get());
+}
 
-  removeMCAssignmentIndication();
+Control *MacroControlParameterEditLayout2::createMCAssignmentIndicator()
+{
+  return nullptr;
 }
 
 bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
@@ -409,10 +411,4 @@ bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModi
     return true;
 
   return super2::onButton(i, down, modifiers);
-}
-
-void MacroControlParameterEditLayout2::removeMCAssignmentIndication()
-{
-  if(auto mcInd = getModeOverlay()->findControlOfType<MCAssignedIndicator>())
-    getModeOverlay()->remove(mcInd.get());
 }

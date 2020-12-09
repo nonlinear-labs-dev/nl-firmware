@@ -35,6 +35,7 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   std::string getButtonText(Buttons b) const;
   void setButtonAText(const std::string &s);
   void setButtonA(Button *button);
+  virtual Control *createMCAssignmentIndicator();
 
  private:
   void onSoundTypeChanged();
@@ -77,5 +78,5 @@ class MacroControlParameterEditLayout2 : public ParameterEditLayout2, public Mac
   virtual void setMode(Mode desiredMode) override;
   virtual bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   virtual ButtonMenu *createMenu(const Rect &rect) override;
-  void removeMCAssignmentIndication();
+  Control *createMCAssignmentIndicator() override;
 };
