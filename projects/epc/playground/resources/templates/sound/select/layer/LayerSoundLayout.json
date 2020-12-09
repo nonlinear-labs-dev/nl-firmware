@@ -78,11 +78,11 @@
           "Init": {
             "Image[ImagePath]": ""
           },
-          "Events": "LayerFBState => Image[ImagePath], LayerFBOffset => Image[ImageOffset]"
+          "Events": "LayerFBState => Image[ImagePath]"
         },
         "FX": {
           "Class": "LayerFBImageLarge",
-          "Position": "202, 21",
+          "Position": "201, 21",
           "Init": {
             "Image[ImagePath]": ""
           },

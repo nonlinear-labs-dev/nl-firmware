@@ -130,7 +130,6 @@ namespace DescriptiveLayouts
     m_map[EventSources::ToFXIIOver0] = std::make_unique<ToFXIIOver0>();
 
     m_map[EventSources::LayerFBState] = std::make_unique<LayerFBState>();
-    m_map[EventSources::LayerFBOffset] = std::make_unique<LayerFBOffset>();
 
     m_map[EventSources::LayerFXState] = std::make_unique<LayerFXState>();
     m_map[EventSources::LayerFXOffset] = std::make_unique<LayerFXOffset>();
