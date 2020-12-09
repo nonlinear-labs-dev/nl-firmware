@@ -77,7 +77,7 @@ public class SplitPointKeyBed extends KeyBed {
             active = lastTouchedVoiceGroup == vg;
         drawHandle(ctx, active, handle, presenter.getStrokeColor(vg));
     }
- 
+
     protected void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
         RGB color = focus ? stroke.brighter(20) : stroke;
         r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, color, RGB.black());
@@ -88,7 +88,18 @@ public class SplitPointKeyBed extends KeyBed {
         double halfSize = size / 2;
         Rect pix = getPixRect();
         double x = pix.getLeft() + getXPosForNote(presenter.getSplitRange(vg).indicator);
-        return new Rect(x - halfSize, pix.getCenterPoint().getY() - halfSize, size, size);
+
+        boolean sameNote = presenter.getSplitRange(VoiceGroup.I).to == presenter.getSplitRange(VoiceGroup.II).from;
+        Rect r = new Rect(x - halfSize, pix.getCenterPoint().getY() - halfSize, size, size);
+
+        if (sameNote) {
+            if (vg == VoiceGroup.I)
+                r.moveBy(0, -halfSize - 1);
+            else
+                r.moveBy(0, halfSize + 1);
+        }
+
+        return r;
     }
 
     @Override

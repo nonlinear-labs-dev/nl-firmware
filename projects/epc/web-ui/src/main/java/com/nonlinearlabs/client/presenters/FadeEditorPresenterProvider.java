@@ -20,8 +20,8 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
     }
 
     public FadeEditorPresenterProvider() {
-        for(VoiceGroup vg: new VoiceGroup[]{VoiceGroup.I, VoiceGroup.II}) {
-            
+        for (VoiceGroup vg : new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II }) {
+
             EditBufferModel.get().getParameter(new ParameterId(396, vg)).onChange(p -> {
                 presenter.lastSelectedPart = vg;
                 update();
@@ -49,7 +49,7 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
         BasicParameterModel splitII = model.getParameter(new ParameterId(356, VoiceGroup.II));
 
         presenter.splitI.from = 0;
-        presenter.splitI.to = (int) Math.round(60 * splitI.value.value.getValue());
+        presenter.splitI.to = (int) Math.round(60 * splitI.value.value.getValue()) + 1;
         presenter.splitI.indicator = presenter.splitI.to;
 
         presenter.splitII.from = (int) Math.round(60 * splitII.value.value.getValue());
