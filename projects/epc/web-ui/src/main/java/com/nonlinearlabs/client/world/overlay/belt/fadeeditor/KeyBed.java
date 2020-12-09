@@ -57,11 +57,6 @@ public abstract class KeyBed extends SVGImage {
         return NonMaps.devicePixelRatio * ((key * keyW) + (key * keyPadding) + keyW + keyPadding);
     }
 
-    protected void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
-        RGB color = focus ? stroke.brighter(20) : stroke;
-        r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, color, RGB.black());
-    }
-
     protected void drawOctaveLabels(Context2d ctx) {
         double fontHeightInPixels = Millimeter.toPixels(2.5);
         ctx.setTextAlign(TextAlign.LEFT);
@@ -76,9 +71,6 @@ public abstract class KeyBed extends SVGImage {
             r.setTop(getSelectedImage().getPixRect().getBottom());
             ctx.fillText("C" + (i + 1), r.getLeft() + 3, r.getTop() + Millimeter.toPixels(3));
         }
-    }
-
-    public void drawUnclipped(Context2d ctx) {
     }
 
     public double getOverflowPixels() {

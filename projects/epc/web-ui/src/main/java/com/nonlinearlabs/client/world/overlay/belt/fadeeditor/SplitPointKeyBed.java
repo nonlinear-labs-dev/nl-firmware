@@ -10,6 +10,7 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
+import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 
 public class SplitPointKeyBed extends KeyBed {
@@ -75,6 +76,11 @@ public class SplitPointKeyBed extends KeyBed {
         if (changer != null)
             active = lastTouchedVoiceGroup == vg;
         drawHandle(ctx, active, handle, presenter.getStrokeColor(vg));
+    }
+ 
+    protected void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
+        RGB color = focus ? stroke.brighter(20) : stroke;
+        r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, color, RGB.black());
     }
 
     private Rect getSplitPointHandleRect(VoiceGroup vg) {

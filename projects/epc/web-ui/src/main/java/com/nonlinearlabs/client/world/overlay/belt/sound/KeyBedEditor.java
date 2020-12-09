@@ -11,7 +11,6 @@ import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Dimension;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
-import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
@@ -93,16 +92,6 @@ class KeyBedEditor extends OverlayLayout {
             try (ClipContext c = new ClipContext(ctx, this)) {
                 ctx.translate(scrolling, 0);
                 super.draw(ctx, invalidationMask);
-            }
-
-            Rect r = getPixRect().copy();
-            double overflow = nested.getOverflowPixels();
-            r.reduceWidthBy(-2 * overflow);
-            r.reduceHeightBy(-2 * overflow);
-            
-            try (ClipContext c = new ClipContext(ctx, r)) {
-                ctx.translate(scrolling, 0);
-                nested.drawUnclipped(ctx);
             }
         }
 

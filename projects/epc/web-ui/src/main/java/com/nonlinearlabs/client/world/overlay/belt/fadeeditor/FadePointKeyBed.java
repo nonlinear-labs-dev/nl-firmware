@@ -1,7 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.contextStates.ClipContext;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
@@ -36,27 +36,15 @@ public class FadePointKeyBed extends KeyBed {
             if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
                 drawLayerPart(ctx, VoiceGroup.II);
                 drawLayerPart(ctx, VoiceGroup.I);
+                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
             } else {
                 drawLayerPart(ctx, VoiceGroup.I);
                 drawLayerPart(ctx, VoiceGroup.II);
+                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
             }
         }
 
         drawOctaveLabels(ctx);
-    }
-
-    @Override
-    public void drawUnclipped(Context2d ctx) {
-        Rect enhancedRect = getPixRect().copy();
-        enhancedRect.reduceWidthBy(-HANDLE_SIZE);
-
-        try (ClipContext c = new ClipContext(ctx, enhancedRect)) {
-            if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
-                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
-            } else {
-                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
-            }
-        }
     }
 
     private void drawLayerPart(Context2d ctx, VoiceGroup vg) {
@@ -94,14 +82,14 @@ public class FadePointKeyBed extends KeyBed {
         Rect handle = getLayerFadeRangeHandleRect(vg);
         boolean sel = selectedParameter != null && selectedParameter.getVoiceGroup() == vg
                 && selectedParameter.getNumber() == 397;
-        drawHandle(ctx, sel, handle, stroke);
+        drawBottomHandle(ctx, sel, handle, stroke);
     }
 
     private void drawFadePointHandle(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
         Rect handle = getLayerFadePointRect(vg);
         boolean sel = selectedParameter != null && selectedParameter.getVoiceGroup() == vg
                 && selectedParameter.getNumber() == 396;
-        drawHandle(ctx, sel, handle, stroke);
+        drawTopHandle(ctx, sel, handle, stroke);
     }
 
     public void drawFadeHandle(Context2d ctx, VoiceGroup[] vgs) {
@@ -109,6 +97,47 @@ public class FadePointKeyBed extends KeyBed {
             drawFadePointHandle(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
             drawFadeRangeHandle(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
         }
+    }
+
+    protected void drawTopHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
+        RGB color = focus ? stroke.brighter(20) : stroke;
+        double corner = Millimeter.toPixels(1);
+        Position center = r.getCenterPoint();
+        ctx.beginPath();
+        ctx.moveTo(r.getLeft(), center.getY());
+        ctx.lineTo(r.getLeft(), r.getTop() + corner);
+        ctx.arcTo(r.getLeft(), r.getTop(), r.getLeft() + corner, r.getTop(), corner);
+        ctx.lineTo(r.getRight() - corner, r.getTop());
+        ctx.arcTo(r.getRight(), r.getTop(), r.getRight(), r.getTop() + corner, corner);
+        ctx.lineTo(r.getRight(), center.getY());
+        ctx.lineTo(center.getX(), r.getBottom());
+        ctx.lineTo(r.getLeft(), center.getY());
+        ctx.closePath();
+        ctx.setFillStyle(color.toString());
+        ctx.fill();
+        ctx.setStrokeStyle(RGB.black().toString());
+        ctx.setLineWidth(Millimeter.toPixels(0.5));
+        ctx.stroke();
+    }
+
+    protected void drawBottomHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
+        RGB color = focus ? stroke.brighter(20) : stroke;
+        double corner = Millimeter.toPixels(1);
+        Position center = r.getCenterPoint();
+        ctx.beginPath();
+        ctx.moveTo(r.getLeft(), center.getY());
+        ctx.lineTo(center.getX(), r.getTop());
+        ctx.lineTo(r.getRight(), center.getY());
+        ctx.lineTo(r.getRight(), r.getBottom() - corner);
+        ctx.arcTo(r.getRight(), r.getBottom(), r.getRight() - corner, r.getBottom(), corner);
+        ctx.lineTo(r.getLeft() + corner, r.getBottom());
+        ctx.arcTo(r.getLeft(), r.getBottom(), r.getLeft(), r.getBottom() - corner, corner);
+        ctx.closePath();
+        ctx.setFillStyle(color.toString());
+        ctx.fill();
+        ctx.setStrokeStyle(RGB.black().toString());
+        ctx.setLineWidth(Millimeter.toPixels(0.5));
+        ctx.stroke();
     }
 
     public double getFadePointHandleX(VoiceGroup vg) {
