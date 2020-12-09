@@ -389,16 +389,15 @@ public class Rect extends Object {
 		ctx.setLineJoin(LineJoin.MITER);
 		double arrowWidth = getHeight() / 4;
 		double arrowHeight = getHeight() / 2;
-		double arrowMargin = 0.5 * arrowWidth;
 
 		if (left) {
-			ctx.moveTo(getCenterPoint().getX() + arrowMargin, getCenterPoint().getY() - arrowHeight / 2);
-			ctx.lineTo(getCenterPoint().getX() - arrowMargin, getCenterPoint().getY());
-			ctx.lineTo(getCenterPoint().getX() + arrowMargin, getCenterPoint().getY() + arrowHeight / 2);
+			ctx.moveTo(getCenterPoint().getX() + arrowWidth, getCenterPoint().getY() - arrowHeight / 2);
+			ctx.lineTo(getCenterPoint().getX(), getCenterPoint().getY());
+			ctx.lineTo(getCenterPoint().getX() + arrowWidth, getCenterPoint().getY() + arrowHeight / 2);
 		} else {
-			ctx.moveTo(getCenterPoint().getX() - arrowMargin, getCenterPoint().getY() - arrowHeight / 2);
-			ctx.lineTo(getCenterPoint().getX() + arrowMargin, getCenterPoint().getY());
-			ctx.lineTo(getCenterPoint().getX() - arrowMargin, getCenterPoint().getY() + arrowHeight / 2);
+			ctx.moveTo(getCenterPoint().getX() - arrowWidth, getCenterPoint().getY() - arrowHeight / 2);
+			ctx.lineTo(getCenterPoint().getX(), getCenterPoint().getY());
+			ctx.lineTo(getCenterPoint().getX() - arrowWidth, getCenterPoint().getY() + arrowHeight / 2);
 		}
 
 		ctx.stroke();

@@ -14,6 +14,7 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.client.world.overlay.belt.presets.ButtonRepeat;
 
 public class ValueEdit extends OverlayLayout {
 
@@ -80,6 +81,26 @@ public class ValueEdit extends OverlayLayout {
 				EditBufferUseCases.get().incParameter(parameter, fine);
 			}
 			return this;
+		}
+
+		@Override
+		public Control longLeftPress(Position eventPoint) {
+			ButtonRepeat.get().start(() -> {
+				boolean fine = NonMaps.get().getNonLinearWorld().isShiftDown();
+
+				if (isLeft) {
+					EditBufferUseCases.get().decParameter(parameter, fine);
+				} else {
+					EditBufferUseCases.get().incParameter(parameter, fine);
+				}
+			});
+			return super.longLeftPress(eventPoint);
+		}
+
+		@Override
+		public void onMouseLost() {
+			ButtonRepeat.get().cancel();
+			super.onMouseLost();
 		}
 
 		@Override
@@ -177,7 +198,7 @@ public class ValueEdit extends OverlayLayout {
 		value.doLayout(0, 0, w, h);
 
 		double arrowWidth = w / 5;
-		if(arrowWidth < 25) {
+		if (arrowWidth < 25) {
 			left.doLayout(0, 0, 0, h);
 			left.doLayout(0 + w, 0, 0, h);
 		} else {
