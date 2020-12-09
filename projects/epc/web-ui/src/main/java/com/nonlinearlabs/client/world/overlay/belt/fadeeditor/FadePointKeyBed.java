@@ -35,15 +35,27 @@ public class FadePointKeyBed extends KeyBed {
             if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
                 drawLayerPart(ctx, VoiceGroup.II);
                 drawLayerPart(ctx, VoiceGroup.I);
-                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
             } else {
                 drawLayerPart(ctx, VoiceGroup.I);
                 drawLayerPart(ctx, VoiceGroup.II);
-                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
             }
         }
 
         drawOctaveLabels(ctx);
+    }
+
+    @Override
+    public void drawUnclipped(Context2d ctx) {
+        Rect enhancedRect = getPixRect().copy();
+        enhancedRect.reduceWidthBy(-HANDLE_SIZE);
+
+        try (ClipContext c = new ClipContext(ctx, enhancedRect)) {
+            if (EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I) {
+                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
+            } else {
+                drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
+            }
+        }
     }
 
     private void drawLayerPart(Context2d ctx, VoiceGroup vg) {
@@ -132,20 +144,20 @@ public class FadePointKeyBed extends KeyBed {
             if (getLayerFadePointRect(vg).contains(pos)) {
                 selectedParameter = new ParameterId(396, vg);
                 changer = EditBufferUseCases.get().startEditParameterValue(selectedParameter, getPixRect().getWidth());
+                invalidate(INVALIDATION_FLAG_UI_CHANGED);
                 return this;
             }
-
             if (getLayerFadeRangeHandleRect(vg).contains(pos)) {
                 selectedParameter = new ParameterId(397, vg);
                 double direction = vg == VoiceGroup.II ? -getPixRect().getWidth() : getPixRect().getWidth();
                 changer = EditBufferUseCases.get().startEditParameterValue(selectedParameter, direction);
+                invalidate(INVALIDATION_FLAG_UI_CHANGED);
                 return this;
             }
         }
         return null;
     }
 
-    @Override
     public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
         if (changer != null) {
             changer.changeBy(fine, newPoint.getX() - oldPoint.getX());

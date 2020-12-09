@@ -56,146 +56,9 @@ public abstract class KeyBed extends SVGImage {
         return (key * keyW) + (key * keyPadding) + keyW + keyPadding;
     }
 
-    private boolean mouseIsDown = false;
-
-    private void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
-        RGB color = stroke;
-
-        if(mouseIsDown && focus)
-            color = stroke.brighter(20);
-
+    protected void drawHandle(Context2d ctx, boolean focus, Rect r, RGB stroke) {
+        RGB color = focus ? stroke.brighter(20) : stroke;
         r.drawRoundedRect(ctx, Rect.ROUNDING_ALL, 2, 1, color, RGB.black());
-    }
-
-    private void drawSplitHandle(Context2d ctx, VoiceGroup vg) {
-        Rect handle = getSplitPointHandleRect(vg);
-        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.SplitPointI : SelectedHandle.SplitPointII;
-        drawHandle(ctx, selection == focus, handle, presenter.getStrokeColor(vg));
-    }
-
-    private void drawSplitPart(Context2d ctx, VoiceGroup vg) {
-        Rect pix = getPixRect().copy();
-
-        ctx.beginPath();
-        ctx.setFillStyle(presenter.getFillColor(vg).toString());
-        ctx.setStrokeStyle(presenter.getStrokeColor(vg).toString());
-
-        KeyRange range = presenter.getSplitRange(vg);
-        double from = getXPosForNote(range.from);
-        double to = getXPosForNote(range.to);
-
-        ctx.moveTo(pix.getLeft() + from, pix.getTop());
-        ctx.lineTo(pix.getLeft() + to, pix.getTop());
-        ctx.lineTo(pix.getLeft() + to, pix.getBottom());
-        ctx.lineTo(pix.getLeft() + from, pix.getBottom());
-        ctx.lineTo(pix.getLeft() + from, pix.getTop());
-
-        ctx.fill();
-        ctx.stroke();
-    }
-
-    private VoiceGroup selectedVoiceGroup() {
-        return presenter.lastSelectedPart;
-    }
-
-    public void drawSplit(Context2d ctx) {
-        VoiceGroup vg = selectedVoiceGroup();
-
-        if (vg == VoiceGroup.I) {
-            drawSplitPart(ctx, VoiceGroup.II);
-            drawSplitPart(ctx, VoiceGroup.I);
-
-            drawSplitHandle(ctx, VoiceGroup.II);
-            drawSplitHandle(ctx, VoiceGroup.I);
-        } else {
-            drawSplitPart(ctx, VoiceGroup.I);
-            drawSplitPart(ctx, VoiceGroup.II);
-
-            drawSplitHandle(ctx, VoiceGroup.I);
-            drawSplitHandle(ctx, VoiceGroup.II);
-        }
-    }
-
-    public double getFadePointHandleX(VoiceGroup vg) {
-        Rect pix = getPixRect();
-        return pix.getLeft() + getXPosForNote(presenter.getFadePointRange(vg).indicator);
-    }
-
-    public double getFadeRangeHandleX(VoiceGroup vg) {
-        Rect pix = getPixRect();
-        return pix.getLeft() + getXPosFadeRange(presenter.getFadeRangePos(vg));
-    }
-
-    public Rect getLayerFadePointRect(VoiceGroup vg) {
-        double size = 20;
-        double halfSize = size / 2;
-        Rect pix = getPixRect();
-        return new Rect(getFadePointHandleX(vg) - halfSize, pix.getTop() - halfSize, size, size);
-    }
-
-    private Rect getSplitPointHandleRect(VoiceGroup vg) {
-        double size = 20;
-        double halfSize = size / 2;
-        Rect pix = getPixRect();
-        double x = pix.getLeft() + getXPosForNote(presenter.getSplitRange(vg).indicator);
-        return new Rect(x - halfSize, pix.getCenterPoint().getY() - halfSize, size, size);
-    }
-
-    private Rect getLayerFadeRangeHandleRect(VoiceGroup vg) {
-        double size = 20;
-        double halfSize = size / 2;
-        Rect pix = getPixRect();
-        return new Rect(getFadeRangeHandleX(vg) - halfSize, pix.getBottom() - halfSize, size, size);
-    }
-
-    private void drawFadeRangeHandle(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
-        Rect handle = getLayerFadeRangeHandleRect(vg);
-        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.FadeRangeI : SelectedHandle.FadeRangeII;
-        drawHandle(ctx, selection == focus, handle, stroke);
-    }
-
-    private void drawFadePointHandle(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
-        Rect handle = getLayerFadePointRect(vg);
-        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.FadePointI : SelectedHandle.FadePointII;
-        drawHandle(ctx, selection == focus, handle, stroke);
-    }
-
-    private void drawLayerPart(Context2d ctx, VoiceGroup vg) {
-        Rect pix = getPixRect().copy();
-
-        ctx.beginPath();
-        ctx.setFillStyle(presenter.getFillColor(vg).toString());
-        ctx.setStrokeStyle(presenter.getStrokeColor(vg).toString());
-
-        KeyRange range = presenter.getFadePointRange(vg);
-        double from = getXPosForNote(range.from);
-        double to = getXPosForNote(range.to);
-        double toBottom = getXPosFadeRange(presenter.getFadeRangePos(vg));
-
-        if (vg == VoiceGroup.I) {
-            ctx.moveTo(pix.getLeft() + from, pix.getTop());
-            ctx.lineTo(pix.getLeft() + to, pix.getTop());
-            ctx.lineTo(pix.getLeft() + toBottom, pix.getBottom());
-            ctx.lineTo(pix.getLeft() + to, pix.getBottom());
-            ctx.lineTo(pix.getLeft() + from, pix.getBottom());
-            ctx.lineTo(pix.getLeft() + from, pix.getTop());
-        } else {
-            ctx.moveTo(pix.getLeft() + from, pix.getTop());
-            ctx.lineTo(pix.getLeft() + toBottom, pix.getBottom());
-            ctx.lineTo(pix.getLeft() + to, pix.getBottom());
-            ctx.lineTo(pix.getLeft() + to, pix.getTop());
-            ctx.lineTo(pix.getLeft() + from, pix.getTop());
-        }
-
-        ctx.fill();
-        ctx.stroke();
-    }
-
-    public void drawFadeHandle(Context2d ctx, VoiceGroup[] vgs) {
-        for (VoiceGroup vg : vgs) {
-            drawFadePointHandle(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
-            drawFadeRangeHandle(ctx, vg, presenter.getStrokeColor(vg), presenter.getFillColor(vg));
-        }
     }
 
     protected void drawOctaveLabels(Context2d ctx) {
@@ -210,7 +73,14 @@ public abstract class KeyBed extends SVGImage {
             r.moveBy(i * 13 * 12.93, 0);
             r.setWidth(13);
             r.setTop(getSelectedImage().getPixRect().getBottom());
-            ctx.fillText("C" + (i + 1), r.getLeft() + 3, r.getTop() + Millimeter.toPixels(2));
+            ctx.fillText("C" + (i + 1), r.getLeft() + 3, r.getTop() + Millimeter.toPixels(3));
         }
+    }
+
+    public void drawUnclipped(Context2d ctx) {
+    }
+
+    public double getOverflowPixels() {
+        return HANDLE_SIZE / 2;
     }
 }
