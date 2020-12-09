@@ -84,7 +84,7 @@ public class ValueEdit extends OverlayLayout {
 
 		@Override
 		public Control doubleClick(Position pos) {
-			return click(null);
+			return this;
 		}
 
 		@Override
