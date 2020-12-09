@@ -1,6 +1,9 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
+import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
@@ -195,196 +198,19 @@ public abstract class KeyBed extends SVGImage {
         }
     }
 
-    public void drawLayer(Context2d ctx) {
-        if (selectedVoiceGroup() == VoiceGroup.I) {
-            drawLayerPart(ctx, VoiceGroup.II);
-            drawLayerPart(ctx, VoiceGroup.I);
-            drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.II, VoiceGroup.I });
-        } else {
-            drawLayerPart(ctx, VoiceGroup.I);
-            drawLayerPart(ctx, VoiceGroup.II);
-            drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
+    protected void drawOctaveLabels(Context2d ctx) {
+        double fontHeightInPixels = Millimeter.toPixels(2.5);
+        ctx.setTextAlign(TextAlign.LEFT);
+        ctx.setTextBaseline(TextBaseline.TOP);
+        ctx.setFillStyle(RGB.lightGray().toString());
+        ctx.setFont(fontHeightInPixels + "px 'SSP-LW25'");
+
+        for (int i = 0; i < 6; i++) {
+            Rect r = getPixRect().copy();
+            r.moveBy(i * 13 * 12.93, 0);
+            r.setWidth(13);
+            r.setTop(getSelectedImage().getPixRect().getBottom());
+            ctx.fillText("C" + (i + 1), r.getLeft() + 3, r.getTop() + Millimeter.toPixels(2));
         }
-    }
-
-    @Override
-    public Control drag(Position pos, DragProxy dragProxy) {
-        return super.drag(pos, dragProxy);
-    }
-
-    void selectControl(SelectedHandle handle) {
-        selection = handle;
-        invalidate(INVALIDATION_FLAG_UI_CHANGED);
-    }
-
-    Control handleMouseDownDragStart(Position pos) {
-        VoiceGroup first = EditBufferModel.get().voiceGroup.getValue();
-        VoiceGroup other = first == VoiceGroup.I ? VoiceGroup.II : VoiceGroup.I;
-        VoiceGroup vgs[] = { first, other };
-
-        SoundType type = EditBufferModel.get().soundType.getValue();
-
-        for (VoiceGroup vg : vgs) {
-            if (type == SoundType.Layer) {
-                if (getLayerFadePointRect(vg).contains(pos)) {
-                    selectControl(vg == VoiceGroup.I ? SelectedHandle.FadePointI : SelectedHandle.FadePointII);
-                    return this;
-                }
-
-                if (getLayerFadeRangeHandleRect(vg).contains(pos)) {
-                    selectControl(vg == VoiceGroup.I ? SelectedHandle.FadeRangeI : SelectedHandle.FadeRangeII);
-                    return this;
-                }
-            } else {
-                if (getSplitPointHandleRect(vg).contains(pos)) {
-                    selectControl(vg == VoiceGroup.I ? SelectedHandle.SplitPointI : SelectedHandle.SplitPointII);
-                    return this;
-                }
-            }
-        }
-
-        selectControl(SelectedHandle.None);
-        return null;
-    }
-
-    @Override
-    public Control startDragging(Position pos) {
-        Control c = handleMouseDownDragStart(pos);
-        if (c == null) {
-            return super.startDragging(pos);
-        }
-        return c;
-    }
-
-    @Override
-    public Control click(Position pos) {        
-        Control c = handleMouseDownDragStart(pos);
-        if (c == null) {
-            return super.click(pos);
-        }
-        return c;
-    }
-
-    public double getCPForPosition(Position p) throws Exception {
-        Rect pix = getPixRect();
-        double xPercent = (p.getX() - pix.getLeft()) / pix.getWidth();
-
-        double fadeI = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.I)).value.value.getValue();
-        double fadeII = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.II)).value.value.getValue();
-
-        BasicParameterModel fadeRangeI = EditBufferModel.get().getParameter(new ParameterId(397, VoiceGroup.I));
-        BasicParameterModel fadeRangeII = EditBufferModel.get().getParameter(new ParameterId(397, VoiceGroup.II));
-
-        boolean fadeIMin = fadeI <= 0;
-        boolean fadeIIMax = fadeII >= 1;
-
-        boolean fine = NonMaps.get().getNonLinearWorld().isShiftDown();
-
-        switch (selection) {
-            case FadePointI:
-            case FadePointII:
-            case SplitPointI:
-            case SplitPointII:
-                return xPercent;
-            case FadeRangeI: {
-                if (!fadeIMin) {
-                    double useableRange = Math.max(0,
-                            Math.min(pix.getWidth() - (pix.getWidth() * fadeI), pix.getWidth()));
-                    double usableRangePercent = useableRange / pix.getWidth();
-                    double newCp = Math.max(0,
-                            Math.min((p.getX() - (pix.getLeft() + (pix.getWidth() * fadeI))) / pix.getWidth(),
-                                    usableRangePercent));
-                    if(fine) {
-                        return newCp;
-                    } else {
-                        return fadeRangeI.value.getQuantizedAndClipped(newCp, false);
-                    }        
-                } else {
-                    return xPercent;
-                }
-            }
-            case FadeRangeII: {
-                if (!fadeIIMax) {
-                    double useableRange = Math.max(0, Math.min((pix.getWidth() * fadeII), pix.getWidth()));
-                    double usableRangePercent = useableRange / pix.getWidth();
-                    double newCp = Math.max(0,
-                            Math.min(((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(),
-                                    usableRangePercent));
-                    if(fine) {
-                        return newCp;
-                    } else {
-                        return fadeRangeII.value.getQuantizedAndClipped(newCp, false);
-                    }        
-                } else {
-                    return 1.0 - xPercent;
-                }
-
-            }
-            case None:
-            default:
-                break;
-
-        }
-
-        throw new Exception("out of bounds!");
-    }
-
-    public void updateCP(Position p) {
-        try {
-            double cp = getCPForPosition(p);
-            switch (selection) {
-                case FadePointI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.I), cp, true);
-                    break;
-                case FadePointII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.II), cp, true);
-                    break;
-                case FadeRangeI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.I), cp, true);
-                    break;
-                case FadeRangeII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.II), cp, true);
-                    break;
-                case SplitPointI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.I), cp, true);
-                    break;
-                case SplitPointII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(356, VoiceGroup.II), cp, true);
-                    break;
-                case None:
-                default:
-                    break;
-            }
-        } catch (Exception e) {
-            // expected!
-        }
-    }
-
-    @Override
-    public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-        if (selection != SelectedHandle.None) {
-            updateCP(newPoint);
-            return this;
-        }
-        return super.mouseDrag(oldPoint, newPoint, fine);
-    }
-
-    @Override
-    public Control mouseDown(Position p) {
-        mouseIsDown = true;
-        invalidate(INVALIDATION_FLAG_UI_CHANGED);
-        return this;
-    }
-
-	@Override
-	public Control mouseUp(Position eventPoint) {
-        mouseIsDown = false;
-        invalidate(INVALIDATION_FLAG_UI_CHANGED);
-        return this;
-    }
-   
-    @Override
-    public void onMouseLost() {
-        mouseIsDown = false;
     }
 }

@@ -1,9 +1,9 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.fadeeditor.FadePointKeyBed;
@@ -30,19 +30,20 @@ public class FadePointsKeyBedEditor extends KeyBedEditor {
             super.doLayout(x, y, w, h);
 
             double pH = h / 4;
-            fadePoint.doLayout(0, 0, w, pH);
-            fadeRange.doLayout(0, pH / 2 * 3, w, pH);
+            fadePoint.doLayout(0, h / 3 * 1 - pH / 2, w, pH);
+            fadeRange.doLayout(0, h / 3 * 2 - pH / 2, w, pH);
         }
     }
 
     private OverlayControl leftControls = null;
     private OverlayControl rightControls = null;
     private KeyBed keys;
+    private HorizonatlScrollPane keysPane;
 
     protected FadePointsKeyBedEditor(Control parent) {
         super(parent);
 
-        keys = addChild(new FadePointKeyBed(this));
+        keysPane = addChild(new HorizonatlScrollPane(this, keys = new FadePointKeyBed(this)));
         leftControls = addChild(new LayerPartIndicators(this, VoiceGroup.I));
         rightControls = addChild(new LayerPartIndicators(this, VoiceGroup.II));
     }
@@ -54,48 +55,29 @@ public class FadePointsKeyBedEditor extends KeyBedEditor {
         int parts = 8;
         double partWidth = w / parts;
 
-        double baseLine = y + (keys.getPictureHeight() / 2);
-        keys.doLayout((w - keys.getPictureWidth()) / 2, (keys.getPictureHeight() / 2), keys.getPictureWidth(),
-                keys.getPictureHeight() + KeyBed.HANDLE_SIZE);
+        // close button has to be in sync with buttons in SoundLayout
+        double settingsWidth = closeButton.getPictureWidth();
+        double settingsHeight = closeButton.getPictureHeight();
+        double xMargin = settingsWidth * 0.5;
+        double closeX = 7 * partWidth - settingsWidth / 2 + settingsWidth + xMargin;
+        closeButton.doLayout(closeX, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
 
-        for (int i = 0; i < 6; i++) {
-            octaveLabels[i].doLayout(
-                    keys.getRelativePosition().getLeft()
-                            + keys.quantizeToNoteBorder(i * 12.0 * (1.0 / 61.0), VoiceGroup.Global) - 30,
-                    keys.getPictureHeight() * 1.6, 50, 40);
-        }
+        // right control aligns itself to the buttons
+        double valueWidth = Math.max(partWidth * 0.75, Millimeter.toPixels(10));
+        rightControls.doLayout(closeButton.getRelativePosition().getLeft() - valueWidth - xMargin, 0, valueWidth, h);
 
-        double closeW = closeButton.getPictureWidth();
-        double closeH = closeButton.getPictureHeight();
-        closeButton.doLayout(7 * partWidth - closeW / 2 + closeW * 1.5, h / 2 - closeH / 2, closeW, closeH);
+        // left button should be same distance to border as right button
+        leftControls.doLayout(w - rightControls.getRelativePosition().getRight(), 0, valueWidth, h);
 
-        double valueWidth = partWidth * 0.75;
-        leftControls.doLayout(keys.getRelativePosition().getLeft() - valueWidth * 1.25, baseLine, valueWidth, h);
-        rightControls.doLayout(keys.getRelativePosition().getRight() + valueWidth * 0.25, baseLine, valueWidth, h);
+        // the rest is for the keys
+        double keysLeft = leftControls.getRelativePosition().getRight() + xMargin;
+        double keysRight = rightControls.getRelativePosition().getLeft() - xMargin;
+        double keysWidth = Math.max(keysRight - keysLeft, 0);
+        double keysWidthClamped = Math.min(keys.getPictureWidth(), keysWidth);
+        keysLeft += (keysWidth - keysWidthClamped) / 2;
+
+        keysPane.doLayout(keysLeft, 0, keysWidthClamped, h);
+
     }
 
-    // Handle overlapping Handles inside KeyBed
-    @Override
-    public Control startDragging(Position pos) {
-        Control c = keys.startDragging(pos);
-        if (c == null)
-            return super.startDragging(pos);
-        return c;
-    }
-
-    @Override
-    public Control click(Position pos) {
-        Control c = keys.click(pos);
-        if (c == null)
-            return super.click(pos);
-        return c;
-    }
-
-    @Override
-    public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-        Control c = keys.mouseDrag(oldPoint, newPoint, fine);
-        if (c == null)
-            return super.mouseDrag(oldPoint, newPoint, fine);
-        return c;
-    }
 }

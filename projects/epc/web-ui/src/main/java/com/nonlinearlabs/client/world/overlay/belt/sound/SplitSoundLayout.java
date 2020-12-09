@@ -6,9 +6,9 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -88,7 +88,7 @@ public class SplitSoundLayout extends SoundLayout {
 				ctx.fillRect(right.getRight(), right.getCenterPoint().getY() - 2, endRight.getLeft() - right.getRight(),
 						4);
 
-				if(!EditBufferPresenterProvider.getPresenter().splitOverlap) {
+				if (!EditBufferPresenterProvider.getPresenter().splitOverlap) {
 					RGB color = EditBufferModel.get().voiceGroup.getValue() == VoiceGroup.I ? bgI : bgII;
 					ctx.setFillStyle(color.toString());
 					double startY = left.getCenterPoint().getY();
@@ -96,8 +96,6 @@ public class SplitSoundLayout extends SoundLayout {
 					ctx.fillRect(left.getCenterPoint().getX() - 2, startY, 4, endY - startY);
 				}
 			}
-
-
 			super.draw(ctx, flags);
 		}
 	}

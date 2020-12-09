@@ -1,19 +1,13 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.contextStates.ClipContext;
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.Dimension;
-import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
-import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.belt.fadeeditor.KeyBed;
 import com.nonlinearlabs.client.world.overlay.belt.fadeeditor.SplitPointKeyBed;
 import com.nonlinearlabs.client.world.overlay.belt.parameters.SyncParameterButton;
-import com.nonlinearlabs.client.world.pointer.Down;
-import com.nonlinearlabs.client.world.pointer.Gesture;
 
 public class SplitPointsKeyBedEditor extends KeyBedEditor {
 
@@ -22,68 +16,6 @@ public class SplitPointsKeyBedEditor extends KeyBedEditor {
     private OverlayControl rightControls = null;
     private KeyBed keys;
     private HorizonatlScrollPane keysPane;
-
-    class HorizonatlScrollPane extends OverlayLayout {
-        double scrolling = 0;
-        KeyBed nested;
-
-        HorizonatlScrollPane(OverlayLayout parent, KeyBed nested) {
-            super(parent);
-            this.nested = addChild(nested);
-        }
-
-        @Override
-        public void doLayout(double x, double y, double w, double h) {
-            super.doLayout(x, y, w, h);
-            getChildren().get(0).doLayout(0, 0, this.nested.getPictureWidth(), h);
-            setScroll(scrolling);
-        }
-
-        void setScroll(double a) {
-            double max = getRelativePosition().getWidth() - nested.getPictureWidth();
-            a = Math.max(max, Math.min(0, a));
-
-            if (a != scrolling) {
-                scrolling = a;
-                invalidate(INVALIDATION_FLAG_SCROLLED);
-            }
-        }
-
-        @Override
-        public void draw(Context2d ctx, int invalidationMask) {
-            try (ClipContext c = new ClipContext(ctx, this)) {
-                ctx.save();
-                ctx.translate(scrolling, 0);
-                super.draw(ctx, invalidationMask);
-                ctx.restore();
-            }
-        }
-
-        @Override
-        public Control mouseDown(Position eventPoint) {
-            return this;
-        }
-
-        @Override
-        public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-            Dimension dim = newPoint.getVector(oldPoint);
-            setScroll(scrolling + dim.getWidth());
-            return this;
-        }
-
-        @Override
-        public Control handleGesture(Gesture g) {
-            if (g instanceof Down) {
-                Down d = (Down) g;
-                d.getPosition().moveBy(-scrolling, 0);
-                Control ret = super.handleGesture(g);
-                d.getPosition().moveBy(scrolling, 0);
-                return ret;
-            }
-            return super.handleGesture(g);
-
-        }
-    }
 
     protected SplitPointsKeyBedEditor(Control parent) {
         super(parent);
@@ -110,7 +42,7 @@ public class SplitPointsKeyBedEditor extends KeyBedEditor {
                 settingsWidth, settingsHeight);
 
         // right control aligns itself to the buttons
-        double valueWidth = partWidth * 0.75;
+        double valueWidth = Math.max(partWidth * 0.75, Millimeter.toPixels(10));
         rightControls.doLayout(button.getRelativePosition().getLeft() - valueWidth - xMargin, h / 2 - h / 8, valueWidth,
                 h / 4);
 
@@ -124,15 +56,6 @@ public class SplitPointsKeyBedEditor extends KeyBedEditor {
         double keysWidthClamped = Math.min(keys.getPictureWidth(), keysWidth);
         keysLeft += (keysWidth - keysWidthClamped) / 2;
 
-        keysPane.doLayout(keysLeft, (keys.getPictureHeight() / 2), keysWidthClamped,
-                keys.getPictureHeight() + KeyBed.HANDLE_SIZE);
-
-        for (int i = 0; i < 6; i++) {
-            octaveLabels[i].doLayout(
-                    keysPane.getRelativePosition().getLeft()
-                            + keys.quantizeToNoteBorder(i * 12.0 * (1.0 / 61.0), VoiceGroup.Global) - 30,
-                    keys.getPictureHeight() * 1.6, 50, 40);
-        }
-
+        keysPane.doLayout(keysLeft, 0, keysWidthClamped, h);
     }
 }

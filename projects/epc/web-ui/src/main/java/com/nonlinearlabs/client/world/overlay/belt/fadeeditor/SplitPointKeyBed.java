@@ -35,6 +35,8 @@ public class SplitPointKeyBed extends KeyBed {
             drawSplitHandle(ctx, other);
             drawSplitHandle(ctx, vg);
         }
+
+        drawOctaveLabels(ctx);
     }
 
     @Override
@@ -47,10 +49,7 @@ public class SplitPointKeyBed extends KeyBed {
     }
 
     private void drawSplitPart(Context2d ctx, VoiceGroup vg) {
-        Rect pix = getPixRect().copy();
-
-        double halfHandle = HANDLE_SIZE / 2;
-        pix.applyPadding(0, halfHandle, 0, halfHandle);
+        Rect pix = getSelectedImage().getPixRect().copy();
 
         ctx.beginPath();
         ctx.setFillStyle(presenter.getFillColor(vg).toString());

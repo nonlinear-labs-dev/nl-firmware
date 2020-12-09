@@ -1,14 +1,13 @@
 package com.nonlinearlabs.client.world.overlay.belt.fadeeditor;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ClipContext;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter.KeyRange;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
+import com.nonlinearlabs.client.useCases.IncrementalChanger;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
@@ -21,7 +20,8 @@ public class FadePointKeyBed extends KeyBed {
         FadePointI, FadePointII, FadeRangeI, FadeRangeII, None
     }
 
-    SelectedHandle selection = SelectedHandle.None;
+    private IncrementalChanger changer;
+    private ParameterId selectedParameter;
 
     public FadePointKeyBed(Control parent) {
         super(parent);
@@ -42,10 +42,12 @@ public class FadePointKeyBed extends KeyBed {
                 drawFadeHandle(ctx, new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II });
             }
         }
+
+        drawOctaveLabels(ctx);
     }
 
     private void drawLayerPart(Context2d ctx, VoiceGroup vg) {
-        Rect pix = getPixRect().copy();
+        Rect pix = getSelectedImage().getPixRect().copy();
 
         ctx.beginPath();
         ctx.setFillStyle(presenter.getFillColor(vg).toString());
@@ -55,9 +57,6 @@ public class FadePointKeyBed extends KeyBed {
         double from = getXPosForNote(range.from);
         double to = getXPosForNote(range.to);
         double toBottom = getXPosFadeRange(presenter.getFadeRangePos(vg));
-
-        double halfHandle = HANDLE_SIZE / 2;
-        pix.applyPadding(0, halfHandle, 0, halfHandle);
 
         if (vg == VoiceGroup.I) {
             ctx.moveTo(pix.getLeft() + from, pix.getTop());
@@ -78,21 +77,18 @@ public class FadePointKeyBed extends KeyBed {
         ctx.stroke();
     }
 
-    void selectControl(SelectedHandle handle) {
-        selection = handle;
-        invalidate(INVALIDATION_FLAG_UI_CHANGED);
-    }
-
     private void drawFadeRangeHandle(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
         Rect handle = getLayerFadeRangeHandleRect(vg);
-        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.FadeRangeI : SelectedHandle.FadeRangeII;
-        drawHandle(ctx, selection == focus, handle, stroke);
+        boolean sel = selectedParameter != null && selectedParameter.getVoiceGroup() == vg
+                && selectedParameter.getNumber() == 397;
+        drawHandle(ctx, sel, handle, stroke);
     }
 
     private void drawFadePointHandle(Context2d ctx, VoiceGroup vg, RGB stroke, RGBA fill) {
         Rect handle = getLayerFadePointRect(vg);
-        SelectedHandle focus = vg == VoiceGroup.I ? SelectedHandle.FadePointI : SelectedHandle.FadePointII;
-        drawHandle(ctx, selection == focus, handle, stroke);
+        boolean sel = selectedParameter != null && selectedParameter.getVoiceGroup() == vg
+                && selectedParameter.getNumber() == 396;
+        drawHandle(ctx, sel, handle, stroke);
     }
 
     public void drawFadeHandle(Context2d ctx, VoiceGroup[] vgs) {
@@ -102,145 +98,68 @@ public class FadePointKeyBed extends KeyBed {
         }
     }
 
-    @Override
-    public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-        if (selection != SelectedHandle.None) {
-            updateCP(newPoint);
-            return this;
-        }
-        return super.mouseDrag(oldPoint, newPoint, fine);
-    }
-
-    protected Control handleMouseDownDragStart(Position pos) {
-        VoiceGroup first = EditBufferModel.get().voiceGroup.getValue();
-        VoiceGroup other = first == VoiceGroup.I ? VoiceGroup.II : VoiceGroup.I;
-        VoiceGroup vgs[] = { first, other };
-
-        for (VoiceGroup vg : vgs) {
-            if (getLayerFadePointRect(vg).contains(pos)) {
-                selectControl(vg == VoiceGroup.I ? SelectedHandle.FadePointI : SelectedHandle.FadePointII);
-                return this;
-            }
-
-            if (getLayerFadeRangeHandleRect(vg).contains(pos)) {
-                selectControl(vg == VoiceGroup.I ? SelectedHandle.FadeRangeI : SelectedHandle.FadeRangeII);
-                return this;
-            }
-
-        }
-
-        selectControl(SelectedHandle.None);
-        return null;
-    }
-
-    public void updateCP(Position p) {
-        try {
-            double cp = getCPForPosition(p);
-            switch (selection) {
-                case FadePointI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.I), cp, true);
-                    break;
-                case FadePointII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(396, VoiceGroup.II), cp, true);
-                    break;
-                case FadeRangeI:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.I), cp, true);
-                    break;
-                case FadeRangeII:
-                    EditBufferUseCases.get().setParameterValue(new ParameterId(397, VoiceGroup.II), cp, true);
-                    break;
-                case None:
-                default:
-                    break;
-            }
-        } catch (Exception e) {
-            // expected!
-        }
-    }
-
     public double getFadePointHandleX(VoiceGroup vg) {
-        Rect pix = getPixRect();
+        Rect pix = getSelectedImage().getPixRect();
         return pix.getLeft() + getXPosForNote(presenter.getFadePointRange(vg).indicator);
     }
 
     public double getFadeRangeHandleX(VoiceGroup vg) {
-        Rect pix = getPixRect();
+        Rect pix = getSelectedImage().getPixRect();
         return pix.getLeft() + getXPosFadeRange(presenter.getFadeRangePos(vg));
     }
 
     public Rect getLayerFadePointRect(VoiceGroup vg) {
         double size = HANDLE_SIZE;
         double halfSize = size / 2;
-        Rect pix = getPixRect();
-        return new Rect(getFadePointHandleX(vg) - halfSize, pix.getTop(), size, size);
+        Rect pix = getSelectedImage().getPixRect();
+        return new Rect(getFadePointHandleX(vg) - halfSize, pix.getTop() - halfSize, size, size);
     }
 
     private Rect getLayerFadeRangeHandleRect(VoiceGroup vg) {
         double size = HANDLE_SIZE;
         double halfSize = size / 2;
-        Rect pix = getPixRect();
-        return new Rect(getFadeRangeHandleX(vg) - halfSize, pix.getBottom() - size, size, size);
+        Rect pix = getSelectedImage().getPixRect();
+        return new Rect(getFadeRangeHandleX(vg) - halfSize, pix.getBottom() + halfSize - size, size, size);
     }
 
-    public double getCPForPosition(Position p) throws Exception {
-        Rect pix = getPixRect();
-        double xPercent = (p.getX() - pix.getLeft()) / pix.getWidth();
+    @Override
+    public Control mouseDown(Position pos) {
+        VoiceGroup first = EditBufferModel.get().voiceGroup.getValue();
+        VoiceGroup other = first == VoiceGroup.I ? VoiceGroup.II : VoiceGroup.I;
+        VoiceGroup vgs[] = { first, other };
 
-        double fadeI = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.I)).value.value.getValue();
-        double fadeII = EditBufferModel.get().getParameter(new ParameterId(396, VoiceGroup.II)).value.value.getValue();
-
-        BasicParameterModel fadeRangeI = EditBufferModel.get().getParameter(new ParameterId(397, VoiceGroup.I));
-        BasicParameterModel fadeRangeII = EditBufferModel.get().getParameter(new ParameterId(397, VoiceGroup.II));
-
-        boolean fadeIMin = fadeI <= 0;
-        boolean fadeIIMax = fadeII >= 1;
-
-        boolean fine = NonMaps.get().getNonLinearWorld().isShiftDown();
-
-        switch (selection) {
-            case FadePointI:
-            case FadePointII:
-            case FadeRangeI: {
-                if (!fadeIMin) {
-                    double useableRange = Math.max(0,
-                            Math.min(pix.getWidth() - (pix.getWidth() * fadeI), pix.getWidth()));
-                    double usableRangePercent = useableRange / pix.getWidth();
-                    double newCp = Math.max(0,
-                            Math.min((p.getX() - (pix.getLeft() + (pix.getWidth() * fadeI))) / pix.getWidth(),
-                                    usableRangePercent));
-                    if (fine) {
-                        return newCp;
-                    } else {
-                        return fadeRangeI.value.getQuantizedAndClipped(newCp, false);
-                    }
-                } else {
-                    return xPercent;
-                }
+        for (VoiceGroup vg : vgs) {
+            if (getLayerFadePointRect(vg).contains(pos)) {
+                selectedParameter = new ParameterId(396, vg);
+                changer = EditBufferUseCases.get().startEditParameterValue(selectedParameter, getPixRect().getWidth());
+                return this;
             }
-            case FadeRangeII: {
-                if (!fadeIIMax) {
-                    double useableRange = Math.max(0, Math.min((pix.getWidth() * fadeII), pix.getWidth()));
-                    double usableRangePercent = useableRange / pix.getWidth();
-                    double newCp = Math.max(0,
-                            Math.min(((pix.getLeft() + (pix.getWidth() * fadeII)) - p.getX()) / pix.getWidth(),
-                                    usableRangePercent));
-                    if (fine) {
-                        return newCp;
-                    } else {
-                        return fadeRangeII.value.getQuantizedAndClipped(newCp, false);
-                    }
-                } else {
-                    return 1.0 - xPercent;
-                }
 
+            if (getLayerFadeRangeHandleRect(vg).contains(pos)) {
+                selectedParameter = new ParameterId(397, vg);
+                double direction = vg == VoiceGroup.II ? -getPixRect().getWidth() : getPixRect().getWidth();
+                changer = EditBufferUseCases.get().startEditParameterValue(selectedParameter, direction);
+                return this;
             }
-            case None:
-            default:
-                break;
-
         }
+        return null;
+    }
 
-        throw new Exception("out of bounds!");
+    @Override
+    public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
+        if (changer != null) {
+            changer.changeBy(fine, newPoint.getX() - oldPoint.getX());
+            return this;
+        }
+        return super.mouseDrag(oldPoint, newPoint, fine);
+    }
+
+    @Override
+    public Control mouseUp(Position eventPoint) {
+        changer = null;
+        selectedParameter = null;
+        invalidate(INVALIDATION_FLAG_UI_CHANGED);
+        return super.mouseUp(eventPoint);
     }
 
 }
