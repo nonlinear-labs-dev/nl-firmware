@@ -23,13 +23,13 @@ class Preset;
  * 
  * For example: 
  * 
- * SplitPoint Parameter |   VG I   |   VG II   
- *    Display Value     |          |           
- * --------------------------------------------
- *                   0  |    C1    |    C1-C6   
- *                   1  |  C1-Cis1 |   Cis1-C6   
- *                  12  |   C1-C2  |    C2-C6   
- *                  60  |   C1-C6  |     C6   
+ * SplitPoint Parameter | CP    |  VG I   |   VG II   
+ *    Key Numbers       |       |         |           
+ * --------------------------------------------------
+ *                   0  |  0    |   C1    |    C1-C6   
+ *                   1  | 1/60  | C1-Cis1 |   Cis1-C6   
+ *                  12  | 12/60 |  C1-C2  |    C2-C6   
+ *                  60  |  1    |  C1-C6  |     C6   
  */
 
 class SplitPointParameter : public ModulateableParameterWithUnusualModUnit

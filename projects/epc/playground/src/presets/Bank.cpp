@@ -11,7 +11,6 @@
 #include <giomm/file.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
-#include <proxies/hwui/HWUI.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 
@@ -702,9 +701,4 @@ const Preset *Bank::getFirstPreset() const
   if(m_presets.empty())
     return nullptr;
   return m_presets.at(0);
-}
-
-auto currentVG()
-{
-  return Application::get().getHWUI()->getCurrentVoiceGroup();
 }
