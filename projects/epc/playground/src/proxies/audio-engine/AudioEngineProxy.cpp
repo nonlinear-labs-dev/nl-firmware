@@ -412,7 +412,7 @@ void AudioEngineProxy::onBankChanged()
   {
     const auto &pm = Application::get().getPresetManager();
 
-    if(auto bank = pm->getSelectedBank())
+    if(auto bank = pm->findMidiSelectedBank())
     {
       if(auto preset = bank->getSelectedPreset())
       {

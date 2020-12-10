@@ -22,14 +22,9 @@ void BankNameLabel::updateLabel(Bank *newBank)
   {
     auto pm = Application::get().getPresetManager();
     auto bankName = newBank->getName(true);
+    lastBank = newBank;
     auto pos = pm->getBankPosition(newBank->getUuid()) + 1;
     auto s = to_string(pos) + ": " + bankName;
-    lastBank = newBank;
-    
-    if(pm->findMidiSelectedBank() == newBank)
-    {
-      s += "^";  //TODO Fix Midi Symbol
-    }
     setText({ s });
   }
   else
@@ -38,14 +33,22 @@ void BankNameLabel::updateLabel(Bank *newBank)
   }
 }
 
+Label::StringAndSuffix BankNameLabel::getText() const
+{
+  auto t = Label::getText();
+  if(isMidiBank())
+  {
+    return addMidiSuffix(t);
+  }
+
+  return t;
+}
+
 void BankNameLabel::onMidiSelectionHappened(const Uuid &uuid)
 {
   if(auto midiBank = Application::get().getPresetManager()->findMidiSelectedBank())
   {
-    if(midiBank == lastBank)
-    {
-      updateLabel(midiBank);
-    }
+    updateLabel(midiBank);
   }
 }
 
@@ -77,4 +80,14 @@ Font::Justification BankNameLabel::getJustification() const
 int BankNameLabel::getXOffset() const
 {
   return 2;
+}
+
+bool BankNameLabel::isMidiBank() const
+{
+  return lastBank && Application::get().getPresetManager()->findMidiSelectedBank() == lastBank;
+}
+
+Label::StringAndSuffix BankNameLabel::addMidiSuffix(Label::StringAndSuffix text) const
+{
+  return { text.text + " ^", text.suffix };
 }
