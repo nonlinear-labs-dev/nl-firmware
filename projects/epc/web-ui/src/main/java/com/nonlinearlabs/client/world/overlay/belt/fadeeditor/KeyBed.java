@@ -5,9 +5,6 @@ import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenter;
 import com.nonlinearlabs.client.presenters.FadeEditorPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
@@ -18,6 +15,8 @@ import com.nonlinearlabs.client.world.overlay.SVGImage;
 public abstract class KeyBed extends SVGImage {
 
     static public double HANDLE_SIZE = 20 * NonMaps.devicePixelRatio;
+    static public double KEY_WIDTH = 13 * NonMaps.devicePixelRatio;
+    static public double KEY_PADDING = 1 * NonMaps.devicePixelRatio;
 
     FadeEditorPresenter presenter;
 
@@ -32,29 +31,11 @@ public abstract class KeyBed extends SVGImage {
     }
 
     public double getXPosForNote(int note) {
-        int keyW = 13;
-        int keyPadding = 1;
-        return note * (keyW + keyPadding) * NonMaps.devicePixelRatio;
+        return note * (KEY_WIDTH + KEY_PADDING);
     }
 
     public double getXPosFadeRange(double noteF) {
-        int keyW = 13;
-        int keyPadding = 1;
-        return noteF * (keyW + keyPadding) * NonMaps.devicePixelRatio;
-    }
-
-    public double quantizeToNoteBorder(double splitValue, VoiceGroup vg) {
-        int totalKeys = 61;
-
-        int keyW = 13;
-        int keyPadding = 1;
-
-        int key = (int) (splitValue * totalKeys);
-
-        if (vg == VoiceGroup.II && EditBufferModel.get().soundType.getValue() == SoundType.Split && key >= 60) {
-            return (key * keyW) + (key * keyPadding);
-        }
-        return NonMaps.devicePixelRatio * ((key * keyW) + (key * keyPadding) + keyW + keyPadding);
+        return noteF * (KEY_WIDTH + KEY_PADDING);
     }
 
     protected void drawOctaveLabels(Context2d ctx) {
@@ -66,8 +47,8 @@ public abstract class KeyBed extends SVGImage {
 
         for (int i = 0; i < 6; i++) {
             Rect r = getPixRect().copy();
-            r.moveBy(i * 13 * 12.93 * NonMaps.devicePixelRatio, 0);
-            r.setWidth(13);
+            r.moveBy(i * KEY_WIDTH * 12.93, 0);
+            r.setWidth(KEY_WIDTH / NonMaps.devicePixelRatio);
             r.setTop(getSelectedImage().getPixRect().getBottom());
             ctx.fillText("C" + (i + 1), r.getLeft() + 3, r.getTop() + Millimeter.toPixels(3));
         }

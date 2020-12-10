@@ -58,7 +58,7 @@ public class SplitPointKeyBed extends KeyBed {
 
         KeyRange range = presenter.getSplitRange(vg);
         double from = getXPosForNote(range.from);
-        double to = getXPosForNote(range.to);
+        double to = getXPosForNote(range.to) + KEY_WIDTH;
 
         ctx.moveTo(pix.getLeft() + from, pix.getTop());
         ctx.lineTo(pix.getLeft() + to, pix.getTop());
@@ -89,7 +89,11 @@ public class SplitPointKeyBed extends KeyBed {
         Rect pix = getPixRect();
         double x = pix.getLeft() + getXPosForNote(presenter.getSplitRange(vg).indicator);
 
-        boolean sameNote = presenter.getSplitRange(VoiceGroup.I).to == presenter.getSplitRange(VoiceGroup.II).from;
+        if (vg == VoiceGroup.I)
+            x += KEY_WIDTH + KEY_PADDING;
+
+        boolean sameNote = presenter.getSplitRange(VoiceGroup.I).to == (presenter.getSplitRange(VoiceGroup.II).from
+                - 1);
         Rect r = new Rect(x - halfSize, pix.getCenterPoint().getY() - halfSize, size, size);
 
         if (sameNote) {

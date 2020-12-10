@@ -5,6 +5,33 @@
 class Setting;
 class Preset;
 
+/*
+ * The SplitPointParameter of a VoiceGroup is the upper (VGI) or
+ * the lower (VGII) end of the according key range. The respective
+ * 'other' end is 0 (VG1) or 60 (VGII). The range is meant to include
+ * both ends:
+ * 
+ * VGI : [0 ... SplitPointVGI]
+ * VGII: [SplitPointVGII ... 60]
+ * 
+ * 0 is the lowest key on the C15 keyboard, C1
+ * 60 is the highest key on the C15 keyboard, C6
+ * 
+ * Note: If SplitPointSync-Setting is enabled, then 
+ *       SplitPointVGI has to be <= 59
+ *       SplitPointVGII has to be >= 1
+ * 
+ * For example: 
+ * 
+ * SplitPoint Parameter |   VG I   |   VG II   
+ *    Display Value     |          |           
+ * --------------------------------------------
+ *                   0  |    C1    |    C1-C6   
+ *                   1  |  C1-Cis1 |   Cis1-C6   
+ *                  12  |   C1-C2  |    C2-C6   
+ *                  60  |   C1-C6  |     C6   
+ */
+
 class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
 {
  public:

@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -49,12 +50,17 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
         BasicParameterModel splitII = model.getParameter(new ParameterId(356, VoiceGroup.II));
 
         presenter.splitI.from = 0;
-        presenter.splitI.to = (int) Math.round(60 * splitI.value.value.getValue()) + 1;
+        presenter.splitI.to = (int) Math.round(60 * splitI.value.getQuantizedAndClipped(true));
         presenter.splitI.indicator = presenter.splitI.to;
 
-        presenter.splitII.from = (int) Math.round(60 * splitII.value.value.getValue());
-        presenter.splitII.to = 61;
+        presenter.splitII.from = (int) Math.round(60 * splitII.value.getQuantizedAndClipped(true));
+        presenter.splitII.to = 60;
         presenter.splitII.indicator = presenter.splitII.from;
+
+        Tracer.log("splitI.from" + presenter.splitI.from);
+        Tracer.log("splitI.to" + presenter.splitI.to);
+        Tracer.log("splitII.from" + presenter.splitII.from);
+        Tracer.log("splitII.to" + presenter.splitII.to);
 
         BasicParameterModel fadeI = model.getParameter(new ParameterId(396, VoiceGroup.I));
         BasicParameterModel fadeII = model.getParameter(new ParameterId(396, VoiceGroup.II));
