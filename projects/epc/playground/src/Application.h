@@ -7,6 +7,7 @@
 #include <nltools/messaging/Messaging.h>
 #include <presets/PresetManagerUseCases.h>
 #include <use-cases/SoundUseCases.h>
+#include <use-cases/EditBufferUseCases.h>
 
 class DeviceInformation;
 class WatchDog;
@@ -54,6 +55,7 @@ class Application
   WebUISupport *getWebUISupport();
   PresetManagerUseCases *getPresetManagerUseCases();
   SoundUseCases *getSoundUseCases();
+  EditBufferUseCases* getEditBufferUseCases();
 
   void quit();
   bool isQuit() const;
@@ -78,6 +80,7 @@ class Application
   std::unique_ptr<HWUI> m_hwui;
   std::unique_ptr<PresetManagerUseCases> m_presetUseCases;
   std::unique_ptr<SoundUseCases> m_soundUseCases;
+  std::unique_ptr<EditBufferUseCases> m_editBufferUseCases;
 
   std::unique_ptr<WatchDog> m_watchDog;
   std::unique_ptr<WatchDog> m_aggroWatchDog;

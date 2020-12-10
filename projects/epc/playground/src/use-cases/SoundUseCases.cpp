@@ -44,3 +44,24 @@ void SoundUseCases::renamePart(VoiceGroup part, const Glib::ustring& name)
   auto scope = m_presetManager->getUndoScope().startTransaction("Rename Part");
   m_editBuffer->setVoiceGroupName(scope->getTransaction(), name, part);
 }
+
+void SoundUseCases::convertToLayer()
+{
+  auto scope = m_editBuffer->getUndoScope().startTransaction("Convert Sound to Layer");
+  auto transaction = scope->getTransaction();
+  m_editBuffer->undoableConvertToDual(transaction, SoundType::Layer);
+}
+
+void SoundUseCases::convertToSingle(VoiceGroup partToUse)
+{
+  auto scope = m_editBuffer->getUndoScope().startTransaction("Convert Sound to Single");
+  auto transaction = scope->getTransaction();
+  m_editBuffer->undoableConvertToSingle(transaction, partToUse);
+}
+
+void SoundUseCases::convertToSplit()
+{
+  auto scope = m_editBuffer->getUndoScope().startTransaction("Convert Sound to Split");
+  auto transaction = scope->getTransaction();
+  m_editBuffer->undoableConvertToDual(transaction, SoundType::Split);
+}

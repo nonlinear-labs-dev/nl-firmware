@@ -42,8 +42,10 @@ TEST_CASE("Preset Load sends EditBuffer")
                                         [&](const auto &singleEditMessage) { singleMessageRecieved = true; });
 
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases ebUseCases(eb);
+
   MockPresetStorage presets;
-  eb->undoableLoad(presets.getSinglePreset());
+  ebUseCases.undoableLoad(presets.getSinglePreset());
 
   TestHelper::doMainLoop(1s, 1s, [&] { return singleMessageRecieved; });
   c.disconnect();

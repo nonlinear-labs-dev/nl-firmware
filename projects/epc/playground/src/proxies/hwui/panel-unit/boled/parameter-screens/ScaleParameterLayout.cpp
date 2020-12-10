@@ -71,10 +71,8 @@ bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers 
 
 void ScaleParameterSelectLayout::reset()
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto scope = Application::get().getUndoScope()->startTransaction("Reset Custom Scale");
-  eb->getParameterGroupByID({ "Scale", VoiceGroup::Global })
-      ->undoableReset(scope->getTransaction(), Initiator::EXPLICIT_HWUI);
+  auto ebUseCases = Application::get().getEditBufferUseCases();
+  ebUseCases->resetCustomScale();
 }
 
 bool ScaleParameterSelectLayout::resetEnabled() const

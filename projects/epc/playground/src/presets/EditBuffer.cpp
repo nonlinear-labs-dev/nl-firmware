@@ -512,23 +512,13 @@ void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
       }
       else
       {
-        undoableLoad(preset);
+        Application::get().getEditBufferUseCases()->undoableLoad(preset);
       }
     }
   }
 }
 
-void EditBuffer::undoableLoad(Preset *preset)
-{
-  if(getUUIDOfLastLoadedPreset() != preset->getUuid())
-  {
-    UNDO::Scope::tTransactionScopePtr scope
-        = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
-    undoableLoad(scope->getTransaction(), preset, true);
-  }
-}
-
-void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset, bool sendToAudioEngine)
+void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
 {
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
@@ -561,13 +551,6 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset, bo
   resetModifiedIndicator(transaction, getHash());
 }
 
-void EditBuffer::undoableLoadToPart(const Preset *preset, VoiceGroup from, VoiceGroup to)
-{
-  UNDO::Scope::tTransactionScopePtr scope = getUndoScope().startTransaction(
-      preset->buildUndoTransactionTitle("Load Part " + toString(from) + " To Part " + toString(to)));
-  undoableLoadToPart(scope->getTransaction(), preset, from, to);
-}
-
 void EditBuffer::undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to)
 {
   undoableLoadPresetPartIntoPart(trans, p, from, to);
@@ -581,7 +564,7 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   resetModifiedIndicator(transaction, getHash());
 }
 
-void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset)
+void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset)
 {
   Uuid newId = Uuid::none();
   if(preset)

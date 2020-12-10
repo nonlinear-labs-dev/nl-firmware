@@ -84,6 +84,8 @@ TEST_CASE("Sync Setting gets updated on store and load")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases ebUseCases(eb);
+
   auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
   auto useCases = SyncSplitSettingUseCases::get();
@@ -124,7 +126,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset With Overlap Loaded")
     {
-      eb->undoableLoad(presetWithOverlap);
+      ebUseCases.undoableLoad(presetWithOverlap);
       THEN("Sync Setting Disabled")
       {
         CHECK(!syncSetting->get());
@@ -133,7 +135,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset Without Overlap Loaded")
     {
-      eb->undoableLoad(presetWithoutOverlap);
+      ebUseCases.undoableLoad(presetWithoutOverlap);
       THEN("Sync Setting Enabled")
       {
         CHECK(syncSetting->get());
@@ -157,7 +159,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset With Overlap Loaded")
     {
-      eb->undoableLoad(presetWithOverlap);
+      ebUseCases.undoableLoad(presetWithOverlap);
       THEN("Sync Setting Disabled")
       {
         CHECK(!syncSetting->get());
@@ -166,7 +168,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset Without Overlap Loaded")
     {
-      eb->undoableLoad(presetWithoutOverlap);
+      ebUseCases.undoableLoad(presetWithoutOverlap);
       THEN("Sync Setting Enabled")
       {
         CHECK(syncSetting->get());

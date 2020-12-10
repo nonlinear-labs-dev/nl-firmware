@@ -40,9 +40,7 @@ class EditBuffer : public ParameterGroupSet
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id);
 
-  void undoableLoad(UNDO::Transaction *transaction, Preset *preset, bool sendToAudioEngine);
-  void undoableLoad(Preset *preset);
-  void undoableLoadToPart(const Preset *preset, VoiceGroup from, VoiceGroup to);
+  void undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine);
   void undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to);
 
   void undoableLoadSelectedPreset(VoiceGroup loadInto);
@@ -50,7 +48,7 @@ class EditBuffer : public ParameterGroupSet
   void undoableLoadSelectedToPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
 
   void fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group);
-  void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, Preset *preset);
+  void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
   void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator);
   void undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup currentVoiceGroup, Initiator initiator);
@@ -215,6 +213,9 @@ class EditBuffer : public ParameterGroupSet
   friend class EditBufferActions;
   friend class PresetParameterGroups;
 
+  friend class EditBufferUseCases;
+  friend class SoundUseCases;
+
   Uuid m_lastLoadedPreset;
 
   Glib::ustring m_name;
@@ -231,6 +232,6 @@ class EditBuffer : public ParameterGroupSet
 
   mutable Preset *m_originCache { nullptr };
   bool isPartLabelChanged(VoiceGroup group) const;
-  void cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset* p);
+  void cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset *p);
   void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
 };

@@ -965,6 +965,7 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
 }
 void PresetManager::autoLoadPresetAccordingToLoadType()
 {
+  auto ebUseCases = Application::get().getEditBufferUseCases();
   auto eb = getEditBuffer();
   auto hwui = Application::get().getHWUI();
   auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
@@ -986,7 +987,7 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
           if(loadToPartActive)
           {
             auto load = hwui->getPresetPartSelection(currentVoiceGroup);
-            eb->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+            ebUseCases->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
           }
           else
           {

@@ -26,6 +26,8 @@ IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* e
 EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     : super("/presets/param-editor/")
 {
+  auto ebUseCases = Application::get().getEditBufferUseCases();
+
   addAction("sync-audioengine", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Application::get().getAudioEngineProxy()->sendEditBuffer();
   });
@@ -307,7 +309,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
     if(auto presetToLoad = pm->findPreset(presetUUID))
     {
-      editBuffer->undoableLoadToPart(presetToLoad, presetPart, loadTo);
+      ebUseCases->undoableLoadToPart(presetToLoad, presetPart, loadTo);
     }
   });
 
