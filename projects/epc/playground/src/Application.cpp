@@ -88,6 +88,7 @@ Application::Application(int numArgs, char **argv)
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
     , m_presetUseCases { std::make_unique<PresetManagerUseCases>(m_presetManager.get()) }
+    , m_soundUseCases { std::make_unique<SoundUseCases>(m_presetManager->getEditBuffer()) }
 {
 #ifdef _PROFILING
   Profiler::get().enable(true);
