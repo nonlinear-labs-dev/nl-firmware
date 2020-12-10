@@ -8,8 +8,6 @@
 BankNameLabel::BankNameLabel(const Rect &pos)
     : super(pos)
 {
-  Application::get().getPresetManager()->onMidiBankSelectionHappened(
-      sigc::mem_fun(this, &BankNameLabel::onMidiSelectionHappened));
 }
 
 BankNameLabel::~BankNameLabel()
@@ -22,33 +20,14 @@ void BankNameLabel::updateLabel(Bank *newBank)
   {
     auto pm = Application::get().getPresetManager();
     auto bankName = newBank->getName(true);
-    lastBank = newBank;
+    auto isMidi = newBank->getUuid() == pm->getMidiSelectedBank();
     auto pos = pm->getBankPosition(newBank->getUuid()) + 1;
-    auto s = to_string(pos) + ": " + bankName;
+    auto s = to_string(pos) + ": " + bankName + (isMidi ? " ^" : "");
     setText({ s });
   }
   else
   {
     setText("");
-  }
-}
-
-Label::StringAndSuffix BankNameLabel::getText() const
-{
-  auto t = Label::getText();
-  if(isMidiBank())
-  {
-    return addMidiSuffix(t);
-  }
-
-  return t;
-}
-
-void BankNameLabel::onMidiSelectionHappened(const Uuid &uuid)
-{
-  if(auto midiBank = Application::get().getPresetManager()->findMidiSelectedBank())
-  {
-    updateLabel(midiBank);
   }
 }
 
@@ -80,14 +59,4 @@ Font::Justification BankNameLabel::getJustification() const
 int BankNameLabel::getXOffset() const
 {
   return 2;
-}
-
-bool BankNameLabel::isMidiBank() const
-{
-  return lastBank && Application::get().getPresetManager()->findMidiSelectedBank() == lastBank;
-}
-
-Label::StringAndSuffix BankNameLabel::addMidiSuffix(Label::StringAndSuffix text) const
-{
-  return { text.text + " ^", text.suffix };
 }

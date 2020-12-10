@@ -206,3 +206,40 @@ TEST_CASE("Delete Current Midi Bank resets attribute")
     CHECK(pm->getMidiSelectedBank() == Uuid::none());
   }
 }
+
+TEST_CASE("When Midi Bank is Selected new and old midi selection banks get notified via onChange")
+{
+  Helper::clearPresetManager();
+  auto pm = TestHelper::getPresetManager();
+  auto useCases = Application::get().getPresetManagerUseCases();
+
+  useCases->createBankAndStoreEditBuffer();
+  auto b1 = pm->getSelectedBank();
+
+  useCases->createBankAndStoreEditBuffer();
+  auto b2 = pm->getSelectedBank();
+
+  int changesB1 = 0;
+  int changesB2 = 0;
+  auto c1 = b1->onBankChanged([&]() { changesB1++; });
+  auto c2 = b2->onBankChanged([&]() { changesB2++; });
+
+  WHEN("Midi Bank 1 Selected")
+  {
+    const auto b1ChangesBeforeSelection = changesB1;
+    useCases->selectMidiBank(b1);
+    CHECK(changesB1 > b1ChangesBeforeSelection);
+    const auto b1ChangesAfterSelection = changesB1;
+
+    THEN("Midi Bank 2 Selected")
+    {
+      const auto b2ChangesBeforeSelection = changesB2;
+      useCases->selectMidiBank(b2);
+      CHECK(changesB2 > b2ChangesBeforeSelection);
+      CHECK(changesB1 > b1ChangesAfterSelection);
+    }
+  }
+
+  c1.disconnect();
+  c2.disconnect();
+}

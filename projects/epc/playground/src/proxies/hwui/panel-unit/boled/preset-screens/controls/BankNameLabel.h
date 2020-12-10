@@ -16,7 +16,6 @@ class BankNameLabel : public Label
   virtual ~BankNameLabel();
 
   void updateLabel(Bank *newBank);
-  StringAndSuffix getText() const override;
 
  protected:
   void setBackgroundColor(FrameBuffer &fb) const override;
@@ -25,9 +24,4 @@ class BankNameLabel : public Label
   int getXOffset() const override;
   virtual StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font,
                                                     const StringAndSuffix &text) const override;
-  void onMidiSelectionHappened(const Uuid &uuid);
-
-  Bank *lastBank = nullptr;
-  bool isMidiBank() const;
-  StringAndSuffix addMidiSuffix(StringAndSuffix suffix) const;
 };

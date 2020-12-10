@@ -30,6 +30,9 @@ BankEditButtonMenu::BankEditButtonMenu(const Rect& rect)
   Application::get().getClipboard()->onClipboardChanged(
       mem_fun(this, &BankEditButtonMenu::rebuildMenuOnClipboardChange));
   Application::get().getPresetManager()->onNumBanksChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
+
+  Application::get().getPresetManager()->onMidiBankSelectionHappened(
+      mem_fun(this, &BankEditButtonMenu::onMidiSelectionChanged));
 }
 
 void BankEditButtonMenu::rebuildMenuOnClipboardChange()
@@ -48,6 +51,12 @@ void BankEditButtonMenu::rebuildMenu(size_t numBanks)
 
   correctMenuSelection();
   selectButton(s_lastSelectedButton);
+}
+
+void BankEditButtonMenu::onMidiSelectionChanged(Uuid bankUuid)
+{
+  auto numbanks = Application::get().getPresetManager()->getNumBanks();
+  rebuildMenu(numbanks);
 }
 
 void BankEditButtonMenu::rebuildFullMenu()

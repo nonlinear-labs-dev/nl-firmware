@@ -40,6 +40,7 @@ class BankEditButtonMenu : public ButtonMenu
 
   void selectButton(size_t i) override;
   void rebuildMenu(size_t numBanks);
+  void onMidiSelectionChanged(Uuid bankUuid);
 
  private:
   void rebuildMenuOnClipboardChange();

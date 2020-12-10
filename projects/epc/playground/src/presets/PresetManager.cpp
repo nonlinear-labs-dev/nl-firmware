@@ -1019,9 +1019,18 @@ Uuid PresetManager::getMidiSelectedBank() const
 void PresetManager::selectMidiBank(UNDO::Transaction *trans, const Uuid &uuid)
 {
   auto swapData = UNDO::createSwapData(uuid);
-  trans->addSimpleCommand([=](auto) {
+
+  trans->addSimpleCommand([=, newUuid = uuid](auto) {
+    const auto oldMidiBankUuid = m_midiSelectedBank;
+
     swapData->swapWith(m_midiSelectedBank);
     m_sigMidiBankSelection.send(m_midiSelectedBank);
+
+    if(auto oldMidiBank = findBank(oldMidiBankUuid))
+      oldMidiBank->invalidate();
+
+    if(auto newMidiBank = findBank(newUuid))
+      newMidiBank->invalidate();
   });
 }
 
