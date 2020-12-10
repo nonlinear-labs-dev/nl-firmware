@@ -200,7 +200,7 @@ public class ValueEdit extends OverlayLayout {
 		double arrowWidth = w / 5;
 		if (arrowWidth < 25) {
 			left.doLayout(0, 0, 0, h);
-			left.doLayout(0 + w, 0, 0, h);
+			right.doLayout(0 + w, 0, 0, h);
 		} else {
 			arrowWidth = Math.min(arrowWidth, 25);
 			left.doLayout(0, 0, arrowWidth, h);
