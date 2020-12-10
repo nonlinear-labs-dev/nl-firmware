@@ -18,9 +18,11 @@ void BankNameLabel::updateLabel(Bank *newBank)
 {
   if(newBank)
   {
+    auto pm = Application::get().getPresetManager();
     auto bankName = newBank->getName(true);
-    auto pos = Application::get().getPresetManager()->getBankPosition(newBank->getUuid()) + 1;
-    auto s = to_string(pos) + ": " + bankName;
+    auto isMidi = newBank->getUuid() == pm->getMidiSelectedBank();
+    auto pos = pm->getBankPosition(newBank->getUuid()) + 1;
+    auto s = to_string(pos) + ": " + bankName + (isMidi ? " ^" : "");
     setText({ s });
   }
   else

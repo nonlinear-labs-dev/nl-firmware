@@ -22,6 +22,8 @@ public class Updater {
 	public void update(Node bank, boolean force) {
 		if (force || ServerProxy.didChange(bank)) {
 			String selectedPreset = bank.getAttributes().getNamedItem("selected-preset").getNodeValue();
+
+			
 			updateBankName(bank);
 			updateBankPosition(bank);
 			updateOrderNumber(bank);

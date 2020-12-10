@@ -84,15 +84,13 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
 
   addAction("delete-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
-
+    auto useCases = Application::get().getPresetManagerUseCases();
     if(auto bank = presetManager.findBank(uuid))
     {
+      useCases->deleteBank(bank);
+
       auto scope = presetManager.getUndoScope().startTransaction("Delete Bank '%0'", bank->getName(true));
       auto transaction = scope->getTransaction();
-
-      if(presetManager.getSelectedBankUuid() == uuid)
-        if(!presetManager.selectPreviousBank(transaction))
-          presetManager.selectNextBank(transaction);
 
       presetManager.deleteBank(transaction, uuid);
     }
@@ -196,6 +194,13 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
         std::advance(i, 2);
       }
     }
+  });
+
+  addAction("select-midi-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+    auto useCases = Application::get().getPresetManagerUseCases();
+    auto bankUuid = request->get("bank", "");
+    auto bank = Application::get().getPresetManager()->findBank(bankUuid);
+    useCases->selectMidiBank(bank);
   });
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tools/Uuid.h>
 #include "proxies/hwui/controls/Label.h"
 
 class Application;

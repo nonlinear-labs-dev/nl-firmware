@@ -762,7 +762,8 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
                         forEachBank([&](Bank *bank) { anyBankChanged |= (bank->didChangeSince(knownRevision)); });
 
                       writer.writeTag("banks", Attribute("changed", anyBankChanged),
-                                      Attribute("selected-bank", getSelectedBankUuid().raw()), [&]() {
+                                      Attribute("selected-bank", getSelectedBankUuid().raw()),
+                                      Attribute("selected-midi-bank", getMidiSelectedBank().raw()), [&]() {
                                         if(anyBankChanged)
                                           forEachBank([&](auto bank) { bank->writeDocument(writer, knownRevision); });
                                       });
@@ -1008,4 +1009,37 @@ void PresetManager::onPresetStored()
 sigc::connection PresetManager::onPresetStoreHappened(sigc::slot<void> cb)
 {
   return m_presetStoreHappened.connect(cb);
+}
+
+Uuid PresetManager::getMidiSelectedBank() const
+{
+  return m_midiSelectedBank;
+}
+
+void PresetManager::selectMidiBank(UNDO::Transaction *trans, const Uuid &uuid)
+{
+  auto swapData = UNDO::createSwapData(uuid);
+
+  trans->addSimpleCommand([=, newUuid = uuid](auto) {
+    const auto oldMidiBankUuid = m_midiSelectedBank;
+
+    swapData->swapWith(m_midiSelectedBank);
+    m_sigMidiBankSelection.send(m_midiSelectedBank);
+
+    if(auto oldMidiBank = findBank(oldMidiBankUuid))
+      oldMidiBank->invalidate();
+
+    if(auto newMidiBank = findBank(newUuid))
+      newMidiBank->invalidate();
+  });
+}
+
+sigc::connection PresetManager::onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb)
+{
+  return m_sigMidiBankSelection.connect(cb);
+}
+
+Bank *PresetManager::findMidiSelectedBank() const
+{
+  return m_banks.find(getMidiSelectedBank());
 }

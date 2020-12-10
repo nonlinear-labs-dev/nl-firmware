@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.dataModel.presetManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.Updater;
 
@@ -21,15 +22,19 @@ public class PresetManagerUpdater extends Updater {
 	}
 
 	private void updateBanks(PresetManagerModel pm, Node banks) {
+		String midiSelectedBank = banks.getAttributes().getNamedItem("selected-midi-bank").getNodeValue();
+
+		GWT.log("updating Banks with midi uuid: " + midiSelectedBank);
+
 		BankMapDataModelEntity existingBanksEntity = pm.getBanks();
 		Map<String, Bank> existingBanks = new HashMap<String, Bank>(existingBanksEntity.getValue());
 		existingBanks.forEach((uuid, bank) -> bank.setDoomed());
-		processChildrenElements(banks, "preset-bank", t -> updateBank(existingBanks, t));
+		processChildrenElements(banks, "preset-bank", t -> updateBank(existingBanks, t, midiSelectedBank));
 		existingBanks.entrySet().removeIf(e -> e.getValue().isDoomed());
 		existingBanksEntity.setValue(existingBanks);
 	}
 
-	private void updateBank(Map<String, Bank> existingBanks, Node bank) {
+	private void updateBank(Map<String, Bank> existingBanks, Node bank, String midiUuid) {
 		if (didChange(bank)) {
 			String uuid = getAttributeValue(bank, "uuid");
 			Bank b = existingBanks.get(uuid);
@@ -44,7 +49,7 @@ public class PresetManagerUpdater extends Updater {
 			b.revive();
 
 			if (dirty) {
-				BankUpdater updater = new BankUpdater(bank, b);
+				BankUpdater updater = new BankUpdater(bank, b, midiUuid);
 				updater.doUpdate();
 			}
 		}

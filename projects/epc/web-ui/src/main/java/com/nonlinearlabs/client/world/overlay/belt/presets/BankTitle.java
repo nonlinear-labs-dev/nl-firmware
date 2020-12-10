@@ -24,7 +24,7 @@ class BankTitle extends Label {
 		Bank bank = getParent().getParent().getBankInCharge();
 
 		if (bank != null) {
-			return bank.getOrderNumber() + " - " + bank.getCurrentName();
+			return bank.getOrderNumber() + " - " + bank.getCurrentName() + (bank.isMidiBank() ? " ^" : "");
 		} else {
 			return "---";
 		}

@@ -68,6 +68,8 @@ public class PresetManager extends MapsLayout {
 
 	private static NonRect oldView = null;
 
+	private Bank midiSelectedBank = null;
+
 	public List<Bank> getBanks() {
 		List<Bank> ret = new ArrayList<>();
 		for (Control c : getChildren()) {
@@ -78,19 +80,19 @@ public class PresetManager extends MapsLayout {
 		return ret;
 	}
 
-	public void saveView() {
+	static public void saveView() {
 		if (NonMaps.theMaps.getNonLinearWorld() != null && NonMaps.theMaps.getNonLinearWorld().getViewport() != null)
 			oldView = NonMaps.theMaps.getNonLinearWorld().getViewport().getNonPosition().copy();
 	}
 
-	public void resetView() {
+	static public void resetView() {
 		if (NonMaps.theMaps.getNonLinearWorld() != null && oldView != null)
 			NonMaps.theMaps.getNonLinearWorld().animateViewport(oldView, true);
 
 		oldView = null;
 	}
 
-	public void resetStoredViewportPosition() {
+	static public void resetStoredViewportPosition() {
 		oldView = null;
 	}
 
@@ -289,6 +291,12 @@ public class PresetManager extends MapsLayout {
 			currentFileVersion = Integer.parseInt(fileVersion.getNodeValue());
 	}
 
+	private void readSelectedMidiBank(Node presetManagerNode) {
+		Node sB = presetManagerNode.getAttributes().getNamedItem("selected-midi-bank");
+		if (sB != null)
+			midiSelectedBank = findBank(sB.getNodeValue());
+	}
+
 	public int getCurrentFileVersion() {
 		return currentFileVersion;
 	}
@@ -329,6 +337,7 @@ public class PresetManager extends MapsLayout {
 				currentChildren.add((Bank) c);
 		}
 
+		readSelectedMidiBank(banks);
 		selectedBank = banks.getAttributes().getNamedItem("selected-bank").getNodeValue();
 		NodeList bankList = banks.getChildNodes();
 
@@ -696,9 +705,11 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/MCView/index.html", "", "");
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ONE || keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_ONE) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ONE
+				|| keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_ONE) {
 			EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.I);
-		} else if(keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_TWO || keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_TWO) {
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_TWO
+				|| keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_TWO) {
 			EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.II);
 		} else {
 			return null;
@@ -1060,5 +1071,13 @@ public class PresetManager extends MapsLayout {
 		if (isInStoreSelectMode())
 			return (StoreSelectMode) customPresetSelector;
 		return null;
+	}
+
+	public Bank getMidiBank() {
+		return midiSelectedBank;
+	}
+
+	public void setMidiBank(Bank bank) {
+		midiSelectedBank = bank;
 	}
 };

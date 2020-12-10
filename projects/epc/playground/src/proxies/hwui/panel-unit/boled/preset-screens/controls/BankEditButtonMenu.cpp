@@ -19,6 +19,8 @@
 #include <xml/VersionAttribute.h>
 #include <tools/TimeTools.h>
 #include <nltools/GenericScopeGuard.h>
+#include <device-settings/Settings.h>
+#include <device-settings/ExternalMidiEnabledSetting.h>
 
 static size_t s_lastSelectedButton = 0;
 
@@ -28,6 +30,9 @@ BankEditButtonMenu::BankEditButtonMenu(const Rect& rect)
   Application::get().getClipboard()->onClipboardChanged(
       mem_fun(this, &BankEditButtonMenu::rebuildMenuOnClipboardChange));
   Application::get().getPresetManager()->onNumBanksChanged(mem_fun(this, &BankEditButtonMenu::rebuildMenu));
+
+  Application::get().getPresetManager()->onMidiBankSelectionHappened(
+      mem_fun(this, &BankEditButtonMenu::onMidiSelectionChanged));
 }
 
 void BankEditButtonMenu::rebuildMenuOnClipboardChange()
@@ -46,6 +51,12 @@ void BankEditButtonMenu::rebuildMenu(size_t numBanks)
 
   correctMenuSelection();
   selectButton(s_lastSelectedButton);
+}
+
+void BankEditButtonMenu::onMidiSelectionChanged(Uuid bankUuid)
+{
+  auto numbanks = Application::get().getPresetManager()->getNumBanks();
+  rebuildMenu(numbanks);
 }
 
 void BankEditButtonMenu::rebuildFullMenu()
@@ -67,6 +78,20 @@ void BankEditButtonMenu::rebuildFullMenu()
   }
 
   addButton("Delete", std::bind(&BankEditButtonMenu::deleteBank, this));
+
+  if(Application::get().getSettings()->getSetting<ExternalMidiEnabledSetting>()->get())
+  {
+    if(Application::get().getPresetManager()->findMidiSelectedBank()
+       != Application::get().getPresetManager()->getSelectedBank())
+    {
+      addButton("Rec. Midi PC", std::bind(&BankEditButtonMenu::selectMidi, this));
+    }
+    else
+    {
+      addButton("Rem. Midi PC", std::bind(&BankEditButtonMenu::removeMidi, this));
+    }
+  }
+
   addButton("Move Left", std::bind(&BankEditButtonMenu::moveLeft, this));
   addButton("Move Right", std::bind(&BankEditButtonMenu::moveRight, this));
 }
@@ -213,11 +238,10 @@ void BankEditButtonMenu::pasteBank()
 void BankEditButtonMenu::deleteBank()
 {
   auto pm = Application::get().getPresetManager();
-
+  auto useCases = Application::get().getPresetManagerUseCases();
   if(auto bank = pm->getSelectedBank())
   {
-    auto scope = bank->getUndoScope().startTransaction("Delete bank '%0'", bank->getName(true));
-    pm->deleteBank(scope->getTransaction(), pm->getSelectedBankUuid());
+    useCases->deleteBank(bank);
   }
 
   auto hwui = Application::get().getHWUI();
@@ -253,6 +277,19 @@ void BankEditButtonMenu::moveRight()
       pm->setOrderNumber(scope->getTransaction(), bank->getUuid(), pos);
     }
   }
+}
+
+void BankEditButtonMenu::selectMidi()
+{
+  auto bank = Application::get().getPresetManager()->getSelectedBank();
+  auto useCases = Application::get().getPresetManagerUseCases();
+  useCases->selectMidiBank(bank);
+}
+
+void BankEditButtonMenu::removeMidi()
+{
+  auto useCases = Application::get().getPresetManagerUseCases();
+  useCases->selectMidiBank(nullptr);
 }
 
 void BankEditButtonMenu::correctMenuSelection()
