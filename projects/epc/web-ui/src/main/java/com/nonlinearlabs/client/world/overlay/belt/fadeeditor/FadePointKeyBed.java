@@ -173,13 +173,13 @@ public class FadePointKeyBed extends KeyBed {
         for (VoiceGroup vg : vgs) {
             if (getLayerFadePointRect(vg).contains(pos)) {
                 selectedParameter = new ParameterId(396, vg);
-                changer = EditBufferUseCases.get().startEditParameterValue(selectedParameter, getPixRect().getWidth());
+                changer = EditBufferUseCases.get().startEditParameterValue(selectedParameter, getPictureWidth());
                 invalidate(INVALIDATION_FLAG_UI_CHANGED);
                 return this;
             }
             if (getLayerFadeRangeHandleRect(vg).contains(pos)) {
                 selectedParameter = new ParameterId(397, vg);
-                double direction = vg == VoiceGroup.II ? -getPixRect().getWidth() : getPixRect().getWidth();
+                double direction = vg == VoiceGroup.II ? -getPictureWidth() : getPictureWidth();
                 changer = EditBufferUseCases.get().startEditParameterValue(selectedParameter, direction);
                 invalidate(INVALIDATION_FLAG_UI_CHANGED);
                 return this;

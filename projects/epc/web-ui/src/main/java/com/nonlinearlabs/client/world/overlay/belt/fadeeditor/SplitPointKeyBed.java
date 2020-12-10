@@ -114,8 +114,7 @@ public class SplitPointKeyBed extends KeyBed {
 
         for (VoiceGroup vg : vgs) {
             if (getSplitPointHandleRect(vg).contains(pos)) {
-                changer = EditBufferUseCases.get().startEditParameterValue(new ParameterId(356, vg),
-                        getPixRect().getWidth());
+                changer = EditBufferUseCases.get().startEditParameterValue(new ParameterId(356, vg), getPictureWidth());
                 lastTouchedVoiceGroup = vg;
                 invalidate(INVALIDATION_FLAG_UI_CHANGED);
                 return this;
