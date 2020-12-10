@@ -14,6 +14,7 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.client.world.overlay.belt.presets.ButtonRepeat;
 
 public class ValueEdit extends OverlayLayout {
 
@@ -80,6 +81,26 @@ public class ValueEdit extends OverlayLayout {
 				EditBufferUseCases.get().incParameter(parameter, fine);
 			}
 			return this;
+		}
+
+		@Override
+		public Control longLeftPress(Position eventPoint) {
+			ButtonRepeat.get().start(() -> {
+				boolean fine = NonMaps.get().getNonLinearWorld().isShiftDown();
+
+				if (isLeft) {
+					EditBufferUseCases.get().decParameter(parameter, fine);
+				} else {
+					EditBufferUseCases.get().incParameter(parameter, fine);
+				}
+			});
+			return super.longLeftPress(eventPoint);
+		}
+
+		@Override
+		public void onMouseLost() {
+			ButtonRepeat.get().cancel();
+			super.onMouseLost();
 		}
 
 		@Override
@@ -160,7 +181,12 @@ public class ValueEdit extends OverlayLayout {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		boolean withArrows = getPixRect().getWidth() >= Millimeter.toPixels(35);
-		getPixRect().drawValueEditSliderBackgound(ctx, withArrows, getColorFont());
+		getPixRect().drawValueEditSliderBackgound(ctx, false, getColorFont());
+
+		if (withArrows) {
+			left.getPixRect().drawValueEditSliderArrow(ctx, true, getColorFont());
+			right.getPixRect().drawValueEditSliderArrow(ctx, false, getColorFont());
+		}
 
 		super.draw(ctx, invalidationMask);
 		value.draw(ctx, invalidationMask);
@@ -172,8 +198,14 @@ public class ValueEdit extends OverlayLayout {
 		value.doLayout(0, 0, w, h);
 
 		double arrowWidth = w / 5;
-		left.doLayout(0, 0, arrowWidth, h);
-		right.doLayout(0 + w - arrowWidth, 0, arrowWidth, h);
+		if (arrowWidth < 25) {
+			left.doLayout(0, 0, 0, h);
+			right.doLayout(0 + w, 0, 0, h);
+		} else {
+			arrowWidth = Math.min(arrowWidth, 25);
+			left.doLayout(0, 0, arrowWidth, h);
+			right.doLayout(0 + w - arrowWidth, 0, arrowWidth, h);
+		}
 	}
 
 }

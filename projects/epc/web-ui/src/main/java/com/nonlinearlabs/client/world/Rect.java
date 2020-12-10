@@ -381,6 +381,28 @@ public class Rect extends Object {
 
 	}
 
+	public void drawValueEditSliderArrow(Context2d ctx, boolean left, RGB strokeColor) {
+		ctx.beginPath();
+		ctx.setStrokeStyle(strokeColor.toString());
+		ctx.setLineWidth(2);
+		ctx.setLineCap(LineCap.SQUARE);
+		ctx.setLineJoin(LineJoin.MITER);
+		double arrowWidth = getHeight() / 4;
+		double arrowHeight = getHeight() / 2;
+
+		if (left) {
+			ctx.moveTo(getCenterPoint().getX() + arrowWidth, getCenterPoint().getY() - arrowHeight / 2);
+			ctx.lineTo(getCenterPoint().getX(), getCenterPoint().getY());
+			ctx.lineTo(getCenterPoint().getX() + arrowWidth, getCenterPoint().getY() + arrowHeight / 2);
+		} else {
+			ctx.moveTo(getCenterPoint().getX() - arrowWidth, getCenterPoint().getY() - arrowHeight / 2);
+			ctx.lineTo(getCenterPoint().getX(), getCenterPoint().getY());
+			ctx.lineTo(getCenterPoint().getX() - arrowWidth, getCenterPoint().getY() + arrowHeight / 2);
+		}
+
+		ctx.stroke();
+	}
+
 	public void moveBy(Position position) {
 		moveBy(position.getX(), position.getY());
 	}
