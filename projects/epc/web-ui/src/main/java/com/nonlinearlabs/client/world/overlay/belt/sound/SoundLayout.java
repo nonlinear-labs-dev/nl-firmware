@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -35,8 +34,6 @@ public class SoundLayout extends OverlayLayout {
 			return this;
 		}
 	}
-
-
 
 	protected SoundLayout(OverlayLayout parent) {
 		super(parent);

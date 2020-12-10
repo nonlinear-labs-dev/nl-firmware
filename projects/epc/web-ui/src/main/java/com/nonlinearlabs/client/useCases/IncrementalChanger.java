@@ -57,8 +57,7 @@ public class IncrementalChanger {
 	}
 
 	public void changeBy(boolean fine, double amount) {
-
-		if(amount == 0)
+		if (amount == 0)
 			return;
 
 		amount /= pixPerRange;
@@ -86,9 +85,10 @@ public class IncrementalChanger {
 			}
 
 			callback.accept(newValPending, false);
-			pendingAmount = 0;
+			pendingAmount -= (newValPending - lastQuantizedValue);
 			lastQuantizedValue = newValPending;
-		} else if (newValRaw != lastQuantizedValue && (lastQuantizedValue == getLowerBorder() || lastQuantizedValue == getUpperBorder())) {
+		} else if (newValRaw != lastQuantizedValue
+				&& (lastQuantizedValue == getLowerBorder() || lastQuantizedValue == getUpperBorder())) {
 			if (isBoolean) {
 				if (newValRaw > lastQuantizedValue)
 					newValRaw = 1.0;
