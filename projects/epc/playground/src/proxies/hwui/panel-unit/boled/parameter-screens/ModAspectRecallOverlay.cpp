@@ -107,21 +107,23 @@ void ModAspectRecallOverlay::doRecall()
   auto& recall = m_oldRecallValues[m_mode];
   recall.anyRecallHappened = true;
 
+  ModParameterUseCases useCase(m_modParam);
+
   switch(m_mode)
   {
     case Mode::MC_SEL:
       recall.rightRecallValue = m_modParam->getModulationSource();
-      m_modParam->undoableRecallMCSource();
+      useCase.recallMCSource();
       recall.leftRecallValue = m_modParam->getModulationSource();
       break;
     case Mode::MC_AMT:
       recall.rightRecallValue = m_modParam->getModulationAmount();
-      m_modParam->undoableRecallMCAmount();
+      useCase.recallMCAmount();
       recall.leftRecallValue = m_modParam->getModulationAmount();
       break;
     case Mode::MC_POS:
       recall.rightRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
-      m_modParam->undoableRecallMCPos();
+      useCase.recallMCPos();
       recall.leftRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
       break;
   }
@@ -132,6 +134,7 @@ void ModAspectRecallOverlay::doRecall()
 
 void ModAspectRecallOverlay::undoRecall()
 {
+  ModParameterUseCases useCase(m_modParam);
   auto& recall = m_oldRecallValues[m_mode];
   auto old = recall.rightRecallValue;
   recall.anyRecallHappened = true;
@@ -140,17 +143,17 @@ void ModAspectRecallOverlay::undoRecall()
   {
     case Mode::MC_SEL:
       recall.leftRecallValue = m_modParam->getModulationSource();
-      m_modParam->undoableUndoRecallMCSel(std::get<MacroControls>(old));
+      useCase.undoRecallMCSel(std::get<MacroControls>(old));
       recall.rightRecallValue = m_modParam->getModulationSource();
       break;
     case Mode::MC_AMT:
       recall.leftRecallValue = m_modParam->getModulationAmount();
-      m_modParam->undoableUndoRecallMCAmount(std::get<double>(old));
+      useCase.undoRecallMCAmt(std::get<double>(old));
       recall.rightRecallValue = m_modParam->getModulationAmount();
       break;
     case Mode::MC_POS:
       recall.leftRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
-      m_modParam->undoableUndoRecallMCPos(std::get<double>(old));
+      useCase.undoRecallMCPos(std::get<double>(old));
       recall.rightRecallValue = m_modParam->getMacroControl()->getControlPositionValue();
       break;
   }

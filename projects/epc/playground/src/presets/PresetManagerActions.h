@@ -1,7 +1,9 @@
 #pragma once
 
 #include "http/RPCActionManager.h"
+#include "PresetManagerUseCases.h"
 #include <libsoup/soup-message-body.h>
+#include <use-cases/SoundUseCases.h>
 
 namespace UNDO
 {
@@ -17,6 +19,8 @@ class PresetManagerActions : public RPCActionManager
  private:
   typedef RPCActionManager super;
   PresetManager& m_presetManager;
+  PresetManagerUseCases pmUseCases;
+  SoundUseCases soundUseCases;
 
  public:
   PresetManagerActions(PresetManager& presetManager);

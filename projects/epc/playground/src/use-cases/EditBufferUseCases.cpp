@@ -56,12 +56,25 @@ void EditBufferUseCases::undoableLoad(const Preset* preset)
 
 std::unique_ptr<ParameterUseCases> EditBufferUseCases::getUseCase(ParameterId id)
 {
-  return std::move(std::make_unique<ParameterUseCases>(id, m_editBuffer));
+  if(auto parameter = m_editBuffer->findParameterByID(id))
+    return std::move(std::make_unique<ParameterUseCases>(parameter));
+
+  return nullptr;
 }
 
 std::unique_ptr<ModParameterUseCases> EditBufferUseCases::getModParamUseCase(ParameterId id)
 {
-  return std::move(std::make_unique<ModParameterUseCases>(id, m_editBuffer));
+  if(auto parameter = m_editBuffer->findAndCastParameterByID<ModulateableParameter>(id))
+    return std::move(std::make_unique<ModParameterUseCases>(parameter));
+  return nullptr;
+}
+
+std::unique_ptr<MacroControlParameterUseCases> EditBufferUseCases::getMCUseCase(ParameterId id)
+{
+  if(auto parameter = m_editBuffer->findAndCastParameterByID<MacroControlParameter>(id))
+    return std::move(std::make_unique<MacroControlParameterUseCases>(parameter));
+
+  return nullptr;
 }
 
 void EditBufferUseCases::selectParameter(const ParameterId& id)
@@ -158,24 +171,6 @@ void EditBufferUseCases::setSplits(const ParameterId& id, tControlPositionValue 
     s->setCPFromWebUI(scope->getTransaction(), cp);
     other->setCPFromWebUI(scope->getTransaction(), otherCp);
   }
-}
-
-void EditBufferUseCases::renameMC(const ParameterId& id, const Glib::ustring& name)
-{
-  if(auto mc = m_editBuffer->findAndCastParameterByID<MacroControlParameter>(id))
-    mc->undoableSetGivenName(name);
-}
-
-void EditBufferUseCases::setMCInfo(const ParameterId& id, const Glib::ustring& info)
-{
-  if(auto mc = m_editBuffer->findAndCastParameterByID<MacroControlParameter>(id))
-    mc->undoableSetInfo(info);
-}
-
-void EditBufferUseCases::resetModulation(const ParameterId& id)
-{
-  if(auto mc = m_editBuffer->findAndCastParameterByID<MacroControlParameter>(id))
-    mc->undoableResetConnectionsToTargets();
 }
 
 void EditBufferUseCases::mutePart(VoiceGroup part)

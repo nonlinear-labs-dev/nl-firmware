@@ -50,7 +50,9 @@ class QuantizedValue : public ClippedValue
   void applyModulation(tControlPositionValue delta);
 
   tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
+  tControlPositionValue getNextStepValue(int incs, bool fine, bool shift) const;
   tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, ButtonModifiers modifiers) const;
+  tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, bool fine, bool shift) const;
 
   tTcdValue getTcdValue() const;
   void setTcdValue(tTcdValue v);

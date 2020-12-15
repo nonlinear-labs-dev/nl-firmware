@@ -27,75 +27,36 @@
 PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     : RPCActionManager("/presets/")
     , m_presetManager(presetManager)
+    , pmUseCases { &m_presetManager }
+    , soundUseCases { m_presetManager.getEditBuffer(), &m_presetManager }
 {
   addAction("new-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto x = request->get("x");
     auto y = request->get("y");
     auto name = request->get("name");
-    auto scope = presetManager.getUndoScope().startTransaction("New Bank");
-    auto transaction = scope->getTransaction();
-    auto bank = presetManager.addBank(transaction);
-    bank->setX(transaction, x);
-    bank->setY(transaction, y);
-    bank->setName(scope->getTransaction(), name);
-    presetManager.selectBank(scope->getTransaction(), bank->getUuid());
+    pmUseCases.newBank(x, y, name);
   });
 
   addAction("new-bank-from-edit-buffer", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    Glib::ustring x = request->get("x");
-    Glib::ustring y = request->get("y");
-
-    auto scope = presetManager.getUndoScope().startTransaction("New Bank");
-    auto transaction = scope->getTransaction();
-    auto bank = presetManager.addBank(transaction);
-    bank->setX(transaction, x);
-    bank->setY(transaction, y);
-    auto preset
-        = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *presetManager.getEditBuffer()));
-    bank->selectPreset(transaction, preset->getUuid());
-    presetManager.selectBank(transaction, bank->getUuid());
+    auto x = request->get("x");
+    auto y = request->get("y");
+    pmUseCases.newBank(x, y);
   });
 
   addAction("rename-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
     auto newName = request->get("name");
-
-    if(auto bank = presetManager.findBank(uuid))
-    {
-      auto &undoScope = presetManager.getUndoScope();
-      auto transactionScope = undoScope.startTransaction("Rename Bank '%0' to '%1'", bank->getName(true), newName);
-      auto transaction = transactionScope->getTransaction();
-      bank->setName(transaction, newName);
-      presetManager.getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
-    }
+    pmUseCases.renameBank(Uuid(uuid), newName);
   });
 
   addAction("select-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
-
-    if(auto bank = presetManager.findBank(uuid))
-    {
-      auto &undoScope = presetManager.getUndoScope();
-      auto transactionScope = undoScope.startTransaction("Select Bank '%0'", bank->getName(true));
-      auto transaction = transactionScope->getTransaction();
-      presetManager.selectBank(transaction, uuid);
-    }
+    pmUseCases.selectBank(Uuid(uuid));
   });
 
   addAction("delete-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
-
-    if(auto bank = presetManager.findBank(uuid))
-    {
-      auto scope = presetManager.getUndoScope().startTransaction("Delete Bank '%0'", bank->getName(true));
-      auto transaction = scope->getTransaction();
-
-      if(presetManager.getSelectedBankUuid() == uuid)
-        if(!presetManager.selectPreviousBank(transaction))
-          presetManager.selectNextBank(transaction);
-
-      presetManager.deleteBank(transaction, uuid);
-    }
+    pmUseCases.deleteBank(Uuid(uuid));
   });
 
   addAction("find-unique-preset-name", [&](std::shared_ptr<NetworkRequest> request) mutable {
@@ -107,17 +68,9 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     }
   });
 
-  addAction("store-init", [&](std::shared_ptr<NetworkRequest>) mutable {
-    auto scope = presetManager.getUndoScope().startTransaction("Store Init");
-    auto transaction = scope->getTransaction();
-    presetManager.storeInitSound(transaction);
-  });
+  addAction("store-init", [&](std::shared_ptr<NetworkRequest>) mutable { soundUseCases.storeInitSound(); });
 
-  addAction("reset-init", [&](std::shared_ptr<NetworkRequest>) mutable {
-    auto scope = presetManager.getUndoScope().startTransaction("Reset Init");
-    auto transaction = scope->getTransaction();
-    presetManager.resetInitSound(transaction);
-  });
+  addAction("reset-init", [&](std::shared_ptr<NetworkRequest>) mutable { soundUseCases.resetInitSound(); });
 
   addAction("import-all-banks", [&](std::shared_ptr<NetworkRequest> request) mutable {
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
@@ -172,30 +125,10 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   });
 
   addAction("move-cluster", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto scope = presetManager.getUndoScope().startTransaction("Moved Banks");
-    auto transaction = scope->getTransaction();
-
-    std::vector<std::string> values;
-
     auto csv = request->get("csv");
-    boost::split(values, csv, boost::is_any_of(","));
-
-    nltools_assertAlways(values.size() % 3 == 0);
-
-    for(auto i = values.begin(); i != values.end();)
-    {
-      if(auto selBank = presetManager.findBank(*(i++)))
-      {
-        auto x = *(i++);
-        auto y = *(i++);
-        selBank->setX(transaction, x);
-        selBank->setY(transaction, y);
-      }
-      else
-      {
-        std::advance(i, 2);
-      }
-    }
+    std::vector<std::string> uuids;
+    boost::split(uuids, csv, boost::is_any_of(","));
+    pmUseCases.moveBankCluster(uuids);
   });
 }
 

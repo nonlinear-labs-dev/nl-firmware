@@ -2,10 +2,10 @@
 #include "ParameterUseCases.h"
 #include "presets/EditBuffer.h"
 
-ParameterUseCases::ParameterUseCases(const ParameterId& id, EditBuffer* eb)
-    : m_parameter { eb->findParameterByID(id) }
+ParameterUseCases::ParameterUseCases(Parameter* parameter)
+    : m_parameter { parameter }
 {
-  nltools_detailedAssertAlways(m_parameter != nullptr, "Could not create ParameterUseCases for id:" + id.toString());
+  nltools_assertAlways(m_parameter != nullptr);
 }
 
 void ParameterUseCases::recallParameterFromPreset()

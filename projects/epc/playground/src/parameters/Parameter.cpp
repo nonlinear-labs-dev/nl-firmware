@@ -274,6 +274,11 @@ tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modi
   return m_value.getNextStepValue(incs, modifiers);
 }
 
+tControlPositionValue Parameter::getNextStepValue(int incs, bool fine, bool shift) const
+{
+  return m_value.getNextStepValue(incs, fine, shift);
+}
+
 const RecallParameter *Parameter::getOriginalParameter() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());

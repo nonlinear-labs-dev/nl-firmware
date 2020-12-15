@@ -143,3 +143,88 @@ void PresetManagerUseCases::updateSyncSettingOnPresetStore(UNDO::Transaction* tr
     }
   }
 }
+
+void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& name)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("New Bank");
+  auto transaction = scope->getTransaction();
+  auto bank = m_presetManager->addBank(transaction);
+  bank->setX(transaction, x);
+  bank->setY(transaction, y);
+  bank->setName(scope->getTransaction(), name);
+  m_presetManager->selectBank(scope->getTransaction(), bank->getUuid());
+}
+
+void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("New Bank");
+  auto transaction = scope->getTransaction();
+  auto bank = m_presetManager->addBank(transaction);
+  bank->setX(transaction, x);
+  bank->setY(transaction, y);
+  auto preset
+      = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, m_presetManager->getEditBuffer(), false));
+  bank->selectPreset(transaction, preset->getUuid());
+  m_presetManager->selectBank(transaction, bank->getUuid());
+}
+
+void PresetManagerUseCases::renameBank(const Uuid& bankUuid, const Glib::ustring& name)
+{
+  if(auto bank = m_presetManager->findBank(bankUuid))
+  {
+    auto& undoScope = m_presetManager->getUndoScope();
+    auto transactionScope = undoScope.startTransaction("Rename Bank '%0' to '%1'", bank->getName(true), name);
+    auto transaction = transactionScope->getTransaction();
+    bank->setName(transaction, name);
+    m_presetManager->getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
+  }
+}
+
+void PresetManagerUseCases::selectBank(const Uuid& uuid)
+{
+  if(auto bank = m_presetManager->findBank(uuid))
+  {
+    auto& undoScope = m_presetManager->getUndoScope();
+    auto transactionScope = undoScope.startTransaction("Select Bank '%0'", bank->getName(true));
+    auto transaction = transactionScope->getTransaction();
+    m_presetManager->selectBank(transaction, uuid);
+  }
+}
+
+void PresetManagerUseCases::deleteBank(const Uuid& uuid)
+{
+  if(auto bank = m_presetManager->findBank(uuid))
+  {
+    auto scope = m_presetManager->getUndoScope().startTransaction("Delete Bank '%0'", bank->getName(true));
+    auto transaction = scope->getTransaction();
+
+    if(m_presetManager->getSelectedBankUuid() == uuid)
+      if(!m_presetManager->selectPreviousBank(transaction))
+        m_presetManager->selectNextBank(transaction);
+
+    m_presetManager->deleteBank(transaction, uuid);
+  }
+}
+
+void PresetManagerUseCases::moveBankCluster(std::vector<std::string> uuids)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("Moved Banks");
+  auto transaction = scope->getTransaction();
+
+  nltools_assertAlways(uuids.size() % 3 == 0);
+
+  for(auto i = uuids.begin(); i != uuids.end();)
+  {
+    if(auto selBank = m_presetManager->findBank(*(i++)))
+    {
+      auto x = *(i++);
+      auto y = *(i++);
+      selBank->setX(transaction, x);
+      selBank->setY(transaction, y);
+    }
+    else
+    {
+      std::advance(i, 2);
+    }
+  }
+}

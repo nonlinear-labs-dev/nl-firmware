@@ -49,25 +49,33 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::IncMCSel, [eb, hwui]() {
       if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
-        modParam->undoableIncrementMCSelect(1);
+      {
+        ModParameterUseCases useCase(modParam);
+        useCase.incMCSelection(1);
+      }
     });
 
     registerEvent(EventSinks::DecMCSel, [eb, hwui]() {
       if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
-        modParam->undoableIncrementMCSelect(-1);
+      {
+        ModParameterUseCases useCase(modParam);
+        useCase.incMCSelection(-1);
+      }
     });
 
     registerEvent(EventSinks::IncMCAmt, [eb, hwui]() {
       if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
       {
-        modParam->undoableIncrementMCAmount(1, {});
+        ModParameterUseCases useCase(modParam);
+        useCase.incModAmount(1, false);
       }
     });
 
     registerEvent(EventSinks::DecMCAmt, [eb, hwui]() {
       if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
       {
-        modParam->undoableIncrementMCAmount(-1, {});
+        ModParameterUseCases useCase(modParam);
+        useCase.incModAmount(-1, false);
       }
     });
 
@@ -76,9 +84,6 @@ namespace DescriptiveLayouts
       {
         if(auto mc = modP->getMacroControl())
         {
-          UNDO::Scope::tTransactionScopePtr rootScope = eb->getParent()->getUndoScope().startTransaction("Inc. MC Pos");
-          auto trans = rootScope->getTransaction();
-          mc->stepCPFromHwui(trans, 1, hwui->getButtonModifiers());
         }
       }
     });

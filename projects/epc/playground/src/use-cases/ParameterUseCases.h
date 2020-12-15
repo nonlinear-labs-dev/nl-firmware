@@ -7,7 +7,7 @@ class Parameter;
 class ParameterUseCases
 {
  public:
-  ParameterUseCases(const ParameterId& id, EditBuffer* eb);
+  ParameterUseCases(Parameter* parameter);
   void recallParameterFromPreset();
 
  private:

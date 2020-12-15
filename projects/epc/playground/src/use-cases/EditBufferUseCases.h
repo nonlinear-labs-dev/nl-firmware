@@ -3,6 +3,7 @@
 #include <GroupId.h>
 #include "ParameterUseCases.h"
 #include "ModParameterUseCases.h"
+#include "MacroControlParameterUseCases.h"
 #include <memory>
 #include <playground.h>
 
@@ -26,10 +27,6 @@ class EditBufferUseCases
   void selectParameter(const ParameterId& id);
   void selectParameter(const Parameter* param);
 
-  void renameMC(const ParameterId& id, const Glib::ustring& name);
-  void setMCInfo(const ParameterId& id, const Glib::ustring& info);
-  void resetModulation(const ParameterId& id);
-
   void mutePart(VoiceGroup part);
   void unmutePart(VoiceGroup part);
   void mutePartUnmuteOtherPart(VoiceGroup part);
@@ -47,6 +44,7 @@ class EditBufferUseCases
 
   std::unique_ptr<ParameterUseCases> getUseCase(ParameterId id);
   std::unique_ptr<ModParameterUseCases> getModParamUseCase(ParameterId id);
+  std::unique_ptr<MacroControlParameterUseCases> getMCUseCase(ParameterId id);
 
  private:
   VoiceGroup invert(VoiceGroup vg);

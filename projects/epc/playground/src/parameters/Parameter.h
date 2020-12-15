@@ -144,20 +144,23 @@ class Parameter : public UpdateDocumentContributor,
 
   bool isMaximum() const;
   bool isMinimum() const;
-  void resetWasDefaulted(UNDO::Transaction* transaction);
+  void resetWasDefaulted(UNDO::Transaction *transaction);
 
   bool isDisabledForType(SoundType type) const;
   bool isDisabled() const;
 
  protected:
   virtual void sendToPlaycontroller() const;
-  virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value, bool dosendToPlaycontroller);
+  virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                          bool dosendToPlaycontroller);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
   virtual void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
                                            tControlPositionValue newValue);
   virtual bool shouldWriteDocProperties(tUpdateID knownRevision) const;
   virtual tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
+  virtual tControlPositionValue getNextStepValue(int incs, bool fine, bool shift) const;
+
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
 
  private:

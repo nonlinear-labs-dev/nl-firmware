@@ -70,7 +70,10 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   addAction("rename-mc", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto id = request->get("id");
     auto newName = request->get("new-name");
-    ebUseCases->renameMC(ParameterId(id), newName);
+    if(auto mcUseCase = ebUseCases->getMCUseCase(ParameterId { id }))
+    {
+      mcUseCase->setName(newName);
+    }
   });
 
   addAction("reset-scale", [=](std::shared_ptr<NetworkRequest> request) mutable { ebUseCases->resetScaleGroup(); });
@@ -78,8 +81,10 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   addAction("set-macrocontrol-info", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto id = request->get("id");
     auto info = request->get("info");
-
-    ebUseCases->setMCInfo(ParameterId(id), info);
+    if(auto mcUseCase = ebUseCases->getMCUseCase(ParameterId { id }))
+    {
+      mcUseCase->setInfo(info);
+    }
   });
 
   addAction("set-ribbon-touch-behaviour", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -117,7 +122,10 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("reset-modulation", [=](std::shared_ptr<NetworkRequest> request) mutable {
     auto id = request->get("id");
-    ebUseCases->resetModulation(ParameterId(id));
+    if(auto mcUseCase = ebUseCases->getMCUseCase(ParameterId { id }))
+    {
+      mcUseCase->resetConnectionsToTargets();
+    }
   });
 
   addAction("randomize-sound", [=](std::shared_ptr<NetworkRequest>) mutable { soundUseCases->randomizeSound(); });
@@ -189,7 +197,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   addAction("recall-mc-for-current-mod-param", [=](auto request) {
     auto id = request->get("id");
     if(auto modUseCase = ebUseCases->getModParamUseCase(ParameterId { id }))
-      modUseCase->undoableRecallMCPos();
+      modUseCase->recallMCPos();
   });
 
   addAction("recall-mc-amount-for-current-mod-param", [=](auto request) {
