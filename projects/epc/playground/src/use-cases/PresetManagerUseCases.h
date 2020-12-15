@@ -19,6 +19,8 @@ class PresetManagerUseCases
   void appendPreset(Bank* bank);
   void appendPresetWithUUID(Bank* bank, const std::string& uuid);
   void createBankAndStoreEditBuffer();
+  void selectMidiBank(Bank* b);
+  void deleteBank(Bank* b);
 
   void newBank(const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& name);
   void newBank(const Glib::ustring& x, const Glib::ustring& y);

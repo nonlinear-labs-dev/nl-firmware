@@ -112,7 +112,6 @@ public class ServerProxy {
 
 			Document xml = XMLParser.parse(responseText);
 
-
 			Node webUIHelper = xml.getElementsByTagName("webui-helper").item(0);
 			updateSyncedPart(webUIHelper);
 
@@ -1127,6 +1126,18 @@ public class ServerProxy {
 	public void defaultParameter(ParameterId id) {
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "default-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
+		queueJob(uri, false);
+	}
+
+	public void selectMidiBank(Bank bank) {
+		String uuid = "";
+
+		if (bank != null) {
+			uuid = bank.getUUID();
+		}
+
+		StaticURI.Path path = new StaticURI.Path("presets", "select-midi-bank");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", uuid));
 		queueJob(uri, false);
 	}
 

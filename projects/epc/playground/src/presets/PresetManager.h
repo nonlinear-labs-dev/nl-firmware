@@ -63,6 +63,8 @@ class PresetManager : public ContentSection
 
   // accessors
   Bank *findBank(const Uuid &uuid) const;
+  Uuid getMidiSelectedBank() const;
+  Bank* findMidiSelectedBank() const;
   Preset *findPreset(const Uuid &uuid) const;
   Bank *findBankWithPreset(const Uuid &uuid) const;
   size_t getNumBanks() const;
@@ -72,6 +74,7 @@ class PresetManager : public ContentSection
   Bank *getSelectedBank() const;
   EditBuffer *getEditBuffer() const;
   void forEachBank(std::function<void(Bank *b)> cb) const;
+  void selectMidiBank(UNDO::Transaction *trans, const Uuid &uuid);
 
   // convenience
   void selectPreviousBank();
@@ -116,6 +119,7 @@ class PresetManager : public ContentSection
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
   sigc::connection onPresetStoreHappened(sigc::slot<void> cb);
+  sigc::connection onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb);
 
   const Preset *getSelectedPreset() const;
   Preset *getSelectedPreset();
@@ -155,12 +159,14 @@ class PresetManager : public ContentSection
   std::list<tRPCActionManagerPtr> m_actionManagers;
   std::unique_ptr<EditBuffer> m_editBuffer;
   std::unique_ptr<Preset> m_initSound;
+  Uuid m_midiSelectedBank;
 
   ScopedGuard m_isLoading;
   SignalWithCache<void, Uuid> m_sigBankSelection;
   SignalWithCache<void, size_t> m_sigNumBanksChanged;
   Signal<void> m_sigRestoreHappened;
   Signal<void> m_presetStoreHappened;
+  Signal<void, Uuid> m_sigMidiBankSelection;
 
   std::atomic_bool m_autoLoadScheduled { false };
 

@@ -906,4 +906,8 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 
 		return null;
 	}
+
+	public boolean isMidiBank() {
+		return NonMaps.get().getNonLinearWorld().getPresetManager().getMidiBank() == this;
+	}
 }

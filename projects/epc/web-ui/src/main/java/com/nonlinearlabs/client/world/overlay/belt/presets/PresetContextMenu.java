@@ -159,6 +159,8 @@ public class PresetContextMenu extends ContextMenu {
 			} else {
 				NonMaps.get().getServerProxy().deletePresets(csv, false);
 			}
+
+			pm.closeMultiSelection();
 		} else {
 			if (preset.getParent().getPresetList().getPresetCount() == 1)
 				PresetDeleter.open(preset);

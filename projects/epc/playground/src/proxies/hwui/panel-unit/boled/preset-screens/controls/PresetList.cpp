@@ -19,6 +19,8 @@ PresetList::PresetList(const Rect& pos, bool showBankArrows)
   Application::get().getPresetManager()->onRestoreHappened(mem_fun(this, &PresetList::onBankChanged));
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       mem_fun(this, &PresetList::onEditBufferChanged));
+  Application::get().getPresetManager()->onMidiBankSelectionHappened(
+      sigc::mem_fun(this, &PresetList::onMidiBankChanged));
 }
 
 PresetList::~PresetList() = default;
@@ -48,6 +50,11 @@ void PresetList::onEditBufferChanged()
   }
 }
 
+void PresetList::onMidiBankChanged(const Uuid& midiBank)
+{
+  onBankChanged();
+}
+
 void PresetList::onBankChanged()
 {
   if(auto bank = Application::get().getPresetManager()->getSelectedBank())
@@ -70,8 +77,6 @@ bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down)
   {
-    nltools::Log::warning("PresetList -> onButton");
-
     auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
     auto pm = Application::get().getPresetManager();
 

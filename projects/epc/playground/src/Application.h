@@ -5,7 +5,7 @@
 #include <glibmm/refptr.h>
 #include <proxies/usb/USBChangeListener.h>
 #include <nltools/messaging/Messaging.h>
-#include <presets/PresetManagerUseCases.h>
+#include <use-cases/PresetManagerUseCases.h>
 #include <use-cases/SoundUseCases.h>
 #include <use-cases/EditBufferUseCases.h>
 

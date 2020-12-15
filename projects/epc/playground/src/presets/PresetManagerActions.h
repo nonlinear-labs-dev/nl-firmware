@@ -1,7 +1,7 @@
 #pragma once
 
 #include "http/RPCActionManager.h"
-#include "PresetManagerUseCases.h"
+#include "use-cases/PresetManagerUseCases.h"
 #include <libsoup/soup-message-body.h>
 #include <use-cases/SoundUseCases.h>
 

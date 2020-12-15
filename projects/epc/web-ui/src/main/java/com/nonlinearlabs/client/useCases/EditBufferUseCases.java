@@ -16,6 +16,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterMod
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.tools.NLMath;
+import com.nonlinearlabs.client.world.maps.presets.PresetManager;
+import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 
 public class EditBufferUseCases {
 	private static EditBufferUseCases theInstance = new EditBufferUseCases();
@@ -544,6 +546,11 @@ public class EditBufferUseCases {
 
 	public void setMuteForPartAndUnmuteOther(VoiceGroup g) {
 		NonMaps.get().getServerProxy().setMuteForPartAndUnmuteOther(g);
+	}
+
+	public void selectMidiBank(Bank bank) {
+		NonMaps.get().getNonLinearWorld().getPresetManager().setMidiBank(bank);
+		NonMaps.get().getServerProxy().selectMidiBank(bank);
 	}
 
 }

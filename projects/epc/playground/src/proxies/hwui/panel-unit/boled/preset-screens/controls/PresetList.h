@@ -28,6 +28,7 @@ class PresetList : public PresetListBase
   void onBankSelectionChanged(const Uuid& selectedBank);
   void onBankChanged();
   void onEditBufferChanged();
+  void onMidiBankChanged(const Uuid& midiBank);
 
   sigc::connection m_bankChangedConnection;
   Uuid m_uuidOfLastLoadedPreset;

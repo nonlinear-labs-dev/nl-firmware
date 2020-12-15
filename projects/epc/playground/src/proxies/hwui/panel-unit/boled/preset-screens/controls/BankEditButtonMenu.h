@@ -40,6 +40,7 @@ class BankEditButtonMenu : public ButtonMenu
 
   void selectButton(size_t i) override;
   void rebuildMenu(size_t numBanks);
+  void onMidiSelectionChanged(Uuid bankUuid);
 
  private:
   void rebuildMenuOnClipboardChange();
@@ -60,6 +61,8 @@ class BankEditButtonMenu : public ButtonMenu
   void deleteBank();
   void moveLeft();
   void moveRight();
+  void selectMidi();
+  void removeMidi();
 
   static Glib::ustring createValidOutputPath(const Glib::ustring& bankName);
 

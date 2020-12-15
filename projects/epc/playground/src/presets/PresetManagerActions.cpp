@@ -130,6 +130,12 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     boost::split(uuids, csv, boost::is_any_of(","));
     pmUseCases.moveBankCluster(uuids);
   });
+
+  addAction("select-midi-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+    auto bankUuid = request->get("bank", "");
+    auto bank = Application::get().getPresetManager()->findBank(bankUuid);
+    pmUseCases.selectMidiBank(bank);
+  });
 }
 
 void PresetManagerActions::handleImportBackupFile(UNDO::Transaction *transaction, SoupBuffer *buffer,

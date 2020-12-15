@@ -228,3 +228,42 @@ void PresetManagerUseCases::moveBankCluster(std::vector<std::string> uuids)
     }
   }
 }
+
+void PresetManagerUseCases::selectMidiBank(Bank* b)
+{
+  if(b)
+  {
+    auto& scope = m_presetManager->getUndoScope();
+    auto transactionScope = scope.startTransaction("Select Bank '%0' for Midi Program-Changes", b->getName(true));
+    auto transaction = transactionScope->getTransaction();
+    m_presetManager->selectMidiBank(transaction, b->getUuid());
+  }
+  else
+  {
+    auto& scope = m_presetManager->getUndoScope();
+    auto transactionScope = scope.startTransaction("Remove Bank for Midi Program-Changes");
+    auto transaction = transactionScope->getTransaction();
+    m_presetManager->selectMidiBank(transaction, "");
+  }
+}
+
+void PresetManagerUseCases::deleteBank(Bank* b)
+{
+  if(b)
+  {
+    auto& scope = m_presetManager->getUndoScope();
+    auto transScope = scope.startTransaction("Delete Bank '%0'", b->getName(true));
+    auto transaction = transScope->getTransaction();
+
+    //Update Bank Selection
+    if(m_presetManager->getSelectedBankUuid() == b->getUuid())
+      if(!m_presetManager->selectPreviousBank(transaction))
+        m_presetManager->selectNextBank(transaction);
+
+    //Clear Midi bank
+    if(m_presetManager->getMidiSelectedBank() == b->getUuid())
+      m_presetManager->selectMidiBank(transaction, Uuid::none());
+
+    m_presetManager->deleteBank(transaction, b->getUuid());
+  }
+}
