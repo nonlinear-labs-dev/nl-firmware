@@ -380,22 +380,14 @@ bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(std::vector<gi
 
 bool PanelUnitParameterEditMode::setParameterSelection(const ParameterId &audioID, bool state)
 {
-  DebugLevel::gassy("setParameterSelection for audioID", audioID);
-
   if(getMacroControlAssignmentStateMachine().getState() != MacroControlAssignmentStates::Initial)
     return true;
 
   if(state)
   {
-    DebugLevel::gassy("setParameterSelection - state == true");
-
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-    if(auto p = editBuffer->findParameterByID(audioID))
-    {
-      DebugLevel::gassy("selecting param");
-      editBuffer->undoableSelectParameter(p);
-    }
+    EditBufferUseCases ebUseCases { editBuffer };
+    ebUseCases.selectParameter(audioID);
   }
 
   return true;

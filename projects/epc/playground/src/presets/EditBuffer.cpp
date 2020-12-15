@@ -234,12 +234,6 @@ sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter
   }
 }
 
-void EditBuffer::undoableSelectParameter(const ParameterId &id)
-{
-  if(auto p = findParameterByID(id))
-    undoableSelectParameter(p);
-}
-
 void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id)
 {
   if(auto p = findParameterByID(id))
@@ -330,26 +324,6 @@ void EditBuffer::resetOriginIf(const Preset *p)
 bool EditBuffer::isDual() const
 {
   return getType() != SoundType::Single;
-}
-
-void EditBuffer::undoableSelectParameter(Parameter *p)
-{
-  if(p->getID().getNumber() != m_lastSelectedParameter.getNumber())
-  {
-    auto newSelection = p;
-    auto scope = getUndoScope().startContinuousTransaction(&newSelection, std::chrono::hours(1), "Select '%0'",
-                                                           p->getGroupAndParameterName());
-    undoableSelectParameter(scope->getTransaction(), p);
-  }
-  else
-  {
-    auto hwui = Application::get().getHWUI();
-
-    if(hwui->getFocusAndMode().mode == UIMode::Info)
-      hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Info));
-    else
-      hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
-  }
 }
 
 bool EditBuffer::isParameterFocusLocked() const
@@ -719,14 +693,13 @@ void EditBuffer::combineSplitPartGlobalMaster(UNDO::Transaction *transaction, Vo
 {
   auto masterGroup = getParameterGroupByID({ "Master", VoiceGroup::Global });
 
-  auto originVolume
-      = dynamic_cast<ModulateableParameter *>(findParameterByID({ C15::PID::Voice_Grp_Volume, copyFrom }));
-  auto originTune = dynamic_cast<ModulateableParameter *>(findParameterByID({ C15::PID::Voice_Grp_Tune, copyFrom }));
+  auto originVolume = findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Volume, copyFrom });
+  auto originTune = findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Tune, copyFrom });
 
-  auto masterVolumeParameter = dynamic_cast<ModulateableParameter *>(
-      masterGroup->getParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global }));
-  auto masterTuneParameter = dynamic_cast<ModulateableParameter *>(
-      masterGroup->getParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global }));
+  auto masterVolumeParameter
+      = masterGroup->findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Volume, VoiceGroup::Global });
+  auto masterTuneParameter
+      = masterGroup->findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Tune, VoiceGroup::Global });
 
   // unmute both parts
   findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);

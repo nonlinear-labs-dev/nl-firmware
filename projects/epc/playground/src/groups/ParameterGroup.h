@@ -30,6 +30,13 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
 
   tParameterPtr findParameterByID(const ParameterId &id) const;
 
+  template <typename tParameterPtrT> tParameterPtrT *findAndCastParameterByID(const ParameterId &id) const
+  {
+    if(auto p = getParameterByID(id))
+      return dynamic_cast<tParameterPtrT *>(p);
+    return nullptr;
+  }
+
   void forEachParameter(const std::function<void(Parameter *p)> &cb)
   {
     for(auto p : m_parameters)

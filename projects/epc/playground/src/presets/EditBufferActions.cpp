@@ -34,7 +34,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("select-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring id = request->get("id");
-    editBuffer->undoableSelectParameter(ParameterId(id));
+    ebUseCases->selectParameter(ParameterId(id));
   });
 
   addAction("set-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
@@ -244,6 +244,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
   addAction("recall-current-from-preset", [=](auto request) {
     auto id = request->get("id");
+
     if(auto selParam = editBuffer->findParameterByID(ParameterId(id)))
     {
       if(selParam->isChangedFromLoaded())

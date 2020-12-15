@@ -35,8 +35,8 @@ class EditBuffer : public ParameterGroupSet
 
   void setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid);
 
-  void undoableSelectParameter(const ParameterId &id);
-  void undoableSelectParameter(Parameter *p);
+  //void undoableSelectParameter(const ParameterId &id);
+  //void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id);
 

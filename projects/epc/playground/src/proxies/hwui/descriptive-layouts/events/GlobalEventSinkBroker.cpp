@@ -26,6 +26,7 @@ namespace DescriptiveLayouts
   GlobalEventSinkBroker::GlobalEventSinkBroker()
   {
     auto eb = Application::get().getPresetManager()->getEditBuffer();
+    EditBufferUseCases ebUseCases { eb };
     auto hwui = Application::get().getHWUI();
 
     registerEvent(EventSinks::Swallow, []() { return; });
@@ -234,19 +235,21 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
+    registerEvent(EventSinks::OpenMonoParameterScreen, [eb, &ebUseCases]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(eb->getType() == SoundType::Split)
-        eb->undoableSelectParameter({ 364, vg });
+        ebUseCases.selectParameter(ParameterId { 364, vg });
       else
-        eb->undoableSelectParameter({ 364, VoiceGroup::I });
+        ebUseCases.selectParameter(ParameterId { 364, VoiceGroup::I });
     });
 
-    registerEvent(EventSinks::OpenPartScreen, [eb]() {
-      eb->undoableSelectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
+    registerEvent(EventSinks::OpenPartScreen, [eb, &ebUseCases]() {
+      ebUseCases.selectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
     });
 
-    registerEvent(EventSinks::OpenMasterParameter, [eb] { eb->undoableSelectParameter({ 247, VoiceGroup::Global }); });
+    registerEvent(EventSinks::OpenMasterParameter, [eb, &ebUseCases] {
+      ebUseCases.selectParameter({ 247, VoiceGroup::Global });
+    });
 
     registerEvent(EventSinks::InitSound, [eb] {
       auto scope = eb->getParent()->getUndoScope().startTransaction("Init Sound");
@@ -254,9 +257,9 @@ namespace DescriptiveLayouts
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
 
-    registerEvent(EventSinks::OpenUnisonParameter, [eb]() {
+    registerEvent(EventSinks::OpenUnisonParameter, [eb, &ebUseCases]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      eb->undoableSelectParameter({ 249, vg });
+      ebUseCases.selectParameter({ 249, vg });
     });
 
     registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {

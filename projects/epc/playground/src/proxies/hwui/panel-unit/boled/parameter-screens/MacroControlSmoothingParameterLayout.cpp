@@ -61,9 +61,10 @@ void MacroControlSmoothingParameterLayout::resetMod()
 void MacroControlSmoothingParameterLayout::selectMacroControl()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+  EditBufferUseCases ebUseCases { eb };
   if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
   {
-    eb->undoableSelectParameter(modTime->getMC());
+    ebUseCases.selectParameter(modTime->getMC());
   }
 }
 

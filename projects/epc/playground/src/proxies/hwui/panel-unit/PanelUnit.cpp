@@ -32,6 +32,7 @@ PanelUnit::PanelUnit()
 
   m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::Selected, [=]() {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    EditBufferUseCases ebUseCases { editBuffer };
     auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
 
     if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
@@ -40,7 +41,7 @@ PanelUnit::PanelUnit()
     }
 
     auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
-    editBuffer->undoableSelectParameter({ currentMc, VoiceGroup::Global });
+    ebUseCases.selectParameter({ currentMc, VoiceGroup::Global });
     return true;
   });
 
@@ -82,9 +83,10 @@ PanelUnit::PanelUnit()
 
   m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::SelectSource, [=]() {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    EditBufferUseCases ebUseCases { editBuffer };
     auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
     auto currentSource = choseHWBestSourceForMC(p->getID());
-    editBuffer->undoableSelectParameter(currentSource);
+    ebUseCases.selectParameter(currentSource);
     m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
     return true;
   });
