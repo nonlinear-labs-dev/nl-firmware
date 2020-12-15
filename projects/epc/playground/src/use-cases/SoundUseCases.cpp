@@ -33,6 +33,12 @@ void SoundUseCases::randomizePart(VoiceGroup part)
   m_editBuffer->undoableRandomizePart(scope->getTransaction(), part, Initiator::EXPLICIT_WEBUI);
 }
 
+void SoundUseCases::initSound()
+{
+  auto scope = m_editBuffer->getUndoScope().startTransaction("Init Sound");
+  m_editBuffer->undoableInitSound(scope->getTransaction(), Defaults::UserDefault);
+}
+
 void SoundUseCases::initPart(VoiceGroup part)
 {
   auto scope = m_presetManager->getUndoScope().startTransaction("Init Part");

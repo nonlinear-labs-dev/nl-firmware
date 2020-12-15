@@ -464,11 +464,7 @@ MacroControlParameter *ModulateableParameter::getMacroControl() const
 
 void ModulateableParameter::undoableRecallMCPos()
 {
-  if(auto mc = getMacroControl())
-  {
-    mc->undoableRecallFromPreset();
-    onChange(ChangeFlags::Generic);
-  }
+
 }
 
 void ModulateableParameter::undoableRecallMCSource()

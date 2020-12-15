@@ -13,9 +13,13 @@ class SoundUseCases
 
   void storeInitSound();
   void resetInitSound();
+
+  void initPart(VoiceGroup part);
+  void initSound();
+
   void randomizeSound();
   void randomizePart(VoiceGroup part);
-  void initPart(VoiceGroup part);
+
   void renamePart(VoiceGroup part, const Glib::ustring& name);
 
   void convertToSingle(VoiceGroup partToUse);

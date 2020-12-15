@@ -242,49 +242,6 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const P
     throw std::runtime_error("could not select parameter: " + id.toString());
 }
 
-void EditBuffer::setParameter(ParameterId id, double cpValue)
-{
-  if(auto p = findParameterByID(id))
-  {
-    DebugLevel::gassy("EditBuffer::setParameter", id, cpValue);
-    Glib::ustring name {};
-    if(m_type == SoundType::Single || ParameterId::isGlobal(id.getNumber()))
-      name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterName());
-    else
-      name = UNDO::StringTools::formatString("Set '%0'", p->getGroupAndParameterNameWithVoiceGroup());
-
-    if(cpValue == p->getDefaultValue())
-      name += " to Default";
-
-    auto scope = getUndoScope().startContinuousTransaction(p, name);
-    p->setCPFromWebUI(scope->getTransaction(), cpValue);
-    onChange();
-  }
-}
-
-void EditBuffer::setModulationSource(MacroControls src, const ParameterId &id)
-{
-  if(auto p = dynamic_cast<ModulateableParameter *>(findParameterByID(id)))
-  {
-    auto dual = isDual() && id.isDual();
-    auto scope = getUndoScope().startTransaction(
-        "Set MC Select for '%0'", dual ? p->getGroupAndParameterNameWithVoiceGroup() : p->getGroupAndParameterName());
-    p->undoableSelectModSource(scope->getTransaction(), src);
-  }
-}
-
-void EditBuffer::setModulationAmount(double amount, const ParameterId &id)
-{
-  if(auto p = dynamic_cast<ModulateableParameter *>(findParameterByID(id)))
-  {
-    auto dual = isDual() && id.isDual();
-    auto scope = getUndoScope().startContinuousTransaction(p->getAmountCookie(), "Set MC Amount for '%0'",
-                                                           dual ? p->getGroupAndParameterNameWithVoiceGroup()
-                                                                : p->getGroupAndParameterName());
-    p->undoableSetModAmount(scope->getTransaction(), amount);
-  }
-}
-
 bool EditBuffer::hasLocks(VoiceGroup vg) const
 {
   return searchForAnyParameterWithLock(vg) != nullptr;
@@ -983,19 +940,6 @@ Glib::ustring EditBuffer::getNameWithSuffix() const
   }
 
   return getName() + " " + (hasMono ? "\uE040" : "") + (hasUnison ? "\uE041" : "");
-}
-
-void EditBuffer::undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo)
-{
-  auto selectedPreset = getParent()->getSelectedPreset();
-
-  if(!selectedPreset)
-    return;
-
-  auto transString = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(copyTo));
-  auto scope = getParent()->getUndoScope().startTransaction(transString);
-
-  undoableLoadToPart(scope->getTransaction(), selectedPreset, from, copyTo);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,

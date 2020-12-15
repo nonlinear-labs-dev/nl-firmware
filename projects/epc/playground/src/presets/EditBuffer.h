@@ -35,8 +35,6 @@ class EditBuffer : public ParameterGroupSet
 
   void setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid);
 
-  //void undoableSelectParameter(const ParameterId &id);
-  //void undoableSelectParameter(Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
   void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id);
 
@@ -134,7 +132,6 @@ class EditBuffer : public ParameterGroupSet
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
 
-  void undoableLoadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup copyTo);
   void undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
                                       VoiceGroup copyTo);
 
@@ -143,15 +140,11 @@ class EditBuffer : public ParameterGroupSet
 
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
   UNDO::Scope &getUndoScope() override;
-  void setParameter(ParameterId id, double cpValue);
 
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-
-  void setModulationSource(MacroControls src, const ParameterId &id);
-  void setModulationAmount(double amount, const ParameterId &id);
 
   void doDeferedJobs();
   void checkModified();
