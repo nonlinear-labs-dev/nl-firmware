@@ -16,9 +16,9 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
 
   void incDec(int inc);
   void sendState(bool state);
+  void endAndReschedule();
 
  private:
-  void endAndReschedule();
   std::unique_ptr<Expiration> m_expiration = nullptr;
   Signal<void, bool> m_screenSaverSignal;
 

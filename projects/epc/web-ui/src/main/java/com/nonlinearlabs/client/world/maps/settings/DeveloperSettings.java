@@ -13,7 +13,7 @@ public class DeveloperSettings extends LayoutResizingVertical {
 
 		// TODO: move into data model
 		addChild(new SetupHeader(this));
-        addChild(new SendPresetAsPlaycontrollerWriteFallback(this));
+		addChild(new SendPresetAsPlaycontrollerWriteFallback(this));
 		addChild(new ResetEditBuffer(this));
 		addChild(new SyncAudioEngine(this));
 		addChild(new DebugLevel(this));
@@ -26,7 +26,7 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new CrashOnError(this));
 		addChild(new ExportBoled(this));
 		addChild(new ExportSoled(this));
-		addChild(new ExternalMidi(this));
+		addChild(new EnableUSBCommunication(this));
 
 		SetupModel.get().localSettings.showDeveloperOptions.onChange(v -> {
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);
