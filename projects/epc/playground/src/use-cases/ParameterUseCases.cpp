@@ -35,3 +35,10 @@ void ParameterUseCases::incDec(int incs, bool fine, bool shift)
                                                                       m_parameter->getGroupAndParameterName());
   m_parameter->stepCP(scope->getTransaction(), incs, fine, shift);
 }
+
+void ParameterUseCases::setDefault()
+{
+  auto name = m_parameter->getGroupAndParameterName();
+  auto scope = m_parameter->getUndoScope().startTransaction("Set Default '%0'", name);
+  m_parameter->setCPFromHwui(scope->getTransaction(), m_parameter->getDefaultValue());
+}

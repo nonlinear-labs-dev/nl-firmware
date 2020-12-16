@@ -14,7 +14,8 @@ class ParameterUseCases
   void undoRecallParameterFromPreset(tControlPositionValue cp);
 
   void incDec(int incs, bool fine, bool shift);
-
+  void setDefault();
+  
  private:
   Parameter* m_parameter = nullptr;
 };

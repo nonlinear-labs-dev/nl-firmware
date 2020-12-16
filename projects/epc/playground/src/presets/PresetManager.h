@@ -85,6 +85,7 @@ class PresetManager : public ContentSection
   std::shared_ptr<ScopedGuard::Lock> lockLoading();
 
   // algorithms
+  std::pair<double, double> calcDefaultBankPositionForNewBank() const;
   std::pair<double, double> calcDefaultBankPositionFor(const Bank *bank) const;
   size_t getBankPosition(const Uuid &uuid) const;
 

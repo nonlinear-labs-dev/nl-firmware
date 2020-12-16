@@ -691,6 +691,30 @@ sigc::connection PresetManager::onRestoreHappened(sigc::slot<void> cb)
   return m_sigRestoreHappened.connect(cb);
 }
 
+std::pair<double, double> PresetManager::calcDefaultBankPositionForNewBank() const
+{
+  const Bank *rightMost = nullptr;
+
+  m_banks.forEach([&](auto other) {
+    if(!rightMost)
+    {
+      rightMost = other;
+      return;
+    }
+
+    auto x = std::stod(other->getX());
+    auto currentX = std::stod(rightMost->getX());
+
+    if(x > currentX)
+      rightMost = other;
+  });
+
+  if(rightMost)
+    return std::make_pair(std::stod(rightMost->getX()) + 300, std::stod(rightMost->getY()));
+
+  return std::make_pair(0.0, 0.0);
+}
+
 std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *bank) const
 {
   const Bank *rightMost = nullptr;
@@ -726,7 +750,7 @@ size_t PresetManager::getBankPosition(const Uuid &uuid) const
 void PresetManager::sanitizeBankClusterRelations(UNDO::Transaction *transaction)
 {
   resolveCyclicAttachments(transaction);
-  ClusterEnforcement enforcer;
+  ClusterEnforcement enforcer(this);
   enforcer.enforceClusterRuleOfOne(transaction);
 }
 

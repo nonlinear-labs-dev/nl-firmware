@@ -47,11 +47,8 @@ void EditBufferUseCases::undoableLoadToPart(const Preset* preset, VoiceGroup fro
 
 void EditBufferUseCases::undoableLoad(const Preset* preset)
 {
-  if(m_editBuffer->getUUIDOfLastLoadedPreset() != preset->getUuid())
-  {
-    auto scope = m_editBuffer->getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
-    m_editBuffer->undoableLoad(scope->getTransaction(), preset, true);
-  }
+  auto scope = m_editBuffer->getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
+  m_editBuffer->undoableLoad(scope->getTransaction(), preset, true);
 }
 
 std::unique_ptr<ParameterUseCases> EditBufferUseCases::getUseCase(ParameterId id)
@@ -265,4 +262,37 @@ void EditBufferUseCases::toggleMute(VoiceGroup part)
       mute->setCPFromHwui(transaction, 1);
     }
   }
+}
+
+void EditBufferUseCases::unmuteBothPartsWithTransactionNameForPart(VoiceGroup part)
+{
+  auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("Unmute Part " + toString(part));
+  auto mute = m_editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, part });
+  auto muteOther = m_editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, invert(part) });
+  mute->setCPFromHwui(scope->getTransaction(), 0);
+  muteOther->setCPFromHwui(scope->getTransaction(), 0);
+}
+
+void EditBufferUseCases::unlockGroup(ParameterGroup* group)
+{
+  if(group)
+  {
+    auto scope = m_editBuffer->getUndoScope().startTransaction("Unlock Group");
+    group->undoableUnlock(scope->getTransaction());
+  }
+}
+
+void EditBufferUseCases::lockGroup(ParameterGroup* group)
+{
+  if(group)
+  {
+    auto scope = m_editBuffer->getUndoScope().startTransaction("Lock Group");
+    group->undoableLock(scope->getTransaction());
+  }
+}
+
+void EditBufferUseCases::renamePart(VoiceGroup part, const Glib::ustring& name)
+{
+  auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("Rename Part to %s", name);
+  m_editBuffer->setVoiceGroupName(scope->getTransaction(), name, part);
 }

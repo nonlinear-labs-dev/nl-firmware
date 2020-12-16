@@ -11,6 +11,7 @@
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>
 #include <http/UndoScope.h>
+#include <use-cases/PresetUseCases.h>
 
 AppendOverwriteInsertButtonMenu::AppendOverwriteInsertButtonMenu(PresetManagerLayout& parent, const Rect& rect)
     : super(rect)
@@ -118,11 +119,8 @@ void AppendOverwriteInsertButtonMenu::pushRenameScreen()
         {
           if(auto preset = bank->getSelectedPreset())
           {
-            if(preset->getName() != newName)
-            {
-              auto scope = Application::get().getUndoScope()->startTransaction("Rename preset");
-              preset->setName(scope->getTransaction(), newName);
-            }
+            PresetUseCases useCases(preset);
+            useCases.rename(newName);
           }
         }
         animate();

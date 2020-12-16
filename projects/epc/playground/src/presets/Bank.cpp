@@ -171,12 +171,26 @@ std::string Bank::getName(bool withFallback) const
 
 std::string Bank::getX() const
 {
-  return m_x;
+  if(m_x.empty())
+  {
+    return "0";
+  }
+  else
+  {
+    return m_x;
+  }
 }
 
 std::string Bank::getY() const
 {
-  return m_y;
+  if(m_y.empty())
+  {
+    return "0";
+  }
+  else
+  {
+    return m_y;
+  }
 }
 
 const Uuid &Bank::getSelectedPresetUuid() const
@@ -701,4 +715,9 @@ const Preset *Bank::getFirstPreset() const
   if(m_presets.empty())
     return nullptr;
   return m_presets.at(0);
+}
+
+Glib::ustring Bank::getComment()
+{
+  return getAttribute("Comment", "");
 }

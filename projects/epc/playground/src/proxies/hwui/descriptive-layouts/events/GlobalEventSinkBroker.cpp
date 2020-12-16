@@ -285,12 +285,12 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::DecSplitPoint, [hwui, eb]() {
-        EditBufferUseCases ebUseCases(eb);
-        auto currentVG = hwui->getCurrentVoiceGroup();
-        if(auto parameterUseCases = ebUseCases.getUseCase({ C15::PID::Split_Split_Point, currentVG }))
-        {
-          parameterUseCases->incDec(-1, false, false);
-        }
+      EditBufferUseCases ebUseCases(eb);
+      auto currentVG = hwui->getCurrentVoiceGroup();
+      if(auto parameterUseCases = ebUseCases.getUseCase({ C15::PID::Split_Split_Point, currentVG }))
+      {
+        parameterUseCases->incDec(-1, false, false);
+      }
     });
 
     registerEvent(EventSinks::LayerMuteInc, [eb]() {
@@ -298,17 +298,15 @@ namespace DescriptiveLayouts
       auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
       const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
+      EditBufferUseCases useCases(eb);
 
       if(!vgIMuted && !vgIIMuted)
       {
-        auto scope = eb->getParent()->getUndoScope().startTransaction("Mute Part I");
-        muteI->setCPFromHwui(scope->getTransaction(), 1);
+        useCases.mutePart(VoiceGroup::I);
       }
       else if(vgIIMuted)
       {
-        auto scope = eb->getParent()->getUndoScope().startTransaction("Unmute Part II");
-        muteI->setCPFromHwui(scope->getTransaction(), 0);
-        muteII->setCPFromHwui(scope->getTransaction(), 0);
+        useCases.unmuteBothPartsWithTransactionNameForPart(VoiceGroup::II);
       }
     });
 
@@ -317,17 +315,15 @@ namespace DescriptiveLayouts
       auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
       const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
+      EditBufferUseCases useCases(eb);
 
       if(!vgIMuted && !vgIIMuted)
       {
-        auto scope = eb->getParent()->getUndoScope().startTransaction("Mute Part II");
-        muteII->setCPFromHwui(scope->getTransaction(), 1);
+        useCases.mutePart(VoiceGroup::II);
       }
       else if(vgIMuted)
       {
-        auto scope = eb->getParent()->getUndoScope().startTransaction("Unmute Part I");
-        muteI->setCPFromHwui(scope->getTransaction(), 0);
-        muteII->setCPFromHwui(scope->getTransaction(), 0);
+        useCases.unmuteBothPartsWithTransactionNameForPart(VoiceGroup::I);
       }
     });
   }

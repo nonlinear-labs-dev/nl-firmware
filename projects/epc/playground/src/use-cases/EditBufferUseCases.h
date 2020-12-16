@@ -29,6 +29,7 @@ class EditBufferUseCases
 
   void mutePart(VoiceGroup part);
   void unmutePart(VoiceGroup part);
+  void unmuteBothPartsWithTransactionNameForPart(VoiceGroup part);
   void mutePartUnmuteOtherPart(VoiceGroup part);
 
   void undoableLoad(const Preset* preset);
@@ -41,12 +42,18 @@ class EditBufferUseCases
   void unlockAllGroups();
   void lockAllGroups();
   void toggleLock(const std::string& groupName);
+  void unlockGroup(ParameterGroup* group);
+  void lockGroup(ParameterGroup* group);
 
   std::unique_ptr<ParameterUseCases> getUseCase(ParameterId id);
   std::unique_ptr<ModParameterUseCases> getModParamUseCase(ParameterId id);
   std::unique_ptr<MacroControlParameterUseCases> getMCUseCase(ParameterId id);
 
- void toggleMute(VoiceGroup part);private:
+  void toggleMute(VoiceGroup part);
+
+  void renamePart(VoiceGroup part, const Glib::ustring& name);
+
+ private:
   VoiceGroup invert(VoiceGroup vg);
   PresetManager* getPresetManager() const;
 

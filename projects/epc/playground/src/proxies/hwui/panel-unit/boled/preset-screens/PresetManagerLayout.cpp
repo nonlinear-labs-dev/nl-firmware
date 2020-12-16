@@ -32,6 +32,7 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadToPartPresetList.h>
 #include "presets/Preset.h"
 #include "SelectVoiceGroupLayout.h"
+#include "RenameBankLayout.h"
 
 PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode oldFocusAndMode)
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())

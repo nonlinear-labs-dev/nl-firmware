@@ -291,8 +291,8 @@ namespace NavTree
     StoreInitSound(InnerNode *p)
         : OneShotEntry(p, "Store Init Sound", [] {
           auto pm = Application::get().getPresetManager();
-          auto scope = pm->getUndoScope().startTransaction("Store Init Sound");
-          pm->storeInitSound(scope->getTransaction());
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.storeInitSound();
         })
     {
     }
@@ -303,8 +303,8 @@ namespace NavTree
     ResetInitSound(InnerNode *p)
         : OneShotEntry(p, "Reset Init Sound", [] {
           auto pm = Application::get().getPresetManager();
-          auto scope = pm->getUndoScope().startTransaction("Reset Init Sound");
-          pm->resetInitSound(scope->getTransaction());
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.resetInitSound();
         })
     {
     }

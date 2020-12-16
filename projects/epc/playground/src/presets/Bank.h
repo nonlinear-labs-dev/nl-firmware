@@ -119,7 +119,7 @@ class Bank : public AttributesOwner
 
   PresetManager *getPresetManager() const;
 
- private:
+ Glib::ustring getComment();private:
   using Attributes = std::map<std::string, std::string>;
 
   uint64_t loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder);
