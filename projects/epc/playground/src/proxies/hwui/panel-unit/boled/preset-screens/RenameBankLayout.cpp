@@ -27,8 +27,8 @@ void RenameBankLayout::commit(const Glib::ustring &newName)
     }
     else
     {
-      auto s = Application::get().getPresetManager()->getUndoScope().startTransaction("Rename Bank");
-      m_currentBank->setName(s->getTransaction(), newName);
+      BankUseCases useCase(m_currentBank);
+      useCase.renameBank(newName);
     }
   }
 }

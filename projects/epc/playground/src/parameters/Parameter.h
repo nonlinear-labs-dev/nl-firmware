@@ -69,6 +69,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
 
+  void stepCP(UNDO::Transaction *transaction, int incs, bool fine, bool shift);
   void stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers);
   void stepCPFromWebUI(UNDO::Transaction *transaction, Step step, ButtonModifiers modifiers);
   void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value);
@@ -131,7 +132,6 @@ class Parameter : public UpdateDocumentContributor,
   void check();
 
   //Recall
-  void undoableRecallFromPreset();
   void undoableRecallFromPreset(UNDO::Transaction *transaction);
   const RecallParameter *getOriginalParameter() const;
 

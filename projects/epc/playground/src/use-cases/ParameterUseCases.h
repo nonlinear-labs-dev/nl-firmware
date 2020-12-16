@@ -1,5 +1,6 @@
 #pragma once
 #include <ParameterId.h>
+#include <playground.h>
 
 class EditBuffer;
 class Parameter;
@@ -7,8 +8,12 @@ class Parameter;
 class ParameterUseCases
 {
  public:
-  ParameterUseCases(Parameter* parameter);
+  explicit ParameterUseCases(Parameter* parameter);
+
   void recallParameterFromPreset();
+  void undoRecallParameterFromPreset(tControlPositionValue cp);
+
+  void incDec(int incs, bool fine, bool shift);
 
  private:
   Parameter* m_parameter = nullptr;

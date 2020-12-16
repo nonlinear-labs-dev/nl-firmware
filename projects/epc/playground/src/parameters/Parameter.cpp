@@ -613,14 +613,6 @@ void Parameter::check()
   g_assert(cp == m_value.getLowerBorder());
 }
 
-void Parameter::undoableRecallFromPreset()
-{
-  auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto transactionScope = scope.startTransaction("Recall value from Preset for '%0'", getGroupAndParameterName());
-  auto transaction = transactionScope->getTransaction();
-  undoableRecallFromPreset(transaction);
-}
-
 void Parameter::undoableRecallFromPreset(UNDO::Transaction *transaction)
 {
   auto original = getOriginalParameter();
@@ -660,4 +652,9 @@ bool Parameter::isDisabled() const
 {
   auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
   return isDisabledForType(eb->getType());
+}
+
+void Parameter::stepCP(UNDO::Transaction *transaction, int incs, bool fine, bool shift)
+{
+  setCPFromHwui(transaction, getNextStepValue(incs, fine, shift));
 }

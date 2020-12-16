@@ -249,3 +249,20 @@ PresetManager* EditBufferUseCases::getPresetManager() const
 
   nltools_assertNotReached();
 }
+
+void EditBufferUseCases::toggleMute(VoiceGroup part)
+{
+  auto scope = m_editBuffer->getUndoScope().startTransaction("Toggle Mute " + toString(part));
+  auto transaction = scope->getTransaction();
+  if(auto mute = m_editBuffer->findParameterByID({ C15::PID::Voice_Grp_Mute, part }))
+  {
+    if(mute->getControlPositionValue() >= 0.5)
+    {
+      mute->setCPFromHwui(transaction, 0);
+    }
+    else
+    {
+      mute->setCPFromHwui(transaction, 1);
+    }
+  }
+}

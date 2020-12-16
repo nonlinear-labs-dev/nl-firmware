@@ -20,7 +20,8 @@ void ModParameterUseCases::recallMCPos()
 {
   if(auto mc = m_modParam->getMacroControl())
   {
-    mc->undoableRecallFromPreset();
+    ParameterUseCases useCase(mc);
+    useCase.recallParameterFromPreset();
     m_modParam->onChange(UpdateDocumentContributor::ChangeFlags::Generic);
   }
 }

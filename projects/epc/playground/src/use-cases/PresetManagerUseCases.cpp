@@ -168,18 +168,6 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   m_presetManager->selectBank(transaction, bank->getUuid());
 }
 
-void PresetManagerUseCases::renameBank(const Uuid& bankUuid, const Glib::ustring& name)
-{
-  if(auto bank = m_presetManager->findBank(bankUuid))
-  {
-    auto& undoScope = m_presetManager->getUndoScope();
-    auto transactionScope = undoScope.startTransaction("Rename Bank '%0' to '%1'", bank->getName(true), name);
-    auto transaction = transactionScope->getTransaction();
-    bank->setName(transaction, name);
-    m_presetManager->getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
-  }
-}
-
 void PresetManagerUseCases::selectBank(const Uuid& uuid)
 {
   if(auto bank = m_presetManager->findBank(uuid))
@@ -266,4 +254,22 @@ void PresetManagerUseCases::deleteBank(Bank* b)
 
     m_presetManager->deleteBank(transaction, b->getUuid());
   }
+}
+
+std::unique_ptr<BankUseCases> PresetManagerUseCases::getBankUseCase(Bank* b) const
+{
+  if(b)
+  {
+    return std::move(std::make_unique<BankUseCases>(b));
+  }
+  return nullptr;
+}
+
+std::unique_ptr<BankUseCases> PresetManagerUseCases::getBankUseCase(const Uuid& uuid) const
+{
+  if(auto b = m_presetManager->findBank(uuid))
+  {
+    return std::move(std::make_unique<BankUseCases>(b));
+  }
+  return nullptr;
 }

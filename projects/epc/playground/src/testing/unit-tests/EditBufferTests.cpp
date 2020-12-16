@@ -396,12 +396,14 @@ TEST_CASE("Load <-> Changed")
       REQUIRE(param->isChangedFromLoaded());
     }
 
+    ParameterUseCases useCase(param);
+
     REQUIRE(param != nullptr);
     REQUIRE(param->isChangedFromLoaded());
     REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
 
-    param->undoableRecallFromPreset();
+    useCase.recallParameterFromPreset();
     editBuffer->TEST_doDeferredJobs();
 
     REQUIRE_FALSE(editBuffer->isModified());
@@ -428,12 +430,14 @@ TEST_CASE("Load <-> Changed")
       REQUIRE(param->isChangedFromLoaded());
     }
 
+    ParameterUseCases useCase(param);
+
     REQUIRE(param != nullptr);
     REQUIRE(param->isChangedFromLoaded());
     REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
 
-    param->undoableRecallFromPreset();
+    useCase.recallParameterFromPreset();
     editBuffer->TEST_doDeferredJobs();
 
     REQUIRE_FALSE(editBuffer->isModified());
@@ -450,7 +454,7 @@ TEST_CASE("Load <-> Changed")
       editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset(), true);
       editBuffer->TEST_doDeferredJobs();
 
-      param = editBuffer->findParameterByID({ 247, VoiceGroup::Global });
+      param = editBuffer->findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
       REQUIRE(param != nullptr);
       REQUIRE_FALSE(param->isChangedFromLoaded());
 
@@ -460,12 +464,14 @@ TEST_CASE("Load <-> Changed")
       REQUIRE(param->isChangedFromLoaded());
     }
 
+    ParameterUseCases useCase(param);
+
     REQUIRE(param != nullptr);
     REQUIRE(param->isChangedFromLoaded());
     REQUIRE(editBuffer->isModified());
     REQUIRE(editBuffer->findAnyParameterChanged());
 
-    param->undoableRecallFromPreset();
+    useCase.recallParameterFromPreset();
     editBuffer->TEST_doDeferredJobs();
 
     REQUIRE_FALSE(editBuffer->isModified());

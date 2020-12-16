@@ -46,7 +46,7 @@ class EditBufferUseCases
   std::unique_ptr<ModParameterUseCases> getModParamUseCase(ParameterId id);
   std::unique_ptr<MacroControlParameterUseCases> getMCUseCase(ParameterId id);
 
- private:
+ void toggleMute(VoiceGroup part);private:
   VoiceGroup invert(VoiceGroup vg);
   PresetManager* getPresetManager() const;
 

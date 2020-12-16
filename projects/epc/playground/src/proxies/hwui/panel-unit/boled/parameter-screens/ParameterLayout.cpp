@@ -29,6 +29,7 @@
 #include <glibmm/main.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
+#include <parameter_declarations.h>
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -402,20 +403,18 @@ void ParameterRecallLayout2::doRecall()
   {
     m_recallString = curr->getDisplayString();
     m_recallValue = curr->getControlPositionValue();
-    curr->undoableRecallFromPreset();
+    ParameterUseCases useCase(curr);
+    useCase.recallParameterFromPreset();
     updateUI(true);
   }
 }
 
 void ParameterRecallLayout2::undoRecall()
 {
-  auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto transactionScope
-      = scope.startTransaction("Recall %0 value from Editbuffer", getCurrentParameter()->getLongName());
-  auto transaction = transactionScope->getTransaction();
   if(auto curr = getCurrentParameter())
   {
-    curr->setCPFromHwui(transaction, m_recallValue);
+    ParameterUseCases useCase(curr);
+    useCase.undoRecallParameterFromPreset(m_recallValue);
     updateUI(false);
   }
 }
@@ -474,7 +473,7 @@ void ParameterRecallLayout2::onParameterChanged(const Parameter *)
 PartMasterRecallLayout2::PartMasterRecallLayout2()
     : ParameterRecallLayout2()
     , m_muteParameter { Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          { 395, Application::get().getHWUI()->getCurrentVoiceGroup() }) }
+          { C15::PID::Voice_Grp_Mute, Application::get().getHWUI()->getCurrentVoiceGroup() }) }
 {
   m_muteParameterConnection
       = m_muteParameter->onParameterChanged(sigc::hide(sigc::mem_fun(this, &PartMasterRecallLayout2::onMuteChanged)));
@@ -530,13 +529,10 @@ bool PartMasterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers mod
 
 void PartMasterRecallLayout2::toggleMute() const
 {
-  auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction(
-      "Toggle Mute " + toString(m_muteParameter->getID().getVoiceGroup()));
-
-  if(m_muteParameter->getControlPositionValue() >= 0.5)
-    m_muteParameter->setCPFromHwui(scope->getTransaction(), 0);
-  else
-    m_muteParameter->setCPFromHwui(scope->getTransaction(), 1);
+  auto pm = Application::get().getPresetManager();
+  auto eb = pm->getEditBuffer();
+  EditBufferUseCases useCase(eb);
+  useCase.toggleMute(m_muteParameter->getID().getVoiceGroup());
 }
 
 void PartMasterRecallLayout2::onMuteChanged()
