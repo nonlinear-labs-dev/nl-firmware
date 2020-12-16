@@ -1,11 +1,11 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file       parameter_list.h
-    @date       2020-12-05, 14:53
-    @version    1.7B-8
-    @author     M. Seeber
-    @brief      complete list of parameters (and their properties) in TCD order
+/**	@file	parameter_list.h
+    @date	2020-12-15, 17:30
+    @version	1.7B-8
+    @author	M. Seeber
+    @brief	complete list of parameters (and their properties) in TCD order
     @todo
 *******************************************************************************/
 
@@ -1933,7 +1933,10 @@ namespace C15
       { None, None, Properties::SmootherScale::Linear, 60.0f, 0.05f, false },
       { 60, 60, 60, 60, "", "Split", "Split", "Split Point", "Split Pnt",
         "Determines the split position of a sound as a key number. Keys from the lower end up to the Split Point will "
-        "be associated to Part I, keys from the Split Point up to the upper end will be associated to Part II." } },
+        "be associated to Part I, keys from the Split Point up to the upper end will be associated to Part II. When "
+        "linked, both split positions are sticked together and the Split Point behaves as one global parameter "
+        "applying to both Parts. When unlinked, the Split Point behaves as two local parameters which can be adjusted "
+        "separately (any MC assignment is still shared, though), allowing for overlapping key ranges.  " } },
     { None },
     { Parameters::Local_Modulateables::Voice_Grp_Volume,
       PID::Voice_Grp_Volume,
