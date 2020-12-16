@@ -20,7 +20,7 @@ bool ScreenSaverUsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers mod
   }
   else if(m_downReceived)
   {
-    Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->sendState(false);
+    Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->endAndReschedule();
   }
 
   return true;
