@@ -25,10 +25,13 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   PlayPanel &getPlayPanel();
 
  private:
+  void onScreenSaverState(bool screenSaverState);
   void respectUsageMode(const Setting *s);
   void onBBBBConnected();
 
   PlayPanel m_playPanel;
   UpperRibbon m_upperRibbon;
   LowerRibbon m_lowerRibbon;
+
+  std::shared_ptr<UsageMode> m_stashedUsageMode = nullptr;
 };
