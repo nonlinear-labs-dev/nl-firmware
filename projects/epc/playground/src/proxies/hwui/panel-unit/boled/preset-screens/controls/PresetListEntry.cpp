@@ -88,7 +88,7 @@ bool PresetListEntry::redraw(FrameBuffer &fb)
     fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
   }
 
-  if(m_animationProgress)
+  if(m_animationProgress != 0)
   {
     Rect r = getPosition();
 

@@ -520,12 +520,8 @@ void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
 
 void EditBuffer::undoableLoad(Preset *preset)
 {
-  if(getUUIDOfLastLoadedPreset() != preset->getUuid())
-  {
-    UNDO::Scope::tTransactionScopePtr scope
-        = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
-    undoableLoad(scope->getTransaction(), preset, true);
-  }
+  auto scope = getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
+  undoableLoad(scope->getTransaction(), preset, true);
 }
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, Preset *preset, bool sendToAudioEngine)
