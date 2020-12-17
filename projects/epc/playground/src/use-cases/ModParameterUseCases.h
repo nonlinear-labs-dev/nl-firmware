@@ -23,6 +23,6 @@ class ModParameterUseCases
 
   void selectModSource(MacroControls mc);
 
- private:
+ void removeModSource();void selectModSourceAndSelectTargetParameter(MacroControls mc);private:
   ModulateableParameter* m_modParam = nullptr;
 };

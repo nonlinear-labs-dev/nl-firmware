@@ -64,7 +64,7 @@ class Parameter : public UpdateDocumentContributor,
   tControlPositionValue getDefaultValue() const;
   tControlPositionValue getFactoryDefaultValue() const;
 
-  void toggleLoadDefaultValue();
+  void toggleLoadDefaultValue(UNDO::Transaction *transaction);
 
   virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
@@ -128,8 +128,6 @@ class Parameter : public UpdateDocumentContributor,
   virtual bool lockingEnabled() const;
   // CALLBACKS
   sigc::connection onParameterChanged(sigc::slot<void, const Parameter *> slot, bool doInitCall = true) const;
-
-  void check();
 
   //Recall
   void undoableRecallFromPreset(UNDO::Transaction *transaction);

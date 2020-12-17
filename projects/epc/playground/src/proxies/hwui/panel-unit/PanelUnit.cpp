@@ -55,18 +55,14 @@ PanelUnit::PanelUnit()
 
     if(auto modParam = dynamic_cast<ModulateableParameter *>(target))
     {
+      ModParameterUseCases useCase(modParam);
       if(modParam->getModulationSource() == mc)
       {
-        auto scope = Application::get().getUndoScope()->startTransaction("Remove Modulation Source");
-        modParam->undoableSelectModSource(scope->getTransaction(), MacroControls::NONE);
+        useCase.removeModSource();
       }
       else
       {
-        auto scope = Application::get().getUndoScope()->startTransaction("Set Modulation Source");
-        modParam->undoableSelectModSource(scope->getTransaction(), mc);
-
-        editBuffer->undoableSelectParameter(scope->getTransaction(), modParam);
-
+        useCase.selectModSourceAndSelectTargetParameter(mc);
         auto hwui = Application::get().getHWUI();
         auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
         boled.onLayoutInstalled([&](Layout *l) {

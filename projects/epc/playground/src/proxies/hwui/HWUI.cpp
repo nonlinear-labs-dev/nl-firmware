@@ -283,7 +283,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         else
         {
           auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(1.0 / p->getValue().getCoarseDenominator());
+          changer->changeBy(nullptr,1.0 / p->getValue().getCoarseDenominator(),false);
         }
       }
       else if(line.find('x') == 0)
@@ -298,7 +298,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         else
         {
           auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(-1.0 / p->getValue().getCoarseDenominator());
+          changer->changeBy(nullptr,-1.0 / p->getValue().getCoarseDenominator(),false);
         }
       }
       else
@@ -603,6 +603,7 @@ void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
 
 void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection()
 {
+  //TODO examine
   auto currentVG = getCurrentVoiceGroup();
   auto partName = currentVG == VoiceGroup::I ? "II" : "I";
   auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Select Part "

@@ -130,3 +130,18 @@ void ModParameterUseCases::undoRecallMCPos(tControlPositionValue mcPos)
   auto scope = m_modParam->getUndoScope().startTransaction("Recall assigned MC Pos from Editbuffer for '%0'", name);
   m_modParam->getMacroControl()->setCPFromHwui(scope->getTransaction(), mcPos);
 }
+
+void ModParameterUseCases::removeModSource()
+{
+  auto scope = m_modParam->getUndoScope().startTransaction("Remove Modulation Source");
+  m_modParam->undoableSelectModSource(scope->getTransaction(), MacroControls::NONE);
+}
+
+void ModParameterUseCases::selectModSourceAndSelectTargetParameter(MacroControls mc)
+{
+  auto scope = m_modParam->getUndoScope().startTransaction("Set Modulation Source");
+  m_modParam->undoableSelectModSource(scope->getTransaction(), mc);
+ 
+  if(auto eb = dynamic_cast<EditBuffer*>(m_modParam->getParentGroup()->getParent()))
+    eb->undoableSelectParameter(scope->getTransaction(), m_modParam);
+}

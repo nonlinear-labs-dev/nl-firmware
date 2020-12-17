@@ -78,7 +78,6 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   // CALLBACKS
   sigc::connection onGroupChanged(const sigc::slot<void> &slot);
 
-  void check();
   VoiceGroup getVoiceGroup() const;
 
   void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);

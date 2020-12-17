@@ -80,13 +80,14 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-      auto scope = presetManager.getUndoScope().startTransaction("Import all Banks");
-      auto transaction = scope->getTransaction();
-
       boled.setOverlay(new SplashLayout());
       auto *buffer = http->getFlattenedBuffer();
 
-      handleImportBackupFile(transaction, buffer, http);
+      PresetManagerUseCases useCase(&m_presetManager);
+      if(!useCase.importBackupFile(buffer))
+      {
+        http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
+      }
 
       boled.resetOverlay();
       soup_buffer_free(buffer);
@@ -96,35 +97,12 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   addAction("load-preset-from-xml", [&](std::shared_ptr<NetworkRequest> request) mutable {
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto editBuffer = presetManager.getEditBuffer();
-
-      Preset p(editBuffer);
-
+      auto xml = http->get("xml", "");
+      PresetManagerUseCases useCase(&m_presetManager);
+      if(!useCase.loadPresetFromCompareXML(xml))
       {
-        auto scope = presetManager.getUndoScope().startTrashTransaction();
-        auto transaction = scope->getTransaction();
-        auto xml = http->get("xml", "");
-
-        MemoryInStream stream(xml, false);
-        XmlReader reader(stream, transaction);
-
-        if(!reader.read<PresetSerializer>(&p))
-        {
-          http->respond("Invalid File!");
-          DebugLevel::warning("Could not read Preset xml!");
-          return;
-        }
+        http->respond("Invalid File!");
       }
-
-      auto loadscope = presetManager.getUndoScope().startTransaction("Load Compare Buffer");
-      auto loadtransaction = loadscope->getTransaction();
-
-      SendEditBufferScopeGuard scopeGuard(loadtransaction, true);
-
-      auto autoLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
-      auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
-      editBuffer->copyFrom(loadtransaction, &p);
-      editBuffer->undoableSetLoadedPresetInfo(loadtransaction, &p);
     }
   });
 
@@ -140,28 +118,6 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
     auto bank = Application::get().getPresetManager()->findBank(bankUuid);
     pmUseCases.selectMidiBank(bank);
   });
-}
-
-void PresetManagerActions::handleImportBackupFile(UNDO::Transaction *transaction, SoupBuffer *buffer,
-                                                  std::shared_ptr<HTTPRequest> http)
-{
-  if(auto lock = m_presetManager.getLoadingLock())
-  {
-    m_presetManager.clear(transaction);
-
-    MemoryInStream stream(buffer, true);
-    XmlReader reader(stream, transaction);
-
-    if(!reader.read<PresetManagerSerializer>(&m_presetManager))
-    {
-      transaction->rollBack();
-      http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
-    }
-    else
-    {
-      m_presetManager.getEditBuffer()->sendToAudioEngine();
-    }
-  }
 }
 
 bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request)

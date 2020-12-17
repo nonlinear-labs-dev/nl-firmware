@@ -122,7 +122,10 @@ bool ParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 void ParameterLayout2::setDefault()
 {
   if(auto p = getCurrentEditParameter())
-    p->toggleLoadDefaultValue();
+  {
+    ParameterUseCases useCase(p);
+    useCase.toggleLoadDefault();
+  }
 }
 
 void ParameterLayout2::onSoundTypeChanged()

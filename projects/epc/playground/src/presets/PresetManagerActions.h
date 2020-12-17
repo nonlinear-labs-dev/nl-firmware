@@ -23,12 +23,6 @@ class PresetManagerActions : public RPCActionManager
   SoundUseCases soundUseCases;
 
  public:
-  PresetManagerActions(PresetManager& presetManager);
-
+  explicit PresetManagerActions(PresetManager& presetManager);
   bool handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request) override;
-
- private:
-  void handleImportBackupFile(UNDO::Transaction* transaction, SoupBuffer* buffer, std::shared_ptr<HTTPRequest> http);
-
-  typedef Preset* tPresetPtr;
 };

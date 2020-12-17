@@ -3,6 +3,8 @@
 #include <libundo/undo/Transaction.h>
 #include <tools/Uuid.h>
 #include <use-cases/BankUseCases.h>
+#include <libsoup/soup-message-body.h>
+#include <xml/FileInStream.h>
 
 class PresetManager;
 class Preset;
@@ -11,11 +13,19 @@ class Bank;
 class PresetManagerUseCases
 {
  public:
+  typename std::function<void(void)> ImportVersionMismatchCallback;
+
   enum class DropActions
   {
     Above,
     Below,
     Onto
+  };
+
+  enum class ImportExitCode
+  {
+    Unsupported,
+    OK
   };
 
   explicit PresetManagerUseCases(PresetManager* pm);
@@ -41,6 +51,8 @@ class PresetManagerUseCases
 
   void selectBank(const Uuid& uuid);
   void selectBank(Bank* b);
+  void selectBank(int index);
+
   void stepBankSelection(int inc, bool shift);
 
   void setOrderNumber(Bank* b, int newOrderNumber);
@@ -65,10 +77,16 @@ class PresetManagerUseCases
   void moveLeft(Bank* bank);
   void moveRight(Bank* bank);
 
+  void insertBankInCluster(Bank* bankToInsert, Bank* bankAtInsert, const Glib::ustring& directionSeenFromBankInCluster);
   void sortBankNumbers();
 
   void dropPresets(const std::string& anchorUuid, DropActions action, const Glib::ustring& csv);
 
+  ImportExitCode importBackupFile(FileInStream& in);
+  bool importBackupFile(SoupBuffer* buffer);
+  bool loadPresetFromCompareXML(const Glib::ustring& xml);
+
+  void moveAllBanks(float x, float y);
  private:
   PresetManager* m_presetManager;
 

@@ -21,6 +21,12 @@ void ParameterUseCases::recallParameterFromPreset()
   }
 }
 
+void ParameterUseCases::toggleLoadDefault()
+{
+  auto scope = m_parameter->getUndoScope().startTransaction("Set '%0'", m_parameter->getGroupAndParameterName());
+  m_parameter->toggleLoadDefaultValue(scope->getTransaction());
+}
+
 void ParameterUseCases::undoRecallParameterFromPreset(tControlPositionValue cp)
 {
   auto& scope = m_parameter->getUndoScope();

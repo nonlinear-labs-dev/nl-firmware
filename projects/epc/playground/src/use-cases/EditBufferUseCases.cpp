@@ -307,3 +307,10 @@ void EditBufferUseCases::renamePart(VoiceGroup part, const Glib::ustring& name)
   auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("Rename Part to %s", name);
   m_editBuffer->setVoiceGroupName(scope->getTransaction(), name, part);
 }
+
+void EditBufferUseCases::loadSinglePresetIntoDualSound(const Preset* preset, VoiceGroup part)
+{
+  auto scope = m_editBuffer->getUndoScope().startTransaction("Load Preset into Part " + toString(part));
+  auto transaction = scope->getTransaction();
+  m_editBuffer->undoableLoadSinglePresetIntoDualSound(transaction, preset, part);
+}

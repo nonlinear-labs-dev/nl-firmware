@@ -145,3 +145,20 @@ void BankUseCases::deletePreset(const Uuid& uuid)
     }
   }
 }
+
+void BankUseCases::selectPreset(int pos)
+{
+  if(pos < m_bank->getNumPresets())
+  {
+    auto scope = m_bank->getUndoScope().startTransaction("Select Preset '%0'", m_bank->getPresetAt(pos)->getName());
+    m_bank->selectPreset(scope->getTransaction(), pos);
+  }
+}
+
+void BankUseCases::setAttribute(const Glib::ustring& key, const Glib::ustring& value)
+{
+  auto scope = m_bank->getUndoScope().startTransaction("Set Bank attribute");
+  auto transaction = scope->getTransaction();
+  m_bank->setAttribute(transaction, key, value);
+  m_bank->updateLastModifiedTimestamp(transaction);
+}

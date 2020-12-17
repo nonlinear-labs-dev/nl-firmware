@@ -25,11 +25,8 @@ class BankActions : public RPCActionManager
  private:
   typedef Preset *tPresetPtr;
 
-  void dropPresets(UNDO::Transaction *transaction, const Glib::ustring &anchorUUID, int offset,
-                   const Glib::ustring &csv);
   void insertBank(Bank *bank, Bank *targetBank, size_t insertPos);
   void insertBank(std::shared_ptr<NetworkRequest> request, size_t offset);
-  Glib::ustring guessNameBasedOnEditBuffer() const;
 
   PresetManager &m_presetManager;
 

@@ -68,7 +68,6 @@ class Bank : public AttributesOwner
   // convenience
   void selectNextPreset();
   void selectPreviousPreset();
-  void selectPreset(size_t pos);
   void rename(const Glib::ustring &name);
   void attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, AttachmentDirection dir);
   void invalidate();

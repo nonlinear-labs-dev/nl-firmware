@@ -21,6 +21,8 @@
 #include <parameters/SplitPointParameter.h>
 #include <use-cases/ParameterUseCases.h>
 #include <use-cases/ModParameterUseCases.h>
+#include <use-cases/RibbonParameterUseCases.h>
+#include <use-cases/PedalParameterUseCases.h>
 
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);
@@ -93,8 +95,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
     if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(ParameterId(id))))
     {
-      auto scope = editBuffer->getUndoScope().startTransaction("Set ribbon touch behaviour");
-      param->undoableSetRibbonTouchBehaviour(scope->getTransaction(), mode);
+      RibbonParameterUseCases useCase(param);
+      useCase.setTouchBehaviour(mode);
     }
   });
 
@@ -104,8 +106,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
     if(auto param = dynamic_cast<RibbonParameter*>(editBuffer->findParameterByID(ParameterId(id))))
     {
-      auto scope = editBuffer->getUndoScope().startTransaction("Set ribbon return mode");
-      param->undoableSetRibbonReturnMode(scope->getTransaction(), mode);
+      RibbonParameterUseCases useCase(param);
+      useCase.setReturnMode(mode);
     }
   });
 
@@ -115,8 +117,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
     if(auto param = dynamic_cast<PedalParameter*>(editBuffer->findParameterByID(ParameterId(id))))
     {
-      auto scope = editBuffer->getUndoScope().startTransaction("Set pedal mode");
-      param->undoableSetPedalMode(scope->getTransaction(), mode);
+      PedalParameterUseCases useCase(param);
+      useCase.setPedalMode(mode);
     }
   });
 
@@ -250,6 +252,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   });
 
   addAction("select-part-from-webui", [=](auto request) {
+    //TODO rethink what selected part really should be: datamodel? but not really as we have X foci for each webUI?
     auto part = to<VoiceGroup>(request->get("part"));
     auto hwui = Application::get().getHWUI();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -266,7 +269,8 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto id = ParameterId(request->get("id"));
     if(auto p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
     {
-      p->toggleLoadDefaultValue();
+      ParameterUseCases useCase(p);
+      useCase.toggleLoadDefault();
     }
   });
 }

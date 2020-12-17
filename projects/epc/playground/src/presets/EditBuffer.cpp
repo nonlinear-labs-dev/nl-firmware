@@ -858,9 +858,8 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 
 void EditBuffer::undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGroup vg)
 {
-  auto scope = getUndoScope().startTransaction("Load Preset into Part " + toString(vg));
-  auto transaction = scope->getTransaction();
-  undoableLoadSinglePresetIntoDualSound(transaction, preset, vg);
+  EditBufferUseCases useCase(this);
+  useCase.loadSinglePresetIntoDualSound(preset, vg);
 }
 
 void EditBuffer::undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset,
@@ -1456,21 +1455,11 @@ void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transa
 
 void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
 {
-  auto scope = getUndoScope().startTransaction("Load Selected Preset Part", toString(from), "into", toString(to));
-  undoableLoadSelectedToPart(scope->getTransaction(), from, to);
-}
-
-void EditBuffer::undoableLoadSelectedToPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to)
-{
-  auto selectedPreset = getParent()->getSelectedPreset();
-
-  if(!selectedPreset)
+  if(auto selectedPreset = getParent()->getSelectedPreset())
   {
-    transaction->rollBack();
-    return;
+    EditBufferUseCases useCase(this);
+    useCase.undoableLoadToPart(selectedPreset, from, to);
   }
-
-  undoableLoadToPart(transaction, selectedPreset, from, to);
 }
 
 void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)

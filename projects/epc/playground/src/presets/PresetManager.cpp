@@ -389,12 +389,8 @@ void PresetManager::selectPreviousBank()
 
 void PresetManager::selectBank(size_t idx)
 {
-  if(idx < getNumBanks())
-  {
-    auto bank = getBankAt(idx);
-    auto transactionScope = getUndoScope().startTransaction("Select Bank '%0'", bank->getName(true));
-    selectBank(transactionScope->getTransaction(), bank->getUuid());
-  }
+  PresetManagerUseCases useCase(this);
+  useCase.selectBank(idx);
 }
 
 bool PresetManager::selectPreviousBank(UNDO::Transaction *transaction)

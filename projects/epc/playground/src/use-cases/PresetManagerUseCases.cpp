@@ -4,6 +4,11 @@
 #include <presets/ClusterEnforcement.h>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
+#include <xml/MemoryInStream.h>
+#include <device-settings/DebugLevel.h>
+#include <presets/SendEditBufferScopeGuard.h>
+#include <device-settings/DirectLoadSetting.h>
+#include <device-settings/BooleanSetting.h>
 #include "PresetManagerUseCases.h"
 #include "presets/PresetManager.h"
 #include "presets/Preset.h"
@@ -15,6 +20,9 @@
 #include "device-settings/Settings.h"
 #include "device-settings/SplitPointSyncParameters.h"
 #include "parameters/SplitPointParameter.h"
+#include <serialization/PresetManagerSerializer.h>
+#include <serialization/PresetSerializer.h>
+#include <xml/VersionAttribute.h>
 
 PresetManagerUseCases::PresetManagerUseCases(PresetManager* pm)
     : m_presetManager { pm }
@@ -195,6 +203,16 @@ void PresetManagerUseCases::selectBank(const Uuid& uuid)
     auto transactionScope = undoScope.startTransaction("Select Bank '%0'", bank->getName(true));
     auto transaction = transactionScope->getTransaction();
     m_presetManager->selectBank(transaction, uuid);
+  }
+}
+
+void PresetManagerUseCases::selectBank(int idx)
+{
+  if(idx < m_presetManager->getNumBanks())
+  {
+    auto bank = m_presetManager->getBankAt(idx);
+    auto transactionScope = m_presetManager->getUndoScope().startTransaction("Select Bank '%0'", bank->getName(true));
+    m_presetManager->selectBank(transactionScope->getTransaction(), bank->getUuid());
   }
 }
 
@@ -465,6 +483,8 @@ void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetMan
       case DropActions::Onto:
         return 1;
     }
+
+    nltools_assertNotReached();
   };
 
   int offset = actionToOffset(action);
@@ -634,6 +654,150 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
     newBank->selectPreset(transaction, newBank->getPresetAt(0)->getUuid());
 
   m_presetManager->selectBank(transaction, newBank->getUuid());
+}
+
+PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(FileInStream& in)
+{
+  if(!in.eof())
+  {
+    auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
+    m_presetManager->clear(scope->getTransaction());
+    PresetManagerSerializer serializer(m_presetManager);
+
+    XmlReader reader(in, scope->getTransaction());
+    reader.onFileVersionRead([&](int version) {
+      if(version > VersionAttribute::getCurrentFileVersion())
+      {
+        scope->getTransaction()->rollBack();
+        return Reader::FileVersionCheckResult::Unsupported;
+      }
+      return Reader::FileVersionCheckResult::OK;
+    });
+
+    if(auto lock = m_presetManager->lockLoading())
+    {
+      if(reader.read<PresetManagerSerializer>(m_presetManager))
+      {
+        m_presetManager->getEditBuffer()->sendToAudioEngine();
+        return ImportExitCode::OK;
+      }
+    }
+  }
+  return ImportExitCode::Unsupported;
+}
+
+bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer)
+{
+  if(auto lock = m_presetManager->getLoadingLock())
+  {
+    auto scope = m_presetManager->getUndoScope().startTransaction("Import all Banks");
+    auto transaction = scope->getTransaction();
+    m_presetManager->clear(transaction);
+
+    MemoryInStream stream(buffer, true);
+    XmlReader reader(stream, transaction);
+
+    if(!reader.read<PresetManagerSerializer>(m_presetManager))
+    {
+      transaction->rollBack();
+      return false;
+    }
+
+    m_presetManager->getEditBuffer()->sendToAudioEngine();
+    return true;
+  }
+  return false;
+}
+
+bool PresetManagerUseCases::loadPresetFromCompareXML(const Glib::ustring& xml)
+{
+  auto editBuffer = m_presetManager->getEditBuffer();
+
+  Preset p(editBuffer);
+
+  {
+    auto scope = UNDO::Scope::startTrashTransaction();
+    auto transaction = scope->getTransaction();
+
+    MemoryInStream stream(xml, false);
+    XmlReader reader(stream, transaction);
+
+    if(!reader.read<PresetSerializer>(&p))
+    {
+      DebugLevel::warning("Could not read Preset xml!");
+      return false;
+    }
+  }
+
+  auto loadscope = m_presetManager->getUndoScope().startTransaction("Load Compare Buffer");
+  auto loadtransaction = loadscope->getTransaction();
+
+  SendEditBufferScopeGuard scopeGuard(loadtransaction, true);
+
+  auto autoLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+  auto scopedLock = autoLoadSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
+  editBuffer->copyFrom(loadtransaction, &p);
+  editBuffer->undoableSetLoadedPresetInfo(loadtransaction, &p);
+  return true;
+}
+
+void PresetManagerUseCases::insertBankInCluster(Bank* bankToInsert, Bank* bankAtInsert,
+                                                const Glib::ustring& directionSeenFromBankInCluster)
+{
+  auto name = bankToInsert->getName(true);
+  auto scope = m_presetManager->getUndoScope().startTransaction("Insert Bank %0 into Cluster", name);
+  auto transaction = scope->getTransaction();
+
+  if(auto slaveBottom = bankToInsert->getSlaveBottom())
+    slaveBottom->attachBank(transaction, Uuid::none(), Bank::AttachmentDirection::none);
+
+  if(auto slaveRight = bankToInsert->getSlaveRight())
+    slaveRight->attachBank(transaction, Uuid::none(), Bank::AttachmentDirection::none);
+
+  if(directionSeenFromBankInCluster == "North")
+  {
+    if(auto topMaster = bankAtInsert->getMasterTop())
+    {
+      bankToInsert->attachBank(transaction, topMaster->getUuid(), Bank::AttachmentDirection::top);
+    }
+    bankAtInsert->attachBank(transaction, bankToInsert->getUuid(), Bank::AttachmentDirection::top);
+  }
+  else if(directionSeenFromBankInCluster == "South")
+  {
+    if(auto bottomSlave = bankAtInsert->getSlaveBottom())
+    {
+      bottomSlave->attachBank(transaction, bankToInsert->getUuid(), Bank::AttachmentDirection::top);
+    }
+    bankToInsert->attachBank(transaction, bankAtInsert->getUuid(), Bank::AttachmentDirection::top);
+  }
+  else if(directionSeenFromBankInCluster == "East")
+  {
+    if(auto rightSlave = bankAtInsert->getSlaveRight())
+    {
+      rightSlave->attachBank(transaction, bankToInsert->getUuid(), Bank::AttachmentDirection::left);
+    }
+    bankToInsert->attachBank(transaction, bankAtInsert->getUuid(), Bank::AttachmentDirection::left);
+  }
+  else if(directionSeenFromBankInCluster == "West")
+  {
+    if(auto leftMaster = bankAtInsert->getMasterLeft())
+    {
+      bankToInsert->attachBank(transaction, leftMaster->getUuid(), Bank::AttachmentDirection::left);
+    }
+    bankAtInsert->attachBank(transaction, bankToInsert->getUuid(), Bank::AttachmentDirection::left);
+  }
+}
+
+void PresetManagerUseCases::moveAllBanks(float x, float y)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("Move all Banks");
+  auto transaction = scope->getTransaction();
+
+  for(auto bank : m_presetManager->getBanks())
+  {
+    bank->setX(transaction, to_string(std::stoi(bank->getX()) + x));
+    bank->setY(transaction, to_string(std::stoi(bank->getY()) + y));
+  }
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)

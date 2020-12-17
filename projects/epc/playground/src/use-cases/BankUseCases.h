@@ -10,9 +10,12 @@ class BankUseCases
  public:
   explicit BankUseCases(Bank* bank);
 
+  void selectPreset(int pos);
+  void stepPresetSelection(int inc);
+
   void renameBank(const Glib::ustring& name);
   void setBankComment(const Glib::ustring& comment);
-  void stepPresetSelection(int inc);
+
   void moveBank(const std::string& x, const std::string& y);
 
   void dropPresets(const std::string& csv);
@@ -22,6 +25,6 @@ class BankUseCases
   void deletePreset(const Preset* p);
   void deletePreset(const Uuid& uuid);
 
- private:
+ void setAttribute(const Glib::ustring& key, const Glib::ustring& value);private:
   Bank* m_bank;
 };

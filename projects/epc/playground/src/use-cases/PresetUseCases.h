@@ -12,6 +12,6 @@ class PresetUseCases
   void rename(const std::string& newName);
   void setComment(const Glib::ustring& comment);
 
- private:
+ void setAttribute(const Glib::ustring& key, const Glib::ustring& value);private:
   Preset* m_preset;
 };

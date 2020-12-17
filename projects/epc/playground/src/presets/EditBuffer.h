@@ -43,7 +43,6 @@ class EditBuffer : public ParameterGroupSet
 
   void undoableLoadSelectedPreset(VoiceGroup loadInto);
   void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
-  void undoableLoadSelectedToPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
 
   void fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group);
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset);
