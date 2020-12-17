@@ -1,4 +1,5 @@
 #include <nltools/logging/Log.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
 #include "NoteShiftStateMachine.h"
 #include "Application.h"
 #include "device-settings/Settings.h"

@@ -9,16 +9,16 @@ import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.settings.OnOffContextMenu.Items;
 import com.nonlinearlabs.client.world.maps.settings.OnOffContextMenu.Listener;
 
-public class ExternalMidi extends Setting {
+public class EnableUSBCommunication extends Setting {
 
-	protected ExternalMidi(MapsLayout parent) {
-		super(parent, "Enable External Midi", "Off");
-	
+	protected EnableUSBCommunication(MapsLayout parent) {
+		super(parent, "Enable USB Communication", "Off");
+
 		DeviceSettingsProvider.get().register(t -> {
 			setCurrentValue(t.externalMidiEnabled);
 			return true;
 		});
-    }
+	}
 
 	@Override
 	public IContextMenu createMenu(NonPosition pos) {

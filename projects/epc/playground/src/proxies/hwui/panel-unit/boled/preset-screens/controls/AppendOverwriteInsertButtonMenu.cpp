@@ -83,11 +83,16 @@ void AppendOverwriteInsertButtonMenu::executeAction()
       Application::get().getUndoScope()->resetCukooTransaction();
 
       auto setting = Application::get().getSettings()->getSetting<PresetStoreModeSetting>()->get();
+      bool modified = pm->getEditBuffer()->isModified();
 
       switch(setting)
       {
         case PresetStoreModeSettings::PRESET_STORE_MODE_APPEND:
           useCases->appendPreset(selectedBank);
+          if(modified)
+          {
+            pushRenameScreen();
+          }
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_INSERT:
@@ -96,6 +101,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_OVERWRITE:
           useCases->overwritePreset(selectedPreset);
+          animate();
           break;
       }
     }

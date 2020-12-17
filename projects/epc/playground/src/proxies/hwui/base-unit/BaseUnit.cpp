@@ -7,16 +7,35 @@
 #include "device-settings/Settings.h"
 #include "device-settings/BaseUnitUIMode.h"
 #include <nltools/messaging/Message.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
+#include <proxies/hwui/panel-unit/ScreenSaverUsageMode.h>
 
 BaseUnit::BaseUnit()
 {
   Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(mem_fun(this, &BaseUnit::respectUsageMode));
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::RibbonLed,
                                         sigc::mem_fun(this, &BaseUnit::onBBBBConnected));
+
+  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
+      mem_fun(this, &BaseUnit::onScreenSaverState));
 }
 
 BaseUnit::~BaseUnit()
 {
+}
+
+void BaseUnit::onScreenSaverState(bool state)
+{
+  if(state)
+  {
+    m_stashedUsageMode = getUsageMode();
+    setUsageMode(new ScreenSaverUsageMode());
+  }
+  else if(m_stashedUsageMode)
+  {
+    restoreUsageMode(m_stashedUsageMode);
+    m_stashedUsageMode = nullptr;
+  }
 }
 
 void BaseUnit::init()
@@ -32,7 +51,7 @@ void BaseUnit::onBBBBConnected()
 
 void BaseUnit::respectUsageMode(const Setting *s)
 {
-  const BaseUnitUIMode *m = dynamic_cast<const BaseUnitUIMode *>(s);
+  auto m = dynamic_cast<const BaseUnitUIMode *>(s);
 
   switch(m->get())
   {

@@ -45,9 +45,6 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 
   Application::get().getHWUI()->onLoadToPartModeChanged(sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
-
-  Application::get().getPresetManager()->onPresetStoreHappened(
-      sigc::mem_fun(this, &PresetManagerLayout::onPresetStoreHappened));
 }
 
 PresetManagerLayout::~PresetManagerLayout()
@@ -400,13 +397,4 @@ StoreModeData *PresetManagerLayout::getStoreModeData()
 void PresetManagerLayout::setStoreModeData(std::unique_ptr<StoreModeData> ptr)
 {
   getStoreModePtr() = std::move(ptr);
-}
-
-void PresetManagerLayout::onPresetStoreHappened()
-{
-  auto hwui = Application::get().getHWUI();
-  if(hwui->getFocusAndMode().mode == UIMode::Store)
-  {
-    hwui->undoableSetFocusAndMode(FocusAndMode(UIMode::Select));
-  }
 }

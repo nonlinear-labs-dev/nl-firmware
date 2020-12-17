@@ -2104,15 +2104,15 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
                 ->m_scaled)
       + C15::Config::physical_key_from;
 
-  if(from == edgeCaseHackKey[_layer])
-  {
-    from = edgeCaseHackRemap[_layer];
-  }
   const float range
       = m_params
             .get_local_direct(_layer,
                               static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range))
             ->m_scaled;
+  if((from == edgeCaseHackKey[_layer]) && (range == 0.0f))
+  {
+    from = edgeCaseHackRemap[_layer];
+  }
   ///
   if(VOICE_FADE_INTERPOLATION)
   {

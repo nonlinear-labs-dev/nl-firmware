@@ -121,19 +121,15 @@ check_preconditions() {
     rm /update/EPC/update.tar
 
     if [[ "$(executeAsRoot "uname -r")" == "4.9.9-rt6-1-rt" ]]; then
-        if ! ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar; then
-            report "E86: ePC update missing" "Please retry download!" && return 1
-        fi
-        FIX_EPC=true
+        [ -f /update/EPC/update_5-7i3.tar ] && { ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar; FIX_EPC=true; } ||
+            { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     else
-        if ! ln -s /update/EPC/update_10i3.tar /update/EPC/update.tar; then
-            report "E86: ePC update missing" "Please retry download!" && return 1
-        fi
-        FIX_EPC=false
+        [ -f /update/EPC/update_10i3.tar ] && { ln -s /update/EPC/update_10i3.tar /update/EPC/update.tar; FIX_EPC=false; } ||
+            { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     fi
 
-    [ -f "/update/BBB/rootfs.tar.gz" ] || (report "E87: BBB update missing" "Please retry download!" && return 1)
-    [ -f "/update/playcontroller/main.bin" ] || (report "E88: playcontroller update missing" "Please retry download!" && return 1)
+    [ -f "/update/BBB/rootfs.tar.gz" ] || { report "" "E87: BBB update missing" "Please retry download!"; return 1; }
+    [ -f "/update/playcontroller/main.bin" ] || { report "" "E88: playcontroller update missing" "Please retry download!"; return 1; }
 
     return 0
 }
