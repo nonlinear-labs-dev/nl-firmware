@@ -28,7 +28,6 @@ class ModulateableParameter : public Parameter
   virtual void undoableSetModAmount(UNDO::Transaction *transaction, double amount);
 
   void undoableIncrementMCSelect(int inc);
-  virtual void undoableIncrementMCAmount(int inc, ButtonModifiers modifiers);
   void undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc);
   virtual void undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc, ButtonModifiers modifiers);
 

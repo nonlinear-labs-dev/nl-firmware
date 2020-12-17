@@ -35,16 +35,18 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::IncParam, [eb, hwui]() {
       if(auto p = eb->getSelected(hwui->getCurrentVoiceGroup()))
       {
-        auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
-        p->stepCPFromHwui(scope->getTransaction(), 1, hwui->getButtonModifiers());
+        auto modifiers = hwui->getButtonModifiers();
+        ParameterUseCases useCase(p);
+        useCase.incDec(1, modifiers[ButtonModifier::FINE], modifiers[ButtonModifier::SHIFT]);
       }
     });
 
     registerEvent(EventSinks::DecParam, [eb, hwui]() {
       if(auto p = eb->getSelected(hwui->getCurrentVoiceGroup()))
       {
-        auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
-        p->stepCPFromHwui(scope->getTransaction(), -1, hwui->getButtonModifiers());
+        auto modifiers = hwui->getButtonModifiers();
+        ParameterUseCases useCase(p);
+        useCase.incDec(-1, modifiers[ButtonModifier::FINE], modifiers[ButtonModifier::SHIFT]);
       }
     });
 

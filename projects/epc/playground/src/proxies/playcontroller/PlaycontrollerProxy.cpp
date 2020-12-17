@@ -287,18 +287,15 @@ void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gin
   m_throttledAbsoluteParameterValue = value;
 
   m_throttledAbsoluteParameterChange.doTask([this, p]() {
-    auto scope
-        = Application::get().getUndoScope()->startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+    ParameterUseCases useCase(p);
 
     if(p->isBiPolar())
     {
-      p->setCPFromHwui(scope->getTransaction(), (m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-      DebugLevel::info("set it (absolutely - bipolar) to", p->getControlPositionValue());
+      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
     }
     else
     {
-      p->setCPFromHwui(scope->getTransaction(), (m_throttledAbsoluteParameterValue / 16000.0));
-      DebugLevel::info("set it (absolutely - unipolar) to", p->getControlPositionValue());
+      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
     }
   });
 }

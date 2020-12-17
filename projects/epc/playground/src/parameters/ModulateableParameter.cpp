@@ -190,12 +190,8 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
 
   if(m_modulationAmount != def)
   {
-    auto eb = Application::get().getPresetManager()->getEditBuffer();
-    auto dual = eb->isDual() && getID().isDual();
-    auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
-                                                           dual ? getGroupAndParameterNameWithVoiceGroup()
-                                                                : getGroupAndParameterName());
-    setModulationAmount(scope->getTransaction(), def);
+    ModParameterUseCases useCase(this);
+    useCase.setModulationAmount(def);
   }
 }
 
@@ -212,16 +208,6 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transac
     src -= numChoices;
 
   setModulationSource(transaction, (MacroControls) src);
-}
-
-void ModulateableParameter::undoableIncrementMCAmount(int inc, ButtonModifiers modifiers)
-{
-  auto dual = getID().isDual() && Application::get().getPresetManager()->getEditBuffer()->isDual();
-
-  auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
-                                                         dual ? getGroupAndParameterNameWithVoiceGroup()
-                                                              : getGroupAndParameterName());
-  undoableIncrementMCAmount(scope->getTransaction(), inc, modifiers);
 }
 
 void ModulateableParameter::undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc,

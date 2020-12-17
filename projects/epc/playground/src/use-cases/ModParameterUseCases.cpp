@@ -141,7 +141,28 @@ void ModParameterUseCases::selectModSourceAndSelectTargetParameter(MacroControls
 {
   auto scope = m_modParam->getUndoScope().startTransaction("Set Modulation Source");
   m_modParam->undoableSelectModSource(scope->getTransaction(), mc);
- 
+
   if(auto eb = dynamic_cast<EditBuffer*>(m_modParam->getParentGroup()->getParent()))
     eb->undoableSelectParameter(scope->getTransaction(), m_modParam);
+}
+
+void ModParameterUseCases::setModulationAmount(tControlPositionValue amt)
+{
+  //TODO remove EB dependency
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto dual = eb->isDual() && m_modParam->getID().isDual();
+  auto name = dual ? m_modParam->getGroupAndParameterNameWithVoiceGroup() : m_modParam->getGroupAndParameterName();
+  auto scope = m_modParam->getUndoScope().startContinuousTransaction(m_modParam->getAmountCookie(),
+                                                                     "Set MC Amount for '%0'", name);
+  m_modParam->setModulationAmount(scope->getTransaction(), amt);
+}
+
+void ModParameterUseCases::setModulationLimit(tControlPositionValue amt, tControlPositionValue cp)
+{
+  auto& undoScope = m_modParam->getUndoScope();
+  const auto name = m_modParam->getGroupAndParameterName();
+  auto scope = undoScope.startContinuousTransaction(m_modParam, "Set Modulation Limit for '%0'", name);
+  auto transaction = scope->getTransaction();
+  m_modParam->undoableSetModAmount(transaction, amt);
+  m_modParam->setCPFromHwui(transaction, cp);
 }

@@ -314,3 +314,10 @@ void EditBufferUseCases::loadSinglePresetIntoDualSound(const Preset* preset, Voi
   auto transaction = scope->getTransaction();
   m_editBuffer->undoableLoadSinglePresetIntoDualSound(transaction, preset, part);
 }
+
+void EditBufferUseCases::scheduleUndoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to)
+{
+  auto name = "Load Preset Part";
+  auto scope = m_editBuffer->getUndoScope().startContinuousTransaction(this, std::chrono::milliseconds(500), name);
+  m_editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, from, to);
+}

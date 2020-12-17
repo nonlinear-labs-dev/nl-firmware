@@ -139,14 +139,9 @@ bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   if(auto p = getCurrentEditParameter())
   {
-    if(!p->isDisabled())
-    {
-      auto name = ParameterId::isGlobal(p->getID().getNumber()) ? p->getGroupAndParameterName()
-                                                                : p->getGroupAndParameterNameWithVoiceGroup();
-      auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", name);
-      p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
-      return true;
-    }
+    ParameterUseCases useCase(p);
+    useCase.incDec(inc, modifiers[ButtonModifier::FINE], modifiers[ButtonModifier::SHIFT]);
+    return true;
   }
 
   return super::onRotary(inc, modifiers);

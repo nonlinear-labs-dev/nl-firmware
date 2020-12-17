@@ -480,6 +480,7 @@ bool RibbonParameterSelectLayout2::onRotary(int inc, ButtonModifiers modifiers)
   {
     if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
     {
+      //TODO move into useCase?
       auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
 
       int step = inc > 0 ? 1 : -1;
@@ -531,6 +532,7 @@ bool PedalParameterSelectLayout2::onRotary(int inc, ButtonModifiers modifiers)
   {
     if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
     {
+      //TODO move into useCase?
       auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
 
       int step = inc > 0 ? 1 : -1;

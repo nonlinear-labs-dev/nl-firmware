@@ -978,12 +978,13 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
         }
       }
 
-      auto scope = getUndoScope().startContinuousTransaction(this, std::chrono::milliseconds(500), "Load Preset Part");
-      eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, loadFrom, loadTo);
+      EditBufferUseCases useCase(eb);
+      useCase.scheduleUndoableLoadToPart(preset, loadFrom, loadTo);
       m_autoLoadScheduled = false;
     }
   });
 }
+
 void PresetManager::autoLoadPresetAccordingToLoadType()
 {
   auto ebUseCases = Application::get().getEditBufferUseCases();

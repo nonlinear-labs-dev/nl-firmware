@@ -18,6 +18,7 @@ class ParameterUseCases
   void incDec(int incs, bool fine, bool shift);
   void setDefault();
 
+  void setControlPosition(tControlPositionValue cp);
  private:
   Parameter* m_parameter = nullptr;
 };
