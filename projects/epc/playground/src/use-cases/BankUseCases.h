@@ -13,6 +13,11 @@ class BankUseCases
   void renameBank(const Glib::ustring& name);
   void setBankComment(const Glib::ustring& comment);
   void stepPresetSelection(int inc);
+  void moveBank(const std::string& x, const std::string& y);
+
+  void dropPresets(const std::string& csv);
+  void dropBank(const Bank* b);
+  void dropBankOnPreset(const Bank* b, const Uuid& presetAnchor);
 
   void deletePreset(const Preset* p);
   void deletePreset(const Uuid& uuid);

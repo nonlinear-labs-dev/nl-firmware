@@ -1,3 +1,5 @@
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
 #include "BankUseCases.h"
 #include "presets/Bank.h"
 #include "presets/PresetManager.h"
@@ -46,6 +48,82 @@ void BankUseCases::stepPresetSelection(int inc)
   }
 }
 
+void BankUseCases::dropPresets(const std::string& csv)
+{
+  if(auto pm = m_bank->getPresetManager())
+  {
+    auto scope = m_bank->getUndoScope().startTransaction("Drop Presets on Bank");
+    auto transaction = scope->getTransaction();
+
+    std::vector<std::string> strs;
+    boost::split(strs, csv, boost::is_any_of(","));
+
+    for(const auto& uuid : strs)
+    {
+      if(auto src = pm->findPreset(uuid))
+      {
+        m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *src, true));
+
+        if(m_bank == src->getParent())
+          m_bank->deletePreset(transaction, uuid);
+      }
+    }
+  }
+}
+
+void BankUseCases::dropBank(const Bank* source)
+{
+  if(auto pm = m_bank->getPresetManager())
+  {
+    if(m_bank != source && source)
+    {
+      auto insertPos = m_bank->getNumPresets();
+      auto scope = pm->getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", source->getName(true),
+                                                       m_bank->getName(true));
+      auto transaction = scope->getTransaction();
+      size_t i = 0;
+
+      source->forEachPreset([&](auto p) {
+        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
+        i++;
+      });
+    }
+  }
+}
+
+void BankUseCases::dropBankOnPreset(const Bank* sourceBank, const Uuid& presetAnchor)
+{
+  if(m_bank != sourceBank)
+  {
+    auto srcBankName = sourceBank->getName(true);
+    auto tgtBankName = m_bank->getName(true);
+    auto scope = m_bank->getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", srcBankName, tgtBankName);
+    auto transaction = scope->getTransaction();
+
+    size_t insertPos = m_bank->getPresetPosition(presetAnchor) + 1;
+    size_t numPresets = m_bank->getNumPresets();
+
+    for(size_t i = 0; i < numPresets; i++)
+    {
+      auto p = std::make_unique<Preset>(m_bank, *sourceBank->getPresetAt(i), true);
+      m_bank->insertPreset(transaction, insertPos + i, std::move(p));
+    }
+
+    m_bank->deletePreset(scope->getTransaction(), presetAnchor);
+  }
+}
+
+void BankUseCases::moveBank(const std::string& x, const std::string& y)
+{
+  if(m_bank->getX() != x || m_bank->getY() != y)
+  {
+    auto scope = m_bank->getUndoScope().startTransaction("Move preset bank '%0'", m_bank->getName(true));
+    auto transaction = scope->getTransaction();
+    m_bank->setX(transaction, x);
+    m_bank->setY(transaction, y);
+  }
+}
+
 void BankUseCases::deletePreset(const Preset* p)
 {
   if(p)
@@ -53,7 +131,7 @@ void BankUseCases::deletePreset(const Preset* p)
     deletePreset(p->getUuid());
   }
 }
- 
+
 void BankUseCases::deletePreset(const Uuid& uuid)
 {
   if(auto preset = m_bank->findPreset(uuid))

@@ -46,9 +46,10 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   addAction("rename-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
     auto newName = request->get("name");
-    if(auto b = pmUseCases.getBankUseCase(uuid))
+    if(auto b = m_presetManager.findBank(uuid))
     {
-      b->renameBank(newName);
+      BankUseCases useCase(b);
+      useCase.renameBank(newName);
     }
   });
 

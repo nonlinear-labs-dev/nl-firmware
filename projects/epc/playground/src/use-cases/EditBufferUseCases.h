@@ -6,6 +6,7 @@
 #include "MacroControlParameterUseCases.h"
 #include <memory>
 #include <playground.h>
+#include <tools/Uuid.h>
 
 class EditBuffer;
 class Preset;
@@ -32,6 +33,7 @@ class EditBufferUseCases
   void unmuteBothPartsWithTransactionNameForPart(VoiceGroup part);
   void mutePartUnmuteOtherPart(VoiceGroup part);
 
+  void undoableLoad(const Uuid& uuid);
   void undoableLoad(const Preset* preset);
   void undoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to);
   void loadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup to);

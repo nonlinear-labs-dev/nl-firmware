@@ -22,6 +22,7 @@ class PresetManagerUseCases
 
   //Preset
   //Store Actions
+  void overwritePreset(const Uuid& uuid);
   void overwritePreset(Preset* preset);
   void overwritePresetWithPreset(Preset* target, Preset* source);
   void insertPresetWithUUID(Bank* bank, size_t pos, const std::string& uuid);
@@ -29,9 +30,8 @@ class PresetManagerUseCases
   void appendPreset(Bank* bank);
   void appendPresetWithUUID(Bank* bank, const std::string& uuid);
   void createBankAndStoreEditBuffer();
-
-  std::unique_ptr<BankUseCases> getBankUseCase(Bank*) const;
-  std::unique_ptr<BankUseCases> getBankUseCase(const Uuid& uuid) const;
+  void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
+  void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
   void newBank(const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& name);
   void newBank(const Glib::ustring& x, const Glib::ustring& y);
@@ -43,8 +43,21 @@ class PresetManagerUseCases
   void selectBank(Bank* b);
   void stepBankSelection(int inc, bool shift);
 
+  void setOrderNumber(Bank* b, int newOrderNumber);
+
+  void movePresetAbove(const Uuid& presetToMoveUuid, const Uuid& presetAnchorUuid);
+  void movePresetBelow(const Uuid& presetToMoveUuid, const Uuid& presetAnchorUuid);
+  void movePresetTo(const Uuid& overwriteWith, const Uuid& presetToOverwrite);
+
+  void copyPresetAbove(const Uuid& presetToCopy, const Uuid& presetAnchorUuid);
+  void copyPresetBelow(const Uuid& presetToCopy, const Uuid& presetAnchorUuid);
+
+  void insertEditBufferAbove(const Uuid& anchor, const Uuid& ebUuid);
+  void insertEditBufferBelow(const Uuid& anchor, const Uuid& ebUuid);
+
   void deleteBank(const Uuid& uuid);
   void deleteBank(Bank* b);
+  void deletePresets(const std::vector<std::string>& uuids, bool deleteBanks);
 
   void selectMidiBank(Bank* b);
   void moveBankCluster(std::vector<std::string> uuids);

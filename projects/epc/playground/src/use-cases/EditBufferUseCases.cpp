@@ -45,6 +45,17 @@ void EditBufferUseCases::undoableLoadToPart(const Preset* preset, VoiceGroup fro
   m_editBuffer->undoableLoadToPart(scope->getTransaction(), preset, from, to);
 }
 
+void EditBufferUseCases::undoableLoad(const Uuid& uuid)
+{
+  if(auto pm = m_editBuffer->getParent())
+  {
+    if(auto preset = pm->findPreset(uuid))
+    {
+      undoableLoad(preset);
+    }
+  }
+}
+
 void EditBufferUseCases::undoableLoad(const Preset* preset)
 {
   auto scope = m_editBuffer->getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
