@@ -13,12 +13,26 @@
 #include <device-settings/SplitPointSyncParameters.h>
 #include <parameter_declarations.h>
 #include <libundo/undo/Scope.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterId& id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
                                               ScaleConverter::get<LinearBipolar60StScaleConverter>(),
                                               id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.5 + 1 / 60.0, 60, 60)
 {
+  auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  setting->onChange(sigc::mem_fun(this, &SplitPointParameter::onLinkChanged));
+}
+
+void SplitPointParameter::onLinkChanged(const Setting* s)
+{
+  sendParameterMessage();
+}
+
+void SplitPointParameter::sendParameterMessage() const
+{
+  if(Application::exists())
+    Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulateableParameter>(this);
 }
 
 Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
