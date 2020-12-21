@@ -32,7 +32,7 @@ class Preset;
  *                  60  |  1    |  C1-C6  |     C6   
  */
 
-class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
+class SplitPointParameter : public ModulateableParameterWithUnusualModUnit, public sigc::trackable
 {
  public:
   SplitPointParameter(ParameterGroup* group, const ParameterId& id);
@@ -58,4 +58,8 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   bool isAtExtremes(tControlPositionValue value);
 
   void clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller);
+  void onLinkChanged(const Setting* s);
+
+ private:
+  void sendParameterMessage() const override;
 };
