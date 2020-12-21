@@ -73,7 +73,6 @@ class ModulateableParameter : public Parameter
   void undoableUndoRecallMCSel(MacroControls &controls);
   void undoableUndoRecallMCAmount(float mcAmt);
   void undoableUndoRecallMCPos(float mcPos);
-
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
