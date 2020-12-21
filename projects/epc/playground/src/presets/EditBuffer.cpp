@@ -176,6 +176,11 @@ sigc::connection EditBuffer::onSoundTypeChanged(const sigc::slot<void, SoundType
     return m_signalTypeChanged.connect(s);
 }
 
+sigc::connection EditBuffer::onEditBufferConverted(const sigc::slot<void, SoundType> &s)
+{
+  return m_signalConversionHappened.connect(s);
+}
+
 UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)
 {
   m_deferredJobs.trigger();
@@ -801,7 +806,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   SendEditBufferScopeGuard scopeGuard(transaction, true);
 
   setName(transaction, getVoiceGroupName(copyFrom));
-  undoableSetType(transaction, SoundType::Single);
+  undoableSetTypeFromConvert(transaction, SoundType::Single);
 
   if(oldType == SoundType::Split)
     undoableConvertSplitToSingle(transaction, copyFrom);
@@ -864,7 +869,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   SendEditBufferScopeGuard scopeGuard(transaction, true);
 
-  undoableSetType(transaction, type);
+  undoableSetTypeFromConvert(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
     undoableConvertSingleToLayer(transaction);
@@ -934,6 +939,24 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
       swap->swapWith(m_type);
       initUnisonVoicesScaling(m_type);
       m_signalTypeChanged.send(m_type);
+      onChange();
+    });
+  }
+}
+
+void EditBuffer::undoableSetTypeFromConvert(UNDO::Transaction *transaction, SoundType type)
+{
+  if(m_type != type)
+  {
+    auto swap = UNDO::createSwapData(type);
+
+    cleanupParameterSelection(transaction, m_type, type);
+
+    transaction->addSimpleCommand([=](auto state) {
+      swap->swapWith(m_type);
+      initUnisonVoicesScaling(m_type);
+      m_signalTypeChanged.send(m_type);
+      m_signalConversionHappened.send(m_type);
       onChange();
     });
   }
