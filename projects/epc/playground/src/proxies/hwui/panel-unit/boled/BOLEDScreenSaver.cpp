@@ -4,6 +4,9 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include "BOLEDScreenSaver.h"
+#include <device-settings/Settings.h>
+#include <device-settings/Setting.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <glibmm/main.h>
 #include <chrono>
 
@@ -65,4 +68,10 @@ bool BOLEDScreenSaver::animate()
 void BOLEDScreenSaver::destroy()
 {
   getOLEDProxy().resetOverlay();
+}
+
+bool BOLEDScreenSaver::onRotary(int inc, ButtonModifiers modifiers)
+{
+  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->endAndReschedule();
+  return true;
 }
