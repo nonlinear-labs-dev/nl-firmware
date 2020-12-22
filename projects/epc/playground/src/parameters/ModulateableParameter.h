@@ -28,7 +28,6 @@ class ModulateableParameter : public Parameter
   virtual void undoableSetModAmount(UNDO::Transaction *transaction, double amount);
 
   void undoableIncrementMCSelect(int inc);
-  virtual void undoableIncrementMCAmount(int inc, ButtonModifiers modifiers);
   void undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc);
   virtual void undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc, ButtonModifiers modifiers);
 
@@ -65,14 +64,8 @@ class ModulateableParameter : public Parameter
   bool isMacroControlAssignedAndChanged() const;
   MacroControlParameter *getMacroControl() const;
 
-  void undoableRecallMCPos();
-  void undoableRecallMCSource();
-  void undoableRecallMCAmount();
   bool isDefaultLoaded() const override;
 
-  void undoableUndoRecallMCSel(MacroControls &controls);
-  void undoableUndoRecallMCAmount(float mcAmt);
-  void undoableUndoRecallMCPos(float mcPos);
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 

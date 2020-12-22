@@ -171,12 +171,26 @@ std::string Bank::getName(bool withFallback) const
 
 std::string Bank::getX() const
 {
-  return m_x;
+  if(m_x.empty())
+  {
+    return "0";
+  }
+  else
+  {
+    return m_x;
+  }
 }
 
 std::string Bank::getY() const
 {
-  return m_y;
+  if(m_y.empty())
+  {
+    return "0";
+  }
+  else
+  {
+    return m_y;
+  }
 }
 
 const Uuid &Bank::getSelectedPresetUuid() const
@@ -283,12 +297,14 @@ Bank *Bank::getSlaveBottom() const
 
 void Bank::selectNextPreset()
 {
-  selectPreset(getNextPresetPosition());
+  BankUseCases useCase(this);
+  useCase.selectPreset(getNextPresetPosition());
 }
 
 void Bank::selectPreviousPreset()
 {
-  selectPreset(getPreviousPresetPosition());
+  BankUseCases useCase(this);
+  useCase.selectPreset(getPreviousPresetPosition());
 }
 
 void Bank::selectNextPreset(UNDO::Transaction *transaction)
@@ -307,15 +323,6 @@ void Bank::selectPreset(UNDO::Transaction *transaction, size_t pos)
     selectPreset(transaction, getPresetAt(pos)->getUuid());
 }
 
-void Bank::selectPreset(size_t pos)
-{
-  if(pos < getNumPresets())
-  {
-    auto scope = getUndoScope().startTransaction("Select Preset '%0'", getPresetAt(pos)->getName());
-    selectPreset(scope->getTransaction(), pos);
-  }
-}
-
 size_t Bank::getNextPresetPosition() const
 {
   return m_presets.getNextPosition(getSelectedPresetUuid());
@@ -328,8 +335,8 @@ size_t Bank::getPreviousPresetPosition() const
 
 void Bank::rename(const Glib::ustring &name)
 {
-  auto scope = getUndoScope().startTransaction("Rename Preset '%0'", name);
-  setName(scope->getTransaction(), name);
+  BankUseCases useCase(this);
+  useCase.renameBank(name);
 }
 
 void Bank::attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, Bank::AttachmentDirection dir)
@@ -701,4 +708,9 @@ const Preset *Bank::getFirstPreset() const
   if(m_presets.empty())
     return nullptr;
   return m_presets.at(0);
+}
+
+Glib::ustring Bank::getComment()
+{
+  return getAttribute("Comment", "");
 }

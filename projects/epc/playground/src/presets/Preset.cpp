@@ -552,3 +552,8 @@ std::vector<std::pair<GroupId, const PresetParameterGroup *>> Preset::getGroups(
   }
   return ret;
 }
+
+Glib::ustring Preset::getComment()
+{
+  return getAttribute("Comment", "");
+}

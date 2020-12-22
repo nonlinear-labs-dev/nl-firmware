@@ -15,6 +15,13 @@ RenameBankLayout::RenameBankLayout(UNDO::Transaction *transaction)
   m_currentBank = Application::get().getPresetManager()->getSelectedBank();
 }
 
+RenameBankLayout::RenameBankLayout()
+    : super()
+    , m_transaction { nullptr }
+{
+  m_currentBank = Application::get().getPresetManager()->getSelectedBank();
+}
+
 void RenameBankLayout::commit(const Glib::ustring &newName)
 {
   if(m_currentBank)
@@ -27,8 +34,8 @@ void RenameBankLayout::commit(const Glib::ustring &newName)
     }
     else
     {
-      auto s = Application::get().getPresetManager()->getUndoScope().startTransaction("Rename Bank");
-      m_currentBank->setName(s->getTransaction(), newName);
+      BankUseCases useCase(m_currentBank);
+      useCase.renameBank(newName);
     }
   }
 }

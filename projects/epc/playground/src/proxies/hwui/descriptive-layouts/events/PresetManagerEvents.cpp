@@ -75,14 +75,14 @@ namespace DescriptiveLayouts
     }
 
     auto pm = Application::get().getPresetManager();
+    PresetManagerUseCases useCases(pm);
     if(auto b = cursor.getBank())
     {
       auto currentBank = pm->getSelectedBank();
 
       if(currentBank != b)
       {
-        auto transaction = Application::get().getUndoScope()->startTransaction("Select Bank");
-        pm->selectBank(transaction->getTransaction(), b->getUuid());
+        useCases.selectBank(b);
       }
       else if(currentBank)
       {
@@ -91,8 +91,7 @@ namespace DescriptiveLayouts
 
         if(currentPreset != newPreset && newPreset)
         {
-          auto transaction = Application::get().getUndoScope()->startTransaction("Select Preset");
-          currentBank->selectPreset(transaction->getTransaction(), newPreset->getUuid());
+          useCases.selectPreset(newPreset);
         }
       }
     }

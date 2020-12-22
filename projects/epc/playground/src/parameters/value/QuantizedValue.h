@@ -3,6 +3,7 @@
 #include "ClippedValue.h"
 #include "proxies/hwui/HWUIEnums.h"
 #include <memory>
+#include <libundo/undo/Transaction.h>
 
 class Parameter;
 
@@ -21,11 +22,11 @@ class QuantizedValue : public ClippedValue
    public:
     IncrementalChanger(Initiator initiator, QuantizedValue &value);
     IncrementalChanger(const IncrementalChanger &other);
-    void changeBy(tControlPositionValue amount);
+    void changeBy(UNDO::Transaction* transaction, tControlPositionValue amount, bool fine);
 
     bool isManaging(const QuantizedValue &v) const;
 
-   private:
+   Parameter* getOwner();private:
     Initiator m_initiator;
     QuantizedValue &m_value;
     tValueType m_lastQuantizedValue;
@@ -50,7 +51,9 @@ class QuantizedValue : public ClippedValue
   void applyModulation(tControlPositionValue delta);
 
   tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
+  tControlPositionValue getNextStepValue(int incs, bool fine, bool shift) const;
   tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, ButtonModifiers modifiers) const;
+  tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, bool fine, bool shift) const;
 
   tTcdValue getTcdValue() const;
   void setTcdValue(tTcdValue v);

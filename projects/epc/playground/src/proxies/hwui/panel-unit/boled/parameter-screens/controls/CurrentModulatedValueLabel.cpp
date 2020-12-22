@@ -27,8 +27,8 @@ bool CurrentModulatedValueLabel::onRotary(int inc, ButtonModifiers modifiers)
 {
   if(auto p = getModulatedParameter())
   {
-    auto scope = p->getUndoScope().startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
-    p->stepCPFromHwui(scope->getTransaction(), inc, modifiers);
+    ParameterUseCases useCase(p);
+    useCase.incDec(inc, modifiers[ButtonModifier::FINE], modifiers[ButtonModifier::SHIFT]);
     return true;
   }
   return false;
@@ -38,7 +38,7 @@ void CurrentModulatedValueLabel::setDefault()
 {
   if(auto param = getModulatedParameter())
   {
-    auto scope = param->getUndoScope().startTransaction("Set Default '%0'", param->getGroupAndParameterName());
-    param->setCPFromHwui(scope->getTransaction(), param->getDefaultValue());
+    ParameterUseCases useCase(param);
+    useCase.setDefault();
   }
 }

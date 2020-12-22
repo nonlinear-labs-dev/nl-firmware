@@ -1,7 +1,7 @@
 #include <presets/ClusterEnforcement.h>
 #include <tools/PerformanceTimer.h>
 
-ClusterEnforcement::ClusterEnforcement()
+ClusterEnforcement::ClusterEnforcement(PresetManager* pm)
 {
   m_presetManager = Application::get().getPresetManager();
 }
@@ -264,18 +264,6 @@ std::vector<Bank*> buildVectorFromNodeVector(const std::vector<ClusterEnforcemen
   for(const auto& x : nodeVec)
     ret.push_back(x->bank);
   return ret;
-}
-
-void ClusterEnforcement::sortBankNumbers()
-{
-  PerformanceTimer t("Sort Banks");
-
-  auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Sort Bank Numbers");
-  auto transaction = scope->getTransaction();
-
-  ClusterEnforcement ce;
-  auto newBanks = ce.sortBanks();
-  Application::get().getPresetManager()->sortBanks(transaction, newBanks);
 }
 
 std::vector<Bank*> ClusterEnforcement::sortBanks()

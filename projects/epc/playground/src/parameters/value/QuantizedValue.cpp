@@ -35,10 +35,9 @@ bool QuantizedValue::IncrementalChanger::isManaging(const QuantizedValue &v) con
   return &v == &m_value;
 }
 
-void QuantizedValue::IncrementalChanger::changeBy(tControlPositionValue amount)
+void QuantizedValue::IncrementalChanger::changeBy(UNDO::Transaction *transaction, tControlPositionValue amount,
+                                                  bool fine)
 {
-  bool fine = Application::get().getHWUI()->isResolutionFine();
-
   if(fine)
     amount = amount * m_value.getCoarseDenominator() / m_value.getFineDenominator();
 
@@ -59,13 +58,16 @@ void QuantizedValue::IncrementalChanger::changeBy(tControlPositionValue amount)
     }
 
     auto owner = m_value.m_owner;
-    auto scope = Application::get().getUndoScope()->startContinuousTransaction(owner, "Set '%0'",
-                                                                               owner->getGroupAndParameterName());
-    owner->setCPFromHwui(scope->getTransaction(), newVal);
+    owner->setCPFromHwui(transaction, newVal);
 
     m_pendingAmount = 0;
     m_lastQuantizedValue = newVal;
   }
+}
+
+Parameter *QuantizedValue::IncrementalChanger::getOwner()
+{
+  return m_value.m_owner;
 }
 
 QuantizedValue::QuantizedValue(Parameter *owner, const ScaleConverter *scale, tControlPositionValue def,
@@ -112,12 +114,14 @@ tControlPositionValue QuantizedValue::getNextStepValue(int incs, ButtonModifiers
   return getNextStepValue(getRawValue(), incs, modifiers);
 }
 
-tControlPositionValue QuantizedValue::getNextStepValue(tControlPositionValue value, int incs,
-                                                       ButtonModifiers modifiers) const
+tControlPositionValue QuantizedValue::getNextStepValue(int incs, bool fine, bool shift) const
 {
-  bool fine = modifiers[ButtonModifier::FINE];
-  bool shift = modifiers[ButtonModifier::SHIFT];
+  return getNextStepValue(getRawValue(), incs, fine, shift);
+}
 
+tControlPositionValue QuantizedValue::getNextStepValue(tControlPositionValue value, int incs, bool fine,
+                                                       bool shift) const
+{
   if(shift || isBoolean())
   {
     if(incs > 0)
@@ -154,6 +158,14 @@ tControlPositionValue QuantizedValue::getNextStepValue(tControlPositionValue val
   auto rounded = std::round(unRounded);
   auto newValue = clip((rounded + incs) / denominator);
   return newValue;
+}
+
+tControlPositionValue QuantizedValue::getNextStepValue(tControlPositionValue value, int incs,
+                                                       ButtonModifiers modifiers) const
+{
+  bool fine = modifiers[ButtonModifier::FINE];
+  bool shift = modifiers[ButtonModifier::SHIFT];
+  return getNextStepValue(value, incs, fine, shift);
 }
 
 bool QuantizedValue::isValueCoarseQuantized() const

@@ -15,7 +15,8 @@ class RenameBankLayout : public RenameLayout
   typedef RenameLayout super;
 
  public:
-  RenameBankLayout(UNDO::Transaction* transaction = nullptr);
+  explicit RenameBankLayout(UNDO::Transaction* transaction);
+  RenameBankLayout();
 
  private:
   virtual void commit(const Glib::ustring& newName) override;

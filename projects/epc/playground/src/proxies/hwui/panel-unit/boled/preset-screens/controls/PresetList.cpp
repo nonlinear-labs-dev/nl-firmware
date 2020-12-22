@@ -128,54 +128,17 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 
 void PresetList::stepBankSelection(int inc, const ButtonModifiers& modifiers, PresetManager* pm) const
 {
-  auto scope = pm->getUndoScope().startTransaction("Select Bank");
-
-  if(modifiers[SHIFT] && pm->getNumBanks() > 0)
-  {
-    selectFirstOrLastBank(inc, pm, scope);
-  }
-  else
-  {
-    stepBankSelection(inc, pm, scope);
-  }
+  PresetManagerUseCases useCase(pm);
+  useCase.stepBankSelection(inc, modifiers[SHIFT]);
 }
 
 void PresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const
 {
-  auto current = bank->getSelectedPreset();
-  auto currentPos = bank->getPresetPosition(current);
-  auto presetPosToSelect = std::max(0, std::min<int>(bank->getNumPresets() - 1, currentPos + inc));
-
-  if(auto presetToSelect = bank->getPresetAt(presetPosToSelect))
+  if(bank)
   {
-    UNDO::Scope::tTransactionScopePtr scope = pm->getUndoScope().startContinuousTransaction(
-        pm, std::chrono::hours(1), presetToSelect->buildUndoTransactionTitle("Select Preset"));
-
-    bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
+    BankUseCases useCase(bank);
+    useCase.stepPresetSelection(inc);
   }
-}
-
-void PresetList::stepBankSelection(int inc, PresetManager* pm, const UNDO::Scope::tTransactionScopePtr& scope) const
-{
-  while(inc < 0)
-  {
-    pm->selectPreviousBank(scope->getTransaction());
-    inc++;
-  }
-
-  while(inc > 0)
-  {
-    pm->selectNextBank(scope->getTransaction());
-    inc--;
-  }
-}
-
-void PresetList::selectFirstOrLastBank(int inc, PresetManager* pm, const UNDO::Scope::tTransactionScopePtr& scope) const
-{
-  if(inc < 0)
-    pm->selectBank(scope->getTransaction(), pm->getBanks().front()->getUuid());
-  else
-    pm->selectBank(scope->getTransaction(), pm->getBanks().back()->getUuid());
 }
 
 std::pair<size_t, size_t> PresetList::getSelectedPosition() const

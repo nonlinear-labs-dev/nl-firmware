@@ -14,6 +14,7 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <clipboard/Clipboard.h>
+#include <use-cases/PresetUseCases.h>
 
 int PresetEditButtonMenu::s_lastSelection = PresetEditButtonMenu::Actions::Rename;
 
@@ -57,11 +58,8 @@ void PresetEditButtonMenu::renamePreset()
     {
       if(auto preset = bank->getSelectedPreset())
       {
-        if(preset->getName() != newName)
-        {
-          auto scope = Application::get().getUndoScope()->startTransaction("Rename Preset");
-          preset->setName(scope->getTransaction(), newName);
-        }
+        PresetUseCases useCase(preset);
+        useCase.rename(newName);
       }
     }
   });
@@ -99,8 +97,8 @@ void PresetEditButtonMenu::deletePreset()
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      auto scope = bank->getUndoScope().startTransaction("Delete preset '%0'", preset->getName());
-      bank->deletePreset(scope->getTransaction(), preset->getUuid());
+      BankUseCases useCase(bank);
+      useCase.deletePreset(preset);
     }
   }
 }

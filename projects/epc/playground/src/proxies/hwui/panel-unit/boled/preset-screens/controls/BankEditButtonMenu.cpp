@@ -121,17 +121,11 @@ void BankEditButtonMenu::selectButton(size_t i)
 void BankEditButtonMenu::newBank()
 {
   auto pm = Application::get().getPresetManager();
-  auto scope = pm->getUndoScope().startTransaction("New bank");
-  auto transaction = scope->getTransaction();
-  auto newBank = pm->addBank(transaction);
-  auto pos = pm->calcDefaultBankPositionFor(newBank);
-  newBank->setX(transaction, to_string(pos.first));
-  newBank->setY(transaction, to_string(pos.second));
-  pm->selectBank(transaction, newBank->getUuid());
+  PresetManagerUseCases useCases(pm);
+  auto pos = pm->calcDefaultBankPositionForNewBank();
+  useCases.newBank(std::to_string(pos.first), std::to_string(pos.second));
 
-  Application::get().getHWUI()->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Presets, UIMode::Select));
-
-  auto layout = new RenameBankLayout(transaction);
+  auto layout = new RenameBankLayout();
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(layout);
 }
 
@@ -252,31 +246,18 @@ void BankEditButtonMenu::deleteBank()
 void BankEditButtonMenu::moveLeft()
 {
   auto pm = Application::get().getPresetManager();
-
+  PresetManagerUseCases useCase(pm);
   if(auto bank = pm->getSelectedBank())
-  {
-    auto pos = pm->getBankPosition(bank->getUuid());
-    if(pos > 0)
-    {
-      auto scope = bank->getUndoScope().startTransaction("Move bank '%0' left", bank->getName(true));
-      pm->setOrderNumber(scope->getTransaction(), bank->getUuid(), pos - 1);
-    }
-  }
+    useCase.moveLeft(bank);
 }
 
 void BankEditButtonMenu::moveRight()
 {
   auto pm = Application::get().getPresetManager();
+  PresetManagerUseCases useCase(pm);
 
   if(auto bank = pm->getSelectedBank())
-  {
-    auto pos = pm->getBankPosition(bank->getUuid()) + 1;
-    if(pos < pm->getNumBanks())
-    {
-      auto scope = bank->getUndoScope().startTransaction("Move bank '%0' right", bank->getName(true));
-      pm->setOrderNumber(scope->getTransaction(), bank->getUuid(), pos);
-    }
-  }
+    useCase.moveRight(bank);
 }
 
 void BankEditButtonMenu::selectMidi()

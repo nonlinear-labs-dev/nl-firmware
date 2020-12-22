@@ -9,6 +9,7 @@
 #include <parameters/RibbonParameter.h>
 #include <proxies/hwui/buttons.h>
 #include <http/UndoScope.h>
+#include <use-cases/RibbonParameterUseCases.h>
 
 BaseUnitPlayMode::BaseUnitPlayMode()
     : m_modeButtonHandler(std::bind(&BaseUnitPlayMode::modeButtonShortPress, this),
@@ -34,12 +35,14 @@ void BaseUnitPlayMode::toggleTouchBehaviour()
 {
   if(auto pm = Application::get().getPresetManager())
   {
-    auto trans = pm->getUndoScope().startTransaction("Set ribbon mode");
+    auto eb = pm->getEditBuffer();
     auto id = Application::get().getPlaycontrollerProxy()->getLastTouchedRibbonParameterID();
 
-    if(auto ribbonParam
-       = dynamic_cast<RibbonParameter*>(pm->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global })))
-      ribbonParam->undoableIncRibbonTouchBehaviour(trans->getTransaction());
+    if(auto ribbonParam = eb->findAndCastParameterByID<RibbonParameter>({ id, VoiceGroup::Global }))
+    {
+      RibbonParameterUseCases useCase(ribbonParam);
+      useCase.incTouchBehaviour();
+    }
   }
 }
 

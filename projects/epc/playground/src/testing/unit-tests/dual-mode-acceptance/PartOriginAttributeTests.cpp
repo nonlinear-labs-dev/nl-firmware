@@ -25,6 +25,8 @@ namespace detail
 TEST_CASE("Part Origin Attribute")
 {
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases ebUseCases(eb);
+
   auto hwui = Application::get().getHWUI();
 
   MockPresetStorage presets;
@@ -34,7 +36,7 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Load Single Full")
   {
-    eb->undoableLoad(presets.getSinglePreset());
+    ebUseCases.undoableLoad(presets.getSinglePreset());
 
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
@@ -78,7 +80,7 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Load Dual Full")
   {
-    eb->undoableLoad(presets.getLayerPreset());
+    ebUseCases.undoableLoad(presets.getLayerPreset());
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 

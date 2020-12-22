@@ -190,21 +190,9 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
 
   if(m_modulationAmount != def)
   {
-    auto eb = Application::get().getPresetManager()->getEditBuffer();
-    auto dual = eb->isDual() && getID().isDual();
-    auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
-                                                           dual ? getGroupAndParameterNameWithVoiceGroup()
-                                                                : getGroupAndParameterName());
-    setModulationAmount(scope->getTransaction(), def);
+    ModParameterUseCases useCase(this);
+    useCase.setModulationAmount(def);
   }
-}
-
-void ModulateableParameter::undoableIncrementMCSelect(int inc)
-{
-  auto dual = getID().isDual() && Application::get().getPresetManager()->getEditBuffer()->isDual();
-  auto scope = getUndoScope().startTransaction(
-      "Set MC Select for '%0'", dual ? getGroupAndParameterNameWithVoiceGroup() : getGroupAndParameterName());
-  undoableIncrementMCSelect(scope->getTransaction(), inc);
 }
 
 void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc)
@@ -220,16 +208,6 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transac
     src -= numChoices;
 
   setModulationSource(transaction, (MacroControls) src);
-}
-
-void ModulateableParameter::undoableIncrementMCAmount(int inc, ButtonModifiers modifiers)
-{
-  auto dual = getID().isDual() && Application::get().getPresetManager()->getEditBuffer()->isDual();
-
-  auto scope = getUndoScope().startContinuousTransaction(getAmountCookie(), "Set MC Amount for '%0'",
-                                                         dual ? getGroupAndParameterNameWithVoiceGroup()
-                                                              : getGroupAndParameterName());
-  undoableIncrementMCAmount(scope->getTransaction(), inc, modifiers);
 }
 
 void ModulateableParameter::undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc,
@@ -462,46 +440,6 @@ MacroControlParameter *ModulateableParameter::getMacroControl() const
   return nullptr;
 }
 
-void ModulateableParameter::undoableRecallMCPos()
-{
-  if(auto mc = getMacroControl())
-  {
-    mc->undoableRecallFromPreset();
-    onChange(ChangeFlags::Generic);
-  }
-}
-
-void ModulateableParameter::undoableRecallMCSource()
-{
-  if(!isModSourceChanged())
-    return;
-  auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto original = getOriginalParameter();
-  auto transactionScope
-      = scope.startTransaction("Recall MC Selection from Preset for '%0'", getGroupAndParameterName());
-  auto transaction = transactionScope->getTransaction();
-  if(original)
-  {
-    setModulationSource(transaction, original->getRecallModSource());
-    onChange(ChangeFlags::Generic);
-  }
-}
-
-void ModulateableParameter::undoableRecallMCAmount()
-{
-  if(!isModAmountChanged())
-    return;
-  auto &scope = Application::get().getPresetManager()->getUndoScope();
-  auto original = getOriginalParameter();
-  auto transactionScope = scope.startTransaction("Recall MC Amount from Preset for '%0'", getGroupAndParameterName());
-  auto transaction = transactionScope->getTransaction();
-  if(original)
-  {
-    setModulationAmount(transaction, original->getRecallModulationAmount());
-    onChange(ChangeFlags::Generic);
-  }
-}
-
 void ModulateableParameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 {
   Parameter::copyFrom(transaction, other);
@@ -522,23 +460,4 @@ bool ModulateableParameter::isDefaultLoaded() const
   auto modSrcSame = getModulationSource() == MacroControls::NONE;
   auto modAmtSame = getModulationAmount() == 0;
   return valSame && modSrcSame && modAmtSame;
-}
-
-void ModulateableParameter::undoableUndoRecallMCSel(MacroControls &controls)
-{
-  auto scope
-      = getUndoScope().startTransaction("Recall MC Selection from Editbuffer for '%0'", getGroupAndParameterName());
-  setModulationSource(scope->getTransaction(), controls);
-}
-
-void ModulateableParameter::undoableUndoRecallMCAmount(float mcAmt)
-{
-  auto scope = getUndoScope().startTransaction("Recall MC Amount from Editbuffer for '%0'", getGroupAndParameterName());
-  setModulationAmount(scope->getTransaction(), mcAmt);
-}
-
-void ModulateableParameter::undoableUndoRecallMCPos(float mcPos)
-{
-  auto scope = getUndoScope().startTransaction("Recall assigned MC Pos from Editbuffer for '%0'", getGroupAndParameterName());
-  getMacroControl()->setCPFromHwui(scope->getTransaction(), mcPos);
 }

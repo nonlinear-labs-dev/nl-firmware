@@ -23,6 +23,7 @@
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <device-settings/Settings.h>
 #include <filesystem>
+#include <use-cases/IncrementalChangerUseCases.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -274,8 +275,9 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
     if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
       m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-    m_relativeEditControlMessageChanger->changeBy(m_throttledRelativeParameterAccumulator
-                                                  / (p->isBiPolar() ? 8000.0 : 16000.0));
+    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+    useCase.changeBy(amount, false);
     m_throttledRelativeParameterAccumulator = 0;
   });
 }
@@ -285,18 +287,15 @@ void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gin
   m_throttledAbsoluteParameterValue = value;
 
   m_throttledAbsoluteParameterChange.doTask([this, p]() {
-    auto scope
-        = Application::get().getUndoScope()->startContinuousTransaction(p, "Set '%0'", p->getGroupAndParameterName());
+    ParameterUseCases useCase(p);
 
     if(p->isBiPolar())
     {
-      p->setCPFromHwui(scope->getTransaction(), (m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-      DebugLevel::info("set it (absolutely - bipolar) to", p->getControlPositionValue());
+      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
     }
     else
     {
-      p->setCPFromHwui(scope->getTransaction(), (m_throttledAbsoluteParameterValue / 16000.0));
-      DebugLevel::info("set it (absolutely - unipolar) to", p->getControlPositionValue());
+      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
     }
   });
 }

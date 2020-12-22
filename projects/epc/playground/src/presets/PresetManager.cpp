@@ -389,12 +389,8 @@ void PresetManager::selectPreviousBank()
 
 void PresetManager::selectBank(size_t idx)
 {
-  if(idx < getNumBanks())
-  {
-    auto bank = getBankAt(idx);
-    auto transactionScope = getUndoScope().startTransaction("Select Bank '%0'", bank->getName(true));
-    selectBank(transactionScope->getTransaction(), bank->getUuid());
-  }
+  PresetManagerUseCases useCase(this);
+  useCase.selectBank(idx);
 }
 
 bool PresetManager::selectPreviousBank(UNDO::Transaction *transaction)
@@ -691,6 +687,30 @@ sigc::connection PresetManager::onRestoreHappened(sigc::slot<void> cb)
   return m_sigRestoreHappened.connect(cb);
 }
 
+std::pair<double, double> PresetManager::calcDefaultBankPositionForNewBank() const
+{
+  const Bank *rightMost = nullptr;
+
+  m_banks.forEach([&](auto other) {
+    if(!rightMost)
+    {
+      rightMost = other;
+      return;
+    }
+
+    auto x = std::stod(other->getX());
+    auto currentX = std::stod(rightMost->getX());
+
+    if(x > currentX)
+      rightMost = other;
+  });
+
+  if(rightMost)
+    return std::make_pair(std::stod(rightMost->getX()) + 300, std::stod(rightMost->getY()));
+
+  return std::make_pair(0.0, 0.0);
+}
+
 std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *bank) const
 {
   const Bank *rightMost = nullptr;
@@ -726,7 +746,7 @@ size_t PresetManager::getBankPosition(const Uuid &uuid) const
 void PresetManager::sanitizeBankClusterRelations(UNDO::Transaction *transaction)
 {
   resolveCyclicAttachments(transaction);
-  ClusterEnforcement enforcer;
+  ClusterEnforcement enforcer(this);
   enforcer.enforceClusterRuleOfOne(transaction);
 }
 
@@ -958,14 +978,16 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
         }
       }
 
-      auto scope = getUndoScope().startContinuousTransaction(this, std::chrono::milliseconds(500), "Load Preset Part");
-      eb->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, loadFrom, loadTo);
+      EditBufferUseCases useCase(eb);
+      useCase.scheduleUndoableLoadToPart(preset, loadFrom, loadTo);
       m_autoLoadScheduled = false;
     }
   });
 }
+
 void PresetManager::autoLoadPresetAccordingToLoadType()
 {
+  auto ebUseCases = Application::get().getEditBufferUseCases();
   auto eb = getEditBuffer();
   auto hwui = Application::get().getHWUI();
   auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
@@ -987,7 +1009,7 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
           if(loadToPartActive)
           {
             auto load = hwui->getPresetPartSelection(currentVoiceGroup);
-            eb->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+            ebUseCases->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
           }
           else
           {
