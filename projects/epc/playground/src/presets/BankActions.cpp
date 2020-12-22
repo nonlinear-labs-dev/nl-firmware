@@ -354,6 +354,24 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
+  addAction("select-preset-with-direct-load", [&](std::shared_ptr<NetworkRequest> request) mutable {
+    Glib::ustring presetUUID = request->get("uuid");
+
+    if(auto bank = m_presetManager.findBankWithPreset(presetUUID))
+    {
+      if(auto preset = bank->findPreset(presetUUID))
+      {
+        UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startContinuousTransaction(
+            &presetManager, std::chrono::hours(1), preset->buildUndoTransactionTitle("Select Preset"));
+
+        auto transaction = scope->getTransaction();
+        m_presetManager.selectBank(transaction, bank->getUuid());
+        bank->selectPreset(transaction, presetUUID);
+        m_presetManager.getEditBuffer()->undoableLoad(transaction, m_presetManager.findPreset(presetUUID), true);
+      }
+    }
+  });
+
   addAction("delete-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto presetUUID = request->get("uuid");
     auto withBank = request->get("delete-bank");

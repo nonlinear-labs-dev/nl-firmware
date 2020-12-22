@@ -964,6 +964,8 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
     }
   });
 }
+
+//How could this ever have worked?
 void PresetManager::autoLoadPresetAccordingToLoadType()
 {
   auto eb = getEditBuffer();

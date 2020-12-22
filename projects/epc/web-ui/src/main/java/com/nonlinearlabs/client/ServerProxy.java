@@ -257,6 +257,12 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
+	public void selectPresetWithDirectLoad(String uuid) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "select-preset-with-direct-load");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
+		queueJob(uri, true);
+	}
+
 	public void newBank(String initialName, NonPosition pos) {
 		StaticURI.Path path = new StaticURI.Path("presets", "new-bank");
 		StaticURI.KeyValue x = new StaticURI.KeyValue("x", pos.getX());

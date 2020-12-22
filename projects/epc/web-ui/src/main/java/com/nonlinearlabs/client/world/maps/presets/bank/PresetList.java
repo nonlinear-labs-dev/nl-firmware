@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.maps.presets.bank;
 
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
@@ -117,8 +118,11 @@ public class PresetList extends LayoutResizingVertical {
 	public void selectPreset(String uuid, boolean sendToServer) {
 		selectedPreset = uuid;
 
-		if(sendToServer) {
-			getNonMaps().getServerProxy().selectPreset(uuid);
+		if (sendToServer) {
+			if (SetupModel.get().systemSettings.directLoad.getBool())
+				getNonMaps().getServerProxy().selectPresetWithDirectLoad(uuid);
+			else
+				getNonMaps().getServerProxy().selectPreset(uuid);
 		}
 
 		requestLayout();
