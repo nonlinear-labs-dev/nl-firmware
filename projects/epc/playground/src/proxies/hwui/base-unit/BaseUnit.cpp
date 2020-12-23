@@ -9,6 +9,7 @@
 #include <nltools/messaging/Message.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <proxies/hwui/panel-unit/ScreenSaverUsageMode.h>
+#include <proxies/hwui/HWUI.h>
 
 BaseUnit::BaseUnit()
 {
@@ -28,13 +29,12 @@ void BaseUnit::onScreenSaverState(bool state)
 {
   if(state)
   {
-    m_stashedUsageMode = getUsageMode();
     setUsageMode(new ScreenSaverUsageMode());
   }
-  else if(m_stashedUsageMode)
+  else if(std::dynamic_pointer_cast<ScreenSaverUsageMode>(getUsageMode()))
   {
-    restoreUsageMode(m_stashedUsageMode);
-    m_stashedUsageMode = nullptr;
+    auto hwui = Application::get().getHWUI();
+    setupFocusAndMode(hwui->getFocusAndMode());
   }
 }
 

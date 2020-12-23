@@ -113,13 +113,11 @@ void PanelUnit::onScreenSaverStateChanged(bool state)
 {
   if(state)
   {
-    m_stashedUsageMode = getUsageMode();
     setUsageMode(new ScreenSaverUsageMode());
   }
-  else if(m_stashedUsageMode)
+  else if(std::dynamic_pointer_cast<ScreenSaverUsageMode>(getUsageMode()))
   {
-    restoreUsageMode(m_stashedUsageMode);
-    m_stashedUsageMode = nullptr;
+    setupFocusAndMode();
   }
 }
 
@@ -215,4 +213,9 @@ bool PanelUnit::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, boo
 MacroControlAssignmentStateMachine &PanelUnit::getMacroControlAssignmentStateMachine()
 {
   return m_macroControlAssignmentStateMachine;
+}
+
+const std::vector<std::shared_ptr<TwoStateLED>> &PanelUnit::getLeds()
+{
+  return m_leds;
 }
