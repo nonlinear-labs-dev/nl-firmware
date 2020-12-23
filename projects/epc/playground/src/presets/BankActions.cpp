@@ -347,6 +347,9 @@ BankActions::BankActions(PresetManager &presetManager)
         UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startContinuousTransaction(
             &presetManager, std::chrono::hours(1), preset->buildUndoTransactionTitle("Select Preset"));
 
+        if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
+          Application::get().getHWUI()->setLoadToPart(false);
+
         auto transaction = scope->getTransaction();
         m_presetManager.selectBank(transaction, bank->getUuid());
         bank->selectPreset(transaction, presetUUID);

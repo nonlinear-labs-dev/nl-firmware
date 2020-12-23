@@ -53,6 +53,7 @@ class HWUI
   VoiceGroup getCurrentVoiceGroup() const;
   bool isInLoadToPart() const;
 
+  //TODO Remove all non HWUI Related things! -> VoiceGroup, LoadToPart etc
   void setLoadToPart(bool state);
   void setCurrentVoiceGroup(VoiceGroup v);
   void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
