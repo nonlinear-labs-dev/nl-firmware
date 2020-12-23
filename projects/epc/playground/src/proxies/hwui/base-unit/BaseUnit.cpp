@@ -21,9 +21,7 @@ BaseUnit::BaseUnit()
       mem_fun(this, &BaseUnit::onScreenSaverState));
 }
 
-BaseUnit::~BaseUnit()
-{
-}
+BaseUnit::~BaseUnit() = default;
 
 void BaseUnit::onScreenSaverState(bool state)
 {
@@ -34,7 +32,7 @@ void BaseUnit::onScreenSaverState(bool state)
   else if(std::dynamic_pointer_cast<ScreenSaverUsageMode>(getUsageMode()))
   {
     auto hwui = Application::get().getHWUI();
-    setupFocusAndMode(hwui->getFocusAndMode());
+    respectUsageMode(Application::get().getSettings()->getSetting<BaseUnitUIMode>().get());
   }
 }
 
