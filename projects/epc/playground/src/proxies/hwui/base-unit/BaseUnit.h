@@ -32,6 +32,4 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   PlayPanel m_playPanel;
   UpperRibbon m_upperRibbon;
   LowerRibbon m_lowerRibbon;
-
-  std::shared_ptr<UsageMode> m_stashedUsageMode = nullptr;
 };
