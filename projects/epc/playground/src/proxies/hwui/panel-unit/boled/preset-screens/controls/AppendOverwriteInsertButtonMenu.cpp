@@ -96,6 +96,10 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_INSERT:
           useCases->insertPreset(selectedBank, selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
+          if(modified)
+            pushRenameScreen();
+          else
+            animate();
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_OVERWRITE:
