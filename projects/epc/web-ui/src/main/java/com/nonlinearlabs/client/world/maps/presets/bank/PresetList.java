@@ -119,10 +119,7 @@ public class PresetList extends LayoutResizingVertical {
 		selectedPreset = uuid;
 
 		if (sendToServer) {
-			if (SetupModel.get().systemSettings.directLoad.getBool())
-				getNonMaps().getServerProxy().selectPresetWithDirectLoad(uuid);
-			else
-				getNonMaps().getServerProxy().selectPreset(uuid);
+			getNonMaps().getServerProxy().selectPreset(uuid);
 		}
 
 		requestLayout();

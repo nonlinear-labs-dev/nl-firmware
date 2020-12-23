@@ -347,27 +347,12 @@ BankActions::BankActions(PresetManager &presetManager)
         UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startContinuousTransaction(
             &presetManager, std::chrono::hours(1), preset->buildUndoTransactionTitle("Select Preset"));
 
-        auto transaction = scope->getTransaction();
-        m_presetManager.selectBank(transaction, bank->getUuid());
-        bank->selectPreset(transaction, presetUUID);
-      }
-    }
-  });
-
-  addAction("select-preset-with-direct-load", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    Glib::ustring presetUUID = request->get("uuid");
-
-    if(auto bank = m_presetManager.findBankWithPreset(presetUUID))
-    {
-      if(auto preset = bank->findPreset(presetUUID))
-      {
-        UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startContinuousTransaction(
-            &presetManager, std::chrono::hours(1), preset->buildUndoTransactionTitle("Select Preset"));
+        if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
+          Application::get().getHWUI()->setLoadToPart(false);
 
         auto transaction = scope->getTransaction();
         m_presetManager.selectBank(transaction, bank->getUuid());
         bank->selectPreset(transaction, presetUUID);
-        m_presetManager.getEditBuffer()->undoableLoad(transaction, m_presetManager.findPreset(presetUUID), true);
       }
     }
   });
