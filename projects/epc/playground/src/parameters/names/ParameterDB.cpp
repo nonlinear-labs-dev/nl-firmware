@@ -73,6 +73,16 @@ Glib::ustring ParameterDB::getDescription(const ParameterId &id) const
   return getDescription(num);
 }
 
+std::optional<Glib::ustring> ParameterDB::getLongGroupName(const ParameterId &id) const
+{
+  auto d = C15::ParameterList[id.getNumber()];
+
+  if(!d.m_pg.m_group_label_long)
+    return {};
+
+  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_group_label_long, id.getVoiceGroup());
+}
+
 Glib::ustring ParameterDB::getDescription(const int num) const
 {
   assert(num >= 0);

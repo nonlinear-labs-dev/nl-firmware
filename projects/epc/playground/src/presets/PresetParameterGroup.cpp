@@ -1,5 +1,6 @@
 #include "PresetParameterGroup.h"
 #include <presets/Preset.h>
+#include <parameters/names/ParameterDB.h>
 #include "PresetParameter.h"
 #include <groups/ParameterGroup.h>
 #include <xml/Writer.h>
@@ -86,9 +87,10 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
     return;
   }
 
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto group = eb->getParameterGroupByID(groupId);
-  auto name = group->getLongName();
+  std::string name = groupId.getName();
+
+  if(!m_parameters.empty())
+    name = ParameterDB::get().getLongGroupName(m_parameters.begin()->first).value_or(name);
 
   writer.writeTag("group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"), [&] {
     std::vector<int> writtenParameters;
@@ -105,12 +107,9 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
       if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter.first.getNumber())
          == writtenParameters.end())
       {
-        if(auto ebParam = eb->findParameterByID(parameter.first))
-        {
-          auto paramName = ebParam->getLongName();
-          writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
-                          Attribute("bfound", "true"), [] {});
-        }
+        auto paramName = ParameterDB::get().getLongName(parameter.first);
+        writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
+                        Attribute("bfound", "true"), [] {});
       }
     }
   });
