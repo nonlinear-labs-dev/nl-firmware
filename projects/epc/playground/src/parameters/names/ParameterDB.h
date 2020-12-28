@@ -9,13 +9,14 @@ class Parameter;
 class ParameterDB
 {
  public:
-  static ParameterDB &get();
+  static ParameterDB& get();
 
   virtual ~ParameterDB();
 
   Glib::ustring getLongName(const ParameterId& id) const;
   Glib::ustring getShortName(const ParameterId& id) const;
   Glib::ustring getDescription(const ParameterId& id) const;
+  std::optional<Glib::ustring> getLongGroupName(const ParameterId& id) const;
 
   Glib::ustring getDescription(const int parameterNumber) const;
 
@@ -26,10 +27,9 @@ class ParameterDB
     return std::numeric_limits<tControlPositionValue>::max();
   }
 
-  bool isActive(const Parameter *p) const;
+  bool isActive(const Parameter* p) const;
 
  private:
-
   Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const;
   ParameterDB();
 };
