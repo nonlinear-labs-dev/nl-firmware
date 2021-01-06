@@ -332,7 +332,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto hwui = Application::get().getHWUI();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-    if(hwui->getCurrentVoiceGroup() != part)
+    if(hwui->getCurrentVoiceGroup() != part && eb->isDual())
     {
       auto str = toString(part);
       auto scope = eb->getUndoScope().startTransaction("Select Part " + str);
