@@ -36,7 +36,6 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly)
     , m_banks(*this, nullptr)
     , m_editBuffer(std::make_unique<EditBuffer>(this))
     , m_initSound(std::make_unique<Preset>(this))
-    , m_autoLoadThrottler(std::chrono::milliseconds(200))
     , m_saveJob(std::bind(&PresetManager::doSaveTask, this))
     , m_readOnly(readOnly)
 {
@@ -249,19 +248,8 @@ void PresetManager::doAutoLoadSelectedPreset(UNDO::Transaction *currentTransacti
     if(!isStoringPreset)
     {
       autoLoadPresetAccordingToLoadType(currentTransactionPtr);
-      //      scheduleAutoLoadPresetAccordingToLoadType(currentTransactionPtr);
     }
   }
-}
-
-void PresetManager::scheduleAutoLoadPresetAccordingToLoadType(void *currentTransactionPtr)
-{
-  //TODO remove completely
-  m_autoLoadScheduled = true;
-  m_autoLoadThrottler.doTask([=]() {
-    m_autoLoadScheduled = false;
-    //autoLoadPresetAccordingToLoadType(currentTransactionPtr);
-  });
 }
 
 bool PresetManager::isLoading() const
@@ -963,28 +951,23 @@ bool PresetManager::currentLoadedPartIsBeforePresetToLoad() const
   return false;
 }
 
-void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo)
+void PresetManager::doLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo)
 {
   auto eb = getEditBuffer();
-  m_autoLoadScheduled = true;
-  m_autoLoadThrottler.doTask([=]() {
-    if(preset)
+  if(preset)
+  {
+    if(auto currentUndo = getUndoScope().getUndoTransaction())
     {
-      if(auto currentUndo = getUndoScope().getUndoTransaction())
+      if(!currentUndo->isClosed())
       {
-        if(!currentUndo->isClosed())
-        {
-          eb->undoableLoadPresetPartIntoPart(currentUndo, preset, loadFrom, loadTo);
-          m_autoLoadScheduled = false;
-          return;
-        }
+        eb->undoableLoadPresetPartIntoPart(currentUndo, preset, loadFrom, loadTo);
+        return;
       }
-
-      EditBufferUseCases useCase(eb);
-      useCase.scheduleUndoableLoadToPart(preset, loadFrom, loadTo);
-      m_autoLoadScheduled = false;
     }
-  });
+
+    EditBufferUseCases useCase(eb);
+    useCase.scheduleUndoableLoadToPart(preset, loadFrom, loadTo);
+  }
 }
 
 void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction)

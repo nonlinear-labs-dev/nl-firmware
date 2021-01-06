@@ -242,8 +242,9 @@ void EditBufferUseCases::loadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGr
 {
   if(auto selectedPreset = m_editBuffer->getParent()->getSelectedPreset())
   {
-    auto name = UNDO::StringTools::buildString("Load Preset Part", toString(from), "into", toString(to));
-    auto scope = getPresetManager()->getUndoScope().startTransaction(name);
+    auto name = UNDO::StringTools::buildString("Load Preset Part ", toString(from), " into ", toString(to));
+    auto scope = getPresetManager()->getUndoScope().startContinuousTransaction(selectedPreset->getParent(),
+                                                                               std::chrono::seconds(5), name);
     m_editBuffer->undoableLoadToPart(scope->getTransaction(), selectedPreset, from, to);
   }
 }
@@ -317,8 +318,9 @@ void EditBufferUseCases::loadSinglePresetIntoDualSound(const Preset* preset, Voi
 
 void EditBufferUseCases::scheduleUndoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to)
 {
-  auto name = "Load Preset Part";
-  auto scope = m_editBuffer->getUndoScope().startContinuousTransaction(this, std::chrono::milliseconds(500), name);
+  auto name = UNDO::StringTools::buildString("Load Preset Part ", toString(from), " into ", toString(to));
+  auto scope
+      = m_editBuffer->getUndoScope().startContinuousTransaction(preset->getParent(), std::chrono::seconds(5), name);
   m_editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, from, to);
 }
 

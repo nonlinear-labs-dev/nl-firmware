@@ -64,7 +64,7 @@ class PresetManager : public ContentSection
   // accessors
   Bank *findBank(const Uuid &uuid) const;
   Uuid getMidiSelectedBank() const;
-  Bank* findMidiSelectedBank() const;
+  Bank *findMidiSelectedBank() const;
   Preset *findPreset(const Uuid &uuid) const;
   Bank *findBankWithPreset(const Uuid &uuid) const;
   size_t getNumBanks() const;
@@ -127,7 +127,7 @@ class PresetManager : public ContentSection
 
   bool currentLoadedPartIsBeforePresetToLoad() const;
 
-  void scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo);
+  void doLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo);
 
  private:
   void loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
@@ -136,7 +136,6 @@ class PresetManager : public ContentSection
   void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
   Glib::ustring getBaseName(const Glib::ustring &basedOn) const;
-  void scheduleAutoLoadPresetAccordingToLoadType(void* currentTransactionPtr);
 
   std::list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
   SaveResult saveMetadata(Glib::RefPtr<Gio::File> pmFolder);
@@ -168,11 +167,7 @@ class PresetManager : public ContentSection
   Signal<void> m_sigRestoreHappened;
   Signal<void> m_presetStoreHappened;
   Signal<void, Uuid> m_sigMidiBankSelection;
-
-  std::atomic_bool m_autoLoadScheduled { false };
-
-  Throttler m_autoLoadThrottler;
-
+  
   Expiration m_saveJob;
   tUpdateID m_lastSavedInitSoundUpdateID = 0;
   tUpdateID m_lastSavedMetaDataUpdateID = 0;

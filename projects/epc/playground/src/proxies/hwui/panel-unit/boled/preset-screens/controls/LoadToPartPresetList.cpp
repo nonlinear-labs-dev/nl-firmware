@@ -182,7 +182,7 @@ void LoadToPartPresetList::onSelectionChanged(const PresetPartSelection& selecti
   if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
   {
     //TODO make sync!
-    Application::get().getPresetManager()->scheduleLoadToPart(selection.m_preset, selection.m_voiceGroup, currentVg);
+    Application::get().getPresetManager()->doLoadToPart(selection.m_preset, selection.m_voiceGroup, currentVg);
   }
 }
 
