@@ -42,7 +42,7 @@ void BankUseCases::stepPresetSelection(int inc)
     if(auto presetToSelect = m_bank->getPresetAt(presetPosToSelect))
     {
       auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
-      auto scope = presetManager->getUndoScope().startContinuousTransaction(presetManager, std::chrono::hours(1), name);
+      auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
       m_bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
     }
   }
@@ -150,8 +150,12 @@ void BankUseCases::selectPreset(int pos)
 {
   if(pos < m_bank->getNumPresets())
   {
-    auto scope = m_bank->getUndoScope().startTransaction("Select Preset '%0'", m_bank->getPresetAt(pos)->getName());
-    m_bank->selectPreset(scope->getTransaction(), pos);
+    if(auto presetToSelect = m_bank->getPresetAt(pos))
+    {
+      auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+      auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
+      m_bank->selectPreset(scope->getTransaction(), pos);
+    }
   }
 }
 

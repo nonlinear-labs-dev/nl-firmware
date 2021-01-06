@@ -42,6 +42,7 @@ class EditBuffer : public ParameterGroupSet
   void undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to);
 
   void undoableLoadSelectedPreset(VoiceGroup loadInto);
+  void undoableLoadSelectedPreset(UNDO::Transaction *transaction, VoiceGroup loadInto);
   void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
 
   void fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group);
@@ -99,6 +100,7 @@ class EditBuffer : public ParameterGroupSet
   void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 
   void undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGroup vg);
+  void undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup vg);
   void undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup to);
 
   static bool isDualParameterForSoundType(const Parameter *parameter, SoundType type);

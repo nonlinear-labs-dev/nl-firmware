@@ -29,7 +29,7 @@ bool DirectLoadSetting::set(BooleanSettings m)
   if(!m_isLoading)
     if(auto pm = Application::get().getPresetManager())
       if(m == BooleanSettings::BOOLEAN_SETTING_TRUE)
-        pm->doAutoLoadSelectedPreset();
+        pm->doAutoLoadSelectedPreset(nullptr);
 
   return ret;
 }

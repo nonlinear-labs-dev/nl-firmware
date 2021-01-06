@@ -430,6 +430,25 @@ bool isLoadToPartActive()
   return hwui->isInLoadToPart();
 }
 
+void EditBuffer::undoableLoadSelectedPreset(UNDO::Transaction *transaction, VoiceGroup loadInto)
+{
+  if(auto bank = getParent()->getSelectedBank())
+  {
+    if(auto preset = bank->getSelectedPreset())
+    {
+      if(isLoadToPartActive() && isDual())
+      {
+        if(!preset->isDual())
+          undoableLoadPresetIntoDualSound(transaction, preset, loadInto);
+      }
+      else
+      {
+        undoableLoad(transaction, preset, true);
+      }
+    }
+  }
+}
+
 void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
 {
   if(auto bank = getParent()->getSelectedBank())
@@ -443,7 +462,8 @@ void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
       }
       else
       {
-        Application::get().getEditBufferUseCases()->undoableLoad(preset);
+        EditBufferUseCases ebUseCases(this);
+        ebUseCases.undoableLoad(preset);
       }
     }
   }
@@ -854,6 +874,11 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
       onChange();
     });
   }
+}
+
+void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup vg)
+{
+  undoableLoadSinglePresetIntoDualSound(transaction, preset, vg);
 }
 
 void EditBuffer::undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGroup vg)

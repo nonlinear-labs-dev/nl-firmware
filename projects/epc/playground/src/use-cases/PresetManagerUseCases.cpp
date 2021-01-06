@@ -200,7 +200,8 @@ void PresetManagerUseCases::selectBank(const Uuid& uuid)
   if(auto bank = m_presetManager->findBank(uuid))
   {
     auto& undoScope = m_presetManager->getUndoScope();
-    auto transactionScope = undoScope.startTransaction("Select Bank '%0'", bank->getName(true));
+    auto transactionScope
+        = undoScope.startContinuousTransaction(m_presetManager, "Select Bank '%0'", bank->getName(true));
     auto transaction = transactionScope->getTransaction();
     m_presetManager->selectBank(transaction, uuid);
   }
@@ -211,7 +212,8 @@ void PresetManagerUseCases::selectBank(int idx)
   if(idx < m_presetManager->getNumBanks())
   {
     auto bank = m_presetManager->getBankAt(idx);
-    auto transactionScope = m_presetManager->getUndoScope().startTransaction("Select Bank '%0'", bank->getName(true));
+    auto transactionScope = m_presetManager->getUndoScope().startContinuousTransaction(
+        m_presetManager, "Select Bank '%0'", bank->getName(true));
     m_presetManager->selectBank(transactionScope->getTransaction(), bank->getUuid());
   }
 }
@@ -331,8 +333,12 @@ void PresetManagerUseCases::selectPreset(const Preset* preset)
     const auto& presetUuid = preset->getUuid();
     if(auto bank = m_presetManager->findBankWithPreset(presetUuid))
     {
-      auto scope = Application::get().getUndoScope()->startTransaction("Select Preset");
-      bank->selectPreset(scope->getTransaction(), presetUuid);
+      if(auto presetToSelect = bank->findPreset(presetUuid))
+      {
+        auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+        auto scope = bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
+        bank->selectPreset(scope->getTransaction(), presetUuid);
+      }
     }
   }
 }

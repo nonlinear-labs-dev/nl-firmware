@@ -57,7 +57,7 @@ class PresetManager : public ContentSection
     throw std::runtime_error("ActionManager does not exist in object");
   }
 
-  void doAutoLoadSelectedPreset();
+  void doAutoLoadSelectedPreset(UNDO::Transaction *currentTransactionPtr);
   bool isLoading() const;
   std::shared_ptr<ScopedGuard::Lock> getLoadingLock();
 
@@ -79,7 +79,7 @@ class PresetManager : public ContentSection
   // convenience
   void selectPreviousBank();
   void selectNextBank();
-  void onPresetSelectionChanged();
+  void onPresetSelectionChanged(UNDO::Transaction *currentTransactionPtr);
   void onPresetStored();
 
   std::shared_ptr<ScopedGuard::Lock> lockLoading();
@@ -108,7 +108,7 @@ class PresetManager : public ContentSection
   void resolveCyclicAttachments(UNDO::Transaction *transaction);
   void ensureBankSelection(UNDO::Transaction *transaction);
 
-  void autoLoadPresetAccordingToLoadType();
+  void autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction);
 
   // algorithms
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;
@@ -136,7 +136,7 @@ class PresetManager : public ContentSection
   void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
   Glib::ustring getBaseName(const Glib::ustring &basedOn) const;
-  void scheduleAutoLoadPresetAccordingToLoadType();
+  void scheduleAutoLoadPresetAccordingToLoadType(void* currentTransactionPtr);
 
   std::list<PresetManager::SaveSubTask> createListOfSaveSubTasks();
   SaveResult saveMetadata(Glib::RefPtr<Gio::File> pmFolder);

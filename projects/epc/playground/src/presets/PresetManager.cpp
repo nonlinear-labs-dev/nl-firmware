@@ -235,7 +235,7 @@ SaveResult PresetManager::saveBanks(Glib::RefPtr<Gio::File> pmFolder)
   return SaveResult::Nothing;
 }
 
-void PresetManager::doAutoLoadSelectedPreset()
+void PresetManager::doAutoLoadSelectedPreset(UNDO::Transaction *currentTransactionPtr)
 {
   if(auto lock = m_isLoading.lock())
   {
@@ -248,17 +248,19 @@ void PresetManager::doAutoLoadSelectedPreset()
 
     if(!isStoringPreset)
     {
-      scheduleAutoLoadPresetAccordingToLoadType();
+      autoLoadPresetAccordingToLoadType(currentTransactionPtr);
+      //      scheduleAutoLoadPresetAccordingToLoadType(currentTransactionPtr);
     }
   }
 }
 
-void PresetManager::scheduleAutoLoadPresetAccordingToLoadType()
+void PresetManager::scheduleAutoLoadPresetAccordingToLoadType(void *currentTransactionPtr)
 {
+  //TODO remove completely
   m_autoLoadScheduled = true;
   m_autoLoadThrottler.doTask([=]() {
     m_autoLoadScheduled = false;
-    autoLoadPresetAccordingToLoadType();
+    //autoLoadPresetAccordingToLoadType(currentTransactionPtr);
   });
 }
 
@@ -510,13 +512,13 @@ void PresetManager::handleDockingOnBankDelete(UNDO::Transaction *transaction, co
 void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   if(m_banks.select(transaction, uuid))
-    onPresetSelectionChanged();
+    onPresetSelectionChanged(transaction);
 }
 
-void PresetManager::onPresetSelectionChanged()
+void PresetManager::onPresetSelectionChanged(UNDO::Transaction *currentTransactionPtr)
 {
   if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
-    doAutoLoadSelectedPreset();
+    doAutoLoadSelectedPreset(currentTransactionPtr);
 }
 
 void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<Bank *> &banks)
@@ -985,12 +987,14 @@ void PresetManager::scheduleLoadToPart(const Preset *preset, VoiceGroup loadFrom
   });
 }
 
-void PresetManager::autoLoadPresetAccordingToLoadType()
+void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction)
 {
-  auto ebUseCases = Application::get().getEditBufferUseCases();
+  auto ebUseCases = EditBufferUseCases(getEditBuffer());
   auto eb = getEditBuffer();
   auto hwui = Application::get().getHWUI();
   auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+
+  auto useUseCase = transaction == nullptr;
 
   if(auto bank = getSelectedBank())
   {
@@ -1002,18 +1006,28 @@ void PresetManager::autoLoadPresetAccordingToLoadType()
       switch(selPreset->getType())
       {
         case SoundType::Single:
-          eb->undoableLoadSelectedPreset(currentVoiceGroup);
+          if(useUseCase)
+            ebUseCases.undoableLoadAccordingToType(selPreset, currentVoiceGroup, eb->getType(), hwui->isInLoadToPart());
+          else
+            eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
+
           break;
         case SoundType::Layer:
         case SoundType::Split:
           if(loadToPartActive)
           {
             auto load = hwui->getPresetPartSelection(currentVoiceGroup);
-            ebUseCases->undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+            if(useUseCase)
+              ebUseCases.undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+            else
+              eb->undoableLoadToPart(transaction, load->m_preset, load->m_voiceGroup, currentVoiceGroup);
           }
           else
           {
-            eb->undoableLoadSelectedPreset(currentVoiceGroup);
+            if(useUseCase)
+              ebUseCases.undoableLoad(selPreset);
+            else
+              eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
           }
           break;
         default:
