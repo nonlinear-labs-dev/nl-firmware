@@ -21,10 +21,11 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart)
   eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged),
                          getHWUI()->getCurrentVoiceGroup());
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
+  auto hwui = Application::get().getHWUI();
 
-  Application::get().getHWUI()->onLoadToPartModeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onLoadModeChanged));
+  hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
+
+  hwui->onLoadToPartModeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onLoadModeChanged));
 }
 
 VoiceGroupIndicator::~VoiceGroupIndicator()
@@ -153,14 +154,29 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
   setDirty();
 }
 
+bool isLayerGlobal(SoundType type, int parameterNumber)
+{
+  if(type == SoundType::Layer)
+  {
+    static auto sGlobalGroupsInLayer
+        = { C15::PID::Mono_Grp_Enable, C15::PID::Mono_Grp_Glide, C15::PID::Mono_Grp_Legato, C15::PID::Mono_Grp_Prio,
+            C15::PID::Unison_Detune,   C15::PID::Unison_Voices,  C15::PID::Unison_Pan,      C15::PID::Unison_Phase };
+    auto it = std::find(sGlobalGroupsInLayer.begin(), sGlobalGroupsInLayer.end(), parameterNumber);
+    return it != sGlobalGroupsInLayer.end();
+  }
+  return false;
+}
+
 void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, const Parameter* newParam)
 {
   m_parameterChanged.disconnect();
   if(newParam)
   {
     m_param = newParam;
-    
-    if(!ParameterId::isGlobal(newParam->getID().getNumber()))
+
+    auto ebType = Application::get().getPresetManager()->getEditBuffer()->getType();
+
+    if(!ParameterId::isGlobal(newParam->getID().getNumber()) && !isLayerGlobal(ebType, newParam->getID().getNumber()))
     {
       m_selectedVoiceGroup = newParam->getID().getVoiceGroup();
       setDirty();
