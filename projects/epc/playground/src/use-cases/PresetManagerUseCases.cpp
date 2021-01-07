@@ -336,12 +336,14 @@ void PresetManagerUseCases::selectPreset(const Preset* preset)
       if(auto presetToSelect = bank->findPreset(presetUuid))
       {
         auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
-        auto scope = bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
+        auto scope = bank->getUndoScope().startContinuousTransaction(bank, std::chrono::hours(1), name);
+        m_presetManager->selectBank(scope->getTransaction(), bank->getUuid());
         bank->selectPreset(scope->getTransaction(), presetUuid);
       }
     }
   }
 }
+
 void PresetManagerUseCases::moveLeft(Bank* bank)
 {
   if(bank)

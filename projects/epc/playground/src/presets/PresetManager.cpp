@@ -972,12 +972,12 @@ void PresetManager::doLoadToPart(const Preset *preset, VoiceGroup loadFrom, Voic
 
 void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction) const
 {
+  nltools_assertAlways(transaction != nullptr);
+
   auto ebUseCases = EditBufferUseCases(getEditBuffer());
   auto eb = getEditBuffer();
   auto hwui = Application::get().getHWUI();
   auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
-
-  auto useUseCase = transaction == nullptr;
 
   if(auto bank = getSelectedBank())
   {
@@ -989,10 +989,7 @@ void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transac
       switch(selPreset->getType())
       {
         case SoundType::Single:
-          if(useUseCase)
-            ebUseCases.undoableLoadAccordingToType(selPreset, currentVoiceGroup, eb->getType(), hwui->isInLoadToPart());
-          else
-            eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
+          eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
 
           break;
         case SoundType::Layer:
@@ -1000,17 +997,11 @@ void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transac
           if(loadToPartActive)
           {
             auto load = hwui->getPresetPartSelection(currentVoiceGroup);
-            if(useUseCase)
-              ebUseCases.undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
-            else
-              eb->undoableLoadToPart(transaction, load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+            eb->undoableLoadToPart(transaction, load->m_preset, load->m_voiceGroup, currentVoiceGroup);
           }
           else
           {
-            if(useUseCase)
-              ebUseCases.undoableLoad(selPreset);
-            else
-              eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
+            eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
           }
           break;
         default:

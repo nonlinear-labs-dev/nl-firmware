@@ -60,6 +60,8 @@ class EditBufferUseCases
  void scheduleUndoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to);
  void undoableLoadAccordingToType(Preset* pPreset, VoiceGroup group, SoundType type, bool isLoadToPartActive);
 
+ void autoLoadSelectedPreset();
+
 private:
   VoiceGroup invert(VoiceGroup vg);
   PresetManager* getPresetManager() const;

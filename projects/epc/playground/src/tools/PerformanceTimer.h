@@ -26,12 +26,12 @@ class PerformanceTimer
 
     if(m_indent == 0)
     {
-      DebugLevel::info(m_name, "took", msec.count(), "ms");
+      DebugLevel::error(m_name, "took", msec.count(), "ms");
     }
     else
     {
       Glib::ustring indentation(s_indent, ' ');
-      DebugLevel::info(indentation, m_name, "took", msec.count(), "ms");
+      DebugLevel::error(indentation, m_name, "took", msec.count(), "ms");
     }
   }
 

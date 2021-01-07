@@ -8,6 +8,7 @@
 #include <libundo/undo/Scope.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameter_declarations.h>
+#include <presets/Bank.h>
 
 EditBufferUseCases::EditBufferUseCases(EditBuffer* eb)
     : m_editBuffer { eb }
@@ -58,7 +59,9 @@ void EditBufferUseCases::undoableLoad(const Uuid& uuid)
 
 void EditBufferUseCases::undoableLoad(const Preset* preset)
 {
-  auto scope = m_editBuffer->getUndoScope().startTransaction(preset->buildUndoTransactionTitle("Load"));
+  auto& undoScope = m_editBuffer->getUndoScope();
+  auto name = preset->buildUndoTransactionTitle("Load");
+  auto scope = undoScope.startContinuousTransaction(preset->getParent(), std::chrono::seconds(5), name);
   m_editBuffer->undoableLoad(scope->getTransaction(), preset, true);
 }
 
@@ -345,4 +348,19 @@ void EditBufferUseCases::loadSelectedPresetAccordingToLoadType()
   auto scope = m_editBuffer->getUndoScope().startContinuousTransaction(m_editBuffer->getParent()->getSelectedBank(),
                                                                        std::chrono::seconds(5), name);
   m_editBuffer->getParent()->autoLoadPresetAccordingToLoadType(scope->getTransaction());
+}
+
+void EditBufferUseCases::autoLoadSelectedPreset()
+{
+  auto pm = m_editBuffer->getParent();
+  if(auto selectedBank = pm->getSelectedBank())
+  {
+    if(auto selectedPreset = selectedBank->getSelectedPreset())
+    {
+      auto name = selectedPreset->buildUndoTransactionTitle("Load");
+      auto scope
+          = m_editBuffer->getUndoScope().startContinuousTransaction(selectedBank, std::chrono::seconds { 5 }, name);
+      pm->doAutoLoadSelectedPreset(scope->getTransaction());
+    }
+  }
 }
