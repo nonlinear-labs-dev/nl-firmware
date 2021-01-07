@@ -5,6 +5,7 @@
 #include <use-cases/BankUseCases.h>
 #include <libsoup/soup-message-body.h>
 #include <xml/FileInStream.h>
+#include <clipboard/Clipboard.h>
 
 class PresetManager;
 class Preset;
@@ -87,6 +88,15 @@ class PresetManagerUseCases
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 
   void moveAllBanks(float x, float y);
+  void pastePresetOnBank(Bank* bank, const Preset* preset, Clipboard* pClipboard);
+
+  void pastePresetOnPreset(Preset* target, Preset* source, Clipboard* clipboard);
+
+  void pasteBankOnBackground(const Glib::ustring& name, const Glib::ustring& x, const Glib::ustring& y,
+                             const Bank* source, Clipboard* pClipboard);
+
+  void pastePresetOnBackground(const Glib::ustring& x, const Glib::ustring& y, Preset* source, Clipboard* clipboard);
+
  private:
   PresetManager* m_presetManager;
 

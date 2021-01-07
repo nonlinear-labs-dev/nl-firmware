@@ -36,6 +36,8 @@ class Clipboard : public ContentSection
   bool containsPreset() const;
   bool hasContent() const;
 
+  void doCut(UNDO::Transaction *transaction);
+
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags
                                                 = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
@@ -59,8 +61,6 @@ class Clipboard : public ContentSection
   void pasteMultiplePresetsOnBackground(const Glib::ustring &x, const Glib::ustring &y);
   void pasteMultiplePresetsOnBank(const Uuid &bankUuid);
   void pasteMultiplePresetsOnPreset(const Uuid &presetUuid);
-
-  void doCut(UNDO::Transaction *transaction);
 
   RPCActionManager m_actions;
   std::unique_ptr<UpdateDocumentContributor> m_content;

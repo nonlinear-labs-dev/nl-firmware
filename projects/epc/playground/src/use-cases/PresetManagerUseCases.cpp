@@ -800,6 +800,54 @@ void PresetManagerUseCases::moveAllBanks(float x, float y)
   }
 }
 
+void PresetManagerUseCases::pastePresetOnBank(Bank* bank, const Preset* preset, Clipboard* pClipboard)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("Paste Preset");
+  auto transaction = scope->getTransaction();
+  bank->appendPreset(transaction, std::make_unique<Preset>(bank, *preset, true));
+  pClipboard->doCut(transaction);
+}
+
+void PresetManagerUseCases::pastePresetOnPreset(Preset* target, Preset* source, Clipboard* clipboard)
+{
+  if(auto targetBank = dynamic_cast<Bank*>(target->getParent()))
+  {
+    auto scope = m_presetManager->getUndoScope().startTransaction("Paste Preset");
+    auto transaction = scope->getTransaction();
+    auto insertPos = targetBank->getPresetPosition(target->getUuid()) + 1;
+    auto newPreset = std::make_unique<Preset>(targetBank, *source, true);
+    auto newPresetPtr = targetBank->insertPreset(transaction, insertPos, std::move(newPreset));
+    targetBank->selectPreset(transaction, newPresetPtr->getUuid());
+    clipboard->doCut(transaction);
+  }
+}
+
+void PresetManagerUseCases::pasteBankOnBackground(const Glib::ustring& name, const Glib::ustring& x,
+                                                  const Glib::ustring& y, const Bank* source, Clipboard* pClipboard)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction(name);
+  auto transaction = scope->getTransaction();
+  auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager, *source, true));
+  newBank->setX(transaction, x);
+  newBank->setY(transaction, y);
+  m_presetManager->selectBank(transaction, newBank->getUuid());
+  pClipboard->doCut(transaction);
+}
+
+void PresetManagerUseCases::pastePresetOnBackground(const Glib::ustring& x, const Glib::ustring& y, Preset* source,
+                                                    Clipboard* clipboard)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("Paste Preset");
+  auto transaction = scope->getTransaction();
+  auto newBank = m_presetManager->addBank(transaction);
+  newBank->setX(transaction, x);
+  newBank->setY(transaction, y);
+  newBank->prependPreset(transaction, std::make_unique<Preset>(newBank, *source, true));
+  newBank->ensurePresetSelection(transaction);
+  m_presetManager->selectBank(transaction, newBank->getUuid());
+  clipboard->doCut(transaction);
+}
+
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)
 {
   auto ebName = eb->getName();
