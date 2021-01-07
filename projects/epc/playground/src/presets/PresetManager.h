@@ -108,7 +108,7 @@ class PresetManager : public ContentSection
   void resolveCyclicAttachments(UNDO::Transaction *transaction);
   void ensureBankSelection(UNDO::Transaction *transaction);
 
-  void autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction);
+  void autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction) const;
 
   // algorithms
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;

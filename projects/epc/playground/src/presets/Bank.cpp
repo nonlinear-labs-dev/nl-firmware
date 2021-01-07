@@ -714,36 +714,3 @@ Glib::ustring Bank::getComment()
 {
   return getAttribute("Comment", "");
 }
-
-
-
-//
-//
-//A Select        Cont Trans add Transaction of Type Select to m_commands map
-//A Auto Load     reopen + add Transaction of Type Load to m_commands map
-//B Select        Cont Trans replace Action to m_commands map Select
-//B Load          reopen + add Transaction of type Load to m_commands map
-//would have to implement tags for tActions
-//
-//
-//
-//
-//A Select          Cont. Trans A -> add action to m_commands
-//A Auto Load       reopen + add actions to m_commands
-//B Select          Cont. Trans B -> add action to m_commands --> overtake to Cont. Trans A
-//B Auto Load       reopen Trans A -> add Actions to m_commands
-//
-//
-//
-
-
-
-
-
-
-
-
-
-
-
-

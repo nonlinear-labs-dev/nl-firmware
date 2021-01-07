@@ -970,7 +970,7 @@ void PresetManager::doLoadToPart(const Preset *preset, VoiceGroup loadFrom, Voic
   }
 }
 
-void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction)
+void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction) const
 {
   auto ebUseCases = EditBufferUseCases(getEditBuffer());
   auto eb = getEditBuffer();
