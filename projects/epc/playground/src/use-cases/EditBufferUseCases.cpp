@@ -338,3 +338,11 @@ void EditBufferUseCases::undoableLoadAccordingToType(Preset* pPreset, VoiceGroup
     undoableLoad(pPreset);
   }
 }
+
+void EditBufferUseCases::loadSelectedPresetAccordingToLoadType()
+{
+  auto name = "Load Preset";
+  auto scope = m_editBuffer->getUndoScope().startContinuousTransaction(m_editBuffer->getParent()->getSelectedBank(),
+                                                                       std::chrono::seconds(5), name);
+  m_editBuffer->getParent()->autoLoadPresetAccordingToLoadType(scope->getTransaction());
+}

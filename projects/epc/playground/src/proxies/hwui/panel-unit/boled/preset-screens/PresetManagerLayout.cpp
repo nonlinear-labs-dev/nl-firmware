@@ -344,7 +344,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
           auto pm = Application::get().getPresetManager();
           EditBufferUseCases useCases(pm->getEditBuffer());
           auto oldPreset = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
-          useCases.undoableLoad(oldPreset);
+          useCases.loadSelectedPresetAccordingToLoadType();
           if(pm->getSelectedPreset()->getUuid() == oldPreset)
           {
             animateSelectedPreset([] {});
