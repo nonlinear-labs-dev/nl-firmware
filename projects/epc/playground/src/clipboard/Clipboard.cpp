@@ -107,7 +107,7 @@ bool Clipboard::containsPreset() const
 
 bool Clipboard::hasContent() const
 {
-  return m_content.get();
+  return containsBank() || containsPreset() || containsMultiplePresets();
 }
 
 void Clipboard::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -206,14 +206,10 @@ void Clipboard::pasteBankOnBackground(const Glib::ustring &transactionName, cons
                                       const Glib::ustring &y, const UpdateDocumentContributor *content)
 {
   auto pm = Application::get().getPresetManager();
+
   auto srcBank = dynamic_cast<const Bank *>(content);
-  auto scope = getUndoScope().startTransaction(transactionName);
-  auto transaction = scope->getTransaction();
-  auto newBank = pm->addBank(transaction, std::make_unique<Bank>(pm, *srcBank, true));
-  newBank->setX(transaction, x);
-  newBank->setY(transaction, y);
-  pm->selectBank(transaction, newBank->getUuid());
-  doCut(transaction);
+  PresetManagerUseCases useCase(pm);
+  useCase.pasteBankOnBackground(transactionName, x, y, srcBank, this);
 }
 
 std::unique_ptr<Bank> multiplePresetsToBank(const MultiplePresetSelection &mulPresets)
@@ -252,18 +248,10 @@ void Clipboard::pasteMultiplePresetsOnPreset(const Uuid &presetUuid)
 
 void Clipboard::pastePresetOnBackground(const Glib::ustring &x, const Glib::ustring &y)
 {
-  auto scope = getUndoScope().startTransaction("Paste Preset");
   auto pm = Application::get().getPresetManager();
-  auto transaction = scope->getTransaction();
-  auto newBank = pm->addBank(transaction);
   auto srcPreset = dynamic_cast<Preset *>(m_content.get());
-  newBank->setX(transaction, x);
-  newBank->setY(transaction, y);
-  newBank->prependPreset(transaction, std::make_unique<Preset>(newBank, *srcPreset, true));
-  newBank->ensurePresetSelection(transaction);
-  pm->selectBank(transaction, newBank->getUuid());
-
-  doCut(transaction);
+  PresetManagerUseCases useCases(pm);
+  useCases.pastePresetOnBackground(x, y, srcPreset, this);
 }
 
 void Clipboard::pasteBankOnBank(const Glib::ustring &transactionName, const Uuid &bankUuid)
@@ -298,11 +286,9 @@ void Clipboard::pastePresetOnBank(const Uuid &bankUuid)
 
     if(auto target = pm->findBank(bankUuid))
     {
-      auto scope = getUndoScope().startTransaction("Paste Preset");
-      auto transaction = scope->getTransaction();
+      PresetManagerUseCases useCase(pm);
       auto source = dynamic_cast<const Preset *>(m_content.get());
-      target->appendPreset(transaction, std::make_unique<Preset>(target, *source, true));
-      doCut(transaction);
+      useCase.pastePresetOnBank(target, source, this);
     }
   }
 }
@@ -342,17 +328,9 @@ void Clipboard::pastePresetOnPreset(const Uuid &presetUuid)
 
   if(auto targetPreset = pm->findPreset(presetUuid))
   {
-    if(auto targetBank = dynamic_cast<Bank *>(targetPreset->getParent()))
-    {
-      auto scope = getUndoScope().startTransaction("Paste Preset");
-      auto transaction = scope->getTransaction();
-      auto insertPos = targetBank->getPresetPosition(presetUuid) + 1;
-      auto source = dynamic_cast<const Preset *>(m_content.get());
-      auto newPreset = std::make_unique<Preset>(targetBank, *source, true);
-      auto newPresetPtr = targetBank->insertPreset(transaction, insertPos, std::move(newPreset));
-      targetBank->selectPreset(transaction, newPresetPtr->getUuid());
-      doCut(transaction);
-    }
+    PresetManagerUseCases useCase(pm);
+    auto source = dynamic_cast<Preset *>(m_content.get());
+    useCase.pastePresetOnPreset(targetPreset, source, this);
   }
 }
 
