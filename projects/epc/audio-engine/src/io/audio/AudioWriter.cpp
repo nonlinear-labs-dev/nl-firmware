@@ -8,6 +8,48 @@ AudioWriterBase::AudioWriterBase(snd_pcm_t *handle)
 #if __BYTE_ORDER != __LITTLE_ENDIAN
 #error "platform not supported"
 #endif
+
+  auto expect16 = [](float in, SampleInt16 out) {
+    SampleInt16 c;
+    convertSample(c, in);
+    g_assert(c == out);
+  };
+
+  auto expect32 = [](float in, SampleInt32 out) {
+    SampleInt32 c;
+    convertSample(c, in);
+    g_assert(c == out);
+  };
+
+  auto e16 = 1.0f / std::pow(2.0f, 15.0f);
+  expect16(2 * e16, 2);
+  expect16(1.75f * e16, 2);
+  expect16(1.25f * e16, 1);
+  expect16(1 * e16, 1);
+  expect16(0.75f * e16, 1);
+  expect16(0.25f * e16, 0);
+  expect16(0 * e16, 0);
+  expect16(-0.25f * e16, 0);
+  expect16(-0.75f * e16, -1);
+  expect16(-1 * e16, -1);
+  expect16(-1.25f * e16, -1);
+  expect16(-1.75f * e16, -2);
+  expect16(-2 * e16, -2);
+
+  auto e32 = 1.0f / std::pow(2.0f, 31.0f);
+  expect32(2 * e32, 2);
+  expect32(1.75f * e32, 2);
+  expect32(1.25f * e32, 1);
+  expect32(1 * e32, 1);
+  expect32(0.75f * e32, 1);
+  expect32(0.25f * e32, 0);
+  expect32(0 * e32, 0);
+  expect32(-0.25f * e32, 0);
+  expect32(-0.75f * e32, -1);
+  expect32(-1 * e32, -1);
+  expect32(-1.25f * e32, -1);
+  expect32(-1.75f * e32, -2);
+  expect32(-2 * e32, -2);
 }
 
 AudioWriterBase::~AudioWriterBase() = default;
