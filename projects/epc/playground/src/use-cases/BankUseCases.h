@@ -10,8 +10,8 @@ class BankUseCases
  public:
   explicit BankUseCases(Bank* bank);
 
-  void selectPreset(int pos);
-  void stepPresetSelection(int inc);
+  void selectPreset(int pos, bool directLoad);
+  void stepPresetSelection(int inc, bool directLoad);
 
   void renameBank(const Glib::ustring& name);
   void setBankComment(const Glib::ustring& comment);

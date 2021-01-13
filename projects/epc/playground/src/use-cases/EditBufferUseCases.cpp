@@ -364,3 +364,17 @@ void EditBufferUseCases::autoLoadSelectedPreset()
     }
   }
 }
+
+void EditBufferUseCases::loadSelectedSinglePresetIntoDualSound(VoiceGroup currentPart)
+{
+  if(auto bank = m_editBuffer->getParent()->getSelectedBank())
+  {
+    if(auto preset = bank->getSelectedPreset())
+    {
+      if(!preset->isDual())
+      {
+        loadSinglePresetIntoDualSound(preset, currentPart);
+      }
+    }
+  }
+}

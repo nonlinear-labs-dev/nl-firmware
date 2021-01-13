@@ -14,33 +14,27 @@ void BaseUnitPresetsMode::setup()
   super::setup();
 
   setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
+    auto pm = Application::get().getPresetManager();
+    PresetManagerUseCases useCase(pm);
+    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+
     if(state)
-    {
-      installButtonRepeat([] {
-        if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-          bank->selectPreviousPreset();
-      });
-    }
+      installButtonRepeat([&] { useCase.selectPreviousPreset(directLoad); });
     else
-    {
       removeButtonRepeat();
-    }
 
     return true;
   });
 
   setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
+    auto pm = Application::get().getPresetManager();
+    PresetManagerUseCases useCase(pm);
+    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+
     if(state)
-    {
-      installButtonRepeat([] {
-        if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-          bank->selectNextPreset();
-      });
-    }
+      installButtonRepeat([&] { useCase.selectNextPreset(directLoad); });
     else
-    {
       removeButtonRepeat();
-    }
 
     return true;
   });
@@ -49,7 +43,17 @@ void BaseUnitPresetsMode::setup()
 void BaseUnitPresetsMode::onFuncButtonDown()
 {
   auto &app = Application::get();
+  auto hwui = Application::get().getHWUI();
   auto eb = app.getPresetManager()->getEditBuffer();
-  auto currentVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
-  eb->undoableLoadSelectedPreset(currentVoiceGroup);
+  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+
+  EditBufferUseCases useCase(eb);
+  if(hwui->isInLoadToPart() && eb->isDual())
+  {
+    useCase.loadSelectedSinglePresetIntoDualSound(currentVoiceGroup);
+  }
+  else
+  {
+    useCase.autoLoadSelectedPreset();
+  }
 }

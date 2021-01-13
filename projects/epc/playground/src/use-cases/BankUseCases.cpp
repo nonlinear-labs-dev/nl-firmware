@@ -31,7 +31,7 @@ void BankUseCases::renameBank(const Glib::ustring& name)
   }
 }
 
-void BankUseCases::stepPresetSelection(int inc)
+void BankUseCases::stepPresetSelection(int inc, bool directLoad)
 {
   if(auto presetManager = m_bank->getPresetManager())
   {
@@ -44,6 +44,11 @@ void BankUseCases::stepPresetSelection(int inc)
       auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
       auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
       m_bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
+
+      if(directLoad)
+      {
+        presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+      }
     }
   }
 }
@@ -146,7 +151,7 @@ void BankUseCases::deletePreset(const Uuid& uuid)
   }
 }
 
-void BankUseCases::selectPreset(int pos)
+void BankUseCases::selectPreset(int pos, bool directLoad)
 {
   if(pos < m_bank->getNumPresets())
   {
@@ -155,6 +160,11 @@ void BankUseCases::selectPreset(int pos)
       auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
       auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
       m_bank->selectPreset(scope->getTransaction(), pos);
+
+      if(directLoad)
+      {
+        m_bank->getPresetManager()->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+      }
     }
   }
 }

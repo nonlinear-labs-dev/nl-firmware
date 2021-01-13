@@ -362,25 +362,9 @@ void PresetManager::forEachBank(std::function<void(Bank *)> cb) const
   m_banks.forEach(cb);
 }
 
-void PresetManager::selectNextBank()
-{
-  selectBank(getNextBankPosition());
-}
-
 std::shared_ptr<ScopedGuard::Lock> PresetManager::lockLoading()
 {
   return m_isLoading.lock();
-}
-
-void PresetManager::selectPreviousBank()
-{
-  selectBank(getPreviousBankPosition());
-}
-
-void PresetManager::selectBank(size_t idx)
-{
-  PresetManagerUseCases useCase(this);
-  useCase.selectBank(idx);
 }
 
 bool PresetManager::selectPreviousBank(UNDO::Transaction *transaction)
@@ -499,14 +483,7 @@ void PresetManager::handleDockingOnBankDelete(UNDO::Transaction *transaction, co
 
 void PresetManager::selectBank(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  if(m_banks.select(transaction, uuid))
-    onPresetSelectionChanged(transaction);
-}
-
-void PresetManager::onPresetSelectionChanged(UNDO::Transaction *currentTransactionPtr)
-{
-  if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
-    doAutoLoadSelectedPreset(currentTransactionPtr);
+  m_banks.select(transaction, uuid);
 }
 
 void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<Bank *> &banks)

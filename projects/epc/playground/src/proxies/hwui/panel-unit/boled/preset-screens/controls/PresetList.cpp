@@ -11,6 +11,8 @@
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
 #include "presets/Preset.h"
+#include <device-settings/Settings.h>
+#include <device-settings/DirectLoadSetting.h>
 
 PresetList::PresetList(const Rect& pos, bool showBankArrows)
     : super(pos, showBankArrows)
@@ -79,31 +81,23 @@ bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
   {
     auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
     auto pm = Application::get().getPresetManager();
+    PresetManagerUseCases useCase(pm);
+    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 
     switch(i)
     {
       case Buttons::BUTTON_B:
         if(focusAndMode.focus == UIFocus::Banks)
-        {
-          if(auto bank = pm->getSelectedBank())
-            bank->selectPreviousPreset();
-        }
+          useCase.selectPreviousPreset(directLoad);
         else
-        {
-          pm->selectPreviousBank();
-        }
+          useCase.selectPreviousBank(directLoad);
         return true;
 
       case Buttons::BUTTON_C:
         if(focusAndMode.focus == UIFocus::Banks)
-        {
-          if(auto bank = pm->getSelectedBank())
-            bank->selectNextPreset();
-        }
+          useCase.selectNextPreset(directLoad);
         else
-        {
-          pm->selectNextBank();
-        }
+          useCase.selectNextBank(directLoad);
         return true;
     }
   }
@@ -129,7 +123,8 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 void PresetList::stepBankSelection(int inc, const ButtonModifiers& modifiers, PresetManager* pm) const
 {
   PresetManagerUseCases useCase(pm);
-  useCase.stepBankSelection(inc, modifiers[SHIFT]);
+  const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+  useCase.stepBankSelection(inc, modifiers[SHIFT], directLoad);
 }
 
 void PresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const
@@ -137,7 +132,8 @@ void PresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) con
   if(bank)
   {
     BankUseCases useCase(bank);
-    useCase.stepPresetSelection(inc);
+    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+    useCase.stepPresetSelection(inc, directLoad);
   }
 }
 

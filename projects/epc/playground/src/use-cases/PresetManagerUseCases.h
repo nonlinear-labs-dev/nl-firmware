@@ -41,19 +41,19 @@ class PresetManagerUseCases
   void appendPresetWithUUID(Bank* bank, const std::string& uuid);
   void createBankAndStoreEditBuffer();
   void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
-  void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
+  void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y, bool directLoad);
 
   void newBank(const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& name);
   void newBank(const Glib::ustring& x, const Glib::ustring& y);
 
-  void selectPreset(const Uuid& uuid);
-  void selectPreset(const Preset* preset);
+  void selectPreset(const Uuid& uuid, bool directLoad);
+  void selectPreset(const Preset* preset, bool directLoad);
 
-  void selectBank(const Uuid& uuid);
-  void selectBank(Bank* b);
-  void selectBank(int index);
+  void selectBank(const Uuid& uuid, bool directLoad);
+  void selectBank(Bank* bank, bool directLoad);
+  void selectBank(int idx, bool directLoad);
 
-  void stepBankSelection(int inc, bool shift);
+  void stepBankSelection(int inc, bool shift, bool directLoad);
 
   void setOrderNumber(Bank* b, int newOrderNumber);
 
@@ -87,6 +87,12 @@ class PresetManagerUseCases
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 
   void moveAllBanks(float x, float y);
+  void selectPreviousBank(const bool directLoad);
+  void selectNextBank(const bool directLoad);
+
+  void selectPreviousPreset(bool directLoad);
+  void selectNextPreset(bool directLoad);
+
  private:
   PresetManager* m_presetManager;
 

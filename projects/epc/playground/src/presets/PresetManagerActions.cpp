@@ -55,7 +55,8 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
 
   addAction("select-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
-    pmUseCases.selectBank(Uuid(uuid));
+    const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+    pmUseCases.selectBank(Uuid(uuid), directLoad);
   });
 
   addAction("delete-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {

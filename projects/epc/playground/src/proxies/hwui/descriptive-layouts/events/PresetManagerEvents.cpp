@@ -76,13 +76,14 @@ namespace DescriptiveLayouts
 
     auto pm = Application::get().getPresetManager();
     PresetManagerUseCases useCases(pm);
+    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
     if(auto b = cursor.getBank())
     {
       auto currentBank = pm->getSelectedBank();
 
       if(currentBank != b)
       {
-        useCases.selectBank(b);
+        useCases.selectBank(b, directLoad);
       }
       else if(currentBank)
       {
@@ -91,7 +92,7 @@ namespace DescriptiveLayouts
 
         if(currentPreset != newPreset && newPreset)
         {
-          useCases.selectPreset(newPreset);
+          useCases.selectPreset(newPreset, directLoad);
         }
       }
     }

@@ -197,7 +197,8 @@ BankActions::BankActions(PresetManager &presetManager)
   addAction("select-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring presetUUID = request->get("uuid");
     PresetManagerUseCases useCase(&m_presetManager);
-    useCase.selectPreset(presetUUID);
+    const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+    useCase.selectPreset(presetUUID, directLoad);
   });
 
   addAction("delete-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
@@ -261,7 +262,8 @@ BankActions::BankActions(PresetManager &presetManager)
     auto y = request->get("y");
 
     PresetManagerUseCases useCase(&m_presetManager);
-    useCase.createBankFromPresets(csv, x, y);
+    const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+    useCase.createBankFromPresets(csv, x, y, directLoad);
   });
 
   addAction("drop-bank-on-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {

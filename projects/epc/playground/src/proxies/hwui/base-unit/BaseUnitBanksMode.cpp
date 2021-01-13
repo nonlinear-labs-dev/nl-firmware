@@ -2,6 +2,8 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/base-unit/BaseUnitBanksMode.h>
 #include <proxies/hwui/buttons.h>
+#include <device-settings/Settings.h>
+#include <device-settings/DirectLoadSetting.h>
 
 void BaseUnitBanksMode::setup()
 {
@@ -9,7 +11,11 @@ void BaseUnitBanksMode::setup()
 
   setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
     if(state)
-      installButtonRepeat([] { Application::get().getPresetManager()->selectPreviousBank(); });
+      installButtonRepeat([] {
+        PresetManagerUseCases useCase(Application::get().getPresetManager());
+        const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+        useCase.selectPreviousBank(directLoad);
+      });
     else
       removeButtonRepeat();
 
@@ -18,7 +24,11 @@ void BaseUnitBanksMode::setup()
 
   setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
     if(state)
-      installButtonRepeat([] { Application::get().getPresetManager()->selectNextBank(); });
+      installButtonRepeat([] {
+        PresetManagerUseCases useCase(Application::get().getPresetManager());
+        const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+        useCase.selectNextBank(directLoad);
+      });
     else
       removeButtonRepeat();
 

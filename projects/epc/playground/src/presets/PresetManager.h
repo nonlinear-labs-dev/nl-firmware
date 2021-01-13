@@ -76,10 +76,6 @@ class PresetManager : public ContentSection
   void forEachBank(std::function<void(Bank *b)> cb) const;
   void selectMidiBank(UNDO::Transaction *trans, const Uuid &uuid);
 
-  // convenience
-  void selectPreviousBank();
-  void selectNextBank();
-  void onPresetSelectionChanged(UNDO::Transaction *currentTransactionPtr);
   void onPresetStored();
 
   std::shared_ptr<ScopedGuard::Lock> lockLoading();
@@ -150,7 +146,6 @@ class PresetManager : public ContentSection
 
   size_t getPreviousBankPosition() const;
   size_t getNextBankPosition() const;
-  void selectBank(size_t idx);
   bool selectBank(UNDO::Transaction *transaction, size_t idx);
 
   UndoableVector<PresetManager, Bank> m_banks;
@@ -167,7 +162,7 @@ class PresetManager : public ContentSection
   Signal<void> m_sigRestoreHappened;
   Signal<void> m_presetStoreHappened;
   Signal<void, Uuid> m_sigMidiBankSelection;
-  
+
   Expiration m_saveJob;
   tUpdateID m_lastSavedInitSoundUpdateID = 0;
   tUpdateID m_lastSavedMetaDataUpdateID = 0;
@@ -177,4 +172,5 @@ class PresetManager : public ContentSection
   bool m_readOnly = false;
 
   friend class PresetManagerSerializer;
+  friend class PresetManagerUseCases;
 };

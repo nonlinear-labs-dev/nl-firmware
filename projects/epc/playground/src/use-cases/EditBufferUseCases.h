@@ -62,6 +62,8 @@ class EditBufferUseCases
 
  void autoLoadSelectedPreset();
 
+ void loadSelectedSinglePresetIntoDualSound(VoiceGroup currentPart);
+
 private:
   VoiceGroup invert(VoiceGroup vg);
   PresetManager* getPresetManager() const;

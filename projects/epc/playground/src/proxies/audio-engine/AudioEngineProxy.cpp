@@ -24,6 +24,7 @@
 #include <parameter_declarations.h>
 #include <groups/SplitParameterGroups.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
+#include <device-settings/DirectLoadSetting.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -48,8 +49,9 @@ AudioEngineProxy::AudioEngineProxy()
     if(auto lock = m_programChangeRecursion.lock())
       if(auto bank = pm->findMidiSelectedBank())
       {
+        auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
         BankUseCases useCase(bank);
-        useCase.selectPreset(msg.program);
+        useCase.selectPreset(msg.program, directLoad);
       }
   });
 

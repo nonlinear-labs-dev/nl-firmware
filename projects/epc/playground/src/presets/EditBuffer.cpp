@@ -451,22 +451,6 @@ void EditBuffer::undoableLoadSelectedPreset(UNDO::Transaction *transaction, Voic
 
 void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
 {
-  if(auto bank = getParent()->getSelectedBank())
-  {
-    if(auto preset = bank->getSelectedPreset())
-    {
-      if(isLoadToPartActive() && isDual())
-      {
-        if(!preset->isDual())
-          undoableLoadPresetIntoDualSound(preset, loadInto);
-      }
-      else
-      {
-        EditBufferUseCases ebUseCases(this);
-        ebUseCases.undoableLoad(preset);
-      }
-    }
-  }
 }
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
@@ -879,12 +863,6 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup vg)
 {
   undoableLoadSinglePresetIntoDualSound(transaction, preset, vg);
-}
-
-void EditBuffer::undoableLoadPresetIntoDualSound(const Preset *preset, VoiceGroup vg)
-{
-  EditBufferUseCases useCase(this);
-  useCase.loadSinglePresetIntoDualSound(preset, vg);
 }
 
 void EditBuffer::undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset,
