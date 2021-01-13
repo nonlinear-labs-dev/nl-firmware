@@ -38,16 +38,19 @@ void BankUseCases::stepPresetSelection(int inc, bool directLoad)
     auto current = m_bank->getSelectedPreset();
     auto currentPos = m_bank->getPresetPosition(current);
     auto presetPosToSelect = std::max(0, std::min<int>(m_bank->getNumPresets() - 1, currentPos + inc));
+    auto selectedPreset = presetManager->getSelectedPreset();
 
     if(auto presetToSelect = m_bank->getPresetAt(presetPosToSelect))
     {
-      auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
-      auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
-      m_bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
-
-      if(directLoad)
+      if(presetToSelect != selectedPreset)
       {
-        presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+        auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+        auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
+        m_bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
+        if(directLoad)
+        {
+          presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+        }
       }
     }
   }
@@ -157,13 +160,15 @@ void BankUseCases::selectPreset(int pos, bool directLoad)
   {
     if(auto presetToSelect = m_bank->getPresetAt(pos))
     {
-      auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
-      auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
-      m_bank->selectPreset(scope->getTransaction(), pos);
-
-      if(directLoad)
+      if(m_bank->getPresetManager()->getSelectedPreset() != presetToSelect)
       {
-        m_bank->getPresetManager()->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+        auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+        auto scope = m_bank->getUndoScope().startContinuousTransaction(nullptr, std::chrono::hours(1), name);
+        m_bank->selectPreset(scope->getTransaction(), pos);
+        if(directLoad)
+        {
+          m_bank->getPresetManager()->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+        }
       }
     }
   }

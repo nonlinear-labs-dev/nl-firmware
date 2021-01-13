@@ -199,16 +199,20 @@ void PresetManagerUseCases::selectBank(const Uuid& uuid, bool directLoad)
 {
   if(auto bank = m_presetManager->findBank(uuid))
   {
-    auto& undoScope = m_presetManager->getUndoScope();
-    auto transactionScope
-        = undoScope.startContinuousTransaction(m_presetManager, "Select Bank '%0'", bank->getName(true));
-    auto transaction = transactionScope->getTransaction();
-    m_presetManager->selectBank(transaction, uuid);
-    if(directLoad)
+    if(m_presetManager->getSelectedBank() != bank)
     {
-      if(auto selectedPreset = bank->getSelectedPreset())
+      auto& undoScope = m_presetManager->getUndoScope();
+      auto transactionScope
+          = undoScope.startContinuousTransaction(m_presetManager, "Select Bank '%0'", bank->getName(true));
+      auto transaction = transactionScope->getTransaction();
+      m_presetManager->selectBank(transaction, uuid);
+
+      if(directLoad)
       {
-        m_presetManager->getEditBuffer()->undoableLoad(transaction, selectedPreset, true);
+        if(auto selectedPreset = bank->getSelectedPreset())
+        {
+          m_presetManager->getEditBuffer()->undoableLoad(transaction, selectedPreset, true);
+        }
       }
     }
   }
@@ -220,15 +224,18 @@ void PresetManagerUseCases::selectBank(int idx, bool directLoad)
   {
     if(auto bank = m_presetManager->getBankAt(idx))
     {
-      auto transactionScope = m_presetManager->getUndoScope().startContinuousTransaction(
-          m_presetManager, "Select Bank '%0'", bank->getName(true));
-      auto transaction = transactionScope->getTransaction();
-      m_presetManager->selectBank(transaction, bank->getUuid());
-      if(directLoad)
+      if(m_presetManager->getSelectedBank() != bank)
       {
-        if(auto selectedPreset = bank->getSelectedPreset())
+        auto transactionScope = m_presetManager->getUndoScope().startContinuousTransaction(
+            m_presetManager, "Select Bank '%0'", bank->getName(true));
+        auto transaction = transactionScope->getTransaction();
+        m_presetManager->selectBank(transaction, bank->getUuid());
+        if(directLoad)
         {
-          m_presetManager->getEditBuffer()->undoableLoad(transaction, selectedPreset, true);
+          if(auto selectedPreset = bank->getSelectedPreset())
+          {
+            m_presetManager->getEditBuffer()->undoableLoad(transaction, selectedPreset, true);
+          }
         }
       }
     }
@@ -352,14 +359,17 @@ void PresetManagerUseCases::selectPreset(const Preset* preset, bool directLoad)
     {
       if(auto presetToSelect = bank->findPreset(presetUuid))
       {
-        auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
-        auto scope = bank->getUndoScope().startContinuousTransaction(bank, std::chrono::hours(1), name);
-        m_presetManager->selectBank(scope->getTransaction(), bank->getUuid());
-        bank->selectPreset(scope->getTransaction(), presetUuid);
-
-        if(directLoad)
+        if(m_presetManager->getSelectedPreset() != presetToSelect)
         {
-          m_presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+          auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+          auto scope = bank->getUndoScope().startContinuousTransaction(bank, std::chrono::hours(1), name);
+          m_presetManager->selectBank(scope->getTransaction(), bank->getUuid());
+          bank->selectPreset(scope->getTransaction(), presetUuid);
+
+          if(directLoad)
+          {
+            m_presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+          }
         }
       }
     }
@@ -469,10 +479,16 @@ void PresetManagerUseCases::stepBankSelection(int inc, bool shift, bool directLo
 
   if(shift && m_presetManager->getNumBanks() > 0)
   {
+    Bank* bankToSelect = nullptr;
     if(inc < 0)
-      m_presetManager->selectBank(scope->getTransaction(), m_presetManager->getBanks().front()->getUuid());
+      bankToSelect = m_presetManager->getBanks().front();
     else
-      m_presetManager->selectBank(scope->getTransaction(), m_presetManager->getBanks().back()->getUuid());
+      bankToSelect = m_presetManager->getBanks().back();
+
+    if(bankToSelect && bankToSelect != m_presetManager->getSelectedBank())
+    {
+      m_presetManager->selectBank(scope->getTransaction(), bankToSelect->getUuid());
+    }
   }
   else
   {
