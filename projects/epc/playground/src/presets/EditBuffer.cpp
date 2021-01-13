@@ -346,6 +346,15 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       hwui->unsetFineMode();
     }
   }
+  else
+  {
+    //If parameter was already selected: set parameter focus and mode
+    auto hwui = Application::get().getHWUI();
+    if(hwui->getFocusAndMode().mode == UIMode::Info)
+      hwui->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Parameters, UIMode::Info));
+    else
+      hwui->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Parameters, UIMode::Select));
+  }
 }
 
 Parameter *EditBuffer::getSelected(VoiceGroup voiceGroup) const
