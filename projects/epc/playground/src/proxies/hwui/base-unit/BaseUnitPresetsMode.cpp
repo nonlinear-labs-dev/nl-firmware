@@ -16,10 +16,9 @@ void BaseUnitPresetsMode::setup()
   setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
     auto pm = Application::get().getPresetManager();
     PresetManagerUseCases useCase(pm);
-    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 
     if(state)
-      installButtonRepeat([&] { useCase.selectPreviousPreset(directLoad); });
+      installButtonRepeat([&] { useCase.selectPreviousPreset(); });
     else
       removeButtonRepeat();
 
@@ -29,10 +28,9 @@ void BaseUnitPresetsMode::setup()
   setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
     auto pm = Application::get().getPresetManager();
     PresetManagerUseCases useCase(pm);
-    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 
     if(state)
-      installButtonRepeat([&] { useCase.selectNextPreset(directLoad); });
+      installButtonRepeat([&] { useCase.selectNextPreset(); });
     else
       removeButtonRepeat();
 
@@ -54,6 +52,6 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   }
   else
   {
-    useCase.autoLoadSelectedPreset();
+    useCase.undoableLoad(eb->getParent()->getSelectedPreset());
   }
 }

@@ -13,8 +13,7 @@ void BaseUnitBanksMode::setup()
     if(state)
       installButtonRepeat([] {
         PresetManagerUseCases useCase(Application::get().getPresetManager());
-        const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
-        useCase.selectPreviousBank(directLoad);
+        useCase.selectPreviousBank();
       });
     else
       removeButtonRepeat();
@@ -26,8 +25,7 @@ void BaseUnitBanksMode::setup()
     if(state)
       installButtonRepeat([] {
         PresetManagerUseCases useCase(Application::get().getPresetManager());
-        const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
-        useCase.selectNextBank(directLoad);
+        useCase.selectNextBank();
       });
     else
       removeButtonRepeat();

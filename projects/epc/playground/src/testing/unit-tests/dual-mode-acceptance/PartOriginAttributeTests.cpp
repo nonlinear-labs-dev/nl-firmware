@@ -145,7 +145,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
 
     {
       PresetManagerUseCases useCase(pm);
-      useCase.selectPreset(bank->getPresetAt(0), true);
+      useCase.selectPreset(bank->getPresetAt(0));
       Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     }
 

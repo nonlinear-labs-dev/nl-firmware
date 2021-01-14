@@ -234,7 +234,7 @@ SaveResult PresetManager::saveBanks(Glib::RefPtr<Gio::File> pmFolder)
   return SaveResult::Nothing;
 }
 
-void PresetManager::doAutoLoadSelectedPreset(UNDO::Transaction *currentTransactionPtr)
+void PresetManager::undoableLoadSelectedPreset(UNDO::Transaction *currentTransactionPtr)
 {
   if(auto lock = m_isLoading.lock())
   {
@@ -247,7 +247,7 @@ void PresetManager::doAutoLoadSelectedPreset(UNDO::Transaction *currentTransacti
 
     if(!isStoringPreset)
     {
-      autoLoadPresetAccordingToLoadType(currentTransactionPtr);
+      undoableLoadSelectedPresetAccordingToLoadType(currentTransactionPtr);
     }
   }
 }
@@ -899,59 +899,10 @@ Preset *PresetManager::getSelectedPreset()
   return nullptr;
 }
 
-bool PresetManager::currentLoadedPartIsBeforePresetToLoad() const
-{
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-  auto og = getEditBuffer()->getPartOrigin(currentVG);
-
-  if(auto selectedBank = getSelectedBank())
-  {
-    if(auto selectedPreset = selectedBank->getSelectedPreset())
-    {
-      if(auto currentOGBank = findBankWithPreset(og.presetUUID))
-      {
-        if(currentOGBank == selectedBank)
-        {
-          if(auto currentOGPreset = currentOGBank->findPreset(og.presetUUID))
-          {
-            return currentOGBank->getPresetPosition(currentOGPreset) < currentOGBank->getPresetPosition(selectedPreset);
-          }
-        }
-        else
-        {
-          return getBankPosition(currentOGBank->getUuid()) < getBankPosition(selectedBank->getUuid());
-        }
-      }
-    }
-  }
-
-  return false;
-}
-
-void PresetManager::doLoadToPart(const Preset *preset, VoiceGroup loadFrom, VoiceGroup loadTo)
-{
-  auto eb = getEditBuffer();
-  if(preset)
-  {
-    if(auto currentUndo = getUndoScope().getUndoTransaction())
-    {
-      if(!currentUndo->isClosed())
-      {
-        eb->undoableLoadPresetPartIntoPart(currentUndo, preset, loadFrom, loadTo);
-        return;
-      }
-    }
-
-    EditBufferUseCases useCase(eb);
-    useCase.scheduleUndoableLoadToPart(preset, loadFrom, loadTo);
-  }
-}
-
-void PresetManager::autoLoadPresetAccordingToLoadType(UNDO::Transaction *transaction) const
+void PresetManager::undoableLoadSelectedPresetAccordingToLoadType(UNDO::Transaction *transaction) const
 {
   nltools_assertAlways(transaction != nullptr);
 
-  auto ebUseCases = EditBufferUseCases(getEditBuffer());
   auto eb = getEditBuffer();
   auto hwui = Application::get().getHWUI();
   auto currentVoiceGroup = hwui->getCurrentVoiceGroup();

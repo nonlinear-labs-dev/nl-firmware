@@ -82,22 +82,21 @@ bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
     auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
     auto pm = Application::get().getPresetManager();
     PresetManagerUseCases useCase(pm);
-    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 
     switch(i)
     {
       case Buttons::BUTTON_B:
         if(focusAndMode.focus == UIFocus::Banks)
-          useCase.selectPreviousPreset(directLoad);
+          useCase.selectPreviousPreset();
         else
-          useCase.selectPreviousBank(directLoad);
+          useCase.selectPreviousBank();
         return true;
 
       case Buttons::BUTTON_C:
         if(focusAndMode.focus == UIFocus::Banks)
-          useCase.selectNextPreset(directLoad);
+          useCase.selectNextPreset();
         else
-          useCase.selectNextBank(directLoad);
+          useCase.selectNextBank();
         return true;
     }
   }
@@ -123,8 +122,7 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 void PresetList::stepBankSelection(int inc, const ButtonModifiers& modifiers, PresetManager* pm) const
 {
   PresetManagerUseCases useCase(pm);
-  const auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
-  useCase.stepBankSelection(inc, modifiers[SHIFT], directLoad);
+  useCase.stepBankSelection(inc, modifiers[SHIFT]);
 }
 
 void PresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const
@@ -132,8 +130,7 @@ void PresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) con
   if(bank)
   {
     BankUseCases useCase(bank);
-    auto directLoad = Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
-    useCase.stepPresetSelection(inc, directLoad);
+    useCase.stepPresetSelection(inc);
   }
 }
 

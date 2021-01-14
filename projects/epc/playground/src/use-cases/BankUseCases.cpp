@@ -5,6 +5,9 @@
 #include "presets/PresetManager.h"
 #include "presets/Preset.h"
 #include "presets/EditBuffer.h"
+#include <device-settings/Settings.h>
+#include <device-settings/DirectLoadSetting.h>
+#include <Application.h>
 
 BankUseCases::BankUseCases(Bank* bank)
     : m_bank { bank }
@@ -31,10 +34,11 @@ void BankUseCases::renameBank(const Glib::ustring& name)
   }
 }
 
-void BankUseCases::stepPresetSelection(int inc, bool directLoad)
+void BankUseCases::stepPresetSelection(int inc)
 {
   if(auto presetManager = m_bank->getPresetManager())
   {
+    const bool directLoad = isDirectLoadActive();
     auto current = m_bank->getSelectedPreset();
     auto currentPos = m_bank->getPresetPosition(current);
     auto presetPosToSelect = std::max(0, std::min<int>(m_bank->getNumPresets() - 1, currentPos + inc));
@@ -44,9 +48,15 @@ void BankUseCases::stepPresetSelection(int inc, bool directLoad)
     {
       if(presetToSelect != selectedPreset)
       {
-        auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+        Glib::ustring name {};
+        if(directLoad)
+          name = presetToSelect->buildUndoTransactionTitle("Select and Load Preset");
+        else
+          name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+
         auto scope = m_bank->getUndoScope().startContinuousTransaction(m_bank, std::chrono::hours(1), name);
         m_bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
+
         if(directLoad)
         {
           presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
@@ -154,7 +164,7 @@ void BankUseCases::deletePreset(const Uuid& uuid)
   }
 }
 
-void BankUseCases::selectPreset(int pos, bool directLoad)
+void BankUseCases::selectPreset(int pos)
 {
   if(pos < m_bank->getNumPresets())
   {
@@ -162,10 +172,17 @@ void BankUseCases::selectPreset(int pos, bool directLoad)
     {
       if(m_bank->getPresetManager()->getSelectedPreset() != presetToSelect)
       {
-        auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+        const auto directLoad = isDirectLoadActive();
+        Glib::ustring name {};
+        if(directLoad)
+          name = presetToSelect->buildUndoTransactionTitle("Select and Load Preset");
+        else
+          name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+
         auto scope = m_bank->getUndoScope().startContinuousTransaction(m_bank, std::chrono::hours(1), name);
         m_bank->selectPreset(scope->getTransaction(), pos);
-        if(directLoad)
+
+        if(isDirectLoadActive())
         {
           m_bank->getPresetManager()->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
         }
@@ -180,4 +197,9 @@ void BankUseCases::setAttribute(const Glib::ustring& key, const Glib::ustring& v
   auto transaction = scope->getTransaction();
   m_bank->setAttribute(transaction, key, value);
   m_bank->updateLastModifiedTimestamp(transaction);
+}
+
+bool BankUseCases::isDirectLoadActive() const
+{
+  return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 }

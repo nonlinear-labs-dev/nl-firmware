@@ -344,11 +344,16 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
         {
           auto pm = Application::get().getPresetManager();
           EditBufferUseCases useCases(pm->getEditBuffer());
+
           auto oldPreset = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
-          useCases.loadSelectedPresetAccordingToLoadType();
-          if(pm->getSelectedPreset()->getUuid() == oldPreset)
+
+          if(auto currentSelectedPreset = pm->getSelectedPreset())
           {
-            animateSelectedPreset([] {});
+            useCases.undoableLoad(currentSelectedPreset);
+            if(currentSelectedPreset->getUuid() == oldPreset)
+            {
+              animateSelectedPreset([] {});
+            }
           }
         }
     }

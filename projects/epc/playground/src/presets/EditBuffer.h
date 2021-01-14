@@ -41,7 +41,6 @@ class EditBuffer : public ParameterGroupSet
   void undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine);
   void undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to);
 
-  void undoableLoadSelectedPreset(VoiceGroup loadInto);
   void undoableLoadSelectedPreset(UNDO::Transaction *transaction, VoiceGroup loadInto);
   void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
 

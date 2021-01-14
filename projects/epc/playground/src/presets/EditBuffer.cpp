@@ -458,10 +458,6 @@ void EditBuffer::undoableLoadSelectedPreset(UNDO::Transaction *transaction, Voic
   }
 }
 
-void EditBuffer::undoableLoadSelectedPreset(VoiceGroup loadInto)
-{
-}
-
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
 {
   PerformanceTimer timer(__PRETTY_FUNCTION__);

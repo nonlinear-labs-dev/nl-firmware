@@ -10,8 +10,8 @@ class BankUseCases
  public:
   explicit BankUseCases(Bank* bank);
 
-  void selectPreset(int pos, bool directLoad);
-  void stepPresetSelection(int inc, bool directLoad);
+  void selectPreset(int pos);
+  void stepPresetSelection(int inc);
 
   void renameBank(const Glib::ustring& name);
   void setBankComment(const Glib::ustring& comment);
@@ -25,6 +25,9 @@ class BankUseCases
   void deletePreset(const Preset* p);
   void deletePreset(const Uuid& uuid);
 
- void setAttribute(const Glib::ustring& key, const Glib::ustring& value);private:
+  void setAttribute(const Glib::ustring& key, const Glib::ustring& value);
+
+ private:
+  bool isDirectLoadActive() const;
   Bank* m_bank;
 };

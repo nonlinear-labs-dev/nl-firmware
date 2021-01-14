@@ -178,11 +178,11 @@ void LoadToPartPresetList::selectNextBank(PresetManager* pm)
 
 void LoadToPartPresetList::onSelectionChanged(const PresetPartSelection& selection)
 {
-  auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
   if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
   {
-    //TODO make sync!
-    Application::get().getPresetManager()->doLoadToPart(selection.m_preset, selection.m_voiceGroup, currentVg);
+    auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    EditBufferUseCases useCase(Application::get().getPresetManager()->getEditBuffer());
+    useCase.undoableLoadToPart(selection.m_preset, selection.m_voiceGroup, currentVg);
   }
 }
 

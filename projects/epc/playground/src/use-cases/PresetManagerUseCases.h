@@ -42,19 +42,19 @@ class PresetManagerUseCases
   void appendPresetWithUUID(Bank* bank, const std::string& uuid);
   void createBankAndStoreEditBuffer();
   void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
-  void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y, bool directLoad);
+  void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
   void newBank(const Glib::ustring& x, const Glib::ustring& y, const Glib::ustring& name);
   void newBank(const Glib::ustring& x, const Glib::ustring& y);
 
-  void selectPreset(const Uuid& uuid, bool directLoad);
-  void selectPreset(const Preset* preset, bool directLoad);
+  void selectPreset(const Uuid& uuid);
+  void selectPreset(const Preset* preset);
 
-  void selectBank(const Uuid& uuid, bool directLoad);
-  void selectBank(Bank* bank, bool directLoad);
-  void selectBank(int idx, bool directLoad);
+  void selectBank(const Uuid& uuid);
+  void selectBank(Bank* bank);
+  void selectBank(int idx);
 
-  void stepBankSelection(int inc, bool shift, bool directLoad);
+  void stepBankSelection(int inc, bool shift);
 
   void setOrderNumber(Bank* b, int newOrderNumber);
 
@@ -88,11 +88,11 @@ class PresetManagerUseCases
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 
   void moveAllBanks(float x, float y);
-  void selectPreviousBank(const bool directLoad);
-  void selectNextBank(const bool directLoad);
+  void selectPreviousBank();
+  void selectNextBank();
 
-  void selectPreviousPreset(bool directLoad);
-  void selectNextPreset(bool directLoad);
+  void selectPreviousPreset();
+  void selectNextPreset();
 
   void pastePresetOnBank(Bank* bank, const Preset* preset, Clipboard* pClipboard);
 
@@ -104,6 +104,8 @@ class PresetManagerUseCases
   void pastePresetOnBackground(const Glib::ustring& x, const Glib::ustring& y, Preset* source, Clipboard* clipboard);
 
  private:
+  [[nodiscard]] bool isDirectLoadActive() const;
+
   PresetManager* m_presetManager;
 
   void onStore(UNDO::Transaction* transaction, Preset* preset);

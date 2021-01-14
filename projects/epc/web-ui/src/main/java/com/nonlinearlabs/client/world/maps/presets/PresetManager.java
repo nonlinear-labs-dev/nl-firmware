@@ -823,7 +823,7 @@ public class PresetManager extends MapsLayout {
 		}
 	}
 
-	public void loadSelectedPreset() {
+	public void undoableLoadSelectedPreset() {
 		Preset p = findSelectedPreset();
 
 		if (p != null)

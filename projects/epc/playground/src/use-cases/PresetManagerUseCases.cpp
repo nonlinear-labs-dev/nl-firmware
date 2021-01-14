@@ -187,15 +187,15 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   m_presetManager->selectBank(transaction, bank->getUuid());
 }
 
-void PresetManagerUseCases::selectBank(Bank* bank, bool directLoad)
+void PresetManagerUseCases::selectBank(Bank* bank)
 {
   if(bank)
   {
-    selectBank(bank->getUuid(), directLoad);
+    selectBank(bank->getUuid());
   }
 }
 
-void PresetManagerUseCases::selectBank(const Uuid& uuid, bool directLoad)
+void PresetManagerUseCases::selectBank(const Uuid& uuid)
 {
   if(auto bank = m_presetManager->findBank(uuid))
   {
@@ -207,7 +207,7 @@ void PresetManagerUseCases::selectBank(const Uuid& uuid, bool directLoad)
       auto transaction = transactionScope->getTransaction();
       m_presetManager->selectBank(transaction, uuid);
 
-      if(directLoad)
+      if(isDirectLoadActive())
       {
         if(auto selectedPreset = bank->getSelectedPreset())
         {
@@ -218,7 +218,7 @@ void PresetManagerUseCases::selectBank(const Uuid& uuid, bool directLoad)
   }
 }
 
-void PresetManagerUseCases::selectBank(int idx, bool directLoad)
+void PresetManagerUseCases::selectBank(int idx)
 {
   if(idx < m_presetManager->getNumBanks())
   {
@@ -230,7 +230,7 @@ void PresetManagerUseCases::selectBank(int idx, bool directLoad)
             m_presetManager, "Select Bank '%0'", bank->getName(true));
         auto transaction = transactionScope->getTransaction();
         m_presetManager->selectBank(transaction, bank->getUuid());
-        if(directLoad)
+        if(isDirectLoadActive())
         {
           if(auto selectedPreset = bank->getSelectedPreset())
           {
@@ -342,15 +342,15 @@ void PresetManagerUseCases::deletePresets(const std::vector<std::string>& uuids,
   m_presetManager->getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
 }
 
-void PresetManagerUseCases::selectPreset(const Uuid& uuid, bool directLoad)
+void PresetManagerUseCases::selectPreset(const Uuid& uuid)
 {
   if(auto preset = m_presetManager->findPreset(uuid))
   {
-    selectPreset(preset, directLoad);
+    selectPreset(preset);
   }
 }
 
-void PresetManagerUseCases::selectPreset(const Preset* preset, bool directLoad)
+void PresetManagerUseCases::selectPreset(const Preset* preset)
 {
   if(preset)
   {
@@ -361,7 +361,13 @@ void PresetManagerUseCases::selectPreset(const Preset* preset, bool directLoad)
       {
         if(m_presetManager->getSelectedPreset() != presetToSelect)
         {
-          auto name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+          const auto directLoad = isDirectLoadActive();
+          Glib::ustring name {};
+          if(directLoad)
+            name = presetToSelect->buildUndoTransactionTitle("Select and Load Preset");
+          else
+            name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+
           auto scope = bank->getUndoScope().startContinuousTransaction(bank, std::chrono::hours(1), name);
           m_presetManager->selectBank(scope->getTransaction(), bank->getUuid());
           bank->selectPreset(scope->getTransaction(), presetUuid);
@@ -473,9 +479,17 @@ void PresetManagerUseCases::setOrderNumber(Bank* b, int newOrderNumber)
   }
 }
 
-void PresetManagerUseCases::stepBankSelection(int inc, bool shift, bool directLoad)
+void PresetManagerUseCases::stepBankSelection(int inc, bool shift)
 {
-  auto scope = m_presetManager->getUndoScope().startTransaction("Select Bank");
+  const auto directLoad = isDirectLoadActive();
+  Glib::ustring name {};
+  if(directLoad)
+    name = "Select Bank and Load Preset";
+  else
+    name = "Select Bank";
+
+  auto scope
+      = m_presetManager->getUndoScope().startContinuousTransaction(m_presetManager, std::chrono::seconds(5), name);
 
   if(shift && m_presetManager->getNumBanks() > 0)
   {
@@ -536,7 +550,6 @@ void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetMan
       case DropActions::Above:
         return 0;
       case DropActions::Below:
-        return 1;
       case DropActions::Onto:
         return 1;
     }
@@ -692,8 +705,7 @@ void PresetManagerUseCases::createBankFromPreset(const Uuid& uuid, const std::st
   }
 }
 
-void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y,
-                                                  bool directLoad)
+void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y)
 {
   auto scope = m_presetManager->getUndoScope().startTransaction("Create new bank");
   auto transaction = scope->getTransaction();
@@ -715,7 +727,7 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
 
   m_presetManager->selectBank(transaction, newBank->getUuid());
 
-  if(directLoad && newBank->getNumPresets() > 0)
+  if(isDirectLoadActive() && newBank->getNumPresets() > 0)
     m_presetManager->getEditBuffer()->undoableLoad(transaction, newBank->getPresetAt(0), true);
 }
 
@@ -863,17 +875,17 @@ void PresetManagerUseCases::moveAllBanks(float x, float y)
   }
 }
 
-void PresetManagerUseCases::selectPreviousBank(const bool directLoad)
+void PresetManagerUseCases::selectPreviousBank()
 {
-  selectBank(m_presetManager->getPreviousBankPosition(), directLoad);
+  selectBank(m_presetManager->getPreviousBankPosition());
 }
 
-void PresetManagerUseCases::selectNextBank(const bool directLoad)
+void PresetManagerUseCases::selectNextBank()
 {
-  selectBank(m_presetManager->getNextBankPosition(), directLoad);
+  selectBank(m_presetManager->getNextBankPosition());
 }
 
-void PresetManagerUseCases::selectPreviousPreset(bool directLoad)
+void PresetManagerUseCases::selectPreviousPreset()
 {
   if(auto bank = m_presetManager->getSelectedBank())
   {
@@ -882,13 +894,13 @@ void PresetManagerUseCases::selectPreviousPreset(bool directLoad)
       auto currentPos = bank->getPresetPosition(selectedPreset);
       if(auto prevPreset = bank->getPresetAt(currentPos - 1))
       {
-        selectPreset(prevPreset, directLoad);
+        selectPreset(prevPreset);
       }
     }
   }
 }
 
-void PresetManagerUseCases::selectNextPreset(bool directLoad)
+void PresetManagerUseCases::selectNextPreset()
 {
   if(auto bank = m_presetManager->getSelectedBank())
   {
@@ -897,7 +909,7 @@ void PresetManagerUseCases::selectNextPreset(bool directLoad)
       auto currentPos = bank->getPresetPosition(selectedPreset);
       if(auto nextPreset = bank->getPresetAt(currentPos + 1))
       {
-        selectPreset(nextPreset, directLoad);
+        selectPreset(nextPreset);
       }
     }
   }
@@ -949,6 +961,11 @@ void PresetManagerUseCases::pastePresetOnBackground(const Glib::ustring& x, cons
   newBank->ensurePresetSelection(transaction);
   m_presetManager->selectBank(transaction, newBank->getUuid());
   clipboard->doCut(transaction);
+}
+
+bool PresetManagerUseCases::isDirectLoadActive() const
+{
+  return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)

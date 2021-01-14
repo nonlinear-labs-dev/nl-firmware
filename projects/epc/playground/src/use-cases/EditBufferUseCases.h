@@ -37,7 +37,8 @@ class EditBufferUseCases
   void undoableLoad(const Preset* preset);
   void undoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to);
   void loadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup to);
-  void loadSelectedPresetAccordingToLoadType();
+  void loadSinglePresetIntoDualSound(const Preset* preset, VoiceGroup part);
+  void loadSelectedSinglePresetIntoDualSound(VoiceGroup currentPart);
 
   void resetScaleGroup();
   void resetCustomScale();
@@ -56,15 +57,7 @@ class EditBufferUseCases
 
   void renamePart(VoiceGroup part, const Glib::ustring& name);
 
-  void loadSinglePresetIntoDualSound(const Preset* preset, VoiceGroup part);
- void scheduleUndoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to);
- void undoableLoadAccordingToType(Preset* pPreset, VoiceGroup group, SoundType type, bool isLoadToPartActive);
-
- void autoLoadSelectedPreset();
-
- void loadSelectedSinglePresetIntoDualSound(VoiceGroup currentPart);
-
-private:
+ private:
   VoiceGroup invert(VoiceGroup vg);
   PresetManager* getPresetManager() const;
 

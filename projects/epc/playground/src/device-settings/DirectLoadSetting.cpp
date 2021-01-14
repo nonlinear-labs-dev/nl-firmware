@@ -30,8 +30,11 @@ bool DirectLoadSetting::set(BooleanSettings m)
     if(auto pm = Application::get().getPresetManager())
       if(m == BooleanSettings::BOOLEAN_SETTING_TRUE)
       {
-        EditBufferUseCases useCase(pm->getEditBuffer());
-        useCase.autoLoadSelectedPreset();
+        if(auto selectedPreset = pm->getSelectedPreset())
+        {
+          EditBufferUseCases useCase(pm->getEditBuffer());
+          useCase.undoableLoad(selectedPreset);
+        }
       }
 
   return ret;

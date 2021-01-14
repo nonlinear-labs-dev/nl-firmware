@@ -319,52 +319,6 @@ void EditBufferUseCases::loadSinglePresetIntoDualSound(const Preset* preset, Voi
   m_editBuffer->undoableLoadSinglePresetIntoDualSound(transaction, preset, part);
 }
 
-void EditBufferUseCases::scheduleUndoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to)
-{
-  auto name = UNDO::StringTools::buildString("Load Preset Part ", toString(from), " into ", toString(to));
-  auto scope
-      = m_editBuffer->getUndoScope().startContinuousTransaction(preset->getParent(), std::chrono::seconds(5), name);
-  m_editBuffer->undoableLoadPresetPartIntoPart(scope->getTransaction(), preset, from, to);
-}
-
-void EditBufferUseCases::undoableLoadAccordingToType(Preset* pPreset, VoiceGroup group, SoundType type,
-                                                     bool isLoadToPartActive)
-{
-  auto dualEB = type != SoundType::Single;
-  if(isLoadToPartActive && dualEB)
-  {
-    if(!pPreset->isDual())
-      loadSinglePresetIntoDualSound(pPreset, group);
-  }
-  else
-  {
-    undoableLoad(pPreset);
-  }
-}
-
-void EditBufferUseCases::loadSelectedPresetAccordingToLoadType()
-{
-  auto name = "Load Preset";
-  auto scope = m_editBuffer->getUndoScope().startContinuousTransaction(m_editBuffer->getParent()->getSelectedBank(),
-                                                                       std::chrono::seconds(5), name);
-  m_editBuffer->getParent()->autoLoadPresetAccordingToLoadType(scope->getTransaction());
-}
-
-void EditBufferUseCases::autoLoadSelectedPreset()
-{
-  auto pm = m_editBuffer->getParent();
-  if(auto selectedBank = pm->getSelectedBank())
-  {
-    if(auto selectedPreset = selectedBank->getSelectedPreset())
-    {
-      auto name = selectedPreset->buildUndoTransactionTitle("Load");
-      auto scope
-          = m_editBuffer->getUndoScope().startContinuousTransaction(selectedBank, std::chrono::seconds { 5 }, name);
-      pm->doAutoLoadSelectedPreset(scope->getTransaction());
-    }
-  }
-}
-
 void EditBufferUseCases::loadSelectedSinglePresetIntoDualSound(VoiceGroup currentPart)
 {
   if(auto bank = m_editBuffer->getParent()->getSelectedBank())
