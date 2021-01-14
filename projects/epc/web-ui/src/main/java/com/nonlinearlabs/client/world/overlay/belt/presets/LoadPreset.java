@@ -100,7 +100,7 @@ class LoadPreset extends SVGImage {
 
 	public void load() {
 		PresetManager pm = NonMaps.theMaps.getNonLinearWorld().getPresetManager();
-		pm.undoableLoadSelectedPreset();
+		pm.loadSelectedPreset();
 	}
 
 	public void loadPart() {
