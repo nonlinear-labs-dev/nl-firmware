@@ -241,17 +241,6 @@ void EditBufferUseCases::toggleLock(const std::string& groupName)
   m_editBuffer->undoableToggleGroupLock(scope->getTransaction(), groupName);
 }
 
-void EditBufferUseCases::loadSelectedPresetPartIntoPart(VoiceGroup from, VoiceGroup to)
-{
-  if(auto selectedPreset = m_editBuffer->getParent()->getSelectedPreset())
-  {
-    auto name = UNDO::StringTools::buildString("Load Preset Part ", toString(from), " into ", toString(to));
-    auto scope = getPresetManager()->getUndoScope().startContinuousTransaction(selectedPreset->getParent(),
-                                                                               std::chrono::seconds(5), name);
-    m_editBuffer->undoableLoadToPart(scope->getTransaction(), selectedPreset, from, to);
-  }
-}
-
 PresetManager* EditBufferUseCases::getPresetManager() const
 {
   if(auto parentPM = dynamic_cast<PresetManager*>(m_editBuffer->getParent()))
@@ -310,25 +299,4 @@ void EditBufferUseCases::renamePart(VoiceGroup part, const Glib::ustring& name)
 {
   auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("Rename Part to %s", name);
   m_editBuffer->setVoiceGroupName(scope->getTransaction(), name, part);
-}
-
-void EditBufferUseCases::loadSinglePresetIntoDualSound(const Preset* preset, VoiceGroup part)
-{
-  auto scope = m_editBuffer->getUndoScope().startTransaction("Load Preset into Part " + toString(part));
-  auto transaction = scope->getTransaction();
-  m_editBuffer->undoableLoadSinglePresetIntoDualSound(transaction, preset, part);
-}
-
-void EditBufferUseCases::loadSelectedSinglePresetIntoDualSound(VoiceGroup currentPart)
-{
-  if(auto bank = m_editBuffer->getParent()->getSelectedBank())
-  {
-    if(auto preset = bank->getSelectedPreset())
-    {
-      if(!preset->isDual())
-      {
-        loadSinglePresetIntoDualSound(preset, currentPart);
-      }
-    }
-  }
 }

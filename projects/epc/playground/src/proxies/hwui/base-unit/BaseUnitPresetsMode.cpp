@@ -48,7 +48,8 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   EditBufferUseCases useCase(eb);
   if(hwui->isInLoadToPart() && eb->isDual())
   {
-    useCase.loadSelectedSinglePresetIntoDualSound(currentVoiceGroup);
+    if(auto preset = eb->getParent()->getSelectedPreset())
+      useCase.undoableLoadToPart(preset, VoiceGroup::I, currentVoiceGroup);
   }
   else
   {

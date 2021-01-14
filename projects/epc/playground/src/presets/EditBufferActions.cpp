@@ -264,7 +264,10 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto presetPart = to<VoiceGroup>(request->get("preset-part"));
     auto editbufferPartPart = to<VoiceGroup>(request->get("editbuffer-part"));
     EditBufferUseCases ebUseCases(editBuffer);
-    ebUseCases.loadSelectedPresetPartIntoPart(presetPart, editbufferPartPart);
+    if(auto selectedPreset = editBuffer->getParent()->getSelectedPreset())
+    {
+      ebUseCases.undoableLoadToPart(selectedPreset, presetPart, editbufferPartPart);
+    }
   });
 
   addAction("load-preset-part-into-editbuffer-part", [=](auto request) {
