@@ -202,8 +202,8 @@ void PresetManagerUseCases::selectBank(const Uuid& uuid, bool directLoad)
     if(m_presetManager->getSelectedBank() != bank)
     {
       auto& undoScope = m_presetManager->getUndoScope();
-      auto transactionScope
-          = undoScope.startContinuousTransaction(m_presetManager, "Select Bank '%0'", bank->getName(true));
+      auto name = "Select Bank '" + bank->getName(true) + '\'';
+      auto transactionScope = undoScope.startContinuousTransaction(m_presetManager, std::chrono::minutes(5), name);
       auto transaction = transactionScope->getTransaction();
       m_presetManager->selectBank(transaction, uuid);
 
