@@ -33,6 +33,7 @@
 #include "presets/Preset.h"
 #include "SelectVoiceGroupLayout.h"
 #include "RenameBankLayout.h"
+#include "clipboard/Clipboard.h"
 
 PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode oldFocusAndMode)
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -205,7 +206,7 @@ void PresetManagerLayout::setupPresetEdit()
 
   addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
 
-  if(selectedBank && !selectedBank->empty())
+  if(selectedBank && (!selectedBank->empty() || Application::get().getClipboard()->hasContent()))
   {
     m_menu = addControl(new PresetEditButtonMenu(Rect(195, 1, 58, 62)));
   }

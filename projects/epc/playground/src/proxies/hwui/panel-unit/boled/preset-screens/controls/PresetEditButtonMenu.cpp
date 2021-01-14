@@ -32,17 +32,26 @@ void PresetEditButtonMenu::onClipboardChanged()
 {
   clear();
 
-  addButton("Rename", std::bind(&PresetEditButtonMenu::renamePreset, this));
-  addButton("Cut", std::bind(&PresetEditButtonMenu::cutPreset, this));
-  addButton("Copy", std::bind(&PresetEditButtonMenu::copyPreset, this));
-
-  if(Application::get().getClipboard()->hasContent())
+  if(auto bank = Application::get().getPresetManager()->getSelectedBank())
   {
-    addButton("Paste", std::bind(&PresetEditButtonMenu::pasteClipboard, this));
-  }
+    if(!bank->empty())
+    {
+      addButton("Rename", std::bind(&PresetEditButtonMenu::renamePreset, this));
+      addButton("Cut", std::bind(&PresetEditButtonMenu::cutPreset, this));
+      addButton("Copy", std::bind(&PresetEditButtonMenu::copyPreset, this));
+    }
 
-  addButton("Delete", std::bind(&PresetEditButtonMenu::deletePreset, this));
-  selectButton(s_lastSelection);
+    if(Application::get().getClipboard()->hasContent())
+    {
+      addButton("Paste", std::bind(&PresetEditButtonMenu::pasteClipboard, this));
+    }
+
+    if(!bank->empty())
+    {
+      addButton("Delete", std::bind(&PresetEditButtonMenu::deletePreset, this));
+    }
+    selectButton(s_lastSelection);
+  }
 }
 
 void PresetEditButtonMenu::selectButton(size_t i)
@@ -111,6 +120,8 @@ void PresetEditButtonMenu::pasteClipboard()
   {
     if(auto selctedPreset = bank->getSelectedPreset())
       Application::get().getClipboard()->pasteOnPreset(selctedPreset->getUuid());
+    else
+      Application::get().getClipboard()->pasteOnBank(bank->getUuid());
 
     selectButton(m_lastCopyingAction);
   }
