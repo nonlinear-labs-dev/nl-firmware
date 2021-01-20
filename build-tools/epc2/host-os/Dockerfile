@@ -1,4 +1,4 @@
-FROM archlinux:20200908
+FROM archlinux:latest
 ARG packages
 RUN echo "[dvzrv]" >> /etc/pacman.d/mirrorlist
 RUN echo "Server = https://pkgbuild.com/~dvzrv/repo/\$arch" >> /etc/pacman.d/mirrorlist
