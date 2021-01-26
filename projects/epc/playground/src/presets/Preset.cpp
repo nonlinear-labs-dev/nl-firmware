@@ -556,9 +556,9 @@ std::vector<std::pair<GroupId, const PresetParameterGroup *>> Preset::getGroups(
 Glib::ustring Preset::getTypeUnicode(const Preset *preset)
 {
   if(preset && preset->getType() == SoundType::Split)
-    return "\uE0F0";
+    return "\uE0F1";
   else if(preset && preset->getType() == SoundType::Layer)
-    return "\uE0F3";
+    return "\uE0F4";
   else
     return "";
 }
