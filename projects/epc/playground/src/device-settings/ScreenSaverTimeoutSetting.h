@@ -24,5 +24,5 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
 
   size_t selectedIndex;
   std::chrono::minutes m_timeout;
-  const std::array<int, 6> s_logTimeOuts = { 0, 1, 5, 20, 60, 180 };
+  const std::array<int, 6> s_logTimeOuts = { 0, 1, 2, 5, 10, 20 };
 };
