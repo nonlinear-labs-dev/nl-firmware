@@ -116,7 +116,7 @@ bool PresetsLayout::updateNameAndNumber()
       auto presetNumberString = formatBankAndPresetNumber(bankNumber, presetPosition, modified);
       m_number->setText(presetNumberString);
       m_name->setText(preset->getDisplayNameWithSuffixes(false));
-      m_type->setText(Preset::getTypeUnicode(preset));
+      m_type->setText(preset->getTypeUnicode());
       return true;
     }
   }
