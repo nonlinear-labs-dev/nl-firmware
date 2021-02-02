@@ -44,8 +44,9 @@ public class SplitPointsKeyBedEditor extends KeyBedEditor {
         rightControls.doLayout(keysPane.getRelativePosition().getRight() + xMargin, h / 2 - settingsHeight / 2, valueWidth, settingsHeight);
 
         double closeXAvaliableSpace = w - rightControls.getRelativePosition().getRight();
-        double closeX = rightControls.getRelativePosition().getRight() + (closeXAvaliableSpace / 2) - settingsWidth / 2;
+        double closeX = rightControls.getRelativePosition().getRight() + (closeXAvaliableSpace / 2);
 
-        closeButton.doLayout(closeX, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
+        closeButton.doLayout(closeX - settingsWidth * 1.5, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
+        button.doLayout(closeX, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
     }
 }
