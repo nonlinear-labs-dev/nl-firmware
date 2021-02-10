@@ -309,9 +309,12 @@ BankActions::BankActions(PresetManager &presetManager)
     auto presetUuid = request->get("preset-uuid");
     auto useCases = Application::get().getPresetManagerUseCases();
 
-    if(auto bank = m_presetManager.findBank(bankUuid))
+    if(auto presetDropped = m_presetManager.findPreset(presetUuid))
     {
-      useCases->appendPreset(bank);
+      if(auto bank = m_presetManager.findBank(bankUuid))
+      {
+        useCases->appendPreset(bank, presetDropped);
+      }
     }
   });
 

@@ -99,6 +99,28 @@ void PresetManagerUseCases::appendPreset(Bank* bank)
   insertPresetWithUUID(bank, bank->getNumPresets(), "");
 }
 
+void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
+{
+  auto scope = Application::get().getUndoScope()->startTransaction("Append preset to Bank '%0'", bank->getName(true));
+  auto transaction = scope->getTransaction();
+  auto ebIsModified = m_presetManager->getEditBuffer()->isModified();
+
+  auto newPreset = std::make_unique<Preset>(bank, *preset, true);
+  auto storedPreset = bank->insertAndLoadPreset(transaction, bank->getNumPresets(), std::move(newPreset));
+
+  m_presetManager->selectBank(transaction, bank->getUuid());
+  bank->selectPreset(transaction, storedPreset->getUuid());
+
+  if(ebIsModified)
+    storedPreset->guessName(transaction);
+
+  onStore(transaction, storedPreset);
+
+  assert(m_presetManager->getSelectedBank() == bank);
+  assert(bank->getSelectedPreset() == storedPreset);
+  assert(m_presetManager->getEditBuffer()->getUUIDOfLastLoadedPreset() == storedPreset->getUuid());
+}
+
 void PresetManagerUseCases::appendPresetWithUUID(Bank* bank, const std::string& uuid)
 {
   insertPresetWithUUID(bank, bank->getNumPresets(), uuid);
