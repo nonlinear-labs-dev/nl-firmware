@@ -21,6 +21,10 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCurve;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.DisplayScaling;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiReceiveChannel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiReceiveChannelSplit;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiSendChannel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiSendChannelSplit;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.StripeBrightness;
@@ -31,6 +35,8 @@ import com.nonlinearlabs.client.presenters.DeviceSettings;
 import com.nonlinearlabs.client.presenters.DeviceSettingsProvider;
 import com.nonlinearlabs.client.presenters.LocalSettings;
 import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
+import com.nonlinearlabs.client.presenters.MidiSettings;
+import com.nonlinearlabs.client.presenters.MidiSettingsProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.SystemSettings;
 import com.nonlinearlabs.client.world.overlay.html.Range;
@@ -42,14 +48,15 @@ public class Setup extends Composite {
 	private static SetupUiBinder ourUiBinder = GWT.create(SetupUiBinder.class);
 
 	@UiField
-	Button deviceSettingsButton, uiSettingsButton, systemInfoButton, aboutButton;
+	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, systemInfoButton, aboutButton;
 
 	@UiField
-	DivElement deviceSettings, uiSettings, systemInfo, about;
+	DivElement deviceSettings, uiSettings, midiSettings, systemInfo, about;
 
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
-			selectionAutoScroll, editParameter, scalingFactor, stripeBrightness;
+			selectionAutoScroll, editParameter, scalingFactor, stripeBrightness, midiReceiveChannel, midiReceiveChannelSplit,
+			midiReceiveVelocityCurve, midiReceiveAftertouchCurve, midiSendChannel, midiSendChannelSplit;
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
@@ -61,7 +68,10 @@ public class Setup extends Composite {
 	@UiField
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
-			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff;
+			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
+			receiveNotesOff, receiveControllersOn, receiveControllersOff, sendPCOn, sendPCOff, sendNotesOn, 
+			sendNotesOff, sendControllersOn, sendControllersOff, localPCOn, localPCOff, localNotesOn, 
+			localNotesOff, localControllersOn, localControllersOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -116,6 +126,14 @@ public class Setup extends Composite {
 			applyPedalValues(t.pedal4, pedal4Type, pedal4Range, pedal4DisplayString);
 		});
 
+		fillListboxWithOptions(midiReceiveChannel, MidiSettings.ReceiveChannel.options);
+		fillListboxWithOptions(midiReceiveChannelSplit, MidiSettings.ReceiveChannelSplit.options);
+		fillListboxWithOptions(midiReceiveAftertouchCurve, MidiSettings.AftertouchCurve.options);
+		fillListboxWithOptions(midiReceiveVelocityCurve, MidiSettings.VelocityCurve.options);
+
+		fillListboxWithOptions(midiSendChannel, MidiSettings.SendChannel.options);
+		fillListboxWithOptions(midiSendChannelSplit, MidiSettings.SendChannelSplit.options);
+
 		fillListboxWithOptions(velocityCurve, DeviceSettings.VelocityCurve.options);
 		fillListboxWithOptions(aftertouchCurve, DeviceSettings.AftertouchCurve.options);
 		fillListboxWithOptions(benderCurve, DeviceSettings.BenderCurve.options);
@@ -132,6 +150,15 @@ public class Setup extends Composite {
 		fillRadioButtons(developerOptionsOn, developerOptionsOff, LocalSettings.ShowDeveloperOptions.options);
 		fillRadioButtons(highlightChangedOn, highlightChangedOff, DeviceSettings.HighlightChanged.options);
 		fillRadioButtons(syncPartsOn, syncPartsOff, DeviceSettings.SyncPartsAcrossUI.options);
+		fillRadioButtons(receivePCOn, receivePCOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(receiveControllersOn, receiveControllersOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(receiveNotesOn, receiveNotesOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(sendPCOn, sendPCOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(sendNotesOn, sendNotesOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(sendControllersOn, sendControllersOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(localPCOn, localPCOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(localNotesOn, localNotesOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(localControllersOn, localControllersOff, MidiSettings.OnOffOption.options);
 	}
 
 	public void connectEventHandlers() {
@@ -142,6 +169,7 @@ public class Setup extends Composite {
 		uiSettingsButton.addClickHandler(e -> switchPage(uiSettingsButton, uiSettings));
 		systemInfoButton.addClickHandler(e -> switchPage(systemInfoButton, systemInfo));
 		aboutButton.addClickHandler(e -> switchPage(aboutButton, about));
+		uiMidiButton.addClickHandler(e -> switchPage(uiMidiButton, midiSettings));
 
 		velocityCurve.addChangeHandler(
 				e -> settings.setVelocityCurve(VelocityCurve.values()[velocityCurve.getSelectedIndex()]));
@@ -203,6 +231,33 @@ public class Setup extends Composite {
 
 		resetInitSound.addClickHandler(e -> settings.resetInitSound());
 		storeInitSound.addClickHandler(e -> settings.storeInitSound());
+
+		midiReceiveChannel.addChangeHandler(e -> settings.setReceiveMidiChannel(MidiReceiveChannel.values()[midiReceiveChannel.getSelectedIndex()]));
+		midiReceiveChannelSplit.addChangeHandler(e -> settings.setReceiveMidiChannelSplit(MidiReceiveChannelSplit.values()[midiReceiveChannelSplit.getSelectedIndex()]));
+		midiReceiveAftertouchCurve.addChangeHandler(e -> settings.setReceiveAftertouchCurve(AftertouchCurve.values()[midiReceiveAftertouchCurve.getSelectedIndex()]));
+		midiReceiveVelocityCurve.addChangeHandler(e -> settings.setReceiveVelocityCurve(VelocityCurve.values()[midiReceiveVelocityCurve.getSelectedIndex()]));
+		receivePCOn.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.on));
+		receivePCOff.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.off));
+		receiveControllersOn.addValueChangeHandler(e -> settings.setReceiveControllers(BooleanValues.on));
+		receiveControllersOff.addValueChangeHandler(e -> settings.setReceiveControllers(BooleanValues.off));
+		receiveNotesOn.addValueChangeHandler(e -> settings.setReceiveNotes(BooleanValues.on));
+		receiveNotesOff.addValueChangeHandler(e -> settings.setReceiveNotes(BooleanValues.off));
+
+		midiSendChannel.addChangeHandler(e -> settings.setSendChannel(MidiSendChannel.values()[midiSendChannel.getSelectedIndex()]));
+		midiSendChannelSplit.addChangeHandler(e -> settings.setSendChannelSplit(MidiSendChannelSplit.values()[midiSendChannelSplit.getSelectedIndex()]));
+		sendPCOn.addValueChangeHandler(e -> settings.setSendProgramChanges(BooleanValues.on));
+		sendPCOff.addValueChangeHandler(e -> settings.setSendProgramChanges(BooleanValues.off));
+		sendNotesOn.addValueChangeHandler(e -> settings.setSendNotes(BooleanValues.on));
+		sendNotesOff.addValueChangeHandler(e -> settings.setSendNotes(BooleanValues.off));
+		sendControllersOn.addValueChangeHandler(e -> settings.setSendControllers(BooleanValues.on));
+		sendControllersOff.addValueChangeHandler(e -> settings.setSendControllers(BooleanValues.off));
+
+		localPCOn.addValueChangeHandler(e -> settings.setLocalProgramChanges(BooleanValues.on));
+		localPCOff.addValueChangeHandler(e -> settings.setLocalProgramChanges(BooleanValues.off));
+		localNotesOn.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.on));
+		localNotesOff.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.off));
+		localControllersOn.addValueChangeHandler(e -> settings.setLocalControllers(BooleanValues.on));
+		localControllersOff.addValueChangeHandler(e -> settings.setLocalControllers(BooleanValues.off));
 	}
 
 	public void connectUpdate() {
@@ -217,6 +272,11 @@ public class Setup extends Composite {
 		});
 
 		DeviceInformationProvider.get().register(t -> {
+			applyPresenter(t);
+			return true;
+		});
+
+		MidiSettingsProvider.get().register(t -> {
 			applyPresenter(t);
 			return true;
 		});
@@ -295,16 +355,47 @@ public class Setup extends Composite {
 		uiTotalRam.setText(t.totalRam);
 	}
 
+	private void applyPresenter(MidiSettings t) {
+		midiReceiveChannel.setSelectedIndex(t.receiveChannel.selected);
+		midiReceiveChannelSplit.setSelectedIndex(t.receiveChannelSplit.selected);
+		midiReceiveAftertouchCurve.setSelectedIndex(t.receiveAftertouchCurve.selected);
+		midiReceiveVelocityCurve.setSelectedIndex(t.receiveVelocityCurve.selected);
+		receiveControllersOn.setValue(t.receiveControllers.value);
+		receiveControllersOff.setValue(!t.receiveControllers.value);
+		receiveNotesOn.setValue(t.receiveNotes.value);
+		receiveNotesOff.setValue(!t.receiveNotes.value);
+		receivePCOn.setValue(t.receiveProgramChanges.value);
+		receivePCOff.setValue(!t.receiveProgramChanges.value);
+
+		midiSendChannel.setSelectedIndex(t.sendChannel.selected);
+		midiSendChannelSplit.setSelectedIndex(t.sendChannelSplit.selected);
+		sendControllersOn.setValue(t.sendControllers.value);
+		sendControllersOff.setValue(!t.sendControllers.value);
+		sendPCOn.setValue(t.sendProgramChanges.value);
+		sendPCOff.setValue(!t.sendProgramChanges.value);
+		sendNotesOn.setValue(t.sendNotes.value);
+		sendNotesOff.setValue(!t.sendNotes.value);
+		
+		localControllersOn.setValue(t.localControllers.value);
+		localControllersOff.setValue(!t.localControllers.value);
+		localPCOn.setValue(t.localProgramChanges.value);
+		localPCOff.setValue(!t.localProgramChanges.value);
+		localNotesOn.setValue(t.localNotes.value);
+		localNotesOff.setValue(!t.localNotes.value);
+	}
+
 	public void switchPage(Button btn, DivElement page) {
 		deviceSettings.getStyle().setDisplay(Display.NONE);
 		uiSettings.getStyle().setDisplay(Display.NONE);
 		systemInfo.getStyle().setDisplay(Display.NONE);
 		about.getStyle().setDisplay(Display.NONE);
+		midiSettings.getStyle().setDisplay(Display.NONE);
 
 		deviceSettingsButton.getElement().removeClassName("active");
 		uiSettingsButton.getElement().removeClassName("active");
 		systemInfoButton.getElement().removeClassName("active");
 		aboutButton.getElement().removeClassName("active");
+		uiMidiButton.getElement().removeClassName("active");
 
 		btn.getElement().addClassName("active");
 		page.getStyle().setDisplay(Display.BLOCK);

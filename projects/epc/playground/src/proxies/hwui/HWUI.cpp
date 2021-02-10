@@ -283,7 +283,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         else
         {
           auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(nullptr,1.0 / p->getValue().getCoarseDenominator(),false);
+          changer->changeBy(nullptr, 1.0 / p->getValue().getCoarseDenominator(), false);
         }
       }
       else if(line.find('x') == 0)
@@ -298,7 +298,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         else
         {
           auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(nullptr,-1.0 / p->getValue().getCoarseDenominator(),false);
+          changer->changeBy(nullptr, -1.0 / p->getValue().getCoarseDenominator(), false);
         }
       }
       else

@@ -259,13 +259,13 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenPartScreen, [eb]() {
-      EditBufferUseCases useCase(eb);
-      useCase.selectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
+      EditBufferUseCases ebUseCases { eb };
+      ebUseCases.selectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] {
-      EditBufferUseCases useCase(eb);
-      useCase.selectParameter({ 247, VoiceGroup::Global });
+      EditBufferUseCases ebUseCases { eb };
+      ebUseCases.selectParameter({ 247, VoiceGroup::Global });
     });
 
     registerEvent(EventSinks::InitSound, [eb] {
@@ -276,8 +276,8 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::OpenUnisonParameter, [eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      EditBufferUseCases useCases(eb);
-      useCases.selectParameter({ 249, vg });
+      EditBufferUseCases ebUseCases { eb };
+      ebUseCases.selectParameter({ 249, vg });
     });
 
     registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {

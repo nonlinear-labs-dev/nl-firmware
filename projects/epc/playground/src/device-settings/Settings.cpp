@@ -54,6 +54,18 @@
 #include <parameters/RibbonParameter.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <iostream>
+#include <device-settings/midi/MidiChannelSettings.h>
+#include <device-settings/midi/local/LocalControllersSetting.h>
+#include <device-settings/midi/local/LocalNotesSetting.h>
+#include <device-settings/midi/local/LocalProgramChangesSetting.h>
+#include <device-settings/midi/send/MidiSendControllersSetting.h>
+#include <device-settings/midi/send/MidiSendNotesSetting.h>
+#include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
+#include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
+#include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
+#include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
+#include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
+#include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -100,6 +112,24 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
   addSetting("SyncSplit", new SplitPointSyncParameters(*this));
   addSetting("ExternalMidi", new ExternalMidiEnabledSetting(*this));
+
+  addSetting("LocalControllers", new LocalControllersSetting(*this));
+  addSetting("LocalNotes", new LocalNotesSetting(*this));
+  addSetting("LocalProgramChanges", new LocalProgramChangesSetting(*this));
+
+  addSetting("ReceiveChannel", new MidiReceiveChannelSetting(*this));
+  addSetting("ReceiveChannelSplit", new MidiReceiveChannelSplitSetting(*this));
+  addSetting("ReceiveProgramChanges", new MidiReceiveProgramChangesSetting(*this));
+  addSetting("ReceiveNotes", new MidiReceiveNotesSetting(*this));
+  addSetting("ReceiveControllers", new MidiReceiveControllersSetting(*this));
+  addSetting("ReceiveAftertouchCurve", new MidiReceiveAftertouchCurveSetting(*this));
+  addSetting("ReceiveVelocityCurve", new MidiReceiveVelocityCurveSetting(*this));
+
+  addSetting("SendChannel", new MidiSendChannelSetting(*this));
+  addSetting("SendChannelSplit", new MidiSendChannelSplitSetting(*this));
+  addSetting("SendProgramChanges", new MidiSendProgramChangesSetting(*this));
+  addSetting("SendNotes", new MidiSendNotesSetting(*this));
+  addSetting("SendControllers", new MidiSendControllersSetting(*this));
 }
 
 Settings::~Settings()
@@ -126,6 +156,8 @@ void Settings::init()
   {
     s.second->init();
   }
+
+  connectMidiSettingsToAudioEngineMessage();
 }
 
 void Settings::reload()
@@ -257,6 +289,7 @@ void Settings::sendGlobalAESettings()
   getSetting<TransitionTime>()->syncExternals(SendReason::HeartBeatDropped);
   getSetting<NoteShift>()->syncExternals(SendReason::HeartBeatDropped);
   getSetting<TuneReference>()->syncExternals(SendReason::HeartBeatDropped);
+  sendMidiSettingsMessage();
 }
 
 void Settings::sendPresetSettingsToPlaycontroller()
@@ -266,4 +299,100 @@ void Settings::sendPresetSettingsToPlaycontroller()
   auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
   r1->sendModeToPlaycontroller();
   r2->sendModeToPlaycontroller();
+}
+
+void Settings::connectMidiSettingsToAudioEngineMessage()
+{
+  for(auto &settingName :
+      { "LocalControllers", "LocalNotes", "LocalProgramChanges", "ReceiveChannel", "ReceiveChannelSplit",
+        "ReceiveProgramChanges", "ReceiveNotes", "ReceiveControllers", "ReceiveAftertouchCurve", "ReceiveVelocityCurve",
+        "SendChannel", "SendChannelSplit", "SendProgramChanges", "SendNotes", "SendControllers" })
+  {
+    if(auto setting = getSetting(settingName))
+    {
+      setting->onChange(sigc::hide(sigc::mem_fun(this, &Settings::sendMidiSettingsMessage)));
+    }
+    else
+    {
+      nltools_assertNotReached();
+    }
+  }
+}
+
+int Settings::channelToMessageInt(MidiSendChannel channel)
+{
+  switch(channel)
+  {
+    case MidiSendChannel::None:
+      return -1;
+    default:
+      return static_cast<int>(channel) - 1;
+  }
+
+  nltools_assertNotReached();
+}
+
+int Settings::channelToMessageInt(MidiSendChannelSplit channel)
+{
+  switch(channel)
+  {
+    case MidiSendChannelSplit::None:
+      return -1;
+    case MidiSendChannelSplit::Follow_I:
+      return channelToMessageInt(getSetting<MidiSendChannelSetting>()->get());
+    default:
+      return static_cast<int>(channel) - 2;
+  }
+  nltools_assertNotReached();
+}
+
+int Settings::channelToMessageInt(MidiReceiveChannel channel)
+{
+  switch(channel)
+  {
+    case MidiReceiveChannel::None:
+      return -1;
+    case MidiReceiveChannel::Omni:
+      return 16;
+    default:
+      return static_cast<int>(channel)
+          - 2;  // - 2 because none is before Channel_1 and channels are 1 index towards the human and 0 indexed in midi
+  }
+}
+
+int Settings::channelToMessageInt(MidiReceiveChannelSplit channel)
+{
+  switch(channel)
+  {
+    case MidiReceiveChannelSplit::None:
+      return -1;
+    case MidiReceiveChannelSplit::Omni:
+      return 16;
+    case MidiReceiveChannelSplit::Follow_I:
+      return channelToMessageInt(getSetting<MidiReceiveChannelSetting>()->get());
+    default:
+      return static_cast<int>(channel) - 1;
+  }
+}
+
+void Settings::sendMidiSettingsMessage()
+{
+  nltools::msg::Setting::MidiSettingsMessage msg;
+  msg.sendChannel = channelToMessageInt(getSetting<MidiSendChannelSetting>()->get());
+  msg.sendSplitChannel = channelToMessageInt(getSetting<MidiSendChannelSplitSetting>()->get());
+  msg.receiveChannel = channelToMessageInt(getSetting<MidiReceiveChannelSetting>()->get());
+  msg.receiveSplitChannel = channelToMessageInt(getSetting<MidiReceiveChannelSplitSetting>()->get());
+
+  msg.sendNotes = getSetting<MidiSendNotesSetting>()->get();
+  msg.sendProgramChange = getSetting<MidiSendProgramChangesSetting>()->get();
+  msg.sendControllers = getSetting<MidiSendControllersSetting>()->get();
+
+  msg.receiveNotes = getSetting<MidiReceiveNotesSetting>()->get();
+  msg.receiveProgramChange = getSetting<MidiReceiveProgramChangesSetting>()->get();
+  msg.receiveControllers = getSetting<MidiReceiveControllersSetting>()->get();
+
+  msg.localNotes = getSetting<LocalNotesSetting>()->get();
+  msg.localControllers = getSetting<LocalControllersSetting>()->get();
+  
+  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
 }

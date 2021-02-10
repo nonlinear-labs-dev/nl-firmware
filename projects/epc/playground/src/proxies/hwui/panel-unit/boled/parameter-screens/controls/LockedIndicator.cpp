@@ -33,7 +33,11 @@ void LockedIndicator::onParameterSelected(Parameter *newOne)
 
 void LockedIndicator::onParameterGroupChanged()
 {
-  auto group = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())->getParentGroup();
+  auto group = Application::get()
+                   .getPresetManager()
+                   ->getEditBuffer()
+                   ->getSelected(getHWUI()->getCurrentVoiceGroup())
+                   ->getParentGroup();
   setText(group->areAllParametersLocked() ? "\uE30E" : "");
 }
 

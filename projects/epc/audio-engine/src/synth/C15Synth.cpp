@@ -60,16 +60,19 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     MidiEvent e;
     std::copy(msg.rawBytes.data(), msg.rawBytes.data() + msg.numBytesUsed, e.raw);
 
-    if((e.raw[0] & 0xF0) == 0xC0)
+    if((e.raw[0] & 0xF0) == 0xC0 && m_midiOptions.shouldReceiveProgramChanges())
     {
       // receive program changes midi-over-ip and dispatch it to playground
-      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage{ e.raw[1] });
+      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
     }
     else
     {
       pushMidiEvent(e);
     }
   });
+
+  receive<nltools::msg::Setting::MidiSettingsMessage>(EndPoint::AudioEngine,
+                                                      sigc::mem_fun(this, &C15Synth::onMidiSettingsMessage));
 }
 
 C15Synth::~C15Synth()
@@ -375,4 +378,9 @@ void C15Synth::onEditSmoothingTimeMessage(const nltools::msg::Setting::EditSmoot
 void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference& msg)
 {
   m_dsp->onSettingTuneReference(static_cast<float>(msg.m_tuneReference));
+}
+
+void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
+{
+  m_midiOptions.update(msg);
 }

@@ -36,6 +36,11 @@ template <typename TEnum> class EnumSetting : public Setting
     return m_mode;
   }
 
+  size_t getEnumIndex() const
+  {
+    return static_cast<size_t>(EnumSetting<tEnum>::get());
+  }
+
   void load(const Glib::ustring &text, Initiator initiator) override
   {
     int i = 0;
@@ -48,6 +53,11 @@ template <typename TEnum> class EnumSetting : public Setting
       }
       i++;
     }
+  }
+
+  void incDec(int i, bool wrap)
+  {
+    inc(i, wrap);
   }
 
   void inc(int dir, bool wrap)
@@ -93,6 +103,11 @@ template <typename TEnum> class EnumSetting : public Setting
   {
     int idx = static_cast<int>(get());
     return enumToString()[idx];
+  }
+
+  const std::vector<Glib::ustring> &getDisplayStrings() const
+  {
+    return enumToDisplayString();
   }
 
   Glib::ustring getDisplayString() const
