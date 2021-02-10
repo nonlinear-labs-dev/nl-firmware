@@ -77,7 +77,7 @@ Glib::ustring MemoryInStream::read()
     return {};
   }
 
-  return Glib::ustring(str);
+  return Glib::ustring(str) + '\n';
 }
 
 bool MemoryInStream::isBufferCorrectC15Backup()
