@@ -5,6 +5,20 @@
 #include <nltools/logging/Log.h>
 #include <nltools/messaging/Message.h>
 
+constexpr static u_int8_t MIDI_SYSEX_PATTERN = 0b11110000;
+constexpr static u_int8_t MIDI_NOTE_OFF_PATTERN = 0b10000000;  //rechten bits ignorieren da channel
+constexpr static u_int8_t MIDI_NOTE_ON_PATTERN = 0b10010000;
+constexpr static u_int8_t MIDI_CHANNEL_MASK = 0b00001111;
+constexpr static u_int8_t MIDI_CHANNEL_AFTERTOUCH_PATTERN = 0b11010000;
+constexpr static u_int8_t MIDI_CONTROLCHANGE_PATTERN = 0b10110000;
+constexpr static u_int8_t MIDI_PITCHBEND_PATTERN = 0b11100000;
+constexpr static u_int8_t MIDI_PROGRAMCHANGE_PATTERN = 0b11000000;
+constexpr static u_int8_t MIDI_CONTROL_CHANGE_HIGH_RES_VELOCITY = 0b01011000;
+constexpr static u_int8_t MIDI_EVENT_TYPE_MASK = 0b11110000;
+constexpr static u_int8_t MIDI_CHANNEL_OMNI = 16;
+constexpr static auto TCD_PATTERN = 0b11100000;
+constexpr static auto TCD_TYPE_MASK = 0b00001111;
+
 C15Synth::C15Synth(AudioEngineOptions* options)
     : Synth(options)
     , m_dsp(std::make_unique<dsp_host_dual>())
@@ -52,7 +66,8 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
-    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage{ 0xC0, pc.program });
+    const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | m_midiOptions.getSendChannel();
+    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
     m_syncExternalsWaiter.notify_all();
   });
 
@@ -105,7 +120,10 @@ void C15Synth::syncExternalMidiBridge()
   while(!m_externalMidiOutBuffer.empty())
   {
     auto msg = m_externalMidiOutBuffer.pop();
-    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, msg);
+    auto copy = msg;
+    if(filterMidiOutEvent(copy))
+      send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, copy);
+
     if(LOG_MIDI_OUT)
     {
       nltools::Log::info("midiOut(status: ", static_cast<uint16_t>(msg.rawBytes[0]),
@@ -123,44 +141,138 @@ void C15Synth::syncPlayground()
     using namespace nltools::msg;
     if(std::exchange(m_hwSourceValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification{ i, static_cast<double>(engineHWSourceValues[i]) });
+      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
 }
 
+bool matchPattern(unsigned char data, uint8_t PATTERN, uint8_t MASK)
+{
+  return (data & MASK) == PATTERN;
+}
+
+bool isSysex(unsigned char data)
+{
+  return matchPattern(data, MIDI_SYSEX_PATTERN, MIDI_EVENT_TYPE_MASK);
+}
+
+bool C15Synth::filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) const
+{
+  const auto statusByte = event.rawBytes[0];
+
+  if(isSysex(statusByte))
+    return false;
+
+  const auto allowedChannel = m_midiOptions.getSendChannel();
+  const auto channel = (statusByte | (MIDI_CHANNEL_MASK & allowedChannel));
+  event.rawBytes[0] = channel;
+
+  const auto isNoteEvent = matchPattern(statusByte, MIDI_NOTE_ON_PATTERN, MIDI_EVENT_TYPE_MASK)
+      || matchPattern(statusByte, MIDI_NOTE_OFF_PATTERN, MIDI_EVENT_TYPE_MASK);
+  const auto isAftertouchEvent = matchPattern(statusByte, MIDI_CHANNEL_AFTERTOUCH_PATTERN, MIDI_EVENT_TYPE_MASK);
+  const auto isControlChangeEvent = matchPattern(statusByte, MIDI_CONTROLCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
+  const auto isPitchbendEvent = matchPattern(statusByte, MIDI_PITCHBEND_PATTERN, MIDI_EVENT_TYPE_MASK);
+  const auto isProgramChangeEvent = matchPattern(statusByte, MIDI_PROGRAMCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
+
+  if(isNoteEvent)
+    return m_midiOptions.shouldSendNotes();
+
+  if(isControlChangeEvent || isAftertouchEvent || isPitchbendEvent)
+  {
+    if(isControlChangeEvent && (int) event.rawBytes[1] == MIDI_CONTROL_CHANGE_HIGH_RES_VELOCITY)
+    {
+      return m_midiOptions.shouldSendNotes();
+    }
+
+    return m_midiOptions.shouldSendControllers();
+  }
+
+  if(isProgramChangeEvent)
+    return m_midiOptions.shouldSendProgramChanges();
+
+  return false;
+}
+
+bool C15Synth::filterMidiInEvent(const MidiEvent& event) const
+{
+  auto statusByte = event.raw[0];
+
+  if(isSysex(statusByte))
+    return false;
+
+  const auto channel = (statusByte & MIDI_CHANNEL_MASK);
+  const auto allowedChannel = m_midiOptions.getReceiveChannel();
+
+  if(channel == allowedChannel || allowedChannel == MIDI_CHANNEL_OMNI)
+  {
+    const auto isNoteEvent = matchPattern(statusByte, MIDI_NOTE_ON_PATTERN, MIDI_EVENT_TYPE_MASK)
+        || matchPattern(statusByte, MIDI_NOTE_OFF_PATTERN, MIDI_EVENT_TYPE_MASK);
+    const auto isAftertouchEvent = matchPattern(statusByte, MIDI_CHANNEL_AFTERTOUCH_PATTERN, MIDI_EVENT_TYPE_MASK);
+    const auto isControlChangeEvent = matchPattern(statusByte, MIDI_CONTROLCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
+    const auto isPitchBendEvent = matchPattern(statusByte, MIDI_PITCHBEND_PATTERN, MIDI_EVENT_TYPE_MASK);
+
+    if(isAftertouchEvent || isControlChangeEvent || isPitchBendEvent)
+    {
+      return m_midiOptions.shouldReceiveControllers();
+    }
+
+    if(isNoteEvent)
+    {
+      return (channel == allowedChannel || allowedChannel == MIDI_CHANNEL_OMNI) && m_midiOptions.shouldReceiveNotes();
+    }
+  }
+  return false;
+}
+
 void C15Synth::doMidi(const MidiEvent& event)
 {
-  m_dsp->onMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
-  m_syncExternalsWaiter.notify_all();
+  if(filterMidiInEvent(event))
+  {
+    //[=](auto outgoingMidiMessage) { queueExternalMidiOut(outgoingMidiMessage);
+    m_dsp->onMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
+    m_syncExternalsWaiter.notify_all();
+  }
+}
+
+bool isValidTCDMessage(const MidiEvent& event)
+{
+  return matchPattern(event.raw[0], TCD_PATTERN, TCD_PATTERN);
+}
+
+bool C15Synth::filterTcdIn(const MidiEvent& event) const
+{
+  if(isValidTCDMessage(event))
+  {
+    const auto typeId = (event.raw[0] & TCD_TYPE_MASK);
+    const auto isNoteEvent = typeId >= 13 && typeId <= 15;
+    const auto isControlEvent = typeId >= 0 && typeId <= 11;
+    
+    if(isNoteEvent)
+    {
+      return m_midiOptions.shouldReceiveLocalNotes();
+    }
+
+    if(isControlEvent)
+    {
+      return m_midiOptions.shouldReceiveLocalControllers();
+    }
+  }
+  return false;
 }
 
 void C15Synth::doTcd(const MidiEvent& event)
 {
-  m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2],
-                      [=](auto outgoingMidiMessage) { queueExternalMidiOut(outgoingMidiMessage); });
-  m_syncExternalsWaiter.notify_all();
-}
-
-void C15Synth::simulateKeyDown(int key)
-{
-  m_dsp->onTcdMessage(0xED, 0, static_cast<uint32_t>(key));  // playcontroller keyPos
-  m_dsp->onTcdMessage(0xEE, 127, 127);                       // playcontroller keyDown (vel: 100%)
-}
-
-void C15Synth::simulateKeyUp(int key)
-{
-  m_dsp->onTcdMessage(0xED, 0, static_cast<uint32_t>(key));  // playcontroller keyPos
-  m_dsp->onTcdMessage(0xEF, 127, 127);                       // playcontroller keyUp (vel: 100%)
+  if(filterTcdIn(event))
+  {
+    m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2],
+                        [=](auto outgoingMidiMessage) { queueExternalMidiOut(outgoingMidiMessage); });
+    m_syncExternalsWaiter.notify_all();
+  }
 }
 
 unsigned int C15Synth::getRenderedSamples()
 {
   return m_dsp->m_sample_counter;
-}
-
-dsp_host_dual* C15Synth::getDsp()
-{
-  return m_dsp.get();
 }
 
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)

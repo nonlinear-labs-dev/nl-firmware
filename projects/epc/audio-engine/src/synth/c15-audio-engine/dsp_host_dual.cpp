@@ -603,8 +603,10 @@ void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
     processUnipolarMidiController<CC_Range_14_Bit>(_data, id);
 }
 
+//todo add midi Out CB
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
+  //todo use midiOut
   const uint32_t type = (_status & 127) >> 4;
   if(LOG_MIDI_RAW)
   {
