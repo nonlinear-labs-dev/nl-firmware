@@ -95,15 +95,8 @@ void EditBufferUseCases::selectParameter(const ParameterId& id)
     auto& undoScope = m_editBuffer->getUndoScope();
     auto groupAndParamName = p->getGroupAndParameterName();
     auto scope = undoScope.startContinuousTransaction(&p, std::chrono::hours(1), "Select '%0'", groupAndParamName);
-    m_editBuffer->undoableSelectParameter(scope->getTransaction(), ParameterId(id));
+    m_editBuffer->undoableSelectParameter(scope->getTransaction(), ParameterId(id), SignalOrigin::EXPLICIT);
   }
-
-  //TODO: if parameter was already selected this code was called from editbuffer:
-  //    auto hwui = Application::get().getHWUI();
-  //    if(hwui->getFocusAndMode().mode == UIMode::Info)
-  //      hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Info));
-  //    else
-  //      hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
 }
 
 void EditBufferUseCases::selectParameter(const Parameter* p)
