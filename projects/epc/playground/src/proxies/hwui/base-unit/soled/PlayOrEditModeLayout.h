@@ -17,7 +17,7 @@ class PlayOrEditModeLayout : public Layout
 
  protected:
   int getBehaviourLeft() const;
-  void onParameterSelectionChanged(const Parameter* old, Parameter* newP, SignalOrigin signalType);
+  void onParameterSelectionChanged(const Parameter* old, Parameter* newP);
 
  private:
   PlayOrEditModeLayout(const PlayOrEditModeLayout& other);

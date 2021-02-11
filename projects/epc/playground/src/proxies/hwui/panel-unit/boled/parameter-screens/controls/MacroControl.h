@@ -24,7 +24,7 @@ class MacroControl : public ControlWithChildren
   MacroControl(const MacroControl &other);
   MacroControl &operator=(const MacroControl &);
 
-  void onSelectionChanged(Parameter *parameter, SignalOrigin signalType);
+  void onSelectionChanged(Parameter *parameter);
   void onTargetChanged(const Parameter *modulatingParameter);
 
   Label *m_name = nullptr;

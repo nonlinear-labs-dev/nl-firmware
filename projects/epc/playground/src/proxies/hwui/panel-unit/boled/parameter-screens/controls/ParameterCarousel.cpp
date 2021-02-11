@@ -120,7 +120,7 @@ void ParameterCarousel::antiTurn()
     {
       if(p->isSelected())
       {
-        ebUseCases.selectParameter(foundCtrl->getParameter()->getID());
+        ebUseCases.selectParameter(foundCtrl->getParameter()->getID(), true);
         return;
       }
       foundCtrl = p;
@@ -140,7 +140,7 @@ void ParameterCarousel::turn()
     {
       if(found)
       {
-        ebUseCases.selectParameter(p->getParameter()->getID());
+        ebUseCases.selectParameter(p->getParameter()->getID(), true);
         handled = true;
         return false;
       }
@@ -158,7 +158,7 @@ void ParameterCarousel::turn()
 
   if(!handled)
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(first()))
-      ebUseCases.selectParameter(p->getParameter()->getID());
+      ebUseCases.selectParameter(p->getParameter()->getID(), true);
 }
 
 void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)

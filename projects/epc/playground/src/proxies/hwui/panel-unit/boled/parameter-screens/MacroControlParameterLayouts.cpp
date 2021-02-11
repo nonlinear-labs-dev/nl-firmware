@@ -307,7 +307,7 @@ void MacroControlParameterLayout2::selectSmoothingParameterForMC()
   
   if(auto mc = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
   {
-    ebUseCases.selectParameter(mc->getSmoothingParameter());
+    ebUseCases.selectParameter(mc->getSmoothingParameter(), true);
   }
 }
 

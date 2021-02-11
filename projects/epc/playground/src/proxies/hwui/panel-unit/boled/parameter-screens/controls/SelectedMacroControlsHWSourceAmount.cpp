@@ -26,7 +26,7 @@ SelectedMacroControlsHWSourceAmount::~SelectedMacroControlsHWSourceAmount()
 {
 }
 
-void SelectedMacroControlsHWSourceAmount::onParameterSelected(Parameter *newOne, SignalOrigin signalType)
+void SelectedMacroControlsHWSourceAmount::onParameterSelected(Parameter *newOne)
 {
   m_mcChanged.disconnect();
   m_mcChanged = newOne->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::onMCChanged));
@@ -100,7 +100,5 @@ void SelectedMacroControlsHWSourceAmount::updateTextFromRouter(const Parameter *
 
 void SelectedMacroControlsHWSourceAmount::onModifiersChanged()
 {
-  onParameterSelected(
-      Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()),
-      SignalOrigin::EXPLICIT);
+  onParameterSelected(Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
 }

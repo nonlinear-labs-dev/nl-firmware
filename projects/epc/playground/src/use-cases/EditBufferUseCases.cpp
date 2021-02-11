@@ -88,22 +88,22 @@ std::unique_ptr<MacroControlParameterUseCases> EditBufferUseCases::getMCUseCase(
   return nullptr;
 }
 
-void EditBufferUseCases::selectParameter(const ParameterId& id)
+void EditBufferUseCases::selectParameter(const ParameterId& id, bool sendReselectionSignal)
 {
   if(auto p = m_editBuffer->findParameterByID(id))
   {
     auto& undoScope = m_editBuffer->getUndoScope();
     auto groupAndParamName = p->getGroupAndParameterName();
     auto scope = undoScope.startContinuousTransaction(&p, std::chrono::hours(1), "Select '%0'", groupAndParamName);
-    m_editBuffer->undoableSelectParameter(scope->getTransaction(), ParameterId(id), SignalOrigin::EXPLICIT);
+    m_editBuffer->undoableSelectParameter(scope->getTransaction(), ParameterId(id), sendReselectionSignal);
   }
 }
 
-void EditBufferUseCases::selectParameter(const Parameter* p)
+void EditBufferUseCases::selectParameter(const Parameter* p, bool sendReselectionSignal)
 {
   if(p)
   {
-    selectParameter(p->getID());
+    selectParameter(p->getID(), sendReselectionSignal);
   }
 }
 

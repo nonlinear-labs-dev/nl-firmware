@@ -16,7 +16,7 @@ namespace DescriptiveLayouts
     {
     }
 
-    void onParameterSelectionChanged(Parameter *oldParam, Parameter *newParam, SignalOrigin signalType) override
+    void onParameterSelectionChanged(Parameter *oldParam, Parameter *newParam) override
     {
       if(newParam)
       {

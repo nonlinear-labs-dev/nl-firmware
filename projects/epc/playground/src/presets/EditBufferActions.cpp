@@ -37,7 +37,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
   addAction("select-param", [=](std::shared_ptr<NetworkRequest> request) mutable {
     Glib::ustring id = request->get("id");
     EditBufferUseCases ebUseCases(editBuffer);
-    ebUseCases.selectParameter(ParameterId(id));
+    ebUseCases.selectParameter(ParameterId(id), false);
   });
 
   addAction("set-param", [=](std::shared_ptr<NetworkRequest> request) mutable {

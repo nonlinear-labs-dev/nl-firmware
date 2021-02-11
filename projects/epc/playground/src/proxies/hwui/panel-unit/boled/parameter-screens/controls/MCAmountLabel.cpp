@@ -22,7 +22,7 @@ MCAmountLabel::~MCAmountLabel()
 {
 }
 
-void MCAmountLabel::onParameterSelected(Parameter *newParameter, SignalOrigin signalType)
+void MCAmountLabel::onParameterSelected(Parameter *newParameter)
 {
   if(newParameter)
   {

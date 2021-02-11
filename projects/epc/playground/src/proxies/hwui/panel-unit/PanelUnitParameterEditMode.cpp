@@ -171,8 +171,7 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
   return true;
 }
 
-void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Parameter *newParam,
-                                                         SignalOrigin signalType)
+void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Parameter *newParam)
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(oldParam))
   {
@@ -388,7 +387,7 @@ bool PanelUnitParameterEditMode::setParameterSelection(const ParameterId &audioI
   {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     EditBufferUseCases ebUseCases { editBuffer };
-    ebUseCases.selectParameter(audioID);
+    ebUseCases.selectParameter(audioID, true);
   }
 
   return true;

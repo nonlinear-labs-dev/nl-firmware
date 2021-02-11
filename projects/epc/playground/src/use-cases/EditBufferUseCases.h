@@ -25,8 +25,8 @@ class EditBufferUseCases
   void setModAmountAndValue(const ParameterId& id, tControlPositionValue modAmt, tControlPositionValue val);
   void setModulationLimit(const ParameterId& id, tControlPositionValue modAmt, tControlPositionValue paramVal);
 
-  void selectParameter(const ParameterId& id);
-  void selectParameter(const Parameter* param);
+  void selectParameter(const ParameterId& id, bool sendReselectionSignal = false);
+  void selectParameter(const Parameter* param, bool sendReselectionSignal = false);
 
   void mutePart(VoiceGroup part);
   void unmutePart(VoiceGroup part);

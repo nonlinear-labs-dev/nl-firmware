@@ -78,15 +78,18 @@ void HWUI::init()
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  m_editBufferParameterSelectionConnection
-      = eb->onSelectionChanged(sigc::mem_fun(this, &HWUI::onParameterSelectionChanged), std::nullopt);
-
   m_editBufferSoundTypeConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
 
   m_editBufferPresetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &HWUI::onPresetLoaded));
 
   m_panelUnit.init();
   m_baseUnit.init();
+
+  m_editBufferParameterReselectionConnection
+      = eb->onParameterReselected(sigc::mem_fun(this, &HWUI::onParameterReselection));
+
+  m_editBufferParameterSelectionConnection
+      = eb->onSelectionChanged(sigc::mem_fun(this, &HWUI::onParameterSelection), std::nullopt);
 
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
@@ -581,7 +584,6 @@ void HWUI::setCurrentVoiceGroup(VoiceGroup v)
     {
       m_voiceGoupSignal.send(m_currentVoiceGroup);
       auto eb = Application::get().getPresetManager()->getEditBuffer();
-      //todo explicit or implicit?
       eb->fakeParameterSelectionSignal(oldGroup, m_currentVoiceGroup);
       eb->onChange(UpdateDocumentContributor::ChangeFlags::Generic);
     }
@@ -601,7 +603,7 @@ void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
 
   if(id.getVoiceGroup() != VoiceGroup::Global)
   {
-    eb->undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup }, SignalOrigin::EXPLICIT);
+    eb->undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup }, false);
   }
 }
 
@@ -842,31 +844,27 @@ void HWUI::exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std:
   boledFile.write(fileName);
 }
 
-void HWUI::onParameterSelectionChanged(const Parameter *newParameter, const Parameter *oldParameter,
-                                       SignalOrigin signalType)
+void HWUI::onParameterReselection(Parameter *parameter)
 {
-  if(newParameter != oldParameter)
-  {
-    unsetFineMode();
-    auto pm = Application::get().getPresetManager();
-    const auto isPresetManagerLoading = pm->isLoading();
-    const auto isParameterFocusLocked = pm->getEditBuffer()->isParameterFocusLocked();
+  if(getFocusAndMode().mode == UIMode::Info)
+    setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Info));
+  else
+    setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+}
 
-    if(!isPresetManagerLoading && !isParameterFocusLocked)
+void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter)
+{
+  unsetFineMode();
+
+  if(getFocusAndMode().focus == UIFocus::Sound)
+  {
+    if(oldParameter->getID() != newParameter->getID())
     {
-      if(getFocusAndMode().focus == UIFocus::Sound)
-      {
-        if(oldParameter == nullptr || newParameter == nullptr || oldParameter->getID() != newParameter->getID())
-          setFocusAndMode(UIFocus::Parameters);
-      }
-      else
-      {
-        setFocusAndMode(UIFocus::Parameters);
-      }
+      setFocusAndMode(UIFocus::Parameters);
     }
   }
-  else if(signalType == SignalOrigin::EXPLICIT)
+  else
   {
-    setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
+    setFocusAndMode(UIFocus::Parameters);
   }
 }

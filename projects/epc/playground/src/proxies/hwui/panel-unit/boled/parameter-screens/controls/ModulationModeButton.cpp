@@ -10,8 +10,7 @@ ModulationModeButton::ModulationModeButton(const Glib::ustring &caption, Buttons
     : super(caption, id)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<2>(sigc::mem_fun(this, &ModulationModeButton::onParameterSelectionChanged)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::mem_fun(this, &ModulationModeButton::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::hide(sigc::mem_fun(this, &ModulationModeButton::onSoundTypeChanged)), false);

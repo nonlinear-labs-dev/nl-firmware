@@ -143,7 +143,7 @@ void ModParameterUseCases::selectModSourceAndSelectTargetParameter(MacroControls
   m_modParam->undoableSelectModSource(scope->getTransaction(), mc);
 
   if(auto eb = dynamic_cast<EditBuffer*>(m_modParam->getParentGroup()->getParent()))
-    eb->undoableSelectParameter(scope->getTransaction(), m_modParam, SignalOrigin::EXPLICIT);
+    eb->undoableSelectParameter(scope->getTransaction(), m_modParam, true);
 }
 
 void ModParameterUseCases::setModulationAmount(tControlPositionValue amt)

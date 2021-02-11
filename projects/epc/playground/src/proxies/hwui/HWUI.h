@@ -96,8 +96,6 @@ class HWUI
   void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
-  void onParameterSelectionChanged(const Parameter *newParameter, const Parameter *oldParameter,
-                                   SignalOrigin signalType);
   void onButtonPressed(Buttons buttonID, bool state);
 
   void onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res);
@@ -119,7 +117,6 @@ class HWUI
   FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
   FocusAndMode removeEditOnFocusChange(FocusAndMode in) const;
 
-  sigc::connection m_editBufferParameterSelectionConnection;
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;
   sigc::connection m_rotaryChangedConnection;
@@ -143,6 +140,12 @@ class HWUI
   ButtonModifiers m_modifiers;
 
   sigc::connection m_blinkTimerConnection;
+  sigc::connection m_editBufferParameterReselectionConnection;
+  sigc::connection m_editBufferParameterSelectionConnection;
+
+  void onParameterReselection(Parameter *parameter);
+  void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+
   Signal<void, ButtonModifiers> m_modifersChanged;
   Signal<void, int> m_blinkTimer;
 

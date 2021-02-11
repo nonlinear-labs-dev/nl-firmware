@@ -26,8 +26,7 @@ namespace DescriptiveLayouts
     onSelectedParameterChanged(p);
   }
 
-  template <typename T>
-  void ParameterEvent<T>::onParameterSelectionChanged(Parameter* oldParam, Parameter* newParam, SignalOrigin signalType)
+  template <typename T> void ParameterEvent<T>::onParameterSelectionChanged(Parameter *oldParam, Parameter *newParam)
   {
     m_onParameterChangedConnection.disconnect();
     if(newParam)

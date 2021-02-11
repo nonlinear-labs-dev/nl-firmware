@@ -78,8 +78,7 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
       sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onModfiersChanged));
 }
 
-void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *, Parameter *newParam,
-                                                                    SignalOrigin signalType)
+void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *, Parameter *newParam)
 {
   m_paramConnection.disconnect();
 

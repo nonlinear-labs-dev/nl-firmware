@@ -19,7 +19,7 @@ ModulationSourceEnabledDottedLine::~ModulationSourceEnabledDottedLine()
 {
 }
 
-void ModulationSourceEnabledDottedLine::onParameterSelected(Parameter *parameter, SignalOrigin signalType)
+void ModulationSourceEnabledDottedLine::onParameterSelected(Parameter *parameter)
 {
   if(parameter)
   {

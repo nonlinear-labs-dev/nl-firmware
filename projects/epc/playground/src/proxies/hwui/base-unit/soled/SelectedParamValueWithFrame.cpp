@@ -41,10 +41,10 @@ int SelectedParamValueWithFrame::getFontHeight() const
   return 8;
 }
 
-void SelectedParamValueWithFrame::onParameterSelected(Parameter *parameter, SignalOrigin signalType)
+void SelectedParamValueWithFrame::onParameterSelected(Parameter *parameter)
 {
   m_ignoreNextValueChange = true;
-  super::onParameterSelected(parameter, SignalOrigin::EXPLICIT);
+  super::onParameterSelected(parameter);
   showName();
 }
 

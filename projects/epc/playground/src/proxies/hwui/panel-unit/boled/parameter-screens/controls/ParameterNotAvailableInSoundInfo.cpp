@@ -54,8 +54,7 @@ void ParameterNotAvailableInSoundInfo::setBackgroundColor(FrameBuffer &fb) const
   fb.setColor(FrameBufferColors::C43);
 }
 
-void ParameterNotAvailableInSoundInfo::onSelectionChanged(const Parameter *old, const Parameter *newParam,
-                                                          SignalOrigin signalType)
+void ParameterNotAvailableInSoundInfo::onSelectionChanged(const Parameter *old, const Parameter *newParam)
 {
   m_parameterNameLabel->setText({ newParam->getLongName(), 0 });
   setVisible(newParam->isDisabled());

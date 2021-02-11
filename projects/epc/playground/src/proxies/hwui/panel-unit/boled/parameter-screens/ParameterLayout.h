@@ -102,7 +102,7 @@ class ParameterRecallLayout2 : public virtual ParameterLayout2
   void undoRecall();
   virtual void updateUI(bool paramLikeInPreset);
   void onParameterChanged(const Parameter *);
-  void onParameterSelectionChanged(Parameter *oldParam, Parameter *newParam, SignalOrigin signalType);
+  void onParameterSelectionChanged(Parameter *oldParam, Parameter *newParam);
 
   Slider *m_slider;
   Label *m_leftValue;

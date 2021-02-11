@@ -58,8 +58,7 @@ void ParameterEditButtonMenu::addActions()
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged), vg);
 }
 
-void ParameterEditButtonMenu::onParameterSelectionChanged(Parameter* oldParameter, Parameter* newParameter,
-                                                          SignalOrigin signalType)
+void ParameterEditButtonMenu::onParameterSelectionChanged(Parameter *oldParameter, Parameter *newParameter)
 {
   auto newGroup = newParameter->getParentGroup();
 

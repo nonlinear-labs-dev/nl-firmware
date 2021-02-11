@@ -71,7 +71,7 @@ ParameterConditions::ParameterCondition::~ParameterCondition()
 }
 
 void ParameterConditions::ParameterCondition::onParameterSelectionChanged(const Parameter *oldParam,
-                                                                          Parameter *newParam, SignalOrigin signalType)
+                                                                          Parameter *newParam)
 {
   m_paramConnection.disconnect();
 

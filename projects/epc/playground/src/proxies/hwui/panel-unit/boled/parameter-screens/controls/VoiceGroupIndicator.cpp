@@ -153,8 +153,7 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
   setDirty();
 }
 
-void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, const Parameter* newParam,
-                                                      SignalOrigin signalType)
+void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, const Parameter* newParam)
 {
   m_parameterChanged.disconnect();
   if(newParam)

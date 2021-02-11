@@ -29,7 +29,7 @@ TEST_CASE("Parameters do not Crash")
     auto editBuffer = TestHelper::getEditBuffer();
     parameterdetail::forAllParametersInAllVoiceGroupsDo([&](const Parameter *p) {
       auto scope = TestHelper::createTestScope();
-      REQUIRE_NOTHROW(editBuffer->undoableSelectParameter(scope->getTransaction(), p->getID(), SignalOrigin::EXPLICIT));
+      REQUIRE_NOTHROW(editBuffer->undoableSelectParameter(scope->getTransaction(), p->getID(), false));
       REQUIRE(editBuffer->getSelectedParameterNumber() == p->getID().getNumber());
     });
   }

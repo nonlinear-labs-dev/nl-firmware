@@ -221,12 +221,12 @@ const PresetManager *EditBuffer::getParent() const
   return static_cast<const PresetManager *>(super::getParent());
 }
 
-sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *, SignalOrigin> &s,
+sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s,
                                                 std::optional<VoiceGroup> initialVG)
 {
   if(initialVG.has_value())
   {
-    return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected(initialVG.value()), SignalOrigin::IMPLICIT);
+    return m_signalSelectedParameter.connectAndInit(s, nullptr, getSelected(initialVG.value()));
   }
   else
   {
@@ -234,10 +234,11 @@ sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter
   }
 }
 
-void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id, SignalOrigin signalType)
+void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id,
+                                         bool sendReselectionSignal)
 {
   if(auto p = findParameterByID(id))
-    undoableSelectParameter(transaction, p, signalType);
+    undoableSelectParameter(transaction, p, sendReselectionSignal);
   else
     throw std::runtime_error("could not select parameter: " + id.toString());
 }
@@ -298,7 +299,7 @@ void EditBuffer::unlockParameterFocusChanges()
   m_lockParameterFocusChanges = false;
 }
 
-void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p, SignalOrigin signalType)
+void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p, bool sendReselectionSignal)
 {
   if(m_lastSelectedParameter != p->getID())
   {
@@ -314,7 +315,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       auto oldP = findParameterByID(oldSelection);
       auto newP = findParameterByID(m_lastSelectedParameter);
 
-      m_signalSelectedParameter.send(oldP, newP, signalType);
+      m_signalSelectedParameter.send(oldP, newP);
 
       if(oldP)
         oldP->onUnselected();
@@ -325,9 +326,9 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       onChange();
     });
   }
-  else
+  else if(sendReselectionSignal)
   {
-    m_signalSelectedParameter.send(p, p, signalType);
+    transaction->addSimpleCommand([=](auto) mutable { m_signalReselectParameter.send(p); });
   }
 }
 
@@ -1498,7 +1499,7 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
       if(newType == SoundType::Single && vg == VoiceGroup::II)
         vg = VoiceGroup::I;
 
-      undoableSelectParameter(transaction, { itConv->second, vg }, SignalOrigin::IMPLICIT);
+      undoableSelectParameter(transaction, { itConv->second, vg }, false);
       hwui->setCurrentVoiceGroup(vg);
     }
   }
@@ -1507,7 +1508,7 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
   {
     auto selNum = getSelectedParameterNumber();
     if(!ParameterId::isGlobal(selNum))
-      undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, SignalOrigin::IMPLICIT);
+      undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, false);
 
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
   }
@@ -1520,7 +1521,7 @@ int EditBuffer::getSelectedParameterNumber() const
 
 void EditBuffer::fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group)
 {
-  m_signalSelectedParameter.send(getSelected(oldGroup), getSelected(group), SignalOrigin::EXPLICIT);
+  m_signalSelectedParameter.send(getSelected(oldGroup), getSelected(group));
 }
 
 bool EditBuffer::isPartLabelChanged(VoiceGroup group) const
@@ -1556,4 +1557,9 @@ void EditBuffer::setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *t
       SyncSplitSettingUseCases::get().enableSyncSetting(transaction);
     }
   }
+}
+
+sigc::connection EditBuffer::onParameterReselected(const sigc::slot<void, Parameter *> &s)
+{
+  return m_signalReselectParameter.connect(s);
 }

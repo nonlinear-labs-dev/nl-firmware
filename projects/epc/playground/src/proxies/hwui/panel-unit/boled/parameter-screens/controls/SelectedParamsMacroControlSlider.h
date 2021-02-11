@@ -15,7 +15,7 @@ class SelectedParamsMacroControlSlider : public DotSlider
   virtual ~SelectedParamsMacroControlSlider();
 
   bool isVisible() const override;
-  void setParameter(Parameter* param, SignalOrigin signalType) override;
+void setParameter(Parameter* param) override;
 
  private:
   // private methods
@@ -23,7 +23,7 @@ class SelectedParamsMacroControlSlider : public DotSlider
   SelectedParamsMacroControlSlider& operator=(const SelectedParamsMacroControlSlider&);
 
   void onTargetParamValueChanged(const Parameter* param);
-  void setTargetParameter(Parameter* param, SignalOrigin signalType);
+  void setTargetParameter(Parameter* param);
 
   Parameter* m_targetParameter = nullptr;
   sigc::connection m_targetParamValueConnection;

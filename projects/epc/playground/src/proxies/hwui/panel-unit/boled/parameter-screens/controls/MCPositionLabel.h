@@ -19,7 +19,7 @@ class MCPositionLabel : public Label
   MCPositionLabel(const MCPositionLabel &other);
   MCPositionLabel &operator=(const MCPositionLabel &);
 
-  void onParameterSelected(Parameter *newParameter, SignalOrigin signalType);
+  void onParameterSelected(Parameter *newParameter);
   void updateTarget(const Parameter *parameter);
   void updateSource(const Parameter *parameter);
   void onModifiersChanged();
