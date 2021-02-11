@@ -14,6 +14,7 @@ namespace UNDO
 
 class EditBuffer;
 class Uuid;
+class Settings;
 
 class AudioEngineProxy : public sigc::trackable
 {
@@ -65,4 +66,16 @@ class AudioEngineProxy : public sigc::trackable
   sigc::connection m_midiBankChangedConnection;
   sigc::connection m_midiBankConnection;
   RecursionGuard m_programChangeRecursion;
+  template <typename T> void subscribeToMidiSetting(Settings* s);
+  template <typename... TT> void subscribeToMidiSettings(Settings* s);
+  void connectMidiSettingsToAudioEngineMessage();
+  static int channelToMessageInt(MidiSendChannel channel);
+  static int channelToMessageInt(MidiSendChannelSplit channel);
+  static int channelToMessageInt(MidiReceiveChannel channel);
+  int channelToMessageInt(MidiReceiveChannelSplit channel);
+  void scheduleMidiSettingsMessage();
+
+  Throttler m_sendMidiSettingThrottler { std::chrono::milliseconds { 250 } };
+
+  std::vector<sigc::connection> m_midiSettingConnections;
 };

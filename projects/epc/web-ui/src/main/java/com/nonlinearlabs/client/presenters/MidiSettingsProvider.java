@@ -23,7 +23,7 @@ public class MidiSettingsProvider {
         //Local
         s.localControllers.onChange(t -> {
             boolean newValue = t == BooleanValues.on;
-            if(newValue != settings.localControllers.value != newValue) {
+            if(settings.localControllers.value != newValue) {
                 settings.localControllers.value = newValue;
                 notifyClients();
             } 

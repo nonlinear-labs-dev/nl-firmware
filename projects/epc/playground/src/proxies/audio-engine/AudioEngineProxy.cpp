@@ -25,11 +25,25 @@
 #include <groups/SplitParameterGroups.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <device-settings/DirectLoadSetting.h>
+#include <device-settings/midi/MidiChannelSettings.h>
+#include <device-settings/midi/local/LocalControllersSetting.h>
+#include <device-settings/midi/local/LocalNotesSetting.h>
+#include <device-settings/midi/local/LocalProgramChangesSetting.h>
+#include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
+#include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
+#include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
+#include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
+#include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
+#include <device-settings/midi/send/MidiSendNotesSetting.h>
+#include <device-settings/midi/send/MidiSendControllersSetting.h>
+#include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
   using namespace nltools::msg;
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
+  onConnectionEstablished(EndPoint::AudioEngine,
+                          sigc::mem_fun(this, &AudioEngineProxy::connectMidiSettingsToAudioEngineMessage));
 
   receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
     auto playController = Application::get().getPlaycontrollerProxy();
@@ -427,7 +441,6 @@ void AudioEngineProxy::sendSelectedMidiPresetAsProgramChange()
             m_lastSendProgramNumber = presetPos;
             nltools::msg::send(nltools::msg::EndPoint::AudioEngine,
                                nltools::msg::Midi::ProgramChangeMessage { presetPos });
-            nltools::Log::error("sending ProgramChangeMessage to AE with preset:", (int) presetPos);
           }
         }
       }
@@ -440,4 +453,113 @@ void AudioEngineProxy::onPresetManagerLoaded()
   auto pm = Application::get().getPresetManager();
   m_midiBankConnection
       = pm->onMidiBankSelectionHappened(sigc::mem_fun(this, &AudioEngineProxy::onMidiBankSelectionChanged));
+}
+
+template <typename T> void AudioEngineProxy::subscribeToMidiSetting(Settings *s)
+{
+  if(auto setting = s->getSetting<T>())
+  {
+    m_midiSettingConnections.push_back(
+        setting->onChange(sigc::hide(sigc::mem_fun(this, &AudioEngineProxy::scheduleMidiSettingsMessage))));
+  }
+}
+
+template <typename... TT> void AudioEngineProxy::subscribeToMidiSettings(Settings *s)
+{
+  (subscribeToMidiSetting<TT>(s), ...);
+}
+
+void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
+{
+  auto settings = Application::get().getSettings();
+  m_midiSettingConnections.clear();
+
+  subscribeToMidiSettings<LocalControllersSetting, LocalNotesSetting, LocalProgramChangesSetting,
+                          MidiReceiveChannelSetting, MidiReceiveChannelSplitSetting, MidiReceiveProgramChangesSetting,
+                          MidiReceiveControllersSetting, MidiReceiveNotesSetting, MidiReceiveAftertouchCurveSetting,
+                          MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
+                          MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting>(settings);
+}
+
+int AudioEngineProxy::channelToMessageInt(MidiSendChannel channel)
+{
+  switch(channel)
+  {
+    case MidiSendChannel::None:
+      return -1;
+    default:
+      return static_cast<int>(channel) - 1;
+  }
+
+  nltools_assertNotReached();
+}
+
+int AudioEngineProxy::channelToMessageInt(MidiSendChannelSplit channel)
+{
+  auto settings = Application::get().getSettings();
+  switch(channel)
+  {
+    case MidiSendChannelSplit::None:
+      return -1;
+    case MidiSendChannelSplit::Follow_I:
+      return channelToMessageInt(settings->getSetting<MidiSendChannelSetting>()->get());
+    default:
+      return static_cast<int>(channel) - 2;
+  }
+  nltools_assertNotReached();
+}
+
+int AudioEngineProxy::channelToMessageInt(MidiReceiveChannel channel)
+{
+  switch(channel)
+  {
+    case MidiReceiveChannel::None:
+      return -1;
+    case MidiReceiveChannel::Omni:
+      return 16;
+    default:
+      return static_cast<int>(channel)
+          - 2;  // - 2 because none is before Channel_1 and channels are 1 index towards the human and 0 indexed in midi
+  }
+}
+
+int AudioEngineProxy::channelToMessageInt(MidiReceiveChannelSplit channel)
+{
+  auto settings = Application::get().getSettings();
+  switch(channel)
+  {
+    case MidiReceiveChannelSplit::None:
+      return -1;
+    case MidiReceiveChannelSplit::Omni:
+      return 16;
+    case MidiReceiveChannelSplit::Follow_I:
+      return channelToMessageInt(settings->getSetting<MidiReceiveChannelSetting>()->get());
+    default:
+      return static_cast<int>(channel) - 1;
+  }
+}
+
+void AudioEngineProxy::scheduleMidiSettingsMessage()
+{
+  m_sendMidiSettingThrottler.doTask([this]() {
+    auto settings = Application::get().getSettings();
+    nltools::msg::Setting::MidiSettingsMessage msg;
+    msg.sendChannel = channelToMessageInt(settings->getSetting<MidiSendChannelSetting>()->get());
+    msg.sendSplitChannel = channelToMessageInt(settings->getSetting<MidiSendChannelSplitSetting>()->get());
+    msg.receiveChannel = channelToMessageInt(settings->getSetting<MidiReceiveChannelSetting>()->get());
+    msg.receiveSplitChannel = channelToMessageInt(settings->getSetting<MidiReceiveChannelSplitSetting>()->get());
+
+    msg.sendNotes = settings->getSetting<MidiSendNotesSetting>()->get();
+    msg.sendProgramChange = settings->getSetting<MidiSendProgramChangesSetting>()->get();
+    msg.sendControllers = settings->getSetting<MidiSendControllersSetting>()->get();
+
+    msg.receiveNotes = settings->getSetting<MidiReceiveNotesSetting>()->get();
+    msg.receiveProgramChange = settings->getSetting<MidiReceiveProgramChangesSetting>()->get();
+    msg.receiveControllers = settings->getSetting<MidiReceiveControllersSetting>()->get();
+
+    msg.localNotes = settings->getSetting<LocalNotesSetting>()->get();
+    msg.localControllers = settings->getSetting<LocalControllersSetting>()->get();
+
+    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  });
 }
