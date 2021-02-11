@@ -301,22 +301,26 @@ void Settings::sendPresetSettingsToPlaycontroller()
   r2->sendModeToPlaycontroller();
 }
 
+template <typename T> void Settings::subscribeToMidiSetting()
+{
+  if(auto setting = getSetting<T>())
+  {
+    setting->onChange(sigc::hide(sigc::mem_fun(this, &Settings::sendMidiSettingsMessage)));
+  }
+}
+
+template <typename... TT> void Settings::subscribeToMidiSettings()
+{
+  (subscribeToMidiSetting<TT>(), ...);
+}
+
 void Settings::connectMidiSettingsToAudioEngineMessage()
 {
-  for(auto &settingName :
-      { "LocalControllers", "LocalNotes", "LocalProgramChanges", "ReceiveChannel", "ReceiveChannelSplit",
-        "ReceiveProgramChanges", "ReceiveNotes", "ReceiveControllers", "ReceiveAftertouchCurve", "ReceiveVelocityCurve",
-        "SendChannel", "SendChannelSplit", "SendProgramChanges", "SendNotes", "SendControllers" })
-  {
-    if(auto setting = getSetting(settingName))
-    {
-      setting->onChange(sigc::hide(sigc::mem_fun(this, &Settings::sendMidiSettingsMessage)));
-    }
-    else
-    {
-      nltools_assertNotReached();
-    }
-  }
+  subscribeToMidiSettings<LocalControllersSetting, LocalNotesSetting, LocalProgramChangesSetting,
+                          MidiReceiveChannelSetting, MidiReceiveChannelSplitSetting, MidiReceiveProgramChangesSetting,
+                          MidiReceiveNotesSetting, MidiReceiveAftertouchCurveSetting, MidiReceiveVelocityCurveSetting,
+                          MidiSendChannelSetting, MidiSendChannelSplitSetting, MidiSendProgramChangesSetting,
+                          MidiSendNotesSetting, MidiSendControllersSetting>();
 }
 
 int Settings::channelToMessageInt(MidiSendChannel channel)
@@ -393,6 +397,6 @@ void Settings::sendMidiSettingsMessage()
 
   msg.localNotes = getSetting<LocalNotesSetting>()->get();
   msg.localControllers = getSetting<LocalControllersSetting>()->get();
-  
+
   nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
 }

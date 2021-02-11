@@ -75,4 +75,6 @@ class Settings : public ContentSection
   int channelToMessageInt(MidiSendChannelSplit channel);
   int channelToMessageInt(MidiReceiveChannel channel);
   int channelToMessageInt(MidiReceiveChannelSplit channel);
+  template <typename T> void subscribeToMidiSetting();
+  template <typename... TT> void subscribeToMidiSettings();
 };
