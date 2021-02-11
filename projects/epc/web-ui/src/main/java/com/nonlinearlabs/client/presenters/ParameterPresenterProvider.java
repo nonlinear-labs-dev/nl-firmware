@@ -142,6 +142,10 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.hidden = isParameterHidden(e);
 		presenter.isDefault = presenter.controlPosition == presenter.defaultPosition;
 
+		if(presenter.id.getNumber() == 396) {
+			GWT.log("isDefault for VG "+ presenter.id.getVoiceGroup().toString() + " is:" + presenter.isDefault);
+		}
+		
 		presenter.displayValues = new String[] { e.value.getDecoratedValue(true, true),
 				e.value.getDecoratedValue(false, true) };
 		presenter.originalParameterValueDecoratedString = e.value.getDecoratedValue(true, e.originalValue.getValue(),
@@ -192,8 +196,10 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			presenter.fullNameWithGroup = groupName + "   \u2013   " + e.longName.getValue() + (changed ? " *" : "");
 		}
 
-		if (presenter.updateHash())
+		if (presenter.updateHash()) {
 			notifyChanges();
+			GWT.log("ParameterPresenterProvider notifyChanges() was called because hash has changed!");
+		}
 	}
 
 	static public boolean isValueChanged(BasicParameterModel e) {
