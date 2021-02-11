@@ -35,8 +35,8 @@ class EditBuffer : public ParameterGroupSet
 
   void setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid);
 
-  void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p);
-  void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id);
+  void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p, bool sendReselectionSignal);
+  void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id, bool sendReselectionSignal);
 
   void undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine);
   void undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to);
@@ -78,6 +78,7 @@ class EditBuffer : public ParameterGroupSet
   // CALLBACKS
   sigc::connection onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s,
                                       std::optional<VoiceGroup> initialVG);
+  sigc::connection onParameterReselected(const sigc::slot<void, Parameter *> &s);
   sigc::connection onModificationStateChanged(const sigc::slot<void, bool> &s);
   sigc::connection onChange(const sigc::slot<void> &s, bool init = true);
   sigc::connection onPresetLoaded(const sigc::slot<void> &s);
@@ -127,6 +128,8 @@ class EditBuffer : public ParameterGroupSet
 
   PartOrigin getPartOrigin(VoiceGroup vg) const;
 
+  bool isParameterFocusLocked() const;
+
  private:
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
@@ -148,7 +151,6 @@ class EditBuffer : public ParameterGroupSet
   void doDeferedJobs();
   void checkModified();
 
-  bool isParameterFocusLocked() const;
   void lockParameterFocusChanges();
   void unlockParameterFocusChanges();
   void initUnisonVoicesScaling(SoundType newType);
@@ -191,6 +193,7 @@ class EditBuffer : public ParameterGroupSet
   bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
+  Signal<void, Parameter *> m_signalReselectParameter;
   SignalWithCache<void, bool> m_signalModificationState;
   Signal<void> m_signalChange;
   Signal<void> m_signalPresetLoaded;

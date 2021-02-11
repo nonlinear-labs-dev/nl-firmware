@@ -113,7 +113,7 @@ void ScaleParameterSelectLayout::selectParameter(int inc)
     id = *idIt;
   }
 
-  ebUseCases.selectParameter({ id, VoiceGroup::Global });
+  ebUseCases.selectParameter({ id, VoiceGroup::Global }, true);
 }
 
 void toggleHightlight(Control* c)

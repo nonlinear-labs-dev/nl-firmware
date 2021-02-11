@@ -69,7 +69,7 @@ bool PlayControlParameterLayout2::onRotary(int i, ButtonModifiers modifiers)
     auto hw = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID({ "CS", VoiceGroup::Global }));
     auto currentID = getCurrentParameter()->getID();
     auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID, i);
-    ebUseCases.selectParameter(newParamID);
+    ebUseCases.selectParameter(newParamID, true);
     return true;
   }
 
@@ -287,7 +287,7 @@ bool PlayControlParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMod
     {
       case Buttons::BUTTON_C:
         if(auto p = dynamic_cast<PhysicalControlParameter *>(getCurrentParameter()))
-          ebUseCases.selectParameter(p->getUiSelectedModulationRouter());
+          ebUseCases.selectParameter(p->getUiSelectedModulationRouter(), true);
 
         return true;
     }

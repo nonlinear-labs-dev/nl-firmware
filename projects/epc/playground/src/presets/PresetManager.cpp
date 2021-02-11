@@ -83,6 +83,7 @@ void PresetManager::init()
   auto hwui = Application::get().getHWUI();
   hwui->getPanelUnit().getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndMode());
   hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
+  m_sigLoadHappened.send();
   onChange();
 }
 
@@ -765,7 +766,7 @@ void PresetManager::stress(int numTransactions)
         {
           auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
           m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(),
-                                                { C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+                                                { C15::PID::FB_Mix_FX_Src, VoiceGroup::I }, false);
 
           if(auto p = m_editBuffer->getSelected(VoiceGroup::I))
           {
@@ -795,7 +796,7 @@ void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
 {
   if(m_editBuffer->getSelected(VoiceGroup::I) != param)
   {
-    m_editBuffer->undoableSelectParameter(trans, param);
+    m_editBuffer->undoableSelectParameter(trans, param, true);
   }
   param->stepCPFromHwui(trans, g_random_boolean() ? -1 : 1, ButtonModifiers {});
 }
@@ -821,7 +822,7 @@ void PresetManager::stressBlocking(int numTransactions)
   int parameterId = g_random_int_range(0, 200);
   {
     auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
-    m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), { parameterId, VoiceGroup::I });
+    m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(), { parameterId, VoiceGroup::I }, false);
 
     if(auto p = m_editBuffer->getSelected(VoiceGroup::I))
     {
@@ -974,10 +975,15 @@ void PresetManager::selectMidiBank(UNDO::Transaction *trans, const Uuid &uuid)
 
 sigc::connection PresetManager::onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb)
 {
-  return m_sigMidiBankSelection.connect(cb);
+  return m_sigMidiBankSelection.connectAndInit(cb, getMidiSelectedBank());
 }
 
 Bank *PresetManager::findMidiSelectedBank() const
 {
   return m_banks.find(getMidiSelectedBank());
+}
+
+sigc::connection PresetManager::onLoadHappened(sigc::slot<void> cb)
+{
+  return m_sigLoadHappened.connect(cb);
 }

@@ -140,6 +140,12 @@ class HWUI
   ButtonModifiers m_modifiers;
 
   sigc::connection m_blinkTimerConnection;
+  sigc::connection m_editBufferParameterReselectionConnection;
+  sigc::connection m_editBufferParameterSelectionConnection;
+
+  void onParameterReselection(Parameter *parameter);
+  void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+
   Signal<void, ButtonModifiers> m_modifersChanged;
   Signal<void, int> m_blinkTimer;
 

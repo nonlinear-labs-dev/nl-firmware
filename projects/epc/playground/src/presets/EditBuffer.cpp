@@ -234,10 +234,11 @@ sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter
   }
 }
 
-void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id)
+void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id,
+                                         bool sendReselectionSignal)
 {
   if(auto p = findParameterByID(id))
-    undoableSelectParameter(transaction, p);
+    undoableSelectParameter(transaction, p, sendReselectionSignal);
   else
     throw std::runtime_error("could not select parameter: " + id.toString());
 }
@@ -298,7 +299,7 @@ void EditBuffer::unlockParameterFocusChanges()
   m_lockParameterFocusChanges = false;
 }
 
-void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p)
+void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p, bool sendReselectionSignal)
 {
   if(m_lastSelectedParameter != p->getID())
   {
@@ -322,38 +323,12 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
       if(newP)
         newP->onSelected();
 
-      if(!getParent()->isLoading() && !isParameterFocusLocked())
-      {
-        if(auto hwui = Application::get().getHWUI())
-        {
-          if(hwui->getFocusAndMode().focus == UIFocus::Sound)
-          {
-            if(oldP->getID() != newP->getID())
-              hwui->setFocusAndMode(UIFocus::Parameters);
-          }
-          else
-          {
-            hwui->setFocusAndMode(UIFocus::Parameters);
-          }
-        }
-      }
-
       onChange();
     });
-
-    if(auto hwui = Application::get().getHWUI())
-    {
-      hwui->unsetFineMode();
-    }
   }
-  else
+  else if(sendReselectionSignal)
   {
-    //If parameter was already selected: set parameter focus and mode
-    auto hwui = Application::get().getHWUI();
-    if(hwui->getFocusAndMode().mode == UIMode::Info)
-      hwui->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Parameters, UIMode::Info));
-    else
-      hwui->undoableSetFocusAndMode(transaction, FocusAndMode(UIFocus::Parameters, UIMode::Select));
+    transaction->addSimpleCommand([=](auto) mutable { m_signalReselectParameter.send(p); });
   }
 }
 
@@ -1524,7 +1499,7 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
       if(newType == SoundType::Single && vg == VoiceGroup::II)
         vg = VoiceGroup::I;
 
-      undoableSelectParameter(transaction, { itConv->second, vg });
+      undoableSelectParameter(transaction, { itConv->second, vg }, false);
       hwui->setCurrentVoiceGroup(vg);
     }
   }
@@ -1533,7 +1508,7 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
   {
     auto selNum = getSelectedParameterNumber();
     if(!ParameterId::isGlobal(selNum))
-      undoableSelectParameter(transaction, { selNum, VoiceGroup::I });
+      undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, false);
 
     hwui->setCurrentVoiceGroup(VoiceGroup::I);
   }
@@ -1582,4 +1557,9 @@ void EditBuffer::setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *t
       SyncSplitSettingUseCases::get().enableSyncSetting(transaction);
     }
   }
+}
+
+sigc::connection EditBuffer::onParameterReselected(const sigc::slot<void, Parameter *> &s)
+{
+  return m_signalReselectParameter.connect(s);
 }

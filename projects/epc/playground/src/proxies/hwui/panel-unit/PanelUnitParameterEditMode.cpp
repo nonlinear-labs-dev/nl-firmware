@@ -387,7 +387,7 @@ bool PanelUnitParameterEditMode::setParameterSelection(const ParameterId &audioI
   {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     EditBufferUseCases ebUseCases { editBuffer };
-    ebUseCases.selectParameter(audioID);
+    ebUseCases.selectParameter(audioID, true);
   }
 
   return true;

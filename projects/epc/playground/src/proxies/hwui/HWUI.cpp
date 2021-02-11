@@ -85,6 +85,12 @@ void HWUI::init()
   m_panelUnit.init();
   m_baseUnit.init();
 
+  m_editBufferParameterReselectionConnection
+      = eb->onParameterReselected(sigc::mem_fun(this, &HWUI::onParameterReselection));
+
+  m_editBufferParameterSelectionConnection
+      = eb->onSelectionChanged(sigc::mem_fun(this, &HWUI::onParameterSelection), std::nullopt);
+
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
 
@@ -283,7 +289,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         else
         {
           auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(nullptr,1.0 / p->getValue().getCoarseDenominator(),false);
+          changer->changeBy(nullptr, 1.0 / p->getValue().getCoarseDenominator(), false);
         }
       }
       else if(line.find('x') == 0)
@@ -298,7 +304,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         else
         {
           auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(nullptr,-1.0 / p->getValue().getCoarseDenominator(),false);
+          changer->changeBy(nullptr, -1.0 / p->getValue().getCoarseDenominator(), false);
         }
       }
       else
@@ -597,7 +603,7 @@ void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
 
   if(id.getVoiceGroup() != VoiceGroup::Global)
   {
-    eb->undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup });
+    eb->undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup }, false);
   }
 }
 
@@ -836,4 +842,29 @@ void HWUI::exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std:
   }
 
   boledFile.write(fileName);
+}
+
+void HWUI::onParameterReselection(Parameter *parameter)
+{
+  if(getFocusAndMode().mode == UIMode::Info)
+    setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Info));
+  else
+    setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+}
+
+void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter)
+{
+  unsetFineMode();
+
+  if(getFocusAndMode().focus == UIFocus::Sound)
+  {
+    if(oldParameter->getID() != newParameter->getID())
+    {
+      setFocusAndMode(UIFocus::Parameters);
+    }
+  }
+  else
+  {
+    setFocusAndMode(UIFocus::Parameters);
+  }
 }

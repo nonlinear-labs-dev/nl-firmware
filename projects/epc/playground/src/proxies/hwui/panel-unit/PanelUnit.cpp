@@ -41,7 +41,7 @@ PanelUnit::PanelUnit()
     }
 
     auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
-    ebUseCases.selectParameter({ currentMc, VoiceGroup::Global });
+    ebUseCases.selectParameter({ currentMc, VoiceGroup::Global }, true);
     return true;
   });
 
@@ -82,7 +82,7 @@ PanelUnit::PanelUnit()
     EditBufferUseCases ebUseCases { editBuffer };
     auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
     auto currentSource = choseHWBestSourceForMC(p->getID());
-    ebUseCases.selectParameter(currentSource);
+    ebUseCases.selectParameter(currentSource, true);
     m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
     return true;
   });

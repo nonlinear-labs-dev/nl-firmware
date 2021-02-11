@@ -211,6 +211,31 @@ namespace nltools
         bool enable = false;
       };
 
+      struct MidiSettingsMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiSettings;
+        }
+
+        int receiveChannel = 0;       // 0-15, -1 => None, 16 => Omni/All
+        int receiveSplitChannel = 0;  // 0-15, -1 => None, 16 => Omni/All
+
+        int sendChannel = 0;       // 0-15, -1 => None
+        int sendSplitChannel = 0;  //0-15, -1 => None
+
+        bool receiveProgramChange = false;
+        bool receiveNotes = false;
+        bool receiveControllers = false;
+
+        bool sendProgramChange = false;
+        bool sendNotes = false;
+        bool sendControllers = false;
+
+        bool localNotes = false;
+        bool localControllers = false;
+      };
+
       struct TransitionTimeMessage
       {
         constexpr static MessageType getType()

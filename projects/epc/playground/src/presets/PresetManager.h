@@ -117,6 +117,7 @@ class PresetManager : public ContentSection
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
   sigc::connection onPresetStoreHappened(sigc::slot<void> cb);
   sigc::connection onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb);
+  sigc::connection onLoadHappened(sigc::slot<void> cb);
 
   const Preset *getSelectedPreset() const;
   Preset *getSelectedPreset();
@@ -156,6 +157,7 @@ class PresetManager : public ContentSection
   SignalWithCache<void, Uuid> m_sigBankSelection;
   SignalWithCache<void, size_t> m_sigNumBanksChanged;
   Signal<void> m_sigRestoreHappened;
+  Signal<void> m_sigLoadHappened;
   Signal<void> m_presetStoreHappened;
   Signal<void, Uuid> m_sigMidiBankSelection;
 

@@ -1,6 +1,7 @@
 #include "dsp_host_dual.h"
 #include <nltools/messaging/Messaging.h>
-#include <assert.h>
+#include <cassert>
+#include <MidiRuntimeOptions.h>
 
 using namespace std::chrono_literals;
 
@@ -426,7 +427,6 @@ void dsp_host_dual::logStatus()
 void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
                                  const MidiOut& out)
 {
-
   const uint32_t ch = _status & 15, st = (_status & 127) >> 4;
   if(LOG_MIDI_TCD)
   {
@@ -603,8 +603,10 @@ void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
     processUnipolarMidiController<CC_Range_14_Bit>(_data, id);
 }
 
+//todo add midi Out CB
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
+  //todo use midiOut
   const uint32_t type = (_status & 127) >> 4;
   if(LOG_MIDI_RAW)
   {
@@ -1739,8 +1741,8 @@ void dsp_host_dual::hwModChain(HW_Src_Param* _src, const uint32_t _id, const flo
           macro->m_unclipped += (_inc * amount->m_position);  // fixing #2023:
           // only rely on unclipped (always up-to-date)
           // NOTE: hopefully, this won't introduce accumulating floating point rounding errors !!!
-          const float clipped
-              = macro->m_unclipped < 0.0f ? 0.0f : macro->m_unclipped > 1.0f ? 1.0f : macro->m_unclipped;
+          const float clipped = std::clamp(macro->m_unclipped, 0.0f, 1.0f);
+          
           if(macro->m_position != clipped)
           {
             macro->m_position = clipped;

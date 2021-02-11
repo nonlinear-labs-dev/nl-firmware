@@ -66,7 +66,7 @@ void MacroControlSmoothingParameterLayout::selectMacroControl()
   EditBufferUseCases ebUseCases { eb };
   if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
   {
-    ebUseCases.selectParameter(modTime->getMC());
+    ebUseCases.selectParameter(modTime->getMC(), true);
   }
 }
 

@@ -253,19 +253,19 @@ namespace DescriptiveLayouts
       EditBufferUseCases useCase(eb);
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(eb->getType() == SoundType::Split)
-        useCase.selectParameter(ParameterId { 364, vg });
+        useCase.selectParameter(ParameterId { 364, vg }, true);
       else
-        useCase.selectParameter(ParameterId { 364, VoiceGroup::I });
+        useCase.selectParameter(ParameterId { 364, VoiceGroup::I }, true);
     });
 
     registerEvent(EventSinks::OpenPartScreen, [eb]() {
-      EditBufferUseCases useCase(eb);
-      useCase.selectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() });
+      EditBufferUseCases ebUseCases { eb };
+      ebUseCases.selectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() }, true);
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] {
-      EditBufferUseCases useCase(eb);
-      useCase.selectParameter({ 247, VoiceGroup::Global });
+      EditBufferUseCases ebUseCases { eb };
+      ebUseCases.selectParameter({ 247, VoiceGroup::Global }, true);
     });
 
     registerEvent(EventSinks::InitSound, [eb] {
@@ -276,8 +276,8 @@ namespace DescriptiveLayouts
 
     registerEvent(EventSinks::OpenUnisonParameter, [eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      EditBufferUseCases useCases(eb);
-      useCases.selectParameter({ 249, vg });
+      EditBufferUseCases ebUseCases { eb };
+      ebUseCases.selectParameter({ 249, vg }, true);
     });
 
     registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {

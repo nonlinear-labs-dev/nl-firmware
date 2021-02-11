@@ -38,7 +38,7 @@ inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI_TCD = false;
 inline constexpr bool LOG_MIDI_RAW = false;
-inline constexpr bool LOG_MIDI_DETAIL = false;
+inline constexpr bool LOG_MIDI_DETAIL = true;
 inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
@@ -58,6 +58,8 @@ inline constexpr bool LOG_ENGINE_EDITS = false;
 inline constexpr uint32_t LOG_PARAMS_LENGTH = 3;
 // use tcd ids here (currently: Split Point, Unison Detune)
 static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
+
+class MidiRuntimeOptions;
 
 class dsp_host_dual
 {
