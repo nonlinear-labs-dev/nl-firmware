@@ -1,6 +1,6 @@
 #include "MidiSendNotesSetting.h"
 
 MidiSendNotesSetting::MidiSendNotesSetting(UpdateDocumentContributor& s)
-    : BooleanSetting(s, false)
+    : BooleanSetting(s, true)
 {
 }
