@@ -173,8 +173,9 @@ bool C15Synth::filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) cons
   const auto isControlChangeEvent = matchPattern(statusByte, MIDI_CONTROLCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
   const auto isPitchbendEvent = matchPattern(statusByte, MIDI_PITCHBEND_PATTERN, MIDI_EVENT_TYPE_MASK);
   const auto isProgramChangeEvent = matchPattern(statusByte, MIDI_PROGRAMCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
-
-  if(isNoteEvent)
+  const auto sendChannelIsNone = m_midiOptions.getSendChannel() == -1;
+  
+  if(isNoteEvent && !sendChannelIsNone)
     return m_midiOptions.shouldSendNotes();
 
   if(isControlChangeEvent || isAftertouchEvent || isPitchbendEvent)
@@ -246,7 +247,7 @@ bool C15Synth::filterTcdIn(const MidiEvent& event) const
     const auto typeId = (event.raw[0] & TCD_TYPE_MASK);
     const auto isNoteEvent = typeId >= 13 && typeId <= 15;
     const auto isControlEvent = typeId >= 0 && typeId <= 11;
-    
+
     if(isNoteEvent)
     {
       return m_midiOptions.shouldReceiveLocalNotes();
