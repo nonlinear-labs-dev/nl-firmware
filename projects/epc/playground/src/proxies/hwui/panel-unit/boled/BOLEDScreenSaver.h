@@ -10,6 +10,7 @@ class BOLEDScreenSaver : public Layout
   BOLEDScreenSaver(OLEDProxy& oled);
   ~BOLEDScreenSaver() override;
   void init() override;
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
 
  private:
   void destroy();
