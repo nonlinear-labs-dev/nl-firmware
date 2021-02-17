@@ -201,16 +201,6 @@ namespace nltools
         double m_tuneReference;
       };
 
-      struct MidiBridgeSettings
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::MidiBridgeSettings;
-        }
-
-        bool enable = false;
-      };
-
       struct TransitionTimeMessage
       {
         constexpr static MessageType getType()
