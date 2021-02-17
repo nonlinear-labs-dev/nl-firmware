@@ -1,6 +1,6 @@
 #include "MidiSendProgramChangesSetting.h"
 
 MidiSendProgramChangesSetting::MidiSendProgramChangesSetting(UpdateDocumentContributor& s)
-    : BooleanSetting(s, false)
+    : BooleanSetting(s, true)
 {
 }

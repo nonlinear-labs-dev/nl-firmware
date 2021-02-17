@@ -2,7 +2,7 @@
 #include "MidiChannelSettings.h"
 
 MidiReceiveChannelSetting::MidiReceiveChannelSetting(UpdateDocumentContributor& s)
-    : EnumSetting<MidiReceiveChannel>(s, MidiReceiveChannel::None)
+    : EnumSetting<MidiReceiveChannel>(s, MidiReceiveChannel::Omni)
 {
 }
 
@@ -20,7 +20,7 @@ const std::vector<Glib::ustring>& MidiReceiveChannelSetting::enumToDisplayString
 }
 
 MidiReceiveChannelSplitSetting::MidiReceiveChannelSplitSetting(UpdateDocumentContributor& s)
-    : EnumSetting<MidiReceiveChannelSplit>(s, MidiReceiveChannelSplit::None)
+    : EnumSetting<MidiReceiveChannelSplit>(s, MidiReceiveChannelSplit::Follow_I)
 {
 }
 
@@ -38,7 +38,7 @@ const std::vector<Glib::ustring>& MidiReceiveChannelSplitSetting::enumToDisplayS
 }
 
 MidiSendChannelSetting::MidiSendChannelSetting(UpdateDocumentContributor& s)
-    : EnumSetting<MidiSendChannel>(s, MidiSendChannel::None)
+    : EnumSetting<MidiSendChannel>(s, MidiSendChannel::CH_1)
 {
 }
 
@@ -56,7 +56,7 @@ const std::vector<Glib::ustring>& MidiSendChannelSetting::enumToDisplayString() 
 }
 
 MidiSendChannelSplitSetting::MidiSendChannelSplitSetting(UpdateDocumentContributor& s)
-    : EnumSetting<MidiSendChannelSplit>(s, MidiSendChannelSplit::None)
+    : EnumSetting<MidiSendChannelSplit>(s, MidiSendChannelSplit::Follow_I)
 {
 }
 
