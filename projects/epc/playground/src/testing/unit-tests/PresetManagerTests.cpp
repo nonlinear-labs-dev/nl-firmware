@@ -5,7 +5,6 @@
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
-#include <device-settings/ExternalMidiEnabledSetting.h>
 
 namespace Helper
 {
@@ -144,9 +143,6 @@ TEST_CASE("Midi Selection Sends Signals Appropriately")
   MockPresetStorage presets2;
   auto pm = TestHelper::getPresetManager();
 
-  auto midiEnable = Application::get().getSettings()->getSetting<ExternalMidiEnabledSetting>()->scopedOverlay(
-      BooleanSettings::BOOLEAN_SETTING_TRUE);
-
   CHECK(pm->getNumBanks() == 2);
 
   WHEN("Midi Bank Selected")
@@ -185,10 +181,7 @@ TEST_CASE("Delete Current Midi Bank resets attribute")
   Helper::clearPresetManager();
   auto pm = TestHelper::getPresetManager();
   auto useCases = Application::get().getPresetManagerUseCases();
-
-  auto midiEnable = Application::get().getSettings()->getSetting<ExternalMidiEnabledSetting>()->scopedOverlay(
-      BooleanSettings::BOOLEAN_SETTING_TRUE);
-
+  
   //Create bank to use
   useCases->createBankAndStoreEditBuffer();
   auto b = pm->getSelectedBank();
