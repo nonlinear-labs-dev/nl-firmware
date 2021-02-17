@@ -128,9 +128,4 @@ public class SystemSettings {
 	public void storeInitSound() {
 		NonMaps.theMaps.getServerProxy().storeAsInit();
 	}
-
-	public void setExternalMidi(boolean midiEnable) {
-		SetupModel.get().systemSettings.externalMidi.setValue(midiEnable);
-		NonMaps.theMaps.getServerProxy().setSetting("ExternalMidi", Boolean.toString(midiEnable));
-	}
 }

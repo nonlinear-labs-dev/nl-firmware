@@ -53,7 +53,6 @@ public class SetupUpdater extends Updater {
 		m.put("TotalRAM", DeviceInformation.get().totalRam);
 		m.put("UsedRAM", DeviceInformation.get().usedRam);
 		m.put("SyncSplit", SetupModel.get().systemSettings.syncSplit);
-		m.put("ExternalMidi", SetupModel.get().systemSettings.externalMidi);
 		return m;
 	}
 

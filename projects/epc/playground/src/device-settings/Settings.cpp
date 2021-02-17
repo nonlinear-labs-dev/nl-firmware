@@ -47,7 +47,6 @@
 #include "UsedRAM.h"
 #include "SyncVoiceGroupsAcrossUIS.h"
 #include "SplitPointSyncParameters.h"
-#include "ExternalMidiEnabledSetting.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -99,7 +98,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SyncVoiceGroups", new SyncVoiceGroupsAcrossUIS(*this));
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
   addSetting("SyncSplit", new SplitPointSyncParameters(*this));
-  addSetting("ExternalMidi", new ExternalMidiEnabledSetting(*this));
 }
 
 Settings::~Settings()
