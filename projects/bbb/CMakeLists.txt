@@ -6,7 +6,6 @@ OPTION(BUILD_BBB_SCRIPTS "Install the shell scripts on the BeagleBoneBlack" Off)
 
 IF(BUILD_BRIDGE)
     add_subdirectory(bridge)
-    add_subdirectory(midi-over-ip)
 ENDIF()
 
 IF(BUILD_ESPI_DRIVER)
