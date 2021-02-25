@@ -1,4 +1,5 @@
 set -e
+set -x
 
 BUILD_SWITCHES="-DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On"
 
@@ -16,12 +17,7 @@ setup_overlay() {
 }
 
 install_packages() {
-    for package in $UPDATE_PACKAGES; do
-        for subpackage in $(pacman -Sp $package); do
-            pacstrap -c -U /overlay-fs $(basename ${subpackage})
-        done
-        pacman --noconfirm -S $UPDATE_PACKAGES
-    done    
+    pacman --noconfirm -S $UPDATE_PACKAGES
 }
 
 build_binaries() {
