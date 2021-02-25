@@ -18,9 +18,7 @@ setup_overlay() {
 install_packages() {
     for package in $UPDATE_PACKAGES; do
         for subpackage in $(pacman -Sp $package); do
-            if !pacstrap -c -U /overlay-fs $(basename ${subpackage}); then
-              bash
-            fi
+            pacstrap -c -U /overlay-fs $(basename ${subpackage})
         done
         pacman --noconfirm -S $UPDATE_PACKAGES
     done    
