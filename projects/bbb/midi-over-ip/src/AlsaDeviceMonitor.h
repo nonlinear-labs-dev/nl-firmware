@@ -19,7 +19,7 @@ class AlsaDeviceMonitor : public sigc::trackable
  private:
   bool poll();
 
-  bool m_enabled = false;
+  bool m_enabled = true;
 
   Callback m_cb;
   InputDevices m_ins;

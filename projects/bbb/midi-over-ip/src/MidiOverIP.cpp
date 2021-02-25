@@ -60,8 +60,6 @@ int main(int args, char *argv[])
     outputs = sync(outs, std::move(outputs));
   });
 
-  receive<Setting::MidiBridgeSettings>(endPoint, [&](const auto &msg) { monitor.setEnabled(msg.enable); });
-
   receive<SimpleMessage>(endPoint, [&](const auto &msg) mutable {
     for(const auto &out : outputs)
       out.second->send(msg);
