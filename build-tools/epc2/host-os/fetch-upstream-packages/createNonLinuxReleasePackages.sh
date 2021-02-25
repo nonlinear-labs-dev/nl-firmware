@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 DOCKERNAME="$1"
 OUT_FILE=$(realpath $2)

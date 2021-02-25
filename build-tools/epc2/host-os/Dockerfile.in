@@ -3,7 +3,7 @@ ARG packages
 ARG tar
 COPY ${tar} /packages/
 RUN mkdir -p /extracted-packages
-RUN cd /extracted-packages && tar -xvzf /packages/*.tar.gz
+RUN cd /extracted-packages && tar -xvzf /packages/${tar}
 RUN ls -la /extracted-packages/
 RUN echo "Server=file:///extracted-packages" > /etc/pacman.d/mirrorlist
 RUN sed -i 's/\[core\]//g' /etc/pacman.conf

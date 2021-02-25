@@ -1,6 +1,6 @@
 SET(DOCKERNAME nl-epc2-${ARCH_VERSION}-fetch-packages)
 SET(DOCKER_BUILD docker build --no-cache=true --build-arg PACKAGES_TAR=${ARCH_INSTALL_PACKAGES} --build-arg arch_version=${ARCH_VERSION} --build-arg packages=${SHARED_PACKAGES} -t ${DOCKERNAME} ${CMAKE_CURRENT_BINARY_DIR})
-SET(ARCH_INSTALL_PACKAGES packages_${ARCH_VERSION}_2.tar.gz)
+SET(ARCH_INSTALL_PACKAGES packages_${ARCH_VERSION}.tar.gz)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile.in ${CMAKE_CURRENT_BINARY_DIR}/Dockerfile COPYONLY)
 
