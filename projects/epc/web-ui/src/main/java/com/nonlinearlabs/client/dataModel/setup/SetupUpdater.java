@@ -53,7 +53,6 @@ public class SetupUpdater extends Updater {
 		m.put("TotalRAM", DeviceInformation.get().totalRam);
 		m.put("UsedRAM", DeviceInformation.get().usedRam);
 		m.put("SyncSplit", SetupModel.get().systemSettings.syncSplit);
-		m.put("ExternalMidi", SetupModel.get().systemSettings.externalMidi);
 		m.put("LocalControllers", SetupModel.get().systemSettings.localControllers);
 		m.put("LocalNotes", SetupModel.get().systemSettings.localNotes);
 		m.put("LocalProgramChanges", SetupModel.get().systemSettings.localProgramChanges);
