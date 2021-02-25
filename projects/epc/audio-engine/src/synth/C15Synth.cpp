@@ -24,6 +24,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternals(); }))
+    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this](auto msg) { queueExternalMidiOut(msg); } }
 {
   m_hwSourceValues.fill(0);
 
@@ -232,12 +233,7 @@ bool C15Synth::filterMidiInEvent(const MidiEvent& event) const
 
 void C15Synth::doMidi(const MidiEvent& event)
 {
-  if(filterMidiInEvent(event))
-  {
-    //[=](auto outgoingMidiMessage) { queueExternalMidiOut(outgoingMidiMessage);
-    m_dsp->onMidiMessage(event.raw[0], event.raw[1], event.raw[2]);
-    m_syncExternalsWaiter.notify_all();
-  }
+  m_inputEventStage.onMIDIMessage(event);
 }
 
 bool isValidTCDMessage(const MidiEvent& event)
@@ -268,12 +264,7 @@ bool C15Synth::filterTcdIn(const MidiEvent& event) const
 
 void C15Synth::doTcd(const MidiEvent& event)
 {
-  if(filterTcdIn(event))
-  {
-    m_dsp->onTcdMessage(event.raw[0], event.raw[1], event.raw[2],
-                        [=](auto outgoingMidiMessage) { queueExternalMidiOut(outgoingMidiMessage); });
-    m_syncExternalsWaiter.notify_all();
-  }
+  m_inputEventStage.onTCDMessage(event);
 }
 
 unsigned int C15Synth::getRenderedSamples()

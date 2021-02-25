@@ -81,6 +81,10 @@ class dsp_host_dual
 
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
+  void onHWChanged(const uint32_t id, double value);
+  void onKeyDown(const int note, double velocity, VoiceGroup part);
+  void onKeyUp(const int note, double velocity, VoiceGroup part);
+
   void onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
                     const MidiOut& out = getNullMidiOut());
 

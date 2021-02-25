@@ -1742,7 +1742,7 @@ void dsp_host_dual::hwModChain(HW_Src_Param* _src, const uint32_t _id, const flo
           // only rely on unclipped (always up-to-date)
           // NOTE: hopefully, this won't introduce accumulating floating point rounding errors !!!
           const float clipped = std::clamp(macro->m_unclipped, 0.0f, 1.0f);
-          
+
           if(macro->m_position != clipped)
           {
             macro->m_position = clipped;
@@ -2821,4 +2821,17 @@ void dsp_host_dual::debugLevels()
       "VoiceGroupLevel[II]:",
       m_params.get_local_target(0, static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Voice_Grp_Volume))
           ->m_scaled);
+}
+
+//TODO fill this with actual functionality
+void dsp_host_dual::onHWChanged(const uint32_t id, double value)
+{
+}
+
+void dsp_host_dual::onKeyDown(const int note, double velocity, VoiceGroup part)
+{
+}
+
+void dsp_host_dual::onKeyUp(const int note, double velocity, VoiceGroup part)
+{
 }
