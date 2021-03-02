@@ -119,8 +119,11 @@ void sendToExternalDevice(snd_rawmidi_t *outputHandle, const nltools::msg::Midi:
     return;
 
   if(auto res = snd_rawmidi_write(outputHandle, msg.rawBytes.data(), msg.numBytesUsed))
+  {
+    nltools::Log::error("Wrote message:", (int) msg.rawBytes[0], (int) msg.rawBytes[1], (int) msg.rawBytes[2]);
     if(size_t(res) != msg.numBytesUsed)
       nltools::Log::error("Could not write message into midi output device");
+  }
 
   snd_rawmidi_drain(outputHandle);
 }
@@ -183,9 +186,7 @@ int main(int args, char *argv[])
 
   if(outputHandle)
   {
-    receive<SimpleMessage>(endPoint, [=](const auto &msg) {
-      sendToExternalDevice(outputHandle, msg);
-    });
+    receive<SimpleMessage>(endPoint, [=](const auto &msg) { sendToExternalDevice(outputHandle, msg); });
   }
 
   pipe(cancelPipe);
