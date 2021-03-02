@@ -4,7 +4,7 @@
 #include "synth/c15-audio-engine/dsp_host_dual.h"
 #include "InputEventStage.h"
 
-InputEventStage::InputEventStage(dsp_host_dual *dspHost, MidiRuntimeOptions *options, InputEventStage::MIDIOut outCB)
+InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, InputEventStage::MIDIOut outCB)
     : m_dspHost { dspHost }
     , m_options { options }
     , m_midiOut { std::move(outCB) }

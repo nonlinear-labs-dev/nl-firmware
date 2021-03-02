@@ -61,7 +61,15 @@ static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
 
 class MidiRuntimeOptions;
 
-class dsp_host_dual
+class DSPInterface
+{
+ public:
+  virtual void onHWChanged(const uint32_t id, double value) = 0;
+  virtual void onKeyDown(const int note, double velocity, VoiceGroup part) = 0;
+  virtual void onKeyUp(const int note, double velocity, VoiceGroup part) = 0;
+};
+
+class dsp_host_dual : public DSPInterface
 {
  public:
   // public members
@@ -81,9 +89,9 @@ class dsp_host_dual
 
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
-  void onHWChanged(const uint32_t id, double value);
-  void onKeyDown(const int note, double velocity, VoiceGroup part);
-  void onKeyUp(const int note, double velocity, VoiceGroup part);
+  void onHWChanged(const uint32_t id, double value) override;
+  void onKeyDown(const int note, double velocity, VoiceGroup part) override;
+  void onKeyUp(const int note, double velocity, VoiceGroup part) override;
 
   void onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
                     const MidiOut& out = getNullMidiOut());
