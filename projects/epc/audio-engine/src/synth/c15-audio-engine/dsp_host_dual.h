@@ -64,9 +64,10 @@ class MidiRuntimeOptions;
 class DSPInterface
 {
  public:
-  virtual void onHWChanged(const uint32_t id, double value) = 0;
-  virtual void onKeyDown(const int note, double velocity, VoiceGroup part) = 0;
-  virtual void onKeyUp(const int note, double velocity, VoiceGroup part) = 0;
+  virtual void onHWChanged(const uint32_t id, float value) = 0;
+  virtual void onKeyDown(const int note, float velocity, VoiceGroup part) = 0;
+  virtual void onKeyUp(const int note, float velocity, VoiceGroup part) = 0;
+  virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
 };
 
 class dsp_host_dual : public DSPInterface
@@ -89,9 +90,10 @@ class dsp_host_dual : public DSPInterface
 
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
-  void onHWChanged(const uint32_t id, double value) override;
-  void onKeyDown(const int note, double velocity, VoiceGroup part) override;
-  void onKeyUp(const int note, double velocity, VoiceGroup part) override;
+  void onHWChanged(const uint32_t id, float value) override;
+  void onKeyDown(const int note, float velocity, VoiceGroup part) override;
+  void onKeyUp(const int note, float velocity, VoiceGroup part) override;
+  C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
 
   void onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
                     const MidiOut& out = getNullMidiOut());

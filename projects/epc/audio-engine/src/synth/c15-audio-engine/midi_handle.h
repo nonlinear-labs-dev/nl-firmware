@@ -173,8 +173,9 @@ namespace Midi
 
     static bool isValidNoteOnVelocity(const uint16_t& _midiValue)
     {
-      return !(_midiValue < BottomOffset);
+      return _midiValue >= BottomOffset;
     }
+
     static float decodeUnipolarMidiValue(const uint16_t& _midiValue)
     {
       if(isValidNoteOnVelocity(_midiValue))

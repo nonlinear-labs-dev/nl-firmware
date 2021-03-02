@@ -5,14 +5,18 @@
 class MockDSPHost : public DSPInterface
 {
  public:
-  void onHWChanged(const uint32_t id, double value) override
+  void onHWChanged(const uint32_t id, float value) override
   {
   }
-  void onKeyDown(const int note, double velocity, VoiceGroup part) override
+  void onKeyDown(const int note, float velocity, VoiceGroup part) override
   {
   }
-  void onKeyUp(const int note, double velocity, VoiceGroup part) override
+  void onKeyUp(const int note, float velocity, VoiceGroup part) override
   {
+  }
+  C15::Properties::HW_Return_Behavior getBehaviour(int id) override
+  {
+    return C15::Properties::HW_Return_Behavior::Zero;
   }
 };
 
@@ -26,7 +30,7 @@ class PassOnKeyDownHost : public MockDSPHost
   {
   }
 
-  void onKeyDown(const int note, double velocity, VoiceGroup part) override
+  void onKeyDown(const int note, float velocity, VoiceGroup part) override
   {
     CHECK(m_note == note);
     CHECK(m_vel == velocity);
@@ -56,7 +60,7 @@ class PassOnKeyUpHost : public MockDSPHost
   {
   }
 
-  void onKeyUp(const int note, double velocity, VoiceGroup part) override
+  void onKeyUp(const int note, float velocity, VoiceGroup part) override
   {
     CHECK(m_note == note);
     CHECK(m_vel == velocity);
@@ -91,7 +95,7 @@ MidiRuntimeOptions createMidiSettings()
 
 TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 {
-  PassOnKeyDownHost dsp { 17, 64, VoiceGroup::I };
+  PassOnKeyDownHost dsp { 17, 0.5, VoiceGroup::I };
 
   auto settings = createMidiSettings();
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
@@ -103,7 +107,7 @@ TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 
 TEST_CASE("Input Event Stage MIDI In KeyUp", "[MIDI]")
 {
-  PassOnKeyUpHost dsp { 17, 64, VoiceGroup::I };
+  PassOnKeyUpHost dsp { 17, 0.5, VoiceGroup::I };
 
   auto settings = createMidiSettings();
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
