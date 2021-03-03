@@ -260,7 +260,7 @@ main() {
     if [ "$1" = "reboot" ]; then
         pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_AUT" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_AUT"
         sleep 2
-        executeAsRoot "reboot"
+        executeAsRoot "systemctl --force --force reboot"
         reboot
     fi
 

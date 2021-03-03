@@ -46,7 +46,7 @@ update(){
 
     for RETRYCOUNTER in {1..5}; do
         echo "restarting epc (try $RETRYCOUNTER)"
-        executeAsRoot "reboot"
+        executeAsRoot "systemctl --force --force reboot"
 
         if ! wait4playground; then
             report_and_quit "E45 ePC update: Reboot taking too long... timed out" "45"
