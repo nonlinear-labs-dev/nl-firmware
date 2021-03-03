@@ -158,22 +158,6 @@ body {
     left: -100px;
 }
 
-#left-border {
-    position: absolute;
-    left: 0;
-    width: 1px;
-    height: 100%;
-    background-color: black;
-}
-
-#right-border {
-    position: absolute;
-    right: 0;
-    width: 1px;
-    height: 100%;
-    background-color: black;
-}
-
 #selected-range-times {
     color: black;
     position: absolute;
@@ -187,7 +171,23 @@ body {
     flex-direction: column;
 }
 
-#left-handle {
+#one-border {
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background-color: black;
+}
+
+#other-border {
+    position: absolute;
+    right: 0;
+    width: 1px;
+    height: 100%;
+    background-color: black;
+}
+
+#one-handle, #other-handle {
     position: absolute;
     width: 1cm;
     height: 1cm;
@@ -198,13 +198,37 @@ body {
     pointer-events: all;
 }
 
-#right-handle {
+#scrollbar {
     position: absolute;
-    width: 1cm;
+    left: 0;
+    width: 100%;
     height: 1cm;
-    right: -0.5cm;
-    top: calc(50% - 0.5cm);
-    background-color: darkgray;
-    border: 1px solid black;
-    pointer-events: all;
+    bottom: 0;
+    background-color: red;
+    opacity: 0.5;
+}
+
+#scrollbar-handle {
+    position: absolute;
+    left: 40%;
+    width: 30%;
+    min-width: 3cm;
+    height: 100%;
+    background-color: green;
+}
+
+#scrollbar-handle-left {
+    position: absolute;
+    left: 0;
+    width: 1cm;
+    height: 100%;
+    background-color: pink;
+}
+
+#scrollbar-handle-right {
+    position: absolute;
+    right: 0cm;
+    width: 1cm;
+    height: 100%;
+    background-color: pink;
 }

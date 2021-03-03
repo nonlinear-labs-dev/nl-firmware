@@ -1,7 +1,6 @@
 const httpPort = ":8890";
 const wsPort = ":8889";
-//const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
-const hostName = "192.168.8.2";
+const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
 
 class TimingInfo {
     serverTime: number = 0;
@@ -13,6 +12,39 @@ class Bar {
     max: number = 0;
     recordTime: number = 0;
 }
+
+class MockUpdateStream {
+    public connect(display: UI): void {
+        console.log("connect");
+        this.ui = display;
+        this.bars.splice(0);
+
+        this.timingInfo.serverTime = this.time;
+        this.timingInfo.localTime = this.time;
+
+        this.addBars(10000);
+        setInterval(() => this.addBars(10), 200);
+    }
+
+    addBars(n: number) {
+        for (var i = 0; i < n; i++) {
+            var b = new Bar();
+            b.id = this.id++;
+            b.max = Math.max(Math.sin(this.id / 10) * Math.sin(this.id / 100) * Math.sin(this.id / 1000) * Math.sin(this.id / 10000) * 256);
+            b.recordTime = this.time;
+            this.time += 84770833;
+            this.bars.push(b);
+        }
+        this.ui?.update();
+    }
+
+    private id = 3;
+    private time = new Date().getTime() * 1000 * 1000;
+    private ui: UI | null = null;
+    public bars: Array<Bar> = new Array<Bar>();
+    public timingInfo: TimingInfo = new TimingInfo();
+}
+
 
 class UpdateStream {
     constructor() {
@@ -133,12 +165,43 @@ class UpdateStream {
     private updateTimer = -1;
 }
 
-enum Dragging {
-    noDrag,
-    dragPane,
-    dragLeftBorder,
-    dragRightBorder,
-    dragRange
+class Draggable {
+    constructor(id: string) {
+        this.element = document.getElementById(id)!;
+        this.element.onpointerdown = (e) => {
+            this.dragging = true;
+            this.element.setPointerCapture(e.pointerId);
+            e.stopPropagation();
+            e.preventDefault();
+            this.startDrag(e);
+        }
+
+        this.element.onpointerup = (e) => {
+            this.dragging = false;
+            this.element.releasePointerCapture(e.pointerId);
+            e.stopPropagation();
+            e.preventDefault();
+            this.stopDrag(e);
+        }
+
+        this.element.onpointermove = (e) => {
+            if (this.dragging) {
+                this.drag(e);
+                e.stopPropagation();
+            }
+        }
+    }
+
+    startDrag(e: PointerEvent): void { }
+    stopDrag(e: PointerEvent): void { }
+    drag(e: PointerEvent): void { }
+
+    getElement(): HTMLElement {
+        return this.element;
+    }
+
+    private element: HTMLElement;
+    private dragging = false;
 }
 
 function buildTime(serverTime: number, timingInfo: TimingInfo): string {
@@ -155,82 +218,88 @@ function fireAndForget(msg: Object) {
     };
 }
 
-class RangeBorderHandler {
-    constructor(id: string, cb: (x: number) => void) {
-        this.callback = cb;
-        this.element = document.getElementById(id)!;
-        this.element.onpointerdown = (e) => this.startDrag(e);
-        this.element.onpointerup = (e) => this.stopDrag(e);
-        this.element.onpointermove = (e) => this.drag(e);
+class RangeBorderHandler extends Draggable {
+    constructor(id: string, private startCB: () => void, private dragCB: (x: number) => void) {
+        super(id);
     }
 
-    private startDrag(e: PointerEvent) {
-        this.element.setPointerCapture(e.pointerId);
-        this.dragging = true;
-        e.stopPropagation();
+    startDrag(e: PointerEvent) {
+        this.startCB();
     }
 
-    private stopDrag(e: PointerEvent) {
-        this.dragging = false;
-        this.element.releasePointerCapture(e.pointerId);
-    }
+    drag(e: PointerEvent) {
+        var waveform = document.getElementById("waveform")!;
+        var walker = this.getElement();
+        var x = e.offsetX;
 
-    private drag(e: PointerEvent) {
-        if (this.dragging) {
-            var waveform = document.getElementById("waveform")!;
-            var walker = this.element;
-            var x = e.offsetX;
-
-            while (true) {
-                x += walker.offsetLeft;
-                walker = walker.parentElement!;
-                if (walker == waveform)
-                    break;
-            }
-
-            this.callback(x);
-            e.stopPropagation();
+        while (walker != waveform) {
+            x += walker.offsetLeft;
+            walker = walker.parentElement!;
         }
-    }
 
-    private element: HTMLElement;
-    private dragging = false;
-    private callback: (x: number) => void
+        this.dragCB(x);
+    }
 }
 
-class SelectedRange {
+class PlaybackRange {
+    constructor(private waveForm: Waveform) {
+    }
+
+    min(): number {
+        if (this.waveForm.bars.length == 0)
+            return 0;
+
+        return Math.max(Math.min(this.one, this.other), this.waveForm.bars[0].id);
+    }
+
+    max(): number {
+        if (this.waveForm.bars.length == 0)
+            return 0;
+
+        return Math.min(Math.max(this.one, this.other), this.waveForm.bars[this.waveForm.bars.length - 1].id);
+    }
+
+    public one = 0;
+    public other = 0;
+}
+
+class SelectedRange extends Draggable {
     constructor(private waveform: Waveform) {
+        super("range-selector");
+
+        this.playbackRange = new PlaybackRange(waveform);
+
         document.getElementById("toggle-playback")!.onpointerdown = (e) => this.togglePlayback(e);
         document.getElementById("download")!.onpointerdown = (e) => this.download(e);
 
-        var rangeSelector = document.getElementById("range-selector")!;
-        rangeSelector.onpointerdown = (e) => this.startDragRange(e);
-        rangeSelector.onpointerup = (e) => this.stopDragRange(e);
-        rangeSelector.onpointermove = (e) => this.dragRange(e);
-
-        this.leftHandle = new RangeBorderHandler("left-handle", (x) => {
-            this.playbackRange.begin = Math.round(this.pixToBar(x));
+        this.oneHandle = new RangeBorderHandler("one-handle", () => { }, (x) => {
+            this.playbackRange.one = Math.round(this.pixToBar(x));
             this.waveform.update();
         });
 
-        this.rightHandle = new RangeBorderHandler("right-handle", (x) => {
-            this.playbackRange.end = Math.round(this.pixToBar(x));
+        this.otherHandle = new RangeBorderHandler("other-handle", () => { }, (x) => {
+            this.playbackRange.other = Math.round(this.pixToBar(x));
             this.waveform.update();
         });
     }
 
     public update(firstBarId: number) {
         var c = document.getElementById("selected-range") as HTMLCanvasElement;
-        var left = (this.playbackRange.begin - firstBarId) / this.waveform.zoom;
-        var right = (this.playbackRange.end - firstBarId) / this.waveform.zoom;
+        var left = (this.playbackRange.min() - firstBarId) / this.waveform.zoom;
+        var right = (this.playbackRange.max() - firstBarId) / this.waveform.zoom;
         var width = right - left;
         c.style.left = left + "px";
         c.style.width = width + "px";
 
+        var onePos = (this.playbackRange.one < this.playbackRange.other) ? 0 : 100;
+        var otherPos = (this.playbackRange.one > this.playbackRange.other) ? 0 : 100;
+        document.getElementById("one-border")!.style.left = onePos + "%";
+        document.getElementById("other-border")!.style.left = otherPos + "%";
+
         var bars = this.waveform.bars;
         if (bars.length > 0) {
-            var fromIdx = this.playbackRange.begin - bars[0].id;
-            var toIdx = this.playbackRange.end - bars[0].id;
+            var fromIdx = this.playbackRange.min() - bars[0].id;
+            var toIdx = this.playbackRange.max() - bars[0].id;
 
             if (fromIdx >= 0 && fromIdx < bars.length && toIdx >= 0 && toIdx < bars.length) {
                 document.getElementById("selected-range-time-from")!.textContent = buildTime(
@@ -246,7 +315,7 @@ class SelectedRange {
         var pb = document.getElementById("toggle-playback")!;
 
         if (pb.classList.contains("paused"))
-            fireAndForget({ "start-playback": { begin: this.playbackRange.begin, end: this.playbackRange.end } });
+            fireAndForget({ "start-playback": { begin: this.playbackRange.min(), end: this.playbackRange.max() } });
         else
             fireAndForget({ "pause-playback": {} });
 
@@ -257,7 +326,7 @@ class SelectedRange {
     private download(e: Event) {
         e.stopPropagation();
         e.preventDefault();
-        var url = "http://" + hostName + httpPort + "/?begin=" + this.playbackRange.begin + "&end=" + this.playbackRange.end;
+        var url = "http://" + hostName + httpPort + "/?begin=" + this.playbackRange.min() + "&end=" + this.playbackRange.max();
         window.location.assign(url);
     }
 
@@ -271,64 +340,114 @@ class SelectedRange {
         return firstBarId + pix * this.waveform.zoom;
     }
 
-    private startDragRange(e: PointerEvent) {
-        document.getElementById("range-selector")!.setPointerCapture(e.pointerId);
-        this.dragging = true;
-        this.playbackRange.begin = Math.round(this.pixToBar(e.offsetX));
-        this.playbackRange.end = this.playbackRange.begin + 1;
+    startDrag(e: PointerEvent) {
+        this.playbackRange.one = this.playbackRange.other = Math.round(this.pixToBar(e.offsetX));
         this.sanitize();
-        e.stopPropagation();
         this.waveform.update();
     }
 
-    private stopDragRange(e: PointerEvent) {
-        this.dragging = false;
-        document.getElementById("range-selector")!.releasePointerCapture(e.pointerId);
-    }
 
-    private dragRange(e: PointerEvent) {
-        if (this.dragging) {
-            this.playbackRange.end = Math.round(this.pixToBar(e.offsetX));
-            this.sanitize();
-            e.stopPropagation();
-            this.waveform.update();
-        }
+    drag(e: PointerEvent) {
+        this.playbackRange.other = Math.round(this.pixToBar(e.offsetX));
+        this.sanitize();
+        this.waveform.update();
     }
 
     private sanitize() {
         if (this.waveform.bars.length > 0) {
-            this.playbackRange.begin = Math.min(this.playbackRange.begin, this.waveform.bars[this.waveform.bars.length - 1].id);
-            this.playbackRange.end = Math.min(this.playbackRange.end, this.waveform.bars[this.waveform.bars.length - 1].id);
-            this.playbackRange.begin = Math.max(this.playbackRange.begin, this.waveform.bars[0].id);
-            this.playbackRange.end = Math.max(this.playbackRange.end, this.waveform.bars[0].id);
+            this.playbackRange.one = Math.min(this.playbackRange.one, this.waveform.bars[this.waveform.bars.length - 1].id);
+            this.playbackRange.other = Math.min(this.playbackRange.other, this.waveform.bars[this.waveform.bars.length - 1].id);
+            this.playbackRange.one = Math.max(this.playbackRange.one, this.waveform.bars[0].id);
+            this.playbackRange.other = Math.max(this.playbackRange.other, this.waveform.bars[0].id);
         }
     }
 
-    private playbackRange = {
-        begin: 0, end: 0
-    }
-    private dragging = false;
-    private leftHandle: RangeBorderHandler;
-    private rightHandle: RangeBorderHandler;
+    private playbackRange: PlaybackRange;
+    private oneHandle: RangeBorderHandler;
+    private otherHandle: RangeBorderHandler;
 }
 
+class ScrollbarHandle extends Draggable {
+    constructor(id: string, private cb: (x: number) => void) {
+        super(id);
+    }
 
-class Waveform {
-    constructor(public bars: Array<any>, public timingInfo: TimingInfo) {
+    startDrag(e: PointerEvent) {
+        this.x = e.screenX;
+    }
+
+    drag(e: PointerEvent) {
+        this.cb(e.screenX - this.x);
+        this.x = e.screenX;
+    }
+
+    private x = 0;
+
+}
+
+class Scrollbar extends Draggable {
+    private leftHandle: ScrollbarHandle;
+    private rightHandle: ScrollbarHandle;
+
+    constructor(private waveform: Waveform) {
+        super("scrollbar-handle");
+
+        this.rightHandle = new ScrollbarHandle("scrollbar-handle-right", (x: number) => {
+            var first = this.waveform.getFirstVisibleBar();
+            var last = this.waveform.getLastVisibleBar();
+            var c = document.getElementById("bars") as HTMLCanvasElement;
+            var handle = document.getElementById("scrollbar-handle")!;
+            var w = Number.parseFloat(handle.style.width) / 100;
+            this.waveform.showBars(first, last + x * this.waveform.zoom / w);
+        });
+
+        this.leftHandle = new ScrollbarHandle("scrollbar-handle-left", (x: number) => {
+            var first = this.waveform.getFirstVisibleBar();
+            var last = this.waveform.getLastVisibleBar();
+            var c = document.getElementById("bars") as HTMLCanvasElement;
+            var handle = document.getElementById("scrollbar-handle")!;
+            var w = Number.parseFloat(handle.style.width) / 100;
+            this.waveform.showBars(first + x * this.waveform.zoom / w, last);
+        });
+
+    }
+
+    public update(firstBarId: number) {
+        var c = document.getElementById("bars") as HTMLCanvasElement;
+        var width = c.width;
+        var numBars = this.waveform.bars.length;
+        var barsToShow = numBars / this.waveform.zoom;
+        var e = document.getElementById("scrollbar")!;
+        e.style.visibility = (width > barsToShow) ? "hidden" : "visible";
+
+        var handle = document.getElementById("scrollbar-handle")!;
+        var handleWidth = 100 * width / barsToShow;
+        handle.style.width = handleWidth + "%";
+        handle.style.left = (100 * firstBarId / numBars) + "%";
+    }
+
+    startDrag(e: PointerEvent) {
+        this.x = e.screenX;
+    }
+
+    drag(e: PointerEvent) {
+        var handle = document.getElementById("scrollbar-handle")!;
+        var w = Number.parseFloat(handle.style.width) / 100;
+        this.waveform.scrollBy((this.x - e.screenX) / w);
+        this.x = e.screenX;
+    }
+
+    private x = 0;
+}
+
+class Waveform extends Draggable {
+    constructor(public bars: Array<Bar>, public timingInfo: TimingInfo) {
+        super("waveform");
         this.selectedRange = new SelectedRange(this);
+        this.scrollbar = new Scrollbar(this);
 
         var waveForm = document.getElementById("waveform")!;
-        waveForm.onpointerdown = (e) => this.startDrag(e);
-        waveForm.onpointerup = (e) => this.stopDrag(e);
-        waveForm.onpointermove = (e) => this.drag(e);
-
-        waveForm.ongotpointercapture = (e) => {
-            console.log("Got capture");
-        }
-
-        waveForm.onlostpointercapture = (e) => {
-            console.log("Lost capture");
-        }
+        waveForm.onwheel = (e) => this.wheel(e);
 
         document.getElementById("zoom-in")!.onclick = (e) => this.zoomIn();
         document.getElementById("zoom-out")!.onclick = (e) => this.zoomOut();
@@ -358,8 +477,6 @@ class Waveform {
 
         this.sanitize(c.width);
 
-        document.getElementById("current-zoom")!.textContent = "1/" + this.zoom;
-
         var lastId = this.lastBarIdToShow != -1 ? this.lastBarIdToShow : this.bars[this.bars.length - 1].id;
         var firstBarId = lastId - c.width * this.zoom;
         var idx = firstBarId - this.bars[0].id;
@@ -367,12 +484,15 @@ class Waveform {
         for (var i = 0; i < c.width; i++) {
             var m = 0;
 
-            for (var q = 0; q < this.zoom; q++) {
-                if (idx < this.bars.length && idx >= 0)
-                    m = Math.max(m, this.bars[idx].max);
+            var from = Math.round(idx);
+            var to = Math.round(idx + this.zoom);
 
-                idx++;
+            for (var q = from; q < to; q++) {
+                if (q < this.bars.length && q >= 0)
+                    m = Math.max(m, this.bars[q].max);
             }
+
+            idx += this.zoom;
 
             var m = center * m / 256;
             var top = center - m;
@@ -387,6 +507,7 @@ class Waveform {
         ctx.stroke();
         this.drawGrid(ctx, c.clientWidth, c.clientHeight, firstBarId - this.bars[0].id);
         this.selectedRange.update(firstBarId);
+        this.scrollbar.update(firstBarId);
 
         if (this.bars.length > 0) {
             var playPosIndicator = document.getElementById("play-pos") as HTMLElement;
@@ -419,11 +540,13 @@ class Waveform {
         var serverTime = this.bars[0].recordTime;
 
         for (var i = 0; i < width; i++) {
-            for (var z = 0; z < this.zoom; z++) {
-                idx++;
-                if (idx % barsPerTimeMarker == 0 && idx >= 0) {
-                    serverTime = idx < this.bars.length && idx >= 0 ? this.bars[idx].recordTime : serverTime + nsPerTimeMarker;
+            var from = Math.round(idx);
+            var to = Math.round(idx + this.zoom);
+            idx += this.zoom;
 
+            for (var z = from; z < to; z++) {
+                if (z % barsPerTimeMarker == 0 && z >= 0) {
+                    serverTime = z < this.bars.length && z >= 0 ? this.bars[z].recordTime : serverTime + nsPerTimeMarker;
                     ctx.moveTo(i, 0);
                     ctx.lineTo(i, height - fontHeight);
                     var str = buildTime(serverTime, this.timingInfo);
@@ -435,45 +558,118 @@ class Waveform {
         ctx.stroke();
     }
 
-    private startDrag(e: PointerEvent) {
-        document.getElementById("waveform")!.setPointerCapture(e.pointerId);
+    getFirstVisibleBar(): number {
+        if (this.bars.length == 0)
+            return -1;
+
+        var c = document.getElementById("bars") as HTMLCanvasElement;
+        return this.getLastVisibleBar() - c.clientWidth * this.zoom;
+    }
+
+    getLastVisibleBar(): number {
+        if (this.bars.length == 0)
+            return -1;
+        return this.lastBarIdToShow != -1 ? this.lastBarIdToShow : this.bars[this.bars.length - 1].id;
+    }
+
+    showBars(first: number, last: number) {
+        var c = document.getElementById("bars") as HTMLCanvasElement;
+        var numBars = last - first;
+        this.zoom = Math.max(1, numBars / c.width);
+        this.lastBarIdToShow = last;
+        this.update();
+    }
+
+    private wheel(e: WheelEvent) {
+        var oldZoom = this.zoom;
+        var newZoom = oldZoom + (e.deltaY < 0 ? 1 : -1);
+
+        var c = document.getElementById("bars") as HTMLDivElement;
+        var lastId = this.lastBarIdToShow != -1 ? this.lastBarIdToShow : this.bars[this.bars.length - 1].id;
+        var firstBarId = lastId - c.clientWidth * oldZoom;
+        var wheelOnBar = firstBarId + e.offsetX * oldZoom;
+        var b = wheelOnBar + newZoom * c.clientWidth - e.offsetX * newZoom;
+
+        this.lastBarIdToShow = b;
+        this.zoom = newZoom;
+        this.update();
+    }
+
+    startDrag(e: PointerEvent) {
         this.scrollX = e.screenX;
-        this.dragging = true;
-        e.preventDefault();
-        e.stopPropagation();
-    }
+        this.pointers.push(e);
 
-    private stopDrag(e: PointerEvent) {
-        this.dragging = false;
-        document.getElementById("waveform")!.releasePointerCapture(e.pointerId);
-    }
-
-    private drag(e: PointerEvent): boolean {
-        if (this.dragging) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            var diff = e.screenX - this.scrollX;
-            this.scrollX = e.screenX;
-
-            var lastId = this.bars[this.bars.length - 1].id;
-
-            if (this.lastBarIdToShow == -1) {
-                if (diff > 0) {
-                    this.lastBarIdToShow = lastId - diff * this.zoom;
-                }
-            }
-            else {
-                this.lastBarIdToShow = this.lastBarIdToShow - diff * this.zoom;
-            }
-
-            if (this.lastBarIdToShow > lastId - 5 * this.zoom)
-                this.lastBarIdToShow = -1; // auto scroll
-
-            this.update();
-            document.getElementById("waveform")!.setPointerCapture(e.pointerId);
+        if (this.pointers.length == 2) {
+            var xDiff = this.pointers[0].clientX - this.pointers[1].clientX;
+            this.barsPerPixelOnPinchStart = xDiff * this.zoom;
         }
-        return true;
+    }
+
+    stopDrag(e: PointerEvent) {
+        for (var i = 0; i < this.pointers.length; i++) {
+            if (this.pointers[i].pointerId == e.pointerId) {
+                this.pointers.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    drag(e: PointerEvent) {
+        for (var i = 0; i < this.pointers.length; i++) {
+            if (e.pointerId == this.pointers[i].pointerId) {
+                this.pointers[i] = e;
+                break;
+            }
+        }
+
+        if (this.pointers.length == 1)
+            this.doScroll(e);
+        else if (this.pointers.length == 2)
+            this.doPinch();
+    }
+
+    scrollBy(amount: number) {
+        var lastId = this.bars[this.bars.length - 1].id;
+
+        if (this.lastBarIdToShow == -1) {
+            if (amount > 0)
+                this.lastBarIdToShow = lastId - amount * this.zoom;
+        }
+        else {
+            this.lastBarIdToShow = this.lastBarIdToShow - amount * this.zoom;
+        }
+
+        if (this.lastBarIdToShow > lastId - 5 * this.zoom)
+            this.lastBarIdToShow = -1; // auto scroll
+
+        this.update();
+    }
+
+
+    private doScroll(e: PointerEvent) {
+        this.scrollBy(e.screenX - this.scrollX);
+        this.scrollX = Math.round(e.screenX);
+    }
+
+    private doPinch() {
+        var xDiff = this.pointers[0].clientX - this.pointers[1].clientX;
+        var X = this.pointers[0].clientX + xDiff / 2;
+
+        var oldZoom = this.zoom;
+        var newZoom = Math.max(1, this.barsPerPixelOnPinchStart / xDiff);
+
+        if (oldZoom != newZoom) {
+            var c = document.getElementById("bars") as HTMLDivElement;
+            var lastId = this.lastBarIdToShow != -1 ? this.lastBarIdToShow : this.bars[this.bars.length - 1].id;
+            var firstBarId = lastId - c.clientWidth * oldZoom;
+            var wheelOnBar = firstBarId + X * oldZoom;
+            var b = wheelOnBar + newZoom * c.clientWidth - X * newZoom;
+
+            this.lastBarIdToShow = b;
+            this.zoom = newZoom;
+        }
+        this.update();
+
     }
 
     setPlayPos(pos: number) {
@@ -493,7 +689,7 @@ class Waveform {
         this.update();
     }
 
-    private sanitize(width: any) {
+    private sanitize(width: number) {
         this.zoom = Math.max(1, this.zoom);
 
         var c = document.getElementById("bars") as HTMLCanvasElement;
@@ -514,14 +710,18 @@ class Waveform {
     public zoom = 1.0;
     public lastBarIdToShow = -1; // -1 = autoscroll
 
-    private dragging = false;
     private scrollX = -1;
     private selectedRange: SelectedRange;
     private playPos = -1;
+
+    private pointers = new Array<PointerEvent>();
+    private barsPerPixelOnPinchStart = 0;
+
+    private scrollbar: Scrollbar;
 }
 
 class UI {
-    constructor(bars: Array<any>, private timingInfo: TimingInfo) {
+    constructor(bars: Array<Bar>, private timingInfo: TimingInfo) {
         this.waveform = new Waveform(bars, timingInfo);
         document.getElementById("toggle-recording")!.onclick = (e) => this.toggleRecording();
         document.getElementById("reset")!.onclick = (e) => this.reset();
@@ -586,14 +786,13 @@ class UI {
         fireAndForget({ "toggle-recording": {} });
     }
 
-    private dragging = Dragging.noDrag;
     private updateStream: UpdateStream | null = null;
     private waveform: Waveform;
 }
 
-
 window.onload = function () {
-    var updateStream = new UpdateStream();
+    var mock = location.search.includes("mock-audio-data");
+    var updateStream = mock ? new MockUpdateStream() : new UpdateStream();
     var display = new UI(updateStream.bars, updateStream.timingInfo);
     updateStream.connect(display);
 }
