@@ -83,8 +83,8 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
                 nltools::Log::error("Read:", (int) msg.rawBytes[0], (int) msg.rawBytes[1], (int) msg.rawBytes[2]);
                 send(EndPoint::ExternalMidiOverIPClient, msg);
               }
-              break;
             }
+            break;
           }
         }
         else if(readResult == -19)
