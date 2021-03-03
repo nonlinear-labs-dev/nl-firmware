@@ -1,4 +1,5 @@
 #include <Application.h>
+#include <Application.h>
 #include <device-info/DateTimeInfo.h>
 #include <device-info/DeviceInformation.h>
 #include <device-info/SoftwareVersion.h>
@@ -787,12 +788,12 @@ namespace NavTree
         : InnerNode(parent, "Receive")
     {
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Channel"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Split Channel (WIP)"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "enable PC"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "enable Notes"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveControllersSetting>(this, "enable Controllers"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveVelocityCurveSetting>(this, "Vel. Curve (WIP)"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveAftertouchCurveSetting>(this, "AT Curve (WIP)"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Split Channel (Part II)"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "Enable Program Change"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "Enable Notes"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveControllersSetting>(this, "Enable Hardware Sources"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveVelocityCurveSetting>(this, "Velocity Curve"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveAftertouchCurveSetting>(this, "Aftertouch Curve"));
     }
   };
 
@@ -802,10 +803,10 @@ namespace NavTree
         : InnerNode(parent, "Send")
     {
       children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Channel"));
-      children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Split Channel (WIP)"));
-      children.emplace_back(new EnumSettingItem<MidiSendProgramChangesSetting>(this, "enable PC"));
-      children.emplace_back(new EnumSettingItem<MidiSendNotesSetting>(this, "enable Notes"));
-      children.emplace_back(new EnumSettingItem<MidiSendControllersSetting>(this, "enable Controllers"));
+      children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Split Channel (Part II)"));
+      children.emplace_back(new EnumSettingItem<MidiSendProgramChangesSetting>(this, "Enable Program Change"));
+      children.emplace_back(new EnumSettingItem<MidiSendNotesSetting>(this, "Enable Notes"));
+      children.emplace_back(new EnumSettingItem<MidiSendControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 
@@ -814,16 +815,16 @@ namespace NavTree
     MidiLocalSettings(InnerNode *parent)
         : InnerNode(parent, "Local")
     {
-      children.emplace_back(new EnumSettingItem<LocalProgramChangesSetting>(this, "enable PC (WIP)"));
-      children.emplace_back(new EnumSettingItem<LocalNotesSetting>(this, "enable Notes"));
-      children.emplace_back(new EnumSettingItem<LocalControllersSetting>(this, "enable Controllers"));
+      children.emplace_back(new EnumSettingItem<LocalProgramChangesSetting>(this, "Enable Program Change"));
+      children.emplace_back(new EnumSettingItem<LocalNotesSetting>(this, "Enable Notes"));
+      children.emplace_back(new EnumSettingItem<LocalControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
-        : InnerNode(parent, "Midi")
+        : InnerNode(parent, "MIDI Settings")
     {
       children.emplace_back(new MidiReceiveSettings(this));
       children.emplace_back(new MidiSendSettings(this));

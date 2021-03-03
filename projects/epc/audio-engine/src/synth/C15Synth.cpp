@@ -100,6 +100,11 @@ C15Synth::~C15Synth()
   m_syncExternalsTask.wait();
 }
 
+dsp_host_dual* C15Synth::getDsp() const
+{
+  return m_dsp.get();
+}
+
 void C15Synth::syncExternals()
 {
   static_assert(std::tuple_size_v<dsp_host_dual::HWSourceValues> == std::tuple_size_v<decltype(m_hwSourceValues)>,
@@ -173,8 +178,9 @@ bool C15Synth::filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) cons
   const auto isControlChangeEvent = matchPattern(statusByte, MIDI_CONTROLCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
   const auto isPitchbendEvent = matchPattern(statusByte, MIDI_PITCHBEND_PATTERN, MIDI_EVENT_TYPE_MASK);
   const auto isProgramChangeEvent = matchPattern(statusByte, MIDI_PROGRAMCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
+  const auto sendChannelIsNone = m_midiOptions.getSendChannel() == -1;
 
-  if(isNoteEvent)
+  if(isNoteEvent && !sendChannelIsNone)
     return m_midiOptions.shouldSendNotes();
 
   if(isControlChangeEvent || isAftertouchEvent || isPitchbendEvent)
@@ -246,7 +252,7 @@ bool C15Synth::filterTcdIn(const MidiEvent& event) const
     const auto typeId = (event.raw[0] & TCD_TYPE_MASK);
     const auto isNoteEvent = typeId >= 13 && typeId <= 15;
     const auto isControlEvent = typeId >= 0 && typeId <= 11;
-    
+
     if(isNoteEvent)
     {
       return m_midiOptions.shouldReceiveLocalNotes();

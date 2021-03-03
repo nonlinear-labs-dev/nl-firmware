@@ -133,11 +133,6 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().storeAsInit();
 	}
 
-	public void setExternalMidi(boolean midiEnable) {
-		SetupModel.get().systemSettings.externalMidi.setValue(midiEnable);
-		NonMaps.theMaps.getServerProxy().setSetting("ExternalMidi", Boolean.toString(midiEnable));
-	}
-
 	public void setReceiveMidiChannel(MidiReceiveChannel midiReceiveChannel) {
 		SetupModel.get().systemSettings.receiveChannel.setValue(midiReceiveChannel);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveChannel", midiReceiveChannel.name());

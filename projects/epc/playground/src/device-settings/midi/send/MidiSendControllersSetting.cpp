@@ -1,6 +1,6 @@
 #include "MidiSendControllersSetting.h"
 
 MidiSendControllersSetting::MidiSendControllersSetting(UpdateDocumentContributor& s)
-    : BooleanSetting(s, false)
+    : BooleanSetting(s, true)
 {
 }

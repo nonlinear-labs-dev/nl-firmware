@@ -20,7 +20,6 @@
 #include <tools/TimeTools.h>
 #include <nltools/GenericScopeGuard.h>
 #include <device-settings/Settings.h>
-#include <device-settings/ExternalMidiEnabledSetting.h>
 
 static size_t s_lastSelectedButton = 0;
 
@@ -79,17 +78,14 @@ void BankEditButtonMenu::rebuildFullMenu()
 
   addButton("Delete", std::bind(&BankEditButtonMenu::deleteBank, this));
 
-  if(Application::get().getSettings()->getSetting<ExternalMidiEnabledSetting>()->get())
+  if(Application::get().getPresetManager()->findMidiSelectedBank()
+     != Application::get().getPresetManager()->getSelectedBank())
   {
-    if(Application::get().getPresetManager()->findMidiSelectedBank()
-       != Application::get().getPresetManager()->getSelectedBank())
-    {
-      addButton("Rec. Midi PC", std::bind(&BankEditButtonMenu::selectMidi, this));
-    }
-    else
-    {
-      addButton("Rem. Midi PC", std::bind(&BankEditButtonMenu::removeMidi, this));
-    }
+    addButton("MIDI PC: On", std::bind(&BankEditButtonMenu::selectMidi, this));
+  }
+  else
+  {
+    addButton("MIDI PC: Off", std::bind(&BankEditButtonMenu::removeMidi, this));
   }
 
   addButton("Move Left", std::bind(&BankEditButtonMenu::moveLeft, this));
