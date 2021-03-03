@@ -23,6 +23,11 @@ class MockUpdateStream {
         this.timingInfo.localTime = this.time;
 
         this.addBars(10000);
+
+        this.ui!.updateFirstAndLastFrame(this.bars[0].recordTime, this.bars[this.bars.length - 1].recordTime);
+        this.ui!.updateMemoryUsage(1234567, 500 * 1024 * 1024);
+        this.ui!.updateTransportStates(false, true, this.bars[this.bars.length / 2].recordTime);
+
         setInterval(() => this.addBars(10), 200);
     }
 
@@ -463,7 +468,7 @@ class Waveform extends Draggable {
         var center = c.height / 2;
 
         ctx.clearRect(0, 0, c.width, c.height);
-        ctx.strokeStyle = "#FFFFFF";
+        ctx.strokeStyle = window.getComputedStyle(document.querySelector('#bars')!).color;
         ctx.lineWidth = 1;
 
         // middle line

@@ -30,6 +30,9 @@ class MockUpdateStream {
         this.timingInfo.serverTime = this.time;
         this.timingInfo.localTime = this.time;
         this.addBars(10000);
+        this.ui.updateFirstAndLastFrame(this.bars[0].recordTime, this.bars[this.bars.length - 1].recordTime);
+        this.ui.updateMemoryUsage(1234567, 500 * 1024 * 1024);
+        this.ui.updateTransportStates(false, true, this.bars[this.bars.length / 2].recordTime);
         setInterval(() => this.addBars(10), 200);
     }
     addBars(n) {
@@ -383,7 +386,7 @@ class Waveform extends Draggable {
         c.height = c.clientHeight;
         var center = c.height / 2;
         ctx.clearRect(0, 0, c.width, c.height);
-        ctx.strokeStyle = "#FFFFFF";
+        ctx.strokeStyle = window.getComputedStyle(document.querySelector('#bars')).color;
         ctx.lineWidth = 1;
         // middle line
         ctx.beginPath();
@@ -471,7 +474,7 @@ class Waveform extends Draggable {
     showBars(first, last) {
         var c = document.getElementById("bars");
         var numBars = last - first;
-        this.zoom = numBars / c.width;
+        this.zoom = Math.max(1, numBars / c.width);
         this.lastBarIdToShow = last;
         this.update();
     }
