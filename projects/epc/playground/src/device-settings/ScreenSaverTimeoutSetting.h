@@ -2,6 +2,8 @@
 #include <nltools/threading/Expiration.h>
 #include "Setting.h"
 
+class Layout;
+
 class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
 {
  public:
@@ -25,4 +27,6 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   size_t selectedIndex;
   std::chrono::minutes m_timeout;
   const std::array<int, 6> s_logTimeOuts = { 0, 1, 5, 20, 60, 180 };
+
+  void onLayoutInstalled(Layout* l);
 };

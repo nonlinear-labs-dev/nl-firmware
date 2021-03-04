@@ -44,4 +44,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   MacroControlAssignmentStateMachine m_macroControlAssignmentStateMachine;
 
   std::shared_ptr<UsageMode> m_stashedUsageMode = nullptr;
+  
+  void initModulateableParameterLayout(Layout *l);
+  sigc::connection m_signalInitializeInstalledLayoutOnce;
 };
