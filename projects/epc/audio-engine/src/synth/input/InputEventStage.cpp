@@ -75,20 +75,20 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
-        if(m_options->shouldReceiveNotes())
+        if(m_options->shouldReceiveNotes() && decoder->getChannel() == m_options->getReceiveChannel())
           m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
-
         break;
+
       case DecoderEventType::KeyUp:
-        if(m_options->shouldReceiveNotes())
+        if(m_options->shouldReceiveNotes() && decoder->getChannel() == m_options->getReceiveChannel())
           m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
-
         break;
+
       case DecoderEventType::HardwareChange:
-        if(m_options->shouldReceiveControllers())
+        if(m_options->shouldReceiveControllers() && decoder->getChannel() == m_options->getReceiveChannel())
           m_dspHost->onHWChanged(decoder->getKeyOrControl(), decoder->getValue());
-
         break;
+        
       case DecoderEventType::UNKNOWN:
         nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
     }

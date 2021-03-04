@@ -14,6 +14,7 @@ class MIDIDecoder
   [[nodiscard]] DecoderEventType getEventType() const;
   [[nodiscard]] int getKeyOrControl() const;
   [[nodiscard]] float getValue() const;
+  [[nodiscard]] int getChannel() const;
 
  private:
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
@@ -26,6 +27,8 @@ class MIDIDecoder
 
   int keyOrControl = -1;
   float value = 0;  // value or velocity
+  int m_midiChannel = -1;
+
   DecoderEventType m_type = DecoderEventType::UNKNOWN;
   DSPInterface* m_dsp;
 

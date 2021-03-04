@@ -30,7 +30,8 @@ enum class MIDIEventTypes : int
 
 bool MIDIDecoder::decode(const MidiEvent& event)
 {
-  const uint32_t type = (event.raw[0] & 127) >> 4;
+  const auto status = event.raw[0];
+  const uint32_t type = (status & 127) >> 4;
   const auto _data0 = event.raw[1];
   const auto _data1 = event.raw[2];
 
@@ -41,6 +42,7 @@ bool MIDIDecoder::decode(const MidiEvent& event)
       const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
       value = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
       keyOrControl = _data0;
+      m_midiChannel = Midi::Channel::statusToChannel(status);
       m_type = DecoderEventType::KeyUp;
     }
     break;
@@ -49,6 +51,7 @@ bool MIDIDecoder::decode(const MidiEvent& event)
       const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
       value = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
       keyOrControl = _data0;
+      m_midiChannel = Midi::Channel::statusToChannel(status);
       if(CC_Range_Vel::isValidNoteOnVelocity(fullResVel))
         m_type = DecoderEventType::KeyDown;
       else
@@ -124,6 +127,7 @@ bool MIDIDecoder::decode(const MidiEvent& event)
       m_hwSourcesMidiLSB[5] = 0;
       keyOrControl = 5;
       value = CC_Range_7_Bit::decodeUnipolarMidiValue(_data0);
+      m_midiChannel = Midi::Channel::statusToChannel(status);
       m_type = DecoderEventType::HardwareChange;
       break;
 
@@ -131,6 +135,7 @@ bool MIDIDecoder::decode(const MidiEvent& event)
       m_hwSourcesMidiLSB[4] = _data0 & 0x7F;
       keyOrControl = 4;
       value = CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_hwSourcesMidiLSB[4], 0));
+      m_midiChannel = Midi::Channel::statusToChannel(status);
       m_type = DecoderEventType::HardwareChange;
       break;
 
@@ -173,4 +178,9 @@ template <typename Range> void MIDIDecoder::processUnipolarMidiController(const 
 {
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
   value = Range::decodeUnipolarMidiValue(midiVal);
+}
+
+int MIDIDecoder::getChannel() const
+{
+  return m_midiChannel;
 }

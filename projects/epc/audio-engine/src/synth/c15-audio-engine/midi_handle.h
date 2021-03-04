@@ -6,6 +6,14 @@
 namespace Midi
 {
 
+  namespace Channel
+  {
+    int statusToChannel(uint8_t status)
+    {
+      return status & 0b00001111;
+    }
+  }
+
   namespace MSB
   {
     // encode HW source number and MSB CC
