@@ -2,9 +2,7 @@
 Description=Nonlinear-Labs Midi Bridge
 
 [Service]
-ExecStartPre=/usr/bin/bash -c "/usr/bin/systemctl set-environment I_MIDI_DEVICE=$(amidi -l | grep -e '^I ' -e '^IO ' | head -n 1 | grep -o 'hw:[0-9,]*')"
-ExecStartPre=/usr/bin/bash -c "/usr/bin/systemctl set-environment O_MIDI_DEVICE=$(amidi -l | grep -e '^O ' -e '^IO ' | head -n 1 | grep -o 'hw:[0-9,]*')"
-ExecStart=@C15_INSTALL_PATH@/midi-over-ip/midi-over-ip -i ${I_MIDI_DEVICE} -o ${O_MIDI_DEVICE} -a 192.168.10.10
+ExecStart=@C15_INSTALL_PATH@/midi-over-ip/midi-over-ip -a 192.168.10.10
 
 [Install]
 WantedBy=multi-user.target
