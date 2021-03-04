@@ -62,16 +62,12 @@ PanelUnit::PanelUnit()
       }
       else
       {
-        useCase.selectModSourceAndSelectTargetParameter(mc);
         auto hwui = Application::get().getHWUI();
         auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
-        boled.onLayoutInstalledDoOnce([&](Layout *l) {
-          if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(l))
-          {
-            modParamLayout->installMcAmountScreen();
-            m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
-          }
-        });
+        m_signalInitializeInstalledLayoutOnce
+            = boled.onLayoutInstalled(sigc::mem_fun(this, &PanelUnit::initModulateableParameterLayout));
+
+        useCase.selectModSourceAndSelectTargetParameter(mc);
       }
     }
     return true;
@@ -213,4 +209,14 @@ bool PanelUnit::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, boo
 MacroControlAssignmentStateMachine &PanelUnit::getMacroControlAssignmentStateMachine()
 {
   return m_macroControlAssignmentStateMachine;
+}
+
+void PanelUnit::initModulateableParameterLayout(Layout *l)
+{
+  if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(l))
+  {
+    modParamLayout->installMcAmountScreen();
+    m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
+  }
+  m_signalInitializeInstalledLayoutOnce.disconnect();
 }

@@ -27,8 +27,7 @@ class OLEDProxy : public Uncopyable
 
   virtual void reset(tLayoutPtr layout);
 
-  void onLayoutInstalled(const sigc::slot<void, Layout *> &slot);
-  void onLayoutInstalledDoOnce(std::function<void(Layout *)> cb);
+  sigc::connection onLayoutInstalled(const sigc::slot<void, Layout *> &slot);
 
   void setOverlay(Layout *layout);
   void setOverlay(tLayoutPtr layout);
@@ -44,7 +43,6 @@ class OLEDProxy : public Uncopyable
 
  private:
   sigc::signal<void, Layout *> m_sigLayoutInstalled;
-  std::function<void(Layout *)> m_onLayoutInstalledOnce;
 
   tLayoutPtr m_layout;
   tLayoutPtr m_overlay;

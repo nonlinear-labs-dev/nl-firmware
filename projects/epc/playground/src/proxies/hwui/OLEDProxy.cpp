@@ -64,12 +64,6 @@ void OLEDProxy::reset(tLayoutPtr layout)
   if(!layout->isInitialized())
     layout->init();
 
-  if(m_onLayoutInstalledOnce)
-  {
-    m_onLayoutInstalledOnce(layout.get());
-    m_onLayoutInstalledOnce = nullptr;
-  }
-  
   m_sigLayoutInstalled.emit(layout.get());
 
   DebugLevel::info(G_STRLOC, typeid(layout.get()).name());
@@ -124,18 +118,7 @@ void OLEDProxy::clear()
   fb.fillRect(Rect(0, 0, m_posInFrameBuffer.getWidth(), m_posInFrameBuffer.getHeight()));
 }
 
-void OLEDProxy::onLayoutInstalled(const sigc::slot<void, Layout *> &slot)
+sigc::connection OLEDProxy::onLayoutInstalled(const sigc::slot<void, Layout *> &slot)
 {
-  m_sigLayoutInstalled.connect(slot);
-}
-
-void OLEDProxy::onLayoutInstalledDoOnce(std::function<void(Layout *)> cb)
-{
-  if(m_onLayoutInstalledOnce != nullptr)
-  {
-    nltools::Log::warning("removing non called onLayoutInstalledOnce Callback!", __LINE__, __PRETTY_FUNCTION__,
-                          __FILE__);
-  }
-
-  m_onLayoutInstalledOnce = std::move(cb);
+  return m_sigLayoutInstalled.connect(slot);
 }
