@@ -68,12 +68,16 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
 
       while(!quitApp)
       {
+        nltools::Log::error("before snd_rawmidi_read");
         auto readResult = snd_rawmidi_read(inputHandle, &byte, 1);
-
+        nltools::Log::error("after snd_rawmidi_read result:", readResult);
+        
         if(readResult == 1)
         {
+          nltools::Log::error("before snd_midi_event_encode_byte");
           if(snd_midi_event_encode_byte(encoder, byte, &event) == 1)
           {
+            nltools::Log::error("after successful snd_midi_event_encode_byte");
             if(event.type < SND_SEQ_EVENT_SONGPOS)
             {
               if(enableMidi)
@@ -83,6 +87,10 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
                 nltools::Log::error("Read:", (int) msg.rawBytes[0], (int) msg.rawBytes[1], (int) msg.rawBytes[2]);
                 send(EndPoint::ExternalMidiOverIPClient, msg);
               }
+            }
+            else
+            {
+              nltools::Log::error("after failed snd_midi_event_encode_byte");
             }
             break;
           }
