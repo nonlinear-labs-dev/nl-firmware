@@ -435,8 +435,10 @@ void EditBuffer::undoableLoadSelectedPreset(UNDO::Transaction *transaction, Voic
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
 {
+  auto hwui = Application::get().getHWUI();
+  auto parameterFocusLock = hwui->getParameterFocusLockGuard();
+  
   PerformanceTimer timer(__PRETTY_FUNCTION__);
-
   SendEditBufferScopeGuard scope(transaction, sendToAudioEngine);
 
   const auto oldType = getType();
