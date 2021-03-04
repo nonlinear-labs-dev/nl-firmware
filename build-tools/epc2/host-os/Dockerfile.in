@@ -15,6 +15,6 @@ RUN echo "Server=file:///extracted-packages" >> /etc/pacman.conf
 
 RUN pacman --noconfirm -Syyuu
 RUN pacman --noconfirm -Syy
-RUN pacman --noconfirm -S ${packages} arch-install-scripts dosfstools cmake make pkgconf gcc git wget unzip jdk11-openjdk fuse-overlayfs fuse3 pacman-contrib
+RUN pacman --noconfirm -S ${packages} arch-install-scripts dosfstools cmake make pkgconf gcc git wget unzip jdk11-openjdk fuse-overlayfs fuse3 pacman-contrib typescript
 
 

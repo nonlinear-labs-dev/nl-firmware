@@ -91,7 +91,7 @@ void NetworkServer::onChunkWritten(SoupMessage *msg, NetworkServer *pThis)
   {
     if(a.msg == msg)
     {
-      auto append = [&](auto &h) {
+      auto append = [&](auto &h, auto) {
         soup_message_body_append(msg->response_body, SOUP_MEMORY_COPY, h.buffer.data(), h.buffer.size());
       };
 

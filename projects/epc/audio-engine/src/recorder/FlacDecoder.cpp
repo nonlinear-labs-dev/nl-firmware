@@ -37,7 +37,7 @@ FLAC__StreamDecoderReadStatus FlacDecoder::readCB(const FLAC__StreamDecoder *dec
 
   if(pThis->m_readScratch.empty())
   {
-    pThis->m_streamOfFrames->next([&](const auto &frame) {
+    pThis->m_streamOfFrames->next([&](const auto &frame, auto) {
       pThis->m_readScratch.insert(pThis->m_readScratch.end(), frame.buffer.begin(), frame.buffer.end());
       std::get<1>(pThis->m_info) = frame.id;
     });

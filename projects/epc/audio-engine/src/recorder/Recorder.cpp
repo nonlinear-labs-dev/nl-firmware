@@ -86,10 +86,38 @@ nlohmann::json Recorder::generateInfo() const
 
 nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
 {
+  constexpr std::chrono::nanoseconds frameLen(std::nano::den * FlacEncoder::flacFrameSize / 48000);
+
   auto ret = nlohmann::json::array();
   auto stream = m_storage->startStream(begin, end);
 
-  while(stream->next([&](const auto &f) { ret.push_back(f.generateInfo()); }))
+  constexpr auto invalidTime = std::chrono::system_clock::time_point::min();
+
+  std::chrono::system_clock::time_point recordTimeOfLastFrame = invalidTime;
+  uint8_t maxOfLastFrame = 0;
+
+  auto cb = [&](const auto &f, auto isLast) {
+    bool skipFrame = false;
+
+    if(!isLast && recordTimeOfLastFrame != invalidTime)
+    {
+      if(f.max == maxOfLastFrame)
+      {
+        auto expectedTS = recordTimeOfLastFrame + frameLen;
+        auto diff = std::chrono::duration_cast<std::chrono::nanoseconds>(expectedTS - f.recordTime);
+        auto oneMS = 1000 * 1000;
+        skipFrame = std::abs(diff.count()) < oneMS;
+      }
+    }
+
+    if(!skipFrame)
+      ret.push_back(f.generateInfo());
+
+    recordTimeOfLastFrame = f.recordTime;
+    maxOfLastFrame = f.max;
+  };
+
+  while(stream->next(cb))
     ;
 
   return ret;

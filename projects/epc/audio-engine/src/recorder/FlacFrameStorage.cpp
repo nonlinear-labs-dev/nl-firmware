@@ -123,14 +123,15 @@ bool FlacFrameStorage::Stream::eos() const
   return storage->m_frames.end() == it || it == end;
 }
 
-bool FlacFrameStorage::Stream::next(std::function<void(const FlacEncoder::Frame &)> cb)
+bool FlacFrameStorage::Stream::next(std::function<void(const FlacEncoder::Frame &, bool last)> cb)
 {
   std::unique_lock<std::mutex> l(storage->m_mutex);
 
   if(it == end)
     return false;
 
-  cb(*(it++)->get());
+  auto frame = *(it++)->get();
+  cb(frame, it == end);
   return true;
 }
 

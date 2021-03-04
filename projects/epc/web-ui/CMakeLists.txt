@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(NonMaps)
 
+add_subdirectory(recorder)
+
 set(NONMAPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(OBJDIR ${CMAKE_CURRENT_BINARY_DIR}/obj)
 set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/compilation-mappings.txt)
@@ -32,5 +34,4 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war DESTINATION ${C15_INSTALL_PATH
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
 install(DIRECTORY ${NONMAPS_ROOT}/src/main/webapp/ DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
 install(DIRECTORY MCView DESTINATION ${C15_INSTALL_PATH}/NonMaps)
-install(DIRECTORY recorder DESTINATION ${C15_INSTALL_PATH}/NonMaps)
 install(FILES ${OBJDIR}/nonmaps-version.txt DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
