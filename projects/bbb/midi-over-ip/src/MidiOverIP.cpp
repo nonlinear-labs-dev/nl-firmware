@@ -37,6 +37,8 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
     snd_midi_event_new(128, &decoder);
     snd_midi_event_no_status(decoder, 1);
 
+    snd_rawmidi_status_t *status = nullptr;
+
     int numPollFDs = snd_rawmidi_poll_descriptors_count(inputHandle);
 
     pollfd pollFileDescriptors[numPollFDs + 1];
@@ -69,9 +71,12 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
       while(!quitApp)
       {
         nltools::Log::error("before snd_rawmidi_read");
+        snd_rawmidi_status(inputHandle, status);
+        auto avail = snd_rawmidi_status_get_avail(status);
+        nltools::Log::error("available Bytes:", avail);
         auto readResult = snd_rawmidi_read(inputHandle, &byte, 1);
         nltools::Log::error("after snd_rawmidi_read result:", readResult);
-        
+
         if(readResult == 1)
         {
           nltools::Log::error("before snd_midi_event_encode_byte");
