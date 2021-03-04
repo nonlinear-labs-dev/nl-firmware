@@ -38,6 +38,7 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
     snd_midi_event_no_status(decoder, 1);
 
     snd_rawmidi_status_t *status = nullptr;
+    snd_rawmidi_status_malloc(&status);
 
     int numPollFDs = snd_rawmidi_poll_descriptors_count(inputHandle);
 
@@ -81,7 +82,7 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
         {
           nltools::Log::error("error getting status:", snd_strerror(statusRet));
         }
-        
+
         auto readResult = snd_rawmidi_read(inputHandle, &byte, 1);
         nltools::Log::error("after snd_rawmidi_read result:", readResult);
 
@@ -115,6 +116,7 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
         }
       }
     }
+    snd_rawmidi_status_free(status);
   }
 }
 
