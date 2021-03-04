@@ -20,6 +20,8 @@ InitPart::InitPart(const Rect& r)
     : AnimatedGenericItem("Init Part", r, []() {
       auto pm = Application::get().getPresetManager();
       SoundUseCases useCases { pm->getEditBuffer(), pm };
+      auto currentPart = Application::get().getHWUI()->getCurrentVoiceGroup();
+      useCases.initPart(currentPart);
       auto hwui = Application::get().getHWUI();
       hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     })

@@ -98,9 +98,9 @@ void Input::readMidi()
               Midi::SimpleMessage msg;
               msg.numBytesUsed = std::min(3l, snd_midi_event_decode(decoder, msg.rawBytes.data(), 3, &event));
               send(EndPoint::ExternalMidiOverIPClient, msg);
-              break;
             }
           }
+          break;
         }
         else if(readResult == -19)
         {

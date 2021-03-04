@@ -630,6 +630,8 @@ void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction 
 
 void HWUI::toggleCurrentVoiceGroup()
 {
+  auto scope = getParameterFocusLockGuard();
+
   if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
     return;
 
@@ -856,15 +858,28 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
 {
   unsetFineMode();
 
-  if(getFocusAndMode().focus == UIFocus::Sound)
+  if(!isParameterFocusLocked())
   {
-    if(oldParameter->getID() != newParameter->getID())
+    if(getFocusAndMode().focus == UIFocus::Sound)
+    {
+      if(oldParameter->getID() != newParameter->getID())
+      {
+        setFocusAndMode(UIFocus::Parameters);
+      }
+    }
+    else
     {
       setFocusAndMode(UIFocus::Parameters);
     }
   }
-  else
-  {
-    setFocusAndMode(UIFocus::Parameters);
-  }
+}
+
+bool HWUI::isParameterFocusLocked() const
+{
+  return m_parameterFocusLock.isLocked();
+}
+
+std::shared_ptr<ScopedGuard::Lock> HWUI::getParameterFocusLockGuard()
+{
+  return m_parameterFocusLock.lock();
 }
