@@ -71,9 +71,17 @@ void readMidi(int cancelHandle, snd_rawmidi_t *inputHandle)
       while(!quitApp)
       {
         nltools::Log::error("before snd_rawmidi_read");
-        snd_rawmidi_status(inputHandle, status);
-        auto avail = snd_rawmidi_status_get_avail(status);
-        nltools::Log::error("available Bytes:", avail);
+        auto statusRet = snd_rawmidi_status(inputHandle, status);
+        if(statusRet == 0)
+        {
+          auto avail = snd_rawmidi_status_get_avail(status);
+          nltools::Log::error("available Bytes:", avail);
+        }
+        else
+        {
+          nltools::Log::error("error getting status:", snd_strerror(statusRet));
+        }
+        
         auto readResult = snd_rawmidi_read(inputHandle, &byte, 1);
         nltools::Log::error("after snd_rawmidi_read result:", readResult);
 
