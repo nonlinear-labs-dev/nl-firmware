@@ -65,7 +65,7 @@ PanelUnit::PanelUnit()
         useCase.selectModSourceAndSelectTargetParameter(mc);
         auto hwui = Application::get().getHWUI();
         auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
-        boled.onLayoutInstalled([&](Layout *l) {
+        boled.onLayoutInstalledDoOnce([&](Layout *l) {
           if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(l))
           {
             modParamLayout->installMcAmountScreen();

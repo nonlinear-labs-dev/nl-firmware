@@ -5,6 +5,7 @@
 #include <proxies/hwui/controls/Rect.h>
 #include <memory>
 #include <functional>
+#include <sigc++/sigc++.h>
 
 class Application;
 class Layout;
@@ -26,7 +27,8 @@ class OLEDProxy : public Uncopyable
 
   virtual void reset(tLayoutPtr layout);
 
-  void onLayoutInstalled(std::function<void(Layout *)> cb);
+  void onLayoutInstalled(const sigc::slot<void, Layout *> &slot);
+  void onLayoutInstalledDoOnce(std::function<void(Layout *)> cb);
 
   void setOverlay(Layout *layout);
   void setOverlay(tLayoutPtr layout);
@@ -41,7 +43,8 @@ class OLEDProxy : public Uncopyable
   const Rect &getPosInFrameBuffer() const;
 
  private:
-  std::function<void(Layout *)> m_onLayoutInstalledCB;
+  sigc::signal<void, Layout *> m_sigLayoutInstalled;
+  std::function<void(Layout *)> m_onLayoutInstalledOnce;
 
   tLayoutPtr m_layout;
   tLayoutPtr m_overlay;
