@@ -2,7 +2,7 @@ set -e
 
 mkdir -p /extracted-packages
 cd /extracted-packages
-tar -xvzf /packages/*.tar.gz
+tar -xvzf /packages/packages_${ARCH_VERSION}.tar.gz
 
 echo "Server=file:///extracted-packages" > /etc/pacman.d/mirrorlist
 sed -i 's/\[core\]//g' /etc/pacman.conf
