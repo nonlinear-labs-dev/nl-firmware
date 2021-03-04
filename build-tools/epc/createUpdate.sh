@@ -98,19 +98,26 @@ download_packages() {
 }
 
 install_packages() {
-    /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
-        cd /update-packages
-        for package in $PACKAGES_TO_INSTALL; do
-	    
-	    if ! pacman --noconfirm -U ./\$package; then
-              	return 1
-            fi
-        done"
+  /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
+    set -x
+  cd /update-packages
+  rm /var/lib/pacman/db.lck
+  for package in $PACKAGES_TO_INSTALL; do
+    if ! pacman --noconfirm -U ./\$package; then
+      exit 1
+    fi
+  done
+
+  echo 'Server=https://archive.archlinux.org/repos/2017/04/16/\$repo/os/\$arch' > /etc/pacman.d/mirrorlist
+  pacman --noconfirm -S typescript
+"
+  
     return $?
 }
 
 build_update() {
     download_packages || error "Downloading packages failed."
+    install_packages || error "Installing the packages failed."
 
     /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
         cd /build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On /sources && make -j8"
@@ -126,7 +133,6 @@ setup_install_overlay() {
 }
 
 install_update() {
-    install_packages || error "Installing the packages failed."
     /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install"
     return $?
 }

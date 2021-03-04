@@ -97,6 +97,12 @@ static std::unique_ptr<AudioOutput> createAudioOut(const std::string &name, Synt
       : std::make_unique<AlsaAudioOutput>(theOptions.get(), name, [synth, recorder](auto buf, auto length) {
           synth->process(buf, length);
           recorder->process(buf, length);
+
+          for(auto i = 0; i < length; i++)
+          {
+            buf[i].left = std::clamp(buf[i].left, -1.0f, 1.0f);
+            buf[i].right = std::clamp(buf[i].right, -1.0f, 1.0f);
+          }
         });
 }
 

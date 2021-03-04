@@ -1,9 +1,15 @@
 #include "FlacEncoder.h"
 #include <algorithm>
 
-FlacEncoder::Frame::Frame(const FLAC__byte *buffer, size_t bytes, Sample max)
+static std::chrono::nanoseconds framesToNanos(size_t frames)
+{
+  return std::chrono::nanoseconds(std::nano::den * frames / 48000);
+}
+
+FlacEncoder::Frame::Frame(const FLAC__byte *buffer, size_t bytes, Sample max,
+                          std::chrono::system_clock::time_point timestamp)
     : buffer { buffer, buffer + bytes }
-    , recordTime { std::chrono::system_clock::now() }
+    , recordTime(timestamp)
     , id(getNextId())
     , max(std::min(max, 1.0f) * std::numeric_limits<decltype(this->max)>::max())
 {
@@ -28,6 +34,7 @@ nlohmann::json FlacEncoder::Frame::generateInfo() const
 FlacEncoder::FlacEncoder(int sr, std::function<void(std::unique_ptr<Frame>)> cb)
     : m_encoder(FLAC__stream_encoder_new())
     , m_cb(cb)
+    , m_resumedAt(std::chrono::system_clock::now())
 {
   FLAC__stream_encoder_set_channels(m_encoder, 2);
   FLAC__stream_encoder_set_sample_rate(m_encoder, sr);
@@ -45,9 +52,12 @@ FlacEncoder::~FlacEncoder()
 FLAC__StreamEncoderWriteStatus FlacEncoder::writeToOut(const FLAC__StreamEncoder *, const FLAC__byte buffer[],
                                                        size_t bytes, uint32_t numSamples, uint32_t, void *client_data)
 {
+
   auto pThis = static_cast<FlacEncoder *>(client_data);
-  auto frame = std::make_unique<Frame>(buffer, bytes, std::exchange(pThis->m_currentMax, 0));
+  auto frame = std::make_unique<Frame>(buffer, bytes, std::exchange(pThis->m_currentMax, 0),
+                                       pThis->m_resumedAt + framesToNanos(pThis->m_framesSinceResume));
   pThis->m_cb(std::move(frame));
+  pThis->m_framesSinceResume += numSamples;
   return FLAC__STREAM_ENCODER_WRITE_STATUS_OK;
 }
 
@@ -61,4 +71,10 @@ void FlacEncoder::push(const SampleFrame *frames, size_t numFrames)
   m_currentMax = std::max({ std::abs(*minmax.first), std::abs(*minmax.second), m_currentMax });
   std::transform(in, in + numSamples, scratchFlac, [](auto i) { return static_cast<FLAC__int32>(i * mul); });
   FLAC__stream_encoder_process_interleaved(m_encoder, scratchFlac, numFrames);
+}
+
+void FlacEncoder::resume()
+{
+  m_resumedAt = std::chrono::system_clock::now();
+  m_framesSinceResume = 0;
 }

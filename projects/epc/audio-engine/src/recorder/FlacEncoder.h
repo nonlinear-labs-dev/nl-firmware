@@ -15,7 +15,7 @@ class FlacEncoder
 
   struct Frame
   {
-    Frame(const FLAC__byte *buffer, size_t bytes, Sample max);
+    Frame(const FLAC__byte *buffer, size_t bytes, Sample max, std::chrono::system_clock::time_point timestamp);
 
     uint64_t getMemUsage() const;
     uint64_t getNextId();
@@ -32,6 +32,7 @@ class FlacEncoder
   ~FlacEncoder();
 
   void push(const SampleFrame *frames, size_t numFrames);
+  void resume();
 
  private:
   static FLAC__StreamEncoderWriteStatus writeToOut(const FLAC__StreamEncoder *, const FLAC__byte buffer[], size_t bytes,
@@ -40,4 +41,7 @@ class FlacEncoder
   FLAC__StreamEncoder *m_encoder = nullptr;
   Sample m_currentMax = 0;
   std::function<void(std::unique_ptr<Frame>)> m_cb;
+
+  std::chrono::system_clock::time_point m_resumedAt;
+  size_t m_framesSinceResume = 0;
 };

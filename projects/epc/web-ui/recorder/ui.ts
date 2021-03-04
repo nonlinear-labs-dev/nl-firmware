@@ -230,7 +230,7 @@ class Scrollbar extends Draggable {
             var last = this.waveform.getLastVisibleBar();
             var c = document.getElementById("bars") as HTMLCanvasElement;
             var handle = document.getElementById("scrollbar-handle")!;
-            var w = Number.parseFloat(handle.style.width) / 100;
+            var w = Number.parseFloat(handle.style.width!) / 100;
             this.waveform.showBars(first, last + x * this.waveform.zoom / w);
         });
 
@@ -239,7 +239,7 @@ class Scrollbar extends Draggable {
             var last = this.waveform.getLastVisibleBar();
             var c = document.getElementById("bars") as HTMLCanvasElement;
             var handle = document.getElementById("scrollbar-handle")!;
-            var w = Number.parseFloat(handle.style.width) / 100;
+            var w = Number.parseFloat(handle.style.width!) / 100;
             this.waveform.showBars(first + x * this.waveform.zoom / w, last);
         });
 
@@ -265,7 +265,7 @@ class Scrollbar extends Draggable {
 
     drag(e: PointerEvent) {
         var handle = document.getElementById("scrollbar-handle")!;
-        var w = Number.parseFloat(handle.style.width) / 100;
+        var w = Number.parseFloat(handle.style.width!) / 100;
         this.waveform.scrollBy((this.x - e.screenX) / w);
         this.x = e.screenX;
     }
@@ -296,7 +296,7 @@ class Waveform extends Draggable {
         var center = c.height / 2;
 
         ctx.clearRect(0, 0, c.width, c.height);
-        ctx.strokeStyle = window.getComputedStyle(document.querySelector('#bars')!).color;
+        ctx.strokeStyle = window.getComputedStyle(document.querySelector('#bars')!).color!;
         ctx.lineWidth = 1;
 
         // middle line

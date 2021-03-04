@@ -66,7 +66,7 @@ class MockUpdateStream {
             this.time += barLength;
             this.bars.add(b);
         }
-        this.ui?.update();
+        this.ui!.update();
     }
 
     bars: Bars = new Bars();

@@ -25,7 +25,14 @@ void RecorderInput::process(SampleFrame *frames, size_t numFrames)
 
 void RecorderInput::togglePause()
 {
+  std::unique_lock<std::mutex> l(mutex);
   paused = !paused;
+
+  if(!paused)
+  {
+    ring.reset();
+    encoder->resume();
+  }
 }
 
 nlohmann::json RecorderInput::generateInfo()
