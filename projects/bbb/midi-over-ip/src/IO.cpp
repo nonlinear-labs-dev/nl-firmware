@@ -46,70 +46,75 @@ void Input::readMidi()
 
   nltools::threading::setThisThreadPrio(nltools::threading::Priority::AlmostRealtime);
 
+  uint8_t buffer[4096];
+  snd_seq_event_t event;
+  snd_midi_event_t *encoder = nullptr;
+  snd_midi_event_t *decoder = nullptr;
+
+  snd_midi_event_new(1024, &encoder);  // allocate only once
+  snd_midi_event_new(1024, &decoder);  // allocate only once
+
+  snd_midi_event_no_status(decoder, 1);
+
+  snd_rawmidi_nonblock(handle, 1);
+
+  int numPollFDs = snd_rawmidi_poll_descriptors_count(handle);
+
+  pollfd pollFileDescriptors[numPollFDs + 1];
+  numPollFDs = snd_rawmidi_poll_descriptors(handle, pollFileDescriptors, numPollFDs);
+  pollFileDescriptors[numPollFDs].fd = m_cancelPipe[0];
+  pollFileDescriptors[numPollFDs].events = POLLIN;
+
   while(!m_quit)
   {
-    uint8_t byte = 0;
-    snd_midi_event_t *encoder = nullptr;
-    snd_midi_event_new(128, &encoder);
+    switch(poll(pollFileDescriptors, numPollFDs + 1, -1))
+    {
+      case POLLPRI:
+      case POLLRDHUP:
+      case POLLERR:
+      case POLLHUP:
+      case POLLNVAL:
+        nltools::Log::error("Polling the midi input file descriptor failed. Terminating.");
+        m_quit = true;
+        break;
+      default:
+        break;
+    }
 
-    snd_midi_event_t *decoder = nullptr;
-    snd_midi_event_new(128, &decoder);
-    snd_midi_event_no_status(decoder, 1);
-
-    int numPollFDs = snd_rawmidi_poll_descriptors_count(handle);
-
-    pollfd pollFileDescriptors[numPollFDs + 1];
-    numPollFDs = snd_rawmidi_poll_descriptors(handle, pollFileDescriptors, numPollFDs);
-    pollFileDescriptors[numPollFDs].fd = m_cancelPipe[0];
-    pollFileDescriptors[numPollFDs].events = POLLIN;
+    if(m_quit)
+      goto _exit;
 
     while(true)
     {
-      switch(poll(pollFileDescriptors, numPollFDs + 1, -1))
-      {
-        case POLLPRI:
-        case POLLRDHUP:
-        case POLLERR:
-        case POLLHUP:
-        case POLLNVAL:
-          nltools::Log::error("Polling the midi input file descriptor failed. Terminating.");
-          m_quit = true;
-          break;
+      auto readResult = snd_rawmidi_read(handle, buffer, sizeof buffer);
 
-        default:
-          break;
-      }
-
-      if(m_quit)
+      if(readResult == -EAGAIN)  // nothing remaining
         break;
 
-      snd_seq_event_t event;
-
-      while(!m_quit)
+      if(readResult < 0)
       {
-        auto readResult = snd_rawmidi_read(handle, &byte, 1);
+        nltools::Log::error("Could not read from midi input file descriptor =>", snd_strerror(readResult));
+        goto _exit;
+      }
 
-        if(readResult == 1)
-        {
-          if(snd_midi_event_encode_byte(encoder, byte, &event) == 1)
-          {
-            if(event.type < SND_SEQ_EVENT_SONGPOS)
-            {
-              Midi::SimpleMessage msg;
-              msg.numBytesUsed = std::min(3l, snd_midi_event_decode(decoder, msg.rawBytes.data(), 3, &event));
-              send(EndPoint::ExternalMidiOverIPClient, msg);
-            }
-            break;
+      for(unsigned i = 0; i < readResult; i++)
+      {
+        if(snd_midi_event_encode_byte(encoder, buffer[i], &event) == 1)
+        {  // event fully decoded
+          if(event.type < SND_SEQ_EVENT_SONGPOS)
+          {  // is relevant event for us
+            Midi::SimpleMessage msg;
+            msg.numBytesUsed = std::min(3l, snd_midi_event_decode(decoder, msg.rawBytes.data(), 3, &event));
+            send(EndPoint::ExternalMidiOverIPClient, msg);
           }
-        }
-        else if(readResult == -19)
-        {
-          nltools::Log::error("Could not read from midi input file descriptor =>", snd_strerror(readResult));
-          return;
         }
       }
     }
   }
+
+_exit:
+  snd_midi_event_free(encoder);
+  snd_midi_event_free(decoder);
 }
 
 snd_rawmidi_t *Input::open(const std::string &name)
