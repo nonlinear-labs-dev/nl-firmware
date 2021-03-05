@@ -46,13 +46,14 @@ void Input::readMidi()
 
   nltools::threading::setThisThreadPrio(nltools::threading::Priority::AlmostRealtime);
 
-  uint8_t buffer[4096];
+  constexpr unsigned BUF_SIZE = 32768;
+  uint8_t *buffer = new uint8_t[BUF_SIZE];
   snd_seq_event_t event;
   snd_midi_event_t *encoder = nullptr;
   snd_midi_event_t *decoder = nullptr;
 
-  snd_midi_event_new(1024, &encoder);  // allocate only once
-  snd_midi_event_new(1024, &decoder);  // allocate only once
+  snd_midi_event_new(1024, &encoder);  // allocate only once and let it survive the looping
+  snd_midi_event_new(128, &decoder);   // allocate only once
 
   snd_midi_event_no_status(decoder, 1);
 
@@ -86,7 +87,7 @@ void Input::readMidi()
 
     while(true)
     {
-      auto readResult = snd_rawmidi_read(handle, buffer, sizeof buffer);
+      auto readResult = snd_rawmidi_read(handle, buffer, BUF_SIZE);
 
       if(readResult == -EAGAIN)  // nothing remaining
         break;
@@ -97,16 +98,25 @@ void Input::readMidi()
         goto _exit;
       }
 
-      for(unsigned i = 0; i < readResult; i++)
+      auto remaining = readResult;
+      auto currentBuffer = buffer;
+      while(remaining)
       {
-        if(snd_midi_event_encode_byte(encoder, buffer[i], &event) == 1)
-        {  // event fully decoded
-          if(event.type < SND_SEQ_EVENT_SONGPOS)
-          {  // is relevant event for us
-            Midi::SimpleMessage msg;
-            msg.numBytesUsed = std::min(3l, snd_midi_event_decode(decoder, msg.rawBytes.data(), 3, &event));
-            send(EndPoint::ExternalMidiOverIPClient, msg);
-          }
+        auto consumed = snd_midi_event_encode(encoder, currentBuffer, remaining, &event);
+        if(consumed <= 0)
+        {
+          nltools::Log::error("Could not encode stream into midi event =>", snd_strerror(consumed));
+          goto _exit;
+        }
+
+        remaining -= consumed;
+        currentBuffer += consumed;
+        if(event.type < SND_SEQ_EVENT_SONGPOS)
+        {  // it's a relevant event for us
+          Midi::SimpleMessage msg;
+          snd_midi_event_reset_decode(decoder);
+          msg.numBytesUsed = std::min(3l, snd_midi_event_decode(decoder, msg.rawBytes.data(), 3, &event));
+          send(EndPoint::ExternalMidiOverIPClient, msg);
         }
       }
     }
@@ -115,6 +125,7 @@ void Input::readMidi()
 _exit:
   snd_midi_event_free(encoder);
   snd_midi_event_free(decoder);
+  delete[] buffer;
 }
 
 snd_rawmidi_t *Input::open(const std::string &name)
