@@ -45,7 +45,7 @@ void Input::readMidi()
 // check raw_midi buffer overruns
 #define CHECK_XRUNS (1)
 
-// TODO : test throttling until bbb_lpc_driver stops to moan
+// TODO : throttling is not that effective to keep bbb_lpc_driver quiet
 #define DO_THROTTLE (1)
 
   using namespace nltools::msg;
@@ -55,7 +55,7 @@ void Input::readMidi()
   // Raw bytes buffer for snd_raw_midi_read()
   // The larger this buffer the more events MIDI events can be extraced in one go from a burst
   // of data. This, though, increases process granularity.
-  constexpr unsigned BUF_SIZE = 132072;
+  constexpr unsigned BUF_SIZE = 131072;
   constexpr unsigned FETCH_SIZE = 4096;
 
   snd_rawmidi_params_t *pParams;
@@ -119,7 +119,7 @@ void Input::readMidi()
     }
 
 #if DO_THROTTLE
-    // TODO : test : throttle if too much traffic at once (then sleep for a while so others get CPU)
+    // TODO : make throttling dependent on elapsed time.
     if(readResult == FETCH_SIZE)
     {
       if(largeData)
@@ -132,22 +132,6 @@ void Input::readMidi()
     }
     else
       largeData = 0;
-#endif
-
-#if CHECK_XRUNS
-    auto err = snd_rawmidi_status(handle, pStatus);
-    if(err)
-    {
-      nltools::Log::error("Could not get midi status =>", snd_strerror(err));
-      break;
-    }
-    err = snd_rawmidi_status_get_xruns(pStatus);
-    if(err)
-    {
-      nltools::Log::error("rawmidi receive buffer overrun");
-      snd_midi_event_reset_decode(decoder);
-      continue;
-    }
 #endif
 
     auto remaining = readResult;  // # of bytes
@@ -175,6 +159,22 @@ void Input::readMidi()
         send(EndPoint::ExternalMidiOverIPClient, msg);
       }
     }
+
+#if CHECK_XRUNS
+    auto err = snd_rawmidi_status(handle, pStatus);
+    if(err)
+    {
+      nltools::Log::error("Could not get midi status =>", snd_strerror(err));
+      break;
+    }
+    err = snd_rawmidi_status_get_xruns(pStatus);
+    if(err > 0)
+    {
+      nltools::Log::error("rawmidi receive buffer overrun");
+      snd_midi_event_reset_decode(decoder);
+      continue;  // discard buffer contents and continue reading
+    }
+#endif
   }
 
   snd_midi_event_free(encoder);
