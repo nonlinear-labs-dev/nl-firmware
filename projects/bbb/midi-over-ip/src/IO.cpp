@@ -89,7 +89,7 @@ void Input::readMidi()
     if(readResult < 0)
     {
       nltools::Log::error("Could not read from midi input file descriptor =>", snd_strerror(readResult));
-      break;
+      break;  // quit (unplugging event, typically)
     }
 
     auto remaining = readResult;  // # of bytes
