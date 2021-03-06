@@ -42,27 +42,35 @@ Input::~Input()
 
 void Input::readMidi()
 {
+// for unknown reason not checking xruns works better (less artifacts, less crashes/stalls)
+#define CHECK_XRUNS (0)
+
   using namespace nltools::msg;
 
   nltools::threading::setThisThreadPrio(nltools::threading::Priority::AlmostRealtime);
 
   // Raw bytes buffer for snd_raw_midi_read()
   // The larger this buffer the more events MIDI events can be extraced in one go from a burst
-  // of data. This also increases process granularity
-  constexpr unsigned BUF_SIZE = 8192;
+  // of data. This, though, increases process granularity.
+  constexpr unsigned BUF_SIZE = 32768;
   uint8_t *buffer = new uint8_t[BUF_SIZE];
 
   snd_seq_event_t event;
 
-  // parsers to encode/decode byte stream <--> midi event
-  // these parsers run asynchronous to the main buffer data chunks --> must be global
+  // Parsers to encode/decode byte stream <--> midi event
+  // These parsers run asynchronous to the main buffer data chunks --> must be global
   snd_midi_event_t *encoder = nullptr;
   snd_midi_event_t *decoder = nullptr;
-  snd_midi_event_new(1024, &encoder);  // temporary buffer for encoding into midi events
+  snd_midi_event_new(4096, &encoder);  // temporary buffer for encoding into midi events
   snd_midi_event_new(128, &decoder);   // re-decoded midi bytes per event to transmit to app (3, currently)
 
   snd_midi_event_no_status(decoder, 1);  // force full-qualified midi events (no "running status")
   snd_rawmidi_nonblock(handle, 1);       // make reads non-blocking
+
+#if CHECK_XRUNS
+  snd_rawmidi_status_t *pStatus;
+  snd_rawmidi_status_alloca(&pStatus);
+#endif
 
   int numPollFDs = snd_rawmidi_poll_descriptors_count(handle);
   pollfd pollFileDescriptors[numPollFDs + 1];
@@ -91,6 +99,22 @@ void Input::readMidi()
       nltools::Log::error("Could not read from midi input file descriptor =>", snd_strerror(readResult));
       break;  // quit (unplugging event, typically)
     }
+
+#if CHECK_XRUNS
+    auto err = snd_rawmidi_status(handle, pStatus);
+    if(err)
+    {
+      nltools::Log::error("Could not get midi status =>", snd_strerror(err));
+      break;
+    }
+    err = snd_rawmidi_status_get_xruns(pStatus);
+    if(err)
+    {
+      nltools::Log::error("rawmidi receive buffer overrun");
+      snd_midi_event_reset_decode(decoder);
+      continue;
+    }
+#endif
 
     auto remaining = readResult;  // # of bytes
     auto currentBuffer = buffer;  // position in buffer
