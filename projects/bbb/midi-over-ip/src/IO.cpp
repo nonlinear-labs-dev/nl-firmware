@@ -42,7 +42,7 @@ Input::~Input()
 
 void Input::readMidi()
 {
-// for unknown reason not checking xruns works better (less artifacts, less crashes/stalls)
+// check raw_midi buffer overruns
 #define CHECK_XRUNS (1)
 
 // TODO : test throttling until bbb_lpc_driver stops to moan
