@@ -46,21 +46,25 @@ void Input::readMidi()
 
   nltools::threading::setThisThreadPrio(nltools::threading::Priority::AlmostRealtime);
 
-  constexpr unsigned BUF_SIZE = 32768;
+  // Raw bytes buffer for snd_raw_midi_read()
+  // The larger this buffer the more events MIDI events can be extraced in one go from a burst
+  // of data. This also increases process granularity
+  constexpr unsigned BUF_SIZE = 8192;
   uint8_t *buffer = new uint8_t[BUF_SIZE];
+
   snd_seq_event_t event;
+
+  // parsers to encode/decode byte stream <--> midi event
+  // these parsers run asynchronous to the main buffer data chunks --> must be global
   snd_midi_event_t *encoder = nullptr;
   snd_midi_event_t *decoder = nullptr;
+  snd_midi_event_new(1024, &encoder);  // temporary buffer for encoding into midi events
+  snd_midi_event_new(128, &decoder);   // re-decoded midi bytes per event to transmit to app (3, currently)
 
-  snd_midi_event_new(1024, &encoder);  // allocate only once and let it survive the looping
-  snd_midi_event_new(128, &decoder);   // allocate only once
-
-  snd_midi_event_no_status(decoder, 1);
-
-  snd_rawmidi_nonblock(handle, 1);
+  snd_midi_event_no_status(decoder, 1);  // force full-qualified midi events (no "running status")
+  snd_rawmidi_nonblock(handle, 1);       // make reads non-blocking
 
   int numPollFDs = snd_rawmidi_poll_descriptors_count(handle);
-
   pollfd pollFileDescriptors[numPollFDs + 1];
   numPollFDs = snd_rawmidi_poll_descriptors(handle, pollFileDescriptors, numPollFDs);
   pollFileDescriptors[numPollFDs].fd = m_cancelPipe[0];
@@ -68,61 +72,52 @@ void Input::readMidi()
 
   while(!m_quit)
   {
-    switch(poll(pollFileDescriptors, numPollFDs + 1, -1))
+    auto readResult = snd_rawmidi_read(handle, buffer, BUF_SIZE);  // try read a block of bytes, non-blocking
+
+    if(readResult == -EAGAIN)  // nothing remaining or no data
     {
-      case POLLPRI:
-      case POLLRDHUP:
-      case POLLERR:
-      case POLLHUP:
-      case POLLNVAL:
+      auto pollResult = poll(pollFileDescriptors, numPollFDs + 1, -1);  // sleep until data is coming in
+      if(pollResult == POLLPRI || pollResult == POLLRDHUP || pollResult == POLLERR || pollResult == POLLHUP
+         || pollResult == POLLNVAL)
+      {
         nltools::Log::error("Polling the midi input file descriptor failed. Terminating.");
-        m_quit = true;
         break;
-      default:
-        break;
+      }
+      continue;  // reading
     }
 
-    if(m_quit)
-      goto _exit;
-
-    while(true)
+    if(readResult < 0)
     {
-      auto readResult = snd_rawmidi_read(handle, buffer, BUF_SIZE);
+      nltools::Log::error("Could not read from midi input file descriptor =>", snd_strerror(readResult));
+      break;
+    }
 
-      if(readResult == -EAGAIN)  // nothing remaining
-        break;
+    auto remaining = readResult;  // # of bytes
+    auto currentBuffer = buffer;  // position in buffer
 
-      if(readResult < 0)
+    while(remaining > 0)  // process a chunk of bytes
+    {
+      auto consumed = snd_midi_event_encode(encoder, currentBuffer, remaining, &event);  // encode next
+      if(consumed <= 0)
       {
-        nltools::Log::error("Could not read from midi input file descriptor =>", snd_strerror(readResult));
-        goto _exit;
+        nltools::Log::error("Could not encode stream into midi event =>", snd_strerror(consumed));
+        break;
       }
 
-      auto remaining = readResult;
-      auto currentBuffer = buffer;
-      while(remaining)
-      {
-        auto consumed = snd_midi_event_encode(encoder, currentBuffer, remaining, &event);
-        if(consumed <= 0)
-        {
-          nltools::Log::error("Could not encode stream into midi event =>", snd_strerror(consumed));
-          goto _exit;
-        }
+      remaining -= consumed;
+      currentBuffer += consumed;
 
-        remaining -= consumed;
-        currentBuffer += consumed;
-        if(event.type < SND_SEQ_EVENT_SONGPOS)
-        {  // it's a relevant event for us
-          Midi::SimpleMessage msg;
-          snd_midi_event_reset_decode(decoder);
-          msg.numBytesUsed = std::min(3l, snd_midi_event_decode(decoder, msg.rawBytes.data(), 3, &event));
-          send(EndPoint::ExternalMidiOverIPClient, msg);
-        }
+      if(event.type < SND_SEQ_EVENT_SONGPOS)  // event complete and relevant for us
+      {
+        Midi::SimpleMessage msg;
+        snd_midi_event_reset_decode(decoder);
+        // reconvert to bytes
+        msg.numBytesUsed = std::min(3l, snd_midi_event_decode(decoder, msg.rawBytes.data(), 3, &event));
+        send(EndPoint::ExternalMidiOverIPClient, msg);
       }
     }
   }
 
-_exit:
   snd_midi_event_free(encoder);
   snd_midi_event_free(decoder);
   delete[] buffer;
