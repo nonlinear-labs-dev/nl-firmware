@@ -101,7 +101,8 @@ void Input::readMidi()
       if(consumed <= 0)
       {
         nltools::Log::error("Could not encode stream into midi event =>", snd_strerror(consumed));
-        break;
+        snd_midi_event_reset_encode(encoder);
+        break;  // discard and continue reading
       }
 
       remaining -= consumed;
