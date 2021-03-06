@@ -45,6 +45,9 @@ void Input::readMidi()
 // for unknown reason not checking xruns works better (less artifacts, less crashes/stalls)
 #define CHECK_XRUNS (0)
 
+// TODO : test throttling until bbb_lpc_driver stops to moan
+#define DO_THROTTLE (0)
+
   using namespace nltools::msg;
 
   nltools::threading::setThisThreadPrio(nltools::threading::Priority::AlmostRealtime);
@@ -52,7 +55,7 @@ void Input::readMidi()
   // Raw bytes buffer for snd_raw_midi_read()
   // The larger this buffer the more events MIDI events can be extraced in one go from a burst
   // of data. This, though, increases process granularity.
-  constexpr unsigned BUF_SIZE = 32768;
+  constexpr unsigned BUF_SIZE = 4096;
   uint8_t *buffer = new uint8_t[BUF_SIZE];
 
   snd_seq_event_t event;
@@ -61,7 +64,7 @@ void Input::readMidi()
   // These parsers run asynchronous to the main buffer data chunks --> must be global
   snd_midi_event_t *encoder = nullptr;
   snd_midi_event_t *decoder = nullptr;
-  snd_midi_event_new(4096, &encoder);  // temporary buffer for encoding into midi events
+  snd_midi_event_new(1024, &encoder);  // temporary buffer for encoding into midi events
   snd_midi_event_new(128, &decoder);   // re-decoded midi bytes per event to transmit to app (3, currently)
 
   snd_midi_event_no_status(decoder, 1);  // force full-qualified midi events (no "running status")
@@ -70,6 +73,10 @@ void Input::readMidi()
 #if CHECK_XRUNS
   snd_rawmidi_status_t *pStatus;
   snd_rawmidi_status_alloca(&pStatus);
+#endif
+
+#if DO_THROTTLE
+  unsigned largeData = 0;
 #endif
 
   int numPollFDs = snd_rawmidi_poll_descriptors_count(handle);
@@ -114,6 +121,19 @@ void Input::readMidi()
       snd_midi_event_reset_decode(decoder);
       continue;
     }
+#endif
+
+#if DO_THROTTLE
+    // TODO : test : throttle if too much traffic at once (then sleep for a while so others get CPU)
+    if(readResult == BUF_SIZE)
+    {
+      if(largeData == 2)
+        usleep(3000);  // >= 3 milliseconds
+      else
+        largeData++;
+    }
+    else
+      largeData = 0;
 #endif
 
     auto remaining = readResult;  // # of bytes
