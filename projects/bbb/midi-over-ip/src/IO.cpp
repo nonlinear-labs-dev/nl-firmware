@@ -45,29 +45,29 @@ void Input::readMidi()
 // check raw_midi buffer overruns
 #define CHECK_XRUNS (1)
 
-// TODO : throttling is not that effective to keep bbb_lpc_driver quiet
-#define DO_THROTTLE (1)
-
   using namespace nltools::msg;
 
   nltools::threading::setThisThreadPrio(nltools::threading::Priority::AlmostRealtime);
 
   // Raw bytes buffer for snd_raw_midi_read()
-  // The larger this buffer the more events MIDI events can be extraced in one go from a burst
-  // of data. This, though, increases process granularity.
-  constexpr unsigned BUF_SIZE = 131072;
-  constexpr unsigned FETCH_SIZE = 4096;
+  constexpr unsigned RAWMIDI_BUF_SIZE = 524288;  // 512k, puh... and it still overruns from time to time
+
+  // The larger this buffer the more events MIDI events can be extracted in one go from a burst of data.
+  constexpr unsigned LOCAL_BUF_SIZE = 4096;
+
+  constexpr unsigned ENCODER_SIZE = 4096;
+  constexpr unsigned DECODER_SIZE = 128;
 
   snd_rawmidi_params_t *pParams;
   snd_rawmidi_params_alloca(&pParams);
-  auto err = snd_rawmidi_params_set_buffer_size(handle, pParams, BUF_SIZE);
+  auto err = snd_rawmidi_params_set_buffer_size(handle, pParams, RAWMIDI_BUF_SIZE);
   if(err < 0)
   {
     nltools::Log::error("Could not set midi buffer size");
     return;
   }
 
-  uint8_t *buffer = new uint8_t[BUF_SIZE];
+  uint8_t *buffer = new uint8_t[LOCAL_BUF_SIZE];
 
   snd_seq_event_t event;
 
@@ -75,8 +75,8 @@ void Input::readMidi()
   // These parsers run asynchronous to the main buffer data chunks --> must be global
   snd_midi_event_t *encoder = nullptr;
   snd_midi_event_t *decoder = nullptr;
-  snd_midi_event_new(4096, &encoder);  // temporary buffer for encoding into midi events
-  snd_midi_event_new(128, &decoder);   // re-decoded midi bytes per event to transmit to app (3, currently)
+  snd_midi_event_new(ENCODER_SIZE, &encoder);  // temporary buffer for encoding into midi events
+  snd_midi_event_new(DECODER_SIZE, &decoder);  // re-decoded midi bytes per event to transmit to app (3, currently)
 
   snd_midi_event_no_status(decoder, 1);  // force full-qualified midi events (no "running status")
   snd_rawmidi_nonblock(handle, 1);       // make reads non-blocking
@@ -84,10 +84,6 @@ void Input::readMidi()
 #if CHECK_XRUNS
   snd_rawmidi_status_t *pStatus;
   snd_rawmidi_status_alloca(&pStatus);
-#endif
-
-#if DO_THROTTLE
-  unsigned largeData = 0;
 #endif
 
   int numPollFDs = snd_rawmidi_poll_descriptors_count(handle);
@@ -98,7 +94,7 @@ void Input::readMidi()
 
   while(!m_quit)
   {
-    auto readResult = snd_rawmidi_read(handle, buffer, FETCH_SIZE);  // try read a block of bytes, non-blocking
+    auto readResult = snd_rawmidi_read(handle, buffer, LOCAL_BUF_SIZE);  // try read a block of bytes, non-blocking
 
     if(readResult == -EAGAIN)  // nothing remaining or no data
     {
@@ -118,22 +114,6 @@ void Input::readMidi()
       break;  // quit (unplugging event, typically)
     }
 
-#if DO_THROTTLE
-    // TODO : make throttling dependent on elapsed time.
-    if(readResult == FETCH_SIZE)
-    {
-      if(largeData)
-      {
-        nltools::Log::error("Throttling...");
-        usleep(5000);  // >= 5 milliseconds
-      }
-      else
-        largeData = 1;
-    }
-    else
-      largeData = 0;
-#endif
-
     auto remaining = readResult;  // # of bytes
     auto currentBuffer = buffer;  // position in buffer
 
@@ -150,6 +130,7 @@ void Input::readMidi()
       remaining -= consumed;
       currentBuffer += consumed;
 
+      // TODO : Bundle available messages into one packet
       if(event.type < SND_SEQ_EVENT_SONGPOS)  // event complete and relevant for us
       {
         Midi::SimpleMessage msg;
@@ -175,7 +156,7 @@ void Input::readMidi()
       continue;  // discard buffer contents and continue reading
     }
 #endif
-  }
+  }  // while(!m_quit)
 
   snd_midi_event_free(encoder);
   snd_midi_event_free(decoder);
