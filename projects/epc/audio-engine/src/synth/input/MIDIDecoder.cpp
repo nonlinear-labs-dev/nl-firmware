@@ -2,6 +2,11 @@
 #include <nltools/logging/Log.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
 
+MIDIDecoder::MIDIDecoder(DSPInterface* dsp)
+    : m_dsp { dsp }
+{
+}
+
 DecoderEventType statusToType(uint8_t status)
 {
   auto statusWithoutChannel = (status & 0b11110000);
@@ -59,35 +64,47 @@ bool MIDIDecoder::decode(const MidiEvent& event)
     }
     break;
     case MIDIEventTypes::CC:
-      switch(_data0)
+      switch((int) _data0)
       {
         case Midi::getMSB::getCC<Midi::MSB::Ped1>():
           processMidiForHWSource(0, _data1);
+          keyOrControl = 0;
+          m_midiChannel = Midi::Channel::statusToChannel(status);
           m_type = DecoderEventType::HardwareChange;
           break;
 
         case Midi::getMSB::getCC<Midi::MSB::Ped2>():
           processMidiForHWSource(1, _data1);
+          keyOrControl = 1;
+          m_midiChannel = Midi::Channel::statusToChannel(status);
           m_type = DecoderEventType::HardwareChange;
           break;
 
         case Midi::getMSB::getCC<Midi::MSB::Ped3>():
           processMidiForHWSource(2, _data1);
+          keyOrControl = 2;
+          m_midiChannel = Midi::Channel::statusToChannel(status);
           m_type = DecoderEventType::HardwareChange;
           break;
 
         case Midi::getMSB::getCC<Midi::MSB::Ped4>():
           processMidiForHWSource(3, _data1);
+          keyOrControl = 3;
+          m_midiChannel = Midi::Channel::statusToChannel(status);
           m_type = DecoderEventType::HardwareChange;
           break;
 
         case Midi::getMSB::getCC<Midi::MSB::Rib1>():
           processMidiForHWSource(6, _data1);
+          keyOrControl = 6;
+          m_midiChannel = Midi::Channel::statusToChannel(status);
           m_type = DecoderEventType::HardwareChange;
           break;
 
         case Midi::getMSB::getCC<Midi::MSB::Rib2>():
           processMidiForHWSource(7, _data1);
+          keyOrControl = 7;
+          m_midiChannel = Midi::Channel::statusToChannel(status);
           m_type = DecoderEventType::HardwareChange;
           break;
 

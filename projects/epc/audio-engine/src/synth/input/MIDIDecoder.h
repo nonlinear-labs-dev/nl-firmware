@@ -9,6 +9,7 @@ class DSPInterface;
 class MIDIDecoder
 {
  public:
+  MIDIDecoder(DSPInterface* dsp);
   bool decode(const MidiEvent& event);
 
   [[nodiscard]] DecoderEventType getEventType() const;

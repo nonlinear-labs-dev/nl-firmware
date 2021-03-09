@@ -26,7 +26,7 @@ void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
 void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
 {
   if(!m_midiDecoder)
-    m_midiDecoder = std::make_unique<MIDIDecoder>();
+    m_midiDecoder = std::make_unique<MIDIDecoder>(m_dspHost);
 
   if(m_midiDecoder->decode(midiEvent))
   {
@@ -88,7 +88,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
         if(m_options->shouldReceiveControllers() && decoder->getChannel() == m_options->getReceiveChannel())
           m_dspHost->onHWChanged(decoder->getKeyOrControl(), decoder->getValue());
         break;
-        
+
       case DecoderEventType::UNKNOWN:
         nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
     }

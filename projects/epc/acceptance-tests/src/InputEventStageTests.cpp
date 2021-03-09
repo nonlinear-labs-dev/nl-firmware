@@ -80,15 +80,42 @@ class PassOnKeyUpHost : public MockDSPHost
   const VoiceGroup m_part;
 };
 
-MidiRuntimeOptions createMidiSettings()
+class PassOnHWReceived : public MockDSPHost
+{
+ public:
+  PassOnHWReceived(int expectedId, float expectedValue)
+      : m_id { expectedId }
+      , m_value { expectedValue }
+  {
+  }
+
+  void onHWChanged(const uint32_t id, float value) override
+  {
+    CHECK(m_id == id);
+    CHECK(m_value == value);
+    m_receivedHW = true;
+  }
+
+  [[nodiscard]] bool didReceiveHW() const
+  {
+    return m_receivedHW;
+  }
+
+ private:
+  bool m_receivedHW = false;
+  const int m_id;
+  const float m_value;
+};
+
+MidiRuntimeOptions createMidiSettings(int receiveChannel)
 {
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
   msg.receiveNotes = true;
   msg.receiveControllers = true;
   msg.receiveProgramChange = true;
-  msg.receiveChannel = 16;
-  msg.receiveSplitChannel = 16;
+  msg.receiveChannel = receiveChannel;
+  msg.receiveSplitChannel = receiveChannel;
   options.update(msg);
   return options;
 }
@@ -97,10 +124,10 @@ TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 {
   PassOnKeyDownHost dsp { 17, 0.5, VoiceGroup::I };
 
-  auto settings = createMidiSettings();
+  auto settings = createMidiSettings(1);
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
-  eventStage.onMIDIMessage({ 0x90, (uint8_t) 17, (uint8_t) 64 });
+  eventStage.onMIDIMessage({ 0x91, (uint8_t) 17, (uint8_t) 64 });
 
   CHECK(dsp.didReceiveKeyDown());
 }
@@ -109,10 +136,22 @@ TEST_CASE("Input Event Stage MIDI In KeyUp", "[MIDI]")
 {
   PassOnKeyUpHost dsp { 17, 0.5, VoiceGroup::I };
 
-  auto settings = createMidiSettings();
+  auto settings = createMidiSettings(1);
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
-  eventStage.onMIDIMessage({ 0x80, (uint8_t) 17, (uint8_t) 64 });
+  eventStage.onMIDIMessage({ 0x81, (uint8_t) 17, (uint8_t) 64 });
 
   CHECK(dsp.didReceiveKeyUp());
+}
+
+TEST_CASE("Input Event Stage MIDI In HWSource", "[MIDI]")
+{
+  PassOnHWReceived dsp { 0, 1 };
+
+  auto settings = createMidiSettings(1);
+  InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
+
+  eventStage.onMIDIMessage({ 0xB1, 0x14, 127 });
+
+  CHECK(dsp.didReceiveHW());
 }
