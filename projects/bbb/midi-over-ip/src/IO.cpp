@@ -48,7 +48,7 @@ void Input::readMidi()
 
   // Raw bytes buffer for snd_raw_midi_read().
   // For large SysEx data coming in fast a fair amount of background buffer is really required
-  constexpr unsigned RAWMIDI_BUF_SIZE = 32768;  // empirical value + safety margin
+  constexpr unsigned RAWMIDI_BUF_SIZE = 131072;  // empirical value + safety margin
 
   // Maximum granularity of the main receive loop.
   // Typically, incoming data between polls will be in much smaller sized blocks.
