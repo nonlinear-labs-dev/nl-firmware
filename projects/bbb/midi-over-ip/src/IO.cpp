@@ -2,7 +2,6 @@
 #include <nltools/threading/Threading.h>
 #include <nltools/messaging/Message.h>
 #include <nltools/logging/Log.h>
-#include <nltools/GenericScopeGuard.h>
 #include <nltools/ExceptionTools.h>
 
 IO::IO(snd_rawmidi_t *handle)
