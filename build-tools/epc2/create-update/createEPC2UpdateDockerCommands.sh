@@ -17,6 +17,7 @@ setup_overlay() {
 
 install_packages() {
     pacman --noconfirm -S $UPDATE_PACKAGES
+    pacstrap -c /overlay-fs $UPDATE_PACKAGES
 }
 
 build_binaries() {
