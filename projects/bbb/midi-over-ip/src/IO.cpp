@@ -49,7 +49,7 @@ struct MidiEventCodecs
     snd_midi_event_new(decoderSize, &decoder);
 
     if(encoder == nullptr || decoder == nullptr)
-      nltools::throwException("Could not set up midi parser buffers");
+      nltools::Log::throwException("Could not set up midi parser buffers");
 
     snd_midi_event_no_status(decoder, 1);  // force full-qualified midi events (no "running status")
   }
@@ -91,7 +91,7 @@ void Input::readMidi()
   pollFileDescriptors[numPollFDs].events = POLLIN;
 
   if(!setupDevice(RAWMIDI_BUF_SIZE))
-    nltools::throwException("Could not set up midi receive buffer");
+    nltools::Log::throwException("Could not set up midi receive buffer");
 
   snd_rawmidi_status_t *pStatus;
   snd_rawmidi_status_alloca(&pStatus);
@@ -101,7 +101,7 @@ void Input::readMidi()
   while(!m_quit)
   {
     if(auto result = snd_rawmidi_status(m_handle, pStatus))
-      nltools::throwException("Could read data/status from midi input file descriptor =>", snd_strerror(result));
+      nltools::Log::throwException("Could read data/status from midi input file descriptor =>", snd_strerror(result));
 
     if(snd_rawmidi_status_get_xruns(pStatus) > 0)
     {
@@ -136,11 +136,11 @@ size_t Input::fetchChunk(uint8_t *buffer, size_t length, int numPollFDs, pollfd 
     if(poll(pollFileDescriptors, numPollFDs + 1, -1) > 0)
       return 0;
 
-    nltools::throwException("Polling the midi input file descriptor failed.");
+    nltools::Log::throwException("Polling the midi input file descriptor failed.");
   }
 
   if(result < 0)  // catch errors
-    nltools::throwException("Error reading midi: ", snd_strerror(result));
+    nltools::Log::throwException("Error reading midi: ", snd_strerror(result));
 
   return result;
 }
