@@ -44,13 +44,10 @@ Input::~Input()
 
 struct MidiEventCodecs
 {
-  MidiEventCodecs()
+  MidiEventCodecs(unsigned encoderSize, unsigned decoderSize)
   {
-    constexpr unsigned ENCODER_SIZE = 1024;  // byte stream --> midi events
-    constexpr unsigned DECODER_SIZE = 128;   // midi event --> bytes
-
-    snd_midi_event_new(ENCODER_SIZE, &encoder);
-    snd_midi_event_new(DECODER_SIZE, &decoder);
+    snd_midi_event_new(encoderSize, &encoder);
+    snd_midi_event_new(decoderSize, &decoder);
 
     if(encoder == nullptr || decoder == nullptr)
       nltools::throwException("Could not set up midi parser buffers");
@@ -100,7 +97,7 @@ void Input::readMidi()
   snd_rawmidi_status_t *pStatus;
   snd_rawmidi_status_alloca(&pStatus);
 
-  MidiEventCodecs codecs;
+  MidiEventCodecs codecs(LOCAL_BUF_SIZE, 128);
 
   while(!m_quit)
   {
