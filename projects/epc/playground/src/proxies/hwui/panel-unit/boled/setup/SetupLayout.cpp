@@ -85,6 +85,10 @@
 #include <device-settings/midi/local/LocalProgramChangesSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
 #include <device-settings/midi/local/LocalControllersSetting.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
 
 namespace NavTree
 {
@@ -821,6 +825,22 @@ namespace NavTree
     }
   };
 
+  struct MidiMappingSettings : InnerNode
+  {
+    MidiMappingSettings(InnerNode *parent)
+        : InnerNode { parent, "Mappings" }
+    {
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<1>>(this, "Pedal 1"));
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<2>>(this, "Pedal 2"));
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<3>>(this, "Pedal 3"));
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<4>>(this, "Pedal 4"));
+      children.emplace_back(new EnumSettingItem<RibbonCCMapping<1>>(this, "Ribbon 1"));
+      children.emplace_back(new EnumSettingItem<RibbonCCMapping<2>>(this, "Ribbon 2"));
+      children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Pitchbend"));
+      children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -829,6 +849,7 @@ namespace NavTree
       children.emplace_back(new MidiReceiveSettings(this));
       children.emplace_back(new MidiSendSettings(this));
       children.emplace_back(new MidiLocalSettings(this));
+      children.emplace_back(new MidiMappingSettings(this));
     }
   };
 

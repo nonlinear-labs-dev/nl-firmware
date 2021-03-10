@@ -23,7 +23,7 @@ class MockDSPHost : public DSPInterface
 class PassOnKeyDownHost : public MockDSPHost
 {
  public:
-  PassOnKeyDownHost(const int expectedNote, double expectedVelo, VoiceGroup expectedPart)
+  PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
       : m_note { expectedNote }
       , m_vel { expectedVelo }
       , m_part { expectedPart }
@@ -46,14 +46,14 @@ class PassOnKeyDownHost : public MockDSPHost
  private:
   bool m_receivedKeyDown = false;
   const int m_note;
-  const double m_vel;
+  const float m_vel;
   const VoiceGroup m_part;
 };
 
 class PassOnKeyUpHost : public MockDSPHost
 {
  public:
-  PassOnKeyUpHost(const int expectedNote, double expectedVelo, VoiceGroup expectedPart)
+  PassOnKeyUpHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
       : m_note { expectedNote }
       , m_vel { expectedVelo }
       , m_part { expectedPart }
@@ -76,7 +76,7 @@ class PassOnKeyUpHost : public MockDSPHost
  private:
   bool m_receivedKeyUp = false;
   const int m_note;
-  const double m_vel;
+  const float m_vel;
   const VoiceGroup m_part;
 };
 
@@ -122,26 +122,46 @@ MidiRuntimeOptions createMidiSettings(int receiveChannel)
 
 TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 {
-  PassOnKeyDownHost dsp { 17, 0.5, VoiceGroup::I };
+  PassOnKeyDownHost dsp { 17, 1, VoiceGroup::I };
 
   auto settings = createMidiSettings(1);
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
-  eventStage.onMIDIMessage({ 0x91, (uint8_t) 17, (uint8_t) 64 });
+  WHEN("Send 14 Bit")
+  {
+    eventStage.onMIDIMessage({ 0xB1, (uint8_t) 88, (uint8_t) 127 });
+    eventStage.onMIDIMessage({ 0x91, (uint8_t) 17, (uint8_t) 127 });
+    CHECK(dsp.didReceiveKeyDown());
+  }
 
-  CHECK(dsp.didReceiveKeyDown());
+  WHEN("Send 7 Bit")
+  {
+    eventStage.onMIDIMessage({ 0x91, (uint8_t) 17, (uint8_t) 127 });
+    CHECK(dsp.didReceiveKeyDown());
+  }
 }
 
 TEST_CASE("Input Event Stage MIDI In KeyUp", "[MIDI]")
 {
-  PassOnKeyUpHost dsp { 17, 0.5, VoiceGroup::I };
+  PassOnKeyUpHost dsp { 17, 1, VoiceGroup::I };
 
   auto settings = createMidiSettings(1);
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
-  eventStage.onMIDIMessage({ 0x81, (uint8_t) 17, (uint8_t) 64 });
+  WHEN("W/o Velo")
+  {
+    eventStage.onMIDIMessage({ 0x81, (uint8_t) 17, (uint8_t) 127 });
 
-  CHECK(dsp.didReceiveKeyUp());
+    CHECK(dsp.didReceiveKeyUp());
+  }
+
+  WHEN("With Velo")
+  {
+    eventStage.onMIDIMessage({ 0xB1, 88, 127 });
+    eventStage.onMIDIMessage({ 0x81, (uint8_t) 17, (uint8_t) 127 });
+
+    CHECK(dsp.didReceiveKeyUp());
+  }
 }
 
 TEST_CASE("Input Event Stage MIDI In HWSource", "[MIDI]")
@@ -151,7 +171,16 @@ TEST_CASE("Input Event Stage MIDI In HWSource", "[MIDI]")
   auto settings = createMidiSettings(1);
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
-  eventStage.onMIDIMessage({ 0xB1, 0x14, 127 });
+  WHEN("Send 14 Bit")
+  {
+    eventStage.onMIDIMessage({ 0xB1, 52, 127 });
+    eventStage.onMIDIMessage({ 0xB1, 20, 127 });
+    CHECK(dsp.didReceiveHW());
+  }
 
-  CHECK(dsp.didReceiveHW());
+  WHEN("Send 7 Bit")
+  {
+    eventStage.onMIDIMessage({ 0xB1, 20, 127 });
+    CHECK(dsp.didReceiveHW());
+  }
 }

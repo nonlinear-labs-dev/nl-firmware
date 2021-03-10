@@ -157,6 +157,78 @@ public class MidiSettingsProvider {
             }
             return true;
         });
+
+        s.pedal1Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.pedalMapping1.selected != newValue) {
+                settings.pedalMapping1.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.pedal2Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.pedalMapping2.selected != newValue) {
+                settings.pedalMapping2.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.pedal3Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.pedalMapping3.selected != newValue) {
+                settings.pedalMapping3.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.pedal4Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.pedalMapping4.selected != newValue) {
+                settings.pedalMapping4.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.ribbon1Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.ribbonMapping1.selected != newValue) {
+                settings.ribbonMapping1.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.ribbon2Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.ribbonMapping2.selected != newValue) {
+                settings.ribbonMapping2.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.benderMapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.benderMapping.selected != newValue) {
+                settings.benderMapping.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.aftertouchMapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.aftertouchMapping.selected != newValue) {
+                settings.aftertouchMapping.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
 	}
 
 	protected void notifyClients() {

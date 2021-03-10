@@ -16,7 +16,9 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCurve;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.DisplayScaling;
@@ -25,7 +27,9 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiReceiveChannel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiReceiveChannelSplit;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiSendChannel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiSendChannelSplit;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalType;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.RibbonCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SelectionAutoScroll;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.StripeBrightness;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.VelocityCurve;
@@ -56,7 +60,8 @@ public class Setup extends Composite {
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
 			selectionAutoScroll, editParameter, scalingFactor, stripeBrightness, midiReceiveChannel, midiReceiveChannelSplit,
-			midiReceiveVelocityCurve, midiReceiveAftertouchCurve, midiSendChannel, midiSendChannelSplit;
+			midiReceiveVelocityCurve, midiReceiveAftertouchCurve, midiSendChannel, midiSendChannelSplit, pedal1Mapping, 
+			pedal2Mapping, pedal3Mapping, pedal4Mapping, ribbon1Mapping, ribbon2Mapping, benderMapping, aftertouchMapping;
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
@@ -141,6 +146,14 @@ public class Setup extends Composite {
 		fillListboxWithOptions(editParameter, LocalSettings.EditParameter.options);
 		fillListboxWithOptions(scalingFactor, LocalSettings.DisplayScalingFactor.options);
 		fillListboxWithOptions(stripeBrightness, LocalSettings.StripeBrightness.options);
+		fillListboxWithOptions(pedal1Mapping, MidiSettings.PedalMapping.options);
+		fillListboxWithOptions(pedal2Mapping, MidiSettings.PedalMapping.options);
+		fillListboxWithOptions(pedal3Mapping, MidiSettings.PedalMapping.options);
+		fillListboxWithOptions(pedal4Mapping, MidiSettings.PedalMapping.options);
+		fillListboxWithOptions(ribbon1Mapping, MidiSettings.RibbonMapping.options);
+		fillListboxWithOptions(ribbon2Mapping, MidiSettings.RibbonMapping.options);
+		fillListboxWithOptions(benderMapping, MidiSettings.BenderMapping.options);
+		fillListboxWithOptions(aftertouchMapping, MidiSettings.AftertouchMapping.options);
 
 		fillRadioButtons(presetGlitchSuppressionOn, presetGlitchSuppressionOff,
 				DeviceSettings.PresetGlitchSuppression.options);
@@ -258,6 +271,15 @@ public class Setup extends Composite {
 		localNotesOff.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.off));
 		localControllersOn.addValueChangeHandler(e -> settings.setLocalControllers(BooleanValues.on));
 		localControllersOff.addValueChangeHandler(e -> settings.setLocalControllers(BooleanValues.off));
+
+		pedal1Mapping.addChangeHandler(e -> settings.setPedal1Mapping(PedalCCMapping.values()[pedal1Mapping.getSelectedIndex()]));
+		pedal2Mapping.addChangeHandler(e -> settings.setPedal2Mapping(PedalCCMapping.values()[pedal2Mapping.getSelectedIndex()]));
+		pedal3Mapping.addChangeHandler(e -> settings.setPedal3Mapping(PedalCCMapping.values()[pedal3Mapping.getSelectedIndex()]));
+		pedal4Mapping.addChangeHandler(e -> settings.setPedal4Mapping(PedalCCMapping.values()[pedal4Mapping.getSelectedIndex()]));
+		ribbon1Mapping.addChangeHandler(e -> settings.setRibbon1Mapping(RibbonCCMapping.values()[ribbon1Mapping.getSelectedIndex()]));
+		ribbon2Mapping.addChangeHandler(e -> settings.setRibbon2Mapping(RibbonCCMapping.values()[ribbon2Mapping.getSelectedIndex()]));
+		aftertouchMapping.addChangeHandler(e -> settings.setAftertouchMapping(AftertouchCCMapping.values()[aftertouchMapping.getSelectedIndex()]));
+		benderMapping.addChangeHandler(e -> settings.setPitchbendMapping(BenderCCMapping.values()[benderMapping.getSelectedIndex()]));
 	}
 
 	public void connectUpdate() {
@@ -382,6 +404,15 @@ public class Setup extends Composite {
 		localPCOff.setValue(!t.localProgramChanges.value);
 		localNotesOn.setValue(t.localNotes.value);
 		localNotesOff.setValue(!t.localNotes.value);
+
+		pedal1Mapping.setSelectedIndex(t.pedalMapping1.selected);
+		pedal2Mapping.setSelectedIndex(t.pedalMapping2.selected);
+		pedal3Mapping.setSelectedIndex(t.pedalMapping3.selected);
+		pedal4Mapping.setSelectedIndex(t.pedalMapping4.selected);		
+		ribbon1Mapping.setSelectedIndex(t.ribbonMapping1.selected);	
+		ribbon2Mapping.setSelectedIndex(t.ribbonMapping2.selected);
+		aftertouchMapping.setSelectedIndex(t.aftertouchMapping.selected);
+		benderMapping.setSelectedIndex(t.benderMapping.selected);
 	}
 
 	public void switchPage(Button btn, DivElement page) {

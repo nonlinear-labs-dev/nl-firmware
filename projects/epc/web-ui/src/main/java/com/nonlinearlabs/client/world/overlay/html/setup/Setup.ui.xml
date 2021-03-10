@@ -320,7 +320,7 @@
 				</div>
 			</div>
 
-			<div ui:field="midiSettings" class="tabcontent">
+			<div ui:field="midiSettings" class="tabcontent midi-tab">
 				<div class="forms-container">
 					<div class="eins-he fl-j-center">
 						<h3 class="uneditable">Receive</h3>
@@ -466,6 +466,82 @@
 						<div class="w40p mw-fit-content">
 							<g:RadioButton ui:field="localControllersOn" name="rad_localControllers" value="true"></g:RadioButton>
 							<g:RadioButton ui:field="localControllersOff" name="rad_localControllers" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Mappings</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 1</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal1Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 2</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal2Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 3</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal3Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 4</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal4Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Ribbon 1</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon1Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Ribbon 2</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon2Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pitchbender</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="benderMapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Aftertouch</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="aftertouchMapping">
+							</g:ListBox>
 						</div>
 					</div>
 				</div>

@@ -68,6 +68,14 @@ public class SetupUpdater extends Updater {
 		m.put("SendProgramChanges", SetupModel.get().systemSettings.sendProgramChanges);
 		m.put("SendNotes", SetupModel.get().systemSettings.sendNotes);
 		m.put("SendControllers", SetupModel.get().systemSettings.sendControllers);
+		m.put("Pedal1Mapping", SetupModel.get().systemSettings.pedal1Mapping);
+		m.put("Pedal2Mapping", SetupModel.get().systemSettings.pedal2Mapping);
+		m.put("Pedal3Mapping", SetupModel.get().systemSettings.pedal3Mapping);
+		m.put("Pedal4Mapping", SetupModel.get().systemSettings.pedal4Mapping);
+		m.put("Ribbon1Mapping", SetupModel.get().systemSettings.ribbon1Mapping);
+		m.put("Ribbon2Mapping", SetupModel.get().systemSettings.ribbon2Mapping);
+		m.put("BenderMapping", SetupModel.get().systemSettings.benderMapping);
+		m.put("AftertouchMapping", SetupModel.get().systemSettings.aftertouchMapping);
 		return m;
 	}
 

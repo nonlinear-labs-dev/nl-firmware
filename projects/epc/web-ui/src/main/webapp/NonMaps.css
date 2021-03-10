@@ -1873,3 +1873,8 @@ button {
 .voicegroup-menu {
   min-width: 7em;
 }
+
+.midi-tab {
+  max-height: 25em;
+  overflow-y: auto;
+}

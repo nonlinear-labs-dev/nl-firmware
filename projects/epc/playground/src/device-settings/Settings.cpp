@@ -65,11 +65,15 @@
 #include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
 #include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
     , m_actions(std::make_unique<SettingsActions>(*this))
-    , m_saveJob(5000, std::bind(&Settings::save, this))
+    , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsPlaycontrollerWriteFallback(*this));
@@ -128,6 +132,15 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SendProgramChanges", new MidiSendProgramChangesSetting(*this));
   addSetting("SendNotes", new MidiSendNotesSetting(*this));
   addSetting("SendControllers", new MidiSendControllersSetting(*this));
+
+  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this));
+  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this));
+  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this));
+  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this));
+  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this));
+  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this));
+  addSetting("BenderMapping", new BenderCCMapping(*this));
+  addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
 }
 
 Settings::~Settings()
