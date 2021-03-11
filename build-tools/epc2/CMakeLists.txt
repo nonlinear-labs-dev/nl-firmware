@@ -1,4 +1,4 @@
-SET(ARCH_VERSION 2021-03-10) # a timestamp indicating the version of the packages needed to build an update
+SET(ARCH_VERSION 2021-03-11) # a timestamp indicating the version of the packages needed to build an update
 
 SET(SHARED_PACKAGES sudo glibmm libsoup freetype2 libpng png++ boost alsa) 
 SET(TARGET_PACKAGES cpupower base linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr alsa-tools alsa-utils linux-firmware shared-mime-info)
