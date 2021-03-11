@@ -14,7 +14,7 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
 void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
 {
   if(!m_tcdDecoder)
-    m_tcdDecoder = std::make_unique<TCDDecoder>();
+    m_tcdDecoder = std::make_unique<TCDDecoder>(m_dspHost, m_options);
 
   if(m_tcdDecoder->decode(tcdEvent))
   {
@@ -75,17 +75,17 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
-        if(checkKeyDownEnabled(decoder))
+        if(checkMIDIKeyDownEnabled(decoder))
           m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
         break;
 
       case DecoderEventType::KeyUp:
-        if(checkKeyUpEnabled(decoder))
+        if(checkMIDIKeyUpEnabled(decoder))
           m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
         break;
 
       case DecoderEventType::HardwareChange:
-        if(checkHardwareChangeEnabled(decoder))
+        if(checkMIDIHardwareChangeEnabled(decoder))
           m_dspHost->onHWChanged(decoder->getKeyOrControl(), decoder->getValue());
         break;
 
@@ -97,12 +97,21 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 
 void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder)
 {
-  MIDIOutType msg {};
-  //TODO put stuff from pDecoder into msg
-  m_midiOut(msg);
+  switch(pDecoder->getEventType())
+  {
+    case DecoderEventType::KeyDown:
+      sendKeyDownAsMidi(pDecoder);
+      return;
+    case DecoderEventType::KeyUp:
+      break;
+    case DecoderEventType::HardwareChange:
+      break;
+    case DecoderEventType::UNKNOWN:
+      break;
+  }
 }
 
-bool InputEventStage::checkKeyDownEnabled(MIDIDecoder *pDecoder)
+bool InputEventStage::checkMIDIKeyDownEnabled(MIDIDecoder *pDecoder)
 {
   const auto recNotes = m_options->shouldReceiveNotes();
   const auto channelMatches = pDecoder->getChannel() == m_options->getReceiveChannel()
@@ -110,15 +119,30 @@ bool InputEventStage::checkKeyDownEnabled(MIDIDecoder *pDecoder)
   return recNotes && channelMatches;
 }
 
-bool InputEventStage::checkKeyUpEnabled(MIDIDecoder *pDecoder)
+bool InputEventStage::checkMIDIKeyUpEnabled(MIDIDecoder *pDecoder)
 {
-  return checkKeyDownEnabled(pDecoder);
+  return checkMIDIKeyDownEnabled(pDecoder);
 }
 
-bool InputEventStage::checkHardwareChangeEnabled(MIDIDecoder *pDecoder)
+bool InputEventStage::checkMIDIHardwareChangeEnabled(MIDIDecoder *pDecoder)
 {
   const auto recControls = m_options->shouldReceiveControllers();
   const auto channelMatches = pDecoder->getChannel() == m_options->getReceiveChannel()
       || m_options->getReceiveChannel() == MidiReceiveChannel::Omni;
   return recControls && channelMatches;
+}
+
+void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder)
+{
+  using CC_Range_Vel = Midi::clipped14BitVelRange;
+
+  auto highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
+  uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
+  auto lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+  m_midiOut({ highResolutionVelocityStatusByte, 88, lsbVelByte });
+
+  auto statusByte = static_cast<uint8_t>(0x90);
+  uint8_t keyByte = static_cast<uint8_t>(pDecoder->getKeyOrController()) & 0x7F;
+  auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
+  m_midiOut({ statusByte, keyByte, msbVelByte });
 }
