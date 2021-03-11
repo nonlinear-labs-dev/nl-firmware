@@ -27,11 +27,16 @@ class InputEventStage
   MidiRuntimeOptions* m_options;
   MIDIOut m_midiOut;
 
-  void onTCDEvent(TCDDecoder* decoder);
-  void onMIDIEvent(MIDIDecoder* decoder);
-  void convertToAndSendMIDI(TCDDecoder* pDecoder);
   bool checkMIDIKeyDownEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIKeyUpEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder);
+  void onMIDIEvent(MIDIDecoder* decoder);
+  
+  void onTCDEvent(TCDDecoder* decoder);
   void sendKeyDownAsMidi(TCDDecoder* pDecoder);
+  void convertToAndSendMIDI(TCDDecoder* pDecoder);
+  void sendKeyUpAsMidi(TCDDecoder* pDecoder);
+  void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
+  void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
+  void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
 };

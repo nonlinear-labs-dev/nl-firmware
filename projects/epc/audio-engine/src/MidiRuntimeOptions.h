@@ -1,6 +1,7 @@
 #pragma once
 #include <nltools/messaging/Message.h>
 #include <variant>
+#include <synth/c15-audio-engine/midi_handle.h>
 
 class MidiRuntimeOptions
 {
@@ -30,8 +31,46 @@ class MidiRuntimeOptions
   static int channelEnumToInt(MidiReceiveChannel channel);
 
   void setBenderCC(BenderCC cc);
-
   void setAftertouchCC(AftertouchCC cc);
+
+  template <Midi::LSB::HWSourceMidiCC tLSB> int getCCFor()
+  {
+    if constexpr(tLSB == Midi::LSB::Ped1)
+      return decodeEnumLSB(pedal1CC);
+    else if constexpr(tLSB == Midi::LSB::Ped2)
+      return decodeEnumLSB(pedal2CC);
+    else if constexpr(tLSB == Midi::LSB::Ped3)
+      return decodeEnumLSB(pedal3CC);
+    else if constexpr(tLSB == Midi::LSB::Ped4)
+      return decodeEnumLSB(pedal4CC);
+    else if constexpr(tLSB == Midi::LSB::Rib1)
+      return decodeEnumLSB(ribbon1CC);
+    else if constexpr(tLSB == Midi::LSB::Rib2)
+      return decodeEnumLSB(ribbon2CC);
+    else
+      nltools_assertNotReached();
+  }
+
+  template <Midi::MSB::HWSourceMidiCC tMSB> int getCCFor()
+  {
+    if constexpr(tMSB == Midi::MSB::Ped1)
+      return decodeEnumMSB(pedal1CC);
+    else if constexpr(tMSB == Midi::MSB::Ped2)
+      return decodeEnumMSB(pedal2CC);
+    else if constexpr(tMSB == Midi::MSB::Ped3)
+      return decodeEnumMSB(pedal3CC);
+    else if constexpr(tMSB == Midi::MSB::Ped4)
+      return decodeEnumMSB(pedal4CC);
+    else if constexpr(tMSB == Midi::MSB::Rib1)
+      return decodeEnumMSB(ribbon1CC);
+    else if constexpr(tMSB == Midi::MSB::Rib2)
+      return decodeEnumMSB(ribbon2CC);
+    else
+      nltools_assertNotReached();
+  }
+
+  std::pair<bool, int> getBenderMSBCC();
+  std::pair<bool, int> getBenderLSBCC();
 
  private:
   MidiReceiveChannel m_receiveChannel;
@@ -59,6 +98,7 @@ class MidiRuntimeOptions
   AftertouchCC aftertouchCC;
   BenderCC benderCC;
 
+  //Mappings
   static int decodeEnumMSB(PedalCC);
   static int decodeEnumLSB(PedalCC);
 

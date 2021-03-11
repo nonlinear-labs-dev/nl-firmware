@@ -9,23 +9,6 @@ MIDIDecoder::MIDIDecoder(DSPInterface* dsp, MidiRuntimeOptions* options)
 {
 }
 
-DecoderEventType statusToType(uint8_t status)
-{
-  auto statusWithoutChannel = (status & 0b11110000);
-  switch(statusWithoutChannel)
-  {
-    case 144:
-      return DecoderEventType::KeyDown;
-    case 128:
-      return DecoderEventType::KeyUp;
-    case 176:
-      return DecoderEventType::HardwareChange;
-    default:
-      nltools::Log::warning("Unkown Status Byte:", (int) status);
-      return DecoderEventType::UNKNOWN;
-  }
-}
-
 enum class MIDIEventTypes : int
 {
   Note_Off = 0,

@@ -1,3 +1,4 @@
+#include <synth/C15Synth.h>
 #include "MidiRuntimeOptions.h"
 
 void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage& msg)
@@ -305,4 +306,14 @@ void MidiRuntimeOptions::setBenderCC(BenderCC cc)
 void MidiRuntimeOptions::setAftertouchCC(AftertouchCC cc)
 {
   aftertouchCC = cc;
+}
+
+std::pair<bool, int> MidiRuntimeOptions::getBenderMSBCC()
+{
+  return decodeEnumMSB(benderCC);
+}
+
+std::pair<bool, int> MidiRuntimeOptions::getBenderLSBCC()
+{
+  return decodeEnumLSB(benderCC);
 }
