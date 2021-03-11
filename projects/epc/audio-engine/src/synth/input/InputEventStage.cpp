@@ -26,7 +26,7 @@ void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
 void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
 {
   if(!m_midiDecoder)
-    m_midiDecoder = std::make_unique<MIDIDecoder>(m_dspHost);
+    m_midiDecoder = std::make_unique<MIDIDecoder>(m_dspHost, m_options);
 
   if(m_midiDecoder->decode(midiEvent))
   {
@@ -75,17 +75,17 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
-        if(m_options->shouldReceiveNotes() && decoder->getChannel() == m_options->getReceiveChannel())
+        if(checkKeyDownEnabled(decoder))
           m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
         break;
 
       case DecoderEventType::KeyUp:
-        if(m_options->shouldReceiveNotes() && decoder->getChannel() == m_options->getReceiveChannel())
+        if(checkKeyUpEnabled(decoder))
           m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
         break;
 
       case DecoderEventType::HardwareChange:
-        if(m_options->shouldReceiveControllers() && decoder->getChannel() == m_options->getReceiveChannel())
+        if(checkHardwareChangeEnabled(decoder))
           m_dspHost->onHWChanged(decoder->getKeyOrControl(), decoder->getValue());
         break;
 
@@ -100,4 +100,25 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder)
   MIDIOutType msg {};
   //TODO put stuff from pDecoder into msg
   m_midiOut(msg);
+}
+
+bool InputEventStage::checkKeyDownEnabled(MIDIDecoder *pDecoder)
+{
+  const auto recNotes = m_options->shouldReceiveNotes();
+  const auto channelMatches = pDecoder->getChannel() == m_options->getReceiveChannel()
+      || m_options->getReceiveChannel() == MidiReceiveChannel::Omni;
+  return recNotes && channelMatches;
+}
+
+bool InputEventStage::checkKeyUpEnabled(MIDIDecoder *pDecoder)
+{
+  return checkKeyDownEnabled(pDecoder);
+}
+
+bool InputEventStage::checkHardwareChangeEnabled(MIDIDecoder *pDecoder)
+{
+  const auto recControls = m_options->shouldReceiveControllers();
+  const auto channelMatches = pDecoder->getChannel() == m_options->getReceiveChannel()
+      || m_options->getReceiveChannel() == MidiReceiveChannel::Omni;
+  return recControls && channelMatches;
 }

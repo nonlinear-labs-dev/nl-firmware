@@ -1,13 +1,14 @@
 #pragma once
 #include <nltools/messaging/Message.h>
+#include <variant>
 
 class MidiRuntimeOptions
 {
  public:
-  [[nodiscard]] int getReceiveChannel() const;
-  [[nodiscard]] int getReceiveSplitChannel() const;
-  [[nodiscard]] int getSendChannel() const;
-  [[nodiscard]] int getSendSplitChannel() const;
+  [[nodiscard]] MidiReceiveChannel getReceiveChannel() const;
+  [[nodiscard]] MidiReceiveChannelSplit getReceiveSplitChannel() const;
+  [[nodiscard]] MidiSendChannel getSendChannel() const;
+  [[nodiscard]] MidiSendChannelSplit getSendSplitChannel() const;
 
   [[nodiscard]] bool shouldReceiveProgramChanges() const;
   [[nodiscard]] bool shouldReceiveNotes() const;
@@ -22,11 +23,17 @@ class MidiRuntimeOptions
 
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
+  int ccToMSBHardwareControlID(uint8_t i);
+  int ccToLSBHardwareControlID(uint8_t i);
+
+  static int channelEnumToInt(MidiSendChannel channel);
+  static int channelEnumToInt(MidiReceiveChannel channel);
+
  private:
-  int m_receiveChannel = -1;
-  int m_receiveSplitChannel = -1;
-  int m_sendChannel = -1;
-  int m_sendSplitChannel = -1;
+  MidiReceiveChannel m_receiveChannel;
+  MidiReceiveChannelSplit m_receiveSplitChannel;
+  MidiSendChannel m_sendChannel;
+  MidiSendChannelSplit m_sendSplitChannel;
 
   bool m_receiveProgramChanges = false;
   bool m_receiveNotes = false;
@@ -38,4 +45,25 @@ class MidiRuntimeOptions
 
   bool m_localNotes = false;
   bool m_localControllers = false;
+
+  PedalCC pedal1CC;
+  PedalCC pedal2CC;
+  PedalCC pedal3CC;
+  PedalCC pedal4CC;
+  RibbonCC ribbon1CC;
+  RibbonCC ribbon2CC;
+  AftertouchCC aftertouchCC;
+  BenderCC benderCC;
+
+  static int decodeEnumMSB(PedalCC);
+  static int decodeEnumLSB(PedalCC);
+
+  static int decodeEnumMSB(RibbonCC);
+  static int decodeEnumLSB(RibbonCC);
+
+  static std::pair<bool, int> decodeEnumMSB(AftertouchCC);
+  static std::pair<bool, int> decodeEnumLSB(AftertouchCC);
+
+  static std::pair<bool, int> decodeEnumMSB(BenderCC);
+  static std::pair<bool, int> decodeEnumLSB(BenderCC);
 };

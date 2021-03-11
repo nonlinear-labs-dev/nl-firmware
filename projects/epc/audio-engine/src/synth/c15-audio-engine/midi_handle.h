@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <parameter_declarations.h>
+#include <nltools/Types.h>
 
 namespace Midi
 {

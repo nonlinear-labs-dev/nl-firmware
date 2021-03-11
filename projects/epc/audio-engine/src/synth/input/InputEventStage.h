@@ -30,4 +30,7 @@ class InputEventStage
   void onTCDEvent(TCDDecoder* decoder);
   void onMIDIEvent(MIDIDecoder* decoder);
   void convertToAndSendMIDI(TCDDecoder* pDecoder);
+  bool checkKeyDownEnabled(MIDIDecoder* pDecoder);
+  bool checkKeyUpEnabled(MIDIDecoder* pDecoder);
+  bool checkHardwareChangeEnabled(MIDIDecoder* pDecoder);
 };

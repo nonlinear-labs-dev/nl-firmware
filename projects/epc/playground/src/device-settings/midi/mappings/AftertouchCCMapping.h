@@ -16,6 +16,7 @@ class AftertouchCCMapping : public EnumSetting<AftertouchCC>
     static auto ret = StringTools::convert(getAllStrings<AftertouchCC>());
     return ret;
   }
+
   const std::vector<Glib::ustring>& enumToDisplayString() const override
   {
     static std::vector<Glib::ustring> ret = {

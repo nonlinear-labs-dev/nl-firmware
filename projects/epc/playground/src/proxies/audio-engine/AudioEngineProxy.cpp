@@ -37,6 +37,10 @@
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/send/MidiSendControllersSetting.h>
 #include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -478,65 +482,9 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
                           MidiReceiveChannelSetting, MidiReceiveChannelSplitSetting, MidiReceiveProgramChangesSetting,
                           MidiReceiveControllersSetting, MidiReceiveNotesSetting, MidiReceiveAftertouchCurveSetting,
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
-                          MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting>(settings);
-}
-
-int AudioEngineProxy::channelToMessageInt(MidiSendChannel channel)
-{
-  switch(channel)
-  {
-    case MidiSendChannel::None:
-      return -1;
-    default:
-      return static_cast<int>(channel) - 1;
-  }
-
-  nltools_assertNotReached();
-}
-
-int AudioEngineProxy::channelToMessageInt(MidiSendChannelSplit channel)
-{
-  auto settings = Application::get().getSettings();
-  switch(channel)
-  {
-    case MidiSendChannelSplit::None:
-      return -1;
-    case MidiSendChannelSplit::Follow_I:
-      return channelToMessageInt(settings->getSetting<MidiSendChannelSetting>()->get());
-    default:
-      return static_cast<int>(channel) - 2;
-  }
-  nltools_assertNotReached();
-}
-
-int AudioEngineProxy::channelToMessageInt(MidiReceiveChannel channel)
-{
-  switch(channel)
-  {
-    case MidiReceiveChannel::None:
-      return -1;
-    case MidiReceiveChannel::Omni:
-      return 16;
-    default:
-      return static_cast<int>(channel)
-          - 2;  // - 2 because none is before Channel_1 and channels are 1 index towards the human and 0 indexed in midi
-  }
-}
-
-int AudioEngineProxy::channelToMessageInt(MidiReceiveChannelSplit channel)
-{
-  auto settings = Application::get().getSettings();
-  switch(channel)
-  {
-    case MidiReceiveChannelSplit::None:
-      return -1;
-    case MidiReceiveChannelSplit::Omni:
-      return 16;
-    case MidiReceiveChannelSplit::Follow_I:
-      return channelToMessageInt(settings->getSetting<MidiReceiveChannelSetting>()->get());
-    default:
-      return static_cast<int>(channel) - 1;
-  }
+                          MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting,
+                          PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
+                          RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping>(settings);
 }
 
 void AudioEngineProxy::scheduleMidiSettingsMessage()
@@ -544,10 +492,10 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
   m_sendMidiSettingThrottler.doTask([this]() {
     auto settings = Application::get().getSettings();
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.sendChannel = channelToMessageInt(settings->getSetting<MidiSendChannelSetting>()->get());
-    msg.sendSplitChannel = channelToMessageInt(settings->getSetting<MidiSendChannelSplitSetting>()->get());
-    msg.receiveChannel = channelToMessageInt(settings->getSetting<MidiReceiveChannelSetting>()->get());
-    msg.receiveSplitChannel = channelToMessageInt(settings->getSetting<MidiReceiveChannelSplitSetting>()->get());
+    msg.sendChannel = settings->getSetting<MidiSendChannelSetting>()->get();
+    msg.sendSplitChannel = settings->getSetting<MidiSendChannelSplitSetting>()->get();
+    msg.receiveChannel = settings->getSetting<MidiReceiveChannelSetting>()->get();
+    msg.receiveSplitChannel = settings->getSetting<MidiReceiveChannelSplitSetting>()->get();
 
     msg.sendNotes = settings->getSetting<MidiSendNotesSetting>()->get();
     msg.sendProgramChange = settings->getSetting<MidiSendProgramChangesSetting>()->get();
@@ -559,6 +507,15 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
 
     msg.localNotes = settings->getSetting<LocalNotesSetting>()->get();
     msg.localControllers = settings->getSetting<LocalControllersSetting>()->get();
+
+    msg.pedal1cc = settings->getSetting<PedalCCMapping<1>>()->get();
+    msg.pedal2cc = settings->getSetting<PedalCCMapping<2>>()->get();
+    msg.pedal3cc = settings->getSetting<PedalCCMapping<3>>()->get();
+    msg.pedal4cc = settings->getSetting<PedalCCMapping<4>>()->get();
+    msg.ribbon1cc = settings->getSetting<RibbonCCMapping<1>>()->get();
+    msg.ribbon2cc = settings->getSetting<RibbonCCMapping<2>>()->get();
+    msg.aftertouchcc = settings->getSetting<AftertouchCCMapping>()->get();
+    msg.bendercc = settings->getSetting<BenderCCMapping>()->get();
 
     nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
   });

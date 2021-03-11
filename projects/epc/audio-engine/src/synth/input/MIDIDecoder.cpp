@@ -1,9 +1,11 @@
 #include "MIDIDecoder.h"
 #include <nltools/logging/Log.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
+#include "MidiRuntimeOptions.h"
 
-MIDIDecoder::MIDIDecoder(DSPInterface* dsp)
+MIDIDecoder::MIDIDecoder(DSPInterface* dsp, MidiRuntimeOptions* options)
     : m_dsp { dsp }
+    , m_options { options }
 {
 }
 
@@ -44,19 +46,19 @@ bool MIDIDecoder::decode(const MidiEvent& event)
   {
     case MIDIEventTypes::Note_Off:
     {
-      const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
+      const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_MidiLSB, 0);
       value = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
       keyOrControl = _data0;
-      m_midiChannel = Midi::Channel::statusToChannel(status);
+      m_midiChannel = statusToChannel(status);
       m_type = DecoderEventType::KeyUp;
     }
     break;
     case MIDIEventTypes::Note_On:
     {
-      const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
+      const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_MidiLSB, 0);
       value = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
       keyOrControl = _data0;
-      m_midiChannel = Midi::Channel::statusToChannel(status);
+      m_midiChannel = statusToChannel(status);
       if(CC_Range_Vel::isValidNoteOnVelocity(fullResVel))
         m_type = DecoderEventType::KeyDown;
       else
@@ -64,95 +66,21 @@ bool MIDIDecoder::decode(const MidiEvent& event)
     }
     break;
     case MIDIEventTypes::CC:
-      switch((int) _data0)
-      {
-        case Midi::getMSB::getCC<Midi::MSB::Ped1>():
-          processMidiForHWSource(0, _data1);
-          keyOrControl = 0;
-          m_midiChannel = Midi::Channel::statusToChannel(status);
-          m_type = DecoderEventType::HardwareChange;
-          break;
-
-        case Midi::getMSB::getCC<Midi::MSB::Ped2>():
-          processMidiForHWSource(1, _data1);
-          keyOrControl = 1;
-          m_midiChannel = Midi::Channel::statusToChannel(status);
-          m_type = DecoderEventType::HardwareChange;
-          break;
-
-        case Midi::getMSB::getCC<Midi::MSB::Ped3>():
-          processMidiForHWSource(2, _data1);
-          keyOrControl = 2;
-          m_midiChannel = Midi::Channel::statusToChannel(status);
-          m_type = DecoderEventType::HardwareChange;
-          break;
-
-        case Midi::getMSB::getCC<Midi::MSB::Ped4>():
-          processMidiForHWSource(3, _data1);
-          keyOrControl = 3;
-          m_midiChannel = Midi::Channel::statusToChannel(status);
-          m_type = DecoderEventType::HardwareChange;
-          break;
-
-        case Midi::getMSB::getCC<Midi::MSB::Rib1>():
-          processMidiForHWSource(6, _data1);
-          keyOrControl = 6;
-          m_midiChannel = Midi::Channel::statusToChannel(status);
-          m_type = DecoderEventType::HardwareChange;
-          break;
-
-        case Midi::getMSB::getCC<Midi::MSB::Rib2>():
-          processMidiForHWSource(7, _data1);
-          keyOrControl = 7;
-          m_midiChannel = Midi::Channel::statusToChannel(status);
-          m_type = DecoderEventType::HardwareChange;
-          break;
-
-        case Midi::getLSB::getCC<Midi::LSB::Ped1>():
-          m_hwSourcesMidiLSB[0] = _data1 & 0x7F;
-          break;
-
-        case Midi::getLSB::getCC<Midi::LSB::Ped2>():
-          m_hwSourcesMidiLSB[1] = _data1 & 0x7F;
-          break;
-
-        case Midi::getLSB::getCC<Midi::LSB::Ped3>():
-          m_hwSourcesMidiLSB[2] = _data1 & 0x7F;
-          break;
-
-        case Midi::getLSB::getCC<Midi::LSB::Ped4>():
-          m_hwSourcesMidiLSB[3] = _data1 & 0x7F;
-          break;
-
-        case Midi::getLSB::getCC<Midi::LSB::Rib1>():
-          m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
-          break;
-
-        case Midi::getLSB::getCC<Midi::LSB::Rib2>():
-          m_hwSourcesMidiLSB[7] = _data1 & 0x7F;
-          break;
-
-        case Midi::getLSB::getCC<Midi::LSB::Vel>():
-          m_velocityLSB = _data1 & 0x7F;
-          break;
-
-        default:
-          break;
-      }
+      handleIncommingCC(event);
       break;
     case MIDIEventTypes::Mono_Aftertouch:
-      m_hwSourcesMidiLSB[5] = 0;
+      m_MidiLSB = 0;
       keyOrControl = 5;
       value = CC_Range_7_Bit::decodeUnipolarMidiValue(_data0);
-      m_midiChannel = Midi::Channel::statusToChannel(status);
+      m_midiChannel = statusToChannel(status);
       m_type = DecoderEventType::HardwareChange;
       break;
 
     case MIDIEventTypes::Bender:
-      m_hwSourcesMidiLSB[4] = _data0 & 0x7F;
+      m_MidiLSB = _data0 & 0x7F;
       keyOrControl = 4;
-      value = CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_hwSourcesMidiLSB[4], 0));
-      m_midiChannel = Midi::Channel::statusToChannel(status);
+      value = CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_MidiLSB, 0));
+      m_midiChannel = statusToChannel(status);
       m_type = DecoderEventType::HardwareChange;
       break;
 
@@ -187,17 +115,44 @@ void MIDIDecoder::processMidiForHWSource(int id, uint32_t _data)
 
 template <typename Range> void MIDIDecoder::processBipolarMidiController(const uint32_t dataByte, int id)
 {
-  auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
+  auto midiVal = (dataByte << 7) + std::exchange(m_MidiLSB, 0);
   value = Range::decodeBipolarMidiValue(midiVal);
 }
 
 template <typename Range> void MIDIDecoder::processUnipolarMidiController(const uint32_t dataByte, int id)
 {
-  auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
+  auto midiVal = (dataByte << 7) + std::exchange(m_MidiLSB, 0);
   value = Range::decodeUnipolarMidiValue(midiVal);
 }
 
-int MIDIDecoder::getChannel() const
+MidiReceiveChannel MIDIDecoder::getChannel() const
 {
   return m_midiChannel;
+}
+
+MidiReceiveChannel MIDIDecoder::statusToChannel(const uint8_t status)
+{
+  return static_cast<MidiReceiveChannel>((status & 0b00001111) + 2);
+}
+
+void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
+{
+  const auto status = event.raw[0];
+  const auto _data0 = event.raw[1];
+  const auto _data1 = event.raw[2];
+
+  auto hwSourceIDLSB = m_options->ccToLSBHardwareControlID(_data0);
+  auto hwSourceIDMSB = m_options->ccToMSBHardwareControlID(_data0);
+
+  if(hwSourceIDMSB != -1)
+  {
+    processMidiForHWSource(hwSourceIDMSB, _data1);
+    keyOrControl = hwSourceIDMSB;
+    m_midiChannel = statusToChannel(status);
+    m_type = DecoderEventType::HardwareChange;
+  }
+  else if(hwSourceIDLSB != -1)
+  {
+    m_MidiLSB = _data1 & 0x7F;
+  }
 }

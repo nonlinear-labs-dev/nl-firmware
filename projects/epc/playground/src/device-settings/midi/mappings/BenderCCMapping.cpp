@@ -5,11 +5,13 @@ BenderCCMapping::BenderCCMapping(UpdateDocumentContributor& u)
     : EnumSetting<BenderCC>(u, BenderCC::Pitchbend)
 {
 }
+
 const std::vector<Glib::ustring>& BenderCCMapping::enumToString() const
 {
   static auto ret = StringTools::convert(getAllStrings<BenderCC>());
   return ret;
 }
+
 const std::vector<Glib::ustring>& BenderCCMapping::enumToDisplayString() const
 {
   static std::vector<Glib::ustring> ret

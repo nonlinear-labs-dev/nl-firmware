@@ -67,9 +67,13 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
-    const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | m_midiOptions.getSendChannel();
-    m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
-    m_syncExternalsWaiter.notify_all();
+    const int sendChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getSendChannel());
+    if(sendChannel != -1)
+    {
+      const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendChannel;
+      m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
+      m_syncExternalsWaiter.notify_all();
+    }
   });
 
   receive<nltools::msg::Midi::SimpleMessage>(EndPoint::ExternalMidiOverIPClient, [&](const auto& msg) {
@@ -169,7 +173,8 @@ bool C15Synth::filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) cons
   if(isSysex(statusByte))
     return false;
 
-  const auto allowedChannel = m_midiOptions.getSendChannel();
+  //TODO remove this function
+  const auto allowedChannel = 1;  //m_midiOptions.getSendChannel();
   const auto channel = (statusByte | (MIDI_CHANNEL_MASK & allowedChannel));
   event.rawBytes[0] = channel;
 
@@ -179,7 +184,8 @@ bool C15Synth::filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) cons
   const auto isControlChangeEvent = matchPattern(statusByte, MIDI_CONTROLCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
   const auto isPitchbendEvent = matchPattern(statusByte, MIDI_PITCHBEND_PATTERN, MIDI_EVENT_TYPE_MASK);
   const auto isProgramChangeEvent = matchPattern(statusByte, MIDI_PROGRAMCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
-  const auto sendChannelIsNone = m_midiOptions.getSendChannel() == -1;
+  const auto sendChannel = m_midiOptions.getSendChannel();
+  const auto sendChannelIsNone = 1 == -1;
 
   if(isNoteEvent && !sendChannelIsNone)
     return m_midiOptions.shouldSendNotes();
@@ -207,8 +213,9 @@ bool C15Synth::filterMidiInEvent(const MidiEvent& event) const
   if(isSysex(statusByte))
     return false;
 
+  //TODO fix / remove this whole function
   const auto channel = (statusByte & MIDI_CHANNEL_MASK);
-  const auto allowedChannel = m_midiOptions.getReceiveChannel();
+  const auto allowedChannel = 1;  //m_midiOptions.getReceiveChannel();
 
   if(channel == allowedChannel || allowedChannel == MIDI_CHANNEL_OMNI)
   {

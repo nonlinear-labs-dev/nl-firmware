@@ -69,10 +69,6 @@ class AudioEngineProxy : public sigc::trackable
   template <typename T> void subscribeToMidiSetting(Settings* s);
   template <typename... TT> void subscribeToMidiSettings(Settings* s);
   void connectMidiSettingsToAudioEngineMessage();
-  static int channelToMessageInt(MidiSendChannel channel);
-  static int channelToMessageInt(MidiSendChannelSplit channel);
-  static int channelToMessageInt(MidiReceiveChannel channel);
-  int channelToMessageInt(MidiReceiveChannelSplit channel);
   void scheduleMidiSettingsMessage();
 
   Throttler m_sendMidiSettingThrottler { std::chrono::milliseconds { 250 } };
