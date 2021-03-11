@@ -18,13 +18,6 @@ struct SampleFrame
   Sample right;
 };
 
-struct __attribute__((packed)) SampleInt24
-{
-  uint8_t a;
-  uint8_t b;
-  uint8_t c;
-};
-
 using SampleInt16 = int16_t;
 using SampleInt32 = int32_t;
 using SampleFloat32 = float;

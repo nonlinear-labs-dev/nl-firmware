@@ -23,11 +23,6 @@ template <> struct AlsaFormatToSample<SND_PCM_FORMAT_S16_LE>
   using Sample = SampleInt16;
 };
 
-template <> struct AlsaFormatToSample<SND_PCM_FORMAT_S24_3LE>
-{
-  using Sample = SampleInt24;
-};
-
 class AudioWriterBase
 {
  public:
@@ -51,16 +46,10 @@ class AudioWriterBase
     out = std::roundf(in * std::numeric_limits<int16_t>::max());
   }
 
-  inline static void convertSample(SampleInt24& out, const Sample in)
-  {
-    constexpr auto factor = static_cast<float>(1 << 23) - 1;
-    int32_t i = std::roundf(in * factor);
-    memcpy(&out, &i, 3);
-  }
-
   inline static void convertSample(SampleInt32& out, const Sample in)
   {
-    out = std::roundf(in * std::numeric_limits<int32_t>::max());
+    constexpr float f = std::numeric_limits<int32_t>::max() - 64;
+    out = std::roundf(in * f);
   }
 
   template <typename TargetFrame, int channels> snd_pcm_sframes_t write(const SampleFrame* frames, size_t numFrames)
