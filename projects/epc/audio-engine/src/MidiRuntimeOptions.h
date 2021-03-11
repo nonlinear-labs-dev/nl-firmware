@@ -29,6 +29,10 @@ class MidiRuntimeOptions
   static int channelEnumToInt(MidiSendChannel channel);
   static int channelEnumToInt(MidiReceiveChannel channel);
 
+  void setBenderCC(BenderCC cc);
+
+  void setAftertouchCC(AftertouchCC cc);
+
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;

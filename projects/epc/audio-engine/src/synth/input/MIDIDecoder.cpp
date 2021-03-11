@@ -141,8 +141,8 @@ void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
   const auto _data0 = event.raw[1];
   const auto _data1 = event.raw[2];
 
-  auto hwSourceIDLSB = m_options->ccToLSBHardwareControlID(_data0);
   auto hwSourceIDMSB = m_options->ccToMSBHardwareControlID(_data0);
+  auto hwSourceIDLSB = m_options->ccToLSBHardwareControlID(_data0);
 
   if(hwSourceIDMSB != -1)
   {

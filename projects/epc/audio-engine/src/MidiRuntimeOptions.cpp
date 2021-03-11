@@ -292,7 +292,17 @@ int MidiRuntimeOptions::channelEnumToInt(MidiReceiveChannel channel)
   if(channel == MidiReceiveChannel::None)
     return -1;
   if(channel == MidiReceiveChannel::Omni)
-    return 187;  //TODO think about how this can be more explicit and less error prone
+    return -2;  //todo reevaluate
 
   return static_cast<int>(channel) - 2;
+}
+
+void MidiRuntimeOptions::setBenderCC(BenderCC cc)
+{
+  benderCC = cc;
+}
+
+void MidiRuntimeOptions::setAftertouchCC(AftertouchCC cc)
+{
+  aftertouchCC = cc;
 }

@@ -107,15 +107,15 @@ class PassOnHWReceived : public MockDSPHost
   const float m_value;
 };
 
-MidiRuntimeOptions createMidiSettings(MidiReceiveChannel receiveChannel, MidiReceiveChannelSplit secRec)
+MidiRuntimeOptions createMidiSettings()
 {
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
   msg.receiveNotes = true;
   msg.receiveControllers = true;
   msg.receiveProgramChange = true;
-  msg.receiveChannel = receiveChannel;
-  msg.receiveSplitChannel = secRec;
+  msg.receiveChannel = MidiReceiveChannel::Omni;
+  msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
 
   msg.bendercc = BenderCC::Pitchbend;
   msg.aftertouchcc = AftertouchCC::ChannelPressure;
@@ -134,7 +134,7 @@ TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 {
   PassOnKeyDownHost dsp { 17, 1, VoiceGroup::I };
 
-  auto settings = createMidiSettings(MidiReceiveChannel::CH_1, MidiReceiveChannelSplit::CH_1);
+  auto settings = createMidiSettings();
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
   WHEN("Send 14 Bit")
@@ -155,7 +155,7 @@ TEST_CASE("Input Event Stage MIDI In KeyUp", "[MIDI]")
 {
   PassOnKeyUpHost dsp { 17, 1, VoiceGroup::I };
 
-  auto settings = createMidiSettings(MidiReceiveChannel::CH_1, MidiReceiveChannelSplit::CH_1);
+  auto settings = createMidiSettings();
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
   WHEN("W/o Velo")
@@ -178,7 +178,7 @@ TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
 {
   PassOnHWReceived dsp { 0, 1 };
 
-  auto settings = createMidiSettings(MidiReceiveChannel::Omni, MidiReceiveChannelSplit::CH_1);
+  auto settings = createMidiSettings();
   InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
   WHEN("Send 14 Bit")
@@ -191,6 +191,70 @@ TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
   WHEN("Send 7 Bit")
   {
     eventStage.onMIDIMessage({ 0xB0, 20, 127 });
+    CHECK(dsp.didReceiveHW());
+  }
+}
+
+TEST_CASE("MIDI in of Bender as Channel Pitchbend", "[MIDI]")
+{
+  PassOnHWReceived dsp { 4, 1 };
+  auto settings = createMidiSettings();
+  InputEventStage eventStage(&dsp, &settings, [](auto msg) { CHECK(false); });
+  eventStage.onMIDIMessage({ 0b11100000, 127, 127 });
+  CHECK(dsp.didReceiveHW());
+}
+
+TEST_CASE("MIDI in of Bender as Control Change", "[MIDI]")
+{
+  PassOnHWReceived dsp { 4, 1 };
+  auto settings = createMidiSettings();
+  settings.setBenderCC(BenderCC::CC01);
+
+  InputEventStage eventStage(&dsp, &settings, [](auto) { CHECK(false); });
+
+  WHEN("Send 14 Bit")
+  {
+    eventStage.onMIDIMessage({ 0xB0, 33, 127 });
+    eventStage.onMIDIMessage({ 0xB0, 1, 127 });
+    CHECK(dsp.didReceiveHW());
+  }
+
+  WHEN("Send 7 Bit")
+  {
+    eventStage.onMIDIMessage({ 0xB0, 1, 127 });
+    CHECK(dsp.didReceiveHW());
+  }
+}
+
+TEST_CASE("MIDI in of Aftertouch as Channel Pressure", "[MIDI]")
+{
+  PassOnHWReceived dsp { 5, 1 };
+  auto settings = createMidiSettings();
+  settings.setAftertouchCC(AftertouchCC::ChannelPressure);
+
+  InputEventStage eventStage(&dsp, &settings, [](auto) { CHECK(false); });
+  eventStage.onMIDIMessage({ 0b11010000, 127, 0 });
+  CHECK(dsp.didReceiveHW());
+}
+
+TEST_CASE("MIDI in of Aftertouch as Control Change", "[MIDI]")
+{
+  PassOnHWReceived dsp { 5, 1 };
+  auto settings = createMidiSettings();
+  settings.setAftertouchCC(AftertouchCC::CC01);
+
+  InputEventStage eventStage(&dsp, &settings, [](auto) { CHECK(false); });
+
+  WHEN("Send 14 Bit")
+  {
+    eventStage.onMIDIMessage({ 0xB0, 33, 127 });
+    eventStage.onMIDIMessage({ 0xB0, 1, 127 });
+    CHECK(dsp.didReceiveHW());
+  }
+
+  WHEN("Send 7 Bit")
+  {
+    eventStage.onMIDIMessage({ 0xB0, 1, 127 });
     CHECK(dsp.didReceiveHW());
   }
 }
