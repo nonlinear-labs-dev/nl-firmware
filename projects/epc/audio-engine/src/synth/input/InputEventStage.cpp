@@ -8,30 +8,26 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
     : m_dspHost { dspHost }
     , m_options { options }
     , m_midiOut { std::move(outCB) }
+    , m_midiDecoder(dspHost, options)
+    , m_tcdDecoder(dspHost, options)
 {
 }
 
 void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
 {
-  if(!m_tcdDecoder)
-    m_tcdDecoder = std::make_unique<TCDDecoder>(m_dspHost, m_options);
-
-  if(m_tcdDecoder->decode(tcdEvent))
+  if(m_tcdDecoder.decode(tcdEvent))
   {
-    onTCDEvent(m_tcdDecoder.get());
-    m_tcdDecoder.reset(nullptr);
+    onTCDEvent(&m_tcdDecoder);
+    m_tcdDecoder.reset();
   }
 }
 
 void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
 {
-  if(!m_midiDecoder)
-    m_midiDecoder = std::make_unique<MIDIDecoder>(m_dspHost, m_options);
-
-  if(m_midiDecoder->decode(midiEvent))
+  if(m_midiDecoder.decode(midiEvent))
   {
-    onMIDIEvent(m_midiDecoder.get());
-    m_midiDecoder.reset(nullptr);
+    onMIDIEvent(&m_midiDecoder);
+    m_midiDecoder.reset();
   }
 }
 

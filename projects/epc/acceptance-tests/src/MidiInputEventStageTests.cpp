@@ -26,6 +26,49 @@ MidiRuntimeOptions createMidiSettings()
   return options;
 }
 
+class MockMIDIDecoder : public MIDIDecoder
+{
+ public:
+  using MIDIDecoder::MIDIDecoder;
+  void setValue(float v)
+  {
+    value = v;
+  }
+
+  void setType(DecoderEventType type)
+  {
+    m_type = type;
+  }
+
+  void setKeyOrCtrl(int k)
+  {
+    keyOrControl = k;
+  }
+
+  void setChannel(MidiReceiveChannel c)
+  {
+    m_midiChannel = c;
+  }
+};
+
+TEST_CASE("Midi Decoder Reset", "[MIDI]")
+{
+  MockDSPHost host;
+  auto setting = createMidiSettings();
+  MockMIDIDecoder decoder(&host, &setting);
+
+  decoder.setChannel(MidiReceiveChannel::CH_1);
+  decoder.setKeyOrCtrl(12);
+  decoder.setType(DecoderEventType::KeyUp);
+  decoder.setValue(187);
+  
+  decoder.reset();
+  CHECK(decoder.getValue() == 0);
+  CHECK(decoder.getEventType() == DecoderEventType::UNKNOWN);
+  CHECK(decoder.getKeyOrControl() == -1);
+  CHECK(decoder.getChannel() == MidiReceiveChannel::None);
+}
+
 TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 {
   PassOnKeyDownHost dsp { 17, 1, VoiceGroup::I };

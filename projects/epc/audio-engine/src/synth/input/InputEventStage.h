@@ -21,8 +21,8 @@ class InputEventStage
   void onMIDIMessage(const MidiEvent& midiEvent);
 
  private:
-  std::unique_ptr<TCDDecoder> m_tcdDecoder;
-  std::unique_ptr<MIDIDecoder> m_midiDecoder;
+  TCDDecoder m_tcdDecoder;
+  MIDIDecoder m_midiDecoder;
   DSPInterface* m_dspHost;
   MidiRuntimeOptions* m_options;
   MIDIOut m_midiOut;

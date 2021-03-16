@@ -7,6 +7,7 @@ MIDIDecoder::MIDIDecoder(DSPInterface* dsp, MidiRuntimeOptions* options)
     : m_dsp { dsp }
     , m_options { options }
 {
+  reset();
 }
 
 enum class MIDIEventTypes : int
@@ -138,4 +139,13 @@ void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
   {
     m_MidiLSB = _data1 & 0x7F;
   }
+}
+
+void MIDIDecoder::reset()
+{
+  m_MidiLSB = 0;
+  m_type = DecoderEventType::UNKNOWN;
+  keyOrControl = -1;
+  value = 0;
+  m_midiChannel = MidiReceiveChannel::None;
 }

@@ -16,13 +16,13 @@ bool TCDDecoder::decode(const MidiEvent &event)
   const uint32_t st = (_status & 0b01111111) >> 4;
 
   //TODO implement Bender and Aftertouch?
-  
+
   if(st == 6)
   {
     if(channel >= 0 && channel <= 7)
     {
       uint32_t arg = _data1 + (_data0 << 7);
-      value = static_cast<float>(arg);
+      value = static_cast<float>(arg) * c_norm_vel;
       keyOrController = channel;
       m_type = DecoderEventType::HardwareChange;
     }
@@ -67,4 +67,11 @@ int TCDDecoder::getKeyOrController() const
 float TCDDecoder::getValue() const
 {
   return value;
+}
+
+void TCDDecoder::reset()
+{
+  value = 0;
+  m_type = DecoderEventType::UNKNOWN;
+  keyOrController = -1;
 }

@@ -19,18 +19,22 @@ class MIDIDecoder
   [[nodiscard]] float getValue() const;
   [[nodiscard]] MidiReceiveChannel getChannel() const;
 
+  void reset();
+
  private:
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
   using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
   using CC_Range_Vel = Midi::clipped14BitVelRange;
 
+ protected:
   int keyOrControl = -1;
-  uint8_t m_MidiLSB;
+  uint8_t m_MidiLSB = 0;
   float value = 0;  // value or velocity
+  DecoderEventType m_type = DecoderEventType::UNKNOWN;
   MidiReceiveChannel m_midiChannel = MidiReceiveChannel::None;
 
-  DecoderEventType m_type = DecoderEventType::UNKNOWN;
+ private:
   DSPInterface* m_dsp;
   MidiRuntimeOptions* m_options;
 

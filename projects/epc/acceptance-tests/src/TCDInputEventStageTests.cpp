@@ -41,6 +41,42 @@ constexpr static uint8_t TCD_KEY_DOWN = 14;
 constexpr static uint8_t TCD_KEY_UP = 15;
 constexpr static uint8_t TCD_UNUSED_VAL = 0x00;
 
+class MockTCDDecoder : public TCDDecoder
+{
+ public:
+  using TCDDecoder::TCDDecoder;
+  void setValue(float v)
+  {
+    value = v;
+  }
+
+  void setType(DecoderEventType type)
+  {
+    m_type = type;
+  }
+
+  void setKeyOrCtrl(int k)
+  {
+    keyOrController = k;
+  }
+};
+
+TEST_CASE("TCD Decoder Reset", "[TCD]")
+{
+  MockDSPHost host;
+  auto setting = createTCDSettings();
+  MockTCDDecoder decoder(&host, &setting);
+
+  decoder.setKeyOrCtrl(12);
+  decoder.setType(DecoderEventType::KeyUp);
+  decoder.setValue(187);
+
+  decoder.reset();
+  CHECK(decoder.getValue() == 0);
+  CHECK(decoder.getEventType() == DecoderEventType::UNKNOWN);
+  CHECK(decoder.getKeyOrController() == -1);
+}
+
 TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;

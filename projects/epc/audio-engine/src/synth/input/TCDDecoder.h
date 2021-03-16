@@ -14,11 +14,14 @@ class TCDDecoder
   [[nodiscard]] int getKeyOrController() const;
   [[nodiscard]] float getValue() const;
 
- private:
+  void reset();
+
+ protected:
   int keyOrController = -1;
   float value = 0;
   DecoderEventType m_type = DecoderEventType::UNKNOWN;
 
+ private:
   DSPInterface* m_dsp;
   MidiRuntimeOptions* m_options;
 
