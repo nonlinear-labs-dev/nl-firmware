@@ -1,4 +1,7 @@
-/* changed */
+html {
+	background-color: #000;	
+}
+
 body {
     position: absolute;
     display: flex;
@@ -38,7 +41,9 @@ body {
 
 #waveform {
     position: absolute;
-    background-color: #333;
+    background-color: #3c3c3c;
+    border: 1px solid #555;
+    overflow: hidden;
     left: 0;
     top: 0;
     right: 0;
@@ -49,8 +54,8 @@ body {
     top: 0;
     bottom: 0;
     position: absolute;
-    background-color: white;
-    opacity: 0.5;
+    background-color: rgba(174, 206, 255, 0.4);
+	box-shadow: #222 0px 0px 10px;
     pointer-events: none;
 }
 
@@ -76,18 +81,16 @@ body {
     justify-content: center;
 }
 
-/* changed */
 #info {
-	font-size: 110%;
-	line-height: 105%;
+/* 	font-size: 110%; */
+	line-height: 115%;
 	color: #ddd;	
     position: absolute;
-    left: 10px;
-    top: 10px;
+    left: 15px;
+    top: 15px;
     background: rgba(128, 128, 128, 0.5);
-	box-shadow: #222 1px 1px 3px;
+	box-shadow: #222 1px 1px 5px;
     padding: 2px 7px;
-    border: 1px solid #888;
     border-radius: 3px;
 }
 
@@ -95,77 +98,78 @@ body {
     content: " – ";
 }
 
-/* changed */
-#options {
-	font-size: 250%;
-	color: #ccc;
-    position: absolute;
-    display: flex;
-    right: 10px;
-    top:0;
-	text-shadow: #000 2px 2px 5px;
-}
-
-/* new */
-#options span {
-	padding: 3px;
-}
-/* * */
-
-/* changed */
 #zoom {
 	font-size: 200%;
-	text-shadow: #000 2px 2px 5px;	
-	color: #ccc;
+	color: #ddd;
     position: absolute;
     display: flex;
     right: 15px;
-    bottom: 45px; 
+    bottom: 50px; 
 }
 
-/* new */
 #zoom span {
-	padding: 5px;
+	width: 37px;
+	height: 37px;
+	margin: 0px 5px;
+	padding: 3px;
+	background-color: rgba(128,128,128,0.5);
+	box-shadow: #000 1px 1px 5px;
+	line-height: 34px;
+	border-radius: 3px;
 }
+
 #zoom span:hover {
 	color: #fff;
+	background-color: rgba(200,200,200,0.8);
 }
-#zoom span:active {
-	color: #888;
-}
-/* * */
 
+#zoom span:active {
+	color: #bbb;
+	background-color: rgba(100,100,100,0.8);
+	box-shadow: none;
+}
+
+#options {
+	font-size: 250%;
+	color: #ddd;
+    position: absolute;
+    display: flex;
+    right: 10px;
+    top: 15px;
+}
+
+#options span {
+	width: 37px;
+	height: 37px;
+	margin: 0px 5px;
+	padding: 3px;
+	background-color: rgba(128,128,128,0.5);
+	box-shadow: #000 1px 1px 5px;
+	line-height: 34px;
+	border-radius: 3px;
+}
+
+#options span:hover {
+	color: #fff;
+	background-color: rgba(200,200,200,0.8);
+}
+
+#options span:active {
+	color: #bbb;
+	background-color: rgba(100,100,100,0.8);
+	box-shadow: none;
+}
 
 #toggle-playback.paused {
     color: white;
 }
 
-#toggle-playback.paused:hover {
-    text-shadow: 0px 0px 3px white;
+#toggle-playback.playing, #toggle-playback.playing:hover {
+    color: #3bc8ff;
 }
 
-#toggle-playback.playing:hover {
-    text-shadow: 0px 0px 3px red;
-}
-
-#toggle-playback.playing {
-    color: red;
-}
-
-#toggle-recording.paused {
-    color: white;
-}
-
-#toggle-recording.recording {
-    color: red;
-}
-
-#toggle-recording.paused:hover {
-    text-shadow: 0px 0px 3px white;
-}
-
-#toggle-recording.recording:hover {
-    text-shadow: 0px 0px 3px red;
+#toggle-recording.recording, #toggle-recording.recording:hover  {
+    color: #f00;
 }
 
 .unselectable {
@@ -198,7 +202,8 @@ body {
 }
 
 #selected-range-times {
-    color: black;
+    color: #fff;
+	text-shadow: #000 1px 1px 5px;
     position: absolute;
     left: 0;
     top: 0;
@@ -226,17 +231,18 @@ body {
     background-color: black;
 }
 
-/* changed */
 #one-handle, #other-handle {
     position: absolute;
     width: 1cm;
     height: 1cm;
     left: -0.5cm;
     top: calc(50% - 0.5cm);
-    background-color: darkgray;
-    border: 1px solid black;
+    background: #c5dcff center center no-repeat;
+    background-image: url(img/sel-handle-top.svg);    
+    border: 1px solid #435168;
     pointer-events: all;
     border-radius: 5px;
+    box-shadow: #29384f 0px 0px 3px;
 }
 
 #scrollbar {
@@ -246,6 +252,7 @@ body {
     height: 1cm;
     bottom: 0;
     background-color: rgba(0,0,0,.5);
+    border-radius: 7px;
 }
 
 #scrollbar-handle {
@@ -254,10 +261,11 @@ body {
     width: 30%;
     min-width: 3cm;
     height: 100%;
-    background-color: rgba(86, 135, 210, 0.7);
-    border-radius: 3px; 
-    border: 1px solid #000;
-    box-sizing: border-box;  
+    background-color: rgba(150, 150, 150, 0.7);
+    border-radius: 7px; 
+    border: 1px solid #333;
+    box-sizing: border-box; 
+    overflow: hidden; 
 }
 
 #scrollbar-handle-left {
@@ -265,11 +273,8 @@ body {
     left: 0;
     width: 1cm;
     height: 100%;
-    border: 1px solid #000;
-    border-radius: 3px;
-    background: #888 center center no-repeat;
-    background-image: url(img/sb-handle-top-a.svg);
-	box-sizing: border-box;
+    background: #b3b3b3 center center no-repeat;
+    background-image: url(img/sb-handle-top.svg);
 }
 
 #scrollbar-handle-right {
@@ -278,9 +283,6 @@ body {
     width: 1cm;
     height: 100%;
     background-color: #444;
-    border: 1px solid #000;
-    border-radius: 3px;   
-    background: #888 center center no-repeat;
-    background-image: url(img/sb-handle-top-a.svg);
-	box-sizing: border-box;
+    background: #b3b3b3 center center no-repeat;
+    background-image: url(img/sb-handle-top.svg);
 }
