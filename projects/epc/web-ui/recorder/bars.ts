@@ -19,12 +19,16 @@ class Bars {
             this.addNext(bar);
             return;
         }
-        var expectedId = this.firstId + this.bars[0].length;
 
-        for (var id = expectedId; id <= bar.id; id++) {
-            var toAdd = { id: id, max: bar.max, recordTime: this.lastTimestamp + this.barLength };
+        var expectedId = this.firstId + this.bars[0].length;
+        var lastMax = this.last().max;
+
+        for (var id = expectedId; id < bar.id; id++) {
+            var toAdd = { id: id, max: lastMax, recordTime: this.lastTimestamp + this.barLength };
             this.addNext(toAdd);
         }
+
+        this.addNext(bar);
     }
 
     private addNext(bar: Bar) {
@@ -52,6 +56,8 @@ class Bars {
 
             this.bars[i][idx] = Math.max(this.bars[i][idx], bar.max);
         }
+
+        assert(Math.abs(this.last().recordTime - this.lastTimestamp) < this.barLength);
     }
 
     remove() {
@@ -80,7 +86,10 @@ class Bars {
                 var srcArray = this.bars[i];
                 var tgtArray = this.bars[i + 1];
 
-                if (srcArray.length > 1)
+                if (tgtArray.length > Math.round(srcArray.length / 2))
+                    tgtArray.splice(0, 1);
+
+                if (srcArray.length > 1 && srcArray.length % 2 == 0)
                     tgtArray[0] = Math.max(srcArray[0], srcArray[1]);
                 else
                     tgtArray[0] = srcArray[0];
@@ -122,14 +131,16 @@ class Bars {
             return null;
 
         var ts = 0;
+        var max = idx >= 0 && idx < this.bars[0].length ? this.bars[0][idx] : 0;
 
         for (let [k, v] of this.timestamps) {
-            if (k > id)
+            if (k > id && ts != 0)
                 break;
+
             ts = v + (id - k) * this.barLength;
         }
 
-        return { id: id, max: this.bars[0][idx], recordTime: ts };
+        return { id: id, max: max, recordTime: ts };
     }
 
     getMax(id: number, zoom: number): number {

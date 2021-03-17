@@ -131,16 +131,14 @@ class SelectedRange extends Draggable {
 
         var bars = this.waveform.bars;
         if (bars.count() > 0) {
-            var fromIdx = this.playbackRange.min() - bars.first().id;
-            var toIdx = this.playbackRange.max() - bars.first().id;
+            var fromId = this.playbackRange.min();
+            var toId = this.playbackRange.max();
 
-            if (fromIdx >= 0 && fromIdx < bars.count() && toIdx >= 0 && toIdx < bars.count()) {
-                document.getElementById("selected-range-time-from")!.textContent = buildTime(
-                    bars.get(fromIdx)!.recordTime, this.waveform.timingInfo);
+            document.getElementById("selected-range-time-from")!.textContent = buildTime(
+                bars.get(fromId)!.recordTime, this.waveform.timingInfo);
 
-                document.getElementById("selected-range-time-to")!.textContent = buildTime(
-                    bars.get(toIdx)!.recordTime, this.waveform.timingInfo);
-            }
+            document.getElementById("selected-range-time-to")!.textContent = buildTime(
+                bars.get(toId)!.recordTime, this.waveform.timingInfo);
         }
     }
 
@@ -257,7 +255,7 @@ class Scrollbar extends Draggable {
         var handleWidth = 100 * width / barsToShow;
         handle.style.width = handleWidth + "%";
         var handleWidthPX = handle.getBoundingClientRect().width;
-        var left = (width - handleWidthPX) * firstBarId / (numBars - width * this.waveform.zoom);
+        var left = (width - handleWidthPX) * (firstBarId - this.waveform.bars.firstId) / (numBars - width * this.waveform.zoom);
         handle.style.left = left + "px";
     }
 
@@ -334,7 +332,7 @@ class Waveform extends Draggable {
         }
 
         ctx.stroke();
-        this.drawGrid(ctx, c.clientWidth, c.clientHeight, firstBarId - this.bars.first().id);
+        this.drawGrid(ctx, c.clientWidth, c.clientHeight, firstBarId);
         this.selectedRange.update(firstBarId);
         this.scrollbar.update(firstBarId);
 
@@ -347,7 +345,7 @@ class Waveform extends Draggable {
         }
     }
 
-    private drawGrid(ctx: CanvasRenderingContext2D, width: number, height: number, idx: number) {
+    private drawGrid(ctx: CanvasRenderingContext2D, width: number, height: number, id: number) {
         if (this.bars.count() < 2)
             return;
 
@@ -369,11 +367,13 @@ class Waveform extends Draggable {
         var serverTime = this.bars.first().recordTime;
 
         for (var i = 0; i < width; i++) {
-            var from = Math.round(idx);
-            var to = Math.round(idx + this.zoom);
+            var from = Math.round(id);
+            var to = Math.round(id + this.zoom);
 
-            var isWrapInRange = (from % barsPerTimeMarker) > (to % barsPerTimeMarker);
-            idx += this.zoom;
+            var markerOffset = (1 + Math.floor(Math.abs(from) / barsPerTimeMarker)) * barsPerTimeMarker;
+
+            var isWrapInRange = ((from + markerOffset) % barsPerTimeMarker) > ((to + markerOffset) % barsPerTimeMarker);
+            id += this.zoom;
 
             if (isWrapInRange) {
                 var b = this.bars.get(from) || this.bars.get(to);
@@ -541,7 +541,7 @@ class Waveform extends Draggable {
             this.lastBarIdToShow = Math.min(this.lastBarIdToShow, this.bars.last().id);
 
             if (this.bars.count() > barsToShow) {
-                this.lastBarIdToShow = Math.max(this.lastBarIdToShow, this.bars.get(barsToShow)!.id);
+                this.lastBarIdToShow = Math.max(this.lastBarIdToShow, this.bars.get(barsToShow + this.bars.firstId)!.id);
             }
         }
     }
