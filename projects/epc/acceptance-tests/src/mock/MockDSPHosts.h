@@ -9,6 +9,8 @@ class MockDSPHost : public DSPInterface
   void onKeyDown(int note, float velocity, VoiceGroup part) override;
   void onKeyUp(int note, float velocity, VoiceGroup part) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
+  SoundType getType() override;
+  VoiceGroup getSplitPartForKey(int key) override;
 };
 
 class PassOnKeyDownHost : public MockDSPHost

@@ -18,6 +18,16 @@ C15::Properties::HW_Return_Behavior MockDSPHost::getBehaviour(int id)
   return C15::Properties::HW_Return_Behavior::Zero;
 }
 
+SoundType MockDSPHost::getType()
+{
+  return SoundType::Single;
+}
+
+VoiceGroup MockDSPHost::getSplitPartForKey(int key)
+{
+  return VoiceGroup::Global;
+}
+
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
     : m_note { expectedNote }
     , m_vel { expectedVelo }

@@ -1,10 +1,12 @@
 #include <synth/C15Synth.h>
 #include "TCDDecoder.h"
 
-TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options)
+TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options, KeyShift *keyShift)
     : m_dsp { dsp }
     , m_options { options }
+    , m_keyShift { keyShift }
 {
+  reset();
 }
 
 bool TCDDecoder::decode(const MidiEvent &event)
@@ -14,8 +16,6 @@ bool TCDDecoder::decode(const MidiEvent &event)
   const auto _data1 = event.raw[2];
   const uint32_t channel = _status & 0b00001111;
   const uint32_t st = (_status & 0b01111111) >> 4;
-
-  //TODO implement Bender and Aftertouch?
 
   if(st == 6)
   {
@@ -33,7 +33,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
     else if(channel == 14)  //Key Down
     {
       uint32_t arg = _data1 + (_data0 << 7);
-      //keyOrController = m_shiftable_keys.keyDown(keyOrController); TODO fix
+      keyOrController = m_keyShift->keyDown(keyOrController);
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {
         value = static_cast<float>(arg) * c_norm_vel;
@@ -43,7 +43,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
     else if(channel == 15)  //Key Up
     {
       uint32_t arg = _data1 + (_data0 << 7);
-      //keyOrController = m_shifteable_keys.keyUp(keyOrController); TODO Fix
+      keyOrController = m_keyShift->keyUp(keyOrController);
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {
         value = static_cast<float>(arg) * c_norm_vel;

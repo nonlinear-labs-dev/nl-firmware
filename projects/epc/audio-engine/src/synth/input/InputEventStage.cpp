@@ -9,7 +9,7 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
     , m_options { options }
     , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
-    , m_tcdDecoder(dspHost, options)
+    , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
 }
 
@@ -236,4 +236,9 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
 
   auto msbValByte = static_cast<uint8_t>(value >> 7 & 0x7F);
   m_midiOut({ statusByte, static_cast<uint8_t>(msbCC), msbValByte });
+}
+
+void InputEventStage::setNoteShift(int i)
+{
+  m_shifteable_keys.setNoteShift(i);
 }

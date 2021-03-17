@@ -61,6 +61,8 @@ static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
 
 class MidiRuntimeOptions;
 
+using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::physical_key_to>;
+
 class DSPInterface
 {
  public:
@@ -68,6 +70,8 @@ class DSPInterface
   virtual void onKeyDown(const int note, float velocity, VoiceGroup part) = 0;
   virtual void onKeyUp(const int note, float velocity, VoiceGroup part) = 0;
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
+  virtual SoundType getType() = 0;
+  virtual VoiceGroup getSplitPartForKey(int key) = 0;
 };
 
 class dsp_host_dual : public DSPInterface
@@ -94,9 +98,6 @@ class dsp_host_dual : public DSPInterface
   void onKeyDown(const int note, float velocity, VoiceGroup part) override;
   void onKeyUp(const int note, float velocity, VoiceGroup part) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
-
-  void onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
-                    const MidiOut& out = getNullMidiOut());
 
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   // event bindings: Preset Messages
@@ -131,6 +132,8 @@ class dsp_host_dual : public DSPInterface
   using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
   HWSourceValues getHWSourceValues() const;
   void hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out);
+  SoundType getType() override;
+  VoiceGroup getSplitPartForKey(int key) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
@@ -155,7 +158,6 @@ class dsp_host_dual : public DSPInterface
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::virtual_key_count,
                   C15::Config::generic_key_pivot, LayerMode>
       m_alloc;
-  ShifteableKeys<C15::Config::physical_key_from, C15::Config::physical_key_to> m_shifteable_keys;
   // dsp components
   atomic_fade_table m_fade;
   PolySection m_poly[2];
@@ -169,7 +171,6 @@ class dsp_host_dual : public DSPInterface
   bool m_glitch_suppression = false;
 
   std::array<uint8_t, 8> m_hwSourcesMidiLSB;
-  uint8_t m_velocityLSB = 0;
 
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);

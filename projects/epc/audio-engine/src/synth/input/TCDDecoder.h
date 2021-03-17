@@ -7,7 +7,7 @@ class MidiRuntimeOptions;
 class TCDDecoder
 {
  public:
-  TCDDecoder(DSPInterface* dsp, MidiRuntimeOptions* options);
+  TCDDecoder(DSPInterface* dsp, MidiRuntimeOptions* options, KeyShift* shift);
   bool decode(const MidiEvent& event);
 
   [[nodiscard]] DecoderEventType getEventType() const;
@@ -23,6 +23,7 @@ class TCDDecoder
 
  private:
   DSPInterface* m_dsp;
+  KeyShift* m_keyShift;
   MidiRuntimeOptions* m_options;
 
   //Constants

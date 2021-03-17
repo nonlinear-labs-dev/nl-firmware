@@ -68,7 +68,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
     const int sendChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getSendChannel());
-    if(sendChannel != -1)
+    if(sendChannel != -1 && m_midiOptions.shouldSendProgramChanges())
     {
       const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendChannel;
       m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
@@ -206,38 +206,6 @@ bool C15Synth::filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) cons
   return false;
 }
 
-bool C15Synth::filterMidiInEvent(const MidiEvent& event) const
-{
-  auto statusByte = event.raw[0];
-
-  if(isSysex(statusByte))
-    return false;
-
-  //TODO fix / remove this whole function
-  const auto channel = (statusByte & MIDI_CHANNEL_MASK);
-  const auto allowedChannel = 1;  //m_midiOptions.getReceiveChannel();
-
-  if(channel == allowedChannel || allowedChannel == MIDI_CHANNEL_OMNI)
-  {
-    const auto isNoteEvent = matchPattern(statusByte, MIDI_NOTE_ON_PATTERN, MIDI_EVENT_TYPE_MASK)
-        || matchPattern(statusByte, MIDI_NOTE_OFF_PATTERN, MIDI_EVENT_TYPE_MASK);
-    const auto isAftertouchEvent = matchPattern(statusByte, MIDI_CHANNEL_AFTERTOUCH_PATTERN, MIDI_EVENT_TYPE_MASK);
-    const auto isControlChangeEvent = matchPattern(statusByte, MIDI_CONTROLCHANGE_PATTERN, MIDI_EVENT_TYPE_MASK);
-    const auto isPitchBendEvent = matchPattern(statusByte, MIDI_PITCHBEND_PATTERN, MIDI_EVENT_TYPE_MASK);
-
-    if(isAftertouchEvent || isControlChangeEvent || isPitchBendEvent)
-    {
-      return m_midiOptions.shouldReceiveControllers();
-    }
-
-    if(isNoteEvent)
-    {
-      return (channel == allowedChannel || allowedChannel == MIDI_CHANNEL_OMNI) && m_midiOptions.shouldReceiveNotes();
-    }
-  }
-  return false;
-}
-
 void C15Synth::doMidi(const MidiEvent& event)
 {
   m_inputEventStage.onMIDIMessage(event);
@@ -246,27 +214,6 @@ void C15Synth::doMidi(const MidiEvent& event)
 bool isValidTCDMessage(const MidiEvent& event)
 {
   return matchPattern(event.raw[0], TCD_PATTERN, TCD_PATTERN);
-}
-
-bool C15Synth::filterTcdIn(const MidiEvent& event) const
-{
-  if(isValidTCDMessage(event))
-  {
-    const auto typeId = (event.raw[0] & TCD_TYPE_MASK);
-    const auto isNoteEvent = typeId >= 13 && typeId <= 15;
-    const auto isControlEvent = typeId >= 0 && typeId <= 11;
-
-    if(isNoteEvent)
-    {
-      return m_midiOptions.shouldReceiveLocalNotes();
-    }
-
-    if(isControlEvent)
-    {
-      return m_midiOptions.shouldReceiveLocalControllers();
-    }
-  }
-  return false;
 }
 
 void C15Synth::doTcd(const MidiEvent& event)
@@ -473,7 +420,8 @@ void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 
 void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg)
 {
-  m_dsp->onSettingNoteShift(msg.m_shift);
+  //  m_dsp->onSettingNoteShift(msg.m_shift);
+  m_inputEventStage.setNoteShift(msg.m_shift);
 }
 
 void C15Synth::onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage& msg)

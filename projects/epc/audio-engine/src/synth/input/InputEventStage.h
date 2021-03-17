@@ -16,9 +16,12 @@ class InputEventStage
  public:
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
+
   InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, MIDIOut outCB);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
+
+  void setNoteShift(int i);
 
  private:
   TCDDecoder m_tcdDecoder;
@@ -26,12 +29,13 @@ class InputEventStage
   DSPInterface* m_dspHost;
   MidiRuntimeOptions* m_options;
   MIDIOut m_midiOut;
+  KeyShift m_shifteable_keys;
 
   bool checkMIDIKeyDownEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIKeyUpEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder);
   void onMIDIEvent(MIDIDecoder* decoder);
-  
+
   void onTCDEvent(TCDDecoder* decoder);
   void sendKeyDownAsMidi(TCDDecoder* pDecoder);
   void convertToAndSendMIDI(TCDDecoder* pDecoder);

@@ -424,155 +424,6 @@ void dsp_host_dual::logStatus()
   }
 }
 
-void dsp_host_dual::onTcdMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1,
-                                 const MidiOut& out)
-{
-  const uint32_t ch = _status & 15, st = (_status & 127) >> 4;
-  if(LOG_MIDI_TCD)
-  {
-    nltools::Log::info("midiMsg(chan:", ch, ", st:", st, ", data0:", _data0, ", data1:", _data1, ")");
-  }
-  uint32_t arg = 0;
-  // Playcontroller MIDI Protocol 1.7 transmits every Playcontroller Message as MIDI PitchBend Message! (avoiding TCD Protocol collisions)
-  if(st == 6)
-  {
-    switch(ch)
-    {
-      case 0:
-        // Pedal 1
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Pedal1, raw:", arg, ")");
-        }
-        updateHW(0, static_cast<float>(arg), out);
-        break;
-      case 1:
-        // Pedal 2
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Pedal2, raw:", arg, ")");
-        }
-        updateHW(1, static_cast<float>(arg), out);
-        break;
-      case 2:
-        // Pedal 3
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Pedal3, raw:", arg, ")");
-        }
-        updateHW(2, static_cast<float>(arg), out);
-        break;
-      case 3:
-        // Pedal 4
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Pedal4, raw:", arg, ")");
-        }
-        updateHW(3, static_cast<float>(arg), out);
-        break;
-      case 4:
-        // Bender
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Bender, raw:", arg, ")");
-        }
-        updateHW(4, static_cast<float>(arg), out);
-        break;
-      case 5:
-        // Aftertouch
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Aftertouch, raw:", arg, ")");
-        }
-        updateHW(5, static_cast<float>(arg), out);
-        break;
-      case 6:
-        // Ribbon 1
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Ribbon1, raw:", arg, ")");
-        }
-        updateHW(6, static_cast<float>(arg), out);
-        break;
-      case 7:
-        // Ribbon 2
-        arg = _data1 + (_data0 << 7);
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:Ribbon2, raw:", arg, ")");
-        }
-        updateHW(7, static_cast<float>(arg), out);
-        break;
-      case 13:
-        // Key Pos (down or up)
-        m_key_pos = _data1;
-        if(LOG_MIDI_DETAIL)
-        {
-          nltools::Log::info("midiMsg(source:KeyPos, raw:", arg, ")");
-        }
-        break;
-      case 14:
-        // Key Down (with Note Shift)
-        arg = _data1 + (_data0 << 7);
-        m_key_pos = m_shifteable_keys.keyDown(m_key_pos);
-        if((m_key_pos >= C15::Config::virtual_key_from) && (m_key_pos <= C15::Config::virtual_key_to))
-        {
-          auto vel = static_cast<float>(arg) * m_norm_vel;
-          keyDown(vel);
-
-          uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(vel);
-          uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
-          out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
-
-          uint8_t statusByte = static_cast<uint8_t>(0x90);
-          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
-          uint8_t msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
-          out({ statusByte, keyByte, msbVelByte });
-        }
-        else if(LOG_FAIL)
-        {
-          nltools::Log::warning(__PRETTY_FUNCTION__, "key_down(pos:", m_key_pos, ") failed!");
-        }
-        // ...
-        break;
-      case 15:
-        // Key Up (with Note Shift)
-        arg = _data1 + (_data0 << 7);
-        m_key_pos = m_shifteable_keys.keyUp(m_key_pos);
-        if((m_key_pos >= C15::Config::virtual_key_from) && (m_key_pos <= C15::Config::virtual_key_to))
-        {
-          auto vel = static_cast<float>(arg) * m_norm_vel;
-          keyUp(vel);
-
-          uint8_t highResolutionVelocityStatusByte = static_cast<uint8_t>(0xB0);
-          uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(vel);
-          uint8_t lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
-          out({ highResolutionVelocityStatusByte, 88, lsbVelByte });
-
-          uint8_t statusByte = static_cast<uint8_t>(0x80);
-          uint8_t keyByte = static_cast<uint8_t>(m_key_pos) & 0x7F;
-          uint8_t msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
-          out({ statusByte, keyByte, msbVelByte });
-        }
-        else if(LOG_FAIL)
-        {
-          nltools::Log::warning(__PRETTY_FUNCTION__, "key_up(pos:", m_key_pos, ") failed!");
-        }
-        break;
-      default:
-        break;
-    }
-  }
-}
-
 template <typename Range> void dsp_host_dual::processBipolarMidiController(const uint32_t dataByte, int id)
 {
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
@@ -606,115 +457,115 @@ void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
 //todo add midi Out CB
 void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
 {
-//  //todo use midiOut
-//  const uint32_t type = (_status & 127) >> 4;
-//  if(LOG_MIDI_RAW)
-//  {
-//    nltools::Log::info("rawMidi(chan:", _status & 15, ", type:", type, ", data0:", _data0, ", data1:", _data1, ")");
-//  }
-//  switch(type)
-//  {
-//    case 0:
-//      // note off (without note shift)
-//      {
-//        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
-//        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
-//        m_key_pos = _data0;
-//        keyUp(vel);
-//      }
-//      break;
-//    case 1:
-//      // note on (without note shift)
-//      {
-//        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
-//        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
-//        m_key_pos = _data0;
-//        if(CC_Range_Vel::isValidNoteOnVelocity(fullResVel))
-//        {
-//          keyDown(vel);
-//        }
-//        else
-//        {
-//          keyUp(0.0f);
-//        }
-//      }
-//      break;
-//    case 3:
-//      switch(_data0)
-//      {
-//        case Midi::getMSB::getCC<Midi::MSB::Ped1>():
-//          processMidiForHWSource(0, _data1);
-//          break;
-//
-//        case Midi::getMSB::getCC<Midi::MSB::Ped2>():
-//          processMidiForHWSource(1, _data1);
-//          break;
-//
-//        case Midi::getMSB::getCC<Midi::MSB::Ped3>():
-//          processMidiForHWSource(2, _data1);
-//          break;
-//
-//        case Midi::getMSB::getCC<Midi::MSB::Ped4>():
-//          processMidiForHWSource(3, _data1);
-//          break;
-//
-//        case Midi::getMSB::getCC<Midi::MSB::Rib1>():
-//          processMidiForHWSource(6, _data1);
-//          break;
-//
-//        case Midi::getMSB::getCC<Midi::MSB::Rib2>():
-//          processMidiForHWSource(7, _data1);
-//          break;
-//
-//        case Midi::getLSB::getCC<Midi::LSB::Ped1>():
-//          m_hwSourcesMidiLSB[0] = _data1 & 0x7F;
-//          break;
-//
-//        case Midi::getLSB::getCC<Midi::LSB::Ped2>():
-//          m_hwSourcesMidiLSB[1] = _data1 & 0x7F;
-//          break;
-//
-//        case Midi::getLSB::getCC<Midi::LSB::Ped3>():
-//          m_hwSourcesMidiLSB[2] = _data1 & 0x7F;
-//          break;
-//
-//        case Midi::getLSB::getCC<Midi::LSB::Ped4>():
-//          m_hwSourcesMidiLSB[3] = _data1 & 0x7F;
-//          break;
-//
-//        case Midi::getLSB::getCC<Midi::LSB::Rib1>():
-//          m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
-//          break;
-//
-//        case Midi::getLSB::getCC<Midi::LSB::Rib2>():
-//          m_hwSourcesMidiLSB[7] = _data1 & 0x7F;
-//          break;
-//
-//        case Midi::getLSB::getCC<Midi::LSB::Vel>():
-//          m_velocityLSB = _data1 & 0x7F;
-//          break;
-//
-//        default:
-//          break;
-//      }
-//      break;
-//    case 5:
-//      // mono aftertouch (hw source)
-//      m_hwSourcesMidiLSB[5] = 0;
-//      processNormalizedMidiController(5, CC_Range_7_Bit::decodeUnipolarMidiValue(_data0));
-//      break;
-//
-//    case 6:
-//      // bender
-//      // pitch bend messages are: STATUS LSB MSB
-//      m_hwSourcesMidiLSB[4] = _data0 & 0x7F;
-//      processNormalizedMidiController(
-//          4, CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_hwSourcesMidiLSB[4], 0)));
-//      break;
-//
-//    default:
-//      break;
-//  }
+  //  //todo use midiOut
+  //  const uint32_t type = (_status & 127) >> 4;
+  //  if(LOG_MIDI_RAW)
+  //  {
+  //    nltools::Log::info("rawMidi(chan:", _status & 15, ", type:", type, ", data0:", _data0, ", data1:", _data1, ")");
+  //  }
+  //  switch(type)
+  //  {
+  //    case 0:
+  //      // note off (without note shift)
+  //      {
+  //        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
+  //        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
+  //        m_key_pos = _data0;
+  //        keyUp(vel);
+  //      }
+  //      break;
+  //    case 1:
+  //      // note on (without note shift)
+  //      {
+  //        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
+  //        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
+  //        m_key_pos = _data0;
+  //        if(CC_Range_Vel::isValidNoteOnVelocity(fullResVel))
+  //        {
+  //          keyDown(vel);
+  //        }
+  //        else
+  //        {
+  //          keyUp(0.0f);
+  //        }
+  //      }
+  //      break;
+  //    case 3:
+  //      switch(_data0)
+  //      {
+  //        case Midi::getMSB::getCC<Midi::MSB::Ped1>():
+  //          processMidiForHWSource(0, _data1);
+  //          break;
+  //
+  //        case Midi::getMSB::getCC<Midi::MSB::Ped2>():
+  //          processMidiForHWSource(1, _data1);
+  //          break;
+  //
+  //        case Midi::getMSB::getCC<Midi::MSB::Ped3>():
+  //          processMidiForHWSource(2, _data1);
+  //          break;
+  //
+  //        case Midi::getMSB::getCC<Midi::MSB::Ped4>():
+  //          processMidiForHWSource(3, _data1);
+  //          break;
+  //
+  //        case Midi::getMSB::getCC<Midi::MSB::Rib1>():
+  //          processMidiForHWSource(6, _data1);
+  //          break;
+  //
+  //        case Midi::getMSB::getCC<Midi::MSB::Rib2>():
+  //          processMidiForHWSource(7, _data1);
+  //          break;
+  //
+  //        case Midi::getLSB::getCC<Midi::LSB::Ped1>():
+  //          m_hwSourcesMidiLSB[0] = _data1 & 0x7F;
+  //          break;
+  //
+  //        case Midi::getLSB::getCC<Midi::LSB::Ped2>():
+  //          m_hwSourcesMidiLSB[1] = _data1 & 0x7F;
+  //          break;
+  //
+  //        case Midi::getLSB::getCC<Midi::LSB::Ped3>():
+  //          m_hwSourcesMidiLSB[2] = _data1 & 0x7F;
+  //          break;
+  //
+  //        case Midi::getLSB::getCC<Midi::LSB::Ped4>():
+  //          m_hwSourcesMidiLSB[3] = _data1 & 0x7F;
+  //          break;
+  //
+  //        case Midi::getLSB::getCC<Midi::LSB::Rib1>():
+  //          m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
+  //          break;
+  //
+  //        case Midi::getLSB::getCC<Midi::LSB::Rib2>():
+  //          m_hwSourcesMidiLSB[7] = _data1 & 0x7F;
+  //          break;
+  //
+  //        case Midi::getLSB::getCC<Midi::LSB::Vel>():
+  //          m_velocityLSB = _data1 & 0x7F;
+  //          break;
+  //
+  //        default:
+  //          break;
+  //      }
+  //      break;
+  //    case 5:
+  //      // mono aftertouch (hw source)
+  //      m_hwSourcesMidiLSB[5] = 0;
+  //      processNormalizedMidiController(5, CC_Range_7_Bit::decodeUnipolarMidiValue(_data0));
+  //      break;
+  //
+  //    case 6:
+  //      // bender
+  //      // pitch bend messages are: STATUS LSB MSB
+  //      m_hwSourcesMidiLSB[4] = _data0 & 0x7F;
+  //      processNormalizedMidiController(
+  //          4, CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_hwSourcesMidiLSB[4], 0)));
+  //      break;
+  //
+  //    default:
+  //      break;
+  //  }
 }
 
 void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _msg)
@@ -2844,4 +2695,16 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, VoiceGroup part)
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
 {
   return m_params.get_hw_src(id)->m_behavior;
+}
+
+SoundType dsp_host_dual::getType()
+{
+  //TODO implement
+  return SoundType::Invalid;
+}
+
+VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
+{
+  //TODO implement
+  return VoiceGroup::NumGroups;
 }

@@ -61,7 +61,7 @@ TEST_CASE("Midi Decoder Reset", "[MIDI]")
   decoder.setKeyOrCtrl(12);
   decoder.setType(DecoderEventType::KeyUp);
   decoder.setValue(187);
-  
+
   decoder.reset();
   CHECK(decoder.getValue() == 0);
   CHECK(decoder.getEventType() == DecoderEventType::UNKNOWN);
