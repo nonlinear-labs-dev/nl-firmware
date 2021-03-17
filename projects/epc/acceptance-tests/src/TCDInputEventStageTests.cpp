@@ -65,7 +65,8 @@ TEST_CASE("TCD Decoder Reset", "[TCD]")
 {
   MockDSPHost host;
   auto setting = createTCDSettings();
-  MockTCDDecoder decoder(&host, &setting);
+  KeyShift shift;
+  MockTCDDecoder decoder(&host, &setting, &shift);
 
   decoder.setKeyOrCtrl(12);
   decoder.setType(DecoderEventType::KeyUp);

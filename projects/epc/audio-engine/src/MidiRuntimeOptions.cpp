@@ -317,3 +317,8 @@ std::pair<bool, int> MidiRuntimeOptions::getBenderLSBCC()
 {
   return decodeEnumLSB(benderCC);
 }
+
+void MidiRuntimeOptions::setPedal1(PedalCC cc)
+{
+  pedal1CC = cc;
+}

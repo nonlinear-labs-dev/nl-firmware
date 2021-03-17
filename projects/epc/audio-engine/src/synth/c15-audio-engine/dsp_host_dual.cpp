@@ -1025,15 +1025,6 @@ void dsp_host_dual::onSettingTransitionTime(const float _position)
   }
 }
 
-void dsp_host_dual::onSettingNoteShift(const int& _shift)
-{
-  m_shifteable_keys.setNoteShift(_shift);
-  if(LOG_SETTINGS)
-  {
-    nltools::Log::info("note_shift:", _shift);
-  }
-}
-
 void dsp_host_dual::onSettingGlitchSuppr(const bool _enabled)
 {
   m_glitch_suppression = _enabled;

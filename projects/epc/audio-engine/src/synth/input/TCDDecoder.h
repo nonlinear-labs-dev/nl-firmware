@@ -1,5 +1,6 @@
 #pragma once
 #include <Types.h>
+#include <synth/c15-audio-engine/dsp_host_dual.h>
 
 class DSPInterface;
 class MidiRuntimeOptions;

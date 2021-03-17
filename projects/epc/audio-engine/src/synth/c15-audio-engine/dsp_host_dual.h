@@ -120,7 +120,6 @@ class dsp_host_dual : public DSPInterface
   // evend bindings: Settings
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
-  void onSettingNoteShift(const int& _shift);
   void onSettingGlitchSuppr(const bool _enabled);
   void onSettingTuneReference(const float _position);
   void onSettingInitialSinglePreset();

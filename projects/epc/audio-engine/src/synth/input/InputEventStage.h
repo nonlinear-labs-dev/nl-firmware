@@ -6,9 +6,8 @@
 #include <synth/input/MIDIDecoder.h>
 #include <functional>
 #include <nltools/messaging/Message.h>
+#include <synth/c15-audio-engine/dsp_host_dual.h>
 
-class dsp_host_dual;
-class DSPInterface;
 class MidiRuntimeOptions;
 
 class InputEventStage

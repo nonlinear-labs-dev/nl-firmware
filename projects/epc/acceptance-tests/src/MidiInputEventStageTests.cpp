@@ -69,6 +69,44 @@ TEST_CASE("Midi Decoder Reset", "[MIDI]")
   CHECK(decoder.getChannel() == MidiReceiveChannel::None);
 }
 
+TEST_CASE("Input Event Mapping CC to HW", "[MIDI]")
+{
+  PassOnHWReceived dsp { 0, 1.0 };
+  auto settings = createMidiSettings();
+  InputEventStage eventStage(&dsp, &settings, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
+
+  WHEN("Pedal CC 01")
+  {
+    settings.setPedal1(PedalCC::CC01);
+
+    WHEN("Send 14 Bit as CC01 && CC33")
+    {
+      eventStage.onMIDIMessage({ 0xB0, 33, 127 });
+      eventStage.onMIDIMessage({ 0xB0, 01, 127 });
+      CHECK(dsp.didReceiveHW());
+    }
+
+    WHEN("Send 14 Bit as CC02 && CC34")
+    {
+      eventStage.onMIDIMessage({ 0xB0, 34, 127 });
+      eventStage.onMIDIMessage({ 0xB0, 02, 127 });
+      CHECK(!dsp.didReceiveHW());
+    }
+
+    WHEN("Send 7 Bit as CC01")
+    {
+      eventStage.onMIDIMessage({ 0xB0, 01, 127 });
+      CHECK(dsp.didReceiveHW());
+    }
+
+    WHEN("Send 7 Bit as CC02")
+    {
+      eventStage.onMIDIMessage({ 0xB0, 02, 127 });
+      CHECK(!dsp.didReceiveHW());
+    }
+  }
+}
+
 TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 {
   PassOnKeyDownHost dsp { 17, 1, VoiceGroup::I };

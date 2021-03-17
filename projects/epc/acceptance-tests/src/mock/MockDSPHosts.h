@@ -1,6 +1,6 @@
 #pragma once
-#include <synth/input/InputEventStage.h>
 #include <synth/C15Synth.h>
+#include <synth/input/InputEventStage.h>
 
 class MockDSPHost : public DSPInterface
 {

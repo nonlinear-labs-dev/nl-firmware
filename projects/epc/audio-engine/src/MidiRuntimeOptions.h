@@ -72,6 +72,8 @@ class MidiRuntimeOptions
   std::pair<bool, int> getBenderMSBCC();
   std::pair<bool, int> getBenderLSBCC();
 
+  void setPedal1(PedalCC cc);
+
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;
