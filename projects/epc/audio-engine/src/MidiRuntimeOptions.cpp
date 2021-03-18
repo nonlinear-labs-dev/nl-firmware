@@ -288,6 +288,16 @@ int MidiRuntimeOptions::channelEnumToInt(MidiSendChannel channel)
     return static_cast<int>(channel) - 1;
 }
 
+int MidiRuntimeOptions::channelEnumToInt(MidiSendChannelSplit channel)
+{
+  if(channel == MidiSendChannelSplit::None)
+    return -1;
+  if(channel == MidiSendChannelSplit::Follow_I)
+    return channelEnumToInt(m_sendChannel);
+  
+  return static_cast<int>(channel) - 1;
+}
+
 int MidiRuntimeOptions::channelEnumToInt(MidiReceiveChannel channel)
 {
   if(channel == MidiReceiveChannel::None)
@@ -321,4 +331,23 @@ std::pair<bool, int> MidiRuntimeOptions::getBenderLSBCC()
 void MidiRuntimeOptions::setPedal1(PedalCC cc)
 {
   pedal1CC = cc;
+}
+
+void MidiRuntimeOptions::setSendSplitChannel(MidiSendChannelSplit c)
+{
+  m_sendSplitChannel = c;
+}
+
+void MidiRuntimeOptions::setSendChannel(MidiSendChannel c)
+{
+  m_sendChannel = c;
+}
+
+void MidiRuntimeOptions::setReceiveChannel(MidiReceiveChannel c)
+{
+  m_receiveChannel = c;
+}
+void MidiRuntimeOptions::setSplitReceiveChannel(MidiReceiveChannelSplit c)
+{
+  m_receiveSplitChannel = c;
 }

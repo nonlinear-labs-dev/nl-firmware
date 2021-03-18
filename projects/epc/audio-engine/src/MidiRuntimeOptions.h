@@ -28,10 +28,15 @@ class MidiRuntimeOptions
   int ccToLSBHardwareControlID(uint8_t i);
 
   static int channelEnumToInt(MidiSendChannel channel);
+  int channelEnumToInt(MidiSendChannelSplit channel);
   static int channelEnumToInt(MidiReceiveChannel channel);
 
   void setBenderCC(BenderCC cc);
   void setAftertouchCC(AftertouchCC cc);
+  void setSendSplitChannel(MidiSendChannelSplit c);
+  void setSendChannel(MidiSendChannel c);
+  void setReceiveChannel(MidiReceiveChannel c);
+  void setSplitReceiveChannel(MidiReceiveChannelSplit c);
 
   template <Midi::LSB::HWSourceMidiCC tLSB> int getCCFor()
   {

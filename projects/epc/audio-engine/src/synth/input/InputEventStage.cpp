@@ -134,13 +134,46 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder)
 {
   using CC_Range_Vel = Midi::clipped14BitVelRange;
 
-  uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
-  auto lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
-  m_midiOut({ 0xB0, 88, lsbVelByte });
+  const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+  const auto keyPart = m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
+  const auto key = pDecoder->getKeyOrController();
 
-  uint8_t keyByte = static_cast<uint8_t>(pDecoder->getKeyOrController()) & 0x7F;
-  auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
-  m_midiOut({ 0x90, keyByte, msbVelByte });
+  if(mainChannel != -1 && (keyPart == VoiceGroup::I || keyPart == VoiceGroup::Global))
+  {
+    auto mainC = static_cast<uint8_t>(mainChannel);
+
+    constexpr const uint8_t ccType = 0xB0;
+    const uint8_t lsbStatus = ccType | mainC;
+
+    uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
+    auto lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+    m_midiOut({ lsbStatus, 88, lsbVelByte });
+
+    constexpr const uint8_t keyType = 0x90;
+    const uint8_t keyStatus = keyType | mainC;
+    uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
+    auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
+    m_midiOut({ keyStatus, keyByte, msbVelByte });
+  }
+
+  if(secondaryChannel != -1 && (keyPart == VoiceGroup::II || keyPart == VoiceGroup::Global))
+  {
+    auto secC = static_cast<uint8_t>(secondaryChannel);
+
+    constexpr const uint8_t ccType = 0xB0;
+    const uint8_t lsbStatus = ccType | secC;
+
+    uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
+    auto lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+    m_midiOut({ lsbStatus, 88, lsbVelByte });
+
+    constexpr const uint8_t keyType = 0x90;
+    const uint8_t keyStatus = keyType | secC;
+    uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
+    auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
+    m_midiOut({ keyStatus, keyByte, msbVelByte });
+  }
 }
 
 void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder)

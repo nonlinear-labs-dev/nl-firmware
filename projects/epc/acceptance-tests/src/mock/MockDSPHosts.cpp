@@ -25,7 +25,7 @@ SoundType MockDSPHost::getType()
 
 VoiceGroup MockDSPHost::getSplitPartForKey(int key)
 {
-  return VoiceGroup::Global;
+  return VoiceGroup::I;
 }
 
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)

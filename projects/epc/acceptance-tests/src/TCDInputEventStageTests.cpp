@@ -165,25 +165,51 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
 
   WHEN("HW Change Received")
   {
-    eventStage.onTCDMessage({ BASE_TCD | Pedal1, 127, 127 });
 
     THEN("DSP got notified")
     {
+      eventStage.onTCDMessage({ BASE_TCD | Pedal1, 127, 127 });
       CHECK(dsp.didReceiveHW());
     }
 
-    THEN("MIDI got send")
+    WHEN("CC01 and CC33")
     {
-      REQUIRE(sendMessages.size() == 2);
-      CHECK(sendMessages[0].rawBytes[0] == 0xB0);
-      CHECK(sendMessages[0].rawBytes[1] == 52);
-      CHECK(
-          sendMessages[0].rawBytes[2]
-          == 0);  // i would have expected 127 here, but apparently the valid 14 bit out range is only up to 16256 which has the last 7 bits set to 0
+      settings.setPedal1(PedalCC::CC01);
+      eventStage.onTCDMessage({ BASE_TCD | Pedal1, 127, 127 });
 
-      CHECK(sendMessages[1].rawBytes[0] == 0xB0);
-      CHECK(sendMessages[1].rawBytes[1] == 20);
-      CHECK(sendMessages[1].rawBytes[2] == 127);
+      THEN("MIDI got send")
+      {
+        REQUIRE(sendMessages.size() == 2);
+        CHECK(sendMessages[0].rawBytes[0] == 0xB0);
+        CHECK(sendMessages[0].rawBytes[1] == 33);
+        CHECK(
+            sendMessages[0].rawBytes[2]
+            == 0);  // i would have expected 127 here, but apparently the valid 14 bit out range is only up to 16256 which has the last 7 bits set to 0
+
+        CHECK(sendMessages[1].rawBytes[0] == 0xB0);
+        CHECK(sendMessages[1].rawBytes[1] == 1);
+        CHECK(sendMessages[1].rawBytes[2] == 127);
+      }
+    }
+
+    WHEN("CC02 and CC34")
+    {
+      settings.setPedal1(PedalCC::CC02);
+      eventStage.onTCDMessage({ BASE_TCD | Pedal1, 127, 127 });
+
+      THEN("MIDI got send")
+      {
+        REQUIRE(sendMessages.size() == 2);
+        CHECK(sendMessages[0].rawBytes[0] == 0xB0);
+        CHECK(sendMessages[0].rawBytes[1] == 34);
+        CHECK(
+            sendMessages[0].rawBytes[2]
+            == 0);  // i would have expected 127 here, but apparently the valid 14 bit out range is only up to 16256 which has the last 7 bits set to 0
+
+        CHECK(sendMessages[1].rawBytes[0] == 0xB0);
+        CHECK(sendMessages[1].rawBytes[1] == 2);
+        CHECK(sendMessages[1].rawBytes[2] == 127);
+      }
     }
   }
 }
