@@ -151,7 +151,7 @@ class Bars {
 
         for (var i = 0; i < this.numIntegrals; i++) {
             if (zoom < 2) {
-                return this.bars[i][idx];
+                return this.bars[i][Math.round(idx)];
             }
 
             zoom /= 2;

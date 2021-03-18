@@ -72,6 +72,12 @@ class RangeBorderHandler extends Draggable {
 
         this.dragCB(x);
     }
+
+    setTime(time: string) {
+        this.time = time;
+    }
+
+    private time = "";
 }
 
 class PlaybackRange {
@@ -114,6 +120,32 @@ class SelectedRange extends Draggable {
             this.playbackRange.other = Math.round(this.pixToBar(x));
             this.waveform.update();
         });
+
+        var undoOne = document.getElementById("undo-one")!;
+        var undoOther = document.getElementById("undo-other")!;
+
+        undoOne.onpointerdown = (e) => { e.stopPropagation(); };
+        undoOther.onpointerdown = (e) => { e.stopPropagation(); };
+
+        undoOne.onclick = (e) => {
+            e.preventDefault();
+            this.jumpUndo(this.playbackRange.one);
+        };
+
+        undoOther.onclick = (e) => {
+            e.preventDefault();
+            this.jumpUndo(this.playbackRange.other);
+        };
+    }
+
+    jumpUndo(barId: number) {
+        var bar = this.waveform.bars.get(barId);
+        if (bar) {
+            var r = new XMLHttpRequest();
+            var url = "http://" + hostName + playgroundHttpPort + "/undo/jump-to-timestamp?timestamp=" + bar.recordTime;
+            r.open("GET", url, true);
+            r.send();
+        }
     }
 
     update(firstBarId: number): void {
@@ -129,16 +161,21 @@ class SelectedRange extends Draggable {
         document.getElementById("one-border")!.style.left = onePos + "%";
         document.getElementById("other-border")!.style.left = otherPos + "%";
 
+        this.oneHandle.setTime("");
+        this.otherHandle.setTime("");
+
         var bars = this.waveform.bars;
         if (bars.count() > 0) {
             var fromId = this.playbackRange.min();
             var toId = this.playbackRange.max();
+            var fromTime = buildTime(bars.get(fromId)!.recordTime, this.waveform.timingInfo);
+            document.getElementById("selected-range-time-from")!.textContent = fromTime;
 
-            document.getElementById("selected-range-time-from")!.textContent = buildTime(
-                bars.get(fromId)!.recordTime, this.waveform.timingInfo);
+            var toTime = buildTime(bars.get(toId)!.recordTime, this.waveform.timingInfo);
+            document.getElementById("selected-range-time-to")!.textContent = toTime;
 
-            document.getElementById("selected-range-time-to")!.textContent = buildTime(
-                bars.get(toId)!.recordTime, this.waveform.timingInfo);
+            this.oneHandle.setTime(this.playbackRange.one < this.playbackRange.other ? fromTime : toTime);
+            this.otherHandle.setTime(this.playbackRange.one < this.playbackRange.other ? toTime : fromTime);
         }
     }
 
