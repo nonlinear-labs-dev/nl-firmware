@@ -27,6 +27,8 @@ class BankUseCases
 
   void setAttribute(const Glib::ustring& key, const Glib::ustring& value);
 
+  void setCollapsed(bool b);
+
  private:
   bool isDirectLoadActive() const;
   Bank* m_bank;

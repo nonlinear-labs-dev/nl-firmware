@@ -771,6 +771,14 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+
+	public void setBankCollapsed(Bank theBank, String collapsed) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-bank-collapse");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()), 
+		new StaticURI.KeyValue("value", collapsed));
+		queueJob(uri, false);
+	}
+
 	public void undoJump(long id) {
 		StaticURI.Path path = new StaticURI.Path("undo", "undo-jump");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("target", id));
