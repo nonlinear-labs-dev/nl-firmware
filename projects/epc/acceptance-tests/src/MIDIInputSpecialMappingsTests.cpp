@@ -138,3 +138,62 @@ TEST_CASE("Secondary Channel", "[MIDI][TCD]")
     }
   }
 }
+
+TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "[MIDI][TCD]")
+{
+  class PassOnKeyDownHostSplit : public PassOnKeyDownHost
+  {
+   public:
+    using PassOnKeyDownHost::PassOnKeyDownHost;
+    VoiceGroup getSplitPartForKey(int key) override
+    {
+      if(key == 64)
+        return VoiceGroup::Global;
+      return key > 64 ? VoiceGroup::II : VoiceGroup::I;
+    }
+
+    void setExpectedKey(int k)
+    {
+      m_note = k;
+    }
+
+    void setExpectedPart(VoiceGroup p)
+    {
+      m_part = p;
+    }
+  };
+
+  PassOnKeyDownHostSplit hostPartI(17, 1.0, VoiceGroup::I);
+  auto settings = createSpecialSettings();
+  settings.setReceiveChannel(MidiReceiveChannel::CH_1);
+  settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_2);
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMIDI;
+  InputEventStage eventStage(&hostPartI, &settings, [&](auto m) { sendMIDI.emplace_back(m); });
+
+  WHEN("MIDI In on Prim. Channel 1, receive")
+  {
+    eventStage.onMIDIMessage({ 0x90, 17, 127 });
+    CHECK(hostPartI.didReceiveKeyDown());
+  }
+
+  WHEN("MIDI In on Prim. Channel 1, receive")
+  {
+    hostPartI.setExpectedKey(77);
+    eventStage.onMIDIMessage({ 0x90, 77, 127 });
+    CHECK(hostPartI.didReceiveKeyDown());
+  }
+
+  WHEN("MIDI in On Sec. Channel 2, recieve")
+  {
+    hostPartI.setExpectedPart(VoiceGroup::II);
+    hostPartI.setExpectedKey(77);
+    eventStage.onMIDIMessage({ 0x92, 77, 127 });
+    CHECK(hostPartI.didReceiveKeyDown());
+  }
+
+  WHEN("MIDI In on Channel 3, no receive")
+  {
+    eventStage.onMIDIMessage({ 0x92, 17, 127 });
+    CHECK(!hostPartI.didReceiveKeyDown());
+  }
+}

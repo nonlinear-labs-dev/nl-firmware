@@ -79,6 +79,8 @@ class MidiRuntimeOptions
 
   void setPedal1(PedalCC cc);
 
+  MidiReceiveChannel splitToNormalChannel(MidiReceiveChannelSplit split);
+
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;

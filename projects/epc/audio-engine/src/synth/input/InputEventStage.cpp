@@ -72,12 +72,12 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
     {
       case DecoderEventType::KeyDown:
         if(checkMIDIKeyDownEnabled(decoder))
-          m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
+          m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder));
         break;
 
       case DecoderEventType::KeyUp:
         if(checkMIDIKeyUpEnabled(decoder))
-          m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), VoiceGroup::I);
+          m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder));
         break;
 
       case DecoderEventType::HardwareChange:
@@ -111,10 +111,17 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder)
 
 bool InputEventStage::checkMIDIKeyDownEnabled(MIDIDecoder *pDecoder)
 {
-  const auto recNotes = m_options->shouldReceiveNotes();
-  const auto channelMatches = pDecoder->getChannel() == m_options->getReceiveChannel()
-      || m_options->getReceiveChannel() == MidiReceiveChannel::Omni;
-  return recNotes && channelMatches;
+  using MRC = MidiReceiveChannel;
+  const auto shouldReceiveNotes = m_options->shouldReceiveNotes();
+  const auto primaryChannel = m_options->getReceiveChannel();
+  const auto secondaryChannel = m_options->splitToNormalChannel(m_options->getReceiveSplitChannel());
+
+  const auto parsedChannel = pDecoder->getChannel();
+
+  const auto primaryChannelMatches = parsedChannel == primaryChannel || primaryChannel == MRC::Omni;
+  const auto secondaryChannelMatches = parsedChannel == secondaryChannel || secondaryChannel == MRC::Omni;
+  const auto channelMatches = primaryChannelMatches || secondaryChannelMatches;
+  return shouldReceiveNotes && channelMatches;
 }
 
 bool InputEventStage::checkMIDIKeyUpEnabled(MIDIDecoder *pDecoder)
@@ -274,4 +281,32 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
 void InputEventStage::setNoteShift(int i)
 {
   m_shifteable_keys.setNoteShift(i);
+}
+
+VoiceGroup InputEventStage::calculatePartForEvent(MIDIDecoder *pDecoder)
+{
+  //?A?! TODO
+  const auto primChannel = m_options->getReceiveChannel();
+  const auto secChannel = m_options->splitToNormalChannel(m_options->getReceiveSplitChannel());
+
+  const auto primIsOmni = primChannel == MidiReceiveChannel::Omni;
+  const auto secIsOmni = secChannel == MidiReceiveChannel::Omni;
+
+  switch(pDecoder->getEventType())
+  {
+    case DecoderEventType::KeyUp:
+    case DecoderEventType::KeyDown:
+      if(primChannel == secChannel && (primChannel == pDecoder->getChannel() || primIsOmni || secIsOmni))
+        return VoiceGroup::I;  //?? TODO FIX
+      if(primChannel == pDecoder->getChannel() || primIsOmni)
+        return VoiceGroup::I;
+      else if(secChannel == pDecoder->getChannel() || secIsOmni)
+        return VoiceGroup::II;
+      break;
+    default:
+    case DecoderEventType::HardwareChange:
+      break;
+  }
+
+  return VoiceGroup::Global;
 }

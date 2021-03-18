@@ -20,11 +20,11 @@ class PassOnKeyDownHost : public MockDSPHost
   void onKeyDown(int note, float velocity, VoiceGroup part) override;
   [[nodiscard]] bool didReceiveKeyDown() const;
 
- private:
+ protected:
   bool m_receivedKeyDown = false;
-  const int m_note;
-  const float m_vel;
-  const VoiceGroup m_part;
+  int m_note;
+  float m_vel;
+  VoiceGroup m_part;
 };
 
 class PassOnKeyUpHost : public MockDSPHost

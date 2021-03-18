@@ -294,7 +294,7 @@ int MidiRuntimeOptions::channelEnumToInt(MidiSendChannelSplit channel)
     return -1;
   if(channel == MidiSendChannelSplit::Follow_I)
     return channelEnumToInt(m_sendChannel);
-  
+
   return static_cast<int>(channel) - 1;
 }
 
@@ -350,4 +350,11 @@ void MidiRuntimeOptions::setReceiveChannel(MidiReceiveChannel c)
 void MidiRuntimeOptions::setSplitReceiveChannel(MidiReceiveChannelSplit c)
 {
   m_receiveSplitChannel = c;
+}
+
+MidiReceiveChannel MidiRuntimeOptions::splitToNormalChannel(MidiReceiveChannelSplit split)
+{
+  if(split == MidiReceiveChannelSplit::Follow_I)
+    return m_receiveChannel;
+  return static_cast<MidiReceiveChannel>(split);
 }

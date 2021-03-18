@@ -42,4 +42,5 @@ class InputEventStage
   void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
+  VoiceGroup calculatePartForEvent(MIDIDecoder* pDecoder);
 };
