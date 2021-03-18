@@ -1,5 +1,3 @@
-const httpPort = ":8890";
-const wsPort = ":8889";
 const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
 
 window.onload = function () {

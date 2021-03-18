@@ -13,6 +13,14 @@
 class Font;
 class UDPSender;
 
+namespace nltools
+{
+  namespace msg
+  {
+    class WebSocketJsonAPI;
+  }
+}
+
 class FrameBuffer : public Uncopyable, public sigc::trackable
 {
  public:
@@ -87,7 +95,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   Clip clipRespectingOffset(const Rect &rect);
   Offset offset(const Point &offset);
 
-  const std::vector<tPixel>& getBackBuffer() const;
+  const std::vector<tPixel> &getBackBuffer() const;
 
   bool swapBuffers();
   bool isValidColor(Colors c) const;
@@ -110,4 +118,6 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   std::stack<Rect> m_clips;
   std::stack<Point> m_offsets;
   bool m_perPixelDebug = false;
+
+  std::unique_ptr<nltools::msg::WebSocketJsonAPI> m_api;
 };
