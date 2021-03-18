@@ -22,7 +22,7 @@ install_packages() {
 
 setup_wifi() {
     (
-    cat <<-ENDOFHERE
+    cat <<'ENDOFHERE'
         [connection]
         id=C15
         uuid=61679179-6804-4197-b476-eacad1d492e4
