@@ -21,48 +21,48 @@ install_packages() {
     
     echo "en_US.UTF-8 UTF-8" > /overlay-fs/etc/locale.gen
     /bin/arch-chroot /overlay-fs locale-gen
-
 }
 
 setup_wifi() {
+    touch /overlay-fs/etc/NetworkManager/system-connections/C15.nmconnection
     (
-    cat <<'ENDOFHERE'
-        [connection]
-        id=C15
-        uuid=61679179-6804-4197-b476-eacad1d492e4
-        type=wifi
-        interface-name=wlp0s20f3
-        permissions=
-    
-        [wifi]
-        band=bg
-        channel=7
-        mac-address-blacklist=
-        mode=ap
-        ssid=Unit-C15-99999
+    cat <<-'ENDOFHERE'
+[connection]
+id=C15
+uuid=61679179-6804-4197-b476-eacad1d492e4
+type=wifi
+interface-name=wlp0s20f3
+permissions=
 
-        [wifi-security]
-        key-mgmt=wpa-psk
-        pairwise=ccmp;
-        proto=rsn;  
-        psk=88888888
+[wifi]
+band=bg
+channel=7
+mac-address-blacklist=
+mode=ap
+ssid=Unit-C15-99999
 
-        [ipv4]
-        address1=192.168.100.101/24,192.168.100.1
-        dns-search=
-        method=shared
+[wifi-security]
+key-mgmt=wpa-psk
+pairwise=ccmp;
+proto=rsn;
+psk=88888888
 
-        [ipv6]
-        addr-gen-mode=stable-privacy
-        dns-search=
-        method=auto
+[ipv4]
+address1=192.168.100.101/24,192.168.100.1
+dns-search=
+method=shared
 
-        [proxy]
-    ENDOFHERE
+[ipv6]
+addr-gen-mode=stable-privacy
+dns-search=
+method=auto
+
+[proxy]
+ENDOFHERE
     ) > /overlay-fs/etc/NetworkManager/system-connections/C15.nmconnection
     
-    arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager"    
-    arch-chroot /mnt /bin/bash -c "systemctl start NetworkManager"
+    /bin/arch-chroot /overlay-fs sudo systemctl enable NetworkManager
+#    /bin/arch-chroot /overlay-fs systemctl start NetworkManager
 }
 
 build_binaries() {
