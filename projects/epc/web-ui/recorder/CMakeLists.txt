@@ -2,14 +2,19 @@ cmake_minimum_required(VERSION 3.0)
 
 project(Recorder)
 
-file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
+
+file(GLOB_RECURSE TS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.ts)
+file(GLOB_RECURSE ALL_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/constants.ts.in ${CMAKE_CURRENT_BINARY_DIR}/ts/constants.ts)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tsconfig.json ${CMAKE_CURRENT_BINARY_DIR}/ts/tsconfig.json)
 
 add_custom_command(
   COMMENT "Transpile TypeScript"
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/recorder.js
-  DEPENDS ${SOURCE_FILES}
+  DEPENDS ${ALL_FILES}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND tsc --outfile ${CMAKE_CURRENT_BINARY_DIR}/recorder.js
+  COMMAND tsc --project ${CMAKE_CURRENT_BINARY_DIR}/ts/tsconfig.json
   )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/recorder.js DESTINATION ${C15_INSTALL_PATH}/NonMaps/recorder)

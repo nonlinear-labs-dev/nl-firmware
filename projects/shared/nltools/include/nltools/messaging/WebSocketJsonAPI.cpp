@@ -31,6 +31,11 @@ namespace nltools
           [this, msg]() { m_connections.remove_if([this, msg](tWebSocketPtr &c) { return !send(c.get(), msg); }); });
     }
 
+    bool WebSocketJsonAPI::hasClients() const
+    {
+      return !m_connections.empty();
+    }
+
     void WebSocketJsonAPI::backgroundThread()
     {
       std::unique_lock<std::mutex> l(m_mutex);

@@ -21,6 +21,7 @@ namespace nltools
       ~WebSocketJsonAPI();
 
       void sendAll(const nlohmann::json &msg);
+      bool hasClients() const;
 
      private:
       using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;

@@ -21,8 +21,9 @@ Recorder::Recorder(int sr)
     : m_storage(std::make_unique<FlacFrameStorage>(c_flacFrameBufferSize))
     , m_in(std::make_unique<RecorderInput>(m_storage.get(), sr))
     , m_out(std::make_unique<RecorderOutput>(m_storage.get(), sr))
-    , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(8889, [this](const auto &msg) { return api(msg); }))
-    , m_http(std::make_unique<NetworkServer>(8890, m_storage.get()))
+    , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(RECORDER_WEBSOCKET_PORT,
+                                                             [this](const auto &msg) { return api(msg); }))
+    , m_http(std::make_unique<NetworkServer>(RECORDER_HTTPSERVER_PORT, m_storage.get()))
 {
 }
 

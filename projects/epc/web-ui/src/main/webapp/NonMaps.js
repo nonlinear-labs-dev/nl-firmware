@@ -106,7 +106,7 @@ function formatDimension(value, stringizer, withUnit) {
 }
 
 function stringizeLegato(value) {
-  switch(Number(value)) {
+  switch (Number(value)) {
     default:
     case 0:
       return "None";
@@ -116,5 +116,113 @@ function stringizeLegato(value) {
       return "Glide";
     case 3:
       return "Env & Glide";
+  }
+}
+
+function showOleds() {
+  const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
+  var refreshTimer = null;
+  var socket = null;
+
+  function open() {
+    if (socket) {
+      socket.close();
+      socket = null;
+    }
+
+    var map = new Map();
+    map.set(0x10, [0, 0, 0, 255]);
+    map.set(0x00, [0, 0, 0, 255]);
+    map.set(0x02, [73, 73, 73, 255]);
+    map.set(0x05, [110, 110, 110, 255]);
+    map.set(0x06, [146, 146, 146, 255]);
+    map.set(0x0A, [183, 183, 183, 255]);
+    map.set(0x0B, [219, 219, 219, 255]);
+    map.set(0x0F, [255, 255, 255, 255]);
+
+    socket = new WebSocket("ws://" + hostName + ":" + 8891);
+    socket.onopen = (event) => { socket.send("{}"); };
+    socket.onerror = (event) => { refresh(); };
+    socket.onclose = (event) => { };
+    socket.onmessage = (event) => {
+      var reader = new FileReader()
+      reader.onload = () => {
+        var oledsRaw = JSON.parse(reader.result);
+        var oledsPix = new Uint8ClampedArray(oledsRaw.length * 4);
+
+        for (var i = 0; i < oledsRaw.length; i++) {
+          var idx = i * 4;
+          var mapped = map.get(oledsRaw[i]);
+          oledsPix[idx + 0] = mapped[0];
+          oledsPix[idx + 1] = mapped[1];
+          oledsPix[idx + 2] = mapped[2];
+          oledsPix[idx + 3] = mapped[3];
+        }
+
+        drawBoled(oledsPix.slice(0, 4 * 256 * 64));
+        drawSoled(oledsPix.slice(4 * 256 * 64, 4 * 256 * 64 + 4 * 256 * 32));
+      }
+      reader.readAsText(event.data);
+    };
+
+
+  }
+
+  function refresh() {
+    if (!refreshTimer) {
+      refreshTimer = setTimeout(() => {
+        refreshTimer = null;
+        open();
+      }, 2000);
+    }
+  }
+
+  function drawBoled(pix) {
+    var canvas = document.getElementById("boled");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var id = new ImageData(pix, canvas.width, canvas.height);
+    ctx.putImageData(id, 0, 0);
+  }
+
+  function drawSoled(pix) {
+    var soled = new Uint8ClampedArray(128 * 32 * 4);
+
+    for (var y = 0; y < 32; y++) {
+      for (var x = 0; x < 128; x++) {
+        var tgtIdx = 4 * (x + y * 128);
+        var srcIdx = 4 * (x + y * 256);
+        soled[tgtIdx + 0] = pix[srcIdx + 0];
+        soled[tgtIdx + 1] = pix[srcIdx + 1];
+        soled[tgtIdx + 2] = pix[srcIdx + 2];
+        soled[tgtIdx + 3] = pix[srcIdx + 3];
+      }
+    }
+
+    var canvas = document.getElementById("soled");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var id = new ImageData(soled, canvas.width, canvas.height);
+    ctx.putImageData(id, 0, 0);
+  }
+
+  this.start = function () {
+    open();
+    document.getElementById("soled").style.visibility = "visible";
+    document.getElementById("boled").style.visibility = "visible";
+  }
+
+  this.stop = function () {
+    document.getElementById("soled").style.visibility = "hidden";
+    document.getElementById("boled").style.visibility = "hidden";
+
+    if (refreshTimer)
+      refreshTimer.cancel();
+
+    if (socket)
+      socket.close();
+
+    refreshTimer = null;
+    socket = null;
   }
 }
