@@ -203,3 +203,12 @@ bool BankUseCases::isDirectLoadActive() const
 {
   return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 }
+
+void BankUseCases::setCollapsed(bool b)
+{
+  std::string name = b ? "Collapse" : "Maximize";
+  auto scope = m_bank->getUndoScope().startTransaction(name + " Bank");
+  auto transaction = scope->getTransaction();
+  m_bank->setAttribute(transaction, "collapsed", b ? "true" : "false");
+  m_bank->updateLastModifiedTimestamp(transaction);
+}

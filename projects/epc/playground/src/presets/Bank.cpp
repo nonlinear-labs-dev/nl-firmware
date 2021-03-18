@@ -500,6 +500,7 @@ void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID kn
                                               TimeTools::getDisplayStringFromStamp(m_lastChangedTimestamp));
                       writer.writeTextElement("attached-to", getAttachedToBankUuid().raw());
                       writer.writeTextElement("attached-direction", getAttachDirection());
+                      writer.writeTextElement("collapsed", getAttribute("collapsed", "false"));
                       writer.writeTextElement("state", calcStateString());
                     }
                   });
