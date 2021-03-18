@@ -66,9 +66,20 @@ using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::phy
 class DSPInterface
 {
  public:
+  enum class InputSource
+  {
+    TCD,
+    Primary,
+    Secondary,
+    Unknown
+  };
+
   virtual void onHWChanged(const uint32_t id, float value) = 0;
-  virtual void onKeyDown(const int note, float velocity, VoiceGroup part) = 0;
-  virtual void onKeyUp(const int note, float velocity, VoiceGroup part) = 0;
+
+  virtual void onKeyDown(const int note, float velocity, InputSource from) = 0;
+  virtual void onKeyUp(const int note, float velocity, InputSource from) = 0;
+  virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputSource from) = 0;
+  virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputSource from) = 0;
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKey(int key) = 0;
@@ -95,8 +106,10 @@ class dsp_host_dual : public DSPInterface
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(const uint32_t id, float value) override;
-  void onKeyDown(const int note, float velocity, VoiceGroup part) override;
-  void onKeyUp(const int note, float velocity, VoiceGroup part) override;
+  void onKeyDown(const int note, float velocity, InputSource from) override;
+  void onKeyUp(const int note, float velocity, InputSource from) override;
+  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputSource from) override;
+  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
 
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);

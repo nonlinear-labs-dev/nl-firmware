@@ -182,9 +182,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
         REQUIRE(sendMessages.size() == 2);
         CHECK(sendMessages[0].rawBytes[0] == 0xB0);
         CHECK(sendMessages[0].rawBytes[1] == 33);
-        CHECK(
-            sendMessages[0].rawBytes[2]
-            == 0);  // i would have expected 127 here, but apparently the valid 14 bit out range is only up to 16256 which has the last 7 bits set to 0
+        CHECK(sendMessages[0].rawBytes[2] == 0);
 
         CHECK(sendMessages[1].rawBytes[0] == 0xB0);
         CHECK(sendMessages[1].rawBytes[1] == 1);

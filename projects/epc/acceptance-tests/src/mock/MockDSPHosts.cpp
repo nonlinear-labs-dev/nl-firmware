@@ -5,11 +5,11 @@ void MockDSPHost::onHWChanged(const uint32_t id, float value)
 {
 }
 
-void MockDSPHost::onKeyDown(const int note, float velocity, VoiceGroup part)
+void MockDSPHost::onKeyDown(const int note, float velocity, InputSource from)
 {
 }
 
-void MockDSPHost::onKeyUp(const int note, float velocity, VoiceGroup part)
+void MockDSPHost::onKeyUp(const int note, float velocity, InputSource from)
 {
 }
 
@@ -28,6 +28,14 @@ VoiceGroup MockDSPHost::getSplitPartForKey(int key)
   return VoiceGroup::I;
 }
 
+void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
+{
+}
+
+void MockDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
+{
+}
+
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
     : m_note { expectedNote }
     , m_vel { expectedVelo }
@@ -35,11 +43,10 @@ PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo,
 {
 }
 
-void PassOnKeyDownHost::onKeyDown(const int note, float velocity, VoiceGroup part)
+void PassOnKeyDownHost::onKeyDown(const int note, float velocity, InputSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
-  CHECK(m_part == part);
   m_receivedKeyDown = true;
 }
 
@@ -55,11 +62,10 @@ PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, Voi
 {
 }
 
-void PassOnKeyUpHost::onKeyUp(const int note, float velocity, VoiceGroup part)
+void PassOnKeyUpHost::onKeyUp(const int note, float velocity, InputSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
-  CHECK(m_part == part);
   m_receivedKeyUp = true;
 }
 

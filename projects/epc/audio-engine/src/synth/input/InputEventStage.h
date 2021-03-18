@@ -43,4 +43,6 @@ class InputEventStage
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
   VoiceGroup calculatePartForEvent(MIDIDecoder* pDecoder);
+  VoiceGroup calculatePartForEvent(TCDDecoder* pDecoder);
+  DSPInterface::InputSource getInterfaceFromDecoder(MIDIDecoder* pDecoder);
 };

@@ -39,14 +39,34 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
     {
       case DecoderEventType::KeyDown:
         if(m_options->shouldReceiveLocalNotes())
-          m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), VoiceGroup::I);
+        {
+          if(m_dspHost->getType() == SoundType::Split)
+          {
+            m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(),
+                                      calculatePartForEvent(decoder), DSPInterface::InputSource::TCD);
+          }
+          else
+          {
+            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
+          }
+        }
         if(m_options->shouldSendNotes())
           convertToAndSendMIDI(decoder);
 
         break;
       case DecoderEventType::KeyUp:
         if(m_options->shouldReceiveLocalNotes())
-          m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), VoiceGroup::I);
+        {
+          if(m_dspHost->getType() == SoundType::Split)
+          {
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), calculatePartForEvent(decoder),
+                                    DSPInterface::InputSource::TCD);
+          }
+          else
+          {
+            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
+          }
+        }
         if(m_options->shouldSendNotes())
           convertToAndSendMIDI(decoder);
 
@@ -72,12 +92,32 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
     {
       case DecoderEventType::KeyDown:
         if(checkMIDIKeyDownEnabled(decoder))
-          m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder));
+        {
+          if(m_dspHost->getType() == SoundType::Split)
+          {
+            m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder),
+                                      getInterfaceFromDecoder(decoder));
+          }
+          else
+          {
+            m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), getInterfaceFromDecoder(decoder));
+          }
+        }
         break;
 
       case DecoderEventType::KeyUp:
         if(checkMIDIKeyUpEnabled(decoder))
-          m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder));
+        {
+          if(m_dspHost->getType() == SoundType::Split)
+          {
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder),
+                                    getInterfaceFromDecoder(decoder));
+          }
+          else
+          {
+            m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), getInterfaceFromDecoder(decoder));
+          }
+        }
         break;
 
       case DecoderEventType::HardwareChange:
@@ -285,6 +325,13 @@ void InputEventStage::setNoteShift(int i)
 
 VoiceGroup InputEventStage::calculatePartForEvent(MIDIDecoder *pDecoder)
 {
+  //if split && (sec != prim && sec != none && prim != none) {
+  //pDec->getChannel == prim ? Part::I
+  //pDec->getChannel == sec ? Part::II
+  //} else {
+  // getPartForSplitKey(pDec->getKeyOrControl());
+  //}
+
   //?A?! TODO
   const auto primChannel = m_options->getReceiveChannel();
   const auto secChannel = m_options->splitToNormalChannel(m_options->getReceiveSplitChannel());
@@ -309,4 +356,35 @@ VoiceGroup InputEventStage::calculatePartForEvent(MIDIDecoder *pDecoder)
   }
 
   return VoiceGroup::Global;
+}
+
+VoiceGroup InputEventStage::calculatePartForEvent(TCDDecoder *pDecoder)
+{
+  return m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
+}
+
+DSPInterface::InputSource InputEventStage::getInterfaceFromDecoder(MIDIDecoder *pDecoder)
+{
+  const auto primChannel = m_options->getReceiveChannel();
+  const auto secChannel = m_options->splitToNormalChannel(m_options->getReceiveSplitChannel());
+  const auto areDifferent = primChannel != secChannel;
+  const auto primNotNone = primChannel != MidiReceiveChannel::None;
+  const auto secNotNone = secChannel != MidiReceiveChannel::None;
+
+  if(areDifferent)
+  {
+    if(primNotNone)
+    {
+      if(pDecoder->getChannel() == primChannel)
+        return DSPInterface::InputSource::Primary;
+    }
+
+    if(secNotNone)
+    {
+      if(pDecoder->getChannel() == secChannel)
+        return DSPInterface::InputSource::Secondary;
+    }
+  }
+
+  return DSPInterface::InputSource::Unknown;
 }

@@ -2671,13 +2671,13 @@ void dsp_host_dual::onHWChanged(const uint32_t id, float value)
   processNormalizedMidiController(id, value);
 }
 
-void dsp_host_dual::onKeyDown(const int note, float velocity, VoiceGroup part)
+void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
 {
   m_key_pos = note;
   keyDown(velocity);
 }
 
-void dsp_host_dual::onKeyUp(const int note, float velocity, VoiceGroup part)
+void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
 {
   m_key_pos = note;
   keyUp(velocity);
@@ -2698,4 +2698,14 @@ VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
 {
   //TODO implement
   return VoiceGroup::NumGroups;
+}
+
+void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
+{
+  //TODO implement
+}
+
+void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
+{
+  //TODO implement
 }
