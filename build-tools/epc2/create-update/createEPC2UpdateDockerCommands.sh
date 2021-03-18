@@ -18,6 +18,10 @@ setup_overlay() {
 install_packages() {
     pacman --noconfirm -S $UPDATE_PACKAGES
     pacstrap -c /overlay-fs $UPDATE_PACKAGES
+    
+    echo "en_US.UTF-8 UTF-8" > /overlay-fs/etc/locale.gen
+    /bin/arch-chroot /overlay-fs locale-gen
+
 }
 
 setup_wifi() {
