@@ -59,7 +59,6 @@ setup_wifi() {
     [proxy]
 ENDOFHERE
 
-    bash
     /bin/arch-chroot /overlay-fs chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
     /bin/arch-chroot /overlay-fs systemctl enable NetworkManager
 }
