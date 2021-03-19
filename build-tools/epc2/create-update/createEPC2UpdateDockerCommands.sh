@@ -21,7 +21,46 @@ install_packages() {
     
     echo "en_US.UTF-8 UTF-8" > /overlay-fs/etc/locale.gen
     /bin/arch-chroot /overlay-fs locale-gen
+}
 
+setup_wifi() {
+
+    cat <<- ENDOFHERE > /overlay-fs/etc/NetworkManager/system-connections/C15.nmconnection
+    [connection]
+    id=C15
+    uuid=61679179-6804-4197-b476-eacad1d492e4
+    type=wifi
+    interface-name=wlp0s20f3
+    permissions=
+
+    [wifi]
+    band=bg
+    channel=7
+    mac-address-blacklist=
+    mode=ap
+    ssid=NL-C15-Unit-EPC-00001
+
+    [wifi-security]
+    key-mgmt=wpa-psk
+    pairwise=ccmp;
+    proto=rsn;
+    psk=88888888
+
+    [ipv4]
+    address1=192.168.100.101/24,192.168.100.1
+    dns-search=
+    method=shared
+
+    [ipv6]
+    addr-gen-mode=stable-privacy
+    dns-search=
+    method=auto
+
+    [proxy]
+ENDOFHERE
+
+    /bin/arch-chroot /overlay-fs chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
+    /bin/arch-chroot /overlay-fs systemctl enable NetworkManager
 }
 
 build_binaries() {
@@ -39,5 +78,6 @@ create_update() {
 
 setup_overlay
 install_packages
+setup_wifi
 build_binaries
 create_update
