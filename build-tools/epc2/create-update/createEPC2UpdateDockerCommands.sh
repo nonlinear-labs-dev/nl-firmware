@@ -24,7 +24,6 @@ install_packages() {
 }
 
 setup_wifi() {
-    touch /overlay-fs/etc/NetworkManager/system-connections/C15.nmconnection
     (
     cat <<-'ENDOFHERE'
 [connection]
@@ -39,7 +38,7 @@ band=bg
 channel=7
 mac-address-blacklist=
 mode=ap
-ssid=Unit-C15-99999
+ssid=NL-C15-Unit-EPC-00001
 
 [wifi-security]
 key-mgmt=wpa-psk
@@ -60,9 +59,9 @@ method=auto
 [proxy]
 ENDOFHERE
     ) > /overlay-fs/etc/NetworkManager/system-connections/C15.nmconnection
-    
-    /bin/arch-chroot /overlay-fs sudo systemctl enable NetworkManager
-#    /bin/arch-chroot /overlay-fs systemctl start NetworkManager
+
+    /bin/arch-chroot /overlay-fs chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
+    /bin/arch-chroot /overlay-fs systemctl enable NetworkManager
 }
 
 build_binaries() {
