@@ -24,42 +24,42 @@ install_packages() {
 }
 
 setup_wifi() {
-    (
-    cat <<-'ENDOFHERE'
-[connection]
-id=C15
-uuid=61679179-6804-4197-b476-eacad1d492e4
-type=wifi
-interface-name=wlp0s20f3
-permissions=
 
-[wifi]
-band=bg
-channel=7
-mac-address-blacklist=
-mode=ap
-ssid=NL-C15-Unit-EPC-00001
+    cat <<- ENDOFHERE > /overlay-fs/etc/NetworkManager/system-connections/C15.nmconnection
+    [connection]
+    id=C15
+    uuid=61679179-6804-4197-b476-eacad1d492e4
+    type=wifi
+    interface-name=wlp0s20f3
+    permissions=
 
-[wifi-security]
-key-mgmt=wpa-psk
-pairwise=ccmp;
-proto=rsn;
-psk=88888888
+    [wifi]
+    band=bg
+    channel=7
+    mac-address-blacklist=
+    mode=ap
+    ssid=NL-C15-Unit-EPC-00001
 
-[ipv4]
-address1=192.168.100.101/24,192.168.100.1
-dns-search=
-method=shared
+    [wifi-security]
+    key-mgmt=wpa-psk
+    pairwise=ccmp;
+    proto=rsn;
+    psk=88888888
 
-[ipv6]
-addr-gen-mode=stable-privacy
-dns-search=
-method=auto
+    [ipv4]
+    address1=192.168.100.101/24,192.168.100.1
+    dns-search=
+    method=shared
 
-[proxy]
+    [ipv6]
+    addr-gen-mode=stable-privacy
+    dns-search=
+    method=auto
+
+    [proxy]
 ENDOFHERE
-    ) > /overlay-fs/etc/NetworkManager/system-connections/C15.nmconnection
 
+    bash
     /bin/arch-chroot /overlay-fs chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
     /bin/arch-chroot /overlay-fs systemctl enable NetworkManager
 }
