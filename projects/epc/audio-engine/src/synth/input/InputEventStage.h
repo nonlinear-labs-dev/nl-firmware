@@ -36,9 +36,9 @@ class InputEventStage
   void onMIDIEvent(MIDIDecoder* decoder);
 
   void onTCDEvent(TCDDecoder* decoder);
-  void sendKeyDownAsMidi(TCDDecoder* pDecoder);
-  void convertToAndSendMIDI(TCDDecoder* pDecoder);
-  void sendKeyUpAsMidi(TCDDecoder* pDecoder);
+  void sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
+  void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
+  void sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);

@@ -5,9 +5,9 @@
 #include "InputEventStage.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, InputEventStage::MIDIOut outCB)
-    : m_dspHost { dspHost }
-    , m_options { options }
-    , m_midiOut { std::move(outCB) }
+    : m_dspHost{ dspHost }
+    , m_options{ options }
+    , m_midiOut{ std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
@@ -35,6 +35,9 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
 {
   if(decoder)
   {
+    // it would be benefitial/desirable to not call calculatePartForEvent() multiple times within a single event chain,
+    // therefore the following suggestion: we can determine the part once within the stack and pass it subsequently
+    VoiceGroup determinedPart = VoiceGroup::Global;  // initially, we set it to global
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
@@ -42,16 +45,18 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(m_dspHost->getType() == SoundType::Split)
           {
-            m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(),
-                                      calculatePartForEvent(decoder), DSPInterface::InputSource::TCD);
+            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
+            m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
+                                      DSPInterface::InputSource::TCD);
           }
           else
           {
+            // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
           }
         }
         if(m_options->shouldSendNotes())
-          convertToAndSendMIDI(decoder);
+          convertToAndSendMIDI(decoder, determinedPart);
 
         break;
       case DecoderEventType::KeyUp:
@@ -59,23 +64,26 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(m_dspHost->getType() == SoundType::Split)
           {
-            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), calculatePartForEvent(decoder),
+            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
                                     DSPInterface::InputSource::TCD);
           }
           else
           {
+            // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
           }
         }
         if(m_options->shouldSendNotes())
-          convertToAndSendMIDI(decoder);
+          convertToAndSendMIDI(decoder, determinedPart);
 
         break;
       case DecoderEventType::HardwareChange:
         if(m_options->shouldReceiveLocalControllers())
           m_dspHost->onHWChanged(decoder->getKeyOrController(), decoder->getValue());
         if(m_options->shouldSendControllers())
-          convertToAndSendMIDI(decoder);
+          // HW Sources seem to act without part association?
+          convertToAndSendMIDI(decoder, determinedPart);
 
         break;
       case DecoderEventType::UNKNOWN:
@@ -131,18 +139,19 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
   }
 }
 
-void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder)
+void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
   switch(pDecoder->getEventType())
   {
     case DecoderEventType::KeyDown:
-      sendKeyDownAsMidi(pDecoder);
+      sendKeyDownAsMidi(pDecoder, determinedPart);
       break;
     case DecoderEventType::KeyUp:
-      sendKeyUpAsMidi(pDecoder);
+      sendKeyUpAsMidi(pDecoder, determinedPart);
       break;
     case DecoderEventType::HardwareChange:
       sendHardwareChangeAsMidi(pDecoder);
+      // TODO: what about primary/secondary ctrl chg? (likewise: prog chg)
       break;
     case DecoderEventType::UNKNOWN:
       nltools_assertNotReached();
@@ -177,16 +186,16 @@ bool InputEventStage::checkMIDIHardwareChangeEnabled(MIDIDecoder *pDecoder)
   return recControls && channelMatches;
 }
 
-void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder)
+void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
   using CC_Range_Vel = Midi::clipped14BitVelRange;
 
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
   const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
-  const auto keyPart = m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
+  //  const auto keyPart = m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
   const auto key = pDecoder->getKeyOrController();
 
-  if(mainChannel != -1 && (keyPart == VoiceGroup::I || keyPart == VoiceGroup::Global))
+  if(mainChannel != -1 && (determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global))
   {
     auto mainC = static_cast<uint8_t>(mainChannel);
 
@@ -204,7 +213,7 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder)
     m_midiOut({ keyStatus, keyByte, msbVelByte });
   }
 
-  if(secondaryChannel != -1 && (keyPart == VoiceGroup::II || keyPart == VoiceGroup::Global))
+  if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global))
   {
     auto secC = static_cast<uint8_t>(secondaryChannel);
 
@@ -223,8 +232,9 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder)
   }
 }
 
-void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder)
+void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
+  // key up events should include part evaluation (as key down events)
   using CC_Range_Vel = Midi::clipped14BitVelRange;
 
   uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
