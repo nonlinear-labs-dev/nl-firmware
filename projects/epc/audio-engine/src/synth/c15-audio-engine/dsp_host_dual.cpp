@@ -424,6 +424,7 @@ void dsp_host_dual::logStatus()
   }
 }
 
+// in theory unsued...
 template <typename Range> void dsp_host_dual::processBipolarMidiController(const uint32_t dataByte, int id)
 {
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
@@ -431,13 +432,14 @@ template <typename Range> void dsp_host_dual::processBipolarMidiController(const
   processNormalizedMidiController(id, value);
 }
 
+// in theory unsued...
 template <typename Range> void dsp_host_dual::processUnipolarMidiController(const uint32_t dataByte, int id)
 {
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
   auto value = Range::decodeUnipolarMidiValue(midiVal);
   processNormalizedMidiController(id, value);
 }
-
+// in theory unsued...
 void dsp_host_dual::processNormalizedMidiController(const uint32_t _id, const float _controlPosition)
 {
   auto source = m_params.get_hw_src(_id);
@@ -446,6 +448,7 @@ void dsp_host_dual::processNormalizedMidiController(const uint32_t _id, const fl
   hwModChain(source, _id, inc);
 }
 
+// UNUSED
 void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
 {
   if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
@@ -1424,6 +1427,7 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
   return result;
 }
 
+// in theory unsued... should be handled by InputEventStage...
 template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb, typename Out>
 void doSendCCOut(const Out& out, uint16_t value)
 {
@@ -1435,6 +1439,7 @@ void doSendCCOut(const Out& out, uint16_t value)
   out({ statusByte, Midi::getMSB::getCC<msb>(), msbValByte });
 }
 
+// in theory unsued... should be handled by InputEventStage...
 template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb>
 void dsp_host_dual::sendCCOut(int id, float controlPosition, const MidiOut& out)
 {
@@ -1444,6 +1449,7 @@ void dsp_host_dual::sendCCOut(int id, float controlPosition, const MidiOut& out)
     doSendCCOut<msb, lsb>(out, CC_Range_14_Bit::encodeUnipolarMidiValue(controlPosition));
 }
 
+// in theory unsued... should be handled by InputEventStage...
 void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out)
 {
   switch(static_cast<C15::Parameters::Hardware_Sources>(id))
@@ -1496,6 +1502,7 @@ void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPositio
   }
 }
 
+// UNUSED
 void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut& out)
 {
   auto source = m_params.get_hw_src(_id);
@@ -2665,10 +2672,14 @@ void dsp_host_dual::debugLevels()
           ->m_scaled);
 }
 
-//TODO ?
+// seems to work (ui and midi, tcd untested but expected to work as well)
 void dsp_host_dual::onHWChanged(const uint32_t id, float value)
 {
-  processNormalizedMidiController(id, value);
+  //  processNormalizedMidiController(id, value);
+  auto source = m_params.get_hw_src(id);
+  const float inc = value - source->m_position;
+  source->m_position = value;
+  hwModChain(source, id, inc);
 }
 
 void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
