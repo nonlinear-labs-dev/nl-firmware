@@ -362,6 +362,8 @@ VoiceGroup InputEventStage::calculatePartForEvent(MIDIDecoder *pDecoder)
   {
     case DecoderEventType::KeyUp:
     case DecoderEventType::KeyDown:
+      // NOTE: this seems incomplete
+      // there should be another state, where m_dspHost->getSplitPartForKey applies
       if(primChannel == secChannel && (primChannel == pDecoder->getChannel() || primIsOmni || secIsOmni))
         return VoiceGroup::I;  //?? TODO FIX
       if(primChannel == pDecoder->getChannel() || primIsOmni)

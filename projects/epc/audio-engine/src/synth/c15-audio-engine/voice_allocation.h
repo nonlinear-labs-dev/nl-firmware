@@ -424,6 +424,24 @@ class VoiceAllocation
     clear_keyState();
   }
 
+  inline AllocatorId getSplitPartForKey(const uint32_t _key)
+  {
+    const uint32_t state = (_key <= m_splitPoint[0]) + ((_key >= m_splitPoint[1]) << 1);
+    switch(state)
+    {
+      case 1:
+        return AllocatorId::Local_I;
+        break;
+      case 2:
+        return AllocatorId::Local_II;
+        break;
+      case 3:
+        return AllocatorId::Global;
+        break;
+    }
+    return AllocatorId::None;
+  }
+
  private:
   PolyVoiceAllocator<GlobalVoices> m_global;
   PolyVoiceAllocator<LocalVoices> m_local[2];

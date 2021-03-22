@@ -2716,7 +2716,21 @@ SoundType dsp_host_dual::getType()
 
 VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
 {
-  //TODO implement
+  // also a little inconvenient but should work
+  switch(m_alloc.getSplitPartForKey(key))
+  {
+    case AllocatorId::Local_I:
+      return VoiceGroup::I;
+      break;
+    case AllocatorId::Local_II:
+      return VoiceGroup::II;
+      break;
+    case AllocatorId::Global:
+      return VoiceGroup::Global;
+      break;
+  }
+  // NOTE: this should never be reached and represents an invalid state!
+  // (maybe, extend enum for better readability?)
   return VoiceGroup::NumGroups;
 }
 
