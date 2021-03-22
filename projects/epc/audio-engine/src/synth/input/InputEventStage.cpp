@@ -98,7 +98,10 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 {
   if(decoder)
   {
-    const SoundType soundType = m_dspHost->getType();  // also tracking the sound type for more safety
+    // it would be benefitial/desirable to not call calculatePartForEvent() multiple times within a single event chain,
+    // therefore the following suggestion: we can determine the part once within the stack and pass it subsequently
+    VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
+    const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
     const bool soundValid = soundType != SoundType::Invalid;
     switch(decoder->getEventType())
     {
@@ -107,7 +110,8 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder),
+            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
+            m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart,
                                       getInterfaceFromDecoder(decoder));
           }
           else if(soundValid)  // safety first
@@ -122,7 +126,8 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder),
+            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart,
                                     getInterfaceFromDecoder(decoder));
           }
           else if(soundValid)  // safety first
