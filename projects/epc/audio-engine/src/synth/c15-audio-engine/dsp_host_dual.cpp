@@ -2701,8 +2701,17 @@ C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
 
 SoundType dsp_host_dual::getType()
 {
-  //TODO implement
-  return SoundType::Invalid;
+  // a little inconvenient and redundant...
+  switch(m_layer_mode)
+  {
+    case LayerMode::Single:
+      return SoundType::Single;
+    case LayerMode::Split:
+      return SoundType::Split;
+    case LayerMode::Layer:
+      return SoundType::Layer;
+  }
+  return SoundType::Invalid;  // should never be reached
 }
 
 VoiceGroup dsp_host_dual::getSplitPartForKey(int key)

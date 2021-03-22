@@ -37,44 +37,46 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
   {
     // it would be benefitial/desirable to not call calculatePartForEvent() multiple times within a single event chain,
     // therefore the following suggestion: we can determine the part once within the stack and pass it subsequently
-    VoiceGroup determinedPart = VoiceGroup::Global;  // initially, we set it to global
+    VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
+    const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
+    const bool soundValid = soundType != SoundType::Invalid;
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
         if(m_options->shouldReceiveLocalNotes())
         {
-          if(m_dspHost->getType() == SoundType::Split)
+          if(soundType == SoundType::Split)
           {
             determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
             m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
                                       DSPInterface::InputSource::TCD);
           }
-          else
+          else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
           }
         }
-        if(m_options->shouldSendNotes())
+        if(m_options->shouldSendNotes() && soundValid)
           convertToAndSendMIDI(decoder, determinedPart);
 
         break;
       case DecoderEventType::KeyUp:
         if(m_options->shouldReceiveLocalNotes())
         {
-          if(m_dspHost->getType() == SoundType::Split)
+          if(soundType == SoundType::Split)
           {
             determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
             m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
                                     DSPInterface::InputSource::TCD);
           }
-          else
+          else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
           }
         }
-        if(m_options->shouldSendNotes())
+        if(m_options->shouldSendNotes() && soundValid)  // safety first
           convertToAndSendMIDI(decoder, determinedPart);
 
         break;
@@ -96,17 +98,19 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 {
   if(decoder)
   {
+    const SoundType soundType = m_dspHost->getType();  // also tracking the sound type for more safety
+    const bool soundValid = soundType != SoundType::Invalid;
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
         if(checkMIDIKeyDownEnabled(decoder))
         {
-          if(m_dspHost->getType() == SoundType::Split)
+          if(soundType == SoundType::Split)
           {
             m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder),
                                       getInterfaceFromDecoder(decoder));
           }
-          else
+          else if(soundValid)  // safety first
           {
             m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), getInterfaceFromDecoder(decoder));
           }
@@ -116,12 +120,12 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
       case DecoderEventType::KeyUp:
         if(checkMIDIKeyUpEnabled(decoder))
         {
-          if(m_dspHost->getType() == SoundType::Split)
+          if(soundType == SoundType::Split)
           {
             m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), calculatePartForEvent(decoder),
                                     getInterfaceFromDecoder(decoder));
           }
-          else
+          else if(soundValid)  // safety first
           {
             m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), getInterfaceFromDecoder(decoder));
           }
