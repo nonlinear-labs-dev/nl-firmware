@@ -2682,18 +2682,6 @@ void dsp_host_dual::onHWChanged(const uint32_t id, float value)
   hwModChain(source, id, inc);
 }
 
-void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
-{
-  m_key_pos = note;
-  keyDown(velocity);
-}
-
-void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
-{
-  m_key_pos = note;
-  keyUp(velocity);
-}
-
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
 {
   return m_params.get_hw_src(id)->m_behavior;
@@ -2734,12 +2722,144 @@ VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
   return VoiceGroup::NumGroups;
 }
 
+void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
+{
+  // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
+  //  const uint32_t sourceId = static_cast<uint32_t>(from);
+  const uint32_t sourceId = static_cast<uint32_t>(InputSource::Primary);
+  bool valid = false;
+  switch(m_layer_mode)
+  {
+    case LayerMode::Single:
+      valid = m_alloc.onSingleKeyDown(note, velocity, sourceId);
+      break;
+    case LayerMode::Layer:
+      valid = m_alloc.onLayerKeyDown(note, velocity, sourceId);
+      break;
+  }
+  if(valid)
+  {
+    if(LOG_KEYS)
+    {
+      nltools::Log::info("key_down(pos:", note, ", vel:", velocity, ", unison:", m_alloc.m_unison, ")");
+    }
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
+    {
+      if(m_poly[event->m_localIndex].keyDown(event))
+      {
+        // mono legato
+        m_mono[event->m_localIndex].keyDown(event);
+      }
+      if(LOG_KEYS_POLY)
+      {
+        nltools::Log::info("key_down_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", unisonIndex:", event->m_unisonIndex, ", stolen:", event->m_stolen,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ")");
+      }
+    }
+  }
+  else if(LOG_FAIL)
+
+  {
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(pos:", note, ") failed!");
+  }
+}
+
+void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
+{
+  // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
+  //  const uint32_t sourceId = static_cast<uint32_t>(from);
+  const uint32_t sourceId = static_cast<uint32_t>(InputSource::Primary);
+  bool valid = false;
+  switch(m_layer_mode)
+  {
+    case LayerMode::Single:
+      valid = m_alloc.onSingleKeyUp(note, velocity, sourceId);
+      break;
+    case LayerMode::Layer:
+      valid = m_alloc.onLayerKeyUp(note, velocity, sourceId);
+      break;
+  }
+  if(valid)
+  {
+    if(LOG_KEYS)
+    {
+      nltools::Log::info("key_up(pos:", note, ", vel:", velocity, ", unison:", m_alloc.m_unison, ")");
+    }
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
+    {
+      m_poly[event->m_localIndex].keyUp(event);
+      if(LOG_KEYS_POLY)
+      {
+        nltools::Log::info("key_up_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ")");
+      }
+    }
+  }
+  else if(LOG_FAIL)
+  {
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(pos:", note, ") failed!");
+  }
+}
+
 void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
 {
-  //TODO implement
+  const uint32_t sourceId = static_cast<uint32_t>(from);
+  bool valid = false;
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:
+        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:
+        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:
+        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Global);
+        break;
+    }
+  }
+  if(valid)
+  {
+    // TODO: traversal...
+  }
+  else if(LOG_FAIL)
+  {
+    // TODO: fail...
+  }
 }
 
 void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
 {
-  //TODO implement
+  const uint32_t sourceId = static_cast<uint32_t>(from);
+  bool valid = false;
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:
+        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:
+        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:
+        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Global);
+        break;
+    }
+  }
+  if(valid)
+  {
+    // TODO: traversal...
+  }
+  else if(LOG_FAIL)
+  {
+    // TODO: fail...
+  }
 }
