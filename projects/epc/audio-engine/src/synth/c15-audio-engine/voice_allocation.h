@@ -425,7 +425,7 @@ class VoiceAllocation
         {
           const uint32_t unisonVoices = m_local[0].getUnison();
           // mono/poly process
-          const uint32_t firstVoice = keyDown_new_process_split(keyState, unisonVoices, 0, applyBoth);
+          const uint32_t firstVoice = keyDown_new_process_split(keyState, unisonVoices, 0, true);
           // unison loop
           keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices);
         }
@@ -1171,33 +1171,39 @@ class VoiceAllocation
                       voiceState->m_stolen, allow_glide);
     }
   }
-  // TODO: newKeyState
+
   inline void clear_keyState()
   {
     m_traversal.init();
     for(uint32_t k = 0; k < Keys; k++)
     {
-      KeyAssignment* keyState = &m_keyState[k];
-      // find active keys
-      if(keyState->m_active)
+      for(uint32_t s = 0; s < 3; s++)
       {
-        keyUp_apply(keyState);
-        keyUp_confirm(keyState);
+        KeyAssignment* keyState = &m_newKeyState[s][k];
+        // find active keys
+        if(keyState->m_active)
+        {
+          keyUp_apply(keyState);
+          keyUp_confirm(keyState);
+        }
       }
     }
   }
-  // TODO: newKeyState
+
   inline void clear_keyState(const AllocatorId _alloc)
   {
     m_traversal.init();
     for(uint32_t k = 0; k < Keys; k++)
     {
-      KeyAssignment* keyState = &m_keyState[k];
-      // find allocated keys
-      if(keyState->m_origin == _alloc)
+      for(uint32_t s = 0; s < 3; s++)
       {
-        keyUp_apply(keyState);
-        keyUp_confirm(keyState);
+        KeyAssignment* keyState = &m_newKeyState[s][k];
+        // find allocated keys
+        if(keyState->m_origin == _alloc)
+        {
+          keyUp_apply(keyState);
+          keyUp_confirm(keyState);
+        }
       }
     }
   }
