@@ -1330,11 +1330,11 @@ uint32_t dsp_host_dual::getLayerId(const VoiceGroup _vg)
   }
 }
 
-void dsp_host_dual::keyDownTraversal(const uint32_t _note, const float _vel)
+void dsp_host_dual::keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId)
 {
   if(LOG_KEYS)
   {
-    nltools::Log::info("key_down(pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_down(src:", _srcId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
   }
   for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
   {
@@ -1387,11 +1387,11 @@ void dsp_host_dual::keyDown(const float _vel)
   }
 }
 
-void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel)
+void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId)
 {
   if(LOG_KEYS)
   {
-    nltools::Log::info("key_up(pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_up(src:", _srcId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
   }
   for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
   {
@@ -2787,7 +2787,7 @@ void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
   }
   if(valid)
   {
-    keyDownTraversal(note, velocity);
+    keyDownTraversal(note, velocity, sourceId);
   }
   else if(LOG_FAIL)
 
@@ -2813,7 +2813,7 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
   }
   if(valid)
   {
-    keyUpTraversal(note, velocity);
+    keyUpTraversal(note, velocity, sourceId);
   }
   else if(LOG_FAIL)
   {
@@ -2843,7 +2843,7 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   }
   if(valid)
   {
-    keyDownTraversal(note, velocity);
+    keyDownTraversal(note, velocity, static_cast<uint32_t>(part));
   }
   else if(LOG_FAIL)
   {
@@ -2873,7 +2873,7 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
   }
   if(valid)
   {
-    keyUpTraversal(note, velocity);
+    keyUpTraversal(note, velocity, static_cast<uint32_t>(part));
   }
   else if(LOG_FAIL)
   {
