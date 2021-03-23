@@ -209,9 +209,12 @@ void Settings::save()
 {
   try
   {
-    SettingsSerializer serializer(*this);
-    XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
-    serializer.write(writer, VersionAttribute::get());
+    if(Application::exists())
+    {
+      SettingsSerializer serializer(*this);
+      XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
+      serializer.write(writer, VersionAttribute::get());
+    }
   }
   catch(...)
   {

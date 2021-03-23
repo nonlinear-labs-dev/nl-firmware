@@ -437,7 +437,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *pres
 {
   auto hwui = Application::get().getHWUI();
   auto parameterFocusLock = hwui->getParameterFocusLockGuard();
-  
+
   PerformanceTimer timer(__PRETTY_FUNCTION__);
   SendEditBufferScopeGuard scope(transaction, sendToAudioEngine);
 
@@ -1485,34 +1485,38 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
                                          { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
                                          { C15::PID::Out_Mix_To_FX, C15::PID::Out_Mix_Lvl } } } };
 
-  auto hwui = Application::get().getHWUI();
-  auto currentVg = hwui->getCurrentVoiceGroup();
-
-  auto itMap = conversions.find({ oldType, newType });
-  if(itMap != conversions.end())
+  if(Application::exists())
   {
-    const auto &conv = itMap->second;
-    auto id = getSelectedParameterNumber();
-    auto itConv = conv.find(id);
-    if(itConv != conv.end())
+    auto hwui = Application::get().getHWUI();
+
+    auto currentVg = hwui->getCurrentVoiceGroup();
+
+    auto itMap = conversions.find({ oldType, newType });
+    if(itMap != conversions.end())
     {
-      auto vg = ParameterId::isGlobal(itConv->second) ? VoiceGroup::Global : currentVg;
+      const auto &conv = itMap->second;
+      auto id = getSelectedParameterNumber();
+      auto itConv = conv.find(id);
+      if(itConv != conv.end())
+      {
+        auto vg = ParameterId::isGlobal(itConv->second) ? VoiceGroup::Global : currentVg;
 
-      if(newType == SoundType::Single && vg == VoiceGroup::II)
-        vg = VoiceGroup::I;
+        if(newType == SoundType::Single && vg == VoiceGroup::II)
+          vg = VoiceGroup::I;
 
-      undoableSelectParameter(transaction, { itConv->second, vg }, false);
-      hwui->setCurrentVoiceGroup(vg);
+        undoableSelectParameter(transaction, { itConv->second, vg }, false);
+        hwui->setCurrentVoiceGroup(vg);
+      }
     }
-  }
 
-  if(newType == SoundType::Single && currentVg == VoiceGroup::II)
-  {
-    auto selNum = getSelectedParameterNumber();
-    if(!ParameterId::isGlobal(selNum))
-      undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, false);
+    if(newType == SoundType::Single && currentVg == VoiceGroup::II)
+    {
+      auto selNum = getSelectedParameterNumber();
+      if(!ParameterId::isGlobal(selNum))
+        undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, false);
 
-    hwui->setCurrentVoiceGroup(VoiceGroup::I);
+      hwui->setCurrentVoiceGroup(VoiceGroup::I);
+    }
   }
 }
 
