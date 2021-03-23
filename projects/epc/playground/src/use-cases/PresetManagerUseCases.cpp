@@ -181,8 +181,8 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   auto bank = m_presetManager->addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-  auto preset
-      = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, m_presetManager->getEditBuffer(), false));
+  auto preset = bank->appendAndLoadPreset(transaction,
+                                          std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer(), false));
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager->selectBank(transaction, bank->getUuid());
 }
