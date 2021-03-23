@@ -424,6 +424,7 @@ void dsp_host_dual::logStatus()
   }
 }
 
+// in theory unsued...
 template <typename Range> void dsp_host_dual::processBipolarMidiController(const uint32_t dataByte, int id)
 {
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
@@ -431,13 +432,14 @@ template <typename Range> void dsp_host_dual::processBipolarMidiController(const
   processNormalizedMidiController(id, value);
 }
 
+// in theory unsued...
 template <typename Range> void dsp_host_dual::processUnipolarMidiController(const uint32_t dataByte, int id)
 {
   auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
   auto value = Range::decodeUnipolarMidiValue(midiVal);
   processNormalizedMidiController(id, value);
 }
-
+// in theory unsued...
 void dsp_host_dual::processNormalizedMidiController(const uint32_t _id, const float _controlPosition)
 {
   auto source = m_params.get_hw_src(_id);
@@ -446,6 +448,7 @@ void dsp_host_dual::processNormalizedMidiController(const uint32_t _id, const fl
   hwModChain(source, _id, inc);
 }
 
+// UNUSED
 void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
 {
   if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
@@ -1424,6 +1427,7 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
   return result;
 }
 
+// in theory unsued... should be handled by InputEventStage...
 template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb, typename Out>
 void doSendCCOut(const Out& out, uint16_t value)
 {
@@ -1435,6 +1439,7 @@ void doSendCCOut(const Out& out, uint16_t value)
   out({ statusByte, Midi::getMSB::getCC<msb>(), msbValByte });
 }
 
+// in theory unsued... should be handled by InputEventStage...
 template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb>
 void dsp_host_dual::sendCCOut(int id, float controlPosition, const MidiOut& out)
 {
@@ -1444,6 +1449,7 @@ void dsp_host_dual::sendCCOut(int id, float controlPosition, const MidiOut& out)
     doSendCCOut<msb, lsb>(out, CC_Range_14_Bit::encodeUnipolarMidiValue(controlPosition));
 }
 
+// in theory unsued... should be handled by InputEventStage...
 void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out)
 {
   switch(static_cast<C15::Parameters::Hardware_Sources>(id))
@@ -1496,6 +1502,7 @@ void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPositio
   }
 }
 
+// UNUSED
 void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut& out)
 {
   auto source = m_params.get_hw_src(_id);
@@ -2665,22 +2672,14 @@ void dsp_host_dual::debugLevels()
           ->m_scaled);
 }
 
-//TODO ?
+// seems to work (ui and midi, tcd untested but expected to work as well)
 void dsp_host_dual::onHWChanged(const uint32_t id, float value)
 {
-  processNormalizedMidiController(id, value);
-}
-
-void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
-{
-  m_key_pos = note;
-  keyDown(velocity);
-}
-
-void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
-{
-  m_key_pos = note;
-  keyUp(velocity);
+  //  processNormalizedMidiController(id, value);
+  auto source = m_params.get_hw_src(id);
+  const float inc = value - source->m_position;
+  source->m_position = value;
+  hwModChain(source, id, inc);
 }
 
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
@@ -2690,22 +2689,177 @@ C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
 
 SoundType dsp_host_dual::getType()
 {
-  //TODO implement
-  return SoundType::Invalid;
+  // a little inconvenient and redundant...
+  switch(m_layer_mode)
+  {
+    case LayerMode::Single:
+      return SoundType::Single;
+    case LayerMode::Split:
+      return SoundType::Split;
+    case LayerMode::Layer:
+      return SoundType::Layer;
+  }
+  return SoundType::Invalid;  // should never be reached
 }
 
 VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
 {
-  //TODO implement
+  // also a little inconvenient but should work
+  switch(m_alloc.getSplitPartForKey(key))
+  {
+    case AllocatorId::Local_I:
+      return VoiceGroup::I;
+      break;
+    case AllocatorId::Local_II:
+      return VoiceGroup::II;
+      break;
+    case AllocatorId::Global:
+      return VoiceGroup::Global;
+      break;
+  }
+  // NOTE: this should never be reached and represents an invalid state!
+  // (maybe, extend enum for better readability?)
   return VoiceGroup::NumGroups;
+}
+
+void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
+{
+  // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
+  //  const uint32_t sourceId = static_cast<uint32_t>(from);
+  const uint32_t sourceId = static_cast<uint32_t>(InputSource::Primary);
+  bool valid = false;
+  switch(m_layer_mode)
+  {
+    case LayerMode::Single:
+      valid = m_alloc.onSingleKeyDown(note, velocity, sourceId);
+      break;
+    case LayerMode::Layer:
+      valid = m_alloc.onLayerKeyDown(note, velocity, sourceId);
+      break;
+  }
+  if(valid)
+  {
+    if(LOG_KEYS)
+    {
+      nltools::Log::info("key_down(pos:", note, ", vel:", velocity, ", unison:", m_alloc.m_unison, ")");
+    }
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
+    {
+      if(m_poly[event->m_localIndex].keyDown(event))
+      {
+        // mono legato
+        m_mono[event->m_localIndex].keyDown(event);
+      }
+      if(LOG_KEYS_POLY)
+      {
+        nltools::Log::info("key_down_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", unisonIndex:", event->m_unisonIndex, ", stolen:", event->m_stolen,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ")");
+      }
+    }
+  }
+  else if(LOG_FAIL)
+
+  {
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(pos:", note, ") failed!");
+  }
+}
+
+void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
+{
+  // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
+  //  const uint32_t sourceId = static_cast<uint32_t>(from);
+  const uint32_t sourceId = static_cast<uint32_t>(InputSource::Primary);
+  bool valid = false;
+  switch(m_layer_mode)
+  {
+    case LayerMode::Single:
+      valid = m_alloc.onSingleKeyUp(note, velocity, sourceId);
+      break;
+    case LayerMode::Layer:
+      valid = m_alloc.onLayerKeyUp(note, velocity, sourceId);
+      break;
+  }
+  if(valid)
+  {
+    if(LOG_KEYS)
+    {
+      nltools::Log::info("key_up(pos:", note, ", vel:", velocity, ", unison:", m_alloc.m_unison, ")");
+    }
+    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
+    {
+      m_poly[event->m_localIndex].keyUp(event);
+      if(LOG_KEYS_POLY)
+      {
+        nltools::Log::info("key_up_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
+                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
+        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
+                           ", trigger_glide:", event->m_trigger_glide, ")");
+      }
+    }
+  }
+  else if(LOG_FAIL)
+  {
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(pos:", note, ") failed!");
+  }
 }
 
 void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
 {
-  //TODO implement
+  const uint32_t sourceId = static_cast<uint32_t>(from);
+  bool valid = false;
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:
+        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:
+        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:
+        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Global);
+        break;
+    }
+  }
+  if(valid)
+  {
+    // TODO: traversal...
+  }
+  else if(LOG_FAIL)
+  {
+    // TODO: fail...
+  }
 }
 
 void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
 {
-  //TODO implement
+  const uint32_t sourceId = static_cast<uint32_t>(from);
+  bool valid = false;
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:
+        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:
+        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:
+        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Global);
+        break;
+    }
+  }
+  if(valid)
+  {
+    // TODO: traversal...
+  }
+  else if(LOG_FAIL)
+  {
+    // TODO: fail...
+  }
 }

@@ -28,5 +28,6 @@ class TCDDecoder
   MidiRuntimeOptions* m_options;
 
   //Constants
-  constexpr static const float c_norm_vel = 1.0f / 16383.0f;
+  constexpr static const float c_norm_vel = 1.0f / 16383.0f;  // this only applies for velocities from the LPC
+  constexpr static const float c_norm_hw = 1.0f / 16000.0f;   // this only applies for hw sources from the LPC
 };
