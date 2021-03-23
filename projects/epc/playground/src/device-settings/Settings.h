@@ -49,6 +49,7 @@ class Settings : public ContentSection
   Glib::ustring getPrefix() const override;
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+  sigc::connection onSettingsChanged(sigc::slot<void(void)> s);
 
   bool isLoading() const;
 
@@ -77,4 +78,6 @@ class Settings : public ContentSection
   int channelToMessageInt(MidiReceiveChannelSplit channel);
   template <typename T> void subscribeToMidiSetting();
   template <typename... TT> void subscribeToMidiSettings();
+
+  sigc::signal<void(void)> m_sigChanged;
 };

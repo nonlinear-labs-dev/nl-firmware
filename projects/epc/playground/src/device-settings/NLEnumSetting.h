@@ -52,7 +52,7 @@ template <typename TEnum> class NLEnumSetting : public Setting
     set(to<TEnum>(text));
   }
 
-  void incDec(int dir, bool wrap)
+  virtual void incDec(int dir, bool wrap)
   {
     const auto &v = m_displayStrings;
     auto it = std::find(v.begin(), v.end(), getDisplayString());
