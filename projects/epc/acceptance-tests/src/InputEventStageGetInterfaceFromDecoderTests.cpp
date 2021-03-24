@@ -2,12 +2,14 @@
 #include <synth/input/InputEventStage.h>
 #include <synth/C15Synth.h>
 #include <mock/MockDSPHosts.h>
+#include <mock/InputEventStageTester.h>
 
 TEST_CASE("Interface correct", "[MIDI]")
 {
   MockDSPHost host;
   MidiRuntimeOptions options;
   InputEventStage eventStage(&host, &options, [](auto) {});
+  InputEventStageTester testObject(&eventStage);
 
   WHEN("Mappings: prim = none, sec = Common")
   {
@@ -22,7 +24,7 @@ TEST_CASE("Interface correct", "[MIDI]")
 
     MIDIDecoder testDecoder(&host, &options);
     testDecoder.decode({ 0x90, 127, 127 });
-    auto ret = eventStage.getInterfaceFromDecoder(&testDecoder);
+    auto ret = testObject.getInterfaceFromDecoder(&testDecoder);
     CHECK(ret == DSPInterface::InputSource::Unknown);
   }
 
@@ -38,7 +40,7 @@ TEST_CASE("Interface correct", "[MIDI]")
 
     MIDIDecoder testDecoder(&host, &options);
     testDecoder.decode({ 0x90, 127, 127 });
-    auto ret = eventStage.getInterfaceFromDecoder(&testDecoder);
+    auto ret = testObject.getInterfaceFromDecoder(&testDecoder);
     CHECK(ret == DSPInterface::InputSource::Both);
   }
 
@@ -56,14 +58,14 @@ TEST_CASE("Interface correct", "[MIDI]")
     WHEN("Send on Channel 1")
     {
       testDecoder.decode({ 0x90, 127, 127 });
-      auto ret = eventStage.getInterfaceFromDecoder(&testDecoder);
+      auto ret = testObject.getInterfaceFromDecoder(&testDecoder);
       CHECK(ret == DSPInterface::InputSource::Primary);
     }
 
     WHEN("Send on Channel 2")
     {
       testDecoder.decode({ 0x91, 127, 127 });
-      auto ret = eventStage.getInterfaceFromDecoder(&testDecoder);
+      auto ret = testObject.getInterfaceFromDecoder(&testDecoder);
       CHECK(ret == DSPInterface::InputSource::Secondary);
     }
   }

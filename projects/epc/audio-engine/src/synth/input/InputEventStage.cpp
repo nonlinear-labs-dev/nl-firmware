@@ -116,7 +116,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculateSplitPartForEvent(decoder);  // Split Sound overrides part association for key
+            determinedPart = calculateSplitPartForEvent(decoder, interface);  // Split Sound overrides part association for key
             if(decoder->getEventType() == DecoderEventType::KeyDown)
               m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
@@ -336,8 +336,12 @@ void InputEventStage::setNoteShift(int i)
   m_shifteable_keys.setNoteShift(i);
 }
 
-VoiceGroup InputEventStage::calculateSplitPartForEvent(MIDIDecoder *pDecoder)
+VoiceGroup InputEventStage::calculateSplitPartForEvent(MIDIDecoder *pDecoder, DSPInterface::InputSource source)
 {
+  //TODO durchdenken und testen
+  if(source == DSPInterface::InputSource::Both)
+    return VoiceGroup::Global;
+
   const auto primChannel = m_options->getReceiveChannel();
   const auto secChannel = m_options->getReceiveSplitChannel();
 
