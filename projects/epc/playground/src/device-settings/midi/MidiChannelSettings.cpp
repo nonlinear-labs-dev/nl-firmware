@@ -20,7 +20,7 @@ const std::vector<Glib::ustring>& MidiReceiveChannelSetting::enumToDisplayString
 }
 
 MidiReceiveChannelSplitSetting::MidiReceiveChannelSplitSetting(UpdateDocumentContributor& s)
-    : EnumSetting<MidiReceiveChannelSplit>(s, MidiReceiveChannelSplit::Follow_I)
+    : EnumSetting<MidiReceiveChannelSplit>(s, MidiReceiveChannelSplit::Common)
 {
 }
 
@@ -33,7 +33,7 @@ const std::vector<Glib::ustring>& MidiReceiveChannelSplitSetting::enumToString()
 const std::vector<Glib::ustring>& MidiReceiveChannelSplitSetting::enumToDisplayString() const
 {
   static std::vector<Glib::ustring> ret { "None", "Omni", "1",  "2",  "3",  "4",  "5",  "6",  "7",     "8",
-                                          "9",    "10",   "11", "12", "13", "14", "15", "16", "Follow" };
+                                          "9",    "10",   "11", "12", "13", "14", "15", "16", "Common" };
   return ret;
 }
 

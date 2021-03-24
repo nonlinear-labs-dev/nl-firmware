@@ -352,9 +352,7 @@ void MidiRuntimeOptions::setSplitReceiveChannel(MidiReceiveChannelSplit c)
   m_receiveSplitChannel = c;
 }
 
-MidiReceiveChannel MidiRuntimeOptions::splitToNormalChannel(MidiReceiveChannelSplit split)
+MidiReceiveChannelSplit MidiRuntimeOptions::normalToSplitChannel(MidiReceiveChannel ch)
 {
-  if(split == MidiReceiveChannelSplit::Follow_I)
-    return m_receiveChannel;
-  return static_cast<MidiReceiveChannel>(split);
+  return static_cast<MidiReceiveChannelSplit>(ch);
 }

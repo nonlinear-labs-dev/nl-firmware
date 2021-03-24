@@ -30,6 +30,7 @@ class MidiRuntimeOptions
   static int channelEnumToInt(MidiSendChannel channel);
   int channelEnumToInt(MidiSendChannelSplit channel);
   static int channelEnumToInt(MidiReceiveChannel channel);
+  static MidiReceiveChannelSplit normalToSplitChannel(MidiReceiveChannel ch);
 
   void setBenderCC(BenderCC cc);
   void setAftertouchCC(AftertouchCC cc);
@@ -79,7 +80,6 @@ class MidiRuntimeOptions
 
   void setPedal1(PedalCC cc);
 
-  MidiReceiveChannel splitToNormalChannel(MidiReceiveChannelSplit split);
 
  private:
   MidiReceiveChannel m_receiveChannel;

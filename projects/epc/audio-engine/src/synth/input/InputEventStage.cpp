@@ -5,9 +5,9 @@
 #include "InputEventStage.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, InputEventStage::MIDIOut outCB)
-    : m_dspHost{ dspHost }
-    , m_options{ options }
-    , m_midiOut{ std::move(outCB) }
+    : m_dspHost { dspHost }
+    , m_options { options }
+    , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
@@ -35,7 +35,7 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
 {
   if(decoder)
   {
-    // it would be benefitial/desirable to not call calculatePartForEvent() multiple times within a single event chain,
+    // it would be benefitial/desirable to not call calculateSplitPartForEvent() multiple times within a single event chain,
     // therefore the following suggestion: we can determine the part once within the stack and pass it subsequently
     VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
     const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
@@ -98,41 +98,36 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 {
   if(decoder)
   {
-    // it would be benefitial/desirable to not call calculatePartForEvent() multiple times within a single event chain,
+    // it would be benefitial/desirable to not call calculateSplitPartForEvent() multiple times within a single event chain,
     // therefore the following suggestion: we can determine the part once within the stack and pass it subsequently
     VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
     const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
     const bool soundValid = soundType != SoundType::Invalid;
+
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
-        if(checkMIDIKeyDownEnabled(decoder))
-        {
-          if(soundType == SoundType::Split)
-          {
-            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
-            m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart,
-                                      getInterfaceFromDecoder(decoder));
-          }
-          else if(soundValid)  // safety first
-          {
-            m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), getInterfaceFromDecoder(decoder));
-          }
-        }
-        break;
-
       case DecoderEventType::KeyUp:
-        if(checkMIDIKeyUpEnabled(decoder))
+        if(checkMIDIKeyEventEnabled(decoder))
         {
+          auto interface = getInterfaceFromDecoder(decoder);
+          if(interface == DSPInterface::InputSource::Unknown)
+            return;
+
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
-            m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart,
-                                    getInterfaceFromDecoder(decoder));
+            determinedPart = calculateSplitPartForEvent(decoder);  // Split Sound overrides part association for key
+            if(decoder->getEventType() == DecoderEventType::KeyDown)
+              m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
+            else if(decoder->getEventType() == DecoderEventType::KeyUp)
+              m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
           }
           else if(soundValid)  // safety first
           {
-            m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), getInterfaceFromDecoder(decoder));
+            if(decoder->getEventType() == DecoderEventType::KeyUp)
+              m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), interface);
+            else if(decoder->getEventType() == DecoderEventType::KeyDown)
+              m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), interface);
           }
         }
         break;
@@ -160,31 +155,29 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGrou
       break;
     case DecoderEventType::HardwareChange:
       sendHardwareChangeAsMidi(pDecoder);
-      // TODO: what about primary/secondary ctrl chg? (likewise: prog chg)
       break;
     case DecoderEventType::UNKNOWN:
       nltools_assertNotReached();
   }
 }
 
-bool InputEventStage::checkMIDIKeyDownEnabled(MIDIDecoder *pDecoder)
+bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
 {
   using MRC = MidiReceiveChannel;
+  using MRCS = MidiReceiveChannelSplit;
   const auto shouldReceiveNotes = m_options->shouldReceiveNotes();
   const auto primaryChannel = m_options->getReceiveChannel();
-  const auto secondaryChannel = m_options->splitToNormalChannel(m_options->getReceiveSplitChannel());
+  const auto secondaryChannel = m_options->getReceiveSplitChannel();
 
   const auto parsedChannel = pDecoder->getChannel();
 
+  const auto primNotNone = primaryChannel != MidiReceiveChannel::None;
+  const auto secNotNone = secondaryChannel != MidiReceiveChannelSplit::None;
   const auto primaryChannelMatches = parsedChannel == primaryChannel || primaryChannel == MRC::Omni;
-  const auto secondaryChannelMatches = parsedChannel == secondaryChannel || secondaryChannel == MRC::Omni;
+  const auto secondaryChannelMatches
+      = MidiRuntimeOptions::normalToSplitChannel(parsedChannel) == secondaryChannel || secondaryChannel == MRCS::Omni;
   const auto channelMatches = primaryChannelMatches || secondaryChannelMatches;
-  return shouldReceiveNotes && channelMatches;
-}
-
-bool InputEventStage::checkMIDIKeyUpEnabled(MIDIDecoder *pDecoder)
-{
-  return checkMIDIKeyDownEnabled(pDecoder);
+  return shouldReceiveNotes && channelMatches && (primNotNone || secNotNone);
 }
 
 bool InputEventStage::checkMIDIHardwareChangeEnabled(MIDIDecoder *pDecoder)
@@ -329,6 +322,7 @@ void InputEventStage::sendCCOut(int hwID, float value, int msbCC, int lsbCC)
 
 void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
 {
+  //TODO Send to Prim and Sec if (not none)
   auto statusByte = static_cast<uint8_t>(0xB0);
   auto lsbValByte = static_cast<uint8_t>(value & 0x7F);
   m_midiOut({ statusByte, static_cast<uint8_t>(lsbCC), lsbValByte });
@@ -342,38 +336,21 @@ void InputEventStage::setNoteShift(int i)
   m_shifteable_keys.setNoteShift(i);
 }
 
-VoiceGroup InputEventStage::calculatePartForEvent(MIDIDecoder *pDecoder)
+VoiceGroup InputEventStage::calculateSplitPartForEvent(MIDIDecoder *pDecoder)
 {
-  //if split && (sec != prim && sec != none && prim != none) {
-  //pDec->getChannel == prim ? Part::I
-  //pDec->getChannel == sec ? Part::II
-  //} else {
-  // getPartForSplitKey(pDec->getKeyOrControl());
-  //}
-
-  //?A?! TODO
   const auto primChannel = m_options->getReceiveChannel();
-  const auto secChannel = m_options->splitToNormalChannel(m_options->getReceiveSplitChannel());
+  const auto secChannel = m_options->getReceiveSplitChannel();
 
-  const auto primIsOmni = primChannel == MidiReceiveChannel::Omni;
-  const auto secIsOmni = secChannel == MidiReceiveChannel::Omni;
-
-  switch(pDecoder->getEventType())
+  if(MidiRuntimeOptions::normalToSplitChannel(primChannel) != secChannel)
   {
-    case DecoderEventType::KeyUp:
-    case DecoderEventType::KeyDown:
-      // NOTE: this seems incomplete
-      // there should be another state, where m_dspHost->getSplitPartForKey applies
-      if(primChannel == secChannel && (primChannel == pDecoder->getChannel() || primIsOmni || secIsOmni))
-        return VoiceGroup::I;  //?? TODO FIX
-      if(primChannel == pDecoder->getChannel() || primIsOmni)
-        return VoiceGroup::I;
-      else if(secChannel == pDecoder->getChannel() || secIsOmni)
-        return VoiceGroup::II;
-      break;
-    default:
-    case DecoderEventType::HardwareChange:
-      break;
+    if(primChannel == pDecoder->getChannel())
+      return VoiceGroup::I;
+    else if(secChannel == MidiRuntimeOptions::normalToSplitChannel(pDecoder->getChannel()))
+      return VoiceGroup::II;
+  }
+  else if(pDecoder->getEventType() == DecoderEventType::KeyUp || pDecoder->getEventType() == DecoderEventType::KeyDown)
+  {
+    return m_dspHost->getSplitPartForKey(pDecoder->getKeyOrControl());
   }
 
   return VoiceGroup::Global;
@@ -387,25 +364,39 @@ VoiceGroup InputEventStage::calculatePartForEvent(TCDDecoder *pDecoder)
 DSPInterface::InputSource InputEventStage::getInterfaceFromDecoder(MIDIDecoder *pDecoder)
 {
   const auto primChannel = m_options->getReceiveChannel();
-  const auto secChannel = m_options->splitToNormalChannel(m_options->getReceiveSplitChannel());
-  const auto areDifferent = primChannel != secChannel;
+  const auto secChannel = m_options->getReceiveSplitChannel();
+  const auto areDifferent = MidiRuntimeOptions::normalToSplitChannel(primChannel) != secChannel;
+  const auto notDifferent = !areDifferent;
   const auto primNotNone = primChannel != MidiReceiveChannel::None;
-  const auto secNotNone = secChannel != MidiReceiveChannel::None;
+  const auto secNotNone = secChannel != MidiReceiveChannelSplit::None;
+  const auto secNone = !secNotNone;
+  const auto primNone = !primNotNone;
+  const auto secIsOmni = secChannel == MidiReceiveChannelSplit::Omni;
+  const auto primIsOmni = primChannel == MidiReceiveChannel::Omni;
 
-  if(areDifferent)
+  if(secChannel == MidiReceiveChannelSplit::Common)
   {
     if(primNotNone)
-    {
-      if(pDecoder->getChannel() == primChannel)
-        return DSPInterface::InputSource::Primary;
-    }
+      return DSPInterface::InputSource::Primary;
+    else
+      return DSPInterface::InputSource::Unknown;
+  }
+  else if(notDifferent || (secIsOmni || primIsOmni))
+  {
+    return DSPInterface::InputSource::Both;
+  }
+  else
+  {
+    if(primNone)
+      return DSPInterface::InputSource::Secondary;
+    else if(secNone)
+      return DSPInterface::InputSource::Primary;
 
-    if(secNotNone)
-    {
-      if(pDecoder->getChannel() == secChannel)
-        return DSPInterface::InputSource::Secondary;
-    }
+    if(primChannel == pDecoder->getChannel())
+      return DSPInterface::InputSource::Primary;
+    else if(secChannel == MidiRuntimeOptions::normalToSplitChannel(pDecoder->getChannel()))
+      return DSPInterface::InputSource::Secondary;
   }
 
-  return DSPInterface::InputSource::Unknown;
+  nltools_assertNotReached();
 }

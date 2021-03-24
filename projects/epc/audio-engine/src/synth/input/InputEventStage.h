@@ -22,7 +22,7 @@ class InputEventStage
 
   void setNoteShift(int i);
 
- private:
+// private:
   TCDDecoder m_tcdDecoder;
   MIDIDecoder m_midiDecoder;
   DSPInterface* m_dspHost;
@@ -30,8 +30,7 @@ class InputEventStage
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
 
-  bool checkMIDIKeyDownEnabled(MIDIDecoder* pDecoder);
-  bool checkMIDIKeyUpEnabled(MIDIDecoder* pDecoder);
+  bool checkMIDIKeyEventEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder);
   void onMIDIEvent(MIDIDecoder* decoder);
 
@@ -42,7 +41,7 @@ class InputEventStage
   void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
-  VoiceGroup calculatePartForEvent(MIDIDecoder* pDecoder);
+  VoiceGroup calculateSplitPartForEvent(MIDIDecoder* pDecoder);
   VoiceGroup calculatePartForEvent(TCDDecoder* pDecoder);
   DSPInterface::InputSource getInterfaceFromDecoder(MIDIDecoder* pDecoder);
 };

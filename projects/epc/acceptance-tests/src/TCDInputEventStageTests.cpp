@@ -98,16 +98,22 @@ TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
 
     THEN("MIDI got send")
     {
-      REQUIRE(sendMessages.size() == 2);
+      REQUIRE(sendMessages.size() == 4);
       CHECK(sendMessages[0].rawBytes[0] == 0xB0);
       CHECK(sendMessages[0].rawBytes[1] == 88);
-      CHECK(
-          sendMessages[0].rawBytes[2]
-          == 0);  // i would have expected 127 here, but apparently the valid 14 bit out range is only up to 16256 which has the last 7 bits set to 0
+      CHECK(sendMessages[0].rawBytes[2] == 0);
 
       CHECK(sendMessages[1].rawBytes[0] == 0x90);
       CHECK(sendMessages[1].rawBytes[1] == 17);
       CHECK(sendMessages[1].rawBytes[2] == 127);
+
+      CHECK(sendMessages[2].rawBytes[0] == 0xB0);
+      CHECK(sendMessages[2].rawBytes[1] == 88);
+      CHECK(sendMessages[2].rawBytes[2] == 0);
+
+      CHECK(sendMessages[3].rawBytes[0] == 0x90);
+      CHECK(sendMessages[3].rawBytes[1] == 17);
+      CHECK(sendMessages[3].rawBytes[2] == 127);
     }
   }
 }
@@ -162,20 +168,21 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings,
                                [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
+  const auto sixtenThousand = 0b11111010000000;
 
   WHEN("HW Change Received")
   {
 
     THEN("DSP got notified")
     {
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, 127, 127 });
+      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixtenThousand >> 7), (uint8_t)(sixtenThousand & 127) });
       CHECK(dsp.didReceiveHW());
     }
 
     WHEN("CC01 and CC33")
     {
       settings.setPedal1(PedalCC::CC01);
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, 127, 127 });
+      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixtenThousand >> 7), (uint8_t)(sixtenThousand & 127) });
 
       THEN("MIDI got send")
       {
@@ -193,16 +200,14 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
     WHEN("CC02 and CC34")
     {
       settings.setPedal1(PedalCC::CC02);
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, 127, 127 });
+      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixtenThousand >> 7), (uint8_t)(sixtenThousand & 127) });
 
       THEN("MIDI got send")
       {
         REQUIRE(sendMessages.size() == 2);
         CHECK(sendMessages[0].rawBytes[0] == 0xB0);
         CHECK(sendMessages[0].rawBytes[1] == 34);
-        CHECK(
-            sendMessages[0].rawBytes[2]
-            == 0);  // i would have expected 127 here, but apparently the valid 14 bit out range is only up to 16256 which has the last 7 bits set to 0
+        CHECK(sendMessages[0].rawBytes[2] == 0);
 
         CHECK(sendMessages[1].rawBytes[0] == 0xB0);
         CHECK(sendMessages[1].rawBytes[1] == 2);

@@ -187,7 +187,7 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   {
     hostPartI.setExpectedPart(VoiceGroup::II);
     hostPartI.setExpectedKey(77);
-    eventStage.onMIDIMessage({ 0x92, 77, 127 });
+    eventStage.onMIDIMessage({ 0x91, 77, 127 });
     CHECK(hostPartI.didReceiveKeyDown());
   }
 

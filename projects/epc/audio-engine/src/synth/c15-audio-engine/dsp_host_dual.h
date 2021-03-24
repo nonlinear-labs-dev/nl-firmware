@@ -71,7 +71,8 @@ class DSPInterface
     TCD,
     Primary,
     Secondary,
-    Unknown
+    Both,
+    Unknown  //Error
   };
 
   virtual void onHWChanged(const uint32_t id, float value) = 0;
