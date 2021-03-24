@@ -26,6 +26,8 @@ add_custom_command(OUTPUT ${OUTFILE}
   DEPENDS ${SOURCE_FILES}
   )
 
+configure_file(${NONMAPS_ROOT}/src/main/webapp/NonMaps.js.in ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js @ONLY)
+
 add_custom_target(NonMaps ALL SOURCES ${OUTFILE})
 
 file(WRITE ${OBJDIR}/nonmaps-version.txt ${C15_VERSION})
@@ -33,5 +35,7 @@ file(WRITE ${OBJDIR}/nonmaps-version.txt ${C15_VERSION})
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war DESTINATION ${C15_INSTALL_PATH}/NonMaps)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
 install(DIRECTORY ${NONMAPS_ROOT}/src/main/webapp/ DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
+
 install(DIRECTORY MCView DESTINATION ${C15_INSTALL_PATH}/NonMaps)
 install(FILES ${OBJDIR}/nonmaps-version.txt DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)

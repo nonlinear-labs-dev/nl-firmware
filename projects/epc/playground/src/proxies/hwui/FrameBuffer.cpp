@@ -283,7 +283,7 @@ bool FrameBuffer::swapBuffers()
 
   if(m_api->hasClients())
   {
-    m_api->sendAll(m_backBuffer);
+    m_api->sendAllUpdating(m_backBuffer);
   }
 
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())

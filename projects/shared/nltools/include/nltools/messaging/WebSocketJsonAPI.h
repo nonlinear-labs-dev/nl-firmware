@@ -21,6 +21,7 @@ namespace nltools
       ~WebSocketJsonAPI();
 
       void sendAll(const nlohmann::json &msg);
+      void sendAllUpdating(const nlohmann::json &msg);
       bool hasClients() const;
 
      private:
@@ -42,6 +43,8 @@ namespace nltools
       bool m_quit = false;
       std::mutex m_mutex;
       std::future<void> m_contextThread;
+
+      nlohmann::json m_pendingUpdateMsg;
     };
   }
 }
