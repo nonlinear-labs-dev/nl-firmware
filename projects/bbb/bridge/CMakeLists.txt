@@ -50,6 +50,7 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/chkphy.service.in ${PROJECT_BINARY_
 configure_file(${PROJECT_SOURCE_DIR}/systemd/reset-playcontroller.service.in ${PROJECT_BINARY_DIR}/systemd/reset-playcontroller.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/redirect-websocket-to-recorder.service.in ${PROJECT_BINARY_DIR}/systemd/redirect-websocket-to-recorder.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/redirect-http-to-recorder.service.in ${PROJECT_BINARY_DIR}/systemd/redirect-http-to-recorder.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/redirect-oled-websocket.service.in ${PROJECT_BINARY_DIR}/systemd/redirect-oled-websocket.service @ONLY)
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/install-update-from-usb.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
@@ -59,6 +60,7 @@ install(FILES ${PROJECT_BINARY_DIR}/systemd/chkphy.service DESTINATION ${SYSTEMD
 install(FILES ${PROJECT_BINARY_DIR}/systemd/reset-playcontroller.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/redirect-websocket-to-recorder.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/redirect-http-to-recorder.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/redirect-oled-websocket.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants)
@@ -75,6 +77,7 @@ install(CODE "execute_process(
     ln -sf ../reset-playcontroller.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/reset-playcontroller.service
     ln -sf ../redirect-websocket-to-recorder.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/redirect-websocket-to-recorder.service
     ln -sf ../redirect-http-to-recorder.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/redirect-http-to-recorder.service
+    ln -sf ../redirect-oled-websocket.service $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants/redirect-oled-websocket.service
     \")")
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})

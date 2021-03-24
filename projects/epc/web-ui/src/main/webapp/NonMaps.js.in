@@ -140,7 +140,7 @@ function showOleds() {
     map.set(0x0B, [219, 219, 219, 255]);
     map.set(0x0F, [255, 255, 255, 255]);
 
-    socket = new WebSocket("ws://" + hostName + ":" + 8891);
+    socket = new WebSocket("ws://" + hostName + ":" + @PLAYGROUND_OLED_WEBSOCKET_PORT@);
     socket.onopen = (event) => { socket.send("{}"); };
     socket.onerror = (event) => { refresh(); };
     socket.onclose = (event) => { };
