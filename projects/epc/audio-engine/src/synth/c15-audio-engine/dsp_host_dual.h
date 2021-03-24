@@ -194,6 +194,8 @@ class dsp_host_dual : public DSPInterface
   // key events
   void keyDown(const float _vel);
   void keyUp(const float _vel);
+  void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId);
+  void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId);
   float scale(const Scale_Aspect _scl, float _value);
   // inner event flow
   void updateHW(const uint32_t _id, const float _raw, const MidiOut& out);
