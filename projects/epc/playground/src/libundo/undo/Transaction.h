@@ -6,6 +6,7 @@
 #include <memory>
 #include <list>
 #include <vector>
+#include <chrono>
 
 class Writer;
 
@@ -18,6 +19,8 @@ namespace UNDO
    public:
     Transaction(Scope &scope, const Glib::ustring &name, size_t depth);
     ~Transaction() override;
+
+    void addTimestamp();
 
     static int getAndResetNumTransactions();
 
@@ -35,6 +38,8 @@ namespace UNDO
 
     int countPredecessors() const;
     int countSuccessorsOnDefaultRoute() const;
+
+    const Transaction *findTransactionAt(std::chrono::system_clock::time_point timestamp) const;
 
     bool hasSuccessors() const;
     size_t getNumSuccessors() const;
@@ -133,6 +138,8 @@ namespace UNDO
     tCommandList m_postfixCommands;
 
     size_t m_depth = 0;
+
+    std::vector<std::chrono::system_clock::time_point> m_timeStamps;
   };
 
 } /* namespace UNDO */

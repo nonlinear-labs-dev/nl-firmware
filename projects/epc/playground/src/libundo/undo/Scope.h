@@ -81,6 +81,8 @@ namespace UNDO
     void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
     void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
+    const Transaction *findTransactionAt(std::chrono::system_clock::time_point timestamp) const;
+
    protected:
     virtual void onTransactionAdded();
     virtual void onAddTransaction(Transaction *transaction);

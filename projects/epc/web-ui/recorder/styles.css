@@ -226,17 +226,47 @@ body {
     background-color: black;
 }
 
-/* changed */
 #one-handle, #other-handle {
     position: absolute;
     width: 1cm;
     height: 1cm;
     left: -0.5cm;
-    top: calc(50% - 0.5cm);
+    top: calc(33% - 0.5cm);
     background-color: darkgray;
     border: 1px solid black;
     pointer-events: all;
     border-radius: 5px;
+    font-size: 1cm;
+    line-height: 1cm;
+    text-align: center;
+    vertical-align: center;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+#undo-one, #undo-other {
+    position: absolute;
+    width: 1cm;
+    height: 1cm;
+    left: -0.5cm;
+    top: calc(66% - 0.5cm);
+    background-color: darkgray;
+    border: 1px solid black;
+    pointer-events: all;
+    border-radius: 5px;
+    font-size: 1cm;
+    line-height: 1cm;
+    text-align: center;
+    vertical-align: center;
+    color: white;
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+#undo-one:active, #undo-other:active {
+    transform: translate(0.2mm, 0.2mm);
 }
 
 #scrollbar {
