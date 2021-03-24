@@ -31,9 +31,8 @@ namespace Tests
           synth->measurePerformance(30s);
           auto longAfterRelease = synth->measurePerformance(1s);
           auto diff = std::abs(std::get<1>(withoutNote) - std::get<1>(longAfterRelease));
-          auto acceptedJitter = 0.1f;
-          CHECK(diff > (1.0f - acceptedJitter));
-          CHECK(diff < (1.0f + acceptedJitter));
+          auto acceptedJitter = 0.1;
+          CHECK(diff < acceptedJitter);
         }
       }
     }
