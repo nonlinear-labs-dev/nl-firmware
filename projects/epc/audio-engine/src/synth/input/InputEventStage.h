@@ -42,7 +42,7 @@ class InputEventStage
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
   VoiceGroup calculateSplitPartForEvent(MIDIDecoder* pDecoder, DSPInterface::InputSource source);
-  VoiceGroup calculatePartForEvent(TCDDecoder* pDecoder);
+  VoiceGroup calculateSplitPartForEvent(TCDDecoder* pDecoder);
   DSPInterface::InputEvent getInterfaceFromParsedChannel(MidiReceiveChannel channel);
 
   friend class InputEventStageTester;
@@ -82,7 +82,21 @@ class InputEventStage
   static constexpr uint16_t midiReceiveChannelMask(const uint8_t& _channel)
   {
     if(_channel > 15)
-      return 0;                                 // fail-safe (but a midi channel shouldn't go beyond 15 anyway)
+      return 0;                                   // fail-safe (but a midi channel shouldn't go beyond 15 anyway)
     return c_midiReceiveMaskTable[2 + _channel];  // we read out the mask matching the specific channel id
   }
 };
+
+namespace InputStateDetail
+{
+  using Event = DSPInterface::InputEvent;
+  using State = DSPInterface::InputState;
+  using Source = DSPInterface::InputSource;
+
+  static constexpr Event Unknown = { Source::Unknown, State::Invalid };
+  static constexpr Event TCD = { Source::TCD, State::Singular };
+  static constexpr Event Singular = { Source::Primary, State::Singular };
+  static constexpr Event Primary = { Source::Primary, State::Separate };
+  static constexpr Event Both = { Source::Both, State::Separate };
+  static constexpr Event Secondary = { Source::Secondary, State::Separate };
+}

@@ -5,9 +5,9 @@
 #include "InputEventStage.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, InputEventStage::MIDIOut outCB)
-    : m_dspHost { dspHost }
-    , m_options { options }
-    , m_midiOut { std::move(outCB) }
+    : m_dspHost{ dspHost }
+    , m_options{ options }
+    , m_midiOut{ std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
@@ -40,8 +40,6 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
     VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
     const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
     const bool soundValid = soundType != SoundType::Invalid;
-    constexpr auto TCDInputState
-        = DSPInterface::InputEvent { DSPInterface::InputSource::TCD, DSPInterface::InputState::Singular };
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
@@ -49,14 +47,14 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
+            determinedPart = calculateSplitPartForEvent(decoder);  // Split Sound overrides part association for key
             m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
-                                      TCDInputState);
+                                      InputStateDetail::TCD);
           }
           else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
-            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), TCDInputState);
+            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), InputStateDetail::TCD);
           }
         }
         if(m_options->shouldSendNotes() && soundValid)
@@ -68,13 +66,14 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
-            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, TCDInputState);
+            determinedPart = calculateSplitPartForEvent(decoder);  // Split Sound overrides part association for key
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
+                                    InputStateDetail::TCD);
           }
           else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
-            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), TCDInputState);
+            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), InputStateDetail::TCD);
           }
         }
         if(m_options->shouldSendNotes() && soundValid)  // safety first
@@ -362,22 +361,9 @@ VoiceGroup InputEventStage::calculateSplitPartForEvent(MIDIDecoder *pDecoder, DS
   return VoiceGroup::Global;
 }
 
-VoiceGroup InputEventStage::calculatePartForEvent(TCDDecoder *pDecoder)
+VoiceGroup InputEventStage::calculateSplitPartForEvent(TCDDecoder *pDecoder)
 {
   return m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
-}
-
-namespace InputStateDetail
-{
-  using Event = DSPInterface::InputEvent;
-  using State = DSPInterface::InputState;
-  using Source = DSPInterface::InputSource;
-
-  static constexpr Event Unknown = { Source::Unknown, State::Invalid };
-  static constexpr Event Singular = { Source::Primary, State::Singular };
-  static constexpr Event Primary = { Source::Primary, State::Separate };
-  static constexpr Event Both = { Source::Both, State::Separate };
-  static constexpr Event Secondary = { Source::Secondary, State::Separate };
 }
 
 DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiReceiveChannel channel)
