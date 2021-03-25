@@ -83,14 +83,9 @@ void InputEventStageTester::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   m_inputStage->doSendCCOut(value, msbCC, lsbCC);
 }
 
-VoiceGroup InputEventStageTester::calculateSplitPartForEvent(MIDIDecoder* pDecoder, DSPInterface::InputSource source)
+VoiceGroup InputEventStageTester::calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, int keyNumber)
 {
-  return m_inputStage->calculateSplitPartForEvent(pDecoder, source);
-}
-
-VoiceGroup InputEventStageTester::calculatePartForEvent(TCDDecoder* pDecoder)
-{
-  return m_inputStage->calculateSplitPartForEvent(pDecoder);
+  return m_inputStage->calculateSplitPartForEvent(inputEvent, keyNumber);
 }
 
 DSPInterface::InputEvent InputEventStageTester::getInterfaceFromDecoder(MidiReceiveChannel channel)

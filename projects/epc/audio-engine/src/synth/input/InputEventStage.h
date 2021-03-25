@@ -41,8 +41,6 @@ class InputEventStage
   void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
-  VoiceGroup calculateSplitPartForEvent(MIDIDecoder* pDecoder, DSPInterface::InputSource source);
-  VoiceGroup calculateSplitPartForEvent(TCDDecoder* pDecoder);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, const int keyNumber);
   DSPInterface::InputEvent getInterfaceFromParsedChannel(MidiReceiveChannel channel);
 

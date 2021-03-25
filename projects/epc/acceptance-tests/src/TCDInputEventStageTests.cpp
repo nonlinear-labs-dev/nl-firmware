@@ -138,16 +138,22 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
 
     THEN("MIDI got send")
     {
-      REQUIRE(sendMessages.size() == 2);
+      REQUIRE(sendMessages.size() == 4);
       CHECK(sendMessages[0].rawBytes[0] == 0xB0);
       CHECK(sendMessages[0].rawBytes[1] == 88);
-      CHECK(
-          sendMessages[0].rawBytes[2]
-          == 0);  // i would have expected 127 here, but apparently the valid 14 bit out range is only up to 16256 which has the last 7 bits set to 0
+      CHECK(sendMessages[0].rawBytes[2] == 0);
 
       CHECK(sendMessages[1].rawBytes[0] == 0x80);
       CHECK(sendMessages[1].rawBytes[1] == 17);
       CHECK(sendMessages[1].rawBytes[2] == 127);
+
+      CHECK(sendMessages[2].rawBytes[0] == 0xB0);
+      CHECK(sendMessages[2].rawBytes[1] == 88);
+      CHECK(sendMessages[2].rawBytes[2] == 0);
+
+      CHECK(sendMessages[3].rawBytes[0] == 0x80);
+      CHECK(sendMessages[3].rawBytes[1] == 17);
+      CHECK(sendMessages[3].rawBytes[2] == 127);
     }
   }
 }

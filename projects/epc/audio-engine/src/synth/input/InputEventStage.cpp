@@ -5,9 +5,9 @@
 #include "InputEventStage.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, InputEventStage::MIDIOut outCB)
-    : m_dspHost{ dspHost }
-    , m_options{ options }
-    , m_midiOut{ std::move(outCB) }
+    : m_dspHost { dspHost }
+    , m_options { options }
+    , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
@@ -35,8 +35,6 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
 {
   if(decoder)
   {
-    // it would be benefitial/desirable to not call calculateSplitPartForEvent() multiple times within a single event chain,
-    // therefore the following suggestion: we can determine the part once within the stack and pass it subsequently
     VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
     const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
     const bool soundValid = soundType != SoundType::Invalid;
@@ -49,12 +47,10 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            //            determinedPart = calculateSplitPartForEvent(decoder);
-            determinedPart = calculateSplitPartForEvent(
-                interface, decoder->getKeyOrController());  // Split Sound overrides part association for key
+            determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
             m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
           }
-          else if(soundValid)  // safety first
+          else if(soundValid)
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
@@ -69,18 +65,16 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            //            determinedPart = calculateSplitPartForEvent(decoder);
-            determinedPart = calculateSplitPartForEvent(
-                interface, decoder->getKeyOrController());  // Split Sound overrides part association for key
+            determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
             m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
           }
-          else if(soundValid)  // safety first
+          else if(soundValid)
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
           }
         }
-        if(m_options->shouldSendNotes() && soundValid)  // safety first
+        if(m_options->shouldSendNotes() && soundValid)
           convertToAndSendMIDI(decoder, determinedPart);
 
         break;
@@ -102,8 +96,6 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 {
   if(decoder)
   {
-    // it would be benefitial/desirable to not call calculateSplitPartForEvent() multiple times within a single event chain,
-    // therefore the following suggestion: we can determine the part once within the stack and pass it subsequently
     VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
     const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
     const bool soundValid = soundType != SoundType::Invalid;
@@ -120,16 +112,13 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 
           if(soundType == SoundType::Split)
           {
-            //            determinedPart = calculateSplitPartForEvent(
-            //                decoder, interface.m_source);
-            determinedPart = calculateSplitPartForEvent(
-                interface, decoder->getKeyOrControl());  // Split Sound overrides part association for key
+            determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrControl());
             if(decoder->getEventType() == DecoderEventType::KeyDown)
               m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
           }
-          else if(soundValid)  // safety first
+          else if(soundValid)
           {
             if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), interface);
@@ -201,7 +190,6 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
   const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
-  //  const auto keyPart = m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
   const auto key = pDecoder->getKeyOrController();
 
   if(mainChannel != -1 && (determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global))
@@ -246,13 +234,43 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
   // key up events should include part evaluation (as key down events)
   using CC_Range_Vel = Midi::clipped14BitVelRange;
 
-  uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
-  auto lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
-  m_midiOut({ 0xB0, 88, lsbVelByte });
+  const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+  const auto key = pDecoder->getKeyOrController();
 
-  uint8_t keyByte = static_cast<uint8_t>(pDecoder->getKeyOrController()) & 0x7F;
-  auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
-  m_midiOut({ 0x80, keyByte, msbVelByte });
+  const auto mainC = static_cast<uint8_t>(mainChannel);
+  const auto secC = static_cast<uint8_t>(secondaryChannel);
+  constexpr const uint8_t keyType = 0x80;
+  constexpr const uint8_t ccType = 0xB0;
+
+  if(mainChannel != -1 && (determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global))
+  {
+    const uint8_t lsbStatus = ccType | mainC;
+
+    uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
+    auto lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+    m_midiOut({ lsbStatus, 88, lsbVelByte });
+
+    const uint8_t keyStatus = keyType | mainC;
+    uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
+    auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
+    m_midiOut({ keyStatus, keyByte, msbVelByte });
+  }
+
+  if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global))
+  {
+
+    const uint8_t lsbStatus = ccType | secC;
+
+    uint16_t fullResolutionValue = CC_Range_Vel::encodeUnipolarMidiValue(pDecoder->getValue());
+    auto lsbVelByte = static_cast<uint8_t>(fullResolutionValue & 0x7F);
+    m_midiOut({ lsbStatus, 88, lsbVelByte });
+
+    const uint8_t keyStatus = keyType | secC;
+    uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
+    auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
+    m_midiOut({ keyStatus, keyByte, msbVelByte });
+  }
 }
 
 void InputEventStage::sendHardwareChangeAsMidi(TCDDecoder *pDecoder)
@@ -343,52 +361,27 @@ void InputEventStage::setNoteShift(int i)
   m_shifteable_keys.setNoteShift(i);
 }
 
-// TODO: remove, update acceptance-tests
-VoiceGroup InputEventStage::calculateSplitPartForEvent(MIDIDecoder *pDecoder, DSPInterface::InputSource source)
-{
-  //TODO durchdenken und testen
-  if(source == DSPInterface::InputSource::Both)
-    return VoiceGroup::Global;
-
-  const auto primChannel = m_options->getReceiveChannel();
-  const auto secChannel = m_options->getReceiveSplitChannel();
-
-  if(MidiRuntimeOptions::normalToSplitChannel(primChannel) != secChannel)
-  {
-    if(primChannel == pDecoder->getChannel())
-      return VoiceGroup::I;
-    else if(secChannel == MidiRuntimeOptions::normalToSplitChannel(pDecoder->getChannel()))
-      return VoiceGroup::II;
-  }
-  else if(pDecoder->getEventType() == DecoderEventType::KeyUp || pDecoder->getEventType() == DecoderEventType::KeyDown)
-  {
-    return m_dspHost->getSplitPartForKey(pDecoder->getKeyOrControl());
-  }
-
-  return VoiceGroup::Global;
-}
-
-// TODO: remove, update acceptance-tests
-VoiceGroup InputEventStage::calculateSplitPartForEvent(TCDDecoder *pDecoder)
-{
-  return m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
-}
-
-// replacement and simplification
 VoiceGroup InputEventStage::calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, const int keyNumber)
 {
-  // NOTE: events already have qualified, so unknown/invalid states do not require additional checks here
-  if((inputEvent.m_state == DSPInterface::InputState::Singular)
-     || (inputEvent.m_source == DSPInterface::InputSource::TCD))
-    return m_dspHost->getSplitPartForKey(keyNumber);  // handles TCD and singular Primary (consuming keyNumber)
+  const auto useSplitPoint = inputEvent.m_state == DSPInterface::InputState::Singular
+      || inputEvent.m_source == DSPInterface::InputSource::TCD;
+
+  if(useSplitPoint)
+    return m_dspHost->getSplitPartForKey(keyNumber);
+
   switch(inputEvent.m_source)
   {
     case DSPInterface::InputSource::Primary:  // handles separate Primary
       return VoiceGroup::I;
     case DSPInterface::InputSource::Secondary:  // handles separate Secondary
       return VoiceGroup::II;
+    case DSPInterface::InputSource::Both:
+      return VoiceGroup::Global;
+    case DSPInterface::InputSource::Unknown:
+    case DSPInterface::InputSource::TCD:
+      nltools_assertNotReached();
   }
-  return VoiceGroup::Global;  // handles separate Both
+  nltools_assertNotReached();
 }
 
 DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiReceiveChannel channel)

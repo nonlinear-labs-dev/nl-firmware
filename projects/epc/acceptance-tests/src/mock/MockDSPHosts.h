@@ -13,6 +13,7 @@ class MockDSPHost : public DSPInterface
   VoiceGroup getSplitPartForKey(int key) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
+  void onMidiSettingsReceived() override;
 };
 
 class PassOnKeyDownHost : public MockDSPHost

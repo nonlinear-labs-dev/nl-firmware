@@ -89,7 +89,6 @@ class DSPInterface
   };
 
   virtual void onHWChanged(const uint32_t id, float value) = 0;
-
   virtual void onKeyDown(const int note, float velocity, InputEvent from) = 0;
   virtual void onKeyUp(const int note, float velocity, InputEvent from) = 0;
   virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) = 0;
@@ -97,11 +96,13 @@ class DSPInterface
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKey(int key) = 0;
+  virtual void onMidiSettingsReceived() = 0;
 };
 
 class dsp_host_dual : public DSPInterface
 {
  public:
+  void onMidiSettingsReceived() override;
   // public members
   float m_mainOut_R = 0.0f, m_mainOut_L = 0.0f;
   uint32_t m_sample_counter = 0;

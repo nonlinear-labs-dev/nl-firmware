@@ -450,4 +450,6 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
   m_midiOptions.update(msg);
+  //TODO have a think about concurrency?
+  m_dsp->onMidiSettingsReceived();
 }

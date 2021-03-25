@@ -2883,3 +2883,8 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", sourceId, ", pos:", note, ") failed!");
   }
 }
+
+void dsp_host_dual::onMidiSettingsReceived()
+{
+  //TODO reset envelopes, voicealloc
+}

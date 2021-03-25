@@ -13,6 +13,10 @@ void MockDSPHost::onKeyUp(const int note, float velocity, InputEvent from)
 {
 }
 
+void MockDSPHost::onMidiSettingsReceived()
+{
+}
+
 C15::Properties::HW_Return_Behavior MockDSPHost::getBehaviour(int id)
 {
   return C15::Properties::HW_Return_Behavior::Zero;
