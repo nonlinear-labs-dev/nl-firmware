@@ -83,7 +83,6 @@ template <uint32_t Keys> class MonoVoiceAllocator
   inline MonoVoiceAllocator()
   {
   }
-  // TODO: remove
   inline void keyDown(const uint32_t _keyPosition)
   {
     // prior states

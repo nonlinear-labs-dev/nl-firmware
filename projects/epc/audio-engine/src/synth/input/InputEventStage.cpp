@@ -40,6 +40,8 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
     VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
     const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
     const bool soundValid = soundType != SoundType::Invalid;
+    const auto interface = InputStateDetail::TCD;
+
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
@@ -47,14 +49,15 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculateSplitPartForEvent(decoder);  // Split Sound overrides part association for key
-            m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
-                                      InputStateDetail::TCD);
+            //            determinedPart = calculateSplitPartForEvent(decoder);
+            determinedPart = calculateSplitPartForEvent(
+                interface, decoder->getKeyOrController());  // Split Sound overrides part association for key
+            m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
           }
           else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
-            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), InputStateDetail::TCD);
+            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
           }
         }
         if(m_options->shouldSendNotes() && soundValid)
@@ -66,14 +69,15 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         {
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculateSplitPartForEvent(decoder);  // Split Sound overrides part association for key
-            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
-                                    InputStateDetail::TCD);
+            //            determinedPart = calculateSplitPartForEvent(decoder);
+            determinedPart = calculateSplitPartForEvent(
+                interface, decoder->getKeyOrController());  // Split Sound overrides part association for key
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
           }
           else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
-            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), InputStateDetail::TCD);
+            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
           }
         }
         if(m_options->shouldSendNotes() && soundValid)  // safety first
@@ -116,8 +120,10 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 
           if(soundType == SoundType::Split)
           {
+            //            determinedPart = calculateSplitPartForEvent(
+            //                decoder, interface.m_source);
             determinedPart = calculateSplitPartForEvent(
-                decoder, interface.m_source);  // Split Sound overrides part association for key
+                interface, decoder->getKeyOrControl());  // Split Sound overrides part association for key
             if(decoder->getEventType() == DecoderEventType::KeyDown)
               m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
@@ -337,6 +343,7 @@ void InputEventStage::setNoteShift(int i)
   m_shifteable_keys.setNoteShift(i);
 }
 
+// TODO: remove, update acceptance-tests
 VoiceGroup InputEventStage::calculateSplitPartForEvent(MIDIDecoder *pDecoder, DSPInterface::InputSource source)
 {
   //TODO durchdenken und testen
@@ -361,9 +368,27 @@ VoiceGroup InputEventStage::calculateSplitPartForEvent(MIDIDecoder *pDecoder, DS
   return VoiceGroup::Global;
 }
 
+// TODO: remove, update acceptance-tests
 VoiceGroup InputEventStage::calculateSplitPartForEvent(TCDDecoder *pDecoder)
 {
   return m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
+}
+
+// replacement and simplification
+VoiceGroup InputEventStage::calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, const int keyNumber)
+{
+  // NOTE: events already have qualified, so unknown/invalid states do not require additional checks here
+  if((inputEvent.m_state == DSPInterface::InputState::Singular)
+     || (inputEvent.m_source == DSPInterface::InputSource::TCD))
+    return m_dspHost->getSplitPartForKey(keyNumber);  // handles TCD and singular Primary (consuming keyNumber)
+  switch(inputEvent.m_source)
+  {
+    case DSPInterface::InputSource::Primary:  // handles separate Primary
+      return VoiceGroup::I;
+    case DSPInterface::InputSource::Secondary:  // handles separate Secondary
+      return VoiceGroup::II;
+  }
+  return VoiceGroup::Global;  // handles separate Both
 }
 
 DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiReceiveChannel channel)

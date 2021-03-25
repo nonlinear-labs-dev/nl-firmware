@@ -5,9 +5,6 @@
 
 using namespace std::chrono_literals;
 
-// temporary: specify static input source and avoid crashes with TCD, Primary, Secondary
-constexpr DSPInterface::InputSource TEMP_SOURCE = DSPInterface::InputSource::TCD;
-
 /******************************************************************************/
 /** @file       dsp_host_dual.cpp
     @date
@@ -2772,9 +2769,10 @@ VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
 
 void dsp_host_dual::onKeyDown(const int note, float velocity, InputEvent from)
 {
-  // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
-  //  const uint32_t sourceId = static_cast<uint32_t>(from);
-  const uint32_t sourceId = static_cast<uint32_t>(TEMP_SOURCE);
+  // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
+  // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
+  const uint32_t sourceId = from.m_source < InputSource::Secondary ? static_cast<uint32_t>(from.m_source) : 1;
+
   bool valid = false;
   switch(m_layer_mode)
   {
@@ -2792,15 +2790,16 @@ void dsp_host_dual::onKeyDown(const int note, float velocity, InputEvent from)
   else if(LOG_FAIL)
 
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", sourceId, ", pos:", note, ") failed!");
   }
 }
 
 void dsp_host_dual::onKeyUp(const int note, float velocity, InputEvent from)
 {
-  // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
-  //  const uint32_t sourceId = static_cast<uint32_t>(from);
-  const uint32_t sourceId = static_cast<uint32_t>(TEMP_SOURCE);  // TEMP: avoid crash
+  // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
+  // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
+  const uint32_t sourceId = from.m_source < InputSource::Secondary ? static_cast<uint32_t>(from.m_source) : 1;
+
   bool valid = false;
   switch(m_layer_mode)
   {
@@ -2817,14 +2816,16 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputEvent from)
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", sourceId, ", pos:", note, ") failed!");
   }
 }
 
 void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
 {
-  //  const uint32_t sourceId = static_cast<uint32_t>(from);
-  const uint32_t sourceId = static_cast<uint32_t>(TEMP_SOURCE);  // TEMP: avoid crash
+  // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
+  // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
+  const uint32_t sourceId = from.m_source < InputSource::Both ? static_cast<uint32_t>(from.m_source) : 1;
+
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
   {
@@ -2847,14 +2848,16 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", sourceId, ", pos:", note, ") failed!");
   }
 }
 
 void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
 {
-  //  const uint32_t sourceId = static_cast<uint32_t>(from);
-  const uint32_t sourceId = static_cast<uint32_t>(TEMP_SOURCE);  // TEMP: avoid crash
+  // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
+  // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
+  const uint32_t sourceId = from.m_source < InputSource::Both ? static_cast<uint32_t>(from.m_source) : 1;
+
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
   {
@@ -2877,6 +2880,6 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", sourceId, ", pos:", note, ") failed!");
   }
 }
