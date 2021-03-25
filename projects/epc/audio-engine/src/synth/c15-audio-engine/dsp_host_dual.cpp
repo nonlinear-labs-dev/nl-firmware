@@ -2844,7 +2844,7 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   }
   if(valid)
   {
-    keyDownTraversal(note, velocity, static_cast<uint32_t>(part));
+    keyDownTraversal(note, velocity, sourceId);
   }
   else if(LOG_FAIL)
   {
@@ -2876,7 +2876,7 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
   }
   if(valid)
   {
-    keyUpTraversal(note, velocity, static_cast<uint32_t>(part));
+    keyUpTraversal(note, velocity, sourceId);
   }
   else if(LOG_FAIL)
   {
@@ -2886,5 +2886,14 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
 
 void dsp_host_dual::onMidiSettingsReceived()
 {
-  //TODO reset envelopes, voicealloc
+  m_fade.muteAndDo([&] {
+    // reset voice allocation
+    m_alloc.reset();
+    // reset envelopes in both parts
+    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+    {
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_key_active = 0;
+    }
+  });
 }
