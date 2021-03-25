@@ -21,6 +21,7 @@
 #include <x86intrin.h>
 
 using int32x4_t = __m128i;
+using uint32x4_t = __m128u;
 using float32x4_t = __m128;
 
 #endif
@@ -31,6 +32,7 @@ namespace parallel_data_detail
 {
   template <typename T, size_t simdSize, size_t parallelism> union v128 {
     int32x4_t mmi[simdSize];
+    uint32x4_t mmu[simdSize];
     float32x4_t mmf[simdSize];
     T raw[simdSize * parallelism];
   };
@@ -42,13 +44,13 @@ namespace parallel_data_detail
     static void copy(v128<int32_t, simdSize, parallelism> &out, const v128<float, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
-        out.mmi[i] = vreinterpretq_s32_f32(in.mmf[i]);
+        out.mmi[i] =  vcvtq_s32_f32(in.mmf[i]);
     }
 
     static void copy(v128<float, simdSize, parallelism> &out, const v128<int32_t, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
-        out.mmf[i] = vreinterpretq_f32_s32(in.mmi[i]);
+        out.mmf[i] =  vcvtq_f32_s32(in.mmi[i]);
     }
 
 #else
@@ -190,7 +192,7 @@ template <typename T, size_t size> class ParallelData
     float32x4_t b = { r, r, r, r };                                                                                    \
                                                                                                                        \
     for(size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                        \
-      ret.m_data.mmi[i] = imm(l.m_data.mmf[i], b);                                                                     \
+      ret.m_data.mmu[i] = imm(l.m_data.mmf[i], b);                                                                     \
                                                                                                                        \
     return ret;                                                                                                        \
   }
@@ -267,13 +269,29 @@ namespace std
     ParallelData<float, size> ret;
     float32x4_t cmp = { a, a, a, a };
 
+    for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
+      ret.m_data.mmf[i] = vminq_f32(in.m_data.mmf[i], cmp);
+
     return ret;
   }
+
+template <size_t size> inline ParallelData<float, size> min(const ParallelData<float, size> &l, const ParallelData<float, size> &r)
+{
+  ParallelData<float, size> ret;
+
+  for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
+    ret.m_data.mmf[i] = vminq_f32(r.m_data.mmf[i], l.m_data.mmf[i]);
+
+  return ret;
+}
 
   template <size_t size> inline ParallelData<float, size> max(const ParallelData<float, size> &in, float a)
   {
     ParallelData<float, size> ret;
     float32x4_t cmp = { a, a, a, a };
+
+    for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
+      ret.m_data.mmf[i] = vmaxq_f32(in.m_data.mmf[i], cmp);
 
     return ret;
   }
@@ -283,15 +301,17 @@ namespace std
   inline ParallelData<float, size> clamp(const ParallelData<float, size> &in, float _min,
                                          const ParallelData<float, size> &_max)
   {
-    ParallelData<float, size> ret = max(in, _min);
-
-    return ret;
+    return min(max(in, _min), _max);
   }
 
   template <size_t size> inline ParallelData<int32_t, size> round(const ParallelData<float, size> &in)
   {
-    ParallelData<int32_t, size> ret;
-    return ret;
+    ParallelData<float, size> ret;
+
+    for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
+        ret.m_data.mmf[i] = vrndnq_f32(in.m_data.mmf[i]);
+
+    return static_cast<ParallelData<int32_t, size>>(ret);
   }
 
 #else

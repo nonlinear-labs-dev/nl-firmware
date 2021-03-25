@@ -26,6 +26,10 @@ IF(OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 ENDIF()
 
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "armv7")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon-fp-armv8")
+endif()
+
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
