@@ -19,8 +19,8 @@ class RenameBankLayout : public RenameLayout
   RenameBankLayout();
 
  private:
-  virtual void commit(const Glib::ustring& newName) override;
-  virtual Glib::ustring getInitialText() const override;
+  void commit(const Glib::ustring& newName) override;
+  Glib::ustring getInitialText() const override;
 
   Bank* m_currentBank = nullptr;
   UNDO::Transaction* m_transaction;

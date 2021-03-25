@@ -4,6 +4,6 @@
 class DualSpecialParameterModuleCaption : public ModuleCaption
 {
 public:
-  DualSpecialParameterModuleCaption(const Rect& pos);
+  explicit DualSpecialParameterModuleCaption(const Rect& pos);
   void updateText(Parameter *newOne) override;
 };

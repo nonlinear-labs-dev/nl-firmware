@@ -15,15 +15,13 @@ FrameBuffer::StackScopeGuard::StackScopeGuard(FrameBuffer *fb)
 {
 }
 
-FrameBuffer::StackScopeGuard::StackScopeGuard(StackScopeGuard &&other)
+FrameBuffer::StackScopeGuard::StackScopeGuard(StackScopeGuard &&other) noexcept
     : m_fb(nullptr)
 {
   std::swap(m_fb, other.m_fb);
 }
 
-FrameBuffer::StackScopeGuard::~StackScopeGuard()
-{
-}
+FrameBuffer::StackScopeGuard::~StackScopeGuard() = default;
 
 FrameBuffer::Clip::Clip(FrameBuffer *fb, const Rect &rect)
     : StackScopeGuard(fb)
@@ -32,7 +30,7 @@ FrameBuffer::Clip::Clip(FrameBuffer *fb, const Rect &rect)
   fb->m_clips.push(intersection);
 }
 
-FrameBuffer::Clip::Clip(Clip &&other)
+FrameBuffer::Clip::Clip(Clip &&other) noexcept
     : StackScopeGuard(std::move(other))
 {
 }
@@ -54,7 +52,7 @@ FrameBuffer::Offset::Offset(FrameBuffer *fb, const Point &offset)
   m_fb->m_offsets.push(m_fb->m_offsets.top() + offset);
 }
 
-FrameBuffer::Offset::Offset(Offset &&other)
+FrameBuffer::Offset::Offset(Offset &&other) noexcept
     : StackScopeGuard(std::move(other))
 {
 }

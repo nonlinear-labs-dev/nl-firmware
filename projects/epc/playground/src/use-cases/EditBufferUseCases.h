@@ -56,7 +56,7 @@ class EditBufferUseCases
 
  private:
   VoiceGroup invert(VoiceGroup vg);
-  PresetManager* getPresetManager() const;
+  [[nodiscard]] PresetManager* getPresetManager() const;
 
   EditBuffer* m_editBuffer;
 };

@@ -91,7 +91,7 @@ void ModulationBoundLabel::setSuffixFontColor(FrameBuffer &fb) const
   fb.setColor(FrameBufferColors::C103);
 }
 
-Label::StringAndSuffix ModulationBoundLabel::shortenStringIfNeccessary(std::shared_ptr<Font> font,
+Label::StringAndSuffix ModulationBoundLabel::shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
                                                                        const StringAndSuffix &text) const
 {
   if(font->getStringWidth(text.text) >= getWidth())

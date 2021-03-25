@@ -69,8 +69,8 @@ namespace DescriptiveLayouts
     return getStyleValue(StyleKey::FontSize);
   }
 
-  Label::StringAndSuffix Text::shortenStringIfNeccessary(std::shared_ptr<Font> font,
-                                                         const Label::StringAndSuffix &text) const
+  Label::StringAndSuffix Text::shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
+                                                         const StringAndSuffix &text) const
   {
     return { TextCropper::shortenStringIfNeccessary(font, text.text, getPosition().getWidth()), text.suffix };
   }

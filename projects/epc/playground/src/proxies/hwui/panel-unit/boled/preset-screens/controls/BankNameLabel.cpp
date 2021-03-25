@@ -31,7 +31,7 @@ void BankNameLabel::updateLabel(Bank *newBank)
   }
 }
 
-Label::StringAndSuffix BankNameLabel::shortenStringIfNeccessary(std::shared_ptr<Font> font,
+Label::StringAndSuffix BankNameLabel::shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
                                                                 const StringAndSuffix &text) const
 {
   auto availableWidth = getPosition().getWidth() - 2 * getXOffset();

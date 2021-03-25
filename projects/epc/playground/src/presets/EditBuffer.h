@@ -28,7 +28,7 @@ class EditBuffer : public ParameterGroupSet
   Glib::ustring getNameWithSuffix() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
   Glib::ustring getVoiceGroupNameWithSuffix(VoiceGroup vg, bool addSpace) const;
-  size_t getHash() const override;
+  size_t getHash() const;
   const Preset *getOrigin() const;
   Parameter *getSelected(VoiceGroup voiceGroup) const;
   int getSelectedParameterNumber() const;
@@ -113,7 +113,7 @@ class EditBuffer : public ParameterGroupSet
   struct PartOrigin
   {
     PartOrigin(Uuid preset, VoiceGroup vg)
-        : presetUUID {std::move( preset )}
+        : presetUUID { std::move(preset) }
         , sourceGroup { vg }
     {
     }

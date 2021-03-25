@@ -195,21 +195,6 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
   }
 }
 
-void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transaction, int inc)
-{
-  auto src = (int) getModulationSource();
-  auto numChoices = static_cast<int>(MacroControls::NUM_CHOICES);
-  src += inc;
-
-  while(src < 0)
-    src += numChoices;
-
-  while(src >= numChoices)
-    src -= numChoices;
-
-  setModulationSource(transaction, (MacroControls) src);
-}
-
 int ModulateableParameter::getModAmountDenominator(const ButtonModifiers &modifiers) const
 {
   auto denom = modifiers[FINE] ? getModulationAmountFineDenominator() : getModulationAmountCoarseDenominator();

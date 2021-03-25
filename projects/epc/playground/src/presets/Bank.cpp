@@ -128,7 +128,7 @@ void Bank::deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder)
 
         if(FileSystem::isNameAUUID(withoutExtension))
         {
-          if(!findPreset(withoutExtension))
+          if(!findPreset(Uuid { withoutExtension }))
           {
             if(auto presetFile = bankFolder->get_child(fileName))
               presetFile->remove();
@@ -521,7 +521,7 @@ void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other, bool igno
   setY(transaction, other->getY());
 
   AttributesOwner::copyFrom(transaction, other);
-  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, p, ignoreUuids)); });
+  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, *p, ignoreUuids)); });
 
   updateLastModifiedTimestamp(transaction);
 }

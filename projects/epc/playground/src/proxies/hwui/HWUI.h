@@ -23,12 +23,9 @@ namespace UNDO
   class Transaction;
 }
 
-namespace nltools
+namespace nltools::msg
 {
-  namespace msg
-  {
-    struct ButtonChangedMessage;
-  }
+  struct ButtonChangedMessage;
 }
 
 class PresetPartSelection;

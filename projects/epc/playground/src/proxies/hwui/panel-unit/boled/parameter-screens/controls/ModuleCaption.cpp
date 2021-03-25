@@ -29,8 +29,8 @@ ModuleCaption::ModuleCaption(const Rect &pos)
       sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSoundTypeChanged)));
 }
 
-Label::StringAndSuffix ModuleCaption::shortenStringIfNeccessary(std::shared_ptr<Font> font,
-                                                                const Label::StringAndSuffix &text) const
+Label::StringAndSuffix ModuleCaption::shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
+                                                                const StringAndSuffix &text) const
 {
   return TextCropper::shortenStringIfNeccessary(font, text.text, getWidth());
 }

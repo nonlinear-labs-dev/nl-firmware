@@ -1,6 +1,7 @@
 #pragma once
 #include "proxies/hwui/controls/Rect.h"
 #include "proxies/hwui/controls/Control.h"
+#include <tools/StringAndSuffix.h>
 
 class CaptionLabelBase
 {
@@ -30,7 +31,7 @@ template <typename tLabelType> class CaptionLabel : public tLabelType, public Ca
 
   void setText(const std::string& s) override
   {
-    tLabelType::setText({ s });
+    tLabelType::setText(StringAndSuffix { s });
   }
 
  protected:
