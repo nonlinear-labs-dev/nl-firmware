@@ -82,7 +82,7 @@ namespace Tests
     // no error for three seconds = success
     playgroundApp.getMainContext()->signal_timeout().connect_seconds(
         [&] {
-          REQUIRE(selectionCount == 1);
+          CHECK(selectionCount == 1);
           playgroundApp.quit();
           return false;
         },
