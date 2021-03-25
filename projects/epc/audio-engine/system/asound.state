@@ -18,14 +18,6 @@ state.PCH {
 }
 
 state.EMPHASE {
-    control.1 {
-        iface CARD
-        name 'Keep Interface'
-        value false
-        comment {
-            access 'read write'
-            type BOOLEAN
-            count 1
-        }
+    control {
     }
 }
