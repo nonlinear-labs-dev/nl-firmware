@@ -11,9 +11,9 @@ class CaptionLabelBase
   virtual void setText(const std::string& s) = 0;
 
  protected:
-  int getXOffset() const;
-  void setFontColor(FrameBuffer& fb) const;
-  void setBackgroundColor(FrameBuffer& fb) const;
+  [[nodiscard]] virtual int getXOffset() const;
+  virtual void setFontColor(FrameBuffer& fb) const;
+  virtual void setBackgroundColor(FrameBuffer& fb) const;
 
   bool m_changeHighlight;
   bool m_changeHighlightBackground;
@@ -34,7 +34,7 @@ template <typename tLabelType> class CaptionLabel : public tLabelType, public Ca
   }
 
  protected:
-  int getXOffset() const override
+  [[nodiscard]] int getXOffset() const override
   {
     return CaptionLabelBase::getXOffset();
   }

@@ -51,22 +51,22 @@ namespace DescriptiveLayouts
     };
 
    public:
-    Selector(Criteria c)
+    explicit Selector(Criteria c)
         : criteria(c)
     {
     }
 
-    Selector(UIFocus f)
+    explicit Selector(UIFocus f)
         : criteria(f)
     {
     }
 
-    Selector(UIMode m)
+    explicit Selector(UIMode m)
         : criteria(m)
     {
     }
 
-    Selector(UIDetail d)
+    explicit Selector(UIDetail d)
         : criteria(d)
     {
     }

@@ -7,6 +7,8 @@
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
 
+#include <utility>
+
 class Application;
 class Writer;
 class PresetManager;
@@ -19,14 +21,14 @@ class EditBuffer : public ParameterGroupSet
   typedef ParameterGroupSet super;
 
  public:
-  EditBuffer(PresetManager *parent);
+  explicit EditBuffer(PresetManager *parent);
   ~EditBuffer() override;
 
   Glib::ustring getName() const;
   Glib::ustring getNameWithSuffix() const;
   Glib::ustring getVoiceGroupName(VoiceGroup vg) const;
   Glib::ustring getVoiceGroupNameWithSuffix(VoiceGroup vg, bool addSpace) const;
-  size_t getHash() const;
+  size_t getHash() const override;
   const Preset *getOrigin() const;
   Parameter *getSelected(VoiceGroup voiceGroup) const;
   int getSelectedParameterNumber() const;
@@ -111,8 +113,8 @@ class EditBuffer : public ParameterGroupSet
   struct PartOrigin
   {
     PartOrigin(Uuid preset, VoiceGroup vg)
-        : presetUUID { preset }
-        , sourceGroup { sourceGroup }
+        : presetUUID {std::move( preset )}
+        , sourceGroup { vg }
     {
     }
 

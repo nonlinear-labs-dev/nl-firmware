@@ -107,13 +107,6 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
                                                                     : getInvalidSignalPathIndication();
 }
 
-bool ParameterDB::isActive(const Parameter *p) const
-{
-  const auto inActiveCP = getSignalPathIndication(p->getID().getNumber());
-  const auto diff = std::abs(inActiveCP - p->getControlPositionValue());
-  return diff > std::numeric_limits<tControlPositionValue>::epsilon();
-}
-
 Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const
 {
   if(name.find("@VG") != Glib::ustring::npos)

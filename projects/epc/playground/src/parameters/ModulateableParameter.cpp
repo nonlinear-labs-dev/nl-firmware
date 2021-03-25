@@ -210,16 +210,6 @@ void ModulateableParameter::undoableIncrementMCSelect(UNDO::Transaction *transac
   setModulationSource(transaction, (MacroControls) src);
 }
 
-void ModulateableParameter::undoableIncrementMCAmount(UNDO::Transaction *transaction, int inc,
-                                                      ButtonModifiers modifiers)
-{
-  tDisplayValue controlVal = getModulationAmount();
-  double denominator = getModAmountDenominator(modifiers);
-  int rasterized = static_cast<int>(round(controlVal * denominator));
-  controlVal = ScaleConverter::getControlPositionRangeBipolar().clip((rasterized + inc) / denominator);
-  setModulationAmount(transaction, controlVal);
-}
-
 int ModulateableParameter::getModAmountDenominator(const ButtonModifiers &modifiers) const
 {
   auto denom = modifiers[FINE] ? getModulationAmountFineDenominator() : getModulationAmountCoarseDenominator();
@@ -245,29 +235,6 @@ void ModulateableParameter::loadDefault(UNDO::Transaction *transaction, Defaults
   undoableSelectModSource(transaction, MacroControls::NONE);
   undoableSetModAmount(transaction, 0.0);
   super::loadDefault(transaction, mode);
-}
-
-void ModulateableParameter::undoableLoadPackedModulationInfo(UNDO::Transaction *transaction,
-                                                             const Glib::ustring &packedModulationInfo)
-{
-  auto bits = std::stoul(packedModulationInfo);
-  auto modSrc = (bits & 0xC000) >> 14;
-  auto modAmount = bits & 0x1FFF;
-  auto negative = bits & 0x2000;
-
-  if(negative && modAmount == 0)
-  {
-    undoableSelectModSource(transaction, MacroControls::NONE);
-    undoableSetModAmount(transaction, 0.0);
-  }
-  else
-  {
-    auto iModSrc = static_cast<MacroControls>(modSrc + 1);
-    undoableSelectModSource(transaction, iModSrc);
-
-    auto fModAmount = (negative ? -1.0 : 1.0) * modAmount / getModulationAmountFineDenominator();
-    undoableSetModAmount(transaction, fModAmount);
-  }
 }
 
 double ModulateableParameter::getModulationAmountFineDenominator() const

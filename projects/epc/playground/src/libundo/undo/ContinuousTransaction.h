@@ -14,7 +14,7 @@ namespace UNDO
 
    public:
     ContinuousTransaction(Scope &scope, void *id, const Glib::ustring &name, size_t depth);
-    virtual ~ContinuousTransaction();
+    ~ContinuousTransaction() override;
 
     std::chrono::steady_clock::duration getAge() const;
     void *getID() const;
@@ -24,11 +24,11 @@ namespace UNDO
     UNDO::ContinuousTransaction *getClosingCommand() const;
 
    protected:
-    virtual void implUndoAction() const;
-    virtual void implRedoAction() const;
+    void implUndoAction() const override;
+    void implRedoAction() const override;
 
-    virtual void onImplUndoActionStart() const;
-    virtual void onImplRedoActionFinished() const;
+    void onImplUndoActionStart() const override;
+    void onImplRedoActionFinished() const override;
 
    private:
     void *m_id = nullptr;

@@ -110,7 +110,7 @@ template <typename TEnum> class EnumSetting : public Setting
     return enumToDisplayString();
   }
 
-  Glib::ustring getDisplayString() const
+  Glib::ustring getDisplayString() const override
   {
     int idx = static_cast<int>(get());
     return enumToDisplayString()[idx];
@@ -126,10 +126,10 @@ template <typename TEnum> class EnumSetting : public Setting
     return ret;
   }
 
- private:
-  EnumSetting(const EnumSetting &other);
-  EnumSetting &operator=(const EnumSetting &);
+  EnumSetting(const EnumSetting &other) = delete;
+  EnumSetting &operator=(const EnumSetting &) = delete;
 
+ private:
   tEnum m_mode;
   std::weak_ptr<tEnum> m_overlay;
 };

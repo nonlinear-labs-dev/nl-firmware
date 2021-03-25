@@ -19,19 +19,19 @@ class Label : public Control
     {
     }
 
-    StringAndSuffix(const Glib::ustring &first, size_t suffix = 0)
+    explicit StringAndSuffix(const Glib::ustring &first, size_t suffix = 0)
         : text(first)
         , suffix(suffix)
     {
     }
 
-    StringAndSuffix(const char *first, size_t suffix = 0)
+    explicit StringAndSuffix(const char *first, size_t suffix = 0)
         : text(first)
         , suffix(suffix)
     {
     }
 
-    StringAndSuffix(const char c, size_t suffix = 0)
+    explicit StringAndSuffix(const char c, size_t suffix = 0)
         : text(std::to_string(c))
         , suffix(suffix)
     {
@@ -43,7 +43,7 @@ class Label : public Control
       return text.raw() != other.text.raw() || suffix != other.suffix;
     }
 
-    std::pair<Glib::ustring, Glib::ustring> getSplits() const
+    [[nodiscard]] std::pair<Glib::ustring, Glib::ustring> getSplits() const
     {
       return std::make_pair<Glib::ustring, Glib::ustring>(text.substr(0, text.length() - suffix),
                                                           text.substr(text.length() - suffix));
@@ -54,7 +54,7 @@ class Label : public Control
   };
 
   Label(const StringAndSuffix &text, const Rect &pos);
-  Label(const Rect &pos);
+  explicit Label(const Rect &pos);
   ~Label() override;
 
   bool redraw(FrameBuffer &fb) override;

@@ -16,8 +16,7 @@ class BanksLayout : public Layout
 
  public:
   BanksLayout();
-
-  virtual ~BanksLayout();
+  ~BanksLayout() override;
 
  private:
   void updateFromBank(const Bank *bank) const;
