@@ -7,6 +7,7 @@
 #include <Options.h>
 
 #include <nltools/messaging/Message.h>
+#include <nltools/messaging/WebSocketJsonAPI.h>
 #include <proxies/hwui/HWUI.h>
 
 FrameBuffer::StackScopeGuard::StackScopeGuard(FrameBuffer *fb)
@@ -65,6 +66,8 @@ FrameBuffer::Offset::~Offset()
 }
 
 FrameBuffer::FrameBuffer()
+    : m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(PLAYGROUND_OLED_WEBSOCKET_PORT,
+                                                             [this](auto) { return m_backBuffer; }))
 {
   initStacks();
   openAndMap();
@@ -277,6 +280,11 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
 bool FrameBuffer::swapBuffers()
 {
   using namespace nltools::msg;
+
+  if(m_api->hasClients())
+  {
+    m_api->sendAllUpdating(m_backBuffer);
+  }
 
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
   {

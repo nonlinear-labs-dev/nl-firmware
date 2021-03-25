@@ -79,7 +79,7 @@ class C15Synth : public Synth, public sigc::trackable
   AudioEngineOptions* m_options;
   MidiRuntimeOptions m_midiOptions;
 
-  RingBuffer<nltools::msg::Midi::SimpleMessage, 2048> m_externalMidiOutBuffer;
+  RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
 
   std::mutex m_syncExternalsMutex;
   std::condition_variable m_syncExternalsWaiter;

@@ -44,15 +44,15 @@ class Settings : public ContentSection
 
   void sendSettingsToPlaycontroller(SendReason reason);
   void sendGlobalPlaycontrollerInitSettings();
+  void sendPresetSettingsToPlaycontroller();
 
   void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+  sigc::connection onSettingsChanged(sigc::slot<void(void)> s);
 
   bool isLoading() const;
-
-  void sendPresetSettingsToPlaycontroller();
 
  protected:
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -68,4 +68,5 @@ class Settings : public ContentSection
   ScopedGuard m_isLoading;
   void sendGlobalAESettings();
   sigc::connection m_aeSettingsConnection;
+  sigc::signal<void(void)> m_sigChanged;
 };

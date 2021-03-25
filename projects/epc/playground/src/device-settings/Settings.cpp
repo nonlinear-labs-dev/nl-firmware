@@ -151,6 +151,7 @@ Settings::~Settings()
 Settings::tUpdateID Settings::onChange(uint64_t flags)
 {
   m_saveJob.trigger();
+  m_sigChanged.emit();
   return super::onChange(flags);
 }
 
@@ -310,4 +311,9 @@ void Settings::sendPresetSettingsToPlaycontroller()
   auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
   r1->sendModeToPlaycontroller();
   r2->sendModeToPlaycontroller();
+}
+
+sigc::connection Settings::onSettingsChanged(sigc::slot<void(void)> s)
+{
+  return m_sigChanged.connect(s);
 }

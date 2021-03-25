@@ -339,6 +339,17 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
+  addAction("set-bank-collapse", [&](auto req) mutable {
+    auto bankUUID = req->get("uuid");
+    auto value = req->get("value");
+
+    if(auto bank = m_presetManager.findBank(bankUUID))
+    {
+      BankUseCases useCase(bank);
+      useCase.setCollapsed(value == "true");
+    }
+  });
+
   addAction("move", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto bankUUID = request->get("bank");
     auto value = request->get("direction");

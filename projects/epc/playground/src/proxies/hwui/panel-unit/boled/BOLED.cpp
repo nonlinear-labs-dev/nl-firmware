@@ -115,7 +115,7 @@ void BOLED::setupParameterScreen(FocusAndMode focusAndMode)
 
     if(auto currentLayout = getLayout().get())
     {
-      auto descriptiveLayout = dynamic_cast<DescriptiveLayouts::GenericLayout*>(currentLayout) != nullptr;
+      auto descriptiveLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout) != nullptr;
 
       if(descriptiveLayout && currentLayout && typeid(*layout) == typeid(*currentLayout))
       {

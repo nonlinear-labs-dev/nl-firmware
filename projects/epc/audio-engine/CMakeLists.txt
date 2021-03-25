@@ -16,7 +16,7 @@ add_nltools(${AE_LIB_NAME})
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${AE_LIB_NAME})
 
-set(LIBS alsa)
+set(LIBS alsa flac)
 
 find_package(OpenMP)
 
@@ -44,6 +44,8 @@ ENDIF(DEV_PC)
 
 target_link_libraries(${AE_LIB_NAME} PUBLIC pthread)
 target_include_directories(${AE_LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/parameter-db/generated)
+
+add_subdirectory(tests)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
 

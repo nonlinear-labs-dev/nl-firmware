@@ -16,6 +16,7 @@ class PedalType : public NLEnumSetting<PedalTypes>
   Glib::ustring getDisplayString() const override;
   const std::vector<Glib::ustring> &getDisplayStrings() const;
   bool set(tEnum m) override;
+  void incDec(int dir, bool wrap) override;
 
  private:
   void syncExternals(SendReason reason) const override;

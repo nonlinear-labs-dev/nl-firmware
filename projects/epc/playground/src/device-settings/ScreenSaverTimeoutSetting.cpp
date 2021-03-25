@@ -8,6 +8,7 @@
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/panel-unit/boled/BOLEDScreenSaver.h>
 #include "ScreenSaverTimeoutSetting.h"
+#include <device-settings/Settings.h>
 
 ScreenSaverTimeoutSetting::ScreenSaverTimeoutSetting(UpdateDocumentContributor& parent)
     : Setting(parent)
@@ -84,12 +85,10 @@ void ScreenSaverTimeoutSetting::init()
 
   Application::get().getPlaycontrollerProxy()->onLastKeyChanged([this](int key) { endAndReschedule(); });
 
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled([this](Layout* l) {
-    if(dynamic_cast<BOLEDScreenSaver*>(l) == nullptr)
-    {
-      endAndReschedule();
-    }
-  });
+  Application::get().getSettings()->onSettingsChanged(sigc::mem_fun(this, &ScreenSaverTimeoutSetting::endAndReschedule));
+
+  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled(
+      sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onLayoutInstalled));
 }
 
 void ScreenSaverTimeoutSetting::sendState(bool state)
@@ -131,4 +130,12 @@ void ScreenSaverTimeoutSetting::incDec(int inc)
   }
 
   notify();
+}
+
+void ScreenSaverTimeoutSetting::onLayoutInstalled(Layout* l)
+{
+  if(dynamic_cast<BOLEDScreenSaver*>(l) == nullptr)
+  {
+    endAndReschedule();
+  }
 }
