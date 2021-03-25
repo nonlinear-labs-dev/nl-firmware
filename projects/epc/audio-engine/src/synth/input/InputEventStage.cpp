@@ -40,6 +40,8 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
     VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
     const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
     const bool soundValid = soundType != SoundType::Invalid;
+    constexpr auto TCDInputState
+        = DSPInterface::InputEvent { DSPInterface::InputSource::TCD, DSPInterface::InputState::Singular };
     switch(decoder->getEventType())
     {
       case DecoderEventType::KeyDown:
@@ -49,12 +51,12 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
           {
             determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
             m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
-                                      DSPInterface::InputSource::TCD);
+                                      TCDInputState);
           }
           else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
-            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
+            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), TCDInputState);
           }
         }
         if(m_options->shouldSendNotes() && soundValid)
@@ -67,13 +69,12 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
           if(soundType == SoundType::Split)
           {
             determinedPart = calculatePartForEvent(decoder);  // Split Sound overrides part association for key
-            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart,
-                                    DSPInterface::InputSource::TCD);
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, TCDInputState);
           }
           else if(soundValid)  // safety first
           {
             // Single/Layer Sound acts global (maybe, only primary is preferred?)
-            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::InputSource::TCD);
+            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), TCDInputState);
           }
         }
         if(m_options->shouldSendNotes() && soundValid)  // safety first
@@ -110,13 +111,14 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
       case DecoderEventType::KeyUp:
         if(checkMIDIKeyEventEnabled(decoder))
         {
-          auto interface = getInterfaceFromDecoder(decoder);
-          if(interface == DSPInterface::InputSource::Unknown)
+          auto interface = getInterfaceFromParsedChannel(decoder->getChannel());
+          if(interface.m_source == DSPInterface::InputSource::Unknown)
             return;
 
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculateSplitPartForEvent(decoder, interface);  // Split Sound overrides part association for key
+            determinedPart = calculateSplitPartForEvent(
+                decoder, interface.m_source);  // Split Sound overrides part association for key
             if(decoder->getEventType() == DecoderEventType::KeyDown)
               m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
@@ -365,42 +367,44 @@ VoiceGroup InputEventStage::calculatePartForEvent(TCDDecoder *pDecoder)
   return m_dspHost->getSplitPartForKey(pDecoder->getKeyOrController());
 }
 
-DSPInterface::InputSource InputEventStage::getInterfaceFromDecoder(MIDIDecoder *pDecoder)
+namespace InputStateDetail
 {
-  const auto primChannel = m_options->getReceiveChannel();
-  const auto secChannel = m_options->getReceiveSplitChannel();
-  const auto areDifferent = MidiRuntimeOptions::normalToSplitChannel(primChannel) != secChannel;
-  const auto notDifferent = !areDifferent;
-  const auto primNotNone = primChannel != MidiReceiveChannel::None;
-  const auto secNotNone = secChannel != MidiReceiveChannelSplit::None;
-  const auto secNone = !secNotNone;
-  const auto primNone = !primNotNone;
-  const auto secIsOmni = secChannel == MidiReceiveChannelSplit::Omni;
-  const auto primIsOmni = primChannel == MidiReceiveChannel::Omni;
+  using Event = DSPInterface::InputEvent;
+  using State = DSPInterface::InputState;
+  using Source = DSPInterface::InputSource;
 
-  if(secChannel == MidiReceiveChannelSplit::Common)
-  {
-    if(primNotNone)
-      return DSPInterface::InputSource::Primary;
-    else
-      return DSPInterface::InputSource::Unknown;
-  }
-  else if(notDifferent || (secIsOmni || primIsOmni))
-  {
-    return DSPInterface::InputSource::Both;
-  }
-  else
-  {
-    if(primNone)
-      return DSPInterface::InputSource::Secondary;
-    else if(secNone)
-      return DSPInterface::InputSource::Primary;
+  static constexpr Event Unknown = { Source::Unknown, State::Invalid };
+  static constexpr Event Singular = { Source::Primary, State::Singular };
+  static constexpr Event Primary = { Source::Primary, State::Separate };
+  static constexpr Event Both = { Source::Both, State::Separate };
+  static constexpr Event Secondary = { Source::Secondary, State::Separate };
+}
 
-    if(primChannel == pDecoder->getChannel())
-      return DSPInterface::InputSource::Primary;
-    else if(secChannel == MidiRuntimeOptions::normalToSplitChannel(pDecoder->getChannel()))
-      return DSPInterface::InputSource::Secondary;
-  }
-
-  nltools_assertNotReached();
+DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiReceiveChannel channel)
+{
+  const auto primary = m_options->getReceiveChannel();
+  const auto secondary = m_options->getReceiveSplitChannel();
+  const auto primaryMask = midiReceiveChannelMask(primary);
+  const auto secondaryMask = midiReceiveChannelMask(secondary);
+  // first check: did event qualify at all?
+  const bool qualifiedForEvent = (primaryMask | secondaryMask) > 0;
+  if(!qualifiedForEvent)
+    return InputStateDetail::Unknown;
+  // second check: obtain channel mask and evaluate common "singular" case
+  const auto channelMask = midiReceiveChannelMask(channel);
+  const bool qualifiedForCommon = secondary == MidiReceiveChannelSplit::Common;
+  const bool qualifiedForPrimary = (channelMask & primaryMask) > 0;
+  if(qualifiedForCommon)
+    return qualifiedForPrimary ? InputStateDetail::Singular : InputStateDetail::Unknown;
+  // third checks: evaluate "separate" cases (both, primary, secondary)
+  const bool qualifiedForSecondary = (channelMask & secondaryMask) > 0;
+  const bool qualifiedForIdentity = qualifiedForPrimary && qualifiedForSecondary;
+  if(qualifiedForIdentity)
+    return InputStateDetail::Both;
+  if(qualifiedForPrimary)
+    return InputStateDetail::Primary;
+  if(qualifiedForSecondary)
+    return InputStateDetail::Secondary;
+  // this line should never be reached
+  return InputStateDetail::Unknown;
 }

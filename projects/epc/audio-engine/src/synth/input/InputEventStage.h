@@ -43,7 +43,46 @@ class InputEventStage
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
   VoiceGroup calculateSplitPartForEvent(MIDIDecoder* pDecoder, DSPInterface::InputSource source);
   VoiceGroup calculatePartForEvent(TCDDecoder* pDecoder);
-  DSPInterface::InputSource getInterfaceFromDecoder(MIDIDecoder* pDecoder);
+  DSPInterface::InputEvent getInterfaceFromParsedChannel(MidiReceiveChannel channel);
 
   friend class InputEventStageTester;
+
+  static constexpr uint16_t c_midiReceiveMaskTable[19] = {
+    0x0000,  // None (no bit is set)
+    0xFFFF,  // Omni (all bits are set)
+    0x0001,  // CH_1 (specific channels 0..15 refer to specific bits 0..15)
+    0x0002,  // CH_2
+    0x0004,  // CH_3
+    0x0008,  // CH_4
+    0x0010,  // CH_5
+    0x0020,  // CH_6
+    0x0040,  // CH_7
+    0x0080,  // CH_8
+    0x0100,  // CH_9
+    0x0200,  // CH_10
+    0x0400,  // CH_11
+    0x0800,  // CH_12
+    0x1000,  // CH_13
+    0x2000,  // CH_14
+    0x4000,  // CH_15
+    0x8000,  // CH_16
+    0x0000   // Common = None
+  };
+
+  static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel)
+  {
+    return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
+  }
+
+  static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel)
+  {
+    return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
+  }
+
+  static constexpr uint16_t midiReceiveChannelMask(const uint8_t& _channel)
+  {
+    if(_channel > 15)
+      return 0;                                 // fail-safe (but a midi channel shouldn't go beyond 15 anyway)
+    return c_midiReceiveMaskTable[2 + _channel];  // we read out the mask matching the specific channel id
+  }
 };

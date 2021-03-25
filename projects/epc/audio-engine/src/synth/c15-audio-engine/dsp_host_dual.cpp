@@ -2770,7 +2770,7 @@ VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
   return VoiceGroup::NumGroups;
 }
 
-void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
+void dsp_host_dual::onKeyDown(const int note, float velocity, InputEvent from)
 {
   // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
   //  const uint32_t sourceId = static_cast<uint32_t>(from);
@@ -2796,7 +2796,7 @@ void dsp_host_dual::onKeyDown(const int note, float velocity, InputSource from)
   }
 }
 
-void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
+void dsp_host_dual::onKeyUp(const int note, float velocity, InputEvent from)
 {
   // NOTE: proof of concept for Single Sounds - InputSource::Unknown is still a crash!!!
   //  const uint32_t sourceId = static_cast<uint32_t>(from);
@@ -2821,7 +2821,7 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputSource from)
   }
 }
 
-void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
+void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
 {
   //  const uint32_t sourceId = static_cast<uint32_t>(from);
   const uint32_t sourceId = static_cast<uint32_t>(TEMP_SOURCE);  // TEMP: avoid crash
@@ -2851,7 +2851,7 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   }
 }
 
-void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputSource from)
+void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
 {
   //  const uint32_t sourceId = static_cast<uint32_t>(from);
   const uint32_t sourceId = static_cast<uint32_t>(TEMP_SOURCE);  // TEMP: avoid crash

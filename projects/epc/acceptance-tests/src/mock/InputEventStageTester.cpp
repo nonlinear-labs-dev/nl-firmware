@@ -93,7 +93,7 @@ VoiceGroup InputEventStageTester::calculatePartForEvent(TCDDecoder* pDecoder)
   return m_inputStage->calculatePartForEvent(pDecoder);
 }
 
-DSPInterface::InputSource InputEventStageTester::getInterfaceFromDecoder(MIDIDecoder* pDecoder)
+DSPInterface::InputEvent InputEventStageTester::getInterfaceFromDecoder(MidiReceiveChannel channel)
 {
-  return m_inputStage->getInterfaceFromDecoder(pDecoder);
+  return m_inputStage->getInterfaceFromParsedChannel(channel);
 }

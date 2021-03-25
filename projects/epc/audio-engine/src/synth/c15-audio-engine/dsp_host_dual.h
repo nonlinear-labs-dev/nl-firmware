@@ -75,12 +75,25 @@ class DSPInterface
     Unknown  //Error
   };
 
+  enum class InputState
+  {
+    Singular,
+    Separate,
+    Invalid
+  };
+
+  struct InputEvent
+  {
+    InputSource m_source = InputSource::Unknown;
+    InputState m_state = InputState::Invalid;
+  };
+
   virtual void onHWChanged(const uint32_t id, float value) = 0;
 
-  virtual void onKeyDown(const int note, float velocity, InputSource from) = 0;
-  virtual void onKeyUp(const int note, float velocity, InputSource from) = 0;
-  virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputSource from) = 0;
-  virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputSource from) = 0;
+  virtual void onKeyDown(const int note, float velocity, InputEvent from) = 0;
+  virtual void onKeyUp(const int note, float velocity, InputEvent from) = 0;
+  virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) = 0;
+  virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) = 0;
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKey(int key) = 0;
@@ -107,10 +120,10 @@ class dsp_host_dual : public DSPInterface
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(const uint32_t id, float value) override;
-  void onKeyDown(const int note, float velocity, InputSource from) override;
-  void onKeyUp(const int note, float velocity, InputSource from) override;
-  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputSource from) override;
-  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputSource from) override;
+  void onKeyDown(const int note, float velocity, InputEvent from) override;
+  void onKeyUp(const int note, float velocity, InputEvent from) override;
+  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
+  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
 
   void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);

@@ -32,7 +32,7 @@ class InputEventStageTester
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
   VoiceGroup calculateSplitPartForEvent(MIDIDecoder* pDecoder, DSPInterface::InputSource source);
   VoiceGroup calculatePartForEvent(TCDDecoder* pDecoder);
-  DSPInterface::InputSource getInterfaceFromDecoder(MIDIDecoder* pDecoder);
+  DSPInterface::InputEvent getInterfaceFromDecoder(MidiReceiveChannel channel);
 
  private:
   InputEventStage* m_inputStage;

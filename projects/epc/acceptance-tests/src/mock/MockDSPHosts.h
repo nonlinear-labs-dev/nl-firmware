@@ -6,20 +6,20 @@ class MockDSPHost : public DSPInterface
 {
  public:
   void onHWChanged(uint32_t id, float value) override;
-  void onKeyDown(const int note, float velocity, InputSource from) override;
-  void onKeyUp(const int note, float velocity, InputSource from) override;
+  void onKeyDown(const int note, float velocity, InputEvent from) override;
+  void onKeyUp(const int note, float velocity, InputEvent from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
   SoundType getType() override;
   VoiceGroup getSplitPartForKey(int key) override;
-  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputSource from) override;
-  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputSource from) override;
+  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
+  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
 };
 
 class PassOnKeyDownHost : public MockDSPHost
 {
  public:
   PassOnKeyDownHost(int expectedNote, float expectedVelo, VoiceGroup expectedPart);
-  void onKeyDown(const int note, float velocity, InputSource from) override;
+  void onKeyDown(const int note, float velocity, InputEvent from) override;
   [[nodiscard]] bool didReceiveKeyDown() const;
 
  protected:
@@ -33,7 +33,7 @@ class PassOnKeyUpHost : public MockDSPHost
 {
  public:
   PassOnKeyUpHost(int expectedNote, float expectedVelo, VoiceGroup expectedPart);
-  void onKeyUp(const int note, float velocity, InputSource from) override;
+  void onKeyUp(const int note, float velocity, InputEvent from) override;
   [[nodiscard]] bool didReceiveKeyUp() const;
 
  private:
