@@ -84,6 +84,8 @@ class InputEventStage
       return 0;                                   // fail-safe (but a midi channel shouldn't go beyond 15 anyway)
     return c_midiReceiveMaskTable[2 + _channel];  // we read out the mask matching the specific channel id
   }
+  void doSendAftertouchOut(uint8_t cc, uint8_t value);
+  void doSendBenderOut(uint8_t lsb, uint8_t msb);
 };
 
 namespace InputStateDetail

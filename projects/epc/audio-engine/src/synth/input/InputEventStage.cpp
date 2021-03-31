@@ -312,22 +312,17 @@ void InputEventStage::sendHardwareChangeAsMidi(TCDDecoder *pDecoder)
 
     case 4:  //Bender
     {
-      //TODO add bender SEND
       auto value = CC_Range_Bender::encodeBipolarMidiValue(pDecoder->getValue());
-      auto statusByte = static_cast<uint8_t>(0xE0);
       auto valByte1 = static_cast<uint8_t>(value & 0x7F);
       auto valByte2 = static_cast<uint8_t>((value >> 7) & 0x7F);
-      // Pitch Bend Messages are: Status LSB MSB
-      m_midiOut({ statusByte, valByte1, valByte2 });
+      doSendBenderOut(valByte1, valByte2);
       break;
     }
 
     case 5:  //Aftertouch
     {
-      //TODO add Aftertouch SEND
-      auto statusByte = static_cast<uint8_t>(0xD0);
       uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(pDecoder->getValue());
-      m_midiOut({ statusByte, valByte });
+      doSendAftertouchOut(0xD0, valByte);
       break;
     }
 
@@ -347,13 +342,29 @@ void InputEventStage::sendCCOut(int hwID, float value, int msbCC, int lsbCC)
 
 void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
 {
-  //TODO Send to Prim and Sec if (not none)
+  const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+
+  const auto mainC = static_cast<uint8_t>(mainChannel);
+  const auto secC = static_cast<uint8_t>(secondaryChannel);
+
   auto statusByte = static_cast<uint8_t>(0xB0);
   auto lsbValByte = static_cast<uint8_t>(value & 0x7F);
-  m_midiOut({ statusByte, static_cast<uint8_t>(lsbCC), lsbValByte });
-
   auto msbValByte = static_cast<uint8_t>(value >> 7 & 0x7F);
-  m_midiOut({ statusByte, static_cast<uint8_t>(msbCC), msbValByte });
+
+  if(mainChannel != -1)
+  {
+    auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
+    m_midiOut({ mainStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+    m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
+  }
+
+  if(secondaryChannel != -1)
+  {
+    auto secStatus = static_cast<uint8_t>(statusByte | secC);
+    m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+    m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
+  }
 }
 
 void InputEventStage::setNoteShift(int i)
@@ -411,4 +422,50 @@ DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiRece
     return InputStateDetail::Secondary;
   // this line should never be reached
   return InputStateDetail::Unknown;
+}
+
+void InputEventStage::doSendAftertouchOut(uint8_t cc, uint8_t value)
+{
+  const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+
+  const auto mainC = static_cast<uint8_t>(mainChannel);
+  const auto secC = static_cast<uint8_t>(secondaryChannel);
+
+  auto statusByte = static_cast<uint8_t>(cc);
+
+  if(mainChannel != -1)
+  {
+    auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
+    m_midiOut({ mainStatus, value });
+  }
+
+  if(secondaryChannel != -1)
+  {
+    auto secStatus = static_cast<uint8_t>(statusByte | secC);
+    m_midiOut({ secStatus, value });
+  }
+}
+
+void InputEventStage::doSendBenderOut(uint8_t lsb, uint8_t msb)
+{
+  const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+
+  const auto mainC = static_cast<uint8_t>(mainChannel);
+  const auto secC = static_cast<uint8_t>(secondaryChannel);
+
+  auto statusByte = static_cast<uint8_t>(0xE0);
+
+  if(mainChannel != -1)
+  {
+    auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
+    m_midiOut({ statusByte, lsb, msb });
+  }
+
+  if(secondaryChannel != -1)
+  {
+    auto secStatus = static_cast<uint8_t>(statusByte | secC);
+    m_midiOut({ statusByte, lsb, msb });
+  }
 }

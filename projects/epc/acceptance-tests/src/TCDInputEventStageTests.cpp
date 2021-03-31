@@ -188,11 +188,12 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
     WHEN("CC01 and CC33")
     {
       settings.setPedal1(PedalCC::CC01);
+      settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
       eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixtenThousand >> 7), (uint8_t)(sixtenThousand & 127) });
 
       THEN("MIDI got send")
       {
-        REQUIRE(sendMessages.size() == 2);
+        REQUIRE(sendMessages.size() == 4);
         CHECK(sendMessages[0].rawBytes[0] == 0xB0);
         CHECK(sendMessages[0].rawBytes[1] == 33);
         CHECK(sendMessages[0].rawBytes[2] == 0);
@@ -200,17 +201,26 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
         CHECK(sendMessages[1].rawBytes[0] == 0xB0);
         CHECK(sendMessages[1].rawBytes[1] == 1);
         CHECK(sendMessages[1].rawBytes[2] == 127);
+
+        CHECK(sendMessages[2].rawBytes[0] == 0xB1);
+        CHECK(sendMessages[2].rawBytes[1] == 33);
+        CHECK(sendMessages[2].rawBytes[2] == 0);
+
+        CHECK(sendMessages[3].rawBytes[0] == 0xB1);
+        CHECK(sendMessages[3].rawBytes[1] == 1);
+        CHECK(sendMessages[3].rawBytes[2] == 127);
       }
     }
 
     WHEN("CC02 and CC34")
     {
       settings.setPedal1(PedalCC::CC02);
+      settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
       eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixtenThousand >> 7), (uint8_t)(sixtenThousand & 127) });
 
       THEN("MIDI got send")
       {
-        REQUIRE(sendMessages.size() == 2);
+        REQUIRE(sendMessages.size() == 4);
         CHECK(sendMessages[0].rawBytes[0] == 0xB0);
         CHECK(sendMessages[0].rawBytes[1] == 34);
         CHECK(sendMessages[0].rawBytes[2] == 0);
@@ -218,6 +228,14 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
         CHECK(sendMessages[1].rawBytes[0] == 0xB0);
         CHECK(sendMessages[1].rawBytes[1] == 2);
         CHECK(sendMessages[1].rawBytes[2] == 127);
+        
+        CHECK(sendMessages[2].rawBytes[0] == 0xB1);
+        CHECK(sendMessages[2].rawBytes[1] == 34);
+        CHECK(sendMessages[2].rawBytes[2] == 0);
+
+        CHECK(sendMessages[3].rawBytes[0] == 0xB1);
+        CHECK(sendMessages[3].rawBytes[1] == 2);
+        CHECK(sendMessages[3].rawBytes[2] == 127);
       }
     }
   }
