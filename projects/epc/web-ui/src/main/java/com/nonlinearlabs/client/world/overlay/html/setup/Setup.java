@@ -60,7 +60,7 @@ public class Setup extends Composite {
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
 			selectionAutoScroll, editParameter, scalingFactor, stripeBrightness, midiReceiveChannel, midiReceiveChannelSplit,
-			midiReceiveVelocityCurve, midiReceiveAftertouchCurve, midiSendChannel, midiSendChannelSplit, pedal1Mapping, 
+			midiSendChannel, midiSendChannelSplit, pedal1Mapping, 
 			pedal2Mapping, pedal3Mapping, pedal4Mapping, ribbon1Mapping, ribbon2Mapping, benderMapping, aftertouchMapping;
 
 	@UiField
@@ -133,8 +133,6 @@ public class Setup extends Composite {
 
 		fillListboxWithOptions(midiReceiveChannel, MidiSettings.ReceiveChannel.options);
 		fillListboxWithOptions(midiReceiveChannelSplit, MidiSettings.ReceiveChannelSplit.options);
-		fillListboxWithOptions(midiReceiveAftertouchCurve, MidiSettings.AftertouchCurve.options);
-		fillListboxWithOptions(midiReceiveVelocityCurve, MidiSettings.VelocityCurve.options);
 
 		fillListboxWithOptions(midiSendChannel, MidiSettings.SendChannel.options);
 		fillListboxWithOptions(midiSendChannelSplit, MidiSettings.SendChannelSplit.options);
@@ -247,8 +245,6 @@ public class Setup extends Composite {
 
 		midiReceiveChannel.addChangeHandler(e -> settings.setReceiveMidiChannel(MidiReceiveChannel.values()[midiReceiveChannel.getSelectedIndex()]));
 		midiReceiveChannelSplit.addChangeHandler(e -> settings.setReceiveMidiChannelSplit(MidiReceiveChannelSplit.values()[midiReceiveChannelSplit.getSelectedIndex()]));
-		midiReceiveAftertouchCurve.addChangeHandler(e -> settings.setReceiveAftertouchCurve(AftertouchCurve.values()[midiReceiveAftertouchCurve.getSelectedIndex()]));
-		midiReceiveVelocityCurve.addChangeHandler(e -> settings.setReceiveVelocityCurve(VelocityCurve.values()[midiReceiveVelocityCurve.getSelectedIndex()]));
 		receivePCOn.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.on));
 		receivePCOff.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.off));
 		receiveControllersOn.addValueChangeHandler(e -> settings.setReceiveControllers(BooleanValues.on));
@@ -380,8 +376,6 @@ public class Setup extends Composite {
 	private void applyPresenter(MidiSettings t) {
 		midiReceiveChannel.setSelectedIndex(t.receiveChannel.selected);
 		midiReceiveChannelSplit.setSelectedIndex(t.receiveChannelSplit.selected);
-		midiReceiveAftertouchCurve.setSelectedIndex(t.receiveAftertouchCurve.selected);
-		midiReceiveVelocityCurve.setSelectedIndex(t.receiveVelocityCurve.selected);
 		receiveControllersOn.setValue(t.receiveControllers.value);
 		receiveControllersOff.setValue(!t.receiveControllers.value);
 		receiveNotesOn.setValue(t.receiveNotes.value);

@@ -460,12 +460,12 @@ void InputEventStage::doSendBenderOut(uint8_t lsb, uint8_t msb)
   if(mainChannel != -1)
   {
     auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
-    m_midiOut({ statusByte, lsb, msb });
+    m_midiOut({ mainStatus, lsb, msb });
   }
 
   if(secondaryChannel != -1)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
-    m_midiOut({ statusByte, lsb, msb });
+    m_midiOut({ secStatus, lsb, msb });
   }
 }

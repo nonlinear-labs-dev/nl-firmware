@@ -796,8 +796,6 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "Enable Notes"));
       children.emplace_back(new EnumSettingItem<MidiReceiveControllersSetting>(this, "Enable Hardware Sources"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveVelocityCurveSetting>(this, "Velocity Curve"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveAftertouchCurveSetting>(this, "Aftertouch Curve"));
     }
   };
 

@@ -2,9 +2,9 @@
 #include "TCDDecoder.h"
 
 TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options, KeyShift *keyShift)
-    : m_dsp{ dsp }
-    , m_options{ options }
-    , m_keyShift{ keyShift }
+    : m_dsp { dsp }
+    , m_options { options }
+    , m_keyShift { keyShift }
 {
   reset();
 }
@@ -23,6 +23,12 @@ bool TCDDecoder::decode(const MidiEvent &event)
     {
       uint32_t arg = _data1 + (_data0 << 7);
       value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
+
+      if(m_dsp->getBehaviour(channel) == C15::Properties::HW_Return_Behavior::Center)
+      {
+        value = (2.0f * value) - 1.0f;
+      }
+
       keyOrController = channel;
       m_type = DecoderEventType::HardwareChange;
     }

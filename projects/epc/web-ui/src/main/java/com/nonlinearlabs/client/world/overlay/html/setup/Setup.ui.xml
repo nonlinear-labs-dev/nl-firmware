@@ -370,24 +370,6 @@
 							<g:RadioButton ui:field="receiveControllersOff" name="rad_recControllers" value="false"></g:RadioButton>
 						</div>
 					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Velocity Curve</p>
-						</div>
-						<div class="w40p">
-							<g:ListBox ui:field="midiReceiveVelocityCurve">
-							</g:ListBox>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Aftertouch Curve</p>
-						</div>
-						<div class="w40p">
-							<g:ListBox ui:field="midiReceiveAftertouchCurve">
-							</g:ListBox>
-						</div>
-					</div>
 					<div class="linie"></div>
 					<div class="eins-he fl-j-center">
 						<h3 class="uneditable">Send</h3>
