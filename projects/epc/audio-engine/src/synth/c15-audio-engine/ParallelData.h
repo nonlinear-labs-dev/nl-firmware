@@ -21,7 +21,7 @@
 #include <x86intrin.h>
 
 using int32x4_t = __m128i;
-using uint32x4_t = __m128u;
+using uint32x4_t = __m128i;
 using float32x4_t = __m128;
 
 #endif
@@ -44,13 +44,13 @@ namespace parallel_data_detail
     static void copy(v128<int32_t, simdSize, parallelism> &out, const v128<float, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
-        out.mmi[i] =  vcvtq_s32_f32(in.mmf[i]);
+        out.mmi[i] = vcvtq_s32_f32(in.mmf[i]);
     }
 
     static void copy(v128<float, simdSize, parallelism> &out, const v128<int32_t, simdSize, parallelism> &in)
     {
       for(int i = 0; i < simdSize; i++)
-        out.mmf[i] =  vcvtq_f32_s32(in.mmi[i]);
+        out.mmf[i] = vcvtq_f32_s32(in.mmi[i]);
     }
 
 #else
@@ -275,15 +275,16 @@ namespace std
     return ret;
   }
 
-template <size_t size> inline ParallelData<float, size> min(const ParallelData<float, size> &l, const ParallelData<float, size> &r)
-{
-  ParallelData<float, size> ret;
+  template <size_t size>
+  inline ParallelData<float, size> min(const ParallelData<float, size> &l, const ParallelData<float, size> &r)
+  {
+    ParallelData<float, size> ret;
 
-  for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
-    ret.m_data.mmf[i] = vminq_f32(r.m_data.mmf[i], l.m_data.mmf[i]);
+    for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
+      ret.m_data.mmf[i] = vminq_f32(r.m_data.mmf[i], l.m_data.mmf[i]);
 
-  return ret;
-}
+    return ret;
+  }
 
   template <size_t size> inline ParallelData<float, size> max(const ParallelData<float, size> &in, float a)
   {
@@ -309,7 +310,7 @@ template <size_t size> inline ParallelData<float, size> min(const ParallelData<f
     ParallelData<float, size> ret;
 
     for(size_t i = 0; i < ParallelData<float, size>::simdSize; i++)
-        ret.m_data.mmf[i] = vrndnq_f32(in.m_data.mmf[i]);
+      ret.m_data.mmf[i] = vrndnq_f32(in.m_data.mmf[i]);
 
     return static_cast<ParallelData<int32_t, size>>(ret);
   }
