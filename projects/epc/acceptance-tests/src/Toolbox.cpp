@@ -45,7 +45,7 @@ namespace Tests
     PresetManager pm(&updateDocMaster, true);
     EditBuffer editBuffer(&pm);
     Preset preset(&pm);
-    preset.setUuid(transaction, uuid);
+    preset.setUuid(transaction, Uuid { uuid });
     preset.load(transaction, file);
     editBuffer.copyFrom(transaction, &preset);
 

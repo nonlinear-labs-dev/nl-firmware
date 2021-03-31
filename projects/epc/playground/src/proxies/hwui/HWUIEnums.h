@@ -65,17 +65,17 @@ struct FocusAndMode
   {
   }
 
-  explicit FocusAndMode(UIFocus f)
+  FocusAndMode(UIFocus f)
       : FocusAndMode(f, UIMode::Unchanged)
   {
   }
 
-  explicit FocusAndMode(UIMode m)
+  FocusAndMode(UIMode m)
       : FocusAndMode(UIFocus::Unchanged, m)
   {
   }
 
-  explicit FocusAndMode(UIDetail d)
+  FocusAndMode(UIDetail d)
       : FocusAndMode(UIFocus::Unchanged, UIMode::Unchanged, d)
   {
   }
@@ -105,7 +105,7 @@ struct FocusAndMode
   UIFocus focus = UIFocus::Unchanged;
   UIMode mode = UIMode::Unchanged;
   UIDetail detail = UIDetail::Unchanged;
-
+  
   std::string toString()
   {
     return "UIFocus: " + ::toString(focus) + " UIMode: " + ::toString(mode) + " UIDetail: " + ::toString(detail);

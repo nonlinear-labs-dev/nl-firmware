@@ -19,10 +19,6 @@ class Label : public Control
   bool redraw(FrameBuffer &fb) override;
 
   virtual bool setText(const StringAndSuffix &text);
-  virtual bool setText(const std::string& text);
-  virtual bool setText(const Glib::ustring &text);
-  virtual bool setText(const char* text);
-  virtual bool setText(const char text);
   virtual StringAndSuffix getText() const;
 
   virtual std::shared_ptr<Font> getFont() const;
@@ -34,7 +30,8 @@ class Label : public Control
   virtual Font::Justification getJustification() const;
   virtual int getFontHeight() const;
 
-  virtual StringAndSuffix shortenStringIfNeccessary(const std::shared_ptr<Font> &font, const StringAndSuffix &text) const;
+  virtual StringAndSuffix shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
+                                                    const StringAndSuffix &text) const;
 
   virtual void setFontColor(FrameBuffer &fb) const;
   virtual void setSuffixFontColor(FrameBuffer &fb) const;

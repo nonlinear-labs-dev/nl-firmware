@@ -34,7 +34,7 @@ namespace JSONTools
     if(it != j.cend())
     {
       T x = converter(*it);
-      outList.push_back(tList::value_type(x));
+      outList.push_back(x);
       return true;
     }
     return false;

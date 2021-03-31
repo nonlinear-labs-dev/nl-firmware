@@ -9,7 +9,7 @@ class CaptionLabelBase
   CaptionLabelBase(bool changeHighlight, bool changeBackground);
   virtual ~CaptionLabelBase();
 
-  virtual void setText(const std::string& s) = 0;
+  virtual bool setText(const std::string&) = 0;
 
  protected:
   [[nodiscard]] virtual int getXOffset() const;
@@ -29,9 +29,9 @@ template <typename tLabelType> class CaptionLabel : public tLabelType, public Ca
   {
   }
 
-  void setText(const std::string& s) override
+  bool setText(const std::string& s) override
   {
-    tLabelType::setText(StringAndSuffix { s });
+    return tLabelType::setText(StringAndSuffix { s });
   }
 
  protected:

@@ -181,23 +181,3 @@ Font::Justification Label::getJustification() const
 {
   return m_justification;
 }
-
-bool Label::setText(const Glib::ustring &text)
-{
-  return setText(StringAndSuffix { text });
-}
-
-bool Label::setText(const std::string &text)
-{
-  return setText(StringAndSuffix { text });
-}
-
-bool Label::setText(const char *text)
-{
-  return setText(StringAndSuffix { text });
-}
-
-bool Label::setText(const char text)
-{
-  return setText(StringAndSuffix { text });
-}
