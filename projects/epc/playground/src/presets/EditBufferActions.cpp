@@ -279,7 +279,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     auto pm = Application::get().getPresetManager();
 
     EditBufferUseCases ebUseCases(editBuffer);
-    if(auto presetToLoad = pm->findPreset(presetUUID))
+    if(auto presetToLoad = pm->findPreset(Uuid { presetUUID }))
     {
       ebUseCases.undoableLoadToPart(presetToLoad, presetPart, loadTo);
     }

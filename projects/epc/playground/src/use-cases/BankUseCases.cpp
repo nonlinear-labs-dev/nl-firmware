@@ -78,12 +78,12 @@ void BankUseCases::dropPresets(const std::string& csv)
 
     for(const auto& uuid : strs)
     {
-      if(auto src = pm->findPreset(uuid))
+      if(auto src = pm->findPreset(Uuid { uuid }))
       {
         m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *src, true));
 
         if(m_bank == src->getParent())
-          m_bank->deletePreset(transaction, uuid);
+          m_bank->deletePreset(transaction, Uuid { uuid });
       }
     }
   }

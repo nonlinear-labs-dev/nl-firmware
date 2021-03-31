@@ -104,7 +104,7 @@ bool ParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
         return true;
 
       case Buttons::BUTTON_INFO:
-        Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Info);
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Info });
         return true;
 
       case Buttons::BUTTON_DEFAULT:
@@ -232,7 +232,7 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         return true;
 
       case Buttons::BUTTON_EDIT:
-        Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Edit);
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
         return true;
     }
   }
@@ -285,7 +285,7 @@ bool ParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifi
 
     if(Buttons::BUTTON_EDIT == i)
     {
-      Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Select);
+      Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Select });
       return true;
     }
   }
@@ -325,11 +325,11 @@ ParameterRecallLayout2::ParameterRecallLayout2()
         break;
     }
 
-    m_leftValue = addControl(new Label(p->getDisplayString(), Rect(67, 35, 58, 11)));
+    m_leftValue = addControl(new Label(StringAndSuffix { p->getDisplayString() }, Rect(67, 35, 58, 11)));
 
     auto displayString = p->getDisplayString(originalValue);
 
-    m_rightValue = addControl(new Label(displayString, Rect(131, 35, 58, 11)));
+    m_rightValue = addControl(new Label(StringAndSuffix { displayString }, Rect(131, 35, 58, 11)));
   }
 
   m_recallValue = getCurrentParameter()->getControlPositionValue();
@@ -430,13 +430,13 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
   {
     if(paramLikeInPreset)
     {
-      m_leftValue->setText(p->getDisplayString());
-      m_rightValue->setText(m_recallString);
+      m_leftValue->setText(StringAndSuffix { p->getDisplayString() });
+      m_rightValue->setText(StringAndSuffix { m_recallString });
       m_slider->setValue(p->getControlPositionValue(), p->isBiPolar());
       m_rightValue->setHighlight(false);
       m_leftValue->setHighlight(true);
-      m_buttonB->setText("");
-      m_buttonC->setText("Recall");
+      m_buttonB->setText(StringAndSuffix::empty());
+      m_buttonC->setText(StringAndSuffix { "Recall" });
     }
     else
     {
@@ -444,13 +444,13 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
       auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
       auto displayString = p->getDisplayString(originalValue);
 
-      m_leftValue->setText(displayString);
-      m_rightValue->setText(p->getDisplayString());
+      m_leftValue->setText(StringAndSuffix { displayString });
+      m_rightValue->setText(StringAndSuffix { p->getDisplayString() });
       m_slider->setValue(m_recallValue, p->isBiPolar());
       m_leftValue->setHighlight(false);
       m_rightValue->setHighlight(true);
-      m_buttonC->setText("");
-      m_buttonB->setText("Recall");
+      m_buttonC->setText(StringAndSuffix::empty());
+      m_buttonB->setText(StringAndSuffix { "Recall" });
     }
   }
 }
@@ -488,10 +488,10 @@ void PartMasterRecallLayout2::updateUI(bool paramLikeInPreset)
 
   if(!shouldShowNormalRecallScreen())
   {
-    m_buttonB->setText("");
-    m_buttonC->setText("");
-    m_leftValue->setText("");
-    m_rightValue->setText("");
+    m_buttonB->setText(StringAndSuffix::empty());
+    m_buttonC->setText(StringAndSuffix::empty());
+    m_leftValue->setText(StringAndSuffix::empty());
+    m_rightValue->setText(StringAndSuffix::empty());
   }
 }
 
@@ -536,7 +536,7 @@ void PartMasterRecallLayout2::toggleMute() const
 void PartMasterRecallLayout2::onMuteChanged()
 {
   if(m_muteParameter->getControlPositionValue() > 0.5)
-    m_buttonA->setText("Unmute");
+    m_buttonA->setText(StringAndSuffix { "Unmute" });
   else
-    m_buttonA->setText("Mute");
+    m_buttonA->setText(StringAndSuffix { "Mute" });
 }

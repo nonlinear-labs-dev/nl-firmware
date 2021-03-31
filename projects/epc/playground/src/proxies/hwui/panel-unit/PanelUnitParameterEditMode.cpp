@@ -123,7 +123,7 @@ void PanelUnitParameterEditMode::setup()
         else
           Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
       else
-        Application::get().getHWUI()->undoableSetFocusAndMode(UIFocus::Sound);
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIFocus::Sound });
     }
 
     return true;

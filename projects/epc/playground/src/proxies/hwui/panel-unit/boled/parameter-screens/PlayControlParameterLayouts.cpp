@@ -229,7 +229,7 @@ bool PedalParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modif
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Edit);
+    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
@@ -308,7 +308,7 @@ PlayControlParameterEditLayout2::PlayControlParameterEditLayout2()
   {
     if(b->getText().text == "Select")
     {
-      b->setText({ "", 0 });
+      b->setText(StringAndSuffix { "", 0 });
       break;
     }
   }
@@ -397,7 +397,7 @@ bool RibbonParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(UIMode::Edit);
+    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 

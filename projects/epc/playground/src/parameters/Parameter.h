@@ -52,7 +52,7 @@ class Parameter : public UpdateDocumentContributor,
 
   Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
             tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
-  virtual ~Parameter() override;
+  ~Parameter() override;
 
   tControlPositionValue expropriateSnapshotValue();
 

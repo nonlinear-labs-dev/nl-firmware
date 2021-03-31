@@ -28,7 +28,7 @@ class PresetManager : public ContentSection
   using SaveSubTask = std::function<SaveResult()>;
 
  public:
-  PresetManager(UpdateDocumentContributor *parent, bool readOnly = false);
+  explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly = false);
   ~PresetManager() override;
 
   void init();

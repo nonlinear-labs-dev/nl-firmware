@@ -8,8 +8,8 @@ class Settings;
 class Passphrase : public Setting
 {
  public:
-  Passphrase(Settings& parent);
-  virtual ~Passphrase();
+  explicit Passphrase(Settings& parent);
+  ~Passphrase() override;
 
   Glib::ustring getDisplayString() const override;
 

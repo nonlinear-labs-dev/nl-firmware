@@ -13,12 +13,9 @@
 class Font;
 class UDPSender;
 
-namespace nltools
+namespace nltools::msg
 {
-  namespace msg
-  {
-    class WebSocketJsonAPI;
-  }
+  class WebSocketJsonAPI;
 }
 
 class FrameBuffer : public Uncopyable, public sigc::trackable
@@ -36,7 +33,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   typedef uint8_t tPixel;
   using Colors = ::FrameBufferColors;
 
-  tPixel interpolateColor(float normalized)
+  [[nodiscard]] static tPixel interpolateColor(float normalized)
   {
     return normalized * 0x0F;
   }
@@ -65,8 +62,8 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   {
     FrameBuffer *m_fb;
 
-    StackScopeGuard(FrameBuffer *fb);
-    StackScopeGuard(StackScopeGuard &&other);
+    explicit StackScopeGuard(FrameBuffer *fb);
+    StackScopeGuard(StackScopeGuard &&other) noexcept;
     virtual ~StackScopeGuard();
     StackScopeGuard(const Uncopyable &) = delete;
     StackScopeGuard &operator=(const Uncopyable &) = delete;
@@ -75,17 +72,17 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   struct Clip : StackScopeGuard
   {
     Clip(FrameBuffer *fb, const Rect &clip);
-    Clip(Clip &&other);
-    ~Clip();
+    Clip(Clip &&other) noexcept;
+    ~Clip() override;
 
-    bool isEmpty() const;
+    [[nodiscard]] bool isEmpty() const;
   };
 
   struct Offset : StackScopeGuard
   {
     Offset(FrameBuffer *fb, const Point &offset);
-    Offset(Offset &&other);
-    ~Offset();
+    Offset(Offset &&other) noexcept;
+    ~Offset() override;
   };
 
   friend struct Clip;

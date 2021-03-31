@@ -42,9 +42,11 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
 
  public:
   Signal() = default;
-  virtual ~Signal() = default;
+  ~Signal() override = default;
+  Signal(const Signal &other) = delete;
+  Signal &operator=(const Signal &) = delete;
 
-  sigc::connection connectAndInit(const typename super::slot_type &slot, const tArgs &... args)
+  sigc::connection connectAndInit(const typename super::slot_type &slot, const tArgs &...args)
   {
     auto cb = std::bind(&super::slot_type::operator(), slot, args...);
     auto ret = super::connect(slot);
@@ -54,22 +56,19 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
     return ret;
   }
 
-  typename super::result_type send(tArgs... args)
+  virtual typename super::result_type send(tArgs... args)
   {
     m_initRecords.clear();
     return this->emit(args...);
   }
 
-  void deferedSend(const tArgs &... args)
+  void deferedSend(const tArgs &...args)
   {
     m_deferedSend = [=]() { send(args...); };
     SignalBase::deferedSend();
   }
 
  private:
-  Signal(const Signal &other);
-  Signal &operator=(const Signal &);
-
   bool findCookie(const void *c) const override
   {
     for(auto &s : this->slots())
@@ -89,7 +88,7 @@ template <typename tFirst, typename... tArgs> class SignalWithCache : public Sig
   using super = Signal<tFirst, tArgs...>;
   using super::super;
 
-  typename super::result_type send(tArgs... args)
+  typename super::result_type send(tArgs... args) override
   {
     auto newValue = std::make_tuple(args...);
     if(newValue != m_cache)

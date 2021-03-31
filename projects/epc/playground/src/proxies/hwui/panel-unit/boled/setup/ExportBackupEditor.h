@@ -11,7 +11,7 @@ class ExportBackupEditor : public ControlWithChildren, public SetupEditor
 {
  public:
   ExportBackupEditor();
-  virtual ~ExportBackupEditor();
+  ~ExportBackupEditor() override;
 
   void setPosition(const Rect &) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;

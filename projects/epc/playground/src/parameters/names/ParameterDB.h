@@ -9,27 +9,24 @@ class Parameter;
 class ParameterDB
 {
  public:
-  static ParameterDB &get();
+  static ParameterDB& get();
 
   virtual ~ParameterDB();
 
-  Glib::ustring getLongName(const ParameterId& id) const;
-  Glib::ustring getShortName(const ParameterId& id) const;
-  Glib::ustring getDescription(const ParameterId& id) const;
+  [[nodiscard]] Glib::ustring getLongName(const ParameterId& id) const;
+  [[nodiscard]] Glib::ustring getShortName(const ParameterId& id) const;
+  [[nodiscard]] Glib::ustring getDescription(const ParameterId& id) const;
 
-  Glib::ustring getDescription(const int parameterNumber) const;
+  [[nodiscard]] Glib::ustring getDescription(int parameterNumber) const;
 
-  tControlPositionValue getSignalPathIndication(int id) const;
+  [[nodiscard]] tControlPositionValue getSignalPathIndication(int id) const;
 
   static constexpr tControlPositionValue getInvalidSignalPathIndication()
   {
     return std::numeric_limits<tControlPositionValue>::max();
   }
 
-  bool isActive(const Parameter *p) const;
-
  private:
-
-  Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const;
+  [[nodiscard]] Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const;
   ParameterDB();
 };

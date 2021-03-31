@@ -646,11 +646,6 @@ sigc::connection HWUI::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGr
   return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
 }
 
-void HWUI::setFocusAndMode(const UIDetail &detail)
-{
-  setFocusAndMode({ m_focusAndMode.focus, m_focusAndMode.mode, detail });
-}
-
 void HWUI::setFocusAndMode(FocusAndMode focusAndMode)
 {
   if(m_focusAndModeFrozen)
@@ -666,6 +661,21 @@ void HWUI::undoableSetFocusAndMode(FocusAndMode focusAndMode)
 {
   auto scope = Application::get().getUndoScope()->startCuckooTransaction();
   undoableSetFocusAndMode(scope->getTransaction(), focusAndMode);
+}
+
+void HWUI::setFocusAndMode(const UIMode &mode)
+{
+  setFocusAndMode(FocusAndMode { mode });
+}
+
+void HWUI::setFocusAndMode(const UIFocus &focus)
+{
+  setFocusAndMode(FocusAndMode { focus });
+}
+
+void HWUI::setFocusAndMode(const UIDetail &detail)
+{
+  setFocusAndMode({ m_focusAndMode.focus, m_focusAndMode.mode, detail });
 }
 
 void HWUI::setUiModeDetail(UIDetail detail)
@@ -864,12 +874,12 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
     {
       if(oldParameter->getID() != newParameter->getID())
       {
-        setFocusAndMode(UIFocus::Parameters);
+        setFocusAndMode(FocusAndMode { UIFocus::Parameters });
       }
     }
     else
     {
-      setFocusAndMode(UIFocus::Parameters);
+      setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     }
   }
 }
