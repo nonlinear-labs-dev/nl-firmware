@@ -29,7 +29,7 @@ void ScaleParameterSelectLayout::addButtons()
 
 void ScaleParameterSelectLayout::updateResetButton()
 {
-  m_resetButton->setText(resetEnabled() ? "Reset" : "");
+  m_resetButton->setText(StringAndSuffix { resetEnabled() ? "Reset" : "" });
 }
 
 bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)

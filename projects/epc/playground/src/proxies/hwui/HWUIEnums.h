@@ -65,13 +65,18 @@ struct FocusAndMode
   {
   }
 
-  FocusAndMode(UIFocus f)
+  explicit FocusAndMode(UIFocus f)
       : FocusAndMode(f, UIMode::Unchanged)
   {
   }
 
-  FocusAndMode(UIMode m)
+  explicit FocusAndMode(UIMode m)
       : FocusAndMode(UIFocus::Unchanged, m)
+  {
+  }
+
+  explicit FocusAndMode(UIDetail d)
+      : FocusAndMode(UIFocus::Unchanged, UIMode::Unchanged, d)
   {
   }
 

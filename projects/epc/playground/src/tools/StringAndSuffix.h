@@ -1,11 +1,13 @@
 #pragma once
 #include <utility>
+#include <glibmm/ustring.h>
 
 class StringAndSuffix
 {
  public:
+  static StringAndSuffix empty();
   StringAndSuffix(const Glib::ustring &first, const Glib::ustring &second);
-  explicit StringAndSuffix(const Glib::ustring &first, size_t suffix = 0);
+  explicit StringAndSuffix(Glib::ustring first, size_t suffix = 0);
   explicit StringAndSuffix(const char *first, size_t suffix = 0);
   explicit StringAndSuffix(char c, size_t suffix = 0);
 

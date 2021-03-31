@@ -337,9 +337,8 @@ void ModulateableParameterSelectLayout2::setDefault()
     case Mode::MacroControlSelection:
       if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
       {
-          ModParameterUseCases useCases(p);
-          useCases.selectModSource(MacroControls::NONE);
-
+        ModParameterUseCases useCases(p);
+        useCases.selectModSource(MacroControls::NONE);
       }
 
       return;
@@ -407,9 +406,9 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
 
   if(isCurrentParameterDisabled())
   {
-    m_mcPosButton->setText("");
-    m_mcAmtButton->setText("");
-    m_mcSelButton->setText("");
+    m_mcPosButton->setText(StringAndSuffix { "" });
+    m_mcAmtButton->setText(StringAndSuffix { "" });
+    m_mcSelButton->setText(StringAndSuffix { "" });
   }
 
   handleSelectPartButton();

@@ -19,6 +19,10 @@ class Label : public Control
   bool redraw(FrameBuffer &fb) override;
 
   virtual bool setText(const StringAndSuffix &text);
+  virtual bool setText(const std::string& text);
+  virtual bool setText(const Glib::ustring &text);
+  virtual bool setText(const char* text);
+  virtual bool setText(const char text);
   virtual StringAndSuffix getText() const;
 
   virtual std::shared_ptr<Font> getFont() const;
