@@ -66,8 +66,6 @@ class C15Synth : public Synth, public sigc::trackable
   unsigned int getRenderedSamples();
 
  private:
-  bool filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) const;
-
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
 
   void syncExternals();

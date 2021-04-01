@@ -40,7 +40,7 @@ bool InputEventStageTester::checkMIDIKeyEventEnabled(MIDIDecoder* pDecoder)
 
 bool InputEventStageTester::checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder)
 {
-  return m_inputStage->checkMIDIHardwareChangeEnabled(pDecoder);
+  return m_inputStage->checkMIDIHardwareChangeChannelMatches(pDecoder);
 }
 
 void InputEventStageTester::onMIDIEvent(MIDIDecoder* decoder)
@@ -70,7 +70,7 @@ void InputEventStageTester::sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGro
 
 void InputEventStageTester::sendHardwareChangeAsMidi(TCDDecoder* pDecoder)
 {
-  m_inputStage->sendHardwareChangeAsMidi(pDecoder);
+  m_inputStage->sendHardwareChangeAsMidi(0, 0);
 }
 
 void InputEventStageTester::sendCCOut(int hwID, float value, int msbCC, int lsbCC)

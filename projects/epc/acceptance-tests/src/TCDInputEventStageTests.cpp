@@ -175,7 +175,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
   InputEventStage eventStage { &dsp, &settings,
                                [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
   const auto sixtenThousand = 0b11111010000000;
-
+  
   WHEN("HW Change Received")
   {
 
@@ -228,7 +228,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
         CHECK(sendMessages[1].rawBytes[0] == 0xB0);
         CHECK(sendMessages[1].rawBytes[1] == 2);
         CHECK(sendMessages[1].rawBytes[2] == 127);
-        
+
         CHECK(sendMessages[2].rawBytes[0] == 0xB1);
         CHECK(sendMessages[2].rawBytes[1] == 34);
         CHECK(sendMessages[2].rawBytes[2] == 0);

@@ -77,9 +77,11 @@ class MidiRuntimeOptions
 
   std::pair<bool, int> getBenderMSBCC();
   std::pair<bool, int> getBenderLSBCC();
+  std::pair<bool, int> getAftertouchMSBCC();
+  std::pair<bool, int> getAftertouchLSBCC();
+  AftertouchCC getAftertouchSetting() const;
 
   void setPedal1(PedalCC cc);
-
 
  private:
   MidiReceiveChannel m_receiveChannel;

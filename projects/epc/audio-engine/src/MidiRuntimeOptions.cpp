@@ -292,8 +292,6 @@ int MidiRuntimeOptions::channelEnumToInt(MidiSendChannelSplit channel)
 {
   if(channel == MidiSendChannelSplit::None)
     return -1;
-  if(channel == MidiSendChannelSplit::Follow_I)
-    return channelEnumToInt(m_sendChannel);
 
   return static_cast<int>(channel) - 1;
 }
@@ -355,4 +353,19 @@ void MidiRuntimeOptions::setSplitReceiveChannel(MidiReceiveChannelSplit c)
 MidiReceiveChannelSplit MidiRuntimeOptions::normalToSplitChannel(MidiReceiveChannel ch)
 {
   return static_cast<MidiReceiveChannelSplit>(ch);
+}
+
+std::pair<bool, int> MidiRuntimeOptions::getAftertouchLSBCC()
+{
+  return decodeEnumLSB(aftertouchCC);
+}
+
+std::pair<bool, int> MidiRuntimeOptions::getAftertouchMSBCC()
+{
+  return decodeEnumMSB(aftertouchCC);
+}
+
+AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
+{
+  return aftertouchCC;
 }

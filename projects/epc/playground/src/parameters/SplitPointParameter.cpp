@@ -129,9 +129,8 @@ SplitPointParameter* SplitPointParameter::getSibling() const
 {
   auto parent = static_cast<ParameterGroup*>(getParent());
   auto groupSet = static_cast<ParameterGroupSet*>(parent->getParent());
-  auto pm = static_cast<PresetManager*>(groupSet->getParent());
-  
-  return static_cast<SplitPointParameter*>(pm->getEditBuffer()->findParameterByID(
+
+  return static_cast<SplitPointParameter*>(groupSet->findParameterByID(
       { C15::PID::Split_Split_Point, getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I }));
 }
 

@@ -56,7 +56,7 @@ const std::vector<Glib::ustring>& MidiSendChannelSetting::enumToDisplayString() 
 }
 
 MidiSendChannelSplitSetting::MidiSendChannelSplitSetting(UpdateDocumentContributor& s)
-    : EnumSetting<MidiSendChannelSplit>(s, MidiSendChannelSplit::Follow_I)
+    : EnumSetting<MidiSendChannelSplit>(s, MidiSendChannelSplit::CH_2)
 {
 }
 
@@ -68,7 +68,7 @@ const std::vector<Glib::ustring>& MidiSendChannelSplitSetting::enumToString() co
 
 const std::vector<Glib::ustring>& MidiSendChannelSplitSetting::enumToDisplayString() const
 {
-  static std::vector<Glib::ustring> ret { "None", "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",
-                                          "9",    "10", "11", "12", "13", "14", "15", "16", "Follow" };
+  static std::vector<Glib::ustring> ret { "None", "1",  "2",  "3",  "4",  "5",  "6",  "7", "8",
+                                          "9",    "10", "11", "12", "13", "14", "15", "16" };
   return ret;
 }

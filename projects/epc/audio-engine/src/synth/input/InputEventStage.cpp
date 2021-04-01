@@ -52,7 +52,6 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
           }
           else if(soundValid)
           {
-            // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
           }
         }
@@ -80,10 +79,7 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
         break;
       case DecoderEventType::HardwareChange:
         if(m_options->shouldReceiveLocalControllers())
-          m_dspHost->onHWChanged(decoder->getKeyOrController(), decoder->getValue());
-        if(m_options->shouldSendControllers())
-          // HW Sources seem to act without part association?
-          convertToAndSendMIDI(decoder, determinedPart);
+          onHWChanged(decoder->getKeyOrController(), decoder->getValue(), true);
 
         break;
       case DecoderEventType::UNKNOWN:
@@ -129,8 +125,8 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
         break;
 
       case DecoderEventType::HardwareChange:
-        if(checkMIDIHardwareChangeEnabled(decoder))
-          m_dspHost->onHWChanged(decoder->getKeyOrControl(), decoder->getValue());
+        if(checkMIDIHardwareChangeChannelMatches(decoder))
+          onHWChanged(decoder->getKeyOrControl(), decoder->getValue(), false);
         break;
 
       case DecoderEventType::UNKNOWN:
@@ -150,7 +146,7 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGrou
       sendKeyUpAsMidi(pDecoder, determinedPart);
       break;
     case DecoderEventType::HardwareChange:
-      sendHardwareChangeAsMidi(pDecoder);
+      sendHardwareChangeAsMidi(pDecoder->getKeyOrController(), pDecoder->getValue());
       break;
     case DecoderEventType::UNKNOWN:
       nltools_assertNotReached();
@@ -176,12 +172,11 @@ bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
   return shouldReceiveNotes && channelMatches && (primNotNone || secNotNone);
 }
 
-bool InputEventStage::checkMIDIHardwareChangeEnabled(MIDIDecoder *pDecoder)
+bool InputEventStage::checkMIDIHardwareChangeChannelMatches(MIDIDecoder *pDecoder)
 {
-  const auto recControls = m_options->shouldReceiveControllers();
   const auto channelMatches = pDecoder->getChannel() == m_options->getReceiveChannel()
       || m_options->getReceiveChannel() == MidiReceiveChannel::Omni;
-  return recControls && channelMatches;
+  return channelMatches;
 }
 
 void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
@@ -210,7 +205,8 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
     m_midiOut({ keyStatus, keyByte, msbVelByte });
   }
 
-  if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global))
+  if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global)
+     && m_dspHost->getType() == SoundType::Split)
   {
     auto secC = static_cast<uint8_t>(secondaryChannel);
 
@@ -257,7 +253,8 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
     m_midiOut({ keyStatus, keyByte, msbVelByte });
   }
 
-  if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global))
+  if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global)
+     && m_dspHost->getType() == SoundType::Split)
   {
 
     const uint8_t lsbStatus = ccType | secC;
@@ -273,63 +270,39 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
   }
 }
 
-void InputEventStage::sendHardwareChangeAsMidi(TCDDecoder *pDecoder)
+void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
 {
-  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
-  using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
-
-  switch(pDecoder->getKeyOrController())
+  switch(hwID)
   {
     case 0:
-      sendCCOut(0, pDecoder->getValue(), m_options->getCCFor<Midi::MSB::Ped1>(),
-                m_options->getCCFor<Midi::LSB::Ped1>());
+      sendCCOut(0, value, m_options->getCCFor<Midi::MSB::Ped1>(), m_options->getCCFor<Midi::LSB::Ped1>());
       break;
-
     case 1:
-      sendCCOut(1, pDecoder->getValue(), m_options->getCCFor<Midi::MSB::Ped2>(),
-                m_options->getCCFor<Midi::LSB::Ped2>());
+      sendCCOut(1, value, m_options->getCCFor<Midi::MSB::Ped2>(), m_options->getCCFor<Midi::LSB::Ped2>());
       break;
-
     case 2:
-      sendCCOut(2, pDecoder->getValue(), m_options->getCCFor<Midi::MSB::Ped3>(),
-                m_options->getCCFor<Midi::LSB::Ped3>());
+      sendCCOut(2, value, m_options->getCCFor<Midi::MSB::Ped3>(), m_options->getCCFor<Midi::LSB::Ped3>());
       break;
-
     case 3:
-      sendCCOut(3, pDecoder->getValue(), m_options->getCCFor<Midi::MSB::Ped4>(),
-                m_options->getCCFor<Midi::LSB::Ped4>());
+      sendCCOut(3, value, m_options->getCCFor<Midi::MSB::Ped4>(), m_options->getCCFor<Midi::LSB::Ped4>());
       break;
-
+    case 4:
+      doSendBenderOut(value);
+      break;
+    case 5:
+      doSendAftertouchOut(value);
+      break;
     case 6:
-      sendCCOut(6, pDecoder->getValue(), m_options->getCCFor<Midi::MSB::Rib1>(),
-                m_options->getCCFor<Midi::LSB::Rib1>());
+      sendCCOut(6, value, m_options->getCCFor<Midi::MSB::Rib1>(), m_options->getCCFor<Midi::LSB::Rib1>());
       break;
-
     case 7:
-      sendCCOut(7, pDecoder->getValue(), m_options->getCCFor<Midi::MSB::Rib2>(),
-                m_options->getCCFor<Midi::LSB::Rib2>());
+      sendCCOut(7, value, m_options->getCCFor<Midi::MSB::Rib2>(), m_options->getCCFor<Midi::LSB::Rib2>());
       break;
-
-    case 4:  //Bender
-    {
-      auto value = CC_Range_Bender::encodeBipolarMidiValue(pDecoder->getValue());
-      auto valByte1 = static_cast<uint8_t>(value & 0x7F);
-      auto valByte2 = static_cast<uint8_t>((value >> 7) & 0x7F);
-      doSendBenderOut(valByte1, valByte2);
-      break;
-    }
-
-    case 5:  //Aftertouch
-    {
-      uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(pDecoder->getValue());
-      doSendAftertouchOut(0xD0, valByte);
-      break;
-    }
-
     default:
       break;
   }
 }
+
 void InputEventStage::sendCCOut(int hwID, float value, int msbCC, int lsbCC)
 {
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
@@ -359,7 +332,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
     m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
   }
 
-  if(secondaryChannel != -1)
+  if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
     m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
@@ -424,48 +397,134 @@ DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiRece
   return InputStateDetail::Unknown;
 }
 
-void InputEventStage::doSendAftertouchOut(uint8_t cc, uint8_t value)
+void InputEventStage::doSendAftertouchOut(float value)
 {
-  const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
-  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
 
-  const auto mainC = static_cast<uint8_t>(mainChannel);
-  const auto secC = static_cast<uint8_t>(secondaryChannel);
-
-  auto statusByte = static_cast<uint8_t>(cc);
-
-  if(mainChannel != -1)
+  const auto sendAsCC = m_options->getAftertouchLSBCC().first;
+  if(sendAsCC)
   {
-    auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
-    m_midiOut({ mainStatus, value });
+    doSendCCOut(value, m_options->getAftertouchMSBCC().second, m_options->getAftertouchLSBCC().second);
   }
-
-  if(secondaryChannel != -1)
+  else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {
-    auto secStatus = static_cast<uint8_t>(statusByte | secC);
-    m_midiOut({ secStatus, value });
+    const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+    const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+
+    const auto mainC = static_cast<uint8_t>(mainChannel);
+    const auto secC = static_cast<uint8_t>(secondaryChannel);
+
+    auto atStatusByte = static_cast<uint8_t>(0xD0);
+    uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);
+
+    if(mainChannel != -1)
+    {
+      auto mainStatus = static_cast<uint8_t>(atStatusByte | mainC);
+      m_midiOut({ mainStatus, valByte });
+    }
+
+    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
+    {
+      auto secStatus = static_cast<uint8_t>(atStatusByte | secC);
+      m_midiOut({ secStatus, valByte });
+    }
+  }
+  else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
+  {
+
+    //TODO fill this
+  }
+  else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
+  {
+    //TODO fill this
   }
 }
 
-void InputEventStage::doSendBenderOut(uint8_t lsb, uint8_t msb)
+void InputEventStage::doSendBenderOut(float value)
 {
-  const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
-  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
-
-  const auto mainC = static_cast<uint8_t>(mainChannel);
-  const auto secC = static_cast<uint8_t>(secondaryChannel);
-
-  auto statusByte = static_cast<uint8_t>(0xE0);
-
-  if(mainChannel != -1)
+  const auto sendAsPitchbend = m_options->getBenderLSBCC().first;
+  if(sendAsPitchbend)
   {
-    auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
-    m_midiOut({ mainStatus, lsb, msb });
+    using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
+
+    auto v = CC_Range_Bender::encodeBipolarMidiValue(value);
+    auto lsb = static_cast<uint8_t>(v & 0x7F);
+    auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
+
+    const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+    const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+
+    const auto mainC = static_cast<uint8_t>(mainChannel);
+    const auto secC = static_cast<uint8_t>(secondaryChannel);
+
+    auto statusByte = static_cast<uint8_t>(0xE0);
+
+    if(mainChannel != -1)
+    {
+      auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
+      m_midiOut({ mainStatus, lsb, msb });
+    }
+
+    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
+    {
+      auto secStatus = static_cast<uint8_t>(statusByte | secC);
+      m_midiOut({ secStatus, lsb, msb });
+    }
+  }
+  else
+  {
+    using CC_Range_14_Bit = Midi::clipped14BitCCRange;
+    auto lsbCC = m_options->getBenderLSBCC().second;
+    auto msbCC = m_options->getBenderMSBCC().second;
+    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
+  }
+}
+
+void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage &message)
+{
+  auto hwID = InputEventStage::parameterIDToHWID(message.parameterId);
+
+  if(hwID != -1)
+  {
+    //TODO filter reoccurring positions
+    onHWChanged(hwID, message.controlPosition, true);
+  }
+}
+
+int InputEventStage::parameterIDToHWID(int id)
+{
+  switch(id)
+  {
+    case 254:
+      return 0;
+    case 259:
+      return 1;
+    case 264:
+      return 2;
+    case 269:
+      return 3;
+    case 274:
+      return 4;
+    case 279:
+      return 5;
+    case 284:
+      return 6;
+    case 289:
+      return 7;
+    default:
+      return -1;
+  }
+}
+
+void InputEventStage::onHWChanged(int hwID, float pos, bool sendMidi)
+{
+  if(m_options->shouldReceiveControllers())
+  {
+    m_dspHost->onHWChanged(hwID, pos);
   }
 
-  if(secondaryChannel != -1)
+  if(sendMidi && m_options->shouldSendControllers())
   {
-    auto secStatus = static_cast<uint8_t>(statusByte | secC);
-    m_midiOut({ secStatus, lsb, msb });
+    sendHardwareChangeAsMidi(hwID, pos);
   }
 }

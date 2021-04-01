@@ -14,6 +14,10 @@ class MockDSPHost : public DSPInterface
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
   void onMidiSettingsReceived() override;
+  void setType(SoundType type);
+
+ private:
+  SoundType m_type = SoundType::Split;
 };
 
 class PassOnKeyDownHost : public MockDSPHost
@@ -21,7 +25,9 @@ class PassOnKeyDownHost : public MockDSPHost
  public:
   PassOnKeyDownHost(int expectedNote, float expectedVelo, VoiceGroup expectedPart);
   void onKeyDown(const int note, float velocity, InputEvent from) override;
+  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
   [[nodiscard]] bool didReceiveKeyDown() const;
+  VoiceGroup getSplitPartForKey(int key) override;
 
  protected:
   bool m_receivedKeyDown = false;
@@ -36,6 +42,8 @@ class PassOnKeyUpHost : public MockDSPHost
   PassOnKeyUpHost(int expectedNote, float expectedVelo, VoiceGroup expectedPart);
   void onKeyUp(const int note, float velocity, InputEvent from) override;
   [[nodiscard]] bool didReceiveKeyUp() const;
+  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
+  VoiceGroup getSplitPartForKey(int key) override;
 
  private:
   bool m_receivedKeyUp = false;

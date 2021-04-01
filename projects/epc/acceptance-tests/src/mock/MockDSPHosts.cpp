@@ -24,7 +24,7 @@ C15::Properties::HW_Return_Behavior MockDSPHost::getBehaviour(int id)
 
 SoundType MockDSPHost::getType()
 {
-  return SoundType::Single;
+  return m_type;
 }
 
 VoiceGroup MockDSPHost::getSplitPartForKey(int key)
@@ -38,6 +38,11 @@ void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part
 
 void MockDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
 {
+}
+
+void MockDSPHost::setType(SoundType type)
+{
+  m_type = type;
 }
 
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
@@ -54,9 +59,21 @@ void PassOnKeyDownHost::onKeyDown(const int note, float velocity, InputEvent fro
   m_receivedKeyDown = true;
 }
 
+void PassOnKeyDownHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+{
+  CHECK(m_note == note);
+  CHECK(m_vel == velocity);
+  m_receivedKeyDown = true;
+}
+
 bool PassOnKeyDownHost::didReceiveKeyDown() const
 {
   return m_receivedKeyDown;
+}
+
+VoiceGroup PassOnKeyDownHost::getSplitPartForKey(int key)
+{
+  return VoiceGroup::Global;
 }
 
 PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
@@ -66,7 +83,19 @@ PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, Voi
 {
 }
 
+VoiceGroup PassOnKeyUpHost::getSplitPartForKey(int key)
+{
+  return VoiceGroup::Global;
+}
+
 void PassOnKeyUpHost::onKeyUp(const int note, float velocity, InputEvent from)
+{
+  CHECK(m_note == note);
+  CHECK(m_vel == velocity);
+  m_receivedKeyUp = true;
+}
+
+void PassOnKeyUpHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);

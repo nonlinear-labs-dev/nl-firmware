@@ -19,8 +19,8 @@ class InputEventStage
   InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, MIDIOut outCB);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
-
   void setNoteShift(int i);
+  void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message);
 
  private:
   TCDDecoder m_tcdDecoder;
@@ -31,14 +31,14 @@ class InputEventStage
   KeyShift m_shifteable_keys;
 
   bool checkMIDIKeyEventEnabled(MIDIDecoder* pDecoder);
-  bool checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder);
+  bool checkMIDIHardwareChangeChannelMatches(MIDIDecoder* pDecoder);
   void onMIDIEvent(MIDIDecoder* decoder);
 
   void onTCDEvent(TCDDecoder* decoder);
   void sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
-  void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
+  void sendHardwareChangeAsMidi(int hwID, float value);
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, const int keyNumber);
@@ -84,8 +84,11 @@ class InputEventStage
       return 0;                                   // fail-safe (but a midi channel shouldn't go beyond 15 anyway)
     return c_midiReceiveMaskTable[2 + _channel];  // we read out the mask matching the specific channel id
   }
-  void doSendAftertouchOut(uint8_t cc, uint8_t value);
-  void doSendBenderOut(uint8_t lsb, uint8_t msb);
+
+  void doSendAftertouchOut(float value);
+  void doSendBenderOut(float value);
+  static int parameterIDToHWID(int id);
+  void onHWChanged(int hwID, float pos, bool sendMidi);
 };
 
 namespace InputStateDetail
