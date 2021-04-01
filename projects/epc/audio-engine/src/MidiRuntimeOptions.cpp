@@ -369,3 +369,35 @@ AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
 {
   return aftertouchCC;
 }
+
+bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed)
+{
+  auto enumIsInSwitching = [](PedalCC cc) -> bool {
+    switch(cc)
+    {
+      case PedalCC::CC64:
+      case PedalCC::CC65:
+      case PedalCC::CC66:
+      case PedalCC::CC67:
+      case PedalCC::CC68:
+      case PedalCC::CC69:
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  switch(pedalZeroIndexed)
+  {
+    case 0:
+      return enumIsInSwitching(pedal1CC);
+    case 1:
+      return enumIsInSwitching(pedal2CC);
+    case 2:
+      return enumIsInSwitching(pedal3CC);
+    case 3:
+      return enumIsInSwitching(pedal4CC);
+    default:
+      return false;
+  }
+}

@@ -83,6 +83,8 @@ class MidiRuntimeOptions
 
   void setPedal1(PedalCC cc);
 
+  bool isSwitchingCC(int pedalZeroIndexed);
+
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;

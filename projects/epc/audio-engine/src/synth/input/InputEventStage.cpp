@@ -272,18 +272,33 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
 void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
 {
+  auto roundPedalToSwitching = [](float val) -> float {
+    if(val >= 0.5f)
+      return 1.0f;
+    else
+      return 0.0f;
+  };
+
   switch(hwID)
   {
     case 0:
+      if(m_options->isSwitchingCC(0))
+        value = roundPedalToSwitching(value);
       sendCCOut(0, value, m_options->getCCFor<Midi::MSB::Ped1>(), m_options->getCCFor<Midi::LSB::Ped1>());
       break;
     case 1:
+      if(m_options->isSwitchingCC(1))
+        value = roundPedalToSwitching(value);
       sendCCOut(1, value, m_options->getCCFor<Midi::MSB::Ped2>(), m_options->getCCFor<Midi::LSB::Ped2>());
       break;
     case 2:
+      if(m_options->isSwitchingCC(2))
+        value = roundPedalToSwitching(value);
       sendCCOut(2, value, m_options->getCCFor<Midi::MSB::Ped3>(), m_options->getCCFor<Midi::LSB::Ped3>());
       break;
     case 3:
+      if(m_options->isSwitchingCC(3))
+        value = roundPedalToSwitching(value);
       sendCCOut(3, value, m_options->getCCFor<Midi::MSB::Ped4>(), m_options->getCCFor<Midi::LSB::Ped4>());
       break;
     case 4:
@@ -429,14 +444,37 @@ void InputEventStage::doSendAftertouchOut(float value)
       m_midiOut({ secStatus, valByte });
     }
   }
-  else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
+  else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown
+          || m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
   {
+    if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
+      value *= -1.f;
 
-    //TODO fill this
-  }
-  else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
-  {
-    //TODO fill this
+    using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
+
+    auto v = CC_Range_Bender::encodeBipolarMidiValue(value);
+    auto lsb = static_cast<uint8_t>(v & 0x7F);
+    auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
+
+    const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
+    const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
+
+    const auto mainC = static_cast<uint8_t>(mainChannel);
+    const auto secC = static_cast<uint8_t>(secondaryChannel);
+
+    auto statusByte = static_cast<uint8_t>(0xE0);
+
+    if(mainChannel != -1)
+    {
+      auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
+      m_midiOut({ mainStatus, lsb, msb });
+    }
+
+    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
+    {
+      auto secStatus = static_cast<uint8_t>(statusByte | secC);
+      m_midiOut({ secStatus, lsb, msb });
+    }
   }
 }
 
