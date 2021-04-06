@@ -106,6 +106,8 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
           if(interface.m_source == DSPInterface::InputSource::Unknown)
             return;
 
+          const auto receivedOnPrimary = interface.m_source == DSPInterface::InputSource::Primary;
+
           if(soundType == SoundType::Split)
           {
             determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrControl());
@@ -114,7 +116,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
           }
-          else if(soundValid)
+          else if(soundValid && receivedOnPrimary)
           {
             if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), interface);
@@ -563,6 +565,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, bool sendMidi)
 
   if(sendMidi && m_options->shouldSendControllers())
   {
+    //TODO filter unchanged values before sending
     sendHardwareChangeAsMidi(hwID, pos);
   }
 }

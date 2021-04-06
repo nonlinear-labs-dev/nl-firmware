@@ -69,6 +69,29 @@ TEST_CASE("Midi Decoder Reset", "[MIDI]")
   CHECK(decoder.getChannel() == MidiReceiveChannel::None);
 }
 
+TEST_CASE("MIDI input on Secondary channel is ignored if not in split", "[MIDI]")
+{
+  PassOnKeyDownHost dsp { 17, 1.0, VoiceGroup::I };
+  auto settings = createMidiSettings();
+  settings.setReceiveChannel(MidiReceiveChannel::CH_1);
+  settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_2);
+  dsp.setType(SoundType::Single);
+
+  InputEventStage eventStage(&dsp, &settings, [](auto) { CHECK(false); });
+
+  WHEN("Channel 1 KeyDown")
+  {
+    eventStage.onMIDIMessage({ 0x90, (uint8_t) 17, (uint8_t) 127 });
+    CHECK(dsp.didReceiveKeyDown());
+  }
+
+  WHEN("Channel 2 KeyDown")
+  {
+    eventStage.onMIDIMessage({ 0x91, (uint8_t) 17, (uint8_t) 127 });
+    CHECK(!dsp.didReceiveKeyDown());
+  }
+}
+
 TEST_CASE("Input Event Mapping CC to HW", "[MIDI]")
 {
   PassOnHWReceived dsp { 0, 1.0 };

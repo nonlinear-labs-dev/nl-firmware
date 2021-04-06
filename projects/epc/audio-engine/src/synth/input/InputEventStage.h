@@ -19,8 +19,8 @@ class InputEventStage
   InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, MIDIOut outCB);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
-  void setNoteShift(int i);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message);
+  void setNoteShift(int i);
 
  private:
   TCDDecoder m_tcdDecoder;
