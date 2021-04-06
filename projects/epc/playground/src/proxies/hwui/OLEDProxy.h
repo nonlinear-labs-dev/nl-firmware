@@ -14,7 +14,7 @@ class FrameBuffer;
 class OLEDProxy : public Uncopyable
 {
  public:
-  OLEDProxy(const Rect &posInFrameBuffer);
+  explicit OLEDProxy(const Rect &posInFrameBuffer);
   virtual ~OLEDProxy();
 
   typedef std::shared_ptr<Layout> tLayoutPtr;

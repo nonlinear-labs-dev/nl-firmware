@@ -9,8 +9,8 @@ class VelocityCurve : public EnumSetting<VelocityCurves>
   typedef EnumSetting<VelocityCurves> super;
 
  public:
-  VelocityCurve(UpdateDocumentContributor &settings);
-  virtual ~VelocityCurve();
+  explicit VelocityCurve(UpdateDocumentContributor &settings);
+  ~VelocityCurve() override;
 
   void syncExternals(SendReason reason) const override;
 

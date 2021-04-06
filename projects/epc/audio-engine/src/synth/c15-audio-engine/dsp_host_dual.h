@@ -36,7 +36,7 @@ inline constexpr bool VOICE_FADE_INTERPOLATION = true;
 inline constexpr bool LOG_MISSING = false;
 inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
-inline constexpr bool LOG_MIDI_TCD = false;
+inline constexpr bool LOG_MIDI_TCD = true;
 inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = true;
 inline constexpr bool LOG_MIDI_OUT = false;
@@ -66,6 +66,13 @@ using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::phy
 class DSPInterface
 {
  public:
+  enum class HWChangeSource
+  {
+    TCD,
+    MIDI,
+    UI
+  };
+
   enum class InputSource
   {
     TCD,

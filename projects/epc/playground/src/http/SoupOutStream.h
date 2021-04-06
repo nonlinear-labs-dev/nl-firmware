@@ -9,7 +9,7 @@ class SoupOutStream : public OutStream
 {
  public:
   SoupOutStream(SoupMessage *msg, const Glib::ustring &contentType, bool zip);
-  virtual ~SoupOutStream();
+  ~SoupOutStream() override;
 
   void flush();
 

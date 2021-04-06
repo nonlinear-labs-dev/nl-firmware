@@ -78,8 +78,7 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
 
         break;
       case DecoderEventType::HardwareChange:
-        if(m_options->shouldReceiveLocalControllers())
-          onHWChanged(decoder->getKeyOrController(), decoder->getValue(), true);
+        onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD);
 
         break;
       case DecoderEventType::UNKNOWN:
@@ -92,8 +91,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 {
   if(decoder)
   {
-    VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
-    const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
+    const auto soundType = m_dspHost->getType();
     const bool soundValid = soundType != SoundType::Invalid;
 
     switch(decoder->getEventType())
@@ -110,7 +108,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 
           if(soundType == SoundType::Split)
           {
-            determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrControl());
+            auto determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrControl());
             if(decoder->getEventType() == DecoderEventType::KeyDown)
               m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
@@ -128,7 +126,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 
       case DecoderEventType::HardwareChange:
         if(checkMIDIHardwareChangeChannelMatches(decoder))
-          onHWChanged(decoder->getKeyOrControl(), decoder->getValue(), false);
+          onHWChanged(decoder->getKeyOrControl(), decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
         break;
 
       case DecoderEventType::UNKNOWN:
@@ -176,8 +174,8 @@ bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
 
 bool InputEventStage::checkMIDIHardwareChangeChannelMatches(MIDIDecoder *pDecoder)
 {
-  const auto channelMatches = pDecoder->getChannel() == m_options->getReceiveChannel()
-      || m_options->getReceiveChannel() == MidiReceiveChannel::Omni;
+  const auto channelMatches = m_options->getReceiveChannel() == MidiReceiveChannel::Omni
+      || pDecoder->getChannel() == m_options->getReceiveChannel();
   return channelMatches;
 }
 
@@ -482,8 +480,8 @@ void InputEventStage::doSendAftertouchOut(float value)
 
 void InputEventStage::doSendBenderOut(float value)
 {
-  const auto sendAsPitchbend = m_options->getBenderLSBCC().first;
-  if(sendAsPitchbend)
+  const auto sendAsCC = m_options->getBenderLSBCC().first;
+  if(!sendAsCC)
   {
     using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
 
@@ -526,8 +524,7 @@ void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMes
 
   if(hwID != -1)
   {
-    //TODO filter reoccurring positions
-    onHWChanged(hwID, message.controlPosition, true);
+    onHWChanged(hwID, message.controlPosition, DSPInterface::HWChangeSource::UI);
   }
 }
 
@@ -535,37 +532,51 @@ int InputEventStage::parameterIDToHWID(int id)
 {
   switch(id)
   {
-    case 254:
+    case C15::PID::Pedal_1:
       return 0;
-    case 259:
+    case C15::PID::Pedal_2:
       return 1;
-    case 264:
+    case C15::PID::Pedal_3:
       return 2;
-    case 269:
+    case C15::PID::Pedal_4:
       return 3;
-    case 274:
+    case C15::PID::Bender:
       return 4;
-    case 279:
+    case C15::PID::Aftertouch:
       return 5;
-    case 284:
+    case C15::PID::Ribbon_1:
       return 6;
-    case 289:
+    case C15::PID::Ribbon_2:
       return 7;
     default:
       return -1;
   }
 }
 
-void InputEventStage::onHWChanged(int hwID, float pos, bool sendMidi)
+void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
-  if(m_options->shouldReceiveControllers())
+  auto sendToDSP = false;
+
+  switch(source)
+  {
+    case DSPInterface::HWChangeSource::TCD:
+      sendToDSP = m_options->shouldReceiveLocalControllers();
+      break;
+    case DSPInterface::HWChangeSource::MIDI:
+      sendToDSP = m_options->shouldReceiveMIDIControllers();
+      break;
+    case DSPInterface::HWChangeSource::UI:
+      sendToDSP = true;
+      break;
+  }
+
+  if(sendToDSP)
   {
     m_dspHost->onHWChanged(hwID, pos);
   }
 
-  if(sendMidi && m_options->shouldSendControllers())
+  if(source != DSPInterface::HWChangeSource::MIDI && m_options->shouldSendControllers())
   {
-    //TODO filter unchanged values before sending
     sendHardwareChangeAsMidi(hwID, pos);
   }
 }

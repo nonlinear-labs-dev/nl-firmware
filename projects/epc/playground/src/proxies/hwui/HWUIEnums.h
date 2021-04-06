@@ -35,13 +35,10 @@ class ButtonModifiers : public std::bitset<ButtonModifier::NUM_MODIFIERS>
   typedef std::bitset<ButtonModifier::NUM_MODIFIERS> super;
 
  public:
-  ButtonModifiers()
-  {
-  }
+  ButtonModifiers() = default;
+  ButtonModifiers(unsigned long long dontCallme) = delete;
 
-  ButtonModifiers(unsigned long long dontCallme);
-
-  ButtonModifiers(ButtonModifier mod)
+  explicit ButtonModifiers(ButtonModifier mod)
   {
     set(mod);
   }
@@ -78,6 +75,11 @@ struct FocusAndMode
   {
   }
 
+  FocusAndMode(UIDetail d)
+      : FocusAndMode(UIFocus::Unchanged, UIMode::Unchanged, d)
+  {
+  }
+
   bool operator==(const FocusAndMode &other) const
   {
     return other.focus == focus && other.mode == mode && other.detail == detail;
@@ -103,7 +105,7 @@ struct FocusAndMode
   UIFocus focus = UIFocus::Unchanged;
   UIMode mode = UIMode::Unchanged;
   UIDetail detail = UIDetail::Unchanged;
-
+  
   std::string toString()
   {
     return "UIFocus: " + ::toString(focus) + " UIMode: " + ::toString(mode) + " UIDetail: " + ::toString(detail);

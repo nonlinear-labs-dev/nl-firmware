@@ -1156,12 +1156,12 @@ EditBuffer::PartOrigin EditBuffer::getPartOrigin(VoiceGroup vg) const
 
   if(vg == VoiceGroup::I)
   {
-    ret.presetUUID = getAttribute("origin-I", "");
+    ret.presetUUID = Uuid { getAttribute("origin-I", "") };
     ret.sourceGroup = to<VoiceGroup>(getAttribute("origin-I-vg", "Global"));
   }
   else if(vg == VoiceGroup::II)
   {
-    ret.presetUUID = getAttribute("origin-II", "");
+    ret.presetUUID = Uuid { getAttribute("origin-II", "") };
     ret.sourceGroup = to<VoiceGroup>(getAttribute("origin-II-vg", "Global"));
   }
 

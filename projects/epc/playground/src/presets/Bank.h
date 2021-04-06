@@ -31,7 +31,7 @@ class Bank : public AttributesOwner
     count
   };
 
-  Bank(UpdateDocumentContributor *parent);
+  explicit Bank(UpdateDocumentContributor *parent);
   Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids);
   ~Bank() override;
 

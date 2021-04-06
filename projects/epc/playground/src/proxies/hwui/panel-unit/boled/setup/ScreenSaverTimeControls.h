@@ -18,17 +18,14 @@ class ScreenSaverTimeEditor : public SetupLabel, public SetupEditor
   ScreenSaverTimeEditor();
   ~ScreenSaverTimeEditor() override;
 
-
-  void setBackgroundColor(FrameBuffer &fb) const;
-
-  Font::Justification getJustification() const;
-
-  void setFontColor(FrameBuffer &fb) const;
+  void setBackgroundColor(FrameBuffer &fb) const override;
+  Font::Justification getJustification() const override;
+  void setFontColor(FrameBuffer &fb) const override;
   bool redraw(FrameBuffer &fb) override;
 
  private:
   void onSettingChanged(const Setting *s);
   bool onRotary(int inc, ButtonModifiers modifiers) override;
-  
+
   SetupLabel *m_label = nullptr;
 };

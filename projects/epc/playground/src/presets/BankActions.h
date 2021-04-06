@@ -13,8 +13,8 @@ class BankActions : public RPCActionManager
   typedef RPCActionManager super;
 
  public:
-  BankActions(PresetManager &presetManager);
-  virtual ~BankActions();
+  explicit BankActions(PresetManager &presetManager);
+  ~BankActions() override;
 
   bool handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request) override;
 
@@ -30,5 +30,5 @@ class BankActions : public RPCActionManager
 
   PresetManager &m_presetManager;
 
-  void insertBankInCluster(Bank *bankToInsert, Bank *bankAtInsert, const Glib::ustring directionSeenFromBankInCluster);
+  void insertBankInCluster(Bank *bankToInsert, Bank *bankAtInsert, Glib::ustring directionSeenFromBankInCluster);
 };

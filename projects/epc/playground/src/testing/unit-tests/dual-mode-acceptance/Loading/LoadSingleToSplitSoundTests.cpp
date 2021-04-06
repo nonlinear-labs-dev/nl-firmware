@@ -46,7 +46,7 @@ TEST_CASE("Load Single into Split Part I")
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 
-  REQUIRE(preset->getType() == SoundType::Single);
+  CHECK(preset->getType() == SoundType::Single);
 
   {
     auto scope = TestHelper::createTestScope();
@@ -170,7 +170,7 @@ TEST_CASE("Load Single into Split Part II")
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 
-  REQUIRE(preset->getType() == SoundType::Single);
+  CHECK(preset->getType() == SoundType::Single);
 
   {
     auto scope = TestHelper::createTestScope();

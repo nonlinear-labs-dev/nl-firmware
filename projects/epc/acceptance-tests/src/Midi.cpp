@@ -79,11 +79,9 @@ namespace Tests
         },
         1);
 
-    // no error for three seconds = success
     playgroundApp.getMainContext()->signal_timeout().connect_seconds(
         [&] {
-          //TODO Fix this failing Test
-          //REQUIRE(selectionCount == 1);
+          CHECK(selectionCount == 1);
           playgroundApp.quit();
           return false;
         },
@@ -185,8 +183,7 @@ namespace Tests
     auto synth = std::make_unique<C15Synth>(options.get());
 
     auto presetSelectionBeforePC = playgroundApp.getPresetManager()->getSelectedPreset();
-    sigc::connection c;
-    c = playgroundApp.getPresetManager()->getSelectedBank()->onBankChanged([&] {
+    auto c = playgroundApp.getPresetManager()->getSelectedBank()->onBankChanged([&] {
       if(playgroundApp.getPresetManager()->getSelectedPreset() != presetSelectionBeforePC)
       {
         // preset selection changed by sending PC, success

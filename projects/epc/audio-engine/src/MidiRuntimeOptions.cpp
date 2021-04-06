@@ -50,7 +50,7 @@ bool MidiRuntimeOptions::shouldReceiveNotes() const
   return m_receiveNotes;
 }
 
-bool MidiRuntimeOptions::shouldReceiveControllers() const
+bool MidiRuntimeOptions::shouldReceiveMIDIControllers() const
 {
   return m_receiveControllers;
 }
@@ -256,6 +256,7 @@ std::pair<bool, int> MidiRuntimeOptions::decodeEnumMSB(AftertouchCC cc)
     return { true, static_cast<int>(cc) };
 }
 
+//maybe use std::optional
 std::pair<bool, int> MidiRuntimeOptions::decodeEnumLSB(AftertouchCC cc)
 {
   if(cc == AftertouchCC::PitchbendUp || cc == AftertouchCC::PitchbendDown || cc == AftertouchCC::ChannelPressure)

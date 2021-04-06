@@ -11,7 +11,7 @@ Uuid::Uuid(const Uuid &other)
 {
 }
 
-Uuid::Uuid(Uuid &&other)
+Uuid::Uuid(Uuid &&other) noexcept
     : id(std::move(other.id))
 {
 }

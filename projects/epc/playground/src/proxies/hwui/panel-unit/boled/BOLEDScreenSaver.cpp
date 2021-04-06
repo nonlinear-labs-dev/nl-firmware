@@ -22,7 +22,7 @@ BOLEDScreenSaver::BOLEDScreenSaver(OLEDProxy& oled)
 
 void BOLEDScreenSaver::init()
 {
-  m_label = addControl(new Label({ "C15", 0 }, { 128, 40, 18, 9 }));
+  m_label = addControl(new Label(StringAndSuffix{ "C15", 0 }, { 128, 40, 18, 9 }));
   Layout::init();
 }
 

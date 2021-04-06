@@ -20,14 +20,15 @@ class ShortenLabel : public Label
 {
  public:
   ShortenLabel(const Glib::ustring &text, const Rect &pos)
-      : Label(text, pos)
+      : Label(StringAndSuffix { text }, pos)
   {
   }
 
  protected:
-  StringAndSuffix shortenStringIfNeccessary(std::shared_ptr<Font> font, const StringAndSuffix &text) const override
+  StringAndSuffix shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
+                                            const StringAndSuffix &text) const override
   {
-    return TextCropper::shortenStringIfNeccessary(font, text.text, getPosition().getWidth());
+    return StringAndSuffix { TextCropper::shortenStringIfNeccessary(font, text.text, getPosition().getWidth()) };
   }
 };
 
@@ -67,13 +68,13 @@ void BanksLayout::updateFromBank(const Bank *bank) const
   {
     auto order = Application::get().getPresetManager()->getBankPosition(bank->getUuid()) + 1;
     auto str = Glib::ustring::format(order);
-    m_number->setText(str);
-    m_name->setText({ bank->getName(true) });
+    m_number->setText(StringAndSuffix { str });
+    m_name->setText(StringAndSuffix { bank->getName(true) });
   }
   else
   {
-    m_number->setText("---");
-    m_name->setText("---");
+    m_number->setText(StringAndSuffix { "---" });
+    m_name->setText(StringAndSuffix { "---" });
   }
 }
 

@@ -69,7 +69,7 @@ template <typename TEnum> class NLEnumSetting : public Setting
       set((tEnum) idx);
   }
 
-  Glib::ustring save() const
+  Glib::ustring save() const override
   {
     return toString(get());
   }
@@ -98,10 +98,11 @@ template <typename TEnum> class NLEnumSetting : public Setting
     return m_displayStrings;
   }
 
+  NLEnumSetting(const NLEnumSetting &other) = delete;
+  NLEnumSetting &operator=(const NLEnumSetting &) = delete;
+
  private:
   std::vector<Glib::ustring> m_displayStrings;
-  NLEnumSetting(const NLEnumSetting &other);
-  NLEnumSetting &operator=(const NLEnumSetting &);
 
   tEnum m_mode;
 };

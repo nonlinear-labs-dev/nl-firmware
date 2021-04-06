@@ -23,7 +23,7 @@ template <typename T> class RingBuffer
   {
     auto idx = m_writeHead % m_buffer.size();
     auto cap = m_buffer.size() - idx;
-    auto todoNow = std::min(cap, numFrames);
+    auto todoNow = std::min<size_t>(cap, numFrames);
     std::copy(e, e + todoNow, m_buffer.data() + idx);
     m_writeHead += todoNow;
 
@@ -49,7 +49,7 @@ template <typename T> class RingBuffer
     auto content = m_writeHead - readHead;
     auto idx = readHead % m_buffer.size();
     auto chunkSize = m_buffer.size() - idx;
-    if(auto todo = std::min(std::min<uint64_t>(chunkSize, content), targetSize))
+    if(auto todo = std::min<size_t>(std::min<size_t>(chunkSize, content), targetSize))
     {
       std::copy(m_buffer.data() + idx, m_buffer.data() + idx + todo, target);
       return todo;

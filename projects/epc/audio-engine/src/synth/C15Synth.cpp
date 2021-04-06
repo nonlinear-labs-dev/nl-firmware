@@ -185,9 +185,12 @@ unsigned int C15Synth::getRenderedSamples()
 
 void C15Synth::doAudio(SampleFrame* target, size_t numFrames)
 {
+#ifdef __arm__
+#else
   // to avoid denormals, we exploit flush_to_zero within this code-block: every denormal float will be set to zero
   _mm_setcsr(_mm_getcsr() | (1 << 15) | (1 << 6));
   // then, the samples are rendered as before
+#endif
 
   for(size_t i = 0; i < numFrames; i++)
   {

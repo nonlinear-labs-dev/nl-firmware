@@ -18,9 +18,9 @@ CurrentModulatedValueLabel::CurrentModulatedValueLabel(const Rect &r)
 void CurrentModulatedValueLabel::updateText(MacroControlParameter *mcParam, ModulateableParameter *modulatedParam)
 {
   if(isHighlight() && Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
-    setText({ modulatedParam->getDisplayString(), " F" });
+    setText(StringAndSuffix { modulatedParam->getDisplayString(), " F" });
   else
-    setText(modulatedParam->getDisplayString());
+    setText(StringAndSuffix { modulatedParam->getDisplayString() });
 }
 
 bool CurrentModulatedValueLabel::onRotary(int inc, ButtonModifiers modifiers)

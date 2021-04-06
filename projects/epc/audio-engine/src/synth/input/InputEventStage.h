@@ -88,7 +88,7 @@ class InputEventStage
   void doSendAftertouchOut(float value);
   void doSendBenderOut(float value);
   static int parameterIDToHWID(int id);
-  void onHWChanged(int hwID, float pos, bool sendMidi);
+  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
 };
 
 namespace InputStateDetail

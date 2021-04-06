@@ -13,7 +13,7 @@ class MidiRuntimeOptions
 
   [[nodiscard]] bool shouldReceiveProgramChanges() const;
   [[nodiscard]] bool shouldReceiveNotes() const;
-  [[nodiscard]] bool shouldReceiveControllers() const;
+  [[nodiscard]] bool shouldReceiveMIDIControllers() const;
 
   [[nodiscard]] bool shouldSendProgramChanges() const;
   [[nodiscard]] bool shouldSendNotes() const;

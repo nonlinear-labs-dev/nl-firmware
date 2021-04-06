@@ -17,7 +17,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
  public:
   ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                  const char *webUIName);
-  virtual ~ParameterGroup();
+  ~ParameterGroup() override;
 
   virtual void init() = 0;
 

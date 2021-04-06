@@ -24,9 +24,16 @@ bool TCDDecoder::decode(const MidiEvent &event)
       uint32_t arg = _data1 + (_data0 << 7);
       value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
 
-      if(m_dsp->getBehaviour(channel) == C15::Properties::HW_Return_Behavior::Center)
+      const auto behaviour = m_dsp->getBehaviour(channel);
+
+      if(behaviour == C15::Properties::HW_Return_Behavior::Center)
       {
         value = (2.0f * value) - 1.0f;
+      }
+
+      if constexpr(LOG_MIDI_TCD)
+      {
+        nltools::Log::warning("Got HW-Src:", channel, "value:", value, "behaviour", static_cast<int>(behaviour));
       }
 
       keyOrController = channel;

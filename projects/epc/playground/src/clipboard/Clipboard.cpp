@@ -16,17 +16,17 @@ Clipboard::Clipboard(UpdateDocumentContributor *parent)
     , m_actions("/clipboard/")
 {
   m_actions.addAction("copy-bank", [=](std::shared_ptr<NetworkRequest> request) {
-    copyBank(request->get("bank"));
+    copyBank(Uuid { request->get("bank") });
     request->okAndComplete();
   });
 
   m_actions.addAction("cut-preset", [=](std::shared_ptr<NetworkRequest> request) {
-    cutPreset(request->get("preset"));
+    cutPreset(Uuid { request->get("preset") });
     request->okAndComplete();
   });
 
   m_actions.addAction("copy-preset", [=](std::shared_ptr<NetworkRequest> request) {
-    copyPreset(request->get("preset"));
+    copyPreset(Uuid { request->get("preset") });
     request->okAndComplete();
   });
 
@@ -51,22 +51,22 @@ Clipboard::Clipboard(UpdateDocumentContributor *parent)
 
   m_actions.addAction("paste-on-bank", [=](std::shared_ptr<NetworkRequest> request) {
     if(containsBank())
-      pasteBankOnBank("Paste Bank", request->get("bank"));
+      pasteBankOnBank("Paste Bank", Uuid { request->get("bank") });
     else if(containsPreset())
-      pastePresetOnBank(request->get("bank"));
+      pastePresetOnBank(Uuid { request->get("bank") });
     else if(containsMultiplePresets())
-      pasteMultiplePresetsOnBank(request->get("bank"));
+      pasteMultiplePresetsOnBank(Uuid { request->get("bank") });
 
     request->okAndComplete();
   });
 
   m_actions.addAction("paste-on-preset", [=](std::shared_ptr<NetworkRequest> request) {
     if(containsBank())
-      pasteBankOnPreset("Paste Bank", request->get("preset"));
+      pasteBankOnPreset("Paste Bank", Uuid { request->get("preset") });
     else if(containsPreset())
-      pastePresetOnPreset(request->get("preset"));
+      pastePresetOnPreset(Uuid { request->get("preset") });
     else if(containsMultiplePresets())
-      pasteMultiplePresetsOnPreset(request->get("preset"));
+      pasteMultiplePresetsOnPreset(Uuid { request->get("preset") });
     request->okAndComplete();
   });
 }
@@ -147,7 +147,7 @@ void Clipboard::copyPresets(const Glib::ustring &csv)
 
   for(const auto &uuid : StringTools::splitStringOnAnyDelimiter(csv, ','))
   {
-    if(auto preset = pm->findPreset(uuid))
+    if(auto preset = pm->findPreset(Uuid { uuid }))
     {
       mulPresetSelection->addPreset(scope->getTransaction(), preset);
     }

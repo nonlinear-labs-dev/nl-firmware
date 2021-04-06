@@ -56,8 +56,8 @@ TEST_CASE("Part Origin Attribute")
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 
-    CHECK(originI.presetUUID == "");
-    CHECK(originII.presetUUID == "");
+    CHECK(originI.presetUUID == Uuid::none());
+    CHECK(originII.presetUUID == Uuid::none());
     CHECK(originI.sourceGroup == VoiceGroup::Global);
     CHECK(originII.sourceGroup == VoiceGroup::Global);
   }
@@ -69,12 +69,12 @@ TEST_CASE("Part Origin Attribute")
 
     eb->undoableInitPart(scope->getTransaction(), VoiceGroup::I, Defaults::FactoryDefault);
     auto originI = eb->getPartOrigin(VoiceGroup::I);
-    CHECK(originI.presetUUID == "");
+    CHECK(originI.presetUUID == Uuid::none());
     CHECK(originI.sourceGroup == VoiceGroup::Global);
 
     eb->undoableInitPart(scope->getTransaction(), VoiceGroup::II, Defaults::FactoryDefault);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
-    CHECK(originII.presetUUID == "");
+    CHECK(originII.presetUUID == Uuid::none());
     CHECK(originII.sourceGroup == VoiceGroup::Global);
   }
 
@@ -134,8 +134,8 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   auto [ogI, ogII] = getOrigins();
 
   CHECK(eb->getOrigin() == nullptr);
-  CHECK(ogI.presetUUID == "");
-  CHECK(ogII.presetUUID == "");
+  CHECK(ogI.presetUUID == Uuid::none());
+  CHECK(ogII.presetUUID == Uuid::none());
   CHECK(eb->getUUIDOfLastLoadedPreset() == Uuid::init());
 
   SECTION("Select First Preset in Bank")

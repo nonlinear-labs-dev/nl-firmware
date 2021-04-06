@@ -38,7 +38,7 @@ void LockedIndicator::onParameterGroupChanged()
                    ->getEditBuffer()
                    ->getSelected(getHWUI()->getCurrentVoiceGroup())
                    ->getParentGroup();
-  setText(group->areAllParametersLocked() ? "\uE30E" : "");
+  setText(StringAndSuffix { group->areAllParametersLocked() ? "\uE30E" : "" });
 }
 
 void LockedIndicator::setFontColor(FrameBuffer &fb) const
