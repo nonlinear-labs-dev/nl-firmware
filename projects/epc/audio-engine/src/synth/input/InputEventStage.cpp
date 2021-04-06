@@ -605,7 +605,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     sendHardwareChangeAsMidi(hwID, pos);
   }
 
-  if(source == DSPInterface::HWChangeSource::MIDI)
+  if(source == DSPInterface::HWChangeSource::MIDI && m_options->shouldReceiveMIDIControllers())
   {
     nltools::Log::warning("received HWChange via MIDI! for hwID:", hwID);
     auto parameterID = HWIDToParameterID(hwID);
