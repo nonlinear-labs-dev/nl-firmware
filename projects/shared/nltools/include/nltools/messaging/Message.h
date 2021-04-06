@@ -58,7 +58,7 @@ namespace nltools
           return MessageType::MidiHardwareChange;
         }
 
-        uint8_t parameterID;
+        int parameterID;
         float value;
       };
     }
