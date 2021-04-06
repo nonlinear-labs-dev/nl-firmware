@@ -82,7 +82,6 @@
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
-#include <device-settings/midi/local/LocalProgramChangesSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
 #include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
@@ -817,7 +816,6 @@ namespace NavTree
     MidiLocalSettings(InnerNode *parent)
         : InnerNode(parent, "Local")
     {
-      children.emplace_back(new EnumSettingItem<LocalProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<LocalNotesSetting>(this, "Enable Notes"));
       children.emplace_back(new EnumSettingItem<LocalControllersSetting>(this, "Enable Hardware Sources"));
     }
@@ -834,7 +832,7 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<PedalCCMapping<4>>(this, "Pedal 4"));
       children.emplace_back(new EnumSettingItem<RibbonCCMapping<1>>(this, "Ribbon 1"));
       children.emplace_back(new EnumSettingItem<RibbonCCMapping<2>>(this, "Ribbon 2"));
-      children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Pitchbend"));
+      children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Bender"));
       children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
     }
   };

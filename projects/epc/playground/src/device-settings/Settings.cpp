@@ -56,7 +56,6 @@
 #include <device-settings/midi/MidiChannelSettings.h>
 #include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/local/LocalProgramChangesSetting.h>
 #include <device-settings/midi/send/MidiSendControllersSetting.h>
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
@@ -117,7 +116,6 @@ Settings::Settings(UpdateDocumentMaster *master)
 
   addSetting("LocalControllers", new LocalControllersSetting(*this));
   addSetting("LocalNotes", new LocalNotesSetting(*this));
-  addSetting("LocalProgramChanges", new LocalProgramChangesSetting(*this));
 
   addSetting("ReceiveChannel", new MidiReceiveChannelSetting(*this));
   addSetting("ReceiveChannelSplit", new MidiReceiveChannelSplitSetting(*this));

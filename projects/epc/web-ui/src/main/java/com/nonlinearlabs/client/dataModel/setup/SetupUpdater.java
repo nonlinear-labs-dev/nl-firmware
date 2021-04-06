@@ -55,7 +55,6 @@ public class SetupUpdater extends Updater {
 		m.put("SyncSplit", SetupModel.get().systemSettings.syncSplit);
 		m.put("LocalControllers", SetupModel.get().systemSettings.localControllers);
 		m.put("LocalNotes", SetupModel.get().systemSettings.localNotes);
-		m.put("LocalProgramChanges", SetupModel.get().systemSettings.localProgramChanges);
 		m.put("ReceiveChannel", SetupModel.get().systemSettings.receiveChannel);
 		m.put("ReceiveChannelSplit", SetupModel.get().systemSettings.receiveChannelSplit);
 		m.put("ReceiveControllers", SetupModel.get().systemSettings.receiveControllers);

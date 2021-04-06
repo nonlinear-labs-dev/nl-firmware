@@ -363,7 +363,6 @@ public class SetupModel {
 		//Midi below
 		public BooleanDataModelEntity localControllers = new BooleanDataModelEntity();
 		public BooleanDataModelEntity localNotes = new BooleanDataModelEntity();
-		public BooleanDataModelEntity localProgramChanges = new BooleanDataModelEntity();
 	
 		public BooleanDataModelEntity sendControllers = new BooleanDataModelEntity();
 		public BooleanDataModelEntity sendNotes = new BooleanDataModelEntity();

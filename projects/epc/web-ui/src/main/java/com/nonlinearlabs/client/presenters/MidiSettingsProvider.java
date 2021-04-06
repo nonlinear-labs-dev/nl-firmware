@@ -39,15 +39,6 @@ public class MidiSettingsProvider {
             return true;
         });
 
-        s.localProgramChanges.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.localProgramChanges.value != newValue) {
-                settings.localProgramChanges.value = newValue;
-                notifyClients();
-            }
-            return true;
-        });
-
         //Send
         s.sendChannel.onChange(t -> {
             int newValue = t.ordinal();

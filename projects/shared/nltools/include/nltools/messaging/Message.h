@@ -50,6 +50,17 @@ namespace nltools
 
         uint8_t program;
       };
+
+      struct HardwareChangeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiHardwareChange;
+        }
+
+        uint8_t parameterID;
+        float value;
+      };
     }
 
     using tID = int;

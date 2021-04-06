@@ -97,7 +97,6 @@ public class MidiSettings {
     //Local
     public OnOffOption localControllers = new OnOffOption();
     public OnOffOption localNotes = new OnOffOption();
-    public OnOffOption localProgramChanges = new OnOffOption();
 
     //Send
     public SendChannel sendChannel = new SendChannel();

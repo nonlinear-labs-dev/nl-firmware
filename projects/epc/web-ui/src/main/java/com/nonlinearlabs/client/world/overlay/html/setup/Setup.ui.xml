@@ -425,15 +425,6 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>Enable Programm Changes</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="localPCOn" name="rad_localPC" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="localPCOff" name="rad_localPC" value="false"></g:RadioButton>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
 							<p>Enable Notes</p>
 						</div>
 						<div class="w40p mw-fit-content">
@@ -510,7 +501,7 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>Pitchbender</p>
+							<p>Bender</p>
 						</div>
 						<div class="w40p">
 							<g:ListBox ui:field="benderMapping">

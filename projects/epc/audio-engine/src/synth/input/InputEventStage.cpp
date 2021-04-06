@@ -553,6 +553,31 @@ int InputEventStage::parameterIDToHWID(int id)
   }
 }
 
+int InputEventStage::HWIDToParameterID(int id)
+{
+  switch(id)
+  {
+    case 0:
+      return C15::PID::Pedal_1;
+    case 1:
+      return C15::PID::Pedal_2;
+    case 2:
+      return C15::PID::Pedal_3;
+    case 3:
+      return C15::PID::Pedal_4;
+    case 4:
+      return C15::PID::Bender;
+    case 5:
+      return C15::PID::Aftertouch;
+    case 6:
+      return C15::PID::Ribbon_1;
+    case 7:
+      return C15::PID::Ribbon_2;
+    default:
+      return -1;
+  }
+}
+
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
   auto sendToDSP = false;
@@ -578,5 +603,17 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
   if(source != DSPInterface::HWChangeSource::MIDI && m_options->shouldSendControllers())
   {
     sendHardwareChangeAsMidi(hwID, pos);
+  }
+
+  if(source == DSPInterface::HWChangeSource::MIDI)
+  {
+    auto parameterID = HWIDToParameterID(hwID);
+    if(parameterID != -1)
+    {
+      nltools::msg::Midi::HardwareChangeMessage msg {};
+      msg.parameterID = parameterID;
+      msg.value = pos;
+      nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
+    }
   }
 }

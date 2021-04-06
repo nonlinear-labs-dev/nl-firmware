@@ -75,7 +75,7 @@ public class Setup extends Composite {
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
 			receiveNotesOff, receiveControllersOn, receiveControllersOff, sendPCOn, sendPCOff, sendNotesOn, 
-			sendNotesOff, sendControllersOn, sendControllersOff, localPCOn, localPCOff, localNotesOn, 
+			sendNotesOff, sendControllersOn, sendControllersOff, localNotesOn, 
 			localNotesOff, localControllersOn, localControllersOff;
 
 	@UiField
@@ -167,7 +167,6 @@ public class Setup extends Composite {
 		fillRadioButtons(sendPCOn, sendPCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(sendNotesOn, sendNotesOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(sendControllersOn, sendControllersOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(localPCOn, localPCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(localNotesOn, localNotesOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(localControllersOn, localControllersOff, MidiSettings.OnOffOption.options);
 	}
@@ -261,8 +260,6 @@ public class Setup extends Composite {
 		sendControllersOn.addValueChangeHandler(e -> settings.setSendControllers(BooleanValues.on));
 		sendControllersOff.addValueChangeHandler(e -> settings.setSendControllers(BooleanValues.off));
 
-		localPCOn.addValueChangeHandler(e -> settings.setLocalProgramChanges(BooleanValues.on));
-		localPCOff.addValueChangeHandler(e -> settings.setLocalProgramChanges(BooleanValues.off));
 		localNotesOn.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.on));
 		localNotesOff.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.off));
 		localControllersOn.addValueChangeHandler(e -> settings.setLocalControllers(BooleanValues.on));
@@ -394,8 +391,6 @@ public class Setup extends Composite {
 		
 		localControllersOn.setValue(t.localControllers.value);
 		localControllersOff.setValue(!t.localControllers.value);
-		localPCOn.setValue(t.localProgramChanges.value);
-		localPCOff.setValue(!t.localProgramChanges.value);
 		localNotesOn.setValue(t.localNotes.value);
 		localNotesOff.setValue(!t.localNotes.value);
 

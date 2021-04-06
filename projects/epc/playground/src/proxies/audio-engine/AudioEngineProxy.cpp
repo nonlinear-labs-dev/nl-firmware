@@ -28,7 +28,6 @@
 #include <device-settings/midi/MidiChannelSettings.h>
 #include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/local/LocalProgramChangesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
@@ -70,6 +69,21 @@ AudioEngineProxy::AudioEngineProxy()
         BankUseCases useCase(bank);
         useCase.selectPreset(msg.program);
       }
+  });
+
+  receive<Midi::HardwareChangeMessage>(EndPoint::Playground, [](const auto &msg) {
+    if(Application::exists())
+    {
+      auto eb = Application::get().getPresetManager()->getEditBuffer();
+      if(auto parameter
+         = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
+      {
+        auto proxy = Application::get().getPlaycontrollerProxy();
+        proxy->notifyRibbonTouch(parameter->getID().getNumber());
+        DebugLevel::info("physical control parameter:", parameter->getMiniParameterEditorName(), ": ", msg.value);
+        proxy->applyParamMessageAbsolutely(parameter, msg.value);
+      }
+    }
   });
 
   pm->onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
@@ -478,8 +492,8 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
   auto settings = Application::get().getSettings();
   m_midiSettingConnections.clear();
 
-  subscribeToMidiSettings<LocalControllersSetting, LocalNotesSetting, LocalProgramChangesSetting,
-                          MidiReceiveChannelSetting, MidiReceiveChannelSplitSetting, MidiReceiveProgramChangesSetting,
+  subscribeToMidiSettings<LocalControllersSetting, LocalNotesSetting, MidiReceiveChannelSetting,
+                          MidiReceiveChannelSplitSetting, MidiReceiveProgramChangesSetting,
                           MidiReceiveControllersSetting, MidiReceiveNotesSetting, MidiReceiveAftertouchCurveSetting,
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
                           MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting,
