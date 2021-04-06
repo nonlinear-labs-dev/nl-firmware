@@ -246,9 +246,4 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.localNotes.setValue(enabled);
 		NonMaps.theMaps.getServerProxy().setSetting("LocalNotes", netify(enabled.name()));
 	}
-
-	public void setLocalProgramChanges(BooleanValues enabled) {
-		SetupModel.get().systemSettings.localProgramChanges.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("LocalProgramChanges", netify(enabled.name()));	
-	}
 }
