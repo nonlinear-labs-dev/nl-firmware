@@ -607,9 +607,11 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(source == DSPInterface::HWChangeSource::MIDI)
   {
+    nltools::Log::warning("received HWChange via MIDI! for hwID:", hwID);
     auto parameterID = HWIDToParameterID(hwID);
     if(parameterID != -1)
     {
+      nltools::Log::warning("sending HWChange that was received via MIDI! value:", pos, "id:", parameterID);
       nltools::msg::Midi::HardwareChangeMessage msg {};
       msg.parameterID = parameterID;
       msg.value = pos;

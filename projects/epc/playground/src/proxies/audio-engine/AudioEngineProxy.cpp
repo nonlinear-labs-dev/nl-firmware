@@ -40,6 +40,7 @@
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <parameters/PhysicalControlParameter.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -74,14 +75,18 @@ AudioEngineProxy::AudioEngineProxy()
   receive<Midi::HardwareChangeMessage>(EndPoint::Playground, [](const auto &msg) {
     if(Application::exists())
     {
+      nltools::Log::warning("recieved Midi::HardwareChangeMessage from MIDI via AE contents id:", msg.parameterID,
+                            "value:", msg.value);
       auto eb = Application::get().getPresetManager()->getEditBuffer();
       if(auto parameter
          = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
       {
-        auto proxy = Application::get().getPlaycontrollerProxy();
-        proxy->notifyRibbonTouch(parameter->getID().getNumber());
-        DebugLevel::info("physical control parameter:", parameter->getMiniParameterEditorName(), ": ", msg.value);
-        proxy->applyParamMessageAbsolutely(parameter, msg.value);
+        nltools::Log::warning("updating Parameter", parameter->getLongName());
+        parameter->onChangeFromPlaycontroller(static_cast<tControlPositionValue>(msg.value));
+        //            auto proxy = Application::get().getPlaycontrollerProxy();
+        //        proxy->notifyRibbonTouch(parameter->getID().getNumber());
+        //        DebugLevel::info("physical control parameter:", parameter->getMiniParameterEditorName(), ": ", msg.value);
+        //        proxy->applyParamMessageAbsolutely(parameter, msg.value);
       }
     }
   });
