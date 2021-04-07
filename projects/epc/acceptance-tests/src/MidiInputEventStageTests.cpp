@@ -195,7 +195,7 @@ TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
   }
 }
 
-TEST_CASE("MIDI in of Bender as Channel Pitchbend", "[MIDI]")
+TEST_CASE("MIDI in of PitchBender as Channel Pitchbend", "[MIDI]")
 {
   PassOnHWReceived dsp { 4, 1 };
   auto settings = createMidiSettings();
@@ -204,7 +204,7 @@ TEST_CASE("MIDI in of Bender as Channel Pitchbend", "[MIDI]")
   CHECK(dsp.didReceiveHW());
 }
 
-TEST_CASE("MIDI in of Bender as Control Change", "[MIDI]")
+TEST_CASE("MIDI in of PitchBender as Control Change", "[MIDI]")
 {
   PassOnHWReceived dsp { 4, 1 };
   auto settings = createMidiSettings();

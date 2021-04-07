@@ -291,7 +291,7 @@ int MidiRuntimeOptions::channelEnumToInt(MidiSendChannel channel)
 
 int MidiRuntimeOptions::channelEnumToInt(MidiSendChannelSplit channel)
 {
-  if(channel == MidiSendChannelSplit::None)
+  if(channel == MidiSendChannelSplit::None || channel == MidiSendChannelSplit::Common)
     return -1;
 
   return static_cast<int>(channel) - 1;

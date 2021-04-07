@@ -16,7 +16,7 @@ enum class MIDIEventTypes : int
   Note_On = 1,
   CC = 3,
   Mono_Aftertouch = 5,
-  Bender = 6
+  PitchBender = 6
 };
 
 bool MIDIDecoder::decode(const MidiEvent& event)
@@ -60,7 +60,7 @@ bool MIDIDecoder::decode(const MidiEvent& event)
       m_type = DecoderEventType::HardwareChange;
       break;
 
-    case MIDIEventTypes::Bender:
+    case MIDIEventTypes::PitchBender:
       m_MidiLSB = _data0 & 0x7F;
       keyOrControl = 4;
       value = CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_MidiLSB, 0));

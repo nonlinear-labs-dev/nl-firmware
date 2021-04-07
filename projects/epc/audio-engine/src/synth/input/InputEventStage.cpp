@@ -189,7 +189,9 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
   const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
   const auto key = pDecoder->getKeyOrController();
 
-  if(mainChannel != -1 && (determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global))
+  if(mainChannel != -1
+     && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
+         || m_options->getSendSplitChannel() == MidiSendChannelSplit::Common))
   {
     auto mainC = static_cast<uint8_t>(mainChannel);
 
@@ -205,6 +207,9 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
     uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
     auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
     m_midiOut({ keyStatus, keyByte, msbVelByte });
+
+    if(m_options->getSendSplitChannel() == MidiSendChannelSplit::Common)
+      return;
   }
 
   if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global)
@@ -241,7 +246,9 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
   constexpr const uint8_t keyType = 0x80;
   constexpr const uint8_t ccType = 0xB0;
 
-  if(mainChannel != -1 && (determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global))
+  if(mainChannel != -1
+     && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
+         || m_options->getSendSplitChannel() == MidiSendChannelSplit::Common))
   {
     const uint8_t lsbStatus = ccType | mainC;
 
@@ -253,6 +260,9 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
     uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
     auto msbVelByte = static_cast<uint8_t>(fullResolutionValue >> 7);
     m_midiOut({ keyStatus, keyByte, msbVelByte });
+
+    if(m_options->getSendSplitChannel() == MidiSendChannelSplit::Common)
+      return;
   }
 
   if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global)
@@ -352,7 +362,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
     m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
   }
 
-  if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
+  if(secondaryChannel != -1)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
     if(lsbCC != -1)
@@ -447,7 +457,7 @@ void InputEventStage::doSendAftertouchOut(float value)
       m_midiOut({ mainStatus, valByte });
     }
 
-    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
+    if(secondaryChannel != -1)
     {
       auto secStatus = static_cast<uint8_t>(atStatusByte | secC);
       m_midiOut({ secStatus, valByte });
@@ -479,7 +489,7 @@ void InputEventStage::doSendAftertouchOut(float value)
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
+    if(secondaryChannel != -1)
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -512,7 +522,7 @@ void InputEventStage::doSendBenderOut(float value)
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
+    if(secondaryChannel != -1)
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -611,7 +621,10 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(source != DSPInterface::HWChangeSource::MIDI && m_options->shouldSendControllers())
   {
-    sendHardwareChangeAsMidi(hwID, pos);
+    if(filterUnchangedHWPositions(hwID, pos))
+    {
+      sendHardwareChangeAsMidi(hwID, pos);
+    }
   }
 
   if(source == DSPInterface::HWChangeSource::MIDI && m_options->shouldReceiveMIDIControllers())
@@ -627,4 +640,14 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
       nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
     }
   }
+}
+
+bool InputEventStage::filterUnchangedHWPositions(int id, float pos)
+{
+  if(m_latchedHWPositions[id] != pos)
+  {
+    m_latchedHWPositions[id] = pos;
+    return true;
+  }
+  return false;
 }

@@ -18,10 +18,9 @@ public class MidiSettings {
     }
 
     static public class SendChannelSplit {
-        static public String[] options = {"None", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"};
+        static public String[] options = {"None", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "Common"};
         public int selected = 0;
     }
-
     
     static public class ReceiveChannel {
         static public String[] options = {"None", "Omni", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"};

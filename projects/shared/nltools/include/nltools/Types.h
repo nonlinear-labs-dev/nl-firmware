@@ -21,8 +21,9 @@ ENUM(MidiReceiveChannelSplit, int8_t, None, Omni, CH_1, CH_2, CH_3, CH_4, CH_5, 
 
 ENUM(MidiSendChannel, int8_t, None, CH_1, CH_2, CH_3, CH_4, CH_5, CH_6, CH_7, CH_8, CH_9, CH_10, CH_11, CH_12, CH_13,
      CH_14, CH_15, CH_16)
+
 ENUM(MidiSendChannelSplit, int8_t, None, CH_1, CH_2, CH_3, CH_4, CH_5, CH_6, CH_7, CH_8, CH_9, CH_10, CH_11, CH_12,
-     CH_13, CH_14, CH_15, CH_16)
+     CH_13, CH_14, CH_15, CH_16, Common)
 
 ENUM(RibbonCC, int8_t, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16,
      CC17, CC18, CC19, CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31);

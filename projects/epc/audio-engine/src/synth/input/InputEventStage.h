@@ -90,6 +90,8 @@ class InputEventStage
   static int parameterIDToHWID(int id);
   static int HWIDToParameterID(int id);
   void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
+  bool filterUnchangedHWPositions(int id, float pos);
+  std::array<float, 8> m_latchedHWPositions { std::numeric_limits<float>::max() };
 };
 
 namespace InputStateDetail
