@@ -41,6 +41,7 @@
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
 #include <parameters/PhysicalControlParameter.h>
+#include <presets/Preset.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -462,8 +463,10 @@ void AudioEngineProxy::sendSelectedMidiPresetAsProgramChange()
           if(presetPos < 128)
           {
             m_lastSendProgramNumber = presetPos;
-            nltools::msg::send(nltools::msg::EndPoint::AudioEngine,
-                               nltools::msg::Midi::ProgramChangeMessage { presetPos });
+            nltools::msg::Midi::ProgramChangeMessage msg {};
+            msg.program = presetPos;
+            msg.programType = selectedPreset->getType();
+            nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
           }
         }
       }

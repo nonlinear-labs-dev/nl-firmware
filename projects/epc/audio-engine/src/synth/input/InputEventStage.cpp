@@ -155,6 +155,7 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGrou
 
 bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
 {
+  using MRO = MidiRuntimeOptions;
   using MRC = MidiReceiveChannel;
   using MRCS = MidiReceiveChannelSplit;
   const auto shouldReceiveNotes = m_options->shouldReceiveNotes();
@@ -163,11 +164,11 @@ bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
 
   const auto parsedChannel = pDecoder->getChannel();
 
-  const auto primNotNone = primaryChannel != MidiReceiveChannel::None;
-  const auto secNotNone = secondaryChannel != MidiReceiveChannelSplit::None;
+  const auto primNotNone = primaryChannel != MRC::None;
+  const auto secNotNone = secondaryChannel != MRCS::None;
   const auto primaryChannelMatches = parsedChannel == primaryChannel || primaryChannel == MRC::Omni;
-  const auto secondaryChannelMatches
-      = MidiRuntimeOptions::normalToSplitChannel(parsedChannel) == secondaryChannel || secondaryChannel == MRCS::Omni;
+  const auto secondaryChannelMatches = MRO::normalToSplitChannel(parsedChannel) == secondaryChannel
+      || secondaryChannel == MRCS::Omni || secondaryChannel == MRCS::Common;
   const auto channelMatches = primaryChannelMatches || secondaryChannelMatches;
   return shouldReceiveNotes && channelMatches && (primNotNone || secNotNone);
 }
@@ -322,6 +323,7 @@ void InputEventStage::sendCCOut(int hwID, float value, int msbCC, int lsbCC)
 {
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
 
+  //CHECK if pedal is switching and only send MSB message
   if(m_dspHost->getBehaviour(hwID) == C15::Properties::HW_Return_Behavior::Center)
     doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
   else
@@ -343,14 +345,18 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   if(mainChannel != -1)
   {
     auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
-    m_midiOut({ mainStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+    if(lsbCC != -1)
+      m_midiOut({ mainStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+
     m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
   }
 
   if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
-    m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+    if(lsbCC != -1)
+      m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+
     m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
   }
 }
@@ -415,11 +421,13 @@ DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiRece
 void InputEventStage::doSendAftertouchOut(float value)
 {
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
+  using CC_Range_14_Bit = Midi::clipped14BitCCRange;
 
   const auto sendAsCC = m_options->getAftertouchLSBCC().first;
   if(sendAsCC)
   {
-    doSendCCOut(value, m_options->getAftertouchMSBCC().second, m_options->getAftertouchLSBCC().second);
+    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), m_options->getAftertouchMSBCC().second,
+                m_options->getAftertouchLSBCC().second);
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {

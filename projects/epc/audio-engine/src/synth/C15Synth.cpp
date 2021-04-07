@@ -68,7 +68,6 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
-    //TODO send secondary if applicable
     const int sendChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getSendChannel());
     if(sendChannel != -1 && m_midiOptions.shouldSendProgramChanges())
     {
@@ -78,7 +77,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     }
 
     const int secChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getSendSplitChannel());
-    if(secChannel != -1 && m_midiOptions.shouldSendProgramChanges() && m_dsp->getType() == SoundType::Split)
+    if(secChannel != -1 && m_midiOptions.shouldSendProgramChanges() && pc.programType == SoundType::Split)
     {
       const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | secChannel;
       m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
@@ -90,10 +89,24 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     MidiEvent e;
     std::copy(msg.rawBytes.data(), msg.rawBytes.data() + msg.numBytesUsed, e.raw);
 
-    if((e.raw[0] & 0xF0) == 0xC0 && m_midiOptions.shouldReceiveProgramChanges())
+    const auto isPC = (e.raw[0] & 0xF0) == 0xC0;
+    if(isPC)
     {
-      // receive program changes midi-over-ip and dispatch it to playground
-      send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+      const auto receivedChannel = static_cast<int>(e.raw[0]) - 192;
+      const auto isOmniReceive = m_midiOptions.getReceiveChannel() == MidiReceiveChannel::Omni;
+      const auto receivedChannelMatches
+          = m_midiOptions.channelEnumToInt(m_midiOptions.getReceiveChannel()) == receivedChannel;
+      const auto receivedSplitChannelMatches
+          = m_midiOptions.channelEnumToInt(m_midiOptions.getReceiveSplitChannel()) == receivedChannel;
+
+      if(isOmniReceive || receivedChannelMatches
+         || (m_dsp->getType() == SoundType::Split && receivedSplitChannelMatches))
+      {
+        if(m_midiOptions.shouldReceiveProgramChanges())
+        {
+          send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+        }
+      }
     }
     else
     {

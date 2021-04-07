@@ -49,6 +49,7 @@ namespace nltools
         }
 
         uint8_t program;
+        SoundType programType = SoundType::Invalid;
       };
 
       struct HardwareChangeMessage

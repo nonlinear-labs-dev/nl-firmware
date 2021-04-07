@@ -233,7 +233,7 @@ int MidiRuntimeOptions::decodeEnumLSB(PedalCC cc)
     case PedalCC::CC67:
     case PedalCC::CC68:
     case PedalCC::CC69:
-      return -1;
+      return -1;  //TODO fix
   }
   return -1;
 }
@@ -302,6 +302,16 @@ int MidiRuntimeOptions::channelEnumToInt(MidiReceiveChannel channel)
   if(channel == MidiReceiveChannel::None)
     return -1;
   if(channel == MidiReceiveChannel::Omni)
+    return -2;  //todo reevaluate
+
+  return static_cast<int>(channel) - 2;
+}
+
+int MidiRuntimeOptions::channelEnumToInt(MidiReceiveChannelSplit channel)
+{
+  if(channel == MidiReceiveChannelSplit::None || channel == MidiReceiveChannelSplit::Common)
+    return -1;
+  if(channel == MidiReceiveChannelSplit::Omni)
     return -2;  //todo reevaluate
 
   return static_cast<int>(channel) - 2;

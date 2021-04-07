@@ -30,6 +30,7 @@ class MidiRuntimeOptions
   static int channelEnumToInt(MidiSendChannel channel);
   int channelEnumToInt(MidiSendChannelSplit channel);
   static int channelEnumToInt(MidiReceiveChannel channel);
+  static int channelEnumToInt(MidiReceiveChannelSplit channel);
   static MidiReceiveChannelSplit normalToSplitChannel(MidiReceiveChannel ch);
 
   void setBenderCC(BenderCC cc);
