@@ -105,6 +105,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
             return;
 
           const auto receivedOnPrimary = interface.m_source == DSPInterface::InputSource::Primary;
+          const auto receivedOnBoth = interface.m_source == DSPInterface::InputSource::Both;
 
           if(soundType == SoundType::Split)
           {
@@ -114,7 +115,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
           }
-          else if(soundValid && receivedOnPrimary)
+          else if(soundValid && (receivedOnPrimary || receivedOnBoth))
           {
             if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), interface);

@@ -197,3 +197,36 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
     CHECK(!hostPartI.didReceiveKeyDown());
   }
 }
+
+TEST_CASE("Receive MIDI Special Receive Channel Settings leads to Note Down", "[MIDI][TCD]")
+{
+  class PassOnKeyDownHostSingle : public PassOnKeyDownHost
+  {
+   public:
+    using PassOnKeyDownHost::PassOnKeyDownHost;
+    SoundType getType() override
+    {
+      return SoundType::Single;
+    }
+  };
+
+  PassOnKeyDownHostSingle host(77, 1.0, VoiceGroup::I);
+  auto settings = createSpecialSettings();
+  InputEventStage eventStage(&host, &settings, [&](auto m) { CHECK(false); });
+
+  WHEN("MIDI In with CH1 & CH1")
+  {
+    settings.setReceiveChannel(MidiReceiveChannel::CH_1);
+    settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_1);
+    eventStage.onMIDIMessage({ 0x90, 77, 127 });
+    CHECK(host.didReceiveKeyDown());
+  }
+
+  WHEN("MIDI In with common")
+  {
+    settings.setReceiveChannel(MidiReceiveChannel::CH_1);
+    settings.setSplitReceiveChannel(MidiReceiveChannelSplit::Common);
+    eventStage.onMIDIMessage({ 0x90, 77, 127 });
+    CHECK(host.didReceiveKeyDown());
+  }
+}
