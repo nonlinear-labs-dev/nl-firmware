@@ -68,7 +68,7 @@ const std::vector<Glib::ustring>& MidiSendChannelSplitSetting::enumToString() co
 
 const std::vector<Glib::ustring>& MidiSendChannelSplitSetting::enumToDisplayString() const
 {
-  static std::vector<Glib::ustring> ret { "None", "1",  "2",  "3",  "4",  "5",  "6",  "7", "8",
-                                          "9",    "10", "11", "12", "13", "14", "15", "16" };
+  static std::vector<Glib::ustring> ret { "None", "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",
+                                          "9",    "10", "11", "12", "13", "14", "15", "16", "Common" };
   return ret;
 }
