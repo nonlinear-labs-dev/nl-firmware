@@ -122,4 +122,5 @@ public class MidiSettings {
     public RibbonMapping ribbonMapping2 = new RibbonMapping();
     public BenderMapping benderMapping = new BenderMapping();
     public AftertouchMapping aftertouchMapping = new AftertouchMapping();
+    public OnOffOption highVelocityCC = new OnOffOption();
 }

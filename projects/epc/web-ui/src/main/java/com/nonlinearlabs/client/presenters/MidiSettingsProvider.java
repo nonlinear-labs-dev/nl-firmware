@@ -220,6 +220,15 @@ public class MidiSettingsProvider {
             }
             return true;
         });
+
+        s.highVelocityCC.onChange(t -> {
+            boolean val = t.equals(BooleanValues.on);
+            if(settings.highVelocityCC.value != val) {
+                settings.highVelocityCC.value = val;
+                notifyClients();
+            }
+            return true;
+        });
 	}
 
 	protected void notifyClients() {

@@ -77,7 +77,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     }
 
     const int secChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getSendSplitChannel());
-    if(secChannel != -1 && m_midiOptions.shouldSendProgramChanges() && pc.programType == SoundType::Split)
+    if(secChannel != -1 && m_midiOptions.shouldSendProgramChanges())
     {
       const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | secChannel;
       m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
@@ -94,13 +94,13 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     {
       const auto receivedChannel = static_cast<int>(e.raw[0]) - 192;
       const auto isOmniReceive = m_midiOptions.getReceiveChannel() == MidiReceiveChannel::Omni;
+      const auto isOmniReceiveSplit = m_midiOptions.getReceiveSplitChannel() == MidiReceiveChannelSplit::Omni;
       const auto receivedChannelMatches
           = m_midiOptions.channelEnumToInt(m_midiOptions.getReceiveChannel()) == receivedChannel;
       const auto receivedSplitChannelMatches
           = m_midiOptions.channelEnumToInt(m_midiOptions.getReceiveSplitChannel()) == receivedChannel;
 
-      if(isOmniReceive || receivedChannelMatches
-         || (m_dsp->getType() == SoundType::Split && receivedSplitChannelMatches))
+      if(isOmniReceive || receivedChannelMatches || receivedSplitChannelMatches || isOmniReceiveSplit)
       {
         if(m_midiOptions.shouldReceiveProgramChanges())
         {

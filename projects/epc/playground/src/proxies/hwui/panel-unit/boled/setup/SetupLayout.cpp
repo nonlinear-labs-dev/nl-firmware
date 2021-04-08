@@ -88,6 +88,7 @@
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 
 namespace NavTree
 {
@@ -834,6 +835,7 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<RibbonCCMapping<2>>(this, "Ribbon 2"));
       children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Bender"));
       children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
+      children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res Velocity (CC 88)"));
     }
   };
 

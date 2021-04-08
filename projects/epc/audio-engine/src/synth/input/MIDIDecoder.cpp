@@ -125,6 +125,12 @@ void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
   const auto _data0 = event.raw[1];
   const auto _data1 = event.raw[2];
 
+  if(_data0 == 88 && m_options->enableHighVelCC())
+  {
+    m_MidiLSB = _data1;
+    return;
+  }
+
   auto hwSourceIDMSB = m_options->ccToMSBHardwareControlID(_data0);
   auto hwSourceIDLSB = m_options->ccToLSBHardwareControlID(_data0);
 

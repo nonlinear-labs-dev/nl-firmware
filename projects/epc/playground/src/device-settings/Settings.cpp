@@ -68,6 +68,7 @@
 #include <device-settings/midi/mappings/BenderCCMapping.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -139,6 +140,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this));
   addSetting("BenderMapping", new BenderCCMapping(*this));
   addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
+  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
 }
 
 Settings::~Settings()

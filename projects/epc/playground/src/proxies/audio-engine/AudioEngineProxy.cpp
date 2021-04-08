@@ -42,6 +42,7 @@
 #include <device-settings/midi/mappings/BenderCCMapping.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <presets/Preset.h>
+#include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -500,13 +501,13 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
   auto settings = Application::get().getSettings();
   m_midiSettingConnections.clear();
 
-  subscribeToMidiSettings<LocalControllersSetting, LocalNotesSetting, MidiReceiveChannelSetting,
-                          MidiReceiveChannelSplitSetting, MidiReceiveProgramChangesSetting,
-                          MidiReceiveControllersSetting, MidiReceiveNotesSetting, MidiReceiveAftertouchCurveSetting,
-                          MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
-                          MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting,
-                          PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
-                          RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping>(settings);
+  subscribeToMidiSettings<
+      LocalControllersSetting, LocalNotesSetting, MidiReceiveChannelSetting, MidiReceiveChannelSplitSetting,
+      MidiReceiveProgramChangesSetting, MidiReceiveControllersSetting, MidiReceiveNotesSetting,
+      MidiReceiveAftertouchCurveSetting, MidiReceiveVelocityCurveSetting, MidiSendChannelSetting,
+      MidiSendChannelSplitSetting, MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting,
+      PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>, RibbonCCMapping<1>,
+      RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC>(settings);
 }
 
 void AudioEngineProxy::scheduleMidiSettingsMessage()
@@ -538,6 +539,8 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
     msg.ribbon2cc = settings->getSetting<RibbonCCMapping<2>>()->get();
     msg.aftertouchcc = settings->getSetting<AftertouchCCMapping>()->get();
     msg.bendercc = settings->getSetting<BenderCCMapping>()->get();
+
+    msg.highVeloCCEnabled = settings->getSetting<EnableHighVelocityCC>()->get();
 
     nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
   });

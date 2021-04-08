@@ -76,7 +76,7 @@ public class Setup extends Composite {
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
 			receiveNotesOff, receiveControllersOn, receiveControllersOff, sendPCOn, sendPCOff, sendNotesOn, 
 			sendNotesOff, sendControllersOn, sendControllersOff, localNotesOn, 
-			localNotesOff, localControllersOn, localControllersOff;
+			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -169,6 +169,7 @@ public class Setup extends Composite {
 		fillRadioButtons(sendControllersOn, sendControllersOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(localNotesOn, localNotesOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(localControllersOn, localControllersOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
 	}
 
 	public void connectEventHandlers() {
@@ -273,6 +274,8 @@ public class Setup extends Composite {
 		ribbon2Mapping.addChangeHandler(e -> settings.setRibbon2Mapping(RibbonCCMapping.values()[ribbon2Mapping.getSelectedIndex()]));
 		aftertouchMapping.addChangeHandler(e -> settings.setAftertouchMapping(AftertouchCCMapping.values()[aftertouchMapping.getSelectedIndex()]));
 		benderMapping.addChangeHandler(e -> settings.setPitchbendMapping(BenderCCMapping.values()[benderMapping.getSelectedIndex()]));
+		highVeloCCOn.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.on));
+		highVeloCCOff.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.off));
 	}
 
 	public void connectUpdate() {
@@ -402,6 +405,8 @@ public class Setup extends Composite {
 		ribbon2Mapping.setSelectedIndex(t.ribbonMapping2.selected);
 		aftertouchMapping.setSelectedIndex(t.aftertouchMapping.selected);
 		benderMapping.setSelectedIndex(t.benderMapping.selected);
+		highVeloCCOn.setValue(t.highVelocityCC.value);
+		highVeloCCOff.setValue(!t.highVelocityCC.value);
 	}
 
 	public void switchPage(Button btn, DivElement page) {

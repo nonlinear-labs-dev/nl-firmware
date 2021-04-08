@@ -28,6 +28,8 @@ void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage
   ribbon2CC = msg.ribbon2cc;
   aftertouchCC = msg.aftertouchcc;
   benderCC = msg.bendercc;
+
+  m_enableHighVelCC = msg.highVeloCCEnabled;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
@@ -293,6 +295,7 @@ int MidiRuntimeOptions::channelEnumToInt(MidiSendChannelSplit channel)
 {
   if(channel == MidiSendChannelSplit::None || channel == MidiSendChannelSplit::Common)
     return -1;
+  //Maybe return Common as -2 if we have to differentiate them
 
   return static_cast<int>(channel) - 1;
 }
@@ -411,4 +414,9 @@ bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed)
     default:
       return false;
   }
+}
+
+bool MidiRuntimeOptions::enableHighVelCC()
+{
+  return m_enableHighVelCC;
 }

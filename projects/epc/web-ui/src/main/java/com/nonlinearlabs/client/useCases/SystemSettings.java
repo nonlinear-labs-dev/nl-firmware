@@ -182,6 +182,11 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("BenderMapping", value.name());
 	}
 
+	public void setHighVelocityCC(BooleanValues b) {
+		SetupModel.get().systemSettings.highVelocityCC.setValue(b);
+		NonMaps.theMaps.getServerProxy().setSetting("HighVeloCC", netify(b.name()));
+	}
+
 	public void setReceiveMidiChannelSplit(MidiReceiveChannelSplit midiReceiveChannelSplit) {
 		SetupModel.get().systemSettings.receiveChannelSplit.setValue(midiReceiveChannelSplit);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveChannelSplit", midiReceiveChannelSplit.name());

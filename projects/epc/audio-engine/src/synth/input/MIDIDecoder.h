@@ -30,6 +30,20 @@ class MIDIDecoder
  protected:
   int keyOrControl = -1;
   uint8_t m_MidiLSB = 0;
+
+  enum class MidiHWChangeSpecialCases {
+    ChannelPitchbend,
+    Aftertouch,
+    PitchbendUp,
+    PitchbendDown,
+    CC
+  };
+
+  struct ReceivedHWMidiEvent {
+    int receivedCC;
+    MidiHWChangeSpecialCases cases;
+  };
+
   float value = 0;  // value or velocity
   DecoderEventType m_type = DecoderEventType::UNKNOWN;
   MidiReceiveChannel m_midiChannel = MidiReceiveChannel::None;

@@ -386,6 +386,7 @@ public class SetupModel {
 		public RibbonMappingDataModelEntity ribbon2Mapping = new RibbonMappingDataModelEntity();
 		public AftertouchMappingDataModelEntity aftertouchMapping = new AftertouchMappingDataModelEntity();
 		public PitchbendMappingDataModelEntity benderMapping = new PitchbendMappingDataModelEntity();
+		public BooleanDataModelEntity highVelocityCC = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {
