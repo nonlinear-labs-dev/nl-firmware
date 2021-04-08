@@ -420,3 +420,31 @@ bool MidiRuntimeOptions::enableHighVelCC()
 {
   return m_enableHighVelCC;
 }
+
+int MidiRuntimeOptions::getMSBCCForHWID(int hwID)
+{
+  auto bender = getBenderMSBCC();
+  auto aftertouch = getAftertouchMSBCC();
+
+  switch(hwID)
+  {
+    case 0:
+      return getCCFor<Midi::MSB::Ped1>();
+    case 1:
+      return getCCFor<Midi::MSB::Ped2>();
+    case 2:
+      return getCCFor<Midi::MSB::Ped3>();
+    case 3:
+      return getCCFor<Midi::MSB::Ped4>();
+    case 4:
+      return bender.second;
+    case 5:
+      return aftertouch.second;
+    case 6:
+      return getCCFor<Midi::MSB::Rib1>();
+    case 7:
+      return getCCFor<Midi::MSB::Rib2>();
+    default:
+      return -1;
+  }
+}

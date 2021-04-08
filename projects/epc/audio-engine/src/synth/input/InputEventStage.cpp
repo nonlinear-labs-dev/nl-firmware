@@ -127,7 +127,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
 
       case DecoderEventType::HardwareChange:
         if(checkMIDIHardwareChangeChannelMatches(decoder))
-          onHWChanged(decoder->getKeyOrControl(), decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
+          onMIDIHWChanged(decoder);
         break;
 
       case DecoderEventType::UNKNOWN:
@@ -631,27 +631,24 @@ int InputEventStage::HWIDToParameterID(int id)
 
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
-  auto sendToDSP = false;
+  auto sendToDSP = [&](auto source) {
+    switch(source)
+    {
+      case DSPInterface::HWChangeSource::MIDI:
+        return m_options->shouldReceiveMIDIControllers();
+      case DSPInterface::HWChangeSource::TCD:
+        return m_options->shouldReceiveLocalControllers();
+      case DSPInterface::HWChangeSource::UI:
+        return true;
+    }
+  };
 
-  switch(source)
-  {
-    case DSPInterface::HWChangeSource::TCD:
-      sendToDSP = m_options->shouldReceiveLocalControllers();
-      break;
-    case DSPInterface::HWChangeSource::MIDI:
-      sendToDSP = m_options->shouldReceiveMIDIControllers();
-      break;
-    case DSPInterface::HWChangeSource::UI:
-      sendToDSP = true;
-      break;
-  }
-
-  if(sendToDSP)
+  if(sendToDSP(source))
   {
     m_dspHost->onHWChanged(hwID, pos);
   }
 
-  if(source != DSPInterface::HWChangeSource::MIDI && m_options->shouldSendControllers())
+  if(m_options->shouldSendControllers() && source != DSPInterface::HWChangeSource::MIDI)
   {
     if(filterUnchangedHWPositions(hwID, pos))
     {
@@ -661,14 +658,68 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(source == DSPInterface::HWChangeSource::MIDI && m_options->shouldReceiveMIDIControllers())
   {
-    nltools::Log::warning("received HWChange via MIDI! for hwID:", hwID);
+    updateUIFromReceivedMIDIHardwareChange(hwID, pos);
+  }
+}
+
+float processMidiForHWSource(DSPInterface *dsp, int id, uint8_t msb, uint8_t lsb)
+{
+  using CC_Range_14_Bit = Midi::clipped14BitCCRange;
+  auto midiVal = (static_cast<uint16_t>(msb) << 7) + lsb;
+
+  if(dsp->getBehaviour(id) == C15::Properties::HW_Return_Behavior::Center)
+    return CC_Range_14_Bit::decodeBipolarMidiValue(midiVal);
+  else
+    return CC_Range_14_Bit::decodeUnipolarMidiValue(midiVal);
+}
+
+void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
+{
+  if(m_options->shouldReceiveMIDIControllers())
+  {
+    auto hwRes = decoder->getHWChangeStruct();
+
+    if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch)
+    {
+      onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
+      return;
+    }
+    else if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend)
+    {
+      onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
+      return;
+    }
+
+    for(auto hwID = 0; hwID < 8; hwID++)
+    {
+      const auto mappedMSBCC = m_options->getMSBCCForHWID(hwID);
+      if(mappedMSBCC != -1 && mappedMSBCC == hwRes.receivedCC)
+      {
+        const auto msb = hwRes.undecodedValueBytes[0];
+        const auto lsb = hwRes.undecodedValueBytes[1];
+        float realVal = processMidiForHWSource(m_dspHost, hwID, msb, lsb);
+        m_dspHost->onHWChanged(hwID, realVal);
+
+        updateUIFromReceivedMIDIHardwareChange(hwID, realVal);
+      }
+      else
+      {
+        //we land here in the special mapping cases
+        nltools::Log::warning("This mapping is not implemented yet!");
+      }
+    }
+  }
+}
+void InputEventStage::updateUIFromReceivedMIDIHardwareChange(int hwID, float realVal) const
+{
+  if(m_options->shouldReceiveMIDIControllers())
+  {
     auto parameterID = HWIDToParameterID(hwID);
     if(parameterID != -1)
     {
-      nltools::Log::warning("sending HWChange that was received via MIDI! value:", pos, "id:", parameterID);
       nltools::msg::Midi::HardwareChangeMessage msg {};
       msg.parameterID = parameterID;
-      msg.value = pos;
+      msg.value = realVal;
       nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
     }
   }

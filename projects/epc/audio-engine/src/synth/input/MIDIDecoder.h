@@ -11,26 +11,6 @@ class MidiRuntimeOptions;
 class MIDIDecoder
 {
  public:
-  MIDIDecoder(DSPInterface* dsp, MidiRuntimeOptions* options);
-  bool decode(const MidiEvent& event);
-
-  [[nodiscard]] DecoderEventType getEventType() const;
-  [[nodiscard]] int getKeyOrControl() const;
-  [[nodiscard]] float getValue() const;
-  [[nodiscard]] MidiReceiveChannel getChannel() const;
-
-  void reset();
-
- private:
-  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
-  using CC_Range_14_Bit = Midi::clipped14BitCCRange;
-  using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
-  using CC_Range_Vel = Midi::clipped14BitVelRange;
-
- protected:
-  int keyOrControl = -1;
-  uint8_t m_MidiLSB = 0;
-
   enum class MidiHWChangeSpecialCases
   {
     ChannelPitchbend,
@@ -44,12 +24,32 @@ class MIDIDecoder
   {
     int receivedCC;
     MidiHWChangeSpecialCases cases;
-
-
-    std::array<uint8_t, 2> undecodedValueBytes;
+    std::array<uint8_t, 2> undecodedValueBytes;  //values are MSB, LSB
   };
 
+  MIDIDecoder(DSPInterface* dsp, MidiRuntimeOptions* options);
+  bool decode(const MidiEvent& event);
+
+  [[nodiscard]] DecoderEventType getEventType() const;
+  [[nodiscard]] int getKeyOrControl() const;
+  [[nodiscard]] float getValue() const;
+  [[nodiscard]] MidiReceiveChannel getChannel() const;
+  [[nodiscard]] ReceivedHWMidiEvent getHWChangeStruct() const;
+
+  void reset();
+
+ private:
+  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
+  using CC_Range_14_Bit = Midi::clipped14BitCCRange;
+  using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
+  using CC_Range_Vel = Midi::clipped14BitVelRange;
+
+ protected:
+  int keyOrControl = -1;
+  uint8_t m_MidiLSB = 0;
+
   float value = 0;  // value or velocity
+  ReceivedHWMidiEvent hwResult;
   DecoderEventType m_type = DecoderEventType::UNKNOWN;
   MidiReceiveChannel m_midiChannel = MidiReceiveChannel::None;
 

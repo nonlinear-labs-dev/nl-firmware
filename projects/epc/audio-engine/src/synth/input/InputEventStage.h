@@ -90,8 +90,10 @@ class InputEventStage
   static int parameterIDToHWID(int id);
   static int HWIDToParameterID(int id);
   void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
+  void onMIDIHWChanged(MIDIDecoder* decoder);
   bool filterUnchangedHWPositions(int id, float pos);
   std::array<float, 8> m_latchedHWPositions { std::numeric_limits<float>::max() };
+  void updateUIFromReceivedMIDIHardwareChange(int hwID, float realVal) const;
 };
 
 namespace InputStateDetail

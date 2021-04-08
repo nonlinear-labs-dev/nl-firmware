@@ -53,8 +53,7 @@ bool MIDIDecoder::decode(const MidiEvent& event)
       handleIncommingCC(event);
       break;
     case MIDIEventTypes::Mono_Aftertouch:
-      m_MidiLSB = 0;
-      keyOrControl = 5;
+      hwResult.cases = MidiHWChangeSpecialCases::Aftertouch;
       value = CC_Range_7_Bit::decodeUnipolarMidiValue(_data0);
       m_midiChannel = statusToChannel(status);
       m_type = DecoderEventType::HardwareChange;
@@ -62,9 +61,9 @@ bool MIDIDecoder::decode(const MidiEvent& event)
 
     case MIDIEventTypes::PitchBender:
       m_MidiLSB = _data0 & 0x7F;
-      keyOrControl = 4;
       value = CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_MidiLSB, 0));
       m_midiChannel = statusToChannel(status);
+      hwResult.cases = MidiHWChangeSpecialCases::ChannelPitchbend;
       m_type = DecoderEventType::HardwareChange;
       break;
 
@@ -122,26 +121,28 @@ MidiReceiveChannel MIDIDecoder::statusToChannel(const uint8_t status)
 void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
 {
   const auto status = event.raw[0];
-  const auto _data0 = event.raw[1];
+  const auto controlChangeID = event.raw[1];
   const auto _data1 = event.raw[2];
 
-  if(_data0 == 88 && m_options->enableHighVelCC())
+  if(controlChangeID == 88 && m_options->enableHighVelCC())
   {
     m_MidiLSB = _data1;
     return;
   }
 
-  auto hwSourceIDMSB = m_options->ccToMSBHardwareControlID(_data0);
-  auto hwSourceIDLSB = m_options->ccToLSBHardwareControlID(_data0);
+  const auto isMSB = controlChangeID > 0 && controlChangeID < 32;
+  const auto isLSB = controlChangeID > 33 && controlChangeID < 64;
+  const auto isSwitching = controlChangeID > 65 && controlChangeID < 70;
 
-  if(hwSourceIDMSB != -1)
+  if(isMSB || isSwitching)
   {
-    processMidiForHWSource(hwSourceIDMSB, _data1);
-    keyOrControl = hwSourceIDMSB;
+    hwResult.cases = MidiHWChangeSpecialCases::CC;
+    hwResult.receivedCC = controlChangeID;
+    hwResult.undecodedValueBytes = { _data1, m_MidiLSB };
     m_midiChannel = statusToChannel(status);
     m_type = DecoderEventType::HardwareChange;
   }
-  else if(hwSourceIDLSB != -1)
+  else if(isLSB)
   {
     m_MidiLSB = _data1 & 0x7F;
   }
@@ -154,4 +155,10 @@ void MIDIDecoder::reset()
   keyOrControl = -1;
   value = 0;
   m_midiChannel = MidiReceiveChannel::None;
+  hwResult = {};
+}
+
+MIDIDecoder::ReceivedHWMidiEvent MIDIDecoder::getHWChangeStruct() const
+{
+  return hwResult;
 }

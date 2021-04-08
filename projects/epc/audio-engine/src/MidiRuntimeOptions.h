@@ -88,6 +88,8 @@ class MidiRuntimeOptions
 
   bool enableHighVelCC();
 
+  int getMSBCCForHWID(int hwID);
+
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;
@@ -106,7 +108,7 @@ class MidiRuntimeOptions
   bool m_localControllers = false;
 
   bool m_enableHighVelCC = false;
-  
+
   PedalCC pedal1CC;
   PedalCC pedal2CC;
   PedalCC pedal3CC;
