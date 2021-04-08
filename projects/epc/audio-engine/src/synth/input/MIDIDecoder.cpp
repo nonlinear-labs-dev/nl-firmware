@@ -138,7 +138,12 @@ void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
   {
     hwResult.cases = MidiHWChangeSpecialCases::CC;
     hwResult.receivedCC = controlChangeID;
-    hwResult.undecodedValueBytes = { _data1, m_MidiLSB };
+
+    if(isSwitching)
+      hwResult.undecodedValueBytes = { static_cast<uint8_t>(_data1 > 64 ? 127 : 0), 0 };
+    else
+      hwResult.undecodedValueBytes = { _data1, m_MidiLSB };
+
     m_midiChannel = statusToChannel(status);
     m_type = DecoderEventType::HardwareChange;
   }

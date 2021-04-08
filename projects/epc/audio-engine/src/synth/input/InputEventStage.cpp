@@ -679,17 +679,6 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
   {
     auto hwRes = decoder->getHWChangeStruct();
 
-    if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch)
-    {
-      onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
-      return;
-    }
-    else if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend)
-    {
-      onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
-      return;
-    }
-
     for(auto hwID = 0; hwID < 8; hwID++)
     {
       const auto mappedMSBCC = m_options->getMSBCCForHWID(hwID);
@@ -704,8 +693,37 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
       }
       else
       {
-        //we land here in the special mapping cases
-        nltools::Log::warning("This mapping is not implemented yet!");
+        if(hwID == 4 && hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend)
+        {
+          onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
+        }
+
+        if(hwID == 5)
+        {
+          if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch)
+          {
+            if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
+            {
+              onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
+            }
+          }
+
+          if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend)
+          {
+            auto pitchbendValue = decoder->getValue();
+
+            if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
+            {
+              pitchbendValue = std::max(0.0f, pitchbendValue);
+              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI);
+            }
+            else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
+            {
+              pitchbendValue = -std::min(0.0f, pitchbendValue);
+              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI);
+            }
+          }
+        }
       }
     }
   }
