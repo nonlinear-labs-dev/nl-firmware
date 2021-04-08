@@ -31,7 +31,8 @@ class MIDIDecoder
   int keyOrControl = -1;
   uint8_t m_MidiLSB = 0;
 
-  enum class MidiHWChangeSpecialCases {
+  enum class MidiHWChangeSpecialCases
+  {
     ChannelPitchbend,
     Aftertouch,
     PitchbendUp,
@@ -39,9 +40,13 @@ class MIDIDecoder
     CC
   };
 
-  struct ReceivedHWMidiEvent {
+  struct ReceivedHWMidiEvent
+  {
     int receivedCC;
     MidiHWChangeSpecialCases cases;
+
+
+    std::array<uint8_t, 2> undecodedValueBytes;
   };
 
   float value = 0;  // value or velocity

@@ -177,7 +177,9 @@ bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
 bool InputEventStage::checkMIDIHardwareChangeChannelMatches(MIDIDecoder *pDecoder)
 {
   const auto channelMatches = m_options->getReceiveChannel() == MidiReceiveChannel::Omni
-      || pDecoder->getChannel() == m_options->getReceiveChannel();
+      || pDecoder->getChannel() == m_options->getReceiveChannel()
+      || MidiRuntimeOptions::normalToSplitChannel(pDecoder->getChannel()) == m_options->getReceiveSplitChannel()
+      || m_options->getReceiveSplitChannel() == MidiReceiveChannelSplit::Omni;
   return channelMatches;
 }
 
