@@ -4,6 +4,13 @@
 
 TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
 {
+  constexpr static uint8_t BASE_TCD = 0b11100000;
+  constexpr static uint8_t Aftertouch = 0b00000101;
+  constexpr static auto sixteenThousand = 0b11111010000000;
+
+  constexpr MidiEvent fullPressureTCDEvent
+      = { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
@@ -26,6 +33,8 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
     msg.sendControllers = true;
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::None;
+    msg.localControllers = true;
     msg.pedal1cc = PedalCC::CC02;
     msg.pedal2cc = PedalCC::CC02;
     msg.pedal3cc = PedalCC::CC02;
@@ -92,6 +101,17 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
       eventStage.onMIDIMessage({ 0xB0, 0x01, 127 });
       CHECK_FALSE(receivedHW);
     }
+
+    WHEN("receive TCD aftertouch, send as MIDI Channel Pressure -> \"-1\"")
+    {
+      eventStage.onTCDMessage(fullPressureTCDEvent);
+      CHECK(receivedHW);
+      CHECK(sendMidiMessages.size() == 1);
+      CHECK(sendMidiMessages[0].numBytesUsed == 3);
+      CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
+      CHECK(sendMidiMessages[0].rawBytes[1] == 0);
+      CHECK(sendMidiMessages[0].rawBytes[2] == 0);
+    }
   }
 
   WHEN("Mapped to Special Case PitchbendUp")
@@ -115,6 +135,42 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
     {
       eventStage.onMIDIMessage({ 0xB0, 0x01, 127 });
       CHECK_FALSE(receivedHW);
+    }
+
+    WHEN("receive TCD aftertouch, send as MIDI Channel Pressure -> 1")
+    {
+      WHEN("Send Split Channel is None")
+      {
+        settings.setSendSplitChannel(MidiSendChannelSplit::None);
+        eventStage.onTCDMessage(fullPressureTCDEvent);
+
+        CHECK(receivedHW);
+        CHECK(sendMidiMessages.size() == 1);
+        CHECK(sendMidiMessages[0].numBytesUsed == 3);
+        CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
+        CHECK(sendMidiMessages[0].rawBytes[1] == 127);
+        CHECK(sendMidiMessages[0].rawBytes[2] == 127);
+      }
+
+      WHEN("Send Split Channel is Different from Send Channel")
+      {
+        settings.setSendChannel(MidiSendChannel::CH_1);
+        settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
+
+        eventStage.onTCDMessage(fullPressureTCDEvent);
+
+        CHECK(receivedHW);
+        CHECK(sendMidiMessages.size() == 2);
+        CHECK(sendMidiMessages[0].numBytesUsed == 3);
+        CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
+        CHECK(sendMidiMessages[0].rawBytes[1] == 127);
+        CHECK(sendMidiMessages[0].rawBytes[2] == 127);
+
+        CHECK(sendMidiMessages[1].numBytesUsed == 3);
+        CHECK(sendMidiMessages[1].rawBytes[0] == 0xE1);
+        CHECK(sendMidiMessages[1].rawBytes[1] == 127);
+        CHECK(sendMidiMessages[1].rawBytes[2] == 127);
+      }
     }
   }
 }
