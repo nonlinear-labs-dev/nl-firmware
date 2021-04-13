@@ -35,8 +35,8 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
 {
   if(decoder)
   {
-    VoiceGroup determinedPart = VoiceGroup::Global;    // initially, we set it to global
-    const SoundType soundType = m_dspHost->getType();  // also, we track the sound type for more safety
+    VoiceGroup determinedPart = VoiceGroup::Global;
+    const SoundType soundType = m_dspHost->getType();
     const bool soundValid = soundType != SoundType::Invalid;
     const auto interface = InputStateDetail::TCD;
 
@@ -69,7 +69,6 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
           }
           else if(soundValid)
           {
-            // Single/Layer Sound acts global (maybe, only primary is preferred?)
             m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
           }
         }
@@ -185,9 +184,6 @@ bool InputEventStage::checkMIDIHardwareChangeChannelMatches(MIDIDecoder *pDecode
 
 void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
-  using CC_Range_Vel = Midi::clipped14BitVelRange;
-  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
-
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
   const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
   const auto key = pDecoder->getKeyOrController();
@@ -250,10 +246,6 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 
 void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
-  // key up events should include part evaluation (as key down events)
-  using CC_Range_Vel = Midi::clipped14BitVelRange;
-  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
-
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
   const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
   const auto key = pDecoder->getKeyOrController();
@@ -367,7 +359,6 @@ void InputEventStage::sendCCOut(int hwID, float value, int msbCC, int lsbCC)
 {
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
 
-  //CHECK if pedal is switching and only send MSB message
   if(m_dspHost->getBehaviour(hwID) == C15::Properties::HW_Return_Behavior::Center)
     doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
   else
@@ -756,4 +747,14 @@ bool InputEventStage::filterUnchangedHWPositions(int id, float pos)
     return true;
   }
   return false;
+}
+
+constexpr uint16_t InputEventStage::midiReceiveChannelMask(const MidiReceiveChannel &_channel)
+{
+  return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
+}
+
+constexpr uint16_t InputEventStage::midiReceiveChannelMask(const MidiReceiveChannelSplit &_channel)
+{
+  return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
 }

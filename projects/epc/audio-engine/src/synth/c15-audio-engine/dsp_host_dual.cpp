@@ -16,66 +16,8 @@ using namespace std::chrono_literals;
 
 dsp_host_dual::dsp_host_dual()
 {
-  m_hwSourcesMidiLSB.fill(0);
   m_mainOut_L = m_mainOut_R = 0.0f;
   m_layer_mode = C15::Properties::LayerMode::Single;
-
-  // pitch bend
-  assert(CC_Range_Bender::encodeBipolarMidiValue(-1.5f) == 0x0000);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(-1.0f) == 0x0000);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(0.0f) == 0x2000);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(1.0f) == 0x3FFF);
-  assert(CC_Range_Bender::encodeBipolarMidiValue(1.5f) == 0x3FFF);
-
-  assert(CC_Range_Bender::decodeBipolarMidiValue(0x0000) == -1.0f);
-  assert(CC_Range_Bender::decodeBipolarMidiValue(0x2000) == 0.0f);
-  assert(CC_Range_Bender::decodeBipolarMidiValue(0x3FFF) == 1.0f);
-
-  // 14 bit bipolar controllers
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(-1.5f) == 0x0000);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(-1.0f) == 0x0000);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(0.0f) == 0x2000);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(1.0f) == 0x3F80);
-  assert(CC_Range_14_Bit::encodeBipolarMidiValue(1.5f) == 0x3F80);
-
-  assert(CC_Range_14_Bit::decodeBipolarMidiValue(0x0000) == -1.0f);
-  assert(CC_Range_14_Bit::decodeBipolarMidiValue(0x2000) == 0.0f);
-  assert(CC_Range_14_Bit::decodeBipolarMidiValue(0x3F80) == 1.0f);
-
-  // 14 bit unipolar controllers
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(-0.5f) == 0x0000);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(0.0f) == 0x0000);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(0.5f) == 0x2000);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(1.0f) == 0x3F80);
-  assert(CC_Range_14_Bit::encodeUnipolarMidiValue(1.5f) == 0x3F80);
-
-  assert(CC_Range_14_Bit::decodeUnipolarMidiValue(0x0000) == 0.0f);
-  assert(CC_Range_14_Bit::decodeUnipolarMidiValue(0x2000) == 0.5f);
-  assert(CC_Range_14_Bit::decodeUnipolarMidiValue(0x3F80) == 1.0f);
-
-  // 7 bit unipolar controllers
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(-0.5f) == 0x00);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(0.0f) == 0x00);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(0.5f) == 0x40);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(1.0f) == 0x7F);
-  assert(CC_Range_7_Bit::encodeUnipolarMidiValue(1.5f) == 0x7F);
-
-  assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x00) == 0.0f);
-  assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x40) == 0.5f);
-  assert(CC_Range_7_Bit::decodeUnipolarMidiValue(0x7F) == 1.0f);
-
-  // velocity control
-  assert(CC_Range_Vel::encodeUnipolarMidiValue(-0.5f) == 0x0000);
-  assert(CC_Range_Vel::encodeUnipolarMidiValue(0.0f) == 0x0080);
-  assert(CC_Range_Vel::encodeUnipolarMidiValue(0.5f) == 0x2000);
-  assert(CC_Range_Vel::encodeUnipolarMidiValue(1.0f) == 0x3F80);
-  assert(CC_Range_Vel::encodeUnipolarMidiValue(1.5f) == 0x3F80);
-
-  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x0000) == 0.0f);
-  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x0080) == 0.0f);
-  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x2000) == 0.5f);
-  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x3F80) == 1.0f);
-  assert(CC_Range_Vel::decodeUnipolarMidiValue(0x3FFF) == 1.0f);
 }
 
 void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
@@ -132,9 +74,9 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate, upsampleFactor);
   // init parameters by parameter list
   m_params.init_modMatrix();
-  for(uint32_t i = 0; i < C15::Config::tcd_elements; i++)
+
+  for(auto element : C15::ParameterList)
   {
-    auto element = C15::ParameterList[i];
     switch(element.m_param.m_type)
     {
       // (global) unmodulateable parameters need their properties and can directly feed to global signals
@@ -341,78 +283,71 @@ void dsp_host_dual::logStatus()
   else if(LOG_ENGINE_EDITS)
   {
     nltools::Log::info("Engine Param Status - - - - - - - - - - - - - - - \n\n");
-    for(uint32_t i = 0; i < LOG_PARAMS_LENGTH; i++)
+    for(unsigned int i : LOG_PARAMS)
     {
-      auto element = C15::ParameterList[LOG_PARAMS[i]];
+      auto element = C15::ParameterList[i];
       switch(element.m_param.m_type)
       {
         case C15::Descriptors::ParameterType::None:
           break;
         case C15::Descriptors::ParameterType::Hardware_Source:
-          nltools::Log::info("HW[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short,
+          nltools::Log::info("HW[", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short,
                              ":(pos:", m_params.get_hw_src(element.m_param.m_index)->m_position,
                              ", beh:", static_cast<int>(m_params.get_hw_src(element.m_param.m_index)->m_behavior), ")");
           break;
         case C15::Descriptors::ParameterType::Hardware_Amount:
-          nltools::Log::info("HA[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short,
+          nltools::Log::info("HA[", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short,
                              ":(pos:", m_params.get_hw_amt(element.m_param.m_index)->m_position, ")");
           break;
         case C15::Descriptors::ParameterType::Macro_Control:
-          nltools::Log::info("MC[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short,
+          nltools::Log::info("MC[", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short,
                              ":(pos:", m_params.get_macro(element.m_param.m_index)->m_position, ")");
           break;
         case C15::Descriptors::ParameterType::Macro_Time:
-          nltools::Log::info("MT[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short,
+          nltools::Log::info("MT[", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short,
                              ":(pos:", m_params.get_macro_time(element.m_param.m_index)->m_position,
                              ", scl:", m_params.get_macro_time(element.m_param.m_index)->m_scaled, ")");
           break;
         case C15::Descriptors::ParameterType::Global_Modulateable:
-          nltools::Log::info("GT[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short, ":(pos:",
-                             m_params.get_global_target(element.m_param.m_index)
-                                 ->polarize(m_params.get_global_target(element.m_param.m_index)->m_position),
-                             ", scl:", m_params.get_global_target(element.m_param.m_index)->m_scaled,
-                             ", amt:", m_params.get_global_target(element.m_param.m_index)->m_amount,
-                             ", src:", static_cast<int>(m_params.get_global_target(element.m_param.m_index)->m_source),
-                             ")");
+          nltools::Log::info(
+              "GT[", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short, ":(pos:",
+              m_params.get_global_target(element.m_param.m_index)
+                  ->polarize(m_params.get_global_target(element.m_param.m_index)->m_position),
+              ", scl:", m_params.get_global_target(element.m_param.m_index)->m_scaled,
+              ", amt:", m_params.get_global_target(element.m_param.m_index)->m_amount,
+              ", src:", static_cast<int>(m_params.get_global_target(element.m_param.m_index)->m_source), ")");
           break;
         case C15::Descriptors::ParameterType::Global_Unmodulateable:
-          nltools::Log::info("GD[", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short,
+          nltools::Log::info("GD[", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short,
                              ":(pos:", m_params.get_global_direct(element.m_param.m_index)->m_position,
                              ", scl:", m_params.get_global_direct(element.m_param.m_index)->m_scaled, ")");
           break;
         case C15::Descriptors::ParameterType::Local_Modulateable:
-          nltools::Log::info("LT[I, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short, ":(pos:",
-                             m_params.get_local_target(0, element.m_param.m_index)
-                                 ->polarize(m_params.get_local_target(0, element.m_param.m_index)->m_position),
-                             ", scl:", m_params.get_local_target(0, element.m_param.m_index)->m_scaled,
-                             ", amt:", m_params.get_local_target(0, element.m_param.m_index)->m_amount, ", src:",
-                             static_cast<int>(m_params.get_local_target(0, element.m_param.m_index)->m_source), ")");
+          nltools::Log::info(
+              "LT[I, ", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short, ":(pos:",
+              m_params.get_local_target(0, element.m_param.m_index)
+                  ->polarize(m_params.get_local_target(0, element.m_param.m_index)->m_position),
+              ", scl:", m_params.get_local_target(0, element.m_param.m_index)->m_scaled,
+              ", amt:", m_params.get_local_target(0, element.m_param.m_index)->m_amount,
+              ", src:", static_cast<int>(m_params.get_local_target(0, element.m_param.m_index)->m_source), ")");
           if(m_layer_mode != C15::Properties::LayerMode::Single)
           {
-            nltools::Log::info("LT[II, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                               element.m_pg.m_param_label_short, ":(pos:",
-                               m_params.get_local_target(1, element.m_param.m_index)
-                                   ->polarize(m_params.get_local_target(1, element.m_param.m_index)->m_position),
-                               ", scl:", m_params.get_local_target(1, element.m_param.m_index)->m_scaled,
-                               ", amt:", m_params.get_local_target(1, element.m_param.m_index)->m_amount, ", src:",
-                               static_cast<int>(m_params.get_local_target(1, element.m_param.m_index)->m_source), ")");
+            nltools::Log::info(
+                "LT[II, ", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short, ":(pos:",
+                m_params.get_local_target(1, element.m_param.m_index)
+                    ->polarize(m_params.get_local_target(1, element.m_param.m_index)->m_position),
+                ", scl:", m_params.get_local_target(1, element.m_param.m_index)->m_scaled,
+                ", amt:", m_params.get_local_target(1, element.m_param.m_index)->m_amount,
+                ", src:", static_cast<int>(m_params.get_local_target(1, element.m_param.m_index)->m_source), ")");
           }
           break;
         case C15::Descriptors::ParameterType::Local_Unmodulateable:
-          nltools::Log::info("LD[I, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
-                             element.m_pg.m_param_label_short,
+          nltools::Log::info("LD[I, ", i, "]", element.m_pg.m_group_label_short, ">", element.m_pg.m_param_label_short,
                              ":(pos:", m_params.get_local_direct(0, element.m_param.m_index)->m_position,
                              ", scl:", m_params.get_local_direct(0, element.m_param.m_index)->m_scaled, ")");
           if(m_layer_mode != C15::Properties::LayerMode::Single)
           {
-            nltools::Log::info("LD[II, ", LOG_PARAMS[i], "]", element.m_pg.m_group_label_short, ">",
+            nltools::Log::info("LD[II, ", i, "]", element.m_pg.m_group_label_short, ">",
                                element.m_pg.m_param_label_short,
                                ":(pos:", m_params.get_local_direct(1, element.m_param.m_index)->m_position,
                                ", scl:", m_params.get_local_direct(1, element.m_param.m_index)->m_scaled, ")");
@@ -422,153 +357,6 @@ void dsp_host_dual::logStatus()
     }
     nltools::Log::info("\n\n - - - - - - - - - - - - - - - Engine Param Status");
   }
-}
-
-// in theory unsued...
-template <typename Range> void dsp_host_dual::processBipolarMidiController(const uint32_t dataByte, int id)
-{
-  auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
-  auto value = Range::decodeBipolarMidiValue(midiVal);
-  processNormalizedMidiController(id, value);
-}
-
-// in theory unsued...
-template <typename Range> void dsp_host_dual::processUnipolarMidiController(const uint32_t dataByte, int id)
-{
-  auto midiVal = (dataByte << 7) + std::exchange(m_hwSourcesMidiLSB[id], 0);
-  auto value = Range::decodeUnipolarMidiValue(midiVal);
-  processNormalizedMidiController(id, value);
-}
-// in theory unsued...
-void dsp_host_dual::processNormalizedMidiController(const uint32_t _id, const float _controlPosition)
-{
-  auto source = m_params.get_hw_src(_id);
-  const float inc = _controlPosition - source->m_position;
-  source->m_position = _controlPosition;
-  hwModChain(source, _id, inc);
-}
-
-// UNUSED
-void dsp_host_dual::processMidiForHWSource(int id, uint32_t _data)
-{
-  if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
-    processBipolarMidiController<CC_Range_14_Bit>(_data, id);
-  else
-    processUnipolarMidiController<CC_Range_14_Bit>(_data, id);
-}
-
-//todo add midi Out CB
-void dsp_host_dual::onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1)
-{
-  //  //todo use midiOut
-  //  const uint32_t type = (_status & 127) >> 4;
-  //  if(LOG_MIDI_RAW)
-  //  {
-  //    nltools::Log::info("rawMidi(chan:", _status & 15, ", type:", type, ", data0:", _data0, ", data1:", _data1, ")");
-  //  }
-  //  switch(type)
-  //  {
-  //    case 0:
-  //      // note off (without note shift)
-  //      {
-  //        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
-  //        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
-  //        m_key_pos = _data0;
-  //        keyUp(vel);
-  //      }
-  //      break;
-  //    case 1:
-  //      // note on (without note shift)
-  //      {
-  //        const uint16_t fullResVel = (_data1 << 7) + std::exchange(m_velocityLSB, 0);
-  //        const float vel = CC_Range_Vel::decodeUnipolarMidiValue(fullResVel);
-  //        m_key_pos = _data0;
-  //        if(CC_Range_Vel::isValidNoteOnVelocity(fullResVel))
-  //        {
-  //          keyDown(vel);
-  //        }
-  //        else
-  //        {
-  //          keyUp(0.0f);
-  //        }
-  //      }
-  //      break;
-  //    case 3:
-  //      switch(_data0)
-  //      {
-  //        case Midi::getMSB::getCC<Midi::MSB::Ped1>():
-  //          processMidiForHWSource(0, _data1);
-  //          break;
-  //
-  //        case Midi::getMSB::getCC<Midi::MSB::Ped2>():
-  //          processMidiForHWSource(1, _data1);
-  //          break;
-  //
-  //        case Midi::getMSB::getCC<Midi::MSB::Ped3>():
-  //          processMidiForHWSource(2, _data1);
-  //          break;
-  //
-  //        case Midi::getMSB::getCC<Midi::MSB::Ped4>():
-  //          processMidiForHWSource(3, _data1);
-  //          break;
-  //
-  //        case Midi::getMSB::getCC<Midi::MSB::Rib1>():
-  //          processMidiForHWSource(6, _data1);
-  //          break;
-  //
-  //        case Midi::getMSB::getCC<Midi::MSB::Rib2>():
-  //          processMidiForHWSource(7, _data1);
-  //          break;
-  //
-  //        case Midi::getLSB::getCC<Midi::LSB::Ped1>():
-  //          m_hwSourcesMidiLSB[0] = _data1 & 0x7F;
-  //          break;
-  //
-  //        case Midi::getLSB::getCC<Midi::LSB::Ped2>():
-  //          m_hwSourcesMidiLSB[1] = _data1 & 0x7F;
-  //          break;
-  //
-  //        case Midi::getLSB::getCC<Midi::LSB::Ped3>():
-  //          m_hwSourcesMidiLSB[2] = _data1 & 0x7F;
-  //          break;
-  //
-  //        case Midi::getLSB::getCC<Midi::LSB::Ped4>():
-  //          m_hwSourcesMidiLSB[3] = _data1 & 0x7F;
-  //          break;
-  //
-  //        case Midi::getLSB::getCC<Midi::LSB::Rib1>():
-  //          m_hwSourcesMidiLSB[6] = _data1 & 0x7F;
-  //          break;
-  //
-  //        case Midi::getLSB::getCC<Midi::LSB::Rib2>():
-  //          m_hwSourcesMidiLSB[7] = _data1 & 0x7F;
-  //          break;
-  //
-  //        case Midi::getLSB::getCC<Midi::LSB::Vel>():
-  //          m_velocityLSB = _data1 & 0x7F;
-  //          break;
-  //
-  //        default:
-  //          break;
-  //      }
-  //      break;
-  //    case 5:
-  //      // mono aftertouch (hw source)
-  //      m_hwSourcesMidiLSB[5] = 0;
-  //      processNormalizedMidiController(5, CC_Range_7_Bit::decodeUnipolarMidiValue(_data0));
-  //      break;
-  //
-  //    case 6:
-  //      // bender
-  //      // pitch bend messages are: STATUS LSB MSB
-  //      m_hwSourcesMidiLSB[4] = _data0 & 0x7F;
-  //      processNormalizedMidiController(
-  //          4, CC_Range_Bender::decodeBipolarMidiValue((_data1 << 7) + std::exchange(m_hwSourcesMidiLSB[4], 0)));
-  //      break;
-  //
-  //    default:
-  //      break;
-  //  }
 }
 
 void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _msg)
@@ -582,14 +370,16 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      recallSingle(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          recallSingle(_msg);
+        });
 
     if(LOG_RECALL)
     {
@@ -612,14 +402,16 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      recallSplit(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          recallSplit(_msg);
+        });
 
     if(LOG_RECALL)
     {
@@ -641,14 +433,16 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      recallLayer(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          recallLayer(_msg);
+        });
 
     if(LOG_RECALL)
     {
@@ -658,29 +452,6 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   else
   {
     recallLayer(_msg);
-  }
-}
-
-void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWSourceChangedMessage& _msg)
-{
-  auto param = m_params.get_hw_src(_id);
-  float inc = -param->m_position;
-  if(param->update_behavior(getBehavior(_msg.returnMode)))
-  {
-    param->update_position(static_cast<float>(_msg.controlPosition));
-    if(LOG_EDITS)
-    {
-      nltools::Log::info("hw_edit(pos:", param->m_position, ", behavior:", static_cast<int>(param->m_behavior), ")");
-    }
-  }
-  else if(param->update_position(static_cast<float>(_msg.controlPosition)))
-  {
-    if(LOG_EDITS)
-    {
-      nltools::Log::info("hw_edit(pos:", param->m_position, ")");
-    }
-    inc += param->m_position;
-    hwModChain(param, _id, inc);
   }
 }
 
@@ -925,22 +696,24 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
     }
 
     // application now via fade point
-    m_fade.muteAndDo([&] {
-      // apply (preloaded) unison change
-      m_alloc.setUnison(layerId, param->m_position, m_layer_mode, m_layer_mode);
-      // apply reset to affected poly compoments
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
-      m_poly[layerId].m_key_active = 0;
-      if(m_layer_mode != LayerMode::Split)
-      {
-        // apply reset to other poly components (when not in split mode)
-        const uint32_t lId = 1 - layerId;
-        m_poly[lId].resetEnvelopes();
-        m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
-        m_poly[lId].m_key_active = 0;
-      }
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // apply (preloaded) unison change
+          m_alloc.setUnison(layerId, param->m_position, m_layer_mode, m_layer_mode);
+          // apply reset to affected poly compoments
+          m_poly[layerId].resetEnvelopes();
+          m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
+          m_poly[layerId].m_key_active = 0;
+          if(m_layer_mode != LayerMode::Split)
+          {
+            // apply reset to other poly components (when not in split mode)
+            const uint32_t lId = 1 - layerId;
+            m_poly[lId].resetEnvelopes();
+            m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
+            m_poly[lId].m_key_active = 0;
+          }
+        });
   }
 }
 
@@ -956,20 +729,22 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
-    m_fade.muteAndDo([&] {
-      // apply (preloaded) mono change
-      m_alloc.setMonoEnable(layerId, param->m_scaled, m_layer_mode);
-      // apply reset to affected poly compoments
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_key_active = 0;
-      if(m_layer_mode != LayerMode::Split)
-      {
-        // apply reset to other poly components (when not in split mode)
-        const uint32_t lId = 1 - layerId;
-        m_poly[lId].resetEnvelopes();
-        m_poly[lId].m_key_active = 0;
-      }
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // apply (preloaded) mono change
+          m_alloc.setMonoEnable(layerId, param->m_scaled, m_layer_mode);
+          // apply reset to affected poly compoments
+          m_poly[layerId].resetEnvelopes();
+          m_poly[layerId].m_key_active = 0;
+          if(m_layer_mode != LayerMode::Split)
+          {
+            // apply reset to other poly components (when not in split mode)
+            const uint32_t lId = 1 - layerId;
+            m_poly[lId].resetEnvelopes();
+            m_poly[lId].m_key_active = 0;
+          }
+        });
   }
 }
 
@@ -1470,99 +1245,6 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
       break;
   }
   return result;
-}
-
-// in theory unsued... should be handled by InputEventStage...
-template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb, typename Out>
-void doSendCCOut(const Out& out, uint16_t value)
-{
-  uint8_t statusByte = static_cast<uint8_t>(0xB0);
-  uint8_t lsbValByte = static_cast<uint8_t>(value & 0x7F);
-  out({ statusByte, Midi::getLSB::getCC<lsb>(), lsbValByte });
-
-  uint8_t msbValByte = static_cast<uint8_t>(value >> 7 & 0x7F);
-  out({ statusByte, Midi::getMSB::getCC<msb>(), msbValByte });
-}
-
-// in theory unsued... should be handled by InputEventStage...
-template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb>
-void dsp_host_dual::sendCCOut(int id, float controlPosition, const MidiOut& out)
-{
-  if(m_params.get_hw_src(id)->m_behavior == C15::Properties::HW_Return_Behavior::Center)
-    doSendCCOut<msb, lsb>(out, CC_Range_14_Bit::encodeBipolarMidiValue(controlPosition));
-  else
-    doSendCCOut<msb, lsb>(out, CC_Range_14_Bit::encodeUnipolarMidiValue(controlPosition));
-}
-
-// in theory unsued... should be handled by InputEventStage...
-void dsp_host_dual::hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out)
-{
-  switch(static_cast<C15::Parameters::Hardware_Sources>(id))
-  {
-    case C15::Parameters::Hardware_Sources::Pedal_1:
-      sendCCOut<Midi::MSB::Ped1, Midi::LSB::Ped1>(0, controlPosition, out);
-      break;
-
-    case C15::Parameters::Hardware_Sources::Pedal_2:
-      sendCCOut<Midi::MSB::Ped2, Midi::LSB::Ped2>(1, controlPosition, out);
-      break;
-
-    case C15::Parameters::Hardware_Sources::Pedal_3:
-      sendCCOut<Midi::MSB::Ped3, Midi::LSB::Ped3>(2, controlPosition, out);
-      break;
-
-    case C15::Parameters::Hardware_Sources::Pedal_4:
-      sendCCOut<Midi::MSB::Ped4, Midi::LSB::Ped4>(3, controlPosition, out);
-      break;
-
-    case C15::Parameters::Hardware_Sources::Ribbon_1:
-      sendCCOut<Midi::MSB::Rib1, Midi::LSB::Rib1>(6, controlPosition, out);
-      break;
-
-    case C15::Parameters::Hardware_Sources::Ribbon_2:
-      sendCCOut<Midi::MSB::Rib2, Midi::LSB::Rib2>(7, controlPosition, out);
-      break;
-
-    case C15::Parameters::Hardware_Sources::Bender:
-    {
-      auto value = CC_Range_Bender::encodeBipolarMidiValue(controlPosition);
-      uint8_t statusByte = static_cast<uint8_t>(0xE0);
-      uint8_t valByte1 = static_cast<uint8_t>(value & 0x7F);
-      uint8_t valByte2 = static_cast<uint8_t>((value >> 7) & 0x7F);
-      // Pitch Bend Messages are: Status LSB MSB
-      out({ statusByte, valByte1, valByte2 });
-      break;
-    }
-
-    case C15::Parameters::Hardware_Sources::Aftertouch:
-    {
-      uint8_t statusByte = static_cast<uint8_t>(0xD0);
-      uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(controlPosition);
-      out({ statusByte, valByte });
-      break;
-    }
-
-    default:
-      break;
-  }
-}
-
-// UNUSED
-void dsp_host_dual::updateHW(const uint32_t _id, const float _raw, const MidiOut& out)
-{
-  auto source = m_params.get_hw_src(_id);
-  float value = _raw * m_norm_hw;
-
-  if(source->m_behavior == C15::Properties::HW_Return_Behavior::Center)
-  {
-    value = (2.0f * value) - 1.0f;  // make return_to_center sources bipolar
-  }
-
-  hwSourceToMidi(_id, value, out);
-
-  const float inc = value - source->m_position;
-  source->m_position = value;
-  hwModChain(source, _id, inc);
 }
 
 void dsp_host_dual::updateTime(Time_Aspect* _param, const float _ms)
@@ -2184,7 +1866,7 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   auto msg = &_msg;
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
-    const C15::Properties::LayerId layer = static_cast<C15::Properties::LayerId>(layerId);
+    const auto layer = static_cast<C15::Properties::LayerId>(layerId);
 
     // update unison and mono groups
     auto polyChanged = evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
@@ -2214,18 +1896,19 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   {
     nltools::Log::info("recall: hw sources:");
   }
-  for(uint32_t i = 0; i < msg->hwsources.size(); i++)
+
+  for(const auto& hwsource : msg->hwsources)
   {
-    globalParRcl(msg->hwsources[i]);
+    globalParRcl(hwsource);
   }
   // global updates: hw amounts
   if(LOG_RECALL)
   {
     nltools::Log::info("recall: hw amounts:");
   }
-  for(uint32_t i = 0; i < msg->hwamounts.size(); i++)
+  for(auto hwamount : msg->hwamounts)
   {
-    globalParRcl(msg->hwamounts[i]);
+    globalParRcl(hwamount);
   }
   // global updates: macros
   if(LOG_RECALL)
@@ -2233,13 +1916,13 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
     nltools::Log::info("recall: macros:");
   }
 
-  for(uint32_t i = 0; i < msg->macros.size(); i++)
+  for(auto macro : msg->macros)
   {
-    globalParRcl(msg->macros[i]);
+    globalParRcl(macro);
   }
-  for(uint32_t i = 0; i < msg->macrotimes.size(); i++)
+  for(auto macrotime : msg->macrotimes)
   {
-    globalTimeRcl(msg->macrotimes[i]);
+    globalTimeRcl(macrotime);
   }
   // global updates: parameters
   if(LOG_RECALL)
@@ -2252,9 +1935,9 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
-  for(uint32_t i = 0; i < msg->scale.size(); i++)
+  for(auto i : msg->scale)
   {
-    globalParRcl(msg->scale[i]);
+    globalParRcl(i);
   }
   // local updates (each layer)
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
@@ -2367,18 +2050,18 @@ void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
   {
     nltools::Log::info("recall: hw sources:");
   }
-  for(uint32_t i = 0; i < msg->hwsources.size(); i++)
+  for(const auto& hwsource : msg->hwsources)
   {
-    globalParRcl(msg->hwsources[i]);
+    globalParRcl(hwsource);
   }
   // global updates: hw amounts
   if(LOG_RECALL)
   {
     nltools::Log::info("recall: hw amounts:");
   }
-  for(uint32_t i = 0; i < msg->hwamounts.size(); i++)
+  for(auto hwamount : msg->hwamounts)
   {
-    globalParRcl(msg->hwamounts[i]);
+    globalParRcl(hwamount);
   }
   // global updates: macros
   if(LOG_RECALL)
@@ -2386,13 +2069,13 @@ void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
     nltools::Log::info("recall: macros:");
   }
 
-  for(uint32_t i = 0; i < msg->macros.size(); i++)
+  for(auto macro : msg->macros)
   {
-    globalParRcl(msg->macros[i]);
+    globalParRcl(macro);
   }
-  for(uint32_t i = 0; i < msg->macrotimes.size(); i++)
+  for(auto macrotime : msg->macrotimes)
   {
-    globalTimeRcl(msg->macrotimes[i]);
+    globalTimeRcl(macrotime);
   }
   // global updates: parameters
   if(LOG_RECALL)
@@ -2405,9 +2088,9 @@ void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
   {
     nltools::Log::info("recall: global params (unmodulateables):");
   }
-  for(uint32_t i = 0; i < msg->scale.size(); i++)
+  for(auto i : msg->scale)
   {
-    globalParRcl(msg->scale[i]);
+    globalParRcl(i);
   }
   // local updates: unison, mono - updating va
   localPolyRcl(0, true, msg->unison, msg->mono);
@@ -2695,7 +2378,7 @@ void dsp_host_dual::localPolyRcl(const uint32_t _layerId, const bool _va_update,
   {
     localParRcl(_layerId, _mono.priority);
     localParRcl(_layerId, _mono.legato);
-    const C15::Properties::LayerId layerId = static_cast<C15::Properties::LayerId>(_layerId);
+    const auto layerId = static_cast<C15::Properties::LayerId>(_layerId);
     m_alloc.setMonoPriority(_layerId, m_params.get_local_mono_priority(layerId)->m_scaled, m_layer_mode);
     m_alloc.setMonoLegato(_layerId, m_params.get_local_mono_legato(layerId)->m_scaled, m_layer_mode);
   }
@@ -2720,7 +2403,6 @@ void dsp_host_dual::debugLevels()
 // seems to work (ui and midi, tcd untested but expected to work as well)
 void dsp_host_dual::onHWChanged(const uint32_t id, float value)
 {
-  //  processNormalizedMidiController(id, value);
   auto source = m_params.get_hw_src(id);
   const float inc = value - source->m_position;
   source->m_position = value;
@@ -2886,14 +2568,16 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
 
 void dsp_host_dual::onMidiSettingsReceived()
 {
-  m_fade.muteAndDo([&] {
-    // reset voice allocation
-    m_alloc.reset();
-    // reset envelopes in both parts
-    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-    {
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_key_active = 0;
-    }
-  });
+  m_fade.muteAndDo(
+      [&]
+      {
+        // reset voice allocation
+        m_alloc.reset();
+        // reset envelopes in both parts
+        for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+        {
+          m_poly[layerId].resetEnvelopes();
+          m_poly[layerId].m_key_active = 0;
+        }
+      });
 }

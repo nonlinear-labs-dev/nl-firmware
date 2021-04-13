@@ -23,28 +23,39 @@ class InputEventStage
   void setNoteShift(int i);
 
  private:
-  TCDDecoder m_tcdDecoder;
-  MIDIDecoder m_midiDecoder;
-  DSPInterface* m_dspHost;
-  MidiRuntimeOptions* m_options;
-  MIDIOut m_midiOut;
-  KeyShift m_shifteable_keys;
+  using CC_Range_Vel = Midi::clipped14BitVelRange;
+  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
 
+  //TCD/MIDI In
   bool checkMIDIKeyEventEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIHardwareChangeChannelMatches(MIDIDecoder* pDecoder);
   void onMIDIEvent(MIDIDecoder* decoder);
-
   void onTCDEvent(TCDDecoder* decoder);
-  void sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
-  void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
-  void sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
-  void sendHardwareChangeAsMidi(int hwID, float value);
-  void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
-  void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
+  void onMIDIHWChanged(MIDIDecoder* decoder);
+
+  //Algorithm
+  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, const int keyNumber);
   DSPInterface::InputEvent getInterfaceFromParsedChannel(MidiReceiveChannel channel);
+  bool filterUnchangedHWPositions(int id, float pos);
 
-  friend class InputEventStageTester;
+  static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
+  static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel);
+  static int parameterIDToHWID(int id);
+  static int HWIDToParameterID(int id);
+
+  //MIDI and UI out
+  void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
+  void sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
+  void sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
+  void sendHardwareChangeAsMidi(int hwID, float value);
+  void doSendAftertouchOut(float value);
+  void doSendBenderOut(float value);
+
+  void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
+  void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
+
+  void updateUIFromReceivedMIDIHardwareChange(int hwID, float realVal) const;
 
   static constexpr uint16_t c_midiReceiveMaskTable[19] = {
     0x0000,  // None (no bit is set)
@@ -68,32 +79,15 @@ class InputEventStage
     0x0000   // Common = None
   };
 
-  static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel)
-  {
-    return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
-  }
-
-  static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel)
-  {
-    return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
-  }
-
-  static constexpr uint16_t midiReceiveChannelMask(const uint8_t& _channel)
-  {
-    if(_channel > 15)
-      return 0;                                   // fail-safe (but a midi channel shouldn't go beyond 15 anyway)
-    return c_midiReceiveMaskTable[2 + _channel];  // we read out the mask matching the specific channel id
-  }
-
-  void doSendAftertouchOut(float value);
-  void doSendBenderOut(float value);
-  static int parameterIDToHWID(int id);
-  static int HWIDToParameterID(int id);
-  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
-  void onMIDIHWChanged(MIDIDecoder* decoder);
-  bool filterUnchangedHWPositions(int id, float pos);
+  TCDDecoder m_tcdDecoder;
+  MIDIDecoder m_midiDecoder;
+  DSPInterface* m_dspHost;
+  MidiRuntimeOptions* m_options;
+  MIDIOut m_midiOut;
+  KeyShift m_shifteable_keys;
   std::array<float, 8> m_latchedHWPositions { std::numeric_limits<float>::max() };
-  void updateUIFromReceivedMIDIHardwareChange(int hwID, float realVal) const;
+
+  friend class InputEventStageTester;
 };
 
 namespace InputStateDetail

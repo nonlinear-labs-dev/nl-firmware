@@ -134,13 +134,10 @@ class dsp_host_dual : public DSPInterface
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
 
-  void onMidiMessage(const uint32_t _status, const uint32_t _data0, const uint32_t _data1);
   // event bindings: Preset Messages
   void onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
   void onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
   void onPresetMessage(const nltools::msg::LayerPresetMessage& _msg);
-  // event bindings: Parameter Changed Messages
-  void globalParChg(const uint32_t _id, const nltools::msg::HWSourceChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
@@ -165,7 +162,6 @@ class dsp_host_dual : public DSPInterface
 
   using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
   HWSourceValues getHWSourceValues() const;
-  void hwSourceToMidi(const uint32_t id, const float controlPosition, const MidiOut& out);
   SoundType getType() override;
   VoiceGroup getSplitPartForKey(int key) override;
 
@@ -204,8 +200,6 @@ class dsp_host_dual : public DSPInterface
   uint32_t m_tone_state = 0;
   bool m_glitch_suppression = false;
 
-  std::array<uint8_t, 8> m_hwSourcesMidiLSB;
-
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
   C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
@@ -219,8 +213,6 @@ class dsp_host_dual : public DSPInterface
   void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId);
   void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId);
   float scale(const Scale_Aspect _scl, float _value);
-  // inner event flow
-  void updateHW(const uint32_t _id, const float _raw, const MidiOut& out);
   void updateTime(Time_Aspect* _param, const float _ms);
   void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);
   void globalModChain(Macro_Param* _mc);
@@ -257,11 +249,4 @@ class dsp_host_dual : public DSPInterface
   {
     return [](const SimpleRawMidiMessage&) {};
   }
-
-  template <typename Range> void processBipolarMidiController(const uint32_t dataByte, int id);
-  template <typename Range> void processUnipolarMidiController(const uint32_t dataByte, int id);
-  void processNormalizedMidiController(const uint32_t _id, const float _controlPosition);
-  template <Midi::MSB::HWSourceMidiCC msb, Midi::LSB::HWSourceMidiCC lsb>
-  void sendCCOut(int id, float controlPosition, const MidiOut& out);
-  void processMidiForHWSource(int id, uint32_t _data);
 };
