@@ -176,11 +176,6 @@ bool matchPattern(unsigned char data, uint8_t PATTERN, uint8_t MASK)
   return (data & MASK) == PATTERN;
 }
 
-bool isSysex(unsigned char data)
-{
-  return matchPattern(data, MIDI_SYSEX_PATTERN, MIDI_EVENT_TYPE_MASK);
-}
-
 void C15Synth::doMidi(const MidiEvent& event)
 {
   m_inputEventStage.onMIDIMessage(event);

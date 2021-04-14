@@ -5,11 +5,11 @@ void MockDSPHost::onHWChanged(const uint32_t id, float value)
 {
 }
 
-void MockDSPHost::onKeyDown(const int note, float velocity, InputEvent from)
+void MockDSPHost::onKeyDown(const int note, float velocity, InputEventSource from)
 {
 }
 
-void MockDSPHost::onKeyUp(const int note, float velocity, InputEvent from)
+void MockDSPHost::onKeyUp(const int note, float velocity, InputEventSource from)
 {
 }
 
@@ -32,11 +32,11 @@ VoiceGroup MockDSPHost::getSplitPartForKey(int key)
   return VoiceGroup::I;
 }
 
-void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
 }
 
-void MockDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+void MockDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
 }
 
@@ -52,14 +52,14 @@ PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo,
 {
 }
 
-void PassOnKeyDownHost::onKeyDown(const int note, float velocity, InputEvent from)
+void PassOnKeyDownHost::onKeyDown(const int note, float velocity, InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
   m_receivedKeyDown = true;
 }
 
-void PassOnKeyDownHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+void PassOnKeyDownHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
@@ -88,14 +88,14 @@ VoiceGroup PassOnKeyUpHost::getSplitPartForKey(int key)
   return VoiceGroup::Global;
 }
 
-void PassOnKeyUpHost::onKeyUp(const int note, float velocity, InputEvent from)
+void PassOnKeyUpHost::onKeyUp(const int note, float velocity, InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
   m_receivedKeyUp = true;
 }
 
-void PassOnKeyUpHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+void PassOnKeyUpHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
@@ -131,13 +131,13 @@ void ConfigureableDSPHost::onHWChanged(uint32_t id, float value)
     m_onHWChanged(id, value);
 }
 
-void ConfigureableDSPHost::onKeyDown(const int note, float velocity, DSPInterface::InputEvent from)
+void ConfigureableDSPHost::onKeyDown(const int note, float velocity, DSPInterface::InputEventSource from)
 {
   if(m_onKeyDown)
     m_onKeyDown(note, velocity, from);
 }
 
-void ConfigureableDSPHost::onKeyUp(const int note, float velocity, DSPInterface::InputEvent from)
+void ConfigureableDSPHost::onKeyUp(const int note, float velocity, DSPInterface::InputEventSource from)
 {
   if(m_onKeyUp)
     m_onKeyUp(note, velocity, from);
@@ -159,12 +159,12 @@ VoiceGroup ConfigureableDSPHost::getSplitPartForKey(int key)
 }
 
 void ConfigureableDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part,
-                                          DSPInterface::InputEvent from)
+                                          DSPInterface::InputEventSource from)
 {
   if(m_onKeyDownSplit)
     m_onKeyDownSplit(note, velocity, part, from);
 }
-void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
   if(m_onKeyUpSplit)
     m_onKeyUpSplit(note, velocity, part, from);
@@ -180,7 +180,7 @@ void ConfigureableDSPHost::setGetSplitPartForKeyCB(std::function<VoiceGroup(int)
   m_getSplitPartForKey = cb;
 }
 
-void ConfigureableDSPHost::setOnKeyDownSplitCB(std::function<void(int, float, VoiceGroup, InputEvent)>&& cb)
+void ConfigureableDSPHost::setOnKeyDownSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb)
 {
   m_onKeyDownSplit = cb;
 }
@@ -190,17 +190,17 @@ void ConfigureableDSPHost::setGetBehaviourCB(std::function<C15::Properties::HW_R
   m_getBehaviour = cb;
 }
 
-void ConfigureableDSPHost::setOnKeyUpCB(std::function<void(int, float, InputEvent)>&& cb)
+void ConfigureableDSPHost::setOnKeyUpCB(std::function<void(int, float, InputEventSource)>&& cb)
 {
   m_onKeyUp = cb;
 }
 
-void ConfigureableDSPHost::setOnKeyDownCB(std::function<void(int, float, InputEvent)>&& cb)
+void ConfigureableDSPHost::setOnKeyDownCB(std::function<void(int, float, InputEventSource)>&& cb)
 {
   m_onKeyDown = cb;
 }
 
-void ConfigureableDSPHost::setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEvent)>&& cb)
+void ConfigureableDSPHost::setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb)
 {
   m_onKeyUpSplit = cb;
 }

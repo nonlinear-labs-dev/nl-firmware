@@ -2449,11 +2449,11 @@ VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
   return VoiceGroup::NumGroups;
 }
 
-void dsp_host_dual::onKeyDown(const int note, float velocity, InputEvent from)
+void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
-  const uint32_t sourceId = from.m_source < InputSource::Secondary ? static_cast<uint32_t>(from.m_source) : 1;
+  const uint32_t sourceId = from == InputEventSource::Internal ? 0 : 1;
 
   bool valid = false;
   switch(m_layer_mode)
@@ -2476,11 +2476,11 @@ void dsp_host_dual::onKeyDown(const int note, float velocity, InputEvent from)
   }
 }
 
-void dsp_host_dual::onKeyUp(const int note, float velocity, InputEvent from)
+void dsp_host_dual::onKeyUp(const int note, float velocity, InputEventSource from)
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
-  const uint32_t sourceId = from.m_source < InputSource::Secondary ? static_cast<uint32_t>(from.m_source) : 1;
+  const uint32_t sourceId = from == InputEventSource::Internal ? 0 : 1;
 
   bool valid = false;
   switch(m_layer_mode)
@@ -2502,11 +2502,19 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputEvent from)
   }
 }
 
-void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
-  const uint32_t sourceId = from.m_source < InputSource::Both ? static_cast<uint32_t>(from.m_source) : 1;
+  uint32_t sourceId = 0;
+  if(from == InputEventSource::Internal)
+    sourceId = 0;
+  else if(from == InputEventSource::External_PartI)
+    sourceId = 1;
+  else if(from == InputEventSource::External_PartII)
+    sourceId = 2;
+  else if(from == InputEventSource::External_BothParts)
+    sourceId = 1;  //TODO ???
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
@@ -2534,11 +2542,19 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   }
 }
 
-void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEvent from)
+void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
-  const uint32_t sourceId = from.m_source < InputSource::Both ? static_cast<uint32_t>(from.m_source) : 1;
+  uint32_t sourceId = 0;
+  if(from == InputEventSource::Internal)
+    sourceId = 0;
+  else if(from == InputEventSource::External_PartI)
+    sourceId = 1;
+  else if(from == InputEventSource::External_PartII)
+    sourceId = 2;
+  else if(from == InputEventSource::External_BothParts)
+    sourceId = 1;  //TODO ???
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)

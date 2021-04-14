@@ -4,6 +4,8 @@
 #include <mock/MockDSPHosts.h>
 #include <mock/InputEventStageTester.h>
 
+using InputEvent = DSPInterface::InputEventSource;
+
 TEST_CASE("Interface correct", "[MIDI]")
 {
   MockDSPHost host;
@@ -24,9 +26,8 @@ TEST_CASE("Interface correct", "[MIDI]")
 
     MIDIDecoder testDecoder(&host, &options);
     testDecoder.decode({ 0x90, 127, 127 });
-    auto ret = testObject.getInterfaceFromDecoder(testDecoder.getChannel());
-    CHECK(ret.m_source == DSPInterface::InputSource::Unknown);
-    CHECK(ret.m_state == DSPInterface::InputState::Invalid);
+    auto ret = testObject.getInputSourceFromParsedChannel(testDecoder.getChannel());
+    CHECK(ret == InputEvent::Invalid);
   }
 
   WHEN("Mappings: prim = 1, sec = 1")
@@ -41,9 +42,8 @@ TEST_CASE("Interface correct", "[MIDI]")
 
     MIDIDecoder testDecoder(&host, &options);
     testDecoder.decode({ 0x90, 127, 127 });
-    auto ret = testObject.getInterfaceFromDecoder(testDecoder.getChannel());
-    CHECK(ret.m_source == DSPInterface::InputSource::Both);
-    CHECK(ret.m_state == DSPInterface::InputState::Separate);
+    auto ret = testObject.getInputSourceFromParsedChannel(testDecoder.getChannel());
+    CHECK(ret == InputEvent::External_BothParts);
   }
 
   WHEN("Mappings: prim = 1, sec = 2")
@@ -60,17 +60,15 @@ TEST_CASE("Interface correct", "[MIDI]")
     WHEN("Send on Channel 1")
     {
       testDecoder.decode({ 0x90, 127, 127 });
-      auto ret = testObject.getInterfaceFromDecoder(testDecoder.getChannel());
-      CHECK(ret.m_source == DSPInterface::InputSource::Primary);
-      CHECK(ret.m_state == DSPInterface::InputState::Separate);
+      auto ret = testObject.getInputSourceFromParsedChannel(testDecoder.getChannel());
+      CHECK(ret == InputEvent::External_PartI);
     }
 
     WHEN("Send on Channel 2")
     {
       testDecoder.decode({ 0x91, 127, 127 });
-      auto ret = testObject.getInterfaceFromDecoder(testDecoder.getChannel());
-      CHECK(ret.m_source == DSPInterface::InputSource::Secondary);
-      CHECK(ret.m_state == DSPInterface::InputState::Separate);
+      auto ret = testObject.getInputSourceFromParsedChannel(testDecoder.getChannel());
+      CHECK(ret == InputEvent::External_PartII);
     }
   }
 }
@@ -101,9 +99,8 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
     for(auto channel = 0; channel < 16; channel++)
     {
       auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-      auto ret = t.getInterfaceFromDecoder(testChannel);
-      CHECK(ret.m_source == DSPInterface::InputSource::Unknown);
-      CHECK(ret.m_state == DSPInterface::InputState::Invalid);
+      auto ret = t.getInputSourceFromParsedChannel(testChannel);
+      CHECK(ret == InputEvent::Invalid);
     }
   }
 
@@ -113,9 +110,8 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
     for(auto channel = 0; channel < 16; channel++)
     {
       auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-      auto ret = t.getInterfaceFromDecoder(testChannel);
-      CHECK(ret.m_source == DSPInterface::InputSource::Unknown);
-      CHECK(ret.m_state == DSPInterface::InputState::Invalid);
+      auto ret = t.getInputSourceFromParsedChannel(testChannel);
+      CHECK(ret == InputEvent::Invalid);
     }
   }
 
@@ -125,25 +121,22 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
     for(auto channel = 0; channel < 16; channel++)
     {
       auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-      auto ret = t.getInterfaceFromDecoder(testChannel);
-      CHECK(ret.m_source == DSPInterface::InputSource::Primary);
-      CHECK(ret.m_state == DSPInterface::InputState::Singular);
+      auto ret = t.getInputSourceFromParsedChannel(testChannel);
+      CHECK(ret == InputEvent::External_Use_Split);
     }
   }
 
   WHEN("Settings receive 1 and common")
   {
     CCBitDetail::setSettings(options, MidiReceiveChannel::CH_1, MidiReceiveChannelSplit::Common);
-    auto ret = t.getInterfaceFromDecoder(MidiReceiveChannel::CH_1);
-    CHECK(ret.m_source == DSPInterface::InputSource::Primary);
-    CHECK(ret.m_state == DSPInterface::InputState::Singular);
+    auto ret = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_1);
+    CHECK(ret == InputEvent::External_Use_Split);
 
     for(auto channel = 1; channel < 16; channel++)
     {
       auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-      auto ret2 = t.getInterfaceFromDecoder(testChannel);
-      CHECK(ret2.m_source == DSPInterface::InputSource::Unknown);
-      CHECK(ret2.m_state == DSPInterface::InputState::Invalid);
+      auto ret2 = t.getInputSourceFromParsedChannel(testChannel);
+      CHECK(ret2 == InputEvent::Invalid);
     }
   }
 
@@ -151,20 +144,17 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
   {
     CCBitDetail::setSettings(options, MidiReceiveChannel::Omni, MidiReceiveChannelSplit::CH_2);
 
-    auto ret = t.getInterfaceFromDecoder(MidiReceiveChannel::CH_1);
-    CHECK(ret.m_source == DSPInterface::InputSource::Primary);
-    CHECK(ret.m_state == DSPInterface::InputState::Separate);
+    auto ret = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_1);
+    CHECK(ret == InputEvent::External_PartI);
 
-    auto ret2 = t.getInterfaceFromDecoder(MidiReceiveChannel::CH_2);
-    CHECK(ret2.m_source == DSPInterface::InputSource::Both);
-    CHECK(ret2.m_state == DSPInterface::InputState::Separate);
+    auto ret2 = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_2);
+    CHECK(ret2 == InputEvent::External_BothParts);
 
     for(auto channel = 2; channel < 16; channel++)
     {
       auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-      auto ret3 = t.getInterfaceFromDecoder(testChannel);
-      CHECK(ret3.m_source == DSPInterface::InputSource::Primary);
-      CHECK(ret3.m_state == DSPInterface::InputState::Separate);
+      auto ret3 = t.getInputSourceFromParsedChannel(testChannel);
+      CHECK(ret3 == InputEvent::External_PartI);
     }
   }
 
@@ -172,26 +162,22 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
   {
     CCBitDetail::setSettings(options, MidiReceiveChannel::CH_2, MidiReceiveChannelSplit::CH_3);
 
-    auto ret = t.getInterfaceFromDecoder(MidiReceiveChannel::CH_1);
-    CHECK(ret.m_source == DSPInterface::InputSource::Unknown);
-    CHECK(ret.m_state == DSPInterface::InputState::Invalid);
+    auto ret = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_1);
+    CHECK(ret == InputEvent::Invalid);
 
-    auto ret2 = t.getInterfaceFromDecoder(MidiReceiveChannel::CH_2);
-    CHECK(ret2.m_source == DSPInterface::InputSource::Primary);
-    CHECK(ret2.m_state == DSPInterface::InputState::Separate);
+    auto ret2 = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_2);
+    CHECK(ret2 == InputEvent::External_PartI);
 
-    auto ret3 = t.getInterfaceFromDecoder(MidiReceiveChannel::CH_3);
-    CHECK(ret3.m_source == DSPInterface::InputSource::Secondary);
-    CHECK(ret3.m_state == DSPInterface::InputState::Separate);
+    auto ret3 = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_3);
+    CHECK(ret3 == InputEvent::External_PartII);
 
     for(auto channel = 3; channel < 16; channel++)
     {
       WHEN("Received Channel is " + std::to_string(channel))
       {
         auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-        auto ret4 = t.getInterfaceFromDecoder(testChannel);
-        CHECK(ret4.m_source == DSPInterface::InputSource::Unknown);
-        CHECK(ret4.m_state == DSPInterface::InputState::Invalid);
+        auto ret4 = t.getInputSourceFromParsedChannel(testChannel);
+        CHECK(ret4 == InputEvent::Invalid);
       }
     }
   }
@@ -205,17 +191,15 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
       WHEN("Received Channel is " + std::to_string(channel))
       {
         auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-        auto ret = t.getInterfaceFromDecoder(testChannel);
+        auto ret = t.getInputSourceFromParsedChannel(testChannel);
 
         if(testChannel == MidiReceiveChannel::CH_3)
         {
-          CHECK(ret.m_source == DSPInterface::InputSource::Both);
-          CHECK(ret.m_state == DSPInterface::InputState::Separate);
+          CHECK(ret == InputEvent::External_BothParts);
         }
         else
         {
-          CHECK(ret.m_source == DSPInterface::InputSource::Secondary);
-          CHECK(ret.m_state == DSPInterface::InputState::Separate);
+          CHECK(ret == InputEvent::External_PartII);
         }
       }
     }
@@ -230,9 +214,8 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
       WHEN("Received Channel is " + std::to_string(channel))
       {
         auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
-        auto ret = t.getInterfaceFromDecoder(testChannel);
-        CHECK(ret.m_source == DSPInterface::InputSource::Both);
-        CHECK(ret.m_state == DSPInterface::InputState::Separate);
+        auto ret = t.getInputSourceFromParsedChannel(testChannel);
+        CHECK(ret == InputEvent::External_BothParts);
       }
     }
   }

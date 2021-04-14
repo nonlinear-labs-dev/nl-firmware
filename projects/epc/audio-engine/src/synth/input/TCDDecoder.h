@@ -8,6 +8,7 @@ class MidiRuntimeOptions;
 class TCDDecoder
 {
  public:
+  //use references
   TCDDecoder(DSPInterface* dsp, MidiRuntimeOptions* options, KeyShift* shift);
   bool decode(const MidiEvent& event);
 

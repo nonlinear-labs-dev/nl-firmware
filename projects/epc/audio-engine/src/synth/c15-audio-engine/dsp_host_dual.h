@@ -66,6 +66,8 @@ using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::phy
 class DSPInterface
 {
  public:
+  //remove or move somewhere else
+  //TCD and MIDI should not be known to DSP
   enum class HWChangeSource
   {
     TCD,
@@ -73,33 +75,21 @@ class DSPInterface
     UI
   };
 
-  enum class InputSource
+  enum class InputEventSource
   {
-    TCD,
-    Primary,
-    Secondary,
-    Both,
-    Unknown  //Error
-  };
-
-  enum class InputState
-  {
-    Singular,
-    Separate,
+    Internal,
+    External_Use_Split,
+    External_PartI,
+    External_PartII,
+    External_BothParts,
     Invalid
   };
 
-  struct InputEvent
-  {
-    InputSource m_source = InputSource::Unknown;
-    InputState m_state = InputState::Invalid;
-  };
-
   virtual void onHWChanged(const uint32_t id, float value) = 0;
-  virtual void onKeyDown(const int note, float velocity, InputEvent from) = 0;
-  virtual void onKeyUp(const int note, float velocity, InputEvent from) = 0;
-  virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) = 0;
-  virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) = 0;
+  virtual void onKeyDown(const int note, float velocity, InputEventSource from) = 0;
+  virtual void onKeyUp(const int note, float velocity, InputEventSource from) = 0;
+  virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
+  virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKey(int key) = 0;
@@ -128,10 +118,10 @@ class dsp_host_dual : public DSPInterface
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(const uint32_t id, float value) override;
-  void onKeyDown(const int note, float velocity, InputEvent from) override;
-  void onKeyUp(const int note, float velocity, InputEvent from) override;
-  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
-  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEvent from) override;
+  void onKeyDown(const int note, float velocity, InputEventSource from) override;
+  void onKeyUp(const int note, float velocity, InputEventSource from) override;
+  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
 
   // event bindings: Preset Messages

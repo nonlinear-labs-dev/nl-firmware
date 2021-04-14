@@ -17,7 +17,7 @@ void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
 {
   if(m_tcdDecoder.decode(tcdEvent))
   {
-    onTCDEvent(&m_tcdDecoder);
+    onTCDEvent(&m_tcdDecoder);  //remove reference
     m_tcdDecoder.reset();
   }
 }
@@ -26,7 +26,7 @@ void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
 {
   if(m_midiDecoder.decode(midiEvent))
   {
-    onMIDIEvent(&m_midiDecoder);
+    onMIDIEvent(&m_midiDecoder);  //remove reference
     m_midiDecoder.reset();
   }
 }
@@ -38,7 +38,7 @@ void InputEventStage::onTCDEvent(TCDDecoder *decoder)
     VoiceGroup determinedPart = VoiceGroup::Global;
     const SoundType soundType = m_dspHost->getType();
     const bool soundValid = soundType != SoundType::Invalid;
-    const auto interface = InputStateDetail::TCD;
+    const auto interface = DSPInterface::InputEventSource::Internal;
 
     switch(decoder->getEventType())
     {
@@ -99,12 +99,11 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
       case DecoderEventType::KeyUp:
         if(checkMIDIKeyEventEnabled(decoder))
         {
-          auto interface = getInterfaceFromParsedChannel(decoder->getChannel());
-          if(interface.m_source == DSPInterface::InputSource::Unknown)
+          auto interface = getInputSourceFromParsedChannel(decoder->getChannel());
+          if(interface == DSPInterface::InputEventSource::Invalid)
             return;
 
-          const auto receivedOnPrimary = interface.m_source == DSPInterface::InputSource::Primary;
-          const auto receivedOnBoth = interface.m_source == DSPInterface::InputSource::Both;
+          const auto receivedOnSecondary = interface == DSPInterface::InputEventSource::External_PartII;
 
           if(soundType == SoundType::Split)
           {
@@ -114,7 +113,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
           }
-          else if(soundValid && (receivedOnPrimary || receivedOnBoth))
+          else if(soundValid && !receivedOnSecondary)
           {
             if(decoder->getEventType() == DecoderEventType::KeyUp)
               m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), interface);
@@ -401,30 +400,26 @@ void InputEventStage::setNoteShift(int i)
   m_shifteable_keys.setNoteShift(i);
 }
 
-VoiceGroup InputEventStage::calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, const int keyNumber)
+VoiceGroup InputEventStage::calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, const int keyNumber)
 {
-  const auto useSplitPoint = inputEvent.m_state == DSPInterface::InputState::Singular
-      || inputEvent.m_source == DSPInterface::InputSource::TCD;
-
-  if(useSplitPoint)
-    return m_dspHost->getSplitPartForKey(keyNumber);
-
-  switch(inputEvent.m_source)
+  switch(inputEvent)
   {
-    case DSPInterface::InputSource::Primary:  // handles separate Primary
+    case DSPInterface::InputEventSource::Internal:
+    case DSPInterface::InputEventSource::External_Use_Split:
+      return m_dspHost->getSplitPartForKey(keyNumber);
+    case DSPInterface::InputEventSource::External_PartI:
       return VoiceGroup::I;
-    case DSPInterface::InputSource::Secondary:  // handles separate Secondary
+    case DSPInterface::InputEventSource::External_PartII:
       return VoiceGroup::II;
-    case DSPInterface::InputSource::Both:
+    case DSPInterface::InputEventSource::External_BothParts:
       return VoiceGroup::Global;
-    case DSPInterface::InputSource::Unknown:
-    case DSPInterface::InputSource::TCD:
-      nltools_assertNotReached();
+    case DSPInterface::InputEventSource::Invalid:
+      break;
   }
   nltools_assertNotReached();
 }
 
-DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiReceiveChannel channel)
+DSPInterface::InputEventSource InputEventStage::getInputSourceFromParsedChannel(MidiReceiveChannel channel)
 {
   const auto primary = m_options->getReceiveChannel();
   const auto secondary = m_options->getReceiveSplitChannel();
@@ -433,24 +428,26 @@ DSPInterface::InputEvent InputEventStage::getInterfaceFromParsedChannel(MidiRece
   // first check: did event qualify at all?
   const bool qualifiedForEvent = (primaryMask | secondaryMask) > 0;
   if(!qualifiedForEvent)
-    return InputStateDetail::Unknown;
+    return DSPInterface::InputEventSource::Invalid;
   // second check: obtain channel mask and evaluate common "singular" case
   const auto channelMask = midiReceiveChannelMask(channel);
   const bool qualifiedForCommon = secondary == MidiReceiveChannelSplit::Common;
   const bool qualifiedForPrimary = (channelMask & primaryMask) > 0;
   if(qualifiedForCommon)
-    return qualifiedForPrimary ? InputStateDetail::Singular : InputStateDetail::Unknown;
+    return qualifiedForPrimary ? DSPInterface::InputEventSource::External_Use_Split
+                               : DSPInterface::InputEventSource::Invalid;
+
   // third checks: evaluate "separate" cases (both, primary, secondary)
   const bool qualifiedForSecondary = (channelMask & secondaryMask) > 0;
   const bool qualifiedForIdentity = qualifiedForPrimary && qualifiedForSecondary;
   if(qualifiedForIdentity)
-    return InputStateDetail::Both;
+    return DSPInterface::InputEventSource::External_BothParts;
   if(qualifiedForPrimary)
-    return InputStateDetail::Primary;
+    return DSPInterface::InputEventSource::External_PartI;
   if(qualifiedForSecondary)
-    return InputStateDetail::Secondary;
+    return DSPInterface::InputEventSource::External_PartII;
   // this line should never be reached
-  return InputStateDetail::Unknown;
+  return DSPInterface::InputEventSource::Invalid;
 }
 
 void InputEventStage::doSendAftertouchOut(float value)
@@ -633,6 +630,8 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
         return m_options->shouldReceiveLocalControllers();
       case DSPInterface::HWChangeSource::UI:
         return true;
+      default:
+        nltools_assertNotReached();
     }
   };
 

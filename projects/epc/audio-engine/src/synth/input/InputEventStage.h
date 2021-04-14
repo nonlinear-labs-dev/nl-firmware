@@ -16,6 +16,7 @@ class InputEventStage
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
 
+  //use reference
   InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, MIDIOut outCB);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
@@ -35,8 +36,8 @@ class InputEventStage
 
   //Algorithm
   void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
-  VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEvent inputEvent, const int keyNumber);
-  DSPInterface::InputEvent getInterfaceFromParsedChannel(MidiReceiveChannel channel);
+  VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, const int keyNumber);
+  DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
   bool filterUnchangedHWPositions(int id, float pos);
 
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
@@ -90,16 +91,16 @@ class InputEventStage
   friend class InputEventStageTester;
 };
 
-namespace InputStateDetail
-{
-  using Event = DSPInterface::InputEvent;
-  using State = DSPInterface::InputState;
-  using Source = DSPInterface::InputSource;
-
-  static constexpr Event Unknown = { Source::Unknown, State::Invalid };
-  static constexpr Event TCD = { Source::TCD, State::Singular };
-  static constexpr Event Singular = { Source::Primary, State::Singular };
-  static constexpr Event Primary = { Source::Primary, State::Separate };
-  static constexpr Event Both = { Source::Both, State::Separate };
-  static constexpr Event Secondary = { Source::Secondary, State::Separate };
-}
+//namespace InputStateDetail
+//{
+//  using Event = DSPInterface::InputEvent;
+//  using State = DSPInterface::InputState;
+//  using Source = DSPInterface::InputSource;
+//
+//  static constexpr Event Unknown = { Source::Unknown, State::Invalid };
+//  static constexpr Event TCD = { Source::TCD, State::Singular };
+//  static constexpr Event Singular = { Source::Primary, State::Singular };
+//  static constexpr Event Primary = { Source::Primary, State::Separate };
+//  static constexpr Event Both = { Source::Both, State::Separate };
+//  static constexpr Event Secondary = { Source::Secondary, State::Separate };
+//}
