@@ -11,6 +11,14 @@
 class FlacEncoder
 {
  public:
+  enum class RecorderFormat
+  {
+    OggFlac,
+    FlacWithHeader,
+    FalcFrames
+  };
+
+  constexpr static auto recorderFormat = RecorderFormat::FalcFrames;
   constexpr static auto flacFrameSize = 4096;
 
   struct Frame
@@ -28,7 +36,9 @@ class FlacEncoder
     uint64_t id;
   };
 
-  FlacEncoder(int sr, std::function<void(std::unique_ptr<Frame>)> m_cb);
+  using CB = std::function<void(std::unique_ptr<Frame>, bool isHeader)>;
+
+  FlacEncoder(int sr, CB cb);
   ~FlacEncoder();
 
   void push(const SampleFrame *frames, size_t numFrames);
@@ -40,8 +50,9 @@ class FlacEncoder
 
   FLAC__StreamEncoder *m_encoder = nullptr;
   Sample m_currentMax = 0;
-  std::function<void(std::unique_ptr<Frame>)> m_cb;
+  CB m_cb;
 
   std::chrono::system_clock::time_point m_resumedAt;
   size_t m_framesSinceResume = 0;
+  bool m_writingHeader = false;
 };

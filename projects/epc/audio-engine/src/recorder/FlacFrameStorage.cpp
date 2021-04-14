@@ -6,11 +6,11 @@ FlacFrameStorage::FlacFrameStorage(uint64_t maxMemUsage)
 {
 }
 
-void FlacFrameStorage::push(std::unique_ptr<FlacEncoder::Frame> frame)
+void FlacFrameStorage::push(std::unique_ptr<FlacEncoder::Frame> frame, bool isHeader)
 {
   std::unique_lock<std::mutex> l(m_mutex);
 
-  if(m_header.size() < 3)
+  if(isHeader)
   {
     m_header.push_back(std::move(frame));
     return;
