@@ -99,26 +99,26 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
       case DecoderEventType::KeyUp:
         if(checkMIDIKeyEventEnabled(decoder))
         {
-          auto interface = getInputSourceFromParsedChannel(decoder->getChannel());
-          if(interface == DSPInterface::InputEventSource::Invalid)
+          auto inputSource = getInputSourceFromParsedChannel(decoder->getChannel());
+          if(inputSource == DSPInterface::InputEventSource::Invalid)
             return;
 
-          const auto receivedOnSecondary = interface == DSPInterface::InputEventSource::External_PartII;
+          const auto receivedOnSecondary = inputSource == DSPInterface::InputEventSource::External_PartII;
 
           if(soundType == SoundType::Split)
           {
-            auto determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrControl());
+            auto determinedPart = calculateSplitPartForEvent(inputSource, decoder->getKeyOrControl());
             if(decoder->getEventType() == DecoderEventType::KeyDown)
-              m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
+              m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
             else if(decoder->getEventType() == DecoderEventType::KeyUp)
-              m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, interface);
+              m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
           }
           else if(soundValid && !receivedOnSecondary)
           {
             if(decoder->getEventType() == DecoderEventType::KeyUp)
-              m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), interface);
+              m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
             else if(decoder->getEventType() == DecoderEventType::KeyDown)
-              m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), interface);
+              m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
           }
         }
         break;
