@@ -103,7 +103,7 @@ void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
           if(inputSource == DSPInterface::InputEventSource::Invalid)
             return;
 
-          const auto receivedOnSecondary = inputSource == DSPInterface::InputEventSource::External_PartII;
+          const auto receivedOnSecondary = inputSource == DSPInterface::InputEventSource::External_Secondary;
 
           if(soundType == SoundType::Split)
           {
@@ -407,11 +407,11 @@ VoiceGroup InputEventStage::calculateSplitPartForEvent(DSPInterface::InputEventS
     case DSPInterface::InputEventSource::Internal:
     case DSPInterface::InputEventSource::External_Use_Split:
       return m_dspHost->getSplitPartForKey(keyNumber);
-    case DSPInterface::InputEventSource::External_PartI:
+    case DSPInterface::InputEventSource::External_Primary:
       return VoiceGroup::I;
-    case DSPInterface::InputEventSource::External_PartII:
+    case DSPInterface::InputEventSource::External_Secondary:
       return VoiceGroup::II;
-    case DSPInterface::InputEventSource::External_BothParts:
+    case DSPInterface::InputEventSource::External_Both:
       return VoiceGroup::Global;
     case DSPInterface::InputEventSource::Invalid:
       break;
@@ -441,11 +441,11 @@ DSPInterface::InputEventSource InputEventStage::getInputSourceFromParsedChannel(
   const bool qualifiedForSecondary = (channelMask & secondaryMask) > 0;
   const bool qualifiedForIdentity = qualifiedForPrimary && qualifiedForSecondary;
   if(qualifiedForIdentity)
-    return DSPInterface::InputEventSource::External_BothParts;
+    return DSPInterface::InputEventSource::External_Both;
   if(qualifiedForPrimary)
-    return DSPInterface::InputEventSource::External_PartI;
+    return DSPInterface::InputEventSource::External_Primary;
   if(qualifiedForSecondary)
-    return DSPInterface::InputEventSource::External_PartII;
+    return DSPInterface::InputEventSource::External_Secondary;
   // this line should never be reached
   return DSPInterface::InputEventSource::Invalid;
 }

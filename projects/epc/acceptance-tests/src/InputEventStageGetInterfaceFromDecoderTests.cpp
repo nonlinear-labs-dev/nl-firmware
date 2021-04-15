@@ -43,7 +43,7 @@ TEST_CASE("Interface correct", "[MIDI]")
     MIDIDecoder testDecoder(&host, &options);
     testDecoder.decode({ 0x90, 127, 127 });
     auto ret = testObject.getInputSourceFromParsedChannel(testDecoder.getChannel());
-    CHECK(ret == InputEvent::External_BothParts);
+    CHECK(ret == InputEvent::External_Both);
   }
 
   WHEN("Mappings: prim = 1, sec = 2")
@@ -61,14 +61,14 @@ TEST_CASE("Interface correct", "[MIDI]")
     {
       testDecoder.decode({ 0x90, 127, 127 });
       auto ret = testObject.getInputSourceFromParsedChannel(testDecoder.getChannel());
-      CHECK(ret == InputEvent::External_PartI);
+      CHECK(ret == InputEvent::External_Primary);
     }
 
     WHEN("Send on Channel 2")
     {
       testDecoder.decode({ 0x91, 127, 127 });
       auto ret = testObject.getInputSourceFromParsedChannel(testDecoder.getChannel());
-      CHECK(ret == InputEvent::External_PartII);
+      CHECK(ret == InputEvent::External_Secondary);
     }
   }
 }
@@ -145,16 +145,16 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
     CCBitDetail::setSettings(options, MidiReceiveChannel::Omni, MidiReceiveChannelSplit::CH_2);
 
     auto ret = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_1);
-    CHECK(ret == InputEvent::External_PartI);
+    CHECK(ret == InputEvent::External_Primary);
 
     auto ret2 = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_2);
-    CHECK(ret2 == InputEvent::External_BothParts);
+    CHECK(ret2 == InputEvent::External_Both);
 
     for(auto channel = 2; channel < 16; channel++)
     {
       auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
       auto ret3 = t.getInputSourceFromParsedChannel(testChannel);
-      CHECK(ret3 == InputEvent::External_PartI);
+      CHECK(ret3 == InputEvent::External_Primary);
     }
   }
 
@@ -166,10 +166,10 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
     CHECK(ret == InputEvent::Invalid);
 
     auto ret2 = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_2);
-    CHECK(ret2 == InputEvent::External_PartI);
+    CHECK(ret2 == InputEvent::External_Primary);
 
     auto ret3 = t.getInputSourceFromParsedChannel(MidiReceiveChannel::CH_3);
-    CHECK(ret3 == InputEvent::External_PartII);
+    CHECK(ret3 == InputEvent::External_Secondary);
 
     for(auto channel = 3; channel < 16; channel++)
     {
@@ -195,11 +195,11 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
 
         if(testChannel == MidiReceiveChannel::CH_3)
         {
-          CHECK(ret == InputEvent::External_BothParts);
+          CHECK(ret == InputEvent::External_Both);
         }
         else
         {
-          CHECK(ret == InputEvent::External_PartII);
+          CHECK(ret == InputEvent::External_Secondary);
         }
       }
     }
@@ -215,7 +215,7 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
       {
         auto testChannel = static_cast<MidiReceiveChannel>(channel + 2);
         auto ret = t.getInputSourceFromParsedChannel(testChannel);
-        CHECK(ret == InputEvent::External_BothParts);
+        CHECK(ret == InputEvent::External_Both);
       }
     }
   }

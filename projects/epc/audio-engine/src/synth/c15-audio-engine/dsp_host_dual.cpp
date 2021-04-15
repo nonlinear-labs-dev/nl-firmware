@@ -2509,12 +2509,10 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   uint32_t sourceId = 0;
   if(from == InputEventSource::Internal)
     sourceId = 0;
-  else if(from == InputEventSource::External_PartI)
+  else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
     sourceId = 1;
-  else if(from == InputEventSource::External_PartII)
+  else if(from == InputEventSource::External_Secondary)
     sourceId = 2;
-  else if(from == InputEventSource::External_BothParts)
-    sourceId = 1;  //TODO ???
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
@@ -2549,12 +2547,10 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
   uint32_t sourceId = 0;
   if(from == InputEventSource::Internal)
     sourceId = 0;
-  else if(from == InputEventSource::External_PartI)
+  else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
     sourceId = 1;
-  else if(from == InputEventSource::External_PartII)
+  else if(from == InputEventSource::External_Secondary)
     sourceId = 2;
-  else if(from == InputEventSource::External_BothParts)
-    sourceId = 1;  //TODO ???
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)

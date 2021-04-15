@@ -77,11 +77,11 @@ class DSPInterface
 
   enum class InputEventSource
   {
-    Internal,
-    External_Use_Split,
-    External_PartI,
-    External_PartII,
-    External_BothParts,
+    Internal, //TCD -> use split
+    External_Use_Split, //Singular -> use split
+    External_Primary, //Primary Midi Channel
+    External_Secondary, //Secondary Midi Channel (UI: Split Channel)
+    External_Both, //Both   E.G Prim: CH1 + Sec: CH1
     Invalid
   };
 
