@@ -29,7 +29,7 @@ FLAC__StreamDecoderReadStatus FlacDecoder::readCB(const FLAC__StreamDecoder *dec
 {
   auto pThis = static_cast<FlacDecoder *>(client_data);
 
-  if(pThis->m_headerPos < 3)
+  if(FlacEncoder::recorderFormat != FlacEncoder::RecorderFormat::FalcFrames && pThis->m_headerPos < 3)
   {
     auto &frame = pThis->m_storage->getHeaders()[pThis->m_headerPos++];
     std::copy(frame->buffer.begin(), frame->buffer.end(), buffer);

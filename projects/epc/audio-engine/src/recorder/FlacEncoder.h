@@ -18,7 +18,7 @@ class FlacEncoder
     FalcFrames
   };
 
-  constexpr static auto recorderFormat = RecorderFormat::FalcFrames;
+  constexpr static auto recorderFormat = RecorderFormat::OggFlac;
   constexpr static auto flacFrameSize = 4096;
 
   struct Frame

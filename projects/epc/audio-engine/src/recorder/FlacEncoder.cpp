@@ -64,8 +64,7 @@ FLAC__StreamEncoderWriteStatus FlacEncoder::writeToOut(const FLAC__StreamEncoder
   auto frame = std::make_unique<Frame>(buffer, bytes, std::exchange(pThis->m_currentMax, 0),
                                        pThis->m_resumedAt + framesToNanos(pThis->m_framesSinceResume));
 
-  if(recorderFormat != RecorderFormat::FalcFrames || !pThis->m_writingHeader)
-    pThis->m_cb(std::move(frame), pThis->m_writingHeader);
+  pThis->m_cb(std::move(frame), pThis->m_writingHeader);
 
   if(!pThis->m_writingHeader)
     pThis->m_framesSinceResume += numSamples;
