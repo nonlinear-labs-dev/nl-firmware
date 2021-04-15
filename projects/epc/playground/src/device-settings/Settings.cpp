@@ -56,7 +56,6 @@
 #include <device-settings/midi/MidiChannelSettings.h>
 #include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/local/LocalProgramChangesSetting.h>
 #include <device-settings/midi/send/MidiSendControllersSetting.h>
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
@@ -65,11 +64,16 @@
 #include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
 #include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
     , m_actions(std::make_unique<SettingsActions>(*this))
-    , m_saveJob(5000, std::bind(&Settings::save, this))
+    , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsPlaycontrollerWriteFallback(*this));
@@ -113,7 +117,6 @@ Settings::Settings(UpdateDocumentMaster *master)
 
   addSetting("LocalControllers", new LocalControllersSetting(*this));
   addSetting("LocalNotes", new LocalNotesSetting(*this));
-  addSetting("LocalProgramChanges", new LocalProgramChangesSetting(*this));
 
   addSetting("ReceiveChannel", new MidiReceiveChannelSetting(*this));
   addSetting("ReceiveChannelSplit", new MidiReceiveChannelSplitSetting(*this));
@@ -128,6 +131,16 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SendProgramChanges", new MidiSendProgramChangesSetting(*this));
   addSetting("SendNotes", new MidiSendNotesSetting(*this));
   addSetting("SendControllers", new MidiSendControllersSetting(*this));
+
+  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this));
+  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this));
+  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this));
+  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this));
+  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this));
+  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this));
+  addSetting("BenderMapping", new BenderCCMapping(*this));
+  addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
+  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
 }
 
 Settings::~Settings()
@@ -197,9 +210,12 @@ void Settings::save()
 {
   try
   {
-    SettingsSerializer serializer(*this);
-    XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
-    serializer.write(writer, VersionAttribute::get());
+    if(Application::exists())
+    {
+      SettingsSerializer serializer(*this);
+      XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
+      serializer.write(writer, VersionAttribute::get());
+    }
   }
   catch(...)
   {

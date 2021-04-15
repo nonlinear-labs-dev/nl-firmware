@@ -10,6 +10,7 @@
 #include <future>
 #include <nltools/threading/BackgroundThreadWaiter.h>
 #include <MidiRuntimeOptions.h>
+#include <synth/input/InputEventStage.h>
 
 namespace nltools
 {
@@ -65,10 +66,6 @@ class C15Synth : public Synth, public sigc::trackable
   unsigned int getRenderedSamples();
 
  private:
-  bool filterMidiInEvent(const MidiEvent& event) const;
-  bool filterMidiOutEvent(nltools::msg::Midi::SimpleMessage& event) const;
-  bool filterTcdIn(const MidiEvent& event) const;
-
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
 
   void syncExternals();
@@ -86,4 +83,5 @@ class C15Synth : public Synth, public sigc::trackable
   std::condition_variable m_syncExternalsWaiter;
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
+  InputEventStage m_inputEventStage;
 };

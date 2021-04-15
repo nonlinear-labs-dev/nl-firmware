@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <chrono>
 
 using Sample = float;
@@ -10,6 +10,14 @@ struct MidiEvent
 {
   uint8_t raw[3] { 0x0 };
   std::chrono::high_resolution_clock::time_point timestamp;
+};
+
+enum class DecoderEventType
+{
+  KeyDown,
+  KeyUp,
+  HardwareChange,
+  UNKNOWN
 };
 
 struct SampleFrame

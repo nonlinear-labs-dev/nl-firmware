@@ -130,6 +130,8 @@ Application::~Application()
   Profiler::get().print();
 #endif
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  theApp = nullptr;
 }
 
 Application &Application::get()

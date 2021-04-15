@@ -44,6 +44,7 @@ class Settings : public ContentSection
 
   void sendSettingsToPlaycontroller(SendReason reason);
   void sendGlobalPlaycontrollerInitSettings();
+  void sendPresetSettingsToPlaycontroller();
 
   void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
@@ -52,8 +53,6 @@ class Settings : public ContentSection
   sigc::connection onSettingsChanged(sigc::slot<void(void)> s);
 
   bool isLoading() const;
-
-  void sendPresetSettingsToPlaycontroller();
 
  protected:
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;

@@ -2,7 +2,9 @@ package com.nonlinearlabs.client.useCases;
 
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCurve;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.DebugLevel;
@@ -10,7 +12,9 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiReceiveChannel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiReceiveChannelSplit;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiSendChannel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiSendChannelSplit;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalType;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.RibbonCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.VelocityCurve;
 
 public class SystemSettings {
@@ -138,6 +142,51 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveChannel", midiReceiveChannel.name());
 	}
 
+	public void setPedal1Mapping(PedalCCMapping value) {
+		SetupModel.get().systemSettings.pedal1Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal1Mapping", value.name());
+	}
+
+	public void setPedal2Mapping(PedalCCMapping value) {
+		SetupModel.get().systemSettings.pedal2Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal2Mapping", value.name());
+	}
+
+	public void setPedal3Mapping(PedalCCMapping value) {
+		SetupModel.get().systemSettings.pedal3Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal3Mapping", value.name());
+	}
+
+	public void setPedal4Mapping(PedalCCMapping value) {
+		SetupModel.get().systemSettings.pedal4Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Pedal4Mapping", value.name());
+	}
+
+	public void setRibbon1Mapping(RibbonCCMapping value) {
+		SetupModel.get().systemSettings.ribbon1Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Ribbon1Mapping", value.name());
+	}
+
+	public void setRibbon2Mapping(RibbonCCMapping value) {
+		SetupModel.get().systemSettings.ribbon2Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Ribbon2Mapping", value.name());
+	}
+
+	public void setAftertouchMapping(AftertouchCCMapping value) {
+		SetupModel.get().systemSettings.aftertouchMapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("AftertouchMapping", value.name());
+	}
+
+	public void setPitchbendMapping(BenderCCMapping value) {
+		SetupModel.get().systemSettings.benderMapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("BenderMapping", value.name());
+	}
+
+	public void setHighVelocityCC(BooleanValues b) {
+		SetupModel.get().systemSettings.highVelocityCC.setValue(b);
+		NonMaps.theMaps.getServerProxy().setSetting("HighVeloCC", netify(b.name()));
+	}
+
 	public void setReceiveMidiChannelSplit(MidiReceiveChannelSplit midiReceiveChannelSplit) {
 		SetupModel.get().systemSettings.receiveChannelSplit.setValue(midiReceiveChannelSplit);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveChannelSplit", midiReceiveChannelSplit.name());
@@ -201,10 +250,5 @@ public class SystemSettings {
 	public void setLocalNotes(BooleanValues enabled) {
 		SetupModel.get().systemSettings.localNotes.setValue(enabled);
 		NonMaps.theMaps.getServerProxy().setSetting("LocalNotes", netify(enabled.name()));
-	}
-
-	public void setLocalProgramChanges(BooleanValues enabled) {
-		SetupModel.get().systemSettings.localProgramChanges.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("LocalProgramChanges", netify(enabled.name()));	
 	}
 }

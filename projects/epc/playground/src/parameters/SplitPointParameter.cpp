@@ -127,7 +127,10 @@ Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionVal
 
 SplitPointParameter* SplitPointParameter::getSibling() const
 {
-  return static_cast<SplitPointParameter*>(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+  auto parent = static_cast<ParameterGroup*>(getParent());
+  auto groupSet = static_cast<ParameterGroupSet*>(parent->getParent());
+
+  return static_cast<SplitPointParameter*>(groupSet->findParameterByID(
       { C15::PID::Split_Split_Point, getVoiceGroup() == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I }));
 }
 

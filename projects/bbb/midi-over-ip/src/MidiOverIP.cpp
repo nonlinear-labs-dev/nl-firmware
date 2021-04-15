@@ -52,8 +52,8 @@ int main(int args, char *argv[])
   nltools::msg::init({ { { EndPoint::ExternalMidiOverIPBridge, almostRealtime } },
                        { { EndPoint::ExternalMidiOverIPClient, audioEngineHost, almostRealtime } } });
 
-  std::map<std::string, std::unique_ptr<Input>> inputs;
-  std::map<std::string, std::unique_ptr<Output>> outputs;
+  std::map<std::string, std::unique_ptr<Input> > inputs;
+  std::map<std::string, std::unique_ptr<Output> > outputs;
 
   AlsaDeviceMonitor monitor([&](auto &ins, auto &outs) {
     inputs = sync(ins, std::move(inputs));
