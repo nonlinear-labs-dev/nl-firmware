@@ -7,6 +7,7 @@
 #include <atomic>
 #include <memory>
 #include <list>
+#include <mutex>
 
 namespace nltools
 {
@@ -29,6 +30,7 @@ namespace nltools
       using Job = std::function<void()>;
       using tJob = std::shared_ptr<Job>;
       std::list<tJob> m_jobs;
+      std::shared_ptr<std::mutex> m_mutex;
     };
   }
 }

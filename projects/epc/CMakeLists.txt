@@ -30,5 +30,3 @@ ENDIF ()
 IF (BUILD_EPC_SCRIPTS)
     add_subdirectory(scripts)
 ENDIF ()
-
-add_subdirectory(third-party)
