@@ -194,25 +194,25 @@ namespace Engine
       }
       inline Target_Param* globalChainFirst(const uint32_t _mcId)
       {
-        auto idx = m_global.m_assignment.first(_mcId);
-        return idx < 0 ? nullptr : &m_global.m_target[m_global.m_assignment.first(_mcId)];
+        const auto idx = m_global.m_assignment.first(_mcId);
+        return idx < 0 ? nullptr : &m_global.m_target[idx];
       }
 
       inline Target_Param* globalChainNext()
       {
-        auto idx = m_global.m_assignment.next();
-        return idx < 0 ? nullptr : &m_global.m_target[m_global.m_assignment.next()];
+        const auto idx = m_global.m_assignment.next();
+        return idx < 0 ? nullptr : &m_global.m_target[idx];
       }
 
       inline Target_Param* localChainFirst(const uint32_t _layer, const uint32_t _mcId)
       {
-        auto idx = m_layer[_layer].m_assignment.first(_mcId);
-        return idx < 0 ? nullptr : &m_layer[_layer].m_target[m_layer[_layer].m_assignment.first(_mcId)];
+        const auto idx = m_layer[_layer].m_assignment.first(_mcId);
+        return idx < 0 ? nullptr : &m_layer[_layer].m_target[idx];
       }
 
       inline Target_Param* localChainNext(const uint32_t _layer)
       {
-        auto idx = m_layer[_layer].m_assignment.next();
+        const auto idx = m_layer[_layer].m_assignment.next();
         return idx < 0 ? nullptr : &m_layer[_layer].m_target[idx];
       }
     };
