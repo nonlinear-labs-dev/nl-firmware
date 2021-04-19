@@ -36,7 +36,7 @@ inline constexpr bool VOICE_FADE_INTERPOLATION = true;
 inline constexpr bool LOG_MISSING = false;
 inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
-inline constexpr bool LOG_MIDI_TCD = true;
+inline constexpr bool LOG_MIDI_TCD = false;
 inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = true;
 inline constexpr bool LOG_MIDI_OUT = false;
@@ -47,7 +47,7 @@ inline constexpr bool LOG_SETTINGS = false;
 inline constexpr bool LOG_RECALL = false;
 inline constexpr bool LOG_RECALL_DETAILS = false;
 inline constexpr bool LOG_RECALL_LEVELS = false;
-inline constexpr bool LOG_KEYS = false;
+inline constexpr bool LOG_KEYS = true;
 inline constexpr bool LOG_KEYS_POLY = false;
 inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = false;
@@ -77,11 +77,11 @@ class DSPInterface
 
   enum class InputEventSource
   {
-    Internal, //TCD -> use split
-    External_Use_Split, //Singular -> use split
-    External_Primary, //Primary Midi Channel
-    External_Secondary, //Secondary Midi Channel (UI: Split Channel)
-    External_Both, //Both   E.G Prim: CH1 + Sec: CH1
+    Internal,            //TCD -> use split
+    External_Use_Split,  //Singular -> use split
+    External_Primary,    //Primary Midi Channel
+    External_Secondary,  //Secondary Midi Channel (UI: Split Channel)
+    External_Both,       //Both   E.G Prim: CH1 + Sec: CH1
     Invalid
   };
 
@@ -198,10 +198,8 @@ class dsp_host_dual : public DSPInterface
   C15::Properties::LayerId getLayer(const VoiceGroup _vg);
   uint32_t getLayerId(const VoiceGroup _vg);
   // key events
-  void keyDown(const float _vel);
-  void keyUp(const float _vel);
-  void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId);
-  void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId);
+  void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
+  void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
   float scale(const Scale_Aspect _scl, float _value);
   void updateTime(Time_Aspect* _param, const float _ms);
   void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);

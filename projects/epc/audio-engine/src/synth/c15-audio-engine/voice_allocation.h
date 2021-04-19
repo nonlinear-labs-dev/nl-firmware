@@ -43,18 +43,13 @@ enum class MonoPriority
 struct KeyAssignment
 {
   AllocatorId m_origin = AllocatorId::None;
-  uint32_t m_voiceId[2] = {}, m_position[2] = {}, m_keyNumber = 0, m_sourceId = 0;
+  uint32_t m_voiceId[2] = {}, m_position[2] = {}, m_keyNumber = 0, m_inputSourceId = 0;
   float m_velocity = 0.0f;
   bool m_active = false;
-  // TODO: remove
-  inline void setVelocity(const float _vel)
+  inline void setVelocityAndInputSourceId(const float _vel, const uint32_t _inputSourceId)
   {
     m_velocity = _vel;
-  }
-  inline void setVelocityAndSourceId(const float _vel, const uint32_t _sourceId)
-  {
-    m_velocity = _vel;
-    m_sourceId = _sourceId;
+    m_inputSourceId = _inputSourceId;
   }
   inline uint32_t setVoiceId(const uint32_t _voiceId, const uint32_t _unison, const uint32_t _index)
   {
@@ -65,7 +60,7 @@ struct KeyAssignment
 
 struct VoiceAssignment
 {
-  uint32_t m_keyNumber = 0, m_sourceId = 0;
+  uint32_t m_keyNumber = 0, m_inputSourceId = 0;
   bool m_active = false, m_stolen = false;
 };
 
@@ -284,79 +279,100 @@ class VoiceAllocation
     // prepare keyAssignment table
     for(uint32_t k = 0; k < Keys; k++)
     {
-      m_keyState[k].m_keyNumber = k;
-      m_newKeyState[0][k].m_keyNumber = m_newKeyState[1][k].m_keyNumber = m_newKeyState[2][k].m_keyNumber = k;
+      m_keyState[0][k].m_keyNumber = m_keyState[1][k].m_keyNumber = m_keyState[2][k].m_keyNumber = k;
     }
   }
-  inline bool onSingleKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _sourceId)
+  inline bool onSingleKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     if(validity)
     {
-      KeyAssignment* keyState = &m_newKeyState[_sourceId][_keyPos];
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_released ?
       validity = !keyState->m_active;
       if(validity)
       {
-        keyState->setVelocityAndSourceId(_vel, _sourceId);
+        keyState->setVelocityAndInputSourceId(_vel, _inputSourceId);
         // apply
         m_traversal.init();
         keyState->m_origin = AllocatorId::Global;
         const uint32_t unisonVoices = m_global.getUnison();
         // mono/poly process
-        const int32_t firstVoice = keyDown_new_process_single(keyState, unisonVoices);
+        const int32_t firstVoice = keyDown_process_single(keyState, unisonVoices);
         if(firstVoice == -1)
           return false;
         // unison loop
-        keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _sourceId);
+        keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
       }
     }
     return validity;
   }
-  inline bool onSplitKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _sourceId,
-                             const AllocatorId _determinedPart, const bool _apply_I, const bool _apply_II)
+  inline bool onSplitKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId,
+                             const AllocatorId _determinedPart)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     bool innerValidity = false;
+    //    bool innerValidity = false;
     if(validity)
     {
-      KeyAssignment* keyState = &m_newKeyState[_sourceId][_keyPos];
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_released ?
       validity = !keyState->m_active;
       if(validity)
       {
-        keyState->setVelocityAndSourceId(_vel, _sourceId);
+        keyState->setVelocityAndInputSourceId(_vel, _inputSourceId);
         // apply
         m_traversal.init();
         keyState->m_origin = _determinedPart;
-        const bool applyBoth = _apply_I && _apply_II;
-        if(_apply_I)
+        uint32_t firstVoice, unisonVoices;
+        switch(_determinedPart)
         {
-          const uint32_t unisonVoices = m_local[0].getUnison();
-          // mono/poly process
-          const int32_t firstVoice = keyDown_new_process_split(keyState, unisonVoices, 0, true);
-          if(firstVoice != -1)
-          {
-            // unison loop
-            keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices);
-            innerValidity = true;
-          }
-        }
-        if(_apply_II)
-        {
-          const uint32_t unisonVoices = m_local[1].getUnison();
-          // mono/poly process
-          const int32_t firstVoice = keyDown_new_process_split(keyState, unisonVoices, 1, !applyBoth);
-          if(firstVoice != -1)
-          {
-            // unison loop
-            keyDown_unisonLoop(keyState->m_position[1], firstVoice, unisonVoices);
-            innerValidity |= true;
-          }
+          case AllocatorId::Local_I:
+            unisonVoices = m_local[0].getUnison();
+            // mono/poly process
+            firstVoice = keyDown_process_split(keyState, unisonVoices, 0, true);
+            if(firstVoice != -1)
+            {
+              innerValidity = true;
+              // unison loop
+              keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _inputSourceId);
+            }
+            break;
+          case AllocatorId::Local_II:
+            unisonVoices = m_local[1].getUnison();
+            // mono/poly process
+            firstVoice = keyDown_process_split(keyState, unisonVoices, 1, true);
+            if(firstVoice != -1)
+            {
+              innerValidity = true;
+              // unison loop
+              keyDown_unisonLoop(keyState->m_position[1], firstVoice, unisonVoices, _inputSourceId);
+            }
+            break;
+          case AllocatorId::Local_Both:
+            unisonVoices = m_local[0].getUnison();
+            // mono/poly process
+            firstVoice = keyDown_process_split(keyState, unisonVoices, 0, true);
+            if(firstVoice != -1)
+            {
+              innerValidity = true;
+              // unison loop
+              keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _inputSourceId);
+            }
+            unisonVoices = m_local[1].getUnison();
+            // mono/poly process
+            firstVoice = keyDown_process_split(keyState, unisonVoices, 1, false);
+            if(firstVoice != -1)
+            {
+              innerValidity = true;
+              // unison loop
+              keyDown_unisonLoop(keyState->m_position[1], firstVoice, unisonVoices, _inputSourceId);
+            }
+            break;
         }
         if(innerValidity)
         {
@@ -367,66 +383,47 @@ class VoiceAllocation
     }
     return innerValidity;
   }
-  inline bool onLayerKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _sourceId)
+  inline bool onLayerKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     if(validity)
     {
-      KeyAssignment* keyState = &m_newKeyState[_sourceId][_keyPos];
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_released ?
       validity = !keyState->m_active;
       if(validity)
       {
-        keyState->setVelocityAndSourceId(_vel, _sourceId);
+        keyState->setVelocityAndInputSourceId(_vel, _inputSourceId);
         // apply
         m_traversal.init();
         keyState->m_origin = AllocatorId::Dual;
         const uint32_t unisonVoices = m_local[0].getUnison();
         // mono/poly process
-        const int32_t firstVoice = keyDown_new_process_layer(keyState, unisonVoices);
+        const int32_t firstVoice = keyDown_process_layer(keyState, unisonVoices);
         if(firstVoice == -1)
           return false;
         // unison loop
-        keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _sourceId);
-        keyDown_unisonLoop(keyState->m_position[0], LocalVoices + firstVoice, unisonVoices, _sourceId);
+        keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _inputSourceId);
+        keyDown_unisonLoop(keyState->m_position[0], LocalVoices + firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
       }
     }
     return validity;
   }
-  // TODO: replace
-  inline bool keyDown(const uint32_t _keyPos, const float _vel, LayerMode currentMode)
+  inline bool onSingleKeyUp(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     if(validity)
     {
-      KeyAssignment* keyState = &m_keyState[_keyPos];
-      // validation 2 - key_released ?
-      validity = !keyState->m_active;
-      if(validity)
-      {
-        keyState->setVelocity(_vel);
-        keyDown_apply(keyState, currentMode);
-        keyDown_confirm(keyState);
-      }
-    }
-    return validity;
-  }
-  inline bool onSingleKeyUp(const uint32_t _keyPos, const float _vel, const uint32_t _sourceId)
-  {
-    // validation 1 - keyPos_in_range ?
-    bool validity = _keyPos < Keys;
-    if(validity)
-    {
-      KeyAssignment* keyState = &m_newKeyState[_sourceId][_keyPos];
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_pressed ?
       validity = keyState->m_active;
       if(validity)
       {
-        keyState->setVelocityAndSourceId(_vel, _sourceId);
+        keyState->setVelocityAndInputSourceId(_vel, _inputSourceId);
         // apply
         m_traversal.init();
         const uint32_t unisonVoices = m_global.getUnison();
@@ -438,19 +435,19 @@ class VoiceAllocation
     }
     return validity;
   }
-  inline bool onSplitKeyUp(const uint32_t _keyPos, const float _vel, const uint32_t _sourceId,
-                           const AllocatorId _determinedPart, const bool _apply_I, const bool _apply_II)
+  inline bool onSplitKeyUp(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId,
+                           const AllocatorId _determinedPart)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     if(validity)
     {
-      KeyAssignment* keyState = &m_newKeyState[_sourceId][_keyPos];
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_pressed ?
-      validity = keyState->m_active;
+      validity = keyState->m_active && (keyState->m_origin == _determinedPart);
       if(validity)
       {
-        keyState->setVelocityAndSourceId(_vel, _sourceId);
+        keyState->setVelocityAndInputSourceId(_vel, _inputSourceId);
         // apply
         m_traversal.init();
         uint32_t firstVoice, unisonVoices;
@@ -484,18 +481,18 @@ class VoiceAllocation
     }
     return validity;
   }
-  inline bool onLayerKeyUp(const uint32_t _keyPos, const float _vel, const uint32_t _sourceId)
+  inline bool onLayerKeyUp(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
     if(validity)
     {
-      KeyAssignment* keyState = &m_newKeyState[_sourceId][_keyPos];
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_pressed ?
       validity = keyState->m_active;
       if(validity)
       {
-        keyState->setVelocityAndSourceId(_vel, _sourceId);
+        keyState->setVelocityAndInputSourceId(_vel, _inputSourceId);
         // apply
         m_traversal.init();
         const uint32_t unisonVoices = m_local[0].getUnison();
@@ -503,25 +500,6 @@ class VoiceAllocation
         // unison loop
         keyUp_unisonLoop(firstVoice, unisonVoices);
         keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
-      }
-      keyUp_confirm(keyState);
-    }
-    return validity;
-  }
-  // TODO: replace
-  inline bool keyUp(const uint32_t _keyPos, const float _vel)
-  {
-    // validation 1 - keyPos_in_range ?
-    bool validity = _keyPos < Keys;
-    if(validity)
-    {
-      KeyAssignment* keyState = &m_keyState[_keyPos];
-      // validation 2 - key_pressed ?
-      validity = keyState->m_active;
-      if(validity)
-      {
-        keyState->setVelocity(_vel);
-        validity = keyUp_apply(keyState);
       }
       keyUp_confirm(keyState);
     }
@@ -661,13 +639,12 @@ class VoiceAllocation
   PolyVoiceAllocator<LocalVoices> m_local[2];
   MonoVoiceAllocator<Keys> m_global_mono;
   MonoVoiceAllocator<Keys> m_local_mono[2];
-  KeyAssignment m_keyState[Keys];
-  KeyAssignment m_newKeyState[3][Keys];
+  KeyAssignment m_keyState[3][Keys];
   VoiceAssignment m_voiceState[GlobalVoices];
   uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {}, m_splitPoint[2] = {};
   bool m_glideAllowance[GlobalVoices] = {};
   const AllocatorId m_layerId[2] = { AllocatorId::Local_I, AllocatorId::Local_II };
-  inline int32_t keyDown_new_process_single(KeyAssignment* _keyState, uint32_t _unisonVoices)
+  inline int32_t keyDown_process_single(KeyAssignment* _keyState, uint32_t _unisonVoices)
   {
     uint32_t firstVoice;
     if(m_global_mono.m_enabled)
@@ -690,40 +667,13 @@ class VoiceAllocation
       //clear stolen key first(all associated voices will be lost)
       if(m_voiceState[firstVoice].m_active)
       {
-        keyUp_confirm(&m_newKeyState[m_voiceState[firstVoice].m_sourceId][m_voiceState[firstVoice].m_keyNumber]);
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_inputSourceId][m_voiceState[firstVoice].m_keyNumber]);
       }
     }
     return firstVoice;
   }
-  // TODO: remove
-  inline uint32_t keyDown_process_single(KeyAssignment* _keyState, uint32_t _unisonVoices)
-  {
-    uint32_t firstVoice;
-    if(m_global_mono.m_enabled)
-    {
-      // single mono keyDown
-      m_global_mono.keyDown(_keyState->m_keyNumber);
-      firstVoice = _keyState->setVoiceId(0, _unisonVoices, 0);
-      _keyState->m_position[0] = m_global_mono.m_key_position;
-      m_traversal.startEvent(_keyState->m_position[0], _keyState->m_velocity, m_global_mono.m_retrigger_env,
-                             m_global_mono.m_retrigger_glide);
-    }
-    else
-    {
-      // single poly keyDown
-      firstVoice = _keyState->setVoiceId(m_global.keyDown(), _unisonVoices, 0);
-      _keyState->m_position[0] = _keyState->m_keyNumber;
-      m_traversal.startEvent(_keyState->m_keyNumber, _keyState->m_velocity, true, false);
-      //clear stolen key first(all associated voices will be lost)
-      if(m_voiceState[firstVoice].m_active)
-      {
-        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyNumber]);
-      }
-    }
-    return firstVoice;
-  }
-  inline int32_t keyDown_new_process_split(KeyAssignment* _keyState, uint32_t _unisonVoices, uint32_t _layerIndex,
-                                           bool _startEvent)
+  inline int32_t keyDown_process_split(KeyAssignment* _keyState, uint32_t _unisonVoices, uint32_t _layerIndex,
+                                       bool _startEvent)
   {
     uint32_t firstVoice;
     const uint32_t voiceOffset = _layerIndex * LocalVoices;
@@ -762,57 +712,13 @@ class VoiceAllocation
       // clear stolen key first (all associated voices of the corresp. part will be lost)
       if(m_voiceState[firstVoice].m_active)
       {
-        keyUp_confirm(&m_newKeyState[m_voiceState[firstVoice].m_sourceId][m_voiceState[firstVoice].m_keyNumber],
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_inputSourceId][m_voiceState[firstVoice].m_keyNumber],
                       _layerIndex);
       }
     }
     return firstVoice;
   }
-  // TODO: remove
-  inline uint32_t keyDown_process_split(KeyAssignment* _keyState, uint32_t _unisonVoices, uint32_t _layerIndex,
-                                        bool _startEvent)
-  {
-    uint32_t firstVoice;
-    const uint32_t voiceOffset = _layerIndex * LocalVoices;
-    if(m_local_mono[_layerIndex].m_enabled)
-    {
-      // split[I/II] mono keyDown
-      m_local_mono[_layerIndex].keyDown(_keyState->m_keyNumber);
-      firstVoice = voiceOffset + _keyState->setVoiceId(0, _unisonVoices, _layerIndex);
-      _keyState->m_position[_layerIndex] = m_local_mono[_layerIndex].m_key_position;
-      if(_startEvent)
-      {
-        m_traversal.startEvent(_keyState->m_position[_layerIndex], _keyState->m_velocity,
-                               m_local_mono[_layerIndex].m_retrigger_env, m_local_mono[_layerIndex].m_retrigger_glide);
-      }
-      else
-      {
-        m_traversal.addEvent(_keyState->m_position[_layerIndex], _keyState->m_velocity,
-                             m_local_mono[_layerIndex].m_retrigger_env, m_local_mono[_layerIndex].m_retrigger_glide);
-      }
-    }
-    else
-    {
-      // split[I/II] poly keyDown
-      firstVoice = voiceOffset + _keyState->setVoiceId(m_local[_layerIndex].keyDown(), _unisonVoices, _layerIndex);
-      _keyState->m_position[_layerIndex] = _keyState->m_keyNumber;
-      if(_startEvent)
-      {
-        m_traversal.startEvent(_keyState->m_keyNumber, _keyState->m_velocity, true, false);
-      }
-      else
-      {
-        m_traversal.addEvent(_keyState->m_keyNumber, _keyState->m_velocity, true, false);
-      }
-      // clear stolen key first (all associated voices of the corresp. part will be lost)
-      if(m_voiceState[firstVoice].m_active)
-      {
-        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyNumber], _layerIndex);
-      }
-    }
-    return firstVoice;
-  }
-  inline int32_t keyDown_new_process_layer(KeyAssignment* _keyState, uint32_t _unisonVoices)
+  inline int32_t keyDown_process_layer(KeyAssignment* _keyState, uint32_t _unisonVoices)
   {
     uint32_t firstVoice;
     if(m_local_mono[0].m_enabled)
@@ -835,102 +741,10 @@ class VoiceAllocation
       // clear stolen key first (all associated voices will be lost)
       if(m_voiceState[firstVoice].m_active)
       {
-        keyUp_confirm(&m_newKeyState[m_voiceState[firstVoice].m_sourceId][m_voiceState[firstVoice].m_keyNumber]);
+        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_inputSourceId][m_voiceState[firstVoice].m_keyNumber]);
       }
     }
     return firstVoice;
-  }
-  // TODO: remove
-  inline uint32_t keyDown_process_layer(KeyAssignment* _keyState, uint32_t _unisonVoices)
-  {
-    uint32_t firstVoice;
-    if(m_local_mono[0].m_enabled)
-    {
-      // layer[I&II] mono keyDown
-      m_local_mono[0].keyDown(_keyState->m_keyNumber);
-      firstVoice = _keyState->setVoiceId(0, _unisonVoices, 0);
-      _keyState->m_position[0] = m_local_mono[0].m_key_position;
-      m_traversal.startEvent(_keyState->m_position[0], _keyState->m_velocity, m_local_mono[0].m_retrigger_env,
-                             m_local_mono[0].m_retrigger_glide);
-    }
-    else
-    {
-      // layer[I&II] poly keyDown
-      firstVoice = _keyState->setVoiceId(m_local[0].keyDown(), _unisonVoices, 0);
-      _keyState->m_position[0] = _keyState->m_keyNumber;
-      m_traversal.startEvent(_keyState->m_keyNumber, _keyState->m_velocity, true, false);
-      // clear stolen key first (all associated voices will be lost)
-      if(m_voiceState[firstVoice].m_active)
-      {
-        keyUp_confirm(&m_keyState[m_voiceState[firstVoice].m_keyNumber]);
-      }
-    }
-    return firstVoice;
-  }
-  // TODO: replace
-  inline void keyDown_apply(KeyAssignment* _keyState, LayerMode _currentMode)
-  {
-    m_traversal.init();
-    uint32_t firstVoice, unisonVoices;
-    bool split_condition_lower, split_condition_upper;
-    // determine associated allocator (by mode)
-    switch(_currentMode)
-    {
-      case LayerMode::Single:
-        _keyState->m_origin = AllocatorId::Global;
-        unisonVoices = m_global.getUnison();
-        // mono/poly process
-        firstVoice = keyDown_process_single(_keyState, unisonVoices);
-        // unison loop
-        keyDown_unisonLoop(_keyState->m_position[0], firstVoice, unisonVoices);
-        break;
-      case LayerMode::Split:
-        // we have to distinguish overlapping split points (AllocatorId::Dual) from non-overlapping ones (AllocatorId::Local_I / II)
-        split_condition_lower = _keyState->m_keyNumber <= m_splitPoint[0];
-        split_condition_upper = _keyState->m_keyNumber >= m_splitPoint[1];
-        if(split_condition_lower && split_condition_upper)
-        {
-          // overlapping split
-          _keyState->m_origin = AllocatorId::Local_Both;
-          // mono/poly process [I]
-          unisonVoices = m_local[0].getUnison();
-          firstVoice = keyDown_process_split(_keyState, unisonVoices, 0, true);
-          keyDown_unisonLoop(_keyState->m_position[0], firstVoice, unisonVoices);
-          // mono/poly process [II]
-          unisonVoices = m_local[1].getUnison();
-          firstVoice = keyDown_process_split(_keyState, unisonVoices, 1, false);
-          keyDown_unisonLoop(_keyState->m_position[1], firstVoice, unisonVoices);
-        }
-        else if(split_condition_lower)
-        {
-          // non-overlapping split [I]
-          _keyState->m_origin = AllocatorId::Local_I;
-          unisonVoices = m_local[0].getUnison();
-          // mono/poly process
-          firstVoice = keyDown_process_split(_keyState, unisonVoices, 0, true);
-          // unison loop
-          keyDown_unisonLoop(_keyState->m_position[0], firstVoice, unisonVoices);
-        }
-        else if(split_condition_upper)
-        {
-          // non-overlapping split [II]
-          _keyState->m_origin = AllocatorId::Local_II;
-          unisonVoices = m_local[1].getUnison();
-          firstVoice = keyDown_process_split(_keyState, unisonVoices, 1, true);
-          // unison loop
-          keyDown_unisonLoop(_keyState->m_position[1], firstVoice, unisonVoices);
-        }
-        break;
-      case LayerMode::Layer:
-        _keyState->m_origin = AllocatorId::Dual;
-        unisonVoices = m_local[0].getUnison();
-        // mono/poly process
-        firstVoice = keyDown_process_layer(_keyState, unisonVoices);
-        // unison loop
-        keyDown_unisonLoop(_keyState->m_position[0], firstVoice, unisonVoices);
-        keyDown_unisonLoop(_keyState->m_position[0], LocalVoices + firstVoice, unisonVoices);
-        break;
-    }
   }
   inline uint32_t keyUp_process_single(KeyAssignment* _keyState)
   {
@@ -985,7 +799,7 @@ class VoiceAllocation
     }
     return _keyState->m_voiceId[_layerIndex];
   }
-  // TODO: remove
+  // still needed for reset
   inline bool keyUp_apply(KeyAssignment* _keyState)
   {
     m_traversal.init();
@@ -1057,7 +871,7 @@ class VoiceAllocation
     }
   }
   inline void keyDown_unisonLoop(const uint32_t _keyId, const uint32_t _firstVoice, const uint32_t _unisonVoices,
-                                 const uint32_t _sourceId)
+                                 const uint32_t _inputSourceId)
   {
     for(uint32_t unisonIndex = 0; unisonIndex < _unisonVoices; unisonIndex++)
     {
@@ -1066,23 +880,7 @@ class VoiceAllocation
       const bool allow_glide = unisonIndex == 0 ? true : m_glideAllowance[voiceId];
       VoiceAssignment* voiceState = &m_voiceState[voiceId];
       voiceState->m_keyNumber = _keyId;
-      voiceState->m_sourceId = _sourceId;
-      voiceState->m_stolen = voiceState->m_active;
-      voiceState->m_active = true;
-      m_traversal.add(m_localIndex[voiceId], m_localVoice[voiceId], unisonIndex, voiceState->m_active,
-                      voiceState->m_stolen, allow_glide);
-    }
-  }
-  // TODO: remove
-  inline void keyDown_unisonLoop(const uint32_t _keyId, const uint32_t _firstVoice, const uint32_t _unisonVoices)
-  {
-    for(uint32_t unisonIndex = 0; unisonIndex < _unisonVoices; unisonIndex++)
-    {
-      const uint32_t voiceId = _firstVoice + unisonIndex;
-      // glide is allowed for: first unison voice and: first unison voice of second voice group (important for single-sound cases)
-      const bool allow_glide = unisonIndex == 0 ? true : m_glideAllowance[voiceId];
-      VoiceAssignment* voiceState = &m_voiceState[voiceId];
-      voiceState->m_keyNumber = _keyId;
+      voiceState->m_inputSourceId = _inputSourceId;
       voiceState->m_stolen = voiceState->m_active;
       voiceState->m_active = true;
       m_traversal.add(m_localIndex[voiceId], m_localVoice[voiceId], unisonIndex, voiceState->m_active,
@@ -1110,7 +908,7 @@ class VoiceAllocation
     {
       for(uint32_t s = 0; s < 3; s++)
       {
-        KeyAssignment* keyState = &m_newKeyState[s][k];
+        KeyAssignment* keyState = &m_keyState[s][k];
         // find active keys
         if(keyState->m_active)
         {
@@ -1128,7 +926,7 @@ class VoiceAllocation
     {
       for(uint32_t s = 0; s < 3; s++)
       {
-        KeyAssignment* keyState = &m_newKeyState[s][k];
+        KeyAssignment* keyState = &m_keyState[s][k];
         // find allocated keys
         if(keyState->m_origin == _alloc)
         {

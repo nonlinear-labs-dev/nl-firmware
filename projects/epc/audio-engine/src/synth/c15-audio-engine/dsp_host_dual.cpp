@@ -370,16 +370,14 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo(
-        [&]
-        {
-          // global flush
-          m_poly[0].flushDSP();
-          m_poly[1].flushDSP();
-          m_mono[0].flushDSP();
-          m_mono[1].flushDSP();
-          recallSingle(_msg);
-        });
+    m_fade.muteAndDo([&] {
+      // global flush
+      m_poly[0].flushDSP();
+      m_poly[1].flushDSP();
+      m_mono[0].flushDSP();
+      m_mono[1].flushDSP();
+      recallSingle(_msg);
+    });
 
     if(LOG_RECALL)
     {
@@ -402,16 +400,14 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo(
-        [&]
-        {
-          // global flush
-          m_poly[0].flushDSP();
-          m_poly[1].flushDSP();
-          m_mono[0].flushDSP();
-          m_mono[1].flushDSP();
-          recallSplit(_msg);
-        });
+    m_fade.muteAndDo([&] {
+      // global flush
+      m_poly[0].flushDSP();
+      m_poly[1].flushDSP();
+      m_mono[0].flushDSP();
+      m_mono[1].flushDSP();
+      recallSplit(_msg);
+    });
 
     if(LOG_RECALL)
     {
@@ -433,16 +429,14 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   if(m_glitch_suppression)
   {
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo(
-        [&]
-        {
-          // global flush
-          m_poly[0].flushDSP();
-          m_poly[1].flushDSP();
-          m_mono[0].flushDSP();
-          m_mono[1].flushDSP();
-          recallLayer(_msg);
-        });
+    m_fade.muteAndDo([&] {
+      // global flush
+      m_poly[0].flushDSP();
+      m_poly[1].flushDSP();
+      m_mono[0].flushDSP();
+      m_mono[1].flushDSP();
+      recallLayer(_msg);
+    });
 
     if(LOG_RECALL)
     {
@@ -696,24 +690,22 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
     }
 
     // application now via fade point
-    m_fade.muteAndDo(
-        [&]
-        {
-          // apply (preloaded) unison change
-          m_alloc.setUnison(layerId, param->m_position, m_layer_mode, m_layer_mode);
-          // apply reset to affected poly compoments
-          m_poly[layerId].resetEnvelopes();
-          m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
-          m_poly[layerId].m_key_active = 0;
-          if(m_layer_mode != LayerMode::Split)
-          {
-            // apply reset to other poly components (when not in split mode)
-            const uint32_t lId = 1 - layerId;
-            m_poly[lId].resetEnvelopes();
-            m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
-            m_poly[lId].m_key_active = 0;
-          }
-        });
+    m_fade.muteAndDo([&] {
+      // apply (preloaded) unison change
+      m_alloc.setUnison(layerId, param->m_position, m_layer_mode, m_layer_mode);
+      // apply reset to affected poly compoments
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
+      m_poly[layerId].m_key_active = 0;
+      if(m_layer_mode != LayerMode::Split)
+      {
+        // apply reset to other poly components (when not in split mode)
+        const uint32_t lId = 1 - layerId;
+        m_poly[lId].resetEnvelopes();
+        m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
+        m_poly[lId].m_key_active = 0;
+      }
+    });
   }
 }
 
@@ -729,22 +721,20 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
-    m_fade.muteAndDo(
-        [&]
-        {
-          // apply (preloaded) mono change
-          m_alloc.setMonoEnable(layerId, param->m_scaled, m_layer_mode);
-          // apply reset to affected poly compoments
-          m_poly[layerId].resetEnvelopes();
-          m_poly[layerId].m_key_active = 0;
-          if(m_layer_mode != LayerMode::Split)
-          {
-            // apply reset to other poly components (when not in split mode)
-            const uint32_t lId = 1 - layerId;
-            m_poly[lId].resetEnvelopes();
-            m_poly[lId].m_key_active = 0;
-          }
-        });
+    m_fade.muteAndDo([&] {
+      // apply (preloaded) mono change
+      m_alloc.setMonoEnable(layerId, param->m_scaled, m_layer_mode);
+      // apply reset to affected poly compoments
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_key_active = 0;
+      if(m_layer_mode != LayerMode::Split)
+      {
+        // apply reset to other poly components (when not in split mode)
+        const uint32_t lId = 1 - layerId;
+        m_poly[lId].resetEnvelopes();
+        m_poly[lId].m_key_active = 0;
+      }
+    });
   }
 }
 
@@ -1102,11 +1092,12 @@ uint32_t dsp_host_dual::getLayerId(const VoiceGroup _vg)
   }
 }
 
-void dsp_host_dual::keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId)
+void dsp_host_dual::keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId)
 {
   if(LOG_KEYS)
   {
-    nltools::Log::info("key_down(src:", _srcId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_down(src:", _inputSourceId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison,
+                       ")");
   }
   for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
   {
@@ -1126,44 +1117,12 @@ void dsp_host_dual::keyDownTraversal(const uint32_t _note, const float _vel, con
   }
 }
 
-// TODO: remove
-void dsp_host_dual::keyDown(const float _vel)
-{
-  if(m_alloc.keyDown(m_key_pos, _vel, m_layer_mode))
-  {
-    if(LOG_KEYS)
-    {
-      nltools::Log::info("key_down(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
-    }
-    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
-    {
-      if(m_poly[event->m_localIndex].keyDown(event))
-      {
-        // mono legato
-        m_mono[event->m_localIndex].keyDown(event);
-      }
-      if(LOG_KEYS_POLY)
-      {
-        nltools::Log::info("key_down_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
-                           ", unisonIndex:", event->m_unisonIndex, ", stolen:", event->m_stolen,
-                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
-        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
-                           ", trigger_glide:", event->m_trigger_glide, ")");
-      }
-    }
-  }
-  else if(LOG_FAIL)
-
-  {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(pos:", m_key_pos, ") failed!");
-  }
-}
-
-void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _srcId)
+void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId)
 {
   if(LOG_KEYS)
   {
-    nltools::Log::info("key_up(src:", _srcId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
+    nltools::Log::info("key_up(src:", _inputSourceId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison,
+                       ")");
   }
   for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
   {
@@ -1175,33 +1134,6 @@ void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel, const
       nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
                          ", trigger_glide:", event->m_trigger_glide, ")");
     }
-  }
-}
-
-// TODO: remove
-void dsp_host_dual::keyUp(const float _vel)
-{
-  if(m_alloc.keyUp(m_key_pos, _vel))
-  {
-    if(LOG_KEYS)
-    {
-      nltools::Log::info("key_up(pos:", m_key_pos, ", vel:", _vel, ", unison:", m_alloc.m_unison, ")");
-    }
-    for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
-    {
-      m_poly[event->m_localIndex].keyUp(event);
-      if(LOG_KEYS_POLY)
-      {
-        nltools::Log::info("key_up_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
-                           ", tune:", event->m_tune, ", velocity:", event->m_velocity, ")");
-        nltools::Log::info("key_details(active:", event->m_active, ", trigger_env:", event->m_trigger_env,
-                           ", trigger_glide:", event->m_trigger_glide, ")");
-      }
-    }
-  }
-  else if(LOG_FAIL)
-  {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(pos:", m_key_pos, ") failed!");
   }
 }
 
@@ -2453,26 +2385,26 @@ void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource f
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
-  const uint32_t sourceId = from == InputEventSource::Internal ? 0 : 1;
+  const uint32_t inputSourceId = from == InputEventSource::Internal ? 0 : 1;
 
   bool valid = false;
   switch(m_layer_mode)
   {
     case LayerMode::Single:
-      valid = m_alloc.onSingleKeyDown(note, velocity, sourceId);
+      valid = m_alloc.onSingleKeyDown(note, velocity, inputSourceId);
       break;
     case LayerMode::Layer:
-      valid = m_alloc.onLayerKeyDown(note, velocity, sourceId);
+      valid = m_alloc.onLayerKeyDown(note, velocity, inputSourceId);
       break;
   }
   if(valid)
   {
-    keyDownTraversal(note, velocity, sourceId);
+    keyDownTraversal(note, velocity, inputSourceId);
   }
   else if(LOG_FAIL)
 
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", sourceId, ", pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", inputSourceId, ", pos:", note, ") failed!");
   }
 }
 
@@ -2480,25 +2412,25 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputEventSource fro
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
-  const uint32_t sourceId = from == InputEventSource::Internal ? 0 : 1;
+  const uint32_t inputSourceId = from == InputEventSource::Internal ? 0 : 1;
 
   bool valid = false;
   switch(m_layer_mode)
   {
     case LayerMode::Single:
-      valid = m_alloc.onSingleKeyUp(note, velocity, sourceId);
+      valid = m_alloc.onSingleKeyUp(note, velocity, inputSourceId);
       break;
     case LayerMode::Layer:
-      valid = m_alloc.onLayerKeyUp(note, velocity, sourceId);
+      valid = m_alloc.onLayerKeyUp(note, velocity, inputSourceId);
       break;
   }
   if(valid)
   {
-    keyUpTraversal(note, velocity, sourceId);
+    keyUpTraversal(note, velocity, inputSourceId);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", sourceId, ", pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", inputSourceId, ", pos:", note, ") failed!");
   }
 }
 
@@ -2506,13 +2438,13 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
-  uint32_t sourceId = 0;
+  uint32_t inputSourceId = 0;
   if(from == InputEventSource::Internal)
-    sourceId = 0;
+    inputSourceId = 0;
   else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
-    sourceId = 1;
+    inputSourceId = 1;
   else if(from == InputEventSource::External_Secondary)
-    sourceId = 2;
+    inputSourceId = 2;
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
@@ -2520,23 +2452,23 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
     switch(part)
     {
       case VoiceGroup::I:  // applies to Part I only
-        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Local_I, true, false);
+        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, AllocatorId::Local_I);
         break;
       case VoiceGroup::II:  // applies to Part II only
-        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Local_II, false, true);
+        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, AllocatorId::Local_II);
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
-        valid = m_alloc.onSplitKeyDown(note, velocity, sourceId, AllocatorId::Local_Both, true, true);
+        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, AllocatorId::Local_Both);
         break;
     }
   }
   if(valid)
   {
-    keyDownTraversal(note, velocity, sourceId);
+    keyDownTraversal(note, velocity, inputSourceId);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", sourceId, ", pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", inputSourceId, ", pos:", note, ") failed!");
   }
 }
 
@@ -2544,13 +2476,13 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
-  uint32_t sourceId = 0;
+  uint32_t inputSourceId = 0;
   if(from == InputEventSource::Internal)
-    sourceId = 0;
+    inputSourceId = 0;
   else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
-    sourceId = 1;
+    inputSourceId = 1;
   else if(from == InputEventSource::External_Secondary)
-    sourceId = 2;
+    inputSourceId = 2;
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
@@ -2558,38 +2490,36 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
     switch(part)
     {
       case VoiceGroup::I:  // applies to Part I only
-        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Local_I, true, false);
+        valid = m_alloc.onSplitKeyUp(note, velocity, inputSourceId, AllocatorId::Local_I);
         break;
       case VoiceGroup::II:  // applies to Part II only
-        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Local_II, false, true);
+        valid = m_alloc.onSplitKeyUp(note, velocity, inputSourceId, AllocatorId::Local_II);
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
-        valid = m_alloc.onSplitKeyUp(note, velocity, sourceId, AllocatorId::Local_Both, true, true);
+        valid = m_alloc.onSplitKeyUp(note, velocity, inputSourceId, AllocatorId::Local_Both);
         break;
     }
   }
   if(valid)
   {
-    keyUpTraversal(note, velocity, sourceId);
+    keyUpTraversal(note, velocity, inputSourceId);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", sourceId, ", pos:", note, ") failed!");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", inputSourceId, ", pos:", note, ") failed!");
   }
 }
 
 void dsp_host_dual::onMidiSettingsReceived()
 {
-  m_fade.muteAndDo(
-      [&]
-      {
-        // reset voice allocation
-        m_alloc.reset();
-        // reset envelopes in both parts
-        for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-        {
-          m_poly[layerId].resetEnvelopes();
-          m_poly[layerId].m_key_active = 0;
-        }
-      });
+  m_fade.muteAndDo([&] {
+    // reset voice allocation
+    m_alloc.reset();
+    // reset envelopes in both parts
+    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+    {
+      m_poly[layerId].resetEnvelopes();
+      m_poly[layerId].m_key_active = 0;
+    }
+  });
 }
