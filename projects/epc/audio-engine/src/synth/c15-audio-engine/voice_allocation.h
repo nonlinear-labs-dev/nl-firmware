@@ -479,7 +479,6 @@ class VoiceAllocation
             keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
             break;
         }
-        keyUp_unisonLoop(firstVoice, unisonVoices);
       }
       keyUp_confirm(keyState);
     }
