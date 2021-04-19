@@ -2439,12 +2439,25 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
   uint32_t inputSourceId = 0;
-  if(from == InputEventSource::Internal)
-    inputSourceId = 0;
-  else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
-    inputSourceId = 1;
-  else if(from == InputEventSource::External_Secondary)
-    inputSourceId = 2;
+  switch(from)
+  {
+    case InputEventSource::Internal:
+      break;
+    case InputEventSource::External_Use_Split:
+    case InputEventSource::External_Primary:
+    case InputEventSource::External_Both:
+      inputSourceId = 1;
+      break;
+    case InputEventSource::External_Secondary:
+      inputSourceId = 2;
+      break;
+  }
+  //  if(from == InputEventSource::Internal)
+  //    inputSourceId = 0;
+  //  else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
+  //    inputSourceId = 1;
+  //  else if(from == InputEventSource::External_Secondary)
+  //    inputSourceId = 2;
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
@@ -2477,12 +2490,25 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
   uint32_t inputSourceId = 0;
-  if(from == InputEventSource::Internal)
-    inputSourceId = 0;
-  else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
-    inputSourceId = 1;
-  else if(from == InputEventSource::External_Secondary)
-    inputSourceId = 2;
+  switch(from)
+  {
+    case InputEventSource::Internal:
+      break;
+    case InputEventSource::External_Use_Split:
+    case InputEventSource::External_Primary:
+    case InputEventSource::External_Both:
+      inputSourceId = 1;
+      break;
+    case InputEventSource::External_Secondary:
+      inputSourceId = 2;
+      break;
+  }
+  //  if(from == InputEventSource::Internal)
+  //    inputSourceId = 0;
+  //  else if(from == InputEventSource::External_Primary || from == InputEventSource::External_Both)
+  //    inputSourceId = 1;
+  //  else if(from == InputEventSource::External_Secondary)
+  //    inputSourceId = 2;
 
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
