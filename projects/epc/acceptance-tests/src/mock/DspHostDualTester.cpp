@@ -3,7 +3,6 @@
 DspHostDualTester::DspHostDualTester(dsp_host_dual* _host)
     : m_host{ _host }
 {
-  getActiveVoices();
 }
 
 uint8_t DspHostDualTester::getActiveVoices(const VoiceGroup _group)
