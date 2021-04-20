@@ -83,6 +83,7 @@ class Preset : public PresetDualParameterGroups
 
   // algorithms
   Glib::ustring buildUndoTransactionTitle(const Glib::ustring &prefix) const;
+  Glib::ustring getTypeUnicode() const;
   bool matchesQuery(const SearchQuery &query) const;
 
   void writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;

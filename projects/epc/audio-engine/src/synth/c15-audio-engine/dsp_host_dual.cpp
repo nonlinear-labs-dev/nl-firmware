@@ -1287,8 +1287,7 @@ void dsp_host_dual::hwModChain(HW_Src_Param* _src, const uint32_t _id, const flo
 
 void dsp_host_dual::globalModChain(Macro_Param* _mc)
 {
-  for(auto param = m_params.globalChainFirst(_mc->m_id); m_params.globalChainRunning();
-      param = m_params.globalChainNext())
+  for(auto param = m_params.globalChainFirst(_mc->m_id); param; param = m_params.globalChainNext())
   {
     if(param->modulate(_mc->m_position))
     {
@@ -1305,8 +1304,7 @@ void dsp_host_dual::globalModChain(Macro_Param* _mc)
 
 void dsp_host_dual::localModChain(Macro_Param* _mc)
 {
-  for(auto param = m_params.localChainFirst(0, _mc->m_id); m_params.localChainRunning(0);
-      param = m_params.localChainNext(0))
+  for(auto param = m_params.localChainFirst(0, _mc->m_id); param; param = m_params.localChainNext(0))
   {
     if(param->modulate(_mc->m_position))
     {
@@ -1324,8 +1322,7 @@ void dsp_host_dual::localModChain(Macro_Param* _mc)
 
 void dsp_host_dual::localModChain(const uint32_t _layer, Macro_Param* _mc)
 {
-  for(auto param = m_params.localChainFirst(_layer, _mc->m_id); m_params.localChainRunning(_layer);
-      param = m_params.localChainNext(_layer))
+  for(auto param = m_params.localChainFirst(_layer, _mc->m_id); param; param = m_params.localChainNext(_layer))
   {
     if(param->modulate(_mc->m_position))
     {

@@ -56,11 +56,12 @@ class AudioEngineProxy : public sigc::trackable
   static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
   static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
 
-  void onMidiBankSelectionChanged(Uuid newMidiBankUuid);
+  void onMidiBankSelectionChanged(const Uuid& newMidiBankUuid);
+  void setLastKnownMIDIProgramChangeNumber(int pc);
   void sendSelectedMidiPresetAsProgramChange();
   void onPresetManagerLoaded();
 
-  uint8_t m_lastSendProgramNumber = std::numeric_limits<uint8_t>::max();
+  uint8_t m_lastMIDIKnownProgramNumber = std::numeric_limits<uint8_t>::max();
   uint m_suppressParamChanges = 0;
 
   sigc::connection m_midiBankChangedConnection;

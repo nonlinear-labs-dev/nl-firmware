@@ -40,7 +40,8 @@ PresetsLayout::PresetsLayout()
 
   addControl(new SoledHeader("Preset", Rect(0, 0, 31, headlineHeight + 1)));
   m_number = addControl(new LabelRegular8("", Rect(32, 1, 64, headlineHeight - 1)));
-  m_name = addControl(new ShortenLabel("", Rect(0, headlineHeight + 2, 128, 32 - headlineHeight - 2)));
+  m_name = addControl(new ShortenLabel("", Rect(0, headlineHeight + 2, 120, 32 - headlineHeight - 2)));
+  m_type = addControl(new ShortenLabel("", Rect(120, headlineHeight, 8, 32 - headlineHeight - 2)));
   m_directLoad = addControl(new DirectLoadIndicator(Rect(96, 0, 32, headlineHeight)));
   addControl(new DottedLine(Rect(31, headlineHeight, 96, 1)));
 
@@ -55,9 +56,7 @@ PresetsLayout::PresetsLayout()
       sigc::mem_fun(this, &PresetsLayout::onAutoLoadSettingChanged));
 }
 
-PresetsLayout::~PresetsLayout()
-{
-}
+PresetsLayout::~PresetsLayout() = default;
 
 void PresetsLayout::onBankSelected(const Uuid &selectedBank)
 {
@@ -114,8 +113,9 @@ bool PresetsLayout::updateNameAndNumber()
       auto presetPosition = bank->getPresetPosition(presetUUID);
       auto modified = eb->isModified() && eb->getUUIDOfLastLoadedPreset() == presetUUID;
       auto presetNumberString = formatBankAndPresetNumber(bankNumber, presetPosition, modified);
-      m_number->setText(StringAndSuffix { presetNumberString });
-      m_name->setText(StringAndSuffix { preset->getDisplayNameWithSuffixes(false) });
+      m_number->setText(presetNumberString);
+      m_name->setText(preset->getDisplayNameWithSuffixes(false));
+      m_type->setText(preset->getTypeUnicode());
       return true;
     }
   }

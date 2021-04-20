@@ -5,7 +5,7 @@
 #include <tools/StringTools.h>
 #include <parameters/Parameter.h>
 #include <parameter_list.h>
-#include <assert.h>
+#include <cassert>
 #include <nltools/logging/Log.h>
 #include <groups/MacroControlsGroup.h>
 #include <presets/PresetManager.h>
@@ -71,6 +71,16 @@ Glib::ustring ParameterDB::getDescription(const ParameterId &id) const
 {
   auto num = id.getNumber();
   return getDescription(num);
+}
+
+std::optional<Glib::ustring> ParameterDB::getLongGroupName(const ParameterId &id) const
+{
+  auto d = C15::ParameterList[id.getNumber()];
+
+  if(!d.m_pg.m_group_label_long)
+    return {};
+
+  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_group_label_long, id.getVoiceGroup());
 }
 
 Glib::ustring ParameterDB::getDescription(const int num) const
