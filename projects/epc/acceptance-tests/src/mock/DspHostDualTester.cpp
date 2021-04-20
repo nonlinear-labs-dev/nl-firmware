@@ -3,9 +3,10 @@
 DspHostDualTester::DspHostDualTester(dsp_host_dual* _host)
     : m_host{ _host }
 {
+  getActiveVoices();
 }
 
-uint8_t DspHostDualTester::getActiveVoices(const VoiceGroup _group = VoiceGroup::Global)
+uint8_t DspHostDualTester::getActiveVoices(const VoiceGroup _group)
 {
   // retrieving the polyphonic Gate Envelope signal from both Poly Sections/Parts (12 Voices per Part)
   // (per Voice: Gate Signal is 1.0 (immediately) after KeyPress, and (almost immediately) 0.0 after KeyRelease)
