@@ -61,6 +61,7 @@ class PresetManagerLayout : public Layout
   StoreModeData *getStoreModeData();
 
   sigc::connection m_dlSettingConnection;
+  sigc::connection m_loadToPartConnection;
 
   void setStoreModeData(std::unique_ptr<StoreModeData> ptr);
 };

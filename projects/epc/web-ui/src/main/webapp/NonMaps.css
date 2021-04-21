@@ -1874,6 +1874,11 @@ button {
   min-width: 7em;
 }
 
+.midi-tab {
+  max-height: 25em;
+  overflow-y: auto;
+}
+
 #oleds {
   display: flex;
   flex-direction: column;

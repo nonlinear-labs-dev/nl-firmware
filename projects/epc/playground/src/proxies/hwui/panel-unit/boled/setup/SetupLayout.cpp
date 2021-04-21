@@ -82,9 +82,13 @@
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
-#include <device-settings/midi/local/LocalProgramChangesSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
 #include <device-settings/midi/local/LocalControllersSetting.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 
 namespace NavTree
 {
@@ -302,11 +306,13 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound", [] {
-          auto pm = Application::get().getPresetManager();
-          SoundUseCases useCases(pm->getEditBuffer(), pm);
-          useCases.storeInitSound();
-        })
+        : OneShotEntry(p, "Store Init Sound",
+                       []
+                       {
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.storeInitSound();
+                       })
     {
     }
   };
@@ -314,11 +320,13 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound", [] {
-          auto pm = Application::get().getPresetManager();
-          SoundUseCases useCases(pm->getEditBuffer(), pm);
-          useCases.resetInitSound();
-        })
+        : OneShotEntry(p, "Reset Init Sound",
+                       []
+                       {
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.resetInitSound();
+                       })
     {
     }
   };
@@ -792,8 +800,6 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "Enable Notes"));
       children.emplace_back(new EnumSettingItem<MidiReceiveControllersSetting>(this, "Enable Hardware Sources"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveVelocityCurveSetting>(this, "Velocity Curve"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveAftertouchCurveSetting>(this, "Aftertouch Curve"));
     }
   };
 
@@ -815,9 +821,25 @@ namespace NavTree
     MidiLocalSettings(InnerNode *parent)
         : InnerNode(parent, "Local")
     {
-      children.emplace_back(new EnumSettingItem<LocalProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<LocalNotesSetting>(this, "Enable Notes"));
       children.emplace_back(new EnumSettingItem<LocalControllersSetting>(this, "Enable Hardware Sources"));
+    }
+  };
+
+  struct MidiMappingSettings : InnerNode
+  {
+    MidiMappingSettings(InnerNode *parent)
+        : InnerNode { parent, "Mappings" }
+    {
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<1>>(this, "Pedal 1"));
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<2>>(this, "Pedal 2"));
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<3>>(this, "Pedal 3"));
+      children.emplace_back(new EnumSettingItem<PedalCCMapping<4>>(this, "Pedal 4"));
+      children.emplace_back(new EnumSettingItem<RibbonCCMapping<1>>(this, "Ribbon 1"));
+      children.emplace_back(new EnumSettingItem<RibbonCCMapping<2>>(this, "Ribbon 2"));
+      children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Bender"));
+      children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
+      children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res. Velocity (CC 88)"));
     }
   };
 
@@ -829,6 +851,7 @@ namespace NavTree
       children.emplace_back(new MidiReceiveSettings(this));
       children.emplace_back(new MidiSendSettings(this));
       children.emplace_back(new MidiLocalSettings(this));
+      children.emplace_back(new MidiMappingSettings(this));
     }
   };
 

@@ -24,6 +24,7 @@
 #include <device-settings/Settings.h>
 #include <filesystem>
 #include <use-cases/IncrementalChangerUseCases.h>
+#include <device-settings/midi/local/LocalControllersSetting.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -205,13 +206,22 @@ void PlaycontrollerProxy::onHardwareSourceReceived(const MessageParser::NLMessag
   DebugLevel::info("received hw source message with hw source id:", id);
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
+  bool shouldReceiveLocalControllers = false;
+  if(Application::exists())
+  {
+    auto localControllersSetting = Application::get().getSettings()->getSetting<LocalControllersSetting>();
+    shouldReceiveLocalControllers = localControllersSetting->get();
+  }
 
   if(auto *param
      = dynamic_cast<PhysicalControlParameter *>(findPhysicalControlParameterFromPlaycontrollerHWSourceID(id)))
   {
-    notifyRibbonTouch(param->getID().getNumber());
-    DebugLevel::info("physical control parameter:", param->getMiniParameterEditorName(), ": ", value);
-    applyParamMessageAbsolutely(param, value);
+    if(shouldReceiveLocalControllers)
+    {
+      notifyRibbonTouch(param->getID().getNumber());
+      DebugLevel::info("physical control parameter:", param->getMiniParameterEditorName(), ": ", value);
+      applyParamMessageAbsolutely(param, value);
+    }
   }
   else if(id == HW_SOURCE_ID_LAST_KEY)
   {

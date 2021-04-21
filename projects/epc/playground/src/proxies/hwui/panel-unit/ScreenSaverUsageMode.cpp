@@ -2,6 +2,9 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
+#include <proxies/hwui/HWUI.h>
+#include <proxies/hwui/panel-unit/PanelUnit.h>
+#include <proxies/hwui/TwoStateLED.h>
 
 ScreenSaverUsageMode::ScreenSaverUsageMode()
     : UsageMode()
@@ -10,6 +13,11 @@ ScreenSaverUsageMode::ScreenSaverUsageMode()
 
 void ScreenSaverUsageMode::setup()
 {
+  auto& panelUnit = Application::get().getHWUI()->getPanelUnit();
+  for(auto& l : panelUnit.getLeds())
+  {
+    l->setState(TwoStateLED::LedState::OFF);
+  }
 }
 
 bool ScreenSaverUsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state)

@@ -88,6 +88,7 @@ class EditBuffer : public ParameterGroupSet
   sigc::connection onRecallValuesChanged(const sigc::slot<void> &s);
   sigc::connection onSoundTypeChanged(const sigc::slot<void, SoundType> &s);
   sigc::connection onSoundTypeChanged(const sigc::slot<void, SoundType> &s, bool init);
+  sigc::connection onEditBufferConverted(const sigc::slot<void, SoundType> &s);
 
   bool isModified() const;
   void sendToAudioEngine();
@@ -146,6 +147,7 @@ class EditBuffer : public ParameterGroupSet
   UNDO::Scope &getUndoScope() override;
 
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
+  void undoableSetTypeFromConvert(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
@@ -201,6 +203,7 @@ class EditBuffer : public ParameterGroupSet
   Signal<void> m_signalPresetLoaded;
   Signal<void> m_signalLocksChanged;
   Signal<void, SoundType> m_signalTypeChanged;
+  Signal<void, SoundType> m_signalConversionHappened;
 
   sigc::connection m_voiceGroupConnection;
 

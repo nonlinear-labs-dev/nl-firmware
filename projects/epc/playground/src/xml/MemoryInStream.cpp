@@ -77,7 +77,7 @@ Glib::ustring MemoryInStream::read()
     return {};
   }
 
-  return Glib::ustring(str);
+  return Glib::ustring(str) + '\n';
 }
 
 std::vector<uint8_t> MemoryInStream::readAll()

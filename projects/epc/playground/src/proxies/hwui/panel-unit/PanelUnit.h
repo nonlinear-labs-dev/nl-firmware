@@ -25,6 +25,8 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   void setupFocusAndMode();
   void onTimeout();
   tLed getLED(Buttons id);
+
+  const std::vector<tLed> &getLeds();
   void init();
   void turnLedsOff();
 
@@ -42,6 +44,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   EditPanel m_editPanel;
   std::vector<tLed> m_leds;
   MacroControlAssignmentStateMachine m_macroControlAssignmentStateMachine;
+
   std::shared_ptr<UsageMode> m_stashedUsageMode = nullptr;
   sigc::connection m_signalInitializeInstalledLayoutOnce;
 };

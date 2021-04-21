@@ -55,7 +55,6 @@ public class SetupUpdater extends Updater {
 		m.put("SyncSplit", SetupModel.get().systemSettings.syncSplit);
 		m.put("LocalControllers", SetupModel.get().systemSettings.localControllers);
 		m.put("LocalNotes", SetupModel.get().systemSettings.localNotes);
-		m.put("LocalProgramChanges", SetupModel.get().systemSettings.localProgramChanges);
 		m.put("ReceiveChannel", SetupModel.get().systemSettings.receiveChannel);
 		m.put("ReceiveChannelSplit", SetupModel.get().systemSettings.receiveChannelSplit);
 		m.put("ReceiveControllers", SetupModel.get().systemSettings.receiveControllers);
@@ -68,6 +67,15 @@ public class SetupUpdater extends Updater {
 		m.put("SendProgramChanges", SetupModel.get().systemSettings.sendProgramChanges);
 		m.put("SendNotes", SetupModel.get().systemSettings.sendNotes);
 		m.put("SendControllers", SetupModel.get().systemSettings.sendControllers);
+		m.put("Pedal1Mapping", SetupModel.get().systemSettings.pedal1Mapping);
+		m.put("Pedal2Mapping", SetupModel.get().systemSettings.pedal2Mapping);
+		m.put("Pedal3Mapping", SetupModel.get().systemSettings.pedal3Mapping);
+		m.put("Pedal4Mapping", SetupModel.get().systemSettings.pedal4Mapping);
+		m.put("Ribbon1Mapping", SetupModel.get().systemSettings.ribbon1Mapping);
+		m.put("Ribbon2Mapping", SetupModel.get().systemSettings.ribbon2Mapping);
+		m.put("BenderMapping", SetupModel.get().systemSettings.benderMapping);
+		m.put("HighVeloCC", SetupModel.get().systemSettings.highVelocityCC);
+		m.put("AftertouchMapping", SetupModel.get().systemSettings.aftertouchMapping);
 		return m;
 	}
 

@@ -491,7 +491,7 @@ public class EditBufferUseCases {
 			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "on");
 		}
 	}
-
+	
 	public void loadPreset(String uuid) {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
