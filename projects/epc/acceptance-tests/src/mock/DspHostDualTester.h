@@ -1,15 +1,35 @@
 #pragma once
 
-#include <synth/c15-audio-engine/dsp_host_dual.h>
+#include <nltools/Types.h>
+#include <nltools/messaging/Message.h>
+
+class dsp_host_dual;
 
 class DspHostDualTester
 {
-public:
+ public:
   explicit DspHostDualTester(dsp_host_dual* _host);
 
   // can be used to detect active Voices, for example with VoiceAllocation/Envelope Reset events
-  uint8_t getActiveVoices(const VoiceGroup _group = VoiceGroup::Global);
+  unsigned int getActiveVoices(const VoiceGroup _group = VoiceGroup::Global);
 
-private:
+  // todo: voice alloc: get assignable voices,
+  unsigned int getAssignableVoices();
+
+  // mono, unison msg generators
+  void sendMonoMessage(const bool _mono, const VoiceGroup _group = VoiceGroup::Global);
+  void sendUnisonMessage(const unsigned int _unison, const VoiceGroup _group = VoiceGroup::Global);
+
+  // preset generators
+  void sendSinglePreset(const bool _mono, const unsigned int _unison);
+  void sendSplitPreset(const bool _monoI, const bool _monoII, const unsigned int _unisonI,
+                       const unsigned int _unisonII);
+  void sendLayerPreset(const bool _mono, const unsigned int _unison);
+
+  // key generators
+  void sendTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
+  void sendTCDKeyUp(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
+
+ private:
   dsp_host_dual* m_host;
 };
