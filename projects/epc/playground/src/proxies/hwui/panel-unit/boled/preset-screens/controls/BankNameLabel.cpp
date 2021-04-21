@@ -22,7 +22,7 @@ void BankNameLabel::updateLabel(Bank *newBank)
     auto bankName = newBank->getName(true);
     auto isMidi = newBank->getUuid() == pm->getMidiSelectedBank();
     auto pos = pm->getBankPosition(newBank->getUuid()) + 1;
-    auto s = to_string(pos) + ": " + bankName + (isMidi ? " ^" : "");
+    auto s = to_string(pos) + ": " + bankName + (isMidi ? " \uE0C1" : "");
     setText({ s });
   }
   else
