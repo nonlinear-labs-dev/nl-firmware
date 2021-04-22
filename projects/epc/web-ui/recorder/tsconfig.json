@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "sourceMap": true,
+    "inlineSourceMap": @INLINE_SOURCE_MAP@,
     "outFile": "@CMAKE_CURRENT_BINARY_DIR@/recorder.js"
   },
   "include": [
