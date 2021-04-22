@@ -21,6 +21,10 @@ namespace Tests
     {
       CHECK(tester.getAssignableVoices() == C15::Config::total_polyphony);
     }
+    THEN("Silence")
+    {
+      CHECK(tester.scanOutput(48).isSilence());
+    }
     GIVEN("TCD KeyDown")
     {
       tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);

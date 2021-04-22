@@ -212,6 +212,23 @@ void DspHostDualTester::applyMidiNoteOff(const unsigned int _pitch, const float 
   }
 }
 
+bool DspHostDualTester::StereoOutput::isSilence()
+{
+  return (m_left + m_right) < Engine::Envelopes::Proto::renderMin;
+}
+
+DspHostDualTester::StereoOutput DspHostDualTester::scanOutput(const unsigned int _samples)
+{
+  StereoOutput result;
+  for(unsigned int i = 0; i < _samples; i++)
+  {
+    m_host->render();
+    result.m_left += std::abs(m_host->m_mainOut_L);
+    result.m_right += std::abs(m_host->m_mainOut_R);
+  }
+  return result;
+}
+
 float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony)
 {
   const float numerator = static_cast<float>(_unison > 0 ? (_unison < _polyphony ? _unison - 1 : _polyphony - 1) : 0);

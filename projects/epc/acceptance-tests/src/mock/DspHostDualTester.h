@@ -52,6 +52,14 @@ class DspHostDualTester
   void applyMidiNoteOff(const unsigned int _pitch, const float _velocity, const MockInputEventSource _inputSrc,
                         const VoiceGroup _group = VoiceGroup::Global);
 
+  // output scanning
+  struct StereoOutput
+  {
+    float m_left{ 0.0f }, m_right{ 0.0f };
+    bool isSilence();
+  };
+  StereoOutput scanOutput(const unsigned int _samples);
+
  private:
   dsp_host_dual* m_host;
   float encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony);
