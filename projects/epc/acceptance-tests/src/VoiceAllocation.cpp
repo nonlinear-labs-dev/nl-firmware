@@ -13,11 +13,11 @@ namespace Tests
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
     DspHostDualTester tester{ synth->getDsp() };
-    GIVEN("No Active Voices")
+    THEN("No Active Voices")
     {
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
     }
-    GIVEN("Full Polyphony")
+    THEN("Full Polyphony")
     {
       CHECK(tester.getAssignableVoices() == C15::Config::total_polyphony);
     }
