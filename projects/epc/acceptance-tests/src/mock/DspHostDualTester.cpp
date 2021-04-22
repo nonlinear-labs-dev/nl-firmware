@@ -215,7 +215,7 @@ void DspHostDualTester::applyMidiNoteOff(const unsigned int _pitch, const float 
 
 bool DspHostDualTester::StereoOutput::isSilence()
 {
-  return (m_left + m_right) < Engine::Envelopes::Proto::renderMin;
+  return (m_left + m_right) == 0.0f;  // is this really legit?
 }
 
 DspHostDualTester::StereoOutput DspHostDualTester::scanOutput(const std::vector<SampleFrame>& _audiodata)

@@ -354,185 +354,426 @@ namespace Tests
   }
   TEST_CASE("Reset Behavior")
   {
-  }
-  // TODO: replace
-  // description doesn't really fit at the moment..
-  TEST_CASE("Voices remain on preset change")
-  {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
     DspHostDualTester tester{ synth->getDsp() };
-    //Prepare Runtime Options for MIDI
+    GIVEN("Active Voices in Single Sound")
     {
-      nltools::msg::Setting::MidiSettingsMessage msg;
-      msg.receiveNotes = true;
-      msg.receiveChannel = MidiReceiveChannel::CH_1;
-      synth->onMidiSettingsMessage(msg);
-    }
-    // initial state checks...
-    GIVEN("initial state: no active voices? full polyphony?")
-    {
-      // are ALL voices (Part I, II) inactive?
-      CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-      // are available voices correct? (initially full/total polyphony - 24 voices)
-      CHECK(tester.getAssignableVoices() == C15::Config::total_polyphony);
-    }
-    GIVEN("initial state: keypress/release?")
-    {
-      WHEN("press a key: active voices?")
+      tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
+      synth->measurePerformance(20ms);
+      tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      THEN("One Active Voice")
       {
-        // press a key
-        synth->doMidi({ 0x90, 0x50, 0x7F });
-        // wait a bit
-        synth->measurePerformance(20ms);
-        // latch voices for subsequent comparison
-        const auto voices = tester.getActiveVoices(VoiceGroup::Global);
-        // is a voice active?
-        CHECK(voices > 0);
-        // subsequent key checks...
-        WHEN("press same key same: voices unchanged?")
-        {
-          synth->doMidi({ 0x90, 0x50, 0x7F });
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // active voices should not have changed
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
-        }
-        WHEN("release pressed key: active voices?")
-        {
-          synth->doMidi({ 0x80, 0x50, 0x7F });
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-        }
-        WHEN("release unpressed key: voices unchanged?")
-        {
-          synth->doMidi({ 0x80, 0x60, 0x7F });
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // active voices should not have changed
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
-        }
-        // subsequent reset checks...
-        WHEN("mono enable changed: reset?")
-        {
-          tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::Global);
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-        }
-        WHEN("unison voices changed: reset?")
-        {
-          tester.applyUnisonMessage(2, VoiceGroup::Global);
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-        }
-        WHEN("midi setting message: reset?")
-        {
-          {
-            nltools::msg::Setting::MidiSettingsMessage msg;
-            msg.receiveNotes = true;
-            msg.receiveChannel = MidiReceiveChannel::CH_2;
-            synth->onMidiSettingsMessage(msg);
-          }
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-        }
-        WHEN("synth reset: reset?")
+        CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
+      }
+      WHEN("Generic Reset Events")
+      {
+        WHEN("Reset Synth")
         {
           synth->resetDSP();
-          // wait a bit
           synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
+        }
+        WHEN("MIDI Settings Message")
+        {
+          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage{});
+          synth->measurePerformance(20ms);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
         }
       }
-    }
-    GIVEN("preset messages: reset?")
-    {
-      WHEN("single preset: reset?")
+      WHEN("Parameter Changed Messages")
       {
-        // prepare
-        tester.applyMalformedSinglePreset({ 1, Polyphony::Mono });
-        // wait a bit
-        synth->measurePerformance(20ms);
-        // are available voices correct? (single is total polyphony - 24 voices)
-        CHECK(tester.getAssignableVoices() == C15::Config::total_polyphony);
-        // press a key
-        tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-        // wait a bit
-        synth->measurePerformance(20ms);
-        // latch voices for subsequent comparison
-        const auto voices = tester.getActiveVoices(VoiceGroup::Global);
-        // is a voice active?
-        CHECK(voices > 0);
-        // subsequent preset checks...
-        WHEN("same sound type, no mono/unison changed: no reset?")
+        WHEN("Change Mono Enable Parameter")
         {
-          // prepare
-          tester.applyMalformedSinglePreset({ 1, Polyphony::Mono });
-          // wait a bit
+          tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::Global);
           synth->measurePerformance(20ms);
-          // active voices should not have changed
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
         }
-        WHEN("same sound type, mono changed: reset?")
+        WHEN("Change Unison Voices Parameter")
         {
-          tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
-          // wait a bit
+          tester.applyUnisonMessage(2, VoiceGroup::Global);
           synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-        }
-        WHEN("same sound type, unison changed: reset?")
-        {
-          tester.applyMalformedSinglePreset({ 2, Polyphony::Mono });
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-        }
-        WHEN("single -> split: reset?")
-        {
-          tester.applyMalformedSplitPreset({ 1, Polyphony::Mono }, { 1, Polyphony::Mono });
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-        }
-        WHEN("single -> layer: reset?")
-        {
-          tester.applyMalformedLayerPreset({ 1, Polyphony::Mono });
-          // wait a bit
-          synth->measurePerformance(20ms);
-          // no more voice should be active
-          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
         }
       }
-      // in a split sound, we could check if same key pressed in primary and secondary would produce changes in assigned voices
-      // maybe, rearrange whole thing: single (key checks, reset checks), split (...), layer (...)
-
-      // TODO:
-      // - establish TCD KeyDown/Up
-      // ... mono/unison parameters, preset, midi settings
-      // ... voice stealing, part association ...
-      // ... midi channels, internal vs external notes
+      WHEN("Preset Messages")
+      {
+        WHEN("Same Sound Type")
+        {
+          WHEN("Single Preset with identical Mono/Unison")
+          {
+            tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("One Active Voice")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
+            }
+          }
+          WHEN("Single Preset with different Mono Enable")
+          {
+            tester.applyMalformedSinglePreset({ 1, Polyphony::Mono });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+          WHEN("Single Preset with different Unison Voices")
+          {
+            tester.applyMalformedSinglePreset({ 2, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+        }
+        WHEN("Different Sound Type")
+        {
+          WHEN("Split Preset with identical Mono/Unison in both Parts")
+          {
+            tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+          WHEN("Layer Preset with identical Mono/Unison")
+          {
+            tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+        }
+      }
     }
-
-    // TODO: remove
-
-    // ???
-    //    auto preset1 = "dcc9b3d3-009d-4363-a64d-930c95d435a5";
-    //    auto preset2 = "119284ae-b3d4-42a7-a155-31f04ed340ac";
-
-    // ??? could not detect full 24 voices here, preset seems to be split or layer
-    //    loadTestPreset(synth.get(), "voices-remain-on-preset-load", preset1);
+    GIVEN("Active Voices in Split Sound")
+    {
+      tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
+      synth->measurePerformance(20ms);
+      tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      THEN("One Active Voice in Part I")
+      {
+        CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+      }
+      THEN("One Active Voice in Part II")
+      {
+        CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+      }
+      WHEN("Generic Reset Events")
+      {
+        WHEN("Reset Synth")
+        {
+          synth->resetDSP();
+          synth->measurePerformance(20ms);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
+        }
+        WHEN("MIDI Settings Message")
+        {
+          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage{});
+          synth->measurePerformance(20ms);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
+        }
+      }
+      WHEN("Parameter Changed Messages")
+      {
+        WHEN("In Part I")
+        {
+          WHEN("Change Mono Enable Parameter")
+          {
+            tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::I);
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices in Part I")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
+            }
+            THEN("One Active Voice in Part II")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+            }
+          }
+          WHEN("Change Unison Voices Parameter")
+          {
+            tester.applyUnisonMessage(2, VoiceGroup::I);
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices in Part I")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
+            }
+            THEN("One Active Voice in Part II")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+            }
+          }
+        }
+        WHEN("In Part II")
+        {
+          WHEN("Change Mono Enable Parameter")
+          {
+            tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::II);
+            synth->measurePerformance(20ms);
+            THEN("One Active Voice in Part I")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+            }
+            THEN("No Active Voices in Part II")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::II) == 0);
+            }
+          }
+          WHEN("Change Unison Voices Parameter")
+          {
+            tester.applyUnisonMessage(2, VoiceGroup::II);
+            synth->measurePerformance(20ms);
+            THEN("One Active Voice in Part I")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+            }
+            THEN("No Active Voices in Part II")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::II) == 0);
+            }
+          }
+        }
+      }
+      WHEN("Preset Messages")
+      {
+        WHEN("Same Sound Type")
+        {
+          WHEN("Split Preset with identical Mono/Unison in both Parts")
+          {
+            tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("One Active Voice in Part I")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+            }
+            THEN("One Active Voice in Part II")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+            }
+          }
+          WHEN("Split Preset with different Mono Enable")
+          {
+            WHEN("In Part I")
+            {
+              tester.applyMalformedSplitPreset({ 1, Polyphony::Mono }, { 1, Polyphony::Poly });
+              synth->measurePerformance(20ms);
+              THEN("No Active Voices in Part I")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
+              }
+              THEN("One Active Voice in Part II")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+              }
+            }
+            WHEN("In Part II")
+            {
+              tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Mono });
+              synth->measurePerformance(20ms);
+              THEN("One Active Voice in Part I")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+              }
+              THEN("No Active Voices in Part II")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::II) == 0);
+              }
+            }
+          }
+          WHEN("Split Preset with different Unison Voices")
+          {
+            WHEN("In Part I")
+            {
+              tester.applyMalformedSplitPreset({ 2, Polyphony::Poly }, { 1, Polyphony::Poly });
+              synth->measurePerformance(20ms);
+              THEN("No Active Voices in Part I")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
+              }
+              THEN("One Active Voice in Part II")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+              }
+            }
+            WHEN("In Part II")
+            {
+              tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 2, Polyphony::Poly });
+              synth->measurePerformance(20ms);
+              THEN("One Active Voice in Part I")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+              }
+              THEN("No Active Voices in Part II")
+              {
+                CHECK(tester.getActiveVoices(VoiceGroup::II) == 0);
+              }
+            }
+          }
+        }
+        WHEN("Different Sound Type")
+        {
+          WHEN("Single Preset with identical Mono/Unison")
+          {
+            tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+          WHEN("Layer Preset with identical Mono/Unison")
+          {
+            tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+        }
+      }
+    }
+    GIVEN("Active Voices in Layer Sound")
+    {
+      tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
+      synth->measurePerformance(20ms);
+      tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      THEN("One Active Voice in Part I")
+      {
+        CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+      }
+      THEN("One Active Voice in Part II")
+      {
+        CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+      }
+      WHEN("Generic Reset Events")
+      {
+        WHEN("Reset Synth")
+        {
+          synth->resetDSP();
+          synth->measurePerformance(20ms);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
+        }
+        WHEN("MIDI Settings Message")
+        {
+          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage{});
+          synth->measurePerformance(20ms);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
+        }
+      }
+      WHEN("Parameter Messages")
+      {
+        WHEN("Change Mono Enable Parameter")
+        {
+          tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::Global);
+          synth->measurePerformance(20ms);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
+        }
+        WHEN("Change Unison Voices Parameter")
+        {
+          tester.applyUnisonMessage(2, VoiceGroup::Global);
+          synth->measurePerformance(20ms);
+          THEN("No Active Voices")
+          {
+            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+          }
+        }
+      }
+      WHEN("Preset Messages")
+      {
+        WHEN("Same Sound Type")
+        {
+          WHEN("Layer Preset with identical Mono/Unison")
+          {
+            tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("One Active Voice in Part I")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
+            }
+            THEN("One Active Voice in Part II")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::II) == 1);
+            }
+          }
+          WHEN("Layer Preset with different Mono Enable")
+          {
+            tester.applyMalformedLayerPreset({ 1, Polyphony::Mono });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+          WHEN("Layer Preset with different Unison Voices")
+          {
+            tester.applyMalformedLayerPreset({ 2, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+        }
+        WHEN("Different Sound Type")
+        {
+          WHEN("Single Preset with identical Mono/Unison")
+          {
+            tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+          WHEN("Split Preset with identical Mono/Unison in both Parts")
+          {
+            tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
+            synth->measurePerformance(20ms);
+            THEN("No Active Voices")
+            {
+              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+            }
+          }
+        }
+      }
+    }
   }
 }
