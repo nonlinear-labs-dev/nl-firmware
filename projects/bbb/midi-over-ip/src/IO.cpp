@@ -219,8 +219,6 @@ void Output::send(const nltools::msg::Midi::SimpleMessage &msg)
   {
     if(size_t(res) != msg.numBytesUsed)
       nltools::Log::error("Could not write message into midi output device");
-    else
-      snd_rawmidi_drain(m_handle);
   }
 }
 
