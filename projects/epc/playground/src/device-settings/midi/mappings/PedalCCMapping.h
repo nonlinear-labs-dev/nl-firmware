@@ -33,6 +33,7 @@ template <int tPedal> class PedalCCMapping : public EnumSetting<PedalCC>
     }
     nltools_detailedAssertAlways(pedal > 0 && pedal <= 4,
                                  "invalid template argument tPedal, out of bounds, use 1 to 4");
+    return PedalCC::CC01;
   }
 
  public:
