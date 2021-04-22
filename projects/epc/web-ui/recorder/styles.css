@@ -165,11 +165,11 @@ body {
 }
 
 #toggle-playback.playing::after {
-    content: "\E0D7";
+    content: "\E0D9";
 }
 
 #toggle-playback.paused::after {
-    content: "\E0D9";
+    content: "\E0D7";
 }
 
 #toggle-recording.recording::after {
@@ -190,7 +190,7 @@ body {
 }
 
 #reset::after {
-    content: "\E0DA"
+    content: "\E0CE"
 }
 
 #zoom-in::after {
