@@ -217,14 +217,13 @@ bool DspHostDualTester::StereoOutput::isSilence()
   return (m_left + m_right) < Engine::Envelopes::Proto::renderMin;
 }
 
-DspHostDualTester::StereoOutput DspHostDualTester::scanOutput(const unsigned int _samples)
+DspHostDualTester::StereoOutput DspHostDualTester::scanOutput(const std::vector<SampleFrame>& _audiodata)
 {
   StereoOutput result;
-  for(unsigned int i = 0; i < _samples; i++)
+  for(SampleFrame sample : _audiodata)
   {
-    m_host->render();
-    result.m_left += std::abs(m_host->m_mainOut_L);
-    result.m_right += std::abs(m_host->m_mainOut_R);
+    result.m_left += std::abs(sample.left);
+    result.m_left += std::abs(sample.right);
   }
   return result;
 }

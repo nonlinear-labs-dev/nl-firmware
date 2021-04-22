@@ -2,6 +2,7 @@
 
 #include <nltools/Types.h>
 #include <nltools/messaging/Message.h>
+#include "../../../audio-engine/src/Types.h"
 
 class dsp_host_dual;
 
@@ -58,7 +59,7 @@ class DspHostDualTester
     float m_left{ 0.0f }, m_right{ 0.0f };
     bool isSilence();
   };
-  StereoOutput scanOutput(const unsigned int _samples);
+  StereoOutput scanOutput(const std::vector<SampleFrame>& _audiodata);
 
  private:
   dsp_host_dual* m_host;

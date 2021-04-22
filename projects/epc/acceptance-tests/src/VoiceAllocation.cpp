@@ -23,7 +23,8 @@ namespace Tests
     }
     THEN("Silence")
     {
-      CHECK(tester.scanOutput(48).isSilence());
+      const auto output = synth->measurePerformance(20ms);
+      CHECK(tester.scanOutput(std::get<0>(output)).isSilence());
     }
     GIVEN("TCD KeyDown")
     {
@@ -78,7 +79,7 @@ namespace Tests
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
     DspHostDualTester tester{ synth->getDsp() };
-    WHEN("Lowest TCD KeyDown")
+    GIVEN("Lowest TCD KeyDown")
     {
       tester.applyTCDKeyDown(0, 1.0f, VoiceGroup::Global);
       synth->measurePerformance(20ms);
@@ -96,7 +97,7 @@ namespace Tests
         }
       }
     }
-    WHEN("Highest TCD KeyDown")
+    GIVEN("Highest TCD KeyDown")
     {
       tester.applyTCDKeyDown(127, 1.0f, VoiceGroup::Global);
       synth->measurePerformance(20ms);
@@ -114,7 +115,7 @@ namespace Tests
         }
       }
     }
-    WHEN("Lowest MIDI NoteOn")
+    GIVEN("Lowest MIDI NoteOn")
     {
       tester.applyMidiNoteOn(0, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
       synth->measurePerformance(20ms);
@@ -132,7 +133,7 @@ namespace Tests
         }
       }
     }
-    WHEN("Highest MIDI NoteOn")
+    GIVEN("Highest MIDI NoteOn")
     {
       tester.applyMidiNoteOn(127, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
       synth->measurePerformance(20ms);
