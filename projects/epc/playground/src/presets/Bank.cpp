@@ -491,7 +491,9 @@ void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID kn
 
   writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("x", getX()),
                   Attribute("y", getY()), Attribute("selected-preset", getSelectedPresetUuid().raw()),
-                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed), [&]() {
+                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed),
+                  [&]()
+                  {
                     if(changed)
                     {
                       AttributesOwner::writeDocument(writer, knownRevision);
@@ -572,32 +574,34 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
   bool hadMatch = false;
   int h = 0;
 
-  m_presets.forEach([&](auto p) {
-    Glib::ustring name = p->getName();
-
-    if(name == baseName)
-    {
-      h = std::max(h, 1);
-      hadMatch = true;
-    }
-    else if(name.find(baseName) == 0)
-    {
-      Glib::MatchInfo matchInfo;
-
-      if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
+  m_presets.forEach(
+      [&](auto p)
       {
-        auto presetsBaseName = matchInfo.fetch(1);
+        Glib::ustring name = p->getName();
 
-        if(presetsBaseName == baseName)
+        if(name == baseName)
         {
-          auto number = matchInfo.fetch(2);
-          int newNumber = std::stoi(number);
-          h = std::max(h, newNumber);
+          h = std::max(h, 1);
           hadMatch = true;
         }
-      }
-    }
-  });
+        else if(name.find(baseName) == 0)
+        {
+          Glib::MatchInfo matchInfo;
+
+          if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
+          {
+            auto presetsBaseName = matchInfo.fetch(1);
+
+            if(presetsBaseName == baseName)
+            {
+              auto number = matchInfo.fetch(2);
+              int newNumber = std::stoi(number);
+              h = std::max(h, newNumber);
+              hadMatch = true;
+            }
+          }
+        }
+      });
 
   if(hadMatch)
     return std::max(1, h);
@@ -611,11 +615,15 @@ void Bank::searchPresets(Writer &writer, const SearchQuery &query) const
   auto pos = pm->getBankPosition(getUuid());
 
   writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                  Attribute("order-number", pos), [&]() {
-                    m_presets.forEach([&](auto p) {
-                      if(p->matchesQuery(query))
-                        p->writeDocument(writer, 0);
-                    });
+                  Attribute("order-number", pos),
+                  [&]()
+                  {
+                    m_presets.forEach(
+                        [&](auto p)
+                        {
+                          if(p->matchesQuery(query))
+                            p->writeDocument(writer, 0);
+                        });
                   });
 }
 
@@ -691,4 +699,9 @@ const Preset *Bank::getFirstPreset() const
 Glib::ustring Bank::getComment()
 {
   return getAttribute("Comment", "");
+}
+
+bool Bank::isMidiSelectedBank() const
+{
+  return getPresetManager()->getMidiSelectedBank() == getUuid();
 }
