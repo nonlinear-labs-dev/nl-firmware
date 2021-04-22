@@ -993,6 +993,7 @@ void dsp_host_dual::reset()
     m_poly[layerId].resetDSP();
     m_mono[layerId].resetDSP();
   }
+  m_alloc.reset();
   m_global.resetDSP();
   m_mainOut_L = m_mainOut_R = 0.0f;
   if(LOG_RESET)

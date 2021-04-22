@@ -75,7 +75,7 @@ namespace Tests
           // no more voice should be active
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
         }
-        WHEN("unison voies changed: reset?")
+        WHEN("unison voices changed: reset?")
         {
           tester.sendUnisonMessage(2, VoiceGroup::Global);
           // wait a bit
@@ -96,6 +96,14 @@ namespace Tests
           // no more voice should be active
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
         }
+        WHEN("synth reset: reset?")
+        {
+          synth->resetDSP();
+          // wait a bit
+          synth->measurePerformance(20ms);
+          // no more voice should be active
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+        }
       }
     }
     GIVEN("preset messages: reset?")
@@ -106,6 +114,8 @@ namespace Tests
         tester.sendSinglePreset(false, 1);
         // wait a bit
         synth->measurePerformance(20ms);
+        // are available voices correct? (single is total polyphony - 24 voices)
+        CHECK(tester.getAssignableVoices() == C15::Config::total_polyphony);
         // press a key
         tester.sendTCDKeyDown(60, 1.0f, VoiceGroup::Global);
         // wait a bit

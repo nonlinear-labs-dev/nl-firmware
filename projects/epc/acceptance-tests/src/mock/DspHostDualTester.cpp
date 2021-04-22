@@ -74,11 +74,11 @@ void DspHostDualTester::sendUnisonMessage(const unsigned int _unison, const Voic
   switch(m_host->getType())
   {
     case SoundType::Single:
-      msg.controlPosition = static_cast<float>(_unison - 1) / static_cast<float>(C15::Config::total_polyphony - 1);
+      msg.controlPosition = encodeUnisonVoice(_unison, C15::Config::total_polyphony);
       break;
     case SoundType::Split:
     case SoundType::Layer:
-      msg.controlPosition = static_cast<float>(_unison - 1) / static_cast<float>(C15::Config::local_polyphony - 1);
+      msg.controlPosition = encodeUnisonVoice(_unison, C15::Config::local_polyphony);
       msg.voiceGroup = _group;
   }
   // propagate message
@@ -90,8 +90,7 @@ void DspHostDualTester::sendSinglePreset(const bool _mono, const unsigned int _u
   // prepare message
   nltools::msg::SinglePresetMessage msg;
   msg.mono.monoEnable.controlPosition = static_cast<float>(_mono);
-  msg.unison.unisonVoices.controlPosition
-      = static_cast<float>(_unison - 1) / static_cast<float>(C15::Config::total_polyphony - 1);
+  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_unison, C15::Config::total_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
@@ -103,10 +102,8 @@ void DspHostDualTester::sendSplitPreset(const bool _monoI, const bool _monoII, c
   nltools::msg::SplitPresetMessage msg;
   msg.mono[0].monoEnable.controlPosition = static_cast<float>(_monoI);
   msg.mono[1].monoEnable.controlPosition = static_cast<float>(_monoII);
-  msg.unison[0].unisonVoices.controlPosition
-      = static_cast<float>(_unisonI - 1) / static_cast<float>(C15::Config::local_polyphony - 1);
-  msg.unison[1].unisonVoices.controlPosition
-      = static_cast<float>(_unisonII - 1) / static_cast<float>(C15::Config::local_polyphony - 1);
+  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_unisonI, C15::Config::local_polyphony);
+  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_unisonII, C15::Config::local_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
@@ -116,8 +113,7 @@ void DspHostDualTester::sendLayerPreset(const bool _mono, const unsigned int _un
   // prepare message
   nltools::msg::LayerPresetMessage msg;
   msg.mono.monoEnable.controlPosition = static_cast<float>(_mono);
-  msg.unison.unisonVoices.controlPosition
-      = static_cast<float>(_unison - 1) / static_cast<float>(C15::Config::local_polyphony - 1);
+  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_unison, C15::Config::local_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
@@ -148,4 +144,10 @@ void DspHostDualTester::sendTCDKeyUp(const unsigned int _pitch, const float _vel
       m_host->onKeyUpSplit(_pitch, _velocity, _group, DSPInterface::InputEventSource::Internal);
       break;
   }
+}
+
+float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony)
+{
+  const float numerator = static_cast<float>(_unison > 0 ? (_unison < _polyphony ? _unison - 1 : _polyphony - 1) : 0);
+  return numerator / static_cast<float>(_polyphony);
 }
