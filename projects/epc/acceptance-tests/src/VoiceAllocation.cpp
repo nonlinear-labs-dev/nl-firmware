@@ -67,16 +67,78 @@ namespace Tests
         }
       }
     }
-    GIVEN("TCD Key Range (128 Keys)")
+  }
+  TEST_CASE("128 Keys")
+  {
+    using namespace std::chrono_literals;
+    auto options = createEmptyAudioEngineOptions();
+    auto synth = std::make_unique<C15Synth>(options.get());
+    DspHostDualTester tester{ synth->getDsp() };
+    WHEN("Lowest TCD KeyDown")
     {
-      // note shift message to synth
-      // apply midi events avoiding inputeventstage ...
-    }
-    GIVEN("No MIDI Settings Provided")
-    {
-      WHEN("MIDI KeyDown")
+      tester.applyTCDKeyDown(0, 1.0f, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      THEN("One Active Voice")
       {
-        synth->doMidi({ 0x90, 0x50, 0x7F });
+        CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
+      }
+      WHEN("Lowest TCD KeyUp")
+      {
+        tester.applyTCDKeyUp(0, 1.0f, VoiceGroup::Global);
+        synth->measurePerformance(20ms);
+        THEN("No Active Voices")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+        }
+      }
+    }
+    WHEN("Highest TCD KeyDown")
+    {
+      tester.applyTCDKeyDown(127, 1.0f, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      THEN("One Active Voice")
+      {
+        CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
+      }
+      WHEN("Highest TCD KeyUp")
+      {
+        tester.applyTCDKeyUp(127, 1.0f, VoiceGroup::Global);
+        synth->measurePerformance(20ms);
+        THEN("No Active Voices")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+        }
+      }
+    }
+    WHEN("Lowest MIDI NoteOn")
+    {
+      tester.applyMidiNoteOn(0, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      THEN("One Active Voice")
+      {
+        CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
+      }
+      WHEN("Lowest MIDI NoteOff")
+      {
+        tester.applyMidiNoteOff(0, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
+        synth->measurePerformance(20ms);
+        THEN("No Active Voices")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+        }
+      }
+    }
+    WHEN("Highest MIDI NoteOn")
+    {
+      tester.applyMidiNoteOn(127, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      THEN("One Active Voice")
+      {
+        CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
+      }
+      WHEN("Highest MIDI NoteOff")
+      {
+        tester.applyMidiNoteOff(127, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
         synth->measurePerformance(20ms);
         THEN("No Active Voices")
         {

@@ -2,7 +2,6 @@
 
 #include <nltools/Types.h>
 #include <nltools/messaging/Message.h>
-#include "../../../audio-engine/src/Types.h"
 
 class dsp_host_dual;
 
@@ -10,6 +9,14 @@ enum class Polyphony : bool
 {
   Mono,
   Poly
+};
+
+enum class MockInputEventSource
+{
+  Singular,
+  Primary,
+  Secondary,
+  Both
 };
 
 class DspHostDualTester
@@ -27,7 +34,7 @@ class DspHostDualTester
   void applyMonoMessage(const bool _mono, const VoiceGroup _group = VoiceGroup::Global);
   void applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group = VoiceGroup::Global);
 
-  // preset generators
+  // preset generators (beware: preset messages are malformed and completely initial, just unison and mono can be used here)
   struct MalformedPresetDescriptor
   {
     const unsigned int m_unison;
@@ -40,6 +47,10 @@ class DspHostDualTester
   // key generators
   void applyTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
   void applyTCDKeyUp(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
+  void applyMidiNoteOn(const unsigned int _pitch, const float _velocity, const MockInputEventSource _inputSrc,
+                       const VoiceGroup _group = VoiceGroup::Global);
+  void applyMidiNoteOff(const unsigned int _pitch, const float _velocity, const MockInputEventSource _inputSrc,
+                        const VoiceGroup _group = VoiceGroup::Global);
 
   // event generators ?
 

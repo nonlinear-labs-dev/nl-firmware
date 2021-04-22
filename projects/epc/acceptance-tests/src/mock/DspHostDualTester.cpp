@@ -146,6 +146,72 @@ void DspHostDualTester::applyTCDKeyUp(const unsigned int _pitch, const float _ve
   }
 }
 
+void DspHostDualTester::applyMidiNoteOn(const unsigned int _pitch, const float _velocity,
+                                        const MockInputEventSource _inputSrc, const VoiceGroup _group)
+{
+  // translate MockInputEventSource to External
+  DSPInterface::InputEventSource inputSource;
+  switch(_inputSrc)
+  {
+    case MockInputEventSource::Singular:
+      inputSource = DSPInterface::InputEventSource::External_Use_Split;
+      break;
+    case MockInputEventSource::Primary:
+      inputSource = DSPInterface::InputEventSource::External_Primary;
+      break;
+    case MockInputEventSource::Secondary:
+      inputSource = DSPInterface::InputEventSource::External_Secondary;
+      break;
+    case MockInputEventSource::Both:
+      inputSource = DSPInterface::InputEventSource::External_Both;
+      break;
+  }
+  // act according to SoundType
+  switch(m_host->getType())
+  {
+    case SoundType::Single:
+    case SoundType::Layer:
+      m_host->onKeyDown(_pitch, _velocity, inputSource);
+      break;
+    case SoundType::Split:
+      m_host->onKeyDownSplit(_pitch, _velocity, _group, inputSource);
+      break;
+  }
+}
+
+void DspHostDualTester::applyMidiNoteOff(const unsigned int _pitch, const float _velocity,
+                                         const MockInputEventSource _inputSrc, const VoiceGroup _group)
+{
+  // translate MockInputEventSource to External
+  DSPInterface::InputEventSource inputSource;
+  switch(_inputSrc)
+  {
+    case MockInputEventSource::Singular:
+      inputSource = DSPInterface::InputEventSource::External_Use_Split;
+      break;
+    case MockInputEventSource::Primary:
+      inputSource = DSPInterface::InputEventSource::External_Primary;
+      break;
+    case MockInputEventSource::Secondary:
+      inputSource = DSPInterface::InputEventSource::External_Secondary;
+      break;
+    case MockInputEventSource::Both:
+      inputSource = DSPInterface::InputEventSource::External_Both;
+      break;
+  }
+  // act according to SoundType
+  switch(m_host->getType())
+  {
+    case SoundType::Single:
+    case SoundType::Layer:
+      m_host->onKeyUp(_pitch, _velocity, inputSource);
+      break;
+    case SoundType::Split:
+      m_host->onKeyUpSplit(_pitch, _velocity, _group, inputSource);
+      break;
+  }
+}
+
 float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony)
 {
   const float numerator = static_cast<float>(_unison > 0 ? (_unison < _polyphony ? _unison - 1 : _polyphony - 1) : 0);
