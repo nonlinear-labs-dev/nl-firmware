@@ -352,6 +352,9 @@ namespace Tests
       }
     }
   }
+  TEST_CASE("Reset Behavior")
+  {
+  }
   // TODO: replace
   // description doesn't really fit at the moment..
   TEST_CASE("Voices remain on preset change")
