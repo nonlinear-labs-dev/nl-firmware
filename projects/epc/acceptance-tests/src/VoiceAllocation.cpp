@@ -69,7 +69,7 @@ namespace Tests
         // subsequent reset checks...
         WHEN("mono enable changed: reset?")
         {
-          tester.sendMonoMessage(true, VoiceGroup::Global);
+          tester.applyMonoMessage(true, VoiceGroup::Global);
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -77,7 +77,7 @@ namespace Tests
         }
         WHEN("unison voices changed: reset?")
         {
-          tester.sendUnisonMessage(2, VoiceGroup::Global);
+          tester.applyUnisonMessage(2, VoiceGroup::Global);
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -111,13 +111,13 @@ namespace Tests
       WHEN("single preset: reset?")
       {
         // prepare
-        tester.sendSinglePreset(false, 1);
+        tester.applyMalformedSinglePreset(false, 1);
         // wait a bit
         synth->measurePerformance(20ms);
         // are available voices correct? (single is total polyphony - 24 voices)
         CHECK(tester.getAssignableVoices() == C15::Config::total_polyphony);
         // press a key
-        tester.sendTCDKeyDown(60, 1.0f, VoiceGroup::Global);
+        tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
         // wait a bit
         synth->measurePerformance(20ms);
         // latch voices for subsequent comparison
@@ -128,7 +128,7 @@ namespace Tests
         WHEN("same sound type, no mono/unison changed: no reset?")
         {
           // prepare
-          tester.sendSinglePreset(false, 1);
+          tester.applyMalformedSinglePreset(false, 1);
           // wait a bit
           synth->measurePerformance(20ms);
           // active voices should not have changed
@@ -136,7 +136,7 @@ namespace Tests
         }
         WHEN("same sound type, mono changed: reset?")
         {
-          tester.sendSinglePreset(true, 1);
+          tester.applyMalformedSinglePreset(true, 1);
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -144,7 +144,7 @@ namespace Tests
         }
         WHEN("same sound type, unison changed: reset?")
         {
-          tester.sendSinglePreset(false, 2);
+          tester.applyMalformedSinglePreset(false, 2);
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -152,7 +152,7 @@ namespace Tests
         }
         WHEN("single -> split: reset?")
         {
-          tester.sendSplitPreset(false, 1, false, 1);
+          tester.applyMalformedSplitPreset(false, 1, false, 1);
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -160,7 +160,7 @@ namespace Tests
         }
         WHEN("single -> layer: reset?")
         {
-          tester.sendLayerPreset(false, 1);
+          tester.applyMalformedLayerPreset(false, 1);
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active

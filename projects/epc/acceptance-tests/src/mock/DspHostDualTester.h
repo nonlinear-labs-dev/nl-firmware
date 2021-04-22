@@ -2,6 +2,7 @@
 
 #include <nltools/Types.h>
 #include <nltools/messaging/Message.h>
+#include "../../../audio-engine/src/Types.h"
 
 class dsp_host_dual;
 
@@ -17,18 +18,18 @@ class DspHostDualTester
   unsigned int getAssignableVoices();
 
   // mono, unison msg generators
-  void sendMonoMessage(const bool _mono, const VoiceGroup _group = VoiceGroup::Global);
-  void sendUnisonMessage(const unsigned int _unison, const VoiceGroup _group = VoiceGroup::Global);
+  void applyMonoMessage(const bool _mono, const VoiceGroup _group = VoiceGroup::Global);
+  void applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group = VoiceGroup::Global);
 
   // preset generators
-  void sendSinglePreset(const bool _mono, const unsigned int _unison);
-  void sendSplitPreset(const bool _monoI, const bool _monoII, const unsigned int _unisonI,
-                       const unsigned int _unisonII);
-  void sendLayerPreset(const bool _mono, const unsigned int _unison);
+  void applyMalformedSinglePreset(const bool _mono, const unsigned int _unison);
+  void applyMalformedSplitPreset(const bool _monoI, const bool _monoII, const unsigned int _unisonI,
+                                 const unsigned int _unisonII);
+  void applyMalformedLayerPreset(const bool _mono, const unsigned int _unison);
 
   // key generators
-  void sendTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
-  void sendTCDKeyUp(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
+  void applyTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
+  void applyTCDKeyUp(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
 
  private:
   dsp_host_dual* m_host;

@@ -49,7 +49,7 @@ unsigned int DspHostDualTester::getAssignableVoices()
   return 1;
 }
 
-void DspHostDualTester::sendMonoMessage(const bool _mono, const VoiceGroup _group)
+void DspHostDualTester::applyMonoMessage(const bool _mono, const VoiceGroup _group)
 {
   // prepare default message
   nltools::msg::UnmodulateableParameterChangedMessage msg{ C15::PID::Mono_Grp_Enable, static_cast<float>(_mono),
@@ -66,7 +66,7 @@ void DspHostDualTester::sendMonoMessage(const bool _mono, const VoiceGroup _grou
   m_host->localMonoEnableChg(msg);
 }
 
-void DspHostDualTester::sendUnisonMessage(const unsigned int _unison, const VoiceGroup _group)
+void DspHostDualTester::applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group)
 {
   // prepare default message
   nltools::msg::UnmodulateableParameterChangedMessage msg{ C15::PID::Unison_Voices, 0.0f, VoiceGroup::Global };
@@ -85,7 +85,7 @@ void DspHostDualTester::sendUnisonMessage(const unsigned int _unison, const Voic
   m_host->localUnisonVoicesChg(msg);
 }
 
-void DspHostDualTester::sendSinglePreset(const bool _mono, const unsigned int _unison)
+void DspHostDualTester::applyMalformedSinglePreset(const bool _mono, const unsigned int _unison)
 {
   // prepare message
   nltools::msg::SinglePresetMessage msg;
@@ -95,8 +95,8 @@ void DspHostDualTester::sendSinglePreset(const bool _mono, const unsigned int _u
   m_host->onPresetMessage(msg);
 }
 
-void DspHostDualTester::sendSplitPreset(const bool _monoI, const bool _monoII, const unsigned int _unisonI,
-                                        const unsigned int _unisonII)
+void DspHostDualTester::applyMalformedSplitPreset(const bool _monoI, const bool _monoII, const unsigned int _unisonI,
+                                                  const unsigned int _unisonII)
 {
   // prepare message
   nltools::msg::SplitPresetMessage msg;
@@ -108,7 +108,7 @@ void DspHostDualTester::sendSplitPreset(const bool _monoI, const bool _monoII, c
   m_host->onPresetMessage(msg);
 }
 
-void DspHostDualTester::sendLayerPreset(const bool _mono, const unsigned int _unison)
+void DspHostDualTester::applyMalformedLayerPreset(const bool _mono, const unsigned int _unison)
 {
   // prepare message
   nltools::msg::LayerPresetMessage msg;
@@ -118,7 +118,7 @@ void DspHostDualTester::sendLayerPreset(const bool _mono, const unsigned int _un
   m_host->onPresetMessage(msg);
 }
 
-void DspHostDualTester::sendTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group)
+void DspHostDualTester::applyTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group)
 {
   switch(m_host->getType())
   {
@@ -132,7 +132,7 @@ void DspHostDualTester::sendTCDKeyDown(const unsigned int _pitch, const float _v
   }
 }
 
-void DspHostDualTester::sendTCDKeyUp(const unsigned int _pitch, const float _velocity, const VoiceGroup _group)
+void DspHostDualTester::applyTCDKeyUp(const unsigned int _pitch, const float _velocity, const VoiceGroup _group)
 {
   switch(m_host->getType())
   {
