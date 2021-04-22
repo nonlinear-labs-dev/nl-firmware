@@ -46,6 +46,7 @@ unsigned int DspHostDualTester::getAssignableVoices()
       return C15::Config::local_polyphony;
   }
   // should never be reached
+  nltools_assertNotReached();
   return 1;
 }
 
@@ -230,6 +231,6 @@ DspHostDualTester::StereoOutput DspHostDualTester::scanOutput(const std::vector<
 
 float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony)
 {
-  const float numerator = static_cast<float>(_unison > 0 ? (_unison < _polyphony ? _unison - 1 : _polyphony - 1) : 0);
-  return numerator / static_cast<float>(_polyphony - 1);
+  nltools_assertAlways(_unison > 0 && _unison <= _polyphony);
+  return static_cast<float>(_unison - 1) / static_cast<float>(_polyphony - 1);
 }

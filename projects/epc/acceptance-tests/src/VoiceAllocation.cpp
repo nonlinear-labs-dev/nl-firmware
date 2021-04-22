@@ -199,29 +199,29 @@ namespace Tests
       {
         tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
         synth->measurePerformance(20ms);
-        WHEN("TCD Key Down")
+        WHEN("TCD Key Down in Part I")
         {
           tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::I);
           synth->measurePerformance(20ms);
-          THEN("One Active Voice")
+          THEN("One Active Voice in Part I")
           {
-            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
+            CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
           }
-          WHEN("Same MIDI Primary NoteOn")
+          WHEN("Same MIDI Primary NoteOn in Part I")
           {
             tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::I);
             synth->measurePerformance(20ms);
-            THEN("Two Active Voices")
+            THEN("Two Active Voices in Part I")
             {
-              CHECK(tester.getActiveVoices(VoiceGroup::Global) == 2);
+              CHECK(tester.getActiveVoices(VoiceGroup::I) == 2);
             }
-            WHEN("Same MIDI Secondary NoteOn")
+            WHEN("Same MIDI Secondary NoteOn in Part I")
             {
-              tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Secondary, VoiceGroup::II);
+              tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Secondary, VoiceGroup::I);
               synth->measurePerformance(20ms);
-              THEN("Three Active Voices")
+              THEN("Three Active Voices in Part I")
               {
-                CHECK(tester.getActiveVoices(VoiceGroup::Global) == 3);
+                CHECK(tester.getActiveVoices(VoiceGroup::I) == 3);
               }
             }
           }
