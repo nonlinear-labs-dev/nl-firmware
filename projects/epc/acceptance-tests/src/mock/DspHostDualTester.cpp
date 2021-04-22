@@ -149,5 +149,5 @@ void DspHostDualTester::sendTCDKeyUp(const unsigned int _pitch, const float _vel
 float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony)
 {
   const float numerator = static_cast<float>(_unison > 0 ? (_unison < _polyphony ? _unison - 1 : _polyphony - 1) : 0);
-  return numerator / static_cast<float>(_polyphony);
+  return numerator / static_cast<float>(_polyphony - 1);
 }
