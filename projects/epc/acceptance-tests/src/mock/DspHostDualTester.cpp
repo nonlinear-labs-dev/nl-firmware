@@ -85,35 +85,35 @@ void DspHostDualTester::applyUnisonMessage(const unsigned int _unison, const Voi
   m_host->localUnisonVoicesChg(msg);
 }
 
-void DspHostDualTester::applyMalformedSinglePreset(const bool _mono, const unsigned int _unison)
+void DspHostDualTester::applyMalformedSinglePreset(const MalformedPresetDescriptor& _preset)
 {
   // prepare message
   nltools::msg::SinglePresetMessage msg;
-  msg.mono.monoEnable.controlPosition = static_cast<float>(_mono);
-  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_unison, C15::Config::total_polyphony);
+  msg.mono.monoEnable.controlPosition = static_cast<float>(_preset.m_mono);
+  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_preset.m_unison, C15::Config::total_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
 
-void DspHostDualTester::applyMalformedSplitPreset(const bool _monoI, const bool _monoII, const unsigned int _unisonI,
-                                                  const unsigned int _unisonII)
+void DspHostDualTester::applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI,
+                                                  const MalformedPresetDescriptor& _partII)
 {
   // prepare message
   nltools::msg::SplitPresetMessage msg;
-  msg.mono[0].monoEnable.controlPosition = static_cast<float>(_monoI);
-  msg.mono[1].monoEnable.controlPosition = static_cast<float>(_monoII);
-  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_unisonI, C15::Config::local_polyphony);
-  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_unisonII, C15::Config::local_polyphony);
+  msg.mono[0].monoEnable.controlPosition = static_cast<float>(_partI.m_mono);
+  msg.mono[1].monoEnable.controlPosition = static_cast<float>(_partII.m_mono);
+  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
+  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
 
-void DspHostDualTester::applyMalformedLayerPreset(const bool _mono, const unsigned int _unison)
+void DspHostDualTester::applyMalformedLayerPreset(const MalformedPresetDescriptor& _preset)
 {
   // prepare message
   nltools::msg::LayerPresetMessage msg;
-  msg.mono.monoEnable.controlPosition = static_cast<float>(_mono);
-  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_unison, C15::Config::local_polyphony);
+  msg.mono.monoEnable.controlPosition = static_cast<float>(_preset.m_mono);
+  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_preset.m_unison, C15::Config::local_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }

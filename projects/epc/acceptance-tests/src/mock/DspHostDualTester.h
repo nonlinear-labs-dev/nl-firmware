@@ -6,6 +6,12 @@
 
 class dsp_host_dual;
 
+enum class Polyphony : bool
+{
+  Mono,
+  Poly
+};
+
 class DspHostDualTester
 {
  public:
@@ -22,14 +28,20 @@ class DspHostDualTester
   void applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group = VoiceGroup::Global);
 
   // preset generators
-  void applyMalformedSinglePreset(const bool _mono, const unsigned int _unison);
-  void applyMalformedSplitPreset(const bool _monoI, const bool _monoII, const unsigned int _unisonI,
-                                 const unsigned int _unisonII);
-  void applyMalformedLayerPreset(const bool _mono, const unsigned int _unison);
+  struct MalformedPresetDescriptor
+  {
+    const unsigned int m_unison;
+    const Polyphony m_mono;
+  };
+  void applyMalformedSinglePreset(const MalformedPresetDescriptor& _preset);
+  void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII);
+  void applyMalformedLayerPreset(const MalformedPresetDescriptor& _preset);
 
   // key generators
   void applyTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
   void applyTCDKeyUp(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
+
+  // event generators ?
 
  private:
   dsp_host_dual* m_host;

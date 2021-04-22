@@ -111,7 +111,7 @@ namespace Tests
       WHEN("single preset: reset?")
       {
         // prepare
-        tester.applyMalformedSinglePreset(false, 1);
+        tester.applyMalformedSinglePreset({ 1, Polyphony::Mono });
         // wait a bit
         synth->measurePerformance(20ms);
         // are available voices correct? (single is total polyphony - 24 voices)
@@ -128,7 +128,7 @@ namespace Tests
         WHEN("same sound type, no mono/unison changed: no reset?")
         {
           // prepare
-          tester.applyMalformedSinglePreset(false, 1);
+          tester.applyMalformedSinglePreset({ 1, Polyphony::Mono });
           // wait a bit
           synth->measurePerformance(20ms);
           // active voices should not have changed
@@ -136,7 +136,7 @@ namespace Tests
         }
         WHEN("same sound type, mono changed: reset?")
         {
-          tester.applyMalformedSinglePreset(true, 1);
+          tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -144,7 +144,7 @@ namespace Tests
         }
         WHEN("same sound type, unison changed: reset?")
         {
-          tester.applyMalformedSinglePreset(false, 2);
+          tester.applyMalformedSinglePreset({ 2, Polyphony::Mono });
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -152,7 +152,7 @@ namespace Tests
         }
         WHEN("single -> split: reset?")
         {
-          tester.applyMalformedSplitPreset(false, 1, false, 1);
+          tester.applyMalformedSplitPreset({ 1, Polyphony::Mono }, { 1, Polyphony::Mono });
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
@@ -160,7 +160,7 @@ namespace Tests
         }
         WHEN("single -> layer: reset?")
         {
-          tester.applyMalformedLayerPreset(false, 1);
+          tester.applyMalformedLayerPreset({ 1, Polyphony::Mono });
           // wait a bit
           synth->measurePerformance(20ms);
           // no more voice should be active
