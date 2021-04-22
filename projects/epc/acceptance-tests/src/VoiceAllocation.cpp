@@ -7,6 +7,85 @@
 
 namespace Tests
 {
+  TEST_CASE("Initial State")
+  {
+    using namespace std::chrono_literals;
+    auto options = createEmptyAudioEngineOptions();
+    auto synth = std::make_unique<C15Synth>(options.get());
+    DspHostDualTester tester{ synth->getDsp() };
+    GIVEN("No Active Voices")
+    {
+      CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+    }
+    GIVEN("Full Polyphony")
+    {
+      CHECK(tester.getAssignableVoices() == C15::Config::total_polyphony);
+    }
+    GIVEN("TCD KeyDown")
+    {
+      tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
+      synth->measurePerformance(20ms);
+      const auto voices = tester.getActiveVoices(VoiceGroup::Global);
+      THEN("One Active Voice")
+      {
+        CHECK(voices == 1);
+      }
+      WHEN("Same TCD KeyDown")
+      {
+        tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
+        synth->measurePerformance(20ms);
+        THEN("Active Voices unchanged")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
+        }
+      }
+      WHEN("Same TCD KeyUp")
+      {
+        tester.applyTCDKeyUp(60, 1.0f, VoiceGroup::Global);
+        synth->measurePerformance(20ms);
+        THEN("No Active Voices")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+        }
+      }
+      WHEN("Different TCD KeyDown")
+      {
+        tester.applyTCDKeyDown(61, 1.0f, VoiceGroup::Global);
+        synth->measurePerformance(20ms);
+        THEN("Active Voices increased")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) > voices);
+        }
+      }
+      WHEN("Unpressed TCD KeyUp")
+      {
+        tester.applyTCDKeyUp(61, 1.0f, VoiceGroup::Global);
+        synth->measurePerformance(20ms);
+        THEN("Active Voices unchanged")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
+        }
+      }
+    }
+    GIVEN("TCD Key Range (128 Keys)")
+    {
+      // note shift message to synth
+      // apply midi events avoiding inputeventstage ...
+    }
+    GIVEN("No MIDI Settings Provided")
+    {
+      WHEN("MIDI KeyDown")
+      {
+        synth->doMidi({ 0x90, 0x50, 0x7F });
+        synth->measurePerformance(20ms);
+        THEN("No Active Voices")
+        {
+          CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+        }
+      }
+    }
+  }
+  // TODO: replace
   // description doesn't really fit at the moment..
   TEST_CASE("Voices remain on preset change")
   {
@@ -177,58 +256,13 @@ namespace Tests
       // ... midi channels, internal vs external notes
     }
 
+    // TODO: remove
+
     // ???
     //    auto preset1 = "dcc9b3d3-009d-4363-a64d-930c95d435a5";
     //    auto preset2 = "119284ae-b3d4-42a7-a155-31f04ed340ac";
 
     // ??? could not detect full 24 voices here, preset seems to be split or layer
     //    loadTestPreset(synth.get(), "voices-remain-on-preset-load", preset1);
-
-    // deprecated
-    /*
-    GIVEN("some notes are played without glitch suppression")
-    {
-      synth->getDsp()->onSettingGlitchSuppr(false);
-      synth->doMidi({ 0x90, 0x50, 0x7F });
-      synth->doMidi({ 0x90, 0x53, 0x7F });
-      synth->doMidi({ 0x90, 0x56, 0x7F });
-
-      synth->measurePerformance(250ms);
-
-      WHEN("preset 2 is loaded")
-      {
-        loadTestPreset(synth.get(), "voices-remain-on-preset-load", preset2);
-        synth->measurePerformance(250ms);
-
-        THEN("sound is still playing")
-        {
-          auto result = synth->measurePerformance(250ms);
-          REQUIRE(getMaxLevel(std::get<0>(result)) > 0.5f);
-        }
-      }
-    }
-
-    GIVEN("some notes are played with glitch suppression")
-    {
-      synth->getDsp()->onSettingGlitchSuppr(true);
-      synth->doMidi({ 0x90, 0x50, 0x7F });
-      synth->doMidi({ 0x90, 0x53, 0x7F });
-      synth->doMidi({ 0x90, 0x56, 0x7F });
-
-      synth->measurePerformance(250ms);
-
-      WHEN("preset 2 is loaded")
-      {
-        loadTestPreset(synth.get(), "voices-remain-on-preset-load", preset2);
-        synth->measurePerformance(250ms);
-
-        THEN("sound is still playing")
-        {
-          auto result = synth->measurePerformance(250ms);
-          REQUIRE(getMaxLevel(std::get<0>(result)) > 0.5f);
-        }
-      }
-    }
-    */
   }
 }
