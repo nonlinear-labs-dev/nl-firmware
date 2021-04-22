@@ -12,7 +12,7 @@ class MessageParser
   enum MessageTypes
   {
     PRESET_DIRECT = 0x0100,
-    HARDWARE_SOURCE = 0x0400,
+    // Deprecated HARDWARE_SOURCE = 0x0400,
     EDIT_CONTROL = 0x0500,
     SETTING = 0x0700,
     NOTIFICATION = 0x0800,

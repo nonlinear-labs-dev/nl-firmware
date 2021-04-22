@@ -15,9 +15,10 @@ class InputEventStage
  public:
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
+  using HWChangedNotification = std::function<void()>;
 
   //use reference
-  InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, MIDIOut outCB);
+  InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, HWChangedNotification hwChangedCB, MIDIOut outCB);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message);
@@ -56,8 +57,6 @@ class InputEventStage
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
   void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
 
-  void updateUIFromReceivedMIDIHardwareChange(int hwID, float realVal) const;
-
   static constexpr uint16_t c_midiReceiveMaskTable[19] = {
     0x0000,  // None (no bit is set)
     0xFFFF,  // Omni (all bits are set)
@@ -84,6 +83,7 @@ class InputEventStage
   MIDIDecoder m_midiDecoder;
   DSPInterface* m_dspHost;
   MidiRuntimeOptions* m_options;
+  HWChangedNotification m_hwChangedCB;
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
   std::array<float, 8> m_latchedHWPositions { std::numeric_limits<float>::max() };

@@ -55,19 +55,15 @@ int main(int args, char *argv[])
   std::map<std::string, std::unique_ptr<Input> > inputs;
   std::map<std::string, std::unique_ptr<Output> > outputs;
 
-  AlsaDeviceMonitor monitor(
-      [&](auto &ins, auto &outs)
-      {
-        inputs = sync(ins, std::move(inputs));
-        outputs = sync(outs, std::move(outputs));
-      });
+  AlsaDeviceMonitor monitor([&](auto &ins, auto &outs) {
+    inputs = sync(ins, std::move(inputs));
+    outputs = sync(outs, std::move(outputs));
+  });
 
-  receive<SimpleMessage>(endPoint,
-                         [&](const auto &msg) mutable
-                         {
-                           for(const auto &out : outputs)
-                             out.second->send(msg);
-                         });
+  receive<SimpleMessage>(endPoint, [&](const SimpleMessage &msg) mutable {
+    for(const auto &out : outputs)
+      out.second->send(msg);
+  });
 
   signal(SIGQUIT, quit);
   signal(SIGTERM, quit);

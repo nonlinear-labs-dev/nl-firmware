@@ -128,8 +128,13 @@ check_preconditions() {
             { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     fi
 
-    [ -f "/update/BBB/rootfs.tar.gz" ] || { report "" "E87: BBB update missing" "Please retry download!"; return 1; }
-    [ -f "/update/playcontroller/main.bin" ] || { report "" "E88: playcontroller update missing" "Please retry download!"; return 1; }
+    if $UPDATE_BBB == 1; then
+      [ -f "/update/BBB/rootfs.tar.gz" ] || { report "" "E87: BBB update missing" "Please retry download!"; return 1; }
+    fi
+    
+    if $UPDATE_PLAYCONTROLLER == 1; then
+      [ -f "/update/playcontroller/main.bin" ] || { report "" "E88: playcontroller update missing" "Please retry download!"; return 1; }
+    fi
 
     return 0
 }

@@ -9,22 +9,21 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) };
 
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB(
-      [&](int hwID, float hwPos)
-      {
-        CHECK(hwID == 0);
-        CHECK(hwPos == 1.0f);
-        receivedHW = true;
-      });
+  host.setOnHWChangedCB([&](int hwID, float hwPos) {
+    CHECK(hwID == 0);
+    CHECK(hwPos == 1.0f);
+    receivedHW = true;
+  });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
-  InputEventStage eventStage(&host, &settings, [&](auto msg) { sendMidiMessages.push_back(msg); });
+  InputEventStage eventStage(
+      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); });
 
   //set settings to not interfere with CC01
   {
@@ -66,13 +65,11 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
 
     WHEN("Send CC01 < 0.5")
     {
-      host.setOnHWChangedCB(
-          [&](int hwID, float hwPos)
-          {
-            CHECK(hwID == 0);
-            CHECK(hwPos == 0.0f);
-            receivedHW = true;
-          });
+      host.setOnHWChangedCB([&](int hwID, float hwPos) {
+        CHECK(hwID == 0);
+        CHECK(hwPos == 0.0f);
+        receivedHW = true;
+      });
 
       eventStage.onMIDIMessage({ 0xB0, 69, 50 });
       CHECK(receivedHW);
@@ -80,13 +77,11 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
 
     WHEN("Send CC01 > 0.5")
     {
-      host.setOnHWChangedCB(
-          [&](int hwID, float hwPos)
-          {
-            CHECK(hwID == 0);
-            CHECK(hwPos == 1.0f);
-            receivedHW = true;
-          });
+      host.setOnHWChangedCB([&](int hwID, float hwPos) {
+        CHECK(hwID == 0);
+        CHECK(hwPos == 1.0f);
+        receivedHW = true;
+      });
 
       eventStage.onMIDIMessage({ 0xB0, 69, 80 });
       CHECK(receivedHW);
@@ -109,17 +104,15 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
       bool received0 = false;
       bool received1 = false;
 
-      host.setOnHWChangedCB(
-          [&](int hwID, float hwPos)
-          {
-            if(hwID == 0)
-              received0 = true;
-            if(hwID == 1)
-              received1 = true;
+      host.setOnHWChangedCB([&](int hwID, float hwPos) {
+        if(hwID == 0)
+          received0 = true;
+        if(hwID == 1)
+          received1 = true;
 
-            CHECK(hwPos == 1.0f);
-            receivedHW = true;
-          });
+        CHECK(hwPos == 1.0f);
+        receivedHW = true;
+      });
 
       eventStage.onMIDIMessage({ 0xB0, 1, 127 });
 

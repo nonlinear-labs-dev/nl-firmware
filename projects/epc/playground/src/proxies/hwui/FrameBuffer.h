@@ -117,4 +117,8 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   bool m_perPixelDebug = false;
 
   std::unique_ptr<nltools::msg::WebSocketJsonAPI> m_api;
+
+  uint64_t m_oledMessageId = 1;
+  uint64_t m_oledCurrentlyShowsMessageId = 0;
+  bool m_oledsDirty = false;
 };

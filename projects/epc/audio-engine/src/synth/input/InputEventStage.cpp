@@ -4,9 +4,11 @@
 #include "synth/c15-audio-engine/dsp_host_dual.h"
 #include "InputEventStage.h"
 
-InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, InputEventStage::MIDIOut outCB)
+InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
+                                 InputEventStage::MIDIOut outCB)
     : m_dspHost { dspHost }
     , m_options { options }
+    , m_hwChangedCB(std::move(hwChangedCB))
     , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
@@ -307,8 +309,7 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
 void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
 {
-  auto roundPedalToSwitching = [](float val) -> float
-  {
+  auto roundPedalToSwitching = [](float val) -> float {
     if(val >= 0.5f)
       return 1.0f;
     else
@@ -322,33 +323,41 @@ void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
         value = roundPedalToSwitching(value);
       sendCCOut(0, value, m_options->getCCFor<Midi::MSB::Ped1>(), m_options->getCCFor<Midi::LSB::Ped1>());
       break;
+
     case 1:
       if(m_options->isSwitchingCC(1))
         value = roundPedalToSwitching(value);
       sendCCOut(1, value, m_options->getCCFor<Midi::MSB::Ped2>(), m_options->getCCFor<Midi::LSB::Ped2>());
       break;
+
     case 2:
       if(m_options->isSwitchingCC(2))
         value = roundPedalToSwitching(value);
       sendCCOut(2, value, m_options->getCCFor<Midi::MSB::Ped3>(), m_options->getCCFor<Midi::LSB::Ped3>());
       break;
+
     case 3:
       if(m_options->isSwitchingCC(3))
         value = roundPedalToSwitching(value);
       sendCCOut(3, value, m_options->getCCFor<Midi::MSB::Ped4>(), m_options->getCCFor<Midi::LSB::Ped4>());
       break;
+
     case 4:
       doSendBenderOut(value);
       break;
+
     case 5:
       doSendAftertouchOut(value);
       break;
+
     case 6:
       sendCCOut(6, value, m_options->getCCFor<Midi::MSB::Rib1>(), m_options->getCCFor<Midi::LSB::Rib1>());
       break;
+
     case 7:
       sendCCOut(7, value, m_options->getCCFor<Midi::MSB::Rib2>(), m_options->getCCFor<Midi::LSB::Rib2>());
       break;
+
     default:
       break;
   }
@@ -379,8 +388,11 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   if(mainChannel != -1)
   {
     auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
+
     if(lsbCC != -1)
+    {
       m_midiOut({ mainStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+    }
 
     m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
   }
@@ -389,7 +401,9 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
     if(lsbCC != -1)
+    {
       m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+    }
 
     m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
   }
@@ -620,8 +634,8 @@ int InputEventStage::HWIDToParameterID(int id)
 
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
-  auto sendToDSP = [&](auto source)
-  {
+
+  auto sendToDSP = [&](auto source) {
     switch(source)
     {
       case DSPInterface::HWChangeSource::MIDI:
@@ -638,6 +652,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
   if(sendToDSP(source))
   {
     m_dspHost->onHWChanged(hwID, pos);
+    m_hwChangedCB();
   }
 
   if(m_options->shouldSendControllers() && source != DSPInterface::HWChangeSource::MIDI)
@@ -646,11 +661,6 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     {
       sendHardwareChangeAsMidi(hwID, pos);
     }
-  }
-
-  if(source == DSPInterface::HWChangeSource::MIDI && m_options->shouldReceiveMIDIControllers())
-  {
-    updateUIFromReceivedMIDIHardwareChange(hwID, pos);
   }
 }
 
@@ -680,8 +690,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         const auto lsb = hwRes.undecodedValueBytes[1];
         float realVal = processMidiForHWSource(m_dspHost, hwID, msb, lsb);
         m_dspHost->onHWChanged(hwID, realVal);
-
-        updateUIFromReceivedMIDIHardwareChange(hwID, realVal);
+        m_hwChangedCB();
       }
       else
       {
@@ -720,20 +729,6 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
           }
         }
       }
-    }
-  }
-}
-void InputEventStage::updateUIFromReceivedMIDIHardwareChange(int hwID, float realVal) const
-{
-  if(m_options->shouldReceiveMIDIControllers())
-  {
-    auto parameterID = HWIDToParameterID(hwID);
-    if(parameterID != -1)
-    {
-      nltools::msg::Midi::HardwareChangeMessage msg {};
-      msg.parameterID = parameterID;
-      msg.value = realVal;
-      nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
     }
   }
 }
