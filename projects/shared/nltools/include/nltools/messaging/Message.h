@@ -468,6 +468,7 @@ namespace nltools
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
         return Glib::wrap(bytes);
       }
+
     }
 
     namespace ParameterGroups
