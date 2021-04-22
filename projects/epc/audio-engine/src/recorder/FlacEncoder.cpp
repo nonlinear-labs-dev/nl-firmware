@@ -42,12 +42,7 @@ FlacEncoder::FlacEncoder(int sr, CB cb)
   FLAC__stream_encoder_set_streamable_subset(m_encoder, true);
   FLAC__stream_encoder_set_blocksize(m_encoder, flacFrameSize);
   m_writingHeader = true;
-
-  if(recorderFormat == RecorderFormat::OggFlac)
-    FLAC__stream_encoder_init_ogg_stream(m_encoder, nullptr, &writeToOut, nullptr, nullptr, nullptr, this);
-  else
-    FLAC__stream_encoder_init_stream(m_encoder, &writeToOut, nullptr, nullptr, nullptr, this);
-
+  FLAC__stream_encoder_init_stream(m_encoder, &writeToOut, nullptr, nullptr, nullptr, this);
   m_writingHeader = false;
 }
 

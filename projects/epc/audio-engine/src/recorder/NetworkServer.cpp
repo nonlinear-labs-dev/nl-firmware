@@ -60,21 +60,15 @@ void NetworkServer::stream(SoupServer *server, SoupMessage *msg, const char *pat
     soup_message_set_status(msg, SOUP_KNOWN_STATUS_CODE_OK);
     soup_message_body_set_accumulate(msg->response_body, FALSE);
     soup_message_headers_set_encoding(msg->response_headers, SOUP_ENCODING_CHUNKED);
-
-    if(FlacEncoder::recorderFormat == FlacEncoder::RecorderFormat::OggFlac)
-      soup_message_headers_set_content_type(msg->response_headers, "audio/ogg", nullptr);
-    else
-      soup_message_headers_set_content_type(msg->response_headers, "audio/flac", nullptr);
-
+    soup_message_headers_set_content_type(msg->response_headers, "audio/flac", nullptr);
     soup_message_headers_set_content_disposition(msg->response_headers, "attachment", nullptr);
 
     g_signal_connect(G_OBJECT(msg), "finished", G_CALLBACK(&NetworkServer::onFinished), pThis);
     auto wroteChunkHandler
         = g_signal_connect(G_OBJECT(msg), "wrote-chunk", G_CALLBACK(&NetworkServer::onChunkWritten), pThis);
 
-    if(FlacEncoder::recorderFormat != FlacEncoder::RecorderFormat::FalcFrames)
-      for(auto &h : pThis->m_storage->getHeaders())
-        soup_message_body_append(msg->response_body, SOUP_MEMORY_COPY, h->buffer.data(), h->buffer.size());
+    for(auto &h : pThis->m_storage->getHeaders())
+      soup_message_body_append(msg->response_body, SOUP_MEMORY_COPY, h->buffer.data(), h->buffer.size());
 
     pThis->m_streams.push_back({ msg, pThis->m_storage->startStream(begin, end), wroteChunkHandler });
     onChunkWritten(msg, pThis);

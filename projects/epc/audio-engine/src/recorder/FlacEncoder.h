@@ -11,14 +11,6 @@
 class FlacEncoder
 {
  public:
-  enum class RecorderFormat
-  {
-    OggFlac,
-    FlacWithHeader,
-    FalcFrames
-  };
-
-  constexpr static auto recorderFormat = RecorderFormat::OggFlac;
   constexpr static auto flacFrameSize = 4096;
 
   struct Frame
