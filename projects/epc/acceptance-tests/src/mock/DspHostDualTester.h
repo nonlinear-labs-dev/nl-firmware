@@ -8,8 +8,8 @@ class dsp_host_dual;
 
 enum class Polyphony : bool
 {
-  Mono,
-  Poly
+  Poly,
+  Mono
 };
 
 enum class MockInputEventSource
@@ -32,7 +32,7 @@ class DspHostDualTester
   unsigned int getAssignableVoices();
 
   // mono, unison msg generators
-  void applyMonoMessage(const bool _mono, const VoiceGroup _group = VoiceGroup::Global);
+  void applyMonoMessage(const Polyphony _mono, const VoiceGroup _group = VoiceGroup::Global);
   void applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group = VoiceGroup::Global);
 
   // preset generators (beware: preset messages are malformed and completely initial, just unison and mono can be used here)

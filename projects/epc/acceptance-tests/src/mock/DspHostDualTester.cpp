@@ -49,7 +49,7 @@ unsigned int DspHostDualTester::getAssignableVoices()
   return 1;
 }
 
-void DspHostDualTester::applyMonoMessage(const bool _mono, const VoiceGroup _group)
+void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup _group)
 {
   // prepare default message
   nltools::msg::UnmodulateableParameterChangedMessage msg{ C15::PID::Mono_Grp_Enable, static_cast<float>(_mono),
