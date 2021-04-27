@@ -15,7 +15,7 @@
 TEST_CASE("FlacDecoder")
 {
   FlacFrameStorage storage(100000);
-  FlacEncoder enc(48000, [&](auto frame) { storage.push(std::move(frame)); });
+  FlacEncoder enc(48000, [&](auto frame, auto header) { storage.push(std::move(frame), header); });
 
   auto numFrames = 48000;
   SampleFrame buf[numFrames];
@@ -46,7 +46,7 @@ TEST_CASE("FlacDecoder In=Out")
   auto numFrames = 4096;
 
   FlacFrameStorage storage(100000);
-  FlacEncoder enc(48000, [&](auto frame) { storage.push(std::move(frame)); });
+  FlacEncoder enc(48000, [&](auto frame, auto header) { storage.push(std::move(frame), header); });
 
   SampleFrame in[numFrames + 1];
   SampleFrame out[numFrames];
@@ -130,8 +130,8 @@ TEST_CASE("Recorder InOut")
 
   r.getInput()->togglePause();
   auto first = r.getStorage()->getFrames().front()->id;
-  auto last = r.getStorage()->getFrames().back()->id;
-  r.getOutput()->start(first, last);
+  r.getOutput()->setPlayPos(first);
+  r.getOutput()->start();
 
   REQUIRE(first == 3);
 

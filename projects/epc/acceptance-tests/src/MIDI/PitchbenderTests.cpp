@@ -7,17 +7,16 @@ TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB(
-      [&](int hwID, float hwPos)
-      {
-        CHECK(hwID == 4);
-        CHECK(hwPos == 1.0f);
-        receivedHW = true;
-      });
+  host.setOnHWChangedCB([&](int hwID, float hwPos) {
+    CHECK(hwID == 4);
+    CHECK(hwPos == 1.0f);
+    receivedHW = true;
+  });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
-  InputEventStage eventStage(&host, &settings, [&](auto msg) { sendMidiMessages.push_back(msg); });
+  InputEventStage eventStage(
+      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); });
 
   //set settings to not interfere with CC01
   {

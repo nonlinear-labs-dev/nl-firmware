@@ -113,6 +113,7 @@ class Bank : public AttributesOwner
 
   PresetManager *getPresetManager() const;
 
+  bool isMidiSelectedBank() const;
   Glib::ustring getComment();
 
  private:

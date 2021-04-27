@@ -393,7 +393,18 @@ namespace nltools
         return MessageType::SetOLED;
       }
 
+      uint64_t messageId = 0;
       uint8_t pixels[256][96];
+    };
+
+    struct OLEDState
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::OLEDState;
+      }
+
+      uint64_t displaysMessageId = 0;
     };
 
     struct SetTimestampedOledMessage
@@ -457,6 +468,7 @@ namespace nltools
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
         return Glib::wrap(bytes);
       }
+
     }
 
     namespace ParameterGroups

@@ -24,7 +24,7 @@ public class BankUpdater extends Updater {
 		bank.isMidiBank.setValue(selectedMidiUuid.equals(bank.uuid.getValue()));
 
 		if (bank.isMidiBank.isTrue()) {
-			bank.name.setValue(bank.name.getValue() + " ^");
+			bank.name.setValue(bank.name.getValue() + " \uE0C1");
 		}
 
 		ArrayList<Preset> existingPresets = new ArrayList<Preset>(bank.getPresets().getValue());

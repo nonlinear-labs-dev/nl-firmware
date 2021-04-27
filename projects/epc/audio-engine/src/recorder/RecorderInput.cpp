@@ -4,7 +4,8 @@
 
 RecorderInput::RecorderInput(FlacFrameStorage *storage, int sr)
     : storage(storage)
-    , encoder(std::make_unique<FlacEncoder>(sr, [this, storage](auto frame) { storage->push(std::move(frame)); }))
+    , encoder(std::make_unique<FlacEncoder>(
+          sr, [this, storage](auto frame, auto isHeader) { storage->push(std::move(frame), isHeader); }))
     , ring(sr)
     , bgTask(std::async(std::launch::async, [this] { background(); }))
 {

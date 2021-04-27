@@ -25,7 +25,8 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternals(); }))
-    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this](auto msg) { queueExternalMidiOut(msg); } }
+    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncExternalsWaiter.notify_all(); },
+                          [this](auto msg) { queueExternalMidiOut(msg); } }
 {
   m_hwSourceValues.fill(0);
 
