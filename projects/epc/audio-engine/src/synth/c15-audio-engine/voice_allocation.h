@@ -526,6 +526,8 @@ class VoiceAllocation
         break;
       case LayerMode::Split:
         clear_keyState(m_layerId[_layer]);
+        if(newMode != oldMode)
+          clear_keyState(m_layerId[1 - _layer]);
         break;
       case LayerMode::Layer:
         clear_keyState(AllocatorId::Dual);
