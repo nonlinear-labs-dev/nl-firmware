@@ -12,7 +12,7 @@ namespace Tests
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
-    DspHostDualTester tester{ synth->getDsp() };
+    DspHostDualTester tester { synth->getDsp() };
     THEN("No Active Voices")
     {
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -32,7 +32,7 @@ namespace Tests
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
-    DspHostDualTester tester{ synth->getDsp() };
+    DspHostDualTester tester { synth->getDsp() };
     GIVEN("TCD KeyDown")
     {
       tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
@@ -278,7 +278,7 @@ namespace Tests
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
-    DspHostDualTester tester{ synth->getDsp() };
+    DspHostDualTester tester { synth->getDsp() };
     GIVEN("Lowest TCD KeyDown")
     {
       tester.applyTCDKeyDown(0, 1.0f, VoiceGroup::Global);
@@ -357,7 +357,7 @@ namespace Tests
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
-    DspHostDualTester tester{ synth->getDsp() };
+    DspHostDualTester tester { synth->getDsp() };
     GIVEN("Active Voices in Single Sound")
     {
       tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
@@ -381,7 +381,7 @@ namespace Tests
         }
         WHEN("MIDI Settings Message")
         {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage{});
+          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
           synth->measurePerformance(20ms);
           THEN("No Active Voices")
           {
@@ -492,7 +492,7 @@ namespace Tests
         }
         WHEN("MIDI Settings Message")
         {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage{});
+          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
           synth->measurePerformance(20ms);
           THEN("No Active Voices")
           {
@@ -687,7 +687,7 @@ namespace Tests
         }
         WHEN("MIDI Settings Message")
         {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage{});
+          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
           synth->measurePerformance(20ms);
           THEN("No Active Voices")
           {

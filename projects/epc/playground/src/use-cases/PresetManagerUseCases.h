@@ -6,6 +6,7 @@
 #include <libsoup/soup-message-body.h>
 #include <xml/FileInStream.h>
 #include <clipboard/Clipboard.h>
+#include <filesystem>
 
 class PresetManager;
 class Preset;
@@ -102,6 +103,9 @@ class PresetManagerUseCases
                              const Bank* source, Clipboard* pClipboard);
 
   void pastePresetOnBackground(const Glib::ustring& x, const Glib::ustring& y, Preset* source, Clipboard* clipboard);
+  void importBankFromPath(const std::filesystem::directory_entry& file,
+                          std::function<void(std::string)> onFileNameReadCallback = nullptr);
+  void importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName);
 
  private:
   [[nodiscard]] bool isDirectLoadActive() const;

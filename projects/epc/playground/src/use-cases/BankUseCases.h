@@ -29,6 +29,8 @@ class BankUseCases
 
   void setCollapsed(bool b);
 
+  void exportBankToFile(const std::string& basicString);
+
  private:
   bool isDirectLoadActive() const;
   Bank* m_bank;
