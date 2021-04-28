@@ -48,10 +48,9 @@ class Scrollbar extends Draggable {
         var numBars = this.c15.getBars().count();
         var barsToShow = numBars / this.waveform.zoom;
         var e = document.getElementById("scrollbar")!;
-        e.style.visibility = (width > barsToShow) ? "hidden" : "visible";
 
         var handle = document.getElementById("scrollbar-handle")!;
-        var handleWidth = 100 * width / barsToShow;
+        var handleWidth = Math.min(100, 100 * width / barsToShow);
         handle.style.width = handleWidth + "%";
         var handleWidthPX = handle.getBoundingClientRect().width;
         var left = (width - handleWidthPX) * (firstBarId - this.c15.getBars().firstId) / (numBars - width * this.waveform.zoom);
