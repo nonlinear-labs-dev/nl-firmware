@@ -862,8 +862,8 @@ namespace NavTree
     {
       children.emplace_back(new DeviceSettings(this));
       children.emplace_back(new HardwareUI(this));
-      children.emplace_back(new SystemInfo(this));
       children.emplace_back(new MidiSettings(this));
+      children.emplace_back(new SystemInfo(this));
       children.emplace_back(new About(this));
       children.emplace_back(new Backup(this));
       focus = children.begin();
