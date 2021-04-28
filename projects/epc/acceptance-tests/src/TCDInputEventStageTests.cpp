@@ -181,15 +181,18 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
 
     THEN("DSP got notified")
     {
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) });
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
       CHECK(dsp.didReceiveHW());
     }
 
-    WHEN("CC01 and CC33")
+    WHEN("CC01 and CC33 and 14 Bit support Enabled")
     {
       settings.setPedal1(PedalCC::CC01);
       settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) });
+      settings.set14BitSupportEnabled(true);
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
 
       THEN("MIDI got send")
       {
@@ -212,11 +215,34 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
       }
     }
 
+    WHEN("CC01 and CC33 and 14 Bit support Disabled")
+    {
+      settings.setPedal1(PedalCC::CC01);
+      settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
+      settings.set14BitSupportEnabled(false);
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+
+      THEN("MIDI got send")
+      {
+        REQUIRE(sendMessages.size() == 2);
+
+        CHECK(sendMessages[0].rawBytes[0] == 0xB0);
+        CHECK(sendMessages[0].rawBytes[1] == 1);
+        CHECK(sendMessages[0].rawBytes[2] == 127);
+
+        CHECK(sendMessages[1].rawBytes[0] == 0xB1);
+        CHECK(sendMessages[1].rawBytes[1] == 1);
+        CHECK(sendMessages[1].rawBytes[2] == 127);
+      }
+    }
+
     WHEN("CC02 and CC34")
     {
       settings.setPedal1(PedalCC::CC02);
       settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) });
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
 
       THEN("MIDI got send")
       {

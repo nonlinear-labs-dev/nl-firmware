@@ -123,4 +123,5 @@ public class MidiSettings {
     public BenderMapping benderMapping = new BenderMapping();
     public AftertouchMapping aftertouchMapping = new AftertouchMapping();
     public OnOffOption highVelocityCC = new OnOffOption();
+    public OnOffOption enable14BitCC = new OnOffOption();
 }

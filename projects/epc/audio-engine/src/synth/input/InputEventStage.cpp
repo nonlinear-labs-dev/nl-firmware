@@ -309,7 +309,8 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
 void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
 {
-  auto roundPedalToSwitching = [](float val) -> float {
+  auto roundPedalToSwitching = [](float val) -> float
+  {
     if(val >= 0.5f)
       return 1.0f;
     else
@@ -389,7 +390,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   {
     auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
 
-    if(lsbCC != -1)
+    if(lsbCC != -1 && m_options->is14BitSupportEnabled())
     {
       m_midiOut({ mainStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
     }
@@ -400,7 +401,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   if(secondaryChannel != -1)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
-    if(lsbCC != -1)
+    if(lsbCC != -1 && m_options->is14BitSupportEnabled())
     {
       m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
     }
@@ -635,7 +636,8 @@ int InputEventStage::HWIDToParameterID(int id)
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
 
-  auto sendToDSP = [&](auto source) {
+  auto sendToDSP = [&](auto source)
+  {
     switch(source)
     {
       case DSPInterface::HWChangeSource::MIDI:

@@ -46,6 +46,7 @@ class MidiRuntimeOptions
   void setSendChannel(MidiSendChannel c);
   void setReceiveChannel(MidiReceiveChannel c);
   void setSplitReceiveChannel(MidiReceiveChannelSplit c);
+  void set14BitSupportEnabled(bool e);
 
   template <Midi::LSB::HWSourceMidiCC tLSB> int getCCFor()
   {
@@ -92,6 +93,7 @@ class MidiRuntimeOptions
 
   bool isSwitchingCC(int pedalZeroIndexed);
   bool enableHighVelCC();
+  bool is14BitSupportEnabled() const;
   int getMSBCCForHWID(int hwID);
 
  private:
@@ -112,6 +114,7 @@ class MidiRuntimeOptions
   bool m_localControllers = false;
 
   bool m_enableHighVelCC = false;
+  bool m_enable14BitCC = false;
 
   PedalCC pedal1CC;
   PedalCC pedal2CC;

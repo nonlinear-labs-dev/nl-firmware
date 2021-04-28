@@ -68,6 +68,13 @@ namespace Tests
      * this would also decrease test-runtime -> very nice
      */
 
+    {
+      nltools::msg::Setting::MidiSettingsMessage msg;
+      msg.receiveChannel = MidiReceiveChannel::CH_1;
+      msg.receiveProgramChange = true;
+      synth->onMidiSettingsMessage(msg);
+    }
+
     // wait one second for settle down, then send an PC from external midi
     playgroundApp.getMainContext()->signal_timeout().connect_seconds(
         [&]
@@ -142,6 +149,13 @@ namespace Tests
     auto synth = std::make_unique<C15Synth>(options.get());
     sigc::connection c1, c2, c3;
 
+    {
+      nltools::msg::Setting::MidiSettingsMessage msg;
+      msg.receiveChannel = MidiReceiveChannel::CH_1;
+      msg.receiveProgramChange = true;
+      synth->onMidiSettingsMessage(msg);
+    }
+
     // wait one second for settle down, then send an PC from external midi
     playgroundApp.getMainContext()->signal_timeout().connect_seconds(
         [&]
@@ -203,6 +217,13 @@ namespace Tests
     // audio-engine
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
+
+    {
+      nltools::msg::Setting::MidiSettingsMessage msg;
+      msg.receiveChannel = MidiReceiveChannel::CH_1;
+      msg.receiveProgramChange = true;
+      synth->onMidiSettingsMessage(msg);
+    }
 
     auto presetSelectionBeforePC = playgroundApp.getPresetManager()->getSelectedPreset();
     auto c = bank->onBankChanged(

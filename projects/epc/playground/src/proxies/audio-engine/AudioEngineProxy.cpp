@@ -43,6 +43,7 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <presets/Preset.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
+#include <device-settings/midi/mappings/Enable14BitSupport.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -509,7 +510,7 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
       MidiReceiveAftertouchCurveSetting, MidiReceiveVelocityCurveSetting, MidiSendChannelSetting,
       MidiSendChannelSplitSetting, MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting,
       PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>, RibbonCCMapping<1>,
-      RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC>(settings);
+      RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC, Enable14BitSupport>(settings);
 }
 
 void AudioEngineProxy::scheduleMidiSettingsMessage()
@@ -545,6 +546,7 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
         msg.bendercc = settings->getSetting<BenderCCMapping>()->get();
 
         msg.highVeloCCEnabled = settings->getSetting<EnableHighVelocityCC>()->get();
+        msg.highResCCEnabled = settings->getSetting<Enable14BitSupport>()->get();
 
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       });

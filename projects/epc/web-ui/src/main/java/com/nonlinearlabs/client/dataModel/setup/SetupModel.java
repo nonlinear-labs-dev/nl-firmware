@@ -387,6 +387,7 @@ public class SetupModel {
 		public AftertouchMappingDataModelEntity aftertouchMapping = new AftertouchMappingDataModelEntity();
 		public PitchbendMappingDataModelEntity benderMapping = new PitchbendMappingDataModelEntity();
 		public BooleanDataModelEntity highVelocityCC = new BooleanDataModelEntity();
+		public BooleanDataModelEntity enable14BitSupport = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {

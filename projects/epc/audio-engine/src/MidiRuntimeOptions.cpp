@@ -30,6 +30,7 @@ void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage
   benderCC = msg.bendercc;
 
   m_enableHighVelCC = msg.highVeloCCEnabled;
+  m_enable14BitCC = msg.highResCCEnabled;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
@@ -478,4 +479,14 @@ void MidiRuntimeOptions::setRibbon1(RibbonCC cc)
 void MidiRuntimeOptions::setRibbon2(RibbonCC cc)
 {
   ribbon2CC = cc;
+}
+
+bool MidiRuntimeOptions::is14BitSupportEnabled() const
+{
+  return m_enable14BitCC;
+}
+
+void MidiRuntimeOptions::set14BitSupportEnabled(bool e)
+{
+  m_enable14BitCC = e;
 }

@@ -76,7 +76,7 @@ public class Setup extends Composite {
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
 			receiveNotesOff, receiveControllersOn, receiveControllersOff, sendPCOn, sendPCOff, sendNotesOn, 
 			sendNotesOff, sendControllersOn, sendControllersOff, localNotesOn, 
-			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff;
+			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -170,6 +170,7 @@ public class Setup extends Composite {
 		fillRadioButtons(localNotesOn, localNotesOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(localControllersOn, localControllersOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 	}
 
 	public void connectEventHandlers() {
@@ -276,6 +277,8 @@ public class Setup extends Composite {
 		benderMapping.addChangeHandler(e -> settings.setPitchbendMapping(BenderCCMapping.values()[benderMapping.getSelectedIndex()]));
 		highVeloCCOn.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.on));
 		highVeloCCOff.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.off));
+		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
+		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));
 	}
 
 	public void connectUpdate() {
@@ -407,6 +410,8 @@ public class Setup extends Composite {
 		benderMapping.setSelectedIndex(t.benderMapping.selected);
 		highVeloCCOn.setValue(t.highVelocityCC.value);
 		highVeloCCOff.setValue(!t.highVelocityCC.value);
+		enable14Bit.setValue(t.enable14BitCC.value);
+		disable14Bit.setValue(!t.enable14BitCC.value);
 	}
 
 	public void switchPage(Button btn, DivElement page) {
