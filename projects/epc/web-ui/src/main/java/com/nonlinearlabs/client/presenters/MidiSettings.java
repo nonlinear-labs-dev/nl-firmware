@@ -41,7 +41,7 @@ public class MidiSettings {
 
     static public class PedalMapping {
         static public String[] options = { 
-            "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)", "CC 05 (LSB: CC 37)",
+            "None", "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)", "CC 05 (LSB: CC 37)",
             "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)", "CC 10 (LSB: CC 42)",
             "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)", "CC 15 (LSB: CC 47)",
             "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)", "CC 20 (LSB: CC 52)",
@@ -55,7 +55,7 @@ public class MidiSettings {
 
     static public class RibbonMapping {
         static public String[] options = {
-            "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)", "CC 05 (LSB: CC 37)",
+            "None", "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)", "CC 05 (LSB: CC 37)",
             "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)", "CC 10 (LSB: CC 42)",
             "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)", "CC 15 (LSB: CC 47)",
             "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)", "CC 20 (LSB: CC 52)",
@@ -68,7 +68,7 @@ public class MidiSettings {
 
     static public class BenderMapping {
         static public String[] options = {
-            "Pitchbend", "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)",
+            "None", "Pitchbend", "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)",
             "CC 05 (LSB: CC 37)", "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)",
             "CC 10 (LSB: CC 42)", "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)",
             "CC 15 (LSB: CC 47)", "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)",
@@ -81,7 +81,7 @@ public class MidiSettings {
 
     static public class AftertouchMapping {
         static public String[] options = {
-            "Channel Pressure",   "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)",
+            "None", "Channel Pressure",   "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)",
             "CC 05 (LSB: CC 37)", "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)",
             "CC 10 (LSB: CC 42)", "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)",
             "CC 15 (LSB: CC 47)", "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)",

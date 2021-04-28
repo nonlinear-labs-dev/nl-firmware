@@ -467,14 +467,15 @@ DSPInterface::InputEventSource InputEventStage::getInputSourceFromParsedChannel(
 
 void InputEventStage::doSendAftertouchOut(float value)
 {
-  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
 
-  const auto sendAsCC = m_options->getAftertouchLSBCC().first;
+  auto atLSB = m_options->getAftertouchLSBCC();
+  auto atMSB = m_options->getAftertouchMSBCC();
+
+  const auto sendAsCC = atLSB.has_value();
   if(sendAsCC)
   {
-    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), m_options->getAftertouchMSBCC().second,
-                m_options->getAftertouchLSBCC().second);
+    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value());
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {
@@ -535,7 +536,9 @@ void InputEventStage::doSendAftertouchOut(float value)
 
 void InputEventStage::doSendBenderOut(float value)
 {
-  const auto sendAsCC = m_options->getBenderLSBCC().first;
+  auto benderLSB = m_options->getBenderLSBCC();
+  auto benderMSB = m_options->getBenderMSBCC();
+  const auto sendAsCC = benderLSB.has_value();
   if(!sendAsCC)
   {
     using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
@@ -564,11 +567,11 @@ void InputEventStage::doSendBenderOut(float value)
       m_midiOut({ secStatus, lsb, msb });
     }
   }
-  else
+  else if(benderLSB.has_value() && benderMSB.has_value())
   {
     using CC_Range_14_Bit = Midi::clipped14BitCCRange;
-    auto lsbCC = m_options->getBenderLSBCC().second;
-    auto msbCC = m_options->getBenderMSBCC().second;
+    auto lsbCC = benderLSB.value();
+    auto msbCC = benderMSB.value();
     doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
   }
 }

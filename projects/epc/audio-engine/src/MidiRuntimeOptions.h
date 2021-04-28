@@ -24,9 +24,6 @@ class MidiRuntimeOptions
 
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
-  int ccToMSBHardwareControlID(uint8_t i);
-  int ccToLSBHardwareControlID(uint8_t i);
-
   static int channelEnumToInt(MidiSendChannel channel);
   int channelEnumToInt(MidiSendChannelSplit channel);
   static int channelEnumToInt(MidiReceiveChannel channel);
@@ -51,17 +48,17 @@ class MidiRuntimeOptions
   template <Midi::LSB::HWSourceMidiCC tLSB> int getCCFor()
   {
     if constexpr(tLSB == Midi::LSB::Ped1)
-      return decodeEnumLSB(pedal1CC);
+      return decodeEnumLSB(pedal1CC).value_or(-1);
     else if constexpr(tLSB == Midi::LSB::Ped2)
-      return decodeEnumLSB(pedal2CC);
+      return decodeEnumLSB(pedal2CC).value_or(-1);
     else if constexpr(tLSB == Midi::LSB::Ped3)
-      return decodeEnumLSB(pedal3CC);
+      return decodeEnumLSB(pedal3CC).value_or(-1);
     else if constexpr(tLSB == Midi::LSB::Ped4)
-      return decodeEnumLSB(pedal4CC);
+      return decodeEnumLSB(pedal4CC).value_or(-1);
     else if constexpr(tLSB == Midi::LSB::Rib1)
-      return decodeEnumLSB(ribbon1CC);
+      return decodeEnumLSB(ribbon1CC).value_or(-1);
     else if constexpr(tLSB == Midi::LSB::Rib2)
-      return decodeEnumLSB(ribbon2CC);
+      return decodeEnumLSB(ribbon2CC).value_or(-1);
     else
       nltools_assertNotReached();
   }
@@ -69,25 +66,25 @@ class MidiRuntimeOptions
   template <Midi::MSB::HWSourceMidiCC tMSB> int getCCFor()
   {
     if constexpr(tMSB == Midi::MSB::Ped1)
-      return decodeEnumMSB(pedal1CC);
+      return decodeEnumMSB(pedal1CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Ped2)
-      return decodeEnumMSB(pedal2CC);
+      return decodeEnumMSB(pedal2CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Ped3)
-      return decodeEnumMSB(pedal3CC);
+      return decodeEnumMSB(pedal3CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Ped4)
-      return decodeEnumMSB(pedal4CC);
+      return decodeEnumMSB(pedal4CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Rib1)
-      return decodeEnumMSB(ribbon1CC);
+      return decodeEnumMSB(ribbon1CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Rib2)
-      return decodeEnumMSB(ribbon2CC);
+      return decodeEnumMSB(ribbon2CC).value_or(-1);
     else
       nltools_assertNotReached();
   }
 
-  std::pair<bool, int> getBenderMSBCC();
-  std::pair<bool, int> getBenderLSBCC();
-  std::pair<bool, int> getAftertouchMSBCC();
-  std::pair<bool, int> getAftertouchLSBCC();
+  std::optional<int> getBenderMSBCC();
+  std::optional<int> getBenderLSBCC();
+  std::optional<int> getAftertouchMSBCC();
+  std::optional<int> getAftertouchLSBCC();
   [[nodiscard]] AftertouchCC getAftertouchSetting() const;
   [[nodiscard]] BenderCC getBenderSetting() const;
 
@@ -126,15 +123,15 @@ class MidiRuntimeOptions
   BenderCC benderCC;
 
   //Mappings
-  static int decodeEnumMSB(PedalCC);
-  static int decodeEnumLSB(PedalCC);
+  static std::optional<int> decodeEnumMSB(PedalCC);
+  static std::optional<int> decodeEnumLSB(PedalCC);
+  static std::optional<int> decodeEnumMSB(RibbonCC);
+  static std::optional<int> decodeEnumLSB(RibbonCC);
 
-  static int decodeEnumMSB(RibbonCC);
-  static int decodeEnumLSB(RibbonCC);
+  static std::optional<int> decodeEnumMSB(AftertouchCC cc);
+  static std::optional<int> decodeEnumLSB(AftertouchCC cc);
+  static std::optional<int> decodeEnumMSB(BenderCC cc);
+  static std::optional<int> decodeEnumLSB(BenderCC cc);
 
-  static std::pair<bool, int> decodeEnumMSB(AftertouchCC);
-  static std::pair<bool, int> decodeEnumLSB(AftertouchCC);
-
-  static std::pair<bool, int> decodeEnumMSB(BenderCC);
-  static std::pair<bool, int> decodeEnumLSB(BenderCC);
+  friend class MidiRuntimeOptionsTester;
 };
