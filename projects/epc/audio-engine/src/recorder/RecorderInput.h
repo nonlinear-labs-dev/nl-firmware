@@ -26,12 +26,12 @@ class RecorderInput
  private:
   void background();
 
-  FlacFrameStorage *storage;
-  std::unique_ptr<FlacEncoder> encoder;
-  RingBuffer<SampleFrame> ring;
-  std::condition_variable cond;
-  std::mutex mutex;
-  bool close = false;
-  std::future<void> bgTask;
-  bool paused = false;
+  FlacFrameStorage *m_storage;
+  std::unique_ptr<FlacEncoder> m_encoder;
+  RingBuffer<SampleFrame> m_ring;
+  std::condition_variable m_cond;
+  std::mutex m_mutex;
+  bool m_close = false;
+  std::future<void> m_bgTask;
+  bool m_paused = false;
 };
