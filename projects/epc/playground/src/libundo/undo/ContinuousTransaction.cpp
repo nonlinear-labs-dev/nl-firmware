@@ -44,7 +44,7 @@ namespace UNDO
     m_continuing = false;
   }
 
-  bool ContinuousTransaction::isContinueing() const
+  bool ContinuousTransaction::isContinuing() const
   {
     return m_continuing;
   }
