@@ -52,49 +52,41 @@ AudioEngineProxy::AudioEngineProxy()
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectMidiSettingsToAudioEngineMessage));
 
-  receive<HardwareSourceChangedNotification>(
-      EndPoint::Playground,
-      [this](auto &msg)
-      {
-        auto playController = Application::get().getPlaycontrollerProxy();
-        auto id = msg.hwSource;
-        auto value = msg.position;
-        auto param = playController->findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
-        if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
-        {
-          playController->notifyRibbonTouch(p->getID().getNumber());
-          p->onChangeFromPlaycontroller(value);
-        }
-      });
+  receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
+    auto playController = Application::get().getPlaycontrollerProxy();
+    auto id = msg.hwSource;
+    auto value = msg.position;
+    auto param = playController->findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
+    if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+    {
+      playController->notifyRibbonTouch(p->getID().getNumber());
+      p->onChangeFromPlaycontroller(value);
+    }
+  });
 
   const auto &pm = Application::get().getPresetManager();
 
-  receive<Midi::ProgramChangeMessage>(EndPoint::Playground,
-                                      [=](const auto &msg)
-                                      {
-                                        if(auto lock = m_programChangeRecursion.lock())
-                                          if(auto bank = pm->findMidiSelectedBank())
-                                          {
-                                            setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
-                                            BankUseCases useCase(bank);
-                                            useCase.selectPreset(msg.program);
-                                          }
-                                      });
-
-  receive<Midi::HardwareChangeMessage>(
-      EndPoint::Playground,
-      [](const auto &msg)
+  receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
+    if(auto lock = m_programChangeRecursion.lock())
+      if(auto bank = pm->findMidiSelectedBank())
       {
-        if(Application::exists())
-        {
-          auto eb = Application::get().getPresetManager()->getEditBuffer();
-          if(auto parameter
-             = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
-          {
-            parameter->onChangeFromPlaycontroller(static_cast<tControlPositionValue>(msg.value));
-          }
-        }
-      });
+        setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
+        BankUseCases useCase(bank);
+        useCase.selectPreset(msg.program);
+      }
+  });
+
+  receive<Midi::HardwareChangeMessage>(EndPoint::Playground, [](const auto &msg) {
+    if(Application::exists())
+    {
+      auto eb = Application::get().getPresetManager()->getEditBuffer();
+      if(auto parameter
+         = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
+      {
+        parameter->onChangeFromPlaycontroller(static_cast<tControlPositionValue>(msg.value));
+      }
+    }
+  });
 
   pm->onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
 }
