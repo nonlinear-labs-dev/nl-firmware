@@ -219,6 +219,40 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
       }
     }
 
+    WHEN("Ribbon Mapping is None")
+    {
+      settings.setRibbon1(RibbonCC::None);
+      settings.set14BitSupportEnabled(true);
+      dsp.setExpectedHW(6);
+
+      WHEN("Ribbon value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Ribbon1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
+    WHEN("Aftertouch Mapping is None")
+    {
+      settings.setAftertouchCC(AftertouchCC::None);
+      settings.set14BitSupportEnabled(true);
+      dsp.setExpectedHW(5);
+
+      WHEN("Aftertouch value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
     WHEN("CC01 and CC33 and 14 Bit support Enabled")
     {
       settings.setPedal1(PedalCC::CC01);
