@@ -117,7 +117,7 @@ namespace UNDO
     {
       if(auto last = dynamic_cast<ContinuousTransaction *>(getUndoTransaction()))
       {
-        if(last->isContinueing() && last->getID() == id && last->getAge() <= timeout)
+        if(last->isContinuing() && last->getID() == id && last->getAge() <= timeout)
         {
           auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
           last->setClosingCommand(std::move(transaction));
