@@ -147,7 +147,7 @@ void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
     m_midiChannel = statusToChannel(status);
     m_type = DecoderEventType::HardwareChange;
   }
-  else if(isLSB)
+  else if(isLSB && m_options->is14BitSupportEnabled())
   {
     m_MidiLSB = _data1 & 0x7F;
   }

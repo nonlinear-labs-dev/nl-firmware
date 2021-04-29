@@ -238,6 +238,7 @@ namespace nltools
         bool localControllers = false;
 
         bool highVeloCCEnabled = true;
+        bool highResCCEnabled = true;
 
         PedalCC pedal1cc;
         PedalCC pedal2cc;

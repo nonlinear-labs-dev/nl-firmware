@@ -75,6 +75,7 @@ public class SetupUpdater extends Updater {
 		m.put("Ribbon2Mapping", SetupModel.get().systemSettings.ribbon2Mapping);
 		m.put("BenderMapping", SetupModel.get().systemSettings.benderMapping);
 		m.put("HighVeloCC", SetupModel.get().systemSettings.highVelocityCC);
+		m.put("HighResCC", SetupModel.get().systemSettings.enable14BitSupport);
 		m.put("AftertouchMapping", SetupModel.get().systemSettings.aftertouchMapping);
 		return m;
 	}

@@ -30,6 +30,7 @@ void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage
   benderCC = msg.bendercc;
 
   m_enableHighVelCC = msg.highVeloCCEnabled;
+  m_enable14BitCC = msg.highResCCEnabled;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
@@ -92,61 +93,7 @@ bool MidiRuntimeOptions::shouldReceiveLocalControllers() const
   return m_localControllers;
 }
 
-int MidiRuntimeOptions::ccToLSBHardwareControlID(const uint8_t i)
-{
-  int numCC = static_cast<int>(i);
-  if(numCC == decodeEnumLSB(pedal1CC))
-    return 0;
-  if(numCC == decodeEnumLSB(pedal2CC))
-    return 1;
-  if(numCC == decodeEnumLSB(pedal3CC))
-    return 2;
-  if(numCC == decodeEnumLSB(pedal4CC))
-    return 3;
-  if(numCC == decodeEnumLSB(ribbon1CC))
-    return 6;
-  if(numCC == decodeEnumLSB(ribbon2CC))
-    return 7;
-
-  auto benderRes = decodeEnumLSB(benderCC);
-  if(benderRes.first && numCC == benderRes.second)
-    return 4;
-
-  auto aftertouchRes = decodeEnumLSB(aftertouchCC);
-  if(aftertouchRes.first && numCC == aftertouchRes.second)
-    return 5;
-
-  return -1;
-}
-
-int MidiRuntimeOptions::ccToMSBHardwareControlID(const uint8_t i)
-{
-  int numCC = static_cast<int>(i);
-  if(numCC == decodeEnumMSB(pedal1CC))
-    return 0;
-  if(numCC == decodeEnumMSB(pedal2CC))
-    return 1;
-  if(numCC == decodeEnumMSB(pedal3CC))
-    return 2;
-  if(numCC == decodeEnumMSB(pedal4CC))
-    return 3;
-  if(numCC == decodeEnumMSB(ribbon1CC))
-    return 6;
-  if(numCC == decodeEnumMSB(ribbon2CC))
-    return 7;
-
-  auto benderRes = decodeEnumMSB(benderCC);
-  if(benderRes.first && numCC == benderRes.second)
-    return 4;
-
-  auto aftertouchRes = decodeEnumMSB(aftertouchCC);
-  if(aftertouchRes.first && numCC == aftertouchRes.second)
-    return 5;
-
-  return -1;
-}
-
-int MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
 {
   switch(cc)
   {
@@ -181,19 +128,21 @@ int MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
     case PedalCC::CC29:
     case PedalCC::CC30:
     case PedalCC::CC31:
-      return static_cast<int>(cc) + 1;
+      return static_cast<int>(cc);
     case PedalCC::CC64:
     case PedalCC::CC65:
     case PedalCC::CC66:
     case PedalCC::CC67:
     case PedalCC::CC68:
     case PedalCC::CC69:
-      return static_cast<int>(cc) + 33;
+      return static_cast<int>(cc) + 32;
+    default:
+    case PedalCC::None:
+      return std::nullopt;
   }
-  return -1;
 }
 
-int MidiRuntimeOptions::decodeEnumLSB(PedalCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumLSB(PedalCC cc)
 {
   switch(cc)
   {
@@ -228,59 +177,67 @@ int MidiRuntimeOptions::decodeEnumLSB(PedalCC cc)
     case PedalCC::CC29:
     case PedalCC::CC30:
     case PedalCC::CC31:
-      return static_cast<int>(cc) + 33;
+      return static_cast<int>(cc) + 32;
     case PedalCC::CC64:
     case PedalCC::CC65:
     case PedalCC::CC66:
     case PedalCC::CC67:
     case PedalCC::CC68:
     case PedalCC::CC69:
-      return -1;  //TODO fix
+    default:
+      return std::nullopt;
   }
-  return -1;
+  return std::nullopt;
 }
 
-int MidiRuntimeOptions::decodeEnumMSB(RibbonCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumMSB(RibbonCC cc)
 {
-  return static_cast<int>(cc) + 1;
+  if(cc == RibbonCC::None)
+    return -1;
+  return static_cast<int>(cc);
 }
 
-int MidiRuntimeOptions::decodeEnumLSB(RibbonCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumLSB(RibbonCC cc)
 {
-  return static_cast<int>(cc) + 33;
+  if(cc == RibbonCC::None)
+    return -1;
+  return static_cast<int>(cc) + 32;
 }
 
-std::pair<bool, int> MidiRuntimeOptions::decodeEnumMSB(AftertouchCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumMSB(AftertouchCC cc)
 {
-  if(cc == AftertouchCC::PitchbendUp || cc == AftertouchCC::PitchbendDown || cc == AftertouchCC::ChannelPressure)
-    return { false, -1 };
+  using ACC = AftertouchCC;
+
+  if(cc == ACC::PitchbendUp || cc == ACC::PitchbendDown || cc == ACC::ChannelPressure || cc == ACC::None)
+    return std::nullopt;
   else
-    return { true, static_cast<int>(cc) };
+    return static_cast<int>(cc) - 1;
 }
 
 //maybe use std::optional
-std::pair<bool, int> MidiRuntimeOptions::decodeEnumLSB(AftertouchCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumLSB(AftertouchCC cc)
 {
-  if(cc == AftertouchCC::PitchbendUp || cc == AftertouchCC::PitchbendDown || cc == AftertouchCC::ChannelPressure)
-    return { false, -1 };
+  using ACC = AftertouchCC;
+  if(cc == ACC::PitchbendUp || cc == ACC::PitchbendDown || cc == ACC::ChannelPressure || cc == ACC::None)
+    return std::nullopt;
   else
-    return { true, static_cast<int>(cc) + 32 };
+    return static_cast<int>(cc) + 31;
 }
 
-std::pair<bool, int> MidiRuntimeOptions::decodeEnumMSB(BenderCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumMSB(BenderCC cc)
 {
-  if(cc == BenderCC::Pitchbend)
-    return { false, -1 };
+  if(cc == BenderCC::Pitchbend || cc == BenderCC::None)
+    return std::nullopt;
   else
-    return { true, static_cast<int>(cc) };
+    return static_cast<int>(cc) - 1;
 }
 
-std::pair<bool, int> MidiRuntimeOptions::decodeEnumLSB(BenderCC cc)
+std::optional<int> MidiRuntimeOptions::decodeEnumLSB(BenderCC cc)
 {
-  if(cc == BenderCC::Pitchbend)
-    return { false, -1 };
+  if(cc == BenderCC::Pitchbend || cc == BenderCC::None)
+    return std::nullopt;
   else
-    return { true, static_cast<int>(cc) + 32 };
+    return static_cast<int>(cc) + 31;
 }
 
 int MidiRuntimeOptions::channelEnumToInt(MidiSendChannel channel)
@@ -330,12 +287,12 @@ void MidiRuntimeOptions::setAftertouchCC(AftertouchCC cc)
   aftertouchCC = cc;
 }
 
-std::pair<bool, int> MidiRuntimeOptions::getBenderMSBCC()
+std::optional<int> MidiRuntimeOptions::getBenderMSBCC()
 {
   return decodeEnumMSB(benderCC);
 }
 
-std::pair<bool, int> MidiRuntimeOptions::getBenderLSBCC()
+std::optional<int> MidiRuntimeOptions::getBenderLSBCC()
 {
   return decodeEnumLSB(benderCC);
 }
@@ -369,12 +326,12 @@ MidiReceiveChannelSplit MidiRuntimeOptions::normalToSplitChannel(MidiReceiveChan
   return static_cast<MidiReceiveChannelSplit>(ch);
 }
 
-std::pair<bool, int> MidiRuntimeOptions::getAftertouchLSBCC()
+std::optional<int> MidiRuntimeOptions::getAftertouchLSBCC()
 {
   return decodeEnumLSB(aftertouchCC);
 }
 
-std::pair<bool, int> MidiRuntimeOptions::getAftertouchMSBCC()
+std::optional<int> MidiRuntimeOptions::getAftertouchMSBCC()
 {
   return decodeEnumMSB(aftertouchCC);
 }
@@ -438,9 +395,9 @@ int MidiRuntimeOptions::getMSBCCForHWID(int hwID)
     case 3:
       return getCCFor<Midi::MSB::Ped4>();
     case 4:
-      return bender.second;
+      return bender.value_or(-1);
     case 5:
-      return aftertouch.second;
+      return aftertouch.value_or(-1);
     case 6:
       return getCCFor<Midi::MSB::Rib1>();
     case 7:
@@ -478,4 +435,14 @@ void MidiRuntimeOptions::setRibbon1(RibbonCC cc)
 void MidiRuntimeOptions::setRibbon2(RibbonCC cc)
 {
   ribbon2CC = cc;
+}
+
+bool MidiRuntimeOptions::is14BitSupportEnabled() const
+{
+  return m_enable14BitCC;
+}
+
+void MidiRuntimeOptions::set14BitSupportEnabled(bool e)
+{
+  m_enable14BitCC = e;
 }

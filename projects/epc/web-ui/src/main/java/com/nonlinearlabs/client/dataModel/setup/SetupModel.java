@@ -90,22 +90,22 @@ public class SetupModel {
 	}
 
 	public enum PedalCCMapping {
-		CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16, CC17, CC18, CC19, 
+		None, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16, CC17, CC18, CC19, 
 		CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31, CC64, CC65, CC66, CC67, CC68, CC69
 	}
 
 	public enum RibbonCCMapping {
-		CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16, CC17, CC18, CC19,
+		None, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16, CC17, CC18, CC19,
 		CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31
 	}
 
 	public enum BenderCCMapping {
-		Pitchbend, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16, CC17,
+		None, Pitchbend, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16, CC17,
 		CC18, CC19, CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31
 	}
 
 	public enum AftertouchCCMapping {
-		ChannelPressure, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16,
+		None, ChannelPressure, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15, CC16,
 		CC17, CC18, CC19, CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31, PitchbendUp, PitchbendDown
 	}
 
@@ -387,6 +387,7 @@ public class SetupModel {
 		public AftertouchMappingDataModelEntity aftertouchMapping = new AftertouchMappingDataModelEntity();
 		public PitchbendMappingDataModelEntity benderMapping = new PitchbendMappingDataModelEntity();
 		public BooleanDataModelEntity highVelocityCC = new BooleanDataModelEntity();
+		public BooleanDataModelEntity enable14BitSupport = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {
