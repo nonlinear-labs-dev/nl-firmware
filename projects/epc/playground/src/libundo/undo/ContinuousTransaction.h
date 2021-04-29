@@ -24,7 +24,7 @@ namespace UNDO
     UNDO::ContinuousTransaction *getClosingCommand() const;
 
     void stopContinuation();
-    bool isContinueing() const;
+    bool isContinuing() const;
 
    protected:
     void implUndoAction() const override;
