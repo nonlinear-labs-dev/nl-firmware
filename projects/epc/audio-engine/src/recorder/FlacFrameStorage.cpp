@@ -93,7 +93,7 @@ const std::vector<std::unique_ptr<FlacEncoder::Frame> > &FlacFrameStorage::getHe
   return m_header;
 }
 
-void FlacFrameStorage::reset()
+nlohmann::json FlacFrameStorage::reset()
 {
   std::unique_lock<std::mutex> l(m_mutex);
 
@@ -108,6 +108,8 @@ void FlacFrameStorage::reset()
     s->it = m_frames.end();
     s->end = m_frames.end();
   }
+
+  return {};
 }
 
 FlacFrameStorage::Stream::Stream(FlacFrameStorage *s, Frames::const_iterator begin, Frames::const_iterator end)

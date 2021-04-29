@@ -155,23 +155,26 @@ class C15Proxy extends C15ProxyIface {
     }
 
     setPlaybackPosition(playPos: number): void {
-        this.fireAndForget({ "set-playback-position": { "frameId": Math.max(playPos, 0) } });
+        playPos = Math.min(Math.max(this.getBars().first().id, playPos), this.getBars().last().id)
+        this.fireAndForget({ "set-playback-position": { "frameId": playPos } }, null);
     }
 
     pausePlayback(): void {
-        this.fireAndForget({ "pause-playback": {} });
+        this.fireAndForget({ "pause-playback": {} }, null);
     }
 
     startPlayback(): void {
-        this.fireAndForget({ "start-playback": {} });
+        this.fireAndForget({ "start-playback": {} }, null);
     }
 
     reset() {
-        this.fireAndForget({ "reset": {} });
+        this.updateStream.stop();
+        this.fireAndForget({ "reset": {} }, () => { this.updateStream = new UpdateStream(this); });
+
     }
 
     toggleRecording() {
-        this.fireAndForget({ "toggle-recording": {} });
+        this.fireAndForget({ "toggle-recording": {} }, null);
     }
 
     undo() {
@@ -189,12 +192,13 @@ class C15Proxy extends C15ProxyIface {
         window.location.assign(url);
     }
 
-    private fireAndForget(msg: Object) {
+    private fireAndForget(msg: Object, cb: (() => void) | null) {
         var webSocket = new WebSocket("ws://" + hostName + wsPort);
 
-        webSocket.onopen = function (event) {
-            webSocket.send(JSON.stringify(msg));
-        };
+        if (cb)
+            webSocket.onmessage = () => { cb(); };
+
+        webSocket.onopen = () => webSocket.send(JSON.stringify(msg));
     }
 
     private updateStream = new UpdateStream(this);
