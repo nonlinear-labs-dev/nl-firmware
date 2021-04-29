@@ -43,6 +43,7 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <presets/Preset.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
+#include <device-settings/midi/mappings/Enable14BitSupport.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -501,43 +502,46 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
       MidiReceiveAftertouchCurveSetting, MidiReceiveVelocityCurveSetting, MidiSendChannelSetting,
       MidiSendChannelSplitSetting, MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting,
       PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>, RibbonCCMapping<1>,
-      RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC>(settings);
+      RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC, Enable14BitSupport>(settings);
 }
 
 void AudioEngineProxy::scheduleMidiSettingsMessage()
 {
-  m_sendMidiSettingThrottler.doTask([this]() {
-    auto settings = Application::get().getSettings();
-    nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.sendChannel = settings->getSetting<MidiSendChannelSetting>()->get();
-    msg.sendSplitChannel = settings->getSetting<MidiSendChannelSplitSetting>()->get();
-    msg.receiveChannel = settings->getSetting<MidiReceiveChannelSetting>()->get();
-    msg.receiveSplitChannel = settings->getSetting<MidiReceiveChannelSplitSetting>()->get();
+  m_sendMidiSettingThrottler.doTask(
+      [this]()
+      {
+        auto settings = Application::get().getSettings();
+        nltools::msg::Setting::MidiSettingsMessage msg;
+        msg.sendChannel = settings->getSetting<MidiSendChannelSetting>()->get();
+        msg.sendSplitChannel = settings->getSetting<MidiSendChannelSplitSetting>()->get();
+        msg.receiveChannel = settings->getSetting<MidiReceiveChannelSetting>()->get();
+        msg.receiveSplitChannel = settings->getSetting<MidiReceiveChannelSplitSetting>()->get();
 
-    msg.sendNotes = settings->getSetting<MidiSendNotesSetting>()->get();
-    msg.sendProgramChange = settings->getSetting<MidiSendProgramChangesSetting>()->get();
-    msg.sendControllers = settings->getSetting<MidiSendControllersSetting>()->get();
+        msg.sendNotes = settings->getSetting<MidiSendNotesSetting>()->get();
+        msg.sendProgramChange = settings->getSetting<MidiSendProgramChangesSetting>()->get();
+        msg.sendControllers = settings->getSetting<MidiSendControllersSetting>()->get();
 
-    msg.receiveNotes = settings->getSetting<MidiReceiveNotesSetting>()->get();
-    msg.receiveProgramChange = settings->getSetting<MidiReceiveProgramChangesSetting>()->get();
-    msg.receiveControllers = settings->getSetting<MidiReceiveControllersSetting>()->get();
+        msg.receiveNotes = settings->getSetting<MidiReceiveNotesSetting>()->get();
+        msg.receiveProgramChange = settings->getSetting<MidiReceiveProgramChangesSetting>()->get();
+        msg.receiveControllers = settings->getSetting<MidiReceiveControllersSetting>()->get();
 
-    msg.localNotes = settings->getSetting<LocalNotesSetting>()->get();
-    msg.localControllers = settings->getSetting<LocalControllersSetting>()->get();
+        msg.localNotes = settings->getSetting<LocalNotesSetting>()->get();
+        msg.localControllers = settings->getSetting<LocalControllersSetting>()->get();
 
-    msg.pedal1cc = settings->getSetting<PedalCCMapping<1>>()->get();
-    msg.pedal2cc = settings->getSetting<PedalCCMapping<2>>()->get();
-    msg.pedal3cc = settings->getSetting<PedalCCMapping<3>>()->get();
-    msg.pedal4cc = settings->getSetting<PedalCCMapping<4>>()->get();
-    msg.ribbon1cc = settings->getSetting<RibbonCCMapping<1>>()->get();
-    msg.ribbon2cc = settings->getSetting<RibbonCCMapping<2>>()->get();
-    msg.aftertouchcc = settings->getSetting<AftertouchCCMapping>()->get();
-    msg.bendercc = settings->getSetting<BenderCCMapping>()->get();
+        msg.pedal1cc = settings->getSetting<PedalCCMapping<1>>()->get();
+        msg.pedal2cc = settings->getSetting<PedalCCMapping<2>>()->get();
+        msg.pedal3cc = settings->getSetting<PedalCCMapping<3>>()->get();
+        msg.pedal4cc = settings->getSetting<PedalCCMapping<4>>()->get();
+        msg.ribbon1cc = settings->getSetting<RibbonCCMapping<1>>()->get();
+        msg.ribbon2cc = settings->getSetting<RibbonCCMapping<2>>()->get();
+        msg.aftertouchcc = settings->getSetting<AftertouchCCMapping>()->get();
+        msg.bendercc = settings->getSetting<BenderCCMapping>()->get();
 
-    msg.highVeloCCEnabled = settings->getSetting<EnableHighVelocityCC>()->get();
+        msg.highVeloCCEnabled = settings->getSetting<EnableHighVelocityCC>()->get();
+        msg.highResCCEnabled = settings->getSetting<Enable14BitSupport>()->get();
 
-    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
-  });
+        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+      });
 }
 
 void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)

@@ -309,7 +309,8 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
 void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
 {
-  auto roundPedalToSwitching = [](float val) -> float {
+  auto roundPedalToSwitching = [](float val) -> float
+  {
     if(val >= 0.5f)
       return 1.0f;
     else
@@ -389,23 +390,29 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   {
     auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
 
-    if(lsbCC != -1)
+    if(lsbCC != -1 && m_options->is14BitSupportEnabled())
     {
       m_midiOut({ mainStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
     }
 
-    m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    if(msbCC != -1)
+    {
+      m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    }
   }
 
   if(secondaryChannel != -1)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
-    if(lsbCC != -1)
+    if(lsbCC != -1 && m_options->is14BitSupportEnabled())
     {
       m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
     }
 
-    m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    if(msbCC != -1)
+    {
+      m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    }
   }
 }
 
@@ -466,14 +473,14 @@ DSPInterface::InputEventSource InputEventStage::getInputSourceFromParsedChannel(
 
 void InputEventStage::doSendAftertouchOut(float value)
 {
-  using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
 
-  const auto sendAsCC = m_options->getAftertouchLSBCC().first;
-  if(sendAsCC)
+  auto atLSB = m_options->getAftertouchLSBCC();
+  auto atMSB = m_options->getAftertouchMSBCC();
+
+  if(atLSB.has_value() && atMSB.has_value())
   {
-    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), m_options->getAftertouchMSBCC().second,
-                m_options->getAftertouchLSBCC().second);
+    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value());
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {
@@ -534,8 +541,17 @@ void InputEventStage::doSendAftertouchOut(float value)
 
 void InputEventStage::doSendBenderOut(float value)
 {
-  const auto sendAsCC = m_options->getBenderLSBCC().first;
-  if(!sendAsCC)
+  auto benderLSB = m_options->getBenderLSBCC();
+  auto benderMSB = m_options->getBenderMSBCC();
+
+  if(benderLSB.has_value() && benderMSB.has_value())
+  {
+    using CC_Range_14_Bit = Midi::clipped14BitCCRange;
+    auto lsbCC = benderLSB.value();
+    auto msbCC = benderMSB.value();
+    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
+  }
+  else if(m_options->getBenderSetting() != BenderCC::None)
   {
     using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
 
@@ -562,13 +578,6 @@ void InputEventStage::doSendBenderOut(float value)
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
     }
-  }
-  else
-  {
-    using CC_Range_14_Bit = Midi::clipped14BitCCRange;
-    auto lsbCC = m_options->getBenderLSBCC().second;
-    auto msbCC = m_options->getBenderMSBCC().second;
-    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
   }
 }
 
@@ -635,7 +644,8 @@ int InputEventStage::HWIDToParameterID(int id)
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
 
-  auto sendToDSP = [&](auto source) {
+  auto sendToDSP = [&](auto source)
+  {
     switch(source)
     {
       case DSPInterface::HWChangeSource::MIDI:
