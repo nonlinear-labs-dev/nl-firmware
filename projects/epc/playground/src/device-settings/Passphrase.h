@@ -2,13 +2,14 @@
 
 #include "Setting.h"
 #include <nltools/messaging/Message.h>
+#include "Wifi.h"
 
 class Settings;
 
 class Passphrase : public Setting
 {
  public:
-  Passphrase(Settings& parent);
+  Passphrase(Settings& parent, const std::shared_ptr<Wifi>& shrd_ptr);
   virtual ~Passphrase();
 
   Glib::ustring getDisplayString() const override;
@@ -21,4 +22,5 @@ class Passphrase : public Setting
  private:
   void updatePassword(const Glib::ustring& password);
   Glib::ustring m_password;
+  const std::shared_ptr<Wifi> m_wifi;
 };
