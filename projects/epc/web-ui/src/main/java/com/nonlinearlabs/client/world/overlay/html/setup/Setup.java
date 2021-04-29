@@ -1,5 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.html.setup;
 
+import java.util.Map;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.InputElement;
@@ -15,6 +17,8 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.presetManager.Bank;
+import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
@@ -43,6 +47,7 @@ import com.nonlinearlabs.client.presenters.MidiSettings;
 import com.nonlinearlabs.client.presenters.MidiSettingsProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.SystemSettings;
+import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.overlay.html.Range;
 
 public class Setup extends Composite {
@@ -61,7 +66,7 @@ public class Setup extends Composite {
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
 			selectionAutoScroll, editParameter, scalingFactor, stripeBrightness, midiReceiveChannel, midiReceiveChannelSplit,
 			midiSendChannel, midiSendChannelSplit, pedal1Mapping, 
-			pedal2Mapping, pedal3Mapping, pedal4Mapping, ribbon1Mapping, ribbon2Mapping, benderMapping, aftertouchMapping;
+			pedal2Mapping, pedal3Mapping, pedal4Mapping, ribbon1Mapping, ribbon2Mapping, benderMapping, aftertouchMapping, pcBanks;
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
@@ -276,6 +281,10 @@ public class Setup extends Composite {
 		benderMapping.addChangeHandler(e -> settings.setPitchbendMapping(BenderCCMapping.values()[benderMapping.getSelectedIndex()]));
 		highVeloCCOn.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.on));
 		highVeloCCOff.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.off));
+
+		pcBanks.addChangeHandler(e -> {
+			NonMaps.get().getServerProxy().selectMidiBank(midiBankIndexToBankMap.get(pcBanks.getSelectedIndex()).uuid.getValue());
+		});
 	}
 
 	public void connectUpdate() {
@@ -298,6 +307,28 @@ public class Setup extends Composite {
 			applyPresenter(t);
 			return true;
 		});
+
+		PresetManagerModel.get().getBanks().onChange(t -> {
+			applyBanks(t);
+			return true;
+		});
+	}
+
+	private Map<Integer, Bank> midiBankIndexToBankMap;
+
+	private void applyBanks(Map<String, Bank> map) {
+		pcBanks.clear();
+		midiBankIndexToBankMap.clear();
+
+		int index = 0;
+		for(String uuid: map.keySet()) {
+			Bank b = map.get(uuid);
+			pcBanks.addItem(b.name.getValue(), uuid);
+			midiBankIndexToBankMap.put(index, b);
+			if(b.isMidiBank.getBool())
+				pcBanks.setSelectedIndex(index);
+			index++;
+		}
 	}
 
 	private void fillListboxWithOptions(ListBox box, String[] options) {
