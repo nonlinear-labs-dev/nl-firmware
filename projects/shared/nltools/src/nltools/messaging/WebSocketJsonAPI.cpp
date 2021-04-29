@@ -1,4 +1,4 @@
-#include "WebSocketJsonAPI.h"
+#include <nltools/messaging/WebSocketJsonAPI.h>
 #include <nltools/logging/Log.h>
 
 namespace nltools
