@@ -23,6 +23,9 @@ namespace UNDO
     void setClosingCommand(std::unique_ptr<ContinuousTransaction> command);
     UNDO::ContinuousTransaction *getClosingCommand() const;
 
+    void stopContinuation();
+    bool isContinuing() const;
+
    protected:
     void implUndoAction() const override;
     void implRedoAction() const override;
@@ -32,6 +35,7 @@ namespace UNDO
 
    private:
     void *m_id = nullptr;
+    bool m_continuing = true;
     steady_clock::time_point m_creationTimestamp;
     std::unique_ptr<ContinuousTransaction> m_closingCommand = nullptr;
     bool m_isNested = false;

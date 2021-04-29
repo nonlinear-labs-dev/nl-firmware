@@ -162,11 +162,11 @@ class Bars {
     }
 
     first(): Bar {
-        return this.get(this.firstId)!;
+        return this.get(this.firstId) || { id: 0, max: 0, recordTime: 0 };
     }
 
     last(): Bar {
-        return this.get(this.firstId + this.bars[0].length - 1)!;
+        return this.get(this.firstId + this.bars[0].length - 1) || { id: 0, max: 0, recordTime: 0 };
     }
 
 
