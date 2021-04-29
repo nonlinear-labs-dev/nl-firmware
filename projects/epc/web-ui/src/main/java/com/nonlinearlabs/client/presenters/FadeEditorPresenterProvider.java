@@ -57,11 +57,6 @@ public class FadeEditorPresenterProvider extends Notifier<FadeEditorPresenter> {
         presenter.splitII.to = 60;
         presenter.splitII.indicator = presenter.splitII.from;
 
-        Tracer.log("splitI.from" + presenter.splitI.from);
-        Tracer.log("splitI.to" + presenter.splitI.to);
-        Tracer.log("splitII.from" + presenter.splitII.from);
-        Tracer.log("splitII.to" + presenter.splitII.to);
-
         BasicParameterModel fadeI = model.getParameter(new ParameterId(396, VoiceGroup.I));
         BasicParameterModel fadeII = model.getParameter(new ParameterId(396, VoiceGroup.II));
         double fadeIVal = fadeI.value.getQuantizedAndClipped(true);

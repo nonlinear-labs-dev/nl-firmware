@@ -145,6 +145,11 @@ public class PresetManager extends MapsLayout {
 			return true;
 		});
 
+		EditBufferModel.get().loadedPreset.onChange(loadedPreset -> {
+			endLoadToPartMode();
+			return true;
+		});
+
 		loadToPartNotifier = new LoadToPartModeNotifier();
 	}
 

@@ -171,7 +171,7 @@ public class Header extends Label {
 
 	@Override
 	protected String getDisplayText() {
-		return getParent().getOrderNumber() + " - " + bankName + (getParent().isMidiBank() ? " ^" : "");
+		return getParent().getOrderNumber() + " - " + bankName + (getParent().isMidiBank() ? " \uE0C1" : "");
 	}
 
 	@Override

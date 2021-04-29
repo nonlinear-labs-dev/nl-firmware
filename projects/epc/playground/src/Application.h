@@ -41,13 +41,13 @@ class Application
   void run();
   Glib::RefPtr<Glib::MainContext> getMainContext();
 
-  PresetManager *getPresetManager() const;
+  [[nodiscard]] PresetManager *getPresetManager() const;
   HTTPServer *getHTTPServer();
-  const Options *getOptions() const;
-  PlaycontrollerProxy *getPlaycontrollerProxy() const;
-  AudioEngineProxy *getAudioEngineProxy() const;
+  [[nodiscard]] const Options *getOptions() const;
+  [[nodiscard]] PlaycontrollerProxy *getPlaycontrollerProxy() const;
+  [[nodiscard]] AudioEngineProxy *getAudioEngineProxy() const;
   HWUI *getHWUI();
-  const HWUI *getHWUI() const;
+  [[nodiscard]] const HWUI *getHWUI() const;
   UndoScope *getUndoScope();
   Settings *getSettings();
   DeviceInformation *getDeviceInformation();
@@ -55,7 +55,7 @@ class Application
   WebUISupport *getWebUISupport();
 
   void quit();
-  bool isQuit() const;
+  [[nodiscard]] bool isQuit() const;
 
   void runWatchDog();
   void stopWatchDog();

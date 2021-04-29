@@ -15,15 +15,13 @@ FrameBuffer::StackScopeGuard::StackScopeGuard(FrameBuffer *fb)
 {
 }
 
-FrameBuffer::StackScopeGuard::StackScopeGuard(StackScopeGuard &&other)
+FrameBuffer::StackScopeGuard::StackScopeGuard(StackScopeGuard &&other) noexcept
     : m_fb(nullptr)
 {
   std::swap(m_fb, other.m_fb);
 }
 
-FrameBuffer::StackScopeGuard::~StackScopeGuard()
-{
-}
+FrameBuffer::StackScopeGuard::~StackScopeGuard() = default;
 
 FrameBuffer::Clip::Clip(FrameBuffer *fb, const Rect &rect)
     : StackScopeGuard(fb)
@@ -32,7 +30,7 @@ FrameBuffer::Clip::Clip(FrameBuffer *fb, const Rect &rect)
   fb->m_clips.push(intersection);
 }
 
-FrameBuffer::Clip::Clip(Clip &&other)
+FrameBuffer::Clip::Clip(Clip &&other) noexcept
     : StackScopeGuard(std::move(other))
 {
 }
@@ -54,7 +52,7 @@ FrameBuffer::Offset::Offset(FrameBuffer *fb, const Point &offset)
   m_fb->m_offsets.push(m_fb->m_offsets.top() + offset);
 }
 
-FrameBuffer::Offset::Offset(Offset &&other)
+FrameBuffer::Offset::Offset(Offset &&other) noexcept
     : StackScopeGuard(std::move(other))
 {
 }
@@ -74,8 +72,17 @@ FrameBuffer::FrameBuffer()
   clear();
 
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Oled, [this] {
+    m_oledCurrentlyShowsMessageId = 0;
+
     if(!swapBuffers())
       nltools::Log::warning("Could not send new framebuffer to BBBB");
+  });
+
+  nltools::msg::receive<nltools::msg::OLEDState>(nltools::msg::EndPoint::Playground, [this](const auto &msg) {
+    m_oledCurrentlyShowsMessageId = msg.displaysMessageId;
+
+    if(m_oledsDirty)
+      swapBuffers();
   });
 }
 
@@ -283,7 +290,7 @@ bool FrameBuffer::swapBuffers()
 
   if(m_api->hasClients())
   {
-    m_api->sendAll(m_backBuffer);
+    m_api->sendAllUpdating(m_backBuffer);
   }
 
   if(Application::get().getOptions()->sendBBBBTurnaroundTimestamps())
@@ -296,9 +303,16 @@ bool FrameBuffer::swapBuffers()
   }
   else
   {
-    SetOLEDMessage msg {};
-    memcpy(msg.pixels, m_backBuffer.data(), m_backBuffer.size());
-    return send(EndPoint::Oled, msg);
+    if(m_oledCurrentlyShowsMessageId == 0 || m_oledCurrentlyShowsMessageId == m_oledMessageId)
+    {
+      SetOLEDMessage msg {};
+      m_oledsDirty = false;
+      msg.messageId = ++m_oledMessageId;
+      memcpy(msg.pixels, m_backBuffer.data(), m_backBuffer.size());
+      return send(EndPoint::Oled, msg);
+    }
+    m_oledsDirty = true;
+    return true;
   }
 }
 

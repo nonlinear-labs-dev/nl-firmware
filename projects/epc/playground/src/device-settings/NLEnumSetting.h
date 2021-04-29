@@ -52,7 +52,7 @@ template <typename TEnum> class NLEnumSetting : public Setting
     set(to<TEnum>(text));
   }
 
-  void incDec(int dir, bool wrap)
+  virtual void incDec(int dir, bool wrap)
   {
     const auto &v = m_displayStrings;
     auto it = std::find(v.begin(), v.end(), getDisplayString());
@@ -69,7 +69,7 @@ template <typename TEnum> class NLEnumSetting : public Setting
       set((tEnum) idx);
   }
 
-  Glib::ustring save() const
+  Glib::ustring save() const override
   {
     return toString(get());
   }
@@ -98,10 +98,11 @@ template <typename TEnum> class NLEnumSetting : public Setting
     return m_displayStrings;
   }
 
+  NLEnumSetting(const NLEnumSetting &other) = delete;
+  NLEnumSetting &operator=(const NLEnumSetting &) = delete;
+
  private:
   std::vector<Glib::ustring> m_displayStrings;
-  NLEnumSetting(const NLEnumSetting &other);
-  NLEnumSetting &operator=(const NLEnumSetting &);
 
   tEnum m_mode;
 };

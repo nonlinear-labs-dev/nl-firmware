@@ -24,6 +24,7 @@
 #include <device-settings/Settings.h>
 #include <filesystem>
 #include <use-cases/IncrementalChangerUseCases.h>
+#include <device-settings/midi/local/LocalControllersSetting.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -78,11 +79,7 @@ gint16 PlaycontrollerProxy::separateSignedBitToComplementary(uint16_t v) const
 
 void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
-  if(msg.type == MessageParser::HARDWARE_SOURCE)
-  {
-    onHardwareSourceReceived(msg);
-  }
-  else if(msg.type == MessageParser::EDIT_CONTROL)
+  if(msg.type == MessageParser::EDIT_CONTROL)
   {
     onEditControlMessageReceived(msg);
   }
@@ -197,30 +194,6 @@ Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHW
   }(id);
 
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramId);
-}
-
-void PlaycontrollerProxy::onHardwareSourceReceived(const MessageParser::NLMessage &msg)
-{
-  uint16_t id = msg.params[0];
-  DebugLevel::info("received hw source message with hw source id:", id);
-
-  gint16 value = separateSignedBitToComplementary(msg.params[1]);
-
-  if(auto *param
-     = dynamic_cast<PhysicalControlParameter *>(findPhysicalControlParameterFromPlaycontrollerHWSourceID(id)))
-  {
-    notifyRibbonTouch(param->getID().getNumber());
-    DebugLevel::info("physical control parameter:", param->getMiniParameterEditorName(), ": ", value);
-    applyParamMessageAbsolutely(param, value);
-  }
-  else if(id == HW_SOURCE_ID_LAST_KEY)
-  {
-    notifyLastKey(value);
-  }
-  else
-  {
-    DebugLevel::info("could not parse hw id", id, " to physical control parameter");
-  }
 }
 
 void PlaycontrollerProxy::applyParamMessageAbsolutely(PhysicalControlParameter *p, gint16 value)

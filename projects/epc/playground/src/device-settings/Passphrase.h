@@ -9,9 +9,8 @@ class Settings;
 class Passphrase : public Setting
 {
  public:
-  Passphrase(Settings& parent, const std::shared_ptr<Wifi>& shrd_ptr);
-  virtual ~Passphrase();
-
+  explicit Passphrase(Settings& parent, const std::shared_ptr<Wifi>& shrd_ptr);
+  ~Passphrase() override;
   Glib::ustring getDisplayString() const override;
 
   void dice();

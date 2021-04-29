@@ -18,7 +18,7 @@ TEST_CASE("Load Part I of Split into Split Part I")
   MockPresetStorage presets;
   auto preset = presets.getSplitPreset();
 
-  REQUIRE(preset->getType() == SoundType::Split);
+  CHECK(preset->getType() == SoundType::Split);
 
   {
     auto scope = TestHelper::createTestScope();
@@ -57,7 +57,7 @@ TEST_CASE("Load Part I of Split into Split Part I")
       }
       else
       {
-        REQUIRE(false);
+        CHECK(false);
       }
     }
 
@@ -181,7 +181,7 @@ TEST_CASE("Load Part I of Split into Split Part II")
   MockPresetStorage presets;
   auto preset = presets.getSplitPreset();
 
-  REQUIRE(preset->getType() == SoundType::Split);
+  CHECK(preset->getType() == SoundType::Split);
 
   {
     auto scope = TestHelper::createTestScope();
@@ -219,7 +219,7 @@ TEST_CASE("Load Part I of Split into Split Part II")
       }
       else
       {
-        REQUIRE(false);
+        CHECK(false);
       }
     }
 

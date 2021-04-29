@@ -116,19 +116,25 @@ namespace DescriptiveLayouts
     /*
        * UIFocus
        */
-    registerEvent(EventSinks::SwitchToParameterFocus, [hwui] { hwui->undoableSetFocusAndMode(UIFocus::Parameters); });
+    registerEvent(EventSinks::SwitchToParameterFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Parameters }); });
     registerEvent(EventSinks::SwitchToSoundFocus, [hwui] {
       hwui->undoableSetFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
-    registerEvent(EventSinks::SwitchToPresetFocus, [hwui] { hwui->undoableSetFocusAndMode(UIFocus::Presets); });
-    registerEvent(EventSinks::SwitchToBankFocus, [hwui] { hwui->undoableSetFocusAndMode(UIFocus::Banks); });
-    registerEvent(EventSinks::SwitchToSetupFocus, [hwui] { hwui->undoableSetFocusAndMode(UIFocus::Setup); });
+    registerEvent(EventSinks::SwitchToPresetFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Presets }); });
+    registerEvent(EventSinks::SwitchToBankFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Banks }); });
+    registerEvent(EventSinks::SwitchToSetupFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Setup }); });
 
     /*
        * UIMode
        */
-    registerEvent(EventSinks::SwitchToEditMode, [hwui]() { hwui->undoableSetFocusAndMode(UIMode::Edit); });
-    registerEvent(EventSinks::SwitchToSelectMode, [hwui]() { hwui->undoableSetFocusAndMode(UIMode::Select); });
+    registerEvent(EventSinks::SwitchToEditMode,
+                  [hwui]() { hwui->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit }); });
+    registerEvent(EventSinks::SwitchToSelectMode,
+                  [hwui]() { hwui->undoableSetFocusAndMode(FocusAndMode { UIMode::Select }); });
 
     /*
        * UIDetail

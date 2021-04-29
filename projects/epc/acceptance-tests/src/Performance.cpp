@@ -5,6 +5,7 @@
 
 namespace Tests
 {
+  //TODO is this failure an performance regression we have to pay attention to?
   SCENARIO("CPU Usage is constant")
   {
     using namespace std::chrono_literals;
@@ -30,9 +31,8 @@ namespace Tests
           synth->measurePerformance(30s);
           auto longAfterRelease = synth->measurePerformance(1s);
           auto diff = std::abs(std::get<1>(withoutNote) - std::get<1>(longAfterRelease));
-          auto acceptedJitter = 0.1f;
-          REQUIRE(diff > (1.0f - acceptedJitter));
-          REQUIRE(diff < (1.0f + acceptedJitter));
+          auto acceptedJitter = 0.1;
+          CHECK(diff < acceptedJitter);
         }
       }
     }

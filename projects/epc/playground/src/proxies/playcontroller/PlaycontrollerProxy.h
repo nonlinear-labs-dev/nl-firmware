@@ -72,6 +72,8 @@ class PlaycontrollerProxy
   Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
   void notifyRibbonTouch(int ribbonsParameterID);
 
+  void applyParamMessageAbsolutely(PhysicalControlParameter *p, gint16 value);
+
  private:
   void onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);
@@ -82,11 +84,9 @@ class PlaycontrollerProxy
   gint16 separateSignedBitToComplementary(uint16_t v) const;
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
 
-  void onHardwareSourceReceived(const MessageParser::NLMessage &msg);
   void onEditControlMessageReceived(const MessageParser::NLMessage &msg);
   void onRelativeEditControlMessageReceived(Parameter *p, gint16 value);
   void onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value);
-  void applyParamMessageAbsolutely(PhysicalControlParameter *p, gint16 value);
   void onAssertionMessageReceived(const MessageParser::NLMessage &msg);
   void onNotificationMessageReceived(const MessageParser::NLMessage &msg);
   void onPlaycontrollerConnected();

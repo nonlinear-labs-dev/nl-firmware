@@ -16,6 +16,14 @@ namespace Tests
     auto preset2 = "119284ae-b3d4-42a7-a155-31f04ed340ac";
     loadTestPreset(synth.get(), "voices-remain-on-preset-load", preset1);
 
+    //Prepare Runtime Options for MIDI
+    {
+      nltools::msg::Setting::MidiSettingsMessage msg;
+      msg.receiveNotes = true;
+      msg.receiveChannel = MidiReceiveChannel::CH_1;
+      synth->onMidiSettingsMessage(msg);
+    }
+
     GIVEN("some notes are played without glitch suppression")
     {
       synth->getDsp()->onSettingGlitchSuppr(false);

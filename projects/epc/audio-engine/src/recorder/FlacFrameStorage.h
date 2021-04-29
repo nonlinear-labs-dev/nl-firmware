@@ -31,9 +31,9 @@ class FlacFrameStorage
 
   FlacFrameStorage(uint64_t m_maxMemUsage);
 
-  void push(std::unique_ptr<FlacEncoder::Frame> frame);
+  void push(std::unique_ptr<FlacEncoder::Frame> frame, bool isHeader);
   const std::vector<std::unique_ptr<FlacEncoder::Frame>> &getHeaders() const;
-  void reset();
+  nlohmann::json reset();
 
   StreamHandle startStream(FrameId begin, FrameId end);
   nlohmann::json generateInfo();

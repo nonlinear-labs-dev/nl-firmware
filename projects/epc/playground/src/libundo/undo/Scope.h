@@ -22,13 +22,13 @@ namespace UNDO
       return std::chrono::seconds(2);
     }
 
-    Scope(UpdateDocumentContributor *parent);
-    virtual ~Scope();
+    explicit Scope(UpdateDocumentContributor *parent);
+    ~Scope() override;
 
     void reset();
 
     template <typename... tArgs>
-    tTransactionScopePtr startTransaction(const Glib::ustring &format, const tArgs &... args)
+    tTransactionScopePtr startTransaction(const Glib::ustring &format, const tArgs &...args)
     {
       return startTransaction(StringTools::formatString(format, args...));
     }
@@ -36,13 +36,13 @@ namespace UNDO
     template <typename... tArgs>
 
     tTransactionScopePtr startContinuousTransaction(void *id, std::chrono::milliseconds timeout,
-                                                    const Glib::ustring &format, const tArgs &... args)
+                                                    const Glib::ustring &format, const tArgs &...args)
     {
       return startContinuousTransaction(id, timeout, StringTools::formatString(format, args...));
     }
 
     template <typename... tArgs>
-    tTransactionScopePtr startContinuousTransaction(void *id, const Glib::ustring &format, const tArgs &... args)
+    tTransactionScopePtr startContinuousTransaction(void *id, const Glib::ustring &format, const tArgs &...args)
     {
       return startContinuousTransaction(id, getStandardContinuousTransactionTimeout(),
                                         StringTools::formatString(format, args...));
@@ -58,14 +58,14 @@ namespace UNDO
     tTransactionScopePtr startCuckooTransaction();
     void resetCukooTransaction();
 
-    Transaction *getUndoTransaction() const;
-    Transaction *getRedoTransaction() const;
-    Transaction *getRootTransaction() const;
+    [[nodiscard]] Transaction *getUndoTransaction() const;
+    [[nodiscard]] Transaction *getRedoTransaction() const;
+    [[nodiscard]] Transaction *getRootTransaction() const;
 
     void rebase(Transaction *newRoot);
 
-    bool canUndo() const;
-    bool canRedo() const;
+    [[nodiscard]] bool canUndo() const;
+    [[nodiscard]] bool canRedo() const;
 
     void undo();
     void undoAndHushUp();
@@ -77,9 +77,11 @@ namespace UNDO
     void eraseBranch(const Glib::ustring &id);
     void eraseBranch(Transaction *branch);
 
-    Glib::ustring getPrefix() const override;
+    [[nodiscard]] Glib::ustring getPrefix() const override;
     void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
     void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+
+    [[nodiscard]] const Transaction *findTransactionAt(std::chrono::system_clock::time_point timestamp) const;
 
    protected:
     virtual void onTransactionAdded();
@@ -91,7 +93,7 @@ namespace UNDO
     Scope(const Scope &other);
     void operator=(const Scope &other);
 
-    size_t getDepth() const;
+    [[nodiscard]] size_t getDepth() const;
     void addTransaction(tTransactionPtr cmd);
 
     friend class Transaction;

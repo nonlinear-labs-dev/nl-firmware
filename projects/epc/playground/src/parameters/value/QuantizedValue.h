@@ -15,65 +15,71 @@ class QuantizedValue : public ClippedValue
  public:
   QuantizedValue(Parameter *owner, const ScaleConverter *scale, tValueType def, tControlPositionValue coarseDenominator,
                  tControlPositionValue fineDenominator);
-  virtual ~QuantizedValue();
+
+  QuantizedValue(const QuantizedValue &other) = delete;
+  QuantizedValue &operator=(const QuantizedValue &) = delete;
+
+  ~QuantizedValue() override;
 
   class IncrementalChanger
   {
    public:
     IncrementalChanger(Initiator initiator, QuantizedValue &value);
     IncrementalChanger(const IncrementalChanger &other);
-    void changeBy(UNDO::Transaction* transaction, tControlPositionValue amount, bool fine);
+    void changeBy(UNDO::Transaction *transaction, tControlPositionValue amount, bool fine);
 
-    bool isManaging(const QuantizedValue &v) const;
+    [[nodiscard]] bool isManaging(const QuantizedValue &v) const;
 
-   Parameter* getOwner();private:
+    Parameter *getOwner();
+
+   private:
     Initiator m_initiator;
     QuantizedValue &m_value;
     tValueType m_lastQuantizedValue;
     tValueType m_pendingAmount;
   };
 
-  tControlPositionValue getQuantizedClipped() const;
-  tControlPositionValue getCoarseDenominator() const;
+  [[nodiscard]] tControlPositionValue getQuantizedClipped() const;
+  [[nodiscard]] tControlPositionValue getCoarseDenominator() const;
   void setCoarseDenominator(tControlPositionValue coarseDenominator);
-  tControlPositionValue getFineDenominator() const;
+  [[nodiscard]] tControlPositionValue getFineDenominator() const;
 
   void setFineDenominator(tControlPositionValue fineDenominator);
 
-  tControlPositionValue getQuantizedClippedValue(bool fine) const;
-  tControlPositionValue getQuantizedUnClippedValue(bool fine) const;
+  [[nodiscard]] tControlPositionValue getQuantizedClippedValue(bool fine) const;
+  [[nodiscard]] tControlPositionValue getQuantizedUnClippedValue(bool fine) const;
 
-  tControlPositionValue getQuantizedValue(tControlPositionValue v, bool fine) const;
+  [[nodiscard]] tControlPositionValue getQuantizedValue(tControlPositionValue v, bool fine) const;
 
   void inc(Initiator initiator, ButtonModifiers modifiers);
   void dec(Initiator initiator, ButtonModifiers modifiers);
   void resetSaturation();
   void applyModulation(tControlPositionValue delta);
 
-  tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
-  tControlPositionValue getNextStepValue(int incs, bool fine, bool shift) const;
-  tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, ButtonModifiers modifiers) const;
-  tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, bool fine, bool shift) const;
+  [[nodiscard]] tControlPositionValue getNextStepValue(int incs, ButtonModifiers modifiers) const;
+  [[nodiscard]] tControlPositionValue getNextStepValue(int incs, bool fine, bool shift) const;
+  [[nodiscard]] tControlPositionValue getNextStepValue(tControlPositionValue value, int incs,
+                                                       ButtonModifiers modifiers) const;
+  [[nodiscard]] tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, bool fine,
+                                                       bool shift) const;
 
-  tTcdValue getTcdValue() const;
+  [[nodiscard]] tTcdValue getTcdValue() const;
   void setTcdValue(tTcdValue v);
-  tDisplayValue getDisplayValue() const;
-  Glib::ustring getDisplayString() const;
-  Glib::ustring getDisplayString(tControlPositionValue cp) const;
-  virtual size_t getHash() const override;
+  [[nodiscard]] tDisplayValue getDisplayValue() const;
+  [[nodiscard]] Glib::ustring getDisplayString() const;
+  [[nodiscard]] Glib::ustring getDisplayString(tControlPositionValue cp) const;
+  [[nodiscard]] size_t getHash() const override;
 
   std::unique_ptr<IncrementalChanger> startUserEdit(Initiator initiator);
 
-  virtual void onClippedValueChanged(Initiator initiator, tControlPositionValue oldClippedValue,
-                                     tControlPositionValue newClippedValue) override;
+  void onClippedValueChanged(Initiator initiator, tControlPositionValue oldClippedValue,
+                             tControlPositionValue newClippedValue) override;
   virtual void onFineQuantizedChanged(Initiator initiator, tControlPositionValue oldFine,
                                       tControlPositionValue newFine);
-  virtual void onRawValueChanged(Initiator initiator, tValueType oldRawValue, tValueType newRawValue) override;
+  void onRawValueChanged(Initiator initiator, tValueType oldRawValue, tValueType newRawValue) override;
 
  private:
-  QuantizedValue(const QuantizedValue &other) = delete;
-  QuantizedValue &operator=(const QuantizedValue &) = delete;
-  bool isValueCoarseQuantized() const;
+  [[nodiscard]] bool isValueCoarseQuantized() const;
 
   Parameter *m_owner;
 

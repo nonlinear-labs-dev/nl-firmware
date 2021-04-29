@@ -31,6 +31,19 @@ namespace nltools
           [this, msg]() { m_connections.remove_if([this, msg](tWebSocketPtr &c) { return !send(c.get(), msg); }); });
     }
 
+    void WebSocketJsonAPI::sendAllUpdating(const nlohmann::json &msg)
+    {
+      std::unique_lock<std::mutex> l(m_mutex);
+      m_pendingUpdateMsg = msg;
+
+      if(!m_bgContextQueue->isPending())
+        m_bgContextQueue->pushMessage([this, msg]() {
+          std::unique_lock<std::mutex> l(m_mutex);
+          m_connections.remove_if([this, msg](tWebSocketPtr &c) { return !send(c.get(), m_pendingUpdateMsg); });
+          m_pendingUpdateMsg.clear();
+        });
+    }
+
     bool WebSocketJsonAPI::hasClients() const
     {
       return !m_connections.empty();

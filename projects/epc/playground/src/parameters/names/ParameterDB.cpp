@@ -5,7 +5,7 @@
 #include <tools/StringTools.h>
 #include <parameters/Parameter.h>
 #include <parameter_list.h>
-#include <assert.h>
+#include <cassert>
 #include <nltools/logging/Log.h>
 #include <groups/MacroControlsGroup.h>
 #include <presets/PresetManager.h>
@@ -73,6 +73,16 @@ Glib::ustring ParameterDB::getDescription(const ParameterId &id) const
   return getDescription(num);
 }
 
+std::optional<Glib::ustring> ParameterDB::getLongGroupName(const ParameterId &id) const
+{
+  auto d = C15::ParameterList[id.getNumber()];
+
+  if(!d.m_pg.m_group_label_long)
+    return {};
+
+  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_group_label_long, id.getVoiceGroup());
+}
+
 Glib::ustring ParameterDB::getDescription(const int num) const
 {
   assert(num >= 0);
@@ -105,13 +115,6 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
   auto d = C15::ParameterList[id];
   return (d.m_pg.m_inactive_cp && strlen(d.m_pg.m_inactive_cp) > 0) ? std::stod(d.m_pg.m_inactive_cp)
                                                                     : getInvalidSignalPathIndication();
-}
-
-bool ParameterDB::isActive(const Parameter *p) const
-{
-  const auto inActiveCP = getSignalPathIndication(p->getID().getNumber());
-  const auto diff = std::abs(inActiveCP - p->getControlPositionValue());
-  return diff > std::numeric_limits<tControlPositionValue>::epsilon();
 }
 
 Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const

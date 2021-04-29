@@ -56,8 +56,8 @@ TEST_CASE("Part Origin Attribute")
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 
-    CHECK(originI.presetUUID == "");
-    CHECK(originII.presetUUID == "");
+    CHECK(originI.presetUUID == Uuid::none());
+    CHECK(originII.presetUUID == Uuid::none());
     CHECK(originI.sourceGroup == VoiceGroup::Global);
     CHECK(originII.sourceGroup == VoiceGroup::Global);
   }
@@ -69,12 +69,12 @@ TEST_CASE("Part Origin Attribute")
 
     eb->undoableInitPart(scope->getTransaction(), VoiceGroup::I, Defaults::FactoryDefault);
     auto originI = eb->getPartOrigin(VoiceGroup::I);
-    CHECK(originI.presetUUID == "");
+    CHECK(originI.presetUUID == Uuid::none());
     CHECK(originI.sourceGroup == VoiceGroup::Global);
 
     eb->undoableInitPart(scope->getTransaction(), VoiceGroup::II, Defaults::FactoryDefault);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
-    CHECK(originII.presetUUID == "");
+    CHECK(originII.presetUUID == Uuid::none());
     CHECK(originII.sourceGroup == VoiceGroup::Global);
   }
 
@@ -134,9 +134,12 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   auto [ogI, ogII] = getOrigins();
 
   CHECK(eb->getOrigin() == nullptr);
-  CHECK(ogI.presetUUID == "");
-  CHECK(ogII.presetUUID == "");
+  CHECK(ogI.presetUUID == Uuid::none());
+  CHECK(ogII.presetUUID == Uuid::none());
   CHECK(eb->getUUIDOfLastLoadedPreset() == Uuid::init());
+
+  auto min = std::chrono::milliseconds(20);
+  auto max = std::chrono::milliseconds(500);
 
   SECTION("Select First Preset in Bank")
   {
@@ -149,7 +152,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
       Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     }
 
-    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&]() {
+    TestHelper::doMainLoop(min, max, [&]() {
       auto uuid = eb->getUUIDOfLastLoadedPreset();
       return uuid == bank->getPresetAt(0)->getUuid();
     });
@@ -158,42 +161,42 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
 
     detail::pressButton(Buttons::BUTTON_INC);
 
-    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&]() {
+    TestHelper::doMainLoop(min, max, [&]() {
       auto [ogI, ogII] = getOrigins();
       auto x = ogI.presetUUID == bank->getPresetAt(0)->getUuid();
       return x && ogI.sourceGroup == VoiceGroup::II;
     });
 
     detail::pressButton(Buttons::BUTTON_INC);
-    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
+    TestHelper::doMainLoop(min, max, [&] {
       auto [ogI, ogII] = getOrigins();
       auto x = ogI.presetUUID == bank->getPresetAt(1)->getUuid();
       return x && ogI.sourceGroup == VoiceGroup::I;
     });
 
     detail::pressButton(Buttons::BUTTON_INC);
-    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
+    TestHelper::doMainLoop(min, max, [&] {
       auto [ogI, ogII] = getOrigins();
       auto x = ogI.presetUUID == bank->getPresetAt(1)->getUuid();
       return x && ogI.sourceGroup == VoiceGroup::II;
     });
 
     detail::pressButton(Buttons::BUTTON_DEC);
-    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
+    TestHelper::doMainLoop(min, max, [&] {
       auto [ogI, ogII] = getOrigins();
       auto x = ogI.presetUUID == bank->getPresetAt(1)->getUuid();
       return x && ogI.sourceGroup == VoiceGroup::I;
     });
 
     detail::pressButton(Buttons::BUTTON_DEC);
-    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
+    TestHelper::doMainLoop(min, max, [&] {
       auto [ogI, ogII] = getOrigins();
       auto x = ogI.presetUUID == bank->getPresetAt(0)->getUuid();
       return x && ogI.sourceGroup == VoiceGroup::II;
     });
 
     detail::pressButton(Buttons::BUTTON_DEC);
-    TestHelper::doMainLoop(std::chrono::milliseconds(200), std::chrono::milliseconds(1000), [&] {
+    TestHelper::doMainLoop(min, max, [&] {
       auto [ogI, ogII] = getOrigins();
       auto x = ogI.presetUUID == bank->getPresetAt(0)->getUuid();
       return x && ogI.sourceGroup == VoiceGroup::I;

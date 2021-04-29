@@ -2,9 +2,14 @@ cmake_minimum_required(VERSION 3.0)
 
 project(Recorder)
 
-
 file(GLOB_RECURSE TS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.ts)
 file(GLOB_RECURSE ALL_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
+
+IF(DEV_PC)
+  SET(INLINE_SOURCE_MAP "true")
+ELSE()
+  SET(INLINE_SOURCE_MAP "false")
+ENDIF()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/constants.ts.in ${CMAKE_CURRENT_BINARY_DIR}/ts/constants.ts)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tsconfig.json ${CMAKE_CURRENT_BINARY_DIR}/ts/tsconfig.json)

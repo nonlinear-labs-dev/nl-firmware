@@ -14,8 +14,23 @@ namespace DescriptiveLayouts
     {
       FocusAndMode fam;
 
-      Tester(FocusAndMode fam)
+      explicit Tester(FocusAndMode fam)
           : fam(fam)
+      {
+      }
+
+      explicit Tester(UIFocus foc)
+          : fam { foc }
+      {
+      }
+
+      explicit Tester(UIMode mod)
+          : fam { mod }
+      {
+      }
+
+      explicit Tester(UIDetail det)
+          : fam { det }
       {
       }
 

@@ -26,6 +26,10 @@ IF(OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 ENDIF()
 
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "armv7")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon-fp-armv8")
+endif()
+
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -49,11 +53,12 @@ add_subdirectory(tests)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
 
-configure_file(${PROJECT_SOURCE_DIR}/systemd/${PROJECT_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service @ONLY)
-configure_file(${PROJECT_SOURCE_DIR}/systemd/fixCpuBindings.service.in ${PROJECT_BINARY_DIR}/systemd/fixCpuBindings.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/system/${PROJECT_NAME}.service.in ${PROJECT_BINARY_DIR}/system/${PROJECT_NAME}.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/system/fixCpuBindings.service.in ${PROJECT_BINARY_DIR}/system/fixCpuBindings.service @ONLY)
 
-install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
-install(FILES ${PROJECT_BINARY_DIR}/systemd/fixCpuBindings.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_SOURCE_DIR}/system/asound.state DESTINATION ${C15_ROOT_PATH}/var/lib/alsa/)
+install(FILES ${PROJECT_BINARY_DIR}/system/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/system/fixCpuBindings.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ../fixCpuBindings.service $ENV{DESTDIR}/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/fixCpuBindings.service)")

@@ -16,7 +16,7 @@ class Clipboard : public ContentSection
   using super = ContentSection;
 
  public:
-  Clipboard(UpdateDocumentContributor *parent);
+  explicit Clipboard(UpdateDocumentContributor *parent);
   virtual ~Clipboard();
 
   void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;

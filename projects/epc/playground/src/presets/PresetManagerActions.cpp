@@ -46,7 +46,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   addAction("rename-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto uuid = request->get("uuid");
     auto newName = request->get("name");
-    if(auto b = m_presetManager.findBank(uuid))
+    if(auto b = m_presetManager.findBank(Uuid { uuid }))
     {
       BankUseCases useCase(b);
       useCase.renameBank(newName);
@@ -115,7 +115,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
 
   addAction("select-midi-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto bankUuid = request->get("bank", "");
-    auto bank = Application::get().getPresetManager()->findBank(bankUuid);
+    auto bank = Application::get().getPresetManager()->findBank(Uuid { bankUuid });
     pmUseCases.selectMidiBank(bank);
   });
 }
@@ -181,8 +181,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       auto bUUID = request->get("p2");
       auto voiceGroupOfA = request->get("vg1");
       auto voiceGroupOfB = request->get("vg2");
-      auto a = pm->findPreset(aUUID);
-      auto b = pm->findPreset(bUUID);
+      auto a = pm->findPreset(Uuid { aUUID });
+      auto b = pm->findPreset(Uuid { bUUID });
       a = a ? a : ebAsPreset.get();
       b = b ? b : ebAsPreset.get();
       XmlWriter writer(request->createStream("text/xml", false));

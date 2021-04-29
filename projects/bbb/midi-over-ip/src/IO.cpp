@@ -29,7 +29,9 @@ Input::Input(Input &&i)
 Input::Input(const std::string &name)
     : IO(open(name))
 {
-  pipe(m_cancelPipe);
+  if(pipe(m_cancelPipe))
+    nltools::Log::warning("Couldn't create pipe");
+
   m_bg = std::async(std::launch::async, [=] { readMidi(); });
 }
 
@@ -37,7 +39,10 @@ Input::~Input()
 {
   m_quit = true;
   uint8_t v = 0;
-  write(m_cancelPipe[1], &v, 1);
+
+  if(write(m_cancelPipe[1], &v, 1) != 1)
+    nltools::Log::warning("Couldn't write to cancel pipe");
+
   m_bg.wait();
 }
 
@@ -214,8 +219,6 @@ void Output::send(const nltools::msg::Midi::SimpleMessage &msg)
   {
     if(size_t(res) != msg.numBytesUsed)
       nltools::Log::error("Could not write message into midi output device");
-    else
-      snd_rawmidi_drain(m_handle);
   }
 }
 

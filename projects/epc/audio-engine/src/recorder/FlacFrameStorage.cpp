@@ -6,11 +6,11 @@ FlacFrameStorage::FlacFrameStorage(uint64_t maxMemUsage)
 {
 }
 
-void FlacFrameStorage::push(std::unique_ptr<FlacEncoder::Frame> frame)
+void FlacFrameStorage::push(std::unique_ptr<FlacEncoder::Frame> frame, bool isHeader)
 {
   std::unique_lock<std::mutex> l(m_mutex);
 
-  if(m_header.size() < 3)
+  if(isHeader)
   {
     m_header.push_back(std::move(frame));
     return;
@@ -93,7 +93,7 @@ const std::vector<std::unique_ptr<FlacEncoder::Frame> > &FlacFrameStorage::getHe
   return m_header;
 }
 
-void FlacFrameStorage::reset()
+nlohmann::json FlacFrameStorage::reset()
 {
   std::unique_lock<std::mutex> l(m_mutex);
 
@@ -108,6 +108,8 @@ void FlacFrameStorage::reset()
     s->it = m_frames.end();
     s->end = m_frames.end();
   }
+
+  return {};
 }
 
 FlacFrameStorage::Stream::Stream(FlacFrameStorage *s, Frames::const_iterator begin, Frames::const_iterator end)

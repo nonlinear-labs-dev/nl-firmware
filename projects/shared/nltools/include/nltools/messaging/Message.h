@@ -49,6 +49,18 @@ namespace nltools
         }
 
         uint8_t program;
+        SoundType programType = SoundType::Invalid;
+      };
+
+      struct HardwareChangeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiHardwareChange;
+        }
+
+        int parameterID;
+        float value;
       };
     }
 
@@ -208,11 +220,11 @@ namespace nltools
           return MessageType::MidiSettings;
         }
 
-        int receiveChannel = 0;       // 0-15, -1 => None, 16 => Omni/All
-        int receiveSplitChannel = 0;  // 0-15, -1 => None, 16 => Omni/All
+        MidiReceiveChannel receiveChannel;
+        MidiReceiveChannelSplit receiveSplitChannel;
 
-        int sendChannel = 0;       // 0-15, -1 => None
-        int sendSplitChannel = 0;  //0-15, -1 => None
+        MidiSendChannel sendChannel;
+        MidiSendChannelSplit sendSplitChannel;
 
         bool receiveProgramChange = false;
         bool receiveNotes = false;
@@ -224,6 +236,17 @@ namespace nltools
 
         bool localNotes = false;
         bool localControllers = false;
+
+        bool highVeloCCEnabled = true;
+
+        PedalCC pedal1cc;
+        PedalCC pedal2cc;
+        PedalCC pedal3cc;
+        PedalCC pedal4cc;
+        RibbonCC ribbon1cc;
+        RibbonCC ribbon2cc;
+        AftertouchCC aftertouchcc;
+        BenderCC bendercc;
       };
 
       struct TransitionTimeMessage
@@ -370,7 +393,18 @@ namespace nltools
         return MessageType::SetOLED;
       }
 
+      uint64_t messageId = 0;
       uint8_t pixels[256][96];
+    };
+
+    struct OLEDState
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::OLEDState;
+      }
+
+      uint64_t displaysMessageId = 0;
     };
 
     struct SetTimestampedOledMessage
@@ -434,6 +468,7 @@ namespace nltools
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
         return Glib::wrap(bytes);
       }
+
     }
 
     namespace ParameterGroups

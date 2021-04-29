@@ -97,6 +97,10 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_INSERT:
           useCases.insertPreset(selectedBank, selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
+          if(modified)
+            pushRenameScreen();
+          else
+            animate();
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_OVERWRITE:
@@ -120,7 +124,8 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 void AppendOverwriteInsertButtonMenu::pushRenameScreen()
 {
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new RenamePresetLayout(
-      [=](const Glib::ustring& newName) {
+      [=](const Glib::ustring& newName)
+      {
         if(auto bank = Application::get().getPresetManager()->getSelectedBank())
         {
           if(auto preset = bank->getSelectedPreset())

@@ -9,7 +9,7 @@ TEST_CASE("Async Command Line does not block")
   bool done = false;
   AsyncCommandLine cmd({ "sleep", "1" },
                        [&](auto o) {
-                         REQUIRE_FALSE(blocked);
+                         CHECK_FALSE(blocked);
                          done = true;
                        },
                        [](auto e) {});
@@ -24,7 +24,7 @@ TEST_CASE("Async Completion will mark job as done")
   auto done = false;
   SpawnAsyncCommandLine::spawn({ "sleep", "1" }, [&](auto) { done = true; }, [](auto) {});
   TestHelper::doMainLoop(std::chrono::milliseconds { 10 }, std::chrono::milliseconds { 2000 }, [&] { return done; });
-  REQUIRE(SpawnAsyncCommandLine::removeDone() > 0);
+  CHECK(SpawnAsyncCommandLine::removeDone() > 0);
 }
 
 TEST_CASE("Async Spawn increments job count")
@@ -37,7 +37,7 @@ TEST_CASE("Async Spawn increments job count")
   SpawnAsyncCommandLine::spawn({ "sleep", "1" }, [&](auto) { done = true; }, [](auto) {});
 
   auto newCount = SpawnAsyncCommandLine::getNumCommands();
-  REQUIRE(newCount > old);
+  CHECK(newCount > old);
 
   TestHelper::doMainLoop(std::chrono::milliseconds { 10 }, std::chrono::milliseconds { 2000 }, [&] { return done; });
 }

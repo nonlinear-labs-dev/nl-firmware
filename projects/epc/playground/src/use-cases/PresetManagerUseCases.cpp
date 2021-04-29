@@ -85,7 +85,7 @@ void PresetManagerUseCases::insertPresetWithUUID(Bank* bank, size_t pos, const s
   }
   else
   {
-    id = uuid;
+    id = Uuid { uuid };
   }
 
   auto pm = Application::get().getPresetManager();
@@ -181,10 +181,10 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   auto bank = m_presetManager->addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-  auto preset
-      = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, m_presetManager->getEditBuffer(), false));
-  bank->selectPreset(transaction, preset->getUuid());
+  auto preset = bank->appendAndLoadPreset(transaction,
+                                          std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer(), false));
   m_presetManager->selectBank(transaction, bank->getUuid());
+  bank->selectPreset(transaction, preset->getUuid());
 }
 
 void PresetManagerUseCases::selectBank(Bank* bank)
@@ -266,7 +266,7 @@ void PresetManagerUseCases::moveBankCluster(std::vector<std::string> uuids)
 
   for(auto i = uuids.begin(); i != uuids.end();)
   {
-    if(auto selBank = m_presetManager->findBank(*(i++)))
+    if(auto selBank = m_presetManager->findBank(Uuid { *(i++) }))
     {
       auto x = *(i++);
       auto y = *(i++);
@@ -294,7 +294,7 @@ void PresetManagerUseCases::selectMidiBank(Bank* b)
     auto& scope = m_presetManager->getUndoScope();
     auto transactionScope = scope.startTransaction("Remove Bank for Midi Program-Changes");
     auto transaction = transactionScope->getTransaction();
-    m_presetManager->selectMidiBank(transaction, "");
+    m_presetManager->selectMidiBank(transaction, Uuid::none());
   }
 }
 
@@ -326,9 +326,10 @@ void PresetManagerUseCases::deletePresets(const std::vector<std::string>& uuids,
   auto transaction = scope->getTransaction();
   for(auto& p : uuids)
   {
-    if(auto bank = m_presetManager->findBankWithPreset(p))
+    auto uuid = Uuid { p };
+    if(auto bank = m_presetManager->findBankWithPreset(uuid))
     {
-      if(auto preset = bank->findPreset(p))
+      if(auto preset = bank->findPreset(uuid))
       {
         bank->deletePreset(transaction, preset->getUuid());
         if(deleteBanks && bank->getNumPresets() == 0)
@@ -544,7 +545,8 @@ void PresetManagerUseCases::sortBankNumbers()
 void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetManagerUseCases::DropActions action,
                                         const Glib::ustring& csv)
 {
-  auto actionToOffset = [](DropActions action) {
+  auto actionToOffset = [](DropActions action)
+  {
     switch(action)
     {
       case DropActions::Above:
@@ -562,18 +564,18 @@ void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetMan
   std::vector<std::string> strs;
   boost::split(strs, csv, boost::is_any_of(","));
 
-  if(auto anchor = m_presetManager->findPreset(anchorUuid))
+  if(auto anchor = m_presetManager->findPreset(Uuid { anchorUuid }))
   {
     auto scope = m_presetManager->getUndoScope().startTransaction("Drop Presets");
     auto transaction = scope->getTransaction();
 
     auto bank = static_cast<Bank*>(anchor->getParent());
-    auto anchorPos = static_cast<int>(bank->getPresetPosition(anchorUuid));
+    auto anchorPos = static_cast<int>(bank->getPresetPosition(Uuid { anchorUuid }));
     auto pos = std::max(anchorPos + offset, 0);
 
     for(const auto& presetUUID : strs)
     {
-      if(auto src = m_presetManager->findPreset(presetUUID))
+      if(auto src = m_presetManager->findPreset(Uuid { presetUUID }))
       {
         if(src->getParent() == anchor->getParent())
         {
@@ -589,9 +591,9 @@ void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetMan
 
     if(action == DropActions::Onto)
     {
-      if(auto droppedOntoPreset = m_presetManager->findPreset(anchorUuid))
+      if(auto droppedOntoPreset = m_presetManager->findPreset(Uuid { anchorUuid }))
       {
-        static_cast<Bank*>(droppedOntoPreset->getParent())->deletePreset(transaction, anchorUuid);
+        static_cast<Bank*>(droppedOntoPreset->getParent())->deletePreset(transaction, Uuid { anchorUuid });
       }
     }
   }
@@ -719,7 +721,7 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
   boost::split(strs, csv, boost::is_any_of(","));
 
   for(const auto& uuid : strs)
-    if(auto src = m_presetManager->findPreset(uuid))
+    if(auto src = m_presetManager->findPreset(Uuid { uuid }))
       newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *src, true));
 
   if(newBank->getNumPresets() > 0)
@@ -740,14 +742,16 @@ PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(Fi
     PresetManagerSerializer serializer(m_presetManager);
 
     XmlReader reader(in, scope->getTransaction());
-    reader.onFileVersionRead([&](int version) {
-      if(version > VersionAttribute::getCurrentFileVersion())
-      {
-        scope->getTransaction()->rollBack();
-        return Reader::FileVersionCheckResult::Unsupported;
-      }
-      return Reader::FileVersionCheckResult::OK;
-    });
+    reader.onFileVersionRead(
+        [&](int version)
+        {
+          if(version > VersionAttribute::getCurrentFileVersion())
+          {
+            scope->getTransaction()->rollBack();
+            return Reader::FileVersionCheckResult::Unsupported;
+          }
+          return Reader::FileVersionCheckResult::OK;
+        });
 
     if(auto lock = m_presetManager->lockLoading())
     {

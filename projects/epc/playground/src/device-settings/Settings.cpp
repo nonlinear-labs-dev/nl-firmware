@@ -57,7 +57,6 @@
 #include <device-settings/midi/MidiChannelSettings.h>
 #include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/local/LocalProgramChangesSetting.h>
 #include <device-settings/midi/send/MidiSendControllersSetting.h>
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
@@ -66,11 +65,16 @@
 #include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
 #include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
     , m_actions(std::make_unique<SettingsActions>(*this))
-    , m_saveJob(5000, std::bind(&Settings::save, this))
+    , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsPlaycontrollerWriteFallback(*this));
@@ -94,6 +98,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("AftertouchCurve", new AftertouchCurve(*this));
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
+
   std::shared_ptr<Wifi> localWifi = std::make_shared<Wifi>();
 
   addSetting("SSID", new SSID(*this, localWifi));
@@ -117,7 +122,6 @@ Settings::Settings(UpdateDocumentMaster *master)
 
   addSetting("LocalControllers", new LocalControllersSetting(*this));
   addSetting("LocalNotes", new LocalNotesSetting(*this));
-  addSetting("LocalProgramChanges", new LocalProgramChangesSetting(*this));
 
   addSetting("ReceiveChannel", new MidiReceiveChannelSetting(*this));
   addSetting("ReceiveChannelSplit", new MidiReceiveChannelSplitSetting(*this));
@@ -132,6 +136,16 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SendProgramChanges", new MidiSendProgramChangesSetting(*this));
   addSetting("SendNotes", new MidiSendNotesSetting(*this));
   addSetting("SendControllers", new MidiSendControllersSetting(*this));
+
+  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this));
+  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this));
+  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this));
+  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this));
+  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this));
+  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this));
+  addSetting("BenderMapping", new BenderCCMapping(*this));
+  addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
+  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
 }
 
 Settings::~Settings()
@@ -142,6 +156,7 @@ Settings::~Settings()
 Settings::tUpdateID Settings::onChange(uint64_t flags)
 {
   m_saveJob.trigger();
+  m_sigChanged.emit();
   return super::onChange(flags);
 }
 
@@ -200,9 +215,12 @@ void Settings::save()
 {
   try
   {
-    SettingsSerializer serializer(*this);
-    XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
-    serializer.write(writer, VersionAttribute::get());
+    if(Application::exists())
+    {
+      SettingsSerializer serializer(*this);
+      XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
+      serializer.write(writer, VersionAttribute::get());
+    }
   }
   catch(...)
   {
@@ -219,6 +237,7 @@ void Settings::addSetting(const Glib::ustring &key, Setting *s)
 {
   m_settings[key] = tSettingPtr(s);
 }
+
 
 const Settings::tMap &Settings::getSettings() const
 {
@@ -298,4 +317,9 @@ void Settings::sendPresetSettingsToPlaycontroller()
   auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
   r1->sendModeToPlaycontroller();
   r2->sendModeToPlaycontroller();
+}
+
+sigc::connection Settings::onSettingsChanged(sigc::slot<void(void)> s)
+{
+  return m_sigChanged.connect(s);
 }

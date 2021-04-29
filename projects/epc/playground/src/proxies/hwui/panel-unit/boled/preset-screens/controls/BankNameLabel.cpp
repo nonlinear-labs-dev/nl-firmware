@@ -22,7 +22,7 @@ void BankNameLabel::updateLabel(Bank *newBank)
     auto bankName = newBank->getName(true);
     auto isMidi = newBank->getUuid() == pm->getMidiSelectedBank();
     auto pos = pm->getBankPosition(newBank->getUuid()) + 1;
-    auto s = to_string(pos) + ": " + bankName + (isMidi ? " ^" : "");
+    auto s = to_string(pos) + ": " + bankName + (isMidi ? " \uE0C1" : "");
     setText({ s });
   }
   else
@@ -31,7 +31,7 @@ void BankNameLabel::updateLabel(Bank *newBank)
   }
 }
 
-Label::StringAndSuffix BankNameLabel::shortenStringIfNeccessary(std::shared_ptr<Font> font,
+StringAndSuffix BankNameLabel::shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
                                                                 const StringAndSuffix &text) const
 {
   auto availableWidth = getPosition().getWidth() - 2 * getXOffset();

@@ -117,7 +117,7 @@ namespace UNDO
     {
       if(auto last = dynamic_cast<ContinuousTransaction *>(getUndoTransaction()))
       {
-        if(last->getID() == id && last->getAge() <= timeout)
+        if(last->isContinueing() && last->getID() == id && last->getAge() <= timeout)
         {
           auto ret = std::make_unique<TransactionCreationScope>(transaction.get());
           last->setClosingCommand(std::move(transaction));
@@ -220,6 +220,10 @@ namespace UNDO
           undo->close();
         }
         undo->undoAction();
+
+        if(m_undoPosition)
+          m_undoPosition->addTimestamp();
+
         onChange();
       }
     }
@@ -244,6 +248,10 @@ namespace UNDO
       {
         m_cuckooTransaction.reset();
         redo->redoAction();
+
+        if(m_undoPosition)
+          m_undoPosition->addTimestamp();
+
         onChange();
       }
       else
@@ -253,7 +261,12 @@ namespace UNDO
         if(predecessor->getNumSuccessors() > (size_t) way)
         {
           m_cuckooTransaction.reset();
-          predecessor->getSuccessor(way)->redoAction();
+          auto p = predecessor->getSuccessor(way);
+          p->redoAction();
+
+          if(m_undoPosition)
+            m_undoPosition->addTimestamp();
+
           onChange();
         }
       }
@@ -271,6 +284,10 @@ namespace UNDO
   void Scope::undoJump(Transaction *target)
   {
     Algorithm::traverse(getUndoTransaction(), target);
+
+    if(m_undoPosition)
+      m_undoPosition->addTimestamp();
+
     onChange();
   }
 
@@ -318,6 +335,11 @@ namespace UNDO
         getRootTransaction()->traverse([&](const Transaction *p) mutable { p->writeDocument(writer, knownRevision); });
       });
     }
+  }
+
+  const Transaction *Scope::findTransactionAt(std::chrono::system_clock::time_point timestamp) const
+  {
+    return m_root->findTransactionAt(timestamp);
   }
 
 } /* namespace UNDO */

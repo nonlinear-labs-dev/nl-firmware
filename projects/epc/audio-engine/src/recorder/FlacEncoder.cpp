@@ -31,7 +31,7 @@ nlohmann::json FlacEncoder::Frame::generateInfo() const
   return { { "id", id }, { "max", max }, { "recordTime", recordTime.time_since_epoch().count() } };
 }
 
-FlacEncoder::FlacEncoder(int sr, std::function<void(std::unique_ptr<Frame>)> cb)
+FlacEncoder::FlacEncoder(int sr, CB cb)
     : m_encoder(FLAC__stream_encoder_new())
     , m_cb(cb)
     , m_resumedAt(std::chrono::system_clock::now())
@@ -41,7 +41,9 @@ FlacEncoder::FlacEncoder(int sr, std::function<void(std::unique_ptr<Frame>)> cb)
   FLAC__stream_encoder_set_bits_per_sample(m_encoder, 24);
   FLAC__stream_encoder_set_streamable_subset(m_encoder, true);
   FLAC__stream_encoder_set_blocksize(m_encoder, flacFrameSize);
+  m_writingHeader = true;
   FLAC__stream_encoder_init_stream(m_encoder, &writeToOut, nullptr, nullptr, nullptr, this);
+  m_writingHeader = false;
 }
 
 FlacEncoder::~FlacEncoder()
@@ -56,8 +58,12 @@ FLAC__StreamEncoderWriteStatus FlacEncoder::writeToOut(const FLAC__StreamEncoder
   auto pThis = static_cast<FlacEncoder *>(client_data);
   auto frame = std::make_unique<Frame>(buffer, bytes, std::exchange(pThis->m_currentMax, 0),
                                        pThis->m_resumedAt + framesToNanos(pThis->m_framesSinceResume));
-  pThis->m_cb(std::move(frame));
-  pThis->m_framesSinceResume += numSamples;
+
+  pThis->m_cb(std::move(frame), pThis->m_writingHeader);
+
+  if(!pThis->m_writingHeader)
+    pThis->m_framesSinceResume += numSamples;
+
   return FLAC__STREAM_ENCODER_WRITE_STATUS_OK;
 }
 

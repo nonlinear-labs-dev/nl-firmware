@@ -8,5 +8,3 @@ RUN echo "Server = https://pkgbuild.com/~dvzrv/repo/\$arch" >> /etc/pacman.d/mir
 RUN pacman --noconfirm -Syyuu
 RUN pacman --noconfirm -Syy
 RUN pacman --noconfirm -S ${packages}
-
-

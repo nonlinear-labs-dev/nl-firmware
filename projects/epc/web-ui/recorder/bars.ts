@@ -132,12 +132,13 @@ class Bars {
 
         var ts = 0;
         var max = idx >= 0 && idx < this.bars[0].length ? this.bars[0][idx] : 0;
+        var largestIdSoFar = -1;
 
         for (let [k, v] of this.timestamps) {
-            if (k > id && ts != 0)
-                break;
-
-            ts = v + (id - k) * this.barLength;
+            if (k <= id && k > largestIdSoFar) {
+                ts = v + (id - k) * this.barLength;
+                largestIdSoFar = k;
+            }
         }
 
         return { id: id, max: max, recordTime: ts };
@@ -151,7 +152,7 @@ class Bars {
 
         for (var i = 0; i < this.numIntegrals; i++) {
             if (zoom < 2) {
-                return this.bars[i][idx];
+                return this.bars[i][Math.round(idx)];
             }
 
             zoom /= 2;
@@ -161,16 +162,17 @@ class Bars {
     }
 
     first(): Bar {
-        return this.get(this.firstId)!;
+        return this.get(this.firstId) || { id: 0, max: 0, recordTime: 0 };
     }
 
     last(): Bar {
-        return this.get(this.firstId + this.bars[0].length - 1)!;
+        return this.get(this.firstId + this.bars[0].length - 1) || { id: 0, max: 0, recordTime: 0 };
     }
 
 
-    bars = new Array<Array<number>>();
     firstId: number = Number.MIN_SAFE_INTEGER;
-    timestamps = new Map<number, number>();
-    lastTimestamp = Number.MIN_SAFE_INTEGER;
+
+    private bars = new Array<Array<number>>();
+    private timestamps = new Map<number, number>();
+    private lastTimestamp = Number.MIN_SAFE_INTEGER;
 }

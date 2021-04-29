@@ -23,12 +23,9 @@ namespace UNDO
   class Transaction;
 }
 
-namespace nltools
+namespace nltools::msg
 {
-  namespace msg
-  {
-    struct ButtonChangedMessage;
-  }
+  struct ButtonChangedMessage;
 }
 
 class PresetPartSelection;
@@ -47,6 +44,8 @@ class HWUI
   void setUiModeDetail(UIDetail detail);
   void undoableSetFocusAndMode(FocusAndMode focusAndMode);
   void setFocusAndMode(const UIDetail &detail);
+  void setFocusAndMode(const UIMode &mode);
+  void setFocusAndMode(const UIFocus &focus);
   void setFocusAndMode(FocusAndMode focusAndMode);
   FocusAndMode getFocusAndMode() const;
   FocusAndMode getOldFocusAndMode() const;
@@ -54,6 +53,7 @@ class HWUI
   VoiceGroup getCurrentVoiceGroup() const;
   bool isInLoadToPart() const;
 
+  //TODO Remove all non HWUI Related things! -> VoiceGroup, LoadToPart etc
   void setLoadToPart(bool state);
   void setCurrentVoiceGroup(VoiceGroup v);
   void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
