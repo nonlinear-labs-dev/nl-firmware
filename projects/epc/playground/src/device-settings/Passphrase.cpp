@@ -5,7 +5,7 @@
 
 Passphrase::Passphrase(Settings& parent, const std::shared_ptr<Wifi>& shrd_ptr)
     : Setting(parent)
-    : m_wifi(shrd_ptr)
+    , m_wifi(shrd_ptr)
 {
 }
 

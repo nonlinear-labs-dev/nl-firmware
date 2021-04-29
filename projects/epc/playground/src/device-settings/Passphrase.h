@@ -22,5 +22,5 @@ class Passphrase : public Setting
  private:
   void updatePassword(const Glib::ustring& password);
   Glib::ustring m_password;
-  const std::shared_ptr<Wifi> m_wifi
+  const std::shared_ptr<Wifi> m_wifi;
 };

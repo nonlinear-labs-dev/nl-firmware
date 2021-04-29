@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nltools/system/SpawnAsyncCommandLine.h>
+#include <nltools/logging/Log.h>
 
 class Wifi
 {

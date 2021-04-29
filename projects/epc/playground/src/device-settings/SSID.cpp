@@ -5,7 +5,7 @@
 
 SSID::SSID(Settings &parent, const std::shared_ptr<Wifi>& shrd_ptr)
     : Setting(parent)
-    : m_wifi(shrd_ptr)
+    , m_wifi(shrd_ptr)
 {
   parent.getSetting<DeviceName>()->onChange([=](const Setting *s) {
     static const std::string dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-_";
@@ -16,7 +16,8 @@ SSID::SSID(Settings &parent, const std::shared_ptr<Wifi>& shrd_ptr)
       if(dict.find(it) == std::string::npos)
         it = '_';
 
-    setSSIDAndNotifyBBB(ssid);
+//    setSSIDAndNotifyBBB(ssid);
+    updateSSID(ssid);
   });
 }
 
@@ -24,7 +25,8 @@ SSID::~SSID() = default;
 
 void SSID::load(const Glib::ustring &ssid, Initiator initiator)
 {
-  setSSIDAndNotifyBBB(ssid);
+//  setSSIDAndNotifyBBB(ssid);
+  updateSSID(ssid);
 }
 
 Glib::ustring SSID::save() const

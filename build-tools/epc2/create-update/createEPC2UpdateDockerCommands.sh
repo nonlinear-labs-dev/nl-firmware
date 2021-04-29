@@ -38,7 +38,7 @@ setup_wifi() {
     channel=7
     mac-address-blacklist=
     mode=ap
-    ssid=NL-C15-Unit-00000
+    ssid=NL-C15-Unit-WiFi-Test
 
     [wifi-security]
     key-mgmt=wpa-psk

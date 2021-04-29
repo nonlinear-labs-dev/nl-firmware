@@ -21,5 +21,5 @@ class SSID : public Setting
  private:
   void updateSSID(const Glib::ustring& str);
   Glib::ustring m_ssid;
-  const std::shared_ptr<Wifi> m_wifi
+  const std::shared_ptr<Wifi> m_wifi;
 };
