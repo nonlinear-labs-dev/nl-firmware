@@ -472,8 +472,7 @@ void InputEventStage::doSendAftertouchOut(float value)
   auto atLSB = m_options->getAftertouchLSBCC();
   auto atMSB = m_options->getAftertouchMSBCC();
 
-  const auto sendAsCC = atLSB.has_value();
-  if(sendAsCC)
+  if(atLSB.has_value() && atMSB.has_value())
   {
     doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value());
   }
@@ -538,8 +537,15 @@ void InputEventStage::doSendBenderOut(float value)
 {
   auto benderLSB = m_options->getBenderLSBCC();
   auto benderMSB = m_options->getBenderMSBCC();
-  const auto sendAsCC = benderLSB.has_value();
-  if(!sendAsCC)
+
+  if(benderLSB.has_value() && benderMSB.has_value())
+  {
+    using CC_Range_14_Bit = Midi::clipped14BitCCRange;
+    auto lsbCC = benderLSB.value();
+    auto msbCC = benderMSB.value();
+    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
+  }
+  else
   {
     using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
 
@@ -566,13 +572,6 @@ void InputEventStage::doSendBenderOut(float value)
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
     }
-  }
-  else if(benderLSB.has_value() && benderMSB.has_value())
-  {
-    using CC_Range_14_Bit = Midi::clipped14BitCCRange;
-    auto lsbCC = benderLSB.value();
-    auto msbCC = benderMSB.value();
-    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
   }
 }
 
