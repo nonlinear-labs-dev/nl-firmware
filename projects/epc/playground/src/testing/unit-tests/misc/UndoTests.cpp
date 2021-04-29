@@ -1,74 +1,99 @@
 #include <testing/TestHelper.h>
-#include <libundo/undo/Scope.h>
-#include <libundo/undo/Transaction.h>
-#include <http/UpdateDocumentMaster.h>
-#include <thread>
+#include <libundo/undo/TransactionLog.h>
+#include <list>
+
+using namespace std::chrono_literals;
 
 TEST_CASE("Timestamped Undo")
 {
-  using namespace std::chrono_literals;
+  auto now = std::chrono::system_clock::time_point();
+  std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };
 
-  class UpdateDocumentMasterMock : public UpdateDocumentMaster
-  {
-    void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-    {
-    }
+  auto getTime = [&]() {
+    auto offset = timestamps.front();
+    timestamps.pop_front();
+    return now + offset;
   };
 
-  UpdateDocumentMasterMock master;
-  UNDO::Scope scope(&master);
+  UNDO::TransactionLog log(getTime);
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(1));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(3));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(4));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(5));
 
-  scope.startTransaction("a").reset();
-  std::this_thread::sleep_for(1ms);
-  scope.startTransaction("b").reset();
-  std::this_thread::sleep_for(1ms);
-  auto bTime = std::chrono::system_clock::now();
-  scope.startTransaction("c").reset();
-  std::this_thread::sleep_for(1ms);
-  scope.startTransaction("d").reset();
-  auto dTime = std::chrono::system_clock::now();
-  std::this_thread::sleep_for(1ms);
-  scope.startTransaction("e").reset();
-  scope.undo();  // d
-  scope.undo();  // c
-  scope.startTransaction("c1").reset();
-  auto c1Time = std::chrono::system_clock::now();
-  scope.startTransaction("c2").reset();
-  auto lastTime = std::chrono::system_clock::now();
-
-  REQUIRE(scope.findTransactionAt(bTime)->getName() == "b");
-  REQUIRE(scope.findTransactionAt(dTime)->getName() == "d");
-  REQUIRE(scope.findTransactionAt(c1Time)->getName() == "c1");
-  REQUIRE(scope.findTransactionAt(lastTime)->getName() == "c2");
+  CHECK(log.findRecentTransactionAt(now + 1s) == reinterpret_cast<const UNDO::Transaction *>(1));
+  CHECK(log.findRecentTransactionAt(now + 2s) == reinterpret_cast<const UNDO::Transaction *>(1));
+  CHECK(log.findRecentTransactionAt(now + 3s) == reinterpret_cast<const UNDO::Transaction *>(2));
+  CHECK(log.findRecentTransactionAt(now + 4s) == reinterpret_cast<const UNDO::Transaction *>(3));
+  CHECK(log.findRecentTransactionAt(now + 5s) == reinterpret_cast<const UNDO::Transaction *>(4));
+  CHECK(log.findRecentTransactionAt(now + 10s) == reinterpret_cast<const UNDO::Transaction *>(5));
 }
 
 TEST_CASE("Timestamped Undo - find after undo")
 {
-  using namespace std::chrono_literals;
+  auto now = std::chrono::system_clock::time_point();
+  std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };
 
-  class UpdateDocumentMasterMock : public UpdateDocumentMaster
-  {
-    void writeDocument(Writer &writer, tUpdateID knownRevision) const override
-    {
-    }
+  auto getTime = [&]() {
+    auto offset = timestamps.front();
+    timestamps.pop_front();
+    return now + offset;
   };
 
-  UpdateDocumentMasterMock master;
-  UNDO::Scope scope(&master);
+  UNDO::TransactionLog log(getTime);
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(1));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(3));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));  // undo step 2
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(3));  // undo step 3
 
-  scope.startTransaction("a").reset();
-  std::this_thread::sleep_for(1ms);
-  scope.startTransaction("b").reset();
-  std::this_thread::sleep_for(1ms);
-  auto b1Time = std::chrono::system_clock::now();
-  scope.startTransaction("c").reset();
-  std::this_thread::sleep_for(1ms);
-  scope.undo();  // b
-  std::this_thread::sleep_for(1ms);
-  auto b2Time = std::chrono::system_clock::now();
-  scope.startTransaction("c").reset();
-  std::this_thread::sleep_for(1ms);
+  CHECK(log.findRecentTransactionAt(now + 1s) == reinterpret_cast<const UNDO::Transaction *>(1));
+  CHECK(log.findRecentTransactionAt(now + 2s) == reinterpret_cast<const UNDO::Transaction *>(1));
+  CHECK(log.findRecentTransactionAt(now + 3s) == reinterpret_cast<const UNDO::Transaction *>(2));
+  CHECK(log.findRecentTransactionAt(now + 4s) == reinterpret_cast<const UNDO::Transaction *>(3));
+  CHECK(log.findRecentTransactionAt(now + 5s) == reinterpret_cast<const UNDO::Transaction *>(2));
+  CHECK(log.findRecentTransactionAt(now + 10s) == reinterpret_cast<const UNDO::Transaction *>(3));
+}
 
-  REQUIRE(scope.findTransactionAt(b1Time)->getName() == "b");
-  REQUIRE(scope.findTransactionAt(b2Time)->getName() == "b");
+TEST_CASE("Timestamped Undo - duplicate")
+{
+  auto now = std::chrono::system_clock::time_point();
+  std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };
+
+  auto getTime = [&]() {
+    auto offset = timestamps.front();
+    timestamps.pop_front();
+    return now + offset;
+  };
+
+  UNDO::TransactionLog log(getTime);
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(1));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));
+
+  CHECK(timestamps.size() == 3);  // only 2 items popped
+}
+
+TEST_CASE("Timestamped Undo - remove")
+{
+  auto now = std::chrono::system_clock::time_point();
+  std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };
+
+  auto getTime = [&]() {
+    auto offset = timestamps.front();
+    timestamps.pop_front();
+    return now + offset;
+  };
+
+  UNDO::TransactionLog log(getTime);
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(1));
+  log.addEntryIfChanged(reinterpret_cast<const UNDO::Transaction *>(2));
+  CHECK(log.getSize() == 2);
+  log.removeTransaction(reinterpret_cast<const UNDO::Transaction *>(1));
+  CHECK(log.getSize() == 1);
+  log.removeTransaction(reinterpret_cast<const UNDO::Transaction *>(2));
+  CHECK(log.getSize() == 0);
 }

@@ -42,7 +42,6 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
 
     if(auto transaction = scope.findTransactionAt(system_clock::time_point(system_clock::duration(time))))
     {
-      using std::chrono::system_clock;
       auto currentTip = scope.getUndoTransaction();
       scope.undoJump(UNDO::StringTools::buildString(reinterpret_cast<size_t>(transaction)));
       auto p = std::make_unique<Preset>(editBuffer->getParent(), *editBuffer);
