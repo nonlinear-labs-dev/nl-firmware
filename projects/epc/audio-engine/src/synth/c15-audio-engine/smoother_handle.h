@@ -32,12 +32,9 @@ template <size_t Size> class ProtoSmoother
   // starting a segment (_dx: converted time, _dest: destination)
   inline void start(int idx, const float _dx, const float _dest)
   {
-    if(_dest != m_value[idx])
-    {
-      m_start[idx] = m_value[idx];
-      m_diff[idx] = _dest - m_start[idx];
-      m_x[idx] = m_dx[idx] = _dx;
-    }
+    m_start[idx] = m_value[idx];
+    m_diff[idx] = _dest - m_start[idx];
+    m_x[idx] = m_dx[idx] = _dx;
   }
   // syncing
   inline void sync(int idx, const float _dest)
