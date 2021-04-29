@@ -7,8 +7,8 @@ class Wifi
     public:
     Wifi();
 
-    void setSSID(const std::string _newSSID);
-    void setPassphrase(std::string _newPassphrase);
+    void setSSID(const Glib::ustring& _newSSID);
+    void setPassphrase(const Glib::ustring& _newPassphrase);
     void reloadConnection();
     void disableConnection();
     void enableConnection();

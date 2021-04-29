@@ -5,13 +5,13 @@ Wifi::Wifi()
 
 }
 
-void Wifi::setPassphrase(std::string _newPassphrase)
+void Wifi::setPassphrase(const Glib::ustring& _newPassphrase)
 {
     SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "802-11-wireless-security.psk ", _newPassphrase}, [](auto) {}, [](auto) {});
 }
 
 
-void Wifi::setSSID(std::string _newSSID)
+void Wifi::setSSID(const Glib::ustring& _newSSID)
 {
     SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "wifi.ssid", _newSSID}, [](auto) {}, [](auto) {});
 }

@@ -3,8 +3,9 @@
 #include "Passphrase.h"
 #include "Settings.h"
 
-Passphrase::Passphrase(Settings& parent)
+Passphrase::Passphrase(Settings& parent, const std::shared_ptr<Wifi>& shrd_ptr)
     : Setting(parent)
+    : m_wifi(shrd_ptr)
 {
 }
 
@@ -44,6 +45,8 @@ void Passphrase::updatePassword(const Glib::ustring& password)
   auto shortened = m_password.size() <= 8 ? m_password : m_password.substr(0, 8);
   auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(shortened);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
+
+  m_wifi->setPassphrase(m_password);
 
   notify();
 }

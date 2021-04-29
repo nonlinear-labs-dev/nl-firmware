@@ -101,8 +101,8 @@ Settings::Settings(UpdateDocumentMaster *master)
 
   std::shared_ptr<Wifi> localWifi = std::make_shared<Wifi>();
 
-  addSetting("SSID", new SSID(*this), localWifi);
-  addSetting("Passphrase", new Passphrase(*this), localWifi);
+  addSetting("SSID", new SSID(*this, localWifi));
+  addSetting("Passphrase", new Passphrase(*this, localWifi));
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
   addSetting("SignalFlowIndication", new SignalFlowIndicationSetting(*this));
@@ -236,6 +236,7 @@ void Settings::addSetting(const Glib::ustring &key, Setting *s)
 {
   m_settings[key] = tSettingPtr(s);
 }
+
 
 const Settings::tMap &Settings::getSettings() const
 {
