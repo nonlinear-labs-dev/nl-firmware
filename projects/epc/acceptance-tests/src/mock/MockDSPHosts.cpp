@@ -59,7 +59,8 @@ void PassOnKeyDownHost::onKeyDown(const int note, float velocity, InputEventSour
   m_receivedKeyDown = true;
 }
 
-void PassOnKeyDownHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+void PassOnKeyDownHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part,
+                                       DSPInterface::InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
@@ -125,6 +126,11 @@ bool PassOnHWReceived::didReceiveHW() const
   return m_receivedHW;
 }
 
+void PassOnHWReceived::setExpectedHW(int hw)
+{
+  m_id = hw;
+}
+
 void ConfigureableDSPHost::onHWChanged(uint32_t id, float value)
 {
   if(m_onHWChanged)
@@ -164,7 +170,8 @@ void ConfigureableDSPHost::onKeyDownSplit(const int note, float velocity, VoiceG
   if(m_onKeyDownSplit)
     m_onKeyDownSplit(note, velocity, part, from);
 }
-void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part,
+                                        DSPInterface::InputEventSource from)
 {
   if(m_onKeyUpSplit)
     m_onKeyUpSplit(note, velocity, part, from);

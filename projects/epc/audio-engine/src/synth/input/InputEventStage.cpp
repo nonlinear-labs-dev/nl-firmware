@@ -395,7 +395,10 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
       m_midiOut({ mainStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
     }
 
-    m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    if(msbCC != -1)
+    {
+      m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    }
   }
 
   if(secondaryChannel != -1)
@@ -406,7 +409,10 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
       m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
     }
 
-    m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    if(msbCC != -1)
+    {
+      m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    }
   }
 }
 
@@ -545,7 +551,7 @@ void InputEventStage::doSendBenderOut(float value)
     auto msbCC = benderMSB.value();
     doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
   }
-  else
+  else if(m_options->getBenderSetting() != BenderCC::None)
   {
     using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
 

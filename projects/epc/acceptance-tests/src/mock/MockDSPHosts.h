@@ -87,9 +87,10 @@ class PassOnHWReceived : public MockDSPHost
   PassOnHWReceived(int expectedId, float expectedValue);
   void onHWChanged(uint32_t id, float value) override;
   [[nodiscard]] bool didReceiveHW() const;
+  void setExpectedHW(int hw);
 
  private:
   bool m_receivedHW = false;
-  const int m_id;
+  int m_id;
   const float m_value;
 };

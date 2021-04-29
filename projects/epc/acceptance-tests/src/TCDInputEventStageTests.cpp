@@ -186,6 +186,39 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
       CHECK(dsp.didReceiveHW());
     }
 
+    WHEN("Pedal Mapping is None")
+    {
+      settings.setPedal1(PedalCC::None);
+      settings.set14BitSupportEnabled(true);
+
+      WHEN("Pedal value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
+    WHEN("Bender Mapping is None")
+    {
+      settings.setBenderCC(BenderCC::None);
+      settings.set14BitSupportEnabled(true);
+      dsp.setExpectedHW(4);
+
+      WHEN("Bender value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Bender, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
     WHEN("CC01 and CC33 and 14 Bit support Enabled")
     {
       settings.setPedal1(PedalCC::CC01);
