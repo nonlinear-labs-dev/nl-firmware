@@ -71,6 +71,16 @@ class UpdateStream {
         this.socket.onmessage = (event) => this.readMessage(event.data);
     }
 
+    stop() {
+        this.close = true;
+        this.socket?.close();
+
+        if (this.updateTimer != -1) {
+            clearTimeout(this.updateTimer);
+            this.updateTimer = -1;
+        }
+    }
+
     private update(): void {
         this.messageHandler = (e) => this.processInfo(e);
 
@@ -83,6 +93,7 @@ class UpdateStream {
     }
 
     private processInfo(info: any) {
+
         this.timingInfo.serverTime = info.time;
         this.timingInfo.localTime = Date.now() * 1000 * 1000;
 
@@ -115,7 +126,7 @@ class UpdateStream {
     }
 
     private scheduleUpdate() {
-        if (this.updateTimer == -1) {
+        if (this.updateTimer == -1 && !this.close) {
             this.updateTimer = setTimeout(() => {
                 this.updateTimer = -1;
                 this.update();
@@ -138,7 +149,7 @@ class UpdateStream {
     }
 
     private retry(): void {
-        if (this.retryTimer == -1) {
+        if (this.retryTimer == -1 && !this.close) {
             console.log("retry connection");
             this.retryTimer = setTimeout(() => {
                 this.retryTimer = -1;
@@ -163,4 +174,5 @@ class UpdateStream {
     private updateWaveform = false;
     private retryTimer = -1;
     private updateTimer = -1;
+    private close = false;
 }

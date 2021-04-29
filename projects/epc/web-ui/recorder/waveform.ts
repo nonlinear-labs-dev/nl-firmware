@@ -67,6 +67,7 @@ class Waveform extends Draggable {
             var lastId = this.lastBarIdToShow != -1 ? this.lastBarIdToShow : this.c15.getBars().last().id;
             var firstBarId = lastId - c.width * this.zoom;
             var playPos = this.isDragging() ? this.dragPosition : this.c15.getCurrentPlayPosition();
+            playPos = Math.min(Math.max(playPos, this.c15.getBars().first().id), lastId);
             playPosIndicator.style.left = (playPos - firstBarId) / this.zoom + "px";
             playPosIndicator.style.visibility = playPos > 0 ? "visible" : "hidden";
 

@@ -72,7 +72,7 @@ nlohmann::json Recorder::api(const nlohmann::json &msg)
     else if(name == "query-frames")
       return queryFrames(args.at("begin"), args.at("end"));
     else if(name == "reset")
-      m_storage->reset();
+      return m_storage->reset();
   }
   return {};
 }

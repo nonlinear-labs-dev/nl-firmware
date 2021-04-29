@@ -3,65 +3,65 @@
 #include "FlacFrameStorage.h"
 
 RecorderInput::RecorderInput(FlacFrameStorage *storage, int sr)
-    : storage(storage)
-    , encoder(std::make_unique<FlacEncoder>(
+    : m_storage(storage)
+    , m_encoder(std::make_unique<FlacEncoder>(
           sr, [this, storage](auto frame, auto isHeader) { storage->push(std::move(frame), isHeader); }))
-    , ring(sr)
-    , bgTask(std::async(std::launch::async, [this] { background(); }))
+    , m_ring(sr)
+    , m_bgTask(std::async(std::launch::async, [this] { background(); }))
 {
 }
 
 RecorderInput::~RecorderInput()
 {
-  close = true;
-  cond.notify_one();
-  bgTask.wait();
+  m_close = true;
+  m_cond.notify_one();
+  m_bgTask.wait();
 }
 
 void RecorderInput::process(SampleFrame *frames, size_t numFrames)
 {
-  ring.push(frames, numFrames);
-  cond.notify_one();
+  m_ring.push(frames, numFrames);
+  m_cond.notify_one();
 }
 
 void RecorderInput::togglePause()
 {
-  std::unique_lock<std::mutex> l(mutex);
-  paused = !paused;
+  std::unique_lock<std::mutex> l(m_mutex);
+  m_paused = !m_paused;
 
-  if(!paused)
+  if(!m_paused)
   {
-    ring.reset();
-    encoder->resume();
+    m_ring.reset();
+    m_encoder->resume();
   }
 }
 
 nlohmann::json RecorderInput::generateInfo()
 {
-  return { { "paused", paused } };
+  return { { "paused", m_paused } };
 }
 
 void RecorderInput::TEST_waitForSettling() const
 {
-  while(ring.avail() >= FlacEncoder::flacFrameSize)
+  while(m_ring.avail() >= FlacEncoder::flacFrameSize)
     std::this_thread::yield();
 }
 
 void RecorderInput::background()
 {
-  std::unique_lock<std::mutex> l(mutex);
+  std::unique_lock<std::mutex> l(m_mutex);
   SampleFrame samples[FlacEncoder::flacFrameSize];
 
-  while(!close)
+  while(!m_close)
   {
-    cond.wait(l);
+    m_cond.wait(l);
 
-    while(!close && ring.avail() >= FlacEncoder::flacFrameSize)
+    while(!m_close && m_ring.avail() >= FlacEncoder::flacFrameSize)
     {
-      auto s = ring.pop(samples, FlacEncoder::flacFrameSize);
+      auto s = m_ring.pop(samples, FlacEncoder::flacFrameSize);
 
-      if(!paused)
-        encoder->push(samples, s);
+      if(!m_paused)
+        m_encoder->push(samples, s);
     }
   }
 }

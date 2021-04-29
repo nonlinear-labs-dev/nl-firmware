@@ -43,6 +43,7 @@
 #include <presets/Preset.h>
 #include <device-settings/SplitPointSyncParameters.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
+#include <libundo/undo/ContinuousTransaction.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
@@ -445,6 +446,9 @@ void EditBuffer::undoableLoadSelectedPreset(UNDO::Transaction *transaction, Voic
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
 {
+  if(auto p = dynamic_cast<UNDO::ContinuousTransaction *>(transaction))
+    p->stopContinuation();  // if transaction was created for a select operation, direct-load has to stop replacing the transaction
+
   auto hwui = Application::get().getHWUI();
   auto parameterFocusLock = hwui->getParameterFocusLockGuard();
 
