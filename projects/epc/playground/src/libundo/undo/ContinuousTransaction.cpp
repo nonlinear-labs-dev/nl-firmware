@@ -41,12 +41,12 @@ namespace UNDO
 
   void ContinuousTransaction::stopContinuation()
   {
-    m_continueing = false;
+    m_continuing = false;
   }
 
   bool ContinuousTransaction::isContinueing() const
   {
-    return m_continueing;
+    return m_continuing;
   }
 
   void ContinuousTransaction::implUndoAction() const
