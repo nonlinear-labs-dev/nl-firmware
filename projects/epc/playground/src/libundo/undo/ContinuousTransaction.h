@@ -35,7 +35,7 @@ namespace UNDO
 
    private:
     void *m_id = nullptr;
-    bool m_continueing = true;
+    bool m_continuing = true;
     steady_clock::time_point m_creationTimestamp;
     std::unique_ptr<ContinuousTransaction> m_closingCommand = nullptr;
     bool m_isNested = false;
