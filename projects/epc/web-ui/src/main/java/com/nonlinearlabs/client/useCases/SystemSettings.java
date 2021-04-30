@@ -187,6 +187,12 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("HighVeloCC", netify(b.name()));
 	}
 
+	public void set14BitSupport(BooleanValues b)
+	{
+		SetupModel.get().systemSettings.enable14BitSupport.setValue(b);
+		NonMaps.theMaps.getServerProxy().setSetting("HighResCC", netify(b.name()));
+	}
+
 	public void setReceiveMidiChannelSplit(MidiReceiveChannelSplit midiReceiveChannelSplit) {
 		SetupModel.get().systemSettings.receiveChannelSplit.setValue(midiReceiveChannelSplit);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveChannelSplit", midiReceiveChannelSplit.name());

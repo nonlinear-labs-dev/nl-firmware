@@ -24,18 +24,15 @@ namespace UNDO
       , m_name(name)
       , m_isClosed(false)
       , m_depth(depth)
-      , m_timeStamps({ std::chrono::system_clock::now() })
   {
     DebugLevel::info("Creating UNDO::Transaction:", name);
     numTransactionsCreated++;
   }
 
-  void Transaction::addTimestamp()
+  Transaction::~Transaction()
   {
-    m_timeStamps.push_back(std::chrono::system_clock::now());
+    m_scope.onTransactionDestroyed(this);
   }
-
-  Transaction::~Transaction() = default;
 
   int Transaction::getAndResetNumTransactions()
   {
@@ -327,33 +324,6 @@ namespace UNDO
     }
 
     return i;
-  }
-
-  const Transaction *Transaction::findTransactionAt(system_clock::time_point timestamp) const
-  {
-    if(m_timeStamps[0] > timestamp)
-      return nullptr;
-
-    const Transaction *ret = this;
-
-    for(const auto &s : m_successors)
-    {
-      if(auto p = s->findTransactionAt(timestamp))
-      {
-        auto inverted = [](auto a, auto b) { return a > b; };
-        auto retLowest = std::upper_bound(ret->m_timeStamps.rbegin(), ret->m_timeStamps.rend(), timestamp, inverted);
-        auto pLowest = std::upper_bound(p->m_timeStamps.rbegin(), p->m_timeStamps.rend(), timestamp, inverted);
-
-        if(retLowest != ret->m_timeStamps.rend() && pLowest != p->m_timeStamps.rend())
-        {
-          if(*retLowest < *pLowest)
-          {
-            ret = p;
-          }
-        }
-      }
-    }
-    return ret;
   }
 
   bool Transaction::isDefaultRouteLeft() const

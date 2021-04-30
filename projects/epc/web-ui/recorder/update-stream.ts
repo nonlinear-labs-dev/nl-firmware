@@ -73,7 +73,8 @@ class UpdateStream {
 
     stop() {
         this.close = true;
-        this.socket?.close();
+        if (this.socket)
+            this.socket.close();
 
         if (this.updateTimer != -1) {
             clearTimeout(this.updateTimer);

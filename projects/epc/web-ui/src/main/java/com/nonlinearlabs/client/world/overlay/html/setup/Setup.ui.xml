@@ -526,6 +526,15 @@
 							<g:RadioButton ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
 						</div>
 					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable High-Res. CC (enable LSB)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="enable14Bit" name="rad_14BitCC" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="disable14Bit" name="rad_14BitCC" value="false"></g:RadioButton>
+						</div>
+					</div>
 				</div>
 			</div>
 

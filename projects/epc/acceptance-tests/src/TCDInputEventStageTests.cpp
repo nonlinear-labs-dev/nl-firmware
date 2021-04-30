@@ -181,15 +181,85 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
 
     THEN("DSP got notified")
     {
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) });
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
       CHECK(dsp.didReceiveHW());
     }
 
-    WHEN("CC01 and CC33")
+    WHEN("Pedal Mapping is None")
+    {
+      settings.setPedal1(PedalCC::None);
+      settings.set14BitSupportEnabled(true);
+
+      WHEN("Pedal value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
+    WHEN("Bender Mapping is None")
+    {
+      settings.setBenderCC(BenderCC::None);
+      settings.set14BitSupportEnabled(true);
+      dsp.setExpectedHW(4);
+
+      WHEN("Bender value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Bender, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
+    WHEN("Ribbon Mapping is None")
+    {
+      settings.setRibbon1(RibbonCC::None);
+      settings.set14BitSupportEnabled(true);
+      dsp.setExpectedHW(6);
+
+      WHEN("Ribbon value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Ribbon1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
+    WHEN("Aftertouch Mapping is None")
+    {
+      settings.setAftertouchCC(AftertouchCC::None);
+      settings.set14BitSupportEnabled(true);
+      dsp.setExpectedHW(5);
+
+      WHEN("Aftertouch value is received from Internal")
+      {
+        eventStage.onTCDMessage(
+            { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+        THEN("No midi got send")
+        {
+          CHECK(sendMessages.empty());
+        }
+      }
+    }
+
+    WHEN("CC01 and CC33 and 14 Bit support Enabled")
     {
       settings.setPedal1(PedalCC::CC01);
       settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) });
+      settings.set14BitSupportEnabled(true);
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
 
       THEN("MIDI got send")
       {
@@ -212,11 +282,34 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
       }
     }
 
+    WHEN("CC01 and CC33 and 14 Bit support Disabled")
+    {
+      settings.setPedal1(PedalCC::CC01);
+      settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
+      settings.set14BitSupportEnabled(false);
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
+
+      THEN("MIDI got send")
+      {
+        REQUIRE(sendMessages.size() == 2);
+
+        CHECK(sendMessages[0].rawBytes[0] == 0xB0);
+        CHECK(sendMessages[0].rawBytes[1] == 1);
+        CHECK(sendMessages[0].rawBytes[2] == 127);
+
+        CHECK(sendMessages[1].rawBytes[0] == 0xB1);
+        CHECK(sendMessages[1].rawBytes[1] == 1);
+        CHECK(sendMessages[1].rawBytes[2] == 127);
+      }
+    }
+
     WHEN("CC02 and CC34")
     {
       settings.setPedal1(PedalCC::CC02);
       settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
-      eventStage.onTCDMessage({ BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) });
+      eventStage.onTCDMessage(
+          { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) });
 
       THEN("MIDI got send")
       {

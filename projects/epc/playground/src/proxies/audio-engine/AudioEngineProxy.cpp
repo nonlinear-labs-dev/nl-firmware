@@ -43,6 +43,7 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <presets/Preset.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
+#include <device-settings/midi/mappings/Enable14BitSupport.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -51,49 +52,41 @@ AudioEngineProxy::AudioEngineProxy()
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectMidiSettingsToAudioEngineMessage));
 
-  receive<HardwareSourceChangedNotification>(
-      EndPoint::Playground,
-      [this](auto &msg)
-      {
-        auto playController = Application::get().getPlaycontrollerProxy();
-        auto id = msg.hwSource;
-        auto value = msg.position;
-        auto param = playController->findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
-        if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
-        {
-          playController->notifyRibbonTouch(p->getID().getNumber());
-          p->onChangeFromPlaycontroller(value);
-        }
-      });
+  receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
+    auto playController = Application::get().getPlaycontrollerProxy();
+    auto id = msg.hwSource;
+    auto value = msg.position;
+    auto param = playController->findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
+    if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+    {
+      playController->notifyRibbonTouch(p->getID().getNumber());
+      p->onChangeFromPlaycontroller(value);
+    }
+  });
 
   const auto &pm = Application::get().getPresetManager();
 
-  receive<Midi::ProgramChangeMessage>(EndPoint::Playground,
-                                      [=](const auto &msg)
-                                      {
-                                        if(auto lock = m_programChangeRecursion.lock())
-                                          if(auto bank = pm->findMidiSelectedBank())
-                                          {
-                                            setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
-                                            BankUseCases useCase(bank);
-                                            useCase.selectPreset(msg.program);
-                                          }
-                                      });
-
-  receive<Midi::HardwareChangeMessage>(
-      EndPoint::Playground,
-      [](const auto &msg)
+  receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
+    if(auto lock = m_programChangeRecursion.lock())
+      if(auto bank = pm->findMidiSelectedBank())
       {
-        if(Application::exists())
-        {
-          auto eb = Application::get().getPresetManager()->getEditBuffer();
-          if(auto parameter
-             = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
-          {
-            parameter->onChangeFromPlaycontroller(static_cast<tControlPositionValue>(msg.value));
-          }
-        }
-      });
+        setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
+        BankUseCases useCase(bank);
+        useCase.selectPreset(msg.program);
+      }
+  });
+
+  receive<Midi::HardwareChangeMessage>(EndPoint::Playground, [](const auto &msg) {
+    if(Application::exists())
+    {
+      auto eb = Application::get().getPresetManager()->getEditBuffer();
+      if(auto parameter
+         = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
+      {
+        parameter->onChangeFromPlaycontroller(static_cast<tControlPositionValue>(msg.value));
+      }
+    }
+  });
 
   pm->onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
 }
@@ -509,7 +502,7 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
       MidiReceiveAftertouchCurveSetting, MidiReceiveVelocityCurveSetting, MidiSendChannelSetting,
       MidiSendChannelSplitSetting, MidiSendProgramChangesSetting, MidiSendNotesSetting, MidiSendControllersSetting,
       PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>, RibbonCCMapping<1>,
-      RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC>(settings);
+      RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC, Enable14BitSupport>(settings);
 }
 
 void AudioEngineProxy::scheduleMidiSettingsMessage()
@@ -545,6 +538,7 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
         msg.bendercc = settings->getSetting<BenderCCMapping>()->get();
 
         msg.highVeloCCEnabled = settings->getSetting<EnableHighVelocityCC>()->get();
+        msg.highResCCEnabled = settings->getSetting<Enable14BitSupport>()->get();
 
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       });
