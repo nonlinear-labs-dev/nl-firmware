@@ -124,4 +124,7 @@ public class MidiSettings {
     public AftertouchMapping aftertouchMapping = new AftertouchMapping();
     public OnOffOption highVelocityCC = new OnOffOption();
     public OnOffOption enable14BitCC = new OnOffOption();
+
+    //FLAC
+    public OnOffOption autoStartRecorder = new OnOffOption();
 }

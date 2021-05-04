@@ -193,6 +193,16 @@ namespace nltools
         int m_shift;
       };
 
+      struct StartStopRecorderMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::StartStopRecorder;
+        }
+
+        bool m_paused;
+      };
+
       struct PresetGlitchMessage
       {
         constexpr static MessageType getType()

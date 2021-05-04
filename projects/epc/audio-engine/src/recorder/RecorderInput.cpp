@@ -36,6 +36,18 @@ void RecorderInput::togglePause()
   }
 }
 
+void RecorderInput::setPaused(bool p)
+{
+  std::unique_lock<std::mutex> l(m_mutex);
+  m_paused = p;
+
+  if(!m_paused)
+  {
+    m_ring.reset();
+    m_encoder->resume();
+  }
+}
+
 nlohmann::json RecorderInput::generateInfo()
 {
   return { { "paused", m_paused } };

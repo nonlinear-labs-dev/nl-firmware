@@ -90,6 +90,7 @@
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
+#include <device-settings/flac/AutoStartRecorderSetting.h>
 
 namespace NavTree
 {
@@ -857,6 +858,15 @@ namespace NavTree
     }
   };
 
+  struct FlacSettings : InnerNode
+  {
+    FlacSettings(InnerNode* parent)
+    :InnerNode(parent, "Recorder Settings")
+    {
+      children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recorder"));
+    }
+  };
+
   struct Setup : InnerNode
   {
     Setup()
@@ -865,6 +875,7 @@ namespace NavTree
       children.emplace_back(new DeviceSettings(this));
       children.emplace_back(new HardwareUI(this));
       children.emplace_back(new MidiSettings(this));
+      children.emplace_back(new FlacSettings(this));
       children.emplace_back(new SystemInfo(this));
       children.emplace_back(new About(this));
       children.emplace_back(new Backup(this));
