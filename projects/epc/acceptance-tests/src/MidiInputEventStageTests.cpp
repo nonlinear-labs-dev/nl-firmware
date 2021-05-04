@@ -186,8 +186,18 @@ TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
   InputEventStage eventStage(
       &dsp, &settings, [] {}, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); });
 
-  WHEN("Send 14 Bit")
+  WHEN("Send 14 Bit with enabled 14 bit support")
   {
+    settings.set14BitSupportEnabled(true);
+    eventStage.onMIDIMessage({ 0xB0, 52, 127 });
+    eventStage.onMIDIMessage({ 0xB0, 20, 127 });
+    CHECK(dsp.didReceiveHW());
+  }
+
+
+  WHEN("Send 14 Bit with disbled 14 bit support")
+  {
+    settings.set14BitSupportEnabled(false);
     eventStage.onMIDIMessage({ 0xB0, 52, 127 });
     eventStage.onMIDIMessage({ 0xB0, 20, 127 });
     CHECK(dsp.didReceiveHW());

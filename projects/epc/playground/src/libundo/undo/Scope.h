@@ -12,6 +12,8 @@ namespace UNDO
   class TransactionCreationScope;
   class Transaction;
 
+  class TransactionLog;
+
   class Scope : public ContentSection
   {
    public:
@@ -25,10 +27,12 @@ namespace UNDO
     explicit Scope(UpdateDocumentContributor *parent);
     ~Scope() override;
 
+    tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
+
     void reset();
 
     template <typename... tArgs>
-    tTransactionScopePtr startTransaction(const Glib::ustring &format, const tArgs &...args)
+    tTransactionScopePtr startTransaction(const Glib::ustring &format, const tArgs &... args)
     {
       return startTransaction(StringTools::formatString(format, args...));
     }
@@ -36,13 +40,13 @@ namespace UNDO
     template <typename... tArgs>
 
     tTransactionScopePtr startContinuousTransaction(void *id, std::chrono::milliseconds timeout,
-                                                    const Glib::ustring &format, const tArgs &...args)
+                                                    const Glib::ustring &format, const tArgs &... args)
     {
       return startContinuousTransaction(id, timeout, StringTools::formatString(format, args...));
     }
 
     template <typename... tArgs>
-    tTransactionScopePtr startContinuousTransaction(void *id, const Glib::ustring &format, const tArgs &...args)
+    tTransactionScopePtr startContinuousTransaction(void *id, const Glib::ustring &format, const tArgs &... args)
     {
       return startContinuousTransaction(id, getStandardContinuousTransactionTimeout(),
                                         StringTools::formatString(format, args...));
@@ -83,6 +87,8 @@ namespace UNDO
 
     [[nodiscard]] const Transaction *findTransactionAt(std::chrono::system_clock::time_point timestamp) const;
 
+    void onTransactionDestroyed(const Transaction *p);
+
    protected:
     virtual void onTransactionAdded();
     virtual void onAddTransaction(Transaction *transaction);
@@ -99,6 +105,8 @@ namespace UNDO
     friend class Transaction;
     void onTransactionUndoStart();
     void onTransactionRedone(const Transaction *transaction);
+
+    std::unique_ptr<TransactionLog> m_transactionLog;
 
     UndoActions m_undoActions;
 

@@ -229,7 +229,16 @@ public class MidiSettingsProvider {
             }
             return true;
         });
-	}
+	
+        s.enable14BitSupport.onChange(t -> {
+            boolean val = t.equals(BooleanValues.on);
+            if(settings.enable14BitCC.value != val) {
+                settings.enable14BitCC.value = val;
+                notifyClients();
+            }
+            return true;
+        });
+    }
 
 	protected void notifyClients() {
 		clients.removeIf(listener -> !listener.apply(settings));

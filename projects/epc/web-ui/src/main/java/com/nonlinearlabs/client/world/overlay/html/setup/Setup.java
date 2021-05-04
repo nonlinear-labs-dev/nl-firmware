@@ -82,7 +82,7 @@ public class Setup extends Composite {
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
 			receiveNotesOff, receiveControllersOn, receiveControllersOff, sendPCOn, sendPCOff, sendNotesOn, 
 			sendNotesOff, sendControllersOn, sendControllersOff, localNotesOn, 
-			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff;
+			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -176,6 +176,7 @@ public class Setup extends Composite {
 		fillRadioButtons(localNotesOn, localNotesOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(localControllersOn, localControllersOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 	}
 
 	public void connectEventHandlers() {
@@ -286,6 +287,8 @@ public class Setup extends Composite {
 		pcBanks.addChangeHandler(e -> {
 			NonMaps.get().getServerProxy().selectMidiBank(midiBankIndexToBankMap.get(pcBanks.getSelectedIndex()).uuid.getValue());
 		});
+		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
+		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));
 	}
 
 	public void connectUpdate() {
@@ -324,7 +327,6 @@ public class Setup extends Composite {
 		int index = 0;
 		for(String uuid: map.keySet()) {
 			Bank b = map.get(uuid);
-			GWT.log(b != null ? "B exists" : "B null");
 			String name = (index + 1) + "-" + b.name.getValue();
 			pcBanks.addItem(name, uuid);
 			midiBankIndexToBankMap.put(index, b);
@@ -441,6 +443,8 @@ public class Setup extends Composite {
 		benderMapping.setSelectedIndex(t.benderMapping.selected);
 		highVeloCCOn.setValue(t.highVelocityCC.value);
 		highVeloCCOff.setValue(!t.highVelocityCC.value);
+		enable14Bit.setValue(t.enable14BitCC.value);
+		disable14Bit.setValue(!t.enable14BitCC.value);
 	}
 
 	public void switchPage(Button btn, DivElement page) {

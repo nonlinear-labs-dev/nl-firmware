@@ -69,6 +69,7 @@
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
+#include <device-settings/midi/mappings/Enable14BitSupport.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -141,6 +142,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("BenderMapping", new BenderCCMapping(*this));
   addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
   addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
+  addSetting("HighResCC", new Enable14BitSupport(*this));
 }
 
 Settings::~Settings()
@@ -252,15 +254,17 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("settings", Attribute("changed", changed), [&]() {
-    if(changed)
-    {
-      for(auto &setting : m_settings)
-      {
-        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
-      }
-    }
-  });
+  writer.writeTag("settings", Attribute("changed", changed),
+                  [&]()
+                  {
+                    if(changed)
+                    {
+                      for(auto &setting : m_settings)
+                      {
+                        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
+                      }
+                    }
+                  });
 }
 
 void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
