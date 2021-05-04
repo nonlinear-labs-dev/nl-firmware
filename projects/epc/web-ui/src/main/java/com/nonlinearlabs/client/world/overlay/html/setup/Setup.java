@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.html.setup;
 
 import java.util.Map;
+import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -314,7 +315,7 @@ public class Setup extends Composite {
 		});
 	}
 
-	private Map<Integer, Bank> midiBankIndexToBankMap;
+	private Map<Integer, Bank> midiBankIndexToBankMap = new HashMap<Integer, Bank>();
 
 	private void applyBanks(Map<String, Bank> map) {
 		pcBanks.clear();
@@ -323,7 +324,9 @@ public class Setup extends Composite {
 		int index = 0;
 		for(String uuid: map.keySet()) {
 			Bank b = map.get(uuid);
-			pcBanks.addItem(b.name.getValue(), uuid);
+			GWT.log(b != null ? "B exists" : "B null");
+			String name = (index + 1) + "-" + b.name.getValue();
+			pcBanks.addItem(name, uuid);
 			midiBankIndexToBankMap.put(index, b);
 			if(b.isMidiBank.getBool())
 				pcBanks.setSelectedIndex(index);
