@@ -12,6 +12,9 @@
 #include <parameters/MacroControlParameter.h>
 #include <nltools/threading/Throttler.h>
 #include <giomm.h>
+#include <fstream>
+#include <nltools/system/AsyncCommandLine.h>
+#include <nltools/system/SpawnAsyncCommandLine.h>
 
 HTTPServer::HTTPServer()
     : m_contentManager()
@@ -39,6 +42,7 @@ void HTTPServer::startServer()
 void HTTPServer::initializeServer()
 {
   soup_server_add_handler(m_server, nullptr, reinterpret_cast<SoupServerCallback>(serverCallback), this, nullptr);
+
   soup_server_add_websocket_handler(m_server, "/ws", nullptr, nullptr,
                                     reinterpret_cast<SoupServerWebsocketCallback>(&HTTPServer::webSocket), this,
                                     nullptr);
@@ -101,6 +105,27 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
     m_servedStreams.push_back(file);
     file->startServing();
   }
+  else if(path == "/C15-Update")
+  {
+    auto req = std::dynamic_pointer_cast<HTTPRequest>(request);
+    const auto outFile = "/tmp/nonlinear-c15-update.tar";
+    {
+      std::ofstream out(outFile, std::ofstream::binary);
+      if(out.is_open())
+      {
+        for(auto i = 0; i < req->getFlattenedBuffer()->length; i++)
+        {
+          out << req->getFlattenedBuffer()->data[i];
+        }
+      }
+    }
+    std::vector<std::string> commands;
+    commands.emplace_back("scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update &&");
+    commands.emplace_back("ssh root@192.168.10.11 'cd /update && tar xf nonlinear-c15-update.tar && chmod +x "
+                          "/update/run.sh && /bin/sh /update/run.sh'");
+    SpawnAsyncCommandLine::spawn(
+        commands, [](auto s) { nltools::Log::warning(s); }, [](auto e) { nltools::Log::error(e); });
+  }
   else
   {
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
@@ -158,14 +183,16 @@ void HTTPServer::onMessageFinished(SoupMessage *msg)
 {
   bool found = false;
 
-  m_servedStreams.remove_if([&](tServedStream file) {
-    if(file->matches(msg))
-    {
-      found = true;
-      return true;
-    }
-    return false;
-  });
+  m_servedStreams.remove_if(
+      [&](tServedStream file)
+      {
+        if(file->matches(msg))
+        {
+          found = true;
+          return true;
+        }
+        return false;
+      });
 
   if(!found)
     m_contentManager.onSectionMessageFinished(msg);

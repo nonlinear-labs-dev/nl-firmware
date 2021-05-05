@@ -24,8 +24,13 @@ HTTPRequest::HTTPRequest(SoupMessage *msg)
     {
       auto header = soup_message_headers_get_one(msg->request_headers, "Content-Type");
       bool containsBlob = header && (g_strcmp0(header, "application/binary") == 0);
+      bool containsTar = header && (g_strcmp0(header, "application/tar.gz") == 0);
 
-      if(!containsBlob)
+      if(containsTar)
+      {
+
+      }
+      else if(!containsBlob)
       {
         if(buffer->length < 10 * 1024 * 1024)
         {

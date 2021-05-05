@@ -1,18 +1,27 @@
 package com.nonlinearlabs.client.world.overlay.html.setup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
@@ -53,6 +62,9 @@ public class Setup extends Composite {
 
 	@UiField
 	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, systemInfoButton, aboutButton;
+
+	@UiField
+	FileUpload updateFile;
 
 	@UiField
 	DivElement deviceSettings, uiSettings, midiSettings, systemInfo, about;
@@ -279,7 +291,38 @@ public class Setup extends Composite {
 		highVeloCCOff.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.off));
 		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
 		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));
+
+
+		updateFile.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent e) {
+				loadUpdateFile(e.getNativeEvent(), new TarUploadedHandler(){
+					@Override
+					public void onTarUploaded(JavaScriptObject buffer) {
+						NonMaps.theMaps.getServerProxy().uploadUpdate(buffer);
+					}
+				});
+			}
+		});
 	}
+
+	private interface TarUploadedHandler {
+		void onTarUploaded(JavaScriptObject buffer);
+	}
+
+	private native void loadUpdateFile(NativeEvent evt, TarUploadedHandler receiver) /*-{
+		var files = evt.target.files;
+		if (files != null && files.length > 0) {
+		var file = files[0];
+		var reader = new FileReader();
+		
+		reader.onload = function(e) {
+		var zip = reader.result;
+		receiver.@com.nonlinearlabs.client.world.overlay.html.setup.Setup.TarUploadedHandler::onTarUploaded(Lcom/google/gwt/core/client/JavaScriptObject;)(zip);
+		}
+		reader.readAsArrayBuffer(file);
+		}
+		}-*/;
 
 	public void connectUpdate() {
 		DeviceSettingsProvider.get().register(t -> {

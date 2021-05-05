@@ -940,6 +940,26 @@ public class ServerProxy {
 																	oReq.send(blob);
 																	}-*/;
 
+	public native void uploadUpdate(JavaScriptObject buffer) /*-{
+																	
+																		var oReq = new XMLHttpRequest();
+																		oReq.open("POST", "/C15-Update", true);
+																		oReq.setRequestHeader("Content-Type", "application/binary");
+																		
+																		oReq.onreadystatechange = function() {
+																		if (oReq.readyState == 4 && oReq.status == 200) {
+																		var ret = oReq.responseText;
+																		var sub = "Invalid";
+																		if (ret.includes(sub)) {
+																		alert(oReq.responseText);
+																		}
+																		}
+																		}
+																		
+																		var blob = new Blob([ buffer ]);
+																		oReq.send(blob);
+																		}-*/;
+
 	public void onBankClusterMoved(List<Bank> changedBanks) {
 		String csv = "";
 		for (Bank curr : changedBanks) {
