@@ -25,10 +25,6 @@ namespace nltools
     {
       return std::string("Caught exception ") + e.what();
     }
-    catch(const std::ostream::failure &f)
-    {
-      return std::string("Caught exception ") + f.what();
-    }
     catch(...)
     {
       return "Unknown Exception!";
