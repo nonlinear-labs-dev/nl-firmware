@@ -136,8 +136,8 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
 
       std::vector<std::string> commands;
       nltools::Log::error(__LINE__, __FILE__);
-      commands.emplace_back("scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update &&");
-      commands.emplace_back("ssh root@192.168.10.11 'cd /update && tar xf nonlinear-c15-update.tar && chmod +x "
+      commands.emplace_back("scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update && ssh root@192.168.10.11 "
+                            "'cd /update && tar xf nonlinear-c15-update.tar && chmod +x "
                             "/update/run.sh && /bin/sh /update/run.sh'");
       nltools::Log::error(__LINE__, __FILE__);
       SpawnAsyncCommandLine::spawn(
