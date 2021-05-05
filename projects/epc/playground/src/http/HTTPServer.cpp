@@ -107,26 +107,40 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
   }
   else if(path == "/C15-Update")
   {
-    auto req = std::dynamic_pointer_cast<HTTPRequest>(request);
-    const auto outFile = "/tmp/nonlinear-c15-update.tar";
+    try
     {
-      std::ofstream out(outFile, std::ofstream::binary);
-      if(out.is_open())
+      auto req = std::dynamic_pointer_cast<HTTPRequest>(request);
+      const auto outFile = "/tmp/nonlinear-c15-update.tar";
       {
-        for(auto i = 0; i < req->getFlattenedBuffer()->length; i++)
+        std::ofstream out(outFile, std::ofstream::binary);
+        if(out.is_open())
         {
-          out << req->getFlattenedBuffer()->data[i];
+          for(auto i = 0; i < req->getFlattenedBuffer()->length; i++)
+          {
+            out << req->getFlattenedBuffer()->data[i];
+          }
+        }
+        else
+        {
+          nltools::Log::error("could not open  /tmp to write");
         }
       }
-    }
-    request->okAndComplete();
+      request->okAndComplete();
 
-    std::vector<std::string> commands;
-    commands.emplace_back("scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update &&");
-    commands.emplace_back("ssh root@192.168.10.11 'cd /update && tar xf nonlinear-c15-update.tar && chmod +x "
-                          "/update/run.sh && /bin/sh /update/run.sh'");
-    SpawnAsyncCommandLine::spawn(
-        commands, [](auto s) { nltools::Log::warning(s); }, [](auto e) { nltools::Log::error(e); });
+      std::vector<std::string> commands;
+      commands.emplace_back("scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update &&");
+      commands.emplace_back("ssh root@192.168.10.11 'cd /update && tar xf nonlinear-c15-update.tar && chmod +x "
+                            "/update/run.sh && /bin/sh /update/run.sh'");
+      SpawnAsyncCommandLine::spawn(
+          commands, [](auto s) { nltools::Log::warning(s); }, [](auto e) { nltools::Log::error(e); });
+    }
+    catch(...)
+    {
+      request->okAndComplete();
+
+      auto currentE = std::current_exception();
+      nltools::Log::error(nltools::handle_eptr(currentE));
+    }
   }
   else
   {

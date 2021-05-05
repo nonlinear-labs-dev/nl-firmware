@@ -25,6 +25,10 @@ namespace nltools
     {
       return std::string("Caught exception ") + e.what();
     }
+    catch(const std::ostream::failure &f)
+    {
+      return std::string("Caught exception ") + f.what();
+    }
     catch(...)
     {
       return "Unknown Exception!";
@@ -32,7 +36,7 @@ namespace nltools
     return "";
   }
 
-  template <typename... tArgs> void throwException(const tArgs &... args)
+  template <typename... tArgs> void throwException(const tArgs &...args)
   {
     throw std::runtime_error(nltools::string::concat(args...));
   }
