@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
@@ -299,11 +300,24 @@ public class Setup extends Composite {
 				loadUpdateFile(e.getNativeEvent(), new TarUploadedHandler(){
 					@Override
 					public void onTarUploaded(JavaScriptObject buffer) {
-						NonMaps.theMaps.getServerProxy().uploadUpdate(buffer);
+						NonMaps.theMaps.getServerProxy().uploadUpdate(buffer, new UploadDoneReceiver(){
+
+							@Override
+							public void onUploadFinished(XMLHttpRequest answer) {
+								GWT.log("Status: " + answer.getStatus());
+								GWT.log("Status: " + answer.getStatusText());
+								GWT.log("Response: " + answer.getResponseText());
+							}
+							
+						});
 					}
 				});
 			}
 		});
+	}
+
+	public interface UploadDoneReceiver {
+		void onUploadFinished(XMLHttpRequest answer);
 	}
 
 	private interface TarUploadedHandler {

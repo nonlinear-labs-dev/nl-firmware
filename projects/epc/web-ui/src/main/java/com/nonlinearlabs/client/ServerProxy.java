@@ -42,6 +42,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.client.world.overlay.html.setup.Setup.UploadDoneReceiver;
 
 public class ServerProxy {
 
@@ -940,7 +941,7 @@ public class ServerProxy {
 																	oReq.send(blob);
 																	}-*/;
 
-	public native void uploadUpdate(JavaScriptObject buffer) /*-{
+	public native void uploadUpdate(JavaScriptObject buffer, UploadDoneReceiver uploadDoneReceiver) /*-{
 																	
 																		var oReq = new XMLHttpRequest();
 																		oReq.open("POST", "/C15-Update", true);
@@ -949,6 +950,7 @@ public class ServerProxy {
 																		oReq.onreadystatechange = function() {
 																		if (oReq.readyState == 4 && oReq.status == 200) {
 																		var ret = oReq.responseText;
+																		uploadDoneReceiver.@com.nonlinearlabs.client.world.overlay.html.setup.Setup.UploadDoneReceiver::onUploadFinished(Lcom/google/gwt/xhr/client/XMLHttpRequest;)(oReq);
 																		var sub = "Invalid";
 																		if (ret.includes(sub)) {
 																		alert(oReq.responseText);

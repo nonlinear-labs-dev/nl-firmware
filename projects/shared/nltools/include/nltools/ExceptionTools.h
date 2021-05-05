@@ -16,7 +16,7 @@ namespace nltools
     }
     catch(const Glib::SpawnError &e)
     {
-      return std::string("Caugth Glib::SpawnError: " + e.what());
+      return std::string("Caught Glib::SpawnError: " + e.what());
     }
     catch(const std::out_of_range &e)
     {
