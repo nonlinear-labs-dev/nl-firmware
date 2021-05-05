@@ -245,7 +245,7 @@ public class MidiSettingsProvider {
         s.autoStartRecorder.onChange(t -> {
             boolean val = t.equals(BooleanValues.on);
             if(settings.autoStartRecorder.value != val) {
-                settings.enable14BitCC.value = val;
+                settings.autoStartRecorder.value = val;
                 notifyClients();
             }
             return true;

@@ -518,8 +518,8 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
       {
         auto as = static_cast<const AutoStartRecorderSetting *>(s);
         const auto shouldAutoStart = as->get();
-        auto msg = nltools::msg::Setting::StartStopRecorderMessage {};
-        msg.m_paused = !shouldAutoStart;
+        auto msg = nltools::msg::Setting::FlacRecorderAutoStart {};
+        msg.enabled = shouldAutoStart;
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       }));
 }

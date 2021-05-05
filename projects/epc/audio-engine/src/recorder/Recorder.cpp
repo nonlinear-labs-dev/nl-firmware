@@ -27,12 +27,12 @@ Recorder::Recorder(int sr)
 {
   m_in->setPaused(true);
   m_settingConnection
-      = nltools::msg::receive<nltools::msg::Setting::StartStopRecorderMessage>(nltools::msg::EndPoint::AudioEngine,
-                                                                               [this](const auto &msg)
-                                                                               {
-                                                                                 if(msg.m_paused == false)
-                                                                                   m_in->setPaused(msg.m_paused);
-                                                                               });
+      = nltools::msg::receive<nltools::msg::Setting::FlacRecorderAutoStart>(nltools::msg::EndPoint::AudioEngine,
+                                                                            [this](const auto &msg)
+                                                                            {
+                                                                              if(msg.enabled)
+                                                                                m_in->setPaused(false);
+                                                                            });
 }
 
 Recorder::~Recorder() = default;

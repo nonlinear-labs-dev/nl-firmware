@@ -26,14 +26,7 @@ void RecorderInput::process(SampleFrame *frames, size_t numFrames)
 
 void RecorderInput::togglePause()
 {
-  std::unique_lock<std::mutex> l(m_mutex);
-  m_paused = !m_paused;
-
-  if(!m_paused)
-  {
-    m_ring.reset();
-    m_encoder->resume();
-  }
+  setPaused(!m_paused);
 }
 
 void RecorderInput::setPaused(bool p)
