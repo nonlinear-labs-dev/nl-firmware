@@ -119,6 +119,8 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
       }
     }
+    request->okAndComplete();
+
     std::vector<std::string> commands;
     commands.emplace_back("scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update &&");
     commands.emplace_back("ssh root@192.168.10.11 'cd /update && tar xf nonlinear-c15-update.tar && chmod +x "
