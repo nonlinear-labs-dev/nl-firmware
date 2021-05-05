@@ -112,38 +112,46 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
       auto req = std::dynamic_pointer_cast<HTTPRequest>(request);
       const auto outFile = "/tmp/nonlinear-c15-update.tar";
       {
-        nltools::Log::error(__LINE__, __FILE__);
         std::ofstream out(outFile, std::ofstream::binary);
-        nltools::Log::error(__LINE__, __FILE__);
         if(out.is_open())
         {
-          nltools::Log::error(__LINE__, __FILE__, "Length:", req->getFlattenedBuffer()->length);
           for(auto i = 0; i < req->getFlattenedBuffer()->length; i++)
           {
             out << req->getFlattenedBuffer()->data[i];
           }
-          nltools::Log::error(__LINE__, __FILE__);
           out.close();
         }
         else
         {
           nltools::Log::error("could not open  /tmp to write");
         }
-        nltools::Log::error(__LINE__, __FILE__);
       }
-      nltools::Log::error(__LINE__, __FILE__);
       request->okAndComplete();
 
-      std::vector<std::string> commands;
-      nltools::Log::error(__LINE__, __FILE__);
-      commands.emplace_back(
-          "/usr/bin/scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update && /usr/bin/ssh root@192.168.10.11 "
-          "'cd /update && tar xf nonlinear-c15-update.tar && chmod +x "
-          "/update/run.sh && /bin/sh /update/run.sh'");
-      nltools::Log::error(__LINE__, __FILE__);
+      std::vector<std::string> commands = { "/usr/bin/scp",
+                                            "/tmp/nonlinear-c15-update.tar",
+                                            "root@192.168.10.11:/update",
+                                            "&&",
+                                            "/usr/bin/ssh",
+                                            "-o",
+                                            "StrictHostKeyChecking=no",
+                                            "root@192.168.10.11",
+                                            "cd",
+                                            "/update",
+                                            "&&",
+                                            "tar",
+                                            "xf",
+                                            "nonlinear-c15-update.tar",
+                                            "&&",
+                                            "chmod",
+                                            "+x",
+                                            "/update/run.sh",
+                                            "&&",
+                                            "/bin/sh",
+                                            "/update/run.sh" };
+
       SpawnAsyncCommandLine::spawn(
           commands, [](auto s) { nltools::Log::warning(s); }, [](auto e) { nltools::Log::error(e); });
-      nltools::Log::error(__LINE__, __FILE__);
     }
     catch(...)
     {
