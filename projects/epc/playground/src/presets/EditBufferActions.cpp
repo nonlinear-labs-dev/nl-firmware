@@ -24,6 +24,7 @@
 #include <use-cases/RibbonParameterUseCases.h>
 #include <use-cases/PedalParameterUseCases.h>
 #include <iomanip>
+#include <presets/LoadedPresetLog.h>
 
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer* editBuffer);
@@ -43,8 +44,10 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
     if(auto transaction = scope.findTransactionAt(system_clock::time_point(system_clock::duration(time))))
     {
       auto currentTip = scope.getUndoTransaction();
+      auto log = editBuffer->getLoadedPresetLog();
+      log->freeze();
       scope.undoJump(UNDO::StringTools::buildString(reinterpret_cast<size_t>(transaction)));
-      auto p = std::make_unique<Preset>(editBuffer->getParent(), *editBuffer);
+      auto p = std::make_unique<Preset>(editBuffer->getParent(), *editBuffer, true);
       scope.undoJump(UNDO::StringTools::buildString(reinterpret_cast<size_t>(currentTip)));
       EditBufferUseCases ebUseCases(editBuffer);
       std::stringstream nameBuilder;
@@ -52,6 +55,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
       std::tm tm = *std::localtime(&tt);
       nameBuilder << "Restore at " << std::put_time(&tm, "%H:%M:%S");
       ebUseCases.undoableLoad(p.get(), nameBuilder.str());
+      log->thaw();
     }
   });
 
