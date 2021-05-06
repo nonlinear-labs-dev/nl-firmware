@@ -11,6 +11,8 @@
 				</g:Button>
 				<g:Button styleName="tabheader" ui:field="uiMidiButton">MIDI Settings
 				</g:Button>
+				<g:Button styleName="tabheader" ui:field="uiFlacButton">Recorder
+				</g:Button>
 				<g:Button styleName="tabheader" ui:field="systemInfoButton">System Info
 				</g:Button>
 				<g:Button styleName="tabheader" ui:field="aboutButton">About</g:Button>
@@ -542,6 +544,23 @@
 						<div class="w40p">
 							<g:ListBox ui:field="pcBanks">
 							</g:ListBox>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div ui:field="flacSettings" class="tabcontent">
+				<div class="forms-container">
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Recorder</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Auto-Start Recorder</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="autoStartRecordOn" name="rad_autoStartRecord" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="autoStartRecordOff" name="rad_autoStartRecord" value="false"></g:RadioButton>
 						</div>
 					</div>
 				</div>

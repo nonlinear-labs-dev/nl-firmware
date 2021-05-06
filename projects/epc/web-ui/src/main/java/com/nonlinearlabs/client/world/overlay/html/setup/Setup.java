@@ -64,10 +64,10 @@ public class Setup extends Composite {
 	private static SetupUiBinder ourUiBinder = GWT.create(SetupUiBinder.class);
 
 	@UiField
-	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, systemInfoButton, aboutButton;
+	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton;
 
 	@UiField
-	DivElement deviceSettings, uiSettings, midiSettings, systemInfo, about;
+	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about;
 
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
@@ -88,7 +88,7 @@ public class Setup extends Composite {
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
 			receiveNotesOff, receiveControllersOn, receiveControllersOff, sendPCOn, sendPCOff, sendNotesOn, 
 			sendNotesOff, sendControllersOn, sendControllersOff, localNotesOn, 
-			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit;
+			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -183,6 +183,7 @@ public class Setup extends Composite {
 		fillRadioButtons(localControllersOn, localControllersOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
+		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
 	}
 
 	public void connectEventHandlers() {
@@ -194,6 +195,7 @@ public class Setup extends Composite {
 		systemInfoButton.addClickHandler(e -> switchPage(systemInfoButton, systemInfo));
 		aboutButton.addClickHandler(e -> switchPage(aboutButton, about));
 		uiMidiButton.addClickHandler(e -> switchPage(uiMidiButton, midiSettings));
+		uiFlacButton.addClickHandler(e -> switchPage(uiFlacButton, flacSettings));
 
 		velocityCurve.addChangeHandler(
 				e -> settings.setVelocityCurve(VelocityCurve.values()[velocityCurve.getSelectedIndex()]));
@@ -298,6 +300,8 @@ public class Setup extends Composite {
 
 		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
 		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));
+		autoStartRecordOn.addValueChangeHandler(e -> settings.setAutoStartRecorder(BooleanValues.on));
+		autoStartRecordOff.addValueChangeHandler(e -> settings.setAutoStartRecorder(BooleanValues.off));
 	}
 
 	public void connectUpdate() {
@@ -467,6 +471,8 @@ public class Setup extends Composite {
 		highVeloCCOff.setValue(!t.highVelocityCC.value);
 		enable14Bit.setValue(t.enable14BitCC.value);
 		disable14Bit.setValue(!t.enable14BitCC.value);
+		autoStartRecordOn.setValue(t.autoStartRecorder.value);
+		autoStartRecordOff.setValue(!t.autoStartRecorder.value);
 	}
 
 	public void switchPage(Button btn, DivElement page) {
@@ -475,12 +481,14 @@ public class Setup extends Composite {
 		systemInfo.getStyle().setDisplay(Display.NONE);
 		about.getStyle().setDisplay(Display.NONE);
 		midiSettings.getStyle().setDisplay(Display.NONE);
+		flacSettings.getStyle().setDisplay(Display.NONE);
 
 		deviceSettingsButton.getElement().removeClassName("active");
 		uiSettingsButton.getElement().removeClassName("active");
 		systemInfoButton.getElement().removeClassName("active");
 		aboutButton.getElement().removeClassName("active");
 		uiMidiButton.getElement().removeClassName("active");
+		uiFlacButton.getElement().removeClassName("active");
 
 		btn.getElement().addClassName("active");
 		page.getStyle().setDisplay(Display.BLOCK);

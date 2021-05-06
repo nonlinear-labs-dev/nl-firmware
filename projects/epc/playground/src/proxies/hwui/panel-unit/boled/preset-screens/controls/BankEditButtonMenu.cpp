@@ -125,11 +125,6 @@ void BankEditButtonMenu::newBank()
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(layout);
 }
 
-BankEditButtonMenu::FileInfos BankEditButtonMenu::extractFileInfos(const std::filesystem::directory_entry& file)
-{
-  return FileInfos { file };
-}
-
 bool BankEditButtonMenu::applicableBackupFilesFilter(const std::filesystem::directory_entry& term)
 {
   auto fileName = term.path().filename().string();
@@ -140,17 +135,14 @@ bool BankEditButtonMenu::applicableBackupFilesFilter(const std::filesystem::dire
 void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_entry& file)
 {
   auto hwui = Application::get().getHWUI();
+
   if(file != std::filesystem::directory_entry())
   {
-    auto fileInfos = extractFileInfos(file);
-
     hwui->getPanelUnit().getEditPanel().getBoled().setOverlay(new SplashLayout());
-
-    FileInStream stream(fileInfos.filePath, false);
-    SplashLayout::addStatus("Importing " + fileInfos.fileName);
-    auto& bankActions = Application::get().getPresetManager()->findActionManager<BankActions>();
-    bankActions.importBank(stream, "0", "0", fileInfos.fileName);
+    PresetManagerUseCases useCase(Application::get().getPresetManager());
+    useCase.importBankFromPath(file, [](const std::string& name) { SplashLayout::addStatus("Importing " + name); });
   }
+
   hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
   hwui->getPanelUnit().setupFocusAndMode({ UIFocus::Presets, UIMode::Select });
 }
@@ -191,14 +183,12 @@ void BankEditButtonMenu::exportBank()
 
 void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::string& outFile)
 {
-  GenericScopeGuard syncAfterAllFileOperation([] {}, FileSystem::syncAll);
-  SplashLayout::addStatus("Exporting " + selBank->getName(true));
-  auto scope = UNDO::Scope::startTrashTransaction();
-  selBank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
-  selBank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
-  PresetBankSerializer serializer(selBank, false);
-  XmlWriter writer(std::make_unique<FileOutStream>(outFile, false));
-  serializer.write(writer, VersionAttribute::get());
+  if(selBank)
+  {
+    SplashLayout::addStatus("Exporting " + selBank->getName(true));
+    BankUseCases useCase(selBank);
+    useCase.exportBankToFile(outFile);
+  }
 }
 
 void BankEditButtonMenu::renameBank()

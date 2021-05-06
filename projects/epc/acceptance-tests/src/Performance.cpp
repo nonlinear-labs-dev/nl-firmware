@@ -2,6 +2,7 @@
 #include "Toolbox.h"
 #include "AudioEngineOptions.h"
 #include <synth/C15Synth.h>
+#include <mock/XMLPresetLoader.h>
 
 namespace Tests
 {
@@ -12,7 +13,7 @@ namespace Tests
 
     auto options = createEmptyAudioEngineOptions();
     auto synth = std::make_unique<C15Synth>(options.get());
-    loadTestPreset(synth.get(), "", "3c830098-c38b-461c-aa55-2548960c9064");
+    XMLPresetLoader::loadTestPreset(synth.get(), "", "3c830098-c38b-461c-aa55-2548960c9064");
 
     auto withoutNote = synth->measurePerformance(1s);
 

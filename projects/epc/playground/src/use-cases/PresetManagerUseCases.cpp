@@ -23,6 +23,8 @@
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
 #include <xml/VersionAttribute.h>
+#include <tools/FileInfo.h>
+#include <tools/TimeTools.h>
 
 PresetManagerUseCases::PresetManagerUseCases(PresetManager* pm)
     : m_presetManager { pm }
@@ -970,6 +972,50 @@ void PresetManagerUseCases::pastePresetOnBackground(const Glib::ustring& x, cons
 bool PresetManagerUseCases::isDirectLoadActive() const
 {
   return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+}
+
+void PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
+                                               std::function<void(std::string)> onFileNameReadCallback)
+{
+  FileInfos fileInfos(file);
+  FileInStream stream(fileInfos.filePath, false);
+
+  if(onFileNameReadCallback)
+    onFileNameReadCallback(fileInfos.fileName);
+
+  importBankFromStream(stream, 0, 0, fileInfos.fileName);
+}
+
+void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName)
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("Import new Bank");
+  auto transaction = scope->getTransaction();
+
+  std::shared_ptr<BooleanSettings> autoLoadOff = nullptr;
+  if(Application::exists())
+  {
+    auto settings = Application::get().getSettings();
+    autoLoadOff = settings->getSetting<DirectLoadSetting>()->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
+  }
+
+  auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager));
+
+  XmlReader reader(stream, transaction);
+  reader.read<PresetBankSerializer>(newBank, true);
+
+  newBank->setAttachedToBank(transaction, Uuid::none());
+  newBank->setAttachedDirection(transaction, to_string(Bank::AttachmentDirection::none));
+
+  newBank->setX(transaction, std::to_string(x));
+  newBank->setY(transaction, std::to_string(y));
+
+  newBank->ensurePresetSelection(transaction);
+  newBank->setAttribute(transaction, "Name of Import File", fileName);
+  newBank->setAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
+  newBank->setAttribute(transaction, "Name of Export File", "");
+  newBank->setAttribute(transaction, "Date of Export File", "");
+
+  m_presetManager->ensureBankSelection(transaction);
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)

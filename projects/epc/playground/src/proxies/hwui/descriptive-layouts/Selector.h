@@ -2,13 +2,13 @@
 
 #include <proxies/hwui/HWUIEnums.h>
 #include <functional>
-#include <tools/variant.hpp>
+#include <variant>
 
 namespace DescriptiveLayouts
 {
   class Selector
   {
-    using Criteria = nonstd::variant<UIFocus, UIMode, UIDetail>;
+    using Criteria = std::variant<UIFocus, UIMode, UIDetail>;
 
     struct Tester
     {
@@ -95,22 +95,22 @@ namespace DescriptiveLayouts
     {
       auto tester = Tester(fam);
       auto c = criteria;
-      return nonstd::visit(tester, c);
+      return std::visit(tester, c);
     }
 
     UIFocus getFocus() const
     {
-      return nonstd::get<UIFocus>(criteria);
+      return std::get<UIFocus>(criteria);
     }
 
     UIMode getMode() const
     {
-      return nonstd::get<UIMode>(criteria);
+      return std::get<UIMode>(criteria);
     }
 
     UIDetail getDetail() const
     {
-      return nonstd::get<UIDetail>(criteria);
+      return std::get<UIDetail>(criteria);
     }
 
    private:
