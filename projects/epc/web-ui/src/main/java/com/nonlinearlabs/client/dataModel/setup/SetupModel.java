@@ -388,6 +388,7 @@ public class SetupModel {
 		public PitchbendMappingDataModelEntity benderMapping = new PitchbendMappingDataModelEntity();
 		public BooleanDataModelEntity highVelocityCC = new BooleanDataModelEntity();
 		public BooleanDataModelEntity enable14BitSupport = new BooleanDataModelEntity();
+		public BooleanDataModelEntity autoStartRecorder = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {

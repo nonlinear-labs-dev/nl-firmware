@@ -5,6 +5,9 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
+
+import org.apache.xpath.operations.Bool;
+
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 public class MidiSettingsProvider {
@@ -234,6 +237,15 @@ public class MidiSettingsProvider {
             boolean val = t.equals(BooleanValues.on);
             if(settings.enable14BitCC.value != val) {
                 settings.enable14BitCC.value = val;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.autoStartRecorder.onChange(t -> {
+            boolean val = t.equals(BooleanValues.on);
+            if(settings.autoStartRecorder.value != val) {
+                settings.autoStartRecorder.value = val;
                 notifyClients();
             }
             return true;

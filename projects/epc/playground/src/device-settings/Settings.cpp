@@ -70,6 +70,7 @@
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
+#include <device-settings/flac/AutoStartRecorderSetting.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -143,6 +144,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
   addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
   addSetting("HighResCC", new Enable14BitSupport(*this));
+  addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
 }
 
 Settings::~Settings()
