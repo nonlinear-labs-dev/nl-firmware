@@ -124,25 +124,15 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
         else
         {
-          nltools::Log::error("could not open  /tmp to write");
+          nltools::Log::error("could not open /tmp to write");
         }
       }
       request->okAndComplete();
 
       Application::get().stopWatchDog();
-
-      SpawnCommandLine cmd0("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 cd /update && rm -rf *");
+      SpawnCommandLine cmd0("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 '/bin/sh "
+                            "/scripts/install-update-from-epc.sh &'");
       nltools::Log::warning("ssh prepare:", cmd0.getStdOutput());
-      SpawnCommandLine cmd1("/usr/bin/scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update");
-      nltools::Log::warning("scp:", cmd1.getStdOutput());
-      SpawnCommandLine cmd2(
-          "/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 cd /update && tar xf nonlinear-c15-update.tar");
-      nltools::Log::warning("ssh unpack:", cmd2.getStdOutput());
-      SpawnCommandLine cmd3("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 chmod +x /update/run.sh && ");
-      nltools::Log::warning("ssh prepare run.sh:", cmd3.getStdOutput());
-      SpawnCommandLine cmd4("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 '/bin/sh /update/run.sh &'");
-      nltools::Log::warning("run run.sh:", cmd4.getStdOutput());
-
       Application::get().runWatchDog();
     }
     catch(...)
