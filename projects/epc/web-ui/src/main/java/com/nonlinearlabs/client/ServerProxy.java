@@ -1143,7 +1143,10 @@ public class ServerProxy {
 		if (bank != null) {
 			uuid = bank.getUUID();
 		}
+		selectMidiBank(uuid);
+	}
 
+	public void selectMidiBank(String uuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "select-midi-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", uuid));
 		queueJob(uri, false);

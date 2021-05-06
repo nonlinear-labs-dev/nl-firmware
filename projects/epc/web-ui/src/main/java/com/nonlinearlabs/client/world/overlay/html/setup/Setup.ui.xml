@@ -537,6 +537,15 @@
 							<g:RadioButton ui:field="disable14Bit" name="rad_14BitCC" value="false"></g:RadioButton>
 						</div>
 					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Program Change Bank</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pcBanks">
+							</g:ListBox>
+						</div>
+					</div>
 				</div>
 			</div>
 
