@@ -1,7 +1,11 @@
 package com.nonlinearlabs.client.world.overlay.html.setup;
 
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -17,9 +21,11 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.Bank;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
@@ -285,8 +291,11 @@ public class Setup extends Composite {
 		highVeloCCOff.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.off));
 
 		pcBanks.addChangeHandler(e -> {
-			NonMaps.get().getServerProxy().selectMidiBank(midiBankIndexToBankMap.get(pcBanks.getSelectedIndex()).uuid.getValue());
+			List<com.nonlinearlabs.client.world.maps.presets.bank.Bank> sortedBanks = getBanksSortedByNumber();			
+			com.nonlinearlabs.client.world.maps.presets.bank.Bank b = sortedBanks.get(pcBanks.getSelectedIndex());
+			NonMaps.get().getServerProxy().selectMidiBank(b.getUUID());
 		});
+
 		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
 		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));
 	}
@@ -318,19 +327,32 @@ public class Setup extends Composite {
 		});
 	}
 
-	private Map<Integer, Bank> midiBankIndexToBankMap = new HashMap<Integer, Bank>();
+	private List<com.nonlinearlabs.client.world.maps.presets.bank.Bank> getBanksSortedByNumber() {
+		List<com.nonlinearlabs.client.world.maps.presets.bank.Bank> bb = NonMaps.get().getNonLinearWorld().getPresetManager().getBanks();
+
+
+		Collections.sort(bb, new Comparator<com.nonlinearlabs.client.world.maps.presets.bank.Bank>() {
+			@Override
+			public int compare(com.nonlinearlabs.client.world.maps.presets.bank.Bank b2, com.nonlinearlabs.client.world.maps.presets.bank.Bank b1)
+			{
+				return  b2.getOrderNumber() - b1.getOrderNumber();
+			}
+		});
+		return bb;
+	}
 
 	private void applyBanks(Map<String, Bank> map) {
 		pcBanks.clear();
-		midiBankIndexToBankMap.clear();
+
+		List<com.nonlinearlabs.client.world.maps.presets.bank.Bank> banks = getBanksSortedByNumber();
+		Tracer.log("new Map.Size(): " + map.size());
+		Tracer.log("sorted Banks Size(): " + banks.size());
 
 		int index = 0;
-		for(String uuid: map.keySet()) {
-			Bank b = map.get(uuid);
-			String name = (index + 1) + "-" + b.name.getValue();
-			pcBanks.addItem(name, uuid);
-			midiBankIndexToBankMap.put(index, b);
-			if(b.isMidiBank.getBool())
+		for(com.nonlinearlabs.client.world.maps.presets.bank.Bank b: banks) {
+			String name = (index + 1) + "-" + b.getCurrentName();
+			pcBanks.addItem(name);
+			if(b.isMidiBank())
 				pcBanks.setSelectedIndex(index);
 			index++;
 		}
