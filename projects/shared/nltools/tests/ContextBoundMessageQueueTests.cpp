@@ -48,7 +48,7 @@ TEST_CASE("ContextBoundMessageQueue - multi threading")
 {
   using namespace std::chrono_literals;
 
-  std::atomic<bool> closed = false;
+  std::atomic<bool> closed { false };
   auto ctx = Glib::MainContext::create();
   auto loop = Glib::MainLoop::create(ctx);
   auto runner = std::async(std::launch::async, [&] { loop->run(); });
@@ -57,10 +57,12 @@ TEST_CASE("ContextBoundMessageQueue - multi threading")
 
   for(int i = 0; i < 1000; i++)
   {
-    queue->pushMessage([&] {
-      std::this_thread::sleep_for(1ms);
-      REQUIRE_FALSE(closed);
-    });
+    queue->pushMessage(
+        [&]
+        {
+          std::this_thread::sleep_for(1ms);
+          REQUIRE_FALSE(closed);
+        });
   }
 
   queue.reset();
