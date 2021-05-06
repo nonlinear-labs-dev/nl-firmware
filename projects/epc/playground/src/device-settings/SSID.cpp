@@ -48,7 +48,7 @@ void SSID::updateSSID(const Glib::ustring &str)
   auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
 
-  m_wifi->setSSID(m_ssid);
+  m_wifi->setNewSSID(m_ssid);
 
   notify();
 }
