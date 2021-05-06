@@ -293,9 +293,7 @@ public class Setup extends Composite {
 		highVeloCCOff.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.off));
 
 		pcBanks.addChangeHandler(e -> {
-			List<com.nonlinearlabs.client.world.maps.presets.bank.Bank> sortedBanks = getBanksSortedByNumber();			
-			com.nonlinearlabs.client.world.maps.presets.bank.Bank b = sortedBanks.get(pcBanks.getSelectedIndex());
-			NonMaps.get().getServerProxy().selectMidiBank(b.getUUID());
+			NonMaps.get().getServerProxy().selectMidiBank(pcBanks.getSelectedValue());
 		});
 
 		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
@@ -349,13 +347,11 @@ public class Setup extends Composite {
 		pcBanks.clear();
 
 		List<com.nonlinearlabs.client.world.maps.presets.bank.Bank> banks = getBanksSortedByNumber();
-		Tracer.log("new Map.Size(): " + map.size());
-		Tracer.log("sorted Banks Size(): " + banks.size());
 
 		int index = 0;
 		for(com.nonlinearlabs.client.world.maps.presets.bank.Bank b: banks) {
 			String name = (index + 1) + "-" + b.getCurrentName();
-			pcBanks.addItem(name);
+			pcBanks.addItem(name, b.getUUID());
 			if(b.isMidiBank())
 				pcBanks.setSelectedIndex(index);
 			index++;
