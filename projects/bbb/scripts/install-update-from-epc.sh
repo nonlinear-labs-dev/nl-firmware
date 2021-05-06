@@ -2,6 +2,7 @@
 # version : 2.0
 
 freeze() {
+    echo "Freezing from install-update-from-epc"
     while true; do
         sleep 1
     done
