@@ -35,10 +35,27 @@ class PresetLogStream {
     }
 
     find(fromTime: number, toTime: number): PresetLogEntry | null {
-        var v = this.log.filter(a => a.time >= fromTime && a.time <= toTime);
-        if (v.length > 0)
-            return v[0];
-        return null;
+        return this.binarySearch(0, this.log.length, fromTime, toTime);
+    }
+
+    private binarySearch(from: number, to: number, fromTime: number, toTime: number): PresetLogEntry | null {
+        if (to - from < 4) {
+            for (var i = from; i < to; i++) {
+                if (this.log[i].time >= fromTime && this.log[i].time <= toTime)
+                    return this.log[i];
+            }
+            return null;
+        }
+
+        var mid = Math.floor((from + to) / 2);
+
+        if (this.log[mid].time > toTime)
+            return this.binarySearch(from, mid, fromTime, toTime);
+
+        if (this.log[mid].time < fromTime)
+            return this.binarySearch(mid + 1, to, fromTime, toTime);
+
+        return this.log[mid];
     }
 
     private retry(): void {
