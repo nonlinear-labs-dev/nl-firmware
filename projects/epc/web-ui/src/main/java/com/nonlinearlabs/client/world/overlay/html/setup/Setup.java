@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
@@ -304,9 +305,9 @@ public class Setup extends Composite {
 
 							@Override
 							public void onUploadFinished(XMLHttpRequest answer) {
-								GWT.log("Status: " + answer.getStatus());
-								GWT.log("Status: " + answer.getStatusText());
-								GWT.log("Response: " + answer.getResponseText());
+								Tracer.log("Status: " + answer.getStatus());
+								Tracer.log("Status: " + answer.getStatusText());
+								Tracer.log("Response: " + answer.getResponseText());
 							}
 							
 						});
