@@ -8,7 +8,7 @@ freeze() {
 }
 
 copy_from_epc() {
-  sshpass -p 'sscl' ssh sscl@192.168.10.10 'scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update'
+  sshpass -p 'sscl' ssh -o StrictHostKeyChecking=no sscl@192.168.10.10 'scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update'
 }
 
 unpack_update() {

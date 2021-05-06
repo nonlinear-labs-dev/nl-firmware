@@ -132,7 +132,6 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
       Application::get().stopWatchDog();
       SpawnCommandLine cmd0("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 '/bin/sh "
                             "/usr/C15/scripts/install-update-from-epc.sh &'");
-      nltools::Log::warning("ssh prepare:", cmd0.getStdOutput());
       Application::get().runWatchDog();
     }
     catch(...)
