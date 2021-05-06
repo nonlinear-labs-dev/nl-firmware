@@ -128,7 +128,9 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
       }
       request->okAndComplete();
-      
+
+      Application::get().stopWatchDog();
+
       SpawnCommandLine cmd0("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 cd /update && rm -rf *");
       nltools::Log::warning("ssh prepare:", cmd0.getStdOutput());
       SpawnCommandLine cmd1("/usr/bin/scp /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update");
@@ -138,8 +140,10 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
       nltools::Log::warning("ssh unpack:", cmd2.getStdOutput());
       SpawnCommandLine cmd3("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 chmod +x /update/run.sh && ");
       nltools::Log::warning("ssh prepare run.sh:", cmd3.getStdOutput());
-      SpawnCommandLine cmd4("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 /bin/sh /update/run.sh");
+      SpawnCommandLine cmd4("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 '/bin/sh /update/run.sh &'");
       nltools::Log::warning("run run.sh:", cmd4.getStdOutput());
+
+      Application::get().runWatchDog();
     }
     catch(...)
     {
