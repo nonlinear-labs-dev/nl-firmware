@@ -43,7 +43,7 @@ namespace nltools
 
          MidiSimpleMessage, MidiAck, MidiProgramChange, MidiBridgeSettings, MidiSettings, MidiHardwareChange,
 
-         StartStopRecorder, SyncFS);
+         AutoStartRecorderMessage, SyncFS);
 
     namespace detail
     {

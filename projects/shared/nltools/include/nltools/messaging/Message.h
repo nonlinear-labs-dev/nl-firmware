@@ -197,7 +197,7 @@ namespace nltools
       {
         constexpr static MessageType getType()
         {
-          return MessageType::StartStopRecorder;
+          return MessageType::AutoStartRecorderMessage;
         }
 
         bool enabled;

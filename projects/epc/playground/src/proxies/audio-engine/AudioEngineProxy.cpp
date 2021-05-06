@@ -51,7 +51,7 @@ AudioEngineProxy::AudioEngineProxy()
   using namespace nltools::msg;
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
   onConnectionEstablished(EndPoint::AudioEngine,
-                          sigc::mem_fun(this, &AudioEngineProxy::connectMidiSettingsToAudioEngineMessage));
+                          sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
   receive<HardwareSourceChangedNotification>(
       EndPoint::Playground,
@@ -490,7 +490,7 @@ template <typename T> void AudioEngineProxy::subscribeToMidiSetting(Settings *s)
 {
   if(auto setting = s->getSetting<T>())
   {
-    m_midiSettingConnections.push_back(
+    m_settingConnections.push_back(
         setting->onChange(sigc::hide(sigc::mem_fun(this, &AudioEngineProxy::scheduleMidiSettingsMessage))));
   }
 }
@@ -500,10 +500,10 @@ template <typename... TT> void AudioEngineProxy::subscribeToMidiSettings(Setting
   (subscribeToMidiSetting<TT>(s), ...);
 }
 
-void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
+void AudioEngineProxy::connectSettingsToAudioEngineMessage()
 {
   auto settings = Application::get().getSettings();
-  m_midiSettingConnections.clear();
+  m_settingConnections.clear();
 
   subscribeToMidiSettings<
       LocalControllersSetting, LocalNotesSetting, MidiReceiveChannelSetting, MidiReceiveChannelSplitSetting,
@@ -513,7 +513,7 @@ void AudioEngineProxy::connectMidiSettingsToAudioEngineMessage()
       PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>, RibbonCCMapping<1>,
       RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC, Enable14BitSupport>(settings);
 
-  m_midiSettingConnections.push_back(settings->getSetting<AutoStartRecorderSetting>()->onChange(
+  m_settingConnections.push_back(settings->getSetting<AutoStartRecorderSetting>()->onChange(
       [this](const Setting *s)
       {
         auto as = static_cast<const AutoStartRecorderSetting *>(s);
