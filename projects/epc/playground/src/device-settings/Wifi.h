@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nltools/system/SpawnAsyncCommandLine.h>
+#include <nltools/system/SpawnCommandLine.h>
 #include <nltools/logging/Log.h>
 
 class Wifi
@@ -13,4 +14,6 @@ class Wifi
     void reloadConnection();
     void disableConnection();
     void enableConnection();
+
+    void waitForConnection();
 };
