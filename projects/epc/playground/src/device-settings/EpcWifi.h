@@ -1,11 +1,10 @@
 #pragma once
 
 #include <nltools/system/SpawnAsyncCommandLine.h>
-#include <nltools/system/SpawnCommandLine.h>
 #include <nltools/logging/Log.h>
 #include <glibmm.h>
 
-class Wifi
+class EpcWifi
 {
     private:
     Glib::ustring m_currentPassphrase, m_newPassphrase;
@@ -18,7 +17,8 @@ class Wifi
     void reloadConnection();
 
     public:
-    Wifi();
+    EpcWifi();
+    ~EpcWifi();
 
     void setNewPassphrase(const Glib::ustring& _newPassphrase);
     void setNewSSID(const Glib::ustring& _newSSID);

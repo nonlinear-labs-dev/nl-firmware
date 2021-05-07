@@ -2,7 +2,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/SSID.h>
 
-SSID::SSID(Settings &parent, const std::shared_ptr<Wifi>& shrd_ptr)
+SSID::SSID(Settings &parent, const std::shared_ptr<EpcWifi>& shrd_ptr)
     : Setting(parent)
     , m_wifi(shrd_ptr)
 {

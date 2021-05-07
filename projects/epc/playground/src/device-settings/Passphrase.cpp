@@ -3,7 +3,7 @@
 #include "Passphrase.h"
 #include "Settings.h"
 
-Passphrase::Passphrase(Settings& parent, const std::shared_ptr<Wifi>& shrd_ptr)
+Passphrase::Passphrase(Settings& parent, const std::shared_ptr<EpcWifi>& shrd_ptr)
     : Setting(parent)
     , m_wifi(shrd_ptr)
 {

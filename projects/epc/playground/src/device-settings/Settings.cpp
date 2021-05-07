@@ -38,7 +38,7 @@
 #include <xml/XmlWriter.h>
 #include <xml/VersionAttribute.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
-#include "Wifi.h"
+#include "EpcWifi.h"
 #include "WifiSetting.h"
 #include "SettingsActions.h"
 #include "CrashOnError.h"
@@ -100,10 +100,10 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  std::shared_ptr<Wifi> localWifi = std::make_shared<Wifi>();
+  std::shared_ptr<EpcWifi> LocalWifi = std::make_shared<EpcWifi>();
 
-  addSetting("SSID", new SSID(*this, localWifi));
-  addSetting("Passphrase", new Passphrase(*this, localWifi));
+  addSetting("SSID", new SSID(*this, LocalWifi));
+  addSetting("Passphrase", new Passphrase(*this, LocalWifi));
 
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
