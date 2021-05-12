@@ -1,54 +1,6 @@
 #include "FlacFrameStorage.h"
 #include <nltools/logging/Log.h>
-
-struct Bitstream
-{
-  Bitstream(std::vector<uint8_t> &d)
-      : data(d)
-  {
-  }
-
-  void seek(uint64_t toBit)
-  {
-    pos = toBit;
-  }
-
-  uint64_t read(uint32_t numBits)
-  {
-    uint64_t ret = 0;
-    for(uint32_t i = 0; i < numBits; i++)
-      ret |= readBit() << (numBits - i - 1);
-
-    return ret;
-  }
-
-  void patch(uint32_t numBits, uint64_t num)
-  {
-    for(uint32_t i = 0; i < numBits; i++)
-      patchBit((num >> (numBits - i - 1)) & 0x01);
-  }
-
-  uint64_t readBit()
-  {
-    auto byte = pos / 8;
-    auto bit = 7 - (pos % 8);
-    pos++;
-    return (data[byte] >> bit) & 0x01;
-  }
-
-  void patchBit(uint32_t i)
-  {
-    auto byte = pos / 8;
-    auto bit = 7 - (pos % 8);
-    pos++;
-    uint8_t mask = ~(1 << bit);
-    data[byte] &= mask;
-    data[byte] |= i << bit;
-  }
-
-  std::vector<uint8_t> &data;
-  uint32_t pos = 0;
-};
+#include "Bitstream.h"
 
 FlacFrameStorage::FlacFrameStorage(uint64_t maxMemUsage)
     : m_maxMemUsage(maxMemUsage)
