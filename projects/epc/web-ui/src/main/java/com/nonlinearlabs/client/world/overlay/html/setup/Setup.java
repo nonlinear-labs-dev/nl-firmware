@@ -348,9 +348,11 @@ public class Setup extends Composite {
 
 		List<com.nonlinearlabs.client.world.maps.presets.bank.Bank> banks = getBanksSortedByNumber();
 
-		int index = 0;
+		pcBanks.addItem("None", "");
+		pcBanks.setSelectedIndex(0);
+		int index = 1;
 		for(com.nonlinearlabs.client.world.maps.presets.bank.Bank b: banks) {
-			String name = (index + 1) + "-" + b.getCurrentName();
+			String name = (index) + "-" + b.getCurrentName();
 			pcBanks.addItem(name, b.getUUID());
 			if(b.isMidiBank())
 				pcBanks.setSelectedIndex(index);

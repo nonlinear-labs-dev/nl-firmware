@@ -12,6 +12,16 @@ class MidiRuntimeOptions;
 
 class InputEventStage
 {
+ private:
+  constexpr static auto PEDAL1 = 0;
+  constexpr static auto PEDAL2 = 1;
+  constexpr static auto PEDAL3 = 2;
+  constexpr static auto PEDAL4 = 3;
+  constexpr static auto BENDER = 4;
+  constexpr static auto AFTERTOUCH = 5;
+  constexpr static auto RIBBON1 = 6;
+  constexpr static auto RIBBON2 = 7;
+
  public:
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
@@ -31,20 +41,18 @@ class InputEventStage
   //TCD/MIDI In
   bool checkMIDIKeyEventEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIHardwareChangeChannelMatches(MIDIDecoder* pDecoder);
-  void onMIDIEvent(MIDIDecoder* decoder);
-  void onTCDEvent(TCDDecoder* decoder);
+  void onMIDIEvent();
+  void onTCDEvent();
   void onMIDIHWChanged(MIDIDecoder* decoder);
 
   //Algorithm
   void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, const int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
-  bool filterUnchangedHWPositions(int id, float pos);
 
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel);
   static int parameterIDToHWID(int id);
-  static int HWIDToParameterID(int id);
 
   //MIDI and UI out
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
@@ -55,7 +63,7 @@ class InputEventStage
   void doSendBenderOut(float value);
 
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
-  void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
+  void doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID);
 
   static constexpr uint16_t c_midiReceiveMaskTable[19] = {
     0x0000,  // None (no bit is set)
@@ -86,21 +94,16 @@ class InputEventStage
   HWChangedNotification m_hwChangedCB;
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<float, 8> m_latchedHWPositions { std::numeric_limits<float>::max() };
+  std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions;
+
+  enum class LatchMode
+  {
+    Option,
+    LSBAndMSB,
+    OnlyMSB
+  };
+
+  template <LatchMode> bool latchHWPosition(int hwID, uint8_t lsb, uint8_t msb);
 
   friend class InputEventStageTester;
 };
-
-//namespace InputStateDetail
-//{
-//  using Event = DSPInterface::InputEvent;
-//  using State = DSPInterface::InputState;
-//  using Source = DSPInterface::InputSource;
-//
-//  static constexpr Event Unknown = { Source::Unknown, State::Invalid };
-//  static constexpr Event TCD = { Source::TCD, State::Singular };
-//  static constexpr Event Singular = { Source::Primary, State::Singular };
-//  static constexpr Event Primary = { Source::Primary, State::Separate };
-//  static constexpr Event Both = { Source::Both, State::Separate };
-//  static constexpr Event Secondary = { Source::Secondary, State::Separate };
-//}
