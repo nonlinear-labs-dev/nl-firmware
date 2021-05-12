@@ -78,9 +78,9 @@ void InputEventStageTester::sendCCOut(int hwID, float value, int msbCC, int lsbC
   m_inputStage->sendCCOut(hwID, value, msbCC, lsbCC);
 }
 
-void InputEventStageTester::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
+void InputEventStageTester::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID)
 {
-  m_inputStage->doSendCCOut(value, msbCC, lsbCC);
+  m_inputStage->doSendCCOut(value, msbCC, lsbCC, hwID);
 }
 
 VoiceGroup InputEventStageTester::calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, int keyNumber)

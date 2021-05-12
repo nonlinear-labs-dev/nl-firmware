@@ -54,7 +54,7 @@ class InputEventStage
   void doSendBenderOut(float value);
 
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
-  void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
+  void doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID);
 
   static constexpr uint16_t c_midiReceiveMaskTable[19] = {
     0x0000,  // None (no bit is set)
@@ -85,7 +85,8 @@ class InputEventStage
   HWChangedNotification m_hwChangedCB;
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<float, 8> m_latchedHWPositions { std::numeric_limits<float>::max() };
+  std::array<std::array<uint8_t, 2>, 8> m_latchedHWPositions { { std::numeric_limits<uint8_t>::max(),
+                                                                 std::numeric_limits<uint8_t>::max() } };
 
   friend class InputEventStageTester;
 };

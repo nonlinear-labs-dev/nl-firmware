@@ -351,12 +351,12 @@ void InputEventStage::sendCCOut(int hwID, float value, int msbCC, int lsbCC)
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
 
   if(m_dspHost->getBehaviour(hwID) == C15::Properties::HW_Return_Behavior::Center)
-    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
+    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, hwID);
   else
-    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), msbCC, lsbCC);
+    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), msbCC, lsbCC, hwID);
 }
 
-void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
+void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID)
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
   const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
@@ -367,6 +367,33 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
   auto statusByte = static_cast<uint8_t>(0xB0);
   auto lsbValByte = static_cast<uint8_t>(value & 0x7F);
   auto msbValByte = static_cast<uint8_t>(value >> 7 & 0x7F);
+
+  auto sendOut = false;
+  auto &latchedPos = m_latchedHWPositions[hwID];
+  if(m_options->is14BitSupportEnabled())
+  {
+    if(latchedPos[0] != lsbValByte)
+    {
+      latchedPos[0] = lsbValByte;
+      sendOut = true;
+    }
+    if(latchedPos[1] != msbValByte)
+    {
+      latchedPos[1] = msbValByte;
+      sendOut = true;
+    }
+  }
+  else
+  {
+    if(latchedPos[1] != msbValByte)
+    {
+      latchedPos[1] = msbValByte;
+      sendOut = true;
+    }
+  }
+
+  if(!sendOut)
+    return;
 
   if(mainChannel != -1)
   {
@@ -462,7 +489,7 @@ void InputEventStage::doSendAftertouchOut(float value)
 
   if(atLSB.has_value() && atMSB.has_value())
   {
-    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value());
+    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value(), 5);
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {
@@ -531,7 +558,7 @@ void InputEventStage::doSendBenderOut(float value)
     using CC_Range_14_Bit = Midi::clipped14BitCCRange;
     auto lsbCC = benderLSB.value();
     auto msbCC = benderMSB.value();
-    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC);
+    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, 4);
   }
   else if(m_options->getBenderSetting() != BenderCC::None)
   {
@@ -652,10 +679,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
       nltools::Log::error("removed LSB part because 14 Bit Supp. is disabled. PreConv:", preConv, "after:", pos);
     }
 
-    if(filterUnchangedHWPositions(hwID, pos))
-    {
-      sendHardwareChangeAsMidi(hwID, pos);
-    }
+    sendHardwareChangeAsMidi(hwID, pos);
   }
 }
 
@@ -726,16 +750,6 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
       }
     }
   }
-}
-
-bool InputEventStage::filterUnchangedHWPositions(int id, float pos)
-{
-  if(m_latchedHWPositions[id] != pos)
-  {
-    m_latchedHWPositions[id] = pos;
-    return true;
-  }
-  return false;
 }
 
 constexpr uint16_t InputEventStage::midiReceiveChannelMask(const MidiReceiveChannel &_channel)

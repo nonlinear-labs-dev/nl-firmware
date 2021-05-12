@@ -29,7 +29,7 @@ class InputEventStageTester
   void sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
-  void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
+  void doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
 
