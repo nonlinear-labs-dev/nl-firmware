@@ -39,7 +39,6 @@ class InputEventStage
   void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, const int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
-  bool filterUnchangedHWPositions(int id, float pos);
 
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel);

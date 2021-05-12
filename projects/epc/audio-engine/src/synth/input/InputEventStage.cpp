@@ -502,7 +502,19 @@ void InputEventStage::doSendAftertouchOut(float value)
     const auto secC = static_cast<uint8_t>(secondaryChannel);
 
     auto atStatusByte = static_cast<uint8_t>(0xD0);
-    uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);
+    uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);  //msb
+
+    auto sendOut = false;
+    auto &latchedPos = m_latchedHWPositions[5];
+
+    if(latchedPos[1] != valByte)
+    {
+      latchedPos[1] = valByte;
+      sendOut = true;
+    }
+
+    if(!sendOut)
+      return;
 
     if(mainChannel != -1)
     {
@@ -527,6 +539,23 @@ void InputEventStage::doSendAftertouchOut(float value)
     auto v = CC_Range_Bender::encodeBipolarMidiValue(value);
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
+
+    auto sendOut = false;
+    auto &latchedPos = m_latchedHWPositions[5];
+
+    if(latchedPos[0] != lsb)
+    {
+      latchedPos[0] = lsb;
+      sendOut = true;
+    }
+    if(latchedPos[1] != msb)
+    {
+      latchedPos[1] = msb;
+      sendOut = true;
+    }
+
+    if(!sendOut)
+      return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
     const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
@@ -569,6 +598,23 @@ void InputEventStage::doSendBenderOut(float value)
     auto v = CC_Range_Bender::encodeBipolarMidiValue(value);
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
+
+    auto sendOut = false;
+    auto &latchedPos = m_latchedHWPositions[4];
+
+    if(latchedPos[0] != lsb)
+    {
+      latchedPos[0] = lsb;
+      sendOut = true;
+    }
+    if(latchedPos[1] != msb)
+    {
+      latchedPos[1] = msb;
+      sendOut = true;
+    }
+
+    if(!sendOut)
+      return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
     const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
