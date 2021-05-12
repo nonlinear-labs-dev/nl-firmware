@@ -94,6 +94,7 @@
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 
 #include <presets/Bank.h>
+#include <use-cases/SettingsUseCases.h>
 
 namespace NavTree
 {
@@ -967,6 +968,45 @@ namespace NavTree
     }
   };
 
+  enum class ResetSettingType
+  {
+    HighRes,
+    Classic
+  };
+
+  template <ResetSettingType type> struct ResetMidiSettingsTo : public OneShotEntry
+  {
+    std::function<void(void)> getCB()
+    {
+      if constexpr(type == ResetSettingType::Classic)
+      {
+        return []()
+        {
+          SettingsUseCases useCases(Application::get().getSettings());
+          useCases.setMappingsToClassicMidi();
+        };
+      }
+      else if constexpr(type == ResetSettingType::HighRes)
+      {
+        return []()
+        {
+          SettingsUseCases useCases(Application::get().getSettings());
+          useCases.setMappingsToHighRes();
+        };
+      }
+    }
+
+    constexpr const char *getName()
+    {
+      return type == ResetSettingType::Classic ? "Set to Classic MIDI Defaults" : "Set to High-Res. Defaults";
+    }
+
+    explicit ResetMidiSettingsTo(InnerNode *parent)
+        : OneShotEntry(parent, getName(), getCB())
+    {
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -977,13 +1017,15 @@ namespace NavTree
       children.emplace_back(new MidiLocalSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
+      children.emplace_back(new ResetMidiSettingsTo<ResetSettingType::Classic>(this));
+      children.emplace_back(new ResetMidiSettingsTo<ResetSettingType::HighRes>(this));
     }
   };
 
   struct FlacSettings : InnerNode
   {
-    FlacSettings(InnerNode* parent)
-    :InnerNode(parent, "Recorder Settings")
+    FlacSettings(InnerNode *parent)
+        : InnerNode(parent, "Recorder Settings")
     {
       children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recorder"));
     }

@@ -105,7 +105,7 @@ public class Setup extends Composite {
 	TextArea deviceName;
 
 	@UiField
-	Button saveDeviceName, storeInitSound, resetInitSound;
+	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -300,6 +300,9 @@ public class Setup extends Composite {
 		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));
 		autoStartRecordOn.addValueChangeHandler(e -> settings.setAutoStartRecorder(BooleanValues.on));
 		autoStartRecordOff.addValueChangeHandler(e -> settings.setAutoStartRecorder(BooleanValues.off));
+	
+		classicMidi.addClickHandler(e -> settings.resetToClassicMidi());
+		highResMidi.addClickHandler(e -> settings.resetToHighResMidi());
 	}
 
 	public void connectUpdate() {

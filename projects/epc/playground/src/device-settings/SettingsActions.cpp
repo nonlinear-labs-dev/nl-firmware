@@ -7,6 +7,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <http/NetworkRequest.h>
 #include <proxies/hwui/TestLayout.h>
+#include <use-cases/SettingsUseCases.h>
 
 SettingsActions::SettingsActions(Settings &settings)
     : super("/settings/")
@@ -47,6 +48,16 @@ SettingsActions::SettingsActions(Settings &settings)
       boled.setOverlay(new TestLayout(boled));
       soled.setOverlay(new TestLayout(soled));
     }
+  });
+
+  addAction("default-high-res", [&](auto request) {
+      SettingsUseCases useCase(Application::get().getSettings());
+      useCase.setMappingsToHighRes();
+  });
+
+  addAction("default-classic-midi", [&](auto request) {
+    SettingsUseCases useCase(Application::get().getSettings());
+    useCase.setMappingsToClassicMidi();
   });
 }
 
