@@ -886,6 +886,11 @@ namespace NavTree
             = getPresetManager()->onMidiBankSelectionHappened([this](auto uuid) { updateOnSettingChanged(); });
       }
 
+      ~Editor() override
+      {
+        m_midiSelectionChanged.disconnect();
+      }
+
      protected:
       sigc::connection m_midiSelectionChanged;
       static PresetManager *getPresetManager()
@@ -982,8 +987,8 @@ namespace NavTree
 
   struct FlacSettings : InnerNode
   {
-    FlacSettings(InnerNode* parent)
-    :InnerNode(parent, "Recorder Settings")
+    FlacSettings(InnerNode *parent)
+        : InnerNode(parent, "Recorder Settings")
     {
       children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recorder"));
     }
