@@ -640,7 +640,9 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
       else
         encoded = dsp_host_dual::CC_Range_14_Bit::encodeUnipolarMidiValue(pos);
 
+      auto lsbValByte = static_cast<uint8_t>(encoded & 0x7F);
       auto msbValByte = static_cast<uint8_t>(encoded >> 7 & 0x7F);
+      nltools::Log::error("lsb:", lsbValByte, "msb:", msbValByte, "hwID", hwID);
 
       if(behaviour == C15::Properties::HW_Return_Behavior::Center)
         pos = dsp_host_dual::CC_Range_14_Bit::decodeBipolarMidiValue(msbValByte);
