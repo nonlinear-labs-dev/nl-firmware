@@ -17,6 +17,71 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
             std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
+template <>
+bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::Option>(int hwID, uint8_t lsb, uint8_t msb)
+{
+  auto didChange = false;
+  auto &latchedPos = m_latchedHWPositions[hwID];
+  if(m_options->is14BitSupportEnabled())
+  {
+    if(latchedPos[0] != lsb)
+    {
+      latchedPos[0] = lsb;
+      didChange = true;
+    }
+    if(latchedPos[1] != msb)
+    {
+      latchedPos[1] = msb;
+      didChange = true;
+    }
+  }
+  else
+  {
+    if(latchedPos[1] != msb)
+    {
+      latchedPos[1] = msb;
+      didChange = true;
+    }
+  }
+
+  return didChange;
+}
+
+template <>
+bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::LSBAndMSB>(int hwID, uint8_t lsb, uint8_t msb)
+{
+  auto didChange = false;
+  auto &latchedPos = m_latchedHWPositions[hwID];
+
+  if(latchedPos[0] != lsb)
+  {
+    latchedPos[0] = lsb;
+    didChange = true;
+  }
+  if(latchedPos[1] != msb)
+  {
+    latchedPos[1] = msb;
+    didChange = true;
+  }
+
+  return didChange;
+}
+
+template <>
+bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::OnlyMSB>(int hwID, uint8_t lsb, uint8_t msb)
+{
+  auto didChange = false;
+  auto &latchedPos = m_latchedHWPositions[hwID];
+
+  if(latchedPos[1] != msb)
+  {
+    latchedPos[1] = msb;
+    didChange = true;
+  }
+
+  return didChange;
+}
+
 void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
 {
   if(m_tcdDecoder.decode(tcdEvent))
@@ -370,31 +435,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
   auto lsbValByte = static_cast<uint8_t>(value & 0x7F);
   auto msbValByte = static_cast<uint8_t>(value >> 7 & 0x7F);
 
-  auto sendOut = false;
-  auto &latchedPos = m_latchedHWPositions[hwID];
-  if(m_options->is14BitSupportEnabled())
-  {
-    if(latchedPos[0] != lsbValByte)
-    {
-      latchedPos[0] = lsbValByte;
-      sendOut = true;
-    }
-    if(latchedPos[1] != msbValByte)
-    {
-      latchedPos[1] = msbValByte;
-      sendOut = true;
-    }
-  }
-  else
-  {
-    if(latchedPos[1] != msbValByte)
-    {
-      latchedPos[1] = msbValByte;
-      sendOut = true;
-    }
-  }
-
-  if(!sendOut)
+  if(!latchHWPosition<LatchMode::Option>(hwID, lsbValByte, msbValByte))
     return;
 
   if(mainChannel != -1)
@@ -504,16 +545,7 @@ void InputEventStage::doSendAftertouchOut(float value)
     auto atStatusByte = static_cast<uint8_t>(0xD0);
     uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);  //msb
 
-    auto sendOut = false;
-    auto &latchedPos = m_latchedHWPositions[5];
-
-    if(latchedPos[1] != valByte)
-    {
-      latchedPos[1] = valByte;
-      sendOut = true;
-    }
-
-    if(!sendOut)
+    if(!latchHWPosition<LatchMode::OnlyMSB>(5, 0, valByte))
       return;
 
     if(mainChannel != -1)
@@ -540,21 +572,7 @@ void InputEventStage::doSendAftertouchOut(float value)
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
 
-    auto sendOut = false;
-    auto &latchedPos = m_latchedHWPositions[5];
-
-    if(latchedPos[0] != lsb)
-    {
-      latchedPos[0] = lsb;
-      sendOut = true;
-    }
-    if(latchedPos[1] != msb)
-    {
-      latchedPos[1] = msb;
-      sendOut = true;
-    }
-
-    if(!sendOut)
+    if(!latchHWPosition<LatchMode::LSBAndMSB>(5, lsb, msb))
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
@@ -599,21 +617,7 @@ void InputEventStage::doSendBenderOut(float value)
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
 
-    auto sendOut = false;
-    auto &latchedPos = m_latchedHWPositions[4];
-
-    if(latchedPos[0] != lsb)
-    {
-      latchedPos[0] = lsb;
-      sendOut = true;
-    }
-    if(latchedPos[1] != msb)
-    {
-      latchedPos[1] = msb;
-      sendOut = true;
-    }
-
-    if(!sendOut)
+    if(!latchHWPosition<LatchMode::LSBAndMSB>(4, lsb, msb))
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());

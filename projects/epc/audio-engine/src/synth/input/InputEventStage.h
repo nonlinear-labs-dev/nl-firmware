@@ -86,5 +86,14 @@ class InputEventStage
   KeyShift m_shifteable_keys;
   std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions;
 
+  enum class LatchMode
+  {
+    Option,
+    LSBAndMSB,
+    OnlyMSB
+  };
+
+  template <LatchMode> bool latchHWPosition(int hwID, uint8_t lsb, uint8_t msb);
+
   friend class InputEventStageTester;
 };
