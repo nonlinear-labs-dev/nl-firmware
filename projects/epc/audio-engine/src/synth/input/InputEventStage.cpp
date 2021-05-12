@@ -19,7 +19,7 @@ void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
 {
   if(m_tcdDecoder.decode(tcdEvent))
   {
-    onTCDEvent(&m_tcdDecoder);  //remove reference
+    onTCDEvent();
     m_tcdDecoder.reset();
   }
 }
@@ -28,111 +28,109 @@ void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
 {
   if(m_midiDecoder.decode(midiEvent))
   {
-    onMIDIEvent(&m_midiDecoder);  //remove reference
+    onMIDIEvent();
     m_midiDecoder.reset();
   }
 }
 
-void InputEventStage::onTCDEvent(TCDDecoder *decoder)
+void InputEventStage::onTCDEvent()
 {
-  if(decoder)
+  auto decoder = &m_tcdDecoder;
+  nltools_assertOnDevPC(decoder != nullptr);
+  VoiceGroup determinedPart = VoiceGroup::Global;
+  const SoundType soundType = m_dspHost->getType();
+  const bool soundValid = soundType != SoundType::Invalid;
+  const auto interface = DSPInterface::InputEventSource::Internal;
+
+  switch(decoder->getEventType())
   {
-    VoiceGroup determinedPart = VoiceGroup::Global;
-    const SoundType soundType = m_dspHost->getType();
-    const bool soundValid = soundType != SoundType::Invalid;
-    const auto interface = DSPInterface::InputEventSource::Internal;
-
-    switch(decoder->getEventType())
-    {
-      case DecoderEventType::KeyDown:
-        if(m_options->shouldReceiveLocalNotes())
+    case DecoderEventType::KeyDown:
+      if(m_options->shouldReceiveLocalNotes())
+      {
+        if(soundType == SoundType::Split)
         {
-          if(soundType == SoundType::Split)
-          {
-            determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
-            m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
-          }
-          else if(soundValid)
-          {
-            m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
-          }
+          determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
+          m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
         }
-        if(m_options->shouldSendNotes() && soundValid)
-          convertToAndSendMIDI(decoder, determinedPart);
-
-        break;
-      case DecoderEventType::KeyUp:
-        if(m_options->shouldReceiveLocalNotes())
+        else if(soundValid)
         {
-          if(soundType == SoundType::Split)
-          {
-            determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
-            m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
-          }
-          else if(soundValid)
-          {
-            m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
-          }
+          m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
         }
-        if(m_options->shouldSendNotes() && soundValid)
-          convertToAndSendMIDI(decoder, determinedPart);
+      }
+      if(m_options->shouldSendNotes() && soundValid)
+        convertToAndSendMIDI(decoder, determinedPart);
 
-        break;
-      case DecoderEventType::HardwareChange:
-        onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD);
+      break;
+    case DecoderEventType::KeyUp:
+      if(m_options->shouldReceiveLocalNotes())
+      {
+        if(soundType == SoundType::Split)
+        {
+          determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
+          m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
+        }
+        else if(soundValid)
+        {
+          m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
+        }
+      }
+      if(m_options->shouldSendNotes() && soundValid)
+        convertToAndSendMIDI(decoder, determinedPart);
 
-        break;
-      case DecoderEventType::UNKNOWN:
-        nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
-    }
+      break;
+    case DecoderEventType::HardwareChange:
+      onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD);
+
+      break;
+    case DecoderEventType::UNKNOWN:
+      nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
   }
 }
 
-void InputEventStage::onMIDIEvent(MIDIDecoder *decoder)
+void InputEventStage::onMIDIEvent()
 {
-  if(decoder)
+  auto decoder = &m_midiDecoder;
+  nltools_assertOnDevPC(decoder != nullptr);
+  const auto soundType = m_dspHost->getType();
+  const bool soundValid = soundType != SoundType::Invalid;
+
+  switch(decoder->getEventType())
   {
-    const auto soundType = m_dspHost->getType();
-    const bool soundValid = soundType != SoundType::Invalid;
+    case DecoderEventType::KeyDown:
+    case DecoderEventType::KeyUp:
+      if(checkMIDIKeyEventEnabled(decoder))
+      {
+        auto inputSource = getInputSourceFromParsedChannel(decoder->getChannel());
+        if(inputSource == DSPInterface::InputEventSource::Invalid)
+          return;
 
-    switch(decoder->getEventType())
-    {
-      case DecoderEventType::KeyDown:
-      case DecoderEventType::KeyUp:
-        if(checkMIDIKeyEventEnabled(decoder))
+        const auto receivedOnSecondary = inputSource == DSPInterface::InputEventSource::External_Secondary;
+
+        if(soundType == SoundType::Split)
         {
-          auto inputSource = getInputSourceFromParsedChannel(decoder->getChannel());
-          if(inputSource == DSPInterface::InputEventSource::Invalid)
-            return;
-
-          const auto receivedOnSecondary = inputSource == DSPInterface::InputEventSource::External_Secondary;
-
-          if(soundType == SoundType::Split)
-          {
-            auto determinedPart = calculateSplitPartForEvent(inputSource, decoder->getKeyOrControl());
-            if(decoder->getEventType() == DecoderEventType::KeyDown)
-              m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
-            else if(decoder->getEventType() == DecoderEventType::KeyUp)
-              m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
-          }
-          else if(soundValid && !receivedOnSecondary)
-          {
-            if(decoder->getEventType() == DecoderEventType::KeyUp)
-              m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
-            else if(decoder->getEventType() == DecoderEventType::KeyDown)
-              m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
-          }
+          auto determinedPart = calculateSplitPartForEvent(inputSource, decoder->getKeyOrControl());
+          if(decoder->getEventType() == DecoderEventType::KeyDown)
+            m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
+          else if(decoder->getEventType() == DecoderEventType::KeyUp)
+            m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
         }
-        break;
+        else if(soundValid && !receivedOnSecondary)
+        {
+          if(decoder->getEventType() == DecoderEventType::KeyUp)
+            m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
+          else if(decoder->getEventType() == DecoderEventType::KeyDown)
+            m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
+        }
+      }
+      break;
 
-      case DecoderEventType::HardwareChange:
-        if(checkMIDIHardwareChangeChannelMatches(decoder))
-          onMIDIHWChanged(decoder);
-        break;
+    case DecoderEventType::HardwareChange:
+      if(checkMIDIHardwareChangeChannelMatches(decoder))
+        onMIDIHWChanged(decoder);
+      break;
 
-      case DecoderEventType::UNKNOWN:
-        nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
-    }
+    case DecoderEventType::UNKNOWN:
+      nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
   }
 }
 
@@ -309,37 +307,21 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
 void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
 {
-  auto roundPedalToSwitching = [](float val) -> float
-  {
-    if(val >= 0.5f)
-      return 1.0f;
-    else
-      return 0.0f;
-  };
-
   switch(hwID)
   {
     case 0:
-      if(m_options->isSwitchingCC(0))
-        value = roundPedalToSwitching(value);
       sendCCOut(0, value, m_options->getCCFor<Midi::MSB::Ped1>(), m_options->getCCFor<Midi::LSB::Ped1>());
       break;
 
     case 1:
-      if(m_options->isSwitchingCC(1))
-        value = roundPedalToSwitching(value);
       sendCCOut(1, value, m_options->getCCFor<Midi::MSB::Ped2>(), m_options->getCCFor<Midi::LSB::Ped2>());
       break;
 
     case 2:
-      if(m_options->isSwitchingCC(2))
-        value = roundPedalToSwitching(value);
       sendCCOut(2, value, m_options->getCCFor<Midi::MSB::Ped3>(), m_options->getCCFor<Midi::LSB::Ped3>());
       break;
 
     case 3:
-      if(m_options->isSwitchingCC(3))
-        value = roundPedalToSwitching(value);
       sendCCOut(3, value, m_options->getCCFor<Midi::MSB::Ped4>(), m_options->getCCFor<Midi::LSB::Ped4>());
       break;
 
@@ -616,31 +598,6 @@ int InputEventStage::parameterIDToHWID(int id)
   }
 }
 
-int InputEventStage::HWIDToParameterID(int id)
-{
-  switch(id)
-  {
-    case 0:
-      return C15::PID::Pedal_1;
-    case 1:
-      return C15::PID::Pedal_2;
-    case 2:
-      return C15::PID::Pedal_3;
-    case 3:
-      return C15::PID::Pedal_4;
-    case 4:
-      return C15::PID::Bender;
-    case 5:
-      return C15::PID::Aftertouch;
-    case 6:
-      return C15::PID::Ribbon_1;
-    case 7:
-      return C15::PID::Ribbon_2;
-    default:
-      return -1;
-  }
-}
-
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
 
@@ -667,6 +624,32 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(m_options->shouldSendControllers() && source != DSPInterface::HWChangeSource::MIDI)
   {
+    const auto isPedal = hwID >= 0 && hwID < 4;
+    if(isPedal && m_options->isSwitchingCC(hwID))
+    {
+      pos = pos >= 0.5f ? 1.0f : 0.0f;
+    }
+
+    if(!m_options->is14BitSupportEnabled())
+    {
+      const auto behaviour = m_dspHost->getBehaviour(hwID);
+      const auto preConv = pos;
+      uint16_t encoded = 0;
+      if(behaviour == C15::Properties::HW_Return_Behavior::Center)
+        encoded = dsp_host_dual::CC_Range_14_Bit::encodeBipolarMidiValue(pos);
+      else
+        encoded = dsp_host_dual::CC_Range_14_Bit::encodeUnipolarMidiValue(pos);
+
+      auto msbValByte = static_cast<uint8_t>(encoded >> 7 & 0x7F);
+
+      if(behaviour == C15::Properties::HW_Return_Behavior::Center)
+        pos = dsp_host_dual::CC_Range_14_Bit::decodeBipolarMidiValue(msbValByte);
+      else
+        pos = dsp_host_dual::CC_Range_14_Bit::decodeUnipolarMidiValue(msbValByte);
+
+      nltools::Log::error("removed LSB part because 14 Bit Supp. is disabled. PreConv:", preConv, "after:", pos);
+    }
+
     if(filterUnchangedHWPositions(hwID, pos))
     {
       sendHardwareChangeAsMidi(hwID, pos);

@@ -45,12 +45,12 @@ bool InputEventStageTester::checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder
 
 void InputEventStageTester::onMIDIEvent(MIDIDecoder* decoder)
 {
-  m_inputStage->onMIDIEvent(decoder);
+  m_inputStage->onMIDIEvent();
 }
 
 void InputEventStageTester::onTCDEvent(TCDDecoder* decoder)
 {
-  m_inputStage->onTCDEvent(decoder);
+  m_inputStage->onTCDEvent();
 }
 
 void InputEventStageTester::sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart)

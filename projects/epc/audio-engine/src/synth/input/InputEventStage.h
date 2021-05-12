@@ -31,8 +31,8 @@ class InputEventStage
   //TCD/MIDI In
   bool checkMIDIKeyEventEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIHardwareChangeChannelMatches(MIDIDecoder* pDecoder);
-  void onMIDIEvent(MIDIDecoder* decoder);
-  void onTCDEvent(TCDDecoder* decoder);
+  void onMIDIEvent();
+  void onTCDEvent();
   void onMIDIHWChanged(MIDIDecoder* decoder);
 
   //Algorithm
@@ -44,7 +44,6 @@ class InputEventStage
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel);
   static int parameterIDToHWID(int id);
-  static int HWIDToParameterID(int id);
 
   //MIDI and UI out
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
@@ -90,17 +89,3 @@ class InputEventStage
 
   friend class InputEventStageTester;
 };
-
-//namespace InputStateDetail
-//{
-//  using Event = DSPInterface::InputEvent;
-//  using State = DSPInterface::InputState;
-//  using Source = DSPInterface::InputSource;
-//
-//  static constexpr Event Unknown = { Source::Unknown, State::Invalid };
-//  static constexpr Event TCD = { Source::TCD, State::Singular };
-//  static constexpr Event Singular = { Source::Primary, State::Singular };
-//  static constexpr Event Primary = { Source::Primary, State::Separate };
-//  static constexpr Event Both = { Source::Both, State::Separate };
-//  static constexpr Event Secondary = { Source::Secondary, State::Separate };
-//}
