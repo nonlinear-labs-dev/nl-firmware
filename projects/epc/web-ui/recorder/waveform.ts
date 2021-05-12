@@ -97,6 +97,7 @@ class Waveform extends Draggable {
         var center = c.height / 2;
         var rects = new Array<Rect>();
         var id = firstId;
+        var fistAvailableBarId = this.c15.getBars().first().id;
 
         for (var i = 0; i < c.width; i++) {
             var m = this.c15.getBars().getMax(id, this.zoom);
@@ -112,7 +113,7 @@ class Waveform extends Draggable {
             var fromBar = this.c15.getBars().get(from);
             var toBar = this.c15.getBars().get(to);
 
-            if (fromBar && toBar) {
+            if (fromBar && toBar && from >= fistAvailableBarId) {
                 var loadEvent = this.c15.getPresetLoadEvent(fromBar.recordTime, toBar.recordTime);
                 if (loadEvent) {
                     var presetTop = 65;
