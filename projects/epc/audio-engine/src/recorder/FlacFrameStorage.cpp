@@ -151,29 +151,11 @@ std::vector<std::unique_ptr<FlacEncoder::Frame> > FlacFrameStorage::Stream::getH
   assert(tgt[0]->buffer.size() == 4);   // exepected to be "fLaC";
   assert(tgt[1]->buffer.size() >= 22);  // exepected to have enough space for STREAMINFO;
 
-  Bitstream bits(tgt[1]->buffer);
-
   // see https://xiph.org/flac/format.html#metadata_block_streaminfo
   // METADATA_BLOCK_HEADER
+  Bitstream bits(tgt[1]->buffer);
   bits.seek(140);
   bits.patch(36, numSamples);
-
-#if DEV_PC
-  Bitstream test(tgt[1]->buffer);
-  assert(test.read(1) == 0);
-  assert(test.read(7) == 0);
-  test.read(24);
-
-  // METADATA_BLOCK_STREAMINFO
-  test.read(16);
-  test.read(16);
-  test.read(24);
-  test.read(24);
-  assert(test.read(20) == 48000);
-  assert(test.read(3) == 1);
-  assert(test.read(5) == 23);
-  assert(test.read(36) == numSamples);
-#endif
 
   return tgt;
 }
