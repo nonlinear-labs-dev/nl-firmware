@@ -1,6 +1,55 @@
 #include "FlacFrameStorage.h"
 #include <nltools/logging/Log.h>
 
+struct Bitstream
+{
+  Bitstream(std::vector<uint8_t> &d)
+      : data(d)
+  {
+  }
+
+  void seek(uint64_t toBit)
+  {
+    pos = toBit;
+  }
+
+  uint64_t read(uint32_t numBits)
+  {
+    uint64_t ret = 0;
+    for(uint32_t i = 0; i < numBits; i++)
+      ret |= readBit() << (numBits - i - 1);
+
+    return ret;
+  }
+
+  void patch(uint32_t numBits, uint64_t num)
+  {
+    for(uint32_t i = 0; i < numBits; i++)
+      patchBit((num >> (numBits - i - 1)) & 0x01);
+  }
+
+  uint64_t readBit()
+  {
+    auto byte = pos / 8;
+    auto bit = 7 - (pos % 8);
+    pos++;
+    return (data[byte] >> bit) & 0x01;
+  }
+
+  void patchBit(uint32_t i)
+  {
+    auto byte = pos / 8;
+    auto bit = 7 - (pos % 8);
+    pos++;
+    uint8_t mask = ~(1 << bit);
+    data[byte] &= mask;
+    data[byte] |= i << bit;
+  }
+
+  std::vector<uint8_t> &data;
+  uint32_t pos = 0;
+};
+
 FlacFrameStorage::FlacFrameStorage(uint64_t maxMemUsage)
     : m_maxMemUsage(maxMemUsage)
 {
@@ -135,6 +184,46 @@ bool FlacFrameStorage::Stream::next(std::function<void(const FlacEncoder::Frame 
   auto frame = *(it++)->get();
   cb(frame, it == end);
   return true;
+}
+
+std::vector<std::unique_ptr<FlacEncoder::Frame> > FlacFrameStorage::Stream::getHeaders() const
+{
+  std::vector<std::unique_ptr<FlacEncoder::Frame> > tgt;
+
+  for(auto &s : storage->getHeaders())
+    tgt.push_back(std::make_unique<FlacEncoder::Frame>(*s));
+
+  auto dist = std::distance(it, end);
+  auto numSamples = dist * FlacEncoder::flacFrameSize;
+
+  assert(tgt[0]->buffer.size() == 4);   // exepected to be "fLaC";
+  assert(tgt[1]->buffer.size() >= 22);  // exepected to have enough space for STREAMINFO;
+
+  Bitstream bits(tgt[1]->buffer);
+
+  // see https://xiph.org/flac/format.html#metadata_block_streaminfo
+  // METADATA_BLOCK_HEADER
+  bits.seek(140);
+  bits.patch(36, numSamples);
+
+#if DEV_PC
+  Bitstream test(tgt[1]->buffer);
+  assert(test.read(1) == 0);
+  assert(test.read(7) == 0);
+  test.read(24);
+
+  // METADATA_BLOCK_STREAMINFO
+  test.read(16);
+  test.read(16);
+  test.read(24);
+  test.read(24);
+  assert(test.read(20) == 48000);
+  assert(test.read(3) == 1);
+  assert(test.read(5) == 23);
+  assert(test.read(36) == numSamples);
+#endif
+
+  return tgt;
 }
 
 bool FlacFrameStorage::Stream::getFirstAndLast(

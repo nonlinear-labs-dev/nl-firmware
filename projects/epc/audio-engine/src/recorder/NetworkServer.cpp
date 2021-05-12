@@ -67,10 +67,12 @@ void NetworkServer::stream(SoupServer *server, SoupMessage *msg, const char *pat
     auto wroteChunkHandler
         = g_signal_connect(G_OBJECT(msg), "wrote-chunk", G_CALLBACK(&NetworkServer::onChunkWritten), pThis);
 
-    for(auto &h : pThis->m_storage->getHeaders())
+    auto stream = pThis->m_storage->startStream(begin, end);
+
+    for(const auto &h : stream->getHeaders())
       soup_message_body_append(msg->response_body, SOUP_MEMORY_COPY, h->buffer.data(), h->buffer.size());
 
-    pThis->m_streams.push_back({ msg, pThis->m_storage->startStream(begin, end), wroteChunkHandler });
+    pThis->m_streams.push_back({ msg, std::move(stream), wroteChunkHandler });
     onChunkWritten(msg, pThis);
   }
   else
