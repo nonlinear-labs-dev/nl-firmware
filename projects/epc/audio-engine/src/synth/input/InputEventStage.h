@@ -85,8 +85,7 @@ class InputEventStage
   HWChangedNotification m_hwChangedCB;
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<std::array<uint8_t, 2>, 8> m_latchedHWPositions { { std::numeric_limits<uint8_t>::max(),
-                                                                 std::numeric_limits<uint8_t>::max() } };
+  std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions;
 
   friend class InputEventStageTester;
 };

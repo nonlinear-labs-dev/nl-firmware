@@ -13,6 +13,8 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
+  std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
+            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
@@ -655,28 +657,6 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     if(isPedal && m_options->isSwitchingCC(hwID))
     {
       pos = pos >= 0.5f ? 1.0f : 0.0f;
-    }
-
-    if(!m_options->is14BitSupportEnabled())
-    {
-      const auto behaviour = m_dspHost->getBehaviour(hwID);
-      const auto preConv = pos;
-      uint16_t encoded = 0;
-      if(behaviour == C15::Properties::HW_Return_Behavior::Center)
-        encoded = dsp_host_dual::CC_Range_14_Bit::encodeBipolarMidiValue(pos);
-      else
-        encoded = dsp_host_dual::CC_Range_14_Bit::encodeUnipolarMidiValue(pos);
-
-      auto lsbValByte = static_cast<uint8_t>(encoded & 0x7F);
-      auto msbValByte = static_cast<uint8_t>(encoded >> 7 & 0x7F);
-      nltools::Log::error("lsb:", lsbValByte, "msb:", msbValByte, "hwID", hwID);
-
-      if(behaviour == C15::Properties::HW_Return_Behavior::Center)
-        pos = dsp_host_dual::CC_Range_14_Bit::decodeBipolarMidiValue(msbValByte);
-      else
-        pos = dsp_host_dual::CC_Range_14_Bit::decodeUnipolarMidiValue(msbValByte);
-
-      nltools::Log::error("removed LSB part because 14 Bit Supp. is disabled. PreConv:", preConv, "after:", pos);
     }
 
     sendHardwareChangeAsMidi(hwID, pos);
