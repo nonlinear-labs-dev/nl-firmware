@@ -153,8 +153,9 @@ std::vector<std::unique_ptr<FlacEncoder::Frame> > FlacFrameStorage::Stream::getH
 
   // see https://xiph.org/flac/format.html#metadata_block_streaminfo
   // METADATA_BLOCK_HEADER
+  constexpr auto c_numSamplesPosition = 172;
   Bitstream bits(tgt[1]->buffer);
-  bits.seek(140);
+  bits.seek(c_numSamplesPosition);
   bits.patch(36, numSamples);
 
   return tgt;

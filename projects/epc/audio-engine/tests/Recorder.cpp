@@ -52,6 +52,8 @@ TEST_CASE("FlacDecoder In=Out")
   SampleFrame in[numFrames + 1];
   SampleFrame out[numFrames];
 
+  g_random_set_seed(0);
+
   for(int i = 0; i < numFrames; i++)
   {
     in[i].left = g_random_double_range(-1, 1);
@@ -114,6 +116,8 @@ TEST_CASE("Recorder InOut")
 
   SampleFrame in[numFrames];
 
+  g_random_set_seed(0);
+
   for(auto i = 0; i < numFrames; i++)
   {
     in[i].left = g_random_double_range(-1, 1);
@@ -169,6 +173,62 @@ TEST_CASE("Bitstream")
   writer.seek(123);
   writer.patch(12, 0xFFFFFFFFFFFFFFFF);
 
-  reader.seek(123);
+  reader.seek(120);
+  REQUIRE(reader.read(3) == 0);
   REQUIRE(reader.read(12) == 0xFFF);
+  REQUIRE(reader.read(5) == 0);
+
+  writer.patch(7, 100);
+
+  reader.seek(120 + 3 + 12);
+  REQUIRE(reader.read(7) == 100);
+}
+
+TEST_CASE("Bitstream on FlacHeader")
+{
+  // audacity egnerated header
+  std::vector<uint8_t> flacHeader
+      = { 0x66, 0x4c, 0x61, 0x43, 0x00, 0x00, 0x00, 0x22, 0x10, 0x00, 0x10, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00,
+          0x0a, 0xc4, 0x42, 0xf0, 0x00, 0x00, 0x00, 0x00, 0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80,
+          0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e, 0x84, 0x00, 0x00, 0x28, 0x20, 0x00, 0x00, 0x00, 0x72, 0x65, 0x66, 0x65,
+          0x72, 0x65, 0x6e, 0x63, 0x65, 0x20, 0x6c, 0x69, 0x62, 0x46, 0x4c, 0x41, 0x43, 0x20, 0x31, 0x2e, 0x33, 0x2e,
+          0x33, 0x20, 0x32, 0x30, 0x31, 0x39, 0x30, 0x38, 0x30, 0x34, 0x00, 0x00, 0x00, 0x00 };
+
+  Bitstream s(flacHeader);
+  REQUIRE(s.read(8) == 'f');
+  REQUIRE(s.read(8) == 'L');
+  REQUIRE(s.read(8) == 'a');
+  REQUIRE(s.read(8) == 'C');
+  REQUIRE(s.read(1) == 0);          // not the last meta data block
+  REQUIRE(s.read(7) == 0);          // block type STREAMINFO
+  REQUIRE(s.read(24) == 34);        // header length
+  REQUIRE(s.read(16) == 4096);      // min block size
+  REQUIRE(s.read(16) == 4096);      // max block size
+  REQUIRE(s.read(24) == 0xffffff);  // min frame size
+  REQUIRE(s.read(24) == 0);         // max frame size
+  REQUIRE(s.read(20) == 44100);     // sample rate
+  REQUIRE(s.read(3) == 1);          // num channels - 2
+  REQUIRE(s.read(5) == 15);         // bits - 1
+  REQUIRE(s.read(36) == 0);         // numFrames
+
+  Bitstream patchLength(flacHeader);
+  patchLength.seek(172);
+  patchLength.patch(36, 1234567890);
+
+  Bitstream check(flacHeader);
+  REQUIRE(check.read(8) == 'f');
+  REQUIRE(check.read(8) == 'L');
+  REQUIRE(check.read(8) == 'a');
+  REQUIRE(check.read(8) == 'C');
+  REQUIRE(check.read(1) == 0);            // not the last meta data block
+  REQUIRE(check.read(7) == 0);            // block type STREAMINFO
+  REQUIRE(check.read(24) == 34);          // header length
+  REQUIRE(check.read(16) == 4096);        // min block size
+  REQUIRE(check.read(16) == 4096);        // max block size
+  REQUIRE(check.read(24) == 0xffffff);    // min frame size
+  REQUIRE(check.read(24) == 0);           // max frame size
+  REQUIRE(check.read(20) == 44100);       // sample rate
+  REQUIRE(check.read(3) == 1);            // num channels - 2
+  REQUIRE(check.read(5) == 15);           // bits - 1
+  REQUIRE(check.read(36) == 1234567890);  // numFrames
 }
