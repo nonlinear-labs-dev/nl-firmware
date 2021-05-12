@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <thread>
+#include <recorder/Bitstream.h>
 
 TEST_CASE("FlacDecoder")
 {

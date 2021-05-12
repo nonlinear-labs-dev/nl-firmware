@@ -1,4 +1,5 @@
 #include "FlacFrameStorage.h"
+#include "Bitstream.h"
 #include <nltools/logging/Log.h>
 
 FlacFrameStorage::FlacFrameStorage(uint64_t maxMemUsage)
