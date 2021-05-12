@@ -43,12 +43,12 @@ bool InputEventStageTester::checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder
   return m_inputStage->checkMIDIHardwareChangeChannelMatches(pDecoder);
 }
 
-void InputEventStageTester::onMIDIEvent(MIDIDecoder* decoder)
+void InputEventStageTester::onMIDIEvent()
 {
   m_inputStage->onMIDIEvent();
 }
 
-void InputEventStageTester::onTCDEvent(TCDDecoder* decoder)
+void InputEventStageTester::onTCDEvent()
 {
   m_inputStage->onTCDEvent();
 }

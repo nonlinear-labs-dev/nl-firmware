@@ -12,6 +12,16 @@ class MidiRuntimeOptions;
 
 class InputEventStage
 {
+ private:
+  constexpr static auto PEDAL1 = 0;
+  constexpr static auto PEDAL2 = 1;
+  constexpr static auto PEDAL3 = 2;
+  constexpr static auto PEDAL4 = 3;
+  constexpr static auto BENDER = 4;
+  constexpr static auto AFTERTOUCH = 5;
+  constexpr static auto RIBBON1 = 6;
+  constexpr static auto RIBBON2 = 7;
+
  public:
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;

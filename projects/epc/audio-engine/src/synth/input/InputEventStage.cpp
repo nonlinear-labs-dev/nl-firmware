@@ -18,36 +18,6 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
 }
 
 template <>
-bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::Option>(int hwID, uint8_t lsb, uint8_t msb)
-{
-  auto didChange = false;
-  auto &latchedPos = m_latchedHWPositions[hwID];
-  if(m_options->is14BitSupportEnabled())
-  {
-    if(latchedPos[0] != lsb)
-    {
-      latchedPos[0] = lsb;
-      didChange = true;
-    }
-    if(latchedPos[1] != msb)
-    {
-      latchedPos[1] = msb;
-      didChange = true;
-    }
-  }
-  else
-  {
-    if(latchedPos[1] != msb)
-    {
-      latchedPos[1] = msb;
-      didChange = true;
-    }
-  }
-
-  return didChange;
-}
-
-template <>
 bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::LSBAndMSB>(int hwID, uint8_t lsb, uint8_t msb)
 {
   auto didChange = false;
@@ -80,6 +50,19 @@ bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::OnlyMSB>(int h
   }
 
   return didChange;
+}
+
+template <>
+bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::Option>(int hwID, uint8_t lsb, uint8_t msb)
+{
+  if(m_options->is14BitSupportEnabled())
+  {
+    return latchHWPosition<LatchMode::LSBAndMSB>(hwID, lsb, msb);
+  }
+  else
+  {
+    return latchHWPosition<LatchMode::OnlyMSB>(hwID, lsb, msb);
+  }
 }
 
 void InputEventStage::onTCDMessage(const MidiEvent &tcdEvent)
@@ -532,7 +515,7 @@ void InputEventStage::doSendAftertouchOut(float value)
 
   if(atLSB.has_value() && atMSB.has_value())
   {
-    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value(), 5);
+    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value(), AFTERTOUCH);
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {
@@ -545,7 +528,7 @@ void InputEventStage::doSendAftertouchOut(float value)
     auto atStatusByte = static_cast<uint8_t>(0xD0);
     uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);  //msb
 
-    if(!latchHWPosition<LatchMode::OnlyMSB>(5, 0, valByte))
+    if(!latchHWPosition<LatchMode::OnlyMSB>(AFTERTOUCH, 0, valByte))
       return;
 
     if(mainChannel != -1)
@@ -572,7 +555,7 @@ void InputEventStage::doSendAftertouchOut(float value)
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
 
-    if(!latchHWPosition<LatchMode::LSBAndMSB>(5, lsb, msb))
+    if(!latchHWPosition<LatchMode::LSBAndMSB>(AFTERTOUCH, lsb, msb))
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
@@ -607,7 +590,7 @@ void InputEventStage::doSendBenderOut(float value)
     using CC_Range_14_Bit = Midi::clipped14BitCCRange;
     auto lsbCC = benderLSB.value();
     auto msbCC = benderMSB.value();
-    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, 4);
+    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, BENDER);
   }
   else if(m_options->getBenderSetting() != BenderCC::None)
   {
@@ -617,7 +600,7 @@ void InputEventStage::doSendBenderOut(float value)
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
 
-    if(!latchHWPosition<LatchMode::LSBAndMSB>(4, lsb, msb))
+    if(!latchHWPosition<LatchMode::LSBAndMSB>(BENDER, lsb, msb))
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
