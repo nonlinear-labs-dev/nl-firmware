@@ -18,7 +18,6 @@ class FlacFrameStorage
     bool eos() const;
     bool next(std::function<void(const FlacEncoder::Frame &, bool last)> cb);
 
-    std::vector<std::unique_ptr<FlacEncoder::Frame>> getHeaders() const;
     bool getFirstAndLast(std::function<void(const FlacEncoder::Frame &first, const FlacEncoder::Frame &last)> cb);
 
    private:
