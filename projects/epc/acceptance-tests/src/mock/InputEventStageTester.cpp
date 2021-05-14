@@ -43,14 +43,14 @@ bool InputEventStageTester::checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder
   return m_inputStage->checkMIDIHardwareChangeChannelMatches(pDecoder);
 }
 
-void InputEventStageTester::onMIDIEvent(MIDIDecoder* decoder)
+void InputEventStageTester::onMIDIEvent()
 {
-  m_inputStage->onMIDIEvent(decoder);
+  m_inputStage->onMIDIEvent();
 }
 
-void InputEventStageTester::onTCDEvent(TCDDecoder* decoder)
+void InputEventStageTester::onTCDEvent()
 {
-  m_inputStage->onTCDEvent(decoder);
+  m_inputStage->onTCDEvent();
 }
 
 void InputEventStageTester::sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart)
@@ -78,9 +78,9 @@ void InputEventStageTester::sendCCOut(int hwID, float value, int msbCC, int lsbC
   m_inputStage->sendCCOut(hwID, value, msbCC, lsbCC);
 }
 
-void InputEventStageTester::doSendCCOut(uint16_t value, int msbCC, int lsbCC)
+void InputEventStageTester::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID)
 {
-  m_inputStage->doSendCCOut(value, msbCC, lsbCC);
+  m_inputStage->doSendCCOut(value, msbCC, lsbCC, hwID);
 }
 
 VoiceGroup InputEventStageTester::calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, int keyNumber)

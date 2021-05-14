@@ -44,6 +44,7 @@
 #include <device-settings/SplitPointSyncParameters.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <libundo/undo/ContinuousTransaction.h>
+#include "LoadedPresetLog.h"
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
@@ -52,6 +53,7 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_recallSet(this)
     , m_type(SoundType::Single)
     , m_lastSelectedParameter { 0, VoiceGroup::I }
+    , m_loadedPresetLog(std::make_unique<LoadedPresetLog>())
 {
   m_hashOnStore = getHash();
 }
@@ -198,6 +200,7 @@ UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)
 void EditBuffer::doDeferedJobs()
 {
   checkModified();
+  m_loadedPresetLog->update(m_presetOriginDescription);
 }
 
 void EditBuffer::checkModified()
@@ -493,18 +496,46 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
 void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset)
 {
   Uuid newId = Uuid::none();
+  std::string presetOriginDescription = "Init";
+
   if(preset)
   {
     setName(transaction, preset->getName());
     setVoiceGroupName(transaction, preset->getVoiceGroupName(VoiceGroup::I), VoiceGroup::I);
     setVoiceGroupName(transaction, preset->getVoiceGroupName(VoiceGroup::II), VoiceGroup::II);
     newId = preset->getUuid();
+
+    if(auto d = preset->getOriginDescription())
+    {
+      presetOriginDescription = d.value();
+    }
+    else
+    {
+      auto pm = getParent();
+
+      if(auto preset = pm->findPreset(newId))
+      {
+        if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
+        {
+          auto pPos = bank->getPresetPosition(preset);
+          auto bPos = pm->getBankPosition(bank->getUuid());
+          auto bName = bank->getName(true);
+          presetOriginDescription
+              = StringTools::buildString(bPos + 1, ": ", bName, " / ", pPos + 1, ": ", preset->getName());
+        }
+        else
+        {
+          presetOriginDescription = preset->getName();
+        }
+      }
+    }
   }
 
-  auto swap = UNDO::createSwapData(std::move(newId));
+  auto swap = UNDO::createSwapData(std::move(newId), std::move(presetOriginDescription));
 
   transaction->addSimpleCommand([=](auto) {
-    swap->swapWith(m_lastLoadedPreset);
+    swap->swapWith<0>(m_lastLoadedPreset);
+    swap->swapWith<1>(m_presetOriginDescription);
     m_signalPresetLoaded.send();
     onChange();
   });
@@ -1280,7 +1311,6 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
 void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset,
                                                VoiceGroup loadInto)
 {
-
   {
     auto toFxParam = findParameterByID({ C15::PID::Out_Mix_To_FX, loadInto });
 
@@ -1532,6 +1562,22 @@ void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, Sound
 int EditBuffer::getSelectedParameterNumber() const
 {
   return m_lastSelectedParameter.getNumber();
+}
+
+std::string EditBuffer::getPresetOriginDescription() const
+{
+  if(m_lastLoadedPreset == Uuid::init())
+    return "Init";
+
+  if(m_lastLoadedPreset == Uuid::converted())
+    return "Converted";
+
+  return m_presetOriginDescription;
+}
+
+LoadedPresetLog *EditBuffer::getLoadedPresetLog() const
+{
+  return m_loadedPresetLog.get();
 }
 
 void EditBuffer::fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group)

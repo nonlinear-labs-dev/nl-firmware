@@ -345,7 +345,6 @@ public class PresetManager extends MapsLayout {
 
 		readSelectedMidiBank(banks);
 		selectedBank = banks.getAttributes().getNamedItem("selected-bank").getNodeValue();
-		GWT.log("selected Bank:" + selectedBank);
 		NodeList bankList = banks.getChildNodes();
 
 		for (int i = 0; i < bankList.getLength(); i++) {
@@ -712,6 +711,9 @@ public class PresetManager extends MapsLayout {
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/NonMaps/MCView/index.html", "", "");
+		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_R
+				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
+			Window.open("/NonMaps/recorder/index.html", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ONE
 				|| keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_ONE) {
 			EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.I);

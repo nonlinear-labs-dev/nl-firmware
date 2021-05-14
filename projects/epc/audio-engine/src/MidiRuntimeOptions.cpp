@@ -193,14 +193,14 @@ std::optional<int> MidiRuntimeOptions::decodeEnumLSB(PedalCC cc)
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(RibbonCC cc)
 {
   if(cc == RibbonCC::None)
-    return -1;
+    return std::nullopt;
   return static_cast<int>(cc);
 }
 
 std::optional<int> MidiRuntimeOptions::decodeEnumLSB(RibbonCC cc)
 {
   if(cc == RibbonCC::None)
-    return -1;
+    return std::nullopt;
   return static_cast<int>(cc) + 32;
 }
 

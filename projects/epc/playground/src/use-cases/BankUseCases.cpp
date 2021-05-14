@@ -8,6 +8,10 @@
 #include <device-settings/Settings.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <Application.h>
+#include <tools/FileSystem.h>
+#include <tools/TimeTools.h>
+#include <xml/FileOutStream.h>
+#include <xml/VersionAttribute.h>
 
 BankUseCases::BankUseCases(Bank* bank)
     : m_bank { bank }
@@ -101,10 +105,12 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset([&](auto p) {
-        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
-        i++;
-      });
+      source->forEachPreset(
+          [&](auto p)
+          {
+            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
+            i++;
+          });
     }
   }
 }
@@ -211,4 +217,15 @@ void BankUseCases::setCollapsed(bool b)
   auto transaction = scope->getTransaction();
   m_bank->setAttribute(transaction, "collapsed", b ? "true" : "false");
   m_bank->updateLastModifiedTimestamp(transaction);
+}
+
+void BankUseCases::exportBankToFile(const std::string& outFile)
+{
+  GenericScopeGuard syncAfterAllFileOperation([] {}, FileSystem::syncAll);
+  auto scope = UNDO::Scope::startTrashTransaction();
+  m_bank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
+  m_bank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
+  PresetBankSerializer serializer(m_bank, false);
+  XmlWriter writer(std::make_unique<FileOutStream>(outFile, false));
+  serializer.write(writer, VersionAttribute::get());
 }

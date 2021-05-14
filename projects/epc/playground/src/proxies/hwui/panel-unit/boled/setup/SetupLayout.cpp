@@ -71,6 +71,7 @@
 #include <device-settings/SyncVoiceGroupsAcrossUIS.h>
 #include "UISoftwareVersionEditor.h"
 #include "ScreenSaverTimeControls.h"
+#include "MenuEditorEntry.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -90,6 +91,9 @@
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
+#include <device-settings/flac/AutoStartRecorderSetting.h>
+
+#include <presets/Bank.h>
 
 namespace NavTree
 {
@@ -845,6 +849,129 @@ namespace NavTree
     }
   };
 
+  struct MidiProgramChangeBank : EditableLeaf
+  {
+   private:
+    struct View : SetupLabel
+    {
+      View()
+          : SetupLabel({ 0, 0, 0, 0 })
+      {
+      }
+
+      StringAndSuffix getText() const override
+      {
+        auto pm = Application::get().getPresetManager();
+        auto selected = pm->getMidiSelectedBank();
+        auto selectedBank = pm->findBank(selected);
+
+        if(selectedBank)
+        {
+          auto pos = pm->getBankPosition(selected);
+          return { std::to_string(pos + 1) + "-" + selectedBank->getName(true), 0 };
+        }
+        else
+        {
+          return { "none", 0 };
+        }
+      }
+    };
+
+    struct Editor : MenuEditor
+    {
+      Editor()
+          : MenuEditor()
+      {
+        m_midiSelectionChanged
+            = getPresetManager()->onMidiBankSelectionHappened([this](auto uuid) { updateOnSettingChanged(); });
+      }
+
+      ~Editor() override
+      {
+        m_midiSelectionChanged.disconnect();
+      }
+
+     protected:
+      sigc::connection m_midiSelectionChanged;
+      static PresetManager *getPresetManager()
+      {
+        return Application::get().getPresetManager();
+      }
+
+      static Bank *getMidiBank()
+      {
+        return getPresetManager()->findMidiSelectedBank();
+      }
+
+      void incSetting(int inc) override
+      {
+        auto pm = getPresetManager();
+        PresetManagerUseCases useCase(pm);
+        const auto numBanks = pm->getNumBanks();
+
+        if(auto current = getMidiBank())
+        {
+          auto currentIndex = getSelectedIndex();
+          auto newIndex = currentIndex + inc;
+          auto size = getDisplayStrings().size();
+
+          newIndex %= static_cast<int>(size);
+
+          if(newIndex != 0)
+            useCase.selectMidiBank(pm->getBankAt(newIndex - 1));
+          else
+            useCase.selectMidiBank(nullptr);
+        }
+        else if(numBanks > 0)
+        {
+          if(inc > 0)
+            useCase.selectMidiBank(pm->getBankAt(0));
+          else if(inc < 0)
+            useCase.selectMidiBank(pm->getBankAt(pm->getNumBanks() - 1));
+        }
+      }
+
+      const std::vector<Glib::ustring> &getDisplayStrings() const override
+      {
+        static std::vector<Glib::ustring> sBankStrings;
+        auto pm = Application::get().getPresetManager();
+        int displayIndex = 1;
+        sBankStrings.clear();
+        sBankStrings.emplace_back("None");
+        for(auto b : pm->getBanks())
+        {
+          sBankStrings.emplace_back(std::to_string(displayIndex) + "-" + b->getName(true));
+          displayIndex++;
+        }
+        return sBankStrings;
+      }
+
+      int getSelectedIndex() const override
+      {
+        if(auto sel = getMidiBank())
+          return static_cast<int>(getPresetManager()->getBankPosition(sel->getUuid()) + 1);
+        else
+          return 0;
+      }
+    };
+
+   public:
+    explicit MidiProgramChangeBank(InnerNode *n)
+        : EditableLeaf(n, "Program Change Bank \uE0C1")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new View();
+    }
+
+    Control *createEditor() override
+    {
+      return new Editor();
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -854,6 +981,16 @@ namespace NavTree
       children.emplace_back(new MidiSendSettings(this));
       children.emplace_back(new MidiLocalSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
+      children.emplace_back(new MidiProgramChangeBank(this));
+    }
+  };
+
+  struct FlacSettings : InnerNode
+  {
+    FlacSettings(InnerNode *parent)
+        : InnerNode(parent, "Recorder Settings")
+    {
+      children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recorder"));
     }
   };
 
@@ -865,6 +1002,7 @@ namespace NavTree
       children.emplace_back(new DeviceSettings(this));
       children.emplace_back(new HardwareUI(this));
       children.emplace_back(new MidiSettings(this));
+      children.emplace_back(new FlacSettings(this));
       children.emplace_back(new SystemInfo(this));
       children.emplace_back(new About(this));
       children.emplace_back(new Backup(this));

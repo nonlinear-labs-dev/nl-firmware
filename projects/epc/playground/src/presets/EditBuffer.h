@@ -6,7 +6,6 @@
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
-
 #include <utility>
 
 class Application;
@@ -14,6 +13,7 @@ class Writer;
 class PresetManager;
 class HWUI;
 class SplitPointParameter;
+class LoadedPresetLog;
 
 class EditBuffer : public ParameterGroupSet
 {
@@ -32,6 +32,9 @@ class EditBuffer : public ParameterGroupSet
   const Preset *getOrigin() const;
   Parameter *getSelected(VoiceGroup voiceGroup) const;
   int getSelectedParameterNumber() const;
+  std::string getPresetOriginDescription() const;
+
+  LoadedPresetLog *getLoadedPresetLog() const;
 
   bool isZombie() const;
 
@@ -196,6 +199,10 @@ class EditBuffer : public ParameterGroupSet
   bool isMonoEnabled(const VoiceGroup &vg) const;
   bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 
+  bool isPartLabelChanged(VoiceGroup group) const;
+  void cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset *p);
+  void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
+
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   Signal<void, Parameter *> m_signalReselectParameter;
   SignalWithCache<void, bool> m_signalModificationState;
@@ -219,6 +226,7 @@ class EditBuffer : public ParameterGroupSet
   Uuid m_lastLoadedPreset;
 
   Glib::ustring m_name;
+  std::string m_presetOriginDescription;
   std::array<Glib::ustring, 2> m_voiceGroupLabels;
 
   DelayedJob m_deferredJobs;
@@ -231,7 +239,6 @@ class EditBuffer : public ParameterGroupSet
   size_t m_hashOnStore;
 
   mutable Preset *m_originCache { nullptr };
-  bool isPartLabelChanged(VoiceGroup group) const;
-  void cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset *p);
-  void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
+
+  std::unique_ptr<LoadedPresetLog> m_loadedPresetLog;
 };

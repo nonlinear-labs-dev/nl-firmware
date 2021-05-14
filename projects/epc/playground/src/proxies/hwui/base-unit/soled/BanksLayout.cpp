@@ -39,8 +39,8 @@ BanksLayout::BanksLayout()
   addControl(new SoledHeader("Bank", Rect(0, 0, 31, headlineHeight + 1)));
 
   m_number = addControl(new LabelRegular8("", Rect(32, 1, 64, headlineHeight - 1)));
-  m_name = addControl(new ShortenLabel("", Rect(9, headlineHeight + 2, 110, 32 - headlineHeight - 2)));
-  m_midiSymbol = addControl(new LabelRegular8("\uE0C1", Rect(119, headlineHeight + 2, 9, 32 - headlineHeight - 2)));
+  m_name = addControl(new ShortenLabel("", Rect(9, headlineHeight + 2, 107, 32 - headlineHeight - 2)));
+  m_midiSymbol = addControl(new LabelRegular8("\uE0C1", Rect(116, headlineHeight + 2, 9, 32 - headlineHeight - 2)));
   m_midiSymbol->setVisible(false);
   m_directLoad = addControl(new DirectLoadIndicator(Rect(96, 0, 32, headlineHeight)));
   addControl(new DottedLine(Rect(31, headlineHeight, 96, 1)));

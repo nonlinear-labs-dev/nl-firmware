@@ -257,4 +257,9 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.localNotes.setValue(enabled);
 		NonMaps.theMaps.getServerProxy().setSetting("LocalNotes", netify(enabled.name()));
 	}
+
+	public void setAutoStartRecorder(BooleanValues on) {
+		SetupModel.get().systemSettings.autoStartRecorder.setValue(on);
+		NonMaps.theMaps.getServerProxy().setSetting("AutoStartRecorder", netify(on.name()));
+	}
 }

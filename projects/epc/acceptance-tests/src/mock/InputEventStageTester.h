@@ -21,15 +21,15 @@ class InputEventStageTester
 
   bool checkMIDIKeyEventEnabled(MIDIDecoder* pDecoder);
   bool checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder);
-  void onMIDIEvent(MIDIDecoder* decoder);
+  void onMIDIEvent();
+  void onTCDEvent();
 
-  void onTCDEvent(TCDDecoder* decoder);
   void sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void sendHardwareChangeAsMidi(TCDDecoder* pDecoder);
   void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
-  void doSendCCOut(uint16_t value, int msbCC, int lsbCC);
+  void doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
 

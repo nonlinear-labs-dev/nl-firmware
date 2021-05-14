@@ -24,6 +24,8 @@ class Waveform extends Draggable {
         ctx.clearRect(0, 0, c.width, c.height);
         ctx.strokeStyle = window.getComputedStyle(document.querySelector('#bars')!).color!;
         ctx.lineWidth = 1;
+        ctx.textBaseline = "middle";
+        ctx.strokeStyle = "rgba(255, 255, 255, 1.0)";
 
         // middle line
         ctx.beginPath();
@@ -39,6 +41,8 @@ class Waveform extends Draggable {
         var lastId = this.lastBarIdToShow != -1 ? this.lastBarIdToShow : this.c15.getBars().last().id;
         var firstBarId = lastId - c.width * this.zoom;
         var id = firstBarId;
+
+        ctx.beginPath();
 
         for (var i = 0; i < c.width; i++) {
             var m = this.c15.getBars().getMax(id, this.zoom);
@@ -58,6 +62,7 @@ class Waveform extends Draggable {
         }
 
         ctx.stroke();
+
         this.drawGrid(ctx, c.clientWidth, c.clientHeight, firstBarId);
         this.selectedRange.update(firstBarId);
         this.scrollbar.update(firstBarId);
@@ -76,11 +81,79 @@ class Waveform extends Draggable {
             if (playBar)
                 playPosTime.innerText = this.c15.buildTime(playBar.recordTime);
         }
+
+        this.drawPresetLog(c, ctx, firstBarId, lastId);
+
+    }
+
+    private drawPresetLog(c: HTMLCanvasElement, ctx: CanvasRenderingContext2D, firstId: number, lastId: number) {
+        ctx.save();
+        ctx.beginPath();
+
+        class Rect {
+            constructor(public x: number, public y: number, public w: number, public h: number) { }
+        }
+
+        var center = c.height / 2;
+        var rects = new Array<Rect>();
+        var id = firstId;
+        var fistAvailableBarId = this.c15.getBars().first().id;
+
+        for (var i = 0; i < c.width; i++) {
+            var m = this.c15.getBars().getMax(id, this.zoom);
+
+            var from = Math.round(id);
+            var to = Math.round(id + this.zoom);
+            id += this.zoom;
+
+            var m = center * m / 256;
+            var top = center - m;
+            var bottom = center + m;
+
+            var fromBar = this.c15.getBars().get(from);
+            var toBar = this.c15.getBars().get(to);
+
+            if (fromBar && toBar && from >= fistAvailableBarId) {
+                var loadEvent = this.c15.getPresetLoadEvent(fromBar.recordTime, toBar.recordTime);
+                if (loadEvent) {
+                    var presetTop = 65;
+                    var fontHeight = 15;
+                    ctx.font = fontHeight + "px serif";
+                    var text = "🖈 " + loadEvent.info;
+                    var width = ctx.measureText(text).width;
+                    var margin = 3;
+
+                    var r = new Rect(i, presetTop, width + 2 * margin, fontHeight + 2 * margin);
+
+                    for (var e of rects) {
+                        if (e.x + e.w > r.x) {
+                            if (e.y == r.y) {
+                                r.y += e.h;
+                            }
+                        }
+                    }
+
+                    rects.push(r);
+
+                    ctx.fillStyle = "rgba(0,0,0,0.5)";
+                    ctx.fillRect(r.x, r.y, r.w, r.h);
+                    ctx.fillStyle = "white";
+                    ctx.fillText(text, r.x + margin, r.y + margin + fontHeight / 2);
+                }
+            }
+
+            if (id >= lastId)
+                break;
+        }
+
+        ctx.restore();
     }
 
     private drawGrid(ctx: CanvasRenderingContext2D, width: number, height: number, id: number) {
         if (this.c15.getBars().count() < 2)
             return;
+
+        ctx.beginPath();
 
         var pixelsPerTimeMarker = 100;
         var timeMarkersOnScreen = Math.floor(width / pixelsPerTimeMarker);
@@ -94,7 +167,7 @@ class Waveform extends Draggable {
         var msPerTimeMarker = 1000 * samplesPerTimeMarker / samplerate;
         var nsPerTimeMarker = 1000 * 1000 * msPerTimeMarker;
 
-        var fontHeight = 10;
+        var fontHeight = 12;
         ctx.font = fontHeight + "px serif";
 
         var serverTime = this.c15.getBars().first().recordTime;
@@ -115,7 +188,7 @@ class Waveform extends Draggable {
                 ctx.lineTo(i, height - fontHeight);
                 var str = this.c15.buildTime(serverTime);
                 var xOffset = ctx.measureText(str).width / 2;
-                ctx.strokeText(str, i - xOffset, height - 2);
+                ctx.strokeText(str, i - xOffset, height - fontHeight / 2);
             }
         }
         ctx.stroke();

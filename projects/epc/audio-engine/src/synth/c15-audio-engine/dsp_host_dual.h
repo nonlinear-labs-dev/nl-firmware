@@ -237,4 +237,5 @@ class dsp_host_dual : public DSPInterface
   {
     return [](const SimpleRawMidiMessage&) {};
   }
+  friend class DspHostDualTester;
 };
