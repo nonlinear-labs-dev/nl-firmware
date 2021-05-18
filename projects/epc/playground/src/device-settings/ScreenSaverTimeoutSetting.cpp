@@ -13,6 +13,7 @@
 ScreenSaverTimeoutSetting::ScreenSaverTimeoutSetting(UpdateDocumentContributor& parent)
     : Setting(parent)
 {
+  nltools_assertOnDevPC(s_logTimeOuts.size() == s_displayStrings.size());
 }
 
 void ScreenSaverTimeoutSetting::load(const Glib::ustring& text, Initiator initiator)
@@ -20,8 +21,6 @@ void ScreenSaverTimeoutSetting::load(const Glib::ustring& text, Initiator initia
   try
   {
     auto loadedValue = std::stoi(text);
-
-    selectedIndex = 0;
 
     for(auto i = 0; i < s_logTimeOuts.size(); i++)
     {
@@ -52,18 +51,14 @@ bool ScreenSaverTimeoutSetting::persistent() const
   return true;
 }
 
+int ScreenSaverTimeoutSetting::getSelectedIndex() const
+{
+  return selectedIndex;
+}
+
 Glib::ustring ScreenSaverTimeoutSetting::getDisplayString() const
 {
-  if(m_timeout.count() == 0)
-    return "Disabled";
-  if(m_timeout.count() == 1)
-    return "1 Minute";
-  if(m_timeout.count() == 60)
-    return "1 Hour";
-  if(m_timeout.count() > 60)
-    return std::to_string(m_timeout.count() / 60) + " Hours";
-
-  return std::to_string(m_timeout.count()) + " Minutes";
+  return s_displayStrings.at(getSelectedIndex());
 }
 
 sigc::connection ScreenSaverTimeoutSetting::onScreenSaverStateChanged(sigc::slot<void, bool> s)
@@ -85,7 +80,8 @@ void ScreenSaverTimeoutSetting::init()
 
   Application::get().getPlaycontrollerProxy()->onLastKeyChanged([this](int key) { endAndReschedule(); });
 
-  Application::get().getSettings()->onSettingsChanged(sigc::mem_fun(this, &ScreenSaverTimeoutSetting::endAndReschedule));
+  Application::get().getSettings()->onSettingsChanged(
+      sigc::mem_fun(this, &ScreenSaverTimeoutSetting::endAndReschedule));
 
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled(
       sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onLayoutInstalled));
@@ -138,4 +134,14 @@ void ScreenSaverTimeoutSetting::onLayoutInstalled(Layout* l)
   {
     endAndReschedule();
   }
+}
+
+void ScreenSaverTimeoutSetting::incDec(int inc, ButtonModifiers m)
+{
+  incDec(inc);
+}
+
+const std::vector<Glib::ustring>& ScreenSaverTimeoutSetting::getDisplayStrings() const
+{
+  return s_displayStrings;
 }
