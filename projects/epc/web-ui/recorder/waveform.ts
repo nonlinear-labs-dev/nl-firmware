@@ -16,6 +16,22 @@ class Waveform extends Draggable {
         var c = document.getElementById("bars") as HTMLCanvasElement;
         var ctx = c.getContext("2d") as CanvasRenderingContext2D;
 
+        var zoomIn = document.getElementById("zoom-in");
+        var zoomOut = document.getElementById("zoom-out");
+
+        if(this.zoom == 1) {
+            zoomIn!.classList.add("disabled-zoom");
+        } else {
+            zoomIn!.classList.remove("disabled-zoom");
+        }
+
+        //64 equals roughly 8H of recorded audio
+        if(this.zoom == 64) {
+            zoomOut!.classList.add("disabled-zoom");
+        } else {
+            zoomOut!.classList.remove("disabled-zoom");
+        }
+
         c.width = c.clientWidth;
         c.height = c.clientHeight;
 
@@ -286,6 +302,7 @@ class Waveform extends Draggable {
 
     private sanitize(width: number) {
         this.zoom = Math.max(1, this.zoom);
+        this.zoom = Math.min(64, this.zoom);
 
         var c = document.getElementById("bars") as HTMLCanvasElement;
 
