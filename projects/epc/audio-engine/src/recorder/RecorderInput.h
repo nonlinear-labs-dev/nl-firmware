@@ -16,6 +16,7 @@ class RecorderInput
   RecorderInput(FlacFrameStorage *storage, int sr);
   ~RecorderInput();
 
+  void setPaused(bool p);
   void process(SampleFrame *frames, size_t numFrames);
   void togglePause();
 

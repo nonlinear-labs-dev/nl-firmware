@@ -7,6 +7,7 @@ enum TransportState {
 abstract class C15ProxyIface {
     abstract download(from: number, to: number): void;
     abstract getBars(): Bars;
+    abstract getPresetLoadEvent(fromTime: number, toTime: number): PresetLogEntry | null;
     abstract buildTime(lastTime: number | undefined): string;
     abstract setPlaybackPosition(playPos: number): void;
     abstract reset(): void;
@@ -62,7 +63,6 @@ abstract class C15ProxyIface {
         return this.currentPlayPosition;
     }
 
-
     static create(): C15ProxyIface {
         var mock = location.search.includes("mock-audio-data");
         return mock ? new C15ProxyMock() : new C15Proxy();
@@ -83,18 +83,29 @@ class C15ProxyMock extends C15ProxyIface {
         this.currentMemoryUsage = 123456;
         this.maxMemoryUsage = 1234567;
 
+        for (var i = 0; i < 10; i++) {
+            this.logEntries.push(new PresetLogEntry(this.getBars().last().recordTime - i * 10 * 1000 * 1000 * 1000, "01: Foo / 02: Bar"));
+        }
+
         setInterval(() => this.playProgress(), 85);
     }
 
     getBars(): Bars {
-        return this.updateStream.bars;
+        return this.updateBarsStream.bars;
+    }
+
+    getPresetLoadEvent(fromTime: number, toTime: number): PresetLogEntry | null {
+        const r = this.logEntries.filter(s => s.time >= fromTime && s.time <= toTime);
+        if (r.length > 0)
+            return r[0];
+        return null;
     }
 
     buildTime(serverTime: number | undefined): string {
         if (!serverTime)
             return "";
 
-        var t = serverTime - this.updateStream.timingInfo.serverTime + this.updateStream.timingInfo.localTime;
+        var t = serverTime - this.updateBarsStream.timingInfo.serverTime + this.updateBarsStream.timingInfo.localTime;
         var d = new Date(t / 1000 / 1000);
         return d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0') + ":" + d.getSeconds().toString().padStart(2, '0');
     }
@@ -105,8 +116,8 @@ class C15ProxyMock extends C15ProxyIface {
     }
 
     reset(): void {
-        this.updateStream.stop();
-        this.updateStream = new MockUpdateStream(this, false);
+        this.updateBarsStream.stop();
+        this.updateBarsStream = new MockUpdateStream(this, false);
     }
 
     toggleRecording(): void {
@@ -137,7 +148,8 @@ class C15ProxyMock extends C15ProxyIface {
     download(from: number, to: number): void {
     }
 
-    private updateStream = new MockUpdateStream(this, true);
+    private updateBarsStream = new MockUpdateStream(this, true);
+    private logEntries = new Array<PresetLogEntry>();
 }
 
 class C15Proxy extends C15ProxyIface {
@@ -152,6 +164,10 @@ class C15Proxy extends C15ProxyIface {
 
     getBars(): Bars {
         return this.updateStream.bars;
+    }
+
+    getPresetLoadEvent(fromTime: number, toTime: number): PresetLogEntry | null {
+        return this.presetLogStream.find(fromTime, toTime);
     }
 
     setPlaybackPosition(playPos: number): void {
@@ -202,5 +218,6 @@ class C15Proxy extends C15ProxyIface {
     }
 
     private updateStream = new UpdateStream(this);
+    private presetLogStream = new PresetLogStream(this);
 
 }

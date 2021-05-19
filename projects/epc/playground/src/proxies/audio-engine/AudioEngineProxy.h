@@ -69,10 +69,10 @@ class AudioEngineProxy : public sigc::trackable
   RecursionGuard m_programChangeRecursion;
   template <typename T> void subscribeToMidiSetting(Settings* s);
   template <typename... TT> void subscribeToMidiSettings(Settings* s);
-  void connectMidiSettingsToAudioEngineMessage();
+  void connectSettingsToAudioEngineMessage();
   void scheduleMidiSettingsMessage();
 
   Throttler m_sendMidiSettingThrottler { std::chrono::milliseconds { 250 } };
 
-  std::vector<sigc::connection> m_midiSettingConnections;
+  std::vector<sigc::connection> m_settingConnections;
 };
