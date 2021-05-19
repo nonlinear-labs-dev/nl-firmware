@@ -47,7 +47,7 @@ EditBufferActions::EditBufferActions(EditBuffer* editBuffer)
       auto log = editBuffer->getLoadedPresetLog();
       log->freeze();
       scope.undoJump(UNDO::StringTools::buildString(reinterpret_cast<size_t>(transaction)));
-      auto p = std::make_unique<Preset>(editBuffer->getParent(), *editBuffer, true);
+      auto p = std::make_unique<Preset>(editBuffer->getParent(), *editBuffer, Uuid::restored());
       scope.undoJump(UNDO::StringTools::buildString(reinterpret_cast<size_t>(currentTip)));
       EditBufferUseCases ebUseCases(editBuffer);
       std::stringstream nameBuilder;

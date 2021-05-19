@@ -86,6 +86,11 @@ Uuid Uuid::converted()
   return Uuid("Converted");
 }
 
+Uuid Uuid::restored()
+{
+  return Uuid("Restored");
+}
+
 void Uuid::generate()
 {
   uuid_t g;
