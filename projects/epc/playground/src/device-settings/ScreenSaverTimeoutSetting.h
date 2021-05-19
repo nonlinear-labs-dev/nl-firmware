@@ -15,7 +15,6 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
 
   sigc::connection onScreenSaverStateChanged(sigc::slot<void, bool> s);
   void init() override;
-  bool persistent() const override;
 
   int getSelectedIndex() const;
   const std::vector<Glib::ustring>& getDisplayStrings() const;
@@ -26,14 +25,11 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   void endAndReschedule();
 
  private:
-  std::unique_ptr<Expiration> m_expiration = nullptr;
+  void onLayoutInstalled(Layout* l);
+
+  Expiration m_expiration;
   Signal<void, bool> m_screenSaverSignal;
 
-  int selectedIndex = 2;
+  int m_selectedIndex = 2;
   std::chrono::minutes m_timeout;
-  const std::array<int, 6> s_logTimeOuts = { 0, 1, 5, 20, 60, 180 };
-  const std::vector<Glib::ustring> s_displayStrings
-      = { "Disabled", "1 Minute", "5 Minutes", "20 Minutes", "1 Hour", "3 Hours" };
-
-  void onLayoutInstalled(Layout* l);
 };
