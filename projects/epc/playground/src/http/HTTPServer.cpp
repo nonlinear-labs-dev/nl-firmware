@@ -116,11 +116,8 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         std::ofstream out(outFile, std::ofstream::binary);
         if(out.is_open())
         {
-          for(auto i = 0; i < req->getFlattenedBuffer()->length; i++)
-          {
-            out << req->getFlattenedBuffer()->data[i];
-          }
-          out.close();
+          auto buff = req->getFlattenedBuffer();
+          out.write(buff->data, buff->length);
         }
         else
         {
@@ -128,6 +125,8 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
       }
       request->okAndComplete();
+
+      nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
 
       Application::get().stopWatchDog();
       SpawnCommandLine cmd0("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 'nohup /bin/sh "
