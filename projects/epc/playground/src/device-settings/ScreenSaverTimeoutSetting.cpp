@@ -85,7 +85,9 @@ void ScreenSaverTimeoutSetting::sendState(bool state)
 void ScreenSaverTimeoutSetting::endAndReschedule()
 {
   sendState(false);
-  m_expiration.refresh(m_timeout);
+
+  if(m_timeout != c_disabled)
+    m_expiration.refresh(m_timeout);
 }
 
 void ScreenSaverTimeoutSetting::incDec(int inc)
