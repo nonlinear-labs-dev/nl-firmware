@@ -42,7 +42,7 @@ run_update() {
 
 main() {
     echo "install-update-from-epc.sh" >> /tmp/update.log
-    check_if_exists && unpack_update && check_preconditions && run_update
+    unpack_update && check_preconditions && run_update
 
     return 0
 }
