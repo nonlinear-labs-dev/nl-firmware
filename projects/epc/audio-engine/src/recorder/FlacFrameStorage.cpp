@@ -145,7 +145,7 @@ std::vector<std::unique_ptr<FlacEncoder::Frame> > FlacFrameStorage::Stream::getH
   for(auto &s : storage->getHeaders())
     tgt.push_back(std::make_unique<FlacEncoder::Frame>(*s));
 
-  auto dist = std::distance(it, end);
+  auto dist = std::distance(it, end) + 1;
   auto numSamples = dist * FlacEncoder::flacFrameSize;
 
   assert(tgt[0]->buffer.size() == 4);   // exepected to be "fLaC";
