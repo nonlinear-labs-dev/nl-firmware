@@ -646,6 +646,8 @@
 						<div class="w60p">
 							<g:FileUpload ui:field="updateFile"></g:FileUpload>
 						</div>
+						<div class="progress-bar hidden" ui:field="updateSpinner">
+						</div>
 					</div>
 
 				</div>

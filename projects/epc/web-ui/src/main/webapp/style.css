@@ -1746,3 +1746,15 @@ input[type="range"]::-moz-range-track {
 .dialogcontainer .w70p {
 	margin: initial;
 }
+
+.progress-bar {
+	background-image: url(loader.gif);
+    min-width: 20px;
+    min-height: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.hidden {
+	display: none;
+}

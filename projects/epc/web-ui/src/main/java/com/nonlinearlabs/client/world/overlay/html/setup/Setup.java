@@ -69,7 +69,7 @@ public class Setup extends Composite {
 	FileUpload updateFile;
 
 	@UiField
-	DivElement deviceSettings, uiSettings, midiSettings, systemInfo, about;
+	DivElement deviceSettings, uiSettings, midiSettings, systemInfo, about, updateSpinner;
 
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
@@ -131,6 +131,8 @@ public class Setup extends Composite {
 	}
 
 	public void setupTexts() {
+		updateSpinner.addClassName("hidden");
+
 		NonMaps.get().getServerProxy().downloadEnumStrings("PedalTypes", (options) -> {
 			fillListboxWithOptions(pedal1Type, options);
 			fillListboxWithOptions(pedal2Type, options);
@@ -296,8 +298,12 @@ public class Setup extends Composite {
 
 
 		updateFile.addChangeHandler(new ChangeHandler() {
+
 			@Override
 			public void onChange(ChangeEvent e) {
+				updateSpinner.removeClassName("hidden");
+				updateFile.getElement().addClassName("hidden");
+
 				loadUpdateFile(e.getNativeEvent(), new TarUploadedHandler(){
 					@Override
 					public void onTarUploaded(JavaScriptObject buffer) {
@@ -305,11 +311,9 @@ public class Setup extends Composite {
 
 							@Override
 							public void onUploadFinished(XMLHttpRequest answer) {
-								Tracer.log("Status: " + answer.getStatus());
-								Tracer.log("Status: " + answer.getStatusText());
-								Tracer.log("Response: " + answer.getResponseText());
+								updateSpinner.addClassName("hidden");
+								updateFile.getElement().removeClassName("hidden");
 							}
-							
 						});
 					}
 				});

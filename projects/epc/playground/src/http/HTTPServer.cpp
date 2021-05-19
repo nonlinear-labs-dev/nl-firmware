@@ -125,10 +125,11 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
           nltools::Log::error("could not open /tmp to write");
         }
       }
-      request->okAndComplete();
-
+      
       nltools::msg::Update::UpdateUploadedNotification msg {};
       nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
+
+      request->okAndComplete();
     }
     catch(...)
     {
