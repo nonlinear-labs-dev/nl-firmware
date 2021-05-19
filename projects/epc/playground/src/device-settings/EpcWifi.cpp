@@ -4,6 +4,7 @@ EpcWifi::EpcWifi()
     : m_currentPassphrase("88888888")
     , m_currentSSID("NL-C15-Unit-00000")
     , m_connectionUp(false)
+    , m_callsInFlight(0)
 {
     syncCredentials();
     Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EpcWifi::syncCredentials), 2);
@@ -23,6 +24,28 @@ void EpcWifi::setNewPassphrase(const Glib::ustring &_newPassphrase)
 
 bool EpcWifi::syncCredentials()
 {
+    bool reload = false;
+
+    if (m_callsInFlight == 0 && ( m_currentPassphrase != m_newPassphrase || m_currentSSID != m_newSSID) )
+    {
+        if (checkConnectionStatus())
+        {
+            if (m_currentPassphrase != m_newPassphrase)
+            {
+                updatePassphrase();
+            }
+
+            if (m_currentSSID != m_newSSID)
+            {
+                updateSSID();
+            }
+        }
+
+    }
+
+    if (reload)
+        reloadConnection();
+
     if (checkConnectionStatus())
     {
         if (m_currentPassphrase != m_newPassphrase)
@@ -45,29 +68,36 @@ bool EpcWifi::syncCredentials()
 
 bool EpcWifi::checkConnectionStatus()
 {
+    m_callsInFlight++;
     SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "connection", "show", "--active" },
                                  [&](const std::string& s) {
                                     std::size_t pos = s.find("C15");
                                     if (pos != std::string::npos)
-                                        m_connectionUp = true; },
+                                        m_connectionUp = true;
+                                    m_callsInFlight--;},
                                  [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                     m_connectionUp = false; });
+                                    m_callsInFlight--;
+                                    m_connectionUp = false; });
     return m_connectionUp;
 }
 
 void EpcWifi::updatePassphrase()
 {
     SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "802-11-wireless-security.psk", m_currentPassphrase},
-                                 [](auto) {},
-                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e); });
+                                 [&](auto) {m_currentPassphrase = m_newPassphrase;
+                                            m_callsInFlight--; },
+                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                             m_callsInFlight--;});
 }
 
 
 void EpcWifi::updateSSID()
 {
     SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "wifi.ssid", m_currentSSID},
-                                 [](auto) {},
-                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e); });
+                                 [&](auto) { m_currentSSID = m_newSSID;
+                                            m_callsInFlight--; },
+                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                             m_callsInFlight--; });
 }
 
 void EpcWifi::reloadConnection()

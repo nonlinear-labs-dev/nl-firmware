@@ -10,6 +10,7 @@ class EpcWifi
     Glib::ustring m_currentPassphrase, m_newPassphrase;
     Glib::ustring m_currentSSID, m_newSSID;
     bool m_connectionUp;
+    uint m_callsInFlight;
     bool syncCredentials();
     bool checkConnectionStatus();
     void updateSSID();
