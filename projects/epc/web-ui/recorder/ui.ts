@@ -29,21 +29,14 @@ class UI {
             c15.download(this.waveform.selectedRange.playbackRange.min(), this.waveform.selectedRange.playbackRange.max());
         }
 
-        document.getElementById("reset")!.onclick = (e) => c15.reset();
+        document.getElementById("reset")!.onclick = (e) => {
+            c15.reset();
+            this.waveform.selectedRange.playbackRange.reset();
+
+        }
+
         document.getElementById("waveform")!.onkeydown = (e) => c15.togglePlayback();
 
-    }
-
-    private togglePlayback(e: Event) {
-        var pb = document.getElementById("toggle-playback")!;
-
-        if (pb.classList.contains("paused"))
-            this.c15.startPlayback();
-        else
-            this.c15.pausePlayback();
-
-        e.stopPropagation();
-        e.preventDefault();
     }
 
     update() {
