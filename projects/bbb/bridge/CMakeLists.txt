@@ -51,6 +51,7 @@ configure_file(${PROJECT_SOURCE_DIR}/systemd/reset-playcontroller.service.in ${P
 configure_file(${PROJECT_SOURCE_DIR}/systemd/redirect-websocket-to-recorder.service.in ${PROJECT_BINARY_DIR}/systemd/redirect-websocket-to-recorder.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/redirect-http-to-recorder.service.in ${PROJECT_BINARY_DIR}/systemd/redirect-http-to-recorder.service @ONLY)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/redirect-oled-websocket.service.in ${PROJECT_BINARY_DIR}/systemd/redirect-oled-websocket.service @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/systemd/install-update-from-epc.service.in ${PROJECT_BINARY_DIR}/systemd/install-update-from-epc.service @ONLY)
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/install-update-from-usb.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
@@ -61,6 +62,7 @@ install(FILES ${PROJECT_BINARY_DIR}/systemd/reset-playcontroller.service DESTINA
 install(FILES ${PROJECT_BINARY_DIR}/systemd/redirect-websocket-to-recorder.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/redirect-http-to-recorder.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_BINARY_DIR}/systemd/redirect-oled-websocket.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_BINARY_DIR}/systemd/install-update-from-epc.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants)
