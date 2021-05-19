@@ -2,7 +2,7 @@
 # version : 2.0
 
 freeze() {
-    echo "Freezing from install-update-from-epc"
+    echo "Freezing from install-update-from-epc" >> /tmp/update.log
     while true; do
         sleep 1
     done
@@ -41,7 +41,7 @@ run_update() {
 
 
 main() {
-
+    echo "install-update-from-epc.sh" >> /tmp/update.log
     unpack_update && check_preconditions && run_update
 
     return 0

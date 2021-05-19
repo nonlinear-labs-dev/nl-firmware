@@ -16,6 +16,7 @@
 #include <nltools/system/AsyncCommandLine.h>
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/system/SpawnCommandLine.h>
+#include <nltools/messaging/Message.h>
 
 HTTPServer::HTTPServer()
     : m_contentManager()
@@ -126,12 +127,8 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
       }
       request->okAndComplete();
 
+      nltools::msg::Update::UpdateUploadedNotification msg {};
       nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
-
-      Application::get().stopWatchDog();
-      SpawnCommandLine cmd0("/usr/bin/ssh -o StrictHostKeyChecking=no root@192.168.10.11 'nohup /bin/sh "
-                            "/usr/C15/scripts/install-update-from-epc.sh &'");
-      Application::get().runWatchDog();
     }
     catch(...)
     {
