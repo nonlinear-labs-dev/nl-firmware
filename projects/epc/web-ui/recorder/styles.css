@@ -160,7 +160,7 @@ body {
 	box-shadow: none;
 }
 
-.disabled-zoom {
+#zoom > span.disabled {
     color: gray;
     pointer-events: none;
 }
