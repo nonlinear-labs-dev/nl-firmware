@@ -92,7 +92,7 @@ void Bitstream::patchUtf8(uint64_t &pos, uint64_t numBytes, uint64_t num)
 
     for(int i = 0; i < numBytes - 1; i++)
     {
-      patchData[i] = num & 0x3F;
+      patchData[i] = (num & 0x3F) | 0x80;
       num >>= 6;
     }
 
