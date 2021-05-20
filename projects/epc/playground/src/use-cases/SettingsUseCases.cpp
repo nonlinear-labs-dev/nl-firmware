@@ -52,12 +52,12 @@ void SettingsUseCases::setMappingsToClassicMidi()
 
   fourteenBitSupport->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
   velCC->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  p1->set(PedalCC::CC01);
-  p2->set(PedalCC::CC02);
-  p3->set(PedalCC::CC03);
-  p4->set(PedalCC::CC04);
-  r1->set(RibbonCC::CC05);
-  r2->set(RibbonCC::CC06);
+  p1->set(PedalCC::CC20);
+  p2->set(PedalCC::CC21);
+  p3->set(PedalCC::CC22);
+  p4->set(PedalCC::CC23);
+  r1->set(RibbonCC::CC24);
+  r2->set(RibbonCC::CC25);
   at->set(AftertouchCC::ChannelPressure);
   be->set(BenderCC::Pitchbend);
 }

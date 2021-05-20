@@ -968,42 +968,41 @@ namespace NavTree
     }
   };
 
-  enum class ResetSettingType
+  struct ResetMidiSettingsToHighRes : public OneShotEntry
   {
-    HighRes,
-    Classic
-  };
 
-  template <ResetSettingType type> struct ResetMidiSettingsTo : public OneShotEntry
-  {
-    std::function<void(void)> getCB()
+    explicit ResetMidiSettingsToHighRes(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToHighRes();
+                       })
     {
-      if constexpr(type == ResetSettingType::Classic)
-      {
-        return []()
-        {
-          SettingsUseCases useCases(Application::get().getSettings());
-          useCases.setMappingsToClassicMidi();
-        };
-      }
-      else if constexpr(type == ResetSettingType::HighRes)
-      {
-        return []()
-        {
-          SettingsUseCases useCases(Application::get().getSettings());
-          useCases.setMappingsToHighRes();
-        };
-      }
     }
 
     constexpr const char *getName()
     {
-      return type == ResetSettingType::Classic ? "Set to Classic MIDI Defaults" : "Set to High-Res. Defaults";
+      return "Set to High-Res. Defaults";
+    }
+  };
+
+  struct ResetMidiSettingsToClassic : public OneShotEntry
+  {
+
+    explicit ResetMidiSettingsToClassic(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToClassicMidi();
+                       })
+    {
     }
 
-    explicit ResetMidiSettingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(), getCB())
+    constexpr const char *getName()
     {
+      return "Set to Classic MIDI Defaults";
     }
   };
 
@@ -1017,8 +1016,8 @@ namespace NavTree
       children.emplace_back(new MidiLocalSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
-      children.emplace_back(new ResetMidiSettingsTo<ResetSettingType::Classic>(this));
-      children.emplace_back(new ResetMidiSettingsTo<ResetSettingType::HighRes>(this));
+      children.emplace_back(new ResetMidiSettingsToClassic(this));
+      children.emplace_back(new ResetMidiSettingsToHighRes(this));
     }
   };
 
