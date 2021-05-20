@@ -95,6 +95,7 @@
 
 #include <presets/Bank.h>
 #include <use-cases/SettingsUseCases.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
 
 namespace NavTree
 {
@@ -163,6 +164,24 @@ namespace NavTree
     }
 
     std::list<std::unique_ptr<Node>> children;
+  };
+
+  template <typename tSetting> struct EnumSettingItem : EditableLeaf
+  {
+    EnumSettingItem(InnerNode *parent, const std::string &text)
+        : EditableLeaf(parent, text)
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SettingView<tSetting>();
+    }
+
+    Control *createEditor() override
+    {
+      return new EnumSettingEditor<tSetting>();
+    }
   };
 
   struct Velocity : EditableLeaf
@@ -430,7 +449,7 @@ namespace NavTree
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new PresetGlitchSuppression(this));
-      children.emplace_back(new SettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));
+      children.emplace_back(new EnumSettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));
       children.emplace_back(new WiFiSetting(this));
       children.emplace_back(new StoreInitSound(this));
       children.emplace_back(new ResetInitSound(this));
@@ -758,24 +777,6 @@ namespace NavTree
     }
   };
 
-  template <typename tSetting> struct EnumSettingItem : EditableLeaf
-  {
-    EnumSettingItem(InnerNode *parent, const std::string &text)
-        : EditableLeaf(parent, text)
-    {
-    }
-
-    Control *createView() override
-    {
-      return new SettingView<tSetting>();
-    }
-
-    Control *createEditor() override
-    {
-      return new EnumSettingEditor<tSetting>();
-    }
-  };
-
   struct Backup : InnerNode
   {
     Backup(InnerNode *parent)
@@ -885,6 +886,11 @@ namespace NavTree
       {
         m_midiSelectionChanged
             = getPresetManager()->onMidiBankSelectionHappened([this](auto uuid) { updateOnSettingChanged(); });
+      }
+
+      ~Editor() override
+      {
+        m_midiSelectionChanged.disconnect();
       }
 
      protected:

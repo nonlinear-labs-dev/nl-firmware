@@ -105,12 +105,10 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset(
-          [&](auto p)
-          {
-            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
-            i++;
-          });
+      source->forEachPreset([&](auto p) {
+        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
+        i++;
+      });
     }
   }
 }
@@ -125,7 +123,7 @@ void BankUseCases::dropBankOnPreset(const Bank* sourceBank, const Uuid& presetAn
     auto transaction = scope->getTransaction();
 
     size_t insertPos = m_bank->getPresetPosition(presetAnchor) + 1;
-    size_t numPresets = m_bank->getNumPresets();
+    size_t numPresets = sourceBank->getNumPresets();
 
     for(size_t i = 0; i < numPresets; i++)
     {

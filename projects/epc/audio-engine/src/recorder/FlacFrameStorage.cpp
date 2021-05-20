@@ -1,4 +1,5 @@
 #include "FlacFrameStorage.h"
+#include "Bitstream.h"
 #include <nltools/logging/Log.h>
 
 FlacFrameStorage::FlacFrameStorage(uint64_t maxMemUsage)
@@ -135,6 +136,29 @@ bool FlacFrameStorage::Stream::next(std::function<void(const FlacEncoder::Frame 
   auto frame = *(it++)->get();
   cb(frame, it == end);
   return true;
+}
+
+std::vector<std::unique_ptr<FlacEncoder::Frame> > FlacFrameStorage::Stream::getHeaders() const
+{
+  std::vector<std::unique_ptr<FlacEncoder::Frame> > tgt;
+
+  for(auto &s : storage->getHeaders())
+    tgt.push_back(std::make_unique<FlacEncoder::Frame>(*s));
+
+  auto dist = std::distance(it, end) + 1;
+  auto numSamples = dist * FlacEncoder::flacFrameSize;
+
+  assert(tgt[0]->buffer.size() == 4);   // exepected to be "fLaC";
+  assert(tgt[1]->buffer.size() >= 22);  // exepected to have enough space for STREAMINFO;
+
+  // see https://xiph.org/flac/format.html#metadata_block_streaminfo
+  // METADATA_BLOCK_HEADER
+  constexpr auto c_numSamplesPosition = 172;
+  Bitstream bits(tgt[1]->buffer);
+  bits.seek(c_numSamplesPosition);
+  bits.patch(36, numSamples);
+
+  return tgt;
 }
 
 bool FlacFrameStorage::Stream::getFirstAndLast(

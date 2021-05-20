@@ -345,7 +345,6 @@ public class PresetManager extends MapsLayout {
 
 		readSelectedMidiBank(banks);
 		selectedBank = banks.getAttributes().getNamedItem("selected-bank").getNodeValue();
-		GWT.log("selected Bank:" + selectedBank);
 		NodeList bankList = banks.getChildNodes();
 
 		for (int i = 0; i < bankList.getLength(); i++) {
