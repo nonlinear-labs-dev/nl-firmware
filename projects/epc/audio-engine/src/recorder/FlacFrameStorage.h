@@ -16,10 +16,10 @@ class FlacFrameStorage
     Stream(FlacFrameStorage *s, Frames::const_iterator begin, Frames::const_iterator end);
 
     bool eos() const;
-    bool next(std::function<void(const FlacEncoder::Frame &, bool last)> cb);
+    bool next(std::function<void(FlacEncoder::Frame &, bool last)> cb);
 
     bool getFirstAndLast(std::function<void(const FlacEncoder::Frame &first, const FlacEncoder::Frame &last)> cb);
-    std::vector<std::unique_ptr<FlacEncoder::Frame> > getHeaders() const;
+    std::vector<std::unique_ptr<FlacEncoder::Frame>> getHeaders() const;
 
    private:
     friend class FlacFrameStorage;
