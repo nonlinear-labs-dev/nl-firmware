@@ -160,6 +160,11 @@ body {
 	box-shadow: none;
 }
 
+#zoom > span.disabled {
+    color: gray;
+    pointer-events: none;
+}
+
 #toggle-playback.disabled {
     color: gray
 }
