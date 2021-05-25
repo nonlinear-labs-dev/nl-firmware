@@ -3,7 +3,6 @@
 #include "playground.h"
 #include "ContentManager.h"
 #include "MCViewContentManager.h"
-#include "UpdateContentManager.h"
 #include <libsoup/soup.h>
 #include <map>
 #include <memory>
