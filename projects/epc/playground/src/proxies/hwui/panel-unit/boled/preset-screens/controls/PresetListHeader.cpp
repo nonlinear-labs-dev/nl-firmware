@@ -45,11 +45,11 @@ void PresetListHeader::setupWithArrows(Bank *bank)
   auto isFirst = order == 0;
   auto isLast = order == pm->getNumBanks() - 1;
 
-  addControl(new PresetListHeaderArrow(isFirst ? " " : "\uE303", Rect(0, -1, arrowWidth, arrowHeight), 0));
-  addControl(new BankNameLabel(Rect(arrowWidth, 0, pos.getWidth() - (2 * arrowWidth + midiWidth), 13)))
+  addControl(new PresetListHeaderArrow(isFirst ? " " : "\uE303", Rect(0, 0, arrowWidth, arrowHeight), 0));
+  addControl(new BankNameLabel(Rect(arrowWidth, 0, pos.getWidth() - (2 * arrowWidth + midiWidth), 15)))
       ->updateLabel(bank);
   addControl(new BankMidiLabel(Rect(getPosition().getWidth() - midiWidth - arrowWidth, 0, midiWidth, 15)))
       ->updateLabel(bank);
   addControl(new PresetListHeaderArrow(isLast ? " " : "\uE301",
-                                       Rect(pos.getWidth() - arrowWidth, -1, arrowWidth, arrowHeight), 1));
+                                       Rect(pos.getWidth() - arrowWidth, 0, arrowWidth, arrowHeight), 1));
 }
