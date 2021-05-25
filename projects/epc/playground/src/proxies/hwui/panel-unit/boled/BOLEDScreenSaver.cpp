@@ -34,34 +34,37 @@ BOLEDScreenSaver::~BOLEDScreenSaver()
 
 bool BOLEDScreenSaver::animate()
 {
-  auto old = m_label->getPosition();
-
-  if(old.getRight() >= 256)
+  if(m_label)
   {
-    m_vel.first = -1;
+    auto old = m_label->getPosition();
+
+    if(old.getRight() >= 256)
+    {
+      m_vel.first = -1;
+    }
+
+    if(old.getLeft() <= 0)
+    {
+      m_vel.first = 1;
+    }
+
+    if(old.getBottom() >= 64)
+    {
+      m_vel.second = -1;
+    }
+
+    if(old.getTop() <= 0)
+    {
+      m_vel.second = 1;
+    }
+
+    old.setLeft(old.getLeft() + m_vel.first);
+    old.setTop(old.getTop() + m_vel.second);
+
+    m_label->setPosition(old);
+
+    setDirty();
   }
-
-  if(old.getLeft() <= 0)
-  {
-    m_vel.first = 1;
-  }
-
-  if(old.getBottom() >= 64)
-  {
-    m_vel.second = -1;
-  }
-
-  if(old.getTop() <= 0)
-  {
-    m_vel.second = 1;
-  }
-
-  old.setLeft(old.getLeft() + m_vel.first);
-  old.setTop(old.getTop() + m_vel.second);
-
-  m_label->setPosition(old);
-
-  setDirty();
   return true;
 }
 

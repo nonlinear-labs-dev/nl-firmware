@@ -28,6 +28,9 @@ void OLEDProxy::invalidate()
 
 OLEDProxy::tLayoutPtr OLEDProxy::getLayout() const
 {
+  if(m_screenSaver)
+    return m_screenSaver;
+
   if(m_overlay)
     return m_overlay;
 
@@ -127,4 +130,21 @@ void OLEDProxy::onLayoutInstalled(std::function<void(Layout *)> cb)
     nltools::Log::warning("removing non called onLayoutInstalled Callback!", __LINE__, __PRETTY_FUNCTION__, __FILE__);
   }
   m_onLayoutInstalledCB = cb;
+}
+
+void OLEDProxy::installScreenSaver(Layout *l)
+{
+  m_screenSaver.reset(l);
+  if(!m_screenSaver->isInitialized())
+    m_screenSaver->init();
+}
+
+void OLEDProxy::removeScreenSaver()
+{
+  m_screenSaver.reset();
+}
+
+Layout *OLEDProxy::getScreenSaver()
+{
+  return m_screenSaver.get();
 }

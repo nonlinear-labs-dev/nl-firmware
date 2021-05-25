@@ -28,7 +28,7 @@ bool UsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, boo
 
 void UsageMode::setupButtonConnection(Buttons buttonID, tAction action)
 {
-  if(buttonID < Buttons::NUM_BUTTONS)
+  if(buttonID < Buttons::NUM_BUTTONS && buttonID != Buttons::FIRST_PARAMETER_BUTTON)
   {
     g_assert(!m_actions[buttonID]);
     m_actions[buttonID] = action;

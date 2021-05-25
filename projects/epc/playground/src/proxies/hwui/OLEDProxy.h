@@ -40,10 +40,16 @@ class OLEDProxy : public Uncopyable
 
   const Rect &getPosInFrameBuffer() const;
 
+ protected:
+  void installScreenSaver(Layout *l);
+  void removeScreenSaver();
+  Layout *getScreenSaver();
+
  private:
   std::function<void(Layout *)> m_onLayoutInstalledCB;
 
   tLayoutPtr m_layout;
   tLayoutPtr m_overlay;
+  tLayoutPtr m_screenSaver;
   Rect m_posInFrameBuffer;
 };

@@ -43,11 +43,11 @@ void BOLED::toggleScreenSaver(bool enabled)
 {
   if(enabled)
   {
-    setOverlay(new BOLEDScreenSaver(*this));
+    installScreenSaver(new BOLEDScreenSaver(*this));
   }
-  else if(std::dynamic_pointer_cast<BOLEDScreenSaver>(getOverlay()) != nullptr)
+  else if(dynamic_cast<BOLEDScreenSaver*>(getScreenSaver()) != nullptr)
   {
-    resetOverlay();
+    removeScreenSaver();
   }
 }
 
