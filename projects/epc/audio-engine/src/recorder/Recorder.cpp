@@ -26,13 +26,11 @@ Recorder::Recorder(int sr)
     , m_http(std::make_unique<NetworkServer>(RECORDER_HTTPSERVER_PORT, m_storage.get()))
 {
   m_in->setPaused(true);
-  m_settingConnection
-      = nltools::msg::receive<nltools::msg::Setting::FlacRecorderAutoStart>(nltools::msg::EndPoint::AudioEngine,
-                                                                            [this](const auto &msg)
-                                                                            {
-                                                                              if(msg.enabled)
-                                                                                m_in->setPaused(false);
-                                                                            });
+  m_settingConnection = nltools::msg::receive<nltools::msg::Setting::FlacRecorderAutoStart>(
+      nltools::msg::EndPoint::AudioEngine, [this](const auto &msg) {
+        if(msg.enabled)
+          m_in->setPaused(false);
+      });
 }
 
 Recorder::~Recorder() = default;
@@ -68,19 +66,35 @@ nlohmann::json Recorder::api(const nlohmann::json &msg)
     auto args = it->second;
 
     if(name == "toggle-recording")
+    {
       m_in->togglePause();
+    }
     else if(name == "set-playback-position")
+    {
       m_out->setPlayPos(args.at("frameId"));
+    }
     else if(name == "start-playback")
+    {
       m_out->start();
+    }
     else if(name == "pause-playback")
+    {
       m_out->pause();
+    }
     else if(name == "get-info")
+    {
       return generateInfo();
+    }
     else if(name == "query-frames")
+    {
       return queryFrames(args.at("begin"), args.at("end"));
+    }
     else if(name == "reset")
-      return m_storage->reset();
+    {
+      auto ret = m_storage->reset();
+      m_out->setPlayPos(-1);
+      return ret;
+    }
   }
   return {};
 }
@@ -107,8 +121,7 @@ nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
   std::chrono::system_clock::time_point recordTimeOfLastFrame = invalidTime;
   uint8_t maxOfLastFrame = 0;
 
-  auto cb = [&](const auto &f, auto isLast)
-  {
+  auto cb = [&](const auto &f, auto isLast) {
     bool skipFrame = false;
 
     if(!isLast && recordTimeOfLastFrame != invalidTime)

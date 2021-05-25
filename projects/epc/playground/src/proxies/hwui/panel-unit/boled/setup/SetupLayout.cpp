@@ -94,6 +94,7 @@
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 
 #include <presets/Bank.h>
+#include <use-cases/SettingsUseCases.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 
 namespace NavTree
@@ -973,6 +974,44 @@ namespace NavTree
     }
   };
 
+  struct ResetMidiSettingsToHighRes : public OneShotEntry
+  {
+
+    explicit ResetMidiSettingsToHighRes(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToHighRes();
+                       })
+    {
+    }
+
+    constexpr const char *getName()
+    {
+      return "Set to High-Res. Defaults";
+    }
+  };
+
+  struct ResetMidiSettingsToClassic : public OneShotEntry
+  {
+
+    explicit ResetMidiSettingsToClassic(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToClassicMidi();
+                       })
+    {
+    }
+
+    constexpr const char *getName()
+    {
+      return "Set to Classic MIDI Defaults";
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -983,6 +1022,8 @@ namespace NavTree
       children.emplace_back(new MidiLocalSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
+      children.emplace_back(new ResetMidiSettingsToClassic(this));
+      children.emplace_back(new ResetMidiSettingsToHighRes(this));
     }
   };
 

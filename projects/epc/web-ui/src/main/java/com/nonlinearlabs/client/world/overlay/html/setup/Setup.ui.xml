@@ -547,6 +547,18 @@
 							</g:ListBox>
 						</div>
 					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Reset Midi Settings to Defaults</p>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="classicMidi">Classic MIDI</g:Button>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="highResMidi">High-Res.</g:Button>
+						</div>
+					</div>
 				</div>
 			</div>
 

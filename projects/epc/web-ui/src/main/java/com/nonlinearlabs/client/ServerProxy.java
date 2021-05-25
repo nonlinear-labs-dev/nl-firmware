@@ -1222,4 +1222,16 @@ public class ServerProxy {
 		return lastOmitOracles;
 	}
 
+	public void resetToClassicMidi() {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-classic-midi");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
+    public void resetToHighResMidi() {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-high-res");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+    }
+
 }

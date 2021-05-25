@@ -1,4 +1,5 @@
 #include "NetworkServer.h"
+#include "FlacFrameBits.h"
 #include <libsoup/soup-message.h>
 #include <nltools/logging/Log.h>
 #include <iomanip>
@@ -95,6 +96,8 @@ void NetworkServer::onChunkWritten(SoupMessage *msg, NetworkServer *pThis)
     if(a.msg == msg)
     {
       auto append = [&](auto &h, auto) {
+        FlacFrameBits frame(h.buffer);
+        frame.patchFrameNumber(a.currentFrame++);
         soup_message_body_append(msg->response_body, SOUP_MEMORY_COPY, h.buffer.data(), h.buffer.size());
       };
 
