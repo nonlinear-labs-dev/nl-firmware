@@ -302,7 +302,7 @@ caption {
 }
 
 .tabcontainer {
-	min-width: 21em;
+	min-width: 41.5em;
 	max-width: 100%;
 	/* 	height: 12em; */
 	margin: 0em;
@@ -1339,8 +1339,8 @@ input[type="range"]::-moz-range-track {
 	font-family: 'SSP-LW25';
 }
 
-.w33 {
-	width: 33em;
+.w36 {
+	width: 36em;
 }
 
 .h33p {

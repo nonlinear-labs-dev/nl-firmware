@@ -13,12 +13,6 @@
 #include <nltools/threading/Throttler.h>
 #include <giomm.h>
 
-#ifdef _DEVELOPMENT_PC
-static const guint port = 8080;
-#else
-static const guint port = 80;
-#endif
-
 HTTPServer::HTTPServer()
     : m_contentManager()
 {
@@ -53,7 +47,7 @@ void HTTPServer::initializeServer()
                                     nullptr);
 
   GError *error = nullptr;
-  soup_server_listen_all(m_server, port, static_cast<SoupServerListenOptions>(0), &error);
+  soup_server_listen_all(m_server, PLAYGROUND_HTTPSERVER_PORT, static_cast<SoupServerListenOptions>(0), &error);
 
   if(error)
   {

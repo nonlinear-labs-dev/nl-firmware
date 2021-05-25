@@ -25,6 +25,8 @@ namespace detail
 TEST_CASE("Part Origin Attribute")
 {
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases ebUseCases(eb);
+
   auto hwui = Application::get().getHWUI();
 
   MockPresetStorage presets;
@@ -34,7 +36,7 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Load Single Full")
   {
-    eb->undoableLoad(presets.getSinglePreset());
+    ebUseCases.undoableLoad(presets.getSinglePreset());
 
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
@@ -54,8 +56,8 @@ TEST_CASE("Part Origin Attribute")
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 
-    CHECK(originI.presetUUID == "");
-    CHECK(originII.presetUUID == "");
+    CHECK(originI.presetUUID == Uuid::none());
+    CHECK(originII.presetUUID == Uuid::none());
     CHECK(originI.sourceGroup == VoiceGroup::Global);
     CHECK(originII.sourceGroup == VoiceGroup::Global);
   }
@@ -67,18 +69,18 @@ TEST_CASE("Part Origin Attribute")
 
     eb->undoableInitPart(scope->getTransaction(), VoiceGroup::I, Defaults::FactoryDefault);
     auto originI = eb->getPartOrigin(VoiceGroup::I);
-    CHECK(originI.presetUUID == "");
+    CHECK(originI.presetUUID == Uuid::none());
     CHECK(originI.sourceGroup == VoiceGroup::Global);
 
     eb->undoableInitPart(scope->getTransaction(), VoiceGroup::II, Defaults::FactoryDefault);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
-    CHECK(originII.presetUUID == "");
+    CHECK(originII.presetUUID == Uuid::none());
     CHECK(originII.sourceGroup == VoiceGroup::Global);
   }
 
   SECTION("Load Dual Full")
   {
-    eb->undoableLoad(presets.getLayerPreset());
+    ebUseCases.undoableLoad(presets.getLayerPreset());
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 
@@ -132,8 +134,8 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   auto [ogI, ogII] = getOrigins();
 
   CHECK(eb->getOrigin() == nullptr);
-  CHECK(ogI.presetUUID == "");
-  CHECK(ogII.presetUUID == "");
+  CHECK(ogI.presetUUID == Uuid::none());
+  CHECK(ogII.presetUUID == Uuid::none());
   CHECK(eb->getUUIDOfLastLoadedPreset() == Uuid::init());
 
   auto min = std::chrono::milliseconds(20);
@@ -145,13 +147,9 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
     detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
 
     {
-      auto scope = TestHelper::createTestScope();
-      auto transaction = scope->getTransaction();
-      pm->selectBank(transaction, bank->getUuid());
-      bank->selectPreset(transaction, 0);
-
-      Application::get().getHWUI()->undoableSetFocusAndMode(transaction,
-                                                            { UIFocus::Presets, UIMode::Select, UIDetail::Init });
+      PresetManagerUseCases useCase(pm);
+      useCase.selectPreset(bank->getPresetAt(0));
+      Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     }
 
     TestHelper::doMainLoop(min, max, [&]() {

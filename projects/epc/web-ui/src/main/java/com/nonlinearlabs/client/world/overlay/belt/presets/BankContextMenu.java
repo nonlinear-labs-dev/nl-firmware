@@ -161,6 +161,24 @@ public abstract class BankContextMenu extends ContextMenu {
 				});
 			}
 
+			if (!bank.isMidiBank()) {
+				addChild(new ContextMenuItem(this, "Connect Bank to MIDI PC") {
+					@Override
+					public Control click(Position eventPoint) {
+						EditBufferUseCases.get().selectMidiBank(bank);
+						return super.click(eventPoint);
+					}
+				});
+			} else {
+				addChild(new ContextMenuItem(this, "Disconnect Bank from MIDI PC") {
+					@Override
+					public Control click(Position eventPoint) {
+						EditBufferUseCases.get().selectMidiBank(null);
+						return super.click(eventPoint);
+					}
+				});
+			}
+
 			addChild(new ContextMenuItem(this, "Sort Bank Numbers") {
 				@Override
 				public Control click(Position eventPoint) {

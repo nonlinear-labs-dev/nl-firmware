@@ -25,8 +25,8 @@ namespace nltools
     ENUM(MessageType, uint16_t, Preset, Morph_A, Morph_B, Parameter, EditControl, MorphPosition, Setting, Notification,
          Assertion, Request,
 
-         SetRibbonLED, SetPanelLED, SetOLED, SetOLEDTimestamped, RotaryChanged, TimestampedRotaryChanged, ButtonChanged,
-         Playcontroller, Ping,
+         SetRibbonLED, SetPanelLED, SetOLED, OLEDState, SetOLEDTimestamped, RotaryChanged, TimestampedRotaryChanged,
+         ButtonChanged, Playcontroller, Ping,
 
          SinglePreset, LayerPreset, SplitPreset, UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
          HWAmountParameter, HWSourceParameter,
@@ -41,9 +41,9 @@ namespace nltools
 
          NotifyHardwareSourceChanged,
 
-         MidiSimpleMessage, MidiAck, MidiProgramChange,
+         MidiSimpleMessage, MidiAck, MidiProgramChange, MidiBridgeSettings, MidiSettings, MidiHardwareChange,
 
-         SyncFS);
+         AutoStartRecorderMessage, SyncFS);
 
     namespace detail
     {
@@ -73,10 +73,12 @@ namespace nltools
       template <typename Msg>
       sigc::connection receive(MessageType type, EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)
       {
-        return receiveSerialized(type, receivingEndPoint, [=](const SerializedMessage &s) {
-          auto msg = detail::deserialize<Msg>(s);
-          cb(msg);
-        });
+        return receiveSerialized(type, receivingEndPoint,
+                                 [=](const SerializedMessage &s)
+                                 {
+                                   auto msg = detail::deserialize<Msg>(s);
+                                   cb(msg);
+                                 });
       }
 
       sigc::connection receiveSerialized(MessageType type, EndPoint receivingEndPoint,

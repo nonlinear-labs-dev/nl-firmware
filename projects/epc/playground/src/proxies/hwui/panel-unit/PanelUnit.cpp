@@ -35,6 +35,8 @@ PanelUnit::PanelUnit()
       [=]()
       {
         auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+        EditBufferUseCases ebUseCases { editBuffer };
+
         auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
 
         if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
@@ -43,7 +45,7 @@ PanelUnit::PanelUnit()
         }
 
         auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
-        editBuffer->undoableSelectParameter({ currentMc, VoiceGroup::Global });
+        ebUseCases.selectParameter({ currentMc, VoiceGroup::Global }, true);
         return true;
       });
 
@@ -60,29 +62,19 @@ PanelUnit::PanelUnit()
 
         if(auto modParam = dynamic_cast<ModulateableParameter *>(target))
         {
+          ModParameterUseCases useCase(modParam);
           if(modParam->getModulationSource() == mc)
           {
-            auto scope = Application::get().getUndoScope()->startTransaction("Remove Modulation Source");
-            modParam->undoableSelectModSource(scope->getTransaction(), MacroControls::NONE);
+            useCase.removeModSource();
           }
           else
           {
-            auto scope = Application::get().getUndoScope()->startTransaction("Set Modulation Source");
-            modParam->undoableSelectModSource(scope->getTransaction(), mc);
-
-            editBuffer->undoableSelectParameter(scope->getTransaction(), modParam);
-
             auto hwui = Application::get().getHWUI();
             auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
-            boled.onLayoutInstalled(
-                [&](Layout *l)
-                {
-                  if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(l))
-                  {
-                    modParamLayout->installMcAmountScreen();
-                    m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
-                  }
-                });
+            m_signalInitializeInstalledLayoutOnce
+                = boled.onLayoutInstalled(sigc::mem_fun(this, &PanelUnit::initModulateableParameterLayout));
+
+            useCase.selectModSourceAndSelectTargetParameter(mc);
           }
         }
         return true;
@@ -93,9 +85,10 @@ PanelUnit::PanelUnit()
       [=]()
       {
         auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+        EditBufferUseCases ebUseCases { editBuffer };
         auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
         auto currentSource = choseHWBestSourceForMC(p->getID());
-        editBuffer->undoableSelectParameter(currentSource);
+        ebUseCases.selectParameter(currentSource, true);
         m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
         return true;
       });
@@ -238,6 +231,16 @@ bool PanelUnit::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, boo
 MacroControlAssignmentStateMachine &PanelUnit::getMacroControlAssignmentStateMachine()
 {
   return m_macroControlAssignmentStateMachine;
+}
+
+void PanelUnit::initModulateableParameterLayout(Layout *l)
+{
+  if(auto modParamLayout = dynamic_cast<ModulateableParameterSelectLayout2 *>(l))
+  {
+    modParamLayout->installMcAmountScreen();
+    m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
+  }
+  m_signalInitializeInstalledLayoutOnce.disconnect();
 }
 
 const std::vector<std::shared_ptr<TwoStateLED>> &PanelUnit::getLeds()

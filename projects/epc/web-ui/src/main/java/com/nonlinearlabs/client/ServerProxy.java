@@ -254,7 +254,7 @@ public class ServerProxy {
 	public void selectPreset(String uuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "select-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
-		queueJob(uri, true);
+		queueJob(uri, false);
 	}
 
 	public void newBank(String initialName, NonPosition pos) {
@@ -771,6 +771,14 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+
+	public void setBankCollapsed(Bank theBank, String collapsed) {
+		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-bank-collapse");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()), 
+		new StaticURI.KeyValue("value", collapsed));
+		queueJob(uri, false);
+	}
+
 	public void undoJump(long id) {
 		StaticURI.Path path = new StaticURI.Path("undo", "undo-jump");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("target", id));
@@ -1135,7 +1143,10 @@ public class ServerProxy {
 		if (bank != null) {
 			uuid = bank.getUUID();
 		}
+		selectMidiBank(uuid);
+	}
 
+	public void selectMidiBank(String uuid) {
 		StaticURI.Path path = new StaticURI.Path("presets", "select-midi-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", uuid));
 		queueJob(uri, false);
@@ -1188,5 +1199,17 @@ public class ServerProxy {
 	public boolean lastDocumentCouldOmitOracles() {
 		return lastOmitOracles;
 	}
+
+	public void resetToClassicMidi() {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-classic-midi");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
+    public void resetToHighResMidi() {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-high-res");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+    }
 
 }

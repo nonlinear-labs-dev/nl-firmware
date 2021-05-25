@@ -128,7 +128,7 @@ void Bank::deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder)
 
         if(FileSystem::isNameAUUID(withoutExtension))
         {
-          if(!findPreset(withoutExtension))
+          if(!findPreset(Uuid { withoutExtension }))
           {
             if(auto presetFile = bankFolder->get_child(fileName))
               presetFile->remove();
@@ -171,12 +171,26 @@ std::string Bank::getName(bool withFallback) const
 
 std::string Bank::getX() const
 {
-  return m_x;
+  if(m_x.empty())
+  {
+    return "0";
+  }
+  else
+  {
+    return m_x;
+  }
 }
 
 std::string Bank::getY() const
 {
-  return m_y;
+  if(m_y.empty())
+  {
+    return "0";
+  }
+  else
+  {
+    return m_y;
+  }
 }
 
 const Uuid &Bank::getSelectedPresetUuid() const
@@ -281,39 +295,10 @@ Bank *Bank::getSlaveBottom() const
   return nullptr;
 }
 
-void Bank::selectNextPreset()
-{
-  selectPreset(getNextPresetPosition());
-}
-
-void Bank::selectPreviousPreset()
-{
-  selectPreset(getPreviousPresetPosition());
-}
-
-void Bank::selectNextPreset(UNDO::Transaction *transaction)
-{
-  selectPreset(transaction, getNextPresetPosition());
-}
-
-void Bank::selectPreviousPreset(UNDO::Transaction *transaction)
-{
-  selectPreset(transaction, getPreviousPresetPosition());
-}
-
 void Bank::selectPreset(UNDO::Transaction *transaction, size_t pos)
 {
   if(pos < getNumPresets())
     selectPreset(transaction, getPresetAt(pos)->getUuid());
-}
-
-void Bank::selectPreset(size_t pos)
-{
-  if(pos < getNumPresets())
-  {
-    auto scope = getUndoScope().startTransaction("Select Preset '%0'", getPresetAt(pos)->getName());
-    selectPreset(scope->getTransaction(), pos);
-  }
 }
 
 size_t Bank::getNextPresetPosition() const
@@ -328,8 +313,8 @@ size_t Bank::getPreviousPresetPosition() const
 
 void Bank::rename(const Glib::ustring &name)
 {
-  auto scope = getUndoScope().startTransaction("Rename Preset '%0'", name);
-  setName(scope->getTransaction(), name);
+  BankUseCases useCase(this);
+  useCase.renameBank(name);
 }
 
 void Bank::attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, Bank::AttachmentDirection dir)
@@ -362,8 +347,7 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 
 void Bank::selectPreset(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  if(m_presets.select(transaction, uuid))
-    static_cast<PresetManager *>(getParent())->onPresetSelectionChanged();
+  m_presets.select(transaction, uuid);
 }
 
 void Bank::ensurePresetSelection(UNDO::Transaction *transaction)
@@ -507,7 +491,9 @@ void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID kn
 
   writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("x", getX()),
                   Attribute("y", getY()), Attribute("selected-preset", getSelectedPresetUuid().raw()),
-                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed), [&]() {
+                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed),
+                  [&]()
+                  {
                     if(changed)
                     {
                       AttributesOwner::writeDocument(writer, knownRevision);
@@ -516,6 +502,7 @@ void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID kn
                                               TimeTools::getDisplayStringFromStamp(m_lastChangedTimestamp));
                       writer.writeTextElement("attached-to", getAttachedToBankUuid().raw());
                       writer.writeTextElement("attached-direction", getAttachDirection());
+                      writer.writeTextElement("collapsed", getAttribute("collapsed", "false"));
                       writer.writeTextElement("state", calcStateString());
                     }
                   });
@@ -536,7 +523,7 @@ void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other, bool igno
   setY(transaction, other->getY());
 
   AttributesOwner::copyFrom(transaction, other);
-  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, p, ignoreUuids)); });
+  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, *p, ignoreUuids)); });
 
   updateLastModifiedTimestamp(transaction);
 }
@@ -587,32 +574,34 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
   bool hadMatch = false;
   int h = 0;
 
-  m_presets.forEach([&](auto p) {
-    Glib::ustring name = p->getName();
-
-    if(name == baseName)
-    {
-      h = std::max(h, 1);
-      hadMatch = true;
-    }
-    else if(name.find(baseName) == 0)
-    {
-      Glib::MatchInfo matchInfo;
-
-      if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
+  m_presets.forEach(
+      [&](auto p)
       {
-        auto presetsBaseName = matchInfo.fetch(1);
+        Glib::ustring name = p->getName();
 
-        if(presetsBaseName == baseName)
+        if(name == baseName)
         {
-          auto number = matchInfo.fetch(2);
-          int newNumber = std::stoi(number);
-          h = std::max(h, newNumber);
+          h = std::max(h, 1);
           hadMatch = true;
         }
-      }
-    }
-  });
+        else if(name.find(baseName) == 0)
+        {
+          Glib::MatchInfo matchInfo;
+
+          if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
+          {
+            auto presetsBaseName = matchInfo.fetch(1);
+
+            if(presetsBaseName == baseName)
+            {
+              auto number = matchInfo.fetch(2);
+              int newNumber = std::stoi(number);
+              h = std::max(h, newNumber);
+              hadMatch = true;
+            }
+          }
+        }
+      });
 
   if(hadMatch)
     return std::max(1, h);
@@ -626,11 +615,15 @@ void Bank::searchPresets(Writer &writer, const SearchQuery &query) const
   auto pos = pm->getBankPosition(getUuid());
 
   writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                  Attribute("order-number", pos), [&]() {
-                    m_presets.forEach([&](auto p) {
-                      if(p->matchesQuery(query))
-                        p->writeDocument(writer, 0);
-                    });
+                  Attribute("order-number", pos),
+                  [&]()
+                  {
+                    m_presets.forEach(
+                        [&](auto p)
+                        {
+                          if(p->matchesQuery(query))
+                            p->writeDocument(writer, 0);
+                        });
                   });
 }
 
@@ -701,4 +694,14 @@ const Preset *Bank::getFirstPreset() const
   if(m_presets.empty())
     return nullptr;
   return m_presets.at(0);
+}
+
+Glib::ustring Bank::getComment()
+{
+  return getAttribute("Comment", "");
+}
+
+bool Bank::isMidiSelectedBank() const
+{
+  return getPresetManager()->getMidiSelectedBank() == getUuid();
 }

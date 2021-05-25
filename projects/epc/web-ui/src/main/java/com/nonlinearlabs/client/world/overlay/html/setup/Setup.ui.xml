@@ -2,12 +2,16 @@
 	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
 	<g:HTMLPanel>
-		<div class="tabcontainer w33 html-dialog">
+		<div class="tabcontainer w36 html-dialog">
 
 			<div class="tab">
 				<g:Button styleName="tabheader" ui:field="deviceSettingsButton">Device Settings
 				</g:Button>
 				<g:Button styleName="tabheader" ui:field="uiSettingsButton">GUI Settings
+				</g:Button>
+				<g:Button styleName="tabheader" ui:field="uiMidiButton">MIDI Settings
+				</g:Button>
+				<g:Button styleName="tabheader" ui:field="uiFlacButton">Recorder
 				</g:Button>
 				<g:Button styleName="tabheader" ui:field="systemInfoButton">System Info
 				</g:Button>
@@ -57,7 +61,7 @@
 					</div>
 
 					<div class="eins-he">
-						<div class="w25p">
+						<div class="w20p">
 							<p>Pedal 1</p>
 						</div>
 						<div class="w15p">
@@ -67,14 +71,14 @@
 							<input type="range" ui:field="pedal1Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
-						<div class="w30p">
+						<div class="w35p">
 							<g:ListBox ui:field="pedal1Type">
 							</g:ListBox>
 						</div>
 					</div>
 
 					<div class="eins-he">
-						<div class="w25p">
+						<div class="w20p">
 							<p>Pedal 2</p>
 						</div>
 						<div class="w15p">
@@ -84,14 +88,14 @@
 							<input type="range" ui:field="pedal2Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
-						<div class="w30p">
+						<div class="w35p">
 							<g:ListBox ui:field="pedal2Type">
 							</g:ListBox>
 						</div>
 					</div>
 
 					<div class="eins-he">
-						<div class="w25p">
+						<div class="w20p">
 							<p>Pedal 3</p>
 						</div>
 						<div class="w15p">
@@ -101,14 +105,14 @@
 							<input type="range" ui:field="pedal3Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
-						<div class="w30p">
+						<div class="w35p">
 							<g:ListBox ui:field="pedal3Type">
 							</g:ListBox>
 						</div>
 					</div>
 
 					<div class="eins-he">
-						<div class="w25p">
+						<div class="w20p">
 							<p>Pedal 4</p>
 						</div>
 						<div class="w15p">
@@ -118,7 +122,7 @@
 							<input type="range" ui:field="pedal4Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
 						</div>
 						<div class="w5p"></div>
-						<div class="w30p">
+						<div class="w35p">
 							<g:ListBox ui:field="pedal4Type">
 							</g:ListBox>
 						</div>
@@ -318,6 +322,262 @@
 				</div>
 			</div>
 
+			<div ui:field="midiSettings" class="tabcontent midi-tab">
+				<div class="forms-container">
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Receive</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Channel</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiReceiveChannel">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Split Channel (Part II)</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiReceiveChannelSplit">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Program Change</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="receivePCOn" name="rad_recPC" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="receivePCOff" name="rad_recPC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Notes</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="receiveNotesOn" name="rad_recNotes" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="receiveNotesOff" name="rad_recNotes" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Hardware Sources</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="receiveControllersOn" name="rad_recControllers" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="receiveControllersOff" name="rad_recControllers" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Send</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Channel</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiSendChannel">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Split Channel (Part II)</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiSendChannelSplit">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Program Change</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="sendPCOn" name="rad_sendPC" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="sendPCOff" name="rad_sendPC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Notes</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="sendNotesOn" name="rad_sendNotes" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="sendNotesOff" name="rad_sendNotes" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Hardware Sources</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="sendControllersOn" name="rad_sendControllers" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="sendControllersOff" name="rad_sendControllers" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Local</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Notes</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="localNotesOn" name="rad_localNotes" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="localNotesOff" name="rad_localNotes" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable Hardware Sources</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="localControllersOn" name="rad_localControllers" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="localControllersOff" name="rad_localControllers" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Mappings</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 1</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal1Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 2</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal2Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 3</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal3Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 4</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal4Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Ribbon 1</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon1Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Ribbon 2</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon2Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Bender</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="benderMapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Aftertouch</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="aftertouchMapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable High-Res. Velocity (CC 88)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable High-Res. CC (enable LSB)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="enable14Bit" name="rad_14BitCC" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="disable14Bit" name="rad_14BitCC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Program Change Bank</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pcBanks">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Reset Midi Settings to Defaults</p>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="classicMidi">Classic MIDI</g:Button>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="highResMidi">High-Res.</g:Button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div ui:field="flacSettings" class="tabcontent">
+				<div class="forms-container">
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Recorder</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Auto-Start Recorder</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="autoStartRecordOn" name="rad_autoStartRecord" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="autoStartRecordOff" name="rad_autoStartRecord" value="false"></g:RadioButton>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<div ui:field="systemInfo" class="tabcontent">
 

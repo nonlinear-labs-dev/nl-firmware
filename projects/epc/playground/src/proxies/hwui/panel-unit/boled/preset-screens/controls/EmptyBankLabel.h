@@ -8,15 +8,12 @@ class EmptyBankLabel : public Label
   typedef Label super;
 
  public:
-  // public methods
-  EmptyBankLabel(const Rect &pos);
-  virtual ~EmptyBankLabel();
+  explicit EmptyBankLabel(const Rect &pos);
+  ~EmptyBankLabel() override;
 
-  bool redraw(FrameBuffer &fb);
-  void setFontColor(FrameBuffer &fb) const;
-
- private:
-  // private methods
-  EmptyBankLabel(const EmptyBankLabel &other);
-  EmptyBankLabel &operator=(const EmptyBankLabel &);
+  EmptyBankLabel(const EmptyBankLabel &other) = delete;
+  EmptyBankLabel &operator=(const EmptyBankLabel &) = delete;
+  
+  bool redraw(FrameBuffer &fb) override;
+  void setFontColor(FrameBuffer &fb) const override;
 };

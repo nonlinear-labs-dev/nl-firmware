@@ -11,10 +11,10 @@ class HTTPRequest : public NetworkRequest
   typedef NetworkRequest super;
 
  public:
-  HTTPRequest(SoupMessage *msg);
-  virtual ~HTTPRequest();
+  explicit HTTPRequest(SoupMessage *msg);
+  ~HTTPRequest() override;
 
-  virtual std::unique_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) override;
+  std::unique_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) override;
 
   void okAndComplete() override;
   void moved(const Glib::ustring &url);
@@ -22,8 +22,8 @@ class HTTPRequest : public NetworkRequest
 
   Glib::ustring getPath() override;
 
-  virtual void pause() override;
-  virtual void unpause() override;
+  void pause() override;
+  void unpause() override;
   void notFound();
   void setContentType(const Glib::ustring &contentType);
   void setStatusOK();

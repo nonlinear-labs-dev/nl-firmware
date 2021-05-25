@@ -210,7 +210,7 @@ public class Belt extends OverlayLayout {
 
 			EditBufferUseCases.get().toggleDirectLoad();
 			return this;
-		} else if (event.getNativeKeyCode() == KeyCodes.KEY_R) {
+		} else if (event.getNativeKeyCode() == KeyCodes.KEY_R && !event.getNativeEvent().getCtrlKey()) {
 			getPresetLayout().renameCurrentPreset();
 			return this;
 		} else if (event.getNativeKeyCode() == KeyCodes.KEY_S && !event.isControlKeyDown()) {

@@ -49,6 +49,18 @@ namespace nltools
         }
 
         uint8_t program;
+        SoundType programType = SoundType::Invalid;
+      };
+
+      struct HardwareChangeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiHardwareChange;
+        }
+
+        int parameterID;
+        float value;
       };
     }
 
@@ -181,6 +193,16 @@ namespace nltools
         int m_shift;
       };
 
+      struct FlacRecorderAutoStart
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::AutoStartRecorderMessage;
+        }
+
+        bool enabled;
+      };
+
       struct PresetGlitchMessage
       {
         constexpr static MessageType getType()
@@ -199,6 +221,43 @@ namespace nltools
         }
 
         double m_tuneReference;
+      };
+
+      struct MidiSettingsMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiSettings;
+        }
+
+        MidiReceiveChannel receiveChannel;
+        MidiReceiveChannelSplit receiveSplitChannel;
+
+        MidiSendChannel sendChannel;
+        MidiSendChannelSplit sendSplitChannel;
+
+        bool receiveProgramChange = false;
+        bool receiveNotes = false;
+        bool receiveControllers = false;
+
+        bool sendProgramChange = false;
+        bool sendNotes = false;
+        bool sendControllers = false;
+
+        bool localNotes = false;
+        bool localControllers = false;
+
+        bool highVeloCCEnabled = true;
+        bool highResCCEnabled = true;
+
+        PedalCC pedal1cc;
+        PedalCC pedal2cc;
+        PedalCC pedal3cc;
+        PedalCC pedal4cc;
+        RibbonCC ribbon1cc;
+        RibbonCC ribbon2cc;
+        AftertouchCC aftertouchcc;
+        BenderCC bendercc;
       };
 
       struct TransitionTimeMessage
@@ -345,7 +404,18 @@ namespace nltools
         return MessageType::SetOLED;
       }
 
+      uint64_t messageId = 0;
       uint8_t pixels[256][96];
+    };
+
+    struct OLEDState
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::OLEDState;
+      }
+
+      uint64_t displaysMessageId = 0;
     };
 
     struct SetTimestampedOledMessage
@@ -409,6 +479,7 @@ namespace nltools
         auto bytes = g_bytes_new_take(scratch, numBytes + 2);
         return Glib::wrap(bytes);
       }
+
     }
 
     namespace ParameterGroups

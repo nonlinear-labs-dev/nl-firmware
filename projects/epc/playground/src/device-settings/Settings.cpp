@@ -53,11 +53,29 @@
 #include <parameters/RibbonParameter.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <iostream>
+#include <device-settings/midi/MidiChannelSettings.h>
+#include <device-settings/midi/local/LocalControllersSetting.h>
+#include <device-settings/midi/local/LocalNotesSetting.h>
+#include <device-settings/midi/send/MidiSendControllersSetting.h>
+#include <device-settings/midi/send/MidiSendNotesSetting.h>
+#include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
+#include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
+#include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
+#include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
+#include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
+#include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/EnableHighVelocityCC.h>
+#include <device-settings/midi/mappings/Enable14BitSupport.h>
+#include <device-settings/flac/AutoStartRecorderSetting.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
     , m_actions(std::make_unique<SettingsActions>(*this))
-    , m_saveJob(5000, std::bind(&Settings::save, this))
+    , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsPlaycontrollerWriteFallback(*this));
@@ -98,6 +116,35 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SyncVoiceGroups", new SyncVoiceGroupsAcrossUIS(*this));
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
   addSetting("SyncSplit", new SplitPointSyncParameters(*this));
+
+  addSetting("LocalControllers", new LocalControllersSetting(*this));
+  addSetting("LocalNotes", new LocalNotesSetting(*this));
+
+  addSetting("ReceiveChannel", new MidiReceiveChannelSetting(*this));
+  addSetting("ReceiveChannelSplit", new MidiReceiveChannelSplitSetting(*this));
+  addSetting("ReceiveProgramChanges", new MidiReceiveProgramChangesSetting(*this));
+  addSetting("ReceiveNotes", new MidiReceiveNotesSetting(*this));
+  addSetting("ReceiveControllers", new MidiReceiveControllersSetting(*this));
+  addSetting("ReceiveAftertouchCurve", new MidiReceiveAftertouchCurveSetting(*this));
+  addSetting("ReceiveVelocityCurve", new MidiReceiveVelocityCurveSetting(*this));
+
+  addSetting("SendChannel", new MidiSendChannelSetting(*this));
+  addSetting("SendChannelSplit", new MidiSendChannelSplitSetting(*this));
+  addSetting("SendProgramChanges", new MidiSendProgramChangesSetting(*this));
+  addSetting("SendNotes", new MidiSendNotesSetting(*this));
+  addSetting("SendControllers", new MidiSendControllersSetting(*this));
+
+  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this));
+  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this));
+  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this));
+  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this));
+  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this));
+  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this));
+  addSetting("BenderMapping", new BenderCCMapping(*this));
+  addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
+  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
+  addSetting("HighResCC", new Enable14BitSupport(*this));
+  addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
 }
 
 Settings::~Settings()
@@ -108,6 +155,7 @@ Settings::~Settings()
 Settings::tUpdateID Settings::onChange(uint64_t flags)
 {
   m_saveJob.trigger();
+  m_sigChanged.emit();
   return super::onChange(flags);
 }
 
@@ -166,9 +214,12 @@ void Settings::save()
 {
   try
   {
-    SettingsSerializer serializer(*this);
-    XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
-    serializer.write(writer, VersionAttribute::get());
+    if(Application::exists())
+    {
+      SettingsSerializer serializer(*this);
+      XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
+      serializer.write(writer, VersionAttribute::get());
+    }
   }
   catch(...)
   {
@@ -205,15 +256,17 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("settings", Attribute("changed", changed), [&]() {
-    if(changed)
-    {
-      for(auto &setting : m_settings)
-      {
-        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
-      }
-    }
-  });
+  writer.writeTag("settings", Attribute("changed", changed),
+                  [&]()
+                  {
+                    if(changed)
+                    {
+                      for(auto &setting : m_settings)
+                      {
+                        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
+                      }
+                    }
+                  });
 }
 
 void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
@@ -264,4 +317,9 @@ void Settings::sendPresetSettingsToPlaycontroller()
   auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
   r1->sendModeToPlaycontroller();
   r2->sendModeToPlaycontroller();
+}
+
+sigc::connection Settings::onSettingsChanged(sigc::slot<void(void)> s)
+{
+  return m_sigChanged.connect(s);
 }
