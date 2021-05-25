@@ -96,6 +96,8 @@
 #include <presets/Bank.h>
 #include <use-cases/SettingsUseCases.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
+#include <device-settings/UsedRAM.h>
+#include <device-settings/TotalRAM.h>
 
 namespace NavTree
 {
@@ -603,6 +605,44 @@ namespace NavTree
     }
   };
 
+  struct RamUsage : Leaf
+  {
+    struct RamUsageLabel : public SetupLabel
+    {
+      RamUsageLabel()
+          : SetupLabel("", Rect(0, 0, 0, 0))
+      {
+
+        m_connection = Application::get().getSettings()->getSetting<UsedRAM>()->onChange(
+            sigc::mem_fun(this, &RamUsageLabel::onSettingChanged));
+      }
+
+      void onSettingChanged(const Setting *s)
+      {
+        if(auto used = dynamic_cast<const UsedRAM *>(s))
+        {
+          auto settings = Application::get().getSettings();
+          auto total = settings->getSetting<TotalRAM>();
+          StringAndSuffix str { used->getDisplayString() + " / " + total->getDisplayString() + " MB", 0 };
+          setText(str);
+        }
+      }
+
+     private:
+      sigc::connection m_connection;
+    };
+
+    RamUsage(InnerNode *parent)
+        : Leaf(parent, "RAM usage:")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new RamUsageLabel();
+    }
+  };
+
   struct SystemInfo : InnerNode
   {
     SystemInfo(InnerNode *parent)
@@ -613,6 +653,7 @@ namespace NavTree
       children.emplace_back(new Passphrase(this));
       children.emplace_back(new WebUIAdress(this));
       children.emplace_back(new FreeInternalMemory(this));
+      children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
