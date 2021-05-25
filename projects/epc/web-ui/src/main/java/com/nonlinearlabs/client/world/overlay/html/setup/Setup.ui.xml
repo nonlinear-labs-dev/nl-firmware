@@ -665,7 +665,7 @@
 						</div>
 					</div>
 
-										<div class="halb-he">
+					<div class="halb-he">
 						<div class="w40p">
 							<p>RAM usage</p>
 						</div>
@@ -678,6 +678,17 @@
 					</div>
 
 					<div class="mb05"></div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Upload Software Update</p>
+						</div>
+						<div class="w60p">
+							<g:FileUpload ui:field="updateFile"></g:FileUpload>
+						</div>
+						<div class="progress-bar hidden" ui:field="updateSpinner">
+						</div>
+					</div>
 
 				</div>
 			</div>

@@ -8,18 +8,28 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
@@ -67,7 +77,10 @@ public class Setup extends Composite {
 	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton;
 
 	@UiField
-	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about;
+	FileUpload updateFile;
+
+	@UiField
+	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about, updateSpinner;
 
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
@@ -129,6 +142,8 @@ public class Setup extends Composite {
 	}
 
 	public void setupTexts() {
+		updateSpinner.addClassName("hidden");
+
 		NonMaps.get().getServerProxy().downloadEnumStrings("PedalTypes", (options) -> {
 			fillListboxWithOptions(pedal1Type, options);
 			fillListboxWithOptions(pedal2Type, options);
@@ -296,14 +311,60 @@ public class Setup extends Composite {
 			NonMaps.get().getServerProxy().selectMidiBank(pcBanks.getSelectedValue());
 		});
 
-		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
-		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));
 		autoStartRecordOn.addValueChangeHandler(e -> settings.setAutoStartRecorder(BooleanValues.on));
 		autoStartRecordOff.addValueChangeHandler(e -> settings.setAutoStartRecorder(BooleanValues.off));
-	
+
+		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
+		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));	
+		
 		classicMidi.addClickHandler(e -> settings.resetToClassicMidi());
 		highResMidi.addClickHandler(e -> settings.resetToHighResMidi());
+
+		updateFile.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent e) {
+				updateSpinner.removeClassName("hidden");
+				updateFile.getElement().addClassName("hidden");
+
+				loadUpdateFile(e.getNativeEvent(), new TarUploadedHandler(){
+					@Override
+					public void onTarUploaded(JavaScriptObject buffer) {
+						NonMaps.theMaps.getServerProxy().uploadUpdate(buffer, new UploadDoneReceiver(){
+
+							@Override
+							public void onUploadFinished(XMLHttpRequest answer) {
+								updateSpinner.addClassName("hidden");
+								updateFile.getElement().removeClassName("hidden");
+							}
+						});
+					}
+				});
+			}
+		});
 	}
+
+	public interface UploadDoneReceiver {
+		void onUploadFinished(XMLHttpRequest answer);
+	}
+
+	private interface TarUploadedHandler {
+		void onTarUploaded(JavaScriptObject buffer);
+	}
+
+	private native void loadUpdateFile(NativeEvent evt, TarUploadedHandler receiver) /*-{
+		var files = evt.target.files;
+		if (files != null && files.length > 0) {
+		var file = files[0];
+		var reader = new FileReader();
+		
+		reader.onload = function(e) {
+		var zip = reader.result;
+		receiver.@com.nonlinearlabs.client.world.overlay.html.setup.Setup.TarUploadedHandler::onTarUploaded(Lcom/google/gwt/core/client/JavaScriptObject;)(zip);
+		}
+		reader.readAsArrayBuffer(file);
+		}
+		}-*/;
 
 	public void connectUpdate() {
 		DeviceSettingsProvider.get().register(t -> {

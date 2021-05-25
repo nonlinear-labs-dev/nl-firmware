@@ -115,6 +115,17 @@ namespace nltools
       };
     }
 
+    namespace Update
+    {
+      struct UpdateUploadedNotification
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::UpdateUploaded;
+        }
+      };
+    }
+
     namespace WiFi
     {
 
