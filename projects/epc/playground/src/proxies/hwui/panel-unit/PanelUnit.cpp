@@ -223,7 +223,7 @@ const std::vector<std::shared_ptr<TwoStateLED>> &PanelUnit::getLeds()
   return m_leds;
 }
 
-std::shared_ptr<UsageMode> PanelUnit::getScreenSaverUsageMode()
+std::shared_ptr<UsageMode> PanelUnit::getScreenSaverUsageMode() const
 {
   static auto s_panelMode = std::make_shared<ScreenSaverUsageMode>();
   return s_panelMode;

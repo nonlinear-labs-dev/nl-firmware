@@ -22,7 +22,7 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   void init();
 
   PlayPanel &getPlayPanel();
-  std::shared_ptr<UsageMode> getScreenSaverUsageMode() override;
+  std::shared_ptr<UsageMode> getScreenSaverUsageMode() const override;
 
  private:
   void respectUsageMode(const Setting *s);

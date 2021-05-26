@@ -33,7 +33,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   const EditPanel &getEditPanel() const;
   EditPanel &getEditPanel();
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
-  std::shared_ptr<UsageMode> getScreenSaverUsageMode() override;
+  std::shared_ptr<UsageMode> getScreenSaverUsageMode() const override;
 
  private:
   void installUsageMode(FocusAndMode focusAndMode);

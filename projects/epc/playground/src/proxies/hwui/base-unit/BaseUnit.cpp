@@ -20,7 +20,7 @@ BaseUnit::BaseUnit()
 
 BaseUnit::~BaseUnit() = default;
 
-std::shared_ptr<UsageMode> BaseUnit::getScreenSaverUsageMode()
+std::shared_ptr<UsageMode> BaseUnit::getScreenSaverUsageMode() const
 {
   static auto sScreenSaver = std::make_shared<ScreenSaverUsageMode>();
   return sScreenSaver;

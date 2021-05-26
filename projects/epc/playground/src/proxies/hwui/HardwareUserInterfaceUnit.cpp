@@ -41,15 +41,10 @@ void HardwareUserInterfaceUnit::restoreUsageMode(std::shared_ptr<UsageMode> mode
     m_usageMode->bruteForceUpdateLeds();
 }
 
-std::shared_ptr<UsageMode> HardwareUserInterfaceUnit::getUsageMode()
+std::shared_ptr<UsageMode> HardwareUserInterfaceUnit::getUsageMode() const
 {
   if(m_screenSaverActive)
     return getScreenSaverUsageMode();
-  return m_usageMode;
-}
-
-std::shared_ptr<const UsageMode> HardwareUserInterfaceUnit::getUsageMode() const
-{
   return m_usageMode;
 }
 

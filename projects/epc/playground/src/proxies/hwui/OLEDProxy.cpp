@@ -136,6 +136,7 @@ void OLEDProxy::installScreenSaver(Layout *l)
 void OLEDProxy::removeScreenSaver()
 {
   m_screenSaver.reset();
+  invalidate();
 }
 
 Layout *OLEDProxy::getScreenSaver()

@@ -22,9 +22,8 @@ class HardwareUserInterfaceUnit
 
   void setUsageMode(UsageMode* mode);
   void restoreUsageMode(std::shared_ptr<UsageMode> mode);
-  std::shared_ptr<UsageMode> getUsageMode();
-  [[nodiscard]] std::shared_ptr<const UsageMode> getUsageMode() const;
-  virtual std::shared_ptr<UsageMode> getScreenSaverUsageMode() = 0;
+  [[nodiscard]] std::shared_ptr<UsageMode> getUsageMode() const;
+  virtual std::shared_ptr<UsageMode> getScreenSaverUsageMode() const = 0;
 
  private:
   void onScreenSaverStateChanged(bool state);
