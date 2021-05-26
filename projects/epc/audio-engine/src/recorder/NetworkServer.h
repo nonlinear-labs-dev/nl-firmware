@@ -23,6 +23,7 @@ class NetworkServer
     SoupMessage *msg;
     FlacFrameStorage::StreamHandle stream;
     gulong wroteChunkHandler = 0;
+    size_t currentFrame = 1;
   };
 
   std::vector<Stream> m_streams;

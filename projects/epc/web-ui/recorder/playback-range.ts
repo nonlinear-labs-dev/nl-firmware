@@ -1,7 +1,11 @@
 
 class PlaybackRange {
-
     constructor(private c15: C15ProxyIface) {
+    }
+
+    reset() {
+        this.one = 0;
+        this.other = 0;
     }
 
     min(): number {

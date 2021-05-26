@@ -42,6 +42,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 import com.nonlinearlabs.client.world.maps.presets.bank.Tape.Orientation;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
+import com.nonlinearlabs.client.world.overlay.html.setup.Setup.UploadDoneReceiver;
 
 public class ServerProxy {
 
@@ -940,6 +941,27 @@ public class ServerProxy {
 																	oReq.send(blob);
 																	}-*/;
 
+	public native void uploadUpdate(JavaScriptObject buffer, UploadDoneReceiver uploadDoneReceiver) /*-{
+																	
+																		var oReq = new XMLHttpRequest();
+																		oReq.open("POST", "/C15-Update", true);
+																		oReq.setRequestHeader("Content-Type", "application/binary");
+																		
+																		oReq.onreadystatechange = function() {
+																		if (oReq.readyState == 4 && oReq.status == 200) {
+																		var ret = oReq.responseText;
+																		uploadDoneReceiver.@com.nonlinearlabs.client.world.overlay.html.setup.Setup.UploadDoneReceiver::onUploadFinished(Lcom/google/gwt/xhr/client/XMLHttpRequest;)(oReq);
+																		var sub = "Invalid";
+																		if (ret.includes(sub)) {
+																		alert(oReq.responseText);
+																		}
+																		}
+																		}
+																		
+																		var blob = new Blob([ buffer ]);
+																		oReq.send(blob);
+																		}-*/;
+
 	public void onBankClusterMoved(List<Bank> changedBanks) {
 		String csv = "";
 		for (Bank curr : changedBanks) {
@@ -1199,5 +1221,17 @@ public class ServerProxy {
 	public boolean lastDocumentCouldOmitOracles() {
 		return lastOmitOracles;
 	}
+
+	public void resetToClassicMidi() {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-classic-midi");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
+    public void resetToHighResMidi() {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-high-res");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+    }
 
 }

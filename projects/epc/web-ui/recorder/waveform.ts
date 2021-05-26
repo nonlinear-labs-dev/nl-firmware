@@ -1,5 +1,9 @@
 
 class Waveform extends Draggable {
+
+    readonly minZoom = 1;
+    readonly maxZoom = 64;
+
     constructor(private c15: C15ProxyIface) {
         super("waveform");
         this.selectedRange = new SelectedRange(c15, this);
@@ -15,6 +19,22 @@ class Waveform extends Draggable {
     update() {
         var c = document.getElementById("bars") as HTMLCanvasElement;
         var ctx = c.getContext("2d") as CanvasRenderingContext2D;
+
+        var zoomIn = document.getElementById("zoom-in");
+        var zoomOut = document.getElementById("zoom-out");
+
+        if(this.zoom == this.minZoom) {
+            zoomIn!.classList.add("disabled");
+        } else {
+            zoomIn!.classList.remove("disabled");
+        }
+
+        //64 equals roughly 8H of recorded audio
+        if(this.zoom == this.maxZoom) {
+            zoomOut!.classList.add("disabled");
+        } else {
+            zoomOut!.classList.remove("disabled");
+        }
 
         c.width = c.clientWidth;
         c.height = c.clientHeight;
@@ -285,7 +305,8 @@ class Waveform extends Draggable {
     }
 
     private sanitize(width: number) {
-        this.zoom = Math.max(1, this.zoom);
+        this.zoom = Math.max(this.minZoom, this.zoom);
+        this.zoom = Math.min(this.maxZoom, this.zoom);
 
         var c = document.getElementById("bars") as HTMLCanvasElement;
 

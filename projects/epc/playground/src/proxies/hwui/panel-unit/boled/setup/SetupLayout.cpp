@@ -94,6 +94,10 @@
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 
 #include <presets/Bank.h>
+#include <use-cases/SettingsUseCases.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
+#include <device-settings/UsedRAM.h>
+#include <device-settings/TotalRAM.h>
 
 namespace NavTree
 {
@@ -162,6 +166,24 @@ namespace NavTree
     }
 
     std::list<std::unique_ptr<Node>> children;
+  };
+
+  template <typename tSetting> struct EnumSettingItem : EditableLeaf
+  {
+    EnumSettingItem(InnerNode *parent, const std::string &text)
+        : EditableLeaf(parent, text)
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SettingView<tSetting>();
+    }
+
+    Control *createEditor() override
+    {
+      return new EnumSettingEditor<tSetting>();
+    }
   };
 
   struct Velocity : EditableLeaf
@@ -429,7 +451,7 @@ namespace NavTree
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new PresetGlitchSuppression(this));
-      children.emplace_back(new SettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));
+      children.emplace_back(new EnumSettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));
       children.emplace_back(new WiFiSetting(this));
       children.emplace_back(new StoreInitSound(this));
       children.emplace_back(new ResetInitSound(this));
@@ -583,6 +605,44 @@ namespace NavTree
     }
   };
 
+  struct RamUsage : Leaf
+  {
+    struct RamUsageLabel : public SetupLabel
+    {
+      RamUsageLabel()
+          : SetupLabel("", Rect(0, 0, 0, 0))
+      {
+
+        m_connection = Application::get().getSettings()->getSetting<UsedRAM>()->onChange(
+            sigc::mem_fun(this, &RamUsageLabel::onSettingChanged));
+      }
+
+      void onSettingChanged(const Setting *s)
+      {
+        if(auto used = dynamic_cast<const UsedRAM *>(s))
+        {
+          auto settings = Application::get().getSettings();
+          auto total = settings->getSetting<TotalRAM>();
+          StringAndSuffix str { used->getDisplayString() + " / " + total->getDisplayString() + " MB", 0 };
+          setText(str);
+        }
+      }
+
+     private:
+      sigc::connection m_connection;
+    };
+
+    RamUsage(InnerNode *parent)
+        : Leaf(parent, "RAM usage:")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new RamUsageLabel();
+    }
+  };
+
   struct SystemInfo : InnerNode
   {
     SystemInfo(InnerNode *parent)
@@ -593,6 +653,7 @@ namespace NavTree
       children.emplace_back(new Passphrase(this));
       children.emplace_back(new WebUIAdress(this));
       children.emplace_back(new FreeInternalMemory(this));
+      children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
@@ -754,24 +815,6 @@ namespace NavTree
     virtual Control *createEditor() override
     {
       return new ImportBackupEditor();
-    }
-  };
-
-  template <typename tSetting> struct EnumSettingItem : EditableLeaf
-  {
-    EnumSettingItem(InnerNode *parent, const std::string &text)
-        : EditableLeaf(parent, text)
-    {
-    }
-
-    Control *createView() override
-    {
-      return new SettingView<tSetting>();
-    }
-
-    Control *createEditor() override
-    {
-      return new EnumSettingEditor<tSetting>();
     }
   };
 
@@ -972,6 +1015,44 @@ namespace NavTree
     }
   };
 
+  struct ResetMidiSettingsToHighRes : public OneShotEntry
+  {
+
+    explicit ResetMidiSettingsToHighRes(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToHighRes();
+                       })
+    {
+    }
+
+    constexpr const char *getName()
+    {
+      return "Set to High-Res. Defaults";
+    }
+  };
+
+  struct ResetMidiSettingsToClassic : public OneShotEntry
+  {
+
+    explicit ResetMidiSettingsToClassic(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToClassicMidi();
+                       })
+    {
+    }
+
+    constexpr const char *getName()
+    {
+      return "Set to Classic MIDI Defaults";
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -982,6 +1063,8 @@ namespace NavTree
       children.emplace_back(new MidiLocalSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
+      children.emplace_back(new ResetMidiSettingsToClassic(this));
+      children.emplace_back(new ResetMidiSettingsToHighRes(this));
     }
   };
 

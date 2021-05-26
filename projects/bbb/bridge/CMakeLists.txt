@@ -48,13 +48,17 @@ foreach(SERVICE ${SERVICES})
   get_filename_component(SERVICENAME ${WITHOUT_IN} NAME)
   configure_file(${SERVICE} ${PROJECT_BINARY_DIR}/systemd/${SERVICENAME} @ONLY)
   install(FILES ${PROJECT_BINARY_DIR}/systemd/${SERVICENAME} DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
-  
-  install(CODE "execute_process(
-      COMMAND bash -c \"set -e
-      mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants
-      mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants
-      ln -sf ../${SERVICENAME} $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${SERVICENAME}
-      \")")
+
+  string(REGEX MATCH ".*-oneshot.service$" IS_ONESHOT ${SERVICENAME})
+
+  if("${IS_ONESHOT}" STREQUAL "")
+      install(CODE "execute_process(
+          COMMAND bash -c \"set -e
+          mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants
+          mkdir -p $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/sysinit.target.wants
+          ln -sf ../${SERVICENAME} $DESTDIR/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${SERVICENAME}
+          \")")
+  endif()
 endforeach(SERVICE)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)

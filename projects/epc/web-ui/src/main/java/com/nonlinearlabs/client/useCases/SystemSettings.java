@@ -262,4 +262,12 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.autoStartRecorder.setValue(on);
 		NonMaps.theMaps.getServerProxy().setSetting("AutoStartRecorder", netify(on.name()));
 	}
+
+    public void resetToClassicMidi() {
+		NonMaps.theMaps.getServerProxy().resetToClassicMidi();
+	}
+
+    public void resetToHighResMidi() {
+		NonMaps.theMaps.getServerProxy().resetToHighResMidi();
+    }
 }

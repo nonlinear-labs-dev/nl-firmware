@@ -61,7 +61,10 @@ void RecorderOutput::setPlayPos(FrameId id)
   std::unique_lock<std::mutex> l(m_mutex);
 
   if(m_storage->getFrames().empty())
+  {
+    m_requestedPlayPosition = -1;
     return;
+  }
 
   m_requestedPlayPosition = std::clamp(id, m_storage->getFrames().front()->id, m_storage->getFrames().back()->id);
 

@@ -185,7 +185,10 @@ class C15Proxy extends C15ProxyIface {
 
     reset() {
         this.updateStream.stop();
-        this.fireAndForget({ "reset": {} }, () => { this.updateStream = new UpdateStream(this); });
+        this.fireAndForget({ "reset": {} }, () => {
+            this.updateStream = new UpdateStream(this);
+            this.currentPlayPosition = 0;
+        });
 
     }
 
