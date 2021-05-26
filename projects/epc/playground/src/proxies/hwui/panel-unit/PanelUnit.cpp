@@ -93,9 +93,6 @@ PanelUnit::PanelUnit()
         return true;
       });
 
-  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
-      sigc::mem_fun(this, &PanelUnit::onScreenSaverStateChanged));
-
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::PanelLed,
                                         sigc::mem_fun(this, &PanelUnit::onBBBBConnected));
 }
@@ -111,28 +108,6 @@ ParameterId PanelUnit::choseHWBestSourceForMC(const ParameterId &mcParamId) cons
   }
 
   return mcParamId;
-}
-
-void PanelUnit::onScreenSaverStateChanged(bool state)
-{
-  if(state)
-  {
-    setOverlayUsageMode(new ScreenSaverUsageMode());
-  }
-  else if(std::dynamic_pointer_cast<ScreenSaverUsageMode>(m_overlayUsageMode))
-  {
-    resetOverlayUsageMode();
-  }
-}
-
-void PanelUnit::setOverlayUsageMode(UsageMode *u)
-{
-  m_overlayUsageMode.reset(u);
-}
-
-void PanelUnit::resetOverlayUsageMode()
-{
-  m_overlayUsageMode.reset();
 }
 
 void PanelUnit::init()
@@ -246,4 +221,10 @@ void PanelUnit::initModulateableParameterLayout(Layout *l)
 const std::vector<std::shared_ptr<TwoStateLED>> &PanelUnit::getLeds()
 {
   return m_leds;
+}
+
+std::shared_ptr<UsageMode> PanelUnit::getScreenSaverUsageMode()
+{
+  static auto s_panelMode = std::make_shared<ScreenSaverUsageMode>();
+  return s_panelMode;
 }

@@ -33,22 +33,19 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   const EditPanel &getEditPanel() const;
   EditPanel &getEditPanel();
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
+  std::shared_ptr<UsageMode> getScreenSaverUsageMode() override;
 
  private:
-  void onScreenSaverStateChanged(bool state);
   void installUsageMode(FocusAndMode focusAndMode);
   void initModulateableParameterLayout(Layout *l);
   void onBBBBConnected();
   ParameterId choseHWBestSourceForMC(const ParameterId &mcParamId) const;
 
-  void setOverlayUsageMode(UsageMode *u);
-  void resetOverlayUsageMode();
-
   EditPanel m_editPanel;
   std::vector<tLed> m_leds;
   MacroControlAssignmentStateMachine m_macroControlAssignmentStateMachine;
+
   std::shared_ptr<UsageMode> m_overlayUsageMode;
 
-  std::shared_ptr<UsageMode> m_stashedUsageMode = nullptr;
   sigc::connection m_signalInitializeInstalledLayoutOnce;
 };

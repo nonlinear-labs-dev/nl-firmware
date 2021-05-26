@@ -16,24 +16,14 @@ BaseUnit::BaseUnit()
   Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(mem_fun(this, &BaseUnit::respectUsageMode));
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::RibbonLed,
                                         sigc::mem_fun(this, &BaseUnit::onBBBBConnected));
-
-  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
-      mem_fun(this, &BaseUnit::onScreenSaverState));
 }
 
 BaseUnit::~BaseUnit() = default;
 
-void BaseUnit::onScreenSaverState(bool state)
+std::shared_ptr<UsageMode> BaseUnit::getScreenSaverUsageMode()
 {
-  if(state)
-  {
-    setUsageMode(new ScreenSaverUsageMode());
-  }
-  else if(std::dynamic_pointer_cast<ScreenSaverUsageMode>(getUsageMode()))
-  {
-    auto hwui = Application::get().getHWUI();
-    respectUsageMode(Application::get().getSettings()->getSetting<BaseUnitUIMode>().get());
-  }
+  static auto sScreenSaver = std::make_shared<ScreenSaverUsageMode>();
+  return sScreenSaver;
 }
 
 void BaseUnit::init()

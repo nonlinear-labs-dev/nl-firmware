@@ -22,9 +22,9 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   void init();
 
   PlayPanel &getPlayPanel();
+  std::shared_ptr<UsageMode> getScreenSaverUsageMode() override;
 
  private:
-  void onScreenSaverState(bool screenSaverState);
   void respectUsageMode(const Setting *s);
   void onBBBBConnected();
 
