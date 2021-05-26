@@ -9,7 +9,7 @@ Preconditions:
 - at least one target expects a qemu installation
 - needed Ubuntu packages for an Developer Setup: 
 ```
-sudo apt install libfreetype-dev libglibmm-2.4-dev libgio2.0-cil-dev libsoup2.4-dev libgtkmm-3.0-dev libboost-dev libpng++-dev cmake git build-essential libasound2-dev 
+sudo apt install libfreetype-dev libglibmm-2.4-dev libgio2.0-cil-dev libsoup2.4-dev libgtkmm-3.0-dev libboost-dev libpng++-dev cmake git build-essential libasound2-dev openjdk-16-jdk-headless openjdk-16-jre-headless libflac-dev
 ```
 
 Then:
