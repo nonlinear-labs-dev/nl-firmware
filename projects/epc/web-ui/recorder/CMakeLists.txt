@@ -22,6 +22,9 @@ add_custom_command(
   COMMAND tsc --project ${CMAKE_CURRENT_BINARY_DIR}/ts/tsconfig.json
   )
 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION ${C15_INSTALL_PATH}/NonMaps/recorder/sources)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/recorder.js.map DESTINATION ${C15_INSTALL_PATH}/NonMaps/recorder/sources/recorder)  
+
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/recorder.js DESTINATION ${C15_INSTALL_PATH}/NonMaps/recorder)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/index.html DESTINATION ${C15_INSTALL_PATH}/NonMaps/recorder)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/styles.css DESTINATION ${C15_INSTALL_PATH}/NonMaps/recorder)
