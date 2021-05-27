@@ -18,6 +18,7 @@
 #include <device-info/DateTimeInfo.h>
 #include <Application.h>
 #include <tools/PerformanceTimer.h>
+#include <xml/StandardOutStream.h>
 #include <xml/VersionAttribute.h>
 #include <boost/algorithm/string.hpp>
 #include <algorithm>
@@ -494,19 +495,21 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
 
   if(path.find("/presets/banks/download-bank/") == 0)
   {
-    PerformanceTimer timer(__PRETTY_FUNCTION__);
-
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       Glib::ustring uuid = request->get("uuid");
 
       if(auto bank = m_presetManager.findBank(Uuid { uuid }))
       {
+        httpRequest->setStatusOK();
+        httpRequest->setContentType("text/xml");
         httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + bank->getName(true) + ".xml\"");
-        XmlWriter writer(request->createStream("text/xml", false));
+
+        auto stream = std::make_shared<std::stringstream>();
+        XmlWriter writer(std::make_unique<StandardOutStream>(stream));
         PresetBankSerializer serializer(bank);
         serializer.write(writer, VersionAttribute::get());
-
+        httpRequest->respond(std::move(*stream));
         auto scope = UNDO::Scope::startTrashTransaction();
         auto transaction = scope->getTransaction();
         bank->setAttribute(transaction, "Name of Export File", "(via Browser)");
@@ -519,13 +522,14 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
 
   if(path.find("/presets/banks/download-preset/") == 0)
   {
-    PerformanceTimer timer(__PRETTY_FUNCTION__);
-
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      XmlWriter writer(request->createStream("text/xml", false));
+      httpRequest->setStatusOK();
+      httpRequest->setContentType("text/xml");
 
-      Glib::ustring uuid = request->get("uuid");
+      auto stream = std::make_shared<std::stringstream>();
+      XmlWriter writer(std::make_unique<StandardOutStream>(stream));
+      Glib::ustring uuid = httpRequest->get("uuid");
 
       Preset *preset = nullptr;
       auto ebAsPreset = std::make_unique<Preset>(&m_presetManager, *m_presetManager.getEditBuffer());
@@ -547,7 +551,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
       PresetSerializer serializer(preset);
       httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + preset->getName() + ".xml\"");
       serializer.write(writer, VersionAttribute::get());
-
+      httpRequest->respond(std::move(*stream));
       return true;
     }
   }

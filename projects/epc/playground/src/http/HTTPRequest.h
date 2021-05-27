@@ -30,6 +30,7 @@ class HTTPRequest : public NetworkRequest
   void setChunkedEncoding();
   void respond(const uint8_t *data, gsize numBytes);
   void respond(const Glib::ustring &str);
+  void respond(std::stringstream &&str);
   void complete();
   void setHeader(const Glib::ustring &key, const Glib::ustring &value);
 

@@ -100,6 +100,16 @@ void HTTPRequest::respond(const Glib::ustring &str)
   respond((const uint8_t *) str.c_str(), str.length());
 }
 
+void HTTPRequest::respond(std::stringstream &&str)
+{
+  size_t bufLen = 1500;
+  uint8_t buf[bufLen];
+  while(auto numRead = str.readsome(reinterpret_cast<char *>(buf), bufLen))
+  {
+    respond(buf, numRead);
+  }
+}
+
 void HTTPRequest::setChunkedEncoding()
 {
   soup_message_headers_set_encoding(m_message->response_headers, SOUP_ENCODING_CHUNKED);

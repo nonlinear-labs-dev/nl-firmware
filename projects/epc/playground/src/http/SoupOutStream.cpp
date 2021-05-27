@@ -1,7 +1,7 @@
 #include "SoupOutStream.h"
 #include <giomm.h>
 
-constexpr size_t scratchbufferSize = 1024 * 16;
+constexpr size_t scratchbufferSize = 1500;  // as suggested by https://de.wikipedia.org/wiki/Maximum_Transmission_Unit
 
 SoupOutStream::SoupOutStream(SoupServer *server, SoupMessage *msg, const Glib::ustring &contentType, bool zip)
     : m_server(server)
