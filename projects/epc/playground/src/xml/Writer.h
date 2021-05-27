@@ -9,7 +9,7 @@ class Attribute;
 class Writer
 {
  public:
-  explicit Writer(std::unique_ptr<OutStream> out);
+  explicit Writer(OutStream &out);
   virtual ~Writer();
 
   typedef std::function<void()> tTagContentWriter;
@@ -60,7 +60,7 @@ class Writer
   void writeAttributes(const Attribute &a);
 
   template <typename tFirst, typename... tAttributes>
-  void writeAttributes(const tFirst &first, const tAttributes &...attributes);
+  void writeAttributes(const tFirst &first, const tAttributes &... attributes);
 
-  std::unique_ptr<OutStream> m_out;
+  OutStream &m_out;
 };

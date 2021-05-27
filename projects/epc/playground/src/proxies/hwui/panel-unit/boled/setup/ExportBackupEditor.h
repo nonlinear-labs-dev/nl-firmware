@@ -13,11 +13,11 @@ class ExportBackupEditor : public ControlWithChildren, public SetupEditor
   ExportBackupEditor();
   ~ExportBackupEditor() override;
 
-  void setPosition(const Rect &) override;
+  void setPosition(const Rect&) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   void exportBanks();
 
-  static void writeBackupToStream(std::unique_ptr<OutStream> stream);
+  static void writeBackupToStream(OutStream& stream);
 
  private:
   enum State

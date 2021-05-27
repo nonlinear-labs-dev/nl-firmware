@@ -11,7 +11,7 @@ class HTTPRequest : public NetworkRequest
   typedef NetworkRequest super;
 
  public:
-  explicit HTTPRequest(SoupMessage *msg);
+  explicit HTTPRequest(SoupServer *server, SoupMessage *msg);
   ~HTTPRequest() override;
 
   std::unique_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) override;
@@ -30,11 +30,15 @@ class HTTPRequest : public NetworkRequest
   void setChunkedEncoding();
   void respond(const uint8_t *data, gsize numBytes);
   void respond(const Glib::ustring &str);
+  void respondComplete(uint status, const char *contentType,
+                       const std::initializer_list<std::pair<std::string, std::string>> &headers,
+                       std::vector<uint8_t> &&buffer);
   void complete();
   void setHeader(const Glib::ustring &key, const Glib::ustring &value);
 
   SoupBuffer *getFlattenedBuffer();
 
  private:
+  SoupServer *m_server = nullptr;
   SoupMessage *m_message = nullptr;
 };

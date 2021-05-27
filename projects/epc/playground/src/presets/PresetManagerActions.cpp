@@ -9,6 +9,7 @@
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
 #include <xml/MemoryInStream.h>
+#include <xml/ZippedMemoryOutStream.h>
 #include <xml/OutStream.h>
 #include <xml/VersionAttribute.h>
 #include <boost/algorithm/string.hpp>
@@ -145,7 +146,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
           fields.push_back(SearchQuery::Fields::DeviceName);
       });
 
-      XmlWriter writer(request->createStream("text/xml", false));
+      auto stream = request->createStream("text/xml", false);
+      XmlWriter writer(*stream);
       Application::get().getPresetManager()->searchPresets(writer, query, mode, std::move(fields));
       return true;
     }
@@ -161,10 +163,11 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       const auto time = TimeTools::getDisplayStringFromStamp(TimeTools::getAdjustedTimestamp());
       const auto timeWithoutWhitespaces = StringTools::replaceAll(time, " ", "-");
       const auto timeSanitized = StringTools::replaceAll(timeWithoutWhitespaces, ":", "-");
-      httpRequest->setHeader("Content-Disposition",
-                             "attachment; filename=\"" + timeSanitized + "-nonlinear-c15-banks.xml.tar.gz\"");
-      ExportBackupEditor::writeBackupToStream(request->createStream("application/zip", true));
-
+      auto disposition = "attachment; filename=\"" + timeSanitized + "-nonlinear-c15-banks.xml.tar.gz\"";
+      ZippedMemoryOutStream stream;
+      ExportBackupEditor::writeBackupToStream(stream);
+      httpRequest->respondComplete(SOUP_STATUS_OK, "application/zip", { { "Content-Disposition", disposition } },
+                                   stream.exhaust());
       boled.resetOverlay();
       return true;
     }
@@ -185,7 +188,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       auto b = pm->findPreset(Uuid { bUUID });
       a = a ? a : ebAsPreset.get();
       b = b ? b : ebAsPreset.get();
-      XmlWriter writer(request->createStream("text/xml", false));
+      auto stream = request->createStream("text/xml", false);
+      XmlWriter writer(*stream);
       a->writeDiff(writer, b, to<VoiceGroup>(voiceGroupOfA), to<VoiceGroup>(voiceGroupOfB));
       return true;
     }

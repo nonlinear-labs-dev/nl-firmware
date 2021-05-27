@@ -224,6 +224,7 @@ void BankUseCases::exportBankToFile(const std::string& outFile)
   m_bank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
   m_bank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
   PresetBankSerializer serializer(m_bank, false);
-  XmlWriter writer(std::make_unique<FileOutStream>(outFile, false));
+  FileOutStream stream(outFile, false);
+  XmlWriter writer(stream);
   serializer.write(writer, VersionAttribute::get());
 }
