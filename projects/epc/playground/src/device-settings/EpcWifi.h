@@ -10,7 +10,6 @@ class EpcWifi
     private:
     Glib::ustring m_currentPassphrase, m_newPassphrase;
     Glib::ustring m_currentSSID, m_newSSID;
-    bool m_connectionUp;
     enum StatusInFlight { vacant, busy, check, update, reload, error };
     StatusInFlight m_status;
     bool syncCredentials();
