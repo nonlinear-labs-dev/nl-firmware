@@ -64,6 +64,7 @@ class UpdateStream {
     private connect() {
         console.log("connect");
         this.bars.clear();
+        this.c15.setConnectionState(ConnectionState.Disconnected);
         this.socket = new WebSocket("ws://" + hostName + wsPort);
         this.socket.onopen = (event) => this.update();
         this.socket.onerror = (event) => this.retry();
@@ -84,6 +85,7 @@ class UpdateStream {
 
     private update(): void {
         this.messageHandler = (e) => this.processInfo(e);
+        this.c15.setConnectionState(ConnectionState.Connected);
 
         try {
             this.socket!.send(JSON.stringify({ "get-info": {} }));
@@ -151,7 +153,7 @@ class UpdateStream {
 
     private retry(): void {
         if (this.retryTimer == -1 && !this.close) {
-            console.log("retry connection");
+            this.c15.setConnectionState(ConnectionState.Disconnected);
             this.retryTimer = setTimeout(() => {
                 this.retryTimer = -1;
                 this.connect();

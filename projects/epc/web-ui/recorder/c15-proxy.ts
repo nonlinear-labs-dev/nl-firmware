@@ -4,6 +4,11 @@ enum TransportState {
     Paused
 }
 
+enum ConnectionState {
+    Connected,
+    Disconnected
+}
+
 abstract class C15ProxyIface {
     abstract download(from: number, to: number): void;
     abstract getBars(): Bars;
@@ -68,12 +73,22 @@ abstract class C15ProxyIface {
         return mock ? new C15ProxyMock() : new C15Proxy();
     }
 
+    setConnectionState(s : ConnectionState) : void {
+        this.connectionState = s;
+        this.synced();
+    }
+
+    getConnectionState() : ConnectionState {
+        return this.connectionState;
+    }
+
     protected ui: UI | null = null;
     protected currentMemoryUsage = 0;
     protected maxMemoryUsage = 0;
     protected recordPaused = true;
     protected playbackPaused = true;
     protected currentPlayPosition = 0;
+    protected connectionState = ConnectionState.Disconnected;
 }
 
 class C15ProxyMock extends C15ProxyIface {
