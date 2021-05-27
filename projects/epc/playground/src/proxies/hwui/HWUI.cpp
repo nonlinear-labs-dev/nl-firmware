@@ -219,7 +219,8 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         auto eb = Application::get().getPresetManager()->getEditBuffer();
         auto wtf = std::shared_ptr<std::ostream>(&std::cout, [](void *) {});
-        XmlWriter writer(std::make_unique<StandardOutStream>(wtf));
+        StandardOutStream stream(wtf);
+        XmlWriter writer(stream);
         eb->writeDocument(writer, 0);
 
         EditBufferSerializer ebs(eb);

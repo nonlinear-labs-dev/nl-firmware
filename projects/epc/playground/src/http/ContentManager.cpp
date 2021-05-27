@@ -226,7 +226,8 @@ bool ContentManager::feedWebSocket(const tWebsocketConnection &c)
     if(c->getLastSentUpdateId() != currentUpdateId)
     {
       DebugLevel::info("Updating websocket", c->getConnection(), "with document for updateID", currentUpdateId);
-      XmlWriter writer(std::make_unique<WebSocketOutStream>(c->getConnection()));
+      WebSocketOutStream stream(c->getConnection());
+      XmlWriter writer(stream);
       writeDocument(writer, c->getLastSentUpdateId(), c->canOmitOracles(currentUpdateId));
       c->setLastSentUpdateId(currentUpdateId);
     }
@@ -265,7 +266,8 @@ void ContentManager::deliverResponse(std::shared_ptr<HTTPRequest> request,
                                      UpdateDocumentContributor::tUpdateID clientsUpdateID)
 {
   request->setHeader("updateID", to_string(getUpdateIDOfLastChange()));
-  XmlWriter writer(request->createStream("text/xml", false));
+  auto stream = request->createStream("text/xml", false);
+  XmlWriter writer(*stream);
   writeDocument(writer, clientsUpdateID);
 }
 

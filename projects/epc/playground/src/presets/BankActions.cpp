@@ -1,31 +1,32 @@
 #include "BankActions.h"
 
-#include <serialization/EditBufferSerializer.h>
-#include <serialization/PresetBankSerializer.h>
-#include <serialization/PresetSerializer.h>
-#include <presets/PresetManager.h>
+#include <use-cases/EditBufferUseCases.h>
+#include <use-cases/PresetManagerUseCases.h>
+#include <use-cases/PresetUseCases.h>
+
 #include <presets/Bank.h>
 #include <presets/Preset.h>
-#include "EditBuffer.h"
-#include "http/SoupOutStream.h"
+#include <presets/PresetManager.h>
+
+#include <http/NetworkRequest.h>
 #include <http/HTTPRequest.h>
-#include "xml/XmlWriter.h"
-#include "ClusterEnforcement.h"
+
+#include <boost/algorithm/string.hpp>
+
 #include <xml/MemoryInStream.h>
-#include <xml/XmlReader.h>
+#include <xml/MemoryOutStream.h>
+#include <xml/VersionAttribute.h>
+#include <serialization/PresetSerializer.h>
+
+#include <tools/TimeTools.h>
+
+#include <device-settings/DebugLevel.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <device-settings/Settings.h>
-#include <device-info/DateTimeInfo.h>
-#include <Application.h>
-#include <tools/PerformanceTimer.h>
-#include <xml/StandardOutStream.h>
-#include <xml/VersionAttribute.h>
-#include <boost/algorithm/string.hpp>
-#include <algorithm>
-#include <tools/TimeTools.h>
+
 #include <proxies/hwui/HWUI.h>
-#include <nltools/Assert.h>
-#include <use-cases/PresetUseCases.h>
+
+#include <Application.h>
 
 BankActions::BankActions(PresetManager &presetManager)
     : RPCActionManager("/presets/banks/")
@@ -501,15 +502,14 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
 
       if(auto bank = m_presetManager.findBank(Uuid { uuid }))
       {
-        httpRequest->setStatusOK();
-        httpRequest->setContentType("text/xml");
-        httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + bank->getName(true) + ".xml\"");
-
-        auto stream = std::make_shared<std::stringstream>();
-        XmlWriter writer(std::make_unique<StandardOutStream>(stream));
+        MemoryOutStream stream;
+        XmlWriter writer(stream);
         PresetBankSerializer serializer(bank);
         serializer.write(writer, VersionAttribute::get());
-        httpRequest->respond(std::move(*stream));
+        auto disposition = "attachment; filename=\"" + bank->getName(true) + ".xml\"";
+        httpRequest->respondComplete(SOUP_STATUS_OK, "text/xml", { { "Content-Disposition", disposition } },
+                                     stream.exhaust());
+
         auto scope = UNDO::Scope::startTrashTransaction();
         auto transaction = scope->getTransaction();
         bank->setAttribute(transaction, "Name of Export File", "(via Browser)");
@@ -524,11 +524,8 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      httpRequest->setStatusOK();
-      httpRequest->setContentType("text/xml");
-
-      auto stream = std::make_shared<std::stringstream>();
-      XmlWriter writer(std::make_unique<StandardOutStream>(stream));
+      MemoryOutStream stream;
+      XmlWriter writer(stream);
       Glib::ustring uuid = httpRequest->get("uuid");
 
       Preset *preset = nullptr;
@@ -549,9 +546,10 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
       }
 
       PresetSerializer serializer(preset);
-      httpRequest->setHeader("Content-Disposition", "attachment; filename=\"" + preset->getName() + ".xml\"");
       serializer.write(writer, VersionAttribute::get());
-      httpRequest->respond(std::move(*stream));
+      auto disposition = "attachment; filename=\"" + preset->getName() + ".xml\"";
+      httpRequest->respondComplete(SOUP_STATUS_OK, "text/xml", { { "Content-Disposition", disposition } },
+                                   stream.exhaust());
       return true;
     }
   }

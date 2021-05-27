@@ -64,7 +64,7 @@ void HTTPRequest::unpause()
 
 void HTTPRequest::setContentType(const Glib::ustring &contentType)
 {
-  soup_message_headers_append(m_message->response_headers, "Content-Type", contentType.c_str());
+  setHeader("Content-Type", contentType);
 }
 
 void HTTPRequest::okAndComplete()
@@ -100,14 +100,26 @@ void HTTPRequest::respond(const Glib::ustring &str)
   respond((const uint8_t *) str.c_str(), str.length());
 }
 
-void HTTPRequest::respond(std::stringstream &&str)
+void HTTPRequest::respondComplete(uint status, const char *contentType,
+                                  const std::initializer_list<std::pair<std::string, std::string> > &headers,
+                                  std::vector<uint8_t> &&buffer)
 {
-  size_t bufLen = 1500;
-  uint8_t buf[bufLen];
-  while(auto numRead = str.readsome(reinterpret_cast<char *>(buf), bufLen))
-  {
-    respond(buf, numRead);
-  }
+  using Data = std::vector<uint8_t>;
+
+  setStatusOK();
+  setContentType(contentType);
+
+  for(const auto &h : headers)
+    setHeader(h.first, h.second);
+
+  setHeader("Content-Length", std::to_string(buffer.size()));
+
+  auto ptr = new Data(std::move(buffer));
+
+  g_object_weak_ref(
+      G_OBJECT(m_message), +[](gpointer data, GObject *) { delete static_cast<Data *>(data); }, ptr);
+  soup_message_body_append(m_message->response_body, SOUP_MEMORY_TEMPORARY, ptr->data(), ptr->size());
+  complete();
 }
 
 void HTTPRequest::setChunkedEncoding()

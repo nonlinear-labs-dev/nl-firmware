@@ -74,7 +74,7 @@ void ExportBackupEditor::installState(State s)
 
 void ExportBackupEditor::writeBackupToStream(std::unique_ptr<OutStream> stream)
 {
-  XmlWriter writer(std::move(stream));
+  XmlWriter writer(*stream);
   auto pm = Application::get().getPresetManager();
   PresetManagerSerializer serializer(pm);
   serializer.write(writer, VersionAttribute::get());

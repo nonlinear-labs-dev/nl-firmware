@@ -217,7 +217,8 @@ void Settings::save()
     if(Application::exists())
     {
       SettingsSerializer serializer(*this);
-      XmlWriter writer(std::make_unique<FileOutStream>(Application::get().getOptions()->getSettingsFile(), false));
+      FileOutStream stream(Application::get().getOptions()->getSettingsFile(), false);
+      XmlWriter writer(stream);
       serializer.write(writer, VersionAttribute::get());
     }
   }
@@ -256,17 +257,15 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("settings", Attribute("changed", changed),
-                  [&]()
-                  {
-                    if(changed)
-                    {
-                      for(auto &setting : m_settings)
-                      {
-                        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
-                      }
-                    }
-                  });
+  writer.writeTag("settings", Attribute("changed", changed), [&]() {
+    if(changed)
+    {
+      for(auto &setting : m_settings)
+      {
+        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
+      }
+    }
+  });
 }
 
 void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)

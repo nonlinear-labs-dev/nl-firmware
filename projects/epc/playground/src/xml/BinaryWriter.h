@@ -5,7 +5,7 @@
 class BinaryWriter : public Writer
 {
  public:
-  explicit BinaryWriter(std::unique_ptr<OutStream> out);
+  explicit BinaryWriter(OutStream &out);
   ~BinaryWriter() override;
 
   void implWriteTextElement(const Glib::ustring &name, const Glib::ustring &text,

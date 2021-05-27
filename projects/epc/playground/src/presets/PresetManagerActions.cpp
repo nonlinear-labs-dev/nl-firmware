@@ -145,7 +145,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
           fields.push_back(SearchQuery::Fields::DeviceName);
       });
 
-      XmlWriter writer(request->createStream("text/xml", false));
+      auto stream = request->createStream("text/xml", false);
+      XmlWriter writer(*stream);
       Application::get().getPresetManager()->searchPresets(writer, query, mode, std::move(fields));
       return true;
     }
@@ -185,7 +186,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       auto b = pm->findPreset(Uuid { bUUID });
       a = a ? a : ebAsPreset.get();
       b = b ? b : ebAsPreset.get();
-      XmlWriter writer(request->createStream("text/xml", false));
+      auto stream = request->createStream("text/xml", false);
+      XmlWriter writer(*stream);
       a->writeDiff(writer, b, to<VoiceGroup>(voiceGroupOfA), to<VoiceGroup>(voiceGroupOfB));
       return true;
     }
