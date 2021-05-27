@@ -33,6 +33,31 @@ class UI {
             c15.reset();
             this.waveform.selectedRange.playbackRange.reset();
 
+	}
+
+        document.onkeypress = (e) => {
+            if (e.key == ' ')
+                c15!.togglePlayback();
+            else if (e.key == 'z' || e.key == 'Z')
+                c15!.reset();
+            else if (e.key == 'r' || e.key == 'R')
+                c15!.toggleRecording();
+            else if (e.key == 's' || e.key == 'S')
+                c15!.download(this.waveform.selectedRange.playbackRange.min(), this.waveform.selectedRange.playbackRange.max());
+            else if (e.key == 'ZoomIn' || e.key == '+')
+                this.waveform.zoomIn();
+            else if (e.key == 'ZoomOut' || e.key == '-')
+                this.waveform.zoomOut();
+            else if (e.key == 'ArrowLeft')
+                console.log("nudge left");
+            else if (e.key == 'ArrowRight')
+                console.log("nudge right");
+            else if (e.key == 'ArrowUp')
+                console.log("prev preset");
+            else if (e.key == 'ArrowDown')
+                console.log("next preset");
+
+            this.update();
         }
 
         document.getElementById("waveform")!.onkeydown = (e) => c15.togglePlayback();
