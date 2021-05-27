@@ -30,6 +30,9 @@ void OLEDProxy::invalidate()
 
 OLEDProxy::tLayoutPtr OLEDProxy::getLayout() const
 {
+  if(m_screenSaver)
+    return m_screenSaver;
+
   if(m_overlay)
     return m_overlay;
 
@@ -121,4 +124,22 @@ void OLEDProxy::clear()
 sigc::connection OLEDProxy::onLayoutInstalled(const sigc::slot<void, Layout *> &slot)
 {
   return m_sigLayoutInstalled.connect(slot);
+}
+
+void OLEDProxy::installScreenSaver(Layout *l)
+{
+  m_screenSaver.reset(l);
+  if(!m_screenSaver->isInitialized())
+    m_screenSaver->init();
+}
+
+void OLEDProxy::removeScreenSaver()
+{
+  m_screenSaver.reset();
+  invalidate();
+}
+
+Layout *OLEDProxy::getScreenSaver()
+{
+  return m_screenSaver.get();
 }

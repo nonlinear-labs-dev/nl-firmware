@@ -18,8 +18,6 @@
 #include <groups/MacroControlsGroup.h>
 #include <http/UndoScope.h>
 #include <nltools/messaging/Message.h>
-#include <device-settings/ScreenSaverTimeoutSetting.h>
-#include "ScreenSaverUsageMode.h"
 
 PanelUnit::PanelUnit()
 {
@@ -36,6 +34,7 @@ PanelUnit::PanelUnit()
       {
         auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
         EditBufferUseCases ebUseCases { editBuffer };
+
         auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
 
         if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
@@ -92,9 +91,6 @@ PanelUnit::PanelUnit()
         return true;
       });
 
-  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
-      sigc::mem_fun(this, &PanelUnit::onScreenSaverStateChanged));
-
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::PanelLed,
                                         sigc::mem_fun(this, &PanelUnit::onBBBBConnected));
 }
@@ -110,18 +106,6 @@ ParameterId PanelUnit::choseHWBestSourceForMC(const ParameterId &mcParamId) cons
   }
 
   return mcParamId;
-}
-
-void PanelUnit::onScreenSaverStateChanged(bool state)
-{
-  if(state)
-  {
-    setUsageMode(new ScreenSaverUsageMode());
-  }
-  else if(std::dynamic_pointer_cast<ScreenSaverUsageMode>(getUsageMode()))
-  {
-    setupFocusAndMode();
-  }
 }
 
 void PanelUnit::init()
@@ -205,7 +189,11 @@ const EditPanel &PanelUnit::getEditPanel() const
 
 bool PanelUnit::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state)
 {
-  if(super::onButtonPressed(buttonID, modifiers, state))
+  if(m_overlayUsageMode)
+  {
+    return m_overlayUsageMode->onButtonPressed(buttonID, modifiers, state);
+  }
+  else if(super::onButtonPressed(buttonID, modifiers, state))
   {
     return true;
   }

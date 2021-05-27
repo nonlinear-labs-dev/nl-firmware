@@ -24,7 +24,6 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   PlayPanel &getPlayPanel();
 
  private:
-  void onScreenSaverState(bool screenSaverState);
   void respectUsageMode(const Setting *s);
   void onBBBBConnected();
 

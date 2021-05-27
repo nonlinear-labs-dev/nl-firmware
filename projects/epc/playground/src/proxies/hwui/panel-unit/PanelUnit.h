@@ -35,7 +35,6 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
 
  private:
-  void onScreenSaverStateChanged(bool state);
   void installUsageMode(FocusAndMode focusAndMode);
   void initModulateableParameterLayout(Layout *l);
   void onBBBBConnected();
@@ -45,6 +44,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   std::vector<tLed> m_leds;
   MacroControlAssignmentStateMachine m_macroControlAssignmentStateMachine;
 
-  std::shared_ptr<UsageMode> m_stashedUsageMode = nullptr;
+  std::shared_ptr<UsageMode> m_overlayUsageMode;
+
   sigc::connection m_signalInitializeInstalledLayoutOnce;
 };

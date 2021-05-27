@@ -41,10 +41,16 @@ class OLEDProxy : public Uncopyable
 
   const Rect &getPosInFrameBuffer() const;
 
+ protected:
+  void installScreenSaver(Layout *l);
+  void removeScreenSaver();
+  Layout *getScreenSaver();
+
  private:
   sigc::signal<void, Layout *> m_sigLayoutInstalled;
 
   tLayoutPtr m_layout;
   tLayoutPtr m_overlay;
+  tLayoutPtr m_screenSaver;
   Rect m_posInFrameBuffer;
 };
