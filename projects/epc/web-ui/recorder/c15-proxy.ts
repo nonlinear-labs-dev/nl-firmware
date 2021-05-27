@@ -88,7 +88,7 @@ abstract class C15ProxyIface {
     protected recordPaused = true;
     protected playbackPaused = true;
     protected currentPlayPosition = 0;
-    protected connectionState = ConnectionState.Disconnected;
+    protected connectionState = ConnectionState.Connected;
 }
 
 class C15ProxyMock extends C15ProxyIface {

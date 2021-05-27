@@ -40,14 +40,10 @@ class UI {
     }
 
     update() {
-        if(this.c15.getConnectionState() == ConnectionState.Connected) {
-            document.getElementById("pane")!.classList.remove("hidden");
+        if(this.c15.getConnectionState() == ConnectionState.Connected)
             document.getElementById("not-connected-box")!.classList.add("hidden");
-        }
-        else {
-            document.getElementById("pane")!.classList.add("hidden");
+        else
             document.getElementById("not-connected-box")!.classList.remove("hidden");
-        }
 
         document.getElementById("first-available-frame-timestamp")!.textContent = this.c15.buildTime(this.c15.getBars().first().recordTime);
         document.getElementById("last-available-frame-timestamp")!.textContent = this.c15.buildTime(this.c15.getBars().last().recordTime);
