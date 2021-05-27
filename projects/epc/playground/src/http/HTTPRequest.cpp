@@ -1,11 +1,9 @@
 #include "HTTPRequest.h"
 #include "SoupOutStream.h"
-#include "Application.h"
-#include "HTTPServer.h"
-#include <iostream>
 
-HTTPRequest::HTTPRequest(SoupMessage *msg)
-    : m_message(msg)
+HTTPRequest::HTTPRequest(SoupServer *server, SoupMessage *msg)
+    : m_server(server)
+    , m_message(msg)
 {
   g_object_ref(m_message);
 
@@ -51,17 +49,17 @@ Glib::ustring HTTPRequest::getPath()
 
 std::unique_ptr<OutStream> HTTPRequest::createStream(const Glib::ustring &contentType, bool zip)
 {
-  return std::make_unique<SoupOutStream>(m_message, contentType, zip);
+  return std::make_unique<SoupOutStream>(m_server, m_message, contentType, zip);
 }
 
 void HTTPRequest::pause()
 {
-  Application::get().getHTTPServer()->pauseMessage(m_message);
+  soup_server_pause_message(m_server, m_message);
 }
 
 void HTTPRequest::unpause()
 {
-  Application::get().getHTTPServer()->unpauseMessage(m_message);
+  soup_server_unpause_message(m_server, m_message);
 }
 
 void HTTPRequest::setContentType(const Glib::ustring &contentType)

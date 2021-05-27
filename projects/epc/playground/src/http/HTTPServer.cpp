@@ -196,28 +196,26 @@ void HTTPServer::onMessageFinished(SoupMessage *msg)
 {
   bool found = false;
 
-  m_servedStreams.remove_if(
-      [&](tServedStream file)
-      {
-        if(file->matches(msg))
-        {
-          found = true;
-          return true;
-        }
-        return false;
-      });
+  m_servedStreams.remove_if([&](tServedStream file) {
+    if(file->matches(msg))
+    {
+      found = true;
+      return true;
+    }
+    return false;
+  });
 
   if(!found)
     m_contentManager.onSectionMessageFinished(msg);
 }
 
-void HTTPServer::serverCallback(SoupServer *, SoupMessage *msg, const char *path, GHashTable *, SoupClientContext *,
-                                HTTPServer *pThis)
+void HTTPServer::serverCallback(SoupServer *server, SoupMessage *msg, const char *path, GHashTable *,
+                                SoupClientContext *, HTTPServer *pThis)
 {
   try
   {
     g_signal_connect(msg, "finished", reinterpret_cast<GCallback>(&HTTPServer::messageFinishedCB), pThis);
-    std::shared_ptr<NetworkRequest> request(new HTTPRequest(msg));
+    std::shared_ptr<NetworkRequest> request(new HTTPRequest(server, msg));
     pThis->handleRequest(request);
   }
   catch(Glib::MarkupError &err)

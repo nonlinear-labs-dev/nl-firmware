@@ -99,6 +99,7 @@ void NetworkServer::onChunkWritten(SoupMessage *msg, NetworkServer *pThis)
         FlacFrameBits frame(h.buffer);
         frame.patchFrameNumber(a.currentFrame++);
         soup_message_body_append(msg->response_body, SOUP_MEMORY_COPY, h.buffer.data(), h.buffer.size());
+        soup_server_unpause_message(pThis->m_server, msg);
       };
 
       if(!a.stream->next(append))

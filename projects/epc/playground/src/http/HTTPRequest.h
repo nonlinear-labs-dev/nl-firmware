@@ -11,7 +11,7 @@ class HTTPRequest : public NetworkRequest
   typedef NetworkRequest super;
 
  public:
-  explicit HTTPRequest(SoupMessage *msg);
+  explicit HTTPRequest(SoupServer *server, SoupMessage *msg);
   ~HTTPRequest() override;
 
   std::unique_ptr<OutStream> createStream(const Glib::ustring &contentType, bool zip) override;
@@ -36,5 +36,6 @@ class HTTPRequest : public NetworkRequest
   SoupBuffer *getFlattenedBuffer();
 
  private:
+  SoupServer *m_server = nullptr;
   SoupMessage *m_message = nullptr;
 };
