@@ -294,12 +294,12 @@ class Waveform extends Draggable {
         this.update();
     }
 
-    private zoomIn() {
+    zoomIn() {
         this.zoom /= 2;
         this.update();
     }
 
-    private zoomOut() {
+    zoomOut() {
         this.zoom *= 2;
         this.update();
     }
