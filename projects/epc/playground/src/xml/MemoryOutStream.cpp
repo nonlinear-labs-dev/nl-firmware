@@ -1,15 +1,12 @@
 #include "MemoryOutStream.h"
-#include <libsoup/soup.h>
 
 MemoryOutStream::MemoryOutStream()
 {
 }
 
-std::vector<uint8_t> MemoryOutStream::exhaust()
+std::vector<uint8_t> &&MemoryOutStream::exhaust()
 {
-  std::vector<uint8_t> a;
-  std::swap(a, m_buffer);
-  return a;
+  return std::move(m_buffer);
 }
 
 void MemoryOutStream::implWrite(const Glib::ustring &str)

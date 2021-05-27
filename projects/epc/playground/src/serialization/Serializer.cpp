@@ -71,7 +71,7 @@ void Serializer::write(Glib::RefPtr<Gio::File> folder, const std::string &name)
     CommitableFileOutStream stream(title, false);
     BinaryWriter writer(stream);
     write(writer, VersionAttribute::get());
-    stream.commit();  // as long as writer is valid, outPtr is vaild, too
+    stream.commit();
   }
   catch(...)
   {

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "OutStream.h"
+#include <giomm.h>
 #include <vector>
 
-class MemoryOutStream : public OutStream
+class ZippedMemoryOutStream : public OutStream
 {
  public:
-  MemoryOutStream();
+  ZippedMemoryOutStream();
 
   std::vector<uint8_t> &&exhaust();
 
@@ -14,5 +15,6 @@ class MemoryOutStream : public OutStream
   void implWrite(const Glib::ustring &str) override;
   void implWrite(const void *buf, size_t numBytes) override;
 
+  Glib::RefPtr<Gio::ZlibCompressor> m_zip;
   std::vector<uint8_t> m_buffer;
 };
