@@ -7,8 +7,6 @@
 #include "device-settings/Settings.h"
 #include "device-settings/BaseUnitUIMode.h"
 #include <nltools/messaging/Message.h>
-#include <device-settings/ScreenSaverTimeoutSetting.h>
-#include <proxies/hwui/panel-unit/ScreenSaverUsageMode.h>
 #include <proxies/hwui/HWUI.h>
 
 BaseUnit::BaseUnit()
@@ -19,12 +17,6 @@ BaseUnit::BaseUnit()
 }
 
 BaseUnit::~BaseUnit() = default;
-
-std::shared_ptr<UsageMode> BaseUnit::getScreenSaverUsageMode() const
-{
-  static auto sScreenSaver = std::make_shared<ScreenSaverUsageMode>();
-  return sScreenSaver;
-}
 
 void BaseUnit::init()
 {

@@ -3,6 +3,7 @@
 #include "UsageMode.h"
 #include <Application.h>
 #include <device-settings/Settings.h>
+#include <proxies/hwui/panel-unit/ScreenSaverUsageMode.h>
 
 HardwareUserInterfaceUnit::HardwareUserInterfaceUnit()
 {
@@ -59,4 +60,10 @@ bool HardwareUserInterfaceUnit::onButtonPressed(Buttons buttonID, ButtonModifier
 void HardwareUserInterfaceUnit::onScreenSaverStateChanged(bool state)
 {
   m_screenSaverActive = state;
+}
+
+std::shared_ptr<UsageMode> HardwareUserInterfaceUnit::getScreenSaverUsageMode() const
+{
+  static auto sScreenSaver = std::make_shared<ScreenSaverUsageMode>();
+  return sScreenSaver;
 }

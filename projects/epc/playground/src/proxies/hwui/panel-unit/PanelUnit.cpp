@@ -18,8 +18,6 @@
 #include <groups/MacroControlsGroup.h>
 #include <http/UndoScope.h>
 #include <nltools/messaging/Message.h>
-#include <device-settings/ScreenSaverTimeoutSetting.h>
-#include "ScreenSaverUsageMode.h"
 
 PanelUnit::PanelUnit()
 {
@@ -221,10 +219,4 @@ void PanelUnit::initModulateableParameterLayout(Layout *l)
 const std::vector<std::shared_ptr<TwoStateLED>> &PanelUnit::getLeds()
 {
   return m_leds;
-}
-
-std::shared_ptr<UsageMode> PanelUnit::getScreenSaverUsageMode() const
-{
-  static auto s_panelMode = std::make_shared<ScreenSaverUsageMode>();
-  return s_panelMode;
 }
