@@ -4,11 +4,9 @@ EpcWifi::EpcWifi()
     : m_currentPassphrase("88888888")
     , m_currentSSID("NL-C15-Unit-00000")
     , m_connectionUp(false)
-    , m_status(m_statusInFlight::vacant)
+    , m_status(StatusInFlight::vacant)
 {
-    syncCredentials();
     Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EpcWifi::syncCredentials), 2);
-//    Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EpcWifi::checkConnectionStatus), 2);
 }
 
 EpcWifi::~EpcWifi() = default;
@@ -25,141 +23,203 @@ void EpcWifi::setNewPassphrase(const Glib::ustring &_newPassphrase)
 
 bool EpcWifi::syncCredentials()
 {
-    if (m_status == m_statusInFlight::vacant) {
+    switch(m_status){
+    case StatusInFlight::vacant : nltools::Log::info("NM: Vacant ...");
         if (m_currentPassphrase != m_newPassphrase || m_currentSSID != m_newSSID)
-            m_status = m_statusInFlight::check;
-    }
+            m_status = StatusInFlight::check;
+        break;
 
-    if (m_status == m_statusInFlight::check)
+    case StatusInFlight::check : nltools::Log::info("NM: Checking connection activity ...");
         checkConnectionStatus();
+        break;
 
-    if (m_status == m_statusInFlight::update){
-        if (m_currentPassphrase != m_newPassphrase)
+    case StatusInFlight::update :
+        if (m_currentPassphrase != m_newPassphrase){
+            nltools::Log::info("NM: Updating Passphrase ...");
             updatePassphrase();
-        else if (m_currentSSID != m_newSSID)
+        }
+        else if (m_currentSSID != m_newSSID){
+            nltools::Log::info("NM: Updating SSID ...");
             updateSSID();
+        }
         else
-            m_status = m_statusInFlight::vacant;
-    }
+            m_status = StatusInFlight::vacant;
+        break;
 
-    if (m_status == m_statusInFlight::reload)
+    case StatusInFlight::reload : nltools::Log::info("NM: Reloading connection ...");
         reloadConnection();
+        break;
 
-    if (m_status == m_statusInFlight::busy)
-        nltools::Log::info("busy...");
+    case StatusInFlight::busy : nltools::Log::info("NM: busy...");
+        break;
 
-    if (m_status == m_statusInFlight::error)
-    {
-        nltools::Log::error("FAIL!");
-        m_status = m_statusInFlight::vacant;
+    case StatusInFlight::error : nltools::Log::error("NM: FAIL!");
+        m_status = StatusInFlight::vacant;
+        break;
     }
-
-//    switch (m_status)
-//    {
-//    case m_statusInFlight::vacant:
-//        nltools::Log::info("Checking credentials");
+//    if (m_status == StatusInFlight::vacant) {
+//        nltools::Log::info("NM Vacant ...");
 //        if (m_currentPassphrase != m_newPassphrase || m_currentSSID != m_newSSID)
-//            m_status = m_statusInFlight::check;
-//        break;
+//            m_status = StatusInFlight::check;
+//    }
 
-//    case m_statusInFlight::check:
-//        nltools::Log::info("Checking connection!");
+//    if (m_status == StatusInFlight::check) {
+//        nltools::Log::info("NM Checking connection activity ...");
 //        checkConnectionStatus();
-//        break;
+//    }
 
-//    case m_statusInFlight::update:
-//        nltools::Log::info("Trying update");
-//        if (m_currentPassphrase != m_newPassphrase)
+//    if (m_status == StatusInFlight::update){
+//        if (m_currentPassphrase != m_newPassphrase){
+//            nltools::Log::info("NM Updating Passphrase ...");
 //            updatePassphrase();
-//        else if (m_currentSSID != m_newSSID)
+//        }
+//        else if (m_currentSSID != m_newSSID){
+//            nltools::Log::info("NM Updating SSID ...");
 //            updateSSID();
-//        break;
+//        }
+//        else
+//            m_status = StatusInFlight::vacant;
+//    }
 
-//    case m_statusInFlight::reload:
-//        nltools::Log::info("Trying reload");
+//    if (m_status == StatusInFlight::reload){
+//        nltools::Log::info("NM Reloading connection ...");
 //        reloadConnection();
-//        break;
+//    }
 
-//    case m_statusInFlight::busy:
-//        nltools::Log::info("busy...");
-//        break;
+//    if (m_status == StatusInFlight::busy)
+//        nltools::Log::info("NM busy...");
 
-//    case m_statusInFlight::error:
-//        nltools::Log::error("FAIL!");
-//        m_status = m_statusInFlight::vacant;
-
-//        break;
+//    if (m_status == StatusInFlight::error)
+//    {
+//        nltools::Log::error("NM: FAIL!");
+//        m_status = StatusInFlight::vacant;
 //    }
     return true;
 }
 
 void EpcWifi::checkConnectionStatus()
 {
-    m_status = m_statusInFlight::busy;
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "connection", "show", "--active" },
-                                 [&](const std::string& s) {
-                                    std::size_t pos = s.find("C15");
-                                    if (pos != std::string::npos)
-                                        m_status = m_statusInFlight::update; },
-                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                            m_status = m_statusInFlight::error; });
-}
+    nltools::Log::info("Checking Status");
+    m_status = StatusInFlight::busy;
 
-void EpcWifi::updateCredentials()
-{
-
+    if constexpr(isDevelopmentPC)
+    {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "connection", "show", "--active" },
+                                     [&](const std::string& s) {
+                                        nltools::Log::info(s);
+                                        std::size_t pos = s.find("NL-C15-qwerty");
+                                        if (pos != std::string::npos)
+                                            m_status = StatusInFlight::update;
+                                        else
+                                            m_status = StatusInFlight::vacant;},
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    } else {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "connection", "show", "--active" },
+                                     [&](const std::string& s) {
+                                        std::size_t pos = s.find("C15");
+                                        if (pos != std::string::npos)
+                                            m_status = StatusInFlight::update;
+                                        else
+                                            m_status = StatusInFlight::vacant; },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    }
 }
 
 void EpcWifi::updatePassphrase()
 {
-    m_status = m_statusInFlight::busy;
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "802-11-wireless-security.psk", m_newPassphrase},
-                                 [&](auto) {m_currentPassphrase = m_newPassphrase;
-                                            if (m_currentSSID == m_newSSID)
-                                                m_status = m_statusInFlight::reload;
-                                            else
-                                                m_status = m_statusInFlight::update; },
-                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                            m_status = m_statusInFlight::error; });
+    m_status = StatusInFlight::busy;
+    if constexpr(isDevelopmentPC)
+    {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "echo", "changing", "Passphrase", "to", m_newPassphrase},
+                                     [&](auto) {m_currentPassphrase = m_newPassphrase;
+                                                if (m_currentSSID == m_newSSID)
+                                                    m_status = StatusInFlight::reload;
+                                                else
+                                                    m_status = StatusInFlight::update; },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    } else {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "802-11-wireless-security.psk", m_newPassphrase},
+                                     [&](auto) {m_currentPassphrase = m_newPassphrase;
+                                                if (m_currentSSID == m_newSSID)
+                                                    m_status = StatusInFlight::reload;
+                                                else
+                                                    m_status = StatusInFlight::update; },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    }
 }
 
 
 void EpcWifi::updateSSID()
 {
-    m_status = m_statusInFlight::busy;
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "wifi.ssid", m_newSSID},
-                                 [&](auto) { m_currentSSID = m_newSSID;
-                                            if (m_currentPassphrase == m_newPassphrase)
-                                                m_status = m_statusInFlight::reload;
-                                            else
-                                                m_status = m_statusInFlight::update; },
-                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                            m_status = m_statusInFlight::error; });
+    nltools::Log::info("Updaing SSID");
+    m_status = StatusInFlight::busy;
+
+    if constexpr(isDevelopmentPC) {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "echo", "changing", "SSID", "to", m_newSSID},
+                                     [&](auto) { m_currentSSID = m_newSSID;
+                                                if (m_currentPassphrase == m_newPassphrase)
+                                                    m_status = StatusInFlight::reload;
+                                                else
+                                                    m_status = StatusInFlight::update; },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    } else {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "wifi.ssid", m_newSSID},
+                                     [&](auto) { m_currentSSID = m_newSSID;
+                                                if (m_currentPassphrase == m_newPassphrase)
+                                                    m_status = StatusInFlight::reload;
+                                                else
+                                                    m_status = StatusInFlight::update; },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    }
 }
 
 void EpcWifi::reloadConnection()
 {
-    m_status = m_statusInFlight::busy;
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "connection", "down", "C15" },
-                                 [&](auto) { enableConnection(); },
-                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                            m_status = m_statusInFlight::error; });
+    nltools::Log::info("Reloading Connection");
+    m_status = StatusInFlight::busy;
+    if constexpr(isDevelopmentPC) {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "echo", "shutting", "down", "C15" },
+                                     [&](auto) { enableConnection(); },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    } else {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "connection", "down", "C15" },
+                                     [&](auto) { enableConnection(); },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                                m_status = StatusInFlight::error; });
+    }
+
 }
 
 void EpcWifi::enableConnection()
 {
-    m_status = m_statusInFlight::busy;
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "up", "C15"},
-                                 [&](auto) { m_status = m_statusInFlight::vacant; },
-                                 [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                           m_status = m_statusInFlight::error; });
+    nltools::Log::info("Bringing UP Connection");
+    m_status = StatusInFlight::busy;
+    if constexpr(isDevelopmentPC) {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "echo", "bringing", "up", "C15"},
+                                     [&](auto) { m_status = StatusInFlight::vacant; },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                               m_status = StatusInFlight::error; });
+    } else {
+        SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "up", "C15"},
+                                     [&](auto) { m_status = StatusInFlight::vacant; },
+                                     [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                                               m_status = StatusInFlight::error; });
+    }
+
 }
 
 void EpcWifi::disableConnection()
 {
-    m_status = m_statusInFlight::busy;
+    m_status = StatusInFlight::busy;
     SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "down", "C15"},
-                                 [&](auto) { m_status = m_statusInFlight::vacant; },
+                                 [&](auto) { m_status = StatusInFlight::vacant; },
                                  [&](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                           m_status = m_statusInFlight::error; });;
+                                                           m_status = StatusInFlight::error; });;
 }

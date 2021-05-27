@@ -2,6 +2,7 @@
 
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/logging/Log.h>
+#include <nltools/Types.h>
 #include <glibmm.h>
 
 class EpcWifi
@@ -10,8 +11,8 @@ class EpcWifi
     Glib::ustring m_currentPassphrase, m_newPassphrase;
     Glib::ustring m_currentSSID, m_newSSID;
     bool m_connectionUp;
-    enum m_statusInFlight { vacant, busy, check, reload, update, error };
-    m_statusInFlight m_status;
+    enum StatusInFlight { vacant, busy, check, update, reload, error };
+    StatusInFlight m_status;
     bool syncCredentials();
     void checkConnectionStatus();
     void updateSSID();
