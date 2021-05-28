@@ -105,13 +105,13 @@ Settings::Settings(UpdateDocumentMaster *master)
 
   addSetting("SSID", new SSID(*this, LocalWifi));
   addSetting("Passphrase", new Passphrase(*this, LocalWifi));
+  addSetting("WifiSetting", new WifiSetting(*this, LocalWifi));
 
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
   addSetting("SignalFlowIndication", new SignalFlowIndicationSetting(*this));
   addSetting("KioskMode", new KioskModeSetting(*this));
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
-  addSetting("WifiSetting", new WifiSetting(*this));
   addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
   addSetting("CrashOnError", new CrashOnError(*this));

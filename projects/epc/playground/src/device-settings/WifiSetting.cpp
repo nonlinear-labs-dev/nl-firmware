@@ -36,8 +36,9 @@ std::vector<std::string> getArgs(WifiSettings s)
              "accesspoint;" };
 };
 
-WifiSetting::WifiSetting(UpdateDocumentContributor& settings)
+WifiSetting::WifiSetting(UpdateDocumentContributor& settings, const std::shared_ptr<EpcWifi>& shrd_ptr)
     : super(settings, WifiSettings::Querying)
+    , m_wifi(shrd_ptr)
 {
   pollAccessPointRunning();
 }
@@ -45,6 +46,11 @@ WifiSetting::WifiSetting(UpdateDocumentContributor& settings)
 bool WifiSetting::set(tEnum m)
 {
   auto ret = super::set(m);
+
+  if (m == WifiSettings::Enabled)
+      m_wifi->setNewWifiState(true);
+  else if (m == WifiSettings::Disabled)
+      m_wifi->setNewWifiState(false);
 
   if constexpr(!isDevelopmentPC)
   {
