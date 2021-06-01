@@ -200,11 +200,17 @@ class C15Proxy extends C15ProxyIface {
 
     reset() {
         this.updateStream.stop();
+        this.ui!.promptOption("This will delete the whole audio content that has been recorded. Are you sure?", () => {
+            this.doReset();
+        });
+
+    }
+
+    doReset() {
         this.fireAndForget({ "reset": {} }, () => {
             this.updateStream = new UpdateStream(this);
             this.currentPlayPosition = 0;
         });
-
     }
 
     toggleRecording() {

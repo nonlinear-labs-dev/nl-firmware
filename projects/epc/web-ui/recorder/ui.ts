@@ -120,5 +120,29 @@ class UI {
         return Math.max(s, 0.1).toFixed(1) + units[i];
     }
 
+    promptOption(prompt : string, cb : VoidFunction) {
+        var dia = document.getElementById("prompt-wrapper");
+        let diaText : HTMLElement = document.getElementById("prompt-text") as HTMLElement;
+        var yes = document.getElementById("prompt-yes");
+        var no = document.getElementById("prompt-no");
+
+        diaText!.innerHTML = prompt;
+
+        dia?.classList.remove("hidden");
+
+        var hide = () => {
+            document.getElementById("prompt-wrapper")?.classList.add("hidden");
+        };
+
+        yes!.addEventListener("click", (e:Event) => {
+            cb();
+            hide();
+        });
+
+        no!.addEventListener("click", (e:Event) => {            
+            hide();
+        });
+    }
+
     private waveform: Waveform;
 }
