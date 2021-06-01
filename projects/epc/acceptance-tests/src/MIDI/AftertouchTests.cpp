@@ -9,16 +9,18 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Aftertouch, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) };
+      = { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
 
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB([&](int hwID, float hwPos) {
-    CHECK(hwID == 5);
-    CHECK(hwPos == 1.0f);
-    receivedHW = true;
-  });
+  host.setOnHWChangedCB(
+      [&](int hwID, float hwPos)
+      {
+        CHECK(hwID == 5);
+        CHECK(hwPos == 1.0f);
+        receivedHW = true;
+      });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
@@ -81,11 +83,13 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   WHEN("Mapped to Special Case PitchbendDown")
   {
     settings.setAftertouchCC(AftertouchCC::PitchbendDown);
-    host.setOnHWChangedCB([&](int hwID, float hwPos) {
-      CHECK(hwID == 5);
-      CHECK(hwPos == 1.0f);
-      receivedHW = true;
-    });
+    host.setOnHWChangedCB(
+        [&](int hwID, float hwPos)
+        {
+          CHECK(hwID == 5);
+          CHECK(hwPos == 1.0f);
+          receivedHW = true;
+        });
 
     WHEN("Send MIDI Pitchbend, -1.0")
     {
@@ -114,11 +118,14 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   WHEN("Mapped to Special Case PitchbendUp")
   {
     settings.setAftertouchCC(AftertouchCC::PitchbendUp);
-    host.setOnHWChangedCB([&](int hwID, float hwPos) {
-      CHECK(hwID == 5);
-      CHECK(hwPos == 1.0f);
-      receivedHW = true;
-    });
+    host.setType(SoundType::Split);
+    host.setOnHWChangedCB(
+        [&](int hwID, float hwPos)
+        {
+          CHECK(hwID == 5);
+          CHECK(hwPos == 1.0f);
+          receivedHW = true;
+        });
 
     WHEN("Send MIDI Channel Pitchbend")
     {
