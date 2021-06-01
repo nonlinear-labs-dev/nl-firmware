@@ -128,10 +128,10 @@ class UI {
 
         diaText!.innerHTML = prompt;
 
-        dia?.classList.remove("hidden");
+        dia!.classList.remove("hidden");
 
         var hide = () => {
-            document.getElementById("prompt-wrapper")?.classList.add("hidden");
+            dia!.classList.add("hidden");
         };
 
         yes!.addEventListener("click", (e:Event) => {
