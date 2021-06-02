@@ -38,7 +38,7 @@ setup_wifi() {
     channel=7
     mac-address-blacklist=
     mode=ap
-    ssid=NL-C15-Unit-EPC-00001
+    ssid=NL-C15-Unit-00000
 
     [wifi-security]
     key-mgmt=wpa-psk
@@ -47,7 +47,7 @@ setup_wifi() {
     psk=88888888
 
     [ipv4]
-    address1=192.168.100.101/24,192.168.100.1
+    address1=192.168.8.2/24,192.168.8.1
     dns-search=
     method=shared
 
