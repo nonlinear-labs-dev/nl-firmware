@@ -65,47 +65,39 @@ void EpcWifi::updateWifiSwitch()
         disableConnection();
 }
 
-void EpcWifi::updatePassphrase()
+void EpcWifi::spawn(const std::vector<std::string>& command, std::function<void(const std::string&)> onSuccess)
 {
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "802-11-wireless-security.psk", m_newPassphrase},
-                                [this, p=m_newPassphrase](auto) { m_currentPassphrase = p;
-                                            updateCredentials(true); },
-                                     [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+    SpawnAsyncCommandLine::spawn(command, onSuccess,
+                                 [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
                                                                 m_busy = false; });
 }
 
-
 void EpcWifi::updateSSID()
 {
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "modify", "C15", "wifi.ssid", m_newSSID},
-                                [this, p=m_newSSID](auto) { m_currentSSID = p;
-                                            updateCredentials(true); },
-                                [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                            m_busy = false;});
+    spawn({ "nmcli", "con", "modify", "C15", "wifi.ssid", m_newSSID },
+        [this, p = m_newSSID](auto) { m_currentSSID = p; updateCredentials(true); } );
+}
+
+void EpcWifi::updatePassphrase()
+{
+    spawn({ "nmcli", "con", "modify", "C15", "802-11-wireless-security.psk", m_newPassphrase },
+          [this, p = m_newPassphrase](auto) { m_currentPassphrase = p; updateCredentials(true); } );
 }
 
 void EpcWifi::reloadConnection()
 {
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "connection", "down", "C15" },
-                                [this](auto) { enableConnection(); },
-                                [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                            m_busy = false; });
+    spawn({ "nmcli", "connection", "down", "C15" },
+           [this](auto) { enableConnection(); } );
 }
 
 void EpcWifi::enableConnection()
 {
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "up", "C15"},
-                                [this](auto) { m_currentEpcWifiState = true;
-                                            m_busy = false;},
-                                [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                             m_busy = false; });
+    spawn({ "nmcli", "con", "up", "C15" },
+          [this](auto) { m_currentEpcWifiState = true; m_busy = false; } );
 }
 
 void EpcWifi::disableConnection()
 {
-    SpawnAsyncCommandLine::spawn(std::vector<std::string> { "nmcli", "con", "down", "C15"},
-                                 [this](auto) { m_currentEpcWifiState = false;
-                                             m_busy = false;},
-                                 [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                            m_busy = false; });;
+    spawn({ "nmcli", "con", "down", "C15" },
+          [this](auto) { m_currentEpcWifiState = false; m_busy = false; } );
 }

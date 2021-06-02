@@ -3,9 +3,9 @@
 #include "Passphrase.h"
 #include "Settings.h"
 
-Passphrase::Passphrase(Settings& parent, const std::shared_ptr<EpcWifi>& shrd_ptr)
+Passphrase::Passphrase(Settings& parent, const std::shared_ptr<EpcWifi>& localWifi)
     : Setting(parent)
-    , m_wifi(shrd_ptr)
+    , m_localWifi(localWifi)
 {
 }
 
@@ -46,7 +46,7 @@ void Passphrase::updatePassword(const Glib::ustring& password)
   auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(shortened);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
 
-  m_wifi->setNewPassphrase(m_password);
+  m_localWifi->setNewPassphrase(m_password);
 
   notify();
 }

@@ -9,7 +9,7 @@ class Settings;
 class Passphrase : public Setting
 {
  public:
-  explicit Passphrase(Settings& parent, const std::shared_ptr<EpcWifi>& shrd_ptr);
+  explicit Passphrase(Settings& parent, const std::shared_ptr<EpcWifi>& localWifi);
   ~Passphrase() override;
   Glib::ustring getDisplayString() const override;
 
@@ -21,5 +21,5 @@ class Passphrase : public Setting
  private:
   void updatePassword(const Glib::ustring& password);
   Glib::ustring m_password;
-  const std::shared_ptr<EpcWifi> m_wifi;
+  const std::shared_ptr<EpcWifi> m_localWifi;
 };

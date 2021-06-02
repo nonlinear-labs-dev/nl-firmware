@@ -11,7 +11,7 @@ class WifiSetting : public NLEnumSetting<WifiSettings>, public sigc::trackable
 {
  public:
   typedef NLEnumSetting<WifiSettings> super;
-  explicit WifiSetting(UpdateDocumentContributor& settings, const std::shared_ptr<EpcWifi>& shrd_ptr);
+  explicit WifiSetting(UpdateDocumentContributor& settings, const std::shared_ptr<EpcWifi>& localWifi);
 
   bool set(tEnum m) override;
   bool persistent() const override;
@@ -23,5 +23,5 @@ class WifiSetting : public NLEnumSetting<WifiSettings>, public sigc::trackable
   void onCommandReturned(GPid pid, int exitStatus);
 
   sigc::connection m_pollConnection;
-  const std::shared_ptr<EpcWifi> m_wifi;
+  const std::shared_ptr<EpcWifi> m_localWifi;
 };

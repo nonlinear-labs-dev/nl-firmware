@@ -13,6 +13,8 @@ class EpcWifi
     bool m_currentEpcWifiState, m_newEpcWifiState;
     bool m_busy;
 
+    void spawn(const std::vector<std::string> &command, std::function<void(const std::string &)> onSuccess);
+
     bool syncCredentials();
     void updateSSID();
     void updatePassphrase();

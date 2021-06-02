@@ -2,9 +2,9 @@
 #include <device-settings/Settings.h>
 #include <device-settings/SSID.h>
 
-SSID::SSID(Settings &parent, const std::shared_ptr<EpcWifi>& shrd_ptr)
+SSID::SSID(Settings &parent, const std::shared_ptr<EpcWifi>& localWifi)
     : Setting(parent)
-    , m_wifi(shrd_ptr)
+    , m_localWifi(localWifi)
 {
   parent.getSetting<DeviceName>()->onChange([=](const Setting *s) {
     static const std::string dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-_";
@@ -48,7 +48,7 @@ void SSID::updateSSID(const Glib::ustring &str)
   auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
 
-  m_wifi->setNewSSID(m_ssid);
+  m_localWifi->setNewSSID(m_ssid);
 
   notify();
 }

@@ -11,7 +11,7 @@ class SSID : public Setting
  public:
   Glib::ustring getDisplayString() const override;
 
-  explicit SSID(Settings& parent, const std::shared_ptr<EpcWifi>& shrd_ptr);
+  explicit SSID(Settings& parent, const std::shared_ptr<EpcWifi>& localWifi);
   ~SSID() override;
 
   bool persistent() const override;
@@ -21,5 +21,5 @@ class SSID : public Setting
  private:
   void updateSSID(const Glib::ustring& str);
   Glib::ustring m_ssid;
-  const std::shared_ptr<EpcWifi> m_wifi;
+  const std::shared_ptr<EpcWifi> m_localWifi;
 };
