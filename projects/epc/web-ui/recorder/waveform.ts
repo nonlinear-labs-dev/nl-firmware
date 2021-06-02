@@ -297,28 +297,20 @@ class Waveform extends Draggable {
     zoomIn() {
         var c = document.getElementById("bars") as HTMLDivElement;
 
-        const barsToShowBefore = c.clientWidth * this.zoom;
-        this.zoom /= 2;
-        const barsToShowAfter = c.clientWidth * this.zoom;
-        const missingBars = barsToShowBefore - barsToShowAfter;
-
         if (this.lastBarIdToShow != -1)
-            this.lastBarIdToShow -= missingBars / 2;
+            this.lastBarIdToShow -= 0.25 * c.clientWidth * this.zoom;;
 
-
+        this.zoom *= 0.5;
         this.update();
     }
 
     zoomOut() {
         var c = document.getElementById("bars") as HTMLDivElement;
-        const barsToShowBefore = c.clientWidth * this.zoom;
-        this.zoom *= 2;
-        const barsToShowAfter = c.clientWidth * this.zoom;
-        const newBars = barsToShowAfter - barsToShowBefore;
 
         if (this.lastBarIdToShow != -1)
-            this.lastBarIdToShow += newBars / 2;
+            this.lastBarIdToShow += 0.5 * c.clientWidth * this.zoom;
 
+        this.zoom *= 2;
         this.update();
     }
 
