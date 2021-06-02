@@ -89,15 +89,17 @@ class Waveform extends Draggable {
 
         if (this.c15.getBars().count() > 0) {
             var playPosIndicator = document.getElementById("play-pos") as HTMLElement;
+            var playPosTime = document.getElementById("play-pos-time") as HTMLElement;
+
             var lastId = this.lastBarIdToShow != -1 ? this.lastBarIdToShow : this.c15.getBars().last().id;
             var firstBarId = lastId - c.width * this.zoom;
             var playPos = this.isDragging() ? this.dragPosition : this.c15.getCurrentPlayPosition();
-            playPos = Math.min(Math.max(playPos, this.c15.getBars().first().id), lastId);
+
             playPosIndicator.style.left = (playPos - firstBarId) / this.zoom + "px";
             playPosIndicator.style.visibility = playPos > 0 ? "visible" : "hidden";
+            playPosTime.style.visibility = playPos > 0 ? "visible" : "hidden";
 
-            var playPosTime = document.getElementById("play-pos-time") as HTMLElement;
-            var playBar = this.c15.getBars().get(playPos);
+            var playBar = this.c15.getBars().get(Math.min(Math.max(playPos, this.c15.getBars().first().id), lastId));
             if (playBar)
                 playPosTime.innerText = this.c15.buildTime(playBar.recordTime);
         }
