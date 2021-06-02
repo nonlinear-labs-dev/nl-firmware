@@ -1,3 +1,6 @@
+/// <reference path="draggable.ts"/>
+/// <reference path="selected-range.ts"/>
+/// <reference path="scrollbar.ts"/>
 
 class Waveform extends Draggable {
 
