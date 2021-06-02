@@ -6,15 +6,15 @@
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
                                  InputEventStage::MIDIOut outCB)
-    : m_dspHost{ dspHost }
-    , m_options{ options }
+    : m_dspHost { dspHost }
+    , m_options { options }
     , m_hwChangedCB(std::move(hwChangedCB))
-    , m_midiOut{ std::move(outCB) }
+    , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 template <>
@@ -435,7 +435,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
     }
   }
 
-  if(secondaryChannel != -1)
+  if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
     if(lsbCC != -1 && m_options->is14BitSupportEnabled())
@@ -536,7 +536,7 @@ void InputEventStage::doSendAftertouchOut(float value)
       m_midiOut({ mainStatus, valByte });
     }
 
-    if(secondaryChannel != -1)
+    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
     {
       auto secStatus = static_cast<uint8_t>(atStatusByte | secC);
       m_midiOut({ secStatus, valByte });
@@ -571,7 +571,7 @@ void InputEventStage::doSendAftertouchOut(float value)
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secondaryChannel != -1)
+    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -616,7 +616,7 @@ void InputEventStage::doSendBenderOut(float value)
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secondaryChannel != -1)
+    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -662,7 +662,8 @@ int InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
 
-  auto sendToDSP = [&](auto source) {
+  auto sendToDSP = [&](auto source)
+  {
     switch(source)
     {
       case DSPInterface::HWChangeSource::MIDI:
