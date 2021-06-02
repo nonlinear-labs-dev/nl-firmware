@@ -23,14 +23,14 @@ class Waveform extends Draggable {
         var zoomIn = document.getElementById("zoom-in");
         var zoomOut = document.getElementById("zoom-out");
 
-        if(this.zoom == this.minZoom) {
+        if (this.zoom == this.minZoom) {
             zoomIn!.classList.add("disabled");
         } else {
             zoomIn!.classList.remove("disabled");
         }
 
         //64 equals roughly 8H of recorded audio
-        if(this.zoom == this.maxZoom) {
+        if (this.zoom == this.maxZoom) {
             zoomOut!.classList.add("disabled");
         } else {
             zoomOut!.classList.remove("disabled");
@@ -297,11 +297,21 @@ class Waveform extends Draggable {
     }
 
     zoomIn() {
-        this.zoom /= 2;
+        var c = document.getElementById("bars") as HTMLDivElement;
+
+        if (this.lastBarIdToShow != -1)
+            this.lastBarIdToShow -= 0.25 * c.clientWidth * this.zoom;;
+
+        this.zoom *= 0.5;
         this.update();
     }
 
     zoomOut() {
+        var c = document.getElementById("bars") as HTMLDivElement;
+
+        if (this.lastBarIdToShow != -1)
+            this.lastBarIdToShow += 0.5 * c.clientWidth * this.zoom;
+
         this.zoom *= 2;
         this.update();
     }
