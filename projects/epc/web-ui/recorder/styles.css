@@ -369,6 +369,9 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #not-connected-box p {
@@ -377,48 +380,49 @@ body {
 
 #not-connected-box div {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-
     border-width: 3px;
     border-style: solid;
     border-color: rgb(231, 231, 231);
     border-image: initial;
-    padding: 3px;
+    padding: 10px;
     background: white;
 }
 
 .hidden {
-    display: none;
+    visibility: hidden;
 }
 
 #prompt-wrapper {
+    position: absolute;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #prompt-box {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-
     border-width: 3px;
     border-style: solid;
     border-color: rgb(231, 231, 231);
     border-image: initial;
-    padding: 3px;
+    padding: 10px;
     background: white;
 }
 
 #prompt-options-wrapper {
     display: flex;
-    justify-content: space-evenly;
-    width: 50%;
-    margin-left: 50%;
+    justify-content: flex-end;
+}
+
+#prompt-options-wrapper > * {
+    min-width: 2cm;
+    min-height: 1cm;
+}
+
+#prompt-yes {
+    margin-right: 1cm;
 }
