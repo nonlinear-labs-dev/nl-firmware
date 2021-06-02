@@ -38,6 +38,7 @@
 #include <xml/XmlWriter.h>
 #include <xml/VersionAttribute.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
+#include "EpcWifi.h"
 #include "WifiSetting.h"
 #include "SettingsActions.h"
 #include "CrashOnError.h"
@@ -99,14 +100,18 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("AftertouchCurve", new AftertouchCurve(*this));
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
-  addSetting("SSID", new SSID(*this));
-  addSetting("Passphrase", new Passphrase(*this));
+
+  std::shared_ptr<EpcWifi> LocalWifi = std::make_shared<EpcWifi>();
+
+  addSetting("SSID", new SSID(*this, LocalWifi));
+  addSetting("Passphrase", new Passphrase(*this, LocalWifi));
+  addSetting("WifiSetting", new WifiSetting(*this, LocalWifi));
+
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
   addSetting("SignalFlowIndication", new SignalFlowIndicationSetting(*this));
   addSetting("KioskMode", new KioskModeSetting(*this));
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
-  addSetting("WifiSetting", new WifiSetting(*this));
   addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
   addSetting("CrashOnError", new CrashOnError(*this));
@@ -237,6 +242,7 @@ void Settings::addSetting(const Glib::ustring &key, Setting *s)
 {
   m_settings[key] = tSettingPtr(s);
 }
+
 
 const Settings::tMap &Settings::getSettings() const
 {
