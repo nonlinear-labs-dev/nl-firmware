@@ -143,8 +143,8 @@ class Waveform extends Draggable {
                 if (loadEvent) {
                     var presetTop = 65;
                     var fontHeight = 15;
-                    ctx.font = fontHeight + "px serif";
-                    var text = "🖈 " + loadEvent.info;
+                    ctx.font = fontHeight + "px SSP-LW00";
+                    var text = "  " + loadEvent.info;
                     var width = ctx.measureText(text).width;
                     var margin = 3;
 
@@ -164,6 +164,11 @@ class Waveform extends Draggable {
                     ctx.fillRect(r.x, r.y, r.w, r.h);
                     ctx.fillStyle = "white";
                     ctx.fillText(text, r.x + margin, r.y + margin + fontHeight / 2);
+
+                    ctx.strokeStyle = "rgb(174, 206, 255)"
+                    ctx.moveTo(r.x, r.y);
+                    ctx.lineTo(r.x, r.y + r.h);
+                    ctx.stroke();
                 }
             }
 
@@ -193,7 +198,7 @@ class Waveform extends Draggable {
         var nsPerTimeMarker = 1000 * 1000 * msPerTimeMarker;
 
         var fontHeight = 12;
-        ctx.font = fontHeight + "px serif";
+        ctx.font = fontHeight + "px SSP-LW00";
 
         var serverTime = this.c15.getBars().first().recordTime;
 
