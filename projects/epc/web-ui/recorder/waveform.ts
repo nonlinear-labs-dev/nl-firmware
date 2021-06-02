@@ -1,3 +1,6 @@
+/// <reference path="draggable.ts"/>
+/// <reference path="selected-range.ts"/>
+/// <reference path="scrollbar.ts"/>
 
 class Waveform extends Draggable {
 
@@ -23,14 +26,14 @@ class Waveform extends Draggable {
         var zoomIn = document.getElementById("zoom-in");
         var zoomOut = document.getElementById("zoom-out");
 
-        if(this.zoom == this.minZoom) {
+        if (this.zoom == this.minZoom) {
             zoomIn!.classList.add("disabled");
         } else {
             zoomIn!.classList.remove("disabled");
         }
 
         //64 equals roughly 8H of recorded audio
-        if(this.zoom == this.maxZoom) {
+        if (this.zoom == this.maxZoom) {
             zoomOut!.classList.add("disabled");
         } else {
             zoomOut!.classList.remove("disabled");
