@@ -434,20 +434,6 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
       m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
     }
   }
-
-  if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
-  {
-    auto secStatus = static_cast<uint8_t>(statusByte | secC);
-    if(lsbCC != -1 && m_options->is14BitSupportEnabled())
-    {
-      m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
-    }
-
-    if(msbCC != -1)
-    {
-      m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
-    }
-  }
 }
 
 void InputEventStage::setNoteShift(int i)
@@ -519,10 +505,7 @@ void InputEventStage::doSendAftertouchOut(float value)
   else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
-    const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
-
     const auto mainC = static_cast<uint8_t>(mainChannel);
-    const auto secC = static_cast<uint8_t>(secondaryChannel);
 
     auto atStatusByte = static_cast<uint8_t>(0xD0);
     uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);  //msb
@@ -534,12 +517,6 @@ void InputEventStage::doSendAftertouchOut(float value)
     {
       auto mainStatus = static_cast<uint8_t>(atStatusByte | mainC);
       m_midiOut({ mainStatus, valByte });
-    }
-
-    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
-    {
-      auto secStatus = static_cast<uint8_t>(atStatusByte | secC);
-      m_midiOut({ secStatus, valByte });
     }
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown
@@ -558,10 +535,7 @@ void InputEventStage::doSendAftertouchOut(float value)
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
-    const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
-
     const auto mainC = static_cast<uint8_t>(mainChannel);
-    const auto secC = static_cast<uint8_t>(secondaryChannel);
 
     auto statusByte = static_cast<uint8_t>(0xE0);
 
@@ -569,12 +543,6 @@ void InputEventStage::doSendAftertouchOut(float value)
     {
       auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
       m_midiOut({ mainStatus, lsb, msb });
-    }
-
-    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
-    {
-      auto secStatus = static_cast<uint8_t>(statusByte | secC);
-      m_midiOut({ secStatus, lsb, msb });
     }
   }
 }
@@ -603,10 +571,7 @@ void InputEventStage::doSendBenderOut(float value)
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
-    const auto secondaryChannel = m_options->channelEnumToInt(m_options->getSendSplitChannel());
-
     const auto mainC = static_cast<uint8_t>(mainChannel);
-    const auto secC = static_cast<uint8_t>(secondaryChannel);
 
     auto statusByte = static_cast<uint8_t>(0xE0);
 
@@ -614,12 +579,6 @@ void InputEventStage::doSendBenderOut(float value)
     {
       auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
       m_midiOut({ mainStatus, lsb, msb });
-    }
-
-    if(secondaryChannel != -1 && m_dspHost->getType() == SoundType::Split)
-    {
-      auto secStatus = static_cast<uint8_t>(statusByte | secC);
-      m_midiOut({ secStatus, lsb, msb });
     }
   }
 }

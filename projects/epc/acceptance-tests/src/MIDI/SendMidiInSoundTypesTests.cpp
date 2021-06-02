@@ -92,23 +92,22 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
     }
   };
 
+  std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 1 } };
+
   WHEN("Split Channel is Channel 2")
   {
-    std::map<SoundType, int> expected = {{SoundType::Single, 1}, {SoundType::Layer, 1}, {SoundType::Split, 2}};
     settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
     doTests(expected);
   }
 
   WHEN("Split Channel is NONE")
   {
-    std::map<SoundType, int> expected = {{SoundType::Single, 1}, {SoundType::Layer, 1}, {SoundType::Split, 1}};
     settings.setSendSplitChannel(MidiSendChannelSplit::None);
     doTests(expected);
   }
 
   WHEN("Split Channel is Common")
   {
-    std::map<SoundType, int> expected = {{SoundType::Single, 1}, {SoundType::Layer, 1}, {SoundType::Split, 1}};
     settings.setSendSplitChannel(MidiSendChannelSplit::Common);
     doTests(expected);
   }
