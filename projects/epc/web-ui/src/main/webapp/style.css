@@ -313,6 +313,7 @@ caption {
 	box-shadow: none;
 	border: none;
 	border-radius: 5px;
+	overflow: hidden;
 }
 
 .tabcontent {
@@ -320,6 +321,7 @@ caption {
 	background-color: #1d233b;
 	border-radius: 4px;
 	border-top-left-radius: 0px;
+	overflow-y: auto;
 }
 
 .tab, .bb-tab {
