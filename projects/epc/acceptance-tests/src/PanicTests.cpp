@@ -31,7 +31,7 @@ TEST_CASE("Notes Active")
 
         WHEN("Panic Button Pressed")
         {
-          synth->getDsp()->panicCancelActiveVoices();
+          synth->resetDSP();
           synth->measurePerformance(20ms);
 
           THEN("Active Voices Zero")

@@ -112,7 +112,7 @@ void BaseUnitPlayMode::setupBaseUnitPlusButton()
 bool BaseUnitPlayMode::checkPanicAffenGriff(Buttons b, bool state)
 {
   m_buttonStates[b] = state;
-  if(std::all_of(m_buttonStates.begin(), m_buttonStates.end(), [](auto x ) { return x == true; }))
+  if(std::all_of(m_buttonStates.cbegin(), m_buttonStates.cend(), [](auto x ) { return x.second == true; }))
   {
     SettingsUseCases useCase(Application::get().getSettings());
     useCase.panicAudioEngine();
