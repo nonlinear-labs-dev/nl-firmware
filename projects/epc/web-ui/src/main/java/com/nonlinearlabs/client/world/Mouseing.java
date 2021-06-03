@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.world.PointerEvent.GwtPointerEvent;
 import com.nonlinearlabs.client.world.pointer.PointerState;
 import com.nonlinearlabs.client.world.pointer.Touch;
 
