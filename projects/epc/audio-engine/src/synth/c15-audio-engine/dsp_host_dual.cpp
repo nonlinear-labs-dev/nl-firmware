@@ -2528,10 +2528,15 @@ void dsp_host_dual::onMidiSettingsReceived()
     // reset voice allocation
     m_alloc.reset();
     // reset envelopes in both parts
-    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+    for(uint32_t layerId = 0; layerId < Engine::Param_Handle::m_layer_count; layerId++)
     {
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_key_active = 0;
     }
   });
+}
+
+void dsp_host_dual::panicCancelActiveVoices()
+{
+  onMidiSettingsReceived(); //seems to be the correct call -> m_alloc.reset() did not suffice? @matthias
 }

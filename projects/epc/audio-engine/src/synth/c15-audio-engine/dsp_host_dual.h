@@ -94,6 +94,7 @@ class DSPInterface
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKey(int key) = 0;
   virtual void onMidiSettingsReceived() = 0;
+  virtual void panicCancelActiveVoices() = 0;
 };
 
 class dsp_host_dual : public DSPInterface
@@ -146,6 +147,8 @@ class dsp_host_dual : public DSPInterface
   void onSettingTuneReference(const float _position);
   void onSettingInitialSinglePreset();
   uint32_t onSettingToneToggle();
+  void panicCancelActiveVoices() override;
+
   // dsp-related
   void render();
   void reset();

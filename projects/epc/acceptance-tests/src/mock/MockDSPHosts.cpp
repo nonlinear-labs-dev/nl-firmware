@@ -1,6 +1,10 @@
 #include "MockDSPHosts.h"
 #include <catch.hpp>
 
+void MockDSPHost::panicCancelActiveVoices()
+{
+}
+
 void MockDSPHost::onHWChanged(const uint32_t id, float value)
 {
 }

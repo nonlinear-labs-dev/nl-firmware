@@ -15,6 +15,7 @@ class MockDSPHost : public DSPInterface
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onMidiSettingsReceived() override;
   void setType(SoundType type);
+  void panicCancelActiveVoices() override;
 
  protected:
   SoundType m_type = SoundType::Split;
