@@ -6,15 +6,15 @@
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
                                  InputEventStage::MIDIOut outCB)
-    : m_dspHost { dspHost }
-    , m_options { options }
+    : m_dspHost{ dspHost }
+    , m_options{ options }
     , m_hwChangedCB(std::move(hwChangedCB))
-    , m_midiOut { std::move(outCB) }
+    , m_midiOut{ std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 template <>
@@ -87,7 +87,6 @@ void InputEventStage::onTCDEvent()
 {
   auto decoder = &m_tcdDecoder;
   nltools_assertOnDevPC(decoder != nullptr);
-  VoiceGroup determinedPart = VoiceGroup::Global;
   const SoundType soundType = m_dspHost->getType();
   const bool soundValid = soundType != SoundType::Invalid;
   const auto interface = DSPInterface::InputEventSource::Internal;
@@ -95,11 +94,14 @@ void InputEventStage::onTCDEvent()
   switch(decoder->getEventType())
   {
     case DecoderEventType::KeyDown:
+    {
+      const bool isSplitSound = (soundType == SoundType::Split);
+      const VoiceGroup determinedPart
+          = isSplitSound ? calculateSplitPartForEvent(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
       if(m_options->shouldReceiveLocalNotes())
       {
-        if(soundType == SoundType::Split)
+        if(isSplitSound)
         {
-          determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
           m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
         }
         else if(soundValid)
@@ -111,12 +113,16 @@ void InputEventStage::onTCDEvent()
         convertToAndSendMIDI(decoder, determinedPart);
 
       break;
+    }
     case DecoderEventType::KeyUp:
+    {
+      const bool isSplitSound = (soundType == SoundType::Split);
+      const VoiceGroup determinedPart
+          = isSplitSound ? calculateSplitPartForEvent(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
       if(m_options->shouldReceiveLocalNotes())
       {
-        if(soundType == SoundType::Split)
+        if(isSplitSound)
         {
-          determinedPart = calculateSplitPartForEvent(interface, decoder->getKeyOrController());
           m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
         }
         else if(soundValid)
@@ -128,6 +134,8 @@ void InputEventStage::onTCDEvent()
         convertToAndSendMIDI(decoder, determinedPart);
 
       break;
+    }
+
     case DecoderEventType::HardwareChange:
       onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD);
 
@@ -621,8 +629,7 @@ int InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
 {
 
-  auto sendToDSP = [&](auto source)
-  {
+  auto sendToDSP = [&](auto source) {
     switch(source)
     {
       case DSPInterface::HWChangeSource::MIDI:
