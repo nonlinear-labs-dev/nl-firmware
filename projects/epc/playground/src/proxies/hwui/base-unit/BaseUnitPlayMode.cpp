@@ -10,6 +10,7 @@
 #include <proxies/hwui/buttons.h>
 #include <http/UndoScope.h>
 #include <use-cases/RibbonParameterUseCases.h>
+#include <use-cases/SettingsUseCases.h>
 
 BaseUnitPlayMode::BaseUnitPlayMode()
     : m_modeButtonHandler(std::bind(&BaseUnitPlayMode::modeButtonShortPress, this),
@@ -111,5 +112,11 @@ void BaseUnitPlayMode::setupBaseUnitPlusButton()
 bool BaseUnitPlayMode::checkPanicAffenGriff(Buttons b, bool state)
 {
   m_buttonStates[b] = state;
-  return std::all_of(m_buttonStates.begin(), m_buttonStates.end(), true);
+  if(std::all_of(m_buttonStates.begin(), m_buttonStates.end(), [](auto x ) { return x == true; }))
+  {
+    SettingsUseCases useCase(Application::get().getSettings());
+    useCase.panicAudioEngine();
+    return true;
+  }
+  return false;
 }
