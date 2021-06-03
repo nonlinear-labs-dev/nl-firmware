@@ -15,6 +15,8 @@ BaseUnitPlayMode::BaseUnitPlayMode()
     : m_modeButtonHandler(std::bind(&BaseUnitPlayMode::modeButtonShortPress, this),
                           std::bind(&BaseUnitPlayMode::modeButtonLongPress, this))
 {
+  for(auto b:  {Buttons::BUTTON_MINUS, Buttons::BUTTON_PLUS, Buttons::BUTTON_MODE, Buttons::BUTTON_FUNCTION})
+    m_buttonStates.emplace(b, false);
 }
 
 void BaseUnitPlayMode::setup()
@@ -24,6 +26,9 @@ void BaseUnitPlayMode::setup()
   setupBaseUnitPlusButton();
 
   setupButtonConnection(Buttons::BUTTON_FUNCTION, [=](auto, auto, auto state) {
+    if(checkPanicAffenGriff(Buttons::BUTTON_FUNCTION, state))
+      return true;
+
     if(state)
       toggleTouchBehaviour();
 
@@ -49,6 +54,9 @@ void BaseUnitPlayMode::toggleTouchBehaviour()
 void BaseUnitPlayMode::setupBaseUnitUIModeButton()
 {
   setupButtonConnection(Buttons::BUTTON_MODE, [=](auto, auto, auto state) {
+    if(checkPanicAffenGriff(Buttons::BUTTON_MODE, state))
+      return true;
+
     m_modeButtonHandler.onButtonEvent(state);
     return true;
   });
@@ -72,6 +80,9 @@ void BaseUnitPlayMode::modeButtonLongPress()
 void BaseUnitPlayMode::setupBaseUnitMinusButton()
 {
   setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
+    if(checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
+        return true;
+
     if(state)
       m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_PRESSED);
     else
@@ -84,6 +95,10 @@ void BaseUnitPlayMode::setupBaseUnitMinusButton()
 void BaseUnitPlayMode::setupBaseUnitPlusButton()
 {
   setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
+
+    if(checkPanicAffenGriff(Buttons::BUTTON_PLUS, state))
+      return true;
+
     if(state)
       m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_PRESSED);
     else
@@ -91,4 +106,10 @@ void BaseUnitPlayMode::setupBaseUnitPlusButton()
 
     return true;
   });
+}
+
+bool BaseUnitPlayMode::checkPanicAffenGriff(Buttons b, bool state)
+{
+  m_buttonStates[b] = state;
+  return std::all_of(m_buttonStates.begin(), m_buttonStates.end(), true);
 }

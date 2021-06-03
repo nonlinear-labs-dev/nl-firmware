@@ -2535,8 +2535,3 @@ void dsp_host_dual::onMidiSettingsReceived()
     }
   });
 }
-
-void dsp_host_dual::panicCancelActiveVoices()
-{
-  onMidiSettingsReceived(); //seems to be the correct call -> m_alloc.reset() did not suffice? @matthias
-}
