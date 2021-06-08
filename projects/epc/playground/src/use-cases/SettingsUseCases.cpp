@@ -6,6 +6,7 @@
 #include <device-settings/midi/mappings/BenderCCMapping.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
+#include <device-settings/midi/HardwareControlEnables.h>
 
 SettingsUseCases::SettingsUseCases(Settings *s)
     : m_settings { s }
@@ -60,4 +61,16 @@ void SettingsUseCases::setMappingsToClassicMidi()
   r2->set(RibbonCC::CC25);
   at->set(AftertouchCC::ChannelPressure);
   be->set(BenderCC::Pitchbend);
+}
+
+void SettingsUseCases::updateHWSourceEnable(int hw, int aspect, bool value)
+{
+  if(auto s = m_settings->getSetting<HardwareControlEnables>())
+  {
+    if(hw < (int) HardwareControlEnables::tHWIdx::LENGTH && aspect < (int) HardwareControlEnables::tSettingIdx::LENGTH)
+    {
+      s->setState(static_cast<HardwareControlEnables::tHWIdx>(hw),
+                  static_cast<HardwareControlEnables::tSettingIdx>(aspect), value);
+    }
+  }
 }

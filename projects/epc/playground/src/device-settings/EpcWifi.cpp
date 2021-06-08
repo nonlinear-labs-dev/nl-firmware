@@ -38,19 +38,15 @@ void EpcWifi::updateCredentials(bool _reload)
 {
     m_busy = true;
     if (m_currentPassphrase != m_newPassphrase){
-        nltools::Log::debug("NM: Updating Passphrase ...");
         updatePassphrase();
     }
     else if (m_currentSSID != m_newSSID){
-        nltools::Log::debug("NM: Updating SSID ...");
         updateSSID();
     }
     else if (m_currentEpcWifiState != m_newEpcWifiState ){
-        nltools::Log::debug("NM: Updating EPC WiFi switch ...");
         updateWifiSwitch();
     }
     else if (_reload){
-        nltools::Log::debug("NM: Reloading ...");
         reloadConnection();
     }
     else
@@ -67,9 +63,12 @@ void EpcWifi::updateWifiSwitch()
 
 void EpcWifi::spawn(const std::vector<std::string>& command, std::function<void(const std::string&)> onSuccess)
 {
+  if constexpr(!isDevelopmentPC)
+  {
     SpawnAsyncCommandLine::spawn(command, onSuccess,
                                  [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                                m_busy = false; });
+                                     m_busy = false; });
+  }
 }
 
 void EpcWifi::updateSSID()

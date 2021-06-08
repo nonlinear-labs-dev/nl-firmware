@@ -270,4 +270,9 @@ public class SystemSettings {
     public void resetToHighResMidi() {
 		NonMaps.theMaps.getServerProxy().resetToHighResMidi();
     }
+
+    public void setHWSourceEnable(int hw, int xx, boolean b) {
+		SetupModel.get().systemSettings.hwSourceMapping.getValue().m_data[hw][xx] = b;
+		NonMaps.theMaps.getServerProxy().setHWSourceEnable(hw, xx, b);
+	}
 }

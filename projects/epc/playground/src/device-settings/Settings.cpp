@@ -72,6 +72,7 @@
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
+#include <device-settings/midi/HardwareControlEnables.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -150,6 +151,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
   addSetting("HighResCC", new Enable14BitSupport(*this));
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
+  addSetting("HardwareControlEnables", new HardwareControlEnables(*this));
 }
 
 Settings::~Settings()

@@ -17,25 +17,20 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.Bank;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
@@ -62,10 +57,13 @@ import com.nonlinearlabs.client.presenters.LocalSettings;
 import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.presenters.MidiSettings;
 import com.nonlinearlabs.client.presenters.MidiSettingsProvider;
+import com.nonlinearlabs.client.tools.Pair;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.SystemSettings;
-import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.overlay.html.Range;
+
+import org.apache.tapestry.form.Radio;
+
 
 public class Setup extends Composite {
 	interface SetupUiBinder extends UiBinder<HTMLPanel, Setup> {
@@ -123,6 +121,75 @@ public class Setup extends Composite {
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
 
+	@UiField
+	RadioButton pson0, pson1, pson2, pson3, pson4, pson5, pson6, pson7, psoff0, psoff1, psoff2, psoff3, psoff4, psoff5, psoff6, psoff7, proff0, proff1,
+	proff2, proff3, proff4, proff5, proff6, proff7, pron0, pron1, pron2, pron3, pron4, pron5, pron6, pron7, sson0, sson1, sson2, sson3, sson4, sson5, 
+	sson6, sson7, ssoff0, ssoff1, ssoff2, ssoff3, ssoff4, ssoff5, ssoff6, ssoff7, sron0, sron1, sron2, sron3, sron4, sron5, sron6, sron7, sroff0, sroff1, sroff2, sroff3, sroff4, sroff5, sroff6, sroff7, lon0, 
+	lon1, lon2, lon3, lon4, lon5, lon6, lon7, loff0, loff1, loff2, loff3, loff4, loff5, loff6, loff7;
+
+
+	private class HWEnableMap {
+		public HWEnableMap(RadioButton pson, RadioButton psoff, RadioButton pron, RadioButton proff, RadioButton sson, RadioButton ssoff, RadioButton sron, RadioButton sroff, RadioButton lon, RadioButton loff) {
+			primSendOn = pson;
+			primSendOff = psoff;
+			primRecOn = pron;
+			primRecOff = proff;
+			splitSendOn = sson;
+			splitSendOff = ssoff;
+			splitRecOn = sron;
+			splitRecOff = sroff;
+			localOn = lon;
+			localOff = loff;
+		}
+
+		public boolean hasNull() {
+			boolean ret = false;
+			for(int i = 0; i < 5; i++) {
+				Pair<RadioButton, RadioButton> x = getOnOffPairForIndex(i);
+				if(x.first == null || x.second == null)
+					ret = true;
+			}
+			return ret;
+		}
+
+		private RadioButton primSendOn, primSendOff, primRecOn, primRecOff, splitSendOn, splitSendOff, splitRecOn, splitRecOff, localOn, localOff;
+		
+		//this order corresponds with the enum found in the MidiSettingsMessage here: nltools/messaging/Message.h 
+		public Pair<RadioButton, RadioButton> getOnOffPairForIndex(int i) {
+			switch(i) {
+				case 0:
+					return new Pair<>(primSendOn, primSendOff);
+				case 1:
+					return new Pair<>(primRecOn, primRecOff);
+				case 2:
+					return new Pair<>(splitSendOn, splitSendOff);
+				case 3:
+					return new Pair<>(splitRecOn, splitRecOff);
+				case 4:
+					return new Pair<>(localOn, localOff);
+			}
+			return null;
+		}
+
+	} 
+
+	private HWEnableMap[] m_hwEnableMap;
+
+	private void createUIData() {
+		m_hwEnableMap = new HWEnableMap[8];
+		m_hwEnableMap[0] = new HWEnableMap(pson0, psoff0, pron0, proff0, sson0, ssoff0, sron0, sroff0, lon0, loff0);
+		m_hwEnableMap[1] = new HWEnableMap(pson1, psoff1, pron1, proff1, sson1, ssoff1, sron1, sroff1, lon1, loff1);
+		m_hwEnableMap[2] = new HWEnableMap(pson2, psoff2, pron2, proff2, sson2, ssoff2, sron2, sroff2, lon2, loff2);
+		m_hwEnableMap[3] = new HWEnableMap(pson3, psoff3, pron3, proff3, sson3, ssoff3, sron3, sroff3, lon3, loff3);
+		m_hwEnableMap[4] = new HWEnableMap(pson4, psoff4, pron4, proff4, sson4, ssoff4, sron4, sroff4, lon4, loff4);
+		m_hwEnableMap[5] = new HWEnableMap(pson5, psoff5, pron5, proff5, sson5, ssoff5, sron5, sroff5, lon5, loff5);
+		m_hwEnableMap[6] = new HWEnableMap(pson6, psoff6, pron6, proff6, sson6, ssoff6, sron6, sroff6, lon6, loff6);
+		m_hwEnableMap[7] = new HWEnableMap(pson7, psoff7, pron7, proff7, sson7, ssoff7, sron7, sroff7, lon7, loff7);
+	
+		for(HWEnableMap m: m_hwEnableMap)
+			Tracer.log(m.hasNull() ? "has null" : "no null");
+	}
+
 	public Setup() {
 		initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -133,6 +200,8 @@ public class Setup extends Composite {
 		pedal2Range = Range.wrap(pedal2Slider);
 		pedal3Range = Range.wrap(pedal3Slider);
 		pedal4Range = Range.wrap(pedal4Slider);
+
+		createUIData();
 
 		setupTexts();
 		connectEventHandlers();
@@ -199,6 +268,13 @@ public class Setup extends Composite {
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
+	
+		for(HWEnableMap m: m_hwEnableMap) {
+			for(int i = 0; i < 5; i++) {
+				Pair<RadioButton, RadioButton> ret = m.getOnOffPairForIndex(i);
+				fillRadioButtons(ret.first, ret.second, MidiSettings.OnOffOption.options);
+			}
+		}
 	}
 
 	public void connectEventHandlers() {
@@ -342,6 +418,31 @@ public class Setup extends Composite {
 				});
 			}
 		});
+
+
+		int hwSource = 0;
+		for(HWEnableMap m: m_hwEnableMap) {
+			for(int i = 0; i < 5; i++) {
+				final int currentSettingIndex = i;
+				final int currentHWSource = hwSource;
+				Pair<RadioButton, RadioButton> ret = m.getOnOffPairForIndex(i);
+				RadioButton on = ret.first;
+				RadioButton off = ret.second;
+
+				on.addClickHandler(e -> {
+					final int hw = currentHWSource;
+					final int xx = currentSettingIndex;
+					settings.setHWSourceEnable(hw, xx, true);
+				});
+
+				off.addClickHandler(e -> {
+					final int hw = currentHWSource;
+					final int xx = currentSettingIndex;
+					settings.setHWSourceEnable(hw, xx, false);
+				});
+			}
+			hwSource++;
+		}
 	}
 
 	public interface UploadDoneReceiver {
@@ -535,6 +636,25 @@ public class Setup extends Composite {
 		disable14Bit.setValue(!t.enable14BitCC.value);
 		autoStartRecordOn.setValue(t.autoStartRecorder.value);
 		autoStartRecordOff.setValue(!t.autoStartRecorder.value);
+		
+		
+		int hwSource = 0;
+		for(HWEnableMap m: m_hwEnableMap) {
+			for(int i = 0; i < 5; i++) {
+				final int currentSettingIndex = i;
+				final int currentHWSource = hwSource;
+
+				Pair<RadioButton, RadioButton> ret = m.getOnOffPairForIndex(i);
+				RadioButton on = ret.first;
+				RadioButton off = ret.second;
+
+				boolean state = t.hwControlEnables.hws[currentHWSource].states[currentSettingIndex].value;
+
+				on.setValue(state);
+				off.setValue(!state);
+			}
+			hwSource++;
+		}
 	}
 
 	public void switchPage(Button btn, DivElement page) {

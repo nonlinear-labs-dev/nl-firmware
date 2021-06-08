@@ -78,6 +78,7 @@ public class SetupUpdater extends Updater {
 		m.put("HighResCC", SetupModel.get().systemSettings.enable14BitSupport);
 		m.put("AftertouchMapping", SetupModel.get().systemSettings.aftertouchMapping);
 		m.put("AutoStartRecorder", SetupModel.get().systemSettings.autoStartRecorder);
+		m.put("HardwareControlEnables", SetupModel.get().systemSettings.hwSourceMapping);
 		return m;
 	}
 

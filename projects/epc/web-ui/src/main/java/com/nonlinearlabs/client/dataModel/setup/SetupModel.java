@@ -4,6 +4,7 @@ import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
+import com.nonlinearlabs.client.dataModel.HardwareSourceEnableSettingsDataModelEntity;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
 import com.nonlinearlabs.client.presenters.DeviceSettings.Pedal;
@@ -389,6 +390,8 @@ public class SetupModel {
 		public BooleanDataModelEntity highVelocityCC = new BooleanDataModelEntity();
 		public BooleanDataModelEntity enable14BitSupport = new BooleanDataModelEntity();
 		public BooleanDataModelEntity autoStartRecorder = new BooleanDataModelEntity();
+
+		public HardwareSourceEnableSettingsDataModelEntity hwSourceMapping = new HardwareSourceEnableSettingsDataModelEntity();
 	};
 
 	public class LocalSettings {

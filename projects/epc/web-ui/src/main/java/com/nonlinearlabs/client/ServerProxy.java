@@ -1234,4 +1234,9 @@ public class ServerProxy {
 		queueJob(uri, false);
     }
 
+    public void setHWSourceEnable(int hw, int xx, boolean b) {
+		StaticURI.Path path = new StaticURI.Path("settings", "hw-source-enable-set");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("hw", hw), new StaticURI.KeyValue("aspect", xx), new StaticURI.KeyValue("value", b));
+		queueJob(uri, false);
+    }
 }

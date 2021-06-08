@@ -1,5 +1,8 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.nonlinearlabs.client.Tracer;
+import com.nonlinearlabs.client.dataModel.HardwareSourceEnableSettings;
+
 public class MidiSettings {
 
 	static public class VelocityCurve {
@@ -91,6 +94,25 @@ public class MidiSettings {
         };
         public int selected = 0;
     }
+
+    static public class HWControlEnable {
+        public HWControlEnable() {
+            for(int i = 0; i < 5; i++) {
+                states[i] = new OnOffOption();
+            }
+        }
+
+        public OnOffOption states[] = new OnOffOption[5];
+    }
+
+    static public class HWSourceEnableSettings {
+        HWSourceEnableSettings() {
+            for(int i = 0; i < 8; i++) {
+                hws[i] = new HWControlEnable();
+            }
+        }
+        public HWControlEnable hws[] = new HWControlEnable[8]; 
+    }
     
 
     //Local
@@ -124,7 +146,19 @@ public class MidiSettings {
     public AftertouchMapping aftertouchMapping = new AftertouchMapping();
     public OnOffOption highVelocityCC = new OnOffOption();
     public OnOffOption enable14BitCC = new OnOffOption();
+    public HWSourceEnableSettings hwControlEnables = new HWSourceEnableSettings();
 
     //FLAC
     public OnOffOption autoStartRecorder = new OnOffOption();
+
+    public static HWSourceEnableSettings convert(HardwareSourceEnableSettings s) {
+        HWSourceEnableSettings ret = new HWSourceEnableSettings();
+        for(int hw = 0; hw < 8; hw++) {
+            for(int m = 0; m < 5; m++) {
+                Tracer.log("hw: " + hw + "m: " + m);
+                ret.hws[hw].states[m].value = s.m_data[hw][m];
+            }
+        }
+        return ret;
+    }
 }

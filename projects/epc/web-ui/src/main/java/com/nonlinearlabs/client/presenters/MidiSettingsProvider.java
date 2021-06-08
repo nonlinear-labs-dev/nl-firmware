@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
+import com.nonlinearlabs.client.presenters.MidiSettings.HWSourceEnableSettings;
 
 import org.apache.xpath.operations.Bool;
 
@@ -246,6 +247,15 @@ public class MidiSettingsProvider {
             boolean val = t.equals(BooleanValues.on);
             if(settings.autoStartRecorder.value != val) {
                 settings.autoStartRecorder.value = val;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.hwSourceMapping.onChange(t -> {
+            HWSourceEnableSettings d = MidiSettings.convert(t);
+            if(d != settings.hwControlEnables) {
+                settings.hwControlEnables = d;
                 notifyClients();
             }
             return true;

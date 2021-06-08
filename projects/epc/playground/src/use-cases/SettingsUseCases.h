@@ -8,6 +8,8 @@ class SettingsUseCases
   void setMappingsToHighRes();
   void setMappingsToClassicMidi();
 
+  void updateHWSourceEnable(int hw, int aspect, bool value);
+
  private:
   Settings* m_settings;
 };
