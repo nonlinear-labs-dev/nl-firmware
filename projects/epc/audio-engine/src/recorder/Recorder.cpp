@@ -89,6 +89,10 @@ nlohmann::json Recorder::api(const nlohmann::json &msg)
     {
       return queryFrames(args.at("begin"), args.at("end"));
     }
+    else if(name == "prepare-download")
+    {
+      return prepareDownload(args.at("begin"), args.at("end"));
+    }
     else if(name == "reset")
     {
       auto ret = m_storage->reset();
@@ -106,6 +110,33 @@ nlohmann::json Recorder::generateInfo() const
   ret["storage"] = m_storage->generateInfo();
   ret["recorder"] = m_in->generateInfo();
   ret["player"] = m_out->generateInfo();
+  return ret;
+}
+
+nlohmann::json Recorder::prepareDownload(FrameId begin, FrameId end) const
+{
+  nlohmann::json ret;
+
+  auto stream = m_storage->startStream(begin, end);
+
+  stream->getFirstAndLast([&](const auto &first, const auto &last) {
+    ret["range"] = { { "from", first.recordTime.time_since_epoch().count() },
+                     { "to", last.recordTime.time_since_epoch().count() } };
+  });
+
+  size_t numFlacBytes = 0;
+  size_t numWaveBytes = 44;
+
+  auto onFrame = [&](auto &frame, auto isLast) {
+    numFlacBytes += frame.getMemUsage();
+    numWaveBytes += FlacEncoder::flacFrameSize * 3 * 2;  // 24 bit
+  };
+
+  while(stream->next(onFrame))
+    ;
+
+  ret["flac"] = { { "size", numFlacBytes } };
+  ret["wave"] = { { "size", numWaveBytes } };
   return ret;
 }
 

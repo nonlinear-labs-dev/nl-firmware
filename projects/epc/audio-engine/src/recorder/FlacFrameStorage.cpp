@@ -1,4 +1,5 @@
 #include "FlacFrameStorage.h"
+#include "FlacFrameBits.h"
 #include "Bitstream.h"
 #include <nltools/logging/Log.h>
 
@@ -134,6 +135,8 @@ bool FlacFrameStorage::Stream::next(std::function<void(FlacEncoder::Frame &, boo
     return false;
 
   auto frame = *(it++)->get();
+  FlacFrameBits bits(frame.buffer);
+  bits.patchFrameNumber(frameNumber++);
   cb(frame, it == end);
   return true;
 }

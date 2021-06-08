@@ -23,6 +23,7 @@ class FlacFrameStorage
 
    private:
     friend class FlacFrameStorage;
+    size_t frameNumber = 0;
     FlacFrameStorage *storage;
     Frames::const_iterator it;
     Frames::const_iterator end;
