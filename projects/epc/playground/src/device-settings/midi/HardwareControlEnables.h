@@ -6,6 +6,7 @@
 class HardwareControlEnables : public Setting
 {
  public:
+  typedef nltools::msg::Setting::MidiSettingsMessage::tHWMappingType tData;
   typedef nltools::msg::Setting::MidiSettingsMessage::HW_INDEX tHWIdx;
   typedef nltools::msg::Setting::MidiSettingsMessage::MAPPING_INDEX tSettingIdx;
   explicit HardwareControlEnables(Settings& s);
@@ -14,7 +15,7 @@ class HardwareControlEnables : public Setting
   void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
   Glib::ustring getDisplayString() const override;
-
+  const tData& getRaw() const;
  private:
-  std::array<std::array<bool, static_cast<size_t>(tSettingIdx::LENGTH)>, static_cast<size_t>(tHWIdx::LENGTH)> m_data;
+  tData m_data;
 };

@@ -6,15 +6,15 @@
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
                                  InputEventStage::MIDIOut outCB)
-    : m_dspHost{ dspHost }
-    , m_options{ options }
+    : m_dspHost { dspHost }
+    , m_options { options }
     , m_hwChangedCB(std::move(hwChangedCB))
-    , m_midiOut{ std::move(outCB) }
+    , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 template <>
@@ -137,7 +137,7 @@ void InputEventStage::onTCDEvent()
     }
 
     case DecoderEventType::HardwareChange:
-      onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD);
+      onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD, false, false);
 
       break;
     case DecoderEventType::UNKNOWN:
@@ -597,7 +597,7 @@ void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMes
 
   if(hwID != -1)
   {
-    onHWChanged(hwID, message.controlPosition, DSPInterface::HWChangeSource::UI);
+    onHWChanged(hwID, message.controlPosition, DSPInterface::HWChangeSource::UI, false, false);
   }
 }
 
@@ -626,16 +626,24 @@ int InputEventStage::parameterIDToHWID(int id)
   }
 }
 
-void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source)
+void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary,
+                                  bool wasMIDISplit)
 {
-
-  auto sendToDSP = [&](auto source) {
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
+  {
     switch(source)
     {
       case DSPInterface::HWChangeSource::MIDI:
-        return m_options->shouldReceiveMIDIControllers();
+      {
+        if(wasPrim)
+          return m_options->shouldReceiveHWSourceOnMidiPrimary(hwID);
+        else if(wasSplit)
+          return m_options->shouldReceiveHWSourceOnMidiSplit(hwID);
+
+        return true;
+      }
       case DSPInterface::HWChangeSource::TCD:
-        return m_options->shouldReceiveLocalControllers();
+        return m_options->shouldAllowHWSourceFromLocal(hwID);
       case DSPInterface::HWChangeSource::UI:
         return true;
       default:
@@ -643,13 +651,15 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     }
   };
 
-  if(sendToDSP(source))
+  if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos);
     m_hwChangedCB();
   }
 
-  if(m_options->shouldSendControllers() && source != DSPInterface::HWChangeSource::MIDI)
+  const auto shouldSend = (wasMIDIPrimary && m_options->shouldSendHWSourceOnMidiPrimary(hwID))
+      || (wasMIDISplit && m_options->shouldSendHWSourceOnMidiSplit(hwID));
+  if(shouldSend && source != DSPInterface::HWChangeSource::MIDI)
   {
     const auto isPedal = hwID >= 0 && hwID < 4;
     if(isPedal && m_options->isSwitchingCC(hwID))
@@ -674,7 +684,40 @@ float processMidiForHWSource(DSPInterface *dsp, int id, uint8_t msb, uint8_t lsb
 
 void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
 {
-  if(m_options->shouldReceiveMIDIControllers())
+  auto hwID = decoder->getKeyOrControl();
+  if(hwID == -1)
+  {
+    switch(decoder->getHWChangeStruct().cases)
+    {
+      case MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend:
+        hwID = 5;
+        break;
+      case MIDIDecoder::MidiHWChangeSpecialCases::PitchbendUp:
+      case MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch:
+      case MIDIDecoder::MidiHWChangeSpecialCases::PitchbendDown:
+        hwID = 4;
+        break;
+      default:
+      case MIDIDecoder::MidiHWChangeSpecialCases::CC:
+        break;
+    }
+  }
+
+  const auto isSplit = m_dspHost->getType() == SoundType::Split;
+  const auto isPrimary = decoder->getChannel() == m_options->getReceiveChannel();
+
+  const auto shouldReceiveOnPrim = m_options->shouldReceiveHWSourceOnMidiPrimary(hwID);
+  const auto shouldReceiveOnSplit = m_options->shouldReceiveHWSourceOnMidiSplit(hwID);
+  const auto isSplitChannel
+      = MidiRuntimeOptions::normalToSplitChannel(decoder->getChannel()) == m_options->getReceiveSplitChannel();
+  const auto receiveOmni = m_options->getReceiveChannel() == MidiReceiveChannel::Omni
+      || m_options->getReceiveSplitChannel() == MidiReceiveChannelSplit::Omni;
+
+  const auto primaryAndAllowed = isPrimary && shouldReceiveOnPrim;
+  const auto splitAndAllowed = isSplit && isSplitChannel && shouldReceiveOnSplit;
+  const auto omniAndAllowed = receiveOmni && (shouldReceiveOnPrim || shouldReceiveOnSplit);
+
+  if(primaryAndAllowed || splitAndAllowed || omniAndAllowed)
   {
     auto hwRes = decoder->getHWChangeStruct();
 
@@ -695,7 +738,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         {
           if(m_options->getBenderSetting() == BenderCC::Pitchbend)
           {
-            onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
+            onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, false, false);
           }
         }
 
@@ -705,7 +748,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
           {
             if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
             {
-              onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI);
+              onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, false, false);
             }
           }
 
@@ -716,12 +759,12 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
             if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
             {
               pitchbendValue = std::max(0.0f, pitchbendValue);
-              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI);
+              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, false, false);
             }
             else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
             {
               pitchbendValue = -std::min(0.0f, pitchbendValue);
-              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI);
+              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, false, false);
             }
           }
         }

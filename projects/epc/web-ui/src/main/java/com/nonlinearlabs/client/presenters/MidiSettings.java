@@ -116,13 +116,11 @@ public class MidiSettings {
     
 
     //Local
-    public OnOffOption localControllers = new OnOffOption();
     public OnOffOption localNotes = new OnOffOption();
 
     //Send
     public SendChannel sendChannel = new SendChannel();
     public SendChannelSplit sendChannelSplit = new SendChannelSplit();
-    public OnOffOption sendControllers = new OnOffOption();
     public OnOffOption sendProgramChanges = new OnOffOption();
     public OnOffOption sendNotes = new OnOffOption();
 
@@ -131,7 +129,6 @@ public class MidiSettings {
     public ReceiveChannelSplit receiveChannelSplit = new ReceiveChannelSplit();
     public OnOffOption receiveProgramChanges = new OnOffOption();
     public OnOffOption receiveNotes = new OnOffOption();
-    public OnOffOption receiveControllers = new OnOffOption();
     public VelocityCurve receiveVelocityCurve = new VelocityCurve();
     public AftertouchCurve receiveAftertouchCurve = new AftertouchCurve();
 

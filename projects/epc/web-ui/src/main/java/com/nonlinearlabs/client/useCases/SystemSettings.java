@@ -208,11 +208,6 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveProgramChanges", netify(enabled.name()));
 	}
 
-	public void setReceiveControllers(BooleanValues enabled) {
-		SetupModel.get().systemSettings.receiveControllers.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("ReceiveControllers", netify(enabled.name()));
-	}
-
 	public void setReceiveAftertouchCurve(AftertouchCurve value) {
 		SetupModel.get().systemSettings.receiveAftertouchCurve.setValue(value);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveAftertouchCurve", value.name());
@@ -241,16 +236,6 @@ public class SystemSettings {
 	public void setSendNotes(BooleanValues enabled) {
 		SetupModel.get().systemSettings.sendNotes.setValue(enabled);
 		NonMaps.theMaps.getServerProxy().setSetting("SendNotes", netify(enabled.name()));
-	}
-
-	public void setSendControllers(BooleanValues enabled) {
-		SetupModel.get().systemSettings.sendControllers.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("SendControllers", netify(enabled.name()));
-	}
-
-	public void setLocalControllers(BooleanValues enabled) {
-		SetupModel.get().systemSettings.localControllers.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("LocalControllers", netify(enabled.name()));
 	}
 
 	public void setLocalNotes(BooleanValues enabled) {

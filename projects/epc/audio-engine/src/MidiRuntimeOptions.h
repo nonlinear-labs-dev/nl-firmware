@@ -13,14 +13,17 @@ class MidiRuntimeOptions
 
   [[nodiscard]] bool shouldReceiveProgramChanges() const;
   [[nodiscard]] bool shouldReceiveNotes() const;
-  [[nodiscard]] bool shouldReceiveMIDIControllers() const;
 
   [[nodiscard]] bool shouldSendProgramChanges() const;
   [[nodiscard]] bool shouldSendNotes() const;
-  [[nodiscard]] bool shouldSendControllers() const;
 
   [[nodiscard]] bool shouldReceiveLocalNotes() const;
-  [[nodiscard]] bool shouldReceiveLocalControllers() const;
+
+  [[nodiscard]] bool shouldReceiveHWSourceOnMidiPrimary(int hwID) const;
+  [[nodiscard]] bool shouldReceiveHWSourceOnMidiSplit(int hwID) const;
+  [[nodiscard]] bool shouldSendHWSourceOnMidiPrimary(int hwID) const;
+  [[nodiscard]] bool shouldSendHWSourceOnMidiSplit(int hwID) const;
+  [[nodiscard]] bool shouldAllowHWSourceFromLocal(int hwID) const;
 
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
@@ -101,14 +104,11 @@ class MidiRuntimeOptions
 
   bool m_receiveProgramChanges = false;
   bool m_receiveNotes = false;
-  bool m_receiveControllers = false;
 
   bool m_sendProgramChanges = false;
   bool m_sendNotes = false;
-  bool m_sendControllers = false;
 
   bool m_localNotes = false;
-  bool m_localControllers = false;
 
   bool m_enableHighVelCC = false;
   bool m_enable14BitCC = false;
@@ -121,6 +121,8 @@ class MidiRuntimeOptions
   RibbonCC ribbon2CC;
   AftertouchCC aftertouchCC;
   BenderCC benderCC;
+
+  nltools::msg::Setting::MidiSettingsMessage::tHWMappingType m_hwEnableMappings;
 
   //Mappings
   static std::optional<int> decodeEnumMSB(PedalCC);

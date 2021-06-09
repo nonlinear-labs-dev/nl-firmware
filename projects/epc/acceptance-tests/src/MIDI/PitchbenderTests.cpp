@@ -1,17 +1,20 @@
 #include <catch.hpp>
 #include <mock/InputEventStageTester.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
 {
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB([&](int hwID, float hwPos) {
-    CHECK(hwID == 4);
-    CHECK(hwPos == 1.0f);
-    receivedHW = true;
-  });
+  host.setOnHWChangedCB(
+      [&](int hwID, float hwPos)
+      {
+        CHECK(hwID == 4);
+        CHECK(hwPos == 1.0f);
+        receivedHW = true;
+      });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
@@ -21,8 +24,7 @@ TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
   //set settings to not interfere with CC01
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.receiveControllers = true;
-    msg.sendControllers = true;
+    msg.hwMappings = TestHelper::createFullMappings(true);
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.pedal1cc = PedalCC::CC02;

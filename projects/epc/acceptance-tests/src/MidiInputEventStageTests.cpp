@@ -8,7 +8,6 @@ MidiRuntimeOptions createMidiSettings()
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
   msg.receiveNotes = true;
-  msg.receiveControllers = true;
   msg.receiveProgramChange = true;
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;

@@ -362,16 +362,13 @@ public class SetupModel {
 		public BooleanDataModelEntity syncSplit = new BooleanDataModelEntity();
 
 		//Midi below
-		public BooleanDataModelEntity localControllers = new BooleanDataModelEntity();
 		public BooleanDataModelEntity localNotes = new BooleanDataModelEntity();
 	
-		public BooleanDataModelEntity sendControllers = new BooleanDataModelEntity();
 		public BooleanDataModelEntity sendNotes = new BooleanDataModelEntity();
 		public BooleanDataModelEntity sendProgramChanges = new BooleanDataModelEntity();
 		public MidiSendChannelSetting sendChannel = new MidiSendChannelSetting();
 		public MidiSendChannelSplitSetting sendChannelSplit = new MidiSendChannelSplitSetting();
 
-		public BooleanDataModelEntity receiveControllers = new BooleanDataModelEntity();
 		public BooleanDataModelEntity receiveNotes = new BooleanDataModelEntity();
 		public BooleanDataModelEntity receiveProgramChanges = new BooleanDataModelEntity();
 		public MidiReceiveChannelSetting receiveChannel = new MidiReceiveChannelSetting();

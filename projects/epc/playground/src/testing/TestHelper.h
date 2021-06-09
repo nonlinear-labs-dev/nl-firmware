@@ -8,9 +8,17 @@
 #include <libundo/undo/Scope.h>
 #include <Application.h>
 #include <parameters/ModulateableParameter.h>
+#include <nltools/messaging/Message.h>
 
 namespace TestHelper
 {
+  inline nltools::msg::Setting::MidiSettingsMessage::tHWMappingType createFullMappings(bool state)
+  {
+    nltools::msg::Setting::MidiSettingsMessage::tHWMappingType ret;
+    ret.fill({ false });
+    return ret;
+  }
+
   namespace floating
   {
     template <typename T> inline bool equals(T first, T second)

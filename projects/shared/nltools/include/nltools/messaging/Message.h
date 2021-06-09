@@ -264,6 +264,10 @@ namespace nltools
           LENGTH = 5
         };
 
+        typedef std::array<std::array<bool, static_cast<size_t>(MAPPING_INDEX::LENGTH)>,
+                           static_cast<size_t>(HW_INDEX::LENGTH)>
+            tHWMappingType;
+
         MidiReceiveChannel receiveChannel;
         MidiReceiveChannelSplit receiveSplitChannel;
 
@@ -272,14 +276,11 @@ namespace nltools
 
         bool receiveProgramChange = false;
         bool receiveNotes = false;
-        bool receiveControllers = false;
 
         bool sendProgramChange = false;
         bool sendNotes = false;
-        bool sendControllers = false;
 
         bool localNotes = false;
-        bool localControllers = false;
 
         bool highVeloCCEnabled = true;
         bool highResCCEnabled = true;
@@ -293,8 +294,7 @@ namespace nltools
         AftertouchCC aftertouchcc;
         BenderCC bendercc;
 
-        std::array<std::array<bool, static_cast<size_t>(MAPPING_INDEX::LENGTH)>, static_cast<size_t>(HW_INDEX::LENGTH)>
-            hwMappings { false };
+        tHWMappingType hwMappings { false };
       };
 
       struct TransitionTimeMessage

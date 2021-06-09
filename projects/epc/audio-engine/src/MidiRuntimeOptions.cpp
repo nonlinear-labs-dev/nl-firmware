@@ -10,15 +10,12 @@ void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage
   m_sendSplitChannel = msg.sendSplitChannel;
 
   m_receiveProgramChanges = msg.receiveProgramChange;
-  m_receiveControllers = msg.receiveControllers;
   m_receiveNotes = msg.receiveNotes;
 
   m_sendProgramChanges = msg.sendProgramChange;
-  m_sendControllers = msg.sendControllers;
   m_sendNotes = msg.sendNotes;
 
   m_localNotes = msg.localNotes;
-  m_localControllers = msg.localControllers;
 
   pedal1CC = msg.pedal1cc;
   pedal2CC = msg.pedal2cc;
@@ -31,6 +28,8 @@ void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage
 
   m_enableHighVelCC = msg.highVeloCCEnabled;
   m_enable14BitCC = msg.highResCCEnabled;
+
+  m_hwEnableMappings = msg.hwMappings;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
@@ -53,11 +52,6 @@ bool MidiRuntimeOptions::shouldReceiveNotes() const
   return m_receiveNotes;
 }
 
-bool MidiRuntimeOptions::shouldReceiveMIDIControllers() const
-{
-  return m_receiveControllers;
-}
-
 bool MidiRuntimeOptions::shouldSendProgramChanges() const
 {
   return m_sendProgramChanges;
@@ -66,11 +60,6 @@ bool MidiRuntimeOptions::shouldSendProgramChanges() const
 bool MidiRuntimeOptions::shouldSendNotes() const
 {
   return m_sendNotes;
-}
-
-bool MidiRuntimeOptions::shouldSendControllers() const
-{
-  return m_sendControllers;
 }
 
 MidiReceiveChannelSplit MidiRuntimeOptions::getReceiveSplitChannel() const
@@ -86,11 +75,6 @@ MidiSendChannelSplit MidiRuntimeOptions::getSendSplitChannel() const
 bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
 {
   return m_localNotes;
-}
-
-bool MidiRuntimeOptions::shouldReceiveLocalControllers() const
-{
-  return m_localControllers;
 }
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
@@ -445,4 +429,30 @@ bool MidiRuntimeOptions::is14BitSupportEnabled() const
 void MidiRuntimeOptions::set14BitSupportEnabled(bool e)
 {
   m_enable14BitCC = e;
+}
+
+bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiPrimary(int hwID) const
+{
+  return m_hwEnableMappings[hwID][1];
+}
+
+bool MidiRuntimeOptions::shouldSendHWSourceOnMidiPrimary(int hwID) const
+{
+  return m_hwEnableMappings[hwID][0];
+  ;
+}
+
+bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiSplit(int hwID) const
+{
+  return m_hwEnableMappings[hwID][3];
+}
+
+bool MidiRuntimeOptions::shouldSendHWSourceOnMidiSplit(int hwID) const
+{
+  return m_hwEnableMappings[hwID][2];
+}
+
+bool MidiRuntimeOptions::shouldAllowHWSourceFromLocal(int hwID) const
+{
+  return m_hwEnableMappings[hwID][4];
 }

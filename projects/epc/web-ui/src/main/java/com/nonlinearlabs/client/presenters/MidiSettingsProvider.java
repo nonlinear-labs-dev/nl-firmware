@@ -25,15 +25,6 @@ public class MidiSettingsProvider {
 		SystemSettings s = SetupModel.get().systemSettings;
 
         //Local
-        s.localControllers.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.localControllers.value != newValue) {
-                settings.localControllers.value = newValue;
-                notifyClients();
-            } 
-            return true;
-        });
-
         s.localNotes.onChange(t -> {
             boolean newValue = t == BooleanValues.on;
             if(settings.localNotes.value != newValue) {
@@ -57,15 +48,6 @@ public class MidiSettingsProvider {
             int newValue = t.ordinal();
             if(settings.sendChannelSplit.selected != newValue) {
                 settings.sendChannelSplit.selected = newValue;
-                notifyClients();
-            }
-            return true;
-        });
-
-        s.sendControllers.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.sendControllers.value != newValue) {
-                settings.sendControllers.value = newValue;
                 notifyClients();
             }
             return true;
@@ -121,15 +103,6 @@ public class MidiSettingsProvider {
             boolean newValue = t == BooleanValues.on;
             if(settings.receiveNotes.value != newValue) {
                 settings.receiveNotes.value = newValue;
-                notifyClients();
-            }
-            return true;
-        });
-
-        s.receiveControllers.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.receiveControllers.value != newValue) {
-                settings.receiveControllers.value = newValue;
                 notifyClients();
             }
             return true;

@@ -46,7 +46,7 @@ class InputEventStage
   void onMIDIHWChanged(MIDIDecoder* decoder);
 
   //Algorithm
-  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
+  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit);
   VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, const int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
 

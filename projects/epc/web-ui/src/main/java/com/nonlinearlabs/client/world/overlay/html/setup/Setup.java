@@ -353,8 +353,6 @@ public class Setup extends Composite {
 		midiReceiveChannelSplit.addChangeHandler(e -> settings.setReceiveMidiChannelSplit(MidiReceiveChannelSplit.values()[midiReceiveChannelSplit.getSelectedIndex()]));
 		receivePCOn.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.on));
 		receivePCOff.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.off));
-		receiveControllersOn.addValueChangeHandler(e -> settings.setReceiveControllers(BooleanValues.on));
-		receiveControllersOff.addValueChangeHandler(e -> settings.setReceiveControllers(BooleanValues.off));
 		receiveNotesOn.addValueChangeHandler(e -> settings.setReceiveNotes(BooleanValues.on));
 		receiveNotesOff.addValueChangeHandler(e -> settings.setReceiveNotes(BooleanValues.off));
 
@@ -364,13 +362,9 @@ public class Setup extends Composite {
 		sendPCOff.addValueChangeHandler(e -> settings.setSendProgramChanges(BooleanValues.off));
 		sendNotesOn.addValueChangeHandler(e -> settings.setSendNotes(BooleanValues.on));
 		sendNotesOff.addValueChangeHandler(e -> settings.setSendNotes(BooleanValues.off));
-		sendControllersOn.addValueChangeHandler(e -> settings.setSendControllers(BooleanValues.on));
-		sendControllersOff.addValueChangeHandler(e -> settings.setSendControllers(BooleanValues.off));
 
 		localNotesOn.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.on));
 		localNotesOff.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.off));
-		localControllersOn.addValueChangeHandler(e -> settings.setLocalControllers(BooleanValues.on));
-		localControllersOff.addValueChangeHandler(e -> settings.setLocalControllers(BooleanValues.off));
 
 		pedal1Mapping.addChangeHandler(e -> settings.setPedal1Mapping(PedalCCMapping.values()[pedal1Mapping.getSelectedIndex()]));
 		pedal2Mapping.addChangeHandler(e -> settings.setPedal2Mapping(PedalCCMapping.values()[pedal2Mapping.getSelectedIndex()]));
@@ -601,8 +595,6 @@ public class Setup extends Composite {
 	private void applyPresenter(MidiSettings t) {
 		midiReceiveChannel.setSelectedIndex(t.receiveChannel.selected);
 		midiReceiveChannelSplit.setSelectedIndex(t.receiveChannelSplit.selected);
-		receiveControllersOn.setValue(t.receiveControllers.value);
-		receiveControllersOff.setValue(!t.receiveControllers.value);
 		receiveNotesOn.setValue(t.receiveNotes.value);
 		receiveNotesOff.setValue(!t.receiveNotes.value);
 		receivePCOn.setValue(t.receiveProgramChanges.value);
@@ -610,15 +602,11 @@ public class Setup extends Composite {
 
 		midiSendChannel.setSelectedIndex(t.sendChannel.selected);
 		midiSendChannelSplit.setSelectedIndex(t.sendChannelSplit.selected);
-		sendControllersOn.setValue(t.sendControllers.value);
-		sendControllersOff.setValue(!t.sendControllers.value);
 		sendPCOn.setValue(t.sendProgramChanges.value);
 		sendPCOff.setValue(!t.sendProgramChanges.value);
 		sendNotesOn.setValue(t.sendNotes.value);
 		sendNotesOff.setValue(!t.sendNotes.value);
 		
-		localControllersOn.setValue(t.localControllers.value);
-		localControllersOff.setValue(!t.localControllers.value);
 		localNotesOn.setValue(t.localNotes.value);
 		localNotesOff.setValue(!t.localNotes.value);
 

@@ -1,6 +1,7 @@
 #include <catch.hpp>
 #include <mock/InputEventStageTester.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
 {
@@ -28,10 +29,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
   //set settings to not interfere with CC01
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.receiveControllers = true;
-    msg.sendControllers = true;
-    msg.localControllers = true;
-
+    msg.hwMappings = TestHelper::createFullMappings(true);
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_2;
 
@@ -126,9 +124,9 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
     WHEN("Receive TCD")
     {
       eventStage.onTCDMessage(fullPressureTCDEvent);
-      CHECK(receivedHW);
+      REQUIRE(receivedHW);
 
-      CHECK(sendMidiMessages.size() == 2);
+      REQUIRE(sendMidiMessages.size() == 2);
       CHECK(sendMidiMessages[0].numBytesUsed == 3);  //LSB
       CHECK(sendMidiMessages[0].rawBytes[0] == 0xB0);
       CHECK(sendMidiMessages[0].rawBytes[1] == 33);

@@ -8,19 +8,17 @@ MidiRuntimeOptions createSpecialSettings()
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
   msg.receiveNotes = true;
-  msg.receiveControllers = true;
   msg.receiveProgramChange = true;
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
 
-  msg.sendControllers = true;
   msg.sendProgramChange = true;
   msg.sendNotes = true;
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_1;
 
   msg.localNotes = true;
-  msg.localControllers = true;
+
 
   msg.bendercc = BenderCC::Pitchbend;
   msg.aftertouchcc = AftertouchCC::ChannelPressure;

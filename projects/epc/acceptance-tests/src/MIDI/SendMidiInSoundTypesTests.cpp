@@ -24,12 +24,12 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   //set settings to not interfere with CC01
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.receiveControllers = true;
-    msg.sendControllers = true;
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
-    msg.localControllers = true;
+
+    msg.hwMappings = TestHelper::createFullMappings(true);
+
     msg.highResCCEnabled = false;
     msg.pedal1cc = PedalCC::CC02;
     msg.pedal2cc = PedalCC::CC02;

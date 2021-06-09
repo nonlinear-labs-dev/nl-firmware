@@ -61,5 +61,15 @@ Glib::ustring HardwareControlEnables::getDisplayString() const
 void HardwareControlEnables::setState(HardwareControlEnables::tHWIdx hwIdx,
                                       HardwareControlEnables::tSettingIdx settingIdx, bool state)
 {
-  m_data.at(static_cast<size_t>(hwIdx)).at(static_cast<size_t>(settingIdx)) = state;
+  auto& val = m_data.at(static_cast<size_t>(hwIdx)).at(static_cast<size_t>(settingIdx));
+  if(val != state)
+  {
+    val = state;
+    notify();
+  }
+}
+
+const HardwareControlEnables::tData& HardwareControlEnables::getRaw() const
+{
+  return m_data;
 }
