@@ -14,8 +14,11 @@ namespace TestHelper
 {
   inline nltools::msg::Setting::MidiSettingsMessage::tHWMappingType createFullMappings(bool state)
   {
-    nltools::msg::Setting::MidiSettingsMessage::tHWMappingType ret;
-    ret.fill({ false });
+    typedef nltools::msg::Setting::MidiSettingsMessage::tHWMappingType tHW;
+    tHW ret;
+    ret.fill(tHW::value_type { });
+    for(auto& x: ret)
+      x.fill(state);
     return ret;
   }
 

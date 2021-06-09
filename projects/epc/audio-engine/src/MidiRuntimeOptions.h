@@ -80,6 +80,10 @@ class MidiRuntimeOptions
       return decodeEnumMSB(ribbon1CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Rib2)
       return decodeEnumMSB(ribbon2CC).value_or(-1);
+    else if constexpr(tMSB == Midi::MSB::Aftertouch)
+      return decodeEnumMSB(aftertouchCC).value_or(-1);
+    else if constexpr(tMSB == Midi::MSB::Bender)
+      return decodeEnumMSB(benderCC).value_or(-1);
     else
       nltools_assertNotReached();
   }

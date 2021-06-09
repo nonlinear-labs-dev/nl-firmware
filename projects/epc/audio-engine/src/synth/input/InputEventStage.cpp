@@ -682,6 +682,55 @@ float processMidiForHWSource(DSPInterface *dsp, int id, uint8_t msb, uint8_t lsb
     return CC_Range_14_Bit::decodeUnipolarMidiValue(midiVal);
 }
 
+int ccToHWID(int cc, MidiRuntimeOptions *options)
+{
+  if(options && cc != -1)
+  {
+    const auto p1 = options->getCCFor<Midi::MSB::Ped1>();
+    const auto p2 = options->getCCFor<Midi::MSB::Ped2>();
+    const auto p3 = options->getCCFor<Midi::MSB::Ped3>();
+    const auto p4 = options->getCCFor<Midi::MSB::Ped4>();
+    const auto at = options->getCCFor<Midi::MSB::Aftertouch>();
+    const auto bender = options->getCCFor<Midi::MSB::Bender>();
+    const auto ribbon1 = options->getCCFor<Midi::MSB::Rib1>();
+    const auto ribbon2 = options->getCCFor<Midi::MSB::Rib2>();
+
+    if(p1 == cc)
+    {
+      return 0;
+    }
+    else if(p2 == cc)
+    {
+      return 1;
+    }
+    else if(p3 == cc)
+    {
+      return 2;
+    }
+    else if(p4 == cc)
+    {
+      return 3;
+    }
+    else if(at == cc)
+    {
+      return 4;
+    }
+    else if(bender == cc)
+    {
+      return 5;
+    }
+    else if(ribbon1 == cc)
+    {
+      return 6;
+    }
+    else if(ribbon2 == cc)
+    {
+      return 7;
+    }
+  }
+  return -1;
+}
+
 void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
 {
   auto hwID = decoder->getKeyOrControl();
@@ -692,16 +741,18 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
       case MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend:
         hwID = 5;
         break;
-      case MIDIDecoder::MidiHWChangeSpecialCases::PitchbendUp:
       case MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch:
-      case MIDIDecoder::MidiHWChangeSpecialCases::PitchbendDown:
         hwID = 4;
         break;
       default:
       case MIDIDecoder::MidiHWChangeSpecialCases::CC:
+        hwID = ccToHWID(decoder->getHWChangeStruct().receivedCC, m_options);
         break;
     }
   }
+
+  if(hwID == -1)
+    return;
 
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
   const auto isPrimary = decoder->getChannel() == m_options->getReceiveChannel();
