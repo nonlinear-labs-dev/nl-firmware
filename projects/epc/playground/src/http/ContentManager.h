@@ -83,8 +83,8 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
 
   typedef std::shared_ptr<WebsocketConnection> tWebsocketConnection;
 
-  void feedWebSockets();
-  bool feedWebSocket(const tWebsocketConnection &ws);
+  void feedWebSockets(bool trustOracles);
+  bool feedWebSocket(const tWebsocketConnection &ws, bool trustOracles);
   void onUpdateIdChangedByNetworkRequest(std::shared_ptr<NetworkRequest> request,
                                          UpdateDocumentContributor::tUpdateID oldUpdateID,
                                          UpdateDocumentContributor::tUpdateID newUpdateID);
