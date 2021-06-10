@@ -439,7 +439,6 @@ bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiPrimary(int hwID) const
 bool MidiRuntimeOptions::shouldSendHWSourceOnMidiPrimary(int hwID) const
 {
   return m_hwEnableMappings[hwID][0];
-  ;
 }
 
 bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiSplit(int hwID) const

@@ -1,6 +1,7 @@
 #pragma once
 #include <Application.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
+#include <Types.h>
 
 class InputEventStage;
 class TCDDecoder;
@@ -23,6 +24,9 @@ class InputEventStageTester
   bool checkMIDIHardwareChangeEnabled(MIDIDecoder* pDecoder);
   void onMIDIEvent();
   void onTCDEvent();
+
+  void onTCDMessage(const MidiEvent& tcdEvent);
+  void onMIDIMessage(const MidiEvent& midiEvent);
 
   void sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);

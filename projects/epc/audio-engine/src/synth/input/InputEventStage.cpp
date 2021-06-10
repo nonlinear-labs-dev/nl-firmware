@@ -232,10 +232,12 @@ bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
 
 bool InputEventStage::checkMIDIHardwareChangeChannelMatches(MIDIDecoder *pDecoder)
 {
-  // Control Changes should be exclusively bound to Primary channel
   const auto channelMatches = m_options->getReceiveChannel() == MidiReceiveChannel::Omni
       || pDecoder->getChannel() == m_options->getReceiveChannel();
-  return channelMatches;
+
+  const auto splitMatches = m_options->getReceiveSplitChannel() == MidiReceiveChannelSplit::Omni
+      || MidiRuntimeOptions::normalToSplitChannel(pDecoder->getChannel()) == m_options->getReceiveSplitChannel();
+  return channelMatches || (isSplitDSP() && splitMatches);
 }
 
 void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
@@ -428,7 +430,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
   if(!latchHWPosition<LatchMode::Option>(hwID, lsbValByte, msbValByte))
     return;
 
-  if(mainChannel != -1)
+  if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(hwID))
   {
     auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
 
@@ -440,6 +442,21 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
     if(msbCC != -1)
     {
       m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
+    }
+  }
+
+  if(secondaryChannel != -1 && m_options->shouldSendHWSourceOnMidiSplit(hwID) && isSplitDSP())
+  {
+    auto secStatus = static_cast<uint8_t>(statusByte | secC);
+
+    if(lsbCC != -1 && m_options->is14BitSupportEnabled())
+    {
+      m_midiOut({ secStatus, static_cast<uint8_t>(lsbCC), lsbValByte });
+    }
+
+    if(msbCC != -1)
+    {
+      m_midiOut({ secStatus, static_cast<uint8_t>(msbCC), msbValByte });
     }
   }
 }
@@ -657,9 +674,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     m_hwChangedCB();
   }
 
-  const auto shouldSend = (wasMIDIPrimary && m_options->shouldSendHWSourceOnMidiPrimary(hwID))
-      || (wasMIDISplit && m_options->shouldSendHWSourceOnMidiSplit(hwID));
-  if(shouldSend && source != DSPInterface::HWChangeSource::MIDI)
+  if(source != DSPInterface::HWChangeSource::MIDI)
   {
     const auto isPedal = hwID >= 0 && hwID < 4;
     if(isPedal && m_options->isSwitchingCC(hwID))
@@ -832,4 +847,9 @@ constexpr uint16_t InputEventStage::midiReceiveChannelMask(const MidiReceiveChan
 constexpr uint16_t InputEventStage::midiReceiveChannelMask(const MidiReceiveChannelSplit &_channel)
 {
   return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
+}
+
+bool InputEventStage::isSplitDSP() const
+{
+  return m_dspHost->getType() == SoundType::Split;
 }

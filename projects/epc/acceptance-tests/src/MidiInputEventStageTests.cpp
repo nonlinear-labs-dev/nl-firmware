@@ -2,6 +2,7 @@
 #include <synth/input/InputEventStage.h>
 #include <synth/C15Synth.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 MidiRuntimeOptions createMidiSettings()
 {
@@ -20,6 +21,8 @@ MidiRuntimeOptions createMidiSettings()
   msg.pedal4cc = PedalCC::CC23;
   msg.ribbon1cc = RibbonCC::CC24;
   msg.ribbon2cc = RibbonCC::CC25;
+
+  msg.hwMappings = TestHelper::createFullMappings(true);
 
   options.update(msg);
   return options;

@@ -127,6 +127,14 @@ namespace TestHelper
   {
     g_main_context_iteration(nullptr, TRUE);
   }
+
+  inline void updateMappings(nltools::msg::Setting::MidiSettingsMessage::tHWMappingType& array,
+                      nltools::msg::Setting::MidiSettingsMessage::MAPPING_INDEX index, bool b)
+  {
+    for(auto& hw: array) {
+      hw[static_cast<int>(index)] = b;
+    }
+  }
 }
 
 inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double v)

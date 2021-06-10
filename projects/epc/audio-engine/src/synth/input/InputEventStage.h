@@ -104,6 +104,7 @@ class InputEventStage
   };
 
   template <LatchMode> bool latchHWPosition(int hwID, uint8_t lsb, uint8_t msb);
+  [[nodiscard]] bool isSplitDSP() const;
 
   friend class InputEventStageTester;
 };
