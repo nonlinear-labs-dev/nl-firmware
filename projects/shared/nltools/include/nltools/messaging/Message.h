@@ -294,7 +294,7 @@ namespace nltools
         AftertouchCC aftertouchcc;
         BenderCC bendercc;
 
-        tHWMappingType hwMappings { false };
+        tHWMappingType hwMappings;
       };
 
       struct TransitionTimeMessage
