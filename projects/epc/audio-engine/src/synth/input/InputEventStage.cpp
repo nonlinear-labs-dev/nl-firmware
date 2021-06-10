@@ -792,7 +792,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
     return;
 
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
-  const auto isPrimary = decoder->getChannel() == m_options->getReceiveChannel();
+  const auto isPrimaryChannel = decoder->getChannel() == m_options->getReceiveChannel();
 
   const auto shouldReceiveOnPrim = m_options->shouldReceiveHWSourceOnMidiPrimary(hwID);
   const auto shouldReceiveOnSplit = m_options->shouldReceiveHWSourceOnMidiSplit(hwID);
@@ -801,7 +801,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
   const auto receiveOmni = m_options->getReceiveChannel() == MidiReceiveChannel::Omni
       || m_options->getReceiveSplitChannel() == MidiReceiveChannelSplit::Omni;
 
-  const auto primaryAndAllowed = isPrimary && shouldReceiveOnPrim;
+  const auto primaryAndAllowed = isPrimaryChannel && shouldReceiveOnPrim;
   const auto splitAndAllowed = isSplit && isSplitChannel && shouldReceiveOnSplit;
   const auto omniAndAllowed = receiveOmni && (shouldReceiveOnPrim || shouldReceiveOnSplit);
 
@@ -826,7 +826,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         {
           if(m_options->getBenderSetting() == BenderCC::Pitchbend)
           {
-            onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, false, false);
+            onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
           }
         }
 
@@ -836,7 +836,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
           {
             if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
             {
-              onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, false, false);
+              onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
             }
           }
 
@@ -847,12 +847,12 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
             if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
             {
               pitchbendValue = std::max(0.0f, pitchbendValue);
-              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, false, false);
+              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
             }
             else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
             {
               pitchbendValue = -std::min(0.0f, pitchbendValue);
-              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, false, false);
+              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
             }
           }
         }
