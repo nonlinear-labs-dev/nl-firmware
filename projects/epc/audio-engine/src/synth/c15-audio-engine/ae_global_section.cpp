@@ -100,6 +100,9 @@ void GlobalSection::render_audio(const float _left, const float _right)
   m_signal[0] = vol * _left;
   m_signal[2] = m_signal[0] + m_signal[1];
   signal = m_signal[m_combinationMode];
+#if SOFT_CLIP == 0
+  m_out_l = signal;
+#elif SOFT_CLIP == 1
   // left: soft clipping
   signal = std::clamp(signal * 0.1588f, -0.25f, 0.25f);
   signal += -0.25f;
@@ -107,10 +110,14 @@ void GlobalSection::render_audio(const float _left, const float _right)
   signal = 0.5f - std::abs(signal);
   squared = signal * signal;
   m_out_l = signal * ((((2.26548f * squared) - 5.13274f) * squared) + 3.14159f);
+#endif
   // right: volume and test tone combination
   m_signal[0] = vol * _right;
   m_signal[2] = m_signal[0] + m_signal[1];
   signal = m_signal[m_combinationMode];
+#if SOFT_CLIP == 0
+  m_out_r = signal;
+#elif SOFT_CLIP == 1
   // right: soft clipping
   signal = std::clamp(signal * 0.1588f, -0.25f, 0.25f);
   signal += -0.25f;
@@ -118,6 +125,7 @@ void GlobalSection::render_audio(const float _left, const float _right)
   signal = 0.5f - std::abs(signal);
   squared = signal * signal;
   m_out_r = signal * ((((2.26548f * squared) - 5.13274f) * squared) + 3.14159f);
+#endif
 }
 
 void GlobalSection::render_fast()

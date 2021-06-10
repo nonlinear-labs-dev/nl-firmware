@@ -13,6 +13,9 @@
 #include "ae_info.h"
 #include "nltoolbox.h"
 
+// specify if soft clipping should be applied
+#define SOFT_CLIP 1
+
 class GlobalSection
 {
  public:
