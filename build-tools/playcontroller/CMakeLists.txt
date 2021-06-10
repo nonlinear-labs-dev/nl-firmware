@@ -26,7 +26,7 @@ add_custom_command(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         "cd /workdir"
-        "cmake -DBUILD_PLAYCONTROLLER=On /sources"
+        "cmake -DTARGET_PLATFORM=playcontroller -DBUILD_PLAYCONTROLLER=On /sources"
         "make main.bin"
         "chown -R ${USER_ID}.${GROUP_ID} /workdir/*"
 )
