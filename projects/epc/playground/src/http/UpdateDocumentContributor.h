@@ -29,6 +29,7 @@ class UpdateDocumentContributor : public IntrusiveListItem<UpdateDocumentContrib
   {
     Generic = 1 << 0,
     LockState = 1 << 1,
+    DontTrustOracle = 1 << 2
   };
 
   virtual tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic);
@@ -45,7 +46,6 @@ class UpdateDocumentContributor : public IntrusiveListItem<UpdateDocumentContrib
   virtual UNDO::Scope &getUndoScope();
   [[nodiscard]] virtual const UNDO::Scope &getUndoScope() const;
 
-  void propagateChangeDownstream();
   void orphan();
 
  protected:
