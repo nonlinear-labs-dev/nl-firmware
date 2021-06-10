@@ -34,6 +34,8 @@ class InputEventStage
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message);
   void setNoteShift(int i);
 
+  static int parameterIDToHWID(int id);
+
  private:
   using CC_Range_Vel = Midi::clipped14BitVelRange;
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
@@ -52,7 +54,6 @@ class InputEventStage
 
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel);
-  static int parameterIDToHWID(int id);
 
   //MIDI and UI out
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
