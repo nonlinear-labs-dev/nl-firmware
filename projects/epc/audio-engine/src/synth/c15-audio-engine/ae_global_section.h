@@ -14,7 +14,7 @@
 #include "nltoolbox.h"
 
 // specify if soft clipping should be applied
-#define SOFT_CLIP 1
+constexpr bool APPLY_SOFT_CLIP = true;
 
 class GlobalSection
 {
