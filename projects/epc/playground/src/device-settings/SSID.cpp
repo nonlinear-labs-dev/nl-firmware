@@ -2,7 +2,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/SSID.h>
 
-SSID::SSID(Settings &parent, const std::shared_ptr<EpcWifi>& localWifi)
+SSID::SSID(Settings &parent, const std::shared_ptr<EpcWifi> &localWifi)
     : Setting(parent)
     , m_localWifi(localWifi)
 {
@@ -45,7 +45,10 @@ void SSID::updateSSID(const Glib::ustring &str)
 {
   m_ssid = str;
 
-  auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid);
+  static auto isEpc2 = !strcmp(TARGET_PLATFORM, "epc2");
+  static auto suffix = (isEpc2 ? "_BBB" : "");
+
+  auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid + suffix);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
 
   m_localWifi->setNewSSID(m_ssid);
