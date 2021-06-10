@@ -44,7 +44,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
   auto sendTCDHWChange = [&]() { eventStage.onTCDMessage(fullPressureTCDEvent); };
 
-  auto doTests = [&]()
+  auto doTests = [&](const std::map<SoundType, int>& expected)
   {
     WHEN("Sound is Single")
     {
@@ -56,7 +56,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
         THEN("HW Change got send on Primary Channel")
         {
-          CHECK(sendMidiMessages.size() == 1);
+          CHECK(sendMidiMessages.size() == expected.at(SoundType::Single));
         }
       }
     }
@@ -71,7 +71,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
         THEN("HW Change got send on Primary Channel")
         {
-          CHECK(sendMidiMessages.size() == 1);
+          CHECK(sendMidiMessages.size() == expected.at(SoundType::Layer));
         }
       }
     }
@@ -84,31 +84,36 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
       {
         sendTCDHWChange();
 
-        THEN("HW Change got send on Primary Channel")
+        THEN("HW Change got send on Primary and Split Channels")
         {
-          CHECK(sendMidiMessages.size() == 1);
+          CHECK(sendMidiMessages.size() == expected.at(SoundType::Split));
         }
       }
     }
   };
 
-  std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 1 } };
 
   WHEN("Split Channel is Channel 2")
   {
+    std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 2 } };
+
     settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
-    doTests();
+    doTests(expected);
   }
 
   WHEN("Split Channel is NONE")
   {
+    std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 1 } };
+
     settings.setSendSplitChannel(MidiSendChannelSplit::None);
-    doTests();
+    doTests(expected);
   }
 
   WHEN("Split Channel is Common")
   {
+    std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 1 } };
+
     settings.setSendSplitChannel(MidiSendChannelSplit::Common);
-    doTests();
+    doTests(expected);
   }
 }

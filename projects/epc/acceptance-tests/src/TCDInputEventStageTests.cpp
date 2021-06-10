@@ -171,6 +171,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnHWReceived dsp { Pedal1, 1.0 };
+  dsp.setType(SoundType::Single);
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
                                [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
