@@ -163,11 +163,15 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
         eventStage.onTCDMessage(fullPressureTCDEvent);
 
         CHECK(receivedHW);
-        REQUIRE(sendMidiMessages.size() == 1);
+        REQUIRE(sendMidiMessages.size() == 2);
         CHECK(sendMidiMessages[0].numBytesUsed == 3);
         CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
         CHECK(sendMidiMessages[0].rawBytes[1] == 127);
         CHECK(sendMidiMessages[0].rawBytes[2] == 127);
+        CHECK(sendMidiMessages[1].numBytesUsed == 3);
+        CHECK(sendMidiMessages[1].rawBytes[0] == 0xE1);
+        CHECK(sendMidiMessages[1].rawBytes[1] == 127);
+        CHECK(sendMidiMessages[1].rawBytes[2] == 127);
       }
     }
   }
