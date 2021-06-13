@@ -2359,10 +2359,11 @@ SoundType dsp_host_dual::getType()
   return SoundType::Invalid;  // should never be reached
 }
 
+// TODO: refactor
 VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
 {
   // also a little inconvenient but should work
-  switch(m_alloc.getSplitPartForKey(key))
+  switch(m_alloc.getSplitPartForKeyDown(key))
   {
     case AllocatorId::Local_I:
       return VoiceGroup::I;
