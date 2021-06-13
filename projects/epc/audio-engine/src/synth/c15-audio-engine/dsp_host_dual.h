@@ -94,6 +94,24 @@ class DSPInterface
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKey(int key) = 0;
   virtual void onMidiSettingsReceived() = 0;
+  static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
+  {
+    // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
+    // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
+    switch(_inputSource)
+    {
+      case InputEventSource::Internal:
+        return 0;
+      case InputEventSource::External_Use_Split:
+      case InputEventSource::External_Primary:
+      case InputEventSource::External_Both:
+        return 1;
+      case InputEventSource::External_Secondary:
+        return 2;
+    }
+    // should never be reached
+    return 0;
+  }
 };
 
 class dsp_host_dual : public DSPInterface
