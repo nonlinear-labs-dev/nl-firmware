@@ -674,7 +674,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Aftertouch</td>
+								<td>Bender</td>
 								<td>
 									<g:RadioButton ui:field="pson4" name="ps4" value="true"></g:RadioButton>
 									<g:RadioButton ui:field="psoff4" name="ps4" value="false"></g:RadioButton>
@@ -697,7 +697,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Bender</td>
+								<td>Aftertouch</td>
 								<td>
 									<g:RadioButton ui:field="pson5" name="ps5" value="true"></g:RadioButton>
 									<g:RadioButton ui:field="psoff5" name="ps5" value="false"></g:RadioButton>
