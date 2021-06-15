@@ -27,7 +27,12 @@ SoundType MockDSPHost::getType()
   return m_type;
 }
 
-VoiceGroup MockDSPHost::getSplitPartForKey(int key)
+VoiceGroup MockDSPHost::getSplitPartForKeyDown(int key)
+{
+  return VoiceGroup::I;
+}
+
+VoiceGroup MockDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
 {
   return VoiceGroup::I;
 }
@@ -46,9 +51,9 @@ void MockDSPHost::setType(SoundType type)
 }
 
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
@@ -72,19 +77,29 @@ bool PassOnKeyDownHost::didReceiveKeyDown() const
   return m_receivedKeyDown;
 }
 
-VoiceGroup PassOnKeyDownHost::getSplitPartForKey(int key)
+VoiceGroup PassOnKeyDownHost::getSplitPartForKeyDown(int key)
+{
+  return VoiceGroup::Global;
+}
+
+VoiceGroup PassOnKeyDownHost::getSplitPartForKeyUp(int key, InputEventSource from)
 {
   return VoiceGroup::Global;
 }
 
 PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
-VoiceGroup PassOnKeyUpHost::getSplitPartForKey(int key)
+VoiceGroup PassOnKeyUpHost::getSplitPartForKeyDown(int key)
+{
+  return VoiceGroup::Global;
+}
+
+VoiceGroup PassOnKeyUpHost::getSplitPartForKeyUp(int key, InputEventSource from)
 {
   return VoiceGroup::Global;
 }
@@ -109,8 +124,8 @@ bool PassOnKeyUpHost::didReceiveKeyUp() const
 }
 
 PassOnHWReceived::PassOnHWReceived(int expectedId, float expectedValue)
-    : m_id { expectedId }
-    , m_value { expectedValue }
+    : m_id{ expectedId }
+    , m_value{ expectedValue }
 {
 }
 
@@ -156,8 +171,17 @@ C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
   return C15::Properties::HW_Return_Behavior::Stay;
 }
 
-VoiceGroup ConfigureableDSPHost::getSplitPartForKey(int key)
+VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
 {
+  if(m_getSplitPartForKey)
+    return m_getSplitPartForKey(key);
+
+  return VoiceGroup::I;
+}
+
+VoiceGroup ConfigureableDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
+{
+  // not sure here...
   if(m_getSplitPartForKey)
     return m_getSplitPartForKey(key);
 

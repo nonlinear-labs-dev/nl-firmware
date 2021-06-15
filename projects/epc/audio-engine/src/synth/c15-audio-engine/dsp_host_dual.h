@@ -92,7 +92,8 @@ class DSPInterface
   virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
   virtual SoundType getType() = 0;
-  virtual VoiceGroup getSplitPartForKey(int key) = 0;
+  virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
+  virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
   virtual void onMidiSettingsReceived() = 0;
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
@@ -171,7 +172,8 @@ class dsp_host_dual : public DSPInterface
   using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
   HWSourceValues getHWSourceValues() const;
   SoundType getType() override;
-  VoiceGroup getSplitPartForKey(int key) override;
+  VoiceGroup getSplitPartForKeyDown(int key) override;
+  VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
@@ -179,6 +181,24 @@ class dsp_host_dual : public DSPInterface
   using CC_Range_Vel = Midi::clipped14BitVelRange;
 
  private:
+  static inline VoiceGroup getVoiceGroupFromAllocatorId(const AllocatorId _id)
+  {
+    // a little inconvenient and redundant...
+    switch(_id)
+    {
+      case AllocatorId::Local_I:
+        return VoiceGroup::I;
+        break;
+      case AllocatorId::Local_II:
+        return VoiceGroup::II;
+        break;
+      case AllocatorId::Local_Both:
+        return VoiceGroup::Global;
+        break;
+    }
+    // fail safety
+    return VoiceGroup::NumGroups;
+  }
   using LayerMode = C15::Properties::LayerMode;
   // parameters
   Engine::Param_Handle m_params;

@@ -2359,25 +2359,14 @@ SoundType dsp_host_dual::getType()
   return SoundType::Invalid;  // should never be reached
 }
 
-// TODO: refactor
-VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
+VoiceGroup dsp_host_dual::getSplitPartForKeyDown(int key)
 {
-  // also a little inconvenient but should work
-  switch(m_alloc.getSplitPartForKeyDown(key))
-  {
-    case AllocatorId::Local_I:
-      return VoiceGroup::I;
-      break;
-    case AllocatorId::Local_II:
-      return VoiceGroup::II;
-      break;
-    case AllocatorId::Local_Both:
-      return VoiceGroup::Global;
-      break;
-  }
-  // NOTE: this should never be reached and represents an invalid state!
-  // (maybe, extend enum for better readability?)
-  return VoiceGroup::NumGroups;
+  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyDown(key));
+}
+
+VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
+{
+  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from)));
 }
 
 void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)

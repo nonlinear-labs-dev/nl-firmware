@@ -455,7 +455,7 @@ VoiceGroup InputEventStage::calculateSplitPartForEvent(DSPInterface::InputEventS
   {
     case DSPInterface::InputEventSource::Internal:
     case DSPInterface::InputEventSource::External_Use_Split:
-      return m_dspHost->getSplitPartForKey(keyNumber);
+      return m_dspHost->getSplitPartForKeyDown(keyNumber);
     case DSPInterface::InputEventSource::External_Primary:
       return VoiceGroup::I;
     case DSPInterface::InputEventSource::External_Secondary:

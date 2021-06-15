@@ -639,8 +639,6 @@ class VoiceAllocation
   inline AllocatorId getSplitPartForKeyUp(const uint32_t _keyPos, const uint32_t _inputSourceId)
   {
     KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
-    if(!keyState->m_active)
-      return AllocatorId::None;
     return keyState->m_origin;
   }
 
