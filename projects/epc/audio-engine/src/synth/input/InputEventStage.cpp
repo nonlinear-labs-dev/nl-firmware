@@ -97,7 +97,7 @@ void InputEventStage::onTCDEvent()
     {
       const bool isSplitSound = (soundType == SoundType::Split);
       const VoiceGroup determinedPart
-          = isSplitSound ? calculateSplitPartForEvent(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+          = isSplitSound ? calculateSplitPartForKeyDown(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
       if(m_options->shouldReceiveLocalNotes())
       {
         if(isSplitSound)
@@ -118,7 +118,7 @@ void InputEventStage::onTCDEvent()
     {
       const bool isSplitSound = (soundType == SoundType::Split);
       const VoiceGroup determinedPart
-          = isSplitSound ? calculateSplitPartForEvent(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+          = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
       if(m_options->shouldReceiveLocalNotes())
       {
         if(isSplitSound)
@@ -166,11 +166,16 @@ void InputEventStage::onMIDIEvent()
 
         if(soundType == SoundType::Split)
         {
-          auto determinedPart = calculateSplitPartForEvent(inputSource, decoder->getKeyOrControl());
           if(decoder->getEventType() == DecoderEventType::KeyDown)
+          {
+            auto determinedPart = calculateSplitPartForKeyDown(inputSource, decoder->getKeyOrControl());
             m_dspHost->onKeyDownSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
+          }
           else if(decoder->getEventType() == DecoderEventType::KeyUp)
+          {
+            auto determinedPart = calculateSplitPartForKeyUp(inputSource, decoder->getKeyOrControl());
             m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
+          }
         }
         else if(soundValid && !receivedOnSecondary)
         {
@@ -449,13 +454,32 @@ void InputEventStage::setNoteShift(int i)
   m_shifteable_keys.setNoteShift(i);
 }
 
-VoiceGroup InputEventStage::calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, const int keyNumber)
+VoiceGroup InputEventStage::calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, const int keyNumber)
 {
   switch(inputEvent)
   {
     case DSPInterface::InputEventSource::Internal:
     case DSPInterface::InputEventSource::External_Use_Split:
       return m_dspHost->getSplitPartForKeyDown(keyNumber);
+    case DSPInterface::InputEventSource::External_Primary:
+      return VoiceGroup::I;
+    case DSPInterface::InputEventSource::External_Secondary:
+      return VoiceGroup::II;
+    case DSPInterface::InputEventSource::External_Both:
+      return VoiceGroup::Global;
+    case DSPInterface::InputEventSource::Invalid:
+      break;
+  }
+  nltools_assertNotReached();
+}
+
+VoiceGroup InputEventStage::calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, const int keyNumber)
+{
+  switch(inputEvent)
+  {
+    case DSPInterface::InputEventSource::Internal:
+    case DSPInterface::InputEventSource::External_Use_Split:
+      return m_dspHost->getSplitPartForKeyUp(keyNumber, inputEvent);
     case DSPInterface::InputEventSource::External_Primary:
       return VoiceGroup::I;
     case DSPInterface::InputEventSource::External_Secondary:
