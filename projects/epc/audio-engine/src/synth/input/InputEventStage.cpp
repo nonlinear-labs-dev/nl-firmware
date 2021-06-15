@@ -622,7 +622,7 @@ void InputEventStage::doSendBenderOut(float value)
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiPrimary(4))
+    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(4))
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });

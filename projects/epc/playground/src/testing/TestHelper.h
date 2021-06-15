@@ -135,6 +135,12 @@ namespace TestHelper
       hw[static_cast<int>(index)] = b;
     }
   }
+
+  inline void updateMappingForHW(int hw, nltools::msg::Setting::MidiSettingsMessage::tHWMappingType& array,
+                             nltools::msg::Setting::MidiSettingsMessage::MAPPING_INDEX index, bool b)
+  {
+    array[hw][static_cast<int>(index)] = b;
+  }
 }
 
 inline std::pair<double, double> getNextStepValuesFromValue(Parameter* p, double v)
