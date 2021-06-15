@@ -247,8 +247,8 @@ namespace nltools
           Pedal2 = 1,
           Pedal3 = 2,
           Pedal4 = 3,
-          Bender = 4,
-          Aftertouch = 5,
+          Aftertouch = 4,
+          Bender = 5,
           Ribbon1 = 6,
           Ribbon2 = 7,
           LENGTH = 8
