@@ -22,7 +22,7 @@ void RecorderOutput::process(SampleFrame *frames, size_t numFrames)
 
   auto todo = numFrames;
 
-  while(todo)
+  while(todo && !m_paused)
   {
     auto n = m_ring.pop(buf, todo);
 

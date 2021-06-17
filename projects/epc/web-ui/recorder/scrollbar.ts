@@ -64,10 +64,10 @@ class Scrollbar extends Draggable {
         playPos.style.visibility = (width > barsToShow) ? "hidden" : "visible";
 
         var selRange = document.getElementById("scrollbar-selected-range")!;
-        var rangeValid = this.waveform.selectedRange.playbackRange.min() > 0 && this.waveform.selectedRange.playbackRange.max() > 0;
+        var rangeValid = this.waveform.selectedRange.barRange.min() > 0 && this.waveform.selectedRange.barRange.max() > 0;
         selRange.style.visibility = rangeValid && width <= barsToShow ? "visible" : "hidden";
-        var leftPosIdx = this.waveform.selectedRange.playbackRange.min() - this.c15.getBars().firstId;
-        var rightPosIdx = this.waveform.selectedRange.playbackRange.max() - this.c15.getBars().firstId;
+        var leftPosIdx = this.waveform.selectedRange.barRange.min() - this.c15.getBars().firstId;
+        var rightPosIdx = this.waveform.selectedRange.barRange.max() - this.c15.getBars().firstId;
         var leftPosPercent = 100 * leftPosIdx / this.c15.getBars().count();
         var rightPosPercent = 100 * rightPosIdx / this.c15.getBars().count();
         selRange.style.left = leftPosPercent + "%";

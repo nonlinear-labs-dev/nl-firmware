@@ -206,7 +206,11 @@ class C15Proxy extends C15ProxyIface {
 
     setPlaybackPosition(playPos: number): void {
         playPos = Math.min(Math.max(this.getBars().first().id, playPos), this.getBars().last().id)
-        this.fireAndForget({ "set-playback-position": { "frameId": playPos } }, null);
+        this.currentPlayPosition = playPos;
+        this.numPlayPosCallsInFlight++;
+        this.fireAndForget({ "set-playback-position": { "frameId": playPos } }, () => {
+            setTimeout(() => { this.numPlayPosCallsInFlight--; }, 500);
+        });
     }
 
     pausePlayback(): void {
@@ -229,6 +233,11 @@ class C15Proxy extends C15ProxyIface {
             this.updateStream = new UpdateStream(this);
             this.currentPlayPosition = 0;
         });
+    }
+
+    updateTransportStates(recPaused: boolean, playPaused: boolean, playPos: number): void {
+        super.updateTransportStates(recPaused, playPaused,
+            this.numPlayPosCallsInFlight == 0 ? playPos : this.currentPlayPosition);
     }
 
     toggleRecording() {
@@ -266,5 +275,6 @@ class C15Proxy extends C15ProxyIface {
 
     private updateStream = new UpdateStream(this);
     private presetLogStream = new PresetLogStream(this);
+    private numPlayPosCallsInFlight = 0;
 
 }

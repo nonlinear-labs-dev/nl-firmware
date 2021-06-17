@@ -31,7 +31,7 @@ class UI {
 
         document.getElementById("reset")!.onclick = (e) => {
             c15.reset();
-            this.waveform.selectedRange.playbackRange.reset();
+            this.waveform.selectedRange.barRange.reset();
         }
 
         document.onkeypress = (e) => {
@@ -78,8 +78,8 @@ class UI {
     }
 
     download() {
-        const begin = this.waveform.selectedRange.playbackRange.min();
-        const end = this.waveform.selectedRange.playbackRange.max();
+        const begin = this.waveform.selectedRange.barRange.min();
+        const end = this.waveform.selectedRange.barRange.max();
 
         this.c15.prepareDownload(begin, end, (info: PrepareDownloadInfo) => {
             var dialog = document.getElementById("download-dialog")! as HTMLDivElement;
