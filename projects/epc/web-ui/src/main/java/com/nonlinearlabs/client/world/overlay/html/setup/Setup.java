@@ -97,9 +97,9 @@ public class Setup extends Composite {
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
-			receiveNotesOff, receiveControllersOn, receiveControllersOff, sendPCOn, sendPCOff, sendNotesOn, 
-			sendNotesOff, sendControllersOn, sendControllersOff, localNotesOn, 
-			localNotesOff, localControllersOn, localControllersOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
+			receiveNotesOff, sendPCOn, sendPCOff, sendNotesOn, 
+			sendNotesOff, localNotesOn, 
+			localNotesOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -258,13 +258,10 @@ public class Setup extends Composite {
 		fillRadioButtons(highlightChangedOn, highlightChangedOff, DeviceSettings.HighlightChanged.options);
 		fillRadioButtons(syncPartsOn, syncPartsOff, DeviceSettings.SyncPartsAcrossUI.options);
 		fillRadioButtons(receivePCOn, receivePCOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(receiveControllersOn, receiveControllersOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(receiveNotesOn, receiveNotesOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(sendPCOn, sendPCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(sendNotesOn, sendNotesOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(sendControllersOn, sendControllersOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(localNotesOn, localNotesOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(localControllersOn, localControllersOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);

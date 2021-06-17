@@ -549,7 +549,7 @@ void InputEventStage::doSendAftertouchOut(float value)
     if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(5))
     {
       auto secStatus = static_cast<uint8_t>(atStatusByte | secC);
-      m_midiOut({secStatus, valByte});
+      m_midiOut({ secStatus, valByte });
     }
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown
@@ -582,7 +582,7 @@ void InputEventStage::doSendAftertouchOut(float value)
     if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(5))
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
-      m_midiOut({secStatus, lsb, msb});
+      m_midiOut({ secStatus, lsb, msb });
     }
   }
 }

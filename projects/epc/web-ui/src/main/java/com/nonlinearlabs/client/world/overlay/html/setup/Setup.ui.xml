@@ -363,15 +363,6 @@
 							<g:RadioButton ui:field="receiveNotesOff" name="rad_recNotes" value="false"></g:RadioButton>
 						</div>
 					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Enable Hardware Sources</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="receiveControllersOn" name="rad_recControllers" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="receiveControllersOff" name="rad_recControllers" value="false"></g:RadioButton>
-						</div>
-					</div>
 					<div class="linie"></div>
 					<div class="eins-he fl-j-center">
 						<h3 class="uneditable">Send</h3>
@@ -412,15 +403,6 @@
 							<g:RadioButton ui:field="sendNotesOff" name="rad_sendNotes" value="false"></g:RadioButton>
 						</div>
 					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Enable Hardware Sources</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="sendControllersOn" name="rad_sendControllers" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="sendControllersOff" name="rad_sendControllers" value="false"></g:RadioButton>
-						</div>
-					</div>
 					<div class="linie"></div>
 					<div class="eins-he fl-j-center">
 						<h3 class="uneditable">Local</h3>
@@ -432,15 +414,6 @@
 						<div class="w40p mw-fit-content">
 							<g:RadioButton ui:field="localNotesOn" name="rad_localNotes" value="true"></g:RadioButton>
 							<g:RadioButton ui:field="localNotesOff" name="rad_localNotes" value="false"></g:RadioButton>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Enable Hardware Sources</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="localControllersOn" name="rad_localControllers" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="localControllersOff" name="rad_localControllers" value="false"></g:RadioButton>
 						</div>
 					</div>
 					<div class="linie"></div>
