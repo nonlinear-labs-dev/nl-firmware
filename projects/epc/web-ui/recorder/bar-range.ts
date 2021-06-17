@@ -1,5 +1,5 @@
 
-class PlaybackRange {
+class BarRange {
     constructor(private c15: C15ProxyIface) {
     }
 

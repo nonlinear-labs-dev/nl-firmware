@@ -2,15 +2,15 @@ class SelectedRange extends Draggable {
     constructor(private c15: C15ProxyIface, private waveform: Waveform) {
         super("range-selector");
 
-        this.playbackRange = new PlaybackRange(c15);
+        this.barRange = new BarRange(c15);
 
         this.oneHandle = new RangeBorderHandler("one-handle", () => { }, (x) => {
-            this.playbackRange.one = Math.round(this.pixToBar(x));
+            this.barRange.one = Math.round(this.pixToBar(x));
             this.waveform.update();
         });
 
         this.otherHandle = new RangeBorderHandler("other-handle", () => { }, (x) => {
-            this.playbackRange.other = Math.round(this.pixToBar(x));
+            this.barRange.other = Math.round(this.pixToBar(x));
             this.waveform.update();
         });
     }
@@ -19,7 +19,7 @@ class SelectedRange extends Draggable {
         var range = document.getElementById("selected-range")!;
         var download = document.getElementById("download")!;
 
-        if (this.playbackRange.empty()) {
+        if (this.barRange.empty()) {
             range.style.visibility = "hidden";
             download.classList.add("disabled");
         }
@@ -29,14 +29,14 @@ class SelectedRange extends Draggable {
         }
 
         var c = document.getElementById("selected-range") as HTMLCanvasElement;
-        var left = (this.playbackRange.min() - firstBarId) / this.waveform.zoom;
-        var right = (this.playbackRange.max() - firstBarId) / this.waveform.zoom;
+        var left = (this.barRange.min() - firstBarId) / this.waveform.zoom;
+        var right = (this.barRange.max() - firstBarId) / this.waveform.zoom;
         var width = right - left;
         c.style.left = left + "px";
         c.style.width = width + "px";
 
-        var onePos = (this.playbackRange.one < this.playbackRange.other) ? 0 : 100;
-        var otherPos = (this.playbackRange.one > this.playbackRange.other) ? 0 : 100;
+        var onePos = (this.barRange.one < this.barRange.other) ? 0 : 100;
+        var otherPos = (this.barRange.one > this.barRange.other) ? 0 : 100;
         document.getElementById("one-border")!.style.left = onePos + "%";
         document.getElementById("other-border")!.style.left = otherPos + "%";
 
@@ -45,8 +45,8 @@ class SelectedRange extends Draggable {
 
         var bars = this.c15.getBars();
         if (bars.count() > 0) {
-            var fromId = this.playbackRange.min();
-            var toId = this.playbackRange.max();
+            var fromId = this.barRange.min();
+            var toId = this.barRange.max();
             var bar = bars.get(fromId);
             if (bar) {
                 var fromTime = this.c15.buildTime(bar.recordTime);
@@ -55,8 +55,8 @@ class SelectedRange extends Draggable {
                 var toTime = this.c15.buildTime(bars.get(toId)!.recordTime);
                 document.getElementById("selected-range-time-to")!.textContent = toTime;
 
-                this.oneHandle.setTime(this.playbackRange.one < this.playbackRange.other ? fromTime : toTime);
-                this.otherHandle.setTime(this.playbackRange.one < this.playbackRange.other ? toTime : fromTime);
+                this.oneHandle.setTime(this.barRange.one < this.barRange.other ? fromTime : toTime);
+                this.otherHandle.setTime(this.barRange.one < this.barRange.other ? toTime : fromTime);
             }
         }
     }
@@ -72,28 +72,28 @@ class SelectedRange extends Draggable {
     }
 
     startDrag(e: PointerEvent) {
-        this.playbackRange.one = this.playbackRange.other = Math.round(this.pixToBar(e.offsetX));
+        this.barRange.one = this.barRange.other = Math.round(this.pixToBar(e.offsetX));
         this.sanitize();
         this.waveform.update();
     }
 
 
     drag(e: PointerEvent) {
-        this.playbackRange.other = Math.round(this.pixToBar(e.offsetX));
+        this.barRange.other = Math.round(this.pixToBar(e.offsetX));
         this.sanitize();
         this.waveform.update();
     }
 
     private sanitize() {
         if (this.c15.getBars().count() > 0) {
-            this.playbackRange.one = Math.min(this.playbackRange.one, this.c15.getBars().last().id);
-            this.playbackRange.other = Math.min(this.playbackRange.other, this.c15.getBars().last().id);
-            this.playbackRange.one = Math.max(this.playbackRange.one, this.c15.getBars().first().id);
-            this.playbackRange.other = Math.max(this.playbackRange.other, this.c15.getBars().first().id);
+            this.barRange.one = Math.min(this.barRange.one, this.c15.getBars().last().id);
+            this.barRange.other = Math.min(this.barRange.other, this.c15.getBars().last().id);
+            this.barRange.one = Math.max(this.barRange.one, this.c15.getBars().first().id);
+            this.barRange.other = Math.max(this.barRange.other, this.c15.getBars().first().id);
         }
     }
 
-    public playbackRange: PlaybackRange;
+    public barRange: BarRange;
     private oneHandle: RangeBorderHandler;
     private otherHandle: RangeBorderHandler;
 }
