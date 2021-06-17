@@ -33,6 +33,7 @@ class Recorder
  private:
   nlohmann::json api(const nlohmann::json& msg);
   nlohmann::json generateInfo() const;
+  nlohmann::json prepareDownload(FrameId begin, FrameId end) const;
   nlohmann::json queryFrames(FrameId begin, FrameId end) const;
 
   std::unique_ptr<FlacFrameStorage> m_storage;

@@ -64,7 +64,7 @@ ENDOFHERE
 }
 
 build_binaries() {
-    DESTDIR=/overlay-fs cmake -DCMAKE_BUILD_TYPE=Release ${BUILD_SWITCHES} -S /source -B /build
+    DESTDIR=/overlay-fs cmake -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release ${BUILD_SWITCHES} -S /source -B /build
     make -j8 -C /build
     DESTDIR=/overlay-fs make -C /build install 
 }

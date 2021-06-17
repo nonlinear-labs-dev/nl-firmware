@@ -74,7 +74,7 @@ class C15Synth : public Synth, public sigc::trackable
   void syncPlayground();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
-  std::array<float, 8> m_hwSourceValues;
+  std::array<float, 8> m_playgroundHwSourceKnownValues;
   AudioEngineOptions* m_options;
   MidiRuntimeOptions m_midiOptions;
 

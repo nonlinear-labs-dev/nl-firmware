@@ -28,7 +28,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncExternalsWaiter.notify_all(); },
                           [this](auto msg) { queueExternalMidiOut(msg); } }
 {
-  m_hwSourceValues.fill(0);
+  m_playgroundHwSourceKnownValues.fill(0);
 
   m_dsp->init(options->getSampleRate(), options->getPolyphony());
 
@@ -80,14 +80,6 @@ C15Synth::C15Synth(AudioEngineOptions* options)
         if(sendChannel != -1 && m_midiOptions.shouldSendProgramChanges())
         {
           const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendChannel;
-          m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
-          m_syncExternalsWaiter.notify_all();
-        }
-
-        const int secChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getSendSplitChannel());
-        if(secChannel != -1 && m_midiOptions.shouldSendProgramChanges())
-        {
-          const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | secChannel;
           m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
           m_syncExternalsWaiter.notify_all();
         }
@@ -147,8 +139,9 @@ dsp_host_dual* C15Synth::getDsp() const
 
 void C15Synth::syncExternals()
 {
-  static_assert(std::tuple_size_v<dsp_host_dual::HWSourceValues> == std::tuple_size_v<decltype(m_hwSourceValues)>,
-                "Types do not match!");
+  static_assert(
+      std::tuple_size_v<dsp_host_dual::HWSourceValues> == std::tuple_size_v<decltype(m_playgroundHwSourceKnownValues)>,
+      "Types do not match!");
 
   std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
 
@@ -176,7 +169,7 @@ void C15Synth::syncPlayground()
   for(size_t i = 0; i < std::tuple_size_v<dsp_host_dual::HWSourceValues>; i++)
   {
     using namespace nltools::msg;
-    if(std::exchange(m_hwSourceValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
+    if(std::exchange(m_playgroundHwSourceKnownValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
     {
       send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
     }
@@ -362,6 +355,7 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
+  m_playgroundHwSourceKnownValues[InputEventStage::parameterIDToHWID(msg.parameterId)] = msg.controlPosition;
   m_inputEventStage.onUIHWSourceMessage(msg);
 }
 

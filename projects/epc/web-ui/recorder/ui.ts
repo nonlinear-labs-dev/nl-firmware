@@ -26,46 +26,137 @@ class UI {
 
             e.stopPropagation();
             e.preventDefault();
-            c15.download(this.waveform.selectedRange.playbackRange.min(), this.waveform.selectedRange.playbackRange.max());
+            this.download();
         }
 
         document.getElementById("reset")!.onclick = (e) => {
             c15.reset();
-            this.waveform.selectedRange.playbackRange.reset();
-
-	}
+            this.waveform.selectedRange.barRange.reset();
+        }
 
         document.onkeypress = (e) => {
+            if (document.activeElement && document.activeElement.tagName == "INPUT")
+                return;
+
+            var undoEnabled = !undo.classList.contains("disabled");
+            var downloadEnabled = !download.classList.contains("disabled");
+
             if (e.key == ' ')
                 c15!.togglePlayback();
-            else if (e.key == 'z' || e.key == 'Z')
-                c15!.reset();
+            else if ((e.key == 'z' || e.key == 'Z') && undoEnabled)
+                c15!.undo();
             else if (e.key == 'r' || e.key == 'R')
                 c15!.toggleRecording();
-            else if (e.key == 's' || e.key == 'S')
-                c15!.download(this.waveform.selectedRange.playbackRange.min(), this.waveform.selectedRange.playbackRange.max());
+            else if ((e.key == 's' || e.key == 'S') && downloadEnabled)
+                this.download();
             else if (e.key == 'ZoomIn' || e.key == '+')
                 this.waveform.zoomIn();
             else if (e.key == 'ZoomOut' || e.key == '-')
                 this.waveform.zoomOut();
-            else if (e.key == 'ArrowLeft')
-                console.log("nudge left");
+
+            this.update();
+        }
+
+        document.onkeydown = (e) => {
+            if (document.activeElement && document.activeElement.tagName == "INPUT")
+                return;
+
+            if (e.key == 'ArrowLeft')
+                this.waveform.scrollBy(50);
             else if (e.key == 'ArrowRight')
-                console.log("nudge right");
+                this.waveform.scrollBy(-50);
             else if (e.key == 'ArrowUp')
                 console.log("prev preset");
             else if (e.key == 'ArrowDown')
                 console.log("next preset");
 
             this.update();
-        }
+        };
 
         document.getElementById("waveform")!.onkeydown = (e) => c15.togglePlayback();
 
     }
 
+    download() {
+        const begin = this.waveform.selectedRange.barRange.min();
+        const end = this.waveform.selectedRange.barRange.max();
+
+        this.c15.prepareDownload(begin, end, (info: PrepareDownloadInfo) => {
+            var dialog = document.getElementById("download-dialog")! as HTMLDivElement;
+            dialog.classList.remove("hidden");
+
+            const name = document.getElementById("download-name")! as HTMLInputElement;
+
+            const flacSize = document.getElementById("flac-size")! as HTMLSpanElement;
+            flacSize.innerText = this.formatMemSize(info.flac.size);
+
+            const waveSize = document.getElementById("wave-size")! as HTMLSpanElement;
+            const tooLargeForWave = info.wave.size >= Math.pow(2, 32);
+            waveSize.innerText = tooLargeForWave ? "(too large)" : this.formatMemSize(info.wave.size);
+
+            const cancel = document.getElementById("download-cancel")! as HTMLButtonElement;
+            cancel.onclick = (e) => {
+                this.defaultDownloadOption = cancel.id;
+                dialog.classList.add("hidden");
+            }
+
+            const flac = document.getElementById("download-flac")! as HTMLButtonElement;
+            flac.onclick = (e) => {
+                this.defaultDownloadOption = flac.id;
+                dialog.classList.add("hidden");
+                this.downloadFile(name.value + ".flac", begin, end);
+            }
+
+            const wave = document.getElementById("download-wave")! as HTMLButtonElement;
+            wave.onclick = (e) => {
+                this.defaultDownloadOption = wave.id;
+                dialog.classList.add("hidden");
+                this.downloadFile(encodeURIComponent(this.sanitizeFileName(name.value) + ".wav"), begin, end);
+            }
+
+            wave.disabled = tooLargeForWave;
+
+            name.oninput = () => {
+                wave.disabled = name.value.length == 0;
+                flac.disabled = name.value.length == 0;
+            }
+
+            var presetName = this.c15.getLoadedPresetAt(info.range.from);
+            if (!presetName) presetName = "Recording";
+            name.value = this.sanitizeFileName("C15 [" + presetName + "] (" + this.toLocaleTime(info.range.from) + " to " + this.toLocaleTime(info.range.to) + ")");
+
+            const resetName = document.getElementById("reset-download-name")! as HTMLAnchorElement;
+            resetName.onclick = () => {
+                name.value = "";
+                wave.disabled = true;
+                flac.disabled = true;
+            }
+
+            var def = document.getElementById(this.defaultDownloadOption) as HTMLButtonElement;
+            def.focus();
+
+        });
+    }
+
+    downloadFile(name: string, from: number, to: number) {
+        var url = "http://" + hostName + httpPort + "/" + name + "?begin=" + from + "&end=" + to;
+        var dlink = document.createElement('a') as HTMLAnchorElement;
+        dlink.download = name;
+        dlink.href = url;
+        dlink.click();
+        dlink.remove();
+    }
+
+    sanitizeFileName(a: string): string {
+        return a.replace(/[/\\?%*:|"<>]/g, '-');
+    }
+
+    toLocaleTime(d: number): string {
+        return new Date(d / 1000 / 1000).toLocaleString();
+    }
+
     update() {
-        if(this.c15.getConnectionState() == ConnectionState.Connected)
+        if (this.c15.getConnectionState() == ConnectionState.Connected)
             document.getElementById("not-connected-box")!.classList.add("hidden");
         else
             document.getElementById("not-connected-box")!.classList.remove("hidden");
@@ -120,9 +211,9 @@ class UI {
         return Math.max(s, 0.1).toFixed(1) + units[i];
     }
 
-    promptOption(prompt : string, cb : VoidFunction) {
+    promptOption(prompt: string, cb: VoidFunction) {
         var dia = document.getElementById("prompt-wrapper");
-        let diaText : HTMLElement = document.getElementById("prompt-text") as HTMLElement;
+        let diaText: HTMLElement = document.getElementById("prompt-text") as HTMLElement;
         var yes = document.getElementById("prompt-yes");
         var no = document.getElementById("prompt-no");
 
@@ -134,15 +225,16 @@ class UI {
             dia!.classList.add("hidden");
         };
 
-        yes!.addEventListener("click", (e:Event) => {
+        yes!.addEventListener("click", (e: Event) => {
             cb();
             hide();
         });
 
-        no!.addEventListener("click", (e:Event) => {            
+        no!.addEventListener("click", (e: Event) => {
             hide();
         });
     }
 
     private waveform: Waveform;
+    private defaultDownloadOption = "download-cancel";
 }
