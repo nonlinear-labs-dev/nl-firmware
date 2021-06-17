@@ -433,25 +433,30 @@ void MidiRuntimeOptions::set14BitSupportEnabled(bool e)
 
 bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiPrimary(int hwID) const
 {
-  return m_hwEnableMappings[hwID][1];
+  constexpr auto receivePrim = static_cast<int>(tHW_ENABLE_INDICES::RECEIVE_PRIMARY);
+  return m_hwEnableMappings[hwID][receivePrim];
 }
 
 bool MidiRuntimeOptions::shouldSendHWSourceOnMidiPrimary(int hwID) const
 {
-  return m_hwEnableMappings[hwID][0];
+  constexpr auto sendPrim = static_cast<int>(tHW_ENABLE_INDICES::SEND_PRIMARY);
+  return m_hwEnableMappings[hwID][sendPrim];
 }
 
 bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiSplit(int hwID) const
 {
-  return m_hwEnableMappings[hwID][3];
+  constexpr auto receiveSplit = static_cast<int>(tHW_ENABLE_INDICES::RECEIVE_SPLIT);
+  return m_hwEnableMappings[hwID][receiveSplit];
 }
 
 bool MidiRuntimeOptions::shouldSendHWSourceOnMidiSplit(int hwID) const
 {
-  return m_hwEnableMappings[hwID][2];
+  constexpr auto sendSplit = static_cast<int>(tHW_ENABLE_INDICES::SEND_SPLIT);
+  return m_hwEnableMappings[hwID][sendSplit];
 }
 
 bool MidiRuntimeOptions::shouldAllowHWSourceFromLocal(int hwID) const
 {
-  return m_hwEnableMappings[hwID][4];
+  constexpr auto local = static_cast<int>(tHW_ENABLE_INDICES::LOCAL);
+  return m_hwEnableMappings[hwID][local];
 }

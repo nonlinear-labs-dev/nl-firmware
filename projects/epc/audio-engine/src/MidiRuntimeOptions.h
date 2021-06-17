@@ -126,6 +126,7 @@ class MidiRuntimeOptions
   AftertouchCC aftertouchCC;
   BenderCC benderCC;
 
+  typedef nltools::msg::Setting::MidiSettingsMessage::MAPPING_INDEX tHW_ENABLE_INDICES;
   nltools::msg::Setting::MidiSettingsMessage::tHWMappingType m_hwEnableMappings;
 
   //Mappings

@@ -368,36 +368,36 @@ void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
 {
   switch(hwID)
   {
-    case 0:
-      sendCCOut(0, value, m_options->getCCFor<Midi::MSB::Ped1>(), m_options->getCCFor<Midi::LSB::Ped1>());
+    case HWID::PEDAL1:
+      sendCCOut(HWID::PEDAL1, value, m_options->getCCFor<Midi::MSB::Ped1>(), m_options->getCCFor<Midi::LSB::Ped1>());
       break;
 
-    case 1:
-      sendCCOut(1, value, m_options->getCCFor<Midi::MSB::Ped2>(), m_options->getCCFor<Midi::LSB::Ped2>());
+    case HWID::PEDAL2:
+      sendCCOut(HWID::PEDAL2, value, m_options->getCCFor<Midi::MSB::Ped2>(), m_options->getCCFor<Midi::LSB::Ped2>());
       break;
 
-    case 2:
-      sendCCOut(2, value, m_options->getCCFor<Midi::MSB::Ped3>(), m_options->getCCFor<Midi::LSB::Ped3>());
+    case HWID::PEDAL3:
+      sendCCOut(HWID::PEDAL3, value, m_options->getCCFor<Midi::MSB::Ped3>(), m_options->getCCFor<Midi::LSB::Ped3>());
       break;
 
-    case 3:
-      sendCCOut(3, value, m_options->getCCFor<Midi::MSB::Ped4>(), m_options->getCCFor<Midi::LSB::Ped4>());
+    case HWID::PEDAL4:
+      sendCCOut(HWID::PEDAL4, value, m_options->getCCFor<Midi::MSB::Ped4>(), m_options->getCCFor<Midi::LSB::Ped4>());
       break;
 
-    case 4:
+    case HWID::BENDER:
       doSendBenderOut(value);
       break;
 
-    case 5:
+    case HWID::AFTERTOUCH:
       doSendAftertouchOut(value);
       break;
 
-    case 6:
-      sendCCOut(6, value, m_options->getCCFor<Midi::MSB::Rib1>(), m_options->getCCFor<Midi::LSB::Rib1>());
+    case HWID::RIBBON1:
+      sendCCOut(HWID::RIBBON2, value, m_options->getCCFor<Midi::MSB::Rib1>(), m_options->getCCFor<Midi::LSB::Rib1>());
       break;
 
-    case 7:
-      sendCCOut(7, value, m_options->getCCFor<Midi::MSB::Rib2>(), m_options->getCCFor<Midi::LSB::Rib2>());
+    case HWID::RIBBON2:
+      sendCCOut(HWID::RIBBON2, value, m_options->getCCFor<Midi::MSB::Rib2>(), m_options->getCCFor<Midi::LSB::Rib2>());
       break;
 
     default:
@@ -525,7 +525,7 @@ void InputEventStage::doSendAftertouchOut(float value)
 
   if(atLSB.has_value() && atMSB.has_value())
   {
-    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value(), AFTERTOUCH);
+    doSendCCOut(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value(), HWID::AFTERTOUCH);
   }
   else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
   {
@@ -537,16 +537,16 @@ void InputEventStage::doSendAftertouchOut(float value)
     auto atStatusByte = static_cast<uint8_t>(0xD0);
     uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);  //msb
 
-    if(!latchHWPosition<LatchMode::OnlyMSB>(AFTERTOUCH, 0, valByte))
+    if(!latchHWPosition<LatchMode::OnlyMSB>(HWID::AFTERTOUCH, 0, valByte))
       return;
 
-    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(5))
+    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(HWID::AFTERTOUCH))
     {
       auto mainStatus = static_cast<uint8_t>(atStatusByte | mainC);
       m_midiOut({ mainStatus, valByte });
     }
 
-    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(5))
+    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(HWID::AFTERTOUCH))
     {
       auto secStatus = static_cast<uint8_t>(atStatusByte | secC);
       m_midiOut({ secStatus, valByte });
@@ -564,7 +564,7 @@ void InputEventStage::doSendAftertouchOut(float value)
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
 
-    if(!latchHWPosition<LatchMode::LSBAndMSB>(AFTERTOUCH, lsb, msb))
+    if(!latchHWPosition<LatchMode::LSBAndMSB>(HWID::AFTERTOUCH, lsb, msb))
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
@@ -573,13 +573,13 @@ void InputEventStage::doSendAftertouchOut(float value)
     const auto secC = static_cast<uint8_t>(secChannel);
     auto statusByte = static_cast<uint8_t>(0xE0);
 
-    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(5))
+    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(HWID::AFTERTOUCH))
     {
       auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(5))
+    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(HWID::AFTERTOUCH))
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -597,7 +597,7 @@ void InputEventStage::doSendBenderOut(float value)
     using CC_Range_14_Bit = Midi::clipped14BitCCRange;
     auto lsbCC = benderLSB.value();
     auto msbCC = benderMSB.value();
-    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, BENDER);
+    doSendCCOut(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, HWID::BENDER);
   }
   else if(m_options->getBenderSetting() != BenderCC::None)
   {
@@ -607,7 +607,7 @@ void InputEventStage::doSendBenderOut(float value)
     auto lsb = static_cast<uint8_t>(v & 0x7F);
     auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
 
-    if(!latchHWPosition<LatchMode::LSBAndMSB>(BENDER, lsb, msb))
+    if(!latchHWPosition<LatchMode::LSBAndMSB>(HWID::BENDER, lsb, msb))
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getSendChannel());
@@ -616,13 +616,13 @@ void InputEventStage::doSendBenderOut(float value)
     const auto secC = static_cast<uint8_t>(secChannel);
     auto statusByte = static_cast<uint8_t>(0xE0);
 
-    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(4))
+    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(HWID::BENDER))
     {
       auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(4))
+    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(HWID::BENDER))
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -634,7 +634,7 @@ void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMes
 {
   auto hwID = InputEventStage::parameterIDToHWID(message.parameterId);
 
-  if(hwID != -1)
+  if(hwID != HWID::INVALID)
   {
     onHWChanged(hwID, message.controlPosition, DSPInterface::HWChangeSource::UI, false, false);
   }
@@ -645,23 +645,23 @@ int InputEventStage::parameterIDToHWID(int id)
   switch(id)
   {
     case C15::PID::Pedal_1:
-      return 0;
+      return HWID::PEDAL1;
     case C15::PID::Pedal_2:
-      return 1;
+      return HWID::PEDAL2;
     case C15::PID::Pedal_3:
-      return 2;
+      return HWID::PEDAL3;
     case C15::PID::Pedal_4:
-      return 3;
+      return HWID::PEDAL4;
     case C15::PID::Bender:
-      return 4;
+      return HWID::BENDER;
     case C15::PID::Aftertouch:
-      return 5;
+      return HWID::AFTERTOUCH;
     case C15::PID::Ribbon_1:
-      return 6;
+      return HWID::RIBBON1;
     case C15::PID::Ribbon_2:
-      return 7;
+      return HWID::RIBBON2;
     default:
-      return -1;
+      return HWID::INVALID;
   }
 }
 
@@ -698,7 +698,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(source != DSPInterface::HWChangeSource::MIDI)
   {
-    const auto isPedal = hwID >= 0 && hwID < 4;
+    const auto isPedal = hwID >= HWID::PEDAL1 && hwID <= HWID::PEDAL4;
     if(isPedal && m_options->isSwitchingCC(hwID))
     {
       pos = pos >= 0.5f ? 1.0f : 0.0f;
@@ -734,52 +734,52 @@ int ccToHWID(int cc, MidiRuntimeOptions *options)
 
     if(p1 == cc)
     {
-      return 0;
+      return HWID::PEDAL1;
     }
     else if(p2 == cc)
     {
-      return 1;
+      return HWID::PEDAL2;
     }
     else if(p3 == cc)
     {
-      return 2;
+      return HWID::PEDAL3;
     }
     else if(p4 == cc)
     {
-      return 3;
+      return HWID::PEDAL4;
     }
     else if(at == cc)
     {
-      return 4;
+      return HWID::AFTERTOUCH;
     }
     else if(bender == cc)
     {
-      return 5;
+      return HWID::BENDER;
     }
     else if(ribbon1 == cc)
     {
-      return 6;
+      return HWID::RIBBON1;
     }
     else if(ribbon2 == cc)
     {
-      return 7;
+      return HWID::RIBBON2;
     }
   }
-  return -1;
+  return HWID::INVALID;
 }
 
 void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
 {
   auto hwID = decoder->getKeyOrControl();
-  if(hwID == -1)
+  if(hwID == HWID::INVALID)
   {
     switch(decoder->getHWChangeStruct().cases)
     {
       case MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend:
-        hwID = 5;
+        hwID = HWID::AFTERTOUCH;
         break;
       case MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch:
-        hwID = 4;
+        hwID = HWID::BENDER;
         break;
       default:
       case MIDIDecoder::MidiHWChangeSpecialCases::CC:
@@ -788,7 +788,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
     }
   }
 
-  if(hwID == -1)
+  if(hwID == HWID::INVALID)
     return;
 
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
@@ -822,21 +822,23 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
       }
       else
       {
-        if(hwID == 4 && hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend)
+        if(hwID == HWID::BENDER && hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend)
         {
           if(m_options->getBenderSetting() == BenderCC::Pitchbend)
           {
-            onHWChanged(4, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
+            onHWChanged(HWID::BENDER, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
+                        isSplitChannel);
           }
         }
 
-        if(hwID == 5)
+        if(hwID == HWID::AFTERTOUCH)
         {
           if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch)
           {
             if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
             {
-              onHWChanged(5, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
+              onHWChanged(HWID::AFTERTOUCH, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
+                          isSplitChannel);
             }
           }
 
@@ -847,12 +849,14 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
             if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
             {
               pitchbendValue = std::max(0.0f, pitchbendValue);
-              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
+              onHWChanged(HWID::AFTERTOUCH, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
+                          isSplitChannel);
             }
             else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
             {
               pitchbendValue = -std::min(0.0f, pitchbendValue);
-              onHWChanged(5, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel, isSplitChannel);
+              onHWChanged(HWID::AFTERTOUCH, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
+                          isSplitChannel);
             }
           }
         }
