@@ -2359,24 +2359,14 @@ SoundType dsp_host_dual::getType()
   return SoundType::Invalid;  // should never be reached
 }
 
-VoiceGroup dsp_host_dual::getSplitPartForKey(int key)
+VoiceGroup dsp_host_dual::getSplitPartForKeyDown(int key)
 {
-  // also a little inconvenient but should work
-  switch(m_alloc.getSplitPartForKey(key))
-  {
-    case AllocatorId::Local_I:
-      return VoiceGroup::I;
-      break;
-    case AllocatorId::Local_II:
-      return VoiceGroup::II;
-      break;
-    case AllocatorId::Local_Both:
-      return VoiceGroup::Global;
-      break;
-  }
-  // NOTE: this should never be reached and represents an invalid state!
-  // (maybe, extend enum for better readability?)
-  return VoiceGroup::NumGroups;
+  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyDown(key));
+}
+
+VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
+{
+  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from)));
 }
 
 void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)
@@ -2434,23 +2424,7 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputEventSource fro
 
 void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
-  // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
-  // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
-  uint32_t inputSourceId = 0;
-  switch(from)
-  {
-    case InputEventSource::Internal:
-      break;
-    case InputEventSource::External_Use_Split:
-    case InputEventSource::External_Primary:
-    case InputEventSource::External_Both:
-      inputSourceId = 1;
-      break;
-    case InputEventSource::External_Secondary:
-      inputSourceId = 2;
-      break;
-  }
-
+  const uint32_t inputSourceId = getInputSourceId(from);
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
   {

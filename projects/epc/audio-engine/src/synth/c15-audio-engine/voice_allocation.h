@@ -618,7 +618,7 @@ class VoiceAllocation
     clear_keyState();
   }
 
-  inline AllocatorId getSplitPartForKey(const uint32_t _key)
+  inline AllocatorId getSplitPartForKeyDown(const uint32_t _key)
   {
     const uint32_t state = (_key <= m_splitPoint[0]) + ((_key >= m_splitPoint[1]) << 1);
     switch(state)
@@ -634,6 +634,12 @@ class VoiceAllocation
         break;
     }
     return AllocatorId::None;
+  }
+
+  inline AllocatorId getSplitPartForKeyUp(const uint32_t _keyPos, const uint32_t _inputSourceId)
+  {
+    KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
+    return keyState->m_origin;
   }
 
  private:
