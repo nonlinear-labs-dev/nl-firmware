@@ -1313,9 +1313,13 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
 {
   {
     auto toFxParam = findParameterByID({ C15::PID::Out_Mix_To_FX, loadInto });
+    auto splitPointI = findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::I});
+    auto splitPointII = findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::II});
 
     ScopedLock locks(transaction);
     locks.addLock(toFxParam);
+    locks.addLock(splitPointI);
+    locks.addLock(splitPointII);
 
     super::copyFrom(transaction, preset, VoiceGroup::I, loadInto);
   }
@@ -1370,11 +1374,8 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
     for(auto p : getCrossFBParameters(copyTo))
       locks.addLock(p);
 
-    if(preset->getType() == SoundType::Split)
-    {
-      for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-        locks.addLock(findParameterByID({ C15::PID::Split_Split_Point, vg }));
-    }
+    for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+      locks.addLock(findParameterByID({ C15::PID::Split_Split_Point, vg }));
 
     if(!preset->isDual())
       locks.addLock(toFxParam);
