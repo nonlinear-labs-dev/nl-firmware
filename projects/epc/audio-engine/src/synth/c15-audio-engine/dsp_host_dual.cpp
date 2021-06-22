@@ -987,19 +987,21 @@ void dsp_host_dual::render()
 
 void dsp_host_dual::reset()
 {
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-  {
-    m_z_layers[layerId].reset();
-    m_poly[layerId].resetDSP();
-    m_mono[layerId].resetDSP();
-  }
-  m_alloc.reset();
-  m_global.resetDSP();
-  m_mainOut_L = m_mainOut_R = 0.0f;
-  if(LOG_RESET)
-  {
-    nltools::Log::info("DSP has been reset.");
-  }
+  m_fade.muteAndDo([&] {
+    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+    {
+      m_z_layers[layerId].reset();
+      m_poly[layerId].resetDSP();
+      m_mono[layerId].resetDSP();
+    }
+    m_alloc.reset();
+    m_global.resetDSP();
+    m_mainOut_L = m_mainOut_R = 0.0f;
+    if(LOG_RESET)
+    {
+      nltools::Log::info("DSP has been reset.");
+    }
+  });
 }
 
 dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
