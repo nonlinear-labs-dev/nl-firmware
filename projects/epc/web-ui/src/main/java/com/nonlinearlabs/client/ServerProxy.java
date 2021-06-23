@@ -1234,4 +1234,16 @@ public class ServerProxy {
 		queueJob(uri, false);
     }
 
+	public void setDirectLoad(String value, Preset selectedPreset, VoiceGroup selectedVoiceGroup, VoiceGroup currentDisplayedVoiceGroup) {
+		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load");
+
+		StaticURI.KeyValue state = new StaticURI.KeyValue("state", value);
+		StaticURI.KeyValue preset = new StaticURI.KeyValue("preset", selectedPreset == null ? "" : selectedPreset.getUUID());
+		StaticURI.KeyValue from = new StaticURI.KeyValue("from", selectedVoiceGroup == null ? "" : selectedVoiceGroup.name());
+		StaticURI.KeyValue to = new StaticURI.KeyValue("to", currentDisplayedVoiceGroup == null ? "" : currentDisplayedVoiceGroup.name());
+
+		StaticURI uri = new StaticURI(path, state, preset, from, to);
+		queueJob(uri, false);
+	}
+
 }

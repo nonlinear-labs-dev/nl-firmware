@@ -1,7 +1,10 @@
 package com.nonlinearlabs.client.useCases;
 
+import com.google.gwt.core.linker.SymbolMapsLinker.ScriptFragmentEditsArtifact.Edit;
+import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -472,13 +475,18 @@ public class EditBufferUseCases {
 		NonMaps.theMaps.getServerProxy().resetModulation(id, getVoiceGroupFor(id));
 	}
 
-	public void toggleDirectLoad() {
+	public void toggleDirectLoad(LoadToPartModeData data, VoiceGroup currentDisplayedVoiceGroup) {
+
 		if (SetupModel.get().systemSettings.directLoad.getBool()) {
 			SetupModel.get().systemSettings.directLoad.setValue(false);
-			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "off");
+			NonMaps.theMaps.getServerProxy().setDirectLoad("off", null, null, currentDisplayedVoiceGroup);
 		} else {
 			SetupModel.get().systemSettings.directLoad.setValue(true);
-			NonMaps.theMaps.getServerProxy().setSetting("DirectLoad", "on");
+			if(data != null && currentDisplayedVoiceGroup != null) {
+				NonMaps.theMaps.getServerProxy().setDirectLoad("on", data.m_selectedPreset, data.m_selectedVoiceGroup, currentDisplayedVoiceGroup);
+			} else {
+				NonMaps.theMaps.getServerProxy().setDirectLoad("on", null, null, currentDisplayedVoiceGroup);
+			}
 		}
 	}
 

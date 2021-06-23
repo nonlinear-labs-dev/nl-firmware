@@ -9,6 +9,9 @@
 #include <parameters/ModulateableParameter.h>
 #include <parameter_declarations.h>
 #include <presets/Bank.h>
+#include <device-settings/DirectLoadSetting.h>
+#include <proxies/hwui/HWUI.h>
+#include <presets/PresetPartSelection.h>
 
 EditBufferUseCases::EditBufferUseCases(EditBuffer* eb)
     : m_editBuffer { eb }
@@ -296,4 +299,24 @@ void EditBufferUseCases::renamePart(VoiceGroup part, const Glib::ustring& name)
 {
   auto scope = m_editBuffer->getParent()->getUndoScope().startTransaction("Rename Part to %s", name);
   m_editBuffer->setVoiceGroupName(scope->getTransaction(), name, part);
+}
+
+void EditBufferUseCases::undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui)
+{
+  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+
+  if(pPreset)
+  {
+    auto loadToPartActive = hwui->isInLoadToPart();
+
+    if(loadToPartActive)
+    {
+      auto load = hwui->getPresetPartSelection(currentVoiceGroup);
+      undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+    }
+    else
+    {
+      undoableLoad(pPreset);
+    }
+  }
 }

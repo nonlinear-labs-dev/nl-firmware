@@ -8,6 +8,8 @@
 #include <http/NetworkRequest.h>
 #include <proxies/hwui/TestLayout.h>
 #include <use-cases/SettingsUseCases.h>
+#include <use-cases/DirectLoadUseCases.h>
+#include <presets/PresetManager.h>
 
 SettingsActions::SettingsActions(Settings &settings)
     : super("/settings/")
@@ -47,6 +49,26 @@ SettingsActions::SettingsActions(Settings &settings)
     {
       boled.setOverlay(new TestLayout(boled));
       soled.setOverlay(new TestLayout(soled));
+    }
+  });
+
+  addAction("set-direct-load", [&](const std::shared_ptr<NetworkRequest>& request) {
+    auto state = request->get("state");
+    auto presetIfInLoadToPart = request->get("preset");
+    auto fromIfInLoadToPart = request->get("from");
+    auto totIfInLoadToPart = request->get("to");
+
+    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>().get());
+
+    if(state == "on") {
+      auto pm = Application::get().getPresetManager();
+      if(auto preset = pm->findPreset(Uuid{presetIfInLoadToPart})) {
+        useCase.enableDirectLoadFromWebUI(preset, to<VoiceGroup>(fromIfInLoadToPart), to<VoiceGroup>(totIfInLoadToPart));
+      } else {
+        useCase.enableDirectLoadFromWebUI(nullptr, VoiceGroup::NumGroups, VoiceGroup::NumGroups);
+      }
+    } else if(state == "off") {
+      useCase.disableDirectLoad();
     }
   });
 

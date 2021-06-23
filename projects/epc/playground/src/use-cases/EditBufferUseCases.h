@@ -11,6 +11,8 @@
 class EditBuffer;
 class Preset;
 class PresetManager;
+class HWUI;
+class DirectLoadSetting;
 
 class EditBufferUseCases
 {
@@ -54,6 +56,8 @@ class EditBufferUseCases
   void toggleMute(VoiceGroup part);
 
   void renamePart(VoiceGroup part, const Glib::ustring& name);
+
+  void undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui);
 
  private:
   VoiceGroup invert(VoiceGroup vg);

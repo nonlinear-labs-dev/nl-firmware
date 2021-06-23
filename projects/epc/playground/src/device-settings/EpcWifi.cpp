@@ -67,9 +67,11 @@ void EpcWifi::updateWifiSwitch()
 
 void EpcWifi::spawn(const std::vector<std::string>& command, std::function<void(const std::string&)> onSuccess)
 {
+  if constexpr(!isDevelopmentPC) {
     SpawnAsyncCommandLine::spawn(command, onSuccess,
                                  [this](const std::string& e) { nltools::Log::warning(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-                                                                m_busy = false; });
+                                     m_busy = false; });
+  }
 }
 
 void EpcWifi::updateSSID()
