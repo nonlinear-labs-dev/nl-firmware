@@ -479,13 +479,13 @@ public class EditBufferUseCases {
 
 		if (SetupModel.get().systemSettings.directLoad.getBool()) {
 			SetupModel.get().systemSettings.directLoad.setValue(false);
-			NonMaps.theMaps.getServerProxy().setDirectLoad("off", null, null, currentDisplayedVoiceGroup);
+			NonMaps.theMaps.getServerProxy().setDirectLoadNoLoadToPart("off");
 		} else {
 			SetupModel.get().systemSettings.directLoad.setValue(true);
 			if(data != null && currentDisplayedVoiceGroup != null) {
-				NonMaps.theMaps.getServerProxy().setDirectLoad("on", data.m_selectedPreset, data.m_selectedVoiceGroup, currentDisplayedVoiceGroup);
+				NonMaps.theMaps.getServerProxy().setDirectLoadWithLoadToPart("on", data.m_selectedPreset, data.m_selectedVoiceGroup, currentDisplayedVoiceGroup);
 			} else {
-				NonMaps.theMaps.getServerProxy().setDirectLoad("on", null, null, currentDisplayedVoiceGroup);
+				NonMaps.theMaps.getServerProxy().setDirectLoadNoLoadToPart("on");
 			}
 		}
 	}

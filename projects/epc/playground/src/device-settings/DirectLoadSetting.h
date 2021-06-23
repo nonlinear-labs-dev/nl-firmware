@@ -10,17 +10,11 @@ class DirectLoadSetting : public BooleanSetting
   DirectLoadSetting(const DirectLoadSetting& other) = delete;
   DirectLoadSetting& operator=(const DirectLoadSetting&) = delete;
 
-  bool set(tEnum m) override;
   void load(const Glib::ustring& text, Initiator initiator) override;
 
-  void toggleWithinLoadToPart(PresetPartSelection* part);
-  void toggleWithoutLoadToPart();
-
-  void enableWithExplicitLoadToPart(Preset* pPreset, VoiceGroup from, VoiceGroup to);
-
-  void enableWithoutLoadToPart();
-
  private:
-  std::function<void(void)> m_currentOnDirectLoadWasEnabledCB;
-  bool m_isLoading = false;
+  void toggle() override;
+  bool set(tEnum e) override;
+
+  friend class DirectLoadUseCases;
 };

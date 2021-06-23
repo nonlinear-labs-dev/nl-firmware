@@ -38,7 +38,7 @@ public class OracleTests extends TestWithSteps {
     }
 
     private void disableDirectLoad() {
-        server.setDirectLoad("off", null, null, null);
+        server.setDirectLoadNoLoadToPart("off");
     }
 
     private void selectPresetViaNewWebSocket() {

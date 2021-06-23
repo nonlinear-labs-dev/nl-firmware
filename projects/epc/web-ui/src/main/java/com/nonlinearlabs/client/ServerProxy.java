@@ -1234,8 +1234,8 @@ public class ServerProxy {
 		queueJob(uri, false);
     }
 
-	public void setDirectLoad(String value, Preset selectedPreset, VoiceGroup selectedVoiceGroup, VoiceGroup currentDisplayedVoiceGroup) {
-		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load");
+	public void setDirectLoadWithLoadToPart(String value, Preset selectedPreset, VoiceGroup selectedVoiceGroup, VoiceGroup currentDisplayedVoiceGroup) {
+		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load-with-load-to-part");
 
 		StaticURI.KeyValue state = new StaticURI.KeyValue("state", value);
 		StaticURI.KeyValue preset = new StaticURI.KeyValue("preset", selectedPreset == null ? "" : selectedPreset.getUUID());
@@ -1243,6 +1243,13 @@ public class ServerProxy {
 		StaticURI.KeyValue to = new StaticURI.KeyValue("to", currentDisplayedVoiceGroup == null ? "" : currentDisplayedVoiceGroup.name());
 
 		StaticURI uri = new StaticURI(path, state, preset, from, to);
+		queueJob(uri, false);
+	}
+
+	public void setDirectLoadNoLoadToPart(String value) {
+		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load-without-load-to-part");
+		StaticURI.KeyValue state = new StaticURI.KeyValue("state", value);
+		StaticURI uri = new StaticURI(path, state);
 		queueJob(uri, false);
 	}
 

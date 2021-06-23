@@ -6,6 +6,7 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
+#include <use-cases/DirectLoadUseCases.h>
 
 namespace detail
 {
@@ -31,7 +32,8 @@ TEST_CASE("Part Origin Attribute")
 
   MockPresetStorage presets;
 
-  detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
+  DirectLoadUseCases useCase(detail::getDirectLoad().get());
+  useCase.disableDirectLoad();
   hwui->setFocusAndMode(UIDetail::Init);
 
   SECTION("Load Single Full")
@@ -144,7 +146,8 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   SECTION("Select First Preset in Bank")
   {
 
-    detail::getDirectLoad()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
+    DirectLoadUseCases dlUseCase(detail::getDirectLoad().get());
+    dlUseCase.enableDirectLoadFromWebUI(nullptr, VoiceGroup::Global, VoiceGroup::Global);
 
     {
       PresetManagerUseCases useCase(pm);
