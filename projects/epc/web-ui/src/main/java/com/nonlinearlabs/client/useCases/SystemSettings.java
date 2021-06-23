@@ -260,4 +260,8 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.hwSourceMapping.getValue().m_data[hw][xx] = b;
 		NonMaps.theMaps.getServerProxy().setHWSourceEnable(hw, xx, b);
 	}
+
+	public void panic() {
+		NonMaps.theMaps.getServerProxy().triggerPanic();
+	}
 }

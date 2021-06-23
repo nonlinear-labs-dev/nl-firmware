@@ -4,7 +4,7 @@
 #include <synth/input/TCDDecoder.h>
 
 InputEventStageTester::InputEventStageTester(InputEventStage* stage)
-    : m_inputStage { stage }
+    : m_inputStage{ stage }
 {
 }
 
@@ -93,9 +93,14 @@ void InputEventStageTester::doSendCCOut(uint16_t value, int msbCC, int lsbCC, in
   m_inputStage->doSendCCOut(value, msbCC, lsbCC, hwID);
 }
 
-VoiceGroup InputEventStageTester::calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, int keyNumber)
+VoiceGroup InputEventStageTester::calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, int keyNumber)
 {
-  return m_inputStage->calculateSplitPartForEvent(inputEvent, keyNumber);
+  return m_inputStage->calculateSplitPartForKeyDown(inputEvent, keyNumber);
+}
+
+VoiceGroup InputEventStageTester::calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, int keyNumber)
+{
+  return m_inputStage->calculateSplitPartForKeyUp(inputEvent, keyNumber);
 }
 
 DSPInterface::InputEventSource InputEventStageTester::getInputSourceFromParsedChannel(MidiReceiveChannel channel)

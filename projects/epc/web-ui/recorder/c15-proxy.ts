@@ -9,17 +9,24 @@ enum ConnectionState {
     Disconnected
 }
 
+interface PrepareDownloadInfo {
+    flac: { size: number },
+    range: { from: number, to: number },
+    wave: { size: number }
+}
+
 abstract class C15ProxyIface {
-    abstract download(from: number, to: number): void;
     abstract getBars(): Bars;
     abstract getPresetLoadEvent(fromTime: number, toTime: number): PresetLogEntry | null;
     abstract buildTime(lastTime: number | undefined): string;
     abstract setPlaybackPosition(playPos: number): void;
+    abstract getLoadedPresetAt(from: number): string | null;
     abstract reset(): void;
     abstract toggleRecording(): void;
     abstract pausePlayback(): void;
     abstract startPlayback(): void;
     abstract undo(): void;
+    abstract prepareDownload(from: number, to: number, cb: (info: PrepareDownloadInfo) => void): void;
 
     connect(ui: UI) {
         this.ui = ui;
@@ -73,12 +80,12 @@ abstract class C15ProxyIface {
         return mock ? new C15ProxyMock() : new C15Proxy();
     }
 
-    setConnectionState(s : ConnectionState) : void {
+    setConnectionState(s: ConnectionState): void {
         this.connectionState = s;
         this.synced();
     }
 
-    getConnectionState() : ConnectionState {
+    getConnectionState(): ConnectionState {
         return this.connectionState;
     }
 
@@ -114,6 +121,10 @@ class C15ProxyMock extends C15ProxyIface {
         if (r.length > 0)
             return r[0];
         return null;
+    }
+
+    getLoadedPresetAt(from: number): string | null {
+        return "Hammer";
     }
 
     buildTime(serverTime: number | undefined): string {
@@ -160,7 +171,11 @@ class C15ProxyMock extends C15ProxyIface {
     undo(): void {
     }
 
-    download(from: number, to: number): void {
+    download(path: string, from: number, to: number): void {
+    }
+
+    prepareDownload(from: number, to: number, cb: (info: PrepareDownloadInfo) => void): void {
+        cb({ flac: { size: 1234 }, wave: { size: 1234 }, range: { from: 123, to: 234 } });
     }
 
     private updateBarsStream = new MockUpdateStream(this, true);
@@ -185,9 +200,17 @@ class C15Proxy extends C15ProxyIface {
         return this.presetLogStream.find(fromTime, toTime);
     }
 
+    getLoadedPresetAt(from: number): string | null {
+        return this.presetLogStream.getLoadedPresetAt(from);
+    }
+
     setPlaybackPosition(playPos: number): void {
         playPos = Math.min(Math.max(this.getBars().first().id, playPos), this.getBars().last().id)
-        this.fireAndForget({ "set-playback-position": { "frameId": playPos } }, null);
+        this.currentPlayPosition = playPos;
+        this.numPlayPosCallsInFlight++;
+        this.fireAndForget({ "set-playback-position": { "frameId": playPos } }, () => {
+            setTimeout(() => { this.numPlayPosCallsInFlight--; }, 500);
+        });
     }
 
     pausePlayback(): void {
@@ -212,6 +235,11 @@ class C15Proxy extends C15ProxyIface {
         });
     }
 
+    updateTransportStates(recPaused: boolean, playPaused: boolean, playPos: number): void {
+        super.updateTransportStates(recPaused, playPaused,
+            this.numPlayPosCallsInFlight == 0 ? playPos : this.currentPlayPosition);
+    }
+
     toggleRecording() {
         this.fireAndForget({ "toggle-recording": {} }, null);
     }
@@ -226,21 +254,27 @@ class C15Proxy extends C15ProxyIface {
         }
     }
 
-    download(from: number, to: number) {
-        var url = "http://" + hostName + httpPort + "/?begin=" + from + "&end=" + to;
-        window.location.assign(url);
+    prepareDownload(from: number, to: number, cb: (info: PrepareDownloadInfo) => void): void {
+        this.fireAndForget({ "prepare-download": { begin: from, end: to } }, cb);
     }
 
-    private fireAndForget(msg: Object, cb: (() => void) | null) {
+    private fireAndForget(msg: Object, cb: ((o: any) => void) | null) {
         var webSocket = new WebSocket("ws://" + hostName + wsPort);
 
         if (cb)
-            webSocket.onmessage = () => { cb(); };
+            webSocket.onmessage = (event) => {
+                var reader = new FileReader()
+                reader.onload = () => { cb(JSON.parse(reader.result as string)); };
+                reader.readAsText(event.data);
+            }
 
         webSocket.onopen = () => webSocket.send(JSON.stringify(msg));
     }
 
+
+
     private updateStream = new UpdateStream(this);
     private presetLogStream = new PresetLogStream(this);
+    private numPlayPosCallsInFlight = 0;
 
 }

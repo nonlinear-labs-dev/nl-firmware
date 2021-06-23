@@ -192,6 +192,13 @@ namespace nltools
       };
     }
 
+    struct PanicAudioEngine {
+      constexpr static MessageType getType()
+      {
+        return MessageType::AEPanic;
+      }
+    };
+
     namespace Setting
     {
       struct NoteShiftMessage

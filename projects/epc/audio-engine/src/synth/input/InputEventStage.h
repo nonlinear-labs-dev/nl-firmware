@@ -38,6 +38,8 @@ class InputEventStage
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message);
   void setNoteShift(int i);
 
+  static int parameterIDToHWID(int id);
+
  private:
   using CC_Range_Vel = Midi::clipped14BitVelRange;
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
@@ -51,12 +53,13 @@ class InputEventStage
 
   //Algorithm
   void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit);
-  VoiceGroup calculateSplitPartForEvent(DSPInterface::InputEventSource inputEvent, const int keyNumber);
+
+  VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, const int keyNumber);
+  VoiceGroup calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, const int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
 
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannelSplit& _channel);
-  static int parameterIDToHWID(int id);
 
   //MIDI and UI out
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);

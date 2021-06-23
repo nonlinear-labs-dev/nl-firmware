@@ -62,20 +62,25 @@ SettingsActions::SettingsActions(Settings &settings)
   });
 
   addAction("hw-source-enable-set", [&](auto request) {
-     try {
-       auto hw = std::stoi(request->get("hw"));
-       auto aspect = std::stoi(request->get("aspect"));
-       auto value = request->get("value") == "1";
+    try
+    {
+      auto hw = std::stoi(request->get("hw"));
+      auto aspect = std::stoi(request->get("aspect"));
+      auto value = request->get("value") == "1";
 
-       SettingsUseCases useCase(Application::get().getSettings());
-       useCase.updateHWSourceEnable(hw, aspect, value);
-     } catch(...) {
-       nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
-     }
+      SettingsUseCases useCase(Application::get().getSettings());
+      useCase.updateHWSourceEnable(hw, aspect, value);
+    }
+    catch(...)
+    {
+      nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+    }
+   });
 
+  addAction("panic-audio-engine", [](auto request) {
+     SettingsUseCases useCase(Application::get().getSettings());
+     useCase.panicAudioEngine();
   });
 }
 
-SettingsActions::~SettingsActions()
-{
-}
+SettingsActions::~SettingsActions() = default;

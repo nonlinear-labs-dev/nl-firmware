@@ -7,6 +7,7 @@
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/HardwareControlEnables.h>
+#include <nltools/messaging/Message.h>
 
 SettingsUseCases::SettingsUseCases(Settings *s)
     : m_settings { s }
@@ -73,4 +74,11 @@ void SettingsUseCases::updateHWSourceEnable(int hw, int aspect, bool value)
                   static_cast<HardwareControlEnables::tSettingIdx>(aspect), value);
     }
   }
+}
+
+void SettingsUseCases::panicAudioEngine()
+{
+  using namespace nltools::msg;
+  PanicAudioEngine msg {};
+  send<PanicAudioEngine>(EndPoint::AudioEngine, msg);
 }

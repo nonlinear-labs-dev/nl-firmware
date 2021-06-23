@@ -13,6 +13,7 @@ class PresetLogEntry {
 
 
 class PresetLogStream {
+
     constructor(private c15: C15ProxyIface) {
         this.connect();
     }
@@ -37,6 +38,11 @@ class PresetLogStream {
             this.socket.close();
     }
 
+    getLoadedPresetAt(at: number): string | null {
+        const e = this.binarySearchAt(0, this.log.length, at);
+        return e ? e.info : null;
+    }
+
     find(fromTime: number, toTime: number): PresetLogEntry | null {
         return this.binarySearch(0, this.log.length, fromTime, toTime);
     }
@@ -57,6 +63,34 @@ class PresetLogStream {
 
         if (this.log[mid].time < fromTime)
             return this.binarySearch(mid + 1, to, fromTime, toTime);
+
+        return this.log[mid];
+    }
+
+    private binarySearchAt(from: number, to: number, at: number): PresetLogEntry | null {
+        if (to - from < 4) {
+            var minDist: number | null = null;
+            var ret: PresetLogEntry | null = null;
+
+            for (var i = from; i < to; i++) {
+                const dist = at - this.log[i].time;
+                if (dist >= 0) {
+                    if (minDist == null || dist < minDist) {
+                        minDist = dist;
+                        ret = this.log[i];
+                    }
+                }
+            }
+            return ret;
+        }
+
+        var mid = Math.floor((from + to) / 2);
+
+        if (this.log[mid].time > at)
+            return this.binarySearchAt(from, mid, at);
+
+        if (this.log[mid].time < at)
+            return this.binarySearchAt(mid, to, at);
 
         return this.log[mid];
     }

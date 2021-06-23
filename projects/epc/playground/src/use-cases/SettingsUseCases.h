@@ -9,6 +9,7 @@ class SettingsUseCases
   void setMappingsToClassicMidi();
 
   void updateHWSourceEnable(int hw, int aspect, bool value);
+  void panicAudioEngine();
 
  private:
   Settings* m_settings;

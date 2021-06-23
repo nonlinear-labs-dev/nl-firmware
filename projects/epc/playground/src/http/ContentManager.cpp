@@ -182,7 +182,7 @@ void ContentManager::connectWebSocket(const std::string &path, SoupWebsocketConn
   auto ws = std::make_shared<WebsocketConnection>(connection);
   DebugLevel::warning("adding new WebsocketConnection for path", path);
   m_webSockets[path] = ws;
-  feedWebSocket(ws);
+  feedWebSocket(ws, false);
 }
 
 void ContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type, GBytes *message,
@@ -199,11 +199,11 @@ void ContentManager::onWebSocketMessage(SoupWebsocketConnection *self, gint type
   }
 }
 
-void ContentManager::feedWebSockets()
+void ContentManager::feedWebSockets(bool trustOracles)
 {
   for(auto it = m_webSockets.begin(); it != m_webSockets.end();)
   {
-    if(!feedWebSocket(it->second))
+    if(!feedWebSocket(it->second, trustOracles))
     {
       it = m_webSockets.erase(it);
       nltools::Log::warning(__PRETTY_FUNCTION__, "remove web socket connection");
@@ -215,7 +215,7 @@ void ContentManager::feedWebSockets()
   }
 }
 
-bool ContentManager::feedWebSocket(const tWebsocketConnection &c)
+bool ContentManager::feedWebSocket(const tWebsocketConnection &c, bool trustOracles)
 {
   auto state = soup_websocket_connection_get_state(c->getConnection());
 
@@ -228,7 +228,7 @@ bool ContentManager::feedWebSocket(const tWebsocketConnection &c)
       DebugLevel::info("Updating websocket", c->getConnection(), "with document for updateID", currentUpdateId);
       WebSocketOutStream stream(c->getConnection());
       XmlWriter writer(stream);
-      writeDocument(writer, c->getLastSentUpdateId(), c->canOmitOracles(currentUpdateId));
+      writeDocument(writer, c->getLastSentUpdateId(), trustOracles && c->canOmitOracles(currentUpdateId));
       c->setLastSentUpdateId(currentUpdateId);
     }
     else
@@ -339,7 +339,8 @@ void ContentManager::sendResponses()
     Application::get().getHTTPServer()->handleRequest(msg);
   }
 
-  feedWebSockets();
+  auto dontTrustOracles = getAndResetFlags() & DontTrustOracle;
+  feedWebSockets(!dontTrustOracles);
 
   m_lastUpdateSentAt = std::chrono::steady_clock::now();
 

@@ -116,7 +116,7 @@ public class Setup extends Composite {
 	TextArea deviceName;
 
 	@UiField
-	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi;
+	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -384,6 +384,8 @@ public class Setup extends Composite {
 		enable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.on));
 		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));	
 		
+		panicAE.addClickHandler(e -> settings.panic());
+
 		classicMidi.addClickHandler(e -> settings.resetToClassicMidi());
 		highResMidi.addClickHandler(e -> settings.resetToHighResMidi());
 
