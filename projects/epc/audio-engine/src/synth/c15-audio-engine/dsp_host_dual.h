@@ -165,6 +165,7 @@ class dsp_host_dual : public DSPInterface
   void onSettingTuneReference(const float _position);
   void onSettingInitialSinglePreset();
   uint32_t onSettingToneToggle();
+
   // dsp-related
   void render();
   void reset();

@@ -1053,6 +1053,19 @@ namespace NavTree
     }
   };
 
+  struct MidiPanicButton : OneShotEntry
+  {
+    MidiPanicButton(InnerNode *p)
+        : OneShotEntry(p, "Panic Button",
+                       []()
+                       {
+                         SettingsUseCases useCase(Application::get().getSettings());
+                         useCase.panicAudioEngine();
+                       })
+    {
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -1063,6 +1076,7 @@ namespace NavTree
       children.emplace_back(new MidiLocalSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
+      children.emplace_back(new MidiPanicButton(this));
       children.emplace_back(new ResetMidiSettingsToClassic(this));
       children.emplace_back(new ResetMidiSettingsToHighRes(this));
     }

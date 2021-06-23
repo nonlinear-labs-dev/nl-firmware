@@ -6,6 +6,7 @@
 #include <device-settings/midi/mappings/BenderCCMapping.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
+#include <nltools/messaging/Message.h>
 
 SettingsUseCases::SettingsUseCases(Settings *s)
     : m_settings { s }
@@ -60,4 +61,11 @@ void SettingsUseCases::setMappingsToClassicMidi()
   r2->set(RibbonCC::CC25);
   at->set(AftertouchCC::ChannelPressure);
   be->set(BenderCC::Pitchbend);
+}
+
+void SettingsUseCases::panicAudioEngine()
+{
+  using namespace nltools::msg;
+  PanicAudioEngine msg {};
+  send<PanicAudioEngine>(EndPoint::AudioEngine, msg);
 }

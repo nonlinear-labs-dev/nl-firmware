@@ -270,4 +270,8 @@ public class SystemSettings {
     public void resetToHighResMidi() {
 		NonMaps.theMaps.getServerProxy().resetToHighResMidi();
     }
+
+	public void panic() {
+		NonMaps.theMaps.getServerProxy().triggerPanic();
+	}
 }

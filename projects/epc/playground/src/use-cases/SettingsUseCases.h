@@ -8,6 +8,8 @@ class SettingsUseCases
   void setMappingsToHighRes();
   void setMappingsToClassicMidi();
 
+  void panicAudioEngine();
+
  private:
   Settings* m_settings;
 };

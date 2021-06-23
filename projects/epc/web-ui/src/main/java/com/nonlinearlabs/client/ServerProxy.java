@@ -1234,4 +1234,10 @@ public class ServerProxy {
 		queueJob(uri, false);
     }
 
+	public void triggerPanic() {
+		StaticURI.Path path = new StaticURI.Path("settings", "panic-audio-engine");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
 }
