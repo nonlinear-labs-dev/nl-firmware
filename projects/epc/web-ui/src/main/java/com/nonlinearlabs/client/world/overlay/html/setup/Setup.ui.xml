@@ -550,6 +550,15 @@
 					<div class="linie"></div>
 					<div class="eins-he">
 						<div class="w60p">
+							<p>Trigger Note Panic</p>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="panicAE">Panic</g:Button>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
 							<p>Reset Midi Settings to Defaults</p>
 						</div>
 						<div class="w20p">

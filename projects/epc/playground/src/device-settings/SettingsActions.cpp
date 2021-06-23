@@ -81,6 +81,11 @@ SettingsActions::SettingsActions(Settings &settings)
     SettingsUseCases useCase(Application::get().getSettings());
     useCase.setMappingsToClassicMidi();
   });
+
+  addAction("panic-audio-engine", [](auto request) {
+     SettingsUseCases useCase(Application::get().getSettings());
+     useCase.panicAudioEngine();
+  });
 }
 
 SettingsActions::~SettingsActions()
