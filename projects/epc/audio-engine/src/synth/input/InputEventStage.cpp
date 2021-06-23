@@ -393,7 +393,7 @@ void InputEventStage::sendHardwareChangeAsMidi(int hwID, float value)
       break;
 
     case HWID::RIBBON1:
-      sendCCOut(HWID::RIBBON2, value, m_options->getCCFor<Midi::MSB::Rib1>(), m_options->getCCFor<Midi::LSB::Rib1>());
+      sendCCOut(HWID::RIBBON1, value, m_options->getCCFor<Midi::MSB::Rib1>(), m_options->getCCFor<Midi::LSB::Rib1>());
       break;
 
     case HWID::RIBBON2:
