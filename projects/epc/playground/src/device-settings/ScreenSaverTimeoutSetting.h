@@ -2,6 +2,7 @@
 #include <nltools/threading/Expiration.h>
 #include "Setting.h"
 #include <proxies/hwui/HWUIEnums.h>
+#include <nltools/messaging/Message.h>
 
 class Layout;
 
@@ -25,6 +26,9 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   void endAndReschedule();
 
  private:
+  void onNoteUp(const nltools::msg::Keyboard::NoteUp& m);
+  void onNoteDown(const nltools::msg::Keyboard::NoteDown& m);
+
   void onLayoutInstalled(Layout* l);
 
   Expiration m_expiration;

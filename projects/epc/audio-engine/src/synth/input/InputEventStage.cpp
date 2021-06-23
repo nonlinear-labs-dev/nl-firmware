@@ -112,6 +112,8 @@ void InputEventStage::onTCDEvent()
       if(m_options->shouldSendNotes() && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
 
+      nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrController()});
+
       break;
     }
     case DecoderEventType::KeyUp:
@@ -132,6 +134,8 @@ void InputEventStage::onTCDEvent()
       }
       if(m_options->shouldSendNotes() && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
+
+      nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrController()});
 
       break;
     }
@@ -184,6 +188,12 @@ void InputEventStage::onMIDIEvent()
           else if(decoder->getEventType() == DecoderEventType::KeyDown)
             m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
         }
+
+
+        if(decoder->getEventType() == DecoderEventType::KeyDown)
+          nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrControl()});
+        else
+          nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrControl()});
       }
       break;
 
