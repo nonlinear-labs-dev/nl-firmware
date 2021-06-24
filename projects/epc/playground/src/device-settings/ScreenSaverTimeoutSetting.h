@@ -26,8 +26,7 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   void endAndReschedule();
 
  private:
-  void onNoteUp(const nltools::msg::Keyboard::NoteUp& m);
-  void onNoteDown(const nltools::msg::Keyboard::NoteDown& m);
+  void onKeyBedMessageReceived(const nltools::msg::Keyboard::ActionHappened& m);
 
   void onLayoutInstalled(Layout* l);
 

@@ -77,8 +77,7 @@ void ScreenSaverTimeoutSetting::init()
   app.getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled(
       sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onLayoutInstalled));
 
-  nltools::msg::receive<nltools::msg::Keyboard::NoteUp>(nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onNoteUp));
-  nltools::msg::receive<nltools::msg::Keyboard::NoteDown>(nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onNoteDown));
+  nltools::msg::receive<nltools::msg::Keyboard::ActionHappened>(nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onKeyBedMessageReceived));
 }
 
 void ScreenSaverTimeoutSetting::sendState(bool state)
@@ -123,12 +122,7 @@ const std::vector<Glib::ustring>& ScreenSaverTimeoutSetting::getDisplayStrings()
   return s_displayStrings;
 }
 
-void ScreenSaverTimeoutSetting::onNoteUp(const nltools::msg::Keyboard::NoteUp& m)
-{
-  endAndReschedule();
-}
-
-void ScreenSaverTimeoutSetting::onNoteDown(const nltools::msg::Keyboard::NoteDown& m)
+void ScreenSaverTimeoutSetting::onKeyBedMessageReceived(const nltools::msg::Keyboard::ActionHappened& m)
 {
   endAndReschedule();
 }

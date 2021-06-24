@@ -109,11 +109,10 @@ void InputEventStage::onTCDEvent()
           m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
         }
 
-        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrController()});
+        setAndScheduleKeybedNotify();
       }
       if(m_options->shouldSendNotes() && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
-
 
       break;
     }
@@ -133,7 +132,7 @@ void InputEventStage::onTCDEvent()
           m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
         }
 
-        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrController()});
+        setAndScheduleKeybedNotify();
       }
       if(m_options->shouldSendNotes() && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
@@ -156,13 +155,6 @@ void InputEventStage::onMIDIEvent()
   nltools_assertOnDevPC(decoder != nullptr);
   const auto soundType = m_dspHost->getType();
   const bool soundValid = soundType != SoundType::Invalid;
-
-  auto sendKeyEventToUI = [decoder] {
-      if(decoder->getEventType() == DecoderEventType::KeyDown)
-        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrControl()});
-      else
-        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrControl()});
-  };
 
   switch(decoder->getEventType())
   {
@@ -188,7 +180,8 @@ void InputEventStage::onMIDIEvent()
             auto determinedPart = calculateSplitPartForKeyUp(inputSource, decoder->getKeyOrControl());
             m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
           }
-          sendKeyEventToUI();
+
+          setAndScheduleKeybedNotify();
         }
         else if(soundValid && !receivedOnSecondary)
         {
@@ -197,7 +190,7 @@ void InputEventStage::onMIDIEvent()
           else if(decoder->getEventType() == DecoderEventType::KeyDown)
             m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
 
-          sendKeyEventToUI();
+          setAndScheduleKeybedNotify();
         }
       }
       break;
@@ -777,4 +770,15 @@ constexpr uint16_t InputEventStage::midiReceiveChannelMask(const MidiReceiveChan
 constexpr uint16_t InputEventStage::midiReceiveChannelMask(const MidiReceiveChannelSplit &_channel)
 {
   return c_midiReceiveMaskTable[static_cast<uint8_t>(_channel)];
+}
+
+bool InputEventStage::getAndResetKeyBedStatus()
+{
+  return std::exchange(m_notifyKeyBedActionStatus, false);
+}
+
+void InputEventStage::setAndScheduleKeybedNotify()
+{
+  m_notifyKeyBedActionStatus = true;
+  m_hwChangedCB();
 }
