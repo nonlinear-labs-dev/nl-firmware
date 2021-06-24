@@ -1,6 +1,7 @@
 #include <catch.hpp>
 #include <mock/InputEventStageTester.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
 {
@@ -9,18 +10,16 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { BASE_TCD | Aftertouch, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) };
 
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB(
-      [&](int hwID, float hwPos)
-      {
-        CHECK(hwID == 5);
-        CHECK(hwPos == 1.0f);
-        receivedHW = true;
-      });
+  host.setOnHWChangedCB([&](int hwID, float hwPos) {
+    CHECK(hwID == 5);
+    CHECK(hwPos == 1.0f);
+    receivedHW = true;
+  });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
@@ -30,12 +29,12 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   //set settings to not interfere with CC01
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.receiveControllers = true;
-    msg.sendControllers = true;
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.sendSplitChannel = MidiSendChannelSplit::None;
-    msg.localControllers = true;
+
+    msg.hwMappings = TestHelper::createFullMappings(true);
+
     msg.pedal1cc = PedalCC::CC02;
     msg.pedal2cc = PedalCC::CC02;
     msg.pedal3cc = PedalCC::CC02;
@@ -83,13 +82,11 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   WHEN("Mapped to Special Case PitchbendDown")
   {
     settings.setAftertouchCC(AftertouchCC::PitchbendDown);
-    host.setOnHWChangedCB(
-        [&](int hwID, float hwPos)
-        {
-          CHECK(hwID == 5);
-          CHECK(hwPos == 1.0f);
-          receivedHW = true;
-        });
+    host.setOnHWChangedCB([&](int hwID, float hwPos) {
+      CHECK(hwID == 5);
+      CHECK(hwPos == 1.0f);
+      receivedHW = true;
+    });
 
     WHEN("Send MIDI Pitchbend, -1.0")
     {
@@ -107,7 +104,7 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
     {
       eventStage.onTCDMessage(fullPressureTCDEvent);
       CHECK(receivedHW);
-      CHECK(sendMidiMessages.size() == 1);
+      REQUIRE(sendMidiMessages.size() == 1);
       CHECK(sendMidiMessages[0].numBytesUsed == 3);
       CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
       CHECK(sendMidiMessages[0].rawBytes[1] == 0);
@@ -119,13 +116,11 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   {
     settings.setAftertouchCC(AftertouchCC::PitchbendUp);
     host.setType(SoundType::Split);
-    host.setOnHWChangedCB(
-        [&](int hwID, float hwPos)
-        {
-          CHECK(hwID == 5);
-          CHECK(hwPos == 1.0f);
-          receivedHW = true;
-        });
+    host.setOnHWChangedCB([&](int hwID, float hwPos) {
+      CHECK(hwID == 5);
+      CHECK(hwPos == 1.0f);
+      receivedHW = true;
+    });
 
     WHEN("Send MIDI Channel Pitchbend")
     {
@@ -147,7 +142,7 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
         eventStage.onTCDMessage(fullPressureTCDEvent);
 
         CHECK(receivedHW);
-        CHECK(sendMidiMessages.size() == 1);
+        REQUIRE(sendMidiMessages.size() == 1);
         CHECK(sendMidiMessages[0].numBytesUsed == 3);
         CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
         CHECK(sendMidiMessages[0].rawBytes[1] == 127);
@@ -162,11 +157,15 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
         eventStage.onTCDMessage(fullPressureTCDEvent);
 
         CHECK(receivedHW);
-        CHECK(sendMidiMessages.size() == 1);
+        REQUIRE(sendMidiMessages.size() == 2);
         CHECK(sendMidiMessages[0].numBytesUsed == 3);
         CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
         CHECK(sendMidiMessages[0].rawBytes[1] == 127);
         CHECK(sendMidiMessages[0].rawBytes[2] == 127);
+        CHECK(sendMidiMessages[1].numBytesUsed == 3);
+        CHECK(sendMidiMessages[1].rawBytes[0] == 0xE1);
+        CHECK(sendMidiMessages[1].rawBytes[1] == 127);
+        CHECK(sendMidiMessages[1].rawBytes[2] == 127);
       }
     }
   }

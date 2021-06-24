@@ -1,3 +1,4 @@
+#include <use-cases/DirectLoadUseCases.h>
 #include "PresetManagerEvents.h"
 #include "proxies/hwui/descriptive-layouts/primitives/Text.h"
 #include "Application.h"
@@ -45,8 +46,9 @@ namespace DescriptiveLayouts
     {
       case EventSinks::ToggleDirectLoad:
       {
-        auto eb = Application::get().getPresetManager()->getEditBuffer();
-        Application::get().getSettings()->getSetting<DirectLoadSetting>()->toggle();
+        auto setting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
+        DirectLoadUseCases useCase(setting.get());
+        useCase.toggleDirectLoadFromHWUI(Application::get().getHWUI());
       }
       break;
 
@@ -102,68 +104,70 @@ namespace DescriptiveLayouts
 
   void PresetManagerEvents::bruteForce()
   {
-    m_throttler.doTask([this] {
-      auto pm = Application::get().getPresetManager();
-      auto updateId = pm->getUpdateIDOfLastChange();
+    m_throttler.doTask(
+        [this]
+        {
+          auto pm = Application::get().getPresetManager();
+          auto updateId = pm->getUpdateIDOfLastChange();
 
-      if(std::exchange(lastSeenPresetManagerRevision, updateId) != updateId)
-      {
-        connections.clear();
+          if(std::exchange(lastSeenPresetManagerRevision, updateId) != updateId)
+          {
+            connections.clear();
 
-        auto selectedPresetUuid = Uuid::none();
+            auto selectedPresetUuid = Uuid::none();
 
-        if(auto b = pm->getSelectedBank())
-          selectedPresetUuid = b->getSelectedPresetUuid();
+            if(auto b = pm->getSelectedBank())
+              selectedPresetUuid = b->getSelectedPresetUuid();
 
-        auto loadedPresetUuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
+            auto loadedPresetUuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
 
-        PresetManagerCursor currentCursor;
+            PresetManagerCursor currentCursor;
 
-        auto previousCursor = currentCursor;
-        previousCursor.previousPreset();
-        auto nextCursor = currentCursor;
-        nextCursor.nextPreset();
+            auto previousCursor = currentCursor;
+            previousCursor.previousPreset();
+            auto nextCursor = currentCursor;
+            nextCursor.nextPreset();
 
-        setString(EventSources::PreviousNumber, previousCursor.getPresetNumberString());
-        setString(EventSources::PreviousName, previousCursor.getPresetName());
-        setString(EventSources::CurrentNumber, currentCursor.getPresetNumberString());
-        setString(EventSources::CurrentName, currentCursor.getPresetName());
-        setString(EventSources::NextNumber, nextCursor.getPresetNumberString());
-        setString(EventSources::NextName, nextCursor.getPresetName());
+            setString(EventSources::PreviousNumber, previousCursor.getPresetNumberString());
+            setString(EventSources::PreviousName, previousCursor.getPresetName());
+            setString(EventSources::CurrentNumber, currentCursor.getPresetNumberString());
+            setString(EventSources::CurrentName, currentCursor.getPresetName());
+            setString(EventSources::NextNumber, nextCursor.getPresetNumberString());
+            setString(EventSources::NextName, nextCursor.getPresetName());
 
-        setString(EventSources::PresetListBankName, currentCursor.getBankName());
+            setString(EventSources::PresetListBankName, currentCursor.getBankName());
 
-        setBool(EventSources::CanLeft, currentCursor.canPreviousBank());
-        setBool(EventSources::CanRight, currentCursor.canNextBank());
+            setBool(EventSources::CanLeft, currentCursor.canPreviousBank());
+            setBool(EventSources::CanRight, currentCursor.canNextBank());
 
-        setBool(EventSources::PreviousSelected, previousCursor.getPresetUuid() == selectedPresetUuid);
-        setBool(EventSources::PreviousLoaded, previousCursor.getPresetUuid() == loadedPresetUuid);
-        setBool(EventSources::CurrentSelected, currentCursor.getPresetUuid() == selectedPresetUuid);
-        setBool(EventSources::CurrentLoaded, currentCursor.getPresetUuid() == loadedPresetUuid);
-        setBool(EventSources::NextSelected, nextCursor.getPresetUuid() == selectedPresetUuid);
-        setBool(EventSources::NextLoaded, nextCursor.getPresetUuid() == loadedPresetUuid);
+            setBool(EventSources::PreviousSelected, previousCursor.getPresetUuid() == selectedPresetUuid);
+            setBool(EventSources::PreviousLoaded, previousCursor.getPresetUuid() == loadedPresetUuid);
+            setBool(EventSources::CurrentSelected, currentCursor.getPresetUuid() == selectedPresetUuid);
+            setBool(EventSources::CurrentLoaded, currentCursor.getPresetUuid() == loadedPresetUuid);
+            setBool(EventSources::NextSelected, nextCursor.getPresetUuid() == selectedPresetUuid);
+            setBool(EventSources::NextLoaded, nextCursor.getPresetUuid() == loadedPresetUuid);
 
-        auto bruteForce = sigc::mem_fun(this, &PresetManagerEvents::bruteForce);
+            auto bruteForce = sigc::mem_fun(this, &PresetManagerEvents::bruteForce);
 
-        if(auto b = currentCursor.getBank())
-          connections.push_back(b->onBankChanged(bruteForce));
+            if(auto b = currentCursor.getBank())
+              connections.push_back(b->onBankChanged(bruteForce));
 
-        if(auto p = previousCursor.getPreset())
-          connections.push_back(p->onChanged(bruteForce));
+            if(auto p = previousCursor.getPreset())
+              connections.push_back(p->onChanged(bruteForce));
 
-        if(auto p = currentCursor.getPreset())
-          connections.push_back(p->onChanged(bruteForce));
+            if(auto p = currentCursor.getPreset())
+              connections.push_back(p->onChanged(bruteForce));
 
-        if(auto p = nextCursor.getPreset())
-          connections.push_back(p->onChanged(bruteForce));
+            if(auto p = nextCursor.getPreset())
+              connections.push_back(p->onChanged(bruteForce));
 
-        connections.push_back(pm->onBankSelection(sigc::hide(bruteForce)));
-        connections.push_back(pm->onRestoreHappened(bruteForce));
-        connections.push_back(pm->getEditBuffer()->onPresetLoaded(bruteForce));
-        connections.push_back(Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
-            sigc::hide(sigc::mem_fun(this, &PresetManagerEvents::updateDirectLoad))));
-      }
-    });
+            connections.push_back(pm->onBankSelection(sigc::hide(bruteForce)));
+            connections.push_back(pm->onRestoreHappened(bruteForce));
+            connections.push_back(pm->getEditBuffer()->onPresetLoaded(bruteForce));
+            connections.push_back(Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
+                sigc::hide(sigc::mem_fun(this, &PresetManagerEvents::updateDirectLoad))));
+          }
+        });
   }
 
   void PresetManagerEvents::updateDirectLoad()

@@ -137,7 +137,7 @@ TEST_CASE("Load Single into Layer Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(eb);
-  
+
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 

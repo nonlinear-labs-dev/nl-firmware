@@ -8,6 +8,9 @@
 #include <http/NetworkRequest.h>
 #include <proxies/hwui/TestLayout.h>
 #include <use-cases/SettingsUseCases.h>
+#include <tools/ExceptionTools.h>
+#include <use-cases/DirectLoadUseCases.h>
+#include <presets/PresetManager.h>
 
 SettingsActions::SettingsActions(Settings &settings)
     : super("/settings/")
@@ -50,9 +53,39 @@ SettingsActions::SettingsActions(Settings &settings)
     }
   });
 
+  addAction("set-direct-load-with-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
+    auto pm = Application::get().getPresetManager();
+    auto state = request->get("state");
+    auto presetIfInLoadToPart = request->get("preset");
+    auto fromIfInLoadToPart = request->get("from");
+    auto totIfInLoadToPart = request->get("to");
+
+    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>().get());
+
+    try {
+      if(state == "on") {
+        if(auto preset = pm->findPreset(Uuid{presetIfInLoadToPart})) {
+          useCase.enableDirectLoadFromWebUI(preset, to<VoiceGroup>(fromIfInLoadToPart), to<VoiceGroup>(totIfInLoadToPart));
+        } else {
+          useCase.enableDirectLoadWithoutPreset();
+        }
+      } else if(state == "off") {
+        useCase.disableDirectLoad();
+      }
+    } catch(const std::runtime_error& e) {
+      nltools::Log::error("Catched Error in \"set-direct-load-with-load-to-part\":", e.what());
+    }
+  });
+
+  addAction("set-direct-load-without-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
+    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>().get());
+    auto state = request->get("state") == "on";
+    useCase.setDirectLoad(state);
+  });
+
   addAction("default-high-res", [&](auto request) {
-      SettingsUseCases useCase(Application::get().getSettings());
-      useCase.setMappingsToHighRes();
+    SettingsUseCases useCase(Application::get().getSettings());
+    useCase.setMappingsToHighRes();
   });
 
   addAction("default-classic-midi", [&](auto request) {
@@ -60,12 +93,26 @@ SettingsActions::SettingsActions(Settings &settings)
     useCase.setMappingsToClassicMidi();
   });
 
+  addAction("hw-source-enable-set", [&](auto request) {
+    try
+    {
+      auto hw = std::stoi(request->get("hw"));
+      auto aspect = std::stoi(request->get("aspect"));
+      auto value = request->get("value") == "1";
+
+      SettingsUseCases useCase(Application::get().getSettings());
+      useCase.updateHWSourceEnable(hw, aspect, value);
+    }
+    catch(...)
+    {
+      nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+    }
+   });
+
   addAction("panic-audio-engine", [](auto request) {
-     SettingsUseCases useCase(Application::get().getSettings());
-     useCase.panicAudioEngine();
+    SettingsUseCases useCase(Application::get().getSettings());
+    useCase.panicAudioEngine();
   });
 }
 
-SettingsActions::~SettingsActions()
-{
-}
+SettingsActions::~SettingsActions() = default;

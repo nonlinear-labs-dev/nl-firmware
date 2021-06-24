@@ -26,6 +26,6 @@ RecallModulationSourceLabel::RecallModulationSourceLabel(Rect pos)
     setText(StringAndSuffix { text });
     return;
   }
- 
+
   setText(StringAndSuffix { text });
 }

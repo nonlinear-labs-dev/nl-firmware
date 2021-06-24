@@ -15,7 +15,7 @@ class Setting : public UpdateDocumentContributor
  public:
   explicit Setting(UpdateDocumentContributor &parent);
   ~Setting() override;
-  
+
   virtual void init();
   virtual void setSetting(Initiator initiator, const Glib::ustring &text);
   virtual void load(const Glib::ustring &text, Initiator initiator) = 0;

@@ -58,7 +58,8 @@ TEST_CASE("XML Reader Test - Memory In Stream")
 
 TEST_CASE("XML Reader Test - File In Stream")
 {
-  const auto testFilePath = "/tmp/" + std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".xml";
+  const auto testFilePath
+      = "/tmp/" + std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".xml";
 
   {
     FileOutStream stream(testFilePath, false);

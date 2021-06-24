@@ -8,19 +8,17 @@ MidiRuntimeOptions createSpecialSettings()
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
   msg.receiveNotes = true;
-  msg.receiveControllers = true;
   msg.receiveProgramChange = true;
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
 
-  msg.sendControllers = true;
   msg.sendProgramChange = true;
   msg.sendNotes = true;
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_1;
 
   msg.localNotes = true;
-  msg.localControllers = true;
+
 
   msg.bendercc = BenderCC::Pitchbend;
   msg.aftertouchcc = AftertouchCC::ChannelPressure;
@@ -82,7 +80,7 @@ TEST_CASE("Secondary Channel", "[MIDI][TCD]")
   //Construct Objects
   SecTests::SplitDSPMock host;
   std::vector<nltools::msg::Midi::SimpleMessage> midiOut;
-  InputEventStage eventStage{ &host, &settings, [] {}, [&](auto m) { midiOut.emplace_back(m); } };
+  InputEventStage eventStage { &host, &settings, [] {}, [&](auto m) { midiOut.emplace_back(m); } };
 
   WHEN("TCD key is pressed on Part I")
   {
@@ -182,7 +180,8 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   settings.setReceiveChannel(MidiReceiveChannel::CH_1);
   settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_2);
   std::vector<nltools::msg::Midi::SimpleMessage> sendMIDI;
-  InputEventStage eventStage(&hostPartI, &settings, [] {}, [&](auto m) { sendMIDI.emplace_back(m); });
+  InputEventStage eventStage(
+      &hostPartI, &settings, [] {}, [&](auto m) { sendMIDI.emplace_back(m); });
 
   WHEN("MIDI In on Prim. Channel 1, receive")
   {
@@ -226,7 +225,8 @@ TEST_CASE("Receive MIDI Special Receive Channel Settings leads to Note Down", "[
 
   PassOnKeyDownHostSingle host(77, 1.0, VoiceGroup::I);
   auto settings = createSpecialSettings();
-  InputEventStage eventStage(&host, &settings, [] {}, [&](auto m) { CHECK(false); });
+  InputEventStage eventStage(
+      &host, &settings, [] {}, [&](auto m) { CHECK(false); });
 
   WHEN("MIDI In with CH1 & CH1")
   {

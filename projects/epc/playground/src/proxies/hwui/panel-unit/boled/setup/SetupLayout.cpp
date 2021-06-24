@@ -333,13 +333,11 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.storeInitSound();
-                       })
+        : OneShotEntry(p, "Store Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.storeInitSound();
+        })
     {
     }
   };
@@ -347,13 +345,11 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.resetInitSound();
-                       })
+        : OneShotEntry(p, "Reset Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.resetInitSound();
+        })
     {
     }
   };
@@ -847,7 +843,6 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Split Channel (Part II)"));
       children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "Enable Notes"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 
@@ -860,7 +855,6 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Split Channel (Part II)"));
       children.emplace_back(new EnumSettingItem<MidiSendProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<MidiSendNotesSetting>(this, "Enable Notes"));
-      children.emplace_back(new EnumSettingItem<MidiSendControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 
@@ -870,7 +864,6 @@ namespace NavTree
         : InnerNode(parent, "Local")
     {
       children.emplace_back(new EnumSettingItem<LocalNotesSetting>(this, "Enable Notes"));
-      children.emplace_back(new EnumSettingItem<LocalControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 
@@ -1019,12 +1012,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToHighRes();
-                       })
+        : OneShotEntry(parent, getName(), []() {
+          SettingsUseCases useCases(Application::get().getSettings());
+          useCases.setMappingsToHighRes();
+        })
     {
     }
 
@@ -1038,12 +1029,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToClassicMidi();
-                       })
+        : OneShotEntry(parent, getName(), []() {
+          SettingsUseCases useCases(Application::get().getSettings());
+          useCases.setMappingsToClassicMidi();
+        })
     {
     }
 
@@ -1056,12 +1045,10 @@ namespace NavTree
   struct MidiPanicButton : OneShotEntry
   {
     MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic Button",
-                       []()
-                       {
-                         SettingsUseCases useCase(Application::get().getSettings());
-                         useCase.panicAudioEngine();
-                       })
+        : OneShotEntry(p, "Panic Button", []() {
+          SettingsUseCases useCase(Application::get().getSettings());
+          useCase.panicAudioEngine();
+        })
     {
     }
   };

@@ -4,7 +4,7 @@
 #include <synth/input/TCDDecoder.h>
 
 InputEventStageTester::InputEventStageTester(InputEventStage* stage)
-    : m_inputStage{ stage }
+    : m_inputStage { stage }
 {
 }
 
@@ -51,6 +51,16 @@ void InputEventStageTester::onMIDIEvent()
 void InputEventStageTester::onTCDEvent()
 {
   m_inputStage->onTCDEvent();
+}
+
+void InputEventStageTester::onTCDMessage(const MidiEvent& tcdEvent)
+{
+  m_inputStage->onTCDMessage(tcdEvent);
+}
+
+void InputEventStageTester::onMIDIMessage(const MidiEvent& midiEvent)
+{
+  m_inputStage->onMIDIMessage(midiEvent);
 }
 
 void InputEventStageTester::sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart)

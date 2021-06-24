@@ -56,7 +56,7 @@ class DspHostDualTester
   // output scanning
   struct StereoOutput
   {
-    float m_left{ 0.0f }, m_right{ 0.0f };
+    float m_left { 0.0f }, m_right { 0.0f };
     bool isSilence();
   };
   StereoOutput scanOutput(const std::vector<SampleFrame>& _audiodata);

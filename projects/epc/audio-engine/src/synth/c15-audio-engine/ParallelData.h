@@ -30,7 +30,8 @@ void testParallelData();
 
 namespace parallel_data_detail
 {
-  template <typename T, size_t simdSize, size_t parallelism> union v128 {
+  template <typename T, size_t simdSize, size_t parallelism> union v128
+  {
     int32x4_t mmi[simdSize];
     uint32x4_t mmu[simdSize];
     float32x4_t mmf[simdSize];

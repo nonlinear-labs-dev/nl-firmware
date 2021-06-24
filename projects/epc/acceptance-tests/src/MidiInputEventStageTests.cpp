@@ -2,13 +2,13 @@
 #include <synth/input/InputEventStage.h>
 #include <synth/C15Synth.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 MidiRuntimeOptions createMidiSettings()
 {
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
   msg.receiveNotes = true;
-  msg.receiveControllers = true;
   msg.receiveProgramChange = true;
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
@@ -21,6 +21,8 @@ MidiRuntimeOptions createMidiSettings()
   msg.pedal4cc = PedalCC::CC23;
   msg.ribbon1cc = RibbonCC::CC24;
   msg.ribbon2cc = RibbonCC::CC25;
+
+  msg.hwMappings = TestHelper::createFullMappings(true);
 
   options.update(msg);
   return options;
@@ -193,7 +195,6 @@ TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
     eventStage.onMIDIMessage({ 0xB0, 20, 127 });
     CHECK(dsp.didReceiveHW());
   }
-
 
   WHEN("Send 14 Bit with disbled 14 bit support")
   {

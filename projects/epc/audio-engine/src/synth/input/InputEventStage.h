@@ -10,9 +10,8 @@
 
 class MidiRuntimeOptions;
 
-class InputEventStage
+namespace HWID
 {
- private:
   constexpr static auto PEDAL1 = 0;
   constexpr static auto PEDAL2 = 1;
   constexpr static auto PEDAL3 = 2;
@@ -22,6 +21,11 @@ class InputEventStage
   constexpr static auto RIBBON1 = 6;
   constexpr static auto RIBBON2 = 7;
 
+  constexpr static auto INVALID = -1;
+};
+
+class InputEventStage
+{
  public:
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
@@ -52,7 +56,8 @@ class InputEventStage
   void onMIDIHWChanged(MIDIDecoder* decoder);
 
   //Algorithm
-  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source);
+  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit);
+
   VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, const int keyNumber);
   VoiceGroup calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, const int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
@@ -111,6 +116,7 @@ class InputEventStage
   };
 
   template <LatchMode> bool latchHWPosition(int hwID, uint8_t lsb, uint8_t msb);
+  [[nodiscard]] bool isSplitDSP() const;
 
   friend class InputEventStageTester;
 };

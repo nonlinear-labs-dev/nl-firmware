@@ -167,17 +167,15 @@ void BankEditButtonMenu::exportBank()
 
   if(auto selBank = Application::get().getPresetManager()->getSelectedBank())
   {
-    boled.setOverlay(new RenameExportLayout(selBank,
-                                            [](Glib::ustring newExportName, auto bank)
-                                            {
-                                              auto& panelunit = Application::get().getHWUI()->getPanelUnit();
-                                              auto& boled = panelunit.getEditPanel().getBoled();
-                                              auto outPath = BankEditButtonMenu::createValidOutputPath(newExportName);
-                                              boled.resetOverlay();
-                                              boled.setOverlay(new SplashLayout());
-                                              BankEditButtonMenu::writeSelectedBankToFile(bank, outPath);
-                                              boled.resetOverlay();
-                                            }));
+    boled.setOverlay(new RenameExportLayout(selBank, [](Glib::ustring newExportName, auto bank) {
+      auto& panelunit = Application::get().getHWUI()->getPanelUnit();
+      auto& boled = panelunit.getEditPanel().getBoled();
+      auto outPath = BankEditButtonMenu::createValidOutputPath(newExportName);
+      boled.resetOverlay();
+      boled.setOverlay(new SplashLayout());
+      BankEditButtonMenu::writeSelectedBankToFile(bank, outPath);
+      boled.resetOverlay();
+    }));
   }
 }
 

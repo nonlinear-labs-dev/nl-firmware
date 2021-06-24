@@ -199,7 +199,8 @@ namespace nltools
       };
     }
 
-    struct PanicAudioEngine {
+    struct PanicAudioEngine
+    {
       constexpr static MessageType getType()
       {
         return MessageType::AEPanic;
@@ -255,6 +256,33 @@ namespace nltools
           return MessageType::MidiSettings;
         }
 
+        enum class HW_INDEX : std::size_t
+        {
+          Pedal1 = 0,
+          Pedal2 = 1,
+          Pedal3 = 2,
+          Pedal4 = 3,
+          Aftertouch = 4,
+          Bender = 5,
+          Ribbon1 = 6,
+          Ribbon2 = 7,
+          LENGTH = 8
+        };
+
+        enum class MAPPING_INDEX : std::size_t
+        {
+          SEND_PRIMARY = 0,
+          RECEIVE_PRIMARY = 1,
+          SEND_SPLIT = 2,
+          RECEIVE_SPLIT = 3,
+          LOCAL = 4,
+          LENGTH = 5
+        };
+
+        typedef std::array<std::array<bool, static_cast<size_t>(MAPPING_INDEX::LENGTH)>,
+                           static_cast<size_t>(HW_INDEX::LENGTH)>
+            tHWMappingType;
+
         MidiReceiveChannel receiveChannel;
         MidiReceiveChannelSplit receiveSplitChannel;
 
@@ -263,14 +291,11 @@ namespace nltools
 
         bool receiveProgramChange = false;
         bool receiveNotes = false;
-        bool receiveControllers = false;
 
         bool sendProgramChange = false;
         bool sendNotes = false;
-        bool sendControllers = false;
 
         bool localNotes = false;
-        bool localControllers = false;
 
         bool highVeloCCEnabled = true;
         bool highResCCEnabled = true;
@@ -283,6 +308,8 @@ namespace nltools
         RibbonCC ribbon2cc;
         AftertouchCC aftertouchcc;
         BenderCC bendercc;
+
+        tHWMappingType hwMappings;
       };
 
       struct TransitionTimeMessage

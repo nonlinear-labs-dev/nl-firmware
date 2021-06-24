@@ -1234,10 +1234,34 @@ public class ServerProxy {
 		queueJob(uri, false);
     }
 
+    public void setHWSourceEnable(int hw, int xx, boolean b) {
+		StaticURI.Path path = new StaticURI.Path("settings", "hw-source-enable-set");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("hw", hw), new StaticURI.KeyValue("aspect", xx), new StaticURI.KeyValue("value", b));
+		queueJob(uri, false);
+    }
+
+	public void setDirectLoadWithLoadToPart(String value, Preset selectedPreset, VoiceGroup selectedVoiceGroup, VoiceGroup currentDisplayedVoiceGroup) {
+		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load-with-load-to-part");
+
+		StaticURI.KeyValue state = new StaticURI.KeyValue("state", value);
+		StaticURI.KeyValue preset = new StaticURI.KeyValue("preset", selectedPreset == null ? "" : selectedPreset.getUUID());
+		StaticURI.KeyValue from = new StaticURI.KeyValue("from", selectedVoiceGroup == null ? "" : selectedVoiceGroup.name());
+		StaticURI.KeyValue to = new StaticURI.KeyValue("to", currentDisplayedVoiceGroup == null ? "" : currentDisplayedVoiceGroup.name());
+
+		StaticURI uri = new StaticURI(path, state, preset, from, to);
+		queueJob(uri, false);
+	}
+
+	public void setDirectLoadNoLoadToPart(String value) {
+		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load-without-load-to-part");
+		StaticURI.KeyValue state = new StaticURI.KeyValue("state", value);
+		StaticURI uri = new StaticURI(path, state);
+		queueJob(uri, false);
+	}
+
 	public void triggerPanic() {
 		StaticURI.Path path = new StaticURI.Path("settings", "panic-audio-engine");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
-
 }

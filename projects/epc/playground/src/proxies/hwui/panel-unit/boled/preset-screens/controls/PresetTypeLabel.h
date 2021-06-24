@@ -50,7 +50,7 @@ class PresetTypeLabel : public Control
  public:
   explicit PresetTypeLabel(const Rect& pos);
   ~PresetTypeLabel() override;
-  
+
   void update(const Preset* newSelection);
   bool redraw(FrameBuffer& fb) override;
   void drawBackground(FrameBuffer& fb) override;

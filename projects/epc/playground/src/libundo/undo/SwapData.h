@@ -14,7 +14,7 @@ namespace UNDO
     typedef std::shared_ptr<tThis> tPtr;
 
     template <typename... Q>
-    explicit SwapData(Q &&...args)
+    explicit SwapData(Q &&... args)
         : tBase(std::forward<Q>(args)...)
     {
     }
@@ -47,7 +47,7 @@ namespace UNDO
     template <class X> using special_decay_t = typename unwrap_refwrapper<typename std::decay<X>::type>::type;
   }
 
-  template <typename... T> static typename SwapData<detail::special_decay_t<T>...>::tPtr createSwapData(T &&...data)
+  template <typename... T> static typename SwapData<detail::special_decay_t<T>...>::tPtr createSwapData(T &&... data)
   {
     using S = SwapData<detail::special_decay_t<T>...>;
     return std::make_shared<S>(std::forward<T>(data)...);
