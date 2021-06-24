@@ -2,25 +2,25 @@
 #include <synth/input/InputEventStage.h>
 #include <synth/C15Synth.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 MidiRuntimeOptions createTCDSettings()
 {
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
   msg.receiveNotes = true;
-  msg.receiveControllers = true;
   msg.receiveProgramChange = true;
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
 
-  msg.sendControllers = true;
   msg.sendProgramChange = true;
   msg.sendNotes = true;
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_1;
 
   msg.localNotes = true;
-  msg.localControllers = true;
+
+  msg.hwMappings = TestHelper::createFullMappings(true);
 
   msg.bendercc = BenderCC::Pitchbend;
   msg.aftertouchcc = AftertouchCC::ChannelPressure;
@@ -171,6 +171,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnHWReceived dsp { Pedal1, 1.0 };
+  dsp.setType(SoundType::Single);
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
                                [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };

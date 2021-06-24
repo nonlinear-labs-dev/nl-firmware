@@ -24,12 +24,12 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   //set settings to not interfere with CC01
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.receiveControllers = true;
-    msg.sendControllers = true;
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
-    msg.localControllers = true;
+
+    msg.hwMappings = TestHelper::createFullMappings(true);
+
     msg.highResCCEnabled = false;
     msg.pedal1cc = PedalCC::CC02;
     msg.pedal2cc = PedalCC::CC02;
@@ -44,7 +44,8 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
   auto sendTCDHWChange = [&]() { eventStage.onTCDMessage(fullPressureTCDEvent); };
 
-  auto doTests = [&]() {
+  auto doTests = [&](const std::map<SoundType, int>& expected)
+  {
     WHEN("Sound is Single")
     {
       host.setType(SoundType::Single);
@@ -55,7 +56,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
         THEN("HW Change got send on Primary Channel")
         {
-          CHECK(sendMidiMessages.size() == 1);
+          CHECK(sendMidiMessages.size() == expected.at(SoundType::Single));
         }
       }
     }
@@ -70,7 +71,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
         THEN("HW Change got send on Primary Channel")
         {
-          CHECK(sendMidiMessages.size() == 1);
+          CHECK(sendMidiMessages.size() == expected.at(SoundType::Layer));
         }
       }
     }
@@ -83,31 +84,36 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
       {
         sendTCDHWChange();
 
-        THEN("HW Change got send on Primary Channel")
+        THEN("HW Change got send on Primary and Split Channels")
         {
-          CHECK(sendMidiMessages.size() == 1);
+          CHECK(sendMidiMessages.size() == expected.at(SoundType::Split));
         }
       }
     }
   };
 
-  std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 1 } };
 
   WHEN("Split Channel is Channel 2")
   {
+    std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 2 } };
+
     settings.setSendSplitChannel(MidiSendChannelSplit::CH_2);
-    doTests();
+    doTests(expected);
   }
 
   WHEN("Split Channel is NONE")
   {
+    std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 1 } };
+
     settings.setSendSplitChannel(MidiSendChannelSplit::None);
-    doTests();
+    doTests(expected);
   }
 
   WHEN("Split Channel is Common")
   {
+    std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 1 } };
+
     settings.setSendSplitChannel(MidiSendChannelSplit::Common);
-    doTests();
+    doTests(expected);
   }
 }

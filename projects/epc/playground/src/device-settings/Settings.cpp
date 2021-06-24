@@ -72,6 +72,7 @@
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
+#include <device-settings/midi/HardwareControlEnables.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
@@ -122,14 +123,12 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
   addSetting("SyncSplit", new SplitPointSyncParameters(*this));
 
-  addSetting("LocalControllers", new LocalControllersSetting(*this));
   addSetting("LocalNotes", new LocalNotesSetting(*this));
 
   addSetting("ReceiveChannel", new MidiReceiveChannelSetting(*this));
   addSetting("ReceiveChannelSplit", new MidiReceiveChannelSplitSetting(*this));
   addSetting("ReceiveProgramChanges", new MidiReceiveProgramChangesSetting(*this));
   addSetting("ReceiveNotes", new MidiReceiveNotesSetting(*this));
-  addSetting("ReceiveControllers", new MidiReceiveControllersSetting(*this));
   addSetting("ReceiveAftertouchCurve", new MidiReceiveAftertouchCurveSetting(*this));
   addSetting("ReceiveVelocityCurve", new MidiReceiveVelocityCurveSetting(*this));
 
@@ -137,7 +136,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SendChannelSplit", new MidiSendChannelSplitSetting(*this));
   addSetting("SendProgramChanges", new MidiSendProgramChangesSetting(*this));
   addSetting("SendNotes", new MidiSendNotesSetting(*this));
-  addSetting("SendControllers", new MidiSendControllersSetting(*this));
 
   addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this));
   addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this));
@@ -150,6 +148,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
   addSetting("HighResCC", new Enable14BitSupport(*this));
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
+  addSetting("HardwareControlEnables", new HardwareControlEnables(*this));
 }
 
 Settings::~Settings()

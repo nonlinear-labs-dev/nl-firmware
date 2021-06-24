@@ -1,5 +1,8 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.nonlinearlabs.client.Tracer;
+import com.nonlinearlabs.client.dataModel.HardwareSourceEnableSettings;
+
 public class MidiSettings {
 
 	static public class VelocityCurve {
@@ -91,16 +94,33 @@ public class MidiSettings {
         };
         public int selected = 0;
     }
+
+    static public class HWControlEnable {
+        public HWControlEnable() {
+            for(int i = 0; i < 5; i++) {
+                states[i] = new OnOffOption();
+            }
+        }
+
+        public OnOffOption states[] = new OnOffOption[5];
+    }
+
+    static public class HWSourceEnableSettings {
+        HWSourceEnableSettings() {
+            for(int i = 0; i < 8; i++) {
+                hws[i] = new HWControlEnable();
+            }
+        }
+        public HWControlEnable hws[] = new HWControlEnable[8]; 
+    }
     
 
     //Local
-    public OnOffOption localControllers = new OnOffOption();
     public OnOffOption localNotes = new OnOffOption();
 
     //Send
     public SendChannel sendChannel = new SendChannel();
     public SendChannelSplit sendChannelSplit = new SendChannelSplit();
-    public OnOffOption sendControllers = new OnOffOption();
     public OnOffOption sendProgramChanges = new OnOffOption();
     public OnOffOption sendNotes = new OnOffOption();
 
@@ -109,7 +129,6 @@ public class MidiSettings {
     public ReceiveChannelSplit receiveChannelSplit = new ReceiveChannelSplit();
     public OnOffOption receiveProgramChanges = new OnOffOption();
     public OnOffOption receiveNotes = new OnOffOption();
-    public OnOffOption receiveControllers = new OnOffOption();
     public VelocityCurve receiveVelocityCurve = new VelocityCurve();
     public AftertouchCurve receiveAftertouchCurve = new AftertouchCurve();
 
@@ -124,7 +143,18 @@ public class MidiSettings {
     public AftertouchMapping aftertouchMapping = new AftertouchMapping();
     public OnOffOption highVelocityCC = new OnOffOption();
     public OnOffOption enable14BitCC = new OnOffOption();
+    public HWSourceEnableSettings hwControlEnables = new HWSourceEnableSettings();
 
     //FLAC
     public OnOffOption autoStartRecorder = new OnOffOption();
+
+    public static HWSourceEnableSettings convert(HardwareSourceEnableSettings s) {
+        HWSourceEnableSettings ret = new HWSourceEnableSettings();
+        for(int hw = 0; hw < 8; hw++) {
+            for(int m = 0; m < 5; m++) {
+                ret.hws[hw].states[m].value = s.m_data[hw][m];
+            }
+        }
+        return ret;
+    }
 }

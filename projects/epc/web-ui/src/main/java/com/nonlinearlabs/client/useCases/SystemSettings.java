@@ -208,11 +208,6 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveProgramChanges", netify(enabled.name()));
 	}
 
-	public void setReceiveControllers(BooleanValues enabled) {
-		SetupModel.get().systemSettings.receiveControllers.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("ReceiveControllers", netify(enabled.name()));
-	}
-
 	public void setReceiveAftertouchCurve(AftertouchCurve value) {
 		SetupModel.get().systemSettings.receiveAftertouchCurve.setValue(value);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveAftertouchCurve", value.name());
@@ -243,16 +238,6 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("SendNotes", netify(enabled.name()));
 	}
 
-	public void setSendControllers(BooleanValues enabled) {
-		SetupModel.get().systemSettings.sendControllers.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("SendControllers", netify(enabled.name()));
-	}
-
-	public void setLocalControllers(BooleanValues enabled) {
-		SetupModel.get().systemSettings.localControllers.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("LocalControllers", netify(enabled.name()));
-	}
-
 	public void setLocalNotes(BooleanValues enabled) {
 		SetupModel.get().systemSettings.localNotes.setValue(enabled);
 		NonMaps.theMaps.getServerProxy().setSetting("LocalNotes", netify(enabled.name()));
@@ -270,6 +255,11 @@ public class SystemSettings {
     public void resetToHighResMidi() {
 		NonMaps.theMaps.getServerProxy().resetToHighResMidi();
     }
+
+    public void setHWSourceEnable(int hw, int xx, boolean b) {
+		SetupModel.get().systemSettings.hwSourceMapping.getValue().m_data[hw][xx] = b;
+		NonMaps.theMaps.getServerProxy().setHWSourceEnable(hw, xx, b);
+	}
 
 	public void panic() {
 		NonMaps.theMaps.getServerProxy().triggerPanic();

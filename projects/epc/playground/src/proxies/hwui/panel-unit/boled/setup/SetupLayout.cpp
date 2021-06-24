@@ -843,7 +843,6 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Split Channel (Part II)"));
       children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "Enable Notes"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 
@@ -856,7 +855,6 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Split Channel (Part II)"));
       children.emplace_back(new EnumSettingItem<MidiSendProgramChangesSetting>(this, "Enable Program Change"));
       children.emplace_back(new EnumSettingItem<MidiSendNotesSetting>(this, "Enable Notes"));
-      children.emplace_back(new EnumSettingItem<MidiSendControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 
@@ -866,7 +864,6 @@ namespace NavTree
         : InnerNode(parent, "Local")
     {
       children.emplace_back(new EnumSettingItem<LocalNotesSetting>(this, "Enable Notes"));
-      children.emplace_back(new EnumSettingItem<LocalControllersSetting>(this, "Enable Hardware Sources"));
     }
   };
 

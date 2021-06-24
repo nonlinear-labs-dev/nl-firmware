@@ -53,6 +53,16 @@ void InputEventStageTester::onTCDEvent()
   m_inputStage->onTCDEvent();
 }
 
+void InputEventStageTester::onTCDMessage(const MidiEvent& tcdEvent)
+{
+  m_inputStage->onTCDMessage(tcdEvent);
+}
+
+void InputEventStageTester::onMIDIMessage(const MidiEvent& midiEvent)
+{
+  m_inputStage->onMIDIMessage(midiEvent);
+}
+
 void InputEventStageTester::sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart)
 {
   m_inputStage->sendKeyDownAsMidi(pDecoder, determinedPart);

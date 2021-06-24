@@ -53,11 +53,9 @@ public class SetupUpdater extends Updater {
 		m.put("TotalRAM", DeviceInformation.get().totalRam);
 		m.put("UsedRAM", DeviceInformation.get().usedRam);
 		m.put("SyncSplit", SetupModel.get().systemSettings.syncSplit);
-		m.put("LocalControllers", SetupModel.get().systemSettings.localControllers);
 		m.put("LocalNotes", SetupModel.get().systemSettings.localNotes);
 		m.put("ReceiveChannel", SetupModel.get().systemSettings.receiveChannel);
 		m.put("ReceiveChannelSplit", SetupModel.get().systemSettings.receiveChannelSplit);
-		m.put("ReceiveControllers", SetupModel.get().systemSettings.receiveControllers);
 		m.put("ReceiveNotes", SetupModel.get().systemSettings.receiveNotes);
 		m.put("ReceiveProgramChanges", SetupModel.get().systemSettings.receiveProgramChanges);
 		m.put("ReceiveAftertouchCurve", SetupModel.get().systemSettings.receiveAftertouchCurve);
@@ -66,7 +64,6 @@ public class SetupUpdater extends Updater {
 		m.put("SendChannelSplit", SetupModel.get().systemSettings.sendChannelSplit);
 		m.put("SendProgramChanges", SetupModel.get().systemSettings.sendProgramChanges);
 		m.put("SendNotes", SetupModel.get().systemSettings.sendNotes);
-		m.put("SendControllers", SetupModel.get().systemSettings.sendControllers);
 		m.put("Pedal1Mapping", SetupModel.get().systemSettings.pedal1Mapping);
 		m.put("Pedal2Mapping", SetupModel.get().systemSettings.pedal2Mapping);
 		m.put("Pedal3Mapping", SetupModel.get().systemSettings.pedal3Mapping);
@@ -78,6 +75,7 @@ public class SetupUpdater extends Updater {
 		m.put("HighResCC", SetupModel.get().systemSettings.enable14BitSupport);
 		m.put("AftertouchMapping", SetupModel.get().systemSettings.aftertouchMapping);
 		m.put("AutoStartRecorder", SetupModel.get().systemSettings.autoStartRecorder);
+		m.put("HardwareControlEnables", SetupModel.get().systemSettings.hwSourceMapping);
 		return m;
 	}
 

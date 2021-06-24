@@ -1234,6 +1234,12 @@ public class ServerProxy {
 		queueJob(uri, false);
     }
 
+    public void setHWSourceEnable(int hw, int xx, boolean b) {
+		StaticURI.Path path = new StaticURI.Path("settings", "hw-source-enable-set");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("hw", hw), new StaticURI.KeyValue("aspect", xx), new StaticURI.KeyValue("value", b));
+		queueJob(uri, false);
+    }
+
 	public void setDirectLoadWithLoadToPart(String value, Preset selectedPreset, VoiceGroup selectedVoiceGroup, VoiceGroup currentDisplayedVoiceGroup) {
 		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load-with-load-to-part");
 
@@ -1258,5 +1264,4 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
-
 }

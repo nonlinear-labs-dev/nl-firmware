@@ -1,6 +1,7 @@
 #include <catch.hpp>
 #include <mock/InputEventStageTester.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
 {
@@ -28,12 +29,12 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   //set settings to not interfere with CC01
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.receiveControllers = true;
-    msg.sendControllers = true;
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.sendSplitChannel = MidiSendChannelSplit::None;
-    msg.localControllers = true;
+
+    msg.hwMappings = TestHelper::createFullMappings(true);
+
     msg.pedal1cc = PedalCC::CC02;
     msg.pedal2cc = PedalCC::CC02;
     msg.pedal3cc = PedalCC::CC02;
@@ -103,7 +104,7 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
     {
       eventStage.onTCDMessage(fullPressureTCDEvent);
       CHECK(receivedHW);
-      CHECK(sendMidiMessages.size() == 1);
+      REQUIRE(sendMidiMessages.size() == 1);
       CHECK(sendMidiMessages[0].numBytesUsed == 3);
       CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
       CHECK(sendMidiMessages[0].rawBytes[1] == 0);
@@ -141,7 +142,7 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
         eventStage.onTCDMessage(fullPressureTCDEvent);
 
         CHECK(receivedHW);
-        CHECK(sendMidiMessages.size() == 1);
+        REQUIRE(sendMidiMessages.size() == 1);
         CHECK(sendMidiMessages[0].numBytesUsed == 3);
         CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
         CHECK(sendMidiMessages[0].rawBytes[1] == 127);
@@ -156,11 +157,15 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
         eventStage.onTCDMessage(fullPressureTCDEvent);
 
         CHECK(receivedHW);
-        CHECK(sendMidiMessages.size() == 1);
+        REQUIRE(sendMidiMessages.size() == 2);
         CHECK(sendMidiMessages[0].numBytesUsed == 3);
         CHECK(sendMidiMessages[0].rawBytes[0] == 0xE0);
         CHECK(sendMidiMessages[0].rawBytes[1] == 127);
         CHECK(sendMidiMessages[0].rawBytes[2] == 127);
+        CHECK(sendMidiMessages[1].numBytesUsed == 3);
+        CHECK(sendMidiMessages[1].rawBytes[0] == 0xE1);
+        CHECK(sendMidiMessages[1].rawBytes[1] == 127);
+        CHECK(sendMidiMessages[1].rawBytes[2] == 127);
       }
     }
   }

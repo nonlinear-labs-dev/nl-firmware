@@ -1760,3 +1760,21 @@ input[type="range"]::-moz-range-track {
 .hidden {
 	display: none;
 }
+
+.table-parent {
+	display: table;
+    min-height: 281px;
+}
+
+.midi-table {
+	height: 100%;
+    display: table-cell;
+}
+
+.midi-table label {
+	font-size: 6pt;
+}
+
+.midi-table table, th, td {
+	border: 1px solid black;
+}
