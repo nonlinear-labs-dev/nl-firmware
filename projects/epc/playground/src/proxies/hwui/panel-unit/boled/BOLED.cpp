@@ -45,7 +45,7 @@ void BOLED::toggleScreenSaver(bool enabled)
   {
     installScreenSaver(new BOLEDScreenSaver(*this));
   }
-  else if(dynamic_cast<BOLEDScreenSaver*>(getScreenSaver()) != nullptr)
+  else if(dynamic_cast<BOLEDScreenSaver *>(getScreenSaver()) != nullptr)
   {
     removeScreenSaver();
   }

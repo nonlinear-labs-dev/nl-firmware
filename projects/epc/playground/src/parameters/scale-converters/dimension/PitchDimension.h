@@ -11,7 +11,7 @@ class PitchDimension : public Dimension
   virtual ~PitchDimension();
 
   static const PitchDimension& get();
-  
+
   [[nodiscard]] Glib::ustring getStingizerJS() const override;
   [[nodiscard]] Glib::ustring stringize(const tDisplayValue& displayValue) const override;
 };

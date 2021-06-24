@@ -126,6 +126,7 @@ void ParameterNameLabel::setSuffixFontColor(FrameBuffer &fb) const
 
 void ParameterNameLabel::onPresetLoaded()
 {
-  const auto param = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  const auto param
+      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
   onParameterChanged(param);
 }

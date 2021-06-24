@@ -333,13 +333,11 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.storeInitSound();
-                       })
+        : OneShotEntry(p, "Store Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.storeInitSound();
+        })
     {
     }
   };
@@ -347,13 +345,11 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.resetInitSound();
-                       })
+        : OneShotEntry(p, "Reset Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.resetInitSound();
+        })
     {
     }
   };
@@ -1016,12 +1012,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToHighRes();
-                       })
+        : OneShotEntry(parent, getName(), []() {
+          SettingsUseCases useCases(Application::get().getSettings());
+          useCases.setMappingsToHighRes();
+        })
     {
     }
 
@@ -1035,12 +1029,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToClassicMidi();
-                       })
+        : OneShotEntry(parent, getName(), []() {
+          SettingsUseCases useCases(Application::get().getSettings());
+          useCases.setMappingsToClassicMidi();
+        })
     {
     }
 
@@ -1053,12 +1045,10 @@ namespace NavTree
   struct MidiPanicButton : OneShotEntry
   {
     MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic Button",
-                       []()
-                       {
-                         SettingsUseCases useCase(Application::get().getSettings());
-                         useCase.panicAudioEngine();
-                       })
+        : OneShotEntry(p, "Panic Button", []() {
+          SettingsUseCases useCase(Application::get().getSettings());
+          useCase.panicAudioEngine();
+        })
     {
     }
   };

@@ -11,6 +11,7 @@ class RibbonParameterUseCases
   void setReturnMode(const Glib::ustring& mode);
 
   void incTouchBehaviour();
+
  private:
   RibbonParameter* m_param;
 };

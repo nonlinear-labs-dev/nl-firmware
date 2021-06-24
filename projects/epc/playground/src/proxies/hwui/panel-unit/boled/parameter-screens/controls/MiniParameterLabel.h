@@ -15,7 +15,7 @@ class MiniParameterLabel : public LabelRegular8
 
   MiniParameterLabel(const MiniParameterLabel& other) = delete;
   MiniParameterLabel& operator=(const MiniParameterLabel&) = delete;
-  
+
   void setSelected(bool selected);
   bool isSelected() const;
 

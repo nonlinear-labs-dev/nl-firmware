@@ -192,7 +192,8 @@ namespace nltools
       };
     }
 
-    struct PanicAudioEngine {
+    struct PanicAudioEngine
+    {
       constexpr static MessageType getType()
       {
         return MessageType::AEPanic;

@@ -4,7 +4,7 @@
 #include <synth/input/TCDDecoder.h>
 
 InputEventStageTester::InputEventStageTester(InputEventStage* stage)
-    : m_inputStage{ stage }
+    : m_inputStage { stage }
 {
 }
 

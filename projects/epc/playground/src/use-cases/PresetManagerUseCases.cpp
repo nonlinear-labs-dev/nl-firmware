@@ -547,8 +547,7 @@ void PresetManagerUseCases::sortBankNumbers()
 void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetManagerUseCases::DropActions action,
                                         const Glib::ustring& csv)
 {
-  auto actionToOffset = [](DropActions action)
-  {
+  auto actionToOffset = [](DropActions action) {
     switch(action)
     {
       case DropActions::Above:
@@ -744,16 +743,14 @@ PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(Fi
     PresetManagerSerializer serializer(m_presetManager);
 
     XmlReader reader(in, scope->getTransaction());
-    reader.onFileVersionRead(
-        [&](int version)
-        {
-          if(version > VersionAttribute::getCurrentFileVersion())
-          {
-            scope->getTransaction()->rollBack();
-            return Reader::FileVersionCheckResult::Unsupported;
-          }
-          return Reader::FileVersionCheckResult::OK;
-        });
+    reader.onFileVersionRead([&](int version) {
+      if(version > VersionAttribute::getCurrentFileVersion())
+      {
+        scope->getTransaction()->rollBack();
+        return Reader::FileVersionCheckResult::Unsupported;
+      }
+      return Reader::FileVersionCheckResult::OK;
+    });
 
     if(auto lock = m_presetManager->lockLoading())
     {

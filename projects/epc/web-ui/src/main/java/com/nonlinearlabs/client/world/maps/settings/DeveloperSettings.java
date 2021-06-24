@@ -11,7 +11,6 @@ public class DeveloperSettings extends LayoutResizingVertical {
 	public DeveloperSettings(MapsLayout parent) {
 		super(parent);
 
-		// TODO: move into data model
 		addChild(new SetupHeader(this));
 		addChild(new SendPresetAsPlaycontrollerWriteFallback(this));
 		addChild(new ResetEditBuffer(this));

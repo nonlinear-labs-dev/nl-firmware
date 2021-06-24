@@ -28,7 +28,7 @@ class NoteShiftStateMachine
   NoteShiftStateMachine();
   NoteShiftStateMachine(const NoteShiftStateMachine& other) = delete;
   NoteShiftStateMachine& operator=(const NoteShiftStateMachine&) = delete;
-  
+
   bool traverse(NoteShiftEvents event) override;
 
  private:

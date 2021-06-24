@@ -14,7 +14,7 @@ class LevelDimension : public Dimension
   }
 
   static const LevelDimension &get();
-  
+
   [[nodiscard]] Glib::ustring getStingizerJS() const override;
   [[nodiscard]] Glib::ustring stringize(const tDisplayValue &displayValue) const override;
 };
