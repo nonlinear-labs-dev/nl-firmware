@@ -17,7 +17,7 @@ class BooleanSetting : public EnumSetting<BooleanSettings>
   BooleanSetting(UpdateDocumentContributor &settings, bool def);
   virtual ~BooleanSetting();
 
-  void toggle();
+  virtual void toggle();
 
   void incDec(int inc, bool wrap);
 

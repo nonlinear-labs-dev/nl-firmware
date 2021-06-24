@@ -219,6 +219,11 @@ const PresetPartSelection* LoadToPartPresetList::getCurrentSelection() const
   return m_selections[static_cast<int>(vg)];
 }
 
+void LoadToPartPresetList::doEnterAction()
+{
+  onEnterButtonPressed();
+}
+
 auto getEditBuffer()
 {
   return Application::get().getPresetManager()->getEditBuffer();
