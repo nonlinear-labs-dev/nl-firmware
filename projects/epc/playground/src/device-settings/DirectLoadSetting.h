@@ -10,11 +10,9 @@ class DirectLoadSetting : public BooleanSetting
   DirectLoadSetting(const DirectLoadSetting& other) = delete;
   DirectLoadSetting& operator=(const DirectLoadSetting&) = delete;
 
-  void load(const Glib::ustring& text, Initiator initiator) override;
-
  private:
-  void toggle() override;
-  bool set(tEnum e) override;
+  using BooleanSetting::toggle;
+  using BooleanSetting::set;
 
   friend class DirectLoadUseCases;
 };
