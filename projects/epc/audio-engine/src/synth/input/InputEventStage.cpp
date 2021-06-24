@@ -108,11 +108,12 @@ void InputEventStage::onTCDEvent()
         {
           m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
         }
+
+        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrController()});
       }
       if(m_options->shouldSendNotes() && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
 
-      nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrController()});
 
       break;
     }
@@ -131,11 +132,11 @@ void InputEventStage::onTCDEvent()
         {
           m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
         }
+
+        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrController()});
       }
       if(m_options->shouldSendNotes() && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
-
-      nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrController()});
 
       break;
     }
@@ -155,6 +156,13 @@ void InputEventStage::onMIDIEvent()
   nltools_assertOnDevPC(decoder != nullptr);
   const auto soundType = m_dspHost->getType();
   const bool soundValid = soundType != SoundType::Invalid;
+
+  auto sendKeyEventToUI = [decoder] {
+      if(decoder->getEventType() == DecoderEventType::KeyDown)
+        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrControl()});
+      else
+        nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrControl()});
+  };
 
   switch(decoder->getEventType())
   {
@@ -180,6 +188,7 @@ void InputEventStage::onMIDIEvent()
             auto determinedPart = calculateSplitPartForKeyUp(inputSource, decoder->getKeyOrControl());
             m_dspHost->onKeyUpSplit(decoder->getKeyOrControl(), decoder->getValue(), determinedPart, inputSource);
           }
+          sendKeyEventToUI();
         }
         else if(soundValid && !receivedOnSecondary)
         {
@@ -187,13 +196,9 @@ void InputEventStage::onMIDIEvent()
             m_dspHost->onKeyUp(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
           else if(decoder->getEventType() == DecoderEventType::KeyDown)
             m_dspHost->onKeyDown(decoder->getKeyOrControl(), decoder->getValue(), inputSource);
+
+          sendKeyEventToUI();
         }
-
-
-        if(decoder->getEventType() == DecoderEventType::KeyDown)
-          nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteDown{decoder->getKeyOrControl()});
-        else
-          nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Keyboard::NoteUp{decoder->getKeyOrControl()});
       }
       break;
 
