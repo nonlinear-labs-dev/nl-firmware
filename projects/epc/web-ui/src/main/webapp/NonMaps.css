@@ -1293,23 +1293,6 @@ td.datePickerYear {
   cursor: row-resize;
 }
 
-input[type="checkbox"] {
-  display: none;
-}
-
-input[type="checkbox"]+label {
-  display: inline-block;
-  vertical-align: middle;
-  background: url("checkbox-unchecked.png") left center no-repeat;
-  background-origin: padding-box;
-  cursor: pointer;
-/*   color: #eee; */
-}
-
-input[type="checkbox"]:checked+label {
-  background: url("checkbox-checked.png") left center no-repeat;
-}
-
 input[type="radio"] {
   display: none;
 }

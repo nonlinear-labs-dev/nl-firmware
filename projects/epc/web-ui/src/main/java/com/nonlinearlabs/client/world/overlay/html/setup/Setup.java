@@ -18,6 +18,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -119,51 +120,35 @@ public class Setup extends Composite {
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
 
 	@UiField
-	RadioButton pson0, pson1, pson2, pson3, pson4, pson5, pson6, pson7, psoff0, psoff1, psoff2, psoff3, psoff4, psoff5, psoff6, psoff7, proff0, proff1,
-	proff2, proff3, proff4, proff5, proff6, proff7, pron0, pron1, pron2, pron3, pron4, pron5, pron6, pron7, sson0, sson1, sson2, sson3, sson4, sson5, 
-	sson6, sson7, ssoff0, ssoff1, ssoff2, ssoff3, ssoff4, ssoff5, ssoff6, ssoff7, sron0, sron1, sron2, sron3, sron4, sron5, sron6, sron7, sroff0, sroff1, sroff2, sroff3, sroff4, sroff5, sroff6, sroff7, lon0, 
-	lon1, lon2, lon3, lon4, lon5, lon6, lon7, loff0, loff1, loff2, loff3, loff4, loff5, loff6, loff7;
+	CheckBox pson0, pson1, pson2, pson3, pson4, pson5, pson6, pson7, pron0, pron1, pron2, pron3, pron4, pron5, pron6, pron7, 
+				sson0, sson1, sson2, sson3, sson4, sson5, sson6, sson7, sron0, sron1, sron2, sron3, sron4, sron5, sron6, sron7, 
+				lon0, lon1, lon2, lon3, lon4, lon5, lon6, lon7;
 
 
 	private class HWEnableMap {
-		public HWEnableMap(RadioButton pson, RadioButton psoff, RadioButton pron, RadioButton proff, RadioButton sson, RadioButton ssoff, RadioButton sron, RadioButton sroff, RadioButton lon, RadioButton loff) {
+		public HWEnableMap(CheckBox pson, CheckBox pron, CheckBox sson, CheckBox sron, CheckBox lon) {
 			primSendOn = pson;
-			primSendOff = psoff;
 			primRecOn = pron;
-			primRecOff = proff;
 			splitSendOn = sson;
-			splitSendOff = ssoff;
 			splitRecOn = sron;
-			splitRecOff = sroff;
 			localOn = lon;
-			localOff = loff;
 		}
 
-		public boolean hasNull() {
-			boolean ret = false;
-			for(int i = 0; i < 5; i++) {
-				Pair<RadioButton, RadioButton> x = getOnOffPairForIndex(i);
-				if(x.first == null || x.second == null)
-					ret = true;
-			}
-			return ret;
-		}
-
-		private RadioButton primSendOn, primSendOff, primRecOn, primRecOff, splitSendOn, splitSendOff, splitRecOn, splitRecOff, localOn, localOff;
+		private CheckBox primSendOn, primRecOn, splitSendOn, splitRecOn, localOn;
 		
 		//this order corresponds with the enum found in the MidiSettingsMessage here: nltools/messaging/Message.h 
-		public Pair<RadioButton, RadioButton> getOnOffPairForIndex(int i) {
+		public CheckBox getCheckBoxForOptionIndex(int i) {
 			switch(i) {
 				case 0:
-					return new Pair<>(primSendOn, primSendOff);
+					return primSendOn;
 				case 1:
-					return new Pair<>(primRecOn, primRecOff);
+					return primRecOn;
 				case 2:
-					return new Pair<>(splitSendOn, splitSendOff);
+					return splitSendOn;
 				case 3:
-					return new Pair<>(splitRecOn, splitRecOff);
+					return splitRecOn;
 				case 4:
-					return new Pair<>(localOn, localOff);
+					return localOn;
 			}
 			return null;
 		}
@@ -174,17 +159,14 @@ public class Setup extends Composite {
 
 	private void createUIData() {
 		m_hwEnableMap = new HWEnableMap[8];
-		m_hwEnableMap[0] = new HWEnableMap(pson0, psoff0, pron0, proff0, sson0, ssoff0, sron0, sroff0, lon0, loff0);
-		m_hwEnableMap[1] = new HWEnableMap(pson1, psoff1, pron1, proff1, sson1, ssoff1, sron1, sroff1, lon1, loff1);
-		m_hwEnableMap[2] = new HWEnableMap(pson2, psoff2, pron2, proff2, sson2, ssoff2, sron2, sroff2, lon2, loff2);
-		m_hwEnableMap[3] = new HWEnableMap(pson3, psoff3, pron3, proff3, sson3, ssoff3, sron3, sroff3, lon3, loff3);
-		m_hwEnableMap[4] = new HWEnableMap(pson4, psoff4, pron4, proff4, sson4, ssoff4, sron4, sroff4, lon4, loff4);
-		m_hwEnableMap[5] = new HWEnableMap(pson5, psoff5, pron5, proff5, sson5, ssoff5, sron5, sroff5, lon5, loff5);
-		m_hwEnableMap[6] = new HWEnableMap(pson6, psoff6, pron6, proff6, sson6, ssoff6, sron6, sroff6, lon6, loff6);
-		m_hwEnableMap[7] = new HWEnableMap(pson7, psoff7, pron7, proff7, sson7, ssoff7, sron7, sroff7, lon7, loff7);
-	
-		for(HWEnableMap m: m_hwEnableMap)
-			Tracer.log(m.hasNull() ? "has null" : "no null");
+		m_hwEnableMap[0] = new HWEnableMap(pson0, pron0, sson0, sron0, lon0);
+		m_hwEnableMap[1] = new HWEnableMap(pson1, pron1, sson1, sron1, lon1);
+		m_hwEnableMap[2] = new HWEnableMap(pson2, pron2, sson2, sron2, lon2);
+		m_hwEnableMap[3] = new HWEnableMap(pson3, pron3, sson3, sron3, lon3);
+		m_hwEnableMap[4] = new HWEnableMap(pson4, pron4, sson4, sron4, lon4);
+		m_hwEnableMap[5] = new HWEnableMap(pson5, pron5, sson5, sron5, lon5);
+		m_hwEnableMap[6] = new HWEnableMap(pson6, pron6, sson6, sron6, lon6);
+		m_hwEnableMap[7] = new HWEnableMap(pson7, pron7, sson7, sron7, lon7);
 	}
 
 	public Setup() {
@@ -262,13 +244,6 @@ public class Setup extends Composite {
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
-	
-		for(HWEnableMap m: m_hwEnableMap) {
-			for(int i = 0; i < 5; i++) {
-				Pair<RadioButton, RadioButton> ret = m.getOnOffPairForIndex(i);
-				fillRadioButtons(ret.first, ret.second, MidiSettings.OnOffOption.options);
-			}
-		}
 	}
 
 	public void connectEventHandlers() {
@@ -415,20 +390,12 @@ public class Setup extends Composite {
 			for(int i = 0; i < 5; i++) {
 				final int currentSettingIndex = i;
 				final int currentHWSource = hwSource;
-				Pair<RadioButton, RadioButton> ret = m.getOnOffPairForIndex(i);
-				RadioButton on = ret.first;
-				RadioButton off = ret.second;
+				CheckBox ret = m.getCheckBoxForOptionIndex(i);
 
-				on.addClickHandler(e -> {
+				ret.addValueChangeHandler(e -> {
 					final int hw = currentHWSource;
 					final int xx = currentSettingIndex;
-					settings.setHWSourceEnable(hw, xx, true);
-				});
-
-				off.addClickHandler(e -> {
-					final int hw = currentHWSource;
-					final int xx = currentSettingIndex;
-					settings.setHWSourceEnable(hw, xx, false);
+					settings.setHWSourceEnable(hw, xx, e.getValue());
 				});
 			}
 			hwSource++;
@@ -628,14 +595,11 @@ public class Setup extends Composite {
 				final int currentSettingIndex = i;
 				final int currentHWSource = hwSource;
 
-				Pair<RadioButton, RadioButton> ret = m.getOnOffPairForIndex(i);
-				RadioButton on = ret.first;
-				RadioButton off = ret.second;
+				CheckBox ret = m.getCheckBoxForOptionIndex(i);
 
 				boolean state = t.hwControlEnables.hws[currentHWSource].states[currentSettingIndex].value;
 
-				on.setValue(state);
-				off.setValue(!state);
+				ret.setValue(state);
 			}
 			hwSource++;
 		}
