@@ -152,7 +152,6 @@ public class MidiSettings {
         HWSourceEnableSettings ret = new HWSourceEnableSettings();
         for(int hw = 0; hw < 8; hw++) {
             for(int m = 0; m < 5; m++) {
-                Tracer.log("hw: " + hw + "m: " + m);
                 ret.hws[hw].states[m].value = s.m_data[hw][m];
             }
         }

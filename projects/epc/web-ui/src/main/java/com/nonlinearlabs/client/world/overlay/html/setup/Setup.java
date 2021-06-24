@@ -62,9 +62,6 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.SystemSettings;
 import com.nonlinearlabs.client.world.overlay.html.Range;
 
-import org.apache.tapestry.form.Radio;
-
-
 public class Setup extends Composite {
 	interface SetupUiBinder extends UiBinder<HTMLPanel, Setup> {
 	}
