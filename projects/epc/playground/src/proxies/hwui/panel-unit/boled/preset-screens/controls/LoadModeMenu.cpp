@@ -26,7 +26,7 @@ bool LoadModeMenu::redraw(FrameBuffer& fb)
 
 LoadModeMenu::LoadModeMenu(const Rect& rect)
     : ControlWithChildren(rect)
-    , sToggleDL { [this]
+    , m_toggleDirectLoadAction { [this]
                   {
                     DirectLoadUseCases useCase(getDirectLoadSetting().get());
                     auto hwui = Application::get().getHWUI();
@@ -79,7 +79,7 @@ void toggleLoadToPartDetail()
 
 void LoadModeMenu::installSingle()
 {
-  m_buttonDHandler = std::make_unique<ShortVsLongPress>(sToggleDL, sToggleDL);
+  m_buttonDHandler = std::make_unique<ShortVsLongPress>(m_toggleDirectLoadAction, m_toggleDirectLoadAction);
 
   auto directLoadButton = addControl(new Button("Direct Load", { 0, 15, 58, 11 }));
   directLoadButton->setHighlight(isDirectLoadEnabled());
@@ -92,7 +92,7 @@ void LoadModeMenu::setBackgroundColor(FrameBuffer& fb) const
 
 void LoadModeMenu::installDual()
 {
-  m_buttonDHandler = std::make_unique<ShortVsLongPress>([this] { toggleLoadToPartDetail(); }, sToggleDL);
+  m_buttonDHandler = std::make_unique<ShortVsLongPress>([this] { toggleLoadToPartDetail(); }, m_toggleDirectLoadAction);
 
   auto loadToPartButton = addControl(new Button("To Part", { 0, 15, 58, 11 }));
   loadToPartButton->setHighlight(isLoadToPartEnabled());

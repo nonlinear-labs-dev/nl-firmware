@@ -15,6 +15,8 @@ class DirectLoadUseCases
 
   void setDirectLoad(bool b);
 
+  void enableDirectLoadWithoutPreset();
+
  private:
   DirectLoadSetting* m_setting;
 };

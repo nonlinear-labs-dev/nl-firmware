@@ -89,3 +89,8 @@ void DirectLoadUseCases::setDirectLoad(bool b)
     }
   }
 }
+
+void DirectLoadUseCases::enableDirectLoadWithoutPreset()
+{
+  m_setting->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
+}

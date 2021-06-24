@@ -1,7 +1,5 @@
 package com.nonlinearlabs.client.useCases;
 
-import com.google.gwt.core.linker.SymbolMapsLinker.ScriptFragmentEditsArtifact.Edit;
-import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
@@ -19,7 +17,6 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterMod
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.tools.NLMath;
-import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 
 public class EditBufferUseCases {

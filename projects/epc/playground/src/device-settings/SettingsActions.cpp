@@ -65,6 +65,8 @@ SettingsActions::SettingsActions(Settings &settings)
       if(state == "on") {
         if(auto preset = pm->findPreset(Uuid{presetIfInLoadToPart})) {
           useCase.enableDirectLoadFromWebUI(preset, to<VoiceGroup>(fromIfInLoadToPart), to<VoiceGroup>(totIfInLoadToPart));
+        } else {
+          useCase.enableDirectLoadWithoutPreset();
         }
       } else if(state == "off") {
         useCase.disableDirectLoad();
