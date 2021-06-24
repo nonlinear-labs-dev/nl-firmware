@@ -5,7 +5,7 @@ template <typename tData> class Item : public IntrusiveListItem<Item<tData> *>
 {
  public:
   explicit Item(tData t)
-      : data{ t }
+      : data { t }
   {
   }
   tData data;
@@ -126,7 +126,8 @@ TEST_CASE("Simple IntrusiveList Operations")
     CHECK(expected == 3);
   }
 
-  SECTION("Clear") {
+  SECTION("Clear")
+  {
     auto last = new Item<int>(3);
 
     l.append(new Item<int>(2));

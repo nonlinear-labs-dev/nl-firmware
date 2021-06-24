@@ -11,7 +11,7 @@ class NoteDimension : public Dimension
   virtual ~NoteDimension();
 
   static const NoteDimension &get();
-  
+
   [[nodiscard]] Glib::ustring getStingizerJS() const override;
   [[nodiscard]] Glib::ustring stringize(const tDisplayValue &displayValue) const override;
 };

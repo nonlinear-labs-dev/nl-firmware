@@ -194,7 +194,6 @@ TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
     CHECK(dsp.didReceiveHW());
   }
 
-
   WHEN("Send 14 Bit with disbled 14 bit support")
   {
     settings.set14BitSupportEnabled(false);

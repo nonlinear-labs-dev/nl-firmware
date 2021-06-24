@@ -22,7 +22,7 @@ class FileListControl : public ControlWithChildren
 
  private:
   std::string getFileNameAtIndex(int index);
-  
+
   Label* upperFile;
   Label* middleFile;
   Label* bottomFile;

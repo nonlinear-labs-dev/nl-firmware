@@ -16,7 +16,7 @@ BaseUnitPlayMode::BaseUnitPlayMode()
     : m_modeButtonHandler(std::bind(&BaseUnitPlayMode::modeButtonShortPress, this),
                           std::bind(&BaseUnitPlayMode::modeButtonLongPress, this))
 {
-  for(auto b:  {Buttons::BUTTON_MINUS, Buttons::BUTTON_PLUS, Buttons::BUTTON_MODE, Buttons::BUTTON_FUNCTION})
+  for(auto b : { Buttons::BUTTON_MINUS, Buttons::BUTTON_PLUS, Buttons::BUTTON_MODE, Buttons::BUTTON_FUNCTION })
     m_buttonStates.emplace(b, false);
 }
 
@@ -82,7 +82,7 @@ void BaseUnitPlayMode::setupBaseUnitMinusButton()
 {
   setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
     if(checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
-        return true;
+      return true;
 
     if(state)
       m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_PRESSED);
@@ -96,7 +96,6 @@ void BaseUnitPlayMode::setupBaseUnitMinusButton()
 void BaseUnitPlayMode::setupBaseUnitPlusButton()
 {
   setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
-
     if(checkPanicAffenGriff(Buttons::BUTTON_PLUS, state))
       return true;
 
@@ -112,7 +111,7 @@ void BaseUnitPlayMode::setupBaseUnitPlusButton()
 bool BaseUnitPlayMode::checkPanicAffenGriff(Buttons b, bool state)
 {
   m_buttonStates[b] = state;
-  if(std::all_of(m_buttonStates.cbegin(), m_buttonStates.cend(), [](auto x ) { return x.second == true; }))
+  if(std::all_of(m_buttonStates.cbegin(), m_buttonStates.cend(), [](auto x) { return x.second == true; }))
   {
     SettingsUseCases useCase(Application::get().getSettings());
     useCase.panicAudioEngine();

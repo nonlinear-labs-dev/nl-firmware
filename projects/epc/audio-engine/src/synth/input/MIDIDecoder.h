@@ -22,7 +22,7 @@ class MIDIDecoder
 
   struct ReceivedHWMidiEvent
   {
-    int receivedCC = -1; //MSB - ControlID
+    int receivedCC = -1;  //MSB - ControlID
     MidiHWChangeSpecialCases cases;
     std::array<uint8_t, 2> undecodedValueBytes;  //values are MSB, LSB
   };

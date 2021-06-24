@@ -2,7 +2,7 @@
 #include <synth/c15-audio-engine/dsp_host_dual.h>
 
 DspHostDualTester::DspHostDualTester(dsp_host_dual* _host)
-    : m_host{ _host }
+    : m_host { _host }
 {
 }
 
@@ -53,8 +53,8 @@ unsigned int DspHostDualTester::getAssignableVoices()
 void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup _group)
 {
   // prepare default message
-  nltools::msg::UnmodulateableParameterChangedMessage msg{ C15::PID::Mono_Grp_Enable, static_cast<float>(_mono),
-                                                           VoiceGroup::Global };
+  nltools::msg::UnmodulateableParameterChangedMessage msg { C15::PID::Mono_Grp_Enable, static_cast<float>(_mono),
+                                                            VoiceGroup::Global };
   // overwrite voiceGroup in non-single sounds
   switch(m_host->getType())
   {
@@ -70,7 +70,7 @@ void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup
 void DspHostDualTester::applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group)
 {
   // prepare default message
-  nltools::msg::UnmodulateableParameterChangedMessage msg{ C15::PID::Unison_Voices, 0.0f, VoiceGroup::Global };
+  nltools::msg::UnmodulateableParameterChangedMessage msg { C15::PID::Unison_Voices, 0.0f, VoiceGroup::Global };
   // act according to sound type
   switch(m_host->getType())
   {

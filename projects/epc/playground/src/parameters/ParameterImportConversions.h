@@ -15,9 +15,9 @@ class ParameterImportConversions
   typedef uint16_t tParameterID;
 
   [[nodiscard]] tControlPositionValue convert(tParameterID parameterID, tControlPositionValue in,
-                                tFileVersion inVersion, SoundType type) const;
+                                              tFileVersion inVersion, SoundType type) const;
   [[nodiscard]] tControlPositionValue convertMCAmount(tParameterID parameterID, tControlPositionValue in,
-                                        tFileVersion inVersion) const;
+                                                      tFileVersion inVersion) const;
 
   virtual ~ParameterImportConversions();
 

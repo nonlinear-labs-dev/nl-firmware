@@ -47,10 +47,10 @@ bool WifiSetting::set(tEnum m)
 {
   auto ret = super::set(m);
 
-  if (m == WifiSettings::Enabled)
-      m_localWifi->setNewWifiState(true);
-  else if (m == WifiSettings::Disabled)
-      m_localWifi->setNewWifiState(false);
+  if(m == WifiSettings::Enabled)
+    m_localWifi->setNewWifiState(true);
+  else if(m == WifiSettings::Disabled)
+    m_localWifi->setNewWifiState(false);
 
   if constexpr(!isDevelopmentPC)
   {

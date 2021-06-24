@@ -8,7 +8,7 @@ class PercentageDimensionFine : public Dimension
   virtual ~PercentageDimensionFine();
 
   static const PercentageDimensionFine &get();
- 
+
   [[nodiscard]] Glib::ustring getStingizerJS() const override;
   [[nodiscard]] Glib::ustring stringize(const tDisplayValue &displayValue) const override;
 

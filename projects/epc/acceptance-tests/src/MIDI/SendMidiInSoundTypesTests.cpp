@@ -11,7 +11,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { BASE_TCD | Aftertouch, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) };
 
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
@@ -44,8 +44,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
   auto sendTCDHWChange = [&]() { eventStage.onTCDMessage(fullPressureTCDEvent); };
 
-  auto doTests = [&]()
-  {
+  auto doTests = [&]() {
     WHEN("Sound is Single")
     {
       host.setType(SoundType::Single);

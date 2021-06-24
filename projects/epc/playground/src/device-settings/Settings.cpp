@@ -243,7 +243,6 @@ void Settings::addSetting(const Glib::ustring &key, Setting *s)
   m_settings[key] = tSettingPtr(s);
 }
 
-
 const Settings::tMap &Settings::getSettings() const
 {
   return m_settings;

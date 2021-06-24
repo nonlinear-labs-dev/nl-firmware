@@ -83,8 +83,8 @@ SettingsActions::SettingsActions(Settings &settings)
   });
 
   addAction("default-high-res", [&](auto request) {
-      SettingsUseCases useCase(Application::get().getSettings());
-      useCase.setMappingsToHighRes();
+    SettingsUseCases useCase(Application::get().getSettings());
+    useCase.setMappingsToHighRes();
   });
 
   addAction("default-classic-midi", [&](auto request) {
@@ -93,8 +93,8 @@ SettingsActions::SettingsActions(Settings &settings)
   });
 
   addAction("panic-audio-engine", [](auto request) {
-     SettingsUseCases useCase(Application::get().getSettings());
-     useCase.panicAudioEngine();
+    SettingsUseCases useCase(Application::get().getSettings());
+    useCase.panicAudioEngine();
   });
 }
 

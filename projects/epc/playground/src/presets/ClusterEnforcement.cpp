@@ -233,7 +233,7 @@ bool inCluster(const ClusterEnforcement::tTreeNodePtr& node)
 std::vector<ClusterEnforcement::tTreeNodePtr>
     prepareNodeVector(const std::map<Uuid, ClusterEnforcement::tTreeNodePtr>& nodeMap)
 {
-  std::vector<ClusterEnforcement::tTreeNodePtr> ret{};
+  std::vector<ClusterEnforcement::tTreeNodePtr> ret {};
   ret.reserve(nodeMap.size());
   for(const auto& x : nodeMap)
     ret.push_back(x.second);

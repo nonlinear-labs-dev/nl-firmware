@@ -74,7 +74,7 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth *synth, const std::string 
   PresetManager pm(&updateDocMaster, true);
   PresetManagerUseCases useCase(&pm);
 
-  useCase.importBankFromPath(std::filesystem::directory_entry{presetData});
+  useCase.importBankFromPath(std::filesystem::directory_entry { presetData });
 
   auto bank = pm.getBankAt(0);
   auto preset = bank->getPresetAt(0);

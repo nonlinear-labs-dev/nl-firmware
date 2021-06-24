@@ -22,7 +22,7 @@ class RecallParameter : public UpdateDocumentContributor
 
   [[nodiscard]] const std::string& getGivenName() const;
   [[nodiscard]] const std::string& getInfo() const;
-  
+
  private:
   ParameterId m_id;
   tControlPositionValue m_recallValue = 0;

@@ -472,7 +472,7 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
   auto preset = presets.getLayerPreset();
 
   REQUIRE(preset->getType() == SoundType::Layer);
-  
+
   {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
