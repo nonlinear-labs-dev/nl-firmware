@@ -20,6 +20,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <parameter_declarations.h>
+#include <use-cases/DirectLoadUseCases.h>
 
 namespace DescriptiveLayouts
 {
@@ -146,9 +147,9 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::SwitchToButtonDDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonD); });
     registerEvent(EventSinks::SwitchToVoicesDetail, [hwui] { hwui->setUiModeDetail(UIDetail::Voices); });
 
-    registerEvent(EventSinks::ToggleDirectLoad, [] {
-      auto eb = Application::get().getPresetManager()->getEditBuffer();
-      Application::get().getSettings()->getSetting<DirectLoadSetting>()->toggle();
+    registerEvent(EventSinks::ToggleDirectLoad, [hwui] {
+      DirectLoadUseCases useCase(Application::get().getSettings()->getSetting<DirectLoadSetting>().get());
+      useCase.toggleDirectLoadFromHWUI(hwui);
     });
 
     registerEvent(EventSinks::SwitchToMCAmtDetail, [hwui, eb]() {
