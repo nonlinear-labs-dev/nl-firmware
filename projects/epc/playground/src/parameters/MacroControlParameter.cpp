@@ -237,7 +237,6 @@ bool MacroControlParameter::isChangedFromLoaded() const
 
 void MacroControlParameter::undoableResetConnectionsToTargets()
 {
-
 }
 
 void MacroControlParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)

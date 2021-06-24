@@ -17,7 +17,8 @@ class ModuleCaption : public Label
 
  protected:
   virtual void updateText(Parameter *newOne);
-  StringAndSuffix shortenStringIfNeccessary(const std::shared_ptr<Font> &font, const StringAndSuffix &text) const override;
+  StringAndSuffix shortenStringIfNeccessary(const std::shared_ptr<Font> &font,
+                                            const StringAndSuffix &text) const override;
 
  private:
   void setFontColor(FrameBuffer &fb) const override;

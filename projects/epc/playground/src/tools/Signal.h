@@ -46,7 +46,7 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
   Signal(const Signal &other) = delete;
   Signal &operator=(const Signal &) = delete;
 
-  sigc::connection connectAndInit(const typename super::slot_type &slot, const tArgs &...args)
+  sigc::connection connectAndInit(const typename super::slot_type &slot, const tArgs &... args)
   {
     auto cb = std::bind(&super::slot_type::operator(), slot, args...);
     auto ret = super::connect(slot);
@@ -62,7 +62,7 @@ template <typename tFirst, typename... tArgs> class Signal : public sigc::signal
     return this->emit(args...);
   }
 
-  void deferedSend(const tArgs &...args)
+  void deferedSend(const tArgs &... args)
   {
     m_deferedSend = [=]() { send(args...); };
     SignalBase::deferedSend();

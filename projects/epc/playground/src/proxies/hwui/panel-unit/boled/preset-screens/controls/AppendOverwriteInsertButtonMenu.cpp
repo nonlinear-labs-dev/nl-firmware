@@ -124,8 +124,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 void AppendOverwriteInsertButtonMenu::pushRenameScreen()
 {
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new RenamePresetLayout(
-      [=](const Glib::ustring& newName)
-      {
+      [=](const Glib::ustring& newName) {
         if(auto bank = Application::get().getPresetManager()->getSelectedBank())
         {
           if(auto preset = bank->getSelectedPreset())

@@ -17,7 +17,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
 {
   auto pm = Application::get().getPresetManager();
   SoundUseCases useCases(pm->getEditBuffer(), pm);
-  
+
   switch(newType)
   {
     case SoundType::Single:

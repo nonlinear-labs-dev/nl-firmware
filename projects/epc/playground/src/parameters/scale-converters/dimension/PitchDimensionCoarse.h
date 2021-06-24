@@ -11,7 +11,7 @@ class PitchDimensionCoarse : public Dimension
   virtual ~PitchDimensionCoarse();
 
   static const PitchDimensionCoarse& get();
-  
+
   [[nodiscard]] Glib::ustring getStingizerJS() const override;
   [[nodiscard]] Glib::ustring stringize(const tDisplayValue& displayValue) const override;
 };

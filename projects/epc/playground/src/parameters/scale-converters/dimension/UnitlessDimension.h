@@ -9,7 +9,7 @@ class UnitlessDimension : public Dimension
   virtual ~UnitlessDimension();
 
   static const UnitlessDimension &get();
-  
+
   [[nodiscard]] Glib::ustring getStingizerJS() const override;
   [[nodiscard]] Glib::ustring stringize(const tDisplayValue &displayValue) const override;
 };

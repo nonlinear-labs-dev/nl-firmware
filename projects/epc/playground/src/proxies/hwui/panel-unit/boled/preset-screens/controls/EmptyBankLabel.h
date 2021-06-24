@@ -13,7 +13,7 @@ class EmptyBankLabel : public Label
 
   EmptyBankLabel(const EmptyBankLabel &other) = delete;
   EmptyBankLabel &operator=(const EmptyBankLabel &) = delete;
-  
+
   bool redraw(FrameBuffer &fb) override;
   void setFontColor(FrameBuffer &fb) const override;
 };

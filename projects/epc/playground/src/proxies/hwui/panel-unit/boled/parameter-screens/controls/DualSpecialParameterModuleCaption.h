@@ -3,7 +3,7 @@
 
 class DualSpecialParameterModuleCaption : public ModuleCaption
 {
-public:
+ public:
   explicit DualSpecialParameterModuleCaption(const Rect& pos);
-  void updateText(Parameter *newOne) override;
+  void updateText(Parameter* newOne) override;
 };

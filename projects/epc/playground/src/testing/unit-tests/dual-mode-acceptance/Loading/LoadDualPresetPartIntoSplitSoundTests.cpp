@@ -198,10 +198,10 @@ TEST_CASE("Load Part I of Split into Split Part II")
     auto tune = preset->findParameterByID({ 248, VoiceGroup::Global }, true);
     tune->setValue(transaction, 0.265);
 
-    auto pSplit = preset->findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::I}, false);
+    auto pSplit = preset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }, false);
     pSplit->setValue(transaction, 1);
 
-    auto eSplit = eb->findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::I});
+    auto eSplit = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
     eSplit->setCPFromHwui(transaction, 0);
 
     auto partVolume = preset->findParameterByID({ 358, VoiceGroup::I }, true);
