@@ -4,7 +4,10 @@
 HardwareControlEnables::HardwareControlEnables(Settings& s)
     : Setting(s)
 {
-  m_data.fill({ false });
+  for(auto& row : m_data)
+  {
+    row.fill(true);
+  }
 }
 
 bool HardwareControlEnables::getState(HardwareControlEnables::tHWIdx hwIdx,

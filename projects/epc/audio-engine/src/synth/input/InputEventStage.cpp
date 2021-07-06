@@ -717,7 +717,8 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos);
-    m_hwChangedCB();
+    if(source != DSPInterface::HWChangeSource::UI)
+      m_hwChangedCB();
   }
 
   if(source != DSPInterface::HWChangeSource::MIDI)
