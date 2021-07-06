@@ -31,9 +31,9 @@ bool TCDDecoder::decode(const MidiEvent &event)
         value = (2.0f * value) - 1.0f;
       }
 
-      if constexpr(LOG_MIDI_TCD)
+      if constexpr(true)
       {
-        nltools::Log::warning("Got HW-Src:", channel, "value:", value, "behaviour", static_cast<int>(behaviour));
+        nltools::Log::warning("Got HW-Src:", channel, "value:", value, "behaviour", static_cast<int>(behaviour), "raw data0", (short)_data0, "raw data1",(short)_data1);
       }
 
       keyOrController = channel;

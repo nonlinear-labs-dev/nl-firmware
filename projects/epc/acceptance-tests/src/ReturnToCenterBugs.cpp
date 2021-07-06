@@ -50,7 +50,6 @@ TEST_CASE("Ribbon 1 Return to Center")
     }
   };
 
-  std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   MyTestHost dsp { Ribbon1, -1 };
 
   dsp.setType(SoundType::Single);
@@ -59,7 +58,7 @@ TEST_CASE("Ribbon 1 Return to Center")
   const auto zero = 0;
 
   CHECK_FALSE(dsp.didReceiveHW());
-  
+
   WHEN("Ribbon 1 is Return to Center and TCD 0 was send")
   {
     eventStage.onTCDMessage({ BASE_TCD | Ribbon1, (uint8_t) (zero >> 7), (uint8_t) (zero & 127) });
