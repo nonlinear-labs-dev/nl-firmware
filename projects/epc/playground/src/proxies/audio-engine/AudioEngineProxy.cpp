@@ -55,7 +55,6 @@ AudioEngineProxy::AudioEngineProxy()
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
   receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
-    nltools::Log::error("Received HWSourceChangedNotification for", msg.hwSource, "value:", msg.position);
     auto playController = Application::get().getPlaycontrollerProxy();
     auto id = msg.hwSource;
     auto value = msg.position;

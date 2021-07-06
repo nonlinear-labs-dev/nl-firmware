@@ -15,7 +15,6 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
     , m_syncPlaygroundTask(std::async(std::launch::async, [this] {syncPlaygroundLoop(); }))
     , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] {
-                            nltools::Log::error("syncPG notified");
                             m_syncPlaygroundWaiter.notify_all(); },
                           [this](auto msg) { queueExternalMidiOut(msg); } }
 {
@@ -156,7 +155,6 @@ void C15Synth::syncExternalMidiBridge()
   {
     auto msg = m_externalMidiOutBuffer.pop();
     auto copy = msg;
-    nltools::Log::error("syncExternalMidiBridge");
     send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, copy);
   }
 }
@@ -360,7 +358,6 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
 
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)
 {
-  nltools::Log::error("queueExternalMidiOut");
   m_externalMidiOutBuffer.push(m);
   m_syncExternalsWaiter.notify_all();
 }
