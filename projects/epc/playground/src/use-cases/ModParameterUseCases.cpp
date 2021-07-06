@@ -11,7 +11,8 @@
 #include <cmath>
 
 ModParameterUseCases::ModParameterUseCases(ModulateableParameter* parameter)
-    : m_modParam { parameter }
+    : ParameterUseCases{parameter}
+    , m_modParam { parameter }
 {
   nltools_assertAlways(m_modParam != nullptr);
 }

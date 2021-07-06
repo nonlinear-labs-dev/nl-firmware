@@ -63,9 +63,13 @@ void ModulationRoutingParameter::applyPlaycontrollerPhysicalControl(tControlPosi
   if(std::abs(amount) > std::numeric_limits<tDisplayValue>::epsilon())
   {
     tControlPositionValue result = diff * amount;
+    //if(m_srcParameter->isBiPolar()) //pretty sure this can be optimized away?!
+    //result /= 2.0;
 
     if(std::abs(result) > std::numeric_limits<tDisplayValue>::epsilon())
       m_tgtParameter->applyPlaycontrollerPhysicalControl(result);
+
+    nltools::Log::error("result",result,"currSRC:", m_srcParameter->getControlPositionValue(), "newTGT:",m_tgtParameter->getControlPositionValue(), "mc-display:", m_tgtParameter->getDisplayValue());
   }
 }
 
@@ -76,6 +80,7 @@ void ModulationRoutingParameter::applyAbsolutePlaycontrollerPhysicalControl(tCon
   if(std::abs(amount) > std::numeric_limits<tDisplayValue>::epsilon())
   {
     m_tgtParameter->applyAbsolutePlaycontrollerPhysicalControl(v);
+    nltools::Log::error("abs.Val:",v,"currSRC:", m_srcParameter->getControlPositionValue(), "newTGT:",m_tgtParameter->getControlPositionValue(), "mc-display:", m_tgtParameter->getDisplayValue());
   }
 }
 

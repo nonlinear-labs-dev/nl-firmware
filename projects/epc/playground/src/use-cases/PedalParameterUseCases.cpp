@@ -4,7 +4,8 @@
 #include <libundo/undo/Scope.h>
 
 PedalParameterUseCases::PedalParameterUseCases(PedalParameter* p)
-    : m_param { p }
+    : PhysicalControlParameterUseCases{p}
+    , m_param { p }
 {
   nltools_assertAlways(m_param != nullptr);
 }
