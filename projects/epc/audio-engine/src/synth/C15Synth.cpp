@@ -161,7 +161,6 @@ void C15Synth::syncExternalMidiBridge()
 
 void C15Synth::syncPlayground()
 {
-  nltools::Log::error("syncPlayground");
   auto engineHWSourceValues = m_dsp->getHWSourceValues();
   for(size_t i = 0; i < std::tuple_size_v<dsp_host_dual::HWSourceValues>; i++)
   {
@@ -171,11 +170,6 @@ void C15Synth::syncPlayground()
       send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
-}
-
-bool matchPattern(unsigned char data, uint8_t PATTERN, uint8_t MASK)
-{
-  return (data & MASK) == PATTERN;
 }
 
 void C15Synth::doMidi(const MidiEvent& event)
