@@ -51,17 +51,6 @@ namespace nltools
         uint8_t program;
         SoundType programType = SoundType::Invalid;
       };
-
-      struct HardwareChangeMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::MidiHardwareChange;
-        }
-
-        int parameterID;
-        float value;
-      };
     }
 
     using tID = int;

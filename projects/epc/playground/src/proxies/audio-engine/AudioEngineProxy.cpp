@@ -55,6 +55,7 @@ AudioEngineProxy::AudioEngineProxy()
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
   receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
+    nltools::Log::error("Received HWSourceChangedNotification for", msg.hwSource, "value:", msg.position);
     auto playController = Application::get().getPlaycontrollerProxy();
     auto id = msg.hwSource;
     auto value = msg.position;
@@ -76,18 +77,6 @@ AudioEngineProxy::AudioEngineProxy()
         BankUseCases useCase(bank);
         useCase.selectPreset(msg.program);
       }
-  });
-
-  receive<Midi::HardwareChangeMessage>(EndPoint::Playground, [](const auto &msg) {
-    if(Application::exists())
-    {
-      auto eb = Application::get().getPresetManager()->getEditBuffer();
-      if(auto parameter
-         = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
-      {
-        parameter->onChangeFromPlaycontroller(static_cast<tControlPositionValue>(msg.value));
-      }
-    }
   });
 
   pm->onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
