@@ -2511,3 +2511,13 @@ void dsp_host_dual::onMidiSettingsReceived()
     }
   });
 }
+
+void dsp_host_dual::updateBehaviour(const nltools::msg::HWSourceChangedMessage& msg)
+{
+  auto element = getParameter(msg.parameterId);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
+  {
+    auto param = m_params.get_hw_src(element.m_param.m_index);
+    param->update_behavior(getBehavior(msg.returnMode));
+  }
+}

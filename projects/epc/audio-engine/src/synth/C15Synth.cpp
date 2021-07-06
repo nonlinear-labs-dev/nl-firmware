@@ -345,7 +345,9 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
-  m_playgroundHwSourceKnownValues[InputEventStage::parameterIDToHWID(msg.parameterId)] = msg.controlPosition;
+  m_dsp->updateBehaviour(msg);
+  auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
+  m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
   m_inputEventStage.onUIHWSourceMessage(msg);
 }
 

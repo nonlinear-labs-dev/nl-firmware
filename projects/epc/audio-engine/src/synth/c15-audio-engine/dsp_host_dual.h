@@ -158,6 +158,7 @@ class dsp_host_dual : public DSPInterface
   void localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
+  void updateBehaviour(const nltools::msg::HWSourceChangedMessage& msg);
   // evend bindings: Settings
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
