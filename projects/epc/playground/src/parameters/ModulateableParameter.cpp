@@ -293,7 +293,8 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
       if(auto srcParam = editBuffer->findParameterByID(srcParamID))
       {
         auto modAmount = getModulationAmount();
-        auto srcValue = srcParam->getValue().getRawValue();
+        auto srcValue = srcParam->getValue().getClippedValue();
+
         auto value = getValue().getRawValue();
 
         if(isBiPolar())

@@ -31,7 +31,7 @@ bool PhysicalControlParameter::isChangedFromLoaded() const
 
 void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newVal)
 {
-  getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().clip(newVal));
+  getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newVal));
 }
 
 void PhysicalControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
