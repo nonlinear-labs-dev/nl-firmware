@@ -4,7 +4,7 @@
 HardwareControlEnables::HardwareControlEnables(Settings& s)
     : Setting(s)
 {
-    m_data.fill( { true });
+  m_data.fill({ true });
 }
 
 bool HardwareControlEnables::getState(HardwareControlEnables::tHWIdx hwIdx,
