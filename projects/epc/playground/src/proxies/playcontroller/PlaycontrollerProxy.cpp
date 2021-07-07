@@ -196,22 +196,6 @@ Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHW
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramId);
 }
 
-void PlaycontrollerProxy::applyParamMessageAbsolutely(PhysicalControlParameter *p, gint16 value)
-{
-  DebugLevel::info(G_STRLOC, value);
-
-  if(p->isBiPolar())
-  {
-    DebugLevel::info(G_STRLOC);
-    p->onChangeFromPlaycontroller((value - 8000.0) / 8000.0);
-  }
-  else
-  {
-    DebugLevel::info(G_STRLOC);
-    p->onChangeFromPlaycontroller(value / 16000.0);
-  }
-}
-
 void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMessage &msg)
 {
   DebugLevel::info("it is an edit control message");

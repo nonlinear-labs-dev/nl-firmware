@@ -72,8 +72,6 @@ class PlaycontrollerProxy
   Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
   void notifyRibbonTouch(int ribbonsParameterID);
 
-  void applyParamMessageAbsolutely(PhysicalControlParameter *p, gint16 value);
-
  private:
   void onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);

@@ -1,11 +1,12 @@
 #pragma once
 #include <ParameterId.h>
 #include <playground.h>
+#include <use-cases/ParameterUseCases.h>
 
 class EditBuffer;
 class ModulateableParameter;
 
-class ModParameterUseCases
+class ModParameterUseCases : public ParameterUseCases
 {
  public:
   explicit ModParameterUseCases(ModulateableParameter* param);

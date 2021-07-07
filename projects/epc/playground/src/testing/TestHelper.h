@@ -16,9 +16,9 @@ namespace TestHelper
   {
     typedef nltools::msg::Setting::MidiSettingsMessage::tHWMappingType tHW;
     tHW ret;
-    ret.fill(tHW::value_type { });
-    for(auto& x: ret)
-      x.fill(state);
+    for(auto& row: ret) {
+      row.fill(state);
+    }
     return ret;
   }
 

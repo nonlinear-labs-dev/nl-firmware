@@ -85,7 +85,7 @@ class DSPInterface
     Invalid
   };
 
-  virtual void onHWChanged(const uint32_t id, float value) = 0;
+  virtual void onHWChanged(const uint32_t id, float value, bool didBehaviourChange) = 0;
   virtual void onKeyDown(const int note, float velocity, InputEventSource from) = 0;
   virtual void onKeyUp(const int note, float velocity, InputEventSource from) = 0;
   virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
@@ -136,7 +136,7 @@ class dsp_host_dual : public DSPInterface
 
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
-  void onHWChanged(const uint32_t id, float value) override;
+  void onHWChanged(const uint32_t id, float value, bool didBehaviourChange) override;
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
@@ -158,6 +158,7 @@ class dsp_host_dual : public DSPInterface
   void localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
+  bool updateBehaviour(C15::ParameterDescriptor& param, ReturnMode mode);
   // evend bindings: Settings
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);

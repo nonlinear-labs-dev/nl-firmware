@@ -2332,13 +2332,13 @@ void dsp_host_dual::debugLevels()
           ->m_scaled);
 }
 
-// seems to work (ui and midi, tcd untested but expected to work as well)
-void dsp_host_dual::onHWChanged(const uint32_t id, float value)
+void dsp_host_dual::onHWChanged(const uint32_t id, float value, bool didBehaviourChange)
 {
   auto source = m_params.get_hw_src(id);
   const float inc = value - source->m_position;
   source->m_position = value;
-  hwModChain(source, id, inc);
+  if(!didBehaviourChange)
+    hwModChain(source, id, inc);
 }
 
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
@@ -2510,4 +2510,10 @@ void dsp_host_dual::onMidiSettingsReceived()
       m_poly[layerId].m_key_active = 0;
     }
   });
+}
+
+bool dsp_host_dual::updateBehaviour(C15::ParameterDescriptor& element, ReturnMode mode)
+{
+  auto param = m_params.get_hw_src(element.m_param.m_index);
+  return param->update_behavior(getBehavior(mode));
 }

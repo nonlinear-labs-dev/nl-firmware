@@ -46,6 +46,7 @@ class QuantizedValue : public ClippedValue
 
   void setFineDenominator(tControlPositionValue fineDenominator);
 
+  [[nodiscard]] tControlPositionValue getFineQuantizedClippedValue(tControlPositionValue newValue) const;
   [[nodiscard]] tControlPositionValue getQuantizedClippedValue(bool fine) const;
   [[nodiscard]] tControlPositionValue getQuantizedUnClippedValue(bool fine) const;
 

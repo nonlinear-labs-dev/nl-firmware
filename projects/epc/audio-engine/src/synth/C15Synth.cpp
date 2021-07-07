@@ -5,19 +5,7 @@
 #include <nltools/logging/Log.h>
 #include <nltools/messaging/Message.h>
 
-constexpr static u_int8_t MIDI_SYSEX_PATTERN = 0b11110000;
-constexpr static u_int8_t MIDI_NOTE_OFF_PATTERN = 0b10000000;  //rechten bits ignorieren da channel
-constexpr static u_int8_t MIDI_NOTE_ON_PATTERN = 0b10010000;
-constexpr static u_int8_t MIDI_CHANNEL_MASK = 0b00001111;
-constexpr static u_int8_t MIDI_CHANNEL_AFTERTOUCH_PATTERN = 0b11010000;
-constexpr static u_int8_t MIDI_CONTROLCHANGE_PATTERN = 0b10110000;
-constexpr static u_int8_t MIDI_PITCHBEND_PATTERN = 0b11100000;
 constexpr static u_int8_t MIDI_PROGRAMCHANGE_PATTERN = 0b11000000;
-constexpr static u_int8_t MIDI_CONTROL_CHANGE_HIGH_RES_VELOCITY = 0b01011000;
-constexpr static u_int8_t MIDI_EVENT_TYPE_MASK = 0b11110000;
-constexpr static u_int8_t MIDI_CHANNEL_OMNI = 16;
-constexpr static auto TCD_PATTERN = 0b11100000;
-constexpr static auto TCD_TYPE_MASK = 0b00001111;
 
 C15Synth::C15Synth(AudioEngineOptions* options)
     : Synth(options)
@@ -345,8 +333,14 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
-  m_playgroundHwSourceKnownValues[InputEventStage::parameterIDToHWID(msg.parameterId)] = msg.controlPosition;
-  m_inputEventStage.onUIHWSourceMessage(msg);
+  auto element = m_dsp->getParameter(msg.parameterId);
+  auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
+
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HWID::INVALID) {
+    auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
+    m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
+    m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
+  }
 }
 
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)
