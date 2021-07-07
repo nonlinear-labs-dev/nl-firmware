@@ -65,6 +65,7 @@ TEST_CASE("100% HW-Amount of Bipolar Source on MC used to lead to 2x the modulat
     }
   }
 
+  //This documents the feature that mapped HWs with 100% Amt can bring an MC into clipping
   WHEN("Ribbon is -0.5")
   {
     ribbonUseCase.setControlPosition(-0.5);
@@ -73,7 +74,7 @@ TEST_CASE("100% HW-Amount of Bipolar Source on MC used to lead to 2x the modulat
     {
       TestHelper::doMainLoopIteration();
       CHECK(ribbon1->getControlPositionValue() == -0.5);
-      CHECK(mcA->getControlPositionValue() == 0.25);
+      CHECK(mcA->getControlPositionValue() == 0);
     }
   }
 
@@ -85,7 +86,7 @@ TEST_CASE("100% HW-Amount of Bipolar Source on MC used to lead to 2x the modulat
     {
       TestHelper::doMainLoopIteration();
       CHECK(ribbon1->getControlPositionValue() == .5);
-      CHECK(mcA->getControlPositionValue() == .75);
+      CHECK(mcA->getControlPositionValue() == 1);
     }
   }
 }
