@@ -15,7 +15,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB([&](int hwID, float hwPos) {
+  host.setOnHWChangedCB([&](int hwID, float hwPos, bool) {
     CHECK(hwID == 0);
     CHECK(hwPos == 1.0f);
     receivedHW = true;
@@ -63,7 +63,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
 
     WHEN("Send CC01 < 0.5")
     {
-      host.setOnHWChangedCB([&](int hwID, float hwPos) {
+      host.setOnHWChangedCB([&](int hwID, float hwPos, bool) {
         CHECK(hwID == 0);
         CHECK(hwPos == 0.0f);
         receivedHW = true;
@@ -75,7 +75,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
 
     WHEN("Send CC01 > 0.5")
     {
-      host.setOnHWChangedCB([&](int hwID, float hwPos) {
+      host.setOnHWChangedCB([&](int hwID, float hwPos, bool) {
         CHECK(hwID == 0);
         CHECK(hwPos == 1.0f);
         receivedHW = true;
@@ -102,7 +102,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
       bool received0 = false;
       bool received1 = false;
 
-      host.setOnHWChangedCB([&](int hwID, float hwPos) {
+      host.setOnHWChangedCB([&](int hwID, float hwPos, bool) {
         if(hwID == 0)
           received0 = true;
         if(hwID == 1)

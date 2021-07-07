@@ -15,7 +15,7 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB([&](int hwID, float hwPos) {
+  host.setOnHWChangedCB([&](int hwID, float hwPos, auto) {
     CHECK(hwID == 5);
     CHECK(hwPos == 1.0f);
     receivedHW = true;
@@ -82,7 +82,7 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   WHEN("Mapped to Special Case PitchbendDown")
   {
     settings.setAftertouchCC(AftertouchCC::PitchbendDown);
-    host.setOnHWChangedCB([&](int hwID, float hwPos) {
+    host.setOnHWChangedCB([&](int hwID, float hwPos, auto) {
       CHECK(hwID == 5);
       CHECK(hwPos == 1.0f);
       receivedHW = true;
@@ -116,7 +116,7 @@ TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
   {
     settings.setAftertouchCC(AftertouchCC::PitchbendUp);
     host.setType(SoundType::Split);
-    host.setOnHWChangedCB([&](int hwID, float hwPos) {
+    host.setOnHWChangedCB([&](int hwID, float hwPos, auto) {
       CHECK(hwID == 5);
       CHECK(hwPos == 1.0f);
       receivedHW = true;

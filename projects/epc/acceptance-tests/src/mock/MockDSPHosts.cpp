@@ -1,7 +1,7 @@
 #include "MockDSPHosts.h"
 #include <catch.hpp>
 
-void MockDSPHost::onHWChanged(const uint32_t id, float value)
+void MockDSPHost::onHWChanged(const uint32_t id, float value, bool)
 {
 }
 
@@ -129,7 +129,7 @@ PassOnHWReceived::PassOnHWReceived(int expectedId, float expectedValue)
 {
 }
 
-void PassOnHWReceived::onHWChanged(const uint32_t id, float value)
+void PassOnHWReceived::onHWChanged(const uint32_t id, float value, bool)
 {
   CHECK(m_id == id);
   CHECK(m_value == value);
@@ -146,10 +146,10 @@ void PassOnHWReceived::setExpectedHW(int hw)
   m_id = hw;
 }
 
-void ConfigureableDSPHost::onHWChanged(uint32_t id, float value)
+void ConfigureableDSPHost::onHWChanged(uint32_t id, float value, bool behaviourChanged)
 {
   if(m_onHWChanged)
-    m_onHWChanged(id, value);
+    m_onHWChanged(id, value, behaviourChanged);
 }
 
 void ConfigureableDSPHost::onKeyDown(const int note, float velocity, DSPInterface::InputEventSource from)
@@ -201,7 +201,7 @@ void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGro
     m_onKeyUpSplit(note, velocity, part, from);
 }
 
-void ConfigureableDSPHost::setOnHWChangedCB(std::function<void(uint32_t, float)>&& cb)
+void ConfigureableDSPHost::setOnHWChangedCB(std::function<void(uint32_t, float, bool)>&& cb)
 {
   m_onHWChanged = cb;
 }
