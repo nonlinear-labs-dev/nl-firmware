@@ -5,7 +5,7 @@
 class MockDSPHost : public DSPInterface
 {
  public:
-  void onHWChanged(uint32_t id, float value) override;
+  void onHWChanged(uint32_t id, float value, bool didBehaviourChange) override;
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
@@ -24,7 +24,7 @@ class MockDSPHost : public DSPInterface
 class ConfigureableDSPHost : public MockDSPHost
 {
  public:
-  void onHWChanged(uint32_t id, float value) override;
+  void onHWChanged(uint32_t id, float value, bool didChange) override;
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
@@ -33,7 +33,7 @@ class ConfigureableDSPHost : public MockDSPHost
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
 
-  void setOnHWChangedCB(std::function<void(uint32_t, float)>&& cb);
+  void setOnHWChangedCB(std::function<void(uint32_t, float, bool)>&& cb);
   void setOnKeyDownCB(std::function<void(int, float, InputEventSource)>&& cb);
   void setOnKeyUpCB(std::function<void(int, float, InputEventSource)>&& cb);
   void setGetBehaviourCB(std::function<C15::Properties::HW_Return_Behavior(int id)>&& cb);
@@ -42,7 +42,7 @@ class ConfigureableDSPHost : public MockDSPHost
   void setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb);
 
  private:
-  std::function<void(uint32_t, float)> m_onHWChanged;
+  std::function<void(uint32_t, float, bool)> m_onHWChanged;
   std::function<void(int, float, InputEventSource)> m_onKeyDown;
   std::function<void(int, float, InputEventSource)> m_onKeyUp;
   std::function<C15::Properties::HW_Return_Behavior(int id)> m_getBehaviour;
@@ -89,7 +89,7 @@ class PassOnHWReceived : public MockDSPHost
 {
  public:
   PassOnHWReceived(int expectedId, float expectedValue);
-  void onHWChanged(uint32_t id, float value) override;
+  void onHWChanged(uint32_t id, float value, bool) override;
   [[nodiscard]] bool didReceiveHW() const;
   void setExpectedHW(int hw);
 

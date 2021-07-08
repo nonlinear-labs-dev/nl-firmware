@@ -200,6 +200,11 @@ void QuantizedValue::setFineDenominator(tControlPositionValue fineDenominator)
   m_fineDenominator = fineDenominator;
 }
 
+tControlPositionValue QuantizedValue::getFineQuantizedClippedValue(tControlPositionValue newValue) const
+{
+  return getQuantizedValue(clip(newValue), true);
+}
+
 tControlPositionValue QuantizedValue::getQuantizedClippedValue(bool fine) const
 {
   return getQuantizedValue(getClippedValue(), fine);
@@ -268,7 +273,6 @@ void QuantizedValue::onClippedValueChanged(Initiator initiator, tControlPosition
   if(oldFine != newFine)
     onFineQuantizedChanged(initiator, oldFine, newFine);
 }
-
 void QuantizedValue::onFineQuantizedChanged(Initiator initiator, tControlPositionValue oldFine,
                                             tControlPositionValue newFine)
 {

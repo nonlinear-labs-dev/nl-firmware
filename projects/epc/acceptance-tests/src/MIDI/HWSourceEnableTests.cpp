@@ -21,7 +21,7 @@ TEST_CASE("HW Source Enable Tests")
   InputEventStageTester eventStage(&eS);
 
   std::vector<std::pair<uint32_t, float>> receivedHWMsg;
-  dsp.setOnHWChangedCB([&](auto id, auto pos) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
+  dsp.setOnHWChangedCB([&](auto id, auto pos, auto) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
 
   //prepare default settings
 
@@ -72,7 +72,7 @@ TEST_CASE("HW Source Enable Tests")
     initSettings({});
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB([&didReceive](auto, auto) { didReceive = true; });
+    dsp.setOnHWChangedCB([&didReceive](auto, auto, auto) { didReceive = true; });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
     eventStage.onMIDIMessage(pedal1PressureMIDIEvent);
@@ -86,7 +86,7 @@ TEST_CASE("HW Source Enable Tests")
     initSettings({ tMAPPING_INDEX::LOCAL });
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB([&didReceive](auto, auto) { didReceive = true; });
+    dsp.setOnHWChangedCB([&didReceive](auto, auto, auto) { didReceive = true; });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
     CHECK(sendMidiMessages.empty());
@@ -99,7 +99,7 @@ TEST_CASE("HW Source Enable Tests")
 
     bool didReceive = false;
     dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto)
+        [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
           CHECK(hwID == 0);
@@ -117,7 +117,7 @@ TEST_CASE("HW Source Enable Tests")
 
     bool didReceive = false;
     dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto)
+        [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
           CHECK(hwID == 0);
@@ -135,7 +135,7 @@ TEST_CASE("HW Source Enable Tests")
 
     bool didReceive = false;
     dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto)
+        [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
           CHECK(hwID == 0);
@@ -169,7 +169,7 @@ TEST_CASE("HW Source Enable Tests")
 
     bool didReceive = false;
     dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto)
+        [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
           CHECK(hwID == 0);
@@ -214,7 +214,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
   InputEventStageTester eventStage(&eS);
 
   std::vector<std::pair<uint32_t, float>> receivedHWMsg;
-  dsp.setOnHWChangedCB([&](auto id, auto pos) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
+  dsp.setOnHWChangedCB([&](auto id, auto pos, auto) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
 
   //prepare default settings
 
@@ -272,7 +272,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
     dsp.setType(SoundType::Split);
 
     dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto)
+        [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
           CHECK(hwID == 4);
@@ -305,7 +305,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
     dsp.setType(SoundType::Split);
 
     dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto)
+        [&didReceive](auto hwID, auto, auto)
         {
             didReceive = true;
             CHECK(hwID == 5);

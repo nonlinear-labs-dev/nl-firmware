@@ -46,6 +46,7 @@
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 #include <device-settings/midi/HardwareControlEnables.h>
+#include <use-cases/PhysicalControlParameterUseCases.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -55,14 +56,16 @@ AudioEngineProxy::AudioEngineProxy()
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
   receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
-    auto playController = Application::get().getPlaycontrollerProxy();
-    auto id = msg.hwSource;
-    auto value = msg.position;
-    auto param = playController->findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
-    if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
-    {
-      playController->notifyRibbonTouch(p->getID().getNumber());
-      p->onChangeFromPlaycontroller(value);
+    auto proxy = Application::get().getPlaycontrollerProxy();
+
+    if(auto param = proxy->findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource)) {
+      if(auto p = dynamic_cast<PhysicalControlParameter *>(param)) {
+
+        PhysicalControlParameterUseCases useCase(p);
+        useCase.changeFromPlaycontroller(msg.position);
+
+        proxy->notifyRibbonTouch(p->getID().getNumber());
+      }
     }
   });
 

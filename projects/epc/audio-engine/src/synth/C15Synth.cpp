@@ -346,8 +346,14 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
-  m_playgroundHwSourceKnownValues[InputEventStage::parameterIDToHWID(msg.parameterId)] = msg.controlPosition;
-  m_inputEventStage.onUIHWSourceMessage(msg);
+  auto element = m_dsp->getParameter(msg.parameterId);
+  auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
+
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HWID::INVALID) {
+    auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
+    m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
+    m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
+  }
 }
 
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)

@@ -278,36 +278,6 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         auto c = static_cast<signed char>(roundf(f));
         m_panelUnit.getEditPanel().getKnob().fake(c);
       }
-      else if(line.find('z') == 0)
-      {
-        auto p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-            HardwareSourcesGroup::getUpperRibbonParameterID());
-
-        if(auto h = dynamic_cast<PhysicalControlParameter *>(p))
-        {
-          h->onChangeFromPlaycontroller(h->getControlPositionValue() + line.size() * 0.1);
-        }
-        else
-        {
-          auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(nullptr, 1.0 / p->getValue().getCoarseDenominator(), false);
-        }
-      }
-      else if(line.find('x') == 0)
-      {
-        auto p = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-            HardwareSourcesGroup::getUpperRibbonParameterID());
-
-        if(auto h = dynamic_cast<PhysicalControlParameter *>(p))
-        {
-          h->onChangeFromPlaycontroller(h->getControlPositionValue() - line.size() * 0.1);
-        }
-        else
-        {
-          auto changer = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
-          changer->changeBy(nullptr, -1.0 / p->getValue().getCoarseDenominator(), false);
-        }
-      }
       else
       {
         try

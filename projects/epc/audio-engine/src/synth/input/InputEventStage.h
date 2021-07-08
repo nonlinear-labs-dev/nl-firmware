@@ -35,7 +35,7 @@ class InputEventStage
   InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, HWChangedNotification hwChangedCB, MIDIOut outCB);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
-  void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message);
+  void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
   void setNoteShift(int i);
 
   static int parameterIDToHWID(int id);
@@ -52,7 +52,8 @@ class InputEventStage
   void onMIDIHWChanged(MIDIDecoder* decoder);
 
   //Algorithm
-  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit);
+  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit,
+                   bool didBehaviourChange);
 
   VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, const int keyNumber);
   VoiceGroup calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, const int keyNumber);

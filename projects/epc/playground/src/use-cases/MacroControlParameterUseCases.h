@@ -2,9 +2,11 @@
 
 #include <ParameterId.h>
 #include <parameters/MacroControlParameter.h>
+#include <use-cases/ParameterUseCases.h>
+
 class EditBuffer;
 
-class MacroControlParameterUseCases
+class MacroControlParameterUseCases : public ParameterUseCases
 {
  public:
   explicit MacroControlParameterUseCases(MacroControlParameter* mc);

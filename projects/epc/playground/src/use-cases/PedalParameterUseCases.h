@@ -1,9 +1,11 @@
 #pragma once
 
 #include <glibmm/ustring.h>
+#include <use-cases/PhysicalControlParameterUseCases.h>
+
 class PedalParameter;
 
-class PedalParameterUseCases
+class PedalParameterUseCases : public PhysicalControlParameterUseCases
 {
  public:
   explicit PedalParameterUseCases(PedalParameter* p);

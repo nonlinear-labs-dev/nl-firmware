@@ -137,7 +137,8 @@ void InputEventStage::onTCDEvent()
     }
 
     case DecoderEventType::HardwareChange:
-      onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD, false, false);
+      onHWChanged(decoder->getKeyOrController(), decoder->getValue(), DSPInterface::HWChangeSource::TCD, false, false,
+                  false);
 
       break;
     case DecoderEventType::UNKNOWN:
@@ -654,13 +655,13 @@ void InputEventStage::doSendBenderOut(float value)
   }
 }
 
-void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage &message)
+void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage &message, bool didBehaviourChange)
 {
   auto hwID = InputEventStage::parameterIDToHWID(message.parameterId);
 
   if(hwID != HWID::INVALID)
   {
-    onHWChanged(hwID, message.controlPosition, DSPInterface::HWChangeSource::UI, false, false);
+    onHWChanged(hwID, message.controlPosition, DSPInterface::HWChangeSource::UI, false, false, didBehaviourChange);
   }
 }
 
@@ -690,7 +691,7 @@ int InputEventStage::parameterIDToHWID(int id)
 }
 
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary,
-                                  bool wasMIDISplit)
+                                  bool wasMIDISplit, bool didBehaviourChange)
 {
   auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
   {
@@ -716,8 +717,9 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
-    m_dspHost->onHWChanged(hwID, pos);
-    m_hwChangedCB();
+    m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
+    if(source != DSPInterface::HWChangeSource::UI)
+      m_hwChangedCB();
   }
 
   if(source != DSPInterface::HWChangeSource::MIDI)
@@ -841,7 +843,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         const auto msb = hwRes.undecodedValueBytes[0];
         const auto lsb = hwRes.undecodedValueBytes[1];
         float realVal = processMidiForHWSource(m_dspHost, hwID, msb, lsb);
-        m_dspHost->onHWChanged(hwID, realVal);
+        m_dspHost->onHWChanged(hwID, realVal, false);
         m_hwChangedCB();
       }
       else
@@ -851,7 +853,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
           if(m_options->getBenderSetting() == BenderCC::Pitchbend)
           {
             onHWChanged(HWID::BENDER, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
-                        isSplitChannel);
+                        isSplitChannel, false);
           }
         }
 
@@ -862,7 +864,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
             if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
             {
               onHWChanged(HWID::AFTERTOUCH, decoder->getValue(), DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
-                          isSplitChannel);
+                          isSplitChannel, false);
             }
           }
 
@@ -874,13 +876,13 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
             {
               pitchbendValue = std::max(0.0f, pitchbendValue);
               onHWChanged(HWID::AFTERTOUCH, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
-                          isSplitChannel);
+                          isSplitChannel, false);
             }
             else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
             {
               pitchbendValue = -std::min(0.0f, pitchbendValue);
               onHWChanged(HWID::AFTERTOUCH, pitchbendValue, DSPInterface::HWChangeSource::MIDI, isPrimaryChannel,
-                          isSplitChannel);
+                          isSplitChannel, false);
             }
           }
         }
