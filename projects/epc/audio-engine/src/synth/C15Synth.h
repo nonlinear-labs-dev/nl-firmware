@@ -69,7 +69,8 @@ class C15Synth : public Synth, public sigc::trackable
  private:
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
 
-  void syncExternals();
+  void syncExternalsLoop();
+  void syncPlaygroundLoop();
   void syncExternalMidiBridge();
   void syncPlayground();
 
@@ -81,8 +82,11 @@ class C15Synth : public Synth, public sigc::trackable
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
 
   std::mutex m_syncExternalsMutex;
+  std::mutex m_syncPlaygroundMutex;
   std::condition_variable m_syncExternalsWaiter;
+  std::condition_variable m_syncPlaygroundWaiter;
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
+  std::future<void> m_syncPlaygroundTask;
   InputEventStage m_inputEventStage;
 };

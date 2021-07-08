@@ -81,19 +81,6 @@ AudioEngineProxy::AudioEngineProxy()
       }
   });
 
-  receive<Midi::HardwareChangeMessage>(EndPoint::Playground, [](const auto &msg) {
-    if(Application::exists())
-    {
-      auto eb = Application::get().getPresetManager()->getEditBuffer();
-      if(auto parameter
-         = eb->findAndCastParameterByID<PhysicalControlParameter>({ msg.parameterID, VoiceGroup::Global }))
-      {
-        PhysicalControlParameterUseCases useCase(parameter);
-        useCase.changeFromPlaycontroller(static_cast<tControlPositionValue>(msg.value));
-      }
-    }
-  });
-
   pm->onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
 }
 

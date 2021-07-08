@@ -12,8 +12,10 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
-    , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternals(); }))
-    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncExternalsWaiter.notify_all(); },
+    , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
+    , m_syncPlaygroundTask(std::async(std::launch::async, [this] {syncPlaygroundLoop(); }))
+    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] {
+                            m_syncPlaygroundWaiter.notify_all(); },
                           [this](auto msg) { queueExternalMidiOut(msg); } }
 {
   m_playgroundHwSourceKnownValues.fill(0);
@@ -104,10 +106,16 @@ C15Synth::~C15Synth()
 {
   {
     std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
+    std::unique_lock<std::mutex> lockPg(m_syncPlaygroundMutex);
+
     m_quit = true;
+
     m_syncExternalsWaiter.notify_all();
+    m_syncPlaygroundWaiter.notify_all();
   }
+
   m_syncExternalsTask.wait();
+  m_syncPlaygroundTask.wait();
 }
 
 dsp_host_dual* C15Synth::getDsp() const
@@ -115,7 +123,7 @@ dsp_host_dual* C15Synth::getDsp() const
   return m_dsp.get();
 }
 
-void C15Synth::syncExternals()
+void C15Synth::syncExternalsLoop()
 {
   static_assert(
       std::tuple_size_v<dsp_host_dual::HWSourceValues> == std::tuple_size_v<decltype(m_playgroundHwSourceKnownValues)>,
@@ -127,6 +135,16 @@ void C15Synth::syncExternals()
   {
     m_syncExternalsWaiter.wait(lock);
     syncExternalMidiBridge();
+  }
+}
+
+void C15Synth::syncPlaygroundLoop()
+{
+  std::unique_lock<std::mutex> lock(m_syncPlaygroundMutex);
+
+  while(!m_quit)
+  {
+    m_syncPlaygroundWaiter.wait(lock);
     syncPlayground();
   }
 }
@@ -152,11 +170,6 @@ void C15Synth::syncPlayground()
       send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
-}
-
-bool matchPattern(unsigned char data, uint8_t PATTERN, uint8_t MASK)
-{
-  return (data & MASK) == PATTERN;
 }
 
 void C15Synth::doMidi(const MidiEvent& event)
