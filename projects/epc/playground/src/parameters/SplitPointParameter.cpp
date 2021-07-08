@@ -188,3 +188,16 @@ void SplitPointParameter::updateCPFromSyncChange(UNDO::Transaction* transaction,
 {
   setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, cp, true);
 }
+
+void SplitPointParameter::loadDefault(UNDO::Transaction* transaction, Defaults mode)
+{
+  if(!isLocked())
+  {
+    undoableSelectModSource(transaction, MacroControls::NONE);
+    undoableSetModAmount(transaction, 0.0);
+    if(mode == Defaults::FactoryDefault)
+      loadFromPreset(transaction, getFactoryDefaultValue());
+    else
+      loadFromPreset(transaction, getDefaultValue());
+  }
+}
