@@ -1768,13 +1768,15 @@ input[type="range"]::-moz-range-track {
 
 .midi-table {
 	height: 100%;
-    display: table-cell;
-}
-
-.midi-table label {
-	font-size: 6pt;
+	width: 100%;
+    display: table;
 }
 
 .midi-table table, th, td {
 	border: 1px solid black;
+}
+
+.midi-table td {
+	vertical-align: middle;
+    text-align: center;
 }
