@@ -62,11 +62,6 @@ void PresetDualParameterGroups::copyFrom(UNDO::Transaction *transaction, const A
       {
         auto groupId = group.first;
         auto&myGroup = m_parameterGroups[index][groupId];
-        auto doesGroupExistInTargetPreset = myGroup == nullptr;
-
-        if(!doesGroupExistInTargetPreset) //When copying a new Preset to an existing Preset w/o VoiceGroup II/Global
-          myGroup = std::make_unique<PresetParameterGroup>(*group.second);
-
         myGroup->copyFrom(transaction, group.second.get());
       }
     }
