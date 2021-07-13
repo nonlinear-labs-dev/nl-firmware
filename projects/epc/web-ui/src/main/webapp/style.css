@@ -1772,11 +1772,18 @@ input[type="range"]::-moz-range-track {
     display: table;
 }
 
-.midi-table table, th, td {
+.midi-table table {
 	border: 1px solid black;
 }
 
+
+.midi-table th {
+	border: 1px solid black;
+}
+
+
 .midi-table td {
+	border: 1px solid black;
 	vertical-align: middle;
     text-align: center;
 }
