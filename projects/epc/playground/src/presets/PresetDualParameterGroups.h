@@ -33,4 +33,5 @@ class PresetDualParameterGroups : public AttributesOwner
 
   friend class PresetParameterVoiceGroupSerializer;
   friend class PresetParameterGroupsSerializer;
+  void initEmpty();
 };
