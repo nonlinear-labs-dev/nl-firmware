@@ -24,6 +24,7 @@ class PresetDualParameterGroups : public AttributesOwner
   void init(const Preset* preset);
 
   GroupsMap& getGroups(VoiceGroup vg);
+  void copyFrom(UNDO::Transaction* transaction, const AttributesOwner* other) override;
 
  protected:
   SoundType m_type;
