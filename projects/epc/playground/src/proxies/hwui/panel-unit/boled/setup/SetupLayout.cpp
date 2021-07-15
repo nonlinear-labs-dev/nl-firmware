@@ -72,6 +72,9 @@
 #include "UISoftwareVersionEditor.h"
 #include "ScreenSaverTimeControls.h"
 #include "MenuEditorEntry.h"
+#include "HardwareEnableSettingsView.h"
+#include "HardwareEnableSettingsEditor.h"
+#include "HardwareEnableSelectionControl.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -1053,6 +1056,28 @@ namespace NavTree
     }
   };
 
+  struct HardwareEnableSettings : EditableLeaf
+  {
+    explicit HardwareEnableSettings(InnerNode* p)
+        : EditableLeaf(p, "Hardware Source Settings")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new HardwareEnableSettingsView();
+    }
+    Control *createEditor() override
+    {
+      return new HardwareEnableSettingsEditor();
+    }
+
+    Control *createSelectionControl() override
+    {
+      return new HardwareEnableSelectionControl();
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -1061,6 +1086,7 @@ namespace NavTree
       children.emplace_back(new MidiReceiveSettings(this));
       children.emplace_back(new MidiSendSettings(this));
       children.emplace_back(new MidiLocalSettings(this));
+      children.emplace_back(new HardwareEnableSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiPanicButton(this));
