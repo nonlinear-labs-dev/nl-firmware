@@ -29,7 +29,7 @@ void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage
   m_enableHighVelCC = msg.highVeloCCEnabled;
   m_enable14BitCC = msg.highResCCEnabled;
 
-  m_hwEnableMappings = msg.hwMappings;
+  m_routingMappings = msg.hwMappings;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
@@ -430,32 +430,37 @@ void MidiRuntimeOptions::set14BitSupportEnabled(bool e)
   m_enable14BitCC = e;
 }
 
-bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiPrimary(int hwID) const
+bool MidiRuntimeOptions::shouldReceiveMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto receivePrim = static_cast<int>(tHW_ENABLE_INDICES::RECEIVE_PRIMARY);
-  return m_hwEnableMappings[hwID][receivePrim];
+  constexpr auto receivePrim = static_cast<int>(tRoutingAspect::RECEIVE_PRIMARY);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][receivePrim];
 }
 
-bool MidiRuntimeOptions::shouldSendHWSourceOnMidiPrimary(int hwID) const
+bool MidiRuntimeOptions::shouldSendMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto sendPrim = static_cast<int>(tHW_ENABLE_INDICES::SEND_PRIMARY);
-  return m_hwEnableMappings[hwID][sendPrim];
+  constexpr auto sendPrim = static_cast<int>(tRoutingAspect::SEND_PRIMARY);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][sendPrim];
 }
 
-bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiSplit(int hwID) const
+bool MidiRuntimeOptions::shouldReceiveMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto receiveSplit = static_cast<int>(tHW_ENABLE_INDICES::RECEIVE_SPLIT);
-  return m_hwEnableMappings[hwID][receiveSplit];
+  constexpr auto receiveSplit = static_cast<int>(tRoutingAspect::RECEIVE_SPLIT);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][receiveSplit];
 }
 
-bool MidiRuntimeOptions::shouldSendHWSourceOnMidiSplit(int hwID) const
+bool MidiRuntimeOptions::shouldSendMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto sendSplit = static_cast<int>(tHW_ENABLE_INDICES::SEND_SPLIT);
-  return m_hwEnableMappings[hwID][sendSplit];
+  constexpr auto sendSplit = static_cast<int>(tRoutingAspect::SEND_SPLIT);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][sendSplit];
 }
 
-bool MidiRuntimeOptions::shouldAllowHWSourceFromLocal(int hwID) const
+bool MidiRuntimeOptions::shouldAllowLocal(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto local = static_cast<int>(tHW_ENABLE_INDICES::LOCAL);
-  return m_hwEnableMappings[hwID][local];
+  constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][local];
 }

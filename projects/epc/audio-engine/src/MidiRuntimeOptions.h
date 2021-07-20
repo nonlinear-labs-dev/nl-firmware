@@ -6,6 +6,9 @@
 class MidiRuntimeOptions
 {
  public:
+  typedef nltools::msg::Setting::MidiSettingsMessage tMidiSettingMessage;
+  typedef tMidiSettingMessage::RoutingAspect tRoutingAspect;
+
   [[nodiscard]] MidiReceiveChannel getReceiveChannel() const;
   [[nodiscard]] MidiReceiveChannelSplit getReceiveSplitChannel() const;
   [[nodiscard]] MidiSendChannel getSendChannel() const;
@@ -19,11 +22,11 @@ class MidiRuntimeOptions
 
   [[nodiscard]] bool shouldReceiveLocalNotes() const;
 
-  [[nodiscard]] bool shouldReceiveHWSourceOnMidiPrimary(int hwID) const;
-  [[nodiscard]] bool shouldReceiveHWSourceOnMidiSplit(int hwID) const;
-  [[nodiscard]] bool shouldSendHWSourceOnMidiPrimary(int hwID) const;
-  [[nodiscard]] bool shouldSendHWSourceOnMidiSplit(int hwID) const;
-  [[nodiscard]] bool shouldAllowHWSourceFromLocal(int hwID) const;
+  [[nodiscard]] bool shouldReceiveMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const;
+  [[nodiscard]] bool shouldReceiveMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const;
+  [[nodiscard]] bool shouldSendMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const;
+  [[nodiscard]] bool shouldSendMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const;
+  [[nodiscard]] bool shouldAllowLocal(tMidiSettingMessage::RoutingIndex routingIndex) const;
 
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
@@ -126,8 +129,7 @@ class MidiRuntimeOptions
   AftertouchCC aftertouchCC;
   BenderCC benderCC;
 
-  typedef nltools::msg::Setting::MidiSettingsMessage::MAPPING_INDEX tHW_ENABLE_INDICES;
-  nltools::msg::Setting::MidiSettingsMessage::tHWMappingType m_hwEnableMappings;
+  nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings;
 
   //Mappings
   static std::optional<int> decodeEnumMSB(PedalCC);

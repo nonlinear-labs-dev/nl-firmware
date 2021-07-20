@@ -1,6 +1,5 @@
 #include "SettingsActions.h"
 #include "Settings.h"
-#include "Setting.h"
 #include "SyncSplitSettingUseCases.h"
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
@@ -93,15 +92,15 @@ SettingsActions::SettingsActions(Settings &settings)
     useCase.setMappingsToClassicMidi();
   });
 
-  addAction("hw-source-enable-set", [&](auto request) {
+  addAction("set-routing-aspect", [&](auto request) {
     try
     {
-      auto hw = std::stoi(request->get("hw"));
+      auto hw = std::stoi(request->get("routing-entry"));
       auto aspect = std::stoi(request->get("aspect"));
       auto value = request->get("value") == "1";
 
       SettingsUseCases useCase(Application::get().getSettings());
-      useCase.updateHWSourceEnable(hw, aspect, value);
+      useCase.updateRoutingAspect(hw, aspect, value);
     }
     catch(...)
     {
@@ -110,8 +109,7 @@ SettingsActions::SettingsActions(Settings &settings)
    });
 
   addAction("panic-audio-engine", [](auto request) {
-    SettingsUseCases useCase(Application::get().getSettings());
-    useCase.panicAudioEngine();
+    SettingsUseCases::panicAudioEngine();
   });
 }
 

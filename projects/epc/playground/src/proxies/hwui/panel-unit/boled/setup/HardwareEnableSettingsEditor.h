@@ -4,7 +4,7 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
-#include <device-settings/midi/HardwareControlEnables.h>
+#include <device-settings/midi/RoutingSettings.h>
 
 template <HW_SOURCE_IDS hw> class HardwareEnableSettingsEditor : public MenuEditor
 {
@@ -23,7 +23,7 @@ template <HW_SOURCE_IDS hw>
 HardwareEnableSettingsEditor<hw>::HardwareEnableSettingsEditor()
     : MenuEditor()
 {
-  Application::get().getSettings()->getSetting<HardwareControlEnables>()->onChange(sigc::mem_fun(this, &HardwareEnableSettingsEditor<hw>::onSettingChanged));
+  Application::get().getSettings()->getSetting<RoutingSettings>()->onChange(sigc::mem_fun(this, &HardwareEnableSettingsEditor<hw>::onSettingChanged));
 }
 
 template <HW_SOURCE_IDS hw> void HardwareEnableSettingsEditor<hw>::setPosition(const Rect& r)

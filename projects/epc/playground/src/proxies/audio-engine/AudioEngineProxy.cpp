@@ -45,7 +45,7 @@
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
-#include <device-settings/midi/HardwareControlEnables.h>
+#include <device-settings/midi/RoutingSettings.h>
 #include <use-cases/PhysicalControlParameterUseCases.h>
 
 AudioEngineProxy::AudioEngineProxy()
@@ -495,7 +495,7 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           MidiSendProgramChangesSetting, MidiSendNotesSetting, PedalCCMapping<1>, PedalCCMapping<2>,
                           PedalCCMapping<3>, PedalCCMapping<4>, RibbonCCMapping<1>, RibbonCCMapping<2>,
                           AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC, Enable14BitSupport,
-                          HardwareControlEnables>(settings);
+                          RoutingSettings>(settings);
 
   m_settingConnections.push_back(settings->getSetting<AutoStartRecorderSetting>()->onChange([this](const Setting *s) {
     auto as = static_cast<const AutoStartRecorderSetting *>(s);
@@ -538,7 +538,7 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
         msg.highVeloCCEnabled = settings->getSetting<EnableHighVelocityCC>()->get();
         msg.highResCCEnabled = settings->getSetting<Enable14BitSupport>()->get();
 
-        msg.hwMappings = settings->getSetting<HardwareControlEnables>()->getRaw();
+        msg.hwMappings = settings->getSetting<RoutingSettings>()->getRaw();
 
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       });

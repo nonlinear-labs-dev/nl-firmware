@@ -564,6 +564,42 @@
 								<th>Both</th>
 							</tr>
 							<tr>
+								<td>Notes</td>
+								<td>
+									<g:CheckBox ui:field="psonNotes" name="psNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="pronNotes" name="prNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="ssonNotes" name="ssNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="sronNotes" name="srNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="lonNotes" name="lNotes" value="true"></g:CheckBox>
+								</td>
+							</tr>
+							<tr>
+								<td>Prog. Change</td>
+								<td>
+									<g:CheckBox ui:field="psonPC" name="psPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="pronPC" name="prPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="ssonPC" name="ssPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="sronPC" name="srPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<p>n.a.</p>
+								</td>
+							</tr>
+							<tr>
 								<td>Pedal1</td>
 								<td>
 									<g:CheckBox ui:field="pson0" name="ps0" value="true"></g:CheckBox>

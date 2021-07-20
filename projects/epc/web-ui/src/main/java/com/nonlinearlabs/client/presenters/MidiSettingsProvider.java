@@ -5,10 +5,7 @@ import java.util.function.Function;
 
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
-import com.nonlinearlabs.client.presenters.MidiSettings.HWSourceEnableSettings;
-
-import org.apache.xpath.operations.Bool;
-
+import com.nonlinearlabs.client.presenters.MidiSettings.RoutingSetting;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 public class MidiSettingsProvider {
@@ -225,10 +222,10 @@ public class MidiSettingsProvider {
             return true;
         });
 
-        s.hwSourceMapping.onChange(t -> {
-            HWSourceEnableSettings d = MidiSettings.convert(t);
-            if(d != settings.hwControlEnables) {
-                settings.hwControlEnables = d;
+        s.routingAspects.onChange(t -> {
+            RoutingSetting d = MidiSettings.convert(t);
+            if(d != settings.routingSetting) {
+                settings.routingSetting = d;
                 notifyClients();
             }
             return true;

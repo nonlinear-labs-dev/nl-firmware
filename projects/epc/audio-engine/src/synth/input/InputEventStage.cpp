@@ -436,7 +436,9 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
   if(!latchHWPosition<LatchMode::Option>(hwID, lsbValByte, msbValByte))
     return;
 
-  if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(hwID))
+  auto routingIndex = static_cast<RoutingIndex>(hwID);
+
+  if(mainChannel != -1 && m_options->shouldSendMidiOnPrimary(routingIndex))
   {
     auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
 
@@ -451,7 +453,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
     }
   }
 
-  if(secondaryChannel != -1 && m_options->shouldSendHWSourceOnMidiSplit(hwID) && isSplitDSP())
+  if(secondaryChannel != -1 && m_options->shouldSendMidiOnSplit(routingIndex) && isSplitDSP())
   {
     auto secStatus = static_cast<uint8_t>(statusByte | secC);
 
@@ -565,13 +567,13 @@ void InputEventStage::doSendAftertouchOut(float value)
     if(!latchHWPosition<LatchMode::OnlyMSB>(HWID::AFTERTOUCH, 0, valByte))
       return;
 
-    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(HWID::AFTERTOUCH))
+    if(mainChannel != -1 && m_options->shouldSendMidiOnPrimary(RoutingIndex::Aftertouch))
     {
       auto mainStatus = static_cast<uint8_t>(atStatusByte | mainC);
       m_midiOut({ mainStatus, valByte });
     }
 
-    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(HWID::AFTERTOUCH))
+    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendMidiOnSplit(RoutingIndex::Aftertouch))
     {
       auto secStatus = static_cast<uint8_t>(atStatusByte | secC);
       m_midiOut({ secStatus, valByte });
@@ -598,13 +600,13 @@ void InputEventStage::doSendAftertouchOut(float value)
     const auto secC = static_cast<uint8_t>(secChannel);
     auto statusByte = static_cast<uint8_t>(0xE0);
 
-    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(HWID::AFTERTOUCH))
+    if(mainChannel != -1 && m_options->shouldSendMidiOnPrimary(RoutingIndex::Aftertouch))
     {
       auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(HWID::AFTERTOUCH))
+    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendMidiOnSplit(RoutingIndex::Aftertouch))
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -641,13 +643,13 @@ void InputEventStage::doSendBenderOut(float value)
     const auto secC = static_cast<uint8_t>(secChannel);
     auto statusByte = static_cast<uint8_t>(0xE0);
 
-    if(mainChannel != -1 && m_options->shouldSendHWSourceOnMidiPrimary(HWID::BENDER))
+    if(mainChannel != -1 && m_options->shouldSendMidiOnPrimary(RoutingIndex::Bender))
     {
       auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
       m_midiOut({ mainStatus, lsb, msb });
     }
 
-    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendHWSourceOnMidiSplit(HWID::BENDER))
+    if(secChannel != -1 && isSplitDSP() && m_options->shouldSendMidiOnSplit(RoutingIndex::Bender))
     {
       auto secStatus = static_cast<uint8_t>(statusByte | secC);
       m_midiOut({ secStatus, lsb, msb });
@@ -695,19 +697,21 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 {
   auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
   {
+    const auto routingIndex = static_cast<RoutingIndex>(hwID);
+
     switch(source)
     {
       case DSPInterface::HWChangeSource::MIDI:
       {
         if(wasPrim)
-          return m_options->shouldReceiveHWSourceOnMidiPrimary(hwID);
+          return m_options->shouldReceiveMidiOnPrimary(routingIndex);
         else if(wasSplit)
-          return m_options->shouldReceiveHWSourceOnMidiSplit(hwID);
+          return m_options->shouldReceiveMidiOnSplit(routingIndex);
 
         return true;
       }
       case DSPInterface::HWChangeSource::TCD:
-        return m_options->shouldAllowHWSourceFromLocal(hwID);
+        return m_options->shouldAllowLocal(routingIndex);
       case DSPInterface::HWChangeSource::UI:
         return true;
       default:
@@ -796,32 +800,33 @@ int ccToHWID(int cc, MidiRuntimeOptions *options)
 
 void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
 {
-  auto hwID = decoder->getKeyOrControl();
-  if(hwID == HWID::INVALID)
+  auto hwControlIDOrCC = decoder->getKeyOrControl();
+  if(hwControlIDOrCC == HWID::INVALID)
   {
     switch(decoder->getHWChangeStruct().cases)
     {
       case MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend:
-        hwID = HWID::AFTERTOUCH;
+        hwControlIDOrCC = HWID::AFTERTOUCH;
         break;
       case MIDIDecoder::MidiHWChangeSpecialCases::Aftertouch:
-        hwID = HWID::BENDER;
+        hwControlIDOrCC = HWID::BENDER;
         break;
       default:
       case MIDIDecoder::MidiHWChangeSpecialCases::CC:
-        hwID = ccToHWID(decoder->getHWChangeStruct().receivedCC, m_options);
+        hwControlIDOrCC = ccToHWID(decoder->getHWChangeStruct().receivedCC, m_options);
         break;
     }
   }
 
-  if(hwID == HWID::INVALID)
+  if(hwControlIDOrCC == HWID::INVALID)
     return;
 
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
   const auto isPrimaryChannel = decoder->getChannel() == m_options->getReceiveChannel();
 
-  const auto shouldReceiveOnPrim = m_options->shouldReceiveHWSourceOnMidiPrimary(hwID);
-  const auto shouldReceiveOnSplit = m_options->shouldReceiveHWSourceOnMidiSplit(hwID);
+  const auto routingIndex = static_cast<RoutingIndex>(hwControlIDOrCC);
+  const auto shouldReceiveOnPrim = m_options->shouldReceiveMidiOnPrimary(routingIndex);
+  const auto shouldReceiveOnSplit = m_options->shouldReceiveMidiOnSplit(routingIndex);
   const auto isSplitChannel
       = MidiRuntimeOptions::normalToSplitChannel(decoder->getChannel()) == m_options->getReceiveSplitChannel();
   const auto receiveOmni = m_options->getReceiveChannel() == MidiReceiveChannel::Omni
