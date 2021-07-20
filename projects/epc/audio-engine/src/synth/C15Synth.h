@@ -11,6 +11,7 @@
 #include <nltools/threading/BackgroundThreadWaiter.h>
 #include <MidiRuntimeOptions.h>
 #include <synth/input/InputEventStage.h>
+#include <synth/input/SpecialMidiFunctionInterface.h>
 
 namespace nltools
 {
@@ -68,7 +69,9 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
+  void queueSpecialMidiFunction(SpecialMidiFunctions function);
 
+  void syncSpecialFunctionsLoop();
   void syncExternalsLoop();
   void syncPlaygroundLoop();
   void syncExternalMidiBridge();
@@ -80,13 +83,19 @@ class C15Synth : public Synth, public sigc::trackable
   MidiRuntimeOptions m_midiOptions;
 
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
+  RingBuffer<SpecialMidiFunctions> m_queuedMidiFunctions;
 
   std::mutex m_syncExternalsMutex;
   std::mutex m_syncPlaygroundMutex;
+  std::mutex m_syncSpecialFunctionsMutex;
   std::condition_variable m_syncExternalsWaiter;
   std::condition_variable m_syncPlaygroundWaiter;
+  std::condition_variable m_syncSpecialFunctionsWaiter;
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
   std::future<void> m_syncPlaygroundTask;
+  std::future<void> m_syncSpecialFunctionsTask;
+
   InputEventStage m_inputEventStage;
+  void doSpecialFunctions();
 };

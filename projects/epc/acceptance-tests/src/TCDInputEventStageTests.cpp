@@ -84,7 +84,7 @@ TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
   PassOnKeyDownHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
+                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); }, [](auto) {}};
 
   WHEN("Keypos and KeyDown is received")
   {
@@ -124,7 +124,7 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
   PassOnKeyUpHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
+                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } , [](auto) {}};
 
   WHEN("Keypos and KeyUp is received")
   {
@@ -174,7 +174,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
+                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } , [](auto) {}};
   const auto sixteenThousand = 0b11111010000000;
 
   WHEN("HW Change Received")

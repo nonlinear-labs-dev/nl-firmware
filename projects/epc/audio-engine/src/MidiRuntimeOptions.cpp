@@ -459,3 +459,36 @@ bool MidiRuntimeOptions::shouldAllowHWSourceFromLocal(int hwID) const
   constexpr auto local = static_cast<int>(tHW_ENABLE_INDICES::LOCAL);
   return m_hwEnableMappings[hwID][local];
 }
+
+bool MidiRuntimeOptions::isCCMappedToSpecialFunction(int cc)
+{
+  return cc == static_cast<int>(SpecialCCs::AllSoundOff);
+}
+
+SpecialMidiFunctions MidiRuntimeOptions::createSpecialFunctionDescriptor(int cc, uint8_t ccMSBValue)
+{
+  switch(cc)
+  {
+    case static_cast<int>(SpecialCCs::AllSoundOff):
+      if(ccMSBValue == 0)
+        return SpecialMidiFunctions::AllSoundOff;
+      break;
+    case static_cast<int>(SpecialCCs::AllNotesOff):
+      if(ccMSBValue == 0)
+        return SpecialMidiFunctions::AllNotesOff;
+      break;
+    case static_cast<int>(SpecialCCs::ResetAllControllers):
+      if(ccMSBValue == 0)
+        return SpecialMidiFunctions::ResetAllControllers;
+      break;
+    case static_cast<int>(SpecialCCs::LocalControlOnOff):
+      if(ccMSBValue == 0)
+        return SpecialMidiFunctions::LocalControllersOff;
+      else if(ccMSBValue == 127)
+        return SpecialMidiFunctions::LocalControllersOn;
+      break;
+    default:
+      return SpecialMidiFunctions::NOOP;
+  }
+  return SpecialMidiFunctions::NOOP;
+}

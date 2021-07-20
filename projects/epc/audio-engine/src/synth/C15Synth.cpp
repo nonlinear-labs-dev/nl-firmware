@@ -12,11 +12,14 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
+    , m_queuedMidiFunctions(128) // @hhoegelow how would I estimate the needed size for this member??
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
     , m_syncPlaygroundTask(std::async(std::launch::async, [this] {syncPlaygroundLoop(); }))
+    , m_syncSpecialFunctionsTask(std::async(std::launch::async, [this] {syncSpecialFunctionsLoop(); }))
     , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] {
                             m_syncPlaygroundWaiter.notify_all(); },
-                          [this](auto msg) { queueExternalMidiOut(msg); } }
+                          [this](auto msg) { queueExternalMidiOut(msg); },
+                                [this](SpecialMidiFunctions func) { queueSpecialMidiFunction(func); }}
 {
   m_playgroundHwSourceKnownValues.fill(0);
 
@@ -107,15 +110,18 @@ C15Synth::~C15Synth()
   {
     std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
     std::unique_lock<std::mutex> lockPg(m_syncPlaygroundMutex);
+    std::unique_lock<std::mutex> midiFunctionsLock(m_syncSpecialFunctionsMutex);
 
     m_quit = true;
 
     m_syncExternalsWaiter.notify_all();
     m_syncPlaygroundWaiter.notify_all();
+    m_syncSpecialFunctionsWaiter.notify_all();
   }
 
   m_syncExternalsTask.wait();
   m_syncPlaygroundTask.wait();
+  m_syncSpecialFunctionsTask.wait();
 }
 
 dsp_host_dual* C15Synth::getDsp() const
@@ -146,6 +152,43 @@ void C15Synth::syncPlaygroundLoop()
   {
     m_syncPlaygroundWaiter.wait(lock);
     syncPlayground();
+  }
+}
+
+void C15Synth::syncSpecialFunctionsLoop()
+{
+  std::unique_lock<std::mutex> lock(m_syncSpecialFunctionsMutex);
+
+  while(!m_quit)
+  {
+    m_syncSpecialFunctionsWaiter.wait(lock);
+    doSpecialFunctions();
+  }
+}
+
+void C15Synth::doSpecialFunctions()
+{
+  //TODO implement remaining special MIDI functions here
+  while(!m_queuedMidiFunctions.empty())
+  {
+    auto msg = m_queuedMidiFunctions.pop();
+    auto copy = msg;
+    switch(copy) {
+      case AllSoundOff:
+        resetDSP();
+        break;
+      case ResetAllControllers:
+        break;
+      case LocalControllersOn:
+        break;
+      case LocalControllersOff:
+        break;
+      case AllNotesOff:
+        break;
+      default:
+      case NOOP:
+        break;
+    }
   }
 }
 
@@ -354,6 +397,12 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
     m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
+}
+
+void C15Synth::queueSpecialMidiFunction(const SpecialMidiFunctions function)
+{
+  m_queuedMidiFunctions.push(function);
+  m_syncSpecialFunctionsWaiter.notify_all();
 }
 
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)

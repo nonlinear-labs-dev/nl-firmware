@@ -7,6 +7,7 @@
 #include <functional>
 #include <nltools/messaging/Message.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
+#include "SpecialMidiFunctionInterface.h"
 
 class MidiRuntimeOptions;
 
@@ -30,9 +31,10 @@ class InputEventStage
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
   using HWChangedNotification = std::function<void()>;
+  using SpecialMidiFunctionOutType = std::function<void(SpecialMidiFunctions)>;
 
   //use reference
-  InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, HWChangedNotification hwChangedCB, MIDIOut outCB);
+  InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, HWChangedNotification hwChangedCB, MIDIOut outCB, SpecialMidiFunctionOutType specialFunctionOut);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
@@ -100,6 +102,7 @@ class InputEventStage
   DSPInterface* m_dspHost;
   MidiRuntimeOptions* m_options;
   HWChangedNotification m_hwChangedCB;
+  SpecialMidiFunctionOutType m_specialFunctionCB;
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
   std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions;
@@ -115,4 +118,6 @@ class InputEventStage
   [[nodiscard]] bool isSplitDSP() const;
 
   friend class InputEventStageTester;
+  bool ccIsMappedToSpecialFunction(int cc);
+  void queueMappedCCFunction(int cc, uint8_t msbCCvalue);
 };
