@@ -463,7 +463,13 @@ bool MidiRuntimeOptions::shouldAllowHWSourceFromLocal(int hwID) const
 bool MidiRuntimeOptions::isCCMappedToSpecialFunction(int cc)
 {
 #warning "expand this check if more special functions are implemented"
-  return cc == static_cast<int>(SpecialCCs::AllSoundOff);
+  switch(cc)
+  {
+    case static_cast<int>(SpecialCCs::AllSoundOff):
+    case static_cast<int>(SpecialCCs::AllNotesOff):
+      return true;
+  }
+  return false;
 }
 
 SpecialMidiFunctions MidiRuntimeOptions::createSpecialFunctionDescriptor(int cc, uint8_t ccMSBValue)

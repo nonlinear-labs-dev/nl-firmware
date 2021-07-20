@@ -12,14 +12,13 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
-    , m_queuedMidiFunctions(128) // @hhoegelow how would I estimate the needed size for this member??
+    , m_queuedMidiFunctions(128)  // @hhoegelow how would I estimate the needed size for this member??
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
-    , m_syncPlaygroundTask(std::async(std::launch::async, [this] {syncPlaygroundLoop(); }))
-    , m_syncSpecialFunctionsTask(std::async(std::launch::async, [this] {syncSpecialFunctionsLoop(); }))
-    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] {
-                            m_syncPlaygroundWaiter.notify_all(); },
-                          [this](auto msg) { queueExternalMidiOut(msg); },
-                                [this](SpecialMidiFunctions func) { queueSpecialMidiFunction(func); }}
+    , m_syncPlaygroundTask(std::async(std::launch::async, [this] { syncPlaygroundLoop(); }))
+    , m_syncSpecialFunctionsTask(std::async(std::launch::async, [this] { syncSpecialFunctionsLoop(); }))
+    , m_inputEventStage{ m_dsp.get(), &m_midiOptions, [this] { m_syncPlaygroundWaiter.notify_all(); },
+                         [this](auto msg) { queueExternalMidiOut(msg); },
+                         [this](SpecialMidiFunctions func) { queueSpecialMidiFunction(func); } }
 {
   m_playgroundHwSourceKnownValues.fill(0);
 
@@ -66,7 +65,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     if(sendChannel != -1 && m_midiOptions.shouldSendProgramChanges())
     {
       const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendChannel;
-      m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
+      m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage{ newStatus, pc.program });
       m_syncExternalsWaiter.notify_all();
     }
   });
@@ -88,7 +87,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
       {
         if(m_midiOptions.shouldReceiveProgramChanges())
         {
-          send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+          send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage{ e.raw[1] });
         }
       }
     }
@@ -173,7 +172,8 @@ void C15Synth::doSpecialFunctions()
   {
     auto msg = m_queuedMidiFunctions.pop();
     auto copy = msg;
-    switch(copy) {
+    switch(copy)
+    {
       case AllSoundOff:
         resetDSP();
         break;
@@ -184,6 +184,7 @@ void C15Synth::doSpecialFunctions()
       case LocalControllersOff:
         break;
       case AllNotesOff:
+        m_dsp->onMidiSettingsReceived();  // NOTE: currently resets all (internal AND external) notes
         break;
       default:
       case NOOP:
@@ -210,7 +211,7 @@ void C15Synth::syncPlayground()
     using namespace nltools::msg;
     if(std::exchange(m_playgroundHwSourceKnownValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
+      send(EndPoint::Playground, HardwareSourceChangedNotification{ i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
 }
@@ -392,7 +393,8 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   auto element = m_dsp->getParameter(msg.parameterId);
   auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
 
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HWID::INVALID) {
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HWID::INVALID)
+  {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
     m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
