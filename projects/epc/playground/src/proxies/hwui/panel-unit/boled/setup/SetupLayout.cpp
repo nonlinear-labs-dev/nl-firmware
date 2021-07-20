@@ -58,6 +58,7 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/TextEditUsageMode.h>
+#include <proxies/hwui/controls/LeftAlignedLabel.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <xml/FileOutStream.h>
 #include <bitset>
@@ -1056,25 +1057,43 @@ namespace NavTree
     }
   };
 
-  struct HardwareEnableSettings : EditableLeaf
+  template <HW_SOURCE_IDS hw> struct HardwareEnableSetting : public EditableLeaf
   {
-    explicit HardwareEnableSettings(InnerNode* p)
-        : EditableLeaf(p, "Hardware Source Settings")
+   public:
+    HardwareEnableSetting(InnerNode *p, const Glib::ustring &text)
+        : EditableLeaf(p, text)
     {
     }
 
     Control *createView() override
     {
-      return new HardwareEnableSettingsView();
-    }
-    Control *createEditor() override
-    {
-      return new HardwareEnableSettingsEditor();
+      return new LeftAlignedLabel({ "..." }, Rect { 0, 0, 128, 16 });
     }
 
-    Control *createSelectionControl() override
+    Control *createEditor() override
     {
-      return new HardwareEnableSelectionControl();
+      return new HardwareEnableSettingsEditor<hw>();
+    }
+  };
+
+  struct HardwareEnableSettings : InnerNode
+  {
+    explicit HardwareEnableSettings(InnerNode *p)
+        : InnerNode(p, "Hardware Source Settings")
+    {
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_1>(this, "Pedal 1"));
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_2>(this, "Pedal 2"));
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_3>(this, "Pedal 3"));
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_4>(this, "Pedal 4"));
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_RIBBON_1>(this, "Ribbon 1"));
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_RIBBON_2>(this, "Ribbon 2"));
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_AFTERTOUCH>(this, "Aftertouch"));
+      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PITCHBEND>(this, "Bender"));
+    }
+
+    Control *createView() override
+    {
+      return new HardwareEnableSettingsView();
     }
   };
 
