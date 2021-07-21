@@ -324,6 +324,15 @@
 
 			<div ui:field="midiSettings" class="tabcontent midi-tab">
 				<div class="forms-container">
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Global Local Enable</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="globalLocalOn" name="rad_globalLocal" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="globalLocalOff" name="rad_globalLocal" value="false"></g:RadioButton>
+						</div>
+					</div>
 					<div class="eins-he fl-j-center">
 						<h3 class="uneditable">Receive</h3>
 					</div>

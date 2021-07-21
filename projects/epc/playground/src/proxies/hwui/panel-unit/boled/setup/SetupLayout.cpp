@@ -81,14 +81,11 @@
 #include <device-settings/midi/MidiChannelSettings.h>
 #include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
-#include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
-#include <device-settings/midi/send/MidiSendControllersSetting.h>
 #include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>

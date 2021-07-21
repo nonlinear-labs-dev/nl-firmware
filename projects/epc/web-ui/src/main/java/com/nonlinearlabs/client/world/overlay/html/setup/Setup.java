@@ -97,7 +97,7 @@ public class Setup extends Composite {
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
 			receiveNotesOff, sendPCOn, sendPCOff, sendNotesOn, 
-			sendNotesOff, localNotesOn, 
+			sendNotesOff, localNotesOn, globalLocalOn, globalLocalOff,
 			localNotesOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
 
 	@UiField
@@ -247,6 +247,7 @@ public class Setup extends Composite {
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(globalLocalOn, globalLocalOff, MidiSettings.OnOffOption.options);
 	}
 
 	public void connectEventHandlers() {
@@ -363,6 +364,9 @@ public class Setup extends Composite {
 
 		classicMidi.addClickHandler(e -> settings.resetToClassicMidi());
 		highResMidi.addClickHandler(e -> settings.resetToHighResMidi());
+
+		globalLocalOn.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.on));
+		globalLocalOff.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.off));
 
 		updateFile.addChangeHandler(new ChangeHandler() {
 

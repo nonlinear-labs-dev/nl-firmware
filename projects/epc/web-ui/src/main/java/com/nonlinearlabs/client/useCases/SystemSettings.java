@@ -193,6 +193,12 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("HighResCC", netify(b.name()));
 	}
 
+	public void setGlobalLocal(BooleanValues b)
+	{
+		SetupModel.get().systemSettings.globalLocalEnable.setValue(b);
+		NonMaps.theMaps.getServerProxy().setSetting("GlobalLocalEnable", netify(b.name()));
+	}
+
 	public void setReceiveMidiChannelSplit(MidiReceiveChannelSplit midiReceiveChannelSplit) {
 		SetupModel.get().systemSettings.receiveChannelSplit.setValue(midiReceiveChannelSplit);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveChannelSplit", midiReceiveChannelSplit.name());

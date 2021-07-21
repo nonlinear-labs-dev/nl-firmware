@@ -48,6 +48,7 @@
 #include "UsedRAM.h"
 #include "SyncVoiceGroupsAcrossUIS.h"
 #include "SplitPointSyncParameters.h"
+#include "GlobalLocalEnableSetting.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -55,14 +56,11 @@
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <iostream>
 #include <device-settings/midi/MidiChannelSettings.h>
-#include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/send/MidiSendControllersSetting.h>
 #include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
-#include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
 #include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
@@ -102,11 +100,10 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  std::shared_ptr<EpcWifi> LocalWifi = std::make_shared<EpcWifi>();
-
-  addSetting("SSID", new SSID(*this, LocalWifi));
-  addSetting("Passphrase", new Passphrase(*this, LocalWifi));
-  addSetting("WifiSetting", new WifiSetting(*this, LocalWifi));
+  auto localWifi = std::make_shared<EpcWifi>();
+  addSetting("SSID", new SSID(*this, localWifi));
+  addSetting("Passphrase", new Passphrase(*this, localWifi));
+  addSetting("WifiSetting", new WifiSetting(*this, localWifi));
 
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
@@ -149,6 +146,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("HighResCC", new Enable14BitSupport(*this));
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
   addSetting("RoutingSettings", new RoutingSettings(*this));
+  addSetting("GlobalLocalEnable", new GlobalLocalEnableSetting(*this));
 }
 
 Settings::~Settings()

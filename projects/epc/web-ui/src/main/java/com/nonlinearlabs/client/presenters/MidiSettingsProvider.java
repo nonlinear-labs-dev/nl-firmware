@@ -230,6 +230,15 @@ public class MidiSettingsProvider {
             }
             return true;
         });
+
+        s.globalLocalEnable.onChange(t -> {
+            boolean val = t.equals(BooleanValues.on);
+            if(val != settings.globalLocalEnable.value != val) {
+                settings.globalLocalEnable.value = val;
+                notifyClients();
+            }
+            return true;
+        });
     }
 
 	protected void notifyClients() {

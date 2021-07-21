@@ -24,7 +24,6 @@
 #include <device-settings/Settings.h>
 #include <filesystem>
 #include <use-cases/IncrementalChangerUseCases.h>
-#include <device-settings/midi/local/LocalControllersSetting.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -285,6 +284,7 @@ void PlaycontrollerProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) con
     gsize numBytes = 0;
     auto data = static_cast<const uint8_t *>(bytes->get_data(numBytes));
 
+#warning dynamic stack array size
     char txt[numBytes * 4];
     char *ptr = txt;
 

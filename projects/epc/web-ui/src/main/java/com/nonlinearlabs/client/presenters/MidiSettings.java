@@ -144,6 +144,7 @@ public class MidiSettings {
     public OnOffOption highVelocityCC = new OnOffOption();
     public OnOffOption enable14BitCC = new OnOffOption();
     public RoutingSetting routingSetting = new RoutingSetting();
+    public OnOffOption globalLocalEnable = new OnOffOption();
 
     //FLAC
     public OnOffOption autoStartRecorder = new OnOffOption();
