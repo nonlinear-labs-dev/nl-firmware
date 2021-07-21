@@ -1,7 +1,7 @@
 #include <testing/TestHelper.h>
 #include <synth/input/InputEventStage.h>
 #include <MidiRuntimeOptions.h>
-#include <synth/input/SpecialMidiFunctionInterface.h>
+#include <synth/input/MidiChannelModeMessages.h>
 #include <mock/MockDSPHosts.h>
 
 TEST_CASE("Special Midi functions are recognises as such when received via midi")

@@ -11,7 +11,7 @@
 #include <nltools/threading/BackgroundThreadWaiter.h>
 #include <MidiRuntimeOptions.h>
 #include <synth/input/InputEventStage.h>
-#include <synth/input/SpecialMidiFunctionInterface.h>
+#include <synth/input/MidiChannelModeMessages.h>
 
 namespace nltools
 {
@@ -97,5 +97,5 @@ class C15Synth : public Synth, public sigc::trackable
   std::future<void> m_syncChannelModeMessagesTask;
 
   InputEventStage m_inputEventStage;
-  void doSpecialFunctions();
+  void doChannelModeMessageFunctions();
 };

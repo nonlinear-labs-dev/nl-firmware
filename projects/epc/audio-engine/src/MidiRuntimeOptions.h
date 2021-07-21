@@ -2,12 +2,12 @@
 #include <nltools/messaging/Message.h>
 #include <variant>
 #include <synth/c15-audio-engine/midi_handle.h>
-#include <synth/input/SpecialMidiFunctionInterface.h>
+#include <synth/input/MidiChannelModeMessages.h>
 
 class MidiRuntimeOptions
 {
  public:
-  enum class SpecialCCs : int {
+  enum class MidiChannelModeMessageCCs : int {
     AllSoundOff = 120,
     ResetAllControllers = 121,
     LocalControlOnOff = 122,

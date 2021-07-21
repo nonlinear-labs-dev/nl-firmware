@@ -465,8 +465,8 @@ bool MidiRuntimeOptions::isCCMappedToChannelModeMessage(int cc)
 #warning "expand this check if more special functions are implemented"
   switch(cc)
   {
-    case static_cast<int>(SpecialCCs::AllSoundOff):
-    case static_cast<int>(SpecialCCs::AllNotesOff):
+    case static_cast<int>(MidiChannelModeMessageCCs::AllSoundOff):
+    case static_cast<int>(MidiChannelModeMessageCCs::AllNotesOff):
       return true;
   }
   return false;
@@ -476,19 +476,19 @@ MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc,
 {
   switch(cc)
   {
-    case static_cast<int>(SpecialCCs::AllSoundOff):
+    case static_cast<int>(MidiChannelModeMessageCCs::AllSoundOff):
       if(ccValue == 0)
         return MidiChannelModeMessages::AllSoundOff;
       break;
-    case static_cast<int>(SpecialCCs::AllNotesOff):
+    case static_cast<int>(MidiChannelModeMessageCCs::AllNotesOff):
       if(ccValue == 0)
         return MidiChannelModeMessages::AllNotesOff;
       break;
-    case static_cast<int>(SpecialCCs::ResetAllControllers):
+    case static_cast<int>(MidiChannelModeMessageCCs::ResetAllControllers):
       if(ccValue == 0)
         return MidiChannelModeMessages::ResetAllControllers;
       break;
-    case static_cast<int>(SpecialCCs::LocalControlOnOff):
+    case static_cast<int>(MidiChannelModeMessageCCs::LocalControlOnOff):
       if(ccValue == 0)
         return MidiChannelModeMessages::LocalControllersOff;
       else if(ccValue == 127)

@@ -161,11 +161,11 @@ void C15Synth::syncChannelModeMessageLoop()
   while(!m_quit)
   {
     m_syncChannelModeMessagesWaiter.wait(lock);
-    doSpecialFunctions();
+    doChannelModeMessageFunctions();
   }
 }
 
-void C15Synth::doSpecialFunctions()
+void C15Synth::doChannelModeMessageFunctions()
 {
   //TODO implement remaining special MIDI functions here
   while(!m_queuedChannelModeMessages.empty())

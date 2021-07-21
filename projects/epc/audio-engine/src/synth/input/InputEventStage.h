@@ -7,7 +7,7 @@
 #include <functional>
 #include <nltools/messaging/Message.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
-#include "SpecialMidiFunctionInterface.h"
+#include "MidiChannelModeMessages.h"
 
 class MidiRuntimeOptions;
 
