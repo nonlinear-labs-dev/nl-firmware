@@ -19,8 +19,8 @@ body {
 
 #pane {
     position: absolute;
-    width: 80vw;
-    height: 40vw;
+    width: 95%;
+    height: 95%;
     color: white;
     background-color: black;
     text-align: center;

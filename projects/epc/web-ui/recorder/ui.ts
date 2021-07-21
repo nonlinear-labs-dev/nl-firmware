@@ -125,9 +125,7 @@ class UI {
             name.oninput = () => {
                 wave.disabled = name.value.length == 0;
                 flac.disabled = name.value.length == 0;
-
-                flacForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name.value) + ".flac");
-                waveForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name.value) + ".wav");
+                this.setupDownloadLinks(name.value);
             }
 
             var presetName = this.c15.getLoadedPresetAt(info.range.from);
@@ -139,26 +137,21 @@ class UI {
                 name.value = "";
                 wave.disabled = true;
                 flac.disabled = true;
+                this.setupDownloadLinks(name.value);
             }
 
-            flacForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name.value) + ".flac");
-            waveForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name.value) + ".wav");
-
+            this.setupDownloadLinks(name.value);
             var def = document.getElementById(this.defaultDownloadOption) as HTMLButtonElement;
             def.focus();
-
         });
     }
 
-    downloadFile(name: string, from: number, to: number) {
-        var url = "http://" + hostName + httpPort + "/" + name + "?begin=" + from + "&end=" + to;
-        window.open(url, "_blank", "");
-        //   var dlink = document.createElement('a') as HTMLAnchorElement;
-        //  dlink.download = name;
-        // dlink.href = url;
-        // dlink.click();
-        // this.c15.reconnectToServer();
-        //dlink.remove();
+    setupDownloadLinks(name: string) {
+        const waveForm = document.getElementById("download-wave-form")! as HTMLFormElement;
+        const flacForm = document.getElementById("download-flac-form")! as HTMLFormElement;
+
+        flacForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name) + ".flac");
+        waveForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name) + ".wav");
     }
 
     sanitizeFileName(a: string): string {
