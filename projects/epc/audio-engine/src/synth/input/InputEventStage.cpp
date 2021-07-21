@@ -5,10 +5,10 @@
 #include "InputEventStage.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
-                                 InputEventStage::MIDIOut outCB, InputEventStage::SpecialMidiFunctionOutType specialCB)
+                                 InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
     : m_dspHost { dspHost }
     , m_options { options }
-    , m_specialFunctionCB(std::move(specialCB))
+    , m_channelModeMessageCB(std::move(specialCB))
     , m_hwChangedCB(std::move(hwChangedCB))
     , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
@@ -800,10 +800,10 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
   auto hwRes = decoder->getHWChangeStruct();
   if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::CC)
   {
-    if(ccIsMappedToSpecialFunction(hwRes.receivedCC))
+    if(ccIsMappedToChannelModeMessage(hwRes.receivedCC))
     {
       auto msbCCValue = hwRes.undecodedValueBytes[0];
-      queueMappedCCFunction(hwRes.receivedCC, msbCCValue);
+      queueChannelModeMessage(hwRes.receivedCC, msbCCValue);
       return;
     }
   }
@@ -916,12 +916,12 @@ bool InputEventStage::isSplitDSP() const
   return m_dspHost->getType() == SoundType::Split;
 }
 
-bool InputEventStage::ccIsMappedToSpecialFunction(int cc)
+bool InputEventStage::ccIsMappedToChannelModeMessage(int cc)
 {
-  return m_options->isCCMappedToSpecialFunction(cc);
+  return m_options->isCCMappedToChannelModeMessage(cc);
 }
 
-void InputEventStage::queueMappedCCFunction(int cc, uint8_t msbCCvalue)
+void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
 {
-  m_specialFunctionCB(MidiRuntimeOptions::createSpecialFunctionDescriptor(cc, msbCCvalue));
+  m_channelModeMessageCB(MidiRuntimeOptions::createChannelModeMessageEnum(cc, msbCCvalue));
 }

@@ -1,5 +1,6 @@
 #pragma once
 
-enum SpecialMidiFunctions {
+enum MidiChannelModeMessages
+{
   AllSoundOff, ResetAllControllers, LocalControllersOn, LocalControllersOff, AllNotesOff, NOOP
 };

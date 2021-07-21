@@ -108,8 +108,8 @@ class MidiRuntimeOptions
   bool is14BitSupportEnabled() const;
   int getMSBCCForHWID(int hwID);
 
-  bool isCCMappedToSpecialFunction(int cc);
-  static SpecialMidiFunctions createSpecialFunctionDescriptor(int cc, uint8_t ccValue);
+  bool isCCMappedToChannelModeMessage(int cc);
+  static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;

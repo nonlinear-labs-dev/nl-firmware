@@ -12,13 +12,13 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
-    , m_queuedMidiFunctions(128)  // @hhoegelow how would I estimate the needed size for this member??
+    , m_queuedChannelModeMessages(128)  // @hhoegelow how would I estimate the needed size for this member??
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
     , m_syncPlaygroundTask(std::async(std::launch::async, [this] { syncPlaygroundLoop(); }))
-    , m_syncSpecialFunctionsTask(std::async(std::launch::async, [this] { syncSpecialFunctionsLoop(); }))
+    , m_syncChannelModeMessagesTask(std::async(std::launch::async, [this] { syncChannelModeMessageLoop(); }))
     , m_inputEventStage{ m_dsp.get(), &m_midiOptions, [this] { m_syncPlaygroundWaiter.notify_all(); },
                          [this](auto msg) { queueExternalMidiOut(msg); },
-                         [this](SpecialMidiFunctions func) { queueSpecialMidiFunction(func); } }
+                         [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
 {
   m_playgroundHwSourceKnownValues.fill(0);
 
@@ -109,18 +109,18 @@ C15Synth::~C15Synth()
   {
     std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
     std::unique_lock<std::mutex> lockPg(m_syncPlaygroundMutex);
-    std::unique_lock<std::mutex> midiFunctionsLock(m_syncSpecialFunctionsMutex);
+    std::unique_lock<std::mutex> midiFunctionsLock(m_syncChannelModeMessagesMutex);
 
     m_quit = true;
 
     m_syncExternalsWaiter.notify_all();
     m_syncPlaygroundWaiter.notify_all();
-    m_syncSpecialFunctionsWaiter.notify_all();
+    m_syncChannelModeMessagesWaiter.notify_all();
   }
 
   m_syncExternalsTask.wait();
   m_syncPlaygroundTask.wait();
-  m_syncSpecialFunctionsTask.wait();
+  m_syncChannelModeMessagesTask.wait();
 }
 
 dsp_host_dual* C15Synth::getDsp() const
@@ -154,13 +154,13 @@ void C15Synth::syncPlaygroundLoop()
   }
 }
 
-void C15Synth::syncSpecialFunctionsLoop()
+void C15Synth::syncChannelModeMessageLoop()
 {
-  std::unique_lock<std::mutex> lock(m_syncSpecialFunctionsMutex);
+  std::unique_lock<std::mutex> lock(m_syncChannelModeMessagesMutex);
 
   while(!m_quit)
   {
-    m_syncSpecialFunctionsWaiter.wait(lock);
+    m_syncChannelModeMessagesWaiter.wait(lock);
     doSpecialFunctions();
   }
 }
@@ -168,11 +168,9 @@ void C15Synth::syncSpecialFunctionsLoop()
 void C15Synth::doSpecialFunctions()
 {
   //TODO implement remaining special MIDI functions here
-  while(!m_queuedMidiFunctions.empty())
+  while(!m_queuedChannelModeMessages.empty())
   {
-    auto msg = m_queuedMidiFunctions.pop();
-    auto copy = msg;
-    switch(copy)
+    switch(m_queuedChannelModeMessages.pop())
     {
       case AllSoundOff:
         resetDSP();
@@ -401,10 +399,10 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   }
 }
 
-void C15Synth::queueSpecialMidiFunction(const SpecialMidiFunctions function)
+void C15Synth::queueChannelModeMessage(MidiChannelModeMessages function)
 {
-  m_queuedMidiFunctions.push(function);
-  m_syncSpecialFunctionsWaiter.notify_all();
+  m_queuedChannelModeMessages.push(function);
+  m_syncChannelModeMessagesWaiter.notify_all();
 }
 
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)

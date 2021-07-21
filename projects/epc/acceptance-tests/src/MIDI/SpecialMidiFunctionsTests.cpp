@@ -21,7 +21,7 @@ TEST_CASE("Special Midi functions are recognises as such when received via midi"
     options.update(msg);
   }
 
-  std::function<void(SpecialMidiFunctions)> currentCallback = nullptr;
+  std::function<void(MidiChannelModeMessages)> currentCallback = nullptr;
   ConfigureableDSPHost host;
   InputEventStage foo { &host, &options, []() {}, [](auto) {},
                         [&currentCallback](auto f)
@@ -32,8 +32,8 @@ TEST_CASE("Special Midi functions are recognises as such when received via midi"
 
   WHEN("Panic CC is Send with value 0")
   {
-    currentCallback = [](SpecialMidiFunctions f) {
-      CHECK(f == SpecialMidiFunctions::AllSoundOff);
+    currentCallback = [](auto f) {
+      CHECK(f == MidiChannelModeMessages::AllSoundOff);
     };
 
     foo.onMIDIMessage(createCCMidiMessage(1, 120, 0));
@@ -41,8 +41,8 @@ TEST_CASE("Special Midi functions are recognises as such when received via midi"
 
   WHEN("Panic CC is Send with value =! 0")
   {
-    currentCallback = [](SpecialMidiFunctions f) {
-        CHECK(f == SpecialMidiFunctions::NOOP);
+    currentCallback = [](auto f) {
+        CHECK(f == MidiChannelModeMessages::NOOP);
     };
 
     foo.onMIDIMessage(createCCMidiMessage(1, 120, 1));

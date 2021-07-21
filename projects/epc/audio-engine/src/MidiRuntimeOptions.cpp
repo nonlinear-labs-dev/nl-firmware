@@ -460,7 +460,7 @@ bool MidiRuntimeOptions::shouldAllowHWSourceFromLocal(int hwID) const
   return m_hwEnableMappings[hwID][local];
 }
 
-bool MidiRuntimeOptions::isCCMappedToSpecialFunction(int cc)
+bool MidiRuntimeOptions::isCCMappedToChannelModeMessage(int cc)
 {
 #warning "expand this check if more special functions are implemented"
   switch(cc)
@@ -472,30 +472,30 @@ bool MidiRuntimeOptions::isCCMappedToSpecialFunction(int cc)
   return false;
 }
 
-SpecialMidiFunctions MidiRuntimeOptions::createSpecialFunctionDescriptor(int cc, uint8_t ccMSBValue)
+MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc, uint8_t ccValue)
 {
   switch(cc)
   {
     case static_cast<int>(SpecialCCs::AllSoundOff):
-      if(ccMSBValue == 0)
-        return SpecialMidiFunctions::AllSoundOff;
+      if(ccValue == 0)
+        return MidiChannelModeMessages::AllSoundOff;
       break;
     case static_cast<int>(SpecialCCs::AllNotesOff):
-      if(ccMSBValue == 0)
-        return SpecialMidiFunctions::AllNotesOff;
+      if(ccValue == 0)
+        return MidiChannelModeMessages::AllNotesOff;
       break;
     case static_cast<int>(SpecialCCs::ResetAllControllers):
-      if(ccMSBValue == 0)
-        return SpecialMidiFunctions::ResetAllControllers;
+      if(ccValue == 0)
+        return MidiChannelModeMessages::ResetAllControllers;
       break;
     case static_cast<int>(SpecialCCs::LocalControlOnOff):
-      if(ccMSBValue == 0)
-        return SpecialMidiFunctions::LocalControllersOff;
-      else if(ccMSBValue == 127)
-        return SpecialMidiFunctions::LocalControllersOn;
+      if(ccValue == 0)
+        return MidiChannelModeMessages::LocalControllersOff;
+      else if(ccValue == 127)
+        return MidiChannelModeMessages::LocalControllersOn;
       break;
     default:
-      return SpecialMidiFunctions::NOOP;
+      return MidiChannelModeMessages::NOOP;
   }
-  return SpecialMidiFunctions::NOOP;
+  return MidiChannelModeMessages::NOOP;
 }
