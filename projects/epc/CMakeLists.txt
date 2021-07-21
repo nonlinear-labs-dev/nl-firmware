@@ -5,7 +5,13 @@ OPTION(BUILD_PLAYGROUND "Build the playground" Off)
 OPTION(BUILD_WEBUI "Build the NonMaps web-ui" Off)
 OPTION(BUILD_EPC_SCRIPTS "Install the shell scripts on the ePC" Off)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
+
+IF (${TARGET_PLATFORM} STREQUAL "epc"  OR  ${TARGET_PLATFORM} STREQUAL "epc2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=broadwell")
+ELSE ()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+ENDIF ()
 
 IF (BUILD_ACCEPTANCE_TESTS)
     add_subdirectory(acceptance-tests)
