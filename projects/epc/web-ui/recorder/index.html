@@ -34,13 +34,22 @@
             <input type="text" id="download-name">
             <a id="reset-download-name"></a>
             <div id="download-options">
-                <button id="download-flac">Flac<span id="flac-size"></span></button>
-                <button id="download-wave">Wave<span id="wave-size"></span></button>
+                <form id="download-flac-form" method="get" action="">
+                    <input type="hidden" name="begin" value="" />
+                    <input type="hidden" name="end" value="" />
+                    <button type="submit" id="download-flac">Flac<span id="flac-size"></span></button>
+                </form>
+                <form id="download-wave-form" method="get" action="">
+                    <input type="hidden" name="begin" value="" />
+                    <input type="hidden" name="end" value="" />
+                    <button type="submit" id="download-wave">Wave<span id="wave-size"></span></button>
+                </form>
                 <button id="download-cancel">Cancel</button>
             </div>
         </div>
     </div>
     <div id="pane">
+
         <div id="waveform">
             <div class="clipping">
                 <div id="range-selector"></div>
@@ -57,6 +66,7 @@
                     <div id="other-border">
                         <div id="other-handle"></div>
                     </div>
+
                 </div>
                 <div id="play-pos">
                     <div id="play-pos-time"></div>
@@ -91,6 +101,11 @@
             <span id="toggle-recording" title="Toggle recording (R)"></span>
             <span id="download" title="Download selection (S)"></span>
             <span id="reset" title="Clear whole recording"></span>
+
+            <form method="get" action="https://filesamples.com/samples/audio/flac/sample3.flac">
+                <button type="submit">FLAC FROM NET</button>
+            </form>
+
         </div>
 
         <div id="zoom">

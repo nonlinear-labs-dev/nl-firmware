@@ -16,6 +16,7 @@ interface PrepareDownloadInfo {
 }
 
 abstract class C15ProxyIface {
+    abstract reconnectToServer(): void;
     abstract getBars(): Bars;
     abstract getPresetLoadEvent(fromTime: number, toTime: number): PresetLogEntry | null;
     abstract buildTime(lastTime: number | undefined): string;
@@ -110,6 +111,9 @@ class C15ProxyMock extends C15ProxyIface {
         }
 
         setInterval(() => this.playProgress(), 85);
+    }
+
+    reconnectToServer(): void {
     }
 
     getBars(): Bars {
@@ -271,6 +275,13 @@ class C15Proxy extends C15ProxyIface {
         webSocket.onopen = () => webSocket.send(JSON.stringify(msg));
     }
 
+    reconnectToServer(): void {
+        this.updateStream.stop();
+        this.presetLogStream.stop();
+
+        this.updateStream = new UpdateStream(this);
+        this.presetLogStream = new PresetLogStream(this);
+    }
 
 
     private updateStream = new UpdateStream(this);
