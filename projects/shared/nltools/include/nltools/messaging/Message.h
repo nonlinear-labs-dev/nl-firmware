@@ -271,14 +271,6 @@ namespace nltools::msg
       MidiSendChannel sendChannel;
       MidiSendChannelSplit sendSplitChannel;
 
-      bool receiveProgramChange = false;
-      bool receiveNotes = false;
-
-      bool sendProgramChange = false;
-      bool sendNotes = false;
-
-      bool localNotes = false;
-
       bool highVeloCCEnabled = true;
       bool highResCCEnabled = true;
 

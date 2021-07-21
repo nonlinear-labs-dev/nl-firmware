@@ -204,16 +204,6 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveChannelSplit", midiReceiveChannelSplit.name());
 	}
 
-	public void setReceiveNotes(BooleanValues enabled) {
-		SetupModel.get().systemSettings.receiveNotes.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("ReceiveNotes", netify(enabled.name()));
-	}
-
-	public void setReceiveProgramChanges(BooleanValues enabled) {
-		SetupModel.get().systemSettings.receiveProgramChanges.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("ReceiveProgramChanges", netify(enabled.name()));
-	}
-
 	public void setReceiveAftertouchCurve(AftertouchCurve value) {
 		SetupModel.get().systemSettings.receiveAftertouchCurve.setValue(value);
 		NonMaps.theMaps.getServerProxy().setSetting("ReceiveAftertouchCurve", value.name());
@@ -232,21 +222,6 @@ public class SystemSettings {
 	public void setSendChannelSplit(MidiSendChannelSplit channel) {
 		SetupModel.get().systemSettings.sendChannelSplit.setValue(channel);
 		NonMaps.theMaps.getServerProxy().setSetting("SendChannelSplit", channel.name());
-	}
-
-	public void setSendProgramChanges(BooleanValues enabled) {
-		SetupModel.get().systemSettings.sendProgramChanges.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("SendProgramChanges", netify(enabled.name()));
-	}
-
-	public void setSendNotes(BooleanValues enabled) {
-		SetupModel.get().systemSettings.sendNotes.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("SendNotes", netify(enabled.name()));
-	}
-
-	public void setLocalNotes(BooleanValues enabled) {
-		SetupModel.get().systemSettings.localNotes.setValue(enabled);
-		NonMaps.theMaps.getServerProxy().setSetting("LocalNotes", netify(enabled.name()));
 	}
 
 	public void setAutoStartRecorder(BooleanValues on) {

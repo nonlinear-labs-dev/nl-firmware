@@ -21,16 +21,6 @@ public class MidiSettingsProvider {
 	private MidiSettingsProvider() {
 		SystemSettings s = SetupModel.get().systemSettings;
 
-        //Local
-        s.localNotes.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.localNotes.value != newValue) {
-                settings.localNotes.value = newValue;   
-                notifyClients();
-            }
-            return true;
-        });
-
         //Send
         s.sendChannel.onChange(t -> {
             int newValue = t.ordinal();
@@ -48,25 +38,7 @@ public class MidiSettingsProvider {
                 notifyClients();
             }
             return true;
-        });
-
-        s.sendProgramChanges.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.sendProgramChanges.value != newValue) {
-                settings.sendProgramChanges.value = newValue;
-                notifyClients();
-            }
-            return true;
-        });
-
-        s.sendNotes.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.sendNotes.value != newValue) {
-                settings.sendNotes.value = newValue;
-                notifyClients();
-            }
-            return true;
-        });
+        });    
 
         //Receive
         s.receiveChannel.onChange(t -> {
@@ -82,24 +54,6 @@ public class MidiSettingsProvider {
             int newValue = t.ordinal();
             if(settings.receiveChannelSplit.selected != newValue) {
                 settings.receiveChannelSplit.selected = newValue;
-                notifyClients();
-            }
-            return true;
-        });
-
-        s.receiveProgramChanges.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.receiveProgramChanges.value != newValue) {
-                settings.receiveProgramChanges.value = newValue;
-                notifyClients();
-            }
-            return true;
-        });
-
-        s.receiveNotes.onChange(t -> {
-            boolean newValue = t == BooleanValues.on;
-            if(settings.receiveNotes.value != newValue) {
-                settings.receiveNotes.value = newValue;
                 notifyClients();
             }
             return true;

@@ -113,22 +113,17 @@ public class MidiSettings {
         }
         public RoutingEntry routings[] = new RoutingEntry[numRoutings]; 
     }
-    
 
-    //Local
-    public OnOffOption localNotes = new OnOffOption();
+    //Global
+    public OnOffOption globalLocalEnable = new OnOffOption();
 
-    //Send
+    //Channels
     public SendChannel sendChannel = new SendChannel();
     public SendChannelSplit sendChannelSplit = new SendChannelSplit();
-    public OnOffOption sendProgramChanges = new OnOffOption();
-    public OnOffOption sendNotes = new OnOffOption();
-
-    //Receive
     public ReceiveChannel receiveChannel = new ReceiveChannel();
     public ReceiveChannelSplit receiveChannelSplit = new ReceiveChannelSplit();
-    public OnOffOption receiveProgramChanges = new OnOffOption();
-    public OnOffOption receiveNotes = new OnOffOption();
+
+    //Unused
     public VelocityCurve receiveVelocityCurve = new VelocityCurve();
     public AftertouchCurve receiveAftertouchCurve = new AftertouchCurve();
 
@@ -143,8 +138,9 @@ public class MidiSettings {
     public AftertouchMapping aftertouchMapping = new AftertouchMapping();
     public OnOffOption highVelocityCC = new OnOffOption();
     public OnOffOption enable14BitCC = new OnOffOption();
+
+    //Routing
     public RoutingSetting routingSetting = new RoutingSetting();
-    public OnOffOption globalLocalEnable = new OnOffOption();
 
     //FLAC
     public OnOffOption autoStartRecorder = new OnOffOption();

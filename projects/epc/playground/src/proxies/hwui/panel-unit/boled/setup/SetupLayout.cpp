@@ -79,10 +79,6 @@
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
-#include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
-#include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
-#include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
-#include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
@@ -842,8 +838,6 @@ namespace NavTree
     {
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Channel"));
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Split Channel (Part II)"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "Enable Program Change"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "Enable Notes"));
     }
   };
 
@@ -854,8 +848,6 @@ namespace NavTree
     {
       children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Split Channel (Part II)"));
-      children.emplace_back(new EnumSettingItem<MidiSendProgramChangesSetting>(this, "Enable Program Change"));
-      children.emplace_back(new EnumSettingItem<MidiSendNotesSetting>(this, "Enable Notes"));
     }
   };
 

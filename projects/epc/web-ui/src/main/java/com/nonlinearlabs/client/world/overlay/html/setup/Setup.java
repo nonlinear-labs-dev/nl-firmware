@@ -95,10 +95,8 @@ public class Setup extends Composite {
 	@UiField
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
-			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, receivePCOn, receivePCOff, receiveNotesOn, 
-			receiveNotesOff, sendPCOn, sendPCOff, sendNotesOn, 
-			sendNotesOff, localNotesOn, globalLocalOn, globalLocalOff,
-			localNotesOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
+			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, 
+			globalLocalOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -239,11 +237,6 @@ public class Setup extends Composite {
 		fillRadioButtons(developerOptionsOn, developerOptionsOff, LocalSettings.ShowDeveloperOptions.options);
 		fillRadioButtons(highlightChangedOn, highlightChangedOff, DeviceSettings.HighlightChanged.options);
 		fillRadioButtons(syncPartsOn, syncPartsOff, DeviceSettings.SyncPartsAcrossUI.options);
-		fillRadioButtons(receivePCOn, receivePCOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(receiveNotesOn, receiveNotesOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(sendPCOn, sendPCOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(sendNotesOn, sendNotesOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(localNotesOn, localNotesOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(highVeloCCOn, highVeloCCOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
@@ -324,20 +317,9 @@ public class Setup extends Composite {
 
 		midiReceiveChannel.addChangeHandler(e -> settings.setReceiveMidiChannel(MidiReceiveChannel.values()[midiReceiveChannel.getSelectedIndex()]));
 		midiReceiveChannelSplit.addChangeHandler(e -> settings.setReceiveMidiChannelSplit(MidiReceiveChannelSplit.values()[midiReceiveChannelSplit.getSelectedIndex()]));
-		receivePCOn.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.on));
-		receivePCOff.addValueChangeHandler(e -> settings.setReceiveProgramChanges(BooleanValues.off));
-		receiveNotesOn.addValueChangeHandler(e -> settings.setReceiveNotes(BooleanValues.on));
-		receiveNotesOff.addValueChangeHandler(e -> settings.setReceiveNotes(BooleanValues.off));
 
 		midiSendChannel.addChangeHandler(e -> settings.setSendChannel(MidiSendChannel.values()[midiSendChannel.getSelectedIndex()]));
 		midiSendChannelSplit.addChangeHandler(e -> settings.setSendChannelSplit(MidiSendChannelSplit.values()[midiSendChannelSplit.getSelectedIndex()]));
-		sendPCOn.addValueChangeHandler(e -> settings.setSendProgramChanges(BooleanValues.on));
-		sendPCOff.addValueChangeHandler(e -> settings.setSendProgramChanges(BooleanValues.off));
-		sendNotesOn.addValueChangeHandler(e -> settings.setSendNotes(BooleanValues.on));
-		sendNotesOff.addValueChangeHandler(e -> settings.setSendNotes(BooleanValues.off));
-
-		localNotesOn.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.on));
-		localNotesOff.addValueChangeHandler(e -> settings.setLocalNotes(BooleanValues.off));
 
 		pedal1Mapping.addChangeHandler(e -> settings.setPedal1Mapping(PedalCCMapping.values()[pedal1Mapping.getSelectedIndex()]));
 		pedal2Mapping.addChangeHandler(e -> settings.setPedal2Mapping(PedalCCMapping.values()[pedal2Mapping.getSelectedIndex()]));
@@ -567,20 +549,8 @@ public class Setup extends Composite {
 	private void applyPresenter(MidiSettings t) {
 		midiReceiveChannel.setSelectedIndex(t.receiveChannel.selected);
 		midiReceiveChannelSplit.setSelectedIndex(t.receiveChannelSplit.selected);
-		receiveNotesOn.setValue(t.receiveNotes.value);
-		receiveNotesOff.setValue(!t.receiveNotes.value);
-		receivePCOn.setValue(t.receiveProgramChanges.value);
-		receivePCOff.setValue(!t.receiveProgramChanges.value);
-
 		midiSendChannel.setSelectedIndex(t.sendChannel.selected);
 		midiSendChannelSplit.setSelectedIndex(t.sendChannelSplit.selected);
-		sendPCOn.setValue(t.sendProgramChanges.value);
-		sendPCOff.setValue(!t.sendProgramChanges.value);
-		sendNotesOn.setValue(t.sendNotes.value);
-		sendNotesOff.setValue(!t.sendNotes.value);
-		
-		localNotesOn.setValue(t.localNotes.value);
-		localNotesOff.setValue(!t.localNotes.value);
 
 		pedal1Mapping.setSelectedIndex(t.pedalMapping1.selected);
 		pedal2Mapping.setSelectedIndex(t.pedalMapping2.selected);

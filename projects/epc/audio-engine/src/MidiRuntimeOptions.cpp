@@ -1,21 +1,30 @@
 #include <synth/C15Synth.h>
 #include "MidiRuntimeOptions.h"
 
-void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage& msg)
+void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 {
+
+  typedef tMidiSettingMessage::RoutingIndex tIndex;
+  typedef tMidiSettingMessage::RoutingAspect tAspect;
+  auto get = [msg = msg](tIndex i, tAspect a){
+    const auto index = static_cast<int>(i);
+    const auto aspect = static_cast<int>(a);
+    return msg.hwMappings.at(index).at(aspect);
+  };
+
   m_receiveChannel = msg.receiveChannel;
   m_receiveSplitChannel = msg.receiveSplitChannel;
 
   m_sendChannel = msg.sendChannel;
   m_sendSplitChannel = msg.sendSplitChannel;
 
-  m_receiveProgramChanges = msg.receiveProgramChange;
-  m_receiveNotes = msg.receiveNotes;
+  //TODO remove this explicit members?
+  m_receiveProgramChanges = get(tIndex::ProgramChange, tAspect::RECEIVE_PRIMARY);
+  m_sendProgramChanges = get(tIndex::ProgramChange, tAspect::SEND_PRIMARY);
 
-  m_sendProgramChanges = msg.sendProgramChange;
-  m_sendNotes = msg.sendNotes;
-
-  m_localNotes = msg.localNotes;
+  m_receiveNotes = get(tIndex::Notes, tAspect::RECEIVE_PRIMARY);
+  m_sendNotes = get(tIndex::Notes, tAspect::SEND_PRIMARY);
+  m_localNotes = get(tIndex::Notes, tAspect::LOCAL);
 
   pedal1CC = msg.pedal1cc;
   pedal2CC = msg.pedal2cc;
