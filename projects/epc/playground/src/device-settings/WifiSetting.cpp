@@ -65,8 +65,6 @@ void WifiSetting::enableDisableBBBWifi(WifiSettings m)
 
 void WifiSetting::setupBBBWifiIfBBBConnectedAndSettingLoaded()
 {
-  nltools::Log::error(__LINE__, "bbbb there:", m_connectionToBBBEstablished, "loaded", m_didSettingLoad);
-
   if(m_connectionToBBBEstablished && m_didSettingLoad)
     enableDisableBBBWifi(get());
 }
