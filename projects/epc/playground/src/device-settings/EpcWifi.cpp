@@ -36,21 +36,26 @@ bool EpcWifi::syncCredentials()
 
 void EpcWifi::updateCredentials(bool _reload)
 {
-    m_busy = true;
-    if (m_currentPassphrase != m_newPassphrase){
-        updatePassphrase();
-    }
-    else if (m_currentSSID != m_newSSID){
-        updateSSID();
-    }
-    else if (m_currentEpcWifiState != m_newEpcWifiState ){
-        updateWifiSwitch();
-    }
-    else if (_reload){
-        reloadConnection();
-    }
-    else
-        m_busy = false;
+  m_busy = true;
+
+  if(m_currentPassphrase != m_newPassphrase)
+  {
+    updatePassphrase();
+  }
+  else if(m_currentSSID != m_newSSID)
+  {
+    updateSSID();
+  }
+  else if(m_currentEpcWifiState != m_newEpcWifiState)
+  {
+    updateWifiSwitch();
+  }
+  else if(_reload)
+  {
+    reloadConnection();
+  }
+  else
+    m_busy = false;
 }
 
 void EpcWifi::updateWifiSwitch()
