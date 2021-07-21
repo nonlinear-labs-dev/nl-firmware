@@ -1,8 +1,6 @@
 #include <fstream>
 #include <giomm.h>
-#include <thread>
 #include "WiFiManager.h"
-#include <nltools/system/SpawnAsyncCommandLine.h>
 
 WiFiManager::WiFiManager()
 {
@@ -18,12 +16,13 @@ WiFiManager::WiFiManager()
                                                                       saveConfig();
                                                                     });
 
-  nltools::msg::receive<nltools::msg::WiFi::EnableWiFiMessage>(nltools::msg::EndPoint::BeagleBone, [this](const auto& msg) {
-     if(msg.m_enable)
-       enableAndStartAP();
-     else
-       disableAndStopAP();
-  });
+  nltools::msg::receive<nltools::msg::WiFi::EnableWiFiMessage>(nltools::msg::EndPoint::BeagleBone,
+                                                               [this](const auto& msg) {
+                                                                 if(msg.m_enable)
+                                                                   enableAndStartAP();
+                                                                 else
+                                                                   disableAndStopAP();
+                                                               });
 }
 
 void WiFiManager::saveConfig()
@@ -65,31 +64,27 @@ void WiFiManager::saveConfig()
 
 void WiFiManager::scheduleRestart()
 {
-#ifndef _DEVELOPMENT_PC
-  static std::vector<std::string> commands = {"systemctl", "restart", "accesspoint"};
-  SpawnAsyncCommandLine::spawn(commands, [](auto) {
-  },[](auto err) {
-    nltools::Log::error(__LINE__, err);
-  });
-#endif
+  if constexpr(isDevelopmentPC)
+    return;
+
+  m_asyncCommands.schedule({ "systemctl", "restart", "accesspoint" }, [](auto) {},
+                           [](auto err) { nltools::Log::error(__LINE__, err); });
 }
 
 void WiFiManager::enableAndStartAP()
 {
-  static std::vector<std::string> commands = {"/usr/C15/scripts/enableAndStartAP.sh"};
+  if constexpr(isDevelopmentPC)
+    return;
 
-  SpawnAsyncCommandLine::spawn(commands, [](auto){
-  }, [](auto err) {
-      nltools::Log::error(__LINE__, err);
-  });
+  m_asyncCommands.schedule({ "/usr/C15/scripts/enableAndStartAP.sh" }, [](auto) {},
+                           [](auto err) { nltools::Log::error(__LINE__, err); });
 }
 
 void WiFiManager::disableAndStopAP()
 {
-  static std::vector<std::string> commands = {"/usr/C15/scripts/disableAndStopAP.sh"};
+  if constexpr(isDevelopmentPC)
+    return;
 
-  SpawnAsyncCommandLine::spawn(commands, [](auto){
-    }, [](auto err) {
-      nltools::Log::error(__LINE__, err);
-    });
+  m_asyncCommands.schedule({ "/usr/C15/scripts/disableAndStopAP.sh" }, [](auto) {},
+                           [](auto err) { nltools::Log::error(__LINE__, err); });
 }
