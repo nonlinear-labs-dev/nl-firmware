@@ -496,3 +496,14 @@ body {
 #wave-size {
     display: block;
 }
+
+#log {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 10em;
+    overflow: scroll;
+    z-index: 10000;
+    background-color: red;
+}

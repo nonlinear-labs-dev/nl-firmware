@@ -61,15 +61,32 @@ class UpdateStream {
         this.connect();
     }
 
+    logToDiv(text: string) {
+        // document.getElementById("log")!.innerText += "/ " + text;
+    }
+
     private connect() {
         console.log("connect");
         this.bars.clear();
         this.c15.setConnectionState(ConnectionState.Disconnected);
         this.socket = new WebSocket("ws://" + hostName + wsPort);
-        this.socket.onopen = (event) => this.update();
-        this.socket.onerror = (event) => this.retry();
-        this.socket.onclose = (event) => this.retry();
-        this.socket.onmessage = (event) => this.readMessage(event.data);
+        this.socket.onopen = (event) => {
+            this.logToDiv("socket open");
+            this.update();
+        }
+        this.socket.onerror = (event) => {
+            this.logToDiv("socket error");
+            this.retry(true);
+        }
+
+        this.socket.onclose = (event) => {
+            this.logToDiv("socket close");
+            this.retry(true);
+        }
+        this.socket.onmessage = (event) => {
+            this.logToDiv("socket msg");
+            this.readMessage(event.data);
+        }
     }
 
     stop() {
@@ -81,6 +98,11 @@ class UpdateStream {
             clearTimeout(this.updateTimer);
             this.updateTimer = -1;
         }
+
+        if (this.watchdogTimer != -1) {
+            clearTimeout(this.watchdogTimer);
+            this.watchdogTimer = -1;
+        }
     }
 
     private update(): void {
@@ -91,7 +113,7 @@ class UpdateStream {
             this.socket!.send(JSON.stringify({ "get-info": {} }));
         }
         catch (err) {
-            this.retry();
+            this.retry(true);
         }
     }
 
@@ -151,9 +173,13 @@ class UpdateStream {
         this.scheduleUpdate();
     }
 
-    private retry(): void {
+    private retry(showDisconnected: boolean): void {
         if (this.retryTimer == -1 && !this.close) {
-            this.c15.setConnectionState(ConnectionState.Disconnected);
+            this.logToDiv("retry");
+
+            if (showDisconnected)
+                this.c15.setConnectionState(ConnectionState.Disconnected);
+
             this.retryTimer = setTimeout(() => {
                 this.retryTimer = -1;
                 this.connect();
@@ -162,6 +188,16 @@ class UpdateStream {
     }
 
     private readMessage(data: any): void {
+
+        if (this.watchdogTimer != -1)
+            clearTimeout(this.watchdogTimer);
+
+        this.watchdogTimer = setTimeout(() => {
+            this.watchdogTimer = -1;
+            this.retry(false);
+        }, 1000);
+
+
         var reader = new FileReader()
         reader.onload = () => {
             this.messageHandler!(JSON.parse(reader.result as string));
@@ -178,4 +214,6 @@ class UpdateStream {
     private retryTimer = -1;
     private updateTimer = -1;
     private close = false;
+
+    private watchdogTimer = -1;
 }

@@ -274,4 +274,5 @@ class C15Proxy extends C15ProxyIface {
     private updateStream = new UpdateStream(this);
     private presetLogStream = new PresetLogStream(this);
     private numPlayPosCallsInFlight = 0;
+
 }
