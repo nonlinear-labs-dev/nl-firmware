@@ -66,18 +66,17 @@ void WiFiManager::saveConfig()
 void WiFiManager::scheduleRestart()
 {
 #ifndef _DEVELOPMENT_PC
-  nltools::Log::info(__FILE__, __FUNCTION__, "schedule Restart!");
-  auto thread = std::thread([]() {
-    if(system("systemctl restart accesspoint"))
-      nltools::Log::error("Could not restart WiFi!");
+  static std::vector<std::string> commands = {"systemctl", "restart", "accesspoint"};
+  SpawnAsyncCommandLine::spawn(commands, [](auto) {
+  },[](auto err) {
+    nltools::Log::error(__LINE__, err);
   });
-  thread.detach();
 #endif
 }
 
 void WiFiManager::enableAndStartAP()
 {
-  std::vector<std::string> commands = {"/usr/C15/scripts/enableAndStartAP.sh"};
+  static std::vector<std::string> commands = {"/usr/C15/scripts/enableAndStartAP.sh"};
 
   SpawnAsyncCommandLine::spawn(commands, [](auto){
   }, [](auto err) {
@@ -87,7 +86,7 @@ void WiFiManager::enableAndStartAP()
 
 void WiFiManager::disableAndStopAP()
 {
-  std::vector<std::string> commands = {"/usr/C15/scripts/disableAndStopAP.sh"};
+  static std::vector<std::string> commands = {"/usr/C15/scripts/disableAndStopAP.sh"};
 
   SpawnAsyncCommandLine::spawn(commands, [](auto){
     }, [](auto err) {
