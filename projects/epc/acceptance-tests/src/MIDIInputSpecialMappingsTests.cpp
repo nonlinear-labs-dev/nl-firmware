@@ -2,23 +2,17 @@
 #include <synth/input/InputEventStage.h>
 #include <synth/C15Synth.h>
 #include <mock/MockDSPHosts.h>
+#include <testing/TestHelper.h>
 
 MidiRuntimeOptions createSpecialSettings()
 {
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
-  msg.receiveNotes = true;
-  msg.receiveProgramChange = true;
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
 
-  msg.sendProgramChange = true;
-  msg.sendNotes = true;
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_1;
-
-  msg.localNotes = true;
-
 
   msg.bendercc = BenderCC::Pitchbend;
   msg.aftertouchcc = AftertouchCC::ChannelPressure;
@@ -28,6 +22,8 @@ MidiRuntimeOptions createSpecialSettings()
   msg.pedal4cc = PedalCC::CC23;
   msg.ribbon1cc = RibbonCC::CC24;
   msg.ribbon2cc = RibbonCC::CC25;
+
+  msg.routings = TestHelper::createFullMappings(true);
 
   options.update(msg);
   return options;
@@ -80,7 +76,7 @@ TEST_CASE("Secondary Channel", "[MIDI][TCD]")
   //Construct Objects
   SecTests::SplitDSPMock host;
   std::vector<nltools::msg::Midi::SimpleMessage> midiOut;
-  InputEventStage eventStage { &host, &settings, [] {}, [&](auto m) { midiOut.emplace_back(m); } };
+  InputEventStage eventStage { &host, &settings, [] {}, [&](auto m) { midiOut.emplace_back(m); }, [](auto){} };
 
   WHEN("TCD key is pressed on Part I")
   {
@@ -181,7 +177,7 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_2);
   std::vector<nltools::msg::Midi::SimpleMessage> sendMIDI;
   InputEventStage eventStage(
-      &hostPartI, &settings, [] {}, [&](auto m) { sendMIDI.emplace_back(m); });
+      &hostPartI, &settings, [] {}, [&](auto m) { sendMIDI.emplace_back(m); }, [](auto) {});
 
   WHEN("MIDI In on Prim. Channel 1, receive")
   {
@@ -226,7 +222,7 @@ TEST_CASE("Receive MIDI Special Receive Channel Settings leads to Note Down", "[
   PassOnKeyDownHostSingle host(77, 1.0, VoiceGroup::I);
   auto settings = createSpecialSettings();
   InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto m) { CHECK(false); });
+      &host, &settings, [] {}, [&](auto m) { CHECK(false); },[](auto) {});
 
   WHEN("MIDI In with CH1 & CH1")
   {

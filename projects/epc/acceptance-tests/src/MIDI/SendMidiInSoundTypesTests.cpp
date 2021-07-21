@@ -19,7 +19,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
   InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); });
+      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
 
   //set settings to not interfere with CC01
   {
@@ -28,7 +28,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
 
-    msg.hwMappings = TestHelper::createFullMappings(true);
+    msg.routings = TestHelper::createFullMappings(true);
 
     msg.highResCCEnabled = false;
     msg.pedal1cc = PedalCC::CC02;

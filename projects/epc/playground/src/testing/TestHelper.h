@@ -136,10 +136,21 @@ namespace TestHelper
     }
   }
 
-  inline void updateMappingForHW(int hw, nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,
-                             nltools::msg::Setting::MidiSettingsMessage::RoutingAspect index, bool b)
+  inline void updateMappingForRow(nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,
+                                  nltools::msg::Setting::MidiSettingsMessage::RoutingIndex index,
+                                  bool value)
   {
-    array[hw][static_cast<int>(index)] = b;
+    for(auto& a: array[static_cast<int>(index)])
+    {
+      a = value;
+    }
+  }
+
+  inline void updateMappingForHW(nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,
+                                 nltools::msg::Setting::MidiSettingsMessage::RoutingIndex index,
+                                 nltools::msg::Setting::MidiSettingsMessage::RoutingAspect aspect, bool b)
+  {
+    array[static_cast<int>(index)][static_cast<int>(aspect)] = b;
   }
 }
 

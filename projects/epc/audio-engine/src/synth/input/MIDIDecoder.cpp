@@ -133,8 +133,9 @@ void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
   const auto isMSB = controlChangeID > 0 && controlChangeID < 32;
   const auto isLSB = controlChangeID > 32 && controlChangeID < 64;
   const auto isSwitching = controlChangeID > 63 && controlChangeID < 70;
+  const auto isChannelModeMessage = m_options->isCCMappedToChannelModeMessage(controlChangeID);
 
-  if(isMSB || isSwitching)
+  if(isMSB || isSwitching || isChannelModeMessage)
   {
     hwResult.cases = MidiHWChangeSpecialCases::CC;
     hwResult.receivedCC = controlChangeID;

@@ -16,7 +16,7 @@ TEST_CASE("HW Source Enable Tests")
       []() {
 
       },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); });
+      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
 
   InputEventStageTester eventStage(&eS);
 
@@ -45,11 +45,11 @@ TEST_CASE("HW Source Enable Tests")
     msg.highVeloCCEnabled = false;
     msg.highResCCEnabled = false;
 
-    msg.hwMappings = TestHelper::createFullMappings(false);
+    msg.routings = TestHelper::createFullMappings(false);
 
     for(auto aspect : aspects)
     {
-      TestHelper::updateMappings(msg.hwMappings, aspect, true);
+      TestHelper::updateMappings(msg.routings, aspect, true);
     }
 
     options.update(msg);
@@ -209,7 +209,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
       []() {
 
       },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); });
+      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
 
   InputEventStageTester eventStage(&eS);
 
@@ -218,7 +218,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
 
   //prepare default settings
 
-  auto initSettings = [&](const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingIndex>& hws,
+  auto initSettings = [&](const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingIndex>& idx,
                           const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingAspect>& aspects)
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
@@ -239,13 +239,13 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
     msg.highVeloCCEnabled = false;
     msg.highResCCEnabled = false;
 
-    msg.hwMappings = TestHelper::createFullMappings(false);
+    msg.routings = TestHelper::createFullMappings(false);
 
-    for(auto hw : hws)
+    for(auto i : idx)
     {
       for(auto aspect : aspects)
       {
-        TestHelper::updateMappingForHW(static_cast<int>(hw), msg.hwMappings, aspect, true);
+        TestHelper::updateMappingForHW(msg.routings, i, aspect, true);
       }
     }
 
@@ -253,8 +253,8 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
   };
 
   constexpr static uint8_t BASE_TCD = 0b11100000;
-  constexpr static uint8_t Aftertouch = 4;
-  constexpr static uint8_t Bender = 5;
+  constexpr static uint8_t Bender = 4;
+  constexpr static uint8_t Aftertouch = 5;
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEventAftertouch
@@ -275,7 +275,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 4);
+          CHECK(hwID == Aftertouch);
         });
 
     THEN("TCD gets send on Prim")
@@ -308,7 +308,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
             didReceive = true;
-            CHECK(hwID == 5);
+            CHECK(hwID == Bender);
         });
 
     THEN("TCD gets send on Prim")

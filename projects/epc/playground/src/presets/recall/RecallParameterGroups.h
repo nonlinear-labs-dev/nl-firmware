@@ -1,14 +1,19 @@
 #pragma once
 
-#include "presets/PresetDualParameterGroups.h"
 #include <tools/Signal.h>
 #include <ParameterId.h>
+#include <http/UpdateDocumentContributor.h>
 #include <unordered_map>
 
 class ParameterGroupSet;
 class EditBuffer;
 class RecallParameterGroup;
 class RecallParameter;
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class RecallParameterGroups : public UpdateDocumentContributor
 {

@@ -530,7 +530,7 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
         msg.highVeloCCEnabled = settings->getSetting<EnableHighVelocityCC>()->get();
         msg.highResCCEnabled = settings->getSetting<Enable14BitSupport>()->get();
 
-        msg.hwMappings = settings->getSetting<RoutingSettings>()->getRaw();
+        msg.routings = settings->getSetting<RoutingSettings>()->getRaw();
 
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       });

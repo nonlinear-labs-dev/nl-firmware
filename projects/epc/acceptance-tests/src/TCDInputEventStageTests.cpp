@@ -7,20 +7,16 @@
 MidiRuntimeOptions createTCDSettings()
 {
   MidiRuntimeOptions options;
-  nltools::msg::Setting::MidiSettingsMessage msg;
-  msg.receiveNotes = true;
-  msg.receiveProgramChange = true;
+  using tMSG = nltools::msg::Setting::MidiSettingsMessage;
+  tMSG msg;
+
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
 
-  msg.sendProgramChange = true;
-  msg.sendNotes = true;
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_1;
 
-  msg.localNotes = true;
-
-  msg.hwMappings = TestHelper::createFullMappings(true);
+  msg.routings = TestHelper::createFullMappings(true);
 
   msg.bendercc = BenderCC::Pitchbend;
   msg.aftertouchcc = AftertouchCC::ChannelPressure;
@@ -84,7 +80,7 @@ TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
   PassOnKeyDownHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
+                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); }, [](auto) {}};
 
   WHEN("Keypos and KeyDown is received")
   {
@@ -124,7 +120,7 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
   PassOnKeyUpHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
+                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } , [](auto) {}};
 
   WHEN("Keypos and KeyUp is received")
   {
@@ -174,7 +170,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings();
   InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } };
+                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); } , [](auto) {}};
   const auto sixteenThousand = 0b11111010000000;
 
   WHEN("HW Change Received")

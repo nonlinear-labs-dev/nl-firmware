@@ -9,7 +9,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   auto get = [msg = msg](tIndex i, tAspect a){
     const auto index = static_cast<int>(i);
     const auto aspect = static_cast<int>(a);
-    return msg.hwMappings.at(index).at(aspect);
+    return msg.routings.at(index).at(aspect);
   };
 
   m_receiveChannel = msg.receiveChannel;
@@ -38,7 +38,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   m_enableHighVelCC = msg.highVeloCCEnabled;
   m_enable14BitCC = msg.highResCCEnabled;
 
-  m_routingMappings = msg.hwMappings;
+  m_routingMappings = msg.routings;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
@@ -472,4 +472,44 @@ bool MidiRuntimeOptions::shouldAllowLocal(tMidiSettingMessage::RoutingIndex rout
   constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
   const auto index = static_cast<int>(routingIndex);
   return m_routingMappings[index][local];
+}
+
+bool MidiRuntimeOptions::isCCMappedToChannelModeMessage(int cc)
+{
+#warning "expand this check if more special functions are implemented"
+  switch(cc)
+  {
+    case static_cast<int>(MidiChannelModeMessageCCs::AllSoundOff):
+    case static_cast<int>(MidiChannelModeMessageCCs::AllNotesOff):
+      return true;
+  }
+  return false;
+}
+
+MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc, uint8_t ccValue)
+{
+  switch(cc)
+  {
+    case static_cast<int>(MidiChannelModeMessageCCs::AllSoundOff):
+      if(ccValue == 0)
+        return MidiChannelModeMessages::AllSoundOff;
+      break;
+    case static_cast<int>(MidiChannelModeMessageCCs::AllNotesOff):
+      if(ccValue == 0)
+        return MidiChannelModeMessages::AllNotesOff;
+      break;
+    case static_cast<int>(MidiChannelModeMessageCCs::ResetAllControllers):
+      if(ccValue == 0)
+        return MidiChannelModeMessages::ResetAllControllers;
+      break;
+    case static_cast<int>(MidiChannelModeMessageCCs::LocalControlOnOff):
+      if(ccValue == 0)
+        return MidiChannelModeMessages::LocalControllersOff;
+      else if(ccValue == 127)
+        return MidiChannelModeMessages::LocalControllersOn;
+      break;
+    default:
+      return MidiChannelModeMessages::NOOP;
+  }
+  return MidiChannelModeMessages::NOOP;
 }

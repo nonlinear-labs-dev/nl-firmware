@@ -75,6 +75,14 @@ namespace nltools::msg
 
       int m_keyPos;
     };
+
+    struct NoteEventHappened
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::NoteAction;
+      }
+    };
   }
 
   namespace USB
@@ -131,12 +139,12 @@ namespace nltools::msg
           std::copy(s.begin(), s.end() + 1, data);
         }
 
-        std::string get() const
+        [[nodiscard]] std::string get() const
         {
           return data;
         }
 
-        char data[tSize + 1];
+        char data[tSize + 1]{};
       };
     }
 
@@ -166,17 +174,28 @@ namespace nltools::msg
         return MessageType::WiFiSetPassword;
       }
 
-      SetWiFiPasswordMessage()
-      {
-      }
+      SetWiFiPasswordMessage() = default;
 
-      template <typename T> SetWiFiPasswordMessage(const T& password)
+      template <typename T> explicit SetWiFiPasswordMessage(const T& password)
       {
         m_password.set(password);
       }
 
       Helper::StringWrapper<8> m_password;
     };
+
+    struct EnableWiFiMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::WiFiEnable;
+      }
+
+      explicit EnableWiFiMessage(bool state) : m_state {state} {}
+
+      bool m_state{};
+    };
+
   }
 
   struct PanicAudioEngine
@@ -283,7 +302,7 @@ namespace nltools::msg
       AftertouchCC aftertouchcc;
       BenderCC bendercc;
 
-      tRoutingMappings hwMappings{};
+      tRoutingMappings routings {};
     };
 
     struct TransitionTimeMessage

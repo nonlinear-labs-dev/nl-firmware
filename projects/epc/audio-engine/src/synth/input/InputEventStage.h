@@ -7,6 +7,7 @@
 #include <functional>
 #include <nltools/messaging/Message.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
+#include "MidiChannelModeMessages.h"
 
 class MidiRuntimeOptions;
 
@@ -31,9 +32,11 @@ class InputEventStage
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
   using HWChangedNotification = std::function<void()>;
+  using ChannelModeMessageCB = std::function<void(MidiChannelModeMessages)>;
 
   //use reference
-  InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, HWChangedNotification hwChangedCB, MIDIOut outCB);
+  InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, HWChangedNotification hwChangedCB, MIDIOut outCB,
+                  ChannelModeMessageCB specialFunctionOut);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
@@ -41,7 +44,11 @@ class InputEventStage
 
   static int parameterIDToHWID(int id);
 
+  bool getAndResetKeyBedStatus();
+
  private:
+  void setAndScheduleKeybedNotify();
+
   using CC_Range_Vel = Midi::clipped14BitVelRange;
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
 
@@ -101,9 +108,11 @@ class InputEventStage
   DSPInterface* m_dspHost;
   MidiRuntimeOptions* m_options;
   HWChangedNotification m_hwChangedCB;
+  ChannelModeMessageCB m_channelModeMessageCB;
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
   std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions;
+  bool m_notifyKeyBedActionStatus = false;
 
   enum class LatchMode
   {
@@ -116,4 +125,6 @@ class InputEventStage
   [[nodiscard]] bool isSplitDSP() const;
 
   friend class InputEventStageTester;
+  bool ccIsMappedToChannelModeMessage(int cc);
+  void queueChannelModeMessage(int cc, uint8_t msbCCvalue);
 };
