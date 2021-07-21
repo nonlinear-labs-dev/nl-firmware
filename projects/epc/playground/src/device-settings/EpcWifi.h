@@ -5,7 +5,7 @@
 #include <nltools/Types.h>
 #include <glibmm.h>
 
-class EpcWifi
+class EpcWifi : public sigc::trackable
 {
  public:
   EpcWifi();
@@ -16,12 +16,6 @@ class EpcWifi
   void setNewWifiState(bool _state);
 
  private:
-  Glib::ustring m_currentPassphrase, m_newPassphrase;
-  Glib::ustring m_currentSSID, m_newSSID;
-  std::optional<bool> m_currentEpcWifiState;
-  bool m_newEpcWifiState;
-  bool m_busy;
-
   void spawn(const std::vector<std::string>& command, std::function<void(const std::string&)> onSuccess);
 
   bool syncCredentials();
@@ -34,4 +28,10 @@ class EpcWifi
 
   void updateWifiSwitch();
   void updateCredentials(bool _reload);
+  
+  Glib::ustring m_currentPassphrase, m_newPassphrase;
+  Glib::ustring m_currentSSID, m_newSSID;
+  std::optional<bool> m_currentEpcWifiState;
+  bool m_newEpcWifiState;
+  bool m_busy;
 };

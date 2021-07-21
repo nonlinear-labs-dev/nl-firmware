@@ -18,7 +18,6 @@ class AttributesOwner : public UpdateDocumentContributor
   ~AttributesOwner() override;
 
   virtual void setAttribute(UNDO::Transaction *transaction, const std::string &key, const Glib::ustring &value);
-  virtual void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
   virtual void clear(UNDO::Transaction *transaction);
 
   [[nodiscard]] Glib::ustring getAttribute(const Glib::ustring &key, const Glib::ustring &def) const;
@@ -27,6 +26,9 @@ class AttributesOwner : public UpdateDocumentContributor
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   void writeDiff(Writer &writer, const AttributesOwner *other) const;
+
+ protected:
+  virtual void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
 
  private:
   tAttributes m_attributes;

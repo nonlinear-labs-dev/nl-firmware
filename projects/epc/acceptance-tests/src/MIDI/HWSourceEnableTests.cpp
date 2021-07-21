@@ -253,8 +253,8 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
   };
 
   constexpr static uint8_t BASE_TCD = 0b11100000;
-  constexpr static uint8_t Aftertouch = 4;
-  constexpr static uint8_t Bender = 5;
+  constexpr static uint8_t Bender = 4;
+  constexpr static uint8_t Aftertouch = 5;
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEventAftertouch
@@ -275,7 +275,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 4);
+          CHECK(hwID == Aftertouch);
         });
 
     THEN("TCD gets send on Prim")
@@ -308,7 +308,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
             didReceive = true;
-            CHECK(hwID == 5);
+            CHECK(hwID == Bender);
         });
 
     THEN("TCD gets send on Prim")
