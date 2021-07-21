@@ -11,6 +11,7 @@
 #include <nltools/threading/BackgroundThreadWaiter.h>
 #include <MidiRuntimeOptions.h>
 #include <synth/input/InputEventStage.h>
+#include <synth/input/MidiChannelModeMessages.h>
 
 namespace nltools
 {
@@ -68,7 +69,9 @@ class C15Synth : public Synth, public sigc::trackable
 
  private:
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
+  void queueChannelModeMessage(MidiChannelModeMessages function);
 
+  void syncChannelModeMessageLoop();
   void syncExternalsLoop();
   void syncPlaygroundLoop();
   void syncExternalMidiBridge();
@@ -80,13 +83,19 @@ class C15Synth : public Synth, public sigc::trackable
   MidiRuntimeOptions m_midiOptions;
 
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
+  RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 
   std::mutex m_syncExternalsMutex;
   std::mutex m_syncPlaygroundMutex;
+  std::mutex m_syncChannelModeMessagesMutex;
   std::condition_variable m_syncExternalsWaiter;
   std::condition_variable m_syncPlaygroundWaiter;
+  std::condition_variable m_syncChannelModeMessagesWaiter;
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
   std::future<void> m_syncPlaygroundTask;
+  std::future<void> m_syncChannelModeMessagesTask;
+
   InputEventStage m_inputEventStage;
+  void doChannelModeMessageFunctions();
 };

@@ -16,7 +16,7 @@ TEST_CASE("HW Source Enable Tests")
       []() {
 
       },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); });
+      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
 
   InputEventStageTester eventStage(&eS);
 
@@ -209,7 +209,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
       []() {
 
       },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); });
+      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
 
   InputEventStageTester eventStage(&eS);
 

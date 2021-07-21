@@ -5,9 +5,10 @@
 #include "InputEventStage.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
-                                 InputEventStage::MIDIOut outCB)
+                                 InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
     : m_dspHost { dspHost }
     , m_options { options }
+    , m_channelModeMessageCB(std::move(specialCB))
     , m_hwChangedCB(std::move(hwChangedCB))
     , m_midiOut { std::move(outCB) }
     , m_midiDecoder(dspHost, options)
@@ -804,10 +805,21 @@ int ccToHWID(int cc, MidiRuntimeOptions *options)
 
 void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
 {
+  auto hwRes = decoder->getHWChangeStruct();
+  if(hwRes.cases == MIDIDecoder::MidiHWChangeSpecialCases::CC)
+  {
+    if(ccIsMappedToChannelModeMessage(hwRes.receivedCC))
+    {
+      auto msbCCValue = hwRes.undecodedValueBytes[0];
+      queueChannelModeMessage(hwRes.receivedCC, msbCCValue);
+      return;
+    }
+  }
+
   auto hwID = decoder->getKeyOrControl();
   if(hwID == HWID::INVALID)
   {
-    switch(decoder->getHWChangeStruct().cases)
+    switch(hwRes.cases)
     {
       case MIDIDecoder::MidiHWChangeSpecialCases::ChannelPitchbend:
         hwID = HWID::AFTERTOUCH;
@@ -817,7 +829,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         break;
       default:
       case MIDIDecoder::MidiHWChangeSpecialCases::CC:
-        hwID = ccToHWID(decoder->getHWChangeStruct().receivedCC, m_options);
+        hwID = ccToHWID(hwRes.receivedCC, m_options);
         break;
     }
   }
@@ -841,8 +853,6 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
 
   if(primaryAndAllowed || splitAndAllowed || omniAndAllowed)
   {
-    auto hwRes = decoder->getHWChangeStruct();
-
     for(auto hwID = 0; hwID < 8; hwID++)
     {
       const auto mappedMSBCC = m_options->getMSBCCForHWID(hwID);
@@ -923,4 +933,14 @@ void InputEventStage::setAndScheduleKeybedNotify()
 bool InputEventStage::isSplitDSP() const
 {
   return m_dspHost->getType() == SoundType::Split;
+}
+
+bool InputEventStage::ccIsMappedToChannelModeMessage(int cc)
+{
+  return m_options->isCCMappedToChannelModeMessage(cc);
+}
+
+void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
+{
+  m_channelModeMessageCB(MidiRuntimeOptions::createChannelModeMessageEnum(cc, msbCCvalue));
 }

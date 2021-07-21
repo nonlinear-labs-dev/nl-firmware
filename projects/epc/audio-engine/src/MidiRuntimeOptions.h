@@ -2,10 +2,18 @@
 #include <nltools/messaging/Message.h>
 #include <variant>
 #include <synth/c15-audio-engine/midi_handle.h>
+#include <synth/input/MidiChannelModeMessages.h>
 
 class MidiRuntimeOptions
 {
  public:
+  enum class MidiChannelModeMessageCCs : int {
+    AllSoundOff = 120,
+    ResetAllControllers = 121,
+    LocalControlOnOff = 122,
+    AllNotesOff = 123
+  };
+
   [[nodiscard]] MidiReceiveChannel getReceiveChannel() const;
   [[nodiscard]] MidiReceiveChannelSplit getReceiveSplitChannel() const;
   [[nodiscard]] MidiSendChannel getSendChannel() const;
@@ -100,6 +108,8 @@ class MidiRuntimeOptions
   bool is14BitSupportEnabled() const;
   int getMSBCCForHWID(int hwID);
 
+  bool isCCMappedToChannelModeMessage(int cc);
+  static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;
