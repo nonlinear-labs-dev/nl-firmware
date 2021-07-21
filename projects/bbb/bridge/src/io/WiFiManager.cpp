@@ -1,6 +1,5 @@
 #include <fstream>
 #include <giomm.h>
-#include <thread>
 #include "WiFiManager.h"
 
 WiFiManager::WiFiManager()
@@ -16,11 +15,18 @@ WiFiManager::WiFiManager()
                                                                       m_lastSeenPassword = msg.m_password.get();
                                                                       saveConfig();
                                                                     });
+
+  nltools::msg::receive<nltools::msg::WiFi::EnableWiFiMessage>(nltools::msg::EndPoint::BeagleBone,
+                                                               [this](const auto& msg) {
+                                                                 if(msg.m_enable)
+                                                                   enableAndStartAP();
+                                                                 else
+                                                                   disableAndStopAP();
+                                                               });
 }
 
 void WiFiManager::saveConfig()
 {
-
   try
   {
     std::string line;
@@ -58,14 +64,27 @@ void WiFiManager::saveConfig()
 
 void WiFiManager::scheduleRestart()
 {
-#ifndef _DEVELOPMENT_PC
-  nltools::Log::info(__FILE__, __FUNCTION__, "schedule Restart!");
-  auto thread = std::thread([]() {
-    if(system("systemctl restart accesspoint"))
-      nltools::Log::warning("Could not restart WiFi!");
-    else
-      nltools::Log::info(__FILE__, __FUNCTION__, "WiFi Restarted!");
-  });
-  thread.detach();
-#endif
+  if constexpr(isDevelopmentPC)
+    return;
+
+  m_asyncCommands.schedule({ "systemctl", "restart", "accesspoint" }, [](auto) {},
+                           [](auto err) { nltools::Log::error(__LINE__, err); });
+}
+
+void WiFiManager::enableAndStartAP()
+{
+  if constexpr(isDevelopmentPC)
+    return;
+
+  m_asyncCommands.schedule({ "/usr/C15/scripts/enableAndStartAP.sh" }, [](auto) {},
+                           [](auto err) { nltools::Log::error(__LINE__, err); });
+}
+
+void WiFiManager::disableAndStopAP()
+{
+  if constexpr(isDevelopmentPC)
+    return;
+
+  m_asyncCommands.schedule({ "/usr/C15/scripts/disableAndStopAP.sh" }, [](auto) {},
+                           [](auto err) { nltools::Log::error(__LINE__, err); });
 }

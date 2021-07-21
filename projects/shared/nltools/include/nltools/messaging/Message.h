@@ -77,6 +77,13 @@ namespace nltools
 
         int m_keyPos;
       };
+
+      struct ActionHappened {
+        constexpr static MessageType getType()
+        {
+          return MessageType::NoteAction;
+        }
+      };
     }
 
     namespace USB
@@ -178,6 +185,15 @@ namespace nltools
         }
 
         Helper::StringWrapper<8> m_password;
+      };
+
+      struct EnableWiFiMessage
+      {
+        constexpr static auto getType() {
+          return MessageType::WiFiEnable;
+        }
+
+        bool m_enable;
       };
     }
 

@@ -117,10 +117,6 @@ void PresetManagerLayout::setupBankEdit()
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
-
-  addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
-
   m_menu = addControl(new BankEditButtonMenu(Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
   m_presets->setBankFocus();
@@ -138,8 +134,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
-  addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
-
+  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
 
@@ -165,8 +160,7 @@ void PresetManagerLayout::setupBankStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
-
+  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_presets->setBankFocus();
@@ -202,9 +196,6 @@ void PresetManagerLayout::setupPresetEdit()
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
-  addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
-
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
 
   if(selectedBank && (!selectedBank->empty() || Application::get().getClipboard()->hasContent()))
   {
@@ -239,7 +230,7 @@ void PresetManagerLayout::setupPresetSelect()
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
-  addControl(new UndoIndicator(Rect(27, 16, 10, 8)));
+  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
 }
 
 void PresetManagerLayout::setupPresetStore()
@@ -252,8 +243,7 @@ void PresetManagerLayout::setupPresetStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect { 5, 14, 15, 5 }));
-
+  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
 }

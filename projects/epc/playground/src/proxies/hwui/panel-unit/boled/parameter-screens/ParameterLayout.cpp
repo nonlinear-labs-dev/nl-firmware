@@ -38,7 +38,7 @@ ParameterLayout2::ParameterLayout2()
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), false));
-  addControl(new UndoIndicator(Rect(1, 32, 10, 8)));
+  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
   addControl(new ParameterNotAvailableInSoundInfo(Rect(64, 0, 128, 48)));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
@@ -130,9 +130,11 @@ void ParameterLayout2::setDefault()
 
 void ParameterLayout2::onSoundTypeChanged()
 {
-  m_soundTypeRedrawThrottler.doTask([&] {
-    Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
-  });
+  m_soundTypeRedrawThrottler.doTask(
+      [&] {
+        Application::get().getMainContext()->signal_idle().connect_once(
+            sigc::mem_fun(this, &ParameterLayout2::setDirty));
+      });
 }
 
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
@@ -245,6 +247,7 @@ ParameterEditLayout2::ParameterEditLayout2()
 {
   addControl(new InvertedLabel("Edit", Rect(8, 26, 48, 12)))->setHighlight(true);
   remove(findControlOfType<VoiceGroupIndicator>().get());
+  remove(findControlOfType<UndoIndicator>().get());
 }
 
 ParameterEditLayout2::~ParameterEditLayout2() = default;

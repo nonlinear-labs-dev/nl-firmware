@@ -33,11 +33,11 @@ namespace nltools
 
          NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,
 
-         NoteDown, NoteUp,
+         NoteDown, NoteUp, NoteAction,
 
          USBStatusMessage,
 
-         WiFiPasswordChanged, WiFiSSIDChanged, WiFiSetSSID, WiFiSetPassword,
+         WiFiPasswordChanged, WiFiSSIDChanged, WiFiSetSSID, WiFiSetPassword, WiFiEnable,
 
          NotifyHardwareSourceChanged,
 

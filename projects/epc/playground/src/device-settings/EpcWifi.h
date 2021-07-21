@@ -28,9 +28,10 @@ class EpcWifi : public sigc::trackable
 
   void updateWifiSwitch();
   void updateCredentials(bool _reload);
-
+  
   Glib::ustring m_currentPassphrase, m_newPassphrase;
   Glib::ustring m_currentSSID, m_newSSID;
-  bool m_currentEpcWifiState, m_newEpcWifiState;
+  std::optional<bool> m_currentEpcWifiState;
+  bool m_newEpcWifiState;
   bool m_busy;
 };

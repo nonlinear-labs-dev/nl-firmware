@@ -1,5 +1,7 @@
 #pragma once
+
 #include <nltools/messaging/Message.h>
+#include <nltools/system/SerializedAsyncCommands.h>
 
 class WiFiManager
 {
@@ -9,11 +11,15 @@ class WiFiManager
  private:
   void saveConfig();
   void scheduleRestart();
+  void enableAndStartAP();
+  void disableAndStopAP();
 
-  std::string m_lastSeenSSID {};
-  std::string m_lastSeenPassword {};
+  std::string m_lastSeenSSID{};
+  std::string m_lastSeenPassword{};
+
+  SerializedAsyncCommands m_asyncCommands;
 
   constexpr static auto c_ssidPattern = "ssid";
   constexpr static auto c_pwPattern = "wpa_passphrase";
-  static constexpr auto c_fileName = "/etc/hostapd.conf";
+  constexpr static auto c_fileName = "/etc/hostapd.conf";
 };
