@@ -191,6 +191,8 @@ namespace nltools::msg
         return MessageType::WiFiEnable;
       }
 
+
+      EnableWiFiMessage() : m_state{false} {}
       explicit EnableWiFiMessage(bool state) : m_state {state} {}
 
       bool m_state{};
