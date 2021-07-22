@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
@@ -314,8 +313,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 				String clip = bounds.outOfRange(modAmount >= 0 ? l : r) ? "! " : "";
 				mod.clipTo(bounds);
-				String with = p.value.getDecoratedValue(true, mod.getLeft() / bipolarFactor, true);
-				String without = p.value.getDecoratedValue(false, mod.getLeft() / bipolarFactor, true);
+				String with = p.value.getDecoratedValue(true, mod.getLeft(), true);
+				String without = p.value.getDecoratedValue(false, mod.getLeft(), true);
 				presenter.modulation.amountLowerBoundDisplayValues = new String[] { clip + "Lower Limit: " + with,
 						clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without,
 						clip + without };
@@ -324,8 +323,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			{
 				String clip = bounds.outOfRange(modAmount >= 0 ? r : l) ? "! " : "";
 				mod.clipTo(bounds);
-				String with = p.value.getDecoratedValue(true, mod.getRight() / bipolarFactor, true);
-				String without = p.value.getDecoratedValue(false, mod.getRight() / bipolarFactor, true);
+				String with = p.value.getDecoratedValue(true, mod.getRight(), true);
+				String without = p.value.getDecoratedValue(false, mod.getRight(), true);
 				presenter.modulation.amountUpperBoundDisplayValues = new String[] { clip + "Upper Limit: " + with,
 						clip + "Upper Limit: " + without, clip + "Upper: " + without, clip + "Up: " + without,
 						clip + without };
