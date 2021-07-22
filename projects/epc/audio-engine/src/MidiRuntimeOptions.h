@@ -119,6 +119,8 @@ class MidiRuntimeOptions
   MidiSendChannel m_sendChannel;
   MidiSendChannelSplit m_sendSplitChannel;
 
+  bool m_globalLocalEnable = true;
+
   bool m_receiveProgramChanges = false;
   bool m_receiveNotes = false;
 

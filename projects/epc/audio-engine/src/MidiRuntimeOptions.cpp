@@ -39,6 +39,8 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   m_enable14BitCC = msg.highResCCEnabled;
 
   m_routingMappings = msg.routings;
+
+  m_globalLocalEnable = msg.globalLocalEnable;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
@@ -471,7 +473,7 @@ bool MidiRuntimeOptions::shouldAllowLocal(tMidiSettingMessage::RoutingIndex rout
 {
   constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
   const auto index = static_cast<int>(routingIndex);
-  return m_routingMappings[index][local];
+  return m_routingMappings[index][local] && m_globalLocalEnable;
 }
 
 bool MidiRuntimeOptions::isCCMappedToChannelModeMessage(int cc)

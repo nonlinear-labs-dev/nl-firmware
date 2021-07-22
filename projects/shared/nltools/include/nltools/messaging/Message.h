@@ -304,6 +304,7 @@ namespace nltools::msg
       AftertouchCC aftertouchcc;
       BenderCC bendercc;
 
+      bool globalLocalEnable = true;
       tRoutingMappings routings {};
     };
 
