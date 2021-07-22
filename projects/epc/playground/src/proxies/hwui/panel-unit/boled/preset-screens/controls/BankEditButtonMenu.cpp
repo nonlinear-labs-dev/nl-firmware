@@ -119,7 +119,7 @@ void BankEditButtonMenu::newBank()
   auto pm = Application::get().getPresetManager();
   PresetManagerUseCases useCases(pm);
   auto pos = pm->calcDefaultBankPositionForNewBank();
-  useCases.newBank(std::to_string(pos.first), std::to_string(pos.second));
+  useCases.newBank(std::to_string(pos.first), std::to_string(pos.second), std::nullopt);
 
   auto layout = new RenameBankLayout();
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(layout);
