@@ -113,7 +113,7 @@ public class Setup extends Composite {
 	TextArea deviceName;
 
 	@UiField
-	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE;
+	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE, routingsOn, routingsOff;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -346,6 +346,8 @@ public class Setup extends Composite {
 
 		classicMidi.addClickHandler(e -> settings.resetToClassicMidi());
 		highResMidi.addClickHandler(e -> settings.resetToHighResMidi());
+		routingsOn.addClickHandler(e -> settings.resetRoutings(true));
+		routingsOff.addClickHandler(e -> settings.resetRoutings(false));
 
 		globalLocalOn.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.on));
 		globalLocalOff.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.off));

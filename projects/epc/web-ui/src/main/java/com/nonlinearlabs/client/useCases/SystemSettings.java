@@ -245,4 +245,8 @@ public class SystemSettings {
 	public void panic() {
 		NonMaps.theMaps.getServerProxy().triggerPanic();
 	}
+
+    public void resetRoutings(boolean b) {
+		NonMaps.theMaps.getServerProxy().resetRoutings(b);
+    }
 }

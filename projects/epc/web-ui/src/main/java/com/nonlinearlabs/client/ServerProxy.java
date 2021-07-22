@@ -1264,4 +1264,11 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
+
+    public void resetRoutings(boolean b) {
+		StaticURI.Path path = new StaticURI.Path("settings", "set-all-routings-to-value");
+		StaticURI.KeyValue state = new StaticURI.KeyValue("state", b ? "1" : "0");
+		StaticURI uri = new StaticURI(path, state);
+		queueJob(uri, false);
+	}
 }

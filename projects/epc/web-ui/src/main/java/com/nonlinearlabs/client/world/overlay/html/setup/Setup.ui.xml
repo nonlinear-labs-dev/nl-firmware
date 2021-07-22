@@ -354,33 +354,14 @@
 					</div>
 					<div class="linie"></div>
 					<div class="eins-he fl-j-center">
-						<h3 class="uneditable">Receive</h3>
+						<h3 class="uneditable">Channels</h3>
 					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Channel</p>
-						</div>
-						<div class="w40p">
-							<g:ListBox ui:field="midiReceiveChannel">
-							</g:ListBox>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Split Channel (Part II)</p>
-						</div>
-						<div class="w40p">
-							<g:ListBox ui:field="midiReceiveChannelSplit">
-							</g:ListBox>
-						</div>
-					</div>
-					<div class="linie"></div>
 					<div class="eins-he fl-j-center">
-						<h3 class="uneditable">Send</h3>
+						<h2>Send</h2>
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>Channel</p>
+							<p>Primary Channel</p>
 						</div>
 						<div class="w40p">
 							<g:ListBox ui:field="midiSendChannel">
@@ -396,10 +377,31 @@
 							</g:ListBox>
 						</div>
 					</div>
+					<div class="eins-he fl-j-center">
+						<h2>Receive</h2>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Primary Channel</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiReceiveChannel">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Split Channel (Part II)</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiReceiveChannelSplit">
+							</g:ListBox>
+						</div>
+					</div>
 
 					<div class="linie"></div>
 					<div class="eins-he fl-j-center">
-						<h3 class="uneditable">Mappings</h3>
+						<h3 class="uneditable">Assignments</h3>
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
@@ -491,21 +493,21 @@
 							<g:RadioButton ui:field="disable14Bit" name="rad_14BitCC" value="false"></g:RadioButton>
 						</div>
 					</div>
-					<div class="linie"></div>
-					
-					<div class="linie"></div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>Reset Midi Settings to Defaults</p>
+							<p>Set to Defaults:</p>
 						</div>
 						<div class="w20p">
-							<g:Button ui:field="classicMidi">Classic MIDI</g:Button>
+							<g:Button ui:field="classicMidi">Classic</g:Button>
 						</div>
 						<div class="w20p">
 							<g:Button ui:field="highResMidi">High-Res.</g:Button>
 						</div>
 					</div>
 					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Routings</h3>
+					</div>
 					<div class="eins-he table-parent">
 						<table class="midi-table">
 							<thead>
@@ -787,6 +789,17 @@
 							</tr>
 							</tbody>
 						</table>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Set to Defaults:</p>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="routingsOn">All On</g:Button>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="routingsOff">All Off</g:Button>
+						</div>
 					</div>
 				</div>
 			</div>

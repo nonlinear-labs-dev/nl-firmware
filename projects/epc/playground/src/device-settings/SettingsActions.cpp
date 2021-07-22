@@ -104,12 +104,19 @@ SettingsActions::SettingsActions(Settings &settings)
     }
     catch(...)
     {
-      nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+      ExceptionTools::errorLogCurrentException();
     }
    });
 
   addAction("panic-audio-engine", [](auto request) {
     SettingsUseCases::panicAudioEngine();
+  });
+
+  addAction("set-all-routings-to-value", [&](auto request) {
+       auto requestedState = request->get("state") == "1";
+       SettingsUseCases useCase(Application::get().getSettings());
+       useCase.setAllRoutingEntries(requestedState);
+       nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
   });
 }
 

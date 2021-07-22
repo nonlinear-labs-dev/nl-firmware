@@ -11,6 +11,8 @@ class SettingsUseCases
   void updateRoutingAspect(int entry, int aspect, bool value);
   static void panicAudioEngine();
 
+  void setAllRoutingEntries(bool state);
+
  private:
   Settings* m_settings;
 };

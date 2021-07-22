@@ -82,3 +82,11 @@ void SettingsUseCases::panicAudioEngine()
   PanicAudioEngine msg {};
   send<PanicAudioEngine>(EndPoint::AudioEngine, msg);
 }
+
+void SettingsUseCases::setAllRoutingEntries(bool state)
+{
+  if(auto s = m_settings->getSetting<RoutingSettings>())
+  {
+    s->setAllValues(state);
+  }
+}

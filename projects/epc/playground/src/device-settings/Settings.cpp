@@ -172,6 +172,11 @@ void Settings::reload()
   load();
 }
 
+const Glib::ustring &Settings::getSettingFileNameToLoadFrom() const
+{
+  return Application::get().getOptions()->getSettingsFile();
+}
+
 void Settings::load()
 {
   auto lock = m_isLoading.lock();
@@ -181,7 +186,7 @@ void Settings::load()
   try
   {
     DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
-    FileInStream in(Application::get().getOptions()->getSettingsFile(), false);
+    FileInStream in(getSettingFileNameToLoadFrom(), false);
     XmlReader reader(in, nullptr);
     reader.read<SettingsSerializer>(std::ref(*this));
   }
@@ -250,15 +255,17 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("settings", Attribute("changed", changed), [&]() {
-    if(changed)
-    {
-      for(auto &setting : m_settings)
-      {
-        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
-      }
-    }
-  });
+  writer.writeTag("settings", Attribute("changed", changed),
+                  [&]()
+                  {
+                    if(changed)
+                    {
+                      for(auto &setting : m_settings)
+                      {
+                        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
+                      }
+                    }
+                  });
 }
 
 void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)

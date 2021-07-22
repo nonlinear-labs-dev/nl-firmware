@@ -75,3 +75,17 @@ const RoutingSettings::tData& RoutingSettings::getRaw() const
 {
   return m_data;
 }
+
+void RoutingSettings::setAllValues(bool value)
+{
+  bool anyChanged = false;
+  for(auto& entry: m_data) {
+    for(auto& aspect: entry) {
+      anyChanged |= (aspect != value);
+      aspect = value;
+    }
+  }
+
+  if(anyChanged)
+    notify();
+}
