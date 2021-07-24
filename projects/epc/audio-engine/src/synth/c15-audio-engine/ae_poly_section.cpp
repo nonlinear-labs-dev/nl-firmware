@@ -649,13 +649,13 @@ void PolySection::postProcess_poly_slow(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // osc b
   envMod = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct_Env_C);
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // comb filter
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay_KT);
   unitSign = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay) < 0 ? -0.001f : 0.001f;
@@ -762,13 +762,13 @@ void PolySection::postProcess_poly_key(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // osc b
   envMod = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct_Env_C);
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // comb filter
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay_KT);
   unitSign = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay) < 0 ? -0.001f : 0.001f;
@@ -942,7 +942,7 @@ void PolySection::stopEnvelopes(const uint32_t _voiceId, const float _pitch, con
 {
   float time, timeKT, releaseVel;
   // env a
-  timeKT = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Time_KT) * _pitch;
+  timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Time_KT) * _pitch;
   releaseVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Rel_Vel) * _vel;
   m_env_a.m_timeFactor[_voiceId][3] = m_convert->eval_level(timeKT + releaseVel) * m_millisecond;
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Rel);
@@ -956,7 +956,7 @@ void PolySection::stopEnvelopes(const uint32_t _voiceId, const float _pitch, con
     m_env_a.setSegmentDx(_voiceId, 4, 0.0f);
   }
   // env b
-  timeKT = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Time_KT) * _pitch;
+  timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Time_KT) * _pitch;
   releaseVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Rel_Vel) * _vel;
   m_env_b.m_timeFactor[_voiceId][3] = m_convert->eval_level(timeKT + releaseVel) * m_millisecond;
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Rel);
@@ -970,7 +970,7 @@ void PolySection::stopEnvelopes(const uint32_t _voiceId, const float _pitch, con
     m_env_b.setSegmentDx(_voiceId, 4, 0.0f);
   }
   // env c
-  timeKT = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
+  timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
   releaseVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Rel_Vel) * _vel;
   m_env_c.m_timeFactor[_voiceId][3] = m_convert->eval_level(timeKT + releaseVel) * m_millisecond;
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Rel);
