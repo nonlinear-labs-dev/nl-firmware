@@ -113,6 +113,8 @@ class MidiRuntimeOptions
 
   bool isCCMappedToChannelModeMessage(int cc);
   static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);
+  void setGlobalLocalEnabled(bool b);
+
  private:
   MidiReceiveChannel m_receiveChannel;
   MidiReceiveChannelSplit m_receiveSplitChannel;

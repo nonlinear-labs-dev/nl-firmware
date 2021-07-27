@@ -517,3 +517,10 @@ MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc,
   }
   return MidiChannelModeMessages::NOOP;
 }
+
+void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
+{
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::LOCAL);
+  m_routingMappings[idx][aspect] = b;
+}

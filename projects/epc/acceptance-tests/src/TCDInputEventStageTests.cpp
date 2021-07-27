@@ -149,6 +149,40 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
       CHECK(sendMessages[3].rawBytes[2] == 127);
     }
   }
+
+
+  WHEN("Keypos and KeyUp is received and global Local is Disabled")
+  {
+    settings.setGlobalLocalEnabled(false);
+
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(127, 127));
+
+    THEN("DSP did not got notified")
+    {
+      CHECK_FALSE(dsp.didReceiveKeyUp());
+    }
+
+    THEN("MIDI got send")
+    {
+      REQUIRE(sendMessages.size() == 4);
+      CHECK(sendMessages[0].rawBytes[0] == 0xB0);
+      CHECK(sendMessages[0].rawBytes[1] == 88);
+      CHECK(sendMessages[0].rawBytes[2] == 0);
+
+      CHECK(sendMessages[1].rawBytes[0] == 0x80);
+      CHECK(sendMessages[1].rawBytes[1] == 17);
+      CHECK(sendMessages[1].rawBytes[2] == 127);
+
+      CHECK(sendMessages[2].rawBytes[0] == 0xB0);
+      CHECK(sendMessages[2].rawBytes[1] == 88);
+      CHECK(sendMessages[2].rawBytes[2] == 0);
+
+      CHECK(sendMessages[3].rawBytes[0] == 0x80);
+      CHECK(sendMessages[3].rawBytes[1] == 17);
+      CHECK(sendMessages[3].rawBytes[2] == 127);
+    }
+  }
 }
 
 constexpr static uint8_t Pedal1 = 0b00000000;
