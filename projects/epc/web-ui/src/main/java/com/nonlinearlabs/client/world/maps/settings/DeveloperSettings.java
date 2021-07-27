@@ -26,6 +26,7 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new ExportBoled(this));
 		addChild(new ExportSoled(this));
 		addChild(new ShowOleds(this));
+		addChild(new StartBBBWiFiForEPC2(this));
 
 		SetupModel.get().localSettings.showDeveloperOptions.onChange(v -> {
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);

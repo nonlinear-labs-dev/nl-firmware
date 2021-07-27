@@ -1271,4 +1271,10 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, state);
 		queueJob(uri, false);
 	}
+
+    public void startBBBWifiIfEPC2() {
+		StaticURI.Path path = new StaticURI.Path("settings", "enable-bbb-wifi-for-epc2");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+    }
 }

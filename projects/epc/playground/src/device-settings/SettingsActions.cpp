@@ -10,6 +10,7 @@
 #include <tools/ExceptionTools.h>
 #include <use-cases/DirectLoadUseCases.h>
 #include <presets/PresetManager.h>
+#include <nltools/messaging/Message.h>
 
 SettingsActions::SettingsActions(Settings &settings)
     : super("/settings/")
@@ -113,10 +114,15 @@ SettingsActions::SettingsActions(Settings &settings)
   });
 
   addAction("set-all-routings-to-value", [&](auto request) {
-       auto requestedState = request->get("state") == "1";
-       SettingsUseCases useCase(Application::get().getSettings());
-       useCase.setAllRoutingEntries(requestedState);
-       nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+    auto requestedState = request->get("state") == "1";
+    SettingsUseCases useCase(Application::get().getSettings());
+    useCase.setAllRoutingEntries(requestedState);
+    nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+  });
+
+  addAction("enable-bbb-wifi-for-epc2", [](auto) {
+    nltools::msg::Setting::EnableBBBWifiFromDevSettings msg{};
+    nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
   });
 }
 

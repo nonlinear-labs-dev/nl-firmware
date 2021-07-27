@@ -308,7 +308,16 @@ namespace nltools::msg
       tRoutingMappings routings {};
     };
 
-    struct SetGlobalLocalSetting {
+    struct EnableBBBWifiFromDevSettings
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::WifiDevBBBEnable;
+      }
+    };
+
+    struct SetGlobalLocalSetting
+    {
       constexpr static MessageType getType()
       {
         return MessageType::GlobalLocalSetting;
