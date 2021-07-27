@@ -166,8 +166,8 @@ public class Setup extends Composite {
 		m_routingMap[5] = new RoutingsMap(pson5, pron5, sson5, sron5, lon5);
 		m_routingMap[6] = new RoutingsMap(pson6, pron6, sson6, sron6, lon6);
 		m_routingMap[7] = new RoutingsMap(pson7, pron7, sson7, sron7, lon7);
-		m_routingMap[8] = new RoutingsMap(psonNotes, pronNotes, ssonNotes, sronNotes, lonNotes);
-		m_routingMap[9] = new RoutingsMap(psonPC, pronPC, ssonPC, sronPC, null);
+		m_routingMap[8] = new RoutingsMap(psonPC, pronPC, ssonPC, sronPC, null);
+		m_routingMap[9] = new RoutingsMap(psonNotes, pronNotes, ssonNotes, sronNotes, lonNotes);
 	}
 
 	public Setup() {
