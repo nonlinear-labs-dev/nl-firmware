@@ -85,7 +85,9 @@ MidiSendChannelSplit MidiRuntimeOptions::getSendSplitChannel() const
 
 bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
 {
-  return m_localNotes;
+  constexpr auto idx = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::LOCAL);
+  return m_routingMappings[idx][aspect] && m_globalLocalEnable;
 }
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)

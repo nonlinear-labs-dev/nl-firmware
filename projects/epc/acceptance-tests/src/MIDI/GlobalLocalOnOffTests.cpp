@@ -9,6 +9,8 @@
 
 TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
 {
+  using namespace TCD_HELPER;
+
   ConfigureableDSPHost dsp {};
   dsp.setType(SoundType::Split);
 
@@ -30,7 +32,6 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
 
     WHEN("HW Event is Send")
     {
-      using namespace TCD_HELPER;
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
       CHECK(didReceive);
     }
@@ -44,7 +45,6 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                             msg.globalLocalEnable = true;
                                           });
 
-      using namespace TCD_HELPER;
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
       CHECK_FALSE(didReceive);
     }
@@ -58,7 +58,6 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                             msg.globalLocalEnable = false;
                                           });
 
-      using namespace TCD_HELPER;
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
       CHECK_FALSE(didReceive);
     }
@@ -72,9 +71,104 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                             msg.globalLocalEnable = false;
                                           });
 
-      using namespace TCD_HELPER;
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
       CHECK_FALSE(didReceive);
+    }
+  }
+}
+
+TEST_CASE("Key Events Local enable disable")
+{
+  using namespace TCD_HELPER;
+
+  ConfigureableDSPHost host;
+  host.setType(SoundType::Single);
+
+  MidiRuntimeOptions options;
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
+  InputEventStage input { &host, &options, []() {}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto) {} };
+
+  WHEN("All routings are on")
+  {
+    bool received = false;
+    host.setOnKeyDownCB([&](int k, float vel, DSPInterface::InputEventSource s) { received = true; });
+
+    WHEN("Global Local is On")
+    {
+      MidiOptionsHelper::configureOptions(&options,
+                                          [](auto& s)
+                                          {
+                                            s.routings = TestHelper::createFullMappings(true);
+                                            s.globalLocalEnable = true;
+                                          });
+
+      input.onTCDMessage(createKeyPosEvent(12));
+      input.onTCDMessage(createKeyDownEvent(127, 127));
+
+      THEN("Note is received")
+      {
+        CHECK(received);
+      }
+    }
+
+    WHEN("Global Local is Off")
+    {
+      MidiOptionsHelper::configureOptions(&options,
+                                          [](auto& s)
+                                          {
+                                            s.routings = TestHelper::createFullMappings(true);
+                                            s.globalLocalEnable = false;
+                                          });
+
+      input.onTCDMessage(createKeyPosEvent(12));
+      input.onTCDMessage(createKeyDownEvent(12, 112));
+
+      THEN("Note is not received")
+      {
+        CHECK_FALSE(received);
+      }
+    }
+  }
+
+  WHEN("All routings are off")
+  {
+    bool received = false;
+    host.setOnKeyDownCB([&](int k, float vel, DSPInterface::InputEventSource s) { received = true; });
+
+    WHEN("Global Local is Off")
+    {
+      MidiOptionsHelper::configureOptions(&options,
+                                          [](auto& s)
+                                          {
+                                            s.routings = TestHelper::createFullMappings(false);
+                                            s.globalLocalEnable = false;
+                                          });
+
+      input.onTCDMessage(createKeyPosEvent(12));
+      input.onTCDMessage(createKeyDownEvent(12, 112));
+
+      THEN("Note is not received")
+      {
+        CHECK_FALSE(received);
+      }
+    }
+
+    WHEN("Global Local is On")
+    {
+      MidiOptionsHelper::configureOptions(&options,
+                                          [](auto& s)
+                                          {
+                                            s.routings = TestHelper::createFullMappings(false);
+                                            s.globalLocalEnable = true;
+                                          });
+
+      input.onTCDMessage(createKeyPosEvent(12));
+      input.onTCDMessage(createKeyDownEvent(12, 112));
+
+      THEN("Note is not received")
+      {
+        CHECK_FALSE(received);
+      }
     }
   }
 }
