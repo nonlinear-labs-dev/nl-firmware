@@ -3,6 +3,8 @@
 #include <synth/C15Synth.h>
 #include <mock/MockDSPHosts.h>
 #include <testing/TestHelper.h>
+#include <mock/MidiOptionsHelpers.h>
+#include <mock/TCDHelpers.h>
 
 MidiRuntimeOptions createMidiSettings()
 {
@@ -75,8 +77,16 @@ TEST_CASE("MIDI input on Secondary channel is ignored if not in split", "[MIDI]"
 {
   PassOnKeyDownHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createMidiSettings();
-  settings.setReceiveChannel(MidiReceiveChannel::CH_1);
-  settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_2);
+
+  MidiOptionsHelper::configureOptions(&settings,
+                                      [](auto& s)
+                                      {
+                                        s.receiveChannel = MidiReceiveChannel::CH_1;
+                                        s.receiveSplitChannel = MidiReceiveChannelSplit::CH_2;
+                                        s.routings = TestHelper::createFullMappings(true);
+                                        s.globalLocalEnable = true;
+                                      });
+
   dsp.setType(SoundType::Single);
 
   InputEventStage eventStage(
@@ -84,13 +94,32 @@ TEST_CASE("MIDI input on Secondary channel is ignored if not in split", "[MIDI]"
 
   WHEN("Channel 1 KeyDown")
   {
-    eventStage.onMIDIMessage({ 0x90, (uint8_t) 17, (uint8_t) 127 });
+    eventStage.onMIDIMessage(MIDI_HELPER::createSimpleKeyDownEvent(0, 17, 127));
     CHECK(dsp.didReceiveKeyDown());
+  }
+
+  WHEN("Channel 1 KeyDown and Split Recieve is Off")
+  {
+    MidiOptionsHelper::configureOptions(
+        &settings,
+        [](auto& s)
+        {
+          s.receiveChannel = MidiReceiveChannel::CH_1;
+          s.receiveSplitChannel = MidiReceiveChannelSplit::CH_2;
+          s.globalLocalEnable = true;
+          constexpr auto idx = static_cast<int>(MidiRuntimeOptions::tMidiSettingMessage::RoutingIndex::Notes);
+          constexpr auto aspect
+              = static_cast<int>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::RECEIVE_SPLIT);
+          s.routings[idx][aspect] = false;
+        });
+
+    eventStage.onMIDIMessage(MIDI_HELPER::createSimpleKeyDownEvent(1, 17, 127));
+    CHECK_FALSE(dsp.didReceiveKeyDown());
   }
 
   WHEN("Channel 2 KeyDown")
   {
-    eventStage.onMIDIMessage({ 0x91, (uint8_t) 17, (uint8_t) 127 });
+    eventStage.onMIDIMessage(MIDI_HELPER::createSimpleKeyDownEvent(1, 17, 127));
     CHECK(!dsp.didReceiveKeyDown());
   }
 }

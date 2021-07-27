@@ -21,6 +21,8 @@ class MidiRuntimeOptions
   [[nodiscard]] MidiReceiveChannelSplit getMIDISplitReceiveChannel() const;
   [[nodiscard]] MidiSendChannel getMIDIPrimarySendChannel() const;
   [[nodiscard]] MidiSendChannelSplit getMIDISplitSendChannel() const;
+  [[nodiscard]] AftertouchCC getAftertouchSetting() const;
+  [[nodiscard]] BenderCC getBenderSetting() const;
 
   [[nodiscard]] bool shouldReceiveMIDIProgramChangesOnPrimary() const;
   [[nodiscard]] bool shouldReceiveMIDIProgramChangesOnSplit() const;
@@ -43,25 +45,10 @@ class MidiRuntimeOptions
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
   static int channelEnumToInt(MidiSendChannel channel);
-  int channelEnumToInt(MidiSendChannelSplit channel);
+  static int channelEnumToInt(MidiSendChannelSplit channel);
   static int channelEnumToInt(MidiReceiveChannel channel);
   static int channelEnumToInt(MidiReceiveChannelSplit channel);
   static MidiReceiveChannelSplit normalToSplitChannel(MidiReceiveChannel ch);
-
-  //Mapping Setters
-  void setPedal1(PedalCC cc);
-  void setPedal2(PedalCC cc);
-  void setPedal3(PedalCC cc);
-  void setPedal4(PedalCC cc);
-  void setRibbon1(RibbonCC cc);
-  void setRibbon2(RibbonCC cc);
-  void setBenderCC(BenderCC cc);
-  void setAftertouchCC(AftertouchCC cc);
-  void setSendSplitChannel(MidiSendChannelSplit c);
-  void setSendChannel(MidiSendChannel c);
-  void setReceiveChannel(MidiReceiveChannel c);
-  void setSplitReceiveChannel(MidiReceiveChannelSplit c);
-  void set14BitSupportEnabled(bool e);
 
   template <Midi::LSB::HWSourceMidiCC tLSB> [[nodiscard]] int getCCFor() const
   {
@@ -80,7 +67,6 @@ class MidiRuntimeOptions
     else
       nltools_assertNotReached();
   }
-
   template <Midi::MSB::HWSourceMidiCC tMSB> [[nodiscard]] int getCCFor() const
   {
     if constexpr(tMSB == Midi::MSB::Ped1)
@@ -103,23 +89,48 @@ class MidiRuntimeOptions
       nltools_assertNotReached();
   }
 
-  std::optional<int> getBenderMSBCC() const;
-  std::optional<int> getBenderLSBCC() const;
-  std::optional<int> getAftertouchMSBCC() const;
-  std::optional<int> getAftertouchLSBCC() const;
-  [[nodiscard]] AftertouchCC getAftertouchSetting() const;
-  [[nodiscard]] BenderCC getBenderSetting() const;
+  [[nodiscard]] std::optional<int> getBenderMSBCC() const;
+  [[nodiscard]] std::optional<int> getBenderLSBCC() const;
+  [[nodiscard]] std::optional<int> getAftertouchMSBCC() const;
+  [[nodiscard]] std::optional<int> getAftertouchLSBCC() const;
 
-  bool isSwitchingCC(int pedalZeroIndexed) const;
+
+  [[nodiscard]] bool isSwitchingCC(int pedalZeroIndexed) const;
   [[nodiscard]] bool enableHighVelCC() const;
   [[nodiscard]] bool is14BitSupportEnabled() const;
-  int getMSBCCForHWID(int hwID) const;
+  [[nodiscard]] int getMSBCCForHWID(int hwID) const;
 
   static bool isCCMappedToChannelModeMessage(int cc);
   static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);
+
+  //Mapping Setters
   void setGlobalLocalEnabled(bool b);
+  void setPedal1(PedalCC cc);
+  void setPedal2(PedalCC cc);
+  void setPedal3(PedalCC cc);
+  void setPedal4(PedalCC cc);
+  void setRibbon1(RibbonCC cc);
+  void setRibbon2(RibbonCC cc);
+  void setBenderCC(BenderCC cc);
+  void setAftertouchCC(AftertouchCC cc);
+  void setSendSplitChannel(MidiSendChannelSplit c);
+  void setSendChannel(MidiSendChannel c);
+  void setReceiveChannel(MidiReceiveChannel c);
+  void setSplitReceiveChannel(MidiReceiveChannelSplit c);
+  void set14BitSupportEnabled(bool e);
 
  private:
+  //Mappings
+  static std::optional<int> decodeEnumMSB(PedalCC);
+  static std::optional<int> decodeEnumLSB(PedalCC);
+  static std::optional<int> decodeEnumMSB(RibbonCC);
+  static std::optional<int> decodeEnumLSB(RibbonCC);
+
+  static std::optional<int> decodeEnumMSB(AftertouchCC cc);
+  static std::optional<int> decodeEnumLSB(AftertouchCC cc);
+  static std::optional<int> decodeEnumMSB(BenderCC cc);
+  static std::optional<int> decodeEnumLSB(BenderCC cc);
+
   MidiReceiveChannel m_midiPrimaryReceiveChannel;
   MidiReceiveChannelSplit m_midiSplitReceiveChannel;
   MidiSendChannel m_midiPrimarySendChannel;
@@ -140,17 +151,6 @@ class MidiRuntimeOptions
   BenderCC benderCC;
 
   nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings;
-
-  //Mappings
-  static std::optional<int> decodeEnumMSB(PedalCC);
-  static std::optional<int> decodeEnumLSB(PedalCC);
-  static std::optional<int> decodeEnumMSB(RibbonCC);
-  static std::optional<int> decodeEnumLSB(RibbonCC);
-
-  static std::optional<int> decodeEnumMSB(AftertouchCC cc);
-  static std::optional<int> decodeEnumLSB(AftertouchCC cc);
-  static std::optional<int> decodeEnumMSB(BenderCC cc);
-  static std::optional<int> decodeEnumLSB(BenderCC cc);
 
   friend class MidiRuntimeOptionsTester;
 };

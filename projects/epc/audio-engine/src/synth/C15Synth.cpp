@@ -79,7 +79,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
         }
 
         const int sendSecChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDISplitSendChannel());
-        if(sendSecChannel != -1 && m_midiOptions.shouldSendMIDIProgramChangesOnPrimary())
+        if(sendSecChannel != -1 && m_midiOptions.shouldSendMIDIProgramChangesOnSplit())
         {
           const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendSecChannel;
           m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });

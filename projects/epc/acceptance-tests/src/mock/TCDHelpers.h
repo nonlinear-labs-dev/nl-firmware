@@ -1,5 +1,14 @@
 #pragma once
 
+namespace MIDI_HELPER
+{
+  inline MidiEvent createSimpleKeyDownEvent(int channel, int note, int vel)
+  {
+    const uint8_t status = 0x90 | channel;
+    return { status, (uint8_t) note, (uint8_t) vel };
+  }
+}
+
 namespace TCD_HELPER
 {
   enum class TCD_HW_IDS : uint8_t
@@ -22,7 +31,6 @@ namespace TCD_HELPER
     TCD_KEY_UP = 15,
     TCD_UNUSED_VAL = 0x00
   };
-
 
   inline uint8_t to(TCD_PROTOCOL p)
   {

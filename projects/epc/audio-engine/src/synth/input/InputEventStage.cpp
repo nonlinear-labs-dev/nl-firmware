@@ -110,7 +110,7 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      if(m_options->shouldSendMIDINotesOnPrimary() && soundValid)
+      if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
 
       break;
@@ -133,7 +133,7 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      if(m_options->shouldSendMIDINotesOnPrimary() && soundValid)
+      if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
         convertToAndSendMIDI(decoder, determinedPart);
 
       break;
@@ -236,9 +236,11 @@ bool InputEventStage::checkMIDIKeyEventEnabled(MIDIDecoder *pDecoder)
 
   const auto primNotNone = primaryChannel != MRC::None;
   const auto secNotNone = secondaryChannel != MRCS::None;
+
   const auto primaryChannelMatches = parsedChannel == primaryChannel || primaryChannel == MRC::Omni;
   const auto secondaryChannelMatches = MRO::normalToSplitChannel(parsedChannel) == secondaryChannel
       || secondaryChannel == MRCS::Omni || secondaryChannel == MRCS::Common;
+
   const auto primaryEnabledAndMatched = primaryChannelMatches && m_options->shouldReceiveMIDINotesOnPrimary();
   const auto secondaryEnabledAndMatched = secondaryChannelMatches && m_options->shouldReceiveMIDINotesOnSplit();
   const auto channelMatchesAndAllowed = primaryEnabledAndMatched || secondaryEnabledAndMatched;

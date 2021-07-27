@@ -5,7 +5,7 @@ namespace MidiOptionsHelper
 {
   typedef nltools::msg::Setting::MidiSettingsMessage tMSG;
 
-  void configureOptions(MidiRuntimeOptions* options, const std::function<void(tMSG&)>& msgEditCB)
+  inline void configureOptions(MidiRuntimeOptions* options, const std::function<void(tMSG&)>& msgEditCB)
   {
     if(options)
     {
