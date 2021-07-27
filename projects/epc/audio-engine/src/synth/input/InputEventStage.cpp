@@ -260,7 +260,7 @@ bool InputEventStage::checkMIDIHardwareChangeChannelMatches(MIDIDecoder *pDecode
 void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
-  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getMIDISplitSendChannel());
+  const auto secondaryChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
   const auto key = pDecoder->getKeyOrController();
   constexpr const uint8_t keyType = 0x90;
   constexpr const uint8_t ccType = 0xB0;
@@ -268,7 +268,7 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
-         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common))
+         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common) && m_options->shouldSendMIDINotesOnPrimary())
   {
     auto mainC = static_cast<uint8_t>(mainChannel);
     const uint8_t keyStatus = keyType | mainC;
@@ -295,7 +295,7 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
   }
 
   if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global)
-     && m_dspHost->getType() == SoundType::Split)
+     && m_dspHost->getType() == SoundType::Split && m_options->shouldSendMIDINotesOnSplit())
   {
     auto secC = static_cast<uint8_t>(secondaryChannel);
     const uint8_t keyStatus = keyType | secC;
@@ -322,7 +322,7 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
-  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getMIDISplitSendChannel());
+  const auto secondaryChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
   const auto key = pDecoder->getKeyOrController();
 
   const auto mainC = static_cast<uint8_t>(mainChannel);
@@ -332,7 +332,7 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
-         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common))
+         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common) && m_options->shouldSendMIDINotesOnPrimary())
   {
     const uint8_t keyStatus = keyType | mainC;
     uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
@@ -358,7 +358,7 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
   }
 
   if(secondaryChannel != -1 && (determinedPart == VoiceGroup::II || determinedPart == VoiceGroup::Global)
-     && m_dspHost->getType() == SoundType::Split)
+     && m_dspHost->getType() == SoundType::Split && m_options->shouldSendMIDINotesOnSplit())
   {
     const uint8_t keyStatus = keyType | secC;
     uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
@@ -435,7 +435,7 @@ void InputEventStage::sendCCOut(int hwID, float value, int msbCC, int lsbCC)
 void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID)
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
-  const auto secondaryChannel = m_options->channelEnumToInt(m_options->getMIDISplitSendChannel());
+  const auto secondaryChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
 
   const auto mainC = static_cast<uint8_t>(mainChannel);
   const auto secC = static_cast<uint8_t>(secondaryChannel);
@@ -569,7 +569,7 @@ void InputEventStage::doSendAftertouchOut(float value)
   {
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
     const auto mainC = static_cast<uint8_t>(mainChannel);
-    const auto secChannel = m_options->channelEnumToInt(m_options->getMIDISplitSendChannel());
+    const auto secChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
     const auto secC = static_cast<uint8_t>(secChannel);
 
     auto atStatusByte = static_cast<uint8_t>(0xD0);
@@ -606,7 +606,7 @@ void InputEventStage::doSendAftertouchOut(float value)
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
-    const auto secChannel = m_options->channelEnumToInt(m_options->getMIDISplitSendChannel());
+    const auto secChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
     const auto mainC = static_cast<uint8_t>(mainChannel);
     const auto secC = static_cast<uint8_t>(secChannel);
     auto statusByte = static_cast<uint8_t>(0xE0);
@@ -649,7 +649,7 @@ void InputEventStage::doSendBenderOut(float value)
       return;
 
     const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
-    const auto secChannel = m_options->channelEnumToInt(m_options->getMIDISplitSendChannel());
+    const auto secChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
     const auto mainC = static_cast<uint8_t>(mainChannel);
     const auto secC = static_cast<uint8_t>(secChannel);
     auto statusByte = static_cast<uint8_t>(0xE0);
