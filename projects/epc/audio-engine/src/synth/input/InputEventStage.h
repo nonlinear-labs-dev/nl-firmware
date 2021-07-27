@@ -23,7 +23,7 @@ namespace HWID
   constexpr static auto RIBBON2 = 7;
 
   constexpr static auto INVALID = -1;
-};
+}
 
 class InputEventStage
 {
@@ -63,8 +63,8 @@ class InputEventStage
   void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit,
                    bool didBehaviourChange);
 
-  VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, const int keyNumber);
-  VoiceGroup calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, const int keyNumber);
+  VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, int keyNumber);
+  VoiceGroup calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
 
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
@@ -111,7 +111,7 @@ class InputEventStage
   ChannelModeMessageCB m_channelModeMessageCB;
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions;
+  std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions {};
   bool m_notifyKeyBedActionStatus = false;
 
   enum class LatchMode
@@ -125,6 +125,6 @@ class InputEventStage
   [[nodiscard]] bool isSplitDSP() const;
 
   friend class InputEventStageTester;
-  bool ccIsMappedToChannelModeMessage(int cc);
+  static bool ccIsMappedToChannelModeMessage(int cc);
   void queueChannelModeMessage(int cc, uint8_t msbCCvalue);
 };

@@ -17,16 +17,20 @@ class MidiRuntimeOptions
     AllNotesOff = 123
   };
 
-  [[nodiscard]] MidiReceiveChannel getReceiveChannel() const;
-  [[nodiscard]] MidiReceiveChannelSplit getReceiveSplitChannel() const;
-  [[nodiscard]] MidiSendChannel getSendChannel() const;
-  [[nodiscard]] MidiSendChannelSplit getSendSplitChannel() const;
+  [[nodiscard]] MidiReceiveChannel getMIDIPrimaryReceiveChannel() const;
+  [[nodiscard]] MidiReceiveChannelSplit getMIDISplitReceiveChannel() const;
+  [[nodiscard]] MidiSendChannel getMIDIPrimarySendChannel() const;
+  [[nodiscard]] MidiSendChannelSplit getMIDISplitSendChannel() const;
 
-  [[nodiscard]] bool shouldReceiveProgramChanges() const;
-  [[nodiscard]] bool shouldReceiveNotes() const;
+  [[nodiscard]] bool shouldReceiveMIDIProgramChangesOnPrimary() const;
+  [[nodiscard]] bool shouldReceiveMIDIProgramChangesOnSplit() const;
+  [[nodiscard]] bool shouldReceiveMIDINotesOnPrimary() const;
+  [[nodiscard]] bool shouldReceiveMIDINotesOnSplit() const;
 
-  [[nodiscard]] bool shouldSendProgramChanges() const;
-  [[nodiscard]] bool shouldSendNotes() const;
+  [[nodiscard]] bool shouldSendMIDIProgramChangesOnPrimary() const;
+  [[nodiscard]] bool shouldSendMIDIProgramChangesOnSplit() const;
+  [[nodiscard]] bool shouldSendMIDINotesOnPrimary() const;
+  [[nodiscard]] bool shouldSendMIDINotesOnSplit() const;
 
   [[nodiscard]] bool shouldReceiveLocalNotes() const;
 
@@ -59,7 +63,7 @@ class MidiRuntimeOptions
   void setSplitReceiveChannel(MidiReceiveChannelSplit c);
   void set14BitSupportEnabled(bool e);
 
-  template <Midi::LSB::HWSourceMidiCC tLSB> int getCCFor()
+  template <Midi::LSB::HWSourceMidiCC tLSB> [[nodiscard]] int getCCFor() const
   {
     if constexpr(tLSB == Midi::LSB::Ped1)
       return decodeEnumLSB(pedal1CC).value_or(-1);
@@ -77,7 +81,7 @@ class MidiRuntimeOptions
       nltools_assertNotReached();
   }
 
-  template <Midi::MSB::HWSourceMidiCC tMSB> int getCCFor()
+  template <Midi::MSB::HWSourceMidiCC tMSB> [[nodiscard]] int getCCFor() const
   {
     if constexpr(tMSB == Midi::MSB::Ped1)
       return decodeEnumMSB(pedal1CC).value_or(-1);
@@ -99,37 +103,29 @@ class MidiRuntimeOptions
       nltools_assertNotReached();
   }
 
-  std::optional<int> getBenderMSBCC();
-  std::optional<int> getBenderLSBCC();
-  std::optional<int> getAftertouchMSBCC();
-  std::optional<int> getAftertouchLSBCC();
+  std::optional<int> getBenderMSBCC() const;
+  std::optional<int> getBenderLSBCC() const;
+  std::optional<int> getAftertouchMSBCC() const;
+  std::optional<int> getAftertouchLSBCC() const;
   [[nodiscard]] AftertouchCC getAftertouchSetting() const;
   [[nodiscard]] BenderCC getBenderSetting() const;
 
-  bool isSwitchingCC(int pedalZeroIndexed);
-  bool enableHighVelCC();
-  bool is14BitSupportEnabled() const;
-  int getMSBCCForHWID(int hwID);
+  bool isSwitchingCC(int pedalZeroIndexed) const;
+  [[nodiscard]] bool enableHighVelCC() const;
+  [[nodiscard]] bool is14BitSupportEnabled() const;
+  int getMSBCCForHWID(int hwID) const;
 
-  bool isCCMappedToChannelModeMessage(int cc);
+  static bool isCCMappedToChannelModeMessage(int cc);
   static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);
   void setGlobalLocalEnabled(bool b);
 
  private:
-  MidiReceiveChannel m_receiveChannel;
-  MidiReceiveChannelSplit m_receiveSplitChannel;
-  MidiSendChannel m_sendChannel;
-  MidiSendChannelSplit m_sendSplitChannel;
+  MidiReceiveChannel m_midiPrimaryReceiveChannel;
+  MidiReceiveChannelSplit m_midiSplitReceiveChannel;
+  MidiSendChannel m_midiPrimarySendChannel;
+  MidiSendChannelSplit m_midiSplitSendChannel;
 
   bool m_globalLocalEnable = true;
-
-  bool m_receiveProgramChanges = false;
-  bool m_receiveNotes = false;
-
-  bool m_sendProgramChanges = false;
-  bool m_sendNotes = false;
-
-  bool m_localNotes = false;
 
   bool m_enableHighVelCC = false;
   bool m_enable14BitCC = false;

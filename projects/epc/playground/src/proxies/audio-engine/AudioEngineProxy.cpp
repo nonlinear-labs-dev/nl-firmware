@@ -40,6 +40,7 @@
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <use-cases/PhysicalControlParameterUseCases.h>
+#include <use-cases/SettingsUseCases.h>
 
 AudioEngineProxy::AudioEngineProxy()
 {
@@ -80,6 +81,19 @@ AudioEngineProxy::AudioEngineProxy()
                                             useCase.selectPreset(msg.program);
                                           }
                                       });
+
+  receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground,
+                                                        [=](const auto &msg)
+                                                        {
+                                                          if(Application::exists())
+                                                          {
+                                                            if(auto settings = Application::get().getSettings())
+                                                            {
+                                                              SettingsUseCases useCases(settings);
+                                                              useCases.setGlobalLocal(msg.m_state);
+                                                            }
+                                                          }
+                                                        });
 
   pm->onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
 }

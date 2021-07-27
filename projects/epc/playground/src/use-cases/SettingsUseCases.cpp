@@ -7,6 +7,7 @@
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/GlobalLocalEnableSetting.h>
 #include <nltools/messaging/Message.h>
 
 SettingsUseCases::SettingsUseCases(Settings *s)
@@ -88,5 +89,13 @@ void SettingsUseCases::setAllRoutingEntries(bool state)
   if(auto s = m_settings->getSetting<RoutingSettings>())
   {
     s->setAllValues(state);
+  }
+}
+
+void SettingsUseCases::setGlobalLocal(bool state)
+{
+  if(auto s = m_settings->getSetting<GlobalLocalEnableSetting>())
+  {
+    s->set(state ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE);
   }
 }

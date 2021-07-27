@@ -308,6 +308,15 @@ namespace nltools::msg
       tRoutingMappings routings {};
     };
 
+    struct SetGlobalLocalSetting {
+      constexpr static MessageType getType()
+      {
+        return MessageType::GlobalLocalSetting;
+      }
+
+      bool m_state;
+    };
+
     struct TransitionTimeMessage
     {
       constexpr static MessageType getType()

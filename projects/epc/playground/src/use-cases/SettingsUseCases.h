@@ -13,6 +13,8 @@ class SettingsUseCases
 
   void setAllRoutingEntries(bool state);
 
+  void setGlobalLocal(bool state);
+
  private:
   Settings* m_settings;
 };
