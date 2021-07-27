@@ -83,7 +83,7 @@ bool MidiRuntimeOptions::shouldSendMIDIProgramChangesOnPrimary() const
 bool MidiRuntimeOptions::shouldSendMIDIProgramChangesOnSplit() const
 {
   constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::ProgramChange);
-  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_PRIMARY);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_SPLIT);
   return m_routingMappings[idx][aspect];
 }
 
@@ -97,7 +97,7 @@ bool MidiRuntimeOptions::shouldSendMIDINotesOnPrimary() const
 bool MidiRuntimeOptions::shouldSendMIDINotesOnSplit() const
 {
   constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
-  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_PRIMARY);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_SPLIT);
   return m_routingMappings[idx][aspect];
 }
 
