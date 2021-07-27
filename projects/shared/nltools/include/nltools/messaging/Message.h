@@ -5,795 +5,803 @@
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
 
-namespace nltools::msg
+namespace nltools
 {
-  namespace Midi
+  namespace msg
   {
-    struct SimpleMessage
+    namespace Midi
     {
-      constexpr static MessageType getType()
+      struct SimpleMessage
       {
-        return MessageType::MidiSimpleMessage;
-      }
-
-      SimpleMessage()
-      {
-      }
-
-      SimpleMessage(uint8_t status, uint8_t data)
-      {
-        rawBytes[0] = status;
-        rawBytes[1] = data;
-        numBytesUsed = 2;
-      }
-
-      SimpleMessage(uint8_t status, uint8_t data1, uint8_t data2)
-      {
-        rawBytes[0] = status;
-        rawBytes[1] = data1;
-        rawBytes[2] = data2;
-        numBytesUsed = 3;
-      }
-
-      std::array<uint8_t, 3> rawBytes;
-      uint8_t numBytesUsed = 0;
-    };
-
-    struct ProgramChangeMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::MidiProgramChange;
-      }
-
-      uint8_t program;
-      SoundType programType = SoundType::Invalid;
-    };
-  }
-
-  using tID = int;
-  using tControlPosition = double;
-
-  namespace Keyboard
-  {
-    struct NoteDown
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::NoteDown;
-      }
-
-      int m_keyPos;
-    };
-
-    struct NoteUp
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::NoteUp;
-      }
-
-      int m_keyPos;
-    };
-
-    struct NoteEventHappened
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::NoteAction;
-      }
-    };
-  }
-
-  namespace USB
-  {
-    struct USBStatusMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::USBStatusMessage;
-      }
-
-      bool m_usbAvailable;
-      bool m_updateAvailable;
-    };
-  }
-
-  namespace FileSystem
-  {
-    struct Sync
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SyncFS;
-      }
-    };
-  }
-
-  namespace Update
-  {
-    struct UpdateUploadedNotification
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::UpdateUploaded;
-      }
-    };
-  }
-
-  namespace WiFi
-  {
-
-    namespace Helper
-    {
-      template <size_t tSize> struct StringWrapper
-      {
-        StringWrapper()
+        constexpr static MessageType getType()
         {
-          std::memset(data, '\0', tSize + 1);
+          return MessageType::MidiSimpleMessage;
         }
 
-        void set(const std::string& s)
+        SimpleMessage()
         {
-          assert(s.size() <= tSize);
-          std::copy(s.begin(), s.end() + 1, data);
         }
 
-        [[nodiscard]] std::string get() const
+        SimpleMessage(uint8_t status, uint8_t data)
         {
-          return data;
+          rawBytes[0] = status;
+          rawBytes[1] = data;
+          numBytesUsed = 2;
         }
 
-        char data[tSize + 1]{};
+        SimpleMessage(uint8_t status, uint8_t data1, uint8_t data2)
+        {
+          rawBytes[0] = status;
+          rawBytes[1] = data1;
+          rawBytes[2] = data2;
+          numBytesUsed = 3;
+        }
+
+        std::array<uint8_t, 3> rawBytes;
+        uint8_t numBytesUsed = 0;
+      };
+
+      struct ProgramChangeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiProgramChange;
+        }
+
+        uint8_t program;
+        SoundType programType = SoundType::Invalid;
       };
     }
 
-    struct SetWiFiSSIDMessage
+    using tID = int;
+    using tControlPosition = double;
+
+    namespace Keyboard
     {
-      constexpr static MessageType getType()
+      struct NoteDown
       {
-        return MessageType::WiFiSetSSID;
-      }
+        constexpr static MessageType getType()
+        {
+          return MessageType::NoteDown;
+        }
 
-      SetWiFiSSIDMessage()
-      {
-      }
-
-      template <typename T> SetWiFiSSIDMessage(const T& ssid)
-      {
-        m_ssid.set(ssid);
-      }
-
-      Helper::StringWrapper<128> m_ssid;
-    };
-
-    struct SetWiFiPasswordMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::WiFiSetPassword;
-      }
-
-      SetWiFiPasswordMessage() = default;
-
-      template <typename T> explicit SetWiFiPasswordMessage(const T& password)
-      {
-        m_password.set(password);
-      }
-
-      Helper::StringWrapper<8> m_password;
-    };
-
-    struct EnableWiFiMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::WiFiEnable;
-      }
-
-
-      EnableWiFiMessage() : m_state{false} {}
-      explicit EnableWiFiMessage(bool state) : m_state {state} {}
-
-      bool m_state{};
-    };
-
-  }
-
-  struct PanicAudioEngine
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::AEPanic;
-    }
-  };
-
-  namespace Setting
-  {
-    struct NoteShiftMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::NoteShiftSetting;
-      }
-
-      int m_shift;
-    };
-
-    struct FlacRecorderAutoStart
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::AutoStartRecorderMessage;
-      }
-
-      bool enabled;
-    };
-
-    struct PresetGlitchMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::PresetGlitchSetting;
-      }
-
-      bool m_enabled;
-    };
-
-    struct TuneReference
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::TuneReference;
-      }
-
-      double m_tuneReference;
-    };
-
-    struct MidiSettingsMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::MidiSettings;
-      }
-
-      enum class RoutingIndex : std::size_t
-      {
-        Pedal1 = 0,
-        Pedal2 = 1,
-        Pedal3 = 2,
-        Pedal4 = 3,
-        Bender = 4,
-        Aftertouch = 5,
-        Ribbon1 = 6,
-        Ribbon2 = 7,
-        ProgramChange = 8,
-        Notes = 9,
-        LENGTH = 10
+        int m_keyPos;
       };
 
-      enum class RoutingAspect : std::size_t
+      struct NoteUp
       {
-        SEND_PRIMARY = 0,
-        RECEIVE_PRIMARY = 1,
-        SEND_SPLIT = 2,
-        RECEIVE_SPLIT = 3,
-        LOCAL = 4,
-        LENGTH = 5
+        constexpr static MessageType getType()
+        {
+          return MessageType::NoteUp;
+        }
+
+        int m_keyPos;
       };
 
-      typedef std::array<std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)>,
-                         static_cast<size_t>(RoutingIndex::LENGTH)>
-          tRoutingMappings;
+      struct NoteEventHappened
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::NoteAction;
+        }
+      };
+    }
 
-      MidiReceiveChannel receiveChannel;
-      MidiReceiveChannelSplit receiveSplitChannel;
+    namespace USB
+    {
+      struct USBStatusMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::USBStatusMessage;
+        }
 
-      MidiSendChannel sendChannel;
-      MidiSendChannelSplit sendSplitChannel;
+        bool m_usbAvailable;
+        bool m_updateAvailable;
+      };
+    }
 
-      bool highVeloCCEnabled = true;
-      bool highResCCEnabled = true;
+    namespace FileSystem
+    {
+      struct Sync
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::SyncFS;
+        }
+      };
+    }
 
-      PedalCC pedal1cc;
-      PedalCC pedal2cc;
-      PedalCC pedal3cc;
-      PedalCC pedal4cc;
-      RibbonCC ribbon1cc;
-      RibbonCC ribbon2cc;
-      AftertouchCC aftertouchcc;
-      BenderCC bendercc;
+    namespace Update
+    {
+      struct UpdateUploadedNotification
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::UpdateUploaded;
+        }
+      };
+    }
 
-      bool globalLocalEnable = true;
-      tRoutingMappings routings {};
-    };
+    namespace WiFi
+    {
 
-    struct EnableBBBWifiFromDevSettings
+      namespace Helper
+      {
+        template <size_t tSize> struct StringWrapper
+        {
+          StringWrapper()
+          {
+            std::memset(data, '\0', tSize + 1);
+          }
+
+          void set(const std::string& s)
+          {
+            assert(s.size() <= tSize);
+            std::copy(s.begin(), s.end() + 1, data);
+          }
+
+          [[nodiscard]] std::string get() const
+          {
+            return data;
+          }
+
+          char data[tSize + 1] {};
+        };
+      }
+
+      struct SetWiFiSSIDMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WiFiSetSSID;
+        }
+
+        SetWiFiSSIDMessage()
+        {
+        }
+
+        template <typename T> SetWiFiSSIDMessage(const T& ssid)
+        {
+          m_ssid.set(ssid);
+        }
+
+        Helper::StringWrapper<128> m_ssid;
+      };
+
+      struct SetWiFiPasswordMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WiFiSetPassword;
+        }
+
+        SetWiFiPasswordMessage() = default;
+
+        template <typename T> explicit SetWiFiPasswordMessage(const T& password)
+        {
+          m_password.set(password);
+        }
+
+        Helper::StringWrapper<8> m_password;
+      };
+
+      struct EnableWiFiMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WiFiEnable;
+        }
+
+        EnableWiFiMessage()
+            : m_state { false }
+        {
+        }
+        explicit EnableWiFiMessage(bool state)
+            : m_state { state }
+        {
+        }
+
+        bool m_state {};
+      };
+
+    }
+
+    struct PanicAudioEngine
     {
       constexpr static MessageType getType()
       {
-        return MessageType::WifiDevBBBEnable;
+        return MessageType::AEPanic;
       }
     };
 
-    struct SetGlobalLocalSetting
+    namespace Setting
+    {
+      struct NoteShiftMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::NoteShiftSetting;
+        }
+
+        int m_shift;
+      };
+
+      struct FlacRecorderAutoStart
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::AutoStartRecorderMessage;
+        }
+
+        bool enabled;
+      };
+
+      struct PresetGlitchMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::PresetGlitchSetting;
+        }
+
+        bool m_enabled;
+      };
+
+      struct TuneReference
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::TuneReference;
+        }
+
+        double m_tuneReference;
+      };
+
+      struct MidiSettingsMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::MidiSettings;
+        }
+
+        enum class RoutingIndex : std::size_t
+        {
+          Pedal1 = 0,
+          Pedal2 = 1,
+          Pedal3 = 2,
+          Pedal4 = 3,
+          Bender = 4,
+          Aftertouch = 5,
+          Ribbon1 = 6,
+          Ribbon2 = 7,
+          ProgramChange = 8,
+          Notes = 9,
+          LENGTH = 10
+        };
+
+        enum class RoutingAspect : std::size_t
+        {
+          SEND_PRIMARY = 0,
+          RECEIVE_PRIMARY = 1,
+          SEND_SPLIT = 2,
+          RECEIVE_SPLIT = 3,
+          LOCAL = 4,
+          LENGTH = 5
+        };
+
+        typedef std::array<std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)>,
+                           static_cast<size_t>(RoutingIndex::LENGTH)>
+            tRoutingMappings;
+
+        MidiReceiveChannel receiveChannel;
+        MidiReceiveChannelSplit receiveSplitChannel;
+
+        MidiSendChannel sendChannel;
+        MidiSendChannelSplit sendSplitChannel;
+
+        bool highVeloCCEnabled = true;
+        bool highResCCEnabled = true;
+
+        PedalCC pedal1cc;
+        PedalCC pedal2cc;
+        PedalCC pedal3cc;
+        PedalCC pedal4cc;
+        RibbonCC ribbon1cc;
+        RibbonCC ribbon2cc;
+        AftertouchCC aftertouchcc;
+        BenderCC bendercc;
+
+        bool globalLocalEnable = true;
+        tRoutingMappings routings {};
+      };
+
+      struct EnableBBBWifiFromDevSettings
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WifiDevBBBEnable;
+        }
+      };
+
+      struct SetGlobalLocalSetting
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::GlobalLocalSetting;
+        }
+
+        bool m_state;
+      };
+
+      struct TransitionTimeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::TransitionTimeSetting;
+        }
+
+        float m_value;
+      };
+
+      struct EditSmoothingTimeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::EditSmoothingTimeSetting;
+        }
+
+        float m_time;
+      };
+    }
+
+    struct HWSourceChangedMessage
     {
       constexpr static MessageType getType()
       {
-        return MessageType::GlobalLocalSetting;
+        return MessageType::HWSourceParameter;
       }
 
-      bool m_state;
+      tID parameterId;
+      tControlPosition controlPosition;
+      ReturnMode returnMode;
     };
 
-    struct TransitionTimeMessage
+    struct HWAmountChangedMessage
     {
       constexpr static MessageType getType()
       {
-        return MessageType::TransitionTimeSetting;
+        return MessageType::HWAmountParameter;
       }
 
-      float m_value;
+      tID parameterId;
+      tControlPosition controlPosition;
     };
 
-    struct EditSmoothingTimeMessage
+    struct MacroControlChangedMessage
     {
       constexpr static MessageType getType()
       {
-        return MessageType::EditSmoothingTimeSetting;
+        return MessageType::MacroControlParameter;
       }
 
-      float m_time;
+      tID parameterId;
+      tControlPosition controlPosition;
     };
-  }
 
-  struct HWSourceChangedMessage
-  {
-    constexpr static MessageType getType()
+    struct UnmodulateableParameterChangedMessage
     {
-      return MessageType::HWSourceParameter;
+      constexpr static MessageType getType()
+      {
+        return MessageType::UnmodulateableParameter;
+      }
+
+      tID parameterId;
+      tControlPosition controlPosition;
+      VoiceGroup voiceGroup;
+    };
+
+    struct ModulateableParameterChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::ModulateableParameter;
+      }
+
+      tID parameterId;
+      tControlPosition controlPosition;
+      MacroControls sourceMacro;
+      tControlPosition mcAmount;
+      tControlPosition mcUpper;
+      tControlPosition mcLower;
+      VoiceGroup voiceGroup;
+    };
+
+    struct RotaryChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::RotaryChanged;
+      }
+
+      int8_t increment;
+    };
+
+    struct TimestampedRotaryChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::TimestampedRotaryChanged;
+      }
+
+      int8_t increment;
+      uint64_t timestamp;
+    };
+
+    struct ButtonChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::ButtonChanged;
+      }
+
+      int8_t buttonId;
+      bool pressed;
+    };
+
+    struct SetRibbonLEDMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetRibbonLED;
+      }
+
+      uint8_t id;
+      uint8_t brightness;
+    };
+
+    struct SetPanelLEDMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetPanelLED;
+      }
+
+      uint8_t id;
+      bool on;
+    };
+
+    struct SetOLEDMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetOLED;
+      }
+
+      uint64_t messageId = 0;
+      uint8_t pixels[256][96] {};
+    };
+
+    struct OLEDState
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::OLEDState;
+      }
+
+      uint64_t displaysMessageId = 0;
+    };
+
+    struct SetTimestampedOledMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetOLEDTimestamped;
+      }
+
+      SetOLEDMessage m_oledMessage {};
+      int64_t m_timestamp {};
+    };
+
+    struct PlaycontrollerMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::Playcontroller;
+      }
+
+      Glib::RefPtr<Glib::Bytes> message;
+    };
+
+    struct PingMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::Ping;
+      }
+    };
+
+    struct HardwareSourceChangedNotification
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::NotifyHardwareSourceChanged;
+      }
+
+      size_t hwSource = 0;  // 0...7
+      double position = 0;  // -1...1
+    };
+
+    namespace detail
+    {
+      template <> inline PlaycontrollerMessage deserialize<PlaycontrollerMessage>(const SerializedMessage& s)
+      {
+        PlaycontrollerMessage ret;
+        gsize numBytes = 0;
+        auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
+        ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
+        return ret;
+      }
+
+      template <> inline SerializedMessage serialize<PlaycontrollerMessage>(const PlaycontrollerMessage& msg)
+      {
+        gsize numBytes = 0;
+        auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
+        auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
+        scratch[0] = static_cast<uint16_t>(MessageType::Playcontroller);
+        std::memcpy(&scratch[1], data, numBytes);
+        auto bytes = g_bytes_new_take(scratch, numBytes + 2);
+        return Glib::wrap(bytes);
+      }
+
     }
 
-    tID parameterId;
-    tControlPosition controlPosition;
-    ReturnMode returnMode;
-  };
-
-  struct HWAmountChangedMessage
-  {
-    constexpr static MessageType getType()
+    namespace ParameterGroups
     {
-      return MessageType::HWAmountParameter;
+      struct Parameter
+      {
+        uint16_t id {};
+        double controlPosition = 0;
+      };
+
+      struct RibbonParameter : Parameter
+      {
+        RibbonTouchBehaviour ribbonTouchBehaviour {};
+        RibbonReturnMode ribbonReturnMode {};
+      };
+
+      struct PedalParameter : Parameter
+      {
+        PedalModes pedalMode {};
+        ReturnMode returnMode {};
+      };
+
+      struct MacroParameter : Parameter
+      {
+      };
+
+      struct ModulateableParameter : Parameter
+      {
+        MacroControls mc = MacroControls::NONE;
+        double modulationAmount = 0;
+      };
+
+      struct UnmodulateableParameter : Parameter
+      {
+      };
+
+      struct GlobalParameter : Parameter
+      {
+      };
+
+      struct HardwareSourceParameter : Parameter
+      {
+        ReturnMode returnMode = ReturnMode::None;
+      };
+
+      struct HardwareAmountParameter : Parameter
+      {
+      };
+
+      struct SplitPoint : ModulateableParameter
+      {
+      };
+
+      struct UnisonGroup
+      {
+        ParameterGroups::UnmodulateableParameter unisonVoices;
+        ParameterGroups::ModulateableParameter detune;
+        ParameterGroups::UnmodulateableParameter phase;
+        ParameterGroups::UnmodulateableParameter pan;
+      };
+
+      struct MonoGroup
+      {
+        ParameterGroups::UnmodulateableParameter monoEnable;
+        ParameterGroups::UnmodulateableParameter legato;
+        ParameterGroups::UnmodulateableParameter priority;
+        ParameterGroups::ModulateableParameter glide;
+      };
+
+      struct MasterGroup
+      {
+        ParameterGroups::ModulateableParameter volume;
+        ParameterGroups::ModulateableParameter tune;
+      };
+
+      inline bool operator==(const Parameter& lhs, const Parameter& rhs)
+      {
+        auto ret = lhs.id == rhs.id;
+        ret &= lhs.controlPosition == rhs.controlPosition;
+        return ret;
+      }
+
+      inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
+      {
+        auto ret = lhs.id == rhs.id;
+        ret &= lhs.controlPosition == rhs.controlPosition;
+        ret &= lhs.modulationAmount == rhs.modulationAmount;
+        ret &= lhs.mc == rhs.mc;
+        return ret;
+      }
+
+      inline bool operator==(const MonoGroup& lhs, const MonoGroup& rhs)
+      {
+        auto ret = lhs.glide == rhs.glide;
+        ret &= lhs.monoEnable == rhs.monoEnable;
+        ret &= lhs.priority == rhs.priority;
+        ret &= lhs.legato == rhs.legato;
+        return ret;
+      }
+
+      inline bool operator==(const UnisonGroup& lhs, const UnisonGroup& rhs)
+      {
+        auto ret = lhs.unisonVoices == rhs.unisonVoices;
+        ret &= lhs.detune == rhs.detune;
+        ret &= lhs.pan == rhs.pan;
+        ret &= lhs.phase == rhs.phase;
+        return ret;
+      }
+
+      inline bool operator==(const MasterGroup& lhs, const MasterGroup& rhs)
+      {
+        auto ret = lhs.volume == rhs.volume;
+        ret &= lhs.tune == rhs.tune;
+        return ret;
+      }
     }
 
-    tID parameterId;
-    tControlPosition controlPosition;
-  };
-
-  struct MacroControlChangedMessage
-  {
-    constexpr static MessageType getType()
+    struct SinglePresetMessage
     {
-      return MessageType::MacroControlParameter;
-    }
+      constexpr static MessageType getType()
+      {
+        return MessageType::SinglePreset;
+      }
 
-    tID parameterId;
-    tControlPosition controlPosition;
-  };
+      std::array<ParameterGroups::MacroParameter, 6> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-  struct UnmodulateableParameterChangedMessage
-  {
-    constexpr static MessageType getType()
+      std::array<ParameterGroups::ModulateableParameter, 101> modulateables;
+      std::array<ParameterGroups::UnmodulateableParameter, 94> unmodulateables;
+
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+
+      ParameterGroups::UnisonGroup unison;
+      ParameterGroups::MonoGroup mono;
+
+      ParameterGroups::MasterGroup master;
+
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
+    };
+
+    inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
     {
-      return MessageType::UnmodulateableParameter;
-    }
-
-    tID parameterId;
-    tControlPosition controlPosition;
-    VoiceGroup voiceGroup;
-  };
-
-  struct ModulateableParameterChangedMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::ModulateableParameter;
-    }
-
-    tID parameterId;
-    tControlPosition controlPosition;
-    MacroControls sourceMacro;
-    tControlPosition mcAmount;
-    tControlPosition mcUpper;
-    tControlPosition mcLower;
-    VoiceGroup voiceGroup;
-  };
-
-  struct RotaryChangedMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::RotaryChanged;
-    }
-
-    int8_t increment;
-  };
-
-  struct TimestampedRotaryChangedMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::TimestampedRotaryChanged;
-    }
-
-    int8_t increment;
-    uint64_t timestamp;
-  };
-
-  struct ButtonChangedMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::ButtonChanged;
-    }
-
-    int8_t buttonId;
-    bool pressed;
-  };
-
-  struct SetRibbonLEDMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::SetRibbonLED;
-    }
-
-    uint8_t id;
-    uint8_t brightness;
-  };
-
-  struct SetPanelLEDMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::SetPanelLED;
-    }
-
-    uint8_t id;
-    bool on;
-  };
-
-  struct SetOLEDMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::SetOLED;
-    }
-
-    uint64_t messageId = 0;
-    uint8_t pixels[256][96]{};
-  };
-
-  struct OLEDState
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::OLEDState;
-    }
-
-    uint64_t displaysMessageId = 0;
-  };
-
-  struct SetTimestampedOledMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::SetOLEDTimestamped;
-    }
-
-    SetOLEDMessage m_oledMessage{};
-    int64_t m_timestamp{};
-  };
-
-  struct PlaycontrollerMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::Playcontroller;
-    }
-
-    Glib::RefPtr<Glib::Bytes> message;
-  };
-
-  struct PingMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::Ping;
-    }
-  };
-
-  struct HardwareSourceChangedNotification
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::NotifyHardwareSourceChanged;
-    }
-
-    size_t hwSource = 0;  // 0...7
-    double position = 0;  // -1...1
-  };
-
-  namespace detail
-  {
-    template <> inline PlaycontrollerMessage deserialize<PlaycontrollerMessage>(const SerializedMessage& s)
-    {
-      PlaycontrollerMessage ret;
-      gsize numBytes = 0;
-      auto data = reinterpret_cast<const uint8_t*>(s->get_data(numBytes));
-      ret.message = Glib::Bytes::create(data + 2, numBytes - 2);
+      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      ret &= lhs.modulateables == rhs.modulateables;
+      ret &= lhs.scale == rhs.scale;
+      ret &= lhs.mono == rhs.mono;
+      ret &= lhs.unison == rhs.unison;
+      ret &= lhs.master == rhs.master;
+      ret &= lhs.hwamounts == rhs.hwamounts;
+      ret &= lhs.hwsources == rhs.hwsources;
+      ret &= lhs.macros == rhs.macros;
+      ret &= lhs.macrotimes == rhs.macrotimes;
       return ret;
     }
 
-    template <> inline SerializedMessage serialize<PlaycontrollerMessage>(const PlaycontrollerMessage& msg)
+    inline bool operator!=(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
     {
-      gsize numBytes = 0;
-      auto data = reinterpret_cast<const uint8_t*>(msg.message->get_data(numBytes));
-      auto scratch = reinterpret_cast<uint16_t*>(g_malloc(numBytes + 2));
-      scratch[0] = static_cast<uint16_t>(MessageType::Playcontroller);
-      std::memcpy(&scratch[1], data, numBytes);
-      auto bytes = g_bytes_new_take(scratch, numBytes + 2);
-      return Glib::wrap(bytes);
+      return !(lhs == rhs);
     }
 
-  }
-
-  namespace ParameterGroups
-  {
-    struct Parameter
+    struct SplitPresetMessage
     {
-      uint16_t id {};
-      double controlPosition = 0;
+      constexpr static MessageType getType()
+      {
+        return MessageType::SplitPreset;
+      }
+
+      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
+
+      std::array<ParameterGroups::UnisonGroup, 2> unison;
+      std::array<ParameterGroups::MonoGroup, 2> mono;
+
+      ParameterGroups::MasterGroup master;
+
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+
+      std::array<ParameterGroups::MacroParameter, 6> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
+      std::array<ParameterGroups::SplitPoint, 2> splitpoint;
     };
 
-    struct RibbonParameter : Parameter
+    inline bool operator==(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
     {
-      RibbonTouchBehaviour ribbonTouchBehaviour {};
-      RibbonReturnMode ribbonReturnMode {};
-    };
-
-    struct PedalParameter : Parameter
-    {
-      PedalModes pedalMode {};
-      ReturnMode returnMode {};
-    };
-
-    struct MacroParameter : Parameter
-    {
-    };
-
-    struct ModulateableParameter : Parameter
-    {
-      MacroControls mc = MacroControls::NONE;
-      double modulationAmount = 0;
-    };
-
-    struct UnmodulateableParameter : Parameter
-    {
-    };
-
-    struct GlobalParameter : Parameter
-    {
-    };
-
-    struct HardwareSourceParameter : Parameter
-    {
-      ReturnMode returnMode = ReturnMode::None;
-    };
-
-    struct HardwareAmountParameter : Parameter
-    {
-    };
-
-    struct SplitPoint : ModulateableParameter
-    {
-    };
-
-    struct UnisonGroup
-    {
-      ParameterGroups::UnmodulateableParameter unisonVoices;
-      ParameterGroups::ModulateableParameter detune;
-      ParameterGroups::UnmodulateableParameter phase;
-      ParameterGroups::UnmodulateableParameter pan;
-    };
-
-    struct MonoGroup
-    {
-      ParameterGroups::UnmodulateableParameter monoEnable;
-      ParameterGroups::UnmodulateableParameter legato;
-      ParameterGroups::UnmodulateableParameter priority;
-      ParameterGroups::ModulateableParameter glide;
-    };
-
-    struct MasterGroup
-    {
-      ParameterGroups::ModulateableParameter volume;
-      ParameterGroups::ModulateableParameter tune;
-    };
-
-    inline bool operator==(const Parameter& lhs, const Parameter& rhs)
-    {
-      auto ret = lhs.id == rhs.id;
-      ret &= lhs.controlPosition == rhs.controlPosition;
+      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      ret &= lhs.modulateables == rhs.modulateables;
+      ret &= lhs.scale == rhs.scale;
+      ret &= lhs.mono == rhs.mono;
+      ret &= lhs.unison == rhs.unison;
+      ret &= lhs.master == rhs.master;
+      ret &= lhs.hwamounts == rhs.hwamounts;
+      ret &= lhs.hwsources == rhs.hwsources;
+      ret &= lhs.macros == rhs.macros;
+      ret &= lhs.macrotimes == rhs.macrotimes;
+      ret &= lhs.splitpoint == rhs.splitpoint;
       return ret;
     }
 
-    inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
+    inline bool operator!=(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
     {
-      auto ret = lhs.id == rhs.id;
-      ret &= lhs.controlPosition == rhs.controlPosition;
-      ret &= lhs.modulationAmount == rhs.modulationAmount;
-      ret &= lhs.mc == rhs.mc;
+      return !(lhs == rhs);
+    }
+
+    struct LayerPresetMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::LayerPreset;
+      }
+
+      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+
+      std::array<ParameterGroups::MacroParameter, 6> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+
+      std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
+
+      ParameterGroups::UnisonGroup unison;
+      ParameterGroups::MonoGroup mono;
+
+      ParameterGroups::MasterGroup master;
+
+      std::array<ParameterGroups::GlobalParameter, 13> scale;
+    };
+
+    inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
+    {
+      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      ret &= lhs.modulateables == rhs.modulateables;
+      ret &= lhs.scale == rhs.scale;
+      ret &= lhs.mono == rhs.mono;
+      ret &= lhs.unison == rhs.unison;
+      ret &= lhs.master == rhs.master;
+      ret &= lhs.hwamounts == rhs.hwamounts;
+      ret &= lhs.hwsources == rhs.hwsources;
+      ret &= lhs.macros == rhs.macros;
+      ret &= lhs.macrotimes == rhs.macrotimes;
       return ret;
     }
 
-    inline bool operator==(const MonoGroup& lhs, const MonoGroup& rhs)
+    inline bool operator!=(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
     {
-      auto ret = lhs.glide == rhs.glide;
-      ret &= lhs.monoEnable == rhs.monoEnable;
-      ret &= lhs.priority == rhs.priority;
-      ret &= lhs.legato == rhs.legato;
-      return ret;
+      return !(lhs == rhs);
     }
-
-    inline bool operator==(const UnisonGroup& lhs, const UnisonGroup& rhs)
-    {
-      auto ret = lhs.unisonVoices == rhs.unisonVoices;
-      ret &= lhs.detune == rhs.detune;
-      ret &= lhs.pan == rhs.pan;
-      ret &= lhs.phase == rhs.phase;
-      return ret;
-    }
-
-    inline bool operator==(const MasterGroup& lhs, const MasterGroup& rhs)
-    {
-      auto ret = lhs.volume == rhs.volume;
-      ret &= lhs.tune == rhs.tune;
-      return ret;
-    }
-  }
-
-  struct SinglePresetMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::SinglePreset;
-    }
-
-    std::array<ParameterGroups::MacroParameter, 6> macros;
-    std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
-
-    std::array<ParameterGroups::ModulateableParameter, 101> modulateables;
-    std::array<ParameterGroups::UnmodulateableParameter, 94> unmodulateables;
-
-    std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-    std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
-
-    ParameterGroups::UnisonGroup unison;
-    ParameterGroups::MonoGroup mono;
-
-    ParameterGroups::MasterGroup master;
-
-    std::array<ParameterGroups::GlobalParameter, 13> scale;
-  };
-
-  inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
-  {
-    auto ret = lhs.unmodulateables == rhs.unmodulateables;
-    ret &= lhs.modulateables == rhs.modulateables;
-    ret &= lhs.scale == rhs.scale;
-    ret &= lhs.mono == rhs.mono;
-    ret &= lhs.unison == rhs.unison;
-    ret &= lhs.master == rhs.master;
-    ret &= lhs.hwamounts == rhs.hwamounts;
-    ret &= lhs.hwsources == rhs.hwsources;
-    ret &= lhs.macros == rhs.macros;
-    ret &= lhs.macrotimes == rhs.macrotimes;
-    return ret;
-  }
-
-  inline bool operator!=(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
-  {
-    return !(lhs == rhs);
-  }
-
-  struct SplitPresetMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::SplitPreset;
-    }
-
-    std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
-    std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
-
-    std::array<ParameterGroups::UnisonGroup, 2> unison;
-    std::array<ParameterGroups::MonoGroup, 2> mono;
-
-    ParameterGroups::MasterGroup master;
-
-    std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-    std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
-
-    std::array<ParameterGroups::MacroParameter, 6> macros;
-    std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
-
-    std::array<ParameterGroups::GlobalParameter, 13> scale;
-    std::array<ParameterGroups::SplitPoint, 2> splitpoint;
-  };
-
-  inline bool operator==(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
-  {
-    auto ret = lhs.unmodulateables == rhs.unmodulateables;
-    ret &= lhs.modulateables == rhs.modulateables;
-    ret &= lhs.scale == rhs.scale;
-    ret &= lhs.mono == rhs.mono;
-    ret &= lhs.unison == rhs.unison;
-    ret &= lhs.master == rhs.master;
-    ret &= lhs.hwamounts == rhs.hwamounts;
-    ret &= lhs.hwsources == rhs.hwsources;
-    ret &= lhs.macros == rhs.macros;
-    ret &= lhs.macrotimes == rhs.macrotimes;
-    ret &= lhs.splitpoint == rhs.splitpoint;
-    return ret;
-  }
-
-  inline bool operator!=(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
-  {
-    return !(lhs == rhs);
-  }
-
-  struct LayerPresetMessage
-  {
-    constexpr static MessageType getType()
-    {
-      return MessageType::LayerPreset;
-    }
-
-    std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-    std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
-
-    std::array<ParameterGroups::MacroParameter, 6> macros;
-    std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
-
-    std::array<std::array<ParameterGroups::ModulateableParameter, 101>, 2> modulateables;
-    std::array<std::array<ParameterGroups::UnmodulateableParameter, 94>, 2> unmodulateables;
-
-    ParameterGroups::UnisonGroup unison;
-    ParameterGroups::MonoGroup mono;
-
-    ParameterGroups::MasterGroup master;
-
-    std::array<ParameterGroups::GlobalParameter, 13> scale;
-  };
-
-  inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
-  {
-    auto ret = lhs.unmodulateables == rhs.unmodulateables;
-    ret &= lhs.modulateables == rhs.modulateables;
-    ret &= lhs.scale == rhs.scale;
-    ret &= lhs.mono == rhs.mono;
-    ret &= lhs.unison == rhs.unison;
-    ret &= lhs.master == rhs.master;
-    ret &= lhs.hwamounts == rhs.hwamounts;
-    ret &= lhs.hwsources == rhs.hwsources;
-    ret &= lhs.macros == rhs.macros;
-    ret &= lhs.macrotimes == rhs.macrotimes;
-    return ret;
-  }
-
-  inline bool operator!=(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
-  {
-    return !(lhs == rhs);
   }
 }
