@@ -267,9 +267,10 @@ public class WebSocketConnection {
 	static SSIDChangedDialog m_dialog = null;
 
 	public class SSIDChangedDialog extends GWTDialog {
-
 		public SSIDChangedDialog() {
 			setModal(true);
+			setGlassEnabled(true);
+
 			setWidth("20em");
 			addHeader("C15 SSID change detected!");
 
