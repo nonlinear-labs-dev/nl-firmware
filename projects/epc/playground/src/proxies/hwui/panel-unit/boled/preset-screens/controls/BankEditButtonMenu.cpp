@@ -149,7 +149,7 @@ void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_ent
 
 void BankEditButtonMenu::importBank()
 {
-  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().reset(
+  Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(
       new FileDialogLayout(&BankEditButtonMenu::applicableBackupFilesFilter, &BankEditButtonMenu::importBankFromPath,
                            "Select Bank for Import"));
 }
