@@ -39,6 +39,10 @@ h1 {
   color: #000000;
 }
 
+.dc-dialog {
+  z-index: 1003;
+}
+
 .sendButton {
   display: block;
   font-size: 18pt;
