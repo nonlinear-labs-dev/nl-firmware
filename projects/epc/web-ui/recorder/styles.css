@@ -15,6 +15,13 @@ body {
     font-weight: 400;
     font-style: normal;
     font-stretch: normal;
+
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
 
 #pane {
