@@ -37,10 +37,12 @@ void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transac
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_touchBehaviour);
-      setupScalingAndDefaultValue();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_touchBehaviour);
+          setupScalingAndDefaultValue();
+        });
   }
   else
   {
@@ -65,7 +67,15 @@ void RibbonParameter::setupScalingAndDefaultValue()
     for(auto router : mappings->getModulationRoutingParametersFor(this))
     {
       if(router->getValue().setIsBoolean(routersAreBoolean))
+      {
         router->onChange();
+      }
+
+      auto routerCP = router->getControlPositionValue();
+      if(!router->getValue().isBoolean() && routerCP == 1)
+      {
+        router->getValue().setRawValue(Initiator::INDIRECT, 0.5);
+      }
     }
   }
 
@@ -123,11 +133,13 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_returnMode);
-      setupScalingAndDefaultValue();
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_returnMode);
+          setupScalingAndDefaultValue();
+          onChange();
+        });
   }
   else
   {
