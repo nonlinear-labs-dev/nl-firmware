@@ -104,28 +104,21 @@ class UI {
             flac.onclick = (e) => {
                 this.defaultDownloadOption = flac.id;
                 dialog.classList.add("hidden");
+                this.downloadFile(name.value + ".flac", begin, end);
             }
-
-            const flacForm = document.getElementById("download-flac-form")! as HTMLFormElement;
-            (flacForm.elements.namedItem("begin") as HTMLInputElement).value = begin.toString();
-            (flacForm.elements.namedItem("end") as HTMLInputElement).value = end.toString();
 
             const wave = document.getElementById("download-wave")! as HTMLButtonElement;
             wave.onclick = (e) => {
                 this.defaultDownloadOption = wave.id;
                 dialog.classList.add("hidden");
+                this.downloadFile(encodeURIComponent(this.sanitizeFileName(name.value) + ".wav"), begin, end);
             }
-
-            const waveForm = document.getElementById("download-wave-form")! as HTMLFormElement;
-            (waveForm.elements.namedItem("begin") as HTMLInputElement).value = begin.toString();
-            (waveForm.elements.namedItem("end") as HTMLInputElement).value = end.toString();
 
             wave.disabled = tooLargeForWave;
 
             name.oninput = () => {
                 wave.disabled = name.value.length == 0;
                 flac.disabled = name.value.length == 0;
-                this.setupDownloadLinks(name.value);
             }
 
             var presetName = this.c15.getLoadedPresetAt(info.range.from);
@@ -137,21 +130,20 @@ class UI {
                 name.value = "";
                 wave.disabled = true;
                 flac.disabled = true;
-                this.setupDownloadLinks(name.value);
             }
 
-            this.setupDownloadLinks(name.value);
             var def = document.getElementById(this.defaultDownloadOption) as HTMLButtonElement;
             def.focus();
         });
     }
 
-    setupDownloadLinks(name: string) {
-        const waveForm = document.getElementById("download-wave-form")! as HTMLFormElement;
-        const flacForm = document.getElementById("download-flac-form")! as HTMLFormElement;
-
-        flacForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name) + ".flac");
-        waveForm.action = "http://" + hostName + httpPort + "/" + encodeURIComponent(this.sanitizeFileName(name) + ".wav");
+    downloadFile(name: string, from: number, to: number) {
+        var url = "http://" + hostName + httpPort + "/" + name + "?begin=" + from + "&end=" + to;
+        var dlink = document.createElement('a') as HTMLAnchorElement;
+        dlink.download = name;
+        dlink.href = url;
+        dlink.click();
+        dlink.remove();
     }
 
     sanitizeFileName(a: string): string {

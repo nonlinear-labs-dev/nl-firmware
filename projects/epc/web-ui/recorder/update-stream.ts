@@ -70,23 +70,10 @@ class UpdateStream {
         this.bars.clear();
         this.c15.setConnectionState(ConnectionState.Disconnected);
         this.socket = new WebSocket("ws://" + hostName + wsPort);
-        this.socket.onopen = (event) => {
-            this.logToDiv("socket open");
-            this.update();
-        }
-        this.socket.onerror = (event) => {
-            this.logToDiv("socket error");
-            this.retry(true);
-        }
-
-        this.socket.onclose = (event) => {
-            this.logToDiv("socket close");
-            this.retry(true);
-        }
-        this.socket.onmessage = (event) => {
-            this.logToDiv("socket msg");
-            this.readMessage(event.data);
-        }
+        this.socket.onopen = (event) => this.update();
+        this.socket.onerror = (event) => this.retry(true);
+        this.socket.onclose = (event) => this.retry(true);
+        this.socket.onmessage = (event) => this.readMessage(event.data);
     }
 
     stop() {
