@@ -23,8 +23,11 @@
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
 #include <xml/VersionAttribute.h>
+#include <xml/ZippedMemoryOutStream.h>
 #include <tools/FileInfo.h>
 #include <tools/TimeTools.h>
+#include <libundo/undo/TrashTransaction.h>
+#include <nltools/logging/Log.h>
 
 PresetManagerUseCases::PresetManagerUseCases(PresetManager* pm)
     : m_presetManager { pm }
@@ -760,27 +763,8 @@ PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(Fi
   if(!in.eof())
   {
     auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
-    m_presetManager->clear(scope->getTransaction());
-    PresetManagerSerializer serializer(m_presetManager);
-
-    XmlReader reader(in, scope->getTransaction());
-    reader.onFileVersionRead([&](int version) {
-      if(version > VersionAttribute::getCurrentFileVersion())
-      {
-        scope->getTransaction()->rollBack();
-        return Reader::FileVersionCheckResult::Unsupported;
-      }
-      return Reader::FileVersionCheckResult::OK;
-    });
-
-    if(auto lock = m_presetManager->lockLoading())
-    {
-      if(reader.read<PresetManagerSerializer>(m_presetManager))
-      {
-        m_presetManager->getEditBuffer()->sendToAudioEngine();
-        return ImportExitCode::OK;
-      }
-    }
+    if(importBackupFile(scope->getTransaction(), in))
+      return ImportExitCode::OK;
   }
   return ImportExitCode::Unsupported;
 }
@@ -790,18 +774,56 @@ bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer)
   if(auto lock = m_presetManager->getLoadingLock())
   {
     auto scope = m_presetManager->getUndoScope().startTransaction("Import all Banks");
-    auto transaction = scope->getTransaction();
-    m_presetManager->clear(transaction);
+    MemoryInStream in(buffer, true);
+    return importBackupFile(scope->getTransaction(), in);
+  }
+  return false;
+}
 
-    MemoryInStream stream(buffer, true);
-    XmlReader reader(stream, transaction);
+bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in)
+{
+  if(auto lock = m_presetManager->getLoadingLock())
+  {
+    // do a snapshot
+    auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
 
+    transaction->addSimpleCommand([pm = m_presetManager, swap](auto) {
+      ZippedMemoryOutStream stream;
+      XmlWriter writer(stream);
+      PresetManagerSerializer serializer(pm);
+      serializer.write(writer, VersionAttribute::get());
+      std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
+      swap->swapWith(zippedPresetManagerXml);
+
+      if(!zippedPresetManagerXml.empty())
+      {
+        auto trash = pm->getUndoScope().startTrashTransaction();
+        MemoryInStream inStream(zippedPresetManagerXml, true);
+        XmlReader reader(inStream, trash->getTransaction());
+        pm->clear(trash->getTransaction());
+        reader.read<PresetManagerSerializer>(pm);
+        pm->getEditBuffer()->sendToAudioEngine();
+      }
+    });
+
+    // fill preset manager with trash transaction, as snapshot above will
+    // care about undo
+
+    auto trash = m_presetManager->getUndoScope().startTrashTransaction();
+    XmlReader reader(in, trash->getTransaction());
+
+    reader.onFileVersionRead([&](int version) {
+      if(version > VersionAttribute::getCurrentFileVersion())
+        return Reader::FileVersionCheckResult::Unsupported;
+      return Reader::FileVersionCheckResult::OK;
+    });
+
+    m_presetManager->clear(trash->getTransaction());
     if(!reader.read<PresetManagerSerializer>(m_presetManager))
     {
       transaction->rollBack();
       return false;
     }
-
     m_presetManager->getEditBuffer()->sendToAudioEngine();
     return true;
   }

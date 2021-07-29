@@ -63,7 +63,8 @@ Glib::ustring MemoryInStream::read()
 {
   GError *error = nullptr;
   gsize length = 0;
-  char *str = g_data_input_stream_read_line(m_stream, &length, nullptr, &error);
+  std::unique_ptr<char, decltype(*g_free)> str(g_data_input_stream_read_line(m_stream, &length, nullptr, &error),
+                                               g_free);
 
   if(error)
   {
@@ -77,7 +78,7 @@ Glib::ustring MemoryInStream::read()
     return {};
   }
 
-  return Glib::ustring(str) + '\n';
+  return Glib::ustring(str.get()) + '\n';
 }
 
 std::vector<uint8_t> MemoryInStream::readAll()

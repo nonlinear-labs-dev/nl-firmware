@@ -56,6 +56,8 @@ namespace UNDO
 
   void Scope::reset()
   {
+    nltools::Log::warning(__PRETTY_FUNCTION__);
+
     m_root.reset();
     m_undoPosition = nullptr;
     m_redoPosition = nullptr;

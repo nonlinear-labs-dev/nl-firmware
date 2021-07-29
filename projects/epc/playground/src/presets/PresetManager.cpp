@@ -543,9 +543,9 @@ void PresetManager::storeInitSound(UNDO::Transaction *transaction)
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto &currentGroup : currentState->getGroups(vg))
       for(auto &currentParameter : currentGroup.second->getParameters())
-        if(takeFromRight.count(currentParameter.first.getNumber()))
-          if(auto oldParameter = m_initSound->findParameterByID(currentParameter.first, false))
-            currentParameter.second->copyFrom(transaction, oldParameter);
+        if(takeFromRight.count(currentParameter->getID().getNumber()))
+          if(auto oldParameter = m_initSound->findParameterByID(currentParameter->getID(), false))
+            currentParameter->copyFrom(transaction, oldParameter);
 
   m_initSound = std::move(currentState);
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());

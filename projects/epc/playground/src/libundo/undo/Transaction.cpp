@@ -25,7 +25,6 @@ namespace UNDO
       , m_isClosed(false)
       , m_depth(depth)
   {
-    DebugLevel::info("Creating UNDO::Transaction:", name);
     numTransactionsCreated++;
   }
 

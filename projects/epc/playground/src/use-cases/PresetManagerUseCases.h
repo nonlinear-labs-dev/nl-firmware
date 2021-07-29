@@ -87,6 +87,8 @@ class PresetManagerUseCases
 
   ImportExitCode importBackupFile(FileInStream& in);
   bool importBackupFile(SoupBuffer* buffer);
+  bool importBackupFile(UNDO::Transaction* transaction, InStream& in);
+
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 
   void moveAllBanks(float x, float y);

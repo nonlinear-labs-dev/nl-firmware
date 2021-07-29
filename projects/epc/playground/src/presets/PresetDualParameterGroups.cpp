@@ -83,7 +83,7 @@ void PresetDualParameterGroups::copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction
     if(!whiteList || whiteList.value().count(g.first))
     {
       auto ptr = g.second.get();
-      GroupId id{ g.first.getName(), VoiceGroup::II };
+      GroupId id { g.first.getName(), VoiceGroup::II };
       m_parameterGroups[vgII][id] = std::make_unique<PresetParameterGroup>(*ptr);
       m_parameterGroups[vgII][id]->assignVoiceGroup(transaction, VoiceGroup::II);
     }
@@ -198,7 +198,7 @@ void PresetDualParameterGroups::forEachParameter(const std::function<void(Preset
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
       for(auto &p : g.second->getParameters())
-        cb(p.second.get());
+        cb(p.get());
 }
 
 void PresetDualParameterGroups::forEachParameter(const std::function<void(const PresetParameter *)> &cb) const
@@ -206,7 +206,7 @@ void PresetDualParameterGroups::forEachParameter(const std::function<void(const 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto &g : m_parameterGroups[static_cast<size_t>(vg)])
       for(auto &p : g.second->getParameters())
-        cb(p.second.get());
+        cb(p.get());
 }
 
 PresetParameterGroup *PresetDualParameterGroups::findOrCreateParameterGroup(const GroupId &id)
