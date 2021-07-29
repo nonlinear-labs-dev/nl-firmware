@@ -22,7 +22,7 @@ void PresetParameterSerializer::writeTagContent(Writer &writer) const
   writer.writeTextElement("value", to_string(m_param->m_value));
 
   for(auto &f : m_param->m_fields)
-    writer.writeTextElement(paramFieldToString(f.first), f.second);
+    writer.writeTextElement(paramFieldToString(std::get<0>(f)), std::to_string(std::get<1>(f)));
 }
 
 void PresetParameterSerializer::readTagContent(Reader &reader) const

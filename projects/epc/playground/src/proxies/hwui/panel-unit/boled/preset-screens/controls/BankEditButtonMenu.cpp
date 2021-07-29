@@ -138,9 +138,10 @@ void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_ent
 
   if(file != std::filesystem::directory_entry())
   {
-    hwui->getPanelUnit().getEditPanel().getBoled().setOverlay(new SplashLayout());
+    SplashLayout::start();
     PresetManagerUseCases useCase(Application::get().getPresetManager());
     useCase.importBankFromPath(file, [](const std::string& name) { SplashLayout::addStatus("Importing " + name); });
+    SplashLayout::finish();
   }
 
   hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();

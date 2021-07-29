@@ -7,7 +7,7 @@ class Bank;
 class PresetBankMetadataSerializer : public Serializer
 {
  public:
-  explicit PresetBankMetadataSerializer(Bank *bank, bool ignoreUUIDs = false);
+  explicit PresetBankMetadataSerializer(Bank *bank, Progress progress, bool ignoreUUIDs = false);
 
   static Glib::ustring getTagName();
 

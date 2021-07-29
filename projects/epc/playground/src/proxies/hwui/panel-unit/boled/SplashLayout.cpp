@@ -1,3 +1,4 @@
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/Font.h>
@@ -88,6 +89,20 @@ SplashLayout::~SplashLayout()
   s_splash = nullptr;
 }
 
+void SplashLayout::start()
+{
+  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+  boled.setOverlay(new SplashLayout());
+}
+
+void SplashLayout::finish()
+{
+  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+
+  if(boled.getOverlay().get() == s_splash)
+    boled.resetOverlay();
+}
+
 void SplashLayout::setStatus(const std::string &msg)
 {
   if(s_splash)
@@ -108,7 +123,7 @@ void SplashLayout::setMessage(const std::string &txt)
 {
   m_text = txt;
   m_message->setText(m_text, FrameBufferColors::C179);
-  Oleds::get().syncRedraw();
+  Oleds::get().syncRedraw(true);
 }
 
 void SplashLayout::addMessage(const std::string &txt)
@@ -120,7 +135,7 @@ void SplashLayout::addMessage(const std::string &txt)
   m_message->setText(m_text, FrameBufferColors::C179);
   scrollToMax();
 
-  Oleds::get().syncRedraw();
+  Oleds::get().syncRedraw(true);
 }
 
 void SplashLayout::addHeadline()

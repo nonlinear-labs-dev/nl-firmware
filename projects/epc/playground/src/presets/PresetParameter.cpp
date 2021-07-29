@@ -48,10 +48,23 @@ void PresetParameter::setValue(UNDO::Transaction *transaction, tControlPositionV
 
 void PresetParameter::setField(UNDO::Transaction *transaction, Fields field, const std::string &value)
 {
-  transaction->addSimpleCommand([this, field, s = UNDO::createSwapData(value)](auto) {
-    auto &v = m_fields[field];
-    s->swapWith(v);
-  });
+  auto cp = m_fields;
+  bool found = false;
+
+  for(auto &f : cp)
+  {
+    if(std::get<0>(f) == field)
+    {
+      std::get<1>(f) = value;
+      found = true;
+      break;
+    }
+  }
+
+  if(!found)
+    cp.push_back({ field, value });
+
+  transaction->addUndoSwap(m_fields, cp);
 }
 
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
@@ -155,40 +168,36 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
 
 MacroControls PresetParameter::getModulationSource() const
 {
-  auto it = m_fields.find(Fields::ModSource);
-
-  if(it != m_fields.end() && !it->second.empty())
-    return static_cast<MacroControls>(std::stoi(it->second));
+  for(const auto &f : m_fields)
+    if(std::get<0>(f) == Fields::ModSource && !std::get<1>(f).empty())
+      return static_cast<MacroControls>(std::stoi(std::get<1>(f)));
 
   return MacroControls::NONE;
 }
 
 double PresetParameter::getModulationAmount() const
 {
-  auto it = m_fields.find(Fields::ModAmount);
-
-  if(it != m_fields.end() && !it->second.empty())
-    return std::stod(it->second);
+  for(const auto &f : m_fields)
+    if(std::get<0>(f) == Fields::ModAmount && !std::get<1>(f).empty())
+      return std::stod(std::get<1>(f));
 
   return 0.0;
 }
 
 std::string PresetParameter::getGivenName() const
 {
-  auto it = m_fields.find(Fields::GivenName);
-
-  if(it != m_fields.end())
-    return it->second;
+  for(const auto &f : m_fields)
+    if(std::get<0>(f) == Fields::GivenName)
+      return std::get<1>(f);
 
   return "";
 }
 
 std::string PresetParameter::getInfo() const
 {
-  auto it = m_fields.find(Fields::Info);
-
-  if(it != m_fields.end())
-    return it->second;
+  for(const auto &f : m_fields)
+    if(std::get<0>(f) == Fields::Info)
+      return std::get<1>(f);
 
   return "";
 }
@@ -200,32 +209,31 @@ const ParameterId PresetParameter::getID() const
 
 enum RibbonReturnMode PresetParameter::getRibbonReturnMode() const
 {
-  auto it = m_fields.find(Fields::RibbonReturnMode);
-
-  if(it != m_fields.end() && !it->second.empty())
-    return static_cast<enum RibbonReturnMode>(std::stoi(it->second));
-
   using RRM = enum RibbonReturnMode;
+
+  for(const auto &f : m_fields)
+    if(std::get<0>(f) == Fields::RibbonReturnMode && !std::get<1>(f).empty())
+      return static_cast<RRM>(std::stoi(std::get<1>(f)));
+
   return RRM::RETURN;
 }
 
 enum RibbonTouchBehaviour PresetParameter::getRibbonTouchBehaviour() const
 {
-  auto it = m_fields.find(Fields::RibbonTouchBehaviour);
-
-  if(it != m_fields.end() && !it->second.empty())
-    return static_cast<enum RibbonTouchBehaviour>(std::stoi(it->second));
-
   using RTB = enum RibbonTouchBehaviour;
+
+  for(const auto &f : m_fields)
+    if(std::get<0>(f) == Fields::RibbonTouchBehaviour && !std::get<1>(f).empty())
+      return static_cast<RTB>(std::stoi(std::get<1>(f)));
+
   return RTB::ABSOLUTE;
 }
 
 enum PedalModes PresetParameter::getPedalMode() const
 {
-  auto it = m_fields.find(Fields::PedalMode);
-
-  if(it != m_fields.end() && !it->second.empty())
-    return static_cast<enum PedalModes>(std::stoi(it->second));
+  for(const auto &f : m_fields)
+    if(std::get<0>(f) == Fields::PedalMode && !std::get<1>(f).empty())
+      return static_cast<enum PedalModes>(std::stoi(std::get<1>(f)));
 
   return PedalModes::STAY;
 }

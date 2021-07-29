@@ -15,7 +15,9 @@ class Attribute;
 class Serializer
 {
  public:
-  explicit Serializer(const Glib::ustring &tag);
+  using Progress = std::function<void(const std::string &)>;
+
+  explicit Serializer(const Glib::ustring &tag, Progress progressCB = {});
   virtual ~Serializer();
 
   void write(Glib::RefPtr<Gio::File> folder, const std::string &name);
@@ -44,6 +46,9 @@ class Serializer
     }
   }
 
+  Progress getProgressCB() const;
+  void addStatus(const std::string &str) const;
+
  protected:
   virtual void writeTagContent(Writer &writer) const = 0;
 
@@ -70,4 +75,5 @@ class Serializer
   }
 
   Glib::ustring m_tagName;
+  Progress m_progressCB;
 };

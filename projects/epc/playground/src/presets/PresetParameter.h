@@ -2,7 +2,7 @@
 
 #include "playground.h"
 #include "AttributesOwner.h"
-#include <unordered_map>
+#include <vector>
 #include <type_traits>
 #include <ParameterId.h>
 
@@ -56,9 +56,10 @@ class PresetParameter
   void writeDocument(Writer &writer) const;
 
  private:
+  using FieldsStorage = std::vector<std::tuple<Fields, std::string>>;
   ParameterId m_id;
   tControlPositionValue m_value = 0;
-  std::unordered_map<Fields, std::string, std::hash<uint8_t>> m_fields;
+  FieldsStorage m_fields;
 
   friend class PresetParameterSerializer;
 };

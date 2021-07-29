@@ -81,7 +81,7 @@ TEST_CASE("UnisonVoices Conversion rules")
     UNDO::Scope scope(&root);
     auto transactionScope = scope.startTransaction("foo");
     XmlReader reader(stream, transactionScope->getTransaction());
-    reader.read<PresetBankSerializer>(&bank);
+    reader.read<PresetBankSerializer>(&bank, Serializer::Progress {});
   };
 
   auto createBankXml = [](auto fileVersion, auto type, auto grpId, auto paramId, auto paramVal) {

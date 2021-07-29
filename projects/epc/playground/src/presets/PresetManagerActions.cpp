@@ -80,17 +80,12 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   addAction("import-all-banks", [&](std::shared_ptr<NetworkRequest> request) mutable {
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-      boled.setOverlay(new SplashLayout());
       auto *buffer = http->getFlattenedBuffer();
 
       PresetManagerUseCases useCase(&m_presetManager);
-      if(!useCase.importBackupFile(buffer))
-      {
+      if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }))
         http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
-      }
 
-      boled.resetOverlay();
       soup_buffer_free(buffer);
     }
   });
@@ -157,9 +152,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-      boled.setOverlay(new SplashLayout());
-
+      SplashLayout::start();
       const auto time = TimeTools::getDisplayStringFromStamp(TimeTools::getAdjustedTimestamp());
       const auto timeWithoutWhitespaces = StringTools::replaceAll(time, " ", "-");
       const auto timeSanitized = StringTools::replaceAll(timeWithoutWhitespaces, ":", "-");
@@ -168,7 +161,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       ExportBackupEditor::writeBackupToStream(stream);
       httpRequest->respondComplete(SOUP_STATUS_OK, "application/zip", { { "Content-Disposition", disposition } },
                                    stream.exhaust());
-      boled.resetOverlay();
+      SplashLayout::finish();
       return true;
     }
   }
