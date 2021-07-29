@@ -24,7 +24,7 @@ SCENARIO("Ribbon Return Mode")
       ribbon->undoableSetRibbonReturnMode(scope->getTransaction(), RibbonReturnMode::RETURN);
     }
 
-    REQUIRE(ribbon->getRibbonReturnMode() == RibbonReturnMode::RETURN);
+    CHECK(ribbon->getRibbonReturnMode() == RibbonReturnMode::RETURN);
 
     THEN("Route to A and B")
     {
@@ -37,8 +37,8 @@ SCENARIO("Ribbon Return Mode")
         rToB->setCPFromHwui(scope->getTransaction(), 0.2);
       }
 
-      REQUIRE_FALSE(rToA->getValue().isBoolean());
-      REQUIRE_FALSE(rToB->getValue().isBoolean());
+      CHECK_FALSE(rToA->getValue().isBoolean());
+      CHECK_FALSE(rToB->getValue().isBoolean());
 
       WHEN("Set Return Mode to None")
       {
@@ -47,11 +47,11 @@ SCENARIO("Ribbon Return Mode")
           ribbon->undoableSetRibbonReturnMode(scope->getTransaction(), RibbonReturnMode::STAY);
         }
 
-        REQUIRE(rToA->getValue().isBoolean());
-        REQUIRE(rToB->getValue().isBoolean());
+        CHECK(rToA->getValue().isBoolean());
+        CHECK(rToB->getValue().isBoolean());
 
-        REQUIRE(rToA->getValue().getRawValue() == 0.0);  //Gets reset to 0
-        REQUIRE(rToB->getValue().getRawValue() == 0.2);  //stays at 0.2 but appears bidirectional as it is boolean value
+        CHECK(rToA->getValue().getRawValue() == 0.0);  //Gets reset to 0
+        CHECK(rToB->getValue().getRawValue() == 0.2);  //stays at 0.2 but appears bidirectional as it is boolean value
       }
     }
   }
