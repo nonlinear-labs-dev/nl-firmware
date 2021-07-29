@@ -11,12 +11,10 @@
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <xml/Writer.h>
-#include <device-settings/DebugLevel.h>
 #include <cmath>
 #include <libundo/undo/Transaction.h>
 #include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
-#include <presets/EditBuffer.h>
 #include <nltools/messaging/Message.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -59,30 +57,29 @@ void RibbonParameter::setupScalingAndDefaultValue()
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
-  if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
+  for(auto router : getRoutingParameters())
   {
-    auto mappings
-        = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
-
-    for(auto router : mappings->getModulationRoutingParametersFor(this))
-    {
-      if(router->getValue().setIsBoolean(routersAreBoolean))
-      {
-        router->onChange();
-      }
-
-      auto routerCP = router->getControlPositionValue();
-      if(!router->getValue().isBoolean() && routerCP == 1)
-      {
-        router->getValue().setRawValue(Initiator::INDIRECT, 0.5);
-      }
-    }
+    if(router->getValue().setIsBoolean(routersAreBoolean))
+      router->onChange();
   }
 
   ensureExclusiveRoutingIfNeeded();
   invalidate();
   sendModeToPlaycontroller();
   m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
+}
+
+std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() const
+{
+  if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
+  {
+    auto group = groups->getParameterGroupByID({ "MCM", VoiceGroup::Global });
+    if(auto mappings = dynamic_cast<MacroControlMappingGroup *>(group))
+    {
+      return mappings->getModulationRoutingParametersFor(this);
+    }
+  }
+  return {};
 }
 
 tControlPositionValue RibbonParameter::getDefaultValueAccordingToMode() const
@@ -133,6 +130,8 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
   {
     auto swapData = UNDO::createSwapData(mode);
 
+    undoableSetHWAmountsForReturnToCenterMode(transaction, mode);
+
     transaction->addSimpleCommand(
         [=](UNDO::Command::State) mutable
         {
@@ -145,6 +144,22 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
   {
     setupScalingAndDefaultValue();
     onChange();
+  }
+}
+
+
+void RibbonParameter::undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction,
+                                                                const RibbonReturnMode &mode) const
+{
+  if(mode == RibbonReturnMode::RETURN)
+  {
+    for(auto p : getRoutingParameters())
+    {
+      if(p->getControlPositionValue() > 0)
+      {
+        p->setCPFromHwui(transaction, 0.5);
+      }
+    }
   }
 }
 
@@ -173,22 +188,17 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
-    if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
-    {
-      auto mappings
-          = dynamic_cast<MacroControlMappingGroup *>(groups->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
-      auto routers = mappings->getModulationRoutingParametersFor(this);
-      auto highest = *routers.begin();
+    auto routers = getRoutingParameters();
+    auto highest = *routers.begin();
 
-      for(auto router : routers)
-        if(highest != router)
-          if(std::abs(router->getValue().getRawValue()) > std::abs(highest->getValue().getRawValue()))
-            highest = router;
+    for(auto router : routers)
+      if(highest != router)
+        if(std::abs(router->getValue().getRawValue()) > std::abs(highest->getValue().getRawValue()))
+          highest = router;
 
-      for(auto router : routers)
-        if(router != highest)
-          router->onExclusiveRoutingLost();
-    }
+    for(auto router : routers)
+      if(router != highest)
+        router->onExclusiveRoutingLost();
   }
 }
 
