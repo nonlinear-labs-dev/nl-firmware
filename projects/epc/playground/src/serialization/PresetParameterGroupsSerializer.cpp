@@ -30,13 +30,18 @@ void PresetParameterGroupsSerializer::writeTagContent(Writer& writer) const
 
 void PresetParameterGroupsSerializer::readTagContent(Reader& reader) const
 {
-  reader.onTag(PresetParameterGroupSerializer::getTagName(), [&](const Attributes& attr) mutable -> PresetParameterGroupSerializer* {
-    auto groupID = GroupId(attr.get("id"));
+  reader.onTag(PresetParameterGroupSerializer::getTagName(),
+               [&](const Attributes& attr) mutable -> PresetParameterGroupSerializer* {
+                 auto groupID = GroupId(attr.get("id"));
 
-    if(groupID.getName() == "Split" && groupID.getVoiceGroup() == VoiceGroup::Global) {
-      return new PresetSplitGroupsFromOldGlobalGroupSerializer(m_preset);
-    } else {
-      return new PresetParameterGroupSerializer(m_preset->findOrCreateParameterGroup(groupID), m_preset->getType());
-    }
-  });
+                 if(groupID.getName() == "Split" && groupID.getVoiceGroup() == VoiceGroup::Global)
+                 {
+                   return new PresetSplitGroupsFromOldGlobalGroupSerializer(m_preset);
+                 }
+                 else
+                 {
+                   return new PresetParameterGroupSerializer(m_preset->findOrCreateParameterGroup(groupID),
+                                                             m_preset->getType());
+                 }
+               });
 }

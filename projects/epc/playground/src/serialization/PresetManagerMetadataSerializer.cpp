@@ -5,8 +5,8 @@
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
 
-PresetManagerMetadataSerializer::PresetManagerMetadataSerializer(PresetManager *pm)
-    : Serializer(getTagName())
+PresetManagerMetadataSerializer::PresetManagerMetadataSerializer(PresetManager *pm, Progress progress)
+    : Serializer(getTagName(), progress)
     , m_pm(pm)
 {
 }
@@ -21,7 +21,7 @@ void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
   writer.writeTextElement("selected-midi-bank-uuid", m_pm->getMidiSelectedBank().raw());
 
-  EditBufferSerializer eb(m_pm->getEditBuffer());
+  EditBufferSerializer eb(m_pm->getEditBuffer(), getProgressCB());
   eb.write(writer);
 
   PresetBankOrderSerializer bankOrder(m_pm);
@@ -39,7 +39,7 @@ void PresetManagerMetadataSerializer::readTagContent(Reader &reader) const
   });
 
   reader.onTag(EditBufferSerializer::getTagName(),
-               [&](const auto &) mutable { return new EditBufferSerializer(m_pm->getEditBuffer()); });
+               [&](const auto &) mutable { return new EditBufferSerializer(m_pm->getEditBuffer(), getProgressCB()); });
 
   reader.onTag(PresetBankOrderSerializer::getTagName(),
                [&](const auto &) mutable { return new PresetBankOrderSerializer(m_pm); });

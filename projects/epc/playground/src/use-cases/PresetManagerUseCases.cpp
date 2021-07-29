@@ -23,8 +23,11 @@
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
 #include <xml/VersionAttribute.h>
+#include <xml/ZippedMemoryOutStream.h>
 #include <tools/FileInfo.h>
 #include <tools/TimeTools.h>
+#include <libundo/undo/TrashTransaction.h>
+#include <nltools/logging/Log.h>
 
 PresetManagerUseCases::PresetManagerUseCases(PresetManager* pm)
     : m_presetManager { pm }
@@ -755,57 +758,79 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
     m_presetManager->getEditBuffer()->undoableLoad(transaction, newBank->getPresetAt(0), true);
 }
 
-PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(FileInStream& in)
+PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(FileInStream& in,
+                                                                              ProgressIndication progress)
 {
   if(!in.eof())
   {
-    auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
-    m_presetManager->clear(scope->getTransaction());
-    PresetManagerSerializer serializer(m_presetManager);
-
-    XmlReader reader(in, scope->getTransaction());
-    reader.onFileVersionRead([&](int version) {
-      if(version > VersionAttribute::getCurrentFileVersion())
-      {
-        scope->getTransaction()->rollBack();
-        return Reader::FileVersionCheckResult::Unsupported;
-      }
-      return Reader::FileVersionCheckResult::OK;
-    });
-
-    if(auto lock = m_presetManager->lockLoading())
+    if(auto lock = m_presetManager->getLoadingLock())
     {
-      if(reader.read<PresetManagerSerializer>(m_presetManager))
-      {
-        m_presetManager->getEditBuffer()->sendToAudioEngine();
+      auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
+      if(importBackupFile(scope->getTransaction(), in, progress))
         return ImportExitCode::OK;
-      }
     }
   }
   return ImportExitCode::Unsupported;
 }
 
-bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer)
+bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress)
 {
   if(auto lock = m_presetManager->getLoadingLock())
   {
     auto scope = m_presetManager->getUndoScope().startTransaction("Import all Banks");
-    auto transaction = scope->getTransaction();
-    m_presetManager->clear(transaction);
-
-    MemoryInStream stream(buffer, true);
-    XmlReader reader(stream, transaction);
-
-    if(!reader.read<PresetManagerSerializer>(m_presetManager))
-    {
-      transaction->rollBack();
-      return false;
-    }
-
-    m_presetManager->getEditBuffer()->sendToAudioEngine();
-    return true;
+    MemoryInStream in(buffer, true);
+    return importBackupFile(scope->getTransaction(), in, progress);
   }
   return false;
+}
+
+bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in, ProgressIndication progress)
+{
+  auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
+
+  transaction->addSimpleCommand([pm = m_presetManager, pg = progress, swap](auto) {
+    pg.start();
+    ZippedMemoryOutStream stream;
+    XmlWriter writer(stream);
+    PresetManagerSerializer serializer(pm, pg._update);
+    serializer.write(writer, VersionAttribute::get());
+    std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
+    swap->swapWith(zippedPresetManagerXml);
+
+    if(!zippedPresetManagerXml.empty())
+    {
+      auto trash = pm->getUndoScope().startTrashTransaction();
+      MemoryInStream inStream(zippedPresetManagerXml, true);
+      XmlReader reader(inStream, trash->getTransaction());
+      pm->clear(trash->getTransaction());
+      reader.read<PresetManagerSerializer>(pm, pg._update);
+      pm->getEditBuffer()->sendToAudioEngine();
+    }
+    pg.finish();
+  });
+
+  // fill preset manager with trash transaction, as snapshot above will
+  // care about undo
+  auto trash = m_presetManager->getUndoScope().startTrashTransaction();
+  XmlReader reader(in, trash->getTransaction());
+
+  reader.onFileVersionRead([&](int version) {
+    if(version > VersionAttribute::getCurrentFileVersion())
+      return Reader::FileVersionCheckResult::Unsupported;
+    return Reader::FileVersionCheckResult::OK;
+  });
+
+  progress.start();
+  m_presetManager->clear(trash->getTransaction());
+  if(!reader.read<PresetManagerSerializer>(m_presetManager, progress._update))
+  {
+    transaction->rollBack();
+    progress.finish();
+    return false;
+  }
+  m_presetManager->getEditBuffer()->sendToAudioEngine();
+  progress.finish();
+  return true;
 }
 
 bool PresetManagerUseCases::loadPresetFromCompareXML(const Glib::ustring& xml)
@@ -993,13 +1018,13 @@ bool PresetManagerUseCases::isDirectLoadActive() const
 }
 
 void PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
-                                               std::function<void(std::string)> onFileNameReadCallback)
+                                               std::function<void(std::string)> progress)
 {
   FileInfos fileInfos(file);
   FileInStream stream(fileInfos.filePath, false);
 
-  if(onFileNameReadCallback)
-    onFileNameReadCallback(fileInfos.fileName);
+  if(progress)
+    progress(fileInfos.fileName);
 
   importBankFromStream(stream, 0, 0, fileInfos.fileName);
 }
@@ -1019,7 +1044,7 @@ void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y,
   auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager));
 
   XmlReader reader(stream, transaction);
-  reader.read<PresetBankSerializer>(newBank, true);
+  reader.read<PresetBankSerializer>(newBank, Serializer::Progress {}, true);
 
   newBank->setAttachedToBank(transaction, Uuid::none());
   newBank->setAttachedDirection(transaction, to_string(Bank::AttachmentDirection::none));

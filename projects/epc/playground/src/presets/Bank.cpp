@@ -11,6 +11,7 @@
 #include <giomm/file.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
+#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 
@@ -77,7 +78,7 @@ SaveResult Bank::saveMetadata(Glib::RefPtr<Gio::File> bankFolder)
 {
   if(m_metadataLastSavedForUpdateID != getUpdateIDOfLastChange())
   {
-    PresetBankMetadataSerializer serializer(this);
+    PresetBankMetadataSerializer serializer(this, {});
     serializer.write(bankFolder, ".metadata");
     m_metadataLastSavedForUpdateID = getUpdateIDOfLastChange();
     return SaveResult::Finished;
@@ -141,7 +142,8 @@ void Bank::deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder)
 
 uint64_t Bank::loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder)
 {
-  return Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", this, false);
+  return Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", this,
+                                                        SplashLayout::addStatus, false);
 }
 
 void Bank::loadPresets(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder)

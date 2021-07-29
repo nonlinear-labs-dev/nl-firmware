@@ -30,7 +30,6 @@
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
-#include <proxies/hwui/panel-unit/boled/BOLED.h>
 
 static const Rect c_fullRightSidePosition(129, 16, 126, 48);
 
@@ -113,7 +112,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     SplashLayout::addStatus("Restoring Backup from File!");
 
     PresetManagerUseCases useCase(app.getPresetManager());
-    auto ret = useCase.importBackupFile(in);
+    auto ret = useCase.importBackupFile(in, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish });
     switch(ret)
     {
       case PresetManagerUseCases::ImportExitCode::Unsupported:
@@ -129,7 +128,6 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     }
   }
 
-  boled.resetOverlay();
   Application::get().getHWUI()->getPanelUnit().setupFocusAndMode({ UIFocus::Presets, UIMode::Select });
 }
 

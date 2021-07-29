@@ -32,6 +32,7 @@ public class WebSocketConnection {
 
 		public ConnectionErrorPopup() {
 			super(false);
+			getStyleElement().addClassName("dc-dialog");
 			Label l = null;
 			setWidget(l = new Label("The connection to the Nonlinear Instrument seems to be broken :-("));
 			l.getElement().addClassName("dc-text");
@@ -266,9 +267,10 @@ public class WebSocketConnection {
 	static SSIDChangedDialog m_dialog = null;
 
 	public class SSIDChangedDialog extends GWTDialog {
-
 		public SSIDChangedDialog() {
 			setModal(true);
+			setGlassEnabled(true);
+
 			setWidth("20em");
 			addHeader("C15 SSID change detected!");
 
@@ -302,6 +304,9 @@ public class WebSocketConnection {
 			buttons.getElement().addClassName("modal-button-div");
 			panel.add(buttons);
 			add(panel);
+
+			center();
+			pushDialogToFront();
 
 			m_dialog = this;
 		}

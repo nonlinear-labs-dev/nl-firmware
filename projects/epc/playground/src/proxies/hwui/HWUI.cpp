@@ -223,7 +223,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         XmlWriter writer(stream);
         eb->writeDocument(writer, 0);
 
-        EditBufferSerializer ebs(eb);
+        EditBufferSerializer ebs(eb, {});
         ebs.write(writer);
       }
       else if(line == "undo-performance-compare")

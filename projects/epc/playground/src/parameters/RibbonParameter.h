@@ -44,12 +44,15 @@ class RibbonParameter : public PhysicalControlParameter
   size_t getHash() const override;
   void sendToPlaycontroller() const override;
 
+
  private:
   void ensureExclusiveRoutingIfNeeded();
   const ScaleConverter *createScaleConverter() const;
   tControlPositionValue getDefaultValueAccordingToMode() const;
   void setupScalingAndDefaultValue();
-
+  std::list<ModulationRoutingParameter*> getRoutingParameters() const;
+  void undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction, const RibbonReturnMode &mode) const;
+  
   RibbonTouchBehaviour m_touchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
   RibbonReturnMode m_returnMode = RibbonReturnMode::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;

@@ -284,7 +284,7 @@ void FrameBuffer::drawVerticalLine(tCoordinate x, tCoordinate y, tCoordinate len
   }
 }
 
-bool FrameBuffer::swapBuffers()
+bool FrameBuffer::swapBuffers(bool force)
 {
   using namespace nltools::msg;
 
@@ -303,7 +303,7 @@ bool FrameBuffer::swapBuffers()
   }
   else
   {
-    if(m_oledCurrentlyShowsMessageId == 0 || m_oledCurrentlyShowsMessageId == m_oledMessageId)
+    if(force || m_oledCurrentlyShowsMessageId == 0 || m_oledCurrentlyShowsMessageId == m_oledMessageId)
     {
       SetOLEDMessage msg {};
       m_oledsDirty = false;

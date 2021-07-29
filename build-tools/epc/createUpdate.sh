@@ -86,7 +86,7 @@ download_packages() {
     cd /workdir/update-packages
     for package in $PACKAGES_TO_INSTALL; do
         if ! download_package ${package}; then
-            return 1
+    		return 1
         fi
     done
 
@@ -101,7 +101,7 @@ install_packages() {
   rm /var/lib/pacman/db.lck
   for package in $PACKAGES_TO_INSTALL; do
     if ! pacman --noconfirm -U ./\$package; then
-      exit 1
+	    exit 1
     fi
   done
 
@@ -130,8 +130,19 @@ setup_install_overlay() {
 }
 
 install_update() {
-    /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install"
-    return $?
+	cp /workdir/update-packages/* /internal/epc-update-partition/update-packages
+	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install"
+	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
+		cd /update-packages
+		rm /var/lib/pacman/db.lck
+		for package in $PACKAGES_TO_INSTALL; do
+		  if ! pacman --noconfirm -U ./\$package; then
+		    exit 1
+		  fi
+		done
+	"
+
+	return $?
 }
 
 update_fstab() {

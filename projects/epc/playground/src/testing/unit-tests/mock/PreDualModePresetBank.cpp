@@ -31,7 +31,7 @@ MockPreset PreDualModePresetBank::createMockPreset()
 
   MemoryInStream stream(getMockData(), false);
   XmlReader reader(stream, scope->getTransaction());
-  reader.read<PresetBankSerializer>(bank, true);
+  reader.read<PresetBankSerializer>(bank, Serializer::Progress {}, true);
   return bank;
 }
 

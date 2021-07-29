@@ -149,10 +149,10 @@ void FileOutStream::setKioskMode(bool kiosk)
     auto pm = app.getPresetManager();
     auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
 
-    boled.setOverlay(new SplashLayout());
+    SplashLayout::start();
     app.getSettings()->reload();
     pm->init();
-    boled.resetOverlay();
+    SplashLayout::finish();
   }
 }
 

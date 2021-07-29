@@ -133,7 +133,7 @@ SaveResult PresetManager::saveMetadata(Glib::RefPtr<Gio::File> pmFolder)
   if(m_lastSavedMetaDataUpdateID != getUpdateIDOfLastChange())
   {
     PerformanceTimer timer(__PRETTY_FUNCTION__);
-    PresetManagerMetadataSerializer serializer(this);
+    PresetManagerMetadataSerializer serializer(this, SplashLayout::addStatus);
     serializer.write(pmFolder, ".metadata");
     m_lastSavedMetaDataUpdateID = getUpdateIDOfLastChange();
     return SaveResult::Finished;
@@ -268,7 +268,7 @@ void PresetManager::loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transact
 {
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
-  Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this);
+  Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, SplashLayout::addStatus);
   m_editBuffer->sendToAudioEngine();
 }
 
@@ -543,9 +543,9 @@ void PresetManager::storeInitSound(UNDO::Transaction *transaction)
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto &currentGroup : currentState->getGroups(vg))
       for(auto &currentParameter : currentGroup.second->getParameters())
-        if(takeFromRight.count(currentParameter.first.getNumber()))
-          if(auto oldParameter = m_initSound->findParameterByID(currentParameter.first, false))
-            currentParameter.second->copyFrom(transaction, oldParameter);
+        if(takeFromRight.count(currentParameter->getID().getNumber()))
+          if(auto oldParameter = m_initSound->findParameterByID(currentParameter->getID(), false))
+            currentParameter->copyFrom(transaction, oldParameter);
 
   m_initSound = std::move(currentState);
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
