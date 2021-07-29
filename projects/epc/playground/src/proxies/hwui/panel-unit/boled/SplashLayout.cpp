@@ -108,7 +108,7 @@ void SplashLayout::setMessage(const std::string &txt)
 {
   m_text = txt;
   m_message->setText(m_text, FrameBufferColors::C179);
-  Oleds::get().syncRedraw();
+  Oleds::get().syncRedraw(true);
 }
 
 void SplashLayout::addMessage(const std::string &txt)
@@ -120,7 +120,7 @@ void SplashLayout::addMessage(const std::string &txt)
   m_message->setText(m_text, FrameBufferColors::C179);
   scrollToMax();
 
-  Oleds::get().syncRedraw();
+  Oleds::get().syncRedraw(true);
 }
 
 void SplashLayout::addHeadline()

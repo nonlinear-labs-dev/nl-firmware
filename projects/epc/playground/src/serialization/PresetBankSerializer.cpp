@@ -28,7 +28,7 @@ void PresetBankSerializer::readTagContent(Reader &reader) const
 {
   const auto bankName = m_bank->getName(false);
 
-  if(!bankName.empty())
+  if(!bankName.empty() && bankName != "New Bank")
     SplashLayout::addStatus("Reading bank " + bankName);
 
   super::readTagContent(reader);

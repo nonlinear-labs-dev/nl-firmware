@@ -1,4 +1,6 @@
 #include <Application.h>
+#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <proxies/hwui/HWUI.h>
 #include <parameter_declarations.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <presets/ClusterEnforcement.h>
@@ -762,9 +764,12 @@ PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(Fi
 {
   if(!in.eof())
   {
-    auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
-    if(importBackupFile(scope->getTransaction(), in))
-      return ImportExitCode::OK;
+    if(auto lock = m_presetManager->getLoadingLock())
+    {
+      auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
+      if(importBackupFile(scope->getTransaction(), in))
+        return ImportExitCode::OK;
+    }
   }
   return ImportExitCode::Unsupported;
 }
@@ -782,52 +787,54 @@ bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer)
 
 bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in)
 {
-  if(auto lock = m_presetManager->getLoadingLock())
-  {
-    // do a snapshot
-    auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
+  auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
 
-    transaction->addSimpleCommand([pm = m_presetManager, swap](auto) {
-      ZippedMemoryOutStream stream;
-      XmlWriter writer(stream);
-      PresetManagerSerializer serializer(pm);
-      serializer.write(writer, VersionAttribute::get());
-      std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
-      swap->swapWith(zippedPresetManagerXml);
+  transaction->addSimpleCommand([pm = m_presetManager, swap](auto) {
+    auto& boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+    boled.setOverlay(new SplashLayout());
+    ZippedMemoryOutStream stream;
+    XmlWriter writer(stream);
+    PresetManagerSerializer serializer(pm);
+    serializer.write(writer, VersionAttribute::get());
+    std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
+    swap->swapWith(zippedPresetManagerXml);
 
-      if(!zippedPresetManagerXml.empty())
-      {
-        auto trash = pm->getUndoScope().startTrashTransaction();
-        MemoryInStream inStream(zippedPresetManagerXml, true);
-        XmlReader reader(inStream, trash->getTransaction());
-        pm->clear(trash->getTransaction());
-        reader.read<PresetManagerSerializer>(pm);
-        pm->getEditBuffer()->sendToAudioEngine();
-      }
-    });
-
-    // fill preset manager with trash transaction, as snapshot above will
-    // care about undo
-
-    auto trash = m_presetManager->getUndoScope().startTrashTransaction();
-    XmlReader reader(in, trash->getTransaction());
-
-    reader.onFileVersionRead([&](int version) {
-      if(version > VersionAttribute::getCurrentFileVersion())
-        return Reader::FileVersionCheckResult::Unsupported;
-      return Reader::FileVersionCheckResult::OK;
-    });
-
-    m_presetManager->clear(trash->getTransaction());
-    if(!reader.read<PresetManagerSerializer>(m_presetManager))
+    if(!zippedPresetManagerXml.empty())
     {
-      transaction->rollBack();
-      return false;
+      auto trash = pm->getUndoScope().startTrashTransaction();
+      MemoryInStream inStream(zippedPresetManagerXml, true);
+      XmlReader reader(inStream, trash->getTransaction());
+      pm->clear(trash->getTransaction());
+      reader.read<PresetManagerSerializer>(pm);
+      pm->getEditBuffer()->sendToAudioEngine();
     }
-    m_presetManager->getEditBuffer()->sendToAudioEngine();
-    return true;
+    boled.resetOverlay();
+  });
+
+  // fill preset manager with trash transaction, as snapshot above will
+  // care about undo
+
+  auto trash = m_presetManager->getUndoScope().startTrashTransaction();
+  XmlReader reader(in, trash->getTransaction());
+
+  reader.onFileVersionRead([&](int version) {
+    if(version > VersionAttribute::getCurrentFileVersion())
+      return Reader::FileVersionCheckResult::Unsupported;
+    return Reader::FileVersionCheckResult::OK;
+  });
+
+  auto& boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+  boled.setOverlay(new SplashLayout());
+  m_presetManager->clear(trash->getTransaction());
+  if(!reader.read<PresetManagerSerializer>(m_presetManager))
+  {
+    transaction->rollBack();
+    boled.resetOverlay();
+    return false;
   }
-  return false;
+  m_presetManager->getEditBuffer()->sendToAudioEngine();
+  boled.resetOverlay();
+  return true;
 }
 
 bool PresetManagerUseCases::loadPresetFromCompareXML(const Glib::ustring& xml)

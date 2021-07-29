@@ -80,17 +80,12 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
   addAction("import-all-banks", [&](std::shared_ptr<NetworkRequest> request) mutable {
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-      boled.setOverlay(new SplashLayout());
       auto *buffer = http->getFlattenedBuffer();
 
       PresetManagerUseCases useCase(&m_presetManager);
       if(!useCase.importBackupFile(buffer))
-      {
         http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
-      }
 
-      boled.resetOverlay();
       soup_buffer_free(buffer);
     }
   });

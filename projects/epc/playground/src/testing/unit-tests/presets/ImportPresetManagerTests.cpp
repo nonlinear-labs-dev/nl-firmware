@@ -46,7 +46,7 @@ TEST_CASE("Import PresetManager overwrites banks")
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "NL Weird 06");
 
-  CHECK(memUsage.getUsage() < 3 * 1024 * 1024);
+  CHECK(memUsage.getUsage() < 4 * 1024 * 1024);
 }
 
 TEST_CASE("Import PresetManager is undoable")
