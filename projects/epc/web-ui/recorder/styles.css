@@ -15,12 +15,19 @@ body {
     font-weight: 400;
     font-style: normal;
     font-stretch: normal;
+
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
 
 #pane {
     position: absolute;
-    width: 80vw;
-    height: 40vw;
+    width: 95%;
+    height: 95%;
     color: white;
     background-color: black;
     text-align: center;
@@ -495,4 +502,15 @@ body {
 
 #wave-size {
     display: block;
+}
+
+#log {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 10em;
+    overflow: scroll;
+    z-index: 10000;
+    background-color: red;
 }

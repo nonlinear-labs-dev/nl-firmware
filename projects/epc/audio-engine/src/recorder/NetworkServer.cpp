@@ -298,7 +298,7 @@ void NetworkServer::exportWave(SoupMessage *msg, const std::string &path, FrameI
   soup_message_set_status(msg, SOUP_KNOWN_STATUS_CODE_OK);
   soup_message_body_set_accumulate(msg->response_body, FALSE);
   soup_message_headers_set_encoding(msg->response_headers, SOUP_ENCODING_CHUNKED);
-  soup_message_headers_set_content_type(msg->response_headers, "audio/wave", nullptr);
+  soup_message_headers_set_content_type(msg->response_headers, "application/octet-stream", nullptr);
   soup_message_headers_set_content_disposition(msg->response_headers, "attachment", nullptr);
 
   g_signal_connect(G_OBJECT(msg), "finished", G_CALLBACK(&NetworkServer::onFinished), this);
@@ -310,7 +310,7 @@ void NetworkServer::exportFlac(SoupMessage *msg, const std::string &path, FrameI
   soup_message_set_status(msg, SOUP_KNOWN_STATUS_CODE_OK);
   soup_message_body_set_accumulate(msg->response_body, FALSE);
   soup_message_headers_set_encoding(msg->response_headers, SOUP_ENCODING_CHUNKED);
-  soup_message_headers_set_content_type(msg->response_headers, "audio/flac", nullptr);
+  soup_message_headers_set_content_type(msg->response_headers, "application/octet-stream", nullptr);
   soup_message_headers_set_content_disposition(msg->response_headers, "attachment", nullptr);
 
   g_signal_connect(G_OBJECT(msg), "finished", G_CALLBACK(&NetworkServer::onFinished), this);

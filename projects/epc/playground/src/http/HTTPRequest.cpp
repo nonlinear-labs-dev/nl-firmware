@@ -87,6 +87,7 @@ void HTTPRequest::setHeader(const Glib::ustring &key, const Glib::ustring &value
 void HTTPRequest::setStatusOK()
 {
   soup_message_set_status(m_message, SOUP_STATUS_OK);
+  setHeader("Access-Control-Allow-Origin", "*");
 }
 
 void HTTPRequest::respond(const uint8_t *data, gsize numBytes)
@@ -116,8 +117,7 @@ void HTTPRequest::respondComplete(uint status, const char *contentType,
 
   auto ptr = new Data(std::move(buffer));
 
-  g_object_weak_ref(
-      G_OBJECT(m_message), +[](gpointer data, GObject *) { delete static_cast<Data *>(data); }, ptr);
+  g_object_weak_ref(G_OBJECT(m_message), +[](gpointer data, GObject *) { delete static_cast<Data *>(data); }, ptr);
   soup_message_body_append(m_message->response_body, SOUP_MEMORY_TEMPORARY, ptr->data(), ptr->size());
   complete();
 }

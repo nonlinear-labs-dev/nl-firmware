@@ -126,7 +126,7 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
       }
 
-      nltools::msg::Update::UpdateUploadedNotification msg {};
+      nltools::msg::Update::UpdateUploadedNotification msg{};
       nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
 
       request->okAndComplete();
