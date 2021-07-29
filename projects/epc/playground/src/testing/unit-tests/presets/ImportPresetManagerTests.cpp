@@ -22,7 +22,7 @@ TEST_CASE("Import PresetManager consumes memory as expected")
   {
     PresetManagerUseCases uc(pm);
     FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/one_bank.xml.tar", true);
-    uc.importBackupFile(stream);
+    uc.importBackupFile(stream, {});
   }
 
   CHECK(memUsage.getUsage() < 8 * 1024 * 1024);
@@ -37,12 +37,12 @@ TEST_CASE("Import PresetManager overwrites banks")
   PresetManagerUseCases uc(pm);
   auto memUsage = nltools::Log::MemUsageLogger(nltools::Log::Debug, __PRETTY_FUNCTION__);
   FileInStream oneStream(getSourceDir() + "/projects/epc/playground/test-resources/one_bank.xml.tar", true);
-  uc.importBackupFile(oneStream);
+  uc.importBackupFile(oneStream, {});
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "Ulis Bank 07");
 
   FileInStream otherStream(getSourceDir() + "/projects/epc/playground/test-resources/other_bank.xml.tar", true);
-  uc.importBackupFile(otherStream);
+  uc.importBackupFile(otherStream, {});
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "NL Weird 06");
 
@@ -58,12 +58,12 @@ TEST_CASE("Import PresetManager is undoable")
   PresetManagerUseCases uc(pm);
   auto memUsage = nltools::Log::MemUsageLogger(nltools::Log::Debug, __PRETTY_FUNCTION__);
   FileInStream oneStream(getSourceDir() + "/projects/epc/playground/test-resources/one_bank.xml.tar", true);
-  uc.importBackupFile(oneStream);
+  uc.importBackupFile(oneStream, {});
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "Ulis Bank 07");
 
   FileInStream otherStream(getSourceDir() + "/projects/epc/playground/test-resources/other_bank.xml.tar", true);
-  uc.importBackupFile(otherStream);
+  uc.importBackupFile(otherStream, {});
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "NL Weird 06");
 

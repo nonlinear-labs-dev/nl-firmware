@@ -1,6 +1,4 @@
 #include <Application.h>
-#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
-#include <proxies/hwui/HWUI.h>
 #include <parameter_declarations.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <presets/ClusterEnforcement.h>
@@ -760,41 +758,41 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
     m_presetManager->getEditBuffer()->undoableLoad(transaction, newBank->getPresetAt(0), true);
 }
 
-PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(FileInStream& in)
+PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(FileInStream& in,
+                                                                              ProgressIndication progress)
 {
   if(!in.eof())
   {
     if(auto lock = m_presetManager->getLoadingLock())
     {
       auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
-      if(importBackupFile(scope->getTransaction(), in))
+      if(importBackupFile(scope->getTransaction(), in, progress))
         return ImportExitCode::OK;
     }
   }
   return ImportExitCode::Unsupported;
 }
 
-bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer)
+bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress)
 {
   if(auto lock = m_presetManager->getLoadingLock())
   {
     auto scope = m_presetManager->getUndoScope().startTransaction("Import all Banks");
     MemoryInStream in(buffer, true);
-    return importBackupFile(scope->getTransaction(), in);
+    return importBackupFile(scope->getTransaction(), in, progress);
   }
   return false;
 }
 
-bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in)
+bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in, ProgressIndication progress)
 {
   auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
 
-  transaction->addSimpleCommand([pm = m_presetManager, swap](auto) {
-    auto& boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-    boled.setOverlay(new SplashLayout());
+  transaction->addSimpleCommand([pm = m_presetManager, pg = progress, swap](auto) {
+    pg.start();
     ZippedMemoryOutStream stream;
     XmlWriter writer(stream);
-    PresetManagerSerializer serializer(pm);
+    PresetManagerSerializer serializer(pm, pg._update);
     serializer.write(writer, VersionAttribute::get());
     std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
     swap->swapWith(zippedPresetManagerXml);
@@ -805,15 +803,14 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
       MemoryInStream inStream(zippedPresetManagerXml, true);
       XmlReader reader(inStream, trash->getTransaction());
       pm->clear(trash->getTransaction());
-      reader.read<PresetManagerSerializer>(pm);
+      reader.read<PresetManagerSerializer>(pm, pg._update);
       pm->getEditBuffer()->sendToAudioEngine();
     }
-    boled.resetOverlay();
+    pg.finish();
   });
 
   // fill preset manager with trash transaction, as snapshot above will
   // care about undo
-
   auto trash = m_presetManager->getUndoScope().startTrashTransaction();
   XmlReader reader(in, trash->getTransaction());
 
@@ -823,17 +820,16 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
     return Reader::FileVersionCheckResult::OK;
   });
 
-  auto& boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-  boled.setOverlay(new SplashLayout());
+  progress.start();
   m_presetManager->clear(trash->getTransaction());
-  if(!reader.read<PresetManagerSerializer>(m_presetManager))
+  if(!reader.read<PresetManagerSerializer>(m_presetManager, progress._update))
   {
     transaction->rollBack();
-    boled.resetOverlay();
+    progress.finish();
     return false;
   }
   m_presetManager->getEditBuffer()->sendToAudioEngine();
-  boled.resetOverlay();
+  progress.finish();
   return true;
 }
 
@@ -1022,13 +1018,13 @@ bool PresetManagerUseCases::isDirectLoadActive() const
 }
 
 void PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
-                                               std::function<void(std::string)> onFileNameReadCallback)
+                                               std::function<void(std::string)> progress)
 {
   FileInfos fileInfos(file);
   FileInStream stream(fileInfos.filePath, false);
 
-  if(onFileNameReadCallback)
-    onFileNameReadCallback(fileInfos.fileName);
+  if(progress)
+    progress(fileInfos.fileName);
 
   importBankFromStream(stream, 0, 0, fileInfos.fileName);
 }
@@ -1048,7 +1044,7 @@ void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y,
   auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager));
 
   XmlReader reader(stream, transaction);
-  reader.read<PresetBankSerializer>(newBank, true);
+  reader.read<PresetBankSerializer>(newBank, Serializer::Progress {}, true);
 
   newBank->setAttachedToBank(transaction, Uuid::none());
   newBank->setAttachedDirection(transaction, to_string(Bank::AttachmentDirection::none));

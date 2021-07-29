@@ -85,9 +85,38 @@ class PresetManagerUseCases
 
   void dropPresets(const std::string& anchorUuid, DropActions action, const Glib::ustring& csv);
 
-  ImportExitCode importBackupFile(FileInStream& in);
-  bool importBackupFile(SoupBuffer* buffer);
-  bool importBackupFile(UNDO::Transaction* transaction, InStream& in);
+  using StartProgressIndication = std::function<void()>;
+  using UpdateProgressIndication = std::function<void(const std::string&)>;
+  using FinishProgressIndication = std::function<void()>;
+
+  struct ProgressIndication
+  {
+    void start() const
+    {
+      if(_start)
+        _start();
+    }
+
+    void update(const std::string& msg) const
+    {
+      if(_update)
+        _update(msg);
+    }
+
+    void finish() const
+    {
+      if(_finish)
+        _finish();
+    }
+
+    StartProgressIndication _start;
+    UpdateProgressIndication _update;
+    FinishProgressIndication _finish;
+  };
+
+  ImportExitCode importBackupFile(FileInStream& in, ProgressIndication progress);
+  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress);
+  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, ProgressIndication progress);
 
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 

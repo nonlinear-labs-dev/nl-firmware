@@ -133,7 +133,7 @@ SaveResult PresetManager::saveMetadata(Glib::RefPtr<Gio::File> pmFolder)
   if(m_lastSavedMetaDataUpdateID != getUpdateIDOfLastChange())
   {
     PerformanceTimer timer(__PRETTY_FUNCTION__);
-    PresetManagerMetadataSerializer serializer(this);
+    PresetManagerMetadataSerializer serializer(this, SplashLayout::addStatus);
     serializer.write(pmFolder, ".metadata");
     m_lastSavedMetaDataUpdateID = getUpdateIDOfLastChange();
     return SaveResult::Finished;
@@ -268,7 +268,7 @@ void PresetManager::loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transact
 {
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
-  Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this);
+  Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, SplashLayout::addStatus);
   m_editBuffer->sendToAudioEngine();
 }
 

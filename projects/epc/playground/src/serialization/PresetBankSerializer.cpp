@@ -2,17 +2,16 @@
 #include "PresetSerializer.h"
 
 #include <presets/Bank.h>
-#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <tools/TimeTools.h>
 
-PresetBankSerializer::PresetBankSerializer(Bank *bank, bool ignoreUUIDs)
-    : super(bank, ignoreUUIDs)
+PresetBankSerializer::PresetBankSerializer(Bank *bank, Progress progress, bool ignoreUUIDs)
+    : super(bank, progress, ignoreUUIDs)
 {
 }
 
 void PresetBankSerializer::writeTagContent(Writer &writer) const
 {
-  SplashLayout::addStatus("Writing bank " + m_bank->getName(true));
+  addStatus("Writing bank " + m_bank->getName(true));
 
   writer.writeTextElement("bank-serialize-date", TimeTools::getAdjustedIso());
 
@@ -29,7 +28,7 @@ void PresetBankSerializer::readTagContent(Reader &reader) const
   const auto bankName = m_bank->getName(false);
 
   if(!bankName.empty() && bankName != "New Bank")
-    SplashLayout::addStatus("Reading bank " + bankName);
+    addStatus("Reading bank " + bankName);
 
   super::readTagContent(reader);
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <glibmm/ustring.h>
 #include <tools/Uuid.h>
+#include <functional>
 
 class Bank;
 class Preset;

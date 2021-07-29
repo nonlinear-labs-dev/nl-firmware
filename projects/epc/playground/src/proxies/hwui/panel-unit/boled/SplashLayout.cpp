@@ -1,3 +1,4 @@
+#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/Font.h>
@@ -86,6 +87,20 @@ SplashLayout::~SplashLayout()
 {
   Application::get().runWatchDog();
   s_splash = nullptr;
+}
+
+void SplashLayout::start()
+{
+  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+  boled.setOverlay(new SplashLayout());
+}
+
+void SplashLayout::finish()
+{
+  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+
+  if(boled.getOverlay().get() == s_splash)
+    boled.resetOverlay();
 }
 
 void SplashLayout::setStatus(const std::string &msg)

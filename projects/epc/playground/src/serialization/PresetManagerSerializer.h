@@ -7,7 +7,7 @@ class PresetManager;
 class PresetManagerSerializer : public Serializer
 {
  public:
-  explicit PresetManagerSerializer(PresetManager *pm);
+  explicit PresetManagerSerializer(PresetManager *pm, Progress progress);
   ~PresetManagerSerializer() override;
 
   static Glib::ustring getTagName();

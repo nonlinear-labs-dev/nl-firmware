@@ -2,11 +2,10 @@
 #include "PresetOrderSerializer.h"
 #include "AttributesOwnerSerializer.h"
 #include <presets/Bank.h>
-#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <giomm/file.h>
 
-PresetBankMetadataSerializer::PresetBankMetadataSerializer(Bank *bank, bool ignoreUUIDs)
-    : Serializer(getTagName())
+PresetBankMetadataSerializer::PresetBankMetadataSerializer(Bank *bank, Progress progress, bool ignoreUUIDs)
+    : Serializer(getTagName(), progress)
     , m_bank(bank)
     , m_ignoreUUIDs(ignoreUUIDs)
 {
@@ -42,7 +41,7 @@ void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
     m_bank->setName(reader.getTransaction(), text);
 
     if(!text.empty())
-      SplashLayout::addStatus("Reading bank " + text);
+      addStatus("Reading bank " + text);
   });
 
   if(!m_ignoreUUIDs)
