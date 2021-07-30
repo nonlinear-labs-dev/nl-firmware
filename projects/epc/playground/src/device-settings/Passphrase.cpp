@@ -13,7 +13,10 @@ Passphrase::~Passphrase() = default;
 
 void Passphrase::load(const Glib::ustring& password, Initiator initiator)
 {
-  updatePassword(password);
+  if(!password.empty())
+  {
+    updatePassword(password);
+  }
 }
 
 Glib::ustring Passphrase::save() const

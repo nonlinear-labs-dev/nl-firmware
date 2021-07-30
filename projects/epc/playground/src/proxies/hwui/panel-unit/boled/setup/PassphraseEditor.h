@@ -19,5 +19,5 @@ class PassphraseEditor : public MenuEditor
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 
  private:
-  int m_selection = 0;
+  static int sLastSelection;
 };
