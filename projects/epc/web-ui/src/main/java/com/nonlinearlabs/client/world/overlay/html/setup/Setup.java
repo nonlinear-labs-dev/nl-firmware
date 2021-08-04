@@ -116,7 +116,7 @@ public class Setup extends Composite {
 	TextArea deviceName, passphrase;
 
 	@UiField
-	Button saveDeviceName, savePassphrase, dicePassphrase, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE;
+	Button saveDeviceName, savePassphrase, dicePassphrase, defaultPassphrase, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -345,7 +345,7 @@ public class Setup extends Composite {
 		});
 
 		dicePassphrase.addClickHandler(e -> NonMaps.theMaps.getServerProxy().dicePassphrase());
-
+		defaultPassphrase.addClickHandler(e -> NonMaps.theMaps.getServerProxy().defaultPassphrase());
 
 		highlightChangedOn.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.on));
 		highlightChangedOff.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.off));

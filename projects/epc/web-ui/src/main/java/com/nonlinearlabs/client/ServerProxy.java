@@ -1272,6 +1272,13 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
+	public void defaultPassphrase()
+	{
+		StaticURI.Path path = new StaticURI.Path("settings", "default-passphrase");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, true);
+	}
+
 	public void isPassphraseValid(String newPassphrase, Consumer<Boolean> cb) {
 		downloadFile("/settings/is-valid-passphrase?text=" + URL.encodeQueryString(newPassphrase), new DownloadHandler() {
 			@Override

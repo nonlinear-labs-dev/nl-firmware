@@ -128,6 +128,13 @@ SettingsActions::SettingsActions(Settings &settings)
         useCases.dicePassphrase();
       }
   });
+
+  addAction("default-passphrase", [](auto) {
+    if(Application::exists()) {
+      SettingsUseCases useCases(Application::get().getSettings());
+      useCases.defaultPassphrase();
+    }
+  });
 }
 
 SettingsActions::~SettingsActions() = default;

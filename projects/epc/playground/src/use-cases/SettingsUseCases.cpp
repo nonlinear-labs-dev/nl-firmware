@@ -93,6 +93,14 @@ void SettingsUseCases::dicePassphrase()
   }
 }
 
+void SettingsUseCases::defaultPassphrase()
+{
+  if(auto passwd = m_settings->getSetting<Passphrase>())
+  {
+    passwd->resetToDefault();
+  }
+}
+
 void SettingsUseCases::setSettingFromWebUI(const Glib::ustring &key, const Glib::ustring& value)
 {
   if(key == "SyncSplit")

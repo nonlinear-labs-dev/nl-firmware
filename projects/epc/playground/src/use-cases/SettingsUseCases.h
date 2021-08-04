@@ -12,6 +12,7 @@ class SettingsUseCases
   void updateHWSourceEnable(int hw, int aspect, bool value);
   void panicAudioEngine();
   void dicePassphrase();
+  void defaultPassphrase();
   void setSettingFromWebUI(const Glib::ustring& key, const Glib::ustring& value);
 
  private:
