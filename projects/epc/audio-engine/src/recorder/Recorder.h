@@ -30,8 +30,9 @@ class Recorder
   RecorderOutput* getOutput() const;
   FlacFrameStorage* getStorage() const;
 
- private:
   nlohmann::json api(const nlohmann::json& msg);
+
+ private:
   nlohmann::json generateInfo() const;
   nlohmann::json prepareDownload(FrameId begin, FrameId end) const;
   nlohmann::json queryFrames(FrameId begin, FrameId end) const;

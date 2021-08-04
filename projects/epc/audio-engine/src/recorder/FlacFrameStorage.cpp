@@ -84,6 +84,11 @@ nlohmann::json FlacFrameStorage::generateInfo()
            { "last", m_frames.back()->generateInfo() } };
 }
 
+size_t FlacFrameStorage::getMemUsage() const
+{
+  return m_memUsage;
+}
+
 const FlacFrameStorage::Frames &FlacFrameStorage::getFrames() const
 {
   return m_frames;

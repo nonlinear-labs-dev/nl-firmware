@@ -39,6 +39,7 @@ class FlacFrameStorage
 
   StreamHandle startStream(FrameId begin, FrameId end);
   nlohmann::json generateInfo();
+  size_t getMemUsage() const;
 
   const Frames &getFrames() const;
 

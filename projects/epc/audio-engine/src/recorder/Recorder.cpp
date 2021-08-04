@@ -142,14 +142,17 @@ nlohmann::json Recorder::prepareDownload(FrameId begin, FrameId end) const
 
 nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
 {
-  constexpr std::chrono::nanoseconds frameLen(std::nano::den * FlacEncoder::flacFrameSize / 48000);
+  using namespace std::chrono;
+  using namespace std::chrono_literals;
+
+  constexpr nanoseconds frameLen(std::nano::den * FlacEncoder::flacFrameSize / 48000);
 
   auto ret = nlohmann::json::array();
   auto stream = m_storage->startStream(begin, end);
 
-  constexpr auto invalidTime = std::chrono::system_clock::time_point::min();
+  constexpr auto invalidTime = system_clock::time_point::min();
 
-  std::chrono::system_clock::time_point recordTimeOfLastFrame = invalidTime;
+  system_clock::time_point recordTimeOfLastFrame = invalidTime;
   uint8_t maxOfLastFrame = 0;
 
   auto cb = [&](const auto &f, auto isLast) {
@@ -160,7 +163,7 @@ nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
       if(f.max == maxOfLastFrame)
       {
         auto expectedTS = recordTimeOfLastFrame + frameLen;
-        auto diff = std::chrono::duration_cast<std::chrono::nanoseconds>(expectedTS - f.recordTime);
+        auto diff = duration_cast<nanoseconds>(expectedTS - f.recordTime);
         auto oneMS = 1000 * 1000;
         skipFrame = std::abs(diff.count()) < oneMS;
       }
@@ -173,8 +176,13 @@ nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
     maxOfLastFrame = f.max;
   };
 
+  auto start = steady_clock::now();
   while(stream->next(cb))
-    ;
+  {
+    auto diff = steady_clock::now() - start;
+    if(diff > 50ms)
+      break;
+  }
 
   return ret;
 }
