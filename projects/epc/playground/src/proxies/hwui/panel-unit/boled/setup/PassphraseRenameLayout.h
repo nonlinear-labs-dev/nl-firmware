@@ -13,4 +13,8 @@ class PassphraseRenameLayout : public RenameLayout
   Glib::ustring getInitialText() const override;
 
   static Passphrase* getSetting();
+  bool isTextApplicable(const Glib::ustring& text) const override;
+
+ private:
+  void onTextChanged(const Glib::ustring& text) override;
 };

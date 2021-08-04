@@ -19,6 +19,8 @@ class Passphrase : public Setting
   void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
 
+  static bool isValidPassword(const Glib::ustring& newPassword);
+
  private:
   Glib::ustring m_password = "88888888";
   const std::shared_ptr<EpcWifi> m_localWifi;

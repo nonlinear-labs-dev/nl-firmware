@@ -52,6 +52,7 @@ public class DeviceSettings {
 	public PresetGlitchSuppression presetGlitchSuppression = new PresetGlitchSuppression();
 	public EditSmoothingTime editSmoothingTime = new EditSmoothingTime();
 	public String deviceName = "";
+	public String passphrase = "";
 	public HighlightChanged highlightChangedParameters = new HighlightChanged();
 	public SyncPartsAcrossUI syncParts = new SyncPartsAcrossUI();
 

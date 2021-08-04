@@ -24,6 +24,15 @@ Glib::ustring Passphrase::save() const
   return m_password;
 }
 
+bool Passphrase::isValidPassword(const Glib::ustring& newPassword)
+{
+  if(newPassword.length() >= 8 && newPassword.length() <= 16)
+  {
+    return newPassword.is_ascii();
+  }
+  return false;
+}
+
 void Passphrase::dice()
 {
   static const std::string dict = "abcdefghkmnpqrstuvwxyzABCDEFGHKMNPQRSTUVWXYZ123456789";
@@ -43,15 +52,21 @@ void Passphrase::resetToDefault()
 
 void Passphrase::updatePassword(const Glib::ustring& password)
 {
-  m_password = password;
+  if(isValidPassword(password))
+  {
+    if(m_password != password)
+    {
+      m_password = password;
 
-  auto shortened = m_password.size() <= 8 ? m_password : m_password.substr(0, 8);
-  auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(shortened);
-  nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
+      auto shortened = m_password.size() <= 8 ? m_password : m_password.substr(0, 8);
+      auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(shortened);
+      nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
 
-  m_localWifi->setNewPassphrase(m_password);
+      m_localWifi->setNewPassphrase(m_password);
 
-  notify();
+      notify();
+    }
+  }
 }
 
 Glib::ustring Passphrase::getDisplayString() const
