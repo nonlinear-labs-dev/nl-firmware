@@ -117,23 +117,18 @@ nlohmann::json Recorder::prepareDownload(FrameId begin, FrameId end) const
 {
   nlohmann::json ret;
 
+  auto numFrames = end - begin + 1;
+  size_t numFlacBytes = 0;
+  size_t numWaveBytes = 44 + numFrames * (FlacEncoder::flacFrameSize * 3 * 2);
+
   auto stream = m_storage->startStream(begin, end);
 
   stream->getFirstAndLast([&](const auto &first, const auto &last) {
     ret["range"] = { { "from", first.recordTime.time_since_epoch().count() },
                      { "to", last.recordTime.time_since_epoch().count() } };
+
+    numFlacBytes = last.summedUpFlacMemUsage - first.summedUpFlacMemUsage + first.buffer.size();
   });
-
-  size_t numFlacBytes = 0;
-  size_t numWaveBytes = 44;
-
-  auto onFrame = [&](auto &frame, auto isLast) {
-    numFlacBytes += frame.getMemUsage();
-    numWaveBytes += FlacEncoder::flacFrameSize * 3 * 2;  // 24 bit
-  };
-
-  while(stream->next(onFrame))
-    ;
 
   ret["flac"] = { { "size", numFlacBytes } };
   ret["wave"] = { { "size", numWaveBytes } };
