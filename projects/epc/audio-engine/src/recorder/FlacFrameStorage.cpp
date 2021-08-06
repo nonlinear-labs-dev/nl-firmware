@@ -22,6 +22,9 @@ void FlacFrameStorage::push(std::unique_ptr<FlacEncoder::Frame> frame, bool isHe
                   m_streams.end());
 
   m_memUsage += frame->getMemUsage();
+
+  uint64_t summedUpFlacMemUsageBefore = m_frames.empty() ? 0 : m_frames.back()->summedUpFlacMemUsage;
+  frame->summedUpFlacMemUsage = summedUpFlacMemUsageBefore + frame->buffer.size();
   m_frames.push_back(std::move(frame));
 
   while(m_memUsage > m_maxMemUsage)
@@ -59,8 +62,8 @@ FlacFrameStorage::StreamHandle FlacFrameStorage::startStream(FrameId begin, Fram
     }
   };
 
-  auto beginIt = std::lower_bound(m_frames.begin(), m_frames.end(), begin, Cmp {});
-  auto endIt = std::upper_bound(m_frames.begin(), m_frames.end(), end, Cmp {});
+  auto beginIt = std::lower_bound(m_frames.begin(), m_frames.end(), begin, Cmp{});
+  auto endIt = std::upper_bound(m_frames.begin(), m_frames.end(), end, Cmp{});
 
   if(end <= begin)
     endIt = beginIt;
@@ -82,6 +85,11 @@ nlohmann::json FlacFrameStorage::generateInfo()
   return { { "memUsage", memUsage },
            { "first", m_frames.front()->generateInfo() },
            { "last", m_frames.back()->generateInfo() } };
+}
+
+size_t FlacFrameStorage::getMemUsage() const
+{
+  return m_memUsage;
 }
 
 const FlacFrameStorage::Frames &FlacFrameStorage::getFrames() const

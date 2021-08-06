@@ -8,10 +8,10 @@ static std::chrono::nanoseconds framesToNanos(size_t frames)
 
 FlacEncoder::Frame::Frame(const FLAC__byte *buffer, size_t bytes, Sample max,
                           std::chrono::system_clock::time_point timestamp)
-    : buffer { buffer, buffer + bytes }
+    : buffer{ buffer, buffer + bytes }
     , recordTime(timestamp)
     , id(getNextId())
-    , max(std::min(max, 1.0f) * std::numeric_limits<decltype(this->max)>::max())
+    , max(static_cast<uint8_t>(std::min(max, 1.0f) * std::numeric_limits<uint8_t>::max()))
 {
 }
 
@@ -31,7 +31,7 @@ nlohmann::json FlacEncoder::Frame::generateInfo() const
   return { { "id", id }, { "max", max }, { "recordTime", recordTime.time_since_epoch().count() } };
 }
 
-FlacEncoder::FlacEncoder(int sr, CB cb)
+FlacEncoder::FlacEncoder(uint32_t sr, CB cb)
     : m_encoder(FLAC__stream_encoder_new())
     , m_cb(cb)
     , m_resumedAt(std::chrono::system_clock::now())
@@ -76,7 +76,7 @@ void FlacEncoder::push(const SampleFrame *frames, size_t numFrames)
   auto minmax = std::minmax_element(in, in + numSamples);
   m_currentMax = std::max({ std::abs(*minmax.first), std::abs(*minmax.second), m_currentMax });
   std::transform(in, in + numSamples, scratchFlac, [](auto i) { return static_cast<FLAC__int32>(i * mul); });
-  FLAC__stream_encoder_process_interleaved(m_encoder, scratchFlac, numFrames);
+  FLAC__stream_encoder_process_interleaved(m_encoder, scratchFlac, static_cast<uint32_t>(numFrames));
 }
 
 void FlacEncoder::resume()
