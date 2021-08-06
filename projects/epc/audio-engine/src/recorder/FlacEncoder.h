@@ -24,13 +24,14 @@ class FlacEncoder
     std::vector<FLAC__byte> buffer;
 
     std::chrono::system_clock::time_point recordTime;
-    uint8_t max;
     uint64_t id;
+    uint8_t max;
+    uint64_t summedUpFlacMemUsage = 0;
   };
 
   using CB = std::function<void(std::unique_ptr<Frame>, bool isHeader)>;
 
-  FlacEncoder(int sr, CB cb);
+  FlacEncoder(uint32_t sr, CB cb);
   ~FlacEncoder();
 
   void push(const SampleFrame *frames, size_t numFrames);

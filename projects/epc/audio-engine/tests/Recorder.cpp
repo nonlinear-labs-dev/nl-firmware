@@ -13,8 +13,9 @@
 #include <thread>
 #include <recorder/Bitstream.h>
 #include <recorder/FlacEncoder.h>
+#include <nltools/logging/Log.h>
 
-TEST_CASE("FlacDecoder")
+TEST_CASE("Recorder FlacDecoder")
 {
   FlacFrameStorage storage(100000);
   FlacEncoder enc(48000, [&](auto frame, auto header) { storage.push(std::move(frame), header); });
@@ -43,7 +44,7 @@ TEST_CASE("FlacDecoder")
   REQUIRE(out[3].left == Approx(0.125f));
 }
 
-TEST_CASE("FlacDecoder In=Out")
+TEST_CASE("Recorder FlacDecoder In=Out")
 {
   auto numFrames = 4096;
 
@@ -163,7 +164,7 @@ TEST_CASE("Recorder InOut")
   }
 }
 
-TEST_CASE("Bitstream")
+TEST_CASE("Recorder Bitstream")
 {
   auto numBytes = 2000;
   std::vector<uint8_t> buffer(numBytes);
@@ -185,7 +186,7 @@ TEST_CASE("Bitstream")
   REQUIRE(reader.read(readerPos, 7) == 100);
 }
 
-TEST_CASE("Bitstream on FlacHeader")
+TEST_CASE("Recorder Bitstream on FlacHeader")
 {
   // audacity egnerated header
   std::vector<uint8_t> flacHeader
@@ -237,7 +238,7 @@ TEST_CASE("Bitstream on FlacHeader")
   REQUIRE(check.read(pos, 36) == 1234567890);  // numFrames
 }
 
-TEST_CASE("Bitstream utf8 numbers reading")
+TEST_CASE("Recorder Bitstream utf8 numbers reading")
 {
   uint64_t expectedFrameNumber = 0;
   FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
@@ -257,7 +258,7 @@ TEST_CASE("Bitstream utf8 numbers reading")
     encoder.push(v, 48000);
 }
 
-TEST_CASE("Bitstream utf8 numbers writing")
+TEST_CASE("Recorder Bitstream utf8 numbers writing")
 {
   auto numBytes = 8;
   std::vector<uint8_t> buffer(numBytes);
@@ -279,7 +280,7 @@ TEST_CASE("Bitstream utf8 numbers writing")
   }
 }
 
-TEST_CASE("CRC8")
+TEST_CASE("Recorder CRC8")
 {
   FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
     if(isHeader)
@@ -314,7 +315,7 @@ TEST_CASE("CRC8")
     encoder.push(v, 48000);
 }
 
-TEST_CASE("CRC16")
+TEST_CASE("Recorder CRC16")
 {
   FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
     if(isHeader)
@@ -331,4 +332,29 @@ TEST_CASE("CRC16")
 
   for(int i = 0; i < 100; i++)
     encoder.push(v, 48000);
+}
+
+TEST_CASE("Recorder API should not stall")
+{
+  Recorder r(48000);
+  r.getInput()->setPaused(false);
+
+  SampleFrame v[48000];
+  for(auto &frame : v)
+  {
+    frame.left = g_random_double_range(-1, 1);
+    frame.right = g_random_double_range(-1, 1);
+  }
+
+  while(r.getStorage()->getMemUsage() < 250 * 1024 * 1024)
+    r.process(v, 48000);
+
+  auto start = std::chrono::steady_clock::now();
+  auto info = r.api({ { "get-info", {} } });
+  auto firstFrame = info.at("storage").at("first").at("id");
+  auto lastFrame = info.at("storage").at("last").at("id");
+  auto res = r.api({ { "query-frames", { { "begin", firstFrame }, { "end", lastFrame } } } });
+  auto end = std::chrono::steady_clock::now();
+  auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  REQUIRE(diff < 100);
 }

@@ -99,7 +99,7 @@ class Bars {
 
     removeUntil(id: number): boolean {
         var ret = false;
-        while (!this.empty() && this.firstId <= id) {
+        while (!this.empty() && this.firstId < id) {
             this.remove();
             ret = true;
         }
