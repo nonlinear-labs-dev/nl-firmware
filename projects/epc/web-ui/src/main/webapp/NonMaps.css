@@ -39,10 +39,6 @@ h1 {
   color: #000000;
 }
 
-.dc-dialog {
-  z-index: 3;
-}
-
 .sendButton {
   display: block;
   font-size: 18pt;
@@ -511,7 +507,6 @@ select {
   background-color: #000;
   opacity: 0.3;
   filter: alpha(opacity=30);
-  z-index: 2;
 }
 
 .gwt-PushButton-up,
@@ -1337,7 +1332,7 @@ canvas {
 
 #search {
   position: absolute;
-  z-index: 0;
+  z-index: 1000;
   display: none;
 }
 
@@ -1404,7 +1399,7 @@ textarea {
 }
 
 .modal-dialog {
-  z-index: 4;
+  z-index: 2147483647;
 }
 
 .clear-search-button {
@@ -1435,7 +1430,7 @@ textarea {
 }
 
 .rename-dialog {
-  z-index: 1;
+  z-index: 100000;
 }
 
 .dialog-header {
@@ -1836,7 +1831,6 @@ button {
 
 .setup-dialog {
 	width: auto;
-  z-index: 2 !important;
 }
 
 .selectable-text {
