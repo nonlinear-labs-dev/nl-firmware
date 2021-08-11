@@ -6,8 +6,9 @@
 #include "tools/PerformanceTimer.h"
 #include <giomm/file.h>
 
-Serializer::Serializer(const Glib::ustring &tagName)
+Serializer::Serializer(const Glib::ustring &tagName, Progress progressCB)
     : m_tagName(tagName)
+    , m_progressCB(progressCB)
 {
 }
 
@@ -35,6 +36,17 @@ void Serializer::read(Reader &reader) const
   reader.preProcess();
   readProlog(reader);
   readTagContent(reader);
+}
+
+Serializer::Progress Serializer::getProgressCB() const
+{
+  return m_progressCB;
+}
+
+void Serializer::addStatus(const std::string &str) const
+{
+  if(m_progressCB)
+    m_progressCB(str);
 }
 
 void Serializer::readProlog(Reader &reader) const

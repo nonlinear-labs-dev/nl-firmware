@@ -1277,4 +1277,31 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
     }
+
+	public void dicePassphrase()
+	{
+		StaticURI.Path path = new StaticURI.Path("settings", "dice-passphrase");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, true);
+	}
+
+	public void defaultPassphrase()
+	{
+		StaticURI.Path path = new StaticURI.Path("settings", "default-passphrase");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, true);
+	}
+
+	public void isPassphraseValid(String newPassphrase, Consumer<Boolean> cb) {
+		downloadFile("/settings/is-valid-passphrase?text=" + URL.encodeQueryString(newPassphrase), new DownloadHandler() {
+			@Override
+			public void onFileDownloaded(String text) {
+				cb.accept(text == "1");
+			}
+
+			@Override
+			public void onError() {
+			}
+		});
+	}
 }

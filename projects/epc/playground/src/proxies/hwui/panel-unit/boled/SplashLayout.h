@@ -13,6 +13,8 @@ class SplashLayout : public InfoLayout
   SplashLayout();
   ~SplashLayout() override;
 
+  static void start();
+  static void finish();
   static void setStatus(const std::string &msg);
   static void addStatus(const std::string &msg);
 

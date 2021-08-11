@@ -223,7 +223,7 @@ void BankUseCases::exportBankToFile(const std::string& outFile)
   auto scope = UNDO::Scope::startTrashTransaction();
   m_bank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
   m_bank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
-  PresetBankSerializer serializer(m_bank, false);
+  PresetBankSerializer serializer(m_bank, {}, false);
   FileOutStream stream(outFile, false);
   XmlWriter writer(stream);
   serializer.write(writer, VersionAttribute::get());

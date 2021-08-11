@@ -18,7 +18,7 @@ class Oleds
   static Oleds &get();
 
   void registerProxy(OLEDProxy *proxy);
-  void syncRedraw();
+  void syncRedraw(bool force = false);
   void setDirty();
   [[nodiscard]] bool isDirty() const;
 

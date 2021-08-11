@@ -19,7 +19,7 @@
 Preset::Preset(UpdateDocumentContributor *parent)
     : super(parent)
     , m_name("New Preset")
-    , m_voiceGroupLabels{ { "", "" } }
+    , m_voiceGroupLabels { { "", "" } }
 {
 }
 
@@ -27,7 +27,7 @@ Preset::Preset(UpdateDocumentContributor *parent, const Preset &other, bool igno
     : super(parent, other)
     , m_uuid(ignoreUuids ? Uuid() : other.m_uuid)
     , m_name(other.m_name)
-    , m_voiceGroupLabels{ other.m_voiceGroupLabels }
+    , m_voiceGroupLabels { other.m_voiceGroupLabels }
 {
 }
 
@@ -65,7 +65,7 @@ bool Preset::save(const Glib::RefPtr<Gio::File> &bankPath)
 {
   if(m_lastSavedUpdateID != getUpdateIDOfLastChange())
   {
-    PresetSerializer serializer(this);
+    PresetSerializer serializer(this, {});
     auto strUUID = getUuid().raw();
     serializer.write(bankPath, strUUID);
     m_lastSavedUpdateID = getUpdateIDOfLastChange();

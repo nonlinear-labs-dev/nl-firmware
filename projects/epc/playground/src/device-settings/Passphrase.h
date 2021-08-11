@@ -14,12 +14,17 @@ class Passphrase : public Setting
   Glib::ustring getDisplayString() const override;
 
   void dice();
+  void updatePassword(const Glib::ustring& password);
   void resetToDefault();
   void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
 
+  static bool isValidPassword(const Glib::ustring& newPassword);
+
+  constexpr static auto getMaxPasswordLength();
+  constexpr static auto getMinPasswordLength();
+
  private:
-  void updatePassword(const Glib::ustring& password);
-  Glib::ustring m_password;
+  Glib::ustring m_password = "88888888";
   const std::shared_ptr<EpcWifi> m_localWifi;
 };

@@ -7,15 +7,14 @@
 #include "xml/Writer.h"
 #include "PresetParameterGroupsSerializer.h"
 #include "ParameterGroupSerializer.h"
-#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include "serialization/RecallEditBufferSerializer.h"
 #include "VoiceGroupsLockSerializer.h"
 #include "SplitGroupsFromOldGlobalGroupSerializer.h"
 #include <groups/ParameterGroup.h>
 #include <nltools/logging/Log.h>
 
-EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer)
-    : Serializer(getTagName())
+EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer, Progress progress)
+    : Serializer(getTagName(), progress)
     , m_editBuffer(editBuffer)
 {
 }
@@ -31,7 +30,7 @@ Glib::ustring EditBufferSerializer::getTagName()
 
 void EditBufferSerializer::writeTagContent(Writer &writer) const
 {
-  SplashLayout::addStatus("Writing Edit Buffer");
+  addStatus("Writing Edit Buffer");
 
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
@@ -65,7 +64,7 @@ bool isOldSplitGroup(const GroupId &id)
 
 void EditBufferSerializer::readTagContent(Reader &reader) const
 {
-  SplashLayout::addStatus("Reading Edit Buffer");
+  addStatus("Reading Edit Buffer");
 
   reader.onTextElement("editbuffer-type", [&](auto text, auto) mutable {
     m_editBuffer->undoableSetType(reader.getTransaction(), to<SoundType>(text));

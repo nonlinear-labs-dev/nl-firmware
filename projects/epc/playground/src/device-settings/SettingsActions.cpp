@@ -11,6 +11,8 @@
 #include <use-cases/DirectLoadUseCases.h>
 #include <presets/PresetManager.h>
 #include <nltools/messaging/Message.h>
+#include <device-settings/Passphrase.h>
+#include <http/HTTPRequest.h>
 
 SettingsActions::SettingsActions(Settings &settings)
     : super("/settings/")
@@ -19,18 +21,10 @@ SettingsActions::SettingsActions(Settings &settings)
     Glib::ustring key = request->get("key");
     Glib::ustring value = request->get("value");
 
-    DebugLevel::warning("Setting: ", key, " changed to: ", value);
-
-    if(key == "SyncSplit")
+    if(Application::exists() && !key.empty())
     {
-      auto useCases = SyncSplitSettingUseCases::get();
-      useCases.updateFromWebUI(value);
-      return;
-    }
-
-    if(auto s = settings.getSetting(key))
-    {
-      s->setSetting(Initiator::EXPLICIT_WEBUI, value);
+      SettingsUseCases useCases(Application::get().getSettings());
+      useCases.setSettingFromWebUI(key, value);
     }
   });
 
@@ -123,6 +117,34 @@ SettingsActions::SettingsActions(Settings &settings)
   addAction("enable-bbb-wifi-for-epc2", [](auto) {
     nltools::msg::Setting::EnableBBBWifiFromDevSettings msg{};
     nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
+  });
+
+  addAction("is-valid-passphrase", [](auto request) {
+    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
+    {
+      auto passphrase = http->get("text");
+      if(!passphrase.empty())
+      {
+        auto val = Passphrase::isValidPassword(passphrase);
+        http->setStatusOK();
+        http->respond(val ? "1" : "0");
+        http->okAndComplete();
+      }
+    }
+  });
+
+  addAction("dice-passphrase", [](auto) {
+      if(Application::exists()) {
+        SettingsUseCases useCases(Application::get().getSettings());
+        useCases.dicePassphrase();
+      }
+  });
+
+  addAction("default-passphrase", [](auto) {
+    if(Application::exists()) {
+      SettingsUseCases useCases(Application::get().getSettings());
+      useCases.defaultPassphrase();
+    }
   });
 }
 

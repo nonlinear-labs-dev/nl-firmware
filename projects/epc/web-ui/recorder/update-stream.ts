@@ -56,53 +56,111 @@ class MockUpdateStream {
     private time = new Date().getTime() * 1000 * 1000;
 }
 
+class Expiration {
+    constructor(handler: (() => void) | null, ms: number) {
+        this.renew(handler, ms);
+    }
+
+    renew(handler: (() => void) | null, ms: number) {
+        this.cancel();
+        if (handler)
+            this.timer = setTimeout(handler, ms);
+    }
+
+    cancel() {
+        if (this.timer != -1)
+            clearTimeout(this.timer);
+    }
+
+    private timer = -1;
+}
+
+class WebSocketAPI {
+    constructor(private onError: (showBanner: boolean) => void, onOpen: () => void) {
+        this.socket = new WebSocket("ws://" + hostName + wsPort);
+        this.socket.onopen = (event) => onOpen();
+        this.socket.onerror = (event) => onError(true);
+        this.socket.onclose = (event) => onError(true);
+        this.socket.onmessage = (event) => this.readMessage(event.data);
+    }
+
+    doRPC(rpc: any, handler: (e: JSON) => void): void {
+        if (this.handler) {
+            console.log("rpc while in flight!" + handler + this.handler);
+            return;
+        }
+
+        try {
+            this.socket!.send(JSON.stringify(rpc));
+            this.handler = handler;
+        }
+        catch (err) {
+            this.onError(true);
+        }
+    }
+
+    close() {
+        this.socket.onopen = null;
+        this.socket.onerror = null;
+        this.socket.onclose = null;
+        this.socket.onmessage = null;
+        this.socket.close();
+        this.handler = null;
+    }
+
+    private readMessage(data: any): void {
+        var reader = new FileReader()
+        reader.onload = () => {
+            var h = this.handler;
+            this.handler = null;
+
+            if (h)
+                h(JSON.parse(reader.result as string));
+        }
+
+        reader.onerror = () => this.onError(false);
+        reader.readAsText(data);
+    }
+
+    private socket: WebSocket;
+    private handler: ((e: JSON) => void) | null = null;
+}
+
 class UpdateStream {
     constructor(private c15: C15ProxyIface) {
+        this.c15.setConnectionState(ConnectionState.Disconnected);
         this.connect();
     }
 
     private connect() {
         console.log("connect");
         this.bars.clear();
-        this.c15.setConnectionState(ConnectionState.Disconnected);
-        this.socket = new WebSocket("ws://" + hostName + wsPort);
-        this.socket.onopen = (event) => this.update();
-        this.socket.onerror = (event) => this.retry();
-        this.socket.onclose = (event) => this.retry();
-        this.socket.onmessage = (event) => this.readMessage(event.data);
+        this.socket = new WebSocketAPI((showBanner) => this.retry(showBanner), () => this.scheduleUpdate(true));
     }
 
     stop() {
-        this.close = true;
-        if (this.socket)
-            this.socket.close();
+        console.log("stop");
+        this.updateTimer.cancel();
+        this.socket!.close();
+        this.socket = null;
+    }
 
-        if (this.updateTimer != -1) {
-            clearTimeout(this.updateTimer);
-            this.updateTimer = -1;
-        }
+    private scheduleUpdate(fast: boolean) {
+        this.updateTimer.renew(() => this.update(), fast ? 1 : 200);
     }
 
     private update(): void {
-        this.messageHandler = (e) => this.processInfo(e);
         this.c15.setConnectionState(ConnectionState.Connected);
-
-        try {
-            this.socket!.send(JSON.stringify({ "get-info": {} }));
-        }
-        catch (err) {
-            this.retry();
-        }
+        this.socket!.doRPC({ 'get-info': {} }, (e) => this.processInfo(e));
     }
 
     private processInfo(info: any) {
-
         this.timingInfo.serverTime = info.time;
         this.timingInfo.localTime = Date.now() * 1000 * 1000;
 
         if (!info.storage) {
             this.c15.synced();
-            this.scheduleUpdate();
+            this.scheduleUpdate(false);
             return;
         }
 
@@ -120,24 +178,14 @@ class UpdateStream {
 
         if (info.storage.last.id - nextId < 1) {
             this.c15.synced();
-            this.scheduleUpdate();
+            this.scheduleUpdate(false);
             return;
         }
 
-        this.messageHandler = (e) => this.processQuery(e);
-        this.socket!.send(JSON.stringify({ "query-frames": { "begin": nextId, "end": info.storage.last.id } }));
+        this.socket!.doRPC({ 'query-frames': { 'begin': nextId, 'end': info.storage.last.id } }, (e) => this.processQuery(e, info.storage.last.id));
     }
 
-    private scheduleUpdate() {
-        if (this.updateTimer == -1 && !this.close) {
-            this.updateTimer = setTimeout(() => {
-                this.updateTimer = -1;
-                this.update();
-            }, 200);
-        }
-    }
-
-    private processQuery(info: any) {
+    private processQuery(info: any, expectedLastId: number) {
         info.forEach((a: Bar) => {
             this.bars.add(a);
             this.updateWaveform = true;
@@ -148,34 +196,26 @@ class UpdateStream {
             this.c15.synced();
         }
 
-        this.scheduleUpdate();
+        var fast = expectedLastId != this.bars.last().id;
+        this.scheduleUpdate(fast);
     }
 
-    private retry(): void {
-        if (this.retryTimer == -1 && !this.close) {
+    private retry(showDisconnected: boolean): void {
+        console.log("retry");
+
+        if (showDisconnected)
             this.c15.setConnectionState(ConnectionState.Disconnected);
-            this.retryTimer = setTimeout(() => {
-                this.retryTimer = -1;
-                this.connect();
-            }, 200);
-        }
-    }
 
-    private readMessage(data: any): void {
-        var reader = new FileReader()
-        reader.onload = () => {
-            this.messageHandler!(JSON.parse(reader.result as string));
-        }
-        reader.readAsText(data);
+        this.stop();
+        this.retryTimer.renew(() => this.connect(), 1000);
     }
 
     bars: Bars = new Bars(singleBarLength);
     timingInfo: TimingInfo = new TimingInfo();
 
-    private socket: WebSocket | null = null;
-    private messageHandler: ((e: any) => void) | null = null;
     private updateWaveform = false;
-    private retryTimer = -1;
-    private updateTimer = -1;
-    private close = false;
+    private socket: WebSocketAPI | null = null;
+
+    private updateTimer = new Expiration(null, 0);
+    private retryTimer = new Expiration(null, 0);
 }

@@ -12,9 +12,7 @@ PresetSerializer::PresetSerializer(Preset *preset, bool ignoreUUIDs)
 {
 }
 
-PresetSerializer::~PresetSerializer()
-{
-}
+PresetSerializer::~PresetSerializer() = default;
 
 Glib::ustring PresetSerializer::getTagName()
 {

@@ -25,7 +25,6 @@
 #include <device-settings/Settings.h>
 
 #include <proxies/hwui/HWUI.h>
-
 #include <Application.h>
 
 BankActions::BankActions(PresetManager &presetManager)
@@ -507,7 +506,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
       {
         MemoryOutStream stream;
         XmlWriter writer(stream);
-        PresetBankSerializer serializer(bank);
+        PresetBankSerializer serializer(bank, {});
         serializer.write(writer, VersionAttribute::get());
         auto disposition = "attachment; filename=\"" + bank->getName(true) + ".xml\"";
         httpRequest->respondComplete(SOUP_STATUS_OK, "text/xml", { { "Content-Disposition", disposition } },
@@ -576,7 +575,7 @@ Bank *BankActions::importBank(UNDO::Transaction *transaction, InStream &stream, 
   auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
 
   XmlReader reader(stream, transaction);
-  reader.read<PresetBankSerializer>(newBank, true);
+  reader.read<PresetBankSerializer>(newBank, Serializer::Progress {}, true);
 
   newBank->setAttachedToBank(transaction, Uuid::none());
   newBank->setAttachedDirection(transaction, to_string(Bank::AttachmentDirection::none));

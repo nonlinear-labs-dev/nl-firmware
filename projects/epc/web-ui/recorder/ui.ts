@@ -134,7 +134,6 @@ class UI {
 
             var def = document.getElementById(this.defaultDownloadOption) as HTMLButtonElement;
             def.focus();
-
         });
     }
 

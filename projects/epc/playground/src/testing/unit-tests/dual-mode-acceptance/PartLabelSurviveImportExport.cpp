@@ -45,7 +45,7 @@ TEST_CASE("Export/Import Presets With Part Names", "[Preset][Store][Export][Impo
       auto oldBankName = bank->getName(false);
 
       {
-        PresetBankSerializer serializer(bank, false);
+        PresetBankSerializer serializer(bank, {}, false);
         FileOutStream stream("/tmp/testbank.xml", false);
         XmlWriter writer(stream);
         serializer.write(writer, VersionAttribute::get());

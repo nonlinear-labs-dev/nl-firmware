@@ -43,7 +43,7 @@ class PresetDualParameterGroups : public AttributesOwner
   {
     for(auto& g : m_parameterGroups[static_cast<int>(VG)])
       for(auto& p : g.second->getParameters())
-        cb(p.second.get());
+        cb(p.get());
   }
 
   void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction* transaction, std::optional<std::set<GroupId> > whiteList);

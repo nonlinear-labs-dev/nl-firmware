@@ -3,7 +3,7 @@
 #include "AttributesOwner.h"
 #include "ParameterId.h"
 #include <memory>
-#include <unordered_map>
+#include <vector>
 
 class Preset;
 class ParameterGroup;
@@ -33,7 +33,7 @@ class PresetParameterGroup
   void copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other);
   void assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg);
 
-  [[nodiscard]] const std::map<ParameterId, ParameterPtr> &getParameters() const
+  [[nodiscard]] const std::vector<ParameterPtr> &getParameters() const
   {
     return m_parameters;
   }
@@ -43,8 +43,8 @@ class PresetParameterGroup
   // algorithm
   void writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const;
 
- protected:
-  std::map<ParameterId, ParameterPtr> m_parameters;
+ private:
+  std::vector<ParameterPtr> m_parameters;
   VoiceGroup m_voiceGroup;
 
   friend class PresetParameterGroupSerializer;

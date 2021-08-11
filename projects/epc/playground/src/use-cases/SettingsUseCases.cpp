@@ -9,6 +9,8 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <nltools/messaging/Message.h>
+#include <device-settings/Passphrase.h>
+#include <device-settings/SyncSplitSettingUseCases.h>
 
 SettingsUseCases::SettingsUseCases(Settings *s)
     : m_settings { s }
@@ -97,5 +99,36 @@ void SettingsUseCases::setGlobalLocal(bool state)
   if(auto s = m_settings->getSetting<GlobalLocalEnableSetting>())
   {
     s->set(state ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE);
+  }
+}
+
+void SettingsUseCases::dicePassphrase()
+{
+  if(auto passwd = m_settings->getSetting<Passphrase>())
+  {
+    passwd->dice();
+  }
+}
+
+void SettingsUseCases::defaultPassphrase()
+{
+  if(auto passwd = m_settings->getSetting<Passphrase>())
+  {
+    passwd->resetToDefault();
+  }
+}
+
+void SettingsUseCases::setSettingFromWebUI(const Glib::ustring &key, const Glib::ustring& value)
+{
+  if(key == "SyncSplit")
+  {
+    auto useCases = SyncSplitSettingUseCases::get();
+    useCases.updateFromWebUI(value);
+    return;
+  }
+
+  if(auto s = m_settings->getSetting(key))
+  {
+    s->setSetting(Initiator::EXPLICIT_WEBUI, value);
   }
 }

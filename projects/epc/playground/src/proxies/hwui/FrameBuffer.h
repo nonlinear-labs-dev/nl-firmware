@@ -94,7 +94,7 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
 
   const std::vector<tPixel> &getBackBuffer() const;
 
-  bool swapBuffers();
+  bool swapBuffers(bool force = false);
   bool isValidColor(Colors c) const;
 
  private:

@@ -76,7 +76,7 @@ void ExportBackupEditor::writeBackupToStream(OutStream &stream)
 {
   XmlWriter writer(stream);
   auto pm = Application::get().getPresetManager();
-  PresetManagerSerializer serializer(pm);
+  PresetManagerSerializer serializer(pm, SplashLayout::addStatus);
   serializer.write(writer, VersionAttribute::get());
 }
 
@@ -112,12 +112,10 @@ void ExportBackupEditor::exportBanks()
 
 void ExportBackupEditor::writeBackupFileXML()
 {
-  auto &app = Application::get();
-  auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
-  boled.setOverlay(new SplashLayout());
+  SplashLayout::start();
   FileOutStream stream(c_tempBackupFile, true);
   writeBackupToStream(stream);
-  boled.resetOverlay();
+  SplashLayout::finish();
 }
 
 bool ExportBackupEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)

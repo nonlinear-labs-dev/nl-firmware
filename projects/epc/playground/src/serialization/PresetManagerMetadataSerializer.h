@@ -10,7 +10,7 @@ class PresetManagerMetadataSerializer : public Serializer
   typedef Serializer super;
 
  public:
-  explicit PresetManagerMetadataSerializer(PresetManager *pm);
+  explicit PresetManagerMetadataSerializer(PresetManager *pm, Progress progress);
 
   static Glib::ustring getTagName();
 

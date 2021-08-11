@@ -17,6 +17,18 @@ namespace nltools
       Silent
     };
 
+    struct MemUsageLogger
+    {
+      MemUsageLogger(Level l, const char *loc);
+      ~MemUsageLogger();
+
+      int64_t getUsage() const;
+
+      Level level;
+      const char *loc;
+      int64_t begin;
+    };
+
     static void setLevel(Level l)
     {
       s_level = l;
@@ -34,6 +46,9 @@ namespace nltools
       InsertSpaces,
       InsertSpacesAndAppendNewLine
     };
+
+    static void memUsage(Level l, const char *location);
+    static void memUsage(Level l, const char *location, size_t bytes);
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
     static void debug(const Args &... args)

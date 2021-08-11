@@ -248,5 +248,10 @@ public class SystemSettings {
 
     public void resetRoutings(boolean b) {
 		NonMaps.theMaps.getServerProxy().resetRoutings(b);
+	}
+
+	public void setPassphrase(String value) {
+		SetupModel.get().systemSettings.passPhrase.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Passphrase", value);
     }
 }

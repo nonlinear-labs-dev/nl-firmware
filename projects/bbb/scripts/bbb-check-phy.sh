@@ -9,7 +9,7 @@
 # and avoid a infinite loop
 
 REBOOTCOUNT=0
-TIMEOUT=3
+TIMEOUT=5
 
 check_state_loop_hard() {
 
