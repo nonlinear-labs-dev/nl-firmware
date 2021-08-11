@@ -264,4 +264,9 @@ public class SystemSettings {
 	public void panic() {
 		NonMaps.theMaps.getServerProxy().triggerPanic();
 	}
+
+    public void setPassphrase(String value) {
+		SetupModel.get().systemSettings.passPhrase.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Passphrase", value);
+    }
 }

@@ -8,6 +8,8 @@
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/HardwareControlEnables.h>
 #include <nltools/messaging/Message.h>
+#include <device-settings/Passphrase.h>
+#include <device-settings/SyncSplitSettingUseCases.h>
 
 SettingsUseCases::SettingsUseCases(Settings *s)
     : m_settings { s }
@@ -81,4 +83,35 @@ void SettingsUseCases::panicAudioEngine()
   using namespace nltools::msg;
   PanicAudioEngine msg {};
   send<PanicAudioEngine>(EndPoint::AudioEngine, msg);
+}
+
+void SettingsUseCases::dicePassphrase()
+{
+  if(auto passwd = m_settings->getSetting<Passphrase>())
+  {
+    passwd->dice();
+  }
+}
+
+void SettingsUseCases::defaultPassphrase()
+{
+  if(auto passwd = m_settings->getSetting<Passphrase>())
+  {
+    passwd->resetToDefault();
+  }
+}
+
+void SettingsUseCases::setSettingFromWebUI(const Glib::ustring &key, const Glib::ustring& value)
+{
+  if(key == "SyncSplit")
+  {
+    auto useCases = SyncSplitSettingUseCases::get();
+    useCases.updateFromWebUI(value);
+    return;
+  }
+
+  if(auto s = m_settings->getSetting(key))
+  {
+    s->setSetting(Initiator::EXPLICIT_WEBUI, value);
+  }
 }

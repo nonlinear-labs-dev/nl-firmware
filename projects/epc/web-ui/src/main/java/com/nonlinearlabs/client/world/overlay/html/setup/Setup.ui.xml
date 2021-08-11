@@ -820,12 +820,30 @@
 						<div class="w40p">
 							<p>Device Name</p>
 						</div>
-						<div class="w40p">
+						<div class="w30p">
 							<g:TextArea ui:field="deviceName" styleName="editable w100p txt-oneline" visibleLines="1"></g:TextArea>
 						</div>
-						<div class="w5p"></div>
-						<div class="w15p fl-j-center">
+						<div class="w10p fl-j-left">
 							<g:Button ui:field="saveDeviceName" text="Save"></g:Button>
+						</div>
+						<div class="w20p fl-j-right"></div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w40p">
+							<p>Passphrase</p>
+						</div>
+						<div class="w30p">
+							<g:TextArea ui:field="passphrase" styleName="editable w100p txt-oneline" visibleLines="1"></g:TextArea>
+						</div>
+						<div class="w10p fl-j-left">
+							<g:Button ui:field="savePassphrase" text="Save"></g:Button>
+						</div>
+						<div class="w10p fl-j-right">
+							<g:Button ui:field="dicePassphrase" text="Dice"></g:Button>
+						</div>
+						<div class="w10p fl-j-right">
+							<g:Button ui:field="defaultPassphrase" text="Default"></g:Button>
 						</div>
 					</div>
 

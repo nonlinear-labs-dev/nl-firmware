@@ -170,6 +170,8 @@ namespace nltools
 
       struct SetWiFiPasswordMessage
       {
+        constexpr static auto maxSize = 16;
+
         constexpr static MessageType getType()
         {
           return MessageType::WiFiSetPassword;
@@ -184,7 +186,7 @@ namespace nltools
           m_password.set(password);
         }
 
-        Helper::StringWrapper<8> m_password;
+        Helper::StringWrapper<maxSize> m_password;
       };
 
       struct EnableWiFiMessage

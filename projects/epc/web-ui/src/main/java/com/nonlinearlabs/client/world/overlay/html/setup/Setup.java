@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.Bank;
@@ -111,10 +112,10 @@ public class Setup extends Composite {
 	InputElement editSmoothingTimeSlider;
 
 	@UiField
-	TextArea deviceName;
+	TextArea deviceName, passphrase;
 
 	@UiField
-	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE;
+	Button saveDeviceName, savePassphrase, dicePassphrase, defaultPassphrase, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -246,6 +247,14 @@ public class Setup extends Composite {
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
 	}
 
+	private void onPassphraseChanged(String text)
+	{
+		savePassphrase.setEnabled(false);
+		NonMaps.theMaps.getServerProxy().isPassphraseValid(text, v -> {
+			savePassphrase.setEnabled(v);
+		});
+	}
+
 	public void connectEventHandlers() {
 		SystemSettings settings = SystemSettings.get();
 		com.nonlinearlabs.client.useCases.LocalSettings locals = com.nonlinearlabs.client.useCases.LocalSettings.get();
@@ -307,7 +316,29 @@ public class Setup extends Composite {
 		pedal4Range.addValueChangeHandler(e -> EditBufferUseCases.get()
 				.setParameterValue(new ParameterId(269, VoiceGroup.Global), e.getValue().doubleValue(), true));
 
+		passphrase.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent e) {
+				String text = passphrase.getValue();
+				onPassphraseChanged(text);
+			}
+		});
+
+		passphrase.addValueChangeHandler(t -> {
+			onPassphraseChanged(t.getValue());
+		});
+
+		passphrase.addKeyUpHandler(t -> {
+			onPassphraseChanged(passphrase.getValue());
+		});
+
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
+		savePassphrase.addClickHandler(e -> {
+			settings.setPassphrase(passphrase.getValue());
+		});
+
+		dicePassphrase.addClickHandler(e -> NonMaps.theMaps.getServerProxy().dicePassphrase());
+		defaultPassphrase.addClickHandler(e -> NonMaps.theMaps.getServerProxy().defaultPassphrase());
 
 		highlightChangedOn.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.on));
 		highlightChangedOff.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.off));
@@ -511,6 +542,7 @@ public class Setup extends Composite {
 		syncPartsOff.setValue(!t.syncParts.value);
 
 		deviceName.setText(t.deviceName);
+		passphrase.setText(t.passphrase);
 
 		highlightChangedOn.setValue(t.highlightChangedParameters.value);
 		highlightChangedOff.setValue(!t.highlightChangedParameters.value);

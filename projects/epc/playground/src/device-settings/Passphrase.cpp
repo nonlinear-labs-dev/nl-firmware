@@ -13,12 +13,34 @@ Passphrase::~Passphrase() = default;
 
 void Passphrase::load(const Glib::ustring& password, Initiator initiator)
 {
-  updatePassword(password);
+  if(!password.empty())
+  {
+    updatePassword(password);
+  }
 }
 
 Glib::ustring Passphrase::save() const
 {
   return m_password;
+}
+
+constexpr auto Passphrase::getMinPasswordLength()
+{
+  return 8;
+}
+
+constexpr auto Passphrase::getMaxPasswordLength()
+{
+  return nltools::msg::WiFi::SetWiFiPasswordMessage::maxSize;
+}
+
+bool Passphrase::isValidPassword(const Glib::ustring& newPassword)
+{
+  if(newPassword.length() >= 8 && newPassword.length() <= getMaxPasswordLength())
+  {
+    return newPassword.is_ascii();
+  }
+  return false;
 }
 
 void Passphrase::dice()
@@ -40,15 +62,22 @@ void Passphrase::resetToDefault()
 
 void Passphrase::updatePassword(const Glib::ustring& password)
 {
-  m_password = password;
+  if(isValidPassword(password))
+  {
+    if(m_password != password)
+    {
+      m_password = password;
 
-  auto shortened = m_password.size() <= 8 ? m_password : m_password.substr(0, 8);
-  auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(shortened);
-  nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
+      const auto maxLen = getMaxPasswordLength();
+      auto shortened = m_password.size() <= maxLen ? m_password : m_password.substr(0, maxLen);
+      auto passwordMsg = nltools::msg::WiFi::SetWiFiPasswordMessage(shortened);
+      nltools::msg::send(nltools::msg::EndPoint::BeagleBone, passwordMsg);
 
-  m_localWifi->setNewPassphrase(m_password);
+      m_localWifi->setNewPassphrase(m_password);
 
-  notify();
+      notify();
+    }
+  }
 }
 
 Glib::ustring Passphrase::getDisplayString() const

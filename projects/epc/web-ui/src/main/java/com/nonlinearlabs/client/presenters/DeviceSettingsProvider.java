@@ -99,6 +99,12 @@ public class DeviceSettingsProvider {
 			return true;
 		});
 
+		SetupModel.get().systemSettings.passPhrase.onChange(t -> {
+			settings.passphrase = t;
+			notifyClients();
+			return true;
+		});
+
 		SetupModel.get().systemSettings.highlightChangedParameters.onChange(t -> {
 			settings.highlightChangedParameters.value = t == BooleanValues.on;
 			notifyClients();
