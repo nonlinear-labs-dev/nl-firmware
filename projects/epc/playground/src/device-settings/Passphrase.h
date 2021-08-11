@@ -21,6 +21,9 @@ class Passphrase : public Setting
 
   static bool isValidPassword(const Glib::ustring& newPassword);
 
+  constexpr static auto getMaxPasswordLength();
+  constexpr static auto getMinPasswordLength();
+
  private:
   Glib::ustring m_password = "88888888";
   const std::shared_ptr<EpcWifi> m_localWifi;

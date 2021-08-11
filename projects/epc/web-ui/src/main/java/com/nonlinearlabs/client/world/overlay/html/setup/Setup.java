@@ -68,7 +68,6 @@ public class Setup extends Composite {
 	interface SetupUiBinder extends UiBinder<HTMLPanel, Setup> {
 	}
 
-	private static boolean scheduledCheckPassphrase = false;
 	private static SetupUiBinder ourUiBinder = GWT.create(SetupUiBinder.class);
 
 	@UiField
@@ -248,6 +247,14 @@ public class Setup extends Composite {
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
 	}
 
+	private void onPassphraseChanged(String text)
+	{
+		savePassphrase.setEnabled(false);
+		NonMaps.theMaps.getServerProxy().isPassphraseValid(text, v -> {
+			savePassphrase.setEnabled(v);
+		});
+	}
+
 	public void connectEventHandlers() {
 		SystemSettings settings = SystemSettings.get();
 		com.nonlinearlabs.client.useCases.LocalSettings locals = com.nonlinearlabs.client.useCases.LocalSettings.get();
@@ -313,35 +320,21 @@ public class Setup extends Composite {
 			@Override
 			public void onChange(ChangeEvent e) {
 				String text = passphrase.getValue();
-				scheduledCheckPassphrase = true;
-				NonMaps.theMaps.getServerProxy().isPassphraseValid(text, v -> {
-					scheduledCheckPassphrase = false;
-					savePassphrase.setEnabled(v);
-				});
+				onPassphraseChanged(text);
 			}
 		});
 
 		passphrase.addValueChangeHandler(t -> {
-			scheduledCheckPassphrase = true;
-			NonMaps.theMaps.getServerProxy().isPassphraseValid(t.getValue(), v -> {
-				scheduledCheckPassphrase = false;
-				savePassphrase.setEnabled(v);
-			});
+			onPassphraseChanged(t.getValue());
 		});
 
 		passphrase.addKeyUpHandler(t -> {
-			scheduledCheckPassphrase = true;
-			NonMaps.theMaps.getServerProxy().isPassphraseValid(passphrase.getValue(), v -> {
-				scheduledCheckPassphrase = false;
-				savePassphrase.setEnabled(v);
-			});
+			onPassphraseChanged(passphrase.getValue());
 		});
 
 		saveDeviceName.addClickHandler(e -> settings.setDeviceName(deviceName.getValue()));
 		savePassphrase.addClickHandler(e -> {
-			if(scheduledCheckPassphrase == false) {
-				settings.setPassphrase(passphrase.getValue());
-			}
+			settings.setPassphrase(passphrase.getValue());
 		});
 
 		dicePassphrase.addClickHandler(e -> NonMaps.theMaps.getServerProxy().dicePassphrase());
