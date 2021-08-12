@@ -75,9 +75,6 @@
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
-#include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
-#include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
-#include <device-settings/midi/local/LocalNotesSetting.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
@@ -828,15 +825,6 @@ namespace NavTree
     }
   };
 
-  struct MidiLocalSettings : InnerNode
-  {
-    MidiLocalSettings(InnerNode *parent)
-        : InnerNode(parent, "Local")
-    {
-      children.emplace_back(new EnumSettingItem<LocalNotesSetting>(this, "Enable Notes"));
-    }
-  };
-
   struct MidiMappingSettings : InnerNode
   {
     MidiMappingSettings(InnerNode *parent)
@@ -1034,7 +1022,7 @@ namespace NavTree
    public:
     HardwareEnableSetting(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
         : EditableLeaf(p, text)
-        , m_id{id}
+        , m_id { id }
     {
     }
 
@@ -1083,7 +1071,6 @@ namespace NavTree
     {
       children.emplace_back(new MidiReceiveSettings(this));
       children.emplace_back(new MidiSendSettings(this));
-      children.emplace_back(new MidiLocalSettings(this));
       children.emplace_back(new HardwareEnableSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
@@ -1360,6 +1347,10 @@ bool SetupLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
           onEnterInEditMode();
           return true;
         }
+      }
+      else if(i == Buttons::BUTTON_B)
+      {
+        return true;
       }
     }
 
