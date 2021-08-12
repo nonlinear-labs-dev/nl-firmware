@@ -31,8 +31,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/PedalEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/PedalSelectionControl.h>
 #include <proxies/hwui/panel-unit/boled/setup/PedalView.h>
-#include <proxies/hwui/panel-unit/boled/setup/PresetGlitchSuppressionEditor.h>
-#include <proxies/hwui/panel-unit/boled/setup/PresetGlitchSuppressionView.h>
 #include <proxies/hwui/panel-unit/boled/setup/RenameDeviceLayout.h>
 #include <proxies/hwui/panel-unit/boled/setup/RibbonRelativeFactorSettingEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/RibbonRelativeFactorSettingView.h>
@@ -48,8 +46,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupView.h>
 #include <proxies/hwui/panel-unit/boled/setup/ImportBackupView.h>
 #include <proxies/hwui/panel-unit/boled/setup/ImportBackupEditor.h>
-#include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicationView.h>
-#include <proxies/hwui/panel-unit/boled/setup/SignalFlowIndicatorEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/SettingView.h>
 #include <proxies/hwui/panel-unit/boled/setup/SettingEditors.h>
@@ -89,6 +85,7 @@
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
+#include <device-settings/PresetGlitchSuppression.h>
 
 #include <presets/Bank.h>
 #include <use-cases/SettingsUseCases.h>
@@ -96,6 +93,7 @@
 #include <device-settings/UsedRAM.h>
 #include <device-settings/TotalRAM.h>
 #include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/SignalFlowIndicationSetting.h>
 
 namespace NavTree
 {
@@ -180,7 +178,17 @@ namespace NavTree
 
     Control *createEditor() override
     {
-      return new EnumSettingEditor<tSetting>();
+      constexpr auto isBoolSetting = std::is_base_of_v<BooleanSetting, tSetting>;
+      constexpr auto isOnOffSetting = std::is_base_of_v<PresetGlitchSuppression, tSetting>;
+
+      if constexpr(isBoolSetting || isOnOffSetting)
+      {
+        return new OnOffOrderChangedEnumSettingEditor<tSetting>();
+      }
+      else
+      {
+        return new EnumSettingEditor<tSetting>();
+      }
     }
   };
 
@@ -331,11 +339,13 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound", [] {
-          auto pm = Application::get().getPresetManager();
-          SoundUseCases useCases(pm->getEditBuffer(), pm);
-          useCases.storeInitSound();
-        })
+        : OneShotEntry(p, "Store Init Sound",
+                       []
+                       {
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.storeInitSound();
+                       })
     {
     }
   };
@@ -343,11 +353,13 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound", [] {
-          auto pm = Application::get().getPresetManager();
-          SoundUseCases useCases(pm->getEditBuffer(), pm);
-          useCases.resetInitSound();
-        })
+        : OneShotEntry(p, "Reset Init Sound",
+                       []
+                       {
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.resetInitSound();
+                       })
     {
     }
   };
@@ -381,24 +393,6 @@ namespace NavTree
       {
         return new NumericSettingEditor<tSetting>();
       }
-    }
-  };
-
-  struct PresetGlitchSuppression : EditableLeaf
-  {
-    PresetGlitchSuppression(InnerNode *parent)
-        : EditableLeaf(parent, "Preset Glitch Suppression ")
-    {
-    }
-
-    Control *createView() override
-    {
-      return new PresetGlitchSuppressionView();
-    }
-
-    Control *createEditor() override
-    {
-      return new PresetGlitchSuppressionEditor();
     }
   };
 
@@ -444,7 +438,7 @@ namespace NavTree
       children.emplace_back(new Aftertouch(this));
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
-      children.emplace_back(new PresetGlitchSuppression(this));
+      children.emplace_back(new EnumSettingItem<PresetGlitchSuppression>(this, "Preset Glitch Suppression"));
       children.emplace_back(new EnumSettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));
       children.emplace_back(new WiFiSetting(this));
       children.emplace_back(new StoreInitSound(this));
@@ -715,24 +709,6 @@ namespace NavTree
     }
   };
 
-  struct SignalFlowIndicationSetting : EditableLeaf
-  {
-    SignalFlowIndicationSetting(InnerNode *parent)
-        : EditableLeaf(parent, "Signal Flow Indication")
-    {
-    }
-
-    virtual Control *createView() override
-    {
-      return new SignalFlowIndicationView();
-    }
-
-    virtual Control *createEditor() override
-    {
-      return new SignalFlowIndicatorEditor();
-    }
-  };
-
   struct ScreenSaverTime : EditableLeaf
   {
     ScreenSaverTime(InnerNode *parent)
@@ -758,7 +734,7 @@ namespace NavTree
     {
       children.emplace_back(new EncoderAcceleration(this));
       children.emplace_back(new RibbonRelativeFactorSetting(this));
-      children.emplace_back(new SignalFlowIndicationSetting(this));
+      children.emplace_back(new EnumSettingItem<SignalFlowIndicationSetting>(this, "Signal Flow Indication"));
       children.emplace_back(new ScreenSaverTime(this));
     }
   };
@@ -1006,10 +982,12 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, getName(), []() {
-          SettingsUseCases useCases(Application::get().getSettings());
-          useCases.setMappingsToHighRes();
-        })
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToHighRes();
+                       })
     {
     }
 
@@ -1023,10 +1001,12 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, getName(), []() {
-          SettingsUseCases useCases(Application::get().getSettings());
-          useCases.setMappingsToClassicMidi();
-        })
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToClassicMidi();
+                       })
     {
     }
 
@@ -1039,10 +1019,12 @@ namespace NavTree
   struct MidiPanicButton : OneShotEntry
   {
     MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic Button", []() {
-          SettingsUseCases useCase(Application::get().getSettings());
-          useCase.panicAudioEngine();
-        })
+        : OneShotEntry(p, "Panic Button",
+                       []()
+                       {
+                         SettingsUseCases useCase(Application::get().getSettings());
+                         useCase.panicAudioEngine();
+                       })
     {
     }
   };
