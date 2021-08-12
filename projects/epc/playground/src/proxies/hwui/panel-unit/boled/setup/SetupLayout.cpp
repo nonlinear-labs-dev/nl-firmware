@@ -95,6 +95,7 @@
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <device-settings/UsedRAM.h>
 #include <device-settings/TotalRAM.h>
+#include <device-settings/midi/RoutingSettings.h>
 
 namespace NavTree
 {
@@ -1046,11 +1047,12 @@ namespace NavTree
     }
   };
 
-  template <HW_SOURCE_IDS hw> struct HardwareEnableSetting : public EditableLeaf
+  struct HardwareEnableSetting : public EditableLeaf
   {
    public:
-    HardwareEnableSetting(InnerNode *p, const Glib::ustring &text)
+    HardwareEnableSetting(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
         : EditableLeaf(p, text)
+        , m_id{id}
     {
     }
 
@@ -1061,8 +1063,11 @@ namespace NavTree
 
     Control *createEditor() override
     {
-      return new HardwareEnableSettingsEditor<hw>();
+      return new HardwareEnableSettingsEditor(m_id);
     }
+
+   private:
+    const RoutingSettings::tRoutingIndex m_id;
   };
 
   struct HardwareEnableSettings : InnerNode
@@ -1070,14 +1075,17 @@ namespace NavTree
     explicit HardwareEnableSettings(InnerNode *p)
         : InnerNode(p, "Hardware Source Settings")
     {
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_1>(this, "Pedal 1"));
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_2>(this, "Pedal 2"));
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_3>(this, "Pedal 3"));
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PEDAL_4>(this, "Pedal 4"));
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_RIBBON_1>(this, "Ribbon 1"));
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_RIBBON_2>(this, "Ribbon 2"));
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_AFTERTOUCH>(this, "Aftertouch"));
-      children.emplace_back(new HardwareEnableSetting<HW_SOURCE_ID_PITCHBEND>(this, "Bender"));
+      typedef RoutingSettings::tRoutingIndex tID;
+      children.emplace_back(new HardwareEnableSetting(tID::Notes, this, "Notes"));
+      children.emplace_back(new HardwareEnableSetting(tID::ProgramChange, this, "Prog. Ch."));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal1, this, "Pedal 1"));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal2, this, "Pedal 2"));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal3, this, "Pedal 3"));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal4, this, "Pedal 4"));
+      children.emplace_back(new HardwareEnableSetting(tID::Ribbon1, this, "Ribbon 1"));
+      children.emplace_back(new HardwareEnableSetting(tID::Ribbon2, this, "Ribbon 2"));
+      children.emplace_back(new HardwareEnableSetting(tID::Aftertouch, this, "Aftertouch"));
+      children.emplace_back(new HardwareEnableSetting(tID::Bender, this, "Bender"));
     }
 
     Control *createView() override
