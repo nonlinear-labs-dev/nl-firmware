@@ -54,6 +54,7 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/TextEditUsageMode.h>
+#include <proxies/hwui/controls/LeftAlignedLabel.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <xml/FileOutStream.h>
 #include <bitset>
@@ -68,19 +69,15 @@
 #include "UISoftwareVersionEditor.h"
 #include "ScreenSaverTimeControls.h"
 #include "MenuEditorEntry.h"
+#include "HardwareEnableSettingsView.h"
+#include "HardwareEnableSettingsEditor.h"
+#include "HardwareEnableSelectionControl.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
-#include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
-#include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
-#include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
-#include <device-settings/midi/send/MidiSendControllersSetting.h>
-#include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
-#include <device-settings/midi/send/MidiSendNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
 #include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/local/LocalControllersSetting.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
@@ -95,6 +92,7 @@
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <device-settings/UsedRAM.h>
 #include <device-settings/TotalRAM.h>
+#include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
 
 namespace NavTree
@@ -817,8 +815,6 @@ namespace NavTree
     {
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Channel"));
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Split Channel (Part II)"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveProgramChangesSetting>(this, "Enable Program Change"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveNotesSetting>(this, "Enable Notes"));
     }
   };
 
@@ -829,8 +825,6 @@ namespace NavTree
     {
       children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Split Channel (Part II)"));
-      children.emplace_back(new EnumSettingItem<MidiSendProgramChangesSetting>(this, "Enable Program Change"));
-      children.emplace_back(new EnumSettingItem<MidiSendNotesSetting>(this, "Enable Notes"));
     }
   };
 
@@ -1035,6 +1029,53 @@ namespace NavTree
     }
   };
 
+  struct HardwareEnableSetting : public EditableLeaf
+  {
+   public:
+    HardwareEnableSetting(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
+        : EditableLeaf(p, text)
+        , m_id{id}
+    {
+    }
+
+    Control *createView() override
+    {
+      return new LeftAlignedLabel({ "..." }, Rect { 0, 0, 128, 16 });
+    }
+
+    Control *createEditor() override
+    {
+      return new HardwareEnableSettingsEditor(m_id);
+    }
+
+   private:
+    const RoutingSettings::tRoutingIndex m_id;
+  };
+
+  struct HardwareEnableSettings : InnerNode
+  {
+    explicit HardwareEnableSettings(InnerNode *p)
+        : InnerNode(p, "Hardware Source Settings")
+    {
+      typedef RoutingSettings::tRoutingIndex tID;
+      children.emplace_back(new HardwareEnableSetting(tID::Notes, this, "Notes"));
+      children.emplace_back(new HardwareEnableSetting(tID::ProgramChange, this, "Prog. Ch."));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal1, this, "Pedal 1"));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal2, this, "Pedal 2"));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal3, this, "Pedal 3"));
+      children.emplace_back(new HardwareEnableSetting(tID::Pedal4, this, "Pedal 4"));
+      children.emplace_back(new HardwareEnableSetting(tID::Ribbon1, this, "Ribbon 1"));
+      children.emplace_back(new HardwareEnableSetting(tID::Ribbon2, this, "Ribbon 2"));
+      children.emplace_back(new HardwareEnableSetting(tID::Aftertouch, this, "Aftertouch"));
+      children.emplace_back(new HardwareEnableSetting(tID::Bender, this, "Bender"));
+    }
+
+    Control *createView() override
+    {
+      return new HardwareEnableSettingsView();
+    }
+  };
+
   struct MidiSettings : InnerNode
   {
     MidiSettings(InnerNode *parent)
@@ -1043,6 +1084,7 @@ namespace NavTree
       children.emplace_back(new MidiReceiveSettings(this));
       children.emplace_back(new MidiSendSettings(this));
       children.emplace_back(new MidiLocalSettings(this));
+      children.emplace_back(new HardwareEnableSettings(this));
       children.emplace_back(new MidiMappingSettings(this));
       children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiPanicButton(this));

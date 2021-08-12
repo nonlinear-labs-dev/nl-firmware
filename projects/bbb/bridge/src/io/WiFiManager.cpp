@@ -5,24 +5,30 @@
 WiFiManager::WiFiManager()
 {
   nltools::msg::receive<nltools::msg::WiFi::SetWiFiSSIDMessage>(nltools::msg::EndPoint::BeagleBone,
-                                                                [this](const auto& msg) {
+                                                                [this](const auto& msg)
+                                                                {
                                                                   m_lastSeenSSID = msg.m_ssid.get();
                                                                   saveConfig();
                                                                 });
 
   nltools::msg::receive<nltools::msg::WiFi::SetWiFiPasswordMessage>(nltools::msg::EndPoint::BeagleBone,
-                                                                    [this](const auto& msg) {
+                                                                    [this](const auto& msg)
+                                                                    {
                                                                       m_lastSeenPassword = msg.m_password.get();
                                                                       saveConfig();
                                                                     });
 
   nltools::msg::receive<nltools::msg::WiFi::EnableWiFiMessage>(nltools::msg::EndPoint::BeagleBone,
-                                                               [this](const auto& msg) {
-                                                                 if(msg.m_enable)
+                                                               [this](const auto& msg)
+                                                               {
+                                                                 if(msg.m_state)
                                                                    enableAndStartAP();
                                                                  else
                                                                    disableAndStopAP();
                                                                });
+
+  nltools::msg::receive<nltools::msg::Setting::EnableBBBWifiFromDevSettings>(nltools::msg::EndPoint::BeagleBone,
+                                                                             [this](auto) { startDEBUGWifi(); });
 }
 
 void WiFiManager::saveConfig()
@@ -64,27 +70,36 @@ void WiFiManager::saveConfig()
 
 void WiFiManager::scheduleRestart()
 {
-  if (isDevelopmentPC)
+  if(isDevelopmentPC)
     return;
 
-  m_asyncCommands.schedule({ "systemctl", "restart", "accesspoint" }, [](auto) {},
-                           [](auto err) { nltools::Log::error(__LINE__, err); });
+  m_asyncCommands.schedule(
+      { "systemctl", "restart", "accesspoint" }, [](auto) {}, [](auto err) { nltools::Log::error(__LINE__, err); });
 }
 
 void WiFiManager::enableAndStartAP()
 {
-  if (isDevelopmentPC)
+  if(isDevelopmentPC)
     return;
 
-  m_asyncCommands.schedule({ "/usr/C15/scripts/enableAndStartAP.sh" }, [](auto) {},
-                           [](auto err) { nltools::Log::error(__LINE__, err); });
+  m_asyncCommands.schedule(
+      { "/usr/C15/scripts/enableAndStartAP.sh" }, [](auto) {}, [](auto err) { nltools::Log::error(__LINE__, err); });
 }
 
 void WiFiManager::disableAndStopAP()
 {
-  if (isDevelopmentPC)
+  if(isDevelopmentPC)
     return;
 
-  m_asyncCommands.schedule({ "/usr/C15/scripts/disableAndStopAP.sh" }, [](auto) {},
-                           [](auto err) { nltools::Log::error(__LINE__, err); });
+  m_asyncCommands.schedule(
+      { "/usr/C15/scripts/disableAndStopAP.sh" }, [](auto) {}, [](auto err) { nltools::Log::error(__LINE__, err); });
+}
+
+void WiFiManager::startDEBUGWifi()
+{
+  if(isDevelopmentPC)
+    return;
+
+  m_asyncCommands.schedule(
+      { "/usr/C15/scripts/startAP.sh" }, [](auto) {}, [](auto err) { nltools::Log::error(__LINE__, err); });
 }

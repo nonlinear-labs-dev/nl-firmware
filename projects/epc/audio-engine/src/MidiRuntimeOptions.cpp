@@ -1,21 +1,13 @@
 #include <synth/C15Synth.h>
 #include "MidiRuntimeOptions.h"
 
-void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage& msg)
+void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 {
-  m_receiveChannel = msg.receiveChannel;
-  m_receiveSplitChannel = msg.receiveSplitChannel;
+  m_midiPrimaryReceiveChannel = msg.receiveChannel;
+  m_midiSplitReceiveChannel = msg.receiveSplitChannel;
 
-  m_sendChannel = msg.sendChannel;
-  m_sendSplitChannel = msg.sendSplitChannel;
-
-  m_receiveProgramChanges = msg.receiveProgramChange;
-  m_receiveNotes = msg.receiveNotes;
-
-  m_sendProgramChanges = msg.sendProgramChange;
-  m_sendNotes = msg.sendNotes;
-
-  m_localNotes = msg.localNotes;
+  m_midiPrimarySendChannel = msg.sendChannel;
+  m_midiSplitSendChannel = msg.sendSplitChannel;
 
   pedal1CC = msg.pedal1cc;
   pedal2CC = msg.pedal2cc;
@@ -29,52 +21,91 @@ void MidiRuntimeOptions::update(const nltools::msg::Setting::MidiSettingsMessage
   m_enableHighVelCC = msg.highVeloCCEnabled;
   m_enable14BitCC = msg.highResCCEnabled;
 
-  m_hwEnableMappings = msg.hwMappings;
+  m_routingMappings = msg.routings;
+  m_globalLocalEnable = msg.globalLocalEnable;
 }
 
-MidiReceiveChannel MidiRuntimeOptions::getReceiveChannel() const
+MidiReceiveChannel MidiRuntimeOptions::getMIDIPrimaryReceiveChannel() const
 {
-  return m_receiveChannel;
+  return m_midiPrimaryReceiveChannel;
 }
 
-MidiSendChannel MidiRuntimeOptions::getSendChannel() const
+MidiReceiveChannelSplit MidiRuntimeOptions::getMIDISplitReceiveChannel() const
 {
-  return m_sendChannel;
+  return m_midiSplitReceiveChannel;
 }
 
-bool MidiRuntimeOptions::shouldReceiveProgramChanges() const
+MidiSendChannel MidiRuntimeOptions::getMIDIPrimarySendChannel() const
 {
-  return m_receiveProgramChanges;
+  return m_midiPrimarySendChannel;
 }
 
-bool MidiRuntimeOptions::shouldReceiveNotes() const
+MidiSendChannelSplit MidiRuntimeOptions::getMIDISplitSendChannel() const
 {
-  return m_receiveNotes;
+  return m_midiSplitSendChannel;
 }
 
-bool MidiRuntimeOptions::shouldSendProgramChanges() const
+bool MidiRuntimeOptions::shouldReceiveMIDIProgramChangesOnPrimary() const
 {
-  return m_sendProgramChanges;
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::ProgramChange);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::RECEIVE_PRIMARY);
+  return m_routingMappings[idx][aspect];
 }
 
-bool MidiRuntimeOptions::shouldSendNotes() const
+bool MidiRuntimeOptions::shouldReceiveMIDIProgramChangesOnSplit() const
 {
-  return m_sendNotes;
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::ProgramChange);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::RECEIVE_SPLIT);
+  return m_routingMappings[idx][aspect];
 }
 
-MidiReceiveChannelSplit MidiRuntimeOptions::getReceiveSplitChannel() const
+bool MidiRuntimeOptions::shouldReceiveMIDINotesOnPrimary() const
 {
-  return m_receiveSplitChannel;
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::RECEIVE_PRIMARY);
+  return m_routingMappings[idx][aspect];
 }
 
-MidiSendChannelSplit MidiRuntimeOptions::getSendSplitChannel() const
+bool MidiRuntimeOptions::shouldReceiveMIDINotesOnSplit() const
 {
-  return m_sendSplitChannel;
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::RECEIVE_SPLIT);
+  return m_routingMappings[idx][aspect];
+}
+
+bool MidiRuntimeOptions::shouldSendMIDIProgramChangesOnPrimary() const
+{
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::ProgramChange);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_PRIMARY);
+  return m_routingMappings[idx][aspect];
+}
+
+bool MidiRuntimeOptions::shouldSendMIDIProgramChangesOnSplit() const
+{
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::ProgramChange);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_SPLIT);
+  return m_routingMappings[idx][aspect];
+}
+
+bool MidiRuntimeOptions::shouldSendMIDINotesOnPrimary() const
+{
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_PRIMARY);
+  return m_routingMappings[idx][aspect];
+}
+
+bool MidiRuntimeOptions::shouldSendMIDINotesOnSplit() const
+{
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::SEND_SPLIT);
+  return m_routingMappings[idx][aspect];
 }
 
 bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
 {
-  return m_localNotes;
+  constexpr auto idx = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::LOCAL);
+  return m_routingMappings[idx][aspect] && m_globalLocalEnable;
 }
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
@@ -171,7 +202,6 @@ std::optional<int> MidiRuntimeOptions::decodeEnumLSB(PedalCC cc)
     default:
       return std::nullopt;
   }
-  return std::nullopt;
 }
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(RibbonCC cc)
@@ -198,7 +228,6 @@ std::optional<int> MidiRuntimeOptions::decodeEnumMSB(AftertouchCC cc)
     return static_cast<int>(cc) - 1;
 }
 
-//maybe use std::optional
 std::optional<int> MidiRuntimeOptions::decodeEnumLSB(AftertouchCC cc)
 {
   using ACC = AftertouchCC;
@@ -271,12 +300,12 @@ void MidiRuntimeOptions::setAftertouchCC(AftertouchCC cc)
   aftertouchCC = cc;
 }
 
-std::optional<int> MidiRuntimeOptions::getBenderMSBCC()
+std::optional<int> MidiRuntimeOptions::getBenderMSBCC() const
 {
   return decodeEnumMSB(benderCC);
 }
 
-std::optional<int> MidiRuntimeOptions::getBenderLSBCC()
+std::optional<int> MidiRuntimeOptions::getBenderLSBCC() const
 {
   return decodeEnumLSB(benderCC);
 }
@@ -288,21 +317,21 @@ void MidiRuntimeOptions::setPedal1(PedalCC cc)
 
 void MidiRuntimeOptions::setSendSplitChannel(MidiSendChannelSplit c)
 {
-  m_sendSplitChannel = c;
+  m_midiSplitSendChannel = c;
 }
 
 void MidiRuntimeOptions::setSendChannel(MidiSendChannel c)
 {
-  m_sendChannel = c;
+  m_midiPrimarySendChannel = c;
 }
 
 void MidiRuntimeOptions::setReceiveChannel(MidiReceiveChannel c)
 {
-  m_receiveChannel = c;
+  m_midiPrimaryReceiveChannel = c;
 }
 void MidiRuntimeOptions::setSplitReceiveChannel(MidiReceiveChannelSplit c)
 {
-  m_receiveSplitChannel = c;
+  m_midiSplitReceiveChannel = c;
 }
 
 MidiReceiveChannelSplit MidiRuntimeOptions::normalToSplitChannel(MidiReceiveChannel ch)
@@ -310,12 +339,12 @@ MidiReceiveChannelSplit MidiRuntimeOptions::normalToSplitChannel(MidiReceiveChan
   return static_cast<MidiReceiveChannelSplit>(ch);
 }
 
-std::optional<int> MidiRuntimeOptions::getAftertouchLSBCC()
+std::optional<int> MidiRuntimeOptions::getAftertouchLSBCC() const
 {
   return decodeEnumLSB(aftertouchCC);
 }
 
-std::optional<int> MidiRuntimeOptions::getAftertouchMSBCC()
+std::optional<int> MidiRuntimeOptions::getAftertouchMSBCC() const
 {
   return decodeEnumMSB(aftertouchCC);
 }
@@ -325,7 +354,7 @@ AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
   return aftertouchCC;
 }
 
-bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed)
+bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed) const
 {
   auto enumIsInSwitching = [](PedalCC cc) -> bool {
     switch(cc)
@@ -357,12 +386,12 @@ bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed)
   }
 }
 
-bool MidiRuntimeOptions::enableHighVelCC()
+bool MidiRuntimeOptions::enableHighVelCC() const
 {
   return m_enableHighVelCC;
 }
 
-int MidiRuntimeOptions::getMSBCCForHWID(int hwID)
+int MidiRuntimeOptions::getMSBCCForHWID(int hwID) const
 {
   auto bender = getBenderMSBCC();
   auto aftertouch = getAftertouchMSBCC();
@@ -430,44 +459,51 @@ void MidiRuntimeOptions::set14BitSupportEnabled(bool e)
   m_enable14BitCC = e;
 }
 
-bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiPrimary(int hwID) const
+bool MidiRuntimeOptions::shouldReceiveMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto receivePrim = static_cast<int>(tHW_ENABLE_INDICES::RECEIVE_PRIMARY);
-  return m_hwEnableMappings[hwID][receivePrim];
+  constexpr auto receivePrim = static_cast<int>(tRoutingAspect::RECEIVE_PRIMARY);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][receivePrim];
 }
 
-bool MidiRuntimeOptions::shouldSendHWSourceOnMidiPrimary(int hwID) const
+bool MidiRuntimeOptions::shouldSendMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto sendPrim = static_cast<int>(tHW_ENABLE_INDICES::SEND_PRIMARY);
-  return m_hwEnableMappings[hwID][sendPrim];
+  constexpr auto sendPrim = static_cast<int>(tRoutingAspect::SEND_PRIMARY);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][sendPrim];
 }
 
-bool MidiRuntimeOptions::shouldReceiveHWSourceOnMidiSplit(int hwID) const
+bool MidiRuntimeOptions::shouldReceiveMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto receiveSplit = static_cast<int>(tHW_ENABLE_INDICES::RECEIVE_SPLIT);
-  return m_hwEnableMappings[hwID][receiveSplit];
+  constexpr auto receiveSplit = static_cast<int>(tRoutingAspect::RECEIVE_SPLIT);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][receiveSplit];
 }
 
-bool MidiRuntimeOptions::shouldSendHWSourceOnMidiSplit(int hwID) const
+bool MidiRuntimeOptions::shouldSendMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto sendSplit = static_cast<int>(tHW_ENABLE_INDICES::SEND_SPLIT);
-  return m_hwEnableMappings[hwID][sendSplit];
+  constexpr auto sendSplit = static_cast<int>(tRoutingAspect::SEND_SPLIT);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][sendSplit];
 }
 
-bool MidiRuntimeOptions::shouldAllowHWSourceFromLocal(int hwID) const
+bool MidiRuntimeOptions::shouldAllowLocal(tMidiSettingMessage::RoutingIndex routingIndex) const
 {
-  constexpr auto local = static_cast<int>(tHW_ENABLE_INDICES::LOCAL);
-  return m_hwEnableMappings[hwID][local];
+  constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
+  const auto index = static_cast<int>(routingIndex);
+  return m_routingMappings[index][local] && m_globalLocalEnable;
 }
 
 bool MidiRuntimeOptions::isCCMappedToChannelModeMessage(int cc)
 {
-#warning "expand this check if more special functions are implemented"
   switch(cc)
   {
     case static_cast<int>(MidiChannelModeMessageCCs::AllSoundOff):
     case static_cast<int>(MidiChannelModeMessageCCs::AllNotesOff):
+    case static_cast<int>(MidiChannelModeMessageCCs::LocalControlOnOff):
       return true;
+    default:
+      break;
   }
   return false;
 }
@@ -498,4 +534,11 @@ MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc,
       return MidiChannelModeMessages::NOOP;
   }
   return MidiChannelModeMessages::NOOP;
+}
+
+void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
+{
+  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
+  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::LOCAL);
+  m_routingMappings[idx][aspect] = b;
 }

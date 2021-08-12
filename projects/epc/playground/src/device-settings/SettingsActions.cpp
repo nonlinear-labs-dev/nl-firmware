@@ -1,6 +1,5 @@
 #include "SettingsActions.h"
 #include "Settings.h"
-#include "Setting.h"
 #include "SyncSplitSettingUseCases.h"
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
@@ -11,6 +10,7 @@
 #include <tools/ExceptionTools.h>
 #include <use-cases/DirectLoadUseCases.h>
 #include <presets/PresetManager.h>
+#include <nltools/messaging/Message.h>
 #include <device-settings/Passphrase.h>
 #include <http/HTTPRequest.h>
 
@@ -87,25 +87,36 @@ SettingsActions::SettingsActions(Settings &settings)
     useCase.setMappingsToClassicMidi();
   });
 
-  addAction("hw-source-enable-set", [&](auto request) {
+  addAction("set-routing-aspect", [&](auto request) {
     try
     {
-      auto hw = std::stoi(request->get("hw"));
+      auto hw = std::stoi(request->get("routing-entry"));
       auto aspect = std::stoi(request->get("aspect"));
       auto value = request->get("value") == "1";
 
       SettingsUseCases useCase(Application::get().getSettings());
-      useCase.updateHWSourceEnable(hw, aspect, value);
+      useCase.updateRoutingAspect(hw, aspect, value);
     }
     catch(...)
     {
-      nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+      ExceptionTools::errorLogCurrentException();
     }
    });
 
   addAction("panic-audio-engine", [](auto request) {
+    SettingsUseCases::panicAudioEngine();
+  });
+
+  addAction("set-all-routings-to-value", [&](auto request) {
+    auto requestedState = request->get("state") == "1";
     SettingsUseCases useCase(Application::get().getSettings());
-    useCase.panicAudioEngine();
+    useCase.setAllRoutingEntries(requestedState);
+    nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+  });
+
+  addAction("enable-bbb-wifi-for-epc2", [](auto) {
+    nltools::msg::Setting::EnableBBBWifiFromDevSettings msg{};
+    nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
   });
 
   addAction("is-valid-passphrase", [](auto request) {

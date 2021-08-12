@@ -16,9 +16,9 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
     , m_syncPlaygroundTask(std::async(std::launch::async, [this] { syncPlaygroundLoop(); }))
     , m_syncChannelModeMessagesTask(std::async(std::launch::async, [this] { syncChannelModeMessageLoop(); }))
-    , m_inputEventStage{ m_dsp.get(), &m_midiOptions, [this] { m_syncPlaygroundWaiter.notify_all(); },
-                         [this](auto msg) { queueExternalMidiOut(msg); },
-                         [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
+    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncPlaygroundWaiter.notify_all(); },
+                          [this](auto msg) { queueExternalMidiOut(msg); },
+                          [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
 {
   m_playgroundHwSourceKnownValues.fill(0);
 
@@ -49,53 +49,86 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   receive<Setting::TuneReference>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onTuneReferenceMessage));
 
-  receive<Keyboard::NoteUp>(EndPoint::AudioEngine, [this](const Keyboard::NoteUp& noteUp) {
-    m_inputEventStage.onMIDIMessage({ 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 });
-    m_syncExternalsWaiter.notify_all();
-  });
+  receive<Keyboard::NoteUp>(EndPoint::AudioEngine,
+                            [this](const Keyboard::NoteUp& noteUp)
+                            {
+                              m_inputEventStage.onMIDIMessage({ 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 });
+                              m_syncExternalsWaiter.notify_all();
+                            });
 
-  receive<Keyboard::NoteDown>(EndPoint::AudioEngine, [this](const Keyboard::NoteDown& noteDown) {
-    m_inputEventStage.onMIDIMessage({ 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 });
-    m_syncExternalsWaiter.notify_all();
-  });
+  receive<Keyboard::NoteDown>(EndPoint::AudioEngine,
+                              [this](const Keyboard::NoteDown& noteDown)
+                              {
+                                m_inputEventStage.onMIDIMessage({ 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 });
+                                m_syncExternalsWaiter.notify_all();
+                              });
 
   // receive program changes from playground and dispatch it to midi-over-ip
-  receive<nltools::msg::Midi::ProgramChangeMessage>(EndPoint::AudioEngine, [this](const auto& pc) {
-    const int sendChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getSendChannel());
-    if(sendChannel != -1 && m_midiOptions.shouldSendProgramChanges())
-    {
-      const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendChannel;
-      m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage{ newStatus, pc.program });
-      m_syncExternalsWaiter.notify_all();
-    }
-  });
-
-  receive<nltools::msg::Midi::SimpleMessage>(EndPoint::ExternalMidiOverIPClient, [&](const auto& msg) {
-    MidiEvent e;
-    std::copy(msg.rawBytes.data(), msg.rawBytes.data() + msg.numBytesUsed, e.raw);
-
-    const auto isPC = (e.raw[0] & 0xF0) == 0xC0;
-    if(isPC)
-    {
-      // Program Changes should be exclusively bound to Primary channel
-      const auto receivedChannel = static_cast<int>(e.raw[0]) - 192;
-      const auto isOmniReceive = m_midiOptions.getReceiveChannel() == MidiReceiveChannel::Omni;
-      const auto receivedChannelMatches
-          = m_midiOptions.channelEnumToInt(m_midiOptions.getReceiveChannel()) == receivedChannel;
-
-      if(isOmniReceive || receivedChannelMatches)
+  receive<nltools::msg::Midi::ProgramChangeMessage>(
+      EndPoint::AudioEngine,
+      [this](const auto& pc)
       {
-        if(m_midiOptions.shouldReceiveProgramChanges())
+        bool scheduled = false;
+
+        const int sendPrimChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDIPrimarySendChannel());
+        if(sendPrimChannel != -1 && m_midiOptions.shouldSendMIDIProgramChangesOnPrimary())
         {
-          send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage{ e.raw[1] });
+          const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendPrimChannel;
+          m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
+          scheduled = true;
         }
-      }
-    }
-    else
-    {
-      pushMidiEvent(e);
-    }
-  });
+
+        const int sendSecChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDISplitSendChannel());
+        if(sendSecChannel != -1 && m_midiOptions.shouldSendMIDIProgramChangesOnSplit())
+        {
+          const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendSecChannel;
+          m_externalMidiOutBuffer.push(nltools::msg::Midi::SimpleMessage { newStatus, pc.program });
+          scheduled = true;
+        }
+
+        if(scheduled)
+          m_syncExternalsWaiter.notify_all();
+      });
+
+  receive<nltools::msg::Midi::SimpleMessage>(
+      EndPoint::ExternalMidiOverIPClient,
+      [&](const auto& msg)
+      {
+        MidiEvent e;
+        std::copy(msg.rawBytes.data(), msg.rawBytes.data() + msg.numBytesUsed, e.raw);
+
+        const auto isPC = (e.raw[0] & 0xF0) == 0xC0;
+        if(isPC)
+        {
+          const auto receivedChannel = static_cast<int>(e.raw[0]) - 192;
+          const auto isPrimaryOmniReceive = m_midiOptions.getMIDIPrimaryReceiveChannel() == MidiReceiveChannel::Omni;
+          const auto isSplitOmniReceive = m_midiOptions.getMIDISplitReceiveChannel() == MidiReceiveChannelSplit::Omni;
+
+          const auto receivedChannelMatchesPrimary
+              = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDIPrimaryReceiveChannel()) == receivedChannel;
+          const auto receivedChannelMatchedSplit
+              = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDISplitReceiveChannel()) == receivedChannel;
+
+          if(isPrimaryOmniReceive || receivedChannelMatchesPrimary)
+          {
+            if(m_midiOptions.shouldReceiveMIDIProgramChangesOnPrimary())
+            {
+              send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+            }
+          }
+          else if(isSplitOmniReceive || receivedChannelMatchedSplit)
+          {
+            if(m_midiOptions.shouldReceiveMIDIProgramChangesOnSplit())
+            {
+              send(nltools::msg::EndPoint::Playground, nltools::msg::Midi::ProgramChangeMessage { e.raw[1] });
+            }
+          }
+        }
+        else
+        {
+          pushMidiEvent(e);
+        }
+      });
 
   receive<nltools::msg::Setting::MidiSettingsMessage>(EndPoint::AudioEngine,
                                                       sigc::mem_fun(this, &C15Synth::onMidiSettingsMessage));
@@ -130,9 +163,9 @@ dsp_host_dual* C15Synth::getDsp() const
 
 void C15Synth::syncExternalsLoop()
 {
-  static_assert(
-      std::tuple_size_v<dsp_host_dual::HWSourceValues> == std::tuple_size_v<decltype(m_playgroundHwSourceKnownValues)>,
-      "Types do not match!");
+  constexpr auto sizeA = std::tuple_size_v<dsp_host_dual::HWSourceValues>;
+  constexpr auto sizeB = std::tuple_size_v<decltype(m_playgroundHwSourceKnownValues)>;
+  static_assert(sizeA == sizeB, "Types do not match!");
 
   std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
 
@@ -178,9 +211,17 @@ void C15Synth::doChannelModeMessageFunctions()
       case ResetAllControllers:
         break;
       case LocalControllersOn:
-        break;
+      {
+        nltools::msg::Setting::SetGlobalLocalSetting msg { true };
+        nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
+      }
+      break;
       case LocalControllersOff:
-        break;
+      {
+        nltools::msg::Setting::SetGlobalLocalSetting msg { false };
+        nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
+      }
+      break;
       case AllNotesOff:
         m_dsp->onMidiSettingsReceived();  // NOTE: currently resets all (internal AND external) notes
         break;
@@ -207,7 +248,7 @@ void C15Synth::syncPlayground()
 
   if(m_inputEventStage.getAndResetKeyBedStatus())
   {
-    send(EndPoint::Playground, Keyboard::ActionHappened {});
+    send(EndPoint::Playground, Keyboard::NoteEventHappened {});
   }
 
   auto engineHWSourceValues = m_dsp->getHWSourceValues();
@@ -215,7 +256,7 @@ void C15Synth::syncPlayground()
   {
     if(std::exchange(m_playgroundHwSourceKnownValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification{ i, static_cast<double>(engineHWSourceValues[i]) });
+      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
     }
   }
 }
