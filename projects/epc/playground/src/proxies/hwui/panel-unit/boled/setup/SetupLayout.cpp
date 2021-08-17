@@ -91,6 +91,7 @@
 #include <device-settings/TotalRAM.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
+#include <device-settings/GlobalLocalEnableSetting.h>
 
 namespace NavTree
 {
@@ -805,30 +806,60 @@ namespace NavTree
     }
   };
 
-  struct MidiReceiveSettings : InnerNode
+  struct MidiChannels : InnerNode
   {
-    MidiReceiveSettings(InnerNode *parent)
-        : InnerNode(parent, "Receive")
+    MidiChannels(InnerNode *parent)
+        : InnerNode(parent, "Channels")
     {
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Channel"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Split Channel (Part II)"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Receive Split Channel"));
+      children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Send Channel"));
+      children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Send Split Channel"));
     }
   };
 
-  struct MidiSendSettings : InnerNode
+  struct ResetMidiSettingsToHighRes : public OneShotEntry
   {
-    MidiSendSettings(InnerNode *parent)
-        : InnerNode(parent, "Send")
+
+    explicit ResetMidiSettingsToHighRes(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToHighRes();
+                       })
     {
-      children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Channel"));
-      children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Split Channel (Part II)"));
+    }
+
+    constexpr const char *getName()
+    {
+      return "Set to High-Res. Defaults";
     }
   };
 
-  struct MidiMappingSettings : InnerNode
+  struct ResetMidiSettingsToClassic : public OneShotEntry
   {
-    MidiMappingSettings(InnerNode *parent)
-        : InnerNode { parent, "Mappings" }
+
+    explicit ResetMidiSettingsToClassic(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setMappingsToClassicMidi();
+                       })
+    {
+    }
+
+    constexpr const char *getName()
+    {
+      return "Set to Classic MIDI Defaults";
+    }
+  };
+
+  struct MidiAssignments : InnerNode
+  {
+    MidiAssignments(InnerNode *parent)
+        : InnerNode { parent, "Assignments" }
     {
       children.emplace_back(new EnumSettingItem<PedalCCMapping<1>>(this, "Pedal 1"));
       children.emplace_back(new EnumSettingItem<PedalCCMapping<2>>(this, "Pedal 2"));
@@ -840,6 +871,8 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
       children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res. Velocity (CC 88)"));
       children.emplace_back(new EnumSettingItem<Enable14BitSupport>(this, "High-Res. CCs (use LSB)"));
+      children.emplace_back(new ResetMidiSettingsToClassic(this));
+      children.emplace_back(new ResetMidiSettingsToHighRes(this));
     }
   };
 
@@ -966,44 +999,6 @@ namespace NavTree
     }
   };
 
-  struct ResetMidiSettingsToHighRes : public OneShotEntry
-  {
-
-    explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToHighRes();
-                       })
-    {
-    }
-
-    constexpr const char *getName()
-    {
-      return "Set to High-Res. Defaults";
-    }
-  };
-
-  struct ResetMidiSettingsToClassic : public OneShotEntry
-  {
-
-    explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToClassicMidi();
-                       })
-    {
-    }
-
-    constexpr const char *getName()
-    {
-      return "Set to Classic MIDI Defaults";
-    }
-  };
-
   struct MidiPanicButton : OneShotEntry
   {
     MidiPanicButton(InnerNode *p)
@@ -1028,7 +1023,7 @@ namespace NavTree
 
     Control *createView() override
     {
-      return new LeftAlignedLabel({ "..." }, Rect { 0, 0, 128, 16 });
+      return new HardwareEnableSettingsView(m_id);
     }
 
     Control *createEditor() override
@@ -1040,10 +1035,32 @@ namespace NavTree
     const RoutingSettings::tRoutingIndex m_id;
   };
 
-  struct HardwareEnableSettings : InnerNode
+  template <bool value> struct SetRoutingsTo : public OneShotEntry
   {
-    explicit HardwareEnableSettings(InnerNode *p)
-        : InnerNode(p, "Hardware Source Settings")
+
+    explicit SetRoutingsTo(InnerNode *parent)
+        : OneShotEntry(parent, getName(),
+                       []()
+                       {
+                         SettingsUseCases useCases(Application::get().getSettings());
+                         useCases.setAllRoutingEntries(value);
+                       })
+    {
+    }
+
+    constexpr const char *getName()
+    {
+      if constexpr(value)
+        return "Set all Routings to True";
+      else
+        return "Set all Routings to False";
+    }
+  };
+
+  struct MidiRoutings : InnerNode
+  {
+    explicit MidiRoutings(InnerNode *p)
+        : InnerNode(p, "Routings")
     {
       typedef RoutingSettings::tRoutingIndex tID;
       children.emplace_back(new HardwareEnableSetting(tID::Notes, this, "Notes"));
@@ -1056,11 +1073,21 @@ namespace NavTree
       children.emplace_back(new HardwareEnableSetting(tID::Ribbon2, this, "Ribbon 2"));
       children.emplace_back(new HardwareEnableSetting(tID::Aftertouch, this, "Aftertouch"));
       children.emplace_back(new HardwareEnableSetting(tID::Bender, this, "Bender"));
+      children.emplace_back(new SetRoutingsTo<true>(this));
+      children.emplace_back(new SetRoutingsTo<false>(this));
     }
 
     Control *createView() override
     {
-      return new HardwareEnableSettingsView();
+      struct View : public SetupLabel
+      {
+       public:
+        View()
+            : SetupLabel("...", Rect { 0, 0, 128, 16 })
+        {
+        }
+      };
+      return new View();
     }
   };
 
@@ -1069,14 +1096,12 @@ namespace NavTree
     MidiSettings(InnerNode *parent)
         : InnerNode(parent, "MIDI Settings")
     {
-      children.emplace_back(new MidiReceiveSettings(this));
-      children.emplace_back(new MidiSendSettings(this));
-      children.emplace_back(new HardwareEnableSettings(this));
-      children.emplace_back(new MidiMappingSettings(this));
-      children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiPanicButton(this));
-      children.emplace_back(new ResetMidiSettingsToClassic(this));
-      children.emplace_back(new ResetMidiSettingsToHighRes(this));
+      children.emplace_back(new SettingItem<GlobalLocalEnableSetting>(this, "Global Local Enable"));
+      children.emplace_back(new MidiProgramChangeBank(this));
+      children.emplace_back(new MidiChannels(this));
+      children.emplace_back(new MidiAssignments(this));
+      children.emplace_back(new MidiRoutings(this));
     }
   };
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "MenuEditor.h"
+#include "SetupLabel.h"
 #include <device-settings/midi/RoutingSettings.h>
 
 class FrameBuffer;
@@ -10,7 +11,10 @@ class AspectList;
 class HardwareEnableSettingsEditor : public MenuEditor
 {
  public:
-  explicit HardwareEnableSettingsEditor(RoutingSettings::tRoutingIndex id);
+  typedef RoutingSettings::tRoutingIndex tID;
+  typedef RoutingSettings::tAspectIndex tAspect;
+
+  explicit HardwareEnableSettingsEditor(tID id);
   void setPosition(const Rect& r) override;
   void drawBackground(FrameBuffer& fb) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
@@ -29,10 +33,11 @@ class HardwareEnableSettingsEditor : public MenuEditor
   VariableCenterAlignedLabel* m_valueLabel;
   AspectList* m_aspectList;
 
-  RoutingSettings::tRoutingIndex m_id;
-  RoutingSettings::tAspectIndex m_aspect = RoutingSettings::tAspectIndex::SEND_PRIMARY;
+  tID m_id;
+  tAspect m_aspect = tAspect::SEND_PRIMARY;
+
   void update();
-  static const Glib::ustring& getTextFor(RoutingSettings::tRoutingIndex index) ;
-  static const Glib::ustring& getTextFor(RoutingSettings::tAspectIndex aspect) ;
+  static const Glib::ustring& getTextFor(tID index);
+  static const Glib::ustring& getTextFor(tAspect aspect);
   const Glib::ustring& getValueText() const;
 };

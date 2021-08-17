@@ -8,16 +8,28 @@
 #include <cmath>
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/Oleds.h>
+#include "HardwareEnableSettingsHelper.h"
 
-inline auto getSetting()
+inline auto getPreviewNameForAspect(RoutingSettings::tAspectIndex a)
 {
-  if(Application::exists())
+  typedef RoutingSettings::tAspectIndex ASP;
+  switch(a)
   {
-    static auto ret = Application::get().getSettings()->getSetting<RoutingSettings>();
-    return ret;
+    case ASP::SEND_PRIMARY:
+      return "Send Prim.";
+    case ASP::RECEIVE_PRIMARY:
+      return "Rec. Prim.";
+    case ASP::SEND_SPLIT:
+      return "Send Split";
+    case ASP::RECEIVE_SPLIT:
+      return "Rec. Split";
+    case ASP::LOCAL:
+      return "Local";
+    default:
+    case ASP::LENGTH:
+      return "";
   }
-  return std::shared_ptr<RoutingSettings>(nullptr);
-}
+};
 
 class AspectList : public Control
 {
@@ -63,7 +75,10 @@ bool AspectList::redraw(FrameBuffer& fb)
   const auto totalHeight = pos.getHeight();
   const auto aspectH = totalHeight / 5;
 
-  for(auto a : { ASP::SEND_PRIMARY, ASP::RECEIVE_PRIMARY, ASP::SEND_SPLIT, ASP::RECEIVE_SPLIT, ASP::LOCAL })
+  Label l(getPosition());
+  l.setFontColor(FrameBufferColors::C43);
+
+  for(auto a : getAspectsForIndex(entry))
   {
     auto aspPos = Rect(x + paddingX, y + paddingY, w - paddingX, aspectH - paddingY);
 
@@ -74,6 +89,11 @@ bool AspectList::redraw(FrameBuffer& fb)
       fb.setColor(FrameBufferColors::C77);
 
     fb.fillRect(aspPos);
+
+    l.setPosition(aspPos);
+    l.setText(getPreviewNameForAspect(a));
+    l.redraw(fb);
+
     auto isSelected = a == aspect;
     if(isSelected)
     {
@@ -171,15 +191,15 @@ HardwareEnableSettingsEditor::HardwareEnableSettingsEditor(RoutingSettings::tRou
 
   addControl(new SetupModuleHeader({ "Routings" }, { 0, 0, 64, 16 }));
 
-  m_entryLabel = addControl(new VariableCenterAlignedLabel("Entry", { 64, 12 - 12, 128, 16 }));
+  m_entryLabel = addControl(new VariableCenterAlignedLabel("Entry", { 64, 0, 128, 16 }));
   m_entryLabel->setFamily(VariableCenterAlignedLabel::FontFamily::Bold9);
   m_entryLabel->setHighlight(true);
-  m_aspectLabel = addControl(new VariableCenterAlignedLabel("Aspect", { 64, 28 - 12, 128, 16 }));
+  m_aspectLabel = addControl(new VariableCenterAlignedLabel("Aspect", { 64, 16, 128, 16 }));
   m_aspectLabel->setFamily(VariableCenterAlignedLabel::FontFamily::Regular9);
-  m_valueLabel = addControl(new VariableCenterAlignedLabel("Value", { 64, 44 - 12, 128, 16 }));
+  m_valueLabel = addControl(new VariableCenterAlignedLabel("Value", { 64, 32, 128, 16 }));
   m_valueLabel->setFamily(VariableCenterAlignedLabel::FontFamily::Regular8);
 
-  m_aspectList = addControl(new AspectList(m_id, m_aspect, { 128 + 64 + 16, 0, 32, 64 }));
+  m_aspectList = addControl(new AspectList(m_id, m_aspect, { 192, 0, 64, 64 }));
   addControl(new Button("Back", Buttons::BUTTON_A));
   addControl(new Button("<", Buttons::BUTTON_B));
   addControl(new Button(">", Buttons::BUTTON_C));
@@ -250,7 +270,7 @@ bool HardwareEnableSettingsEditor::onButton(Buttons i, bool down, ButtonModifier
 
 void HardwareEnableSettingsEditor::stepEntry(int inc)
 {
-  const auto length = static_cast<int>(decltype(m_id)::LENGTH);
+  const auto length = static_cast<int>(tID::LENGTH);
   auto currentIdx = static_cast<int>(m_id);
   currentIdx += inc;
 
@@ -259,13 +279,27 @@ void HardwareEnableSettingsEditor::stepEntry(int inc)
   if(currentIdx < 0)
     currentIdx = length - 1;
 
-  m_id = static_cast<decltype(m_id)>(currentIdx);
+  m_id = static_cast<tID>(currentIdx);
+
+  if(m_id == tID::ProgramChange)
+  {
+    if(m_aspect == tAspect::LOCAL)
+    {
+      m_aspect = tAspect::RECEIVE_SPLIT;
+    }
+  }
+
   update();
 }
 
 void HardwareEnableSettingsEditor::stepAspect(int inc)
 {
-  const auto length = static_cast<int>(decltype(m_aspect)::LENGTH);
+  const auto isProgramChange = m_id == tID::ProgramChange;
+
+  const auto totalLength = static_cast<int>(tAspect::LENGTH);
+  const auto trimmedLength = totalLength - 1;
+  const auto length = isProgramChange ? trimmedLength : totalLength;
+
   auto currentIdx = static_cast<int>(m_aspect);
   currentIdx += inc;
 
@@ -274,7 +308,7 @@ void HardwareEnableSettingsEditor::stepAspect(int inc)
   if(currentIdx < 0)
     currentIdx = length - 1;
 
-  m_aspect = static_cast<decltype(m_aspect)>(currentIdx);
+  m_aspect = static_cast<tAspect>(currentIdx);
   update();
 }
 
@@ -287,7 +321,7 @@ void HardwareEnableSettingsEditor::update()
   ControlWithChildren::setDirty();
 }
 
-const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(RoutingSettings::tRoutingIndex index)
+const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(tID index)
 {
   static const std::vector<Glib::ustring> sRet
       = { "Pedal 1",  "Pedal 2",  "Pedal 3",   "Pedal 4", "Bender", "Aftertouch",
@@ -295,10 +329,10 @@ const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(RoutingSettings::t
   return sRet.at(static_cast<int>(index));
 }
 
-const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(RoutingSettings::tAspectIndex aspect)
+const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(tAspect aspect)
 {
   static const std::vector<Glib::ustring> sRet
-      = { "Send Prim.", "Rec. Prim.", "Send Split", "Rec. Split", "Local", "LENGTH" };
+      = { "Send Primary", "Receive Primary", "Send Split", "Receive Split", "Local", "LENGTH" };
   return sRet.at(static_cast<int>(aspect));
 }
 
