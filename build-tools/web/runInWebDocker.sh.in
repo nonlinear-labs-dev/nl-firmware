@@ -1,0 +1,13 @@
+#!/bin/bash
+
+SELF_DIR=$(readlink -f $(dirname $0))
+SCRIPT=$(cat $1)
+SOURCE_DIR="$2"
+DOCKER_OPTIONS="$3"
+
+if tty; then
+    TTY_OPTION=" -ti "
+fi
+
+USER_ID=$(id -u)
+docker run -e USER_ID=$USER_ID --privileged $DOCKER_OPTIONS $TTY_OPTION -v $SELF_DIR:/builddir -v $SOURCE_DIR:/src @DOCKERNAME@ bash -c "$SCRIPT"
