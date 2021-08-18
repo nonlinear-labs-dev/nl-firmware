@@ -124,15 +124,17 @@ void EditBuffer::resetModifiedIndicator(UNDO::Transaction *transaction, size_t h
 {
   auto swap = UNDO::createSwapData(false, hash);
 
-  transaction->addSimpleCommand([=](UNDO::Command::State) {
-    auto oldState = m_isModified;
+  transaction->addSimpleCommand(
+      [=](UNDO::Command::State)
+      {
+        auto oldState = m_isModified;
 
-    swap->swapWith<0>(m_isModified);
-    swap->swapWith<1>(m_hashOnStore);
+        swap->swapWith<0>(m_isModified);
+        swap->swapWith<1>(m_hashOnStore);
 
-    if(oldState != m_isModified)
-      m_signalModificationState.send(m_isModified);
-  });
+        if(oldState != m_isModified)
+          m_signalModificationState.send(m_isModified);
+      });
 }
 
 bool EditBuffer::isModified() const
@@ -329,6 +331,7 @@ nlohmann::json EditBuffer::serialize() const
            { "origin-II", getAttribute("origin-II", "") },
            { "origin-I-vg", getAttribute("origin-I-vg", "") },
            { "origin-II-vg", getAttribute("origin-II-vg", "") },
+           { "parameters", "foo" },
            { "attributes", AttributesOwner::toJson() } };
 }
 
@@ -350,24 +353,26 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
     p->resetWasDefaulted(transaction);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      auto oldSelection = m_lastSelectedParameter;
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          auto oldSelection = m_lastSelectedParameter;
 
-      swapData->swapWith(m_lastSelectedParameter);
+          swapData->swapWith(m_lastSelectedParameter);
 
-      auto oldP = findParameterByID(oldSelection);
-      auto newP = findParameterByID(m_lastSelectedParameter);
+          auto oldP = findParameterByID(oldSelection);
+          auto newP = findParameterByID(m_lastSelectedParameter);
 
-      m_signalSelectedParameter.send(oldP, newP);
+          m_signalSelectedParameter.send(oldP, newP);
 
-      if(oldP)
-        oldP->onUnselected();
+          if(oldP)
+            oldP->onUnselected();
 
-      if(newP)
-        newP->onSelected();
+          if(newP)
+            newP->onSelected();
 
-      onChange();
-    });
+          onChange();
+        });
   }
   else if(sendReselectionSignal)
   {
@@ -444,7 +449,8 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("origin-I", getAttribute("origin-I", "")), Attribute("origin-II", getAttribute("origin-II", "")),
         Attribute("origin-I-vg", getAttribute("origin-I-vg", "")),
         Attribute("origin-II-vg", getAttribute("origin-II-vg", "")) },
-      [&]() {
+      [&]()
+      {
         if(changed)
           super::writeDocument(writer, knownRevision);
         m_recallSet.writeDocument(writer, knownRevision);
@@ -537,12 +543,14 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
 
   auto swap = UNDO::createSwapData(std::move(newId), std::move(presetOriginDescription));
 
-  transaction->addSimpleCommand([=](auto) {
-    swap->swapWith<0>(m_lastLoadedPreset);
-    swap->swapWith<1>(m_presetOriginDescription);
-    m_signalPresetLoaded.send();
-    onChange();
-  });
+  transaction->addSimpleCommand(
+      [=](auto)
+      {
+        swap->swapWith<0>(m_lastLoadedPreset);
+        swap->swapWith<1>(m_presetOriginDescription);
+        m_signalPresetLoaded.send();
+        onChange();
+      });
 
   initRecallValues(transaction);
 }
@@ -582,11 +590,13 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode
     undoableInitPart(transaction, vg, mode);
 
   auto swap = UNDO::createSwapData(Uuid::init());
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    swap->swapWith(m_lastLoadedPreset);
-    m_signalPresetLoaded.send();
-    onChange();
-  });
+  transaction->addSimpleCommand(
+      [=](UNDO::Command::State) mutable
+      {
+        swap->swapWith(m_lastLoadedPreset);
+        m_signalPresetLoaded.send();
+        onChange();
+      });
 
   resetModifiedIndicator(transaction);
 
@@ -831,12 +841,10 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
 void EditBuffer::undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  getParameterGroupByID({ "Mono", vg })->forEachParameter([&](auto p) -> void {
-    p->loadDefault(transaction, Defaults::FactoryDefault);
-  });
-  getParameterGroupByID({ "Unison", vg })->forEachParameter([&](auto p) -> void {
-    p->loadDefault(transaction, Defaults::FactoryDefault);
-  });
+  getParameterGroupByID({ "Mono", vg })
+      ->forEachParameter([&](auto p) -> void { p->loadDefault(transaction, Defaults::FactoryDefault); });
+  getParameterGroupByID({ "Unison", vg })
+      ->forEachParameter([&](auto p) -> void { p->loadDefault(transaction, Defaults::FactoryDefault); });
 }
 
 void EditBuffer::undoableUnmuteLayers(UNDO::Transaction *transaction)
@@ -877,12 +885,14 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 
     cleanupParameterSelection(transaction, m_type, type);
 
-    transaction->addSimpleCommand([=](auto state) {
-      swap->swapWith(m_type);
-      initUnisonVoicesScaling(m_type);
-      m_signalTypeChanged.send(m_type);
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](auto state)
+        {
+          swap->swapWith(m_type);
+          initUnisonVoicesScaling(m_type);
+          m_signalTypeChanged.send(m_type);
+          onChange();
+        });
   }
 }
 
@@ -1311,8 +1321,8 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
 {
   {
     auto toFxParam = findParameterByID({ C15::PID::Out_Mix_To_FX, loadInto });
-    auto splitPointI = findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::I});
-    auto splitPointII = findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::II});
+    auto splitPointI = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
+    auto splitPointII = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
 
     ScopedLock locks(transaction);
     locks.addLock(toFxParam);
@@ -1623,12 +1633,14 @@ void EditBuffer::undoableSetTypeFromConvert(UNDO::Transaction *transaction, Soun
 
     cleanupParameterSelection(transaction, m_type, type);
 
-    transaction->addSimpleCommand([=](auto state) {
-      swap->swapWith(m_type);
-      initUnisonVoicesScaling(m_type);
-      m_signalTypeChanged.send(m_type);
-      m_signalConversionHappened.send(m_type);
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](auto state)
+        {
+          swap->swapWith(m_type);
+          initUnisonVoicesScaling(m_type);
+          m_signalTypeChanged.send(m_type);
+          m_signalConversionHappened.send(m_type);
+          onChange();
+        });
   }
 }

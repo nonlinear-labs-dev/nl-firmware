@@ -8,6 +8,7 @@
 #include <nltools/Assert.h>
 #include <glibmm/regex.h>
 #include <giomm/file.h>
+#include <sync/JsonAdlSerializers.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
 

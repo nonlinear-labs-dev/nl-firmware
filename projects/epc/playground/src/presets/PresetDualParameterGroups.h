@@ -31,7 +31,7 @@ class PresetDualParameterGroups : public AttributesOwner
 
   GroupsMap& getGroups(VoiceGroup vg);
 
-  SoundType getType() const;
+  [[nodiscard]] SoundType getType() const;
 
   virtual void setType(UNDO::Transaction* transaction, SoundType type);
 

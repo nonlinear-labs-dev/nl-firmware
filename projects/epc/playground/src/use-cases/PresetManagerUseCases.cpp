@@ -130,7 +130,7 @@ void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
   auto transaction = scope->getTransaction();
   auto ebIsModified = m_presetManager->getEditBuffer()->isModified();
 
-  auto newPreset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *preset, true));
+  auto newPreset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *preset));
 
   m_presetManager->selectBank(transaction, bank->getUuid());
   bank->selectPreset(transaction, newPreset->getUuid());
