@@ -2,6 +2,8 @@
 
 #include "UpdateDocumentContributor.h"
 
+class SyncMaster;
+
 class UpdateDocumentMaster : public UpdateDocumentContributor
 {
  public:
