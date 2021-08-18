@@ -45,9 +45,11 @@
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <libundo/undo/ContinuousTransaction.h>
 #include "LoadedPresetLog.h"
+#include <sync/JsonAdlSerializers.h>
 
 EditBuffer::EditBuffer(PresetManager *parent)
     : ParameterGroupSet(parent)
+    , SyncedItem(parent->getRoot()->getSyncMaster(), "/editbuffer")
     , m_deferredJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
     , m_recallSet(this)
@@ -194,6 +196,7 @@ UpdateDocumentContributor::tUpdateID EditBuffer::onChange(uint64_t flags)
     m_signalLocksChanged.deferedSend();
   }
 
+  SyncedItem::setDirty();
   return ParameterGroupSet::onChange(flags);
 }
 
@@ -291,6 +294,42 @@ void EditBuffer::resetOriginIf(const Preset *p)
 bool EditBuffer::isDual() const
 {
   return getType() != SoundType::Single;
+}
+
+bool EditBuffer::isParameterFocusLocked() const
+{
+  return m_lockParameterFocusChanges;
+}
+
+nlohmann::json EditBuffer::serialize() const
+{
+  auto pm = static_cast<const PresetManager *>(getParent());
+  auto origin = pm->findPreset(getUUIDOfLastLoadedPreset());
+  auto zombie = isZombie();
+  auto bank = origin ? dynamic_cast<const Bank *>(origin->getParent()) : nullptr;
+  auto bankName = bank ? bank->getName(true) : "";
+  auto vgIName = getVoiceGroupName(VoiceGroup::I);
+  auto vgINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::I, true);
+  auto vgIIName = getVoiceGroupName(VoiceGroup::II);
+  auto vgIINameWithSuffix = getVoiceGroupNameWithSuffix(VoiceGroup::II, true);
+
+  return { { "selected-parameter", m_lastSelectedParameter },
+           { "editbuffer-type", toString(m_type) },
+           { "loaded-preset", getUUIDOfLastLoadedPreset() },
+           { "loaded-presets-name", getName() },
+           { "loaded-presets-bank-name", bankName },
+           { "preset-is-zombie", zombie },
+           { "is-modified", m_isModified },
+           { "hash", getHash() },
+           { "vg-I-name", vgIName },
+           { "vg-II-name", vgIIName },
+           { "vg-I-name-with-suffix", vgINameWithSuffix },
+           { "vg-II-name-with-suffix", vgIINameWithSuffix },
+           { "origin-I", getAttribute("origin-I", "") },
+           { "origin-II", getAttribute("origin-II", "") },
+           { "origin-I-vg", getAttribute("origin-I-vg", "") },
+           { "origin-II-vg", getAttribute("origin-II-vg", "") },
+           { "attributes", AttributesOwner::toJson() } };
 }
 
 void EditBuffer::lockParameterFocusChanges()

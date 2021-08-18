@@ -172,7 +172,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
     {
       auto pm = Application::get().getPresetManager();
       auto eb = pm->getEditBuffer();
-      auto ebAsPreset = std::make_unique<Preset>(pm, *eb, true);
+      auto ebAsPreset = std::make_unique<Preset>(pm, *eb);
       auto aUUID = request->get("p1");
       auto bUUID = request->get("p2");
       auto voiceGroupOfA = request->get("vg1");

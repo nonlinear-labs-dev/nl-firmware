@@ -84,7 +84,7 @@ void BankUseCases::dropPresets(const std::string& csv)
     {
       if(auto src = pm->findPreset(Uuid { uuid }))
       {
-        m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *src, true));
+        m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *src));
 
         if(m_bank == src->getParent())
           m_bank->deletePreset(transaction, Uuid { uuid });
@@ -105,12 +105,10 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset(
-          [&](auto p)
-          {
-            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
-            i++;
-          });
+      source->forEachPreset([&](auto p) {
+        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p));
+        i++;
+      });
     }
   }
 }
@@ -129,7 +127,7 @@ void BankUseCases::dropBankOnPreset(const Bank* sourceBank, const Uuid& presetAn
 
     for(size_t i = 0; i < numPresets; i++)
     {
-      auto p = std::make_unique<Preset>(m_bank, *sourceBank->getPresetAt(i), true);
+      auto p = std::make_unique<Preset>(m_bank, *sourceBank->getPresetAt(i));
       m_bank->insertPreset(transaction, insertPos + i, std::move(p));
     }
 

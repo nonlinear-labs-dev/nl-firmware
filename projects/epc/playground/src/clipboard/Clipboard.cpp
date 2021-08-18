@@ -131,7 +131,7 @@ void Clipboard::copyBank(const Uuid &bankUuid)
   {
     m_currentContentWasCut = false;
     auto scope = getUndoScope().startTrashTransaction();
-    m_content = std::make_unique<Bank>(this, *bank, false);
+    m_content = std::make_unique<Bank>(this, *bank);
     onChange(UpdateDocumentContributor::ChangeFlags::Generic);
   }
 }
@@ -163,7 +163,7 @@ bool Clipboard::copyPreset(const Uuid &presetUuid)
   {
     m_currentContentWasCut = false;
     auto scope = getUndoScope().startTrashTransaction();
-    m_content = std::make_unique<Preset>(this, *preset, false);
+    m_content = std::make_unique<Preset>(this, *preset);
     onChange(UpdateDocumentContributor::ChangeFlags::Generic);
     return true;
   }
@@ -219,7 +219,7 @@ std::unique_ptr<Bank> multiplePresetsToBank(const MultiplePresetSelection &mulPr
   auto b = std::make_unique<Bank>(Application::get().getPresetManager());
 
   for(auto &preset : mulPresets.getPresets())
-    b->prependPreset(transaction, std::make_unique<Preset>(b.get(), *preset.get(), true));
+    b->prependPreset(transaction, std::make_unique<Preset>(b.get(), *preset.get()));
 
   b->ensurePresetSelection(transaction);
   return b;
@@ -270,7 +270,7 @@ void Clipboard::pasteBankOnBank(const Glib::ustring &transactionName, const Uuid
     auto transaction = scope->getTransaction();
     auto source = dynamic_cast<const Bank *>(content);
     source->forEachPreset([&](auto preset) {
-      auto newPreset = std::make_unique<Preset>(target, *preset, true);
+      auto newPreset = std::make_unique<Preset>(target, *preset);
       target->appendPreset(transaction, std::move(newPreset));
     });
 
@@ -313,7 +313,7 @@ void Clipboard::pasteBankOnPreset(const Glib::ustring &transactionName, const Uu
       auto insertPos = targetBank->getPresetPosition(presetUuid) + 1;
 
       source->forEachPreset([&](auto srcPreset) {
-        auto cp = std::make_unique<Preset>(targetBank, *srcPreset, true);
+        auto cp = std::make_unique<Preset>(targetBank, *srcPreset);
         targetBank->insertPreset(transaction, insertPos++, std::move(cp));
       });
 

@@ -4,6 +4,7 @@
 #include "presets/recall/RecallParameterGroups.h"
 #include "nltools/GenericScopeGuard.h"
 #include <nltools/threading/Expiration.h>
+#include <sync/SyncedItem.h>
 #include <tools/DelayedJob.h>
 #include <tools/Uuid.h>
 #include <utility>
@@ -15,7 +16,7 @@ class HWUI;
 class SplitPointParameter;
 class LoadedPresetLog;
 
-class EditBuffer : public ParameterGroupSet
+class EditBuffer : public ParameterGroupSet, public SyncedItem
 {
  private:
   typedef ParameterGroupSet super;
@@ -128,6 +129,9 @@ class EditBuffer : public ParameterGroupSet
  private:
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
+
+  nlohmann::json serialize() const override;
+
 
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;

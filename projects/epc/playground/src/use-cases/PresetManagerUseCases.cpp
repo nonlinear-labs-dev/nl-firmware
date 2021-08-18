@@ -209,8 +209,9 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   auto bank = m_presetManager->addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-  auto preset = bank->appendPreset(transaction,
-                                          std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer(), false));
+
+  auto preset
+      = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager->selectBank(transaction, bank->getUuid());
   m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
@@ -611,7 +612,7 @@ void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetMan
         }
         else
         {
-          bank->insertPreset(transaction, size_t(pos), std::make_unique<Preset>(bank, *src, true));
+          bank->insertPreset(transaction, size_t(pos), std::make_unique<Preset>(bank, *src));
           pos++;
         }
       }
@@ -641,7 +642,7 @@ void PresetManagerUseCases::copyPresetAbove(const Uuid& presetToCopy, const Uuid
 
     auto scope = m_presetManager->getUndoScope().startTransaction("Copy preset '%0'", srcPreset->getName());
     auto transaction = scope->getTransaction();
-    auto newPreset = std::make_unique<Preset>(tgtBank, *srcPreset, true);
+    auto newPreset = std::make_unique<Preset>(tgtBank, *srcPreset);
     auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
     tgtBank->selectPreset(transaction, tgtPreset->getUuid());
     m_presetManager->selectBank(transaction, tgtBank->getUuid());
@@ -662,7 +663,7 @@ void PresetManagerUseCases::copyPresetBelow(const Uuid& presetToCopy, const Uuid
 
     auto scope = m_presetManager->getUndoScope().startTransaction("Copy preset '%0'", srcPreset->getName());
     auto transaction = scope->getTransaction();
-    auto newPreset = std::make_unique<Preset>(tgtBank, *srcPreset, true);
+    auto newPreset = std::make_unique<Preset>(tgtBank, *srcPreset);
     auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
     tgtBank->selectPreset(transaction, tgtPreset->getUuid());
     m_presetManager->selectBank(transaction, tgtBank->getUuid());
@@ -729,7 +730,7 @@ void PresetManagerUseCases::createBankFromPreset(const Uuid& uuid, const std::st
       auto newBank = m_presetManager->addBank(transaction);
       newBank->setX(transaction, x);
       newBank->setY(transaction, y);
-      auto newPreset = newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *p, true));
+      auto newPreset = newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *p));
       newBank->setName(transaction, "New Bank");
       newBank->selectPreset(transaction, newPreset->getUuid());
       m_presetManager->selectBank(transaction, newBank->getUuid());
@@ -752,7 +753,7 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
 
   for(const auto& uuid : strs)
     if(auto src = m_presetManager->findPreset(Uuid { uuid }))
-      newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *src, true));
+      newBank->appendPreset(transaction, std::make_unique<Preset>(newBank, *src));
 
   if(newBank->getNumPresets() > 0)
     newBank->selectPreset(transaction, newBank->getPresetAt(0)->getUuid());
@@ -973,7 +974,7 @@ void PresetManagerUseCases::pastePresetOnBank(Bank* bank, const Preset* preset, 
 {
   auto scope = m_presetManager->getUndoScope().startTransaction("Paste Preset");
   auto transaction = scope->getTransaction();
-  bank->appendPreset(transaction, std::make_unique<Preset>(bank, *preset, true));
+  bank->appendPreset(transaction, std::make_unique<Preset>(bank, *preset));
   pClipboard->doCut(transaction);
 }
 
@@ -984,7 +985,7 @@ void PresetManagerUseCases::pastePresetOnPreset(Preset* target, Preset* source, 
     auto scope = m_presetManager->getUndoScope().startTransaction("Paste Preset");
     auto transaction = scope->getTransaction();
     auto insertPos = targetBank->getPresetPosition(target->getUuid()) + 1;
-    auto newPreset = std::make_unique<Preset>(targetBank, *source, true);
+    auto newPreset = std::make_unique<Preset>(targetBank, *source);
     auto newPresetPtr = targetBank->insertPreset(transaction, insertPos, std::move(newPreset));
     targetBank->selectPreset(transaction, newPresetPtr->getUuid());
     clipboard->doCut(transaction);
@@ -996,7 +997,7 @@ void PresetManagerUseCases::pasteBankOnBackground(const Glib::ustring& name, con
 {
   auto scope = m_presetManager->getUndoScope().startTransaction(name);
   auto transaction = scope->getTransaction();
-  auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager, *source, true));
+  auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager, *source));
   newBank->setX(transaction, x);
   newBank->setY(transaction, y);
   m_presetManager->selectBank(transaction, newBank->getUuid());
@@ -1011,7 +1012,7 @@ void PresetManagerUseCases::pastePresetOnBackground(const Glib::ustring& x, cons
   auto newBank = m_presetManager->addBank(transaction);
   newBank->setX(transaction, x);
   newBank->setY(transaction, y);
-  newBank->prependPreset(transaction, std::make_unique<Preset>(newBank, *source, true));
+  newBank->prependPreset(transaction, std::make_unique<Preset>(newBank, *source));
   newBank->ensurePresetSelection(transaction);
   m_presetManager->selectBank(transaction, newBank->getUuid());
   clipboard->doCut(transaction);

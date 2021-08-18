@@ -13,20 +13,22 @@ std::string to_string(Bank::AttachmentDirection dir);
 
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
+    , SyncedItem(parent->getRoot()->getSyncMaster())
     , m_attachedToBankWithUuid(Uuid::none())
     , m_name("New Bank")
     , m_presets(*this, std::bind(&Bank::clonePreset, this, std::placeholders::_1))
 {
+  setTopic("/bank/" + m_uuid.raw());
 }
 
-Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids)
-    : Bank(parent)
+Bank::Bank(UpdateDocumentContributor *parent, const Bank &other)
+    : super(parent)
+    , SyncedItem(parent->getRoot()->getSyncMaster())
+    , m_attachedToBankWithUuid(Uuid::none())
+    , m_name("New Bank")
+    , m_presets(*this, std::bind(&Bank::clonePreset, this, std::placeholders::_1))
 {
-  if(!ignoreUuids)
-  {
-    m_uuid = other.m_uuid;
-    m_attachedToBankWithUuid = other.m_attachedToBankWithUuid;
-  }
+  setTopic("/bank/" + m_uuid.raw());
 
   {
     auto scope = UNDO::Scope::startTrashTransaction();
@@ -92,7 +94,7 @@ SaveResult Bank::savePresets(Glib::RefPtr<Gio::File> bankFolder)
 
 Preset *Bank::clonePreset(const Preset *p)
 {
-  return new Preset(this, *p, true);
+  return new Preset(this, *p);
 }
 
 void Bank::load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder, int numBank, int numBanks)
@@ -146,12 +148,8 @@ UpdateDocumentContributor::tUpdateID Bank::onChange(uint64_t flags)
 {
   auto ret = AttributesOwner::onChange(flags);
   m_sigBankChanged.send();
+  setDirty();
   return ret;
-}
-
-const Uuid &Bank::getUuid() const
-{
-  return m_uuid;
 }
 
 std::string Bank::getName(bool withFallback) const
@@ -323,7 +321,13 @@ void Bank::setName(UNDO::Transaction *transaction, const std::string &name)
 
 void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-  transaction->addUndoSwap(this, m_uuid, uuid);
+  auto s = UNDO::createSwapData(uuid);
+
+  transaction->addSimpleCommand([this, s](auto) {
+    s->swapWith(m_uuid);
+    SyncedItem::setTopic("/bank/" + m_uuid.raw());
+  });
+
   updateLastModifiedTimestamp(transaction);
 }
 
@@ -447,7 +451,7 @@ void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID kn
   auto pm = dynamic_cast<const PresetManager *>(getParent());
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("x", getX()),
+  writer.writeTag("preset-bank", Attribute("uuid", getUuid().raw()), Attribute("name", m_name), Attribute("x", getX()),
                   Attribute("y", getY()), Attribute("selected-preset", getSelectedPresetUuid().raw()),
                   Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed),
                   [&]()
@@ -471,17 +475,14 @@ bool Bank::empty() const
   return m_presets.empty();
 }
 
-void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other, bool ignoreUuids)
+void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other)
 {
-  if(!ignoreUuids)
-    setUuid(transaction, other->getUuid());
-
   setName(transaction, other->getName(false));
   setX(transaction, other->getX());
   setY(transaction, other->getY());
 
   AttributesOwner::copyFrom(transaction, other);
-  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, *p, ignoreUuids)); });
+  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, *p)); });
 
   updateLastModifiedTimestamp(transaction);
 }
@@ -588,6 +589,31 @@ void Bank::searchPresets(Writer &writer, const SearchQuery &query) const
 time_t Bank::getLastChangedTimestamp() const
 {
   return m_lastChangedTimestamp;
+}
+
+const Uuid &Bank::getUuid() const
+{
+  return m_uuid;
+}
+
+nlohmann::json Bank::serialize() const
+{
+  if(getPresetManager()->findBank(m_uuid) != this)
+    return nullptr;
+
+  return { { "uuid", m_uuid },
+           { "name", m_name },
+           { "x", getX() },
+           { "y", getY() },
+           { "selected-preset", getSelectedPresetUuid() },
+           { "order-number", getPresetManager()->getBankPosition(getUuid()) + 1 },
+           { "attributes", AttributesOwner::toJson() },
+           { "date-of-last-change", TimeTools::getDisplayStringFromStamp(m_lastChangedTimestamp) },
+           { "attached-to", getAttachedToBankUuid() },
+           { "attached-direction", getAttachDirection() },
+           { "collapsed", getAttribute("collapsed", "false") },
+           { "state", calcStateString() },
+           { "presets", m_presets } };
 }
 
 const Glib::ustring Bank::calcStateString() const

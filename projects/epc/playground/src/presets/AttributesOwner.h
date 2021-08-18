@@ -2,6 +2,7 @@
 
 #include <http/UpdateDocumentContributor.h>
 #include <map>
+#include <nltools/nlohmann/json.hpp>
 
 namespace UNDO
 {

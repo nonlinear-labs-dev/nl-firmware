@@ -235,6 +235,7 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
             ElementPtr e = std::move(*it);
             m_elements.erase(it);
             swapData->swapWith(e);
+            e->invalidate();
             invalidateAllChildren();
           },
           [=](auto) {

@@ -15,6 +15,8 @@
 #include <tools/Signal.h>
 #include <nltools/Types.h>
 
+#include <sync/SyncedItem.h>
+
 class Bank;
 class Preset;
 class EditBuffer;
@@ -25,7 +27,7 @@ class NetworkRequest;
 class AudioEngineProxy;
 class Options;
 
-class PresetManager : public ContentSection
+class PresetManager : public ContentSection, public SyncedItem
 {
   using SaveSubTask = std::function<SaveResult()>;
 
@@ -112,6 +114,7 @@ class PresetManager : public ContentSection
   Preset *getSelectedPreset();
 
  private:
+  nlohmann::json serialize() const override;
   void loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
                                                      const Glib::RefPtr<Gio::File> &pmFolder);
   void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder);
