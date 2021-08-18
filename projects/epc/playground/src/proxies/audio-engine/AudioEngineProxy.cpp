@@ -26,7 +26,6 @@
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <device-settings/midi/MidiChannelSettings.h>
-#include <device-settings/midi/local/LocalNotesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
