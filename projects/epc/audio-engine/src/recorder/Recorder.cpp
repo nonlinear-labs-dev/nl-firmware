@@ -22,7 +22,7 @@ Recorder::Recorder(int sr)
     , m_in(std::make_unique<RecorderInput>(m_storage.get(), sr))
     , m_out(std::make_unique<RecorderOutput>(m_storage.get(), sr))
     , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(RECORDER_WEBSOCKET_PORT,
-                                                             [this](const auto &msg) { return api(msg); }))
+                                                             [this](auto, const auto &msg) { return api(msg); }))
     , m_http(std::make_unique<NetworkServer>(RECORDER_HTTPSERVER_PORT, m_storage.get()))
 {
   m_in->setPaused(true);

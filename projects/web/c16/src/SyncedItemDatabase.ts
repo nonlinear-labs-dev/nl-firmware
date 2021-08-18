@@ -28,8 +28,10 @@ export class SyncedItemDatabase {
     }
 
     public queryVar(topic: Topic): ReactiveVar<SyncedData> {
-        if (!this.database.has(topic))
+        if (!this.database.has(topic)) {
             this.database.set(topic, new ReactiveVar<SyncedData>({}));
+            this.socket.send(JSON.stringify({ 'sub': topic }));
+        }
         return this.database.get(topic);
     }
 
@@ -44,7 +46,7 @@ export class SyncedItemDatabase {
 
     private onOpen() {
         this.database.forEach((v, k) => v.set(null));
-        this.socket.send(JSON.stringify({ 'sync': {} }));
+        this.database.clear();
     }
 
     private onError() {
@@ -77,15 +79,17 @@ export class SyncedItemDatabase {
     private onMessage(data: any) {
         var reader = new FileReader()
         reader.onload = () => {
-            var j = JSON.parse(reader.result as string);
-            j.forEach((c: SyncedItem) => {
+            var c: SyncedItem = JSON.parse(reader.result as string);
+
+            if (c) {
                 if (!c.state || Object.keys(c.state).length == 0) {
                     this.queryVar(c.topic).set(null);
                 }
                 else {
                     this.queryVar(c.topic).set(c.state);
                 }
-            });
+            }
+
         }
         reader.readAsText(data);
     }

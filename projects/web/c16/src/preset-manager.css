@@ -1,0 +1,53 @@
+.preset-manager {
+    display: block;
+}
+
+.bank {
+    display: inline-block;
+    border: 1px solid black;
+    margin: 1em;
+    width: 10em;
+}
+
+.bank .header {
+    display: block;
+    text-align: center;
+    border-bottom: solid 1px black;
+    padding: 2mm;
+}
+
+
+.bank .preset-list {
+    display: flex;
+    flex-direction: column;
+    border-collapse: collapse;
+}
+
+.bank .preset-list .preset {
+    display: table-row;
+    border-bottom: 1px solid black;
+}
+
+.bank .preset-list .preset:last-child {
+    border-bottom: none;
+}
+
+.bank .preset-list .preset .number {
+    display: table-cell;
+    padding: 2mm;
+}
+
+.bank .preset-list .preset .name {
+    display: table-cell;
+    padding: 2mm;
+}
+
+.bank .preset-list .preset.selected {
+    background-color: #CCCCCC;
+}
+
+.bank .preset-list .preset.loaded {
+    outline: 2px solid green;
+    outline-offset: -2px;
+}
+

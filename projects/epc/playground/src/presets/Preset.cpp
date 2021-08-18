@@ -424,7 +424,7 @@ nlohmann::json Preset::serialize() const
            { "bank-uuid", bank ? bank->getUuid() : Uuid::none() },
            { "name", m_name },
            { "name-suffixed", getDisplayNameWithSuffixes(true) },
-           { "type", toString(m_type) },
+           { "type", toString(getType()) },
            { "part-I-name", getVoiceGroupName(VoiceGroup::I) },
            { "part-II-name", getVoiceGroupName(VoiceGroup::II) },
            { "attributes", AttributesOwner::toJson() } };

@@ -1,6 +1,5 @@
 #include "SyncMaster.h"
 #include "SyncedItem.h"
-#include <nltools/messaging/WebSocketJsonAPI.h>
 #include <sync/JsonAdlSerializers.h>
 #include <nltools/messaging/MockAPI.h>
 
@@ -49,8 +48,21 @@ nlohmann::json SyncMaster::api(const nlohmann::json &in)
     auto name = it->first;
     auto args = it->second;
 
-    if(name == "sync")
-      return m_items;
+    if(name == "sub")
+    {
+      try
+      {
+        std::string topic = args;
+        m_subscribers[topic].push_back(client);
+
+        auto it = std::find_if(m_items.begin(), m_items.end(), [&](auto &a) { return a->getTopic() == topic; });
+        if(it != m_items.end())
+          return *it;
+      }
+      catch(...)
+      {
+      }
+    }
   }
   return {};
 }
@@ -66,8 +78,17 @@ void SyncMaster::remove(SyncedItem *i)
   m_items.erase(std::find(m_items.begin(), m_items.end(), i));
   i->resetDirty();
   nlohmann::json r;
-  r.push_back({ { "topic", i->getTopic() }, { "state", nullptr } });
-  m_api->sendAll(r);
+  auto topic = i->getTopic();
+  r.push_back({ { "topic", topic }, { "state", nullptr } });
+
+  if(auto it = m_subscribers.find(topic); it != m_subscribers.end())
+  {
+    for(auto &s : it->second)
+      if(auto p = s.lock())
+        m_api->send(p.get(), r);
+
+    m_subscribers.erase(it);
+  }
 }
 
 void SyncMaster::addDirty(SyncedItem *item)
@@ -86,6 +107,23 @@ void SyncMaster::handleDirty()
   auto cp(std::move(m_dirty));
   auto newEnd = std::remove_if(cp.begin(), cp.end(), [](auto i) { return !i->updateState(); });
   cp.erase(newEnd, cp.end());
-  if(!cp.empty())
-    m_api->sendAll(cp);
+
+  for(const auto &dirtyItem : cp)
+  {
+    if(auto it = m_subscribers.find(dirtyItem->getTopic()); it != m_subscribers.end())
+    {
+      auto &clients = it->second;
+
+      auto newEnd = std::remove_if(clients.begin(), clients.end(), [&](auto &client) {
+        if(auto p = client.lock())
+        {
+          m_api->send(p.get(), dirtyItem);
+          return false;
+        }
+        return true;
+      });
+
+      clients.erase(newEnd, clients.end());
+    }
+  }
 }

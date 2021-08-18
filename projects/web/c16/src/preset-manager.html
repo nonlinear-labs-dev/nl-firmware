@@ -18,22 +18,28 @@
 </template>
 
 <template name="presetManager">
-    <div>C16 Preset Manager</div>
-
-    {{#each getBanks}}
-    {{ > bank }}
-    {{/each}}
-
+    <div class="preset-manager">
+        {{#each getBanks}}
+        {{ > bank }}
+        {{/each}}
+    </div>
 </template>
 
 <template name="bank">
-    <div>Bank {{ getNumber }} : {{ getName }} </div>
-    {{#each getPresets}}
-    {{ > preset }}
-    {{/each}}
+    <div class="bank" id="bank-{{ uuid }} {{#if selected}}selected{{/if}}">
+        <div class="header"> {{ orderNumber }} - {{ name }}</div>
+        <div class="preset-list">
+            {{#each getPresets}}
+            {{ > preset }}
+            {{/each}}
+        </div>
+    </div>
 
 </template>
 
 <template name="preset">
-    <div>{{ getNumber }} - {{ getName }} </div>
+    <div class="preset {{#if selected}}selected{{/if}} {{#if loaded}}loaded{{/if}}">
+        <span class="number">{{ orderNumber }}</span>
+        <span class="name">{{ name }}</span>
+    </div>
 </template>
