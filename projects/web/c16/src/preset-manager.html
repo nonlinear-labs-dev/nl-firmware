@@ -1,6 +1,20 @@
 <template name="editBuffer">
     <div>C16 Parameter Editor</div>
-    {{getParameters}}
+    {{#each getParameterGroups}}
+    {{ > parameterGroup }}
+    {{/each}}
+</template>
+
+<template name="parameterGroup">
+    <div>Group: {{ getName }}</div>
+    {{ #each getParameters }}
+    {{ > parameter }}
+    {{/each}}
+</template>
+
+<template name="parameter">
+    <div>Name: {{ getName }}</div>
+    <div>Value: {{ getValue }}</div>
 </template>
 
 <template name="presetManager">

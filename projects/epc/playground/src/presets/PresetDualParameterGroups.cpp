@@ -8,6 +8,7 @@
 #include <presets/PresetParameterGroup.h>
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
+#include <sync/SyncMasterMockRoot.h>
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent)
     : AttributesOwner(parent)
@@ -170,7 +171,7 @@ void PresetDualParameterGroups::setType(UNDO::Transaction *transaction, SoundTyp
   transaction->addUndoSwap(this, m_type, type);
 }
 
-PresetParameter *PresetDualParameterGroups::findParameterByID(ParameterId id, bool throwIfMissing) const
+PresetParameter *PresetDualParameterGroups::findParameterByID(const ParameterId& id, bool throwIfMissing) const
 {
   for(auto &g : m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())])
     if(auto p = g.second->findParameterByID(id))

@@ -48,6 +48,7 @@ class ParameterGroupSet : public AttributesOwner
   void forEachParameter(const std::function<void(const Parameter *)> &cb) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  [[nodiscard]] nlohmann::json getParameterGroupIDs() const;
 
  protected:
   void loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transaction, const Preset *p, VoiceGroup target);

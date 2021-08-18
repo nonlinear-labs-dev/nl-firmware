@@ -9,7 +9,7 @@
 class PresetParameterGroup;
 class ParameterGroupSet;
 
-class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListItem<ParameterGroup *>
+class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListItem<ParameterGroup *>, public SyncedItem
 {
  private:
   typedef UpdateDocumentContributor super;
@@ -19,6 +19,9 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
                  const char *webUIName);
   ~ParameterGroup() override;
 
+ protected:
+
+ public:
   virtual void init() = 0;
 
   Glib::ustring getShortName() const;
@@ -84,6 +87,8 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
 
  protected:
   tParameterPtr appendParameter(Parameter *p);
+  nlohmann::json serialize() const override;
+  nlohmann::json getParameterIDs() const;
 
  private:
   const GroupId m_id;

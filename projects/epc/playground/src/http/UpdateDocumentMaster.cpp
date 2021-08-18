@@ -9,9 +9,9 @@ UpdateDocumentMaster::UpdateDocumentMaster()
 
 UpdateDocumentMaster::~UpdateDocumentMaster() = default;
 
-void UpdateDocumentMaster::enableSync()
+void UpdateDocumentMaster::enableSync(nltools::msg::API::Backend apiImpl)
 {
-  m_sync = std::make_unique<SyncMaster>();
+  m_sync = std::make_unique<SyncMaster>(apiImpl);
 }
 
 SyncMaster &UpdateDocumentMaster::getSyncMaster() const

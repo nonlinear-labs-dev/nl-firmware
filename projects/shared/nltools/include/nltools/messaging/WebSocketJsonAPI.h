@@ -7,12 +7,13 @@
 #include <glibmm.h>
 #include <memory>
 #include <future>
+#include <nltools/messaging/API.h>
 
 namespace nltools
 {
   namespace msg
   {
-    class WebSocketJsonAPI
+    class WebSocketJsonAPI : public API
     {
      public:
       using ReceiveCB = std::function<nlohmann::json(const nlohmann::json &)>;
@@ -20,12 +21,13 @@ namespace nltools
       WebSocketJsonAPI(guint port, ReceiveCB cb);
       ~WebSocketJsonAPI();
 
-      void sendAll(const nlohmann::json &msg);
-      void sendAllUpdating(const nlohmann::json &msg);
-      bool hasClients() const;
+      void sendAll(const nlohmann::json &msg) override;
+      void sendAllUpdating(const nlohmann::json &msg) override;
+      bool hasClients() const override;
 
      private:
-      using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
+      using tGObjectUnref = decltype(*g_object_unref);
+      using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, tGObjectUnref>;
 
       void backgroundThread();
       bool send(SoupWebsocketConnection *c, const nlohmann::json &msg);
@@ -35,7 +37,7 @@ namespace nltools
 
       guint m_port;
       ReceiveCB m_cb;
-      std::unique_ptr<SoupServer, decltype(*g_object_unref)> m_server;
+      std::unique_ptr<SoupServer, tGObjectUnref> m_server;
       Glib::RefPtr<Glib::MainLoop> m_messageLoop;
       std::unique_ptr<threading::ContextBoundMessageQueue> m_mainContextQueue;
       std::unique_ptr<threading::ContextBoundMessageQueue> m_bgContextQueue;

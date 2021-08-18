@@ -331,7 +331,7 @@ nlohmann::json EditBuffer::serialize() const
            { "origin-II", getAttribute("origin-II", "") },
            { "origin-I-vg", getAttribute("origin-I-vg", "") },
            { "origin-II-vg", getAttribute("origin-II-vg", "") },
-           { "parameters", "foo" },
+           { "parametergroups", getParameterGroupIDs() },
            { "attributes", AttributesOwner::toJson() } };
 }
 

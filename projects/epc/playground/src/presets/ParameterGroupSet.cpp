@@ -277,3 +277,16 @@ void ParameterGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transa
     setAttribute(transaction, "origin-I-vg", toString(VoiceGroup::II));
   }
 }
+
+nlohmann::json ParameterGroupSet::getParameterGroupIDs() const
+{
+  nlohmann::json ret {};
+  for(auto &vg : m_parameterGroups)
+  {
+    for(auto &g : vg)
+    {
+      ret.push_back(g->getID().toString());
+    }
+  }
+  return ret;
+}

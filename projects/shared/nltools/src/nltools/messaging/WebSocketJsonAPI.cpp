@@ -1,6 +1,8 @@
 #include <nltools/messaging/WebSocketJsonAPI.h>
 #include <nltools/logging/Log.h>
 
+#include <utility>
+
 namespace nltools
 {
   namespace msg
@@ -8,7 +10,7 @@ namespace nltools
 
     WebSocketJsonAPI::WebSocketJsonAPI(guint port, WebSocketJsonAPI::ReceiveCB cb)
         : m_port(port)
-        , m_cb(cb)
+        , m_cb(std::move(cb))
         , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
         , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
         , m_messageLoop(Glib::MainLoop::create(Glib::MainContext::create()))
@@ -76,6 +78,7 @@ namespace nltools
 
     bool WebSocketJsonAPI::send(SoupWebsocketConnection *c, const nlohmann::json &msg)
     {
+      nltools::Log::error(to_string(msg));
       if(std::find_if(m_connections.begin(), m_connections.end(), [&](auto &a) { return c == a.get(); })
          == m_connections.end())
         return false;

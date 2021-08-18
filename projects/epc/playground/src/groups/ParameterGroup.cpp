@@ -10,10 +10,12 @@
 #include <libundo/undo/Scope.h>
 #include <xml/Attribute.h>
 #include <nltools/logging/Log.h>
+#include <http/UpdateDocumentMaster.h>
 
 ParameterGroup::ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                                const char *webUIName)
     : UpdateDocumentContributor(parent)
+    , SyncedItem(parent->getRoot()->getSyncMaster(), "/parametergroup/" + id.toString())
     , m_id(id)
     , m_shortName(shortName)
     , m_longName(longName)
@@ -86,6 +88,7 @@ ParameterGroup::tUpdateID ParameterGroup::onChange(uint64_t flags)
 {
   auto ret = super::onChange(flags);
   m_signalGroupChanged.deferedSend();
+  SyncedItem::setDirty();
   return ret;
 }
 
@@ -118,7 +121,9 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("parameter-group", Attribute("id", getID()), Attribute("short-name", getShortName()),
-                  Attribute("long-name", m_webUIName), Attribute("changed", changed), [&]() {
+                  Attribute("long-name", m_webUIName), Attribute("changed", changed),
+                  [&]()
+                  {
                     if(changed)
                       for(const auto p : m_parameters)
                         p->writeDocument(writer, knownRevision);
@@ -208,4 +213,19 @@ void ParameterGroup::undoableLoadDefault(UNDO::Transaction *transaction, Default
 {
   for(auto &p : getParameters())
     p->loadDefault(transaction, mode);
+}
+
+nlohmann::json ParameterGroup::serialize() const
+{
+  return { { "id", getID().toString() }, { "name", getLongName().c_str() }, { "parameters", getParameterIDs() } };
+}
+
+nlohmann::json ParameterGroup::getParameterIDs() const
+{
+  nlohmann::json ret {};
+  for(const auto &p : getParameters())
+  {
+    ret.push_back(p->getID().toString());
+  }
+  return ret;
 }

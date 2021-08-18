@@ -74,7 +74,7 @@ bool ContentManager::WebsocketConnection::canOmitOracles(int currentUpdateId) co
 ContentManager::ContentManager()
     : m_lastUpdateSentAt(std::chrono::steady_clock::now())
 {
-  enableSync();
+  enableSync(nltools::msg::API::Backend::Websocket);
 }
 
 ContentManager::~ContentManager() = default;
