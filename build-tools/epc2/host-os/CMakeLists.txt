@@ -6,7 +6,7 @@ message("Arch is ${ARCH_VERSION}")
 SET(HOST_PACKAGES ${SHARED_PACKAGES} 
   nano vi mc arch-install-scripts dosfstools cmake make pkgconf gcc git wget unzip 
   jdk11-openjdk fuse-overlayfs fuse3 pacman-contrib typescript archiso
-  linux mkinitcpio-archiso syslinux)
+  linux mkinitcpio-archiso syslinux npm rsync)
 
 string(REPLACE ";" " " HOST_PACKAGES "${HOST_PACKAGES}")
 

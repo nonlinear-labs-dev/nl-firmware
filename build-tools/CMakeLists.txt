@@ -2,6 +2,7 @@ add_subdirectory(bbb)
 add_subdirectory(epc)
 add_subdirectory(epc2)
 add_subdirectory(playcontroller)
+add_subdirectory(web)
 
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
