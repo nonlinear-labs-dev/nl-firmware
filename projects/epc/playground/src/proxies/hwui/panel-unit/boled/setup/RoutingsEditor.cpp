@@ -1,4 +1,4 @@
-#include "HardwareEnableSettingsEditor.h"
+#include "RoutingsEditor.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
@@ -8,7 +8,8 @@
 #include <cmath>
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/Oleds.h>
-#include "HardwareEnableSettingsHelper.h"
+#include <proxies/hwui/controls/labels/LabelStyleable.h>
+#include "RoutingsSettingsHelper.h"
 
 inline auto getPreviewNameForAspect(RoutingSettings::tAspectIndex a)
 {
@@ -114,50 +115,6 @@ AspectList::AspectList(RoutingSettings::tRoutingIndex e, RoutingSettings::tAspec
 {
 }
 
-class VariableCenterAlignedLabel : public CenterAlignedLabel
-{
- public:
-  using CenterAlignedLabel::CenterAlignedLabel;
-
-  enum class FontFamily
-  {
-    Regular8,
-    Regular9,
-    Bold8,
-    Bold9
-  };
-
-  void setFamily(FontFamily fam)
-  {
-    if(m_family != fam)
-    {
-      m_family = fam;
-      setDirty();
-    }
-  }
-
-  std::shared_ptr<Font> getFont() const override
-  {
-    auto& oled = Oleds::get();
-    switch(m_family)
-    {
-      case FontFamily::Regular8:
-        return oled.getFont("Emphase-8-Regular", 8);
-      case FontFamily::Regular9:
-        return oled.getFont("Emphase-9-Regular", 9);
-      case FontFamily::Bold8:
-        return oled.getFont("Emphase-8-Bold", 8);
-      case FontFamily::Bold9:
-        return oled.getFont("Emphase-9-Bold", 9);
-    }
-
-    return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
-  }
-
- private:
-  FontFamily m_family;
-};
-
 class SetupModuleHeader : public Label
 {
  public:
@@ -177,7 +134,7 @@ class SetupModuleHeader : public Label
   }
 };
 
-HardwareEnableSettingsEditor::HardwareEnableSettingsEditor(RoutingSettings::tRoutingIndex id)
+RoutingsEditor::RoutingsEditor(RoutingSettings::tRoutingIndex id)
     : MenuEditor()
     , m_id { id }
 {
@@ -186,18 +143,19 @@ HardwareEnableSettingsEditor::HardwareEnableSettingsEditor(RoutingSettings::tRou
   if(Application::exists())
   {
     auto setting = Application::get().getSettings()->getSetting<RoutingSettings>();
-    setting->onChange(sigc::mem_fun(this, &HardwareEnableSettingsEditor::onSettingChanged));
+    setting->onChange(sigc::mem_fun(this, &RoutingsEditor::onSettingChanged));
   }
 
   addControl(new SetupModuleHeader({ "Routings" }, { 0, 0, 64, 16 }));
 
-  m_entryLabel = addControl(new VariableCenterAlignedLabel("Entry", { 64, 0, 128, 16 }));
-  m_entryLabel->setFamily(VariableCenterAlignedLabel::FontFamily::Bold9);
+  LabelStyle entryStyle = { FontSize::Size9, FontDecoration::Bold, Font::Justification::Center };
+  m_entryLabel = addControl(new LabelStyleable("Entry", { 64, 0, 128, 16 }, entryStyle));
   m_entryLabel->setHighlight(true);
-  m_aspectLabel = addControl(new VariableCenterAlignedLabel("Aspect", { 64, 16, 128, 16 }));
-  m_aspectLabel->setFamily(VariableCenterAlignedLabel::FontFamily::Regular9);
-  m_valueLabel = addControl(new VariableCenterAlignedLabel("Value", { 64, 32, 128, 16 }));
-  m_valueLabel->setFamily(VariableCenterAlignedLabel::FontFamily::Regular8);
+
+  LabelStyle aspectStyle = { FontSize::Size9, FontDecoration::Regular, Font::Justification::Center };
+  m_aspectLabel = addControl(new LabelStyleable("Aspect", { 64, 16, 128, 16 }, aspectStyle));
+  LabelStyle valueStyle = { FontSize::Size8, FontDecoration::Regular, Font::Justification::Center };
+  m_valueLabel = addControl(new LabelStyleable("Value", { 64, 32, 128, 16 }, valueStyle));
 
   m_aspectList = addControl(new AspectList(m_id, m_aspect, { 192, 0, 64, 64 }));
   addControl(new Button("Back", Buttons::BUTTON_A));
@@ -206,19 +164,19 @@ HardwareEnableSettingsEditor::HardwareEnableSettingsEditor(RoutingSettings::tRou
   update();
 }
 
-void HardwareEnableSettingsEditor::setPosition(const Rect& r)
+void RoutingsEditor::setPosition(const Rect& r)
 {
   static const Rect menuEditorPosition(0, 0, 256, 96);
   ControlWithChildren::setPosition(menuEditorPosition);
 }
 
-void HardwareEnableSettingsEditor::drawBackground(FrameBuffer& fb)
+void RoutingsEditor::drawBackground(FrameBuffer& fb)
 {
   fb.setColor(FrameBufferColors::C128);
   fb.fillRect(getPosition());
 }
 
-void HardwareEnableSettingsEditor::incSetting(int inc)
+void RoutingsEditor::incSetting(int inc)
 {
   if(Application::exists())
   {
@@ -231,19 +189,19 @@ void HardwareEnableSettingsEditor::incSetting(int inc)
   }
 }
 
-const std::vector<Glib::ustring>& HardwareEnableSettingsEditor::getDisplayStrings() const
+const std::vector<Glib::ustring>& RoutingsEditor::getDisplayStrings() const
 {
   static std::vector<Glib::ustring> unused = { "" };
   return unused;
 }
 
-int HardwareEnableSettingsEditor::getSelectedIndex() const
+int RoutingsEditor::getSelectedIndex() const
 {
   constexpr auto unused = 0;
   return unused;
 }
 
-bool HardwareEnableSettingsEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+bool RoutingsEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   auto doIfDownAndSwallowAll = [isDown = down, pressed = i](Buttons b, auto cb)
   {
@@ -268,7 +226,7 @@ bool HardwareEnableSettingsEditor::onButton(Buttons i, bool down, ButtonModifier
   return MenuEditor::onButton(i, down, modifiers);
 }
 
-void HardwareEnableSettingsEditor::stepEntry(int inc)
+void RoutingsEditor::stepEntry(int inc)
 {
   const auto length = static_cast<int>(tID::LENGTH);
   auto currentIdx = static_cast<int>(m_id);
@@ -292,7 +250,7 @@ void HardwareEnableSettingsEditor::stepEntry(int inc)
   update();
 }
 
-void HardwareEnableSettingsEditor::stepAspect(int inc)
+void RoutingsEditor::stepAspect(int inc)
 {
   const auto isProgramChange = m_id == tID::ProgramChange;
 
@@ -312,7 +270,7 @@ void HardwareEnableSettingsEditor::stepAspect(int inc)
   update();
 }
 
-void HardwareEnableSettingsEditor::update()
+void RoutingsEditor::update()
 {
   m_aspectList->update(m_id, m_aspect);
   m_entryLabel->setText(getTextFor(m_id));
@@ -321,7 +279,7 @@ void HardwareEnableSettingsEditor::update()
   ControlWithChildren::setDirty();
 }
 
-const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(tID index)
+const Glib::ustring& RoutingsEditor::getTextFor(tID index)
 {
   static const std::vector<Glib::ustring> sRet
       = { "Pedal 1",  "Pedal 2",  "Pedal 3",   "Pedal 4", "Bender", "Aftertouch",
@@ -329,14 +287,14 @@ const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(tID index)
   return sRet.at(static_cast<int>(index));
 }
 
-const Glib::ustring& HardwareEnableSettingsEditor::getTextFor(tAspect aspect)
+const Glib::ustring& RoutingsEditor::getTextFor(tAspect aspect)
 {
   static const std::vector<Glib::ustring> sRet
       = { "Send Primary", "Receive Primary", "Send Split", "Receive Split", "Local", "LENGTH" };
   return sRet.at(static_cast<int>(aspect));
 }
 
-const Glib::ustring& HardwareEnableSettingsEditor::getValueText() const
+const Glib::ustring& RoutingsEditor::getValueText() const
 {
   static std::vector<Glib::ustring> ret = { "On", "Off" };
   auto active = getSetting()->getState(m_id, m_aspect);

@@ -1,7 +1,5 @@
 #include <Application.h>
-#include <Application.h>
 #include <device-info/DateTimeInfo.h>
-#include <device-info/DeviceInformation.h>
 #include <device-info/SoftwareVersion.h>
 #include <device-settings/PedalType.h>
 #include <groups/HardwareSourcesGroup.h>
@@ -61,17 +59,15 @@
 #include <chrono>
 #include <list>
 #include <memory>
+#include <utility>
 #include <device-settings/TuneReference.h>
 #include <device-settings/TransitionTime.h>
 #include <tools/StringTools.h>
-#include <parameter_declarations.h>
 #include <device-settings/SyncVoiceGroupsAcrossUIS.h>
 #include "UISoftwareVersionEditor.h"
 #include "ScreenSaverTimeControls.h"
-#include "MenuEditorEntry.h"
-#include "HardwareEnableSettingsView.h"
-#include "HardwareEnableSettingsEditor.h"
-#include "HardwareEnableSelectionControl.h"
+#include "RoutingsView.h"
+#include "RoutingsEditor.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -101,7 +97,7 @@ namespace NavTree
   {
     Node(InnerNode *parent, Glib::ustring name)
         : parent(parent)
-        , name(name)
+        , name(std::move(name))
     {
     }
 
@@ -117,7 +113,7 @@ namespace NavTree
       return false;
     }
 
-    virtual Glib::ustring getName() const
+    [[nodiscard]] virtual Glib::ustring getName() const
     {
       return name;
     }
@@ -132,7 +128,7 @@ namespace NavTree
   struct Leaf : Node
   {
     Leaf(InnerNode *parent, Glib::ustring name)
-        : Node(parent, name)
+        : Node(parent, std::move(name))
     {
     }
   };
@@ -140,7 +136,7 @@ namespace NavTree
   struct EditableLeaf : Leaf
   {
     EditableLeaf(InnerNode *parent, Glib::ustring name)
-        : Leaf(parent, name)
+        : Leaf(parent, std::move(name))
     {
     }
 
@@ -150,11 +146,11 @@ namespace NavTree
   struct InnerNode : Node
   {
     InnerNode(InnerNode *parent, Glib::ustring name)
-        : Node(parent, name)
+        : Node(parent, std::move(name))
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
@@ -192,17 +188,17 @@ namespace NavTree
 
   struct Velocity : EditableLeaf
   {
-    Velocity(InnerNode *parent)
+    explicit Velocity(InnerNode *parent)
         : EditableLeaf(parent, "Velocity Curve")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new VelocityView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new VelocityEditor();
     }
@@ -210,17 +206,17 @@ namespace NavTree
 
   struct Aftertouch : EditableLeaf
   {
-    Aftertouch(InnerNode *parent)
+    explicit Aftertouch(InnerNode *parent)
         : EditableLeaf(parent, "Aftertouch Curve")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new AftertouchView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new AftertouchEditor();
     }
@@ -228,17 +224,17 @@ namespace NavTree
 
   struct BenderCurveSetting : EditableLeaf
   {
-    BenderCurveSetting(InnerNode *parent)
+    explicit BenderCurveSetting(InnerNode *parent)
         : EditableLeaf(parent, "Bender Curve")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new BenderCurveView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new BenderCurveEditor();
     }
@@ -274,7 +270,7 @@ namespace NavTree
 
   struct WiFiSetting : EditableLeaf
   {
-    WiFiSetting(InnerNode *parent)
+    explicit WiFiSetting(InnerNode *parent)
         : EditableLeaf(parent, "Enable/Disable WiFi")
     {
     }
@@ -309,9 +305,9 @@ namespace NavTree
     Item *theItem = nullptr;
     CB cb;
 
-    OneShotEntry(InnerNode *p, const std::string &name, const CB &cb)
+    OneShotEntry(InnerNode *p, const std::string &name, CB cb)
         : EditableLeaf(p, name)
-        , cb(cb)
+        , cb(std::move(cb))
     {
     }
 
@@ -336,7 +332,7 @@ namespace NavTree
 
   struct StoreInitSound : OneShotEntry
   {
-    StoreInitSound(InnerNode *p)
+    explicit StoreInitSound(InnerNode *p)
         : OneShotEntry(p, "Store Init Sound",
                        []
                        {
@@ -350,7 +346,7 @@ namespace NavTree
 
   struct ResetInitSound : OneShotEntry
   {
-    ResetInitSound(InnerNode *p)
+    explicit ResetInitSound(InnerNode *p)
         : OneShotEntry(p, "Reset Init Sound",
                        []
                        {
@@ -396,7 +392,7 @@ namespace NavTree
 
   struct EditSmoothingTime : EditableLeaf
   {
-    EditSmoothingTime(InnerNode *parent)
+    explicit EditSmoothingTime(InnerNode *parent)
         : EditableLeaf(parent, "Edit Smoothing Time")
     {
     }
@@ -414,7 +410,7 @@ namespace NavTree
 
   struct PedalSettings : InnerNode
   {
-    PedalSettings(InnerNode *parent)
+    explicit PedalSettings(InnerNode *parent)
         : InnerNode(parent, "Pedals")
     {
       children.emplace_back(new PedalSetting(this, HardwareSourcesGroup::getPedal1ParameterID().getNumber()));
@@ -426,7 +422,7 @@ namespace NavTree
 
   struct DeviceSettings : InnerNode
   {
-    DeviceSettings(InnerNode *parent)
+    explicit DeviceSettings(InnerNode *parent)
         : InnerNode(parent, "Device Settings")
     {
       children.emplace_back(new EditSmoothingTime(this));
@@ -446,22 +442,22 @@ namespace NavTree
 
   struct DeviceName : EditableLeaf
   {
-    DeviceName(InnerNode *parent)
+    explicit DeviceName(InnerNode *parent)
         : EditableLeaf(parent, "Device Name")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new DeviceNameView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return nullptr;
     }
 
-    virtual bool onEditModeEntered()
+    bool onEditModeEntered() override
     {
       auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
       boled.setOverlay(new RenameDeviceLayout(boled.getLayout()));
@@ -471,12 +467,12 @@ namespace NavTree
 
   struct SSID : Leaf
   {
-    SSID(InnerNode *parent)
+    explicit SSID(InnerNode *parent)
         : Leaf(parent, "SSID")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new SSIDView();
     }
@@ -484,17 +480,17 @@ namespace NavTree
 
   struct Passphrase : EditableLeaf
   {
-    Passphrase(InnerNode *parent)
+    explicit Passphrase(InnerNode *parent)
         : EditableLeaf(parent, "Passphrase")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new PassphraseView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new PassphraseEditor();
     }
@@ -502,17 +498,17 @@ namespace NavTree
 
   struct UpdateAvailable : EditableLeaf
   {
-    UpdateAvailable(InnerNode *parent)
+    explicit UpdateAvailable(InnerNode *parent)
         : EditableLeaf(parent, "Update Available")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new UpdateAvailableView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       if(UpdateAvailableView::updateExists())
         return new UpdateAvailableEditor();
@@ -523,12 +519,12 @@ namespace NavTree
 
   struct FreeInternalMemory : Leaf
   {
-    FreeInternalMemory(InnerNode *parent)
+    explicit FreeInternalMemory(InnerNode *parent)
         : Leaf(parent, "Free Internal Memory")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new FreeInternalMemoryView();
     }
@@ -536,18 +532,18 @@ namespace NavTree
 
   struct UISoftwareVersion : EditableLeaf
   {
-    UISoftwareVersion(InnerNode *parent)
+    explicit UISoftwareVersion(InnerNode *parent)
         : EditableLeaf(parent, "Software Version")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       auto info = Application::get().getDeviceInformation()->getItem<::SoftwareVersion>().get();
       return new DeviceInfoItemView(info);
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new UISoftwareVersionEditor();
     }
@@ -555,18 +551,18 @@ namespace NavTree
 
   struct DateTime : EditableLeaf
   {
-    DateTime(InnerNode *parent)
+    explicit DateTime(InnerNode *parent)
         : EditableLeaf(parent, "Date / Time")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       auto info = Application::get().getDeviceInformation()->getItem<::DateTimeInfo>().get();
       return new DeviceInfoItemView(info, std::chrono::milliseconds(500));
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new DateTimeEditor();
     }
@@ -581,11 +577,11 @@ namespace NavTree
       {
       }
     };
-    WebUIAdress(InnerNode *parent)
+    explicit WebUIAdress(InnerNode *parent)
         : Leaf(parent, "Website Address:")
     {
     }
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new AddressLabel();
     }
@@ -599,7 +595,7 @@ namespace NavTree
           : SetupLabel("", Rect(0, 0, 0, 0))
       {
 
-        m_connection = Application::get().getSettings()->getSetting<UsedRAM>()->onChange(
+        Application::get().getSettings()->getSetting<UsedRAM>()->onChange(
             sigc::mem_fun(this, &RamUsageLabel::onSettingChanged));
       }
 
@@ -613,12 +609,9 @@ namespace NavTree
           setText(str);
         }
       }
-
-     private:
-      sigc::connection m_connection;
     };
 
-    RamUsage(InnerNode *parent)
+    explicit RamUsage(InnerNode *parent)
         : Leaf(parent, "RAM usage:")
     {
     }
@@ -631,7 +624,7 @@ namespace NavTree
 
   struct SystemInfo : InnerNode
   {
-    SystemInfo(InnerNode *parent)
+    explicit SystemInfo(InnerNode *parent)
         : InnerNode(parent, "System Info")
     {
       children.emplace_back(new DeviceName(this));
@@ -648,22 +641,22 @@ namespace NavTree
 
   struct About : EditableLeaf
   {
-    About(InnerNode *parent)
+    explicit About(InnerNode *parent)
         : EditableLeaf(parent, "About")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return nullptr;
     }
 
-    virtual bool onEditModeEntered()
+    bool onEditModeEntered() override
     {
       auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
       boled.setOverlay(new AboutLayout());
@@ -673,17 +666,17 @@ namespace NavTree
 
   struct EncoderAcceleration : EditableLeaf
   {
-    EncoderAcceleration(InnerNode *parent)
+    explicit EncoderAcceleration(InnerNode *parent)
         : EditableLeaf(parent, "Encoder Acceleration")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new EncoderAccelerationView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new EncoderAccelerationEditor();
     }
@@ -691,17 +684,17 @@ namespace NavTree
 
   struct RibbonRelativeFactorSetting : EditableLeaf
   {
-    RibbonRelativeFactorSetting(InnerNode *parent)
+    explicit RibbonRelativeFactorSetting(InnerNode *parent)
         : EditableLeaf(parent, "Ribbon Relative Factor")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new RibbonRelativeFactorSettingView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new RibbonRelativeFactorSettingEditor();
     }
@@ -709,7 +702,7 @@ namespace NavTree
 
   struct ScreenSaverTime : EditableLeaf
   {
-    ScreenSaverTime(InnerNode *parent)
+    explicit ScreenSaverTime(InnerNode *parent)
         : EditableLeaf(parent, "Screensaver Timeout")
     {
     }
@@ -727,7 +720,7 @@ namespace NavTree
 
   struct HardwareUI : InnerNode
   {
-    HardwareUI(InnerNode *parent)
+    explicit HardwareUI(InnerNode *parent)
         : InnerNode(parent, "Hardware UI")
     {
       children.emplace_back(new EncoderAcceleration(this));
@@ -739,12 +732,12 @@ namespace NavTree
 
   struct USBStickAvailable : Leaf
   {
-    USBStickAvailable(InnerNode *parent)
+    explicit USBStickAvailable(InnerNode *parent)
         : Leaf(parent, "USB Available")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new USBStickAvailableView();
     }
@@ -752,17 +745,17 @@ namespace NavTree
 
   struct BackupExport : EditableLeaf
   {
-    BackupExport(InnerNode *parent)
+    explicit BackupExport(InnerNode *parent)
         : EditableLeaf(parent, "Save all Banks...")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new ExportBackupView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new ExportBackupEditor();
     }
@@ -770,17 +763,17 @@ namespace NavTree
 
   struct BackupImport : EditableLeaf
   {
-    BackupImport(InnerNode *parent)
+    explicit BackupImport(InnerNode *parent)
         : EditableLeaf(parent, "Restore all Banks...")
     {
     }
 
-    virtual Control *createView() override
+    Control *createView() override
     {
       return new ImportBackupView();
     }
 
-    virtual Control *createEditor() override
+    Control *createEditor() override
     {
       return new ImportBackupEditor();
     }
@@ -788,7 +781,7 @@ namespace NavTree
 
   struct Backup : InnerNode
   {
-    Backup(InnerNode *parent)
+    explicit Backup(InnerNode *parent)
         : InnerNode(parent, "Backup")
     {
       children.emplace_back(new USBStickAvailable(this));
@@ -808,7 +801,7 @@ namespace NavTree
 
   struct MidiChannels : InnerNode
   {
-    MidiChannels(InnerNode *parent)
+    explicit MidiChannels(InnerNode *parent)
         : InnerNode(parent, "Channels")
     {
       children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
@@ -822,7 +815,7 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
+        : OneShotEntry(parent, "Set to High-Res. Defaults",
                        []()
                        {
                          SettingsUseCases useCases(Application::get().getSettings());
@@ -830,18 +823,13 @@ namespace NavTree
                        })
     {
     }
-
-    constexpr const char *getName()
-    {
-      return "Set to High-Res. Defaults";
-    }
   };
 
   struct ResetMidiSettingsToClassic : public OneShotEntry
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults",
                        []()
                        {
                          SettingsUseCases useCases(Application::get().getSettings());
@@ -849,16 +837,11 @@ namespace NavTree
                        })
     {
     }
-
-    constexpr const char *getName()
-    {
-      return "Set to Classic MIDI Defaults";
-    }
   };
 
   struct MidiAssignments : InnerNode
   {
-    MidiAssignments(InnerNode *parent)
+    explicit MidiAssignments(InnerNode *parent)
         : InnerNode { parent, "Assignments" }
     {
       children.emplace_back(new EnumSettingItem<PedalCCMapping<1>>(this, "Pedal 1"));
@@ -906,37 +889,32 @@ namespace NavTree
 
     struct Editor : MenuEditor
     {
-      Editor()
-          : MenuEditor()
-      {
-        m_midiSelectionChanged
-            = getPresetManager()->onMidiBankSelectionHappened([this](auto uuid) { updateOnSettingChanged(); });
-      }
-
-      ~Editor() override
-      {
-        m_midiSelectionChanged.disconnect();
-      }
-
-     protected:
-      sigc::connection m_midiSelectionChanged;
-      static PresetManager *getPresetManager()
+     private:
+      static auto getPresetManager()
       {
         return Application::get().getPresetManager();
       }
 
-      static Bank *getMidiBank()
+      static auto getMidiBank()
       {
         return getPresetManager()->findMidiSelectedBank();
       }
 
+     public:
+      Editor()
+          : MenuEditor()
+      {
+        getPresetManager()->onMidiBankSelectionHappened([this](auto uuid) { updateOnSettingChanged(); });
+      }
+
+     protected:
       void incSetting(int inc) override
       {
         auto pm = getPresetManager();
         PresetManagerUseCases useCase(pm);
         const auto numBanks = pm->getNumBanks();
 
-        if(auto current = getMidiBank())
+        if(getMidiBank())
         {
           auto currentIndex = getSelectedIndex();
           auto newIndex = currentIndex + inc;
@@ -1001,21 +979,16 @@ namespace NavTree
 
   struct MidiPanicButton : OneShotEntry
   {
-    MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic Button",
-                       []()
-                       {
-                         SettingsUseCases useCase(Application::get().getSettings());
-                         useCase.panicAudioEngine();
-                       })
+    explicit MidiPanicButton(InnerNode *p)
+        : OneShotEntry(p, "Panic Button", []() { SettingsUseCases::panicAudioEngine(); })
     {
     }
   };
 
-  struct HardwareEnableSetting : public EditableLeaf
+  struct RoutingsEntry : public EditableLeaf
   {
    public:
-    HardwareEnableSetting(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
+    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
         : EditableLeaf(p, text)
         , m_id { id }
     {
@@ -1023,12 +996,12 @@ namespace NavTree
 
     Control *createView() override
     {
-      return new HardwareEnableSettingsView(m_id);
+      return new RoutingsView(m_id);
     }
 
     Control *createEditor() override
     {
-      return new HardwareEnableSettingsEditor(m_id);
+      return new RoutingsEditor(m_id);
     }
 
    private:
@@ -1063,37 +1036,29 @@ namespace NavTree
         : InnerNode(p, "Routings")
     {
       typedef RoutingSettings::tRoutingIndex tID;
-      children.emplace_back(new HardwareEnableSetting(tID::Notes, this, "Notes"));
-      children.emplace_back(new HardwareEnableSetting(tID::ProgramChange, this, "Prog. Ch."));
-      children.emplace_back(new HardwareEnableSetting(tID::Pedal1, this, "Pedal 1"));
-      children.emplace_back(new HardwareEnableSetting(tID::Pedal2, this, "Pedal 2"));
-      children.emplace_back(new HardwareEnableSetting(tID::Pedal3, this, "Pedal 3"));
-      children.emplace_back(new HardwareEnableSetting(tID::Pedal4, this, "Pedal 4"));
-      children.emplace_back(new HardwareEnableSetting(tID::Ribbon1, this, "Ribbon 1"));
-      children.emplace_back(new HardwareEnableSetting(tID::Ribbon2, this, "Ribbon 2"));
-      children.emplace_back(new HardwareEnableSetting(tID::Aftertouch, this, "Aftertouch"));
-      children.emplace_back(new HardwareEnableSetting(tID::Bender, this, "Bender"));
+      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes"));
+      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch."));
+      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1"));
+      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2"));
+      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3"));
+      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4"));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1"));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2"));
+      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch"));
+      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender"));
       children.emplace_back(new SetRoutingsTo<true>(this));
       children.emplace_back(new SetRoutingsTo<false>(this));
     }
 
     Control *createView() override
     {
-      struct View : public SetupLabel
-      {
-       public:
-        View()
-            : SetupLabel("...", Rect { 0, 0, 128, 16 })
-        {
-        }
-      };
-      return new View();
+      return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
   };
 
   struct MidiSettings : InnerNode
   {
-    MidiSettings(InnerNode *parent)
+    explicit MidiSettings(InnerNode *parent)
         : InnerNode(parent, "MIDI Settings")
     {
       children.emplace_back(new MidiPanicButton(this));
@@ -1107,7 +1072,7 @@ namespace NavTree
 
   struct FlacSettings : InnerNode
   {
-    FlacSettings(InnerNode *parent)
+    explicit FlacSettings(InnerNode *parent)
         : InnerNode(parent, "Recorder Settings")
     {
       children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recorder"));
@@ -1129,7 +1094,7 @@ namespace NavTree
       focus = children.begin();
     }
 
-    Glib::ustring getName() const override
+    [[nodiscard]] Glib::ustring getName() const override
     {
       if(FileOutStream::getKioskMode())
         return "Setup (Kiosk)";
@@ -1192,13 +1157,13 @@ namespace NavTree
 class Breadcrumb : public Control
 {
  public:
-  Breadcrumb(NavTree::Node *node)
+  explicit Breadcrumb(NavTree::Node *node)
       : Control(Rect(0, 0, 256, 12))
       , m_node(node)
   {
   }
 
-  bool redraw(FrameBuffer &fb)
+  bool redraw(FrameBuffer &fb) override
   {
     fb.setColor(FrameBufferColors::C103);
     fb.fillRect(getPosition());
@@ -1280,13 +1245,6 @@ void SetupLayout::addSelectionEntries()
     s->setHighlight((c.get() == focus));
     addSelectionEntry(s);
   }
-}
-
-bool SetupLayout::isInSelectionMode() const
-{
-  auto focus = m_tree->focus->get();
-  auto focusEditable = dynamic_cast<const NavTree::Leaf *>(focus);
-  return m_focusAndMode.mode == UIMode::Select || !focusEditable;
 }
 
 void SetupLayout::addValueViews()

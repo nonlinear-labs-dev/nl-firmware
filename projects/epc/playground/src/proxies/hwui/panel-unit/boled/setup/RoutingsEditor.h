@@ -5,16 +5,16 @@
 
 class FrameBuffer;
 class Label;
-class VariableCenterAlignedLabel;
+class LabelStyleable;
 class AspectList;
 
-class HardwareEnableSettingsEditor : public MenuEditor
+class RoutingsEditor : public MenuEditor
 {
  public:
   typedef RoutingSettings::tRoutingIndex tID;
   typedef RoutingSettings::tAspectIndex tAspect;
 
-  explicit HardwareEnableSettingsEditor(tID id);
+  explicit RoutingsEditor(tID id);
   void setPosition(const Rect& r) override;
   void drawBackground(FrameBuffer& fb) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
@@ -28,9 +28,9 @@ class HardwareEnableSettingsEditor : public MenuEditor
   void stepAspect(int inc);
 
  private:
-  VariableCenterAlignedLabel* m_entryLabel;
-  VariableCenterAlignedLabel* m_aspectLabel;
-  VariableCenterAlignedLabel* m_valueLabel;
+  LabelStyleable* m_entryLabel;
+  LabelStyleable* m_aspectLabel;
+  LabelStyleable* m_valueLabel;
   AspectList* m_aspectList;
 
   tID m_id;

@@ -13,7 +13,7 @@ inline auto getSetting()
   return std::shared_ptr<RoutingSettings>(nullptr);
 }
 
-inline auto getAspectsForIndex(RoutingSettings::tRoutingIndex id)
+inline std::initializer_list<RoutingSettings::tAspectIndex> getAspectsForIndex(RoutingSettings::tRoutingIndex id)
 {
   typedef RoutingSettings::tAspectIndex ASP;
   static auto aspects = { ASP::SEND_PRIMARY, ASP::RECEIVE_PRIMARY, ASP::SEND_SPLIT, ASP::RECEIVE_SPLIT, ASP::LOCAL };
