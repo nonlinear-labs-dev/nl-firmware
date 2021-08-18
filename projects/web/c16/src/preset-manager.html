@@ -1,0 +1,20 @@
+<template name="presetManager">
+    <div>C16 Preset Manager</div>
+
+    {{#each getBanks}}
+    {{ > bank }}
+    {{/each}}
+
+</template>
+
+<template name="bank">
+    <div>Bank {{ getNumber }} : {{ getName }} </div>
+    {{#each getPresets}}
+    {{ > preset }}
+    {{/each}}
+
+</template>
+
+<template name="preset">
+    <div>{{ getNumber }} - {{ getName }} </div>
+</template>
