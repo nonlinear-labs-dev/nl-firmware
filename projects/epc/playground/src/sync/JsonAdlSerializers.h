@@ -4,6 +4,7 @@
 #include <tools/Uuid.h>
 #include <ParameterId.h>
 #include <GroupId.h>
+#include <parameters/Parameter.h>
 
 namespace nlohmann
 {
@@ -12,6 +13,25 @@ namespace nlohmann
     static void to_json(json &j, const UndoableVector<A, B> &v)
     {
       v.forEach([&](B *a) { j.push_back(a->getUuid()); });
+    }
+  };
+
+  template <typename T> struct adl_serializer<IntrusiveList<T>>
+  {
+    static void to_json(json &j, const IntrusiveList<T> &t)
+    {
+      t.template forEach([&j](const auto &x) { j.push_back(x); });
+    }
+  };
+
+  template <typename T, size_t size> struct adl_serializer<std::array<T, size>>
+  {
+    static void to_json(json &j, const std::array<T, size> &a)
+    {
+      for(const auto &e : a)
+      {
+        j.push_back(e);
+      }
     }
   };
 

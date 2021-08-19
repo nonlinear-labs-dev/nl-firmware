@@ -1,23 +1,8 @@
 import { Tracker } from 'meteor/tracker';
 import './preset-manager.html';
+import { EditBufferPresenter, ParameterGroupPresenter, ParameterPresenter } from './presenters';
 
 declare var Template;
-
-class EditBufferPresenter {
-    groups = new Array<string>();
-
-    static create(): EditBufferPresenter {
-        try {
-            var presenter = new EditBufferPresenter();
-            presenter.groups = global.sync.queryItem("/editbuffer").parametergroups;
-            console.log(presenter.groups);
-            return presenter;
-        }
-        catch (err) {
-            return new EditBufferPresenter();
-        }
-    }
-}
 
 Template.editBuffer.onCreated(function () {
     const instance = this;
@@ -30,37 +15,8 @@ Template.editBuffer.onCreated(function () {
 
 Template.editBuffer.helpers({
     getParameterGroups() {
-        return Template.instance().presenter.get().groups;
+        return Template.instance().presenter.get().groups.map(p => ParameterGroupPresenter.create(p));
     }
-});
-
-class ParameterGroupPresenter {
-    parameters = new Array<string>();
-    id: string;
-    name: string;
-
-    static create(id: string): ParameterGroupPresenter {
-        try {
-            var presenter = new ParameterGroupPresenter();
-            var group = global.sync.queryItem("/parametergroup/" + id);
-            presenter.id = id;
-            presenter.name = group.name;
-            presenter.parameters = group.parameters;
-            return presenter;
-        } catch(err) {
-            return new ParameterGroupPresenter();
-        }
-    }
-}
-
-Template.parameterGroup.onCreated(function () {
-    const instance = this;
-    instance.presenter = new ReactiveVar<ParameterGroupPresenter>(ParameterGroupPresenter.create(instance.data));
-
-    Tracker.autorun(() => {
-        console.log(instance.data);
-        instance.presenter.set(ParameterGroupPresenter.create(instance.data));
-    });
 });
 
 Template.parameterGroup.helpers({
@@ -102,6 +58,6 @@ Template.parameter.helpers({
         return Template.instance().presenter.get().name;
     },
     getValue() {
-        return Template.instance().presenter.get().value;
+        return this.parameters.map(p => ParameterPresenter.create(p));
     }
 });

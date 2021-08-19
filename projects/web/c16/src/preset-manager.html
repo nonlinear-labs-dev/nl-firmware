@@ -6,15 +6,15 @@
 </template>
 
 <template name="parameterGroup">
-    <div>Group: {{ getName }}</div>
+    <h1>Group: {{ name }}</h1>
     {{ #each getParameters }}
     {{ > parameter }}
     {{/each}}
 </template>
 
 <template name="parameter">
-    <div>Name: {{ getName }}</div>
-    <div>Value: {{ getValue }}</div>
+    <h2>Name: {{ name }}</h2>
+    <div>Value: {{ value }}</div>
 </template>
 
 <template name="presetManager">

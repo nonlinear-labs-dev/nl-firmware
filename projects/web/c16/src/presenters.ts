@@ -72,3 +72,61 @@ export { PresetManagerPresenter };
 export { BankPresenter };
 export { PresetPresenter };
 
+class EditBufferPresenter {
+    groups = new Array<string>();
+
+    static create(): EditBufferPresenter {
+        try {
+            var presenter = new EditBufferPresenter();
+            var eb = global.sync.queryItem("/editbuffer");
+            presenter.groups = Array.from(eb.parametergroups.flat());
+            return presenter;
+        }
+        catch (err) {
+            return new EditBufferPresenter();
+        }
+    }
+}
+
+class ParameterGroupPresenter {
+    parameters = new Array<string>();
+    id = "";
+    name = "";
+
+    static create(id: string): ParameterGroupPresenter {
+        try {
+            var presenter = new ParameterGroupPresenter();
+            var group = global.sync.queryItem("/parametergroup/" + id);
+            presenter.id = id;
+            presenter.name = group.name;
+            presenter.parameters = Array.from(group.parameters);
+            return presenter;
+        } catch(err) {
+            return new ParameterGroupPresenter();
+        }
+    }
+}
+
+
+class ParameterPresenter {
+    id = "";
+    name = "";
+    value = "";
+
+    static create(id: string): ParameterPresenter {
+        try {
+            var presenter = new ParameterPresenter();
+            var param = global.sync.queryItem("/parameter/" + id);
+            presenter.id = id;
+            presenter.name = param.name;
+            presenter.value = param.value;
+            return presenter;
+        } catch(err) {
+            return new ParameterPresenter();
+        }
+    }
+}
+
+export { EditBufferPresenter };
+export { ParameterGroupPresenter };
+export { ParameterPresenter };

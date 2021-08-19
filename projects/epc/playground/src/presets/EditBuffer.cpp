@@ -302,6 +302,16 @@ bool EditBuffer::isParameterFocusLocked() const
 {
   return m_lockParameterFocusChanges;
 }
+namespace nlohmann
+{
+  template <> struct adl_serializer<ParameterGroup *>
+  {
+    static void to_json(json &j, const ParameterGroup *v)
+    {
+      j = v->getID().toString();
+    }
+  };
+}
 
 nlohmann::json EditBuffer::serialize() const
 {
@@ -331,7 +341,7 @@ nlohmann::json EditBuffer::serialize() const
            { "origin-II", getAttribute("origin-II", "") },
            { "origin-I-vg", getAttribute("origin-I-vg", "") },
            { "origin-II-vg", getAttribute("origin-II-vg", "") },
-           { "parametergroups", getParameterGroupIDs() },
+           { "parametergroups", getParameters() },
            { "attributes", AttributesOwner::toJson() } };
 }
 

@@ -11,6 +11,7 @@
 #include <xml/Attribute.h>
 #include <nltools/logging/Log.h>
 #include <http/UpdateDocumentMaster.h>
+#include <sync/JsonAdlSerializers.h>
 
 ParameterGroup::ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
                                const char *webUIName)
@@ -215,17 +216,18 @@ void ParameterGroup::undoableLoadDefault(UNDO::Transaction *transaction, Default
     p->loadDefault(transaction, mode);
 }
 
-nlohmann::json ParameterGroup::serialize() const
+namespace nlohmann
 {
-  return { { "id", getID().toString() }, { "name", getLongName().c_str() }, { "parameters", getParameterIDs() } };
+  template <> struct adl_serializer<Parameter *>
+  {
+    static void to_json(json &j, const Parameter *v)
+    {
+      j = v->getID();
+    }
+  };
 }
 
-nlohmann::json ParameterGroup::getParameterIDs() const
+nlohmann::json ParameterGroup::serialize() const
 {
-  nlohmann::json ret {};
-  for(const auto &p : getParameters())
-  {
-    ret.push_back(p->getID().toString());
-  }
-  return ret;
+  return { { "id", getID() }, { "name", getLongName() }, { "parameters", m_parameters } };
 }

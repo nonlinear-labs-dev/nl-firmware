@@ -23,7 +23,12 @@ class ParameterGroupSet : public AttributesOwner
   ~ParameterGroupSet() override;
 
   typedef ParameterGroup *tParameterGroupPtr;
+  typedef IntrusiveList<tParameterGroupPtr> tParamGroups;
+  typedef std::map<int, Parameter *> tParamMap;
+  typedef std::array<tParamGroups, static_cast<size_t>(VoiceGroup::NumGroups)> tParamArray;
+  typedef std::array<tParamMap, static_cast<size_t>(VoiceGroup::NumGroups)> tParamMapArray;
 
+  [[nodiscard]] const tParamArray& getParameters() const;
   [[nodiscard]] virtual tParameterGroupPtr getParameterGroupByID(const GroupId &id) const;
   [[nodiscard]] virtual const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg) const;
 
@@ -48,7 +53,6 @@ class ParameterGroupSet : public AttributesOwner
   void forEachParameter(const std::function<void(const Parameter *)> &cb) const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
-  [[nodiscard]] nlohmann::json getParameterGroupIDs() const;
 
  protected:
   void loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transaction, const Preset *p, VoiceGroup target);
@@ -59,11 +63,8 @@ class ParameterGroupSet : public AttributesOwner
   void copyVoiceGroup(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
 
  private:
-  using tParamGroups = IntrusiveList<tParameterGroupPtr>;
-  using tParamMap = std::map<int, Parameter *>;
-
-  std::array<tParamGroups, static_cast<size_t>(VoiceGroup::NumGroups)> m_parameterGroups;
-  std::array<tParamMap, static_cast<size_t>(VoiceGroup::NumGroups)> m_idToParameterMap;
+  tParamArray m_parameterGroups;
+  tParamMapArray m_idToParameterMap;
 
   void copyGlobalSplitIntoDualSplit(UNDO::Transaction *transaction, const Preset *other);
 };
