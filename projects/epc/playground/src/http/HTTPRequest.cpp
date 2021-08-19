@@ -24,12 +24,7 @@ HTTPRequest::HTTPRequest(SoupServer *server, SoupMessage *msg)
       bool containsBlob = header && (g_strcmp0(header, "application/binary") == 0);
 
       if(!containsBlob)
-      {
-        if(buffer->length < 10 * 1024 * 1024)
-        {
-          createMapFromQueryString(buffer->data);
-        }
-      }
+        createMapFromQueryString(buffer->data);
 
       soup_buffer_free(buffer);
     }
