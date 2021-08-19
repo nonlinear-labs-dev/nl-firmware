@@ -44,6 +44,7 @@ class BankPresenter {
 
 class PresetPresenter {
     name = "";
+    uuid = "";
     orderNumber = 0;
     selected = false;
     loaded = false;
@@ -57,6 +58,7 @@ class PresetPresenter {
             const editbuffer = global.sync.queryItem("/editbuffer");
 
             presenter.name = preset.name;
+            presenter.uuid = uuid;
             presenter.orderNumber = bank.presets.findIndex((e: string) => e == uuid) + 1;
             presenter.selected = bank['selected-preset'] == uuid;
             presenter.loaded = editbuffer['loaded-preset'] == uuid;
@@ -71,6 +73,9 @@ class PresetPresenter {
 export { PresetManagerPresenter };
 export { BankPresenter };
 export { PresetPresenter };
+export { EditBufferPresenter };
+export { ParameterGroupPresenter };
+export { ParameterPresenter };
 
 class EditBufferPresenter {
     groups = new Array<string>();
@@ -101,7 +106,7 @@ class ParameterGroupPresenter {
             presenter.name = group.name;
             presenter.parameters = Array.from(group.parameters);
             return presenter;
-        } catch(err) {
+        } catch (err) {
             return new ParameterGroupPresenter();
         }
     }
@@ -121,12 +126,9 @@ class ParameterPresenter {
             presenter.name = param.name;
             presenter.value = param.value;
             return presenter;
-        } catch(err) {
+        } catch (err) {
             return new ParameterPresenter();
         }
     }
 }
 
-export { EditBufferPresenter };
-export { ParameterGroupPresenter };
-export { ParameterPresenter };

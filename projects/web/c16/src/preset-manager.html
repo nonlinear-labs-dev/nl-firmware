@@ -26,7 +26,7 @@
 </template>
 
 <template name="bank">
-    <div class="bank" id="bank-{{ uuid }} {{#if selected}}selected{{/if}}">
+    <div class="bank {{#if selected}}selected{{/if}}" id="bank-{{ uuid }} {{#if selected}}selected{{/if}}">
         <div class="header"> {{ orderNumber }} - {{ name }}</div>
         <div class="preset-list">
             {{#each getPresets}}

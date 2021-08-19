@@ -4,7 +4,7 @@
 
 .bank {
     display: inline-block;
-    border: 1px solid black;
+    border: 3px solid gray;
     margin: 1em;
     width: 10em;
 }
@@ -14,8 +14,18 @@
     text-align: center;
     border-bottom: solid 1px black;
     padding: 2mm;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
+.bank.selected .header {
+    background-color: gray;
+    color: white;
+}
+
+.bank.selected {
+   border-color: green;
+}
 
 .bank .preset-list {
     display: flex;
@@ -26,6 +36,7 @@
 .bank .preset-list .preset {
     display: table-row;
     border-bottom: 1px solid black;
+    overflow: hidden;
 }
 
 .bank .preset-list .preset:last-child {
@@ -40,6 +51,8 @@
 .bank .preset-list .preset .name {
     display: table-cell;
     padding: 2mm;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .bank .preset-list .preset.selected {

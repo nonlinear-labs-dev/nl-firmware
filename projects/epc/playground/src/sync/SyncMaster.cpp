@@ -105,6 +105,8 @@ void SyncMaster::removeDirty(SyncedItem *item)
 void SyncMaster::handleDirty()
 {
   auto cp(std::move(m_dirty));
+  m_dirty.clear();
+
   auto newEnd = std::remove_if(cp.begin(), cp.end(), [](auto i) { return !i->updateState(); });
   cp.erase(newEnd, cp.end());
 

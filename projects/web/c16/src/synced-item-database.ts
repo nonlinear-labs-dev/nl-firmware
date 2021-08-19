@@ -1,6 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
-var syncPort: string = ":8893";
+declare var syncPort: string;
 
 interface SyncedItem {
     topic: string,

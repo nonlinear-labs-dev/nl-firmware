@@ -7,7 +7,10 @@ set -e
 cd /home/bob-the-builder/meteor-build
 export PATH=/home/bob-the-builder/.meteor/:$PATH
 rm -rf /home/bob-the-builder/meteor-build/client
-ln -s /src/src /home/bob-the-builder/meteor-build/client
+mkdir -p /home/bob-the-builder/meteor-build/client
+echo "import './src/main.js'; " > /home/bob-the-builder/meteor-build/client/main.js
+ln -s /src/src /home/bob-the-builder/meteor-build/client/src
+ln -s /configured-sources/build-time-info.js /home/bob-the-builder/meteor-build/client/build-time-info.js
 node ./node_modules/meteor-build-client/main.js ../out
 END_HEREDOC
 )
