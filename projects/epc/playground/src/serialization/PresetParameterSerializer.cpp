@@ -46,6 +46,10 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
     reader.onTextElement("modAmount",
                          [=, &reader](const Glib::ustring &text, const Attributes &attr)
                          {
+                           if(m_param->getID().getNumber() == C15::PID::Split_Split_Point)
+                           {
+                             nltools::Log::error(__FILE__, __LINE__,"id:", m_param->getID(), "modAmt:", text);
+                           }
                            double value = 0;
                            if(!text.empty())
                            {
@@ -60,7 +64,13 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
 
     reader.onTextElement("modSrc",
                          [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                         { m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModSource, text); });
+                         {
+                           if(m_param->getID().getNumber() == C15::PID::Split_Split_Point)
+                           {
+                             nltools::Log::error(__FILE__, __LINE__,"id:", m_param->getID(), "modSrc:", text);
+                           }
+                           m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModSource, text);
+                         });
 
     reader.onTextElement("givenName",
                          [=, &reader](const Glib::ustring &text, const Attributes &attr)

@@ -148,5 +148,8 @@ void Reader::onReadFinished(Reader::tReadFinishedCB cb)
 void Reader::doOnReadFinish()
 {
   if(m_readFinishedCB)
+  {
     m_readFinishedCB(*this);
+    m_readFinishedCB = nullptr;
+  }
 }
