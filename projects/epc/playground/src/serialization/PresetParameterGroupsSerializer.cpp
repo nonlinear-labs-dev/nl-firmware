@@ -4,6 +4,7 @@
 #include "PresetSplitGroupsFromOldGlobalGroupSerializer.h"
 #include <presets/Preset.h>
 #include <presets/PresetParameterGroup.h>
+#include <nltools/logging/Log.h>
 
 PresetParameterGroupsSerializer::PresetParameterGroupsSerializer(Preset* preset)
     : Serializer(getTagName())

@@ -9,6 +9,12 @@ PresetSplitGroupsFromOldGlobalGroupSerializer::PresetSplitGroupsFromOldGlobalGro
 
 void PresetSplitGroupsFromOldGlobalGroupSerializer::readTagContent(Reader &reader) const
 {
+  reader.onReadFinished(
+      [preset = m_preset](auto &reader)
+      {
+        auto sI = preset->findParameterGroup({ "Split", VoiceGroup::I });
+        auto sII = preset->findParameterGroup({ "Split", VoiceGroup::II });
+        sII->copyFrom(reader.getTransaction(), sI);
+      });
   PresetParameterGroupSerializer::readTagContent(reader);
-  m_vgII->copyFrom(reader.getTransaction(), m_paramGroup);
 }

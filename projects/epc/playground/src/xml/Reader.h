@@ -17,6 +17,7 @@ class Reader
 
   typedef std::function<void(const Glib::ustring &text, const Attributes &attr)> tTextElementCB;
   typedef std::function<Serializer *(const Attributes &attr)> tTagElementCB;
+  typedef std::function<void(Reader&)> tReadFinishedCB;
 
   void onTextElement(size_t nameHash, tTextElementCB cb);
   void onTextElement(const Glib::ustring &name, tTextElementCB cb);
@@ -25,6 +26,7 @@ class Reader
 
   void onTag(size_t nameHash, tTagElementCB cb);
   void onTag(const Glib::ustring &name, tTagElementCB cb);
+  void onReadFinished(tReadFinishedCB cb);
 
   void preProcess();
 
@@ -75,6 +77,8 @@ class Reader
     return foundTag;
   }
 
+  void doOnReadFinish();
+
  protected:
   InStream &getInStream();
 
@@ -112,4 +116,5 @@ class Reader
   int m_fileVersion = 0;
   Signal<FileVersionCheckResult, int> m_sigFileVersionRead;
   FileVersionCheckResult m_versionCheck = FileVersionCheckResult::OK;
+  tReadFinishedCB m_readFinishedCB;
 };

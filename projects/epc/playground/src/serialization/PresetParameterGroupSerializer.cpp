@@ -2,6 +2,7 @@
 #include "PresetParameterSerializer.h"
 #include <presets/PresetParameterGroup.h>
 #include <presets/PresetParameter.h>
+#include <parameter_declarations.h>
 
 PresetParameterGroupSerializer::PresetParameterGroupSerializer(PresetParameterGroup *paramGroup, SoundType type)
     : Serializer(getTagName())
@@ -35,6 +36,12 @@ void PresetParameterGroupSerializer::readTagContent(Reader &reader) const
   {
     reader.onTag(PresetParameterSerializer::getTagName(), [&](const Attributes &attr) mutable {
       ParameterId id(attr.get("id"));
+
+      //Prevent old ParameterID to slip through
+      if(id == ParameterId{C15::PID::Split_Split_Point, VoiceGroup::Global})
+      {
+        id = {C15::PID::Split_Split_Point, VoiceGroup::I};
+      }
 
       if(auto p = m_paramGroup->findParameterByID(id))
         return new PresetParameterSerializer(p, m_type);

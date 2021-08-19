@@ -28,6 +28,9 @@ TEST_CASE("Import Preset with ModAspects on Split")
   auto firstPreset = fuxiesSplit->getPresetAt(0);
   CHECK(firstPreset != nullptr);
 
+  auto oldParam = firstPreset->findParameterByID({C15::PID::Split_Split_Point, VoiceGroup::Global}, false);
+  CHECK(oldParam == nullptr);
+
   auto splitPntI = firstPreset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }, false);
   auto splitPntII = firstPreset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }, false);
   CHECK(splitPntI != nullptr);
