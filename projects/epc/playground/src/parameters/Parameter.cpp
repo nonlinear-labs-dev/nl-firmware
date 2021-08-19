@@ -26,6 +26,7 @@
 #include <http/UndoScope.h>
 #include <proxies/hwui/HWUI.h>
 #include <parameter_declarations.h>
+#include <sync/JsonAdlSerializers.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -47,7 +48,7 @@ Parameter::~Parameter()
 }
 nlohmann::json Parameter::serialize() const
 {
-  return { { "id", getID().toString() }, { "name", getLongName().c_str() }, { "value", getDisplayString().c_str() } };
+  return { { "id", getID() }, { "name", getLongName() }, { "value", getDisplayString() } };
 }
 
 size_t Parameter::getHash() const

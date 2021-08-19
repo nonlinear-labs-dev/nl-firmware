@@ -24,17 +24,6 @@ namespace nlohmann
     }
   };
 
-  template <typename T, size_t size> struct adl_serializer<std::array<T, size>>
-  {
-    static void to_json(json &j, const std::array<T, size> &a)
-    {
-      for(const auto &e : a)
-      {
-        j.push_back(e);
-      }
-    }
-  };
-
   template <> struct adl_serializer<Glib::ustring>
   {
     static void to_json(json &j, const Glib::ustring &v)

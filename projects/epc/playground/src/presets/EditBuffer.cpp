@@ -302,13 +302,14 @@ bool EditBuffer::isParameterFocusLocked() const
 {
   return m_lockParameterFocusChanges;
 }
+
 namespace nlohmann
 {
   template <> struct adl_serializer<ParameterGroup *>
   {
     static void to_json(json &j, const ParameterGroup *v)
     {
-      j = v->getID().toString();
+      j = v->getID();
     }
   };
 }
