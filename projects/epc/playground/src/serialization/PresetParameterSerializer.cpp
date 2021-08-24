@@ -7,14 +7,13 @@
 #include <parameter_declarations.h>
 #include <nltools/logging/Log.h>
 #include <nltools/Assert.h>
+#include <utility>
 
-PresetParameterSerializer::PresetParameterSerializer(PresetParameter *param, SoundType type)
+PresetParameterSerializer::PresetParameterSerializer(std::vector<PresetParameter *> param, SoundType type)
     : Serializer(getTagName())
-    , m_param(param)
+    , m_param(std::move(param))
     , m_type(type)
 {
-  auto forbiddenID = ParameterId { C15::PID::ParameterID::Split_Split_Point, VoiceGroup::Global };
-  nltools_assertAlways(m_param->getID() != forbiddenID);
 }
 
 Glib::ustring PresetParameterSerializer::getTagName()
@@ -24,74 +23,92 @@ Glib::ustring PresetParameterSerializer::getTagName()
 
 void PresetParameterSerializer::writeTagContent(Writer &writer) const
 {
-  writer.writeTextElement("value", to_string(m_param->m_value));
+  nltools_assertAlways(m_param.size() == 1);
 
-  for(auto &f : m_param->m_fields)
+  auto parameter = m_param[0];
+  writer.writeTextElement("value", to_string(parameter->m_value));
+
+  for(auto &f : parameter->m_fields)
     writer.writeTextElement(paramFieldToString(std::get<0>(f)), std::to_string(std::get<1>(f)));
 }
 
 void PresetParameterSerializer::readTagContent(Reader &reader) const
 {
-  if(m_param)
-  {
-    reader.onTextElement("value",
-                         [&](const Glib::ustring &text, const Attributes &attr) mutable
+  reader.onTextElement("value",
+                       [&](const Glib::ustring &text, const Attributes &attr) mutable
+                       {
+                         auto v = std::stod(text);
+                         for(auto &p : m_param)
                          {
-                           auto v = std::stod(text);
-                           auto converted = ParameterImportConversions::get().convert(m_param->m_id.getNumber(), v,
+                           auto converted = ParameterImportConversions::get().convert(p->m_id.getNumber(), v,
                                                                                       reader.getFileVersion(), m_type);
-                           m_param->setValue(reader.getTransaction(), converted);
-                         });
+                           p->setValue(reader.getTransaction(), converted);
+                         }
+                       });
 
-    reader.onTextElement("modAmount",
-                         [=, &reader](const Glib::ustring &text, const Attributes &attr)
+  reader.onTextElement("modAmount",
+                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
+                       {
+                         auto v = std::stod(text);
+                         for(auto &p : m_param)
                          {
-                           if(m_param->getID().getNumber() == C15::PID::Split_Split_Point)
-                           {
-                             nltools::Log::error(__FILE__, __LINE__,"id:", m_param->getID(), "modAmt:", text);
-                           }
-                           double value = 0;
-                           if(!text.empty())
-                           {
-                             auto v = std::stod(text);
-                             value = ParameterImportConversions::get().convertMCAmount(m_param->m_id.getNumber(), v,
-                                                                                       reader.getFileVersion());
-                           }
+                           v = ParameterImportConversions::get().convertMCAmount(p->m_id.getNumber(), v,
+                                                                                 reader.getFileVersion());
+                           p->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, to_string(v));
+                         }
+                       });
 
-                           m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount,
-                                             to_string(value));
-                         });
-
-    reader.onTextElement("modSrc",
-                         [=, &reader](const Glib::ustring &text, const Attributes &attr)
+  reader.onTextElement("modSrc",
+                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
+                       {
+                         for(auto &p : m_param)
                          {
-                           if(m_param->getID().getNumber() == C15::PID::Split_Split_Point)
-                           {
-                             nltools::Log::error(__FILE__, __LINE__,"id:", m_param->getID(), "modSrc:", text);
-                           }
-                           m_param->setField(reader.getTransaction(), PresetParameter::Fields::ModSource, text);
-                         });
+                           p->setField(reader.getTransaction(), PresetParameter::Fields::ModSource, text);
+                         }
+                       });
 
-    reader.onTextElement("givenName",
-                         [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                         { m_param->setField(reader.getTransaction(), PresetParameter::Fields::GivenName, text); });
+  reader.onTextElement("givenName",
+                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
+                       {
+                         for(auto &p : m_param)
+                         {
+                           p->setField(reader.getTransaction(), PresetParameter::Fields::GivenName, text);
+                         }
+                       });
 
-    reader.onTextElement("info",
-                         [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                         { m_param->setField(reader.getTransaction(), PresetParameter::Fields::Info, text); });
+  reader.onTextElement("info",
+                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
+                       {
+                         for(auto &p : m_param)
+                         {
+                           p->setField(reader.getTransaction(), PresetParameter::Fields::Info, text);
+                         }
+                       });
 
-    reader.onTextElement(
-        "ribbon-touch-behaviour",
-        [=, &reader](const Glib::ustring &text, const Attributes &attr)
-        { m_param->setField(reader.getTransaction(), PresetParameter::Fields::RibbonTouchBehaviour, text); });
+  reader.onTextElement("ribbon-touch-behaviour",
+                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
+                       {
+                         for(auto &p : m_param)
+                         {
+                           p->setField(reader.getTransaction(), PresetParameter::Fields::RibbonTouchBehaviour, text);
+                         }
+                       });
 
-    reader.onTextElement("ribbon-return-mode",
-                         [=, &reader](const Glib::ustring &text, const Attributes &attr) {
-                           m_param->setField(reader.getTransaction(), PresetParameter::Fields::RibbonReturnMode, text);
-                         });
+  reader.onTextElement("ribbon-return-mode",
+                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
+                       {
+                         for(auto &p : m_param)
+                         {
+                           p->setField(reader.getTransaction(), PresetParameter::Fields::RibbonReturnMode, text);
+                         }
+                       });
 
-    reader.onTextElement("pedalMode",
-                         [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                         { m_param->setField(reader.getTransaction(), PresetParameter::Fields::PedalMode, text); });
-  }
+  reader.onTextElement("pedalMode",
+                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
+                       {
+                         for(auto &p : m_param)
+                         {
+                           p->setField(reader.getTransaction(), PresetParameter::Fields::PedalMode, text);
+                         }
+                       });
 }

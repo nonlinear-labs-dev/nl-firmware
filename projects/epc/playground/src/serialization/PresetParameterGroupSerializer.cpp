@@ -4,21 +4,21 @@
 #include <presets/PresetParameter.h>
 #include <parameter_declarations.h>
 #include <nltools/logging/Log.h>
+#include <utility>
 
 // change this signature and following serializers to accept a list of groups/parameters
 // read can then directly fill all requested parameters with the values read -> split
 // write will still create the group serializer with only one argument
 
-PresetParameterGroupSerializer::PresetParameterGroupSerializer(PresetParameterGroup *paramGroup, SoundType type)
+PresetParameterGroupSerializer::PresetParameterGroupSerializer(std::vector<PresetParameterGroup *> paramGroup,
+                                                               SoundType type)
     : Serializer(getTagName())
-    , m_paramGroup(paramGroup)
+    , m_paramGroups(std::move(paramGroup))
     , m_type(type)
 {
 }
 
-PresetParameterGroupSerializer::~PresetParameterGroupSerializer()
-{
-}
+PresetParameterGroupSerializer::~PresetParameterGroupSerializer() = default;
 
 Glib::ustring PresetParameterGroupSerializer::getTagName()
 {
@@ -27,35 +27,29 @@ Glib::ustring PresetParameterGroupSerializer::getTagName()
 
 void PresetParameterGroupSerializer::writeTagContent(Writer &writer) const
 {
-  if(m_paramGroup)
-    for(auto &param : m_paramGroup->m_parameters)
+  for(auto &g : m_paramGroups)
+    for(auto &param : g->m_parameters)
     {
-      PresetParameterSerializer paramSerializer(param.get(), m_type);
+      PresetParameterSerializer paramSerializer({ param.get() }, m_type);
       paramSerializer.write(writer, Attribute("id", param->getID()));
     }
 }
 
 void PresetParameterGroupSerializer::readTagContent(Reader &reader) const
 {
-  if(m_paramGroup)
-  {
-    reader.onTag(PresetParameterSerializer::getTagName(), [&](const Attributes &attr) mutable {
-      ParameterId id(attr.get("id"));
+  reader.onTag(PresetParameterSerializer::getTagName(),
+               [&](const Attributes &attr) mutable
+               {
+                 std::vector<PresetParameter *> params;
 
-      //Prevent old ParameterID to slip through
-      if(id == ParameterId{C15::PID::Split_Split_Point, VoiceGroup::Global})
-      {
-        id = {C15::PID::Split_Split_Point, VoiceGroup::I};
-      }
+                 for(auto &g : m_paramGroups)
+                 {
+                   for(auto &p : g->m_parameters)
+                   {
+                     params.emplace_back(p.get());
+                   }
+                 }
 
-      if(auto p = m_paramGroup->findParameterByID(id))
-        return new PresetParameterSerializer(p, m_type);
-
-      nltools::Log::error("creating param:", id);
-      auto param = std::make_unique<PresetParameter>(id);
-      auto ret = new PresetParameterSerializer(param.get(), m_type);
-      m_paramGroup->m_parameters.push_back(std::move(param));
-      return ret;
-    });
-  }
+                 return new PresetParameterSerializer(params, m_type);
+               });
 }

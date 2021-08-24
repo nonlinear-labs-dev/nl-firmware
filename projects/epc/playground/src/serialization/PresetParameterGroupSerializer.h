@@ -8,7 +8,7 @@ class PresetParameterGroup;
 class PresetParameterGroupSerializer : public Serializer
 {
  public:
-  PresetParameterGroupSerializer(PresetParameterGroup *paramGroup, SoundType type);
+  PresetParameterGroupSerializer(std::vector<PresetParameterGroup *> paramGroup, SoundType type);
   ~PresetParameterGroupSerializer() override;
 
   static Glib::ustring getTagName();
@@ -17,6 +17,6 @@ class PresetParameterGroupSerializer : public Serializer
   void writeTagContent(Writer &writer) const override;
   void readTagContent(Reader &reader) const override;
 
-  PresetParameterGroup *m_paramGroup = nullptr;
+  std::vector<PresetParameterGroup*> m_paramGroups;
   SoundType m_type;
 };
