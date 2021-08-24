@@ -162,7 +162,7 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
     REQUIRE(editBuffer->getType() == SoundType::Single);
     REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
-    REQUIRE(vgParameter->getControlPositionValue() == vgParameter->getDefaultValue());
+    REQUIRE(vgParameter->getControlPositionValue() == vgParameter->getFactoryDefaultValue());
     REQUIRE(globalParameter->getDisplayValue() == globalParameterPreConversion + vGroupParameterPreConversion);
   }
 }
@@ -543,17 +543,17 @@ void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
     REQUIRE_FALSE(eb->isModified());
     REQUIRE_FALSE(eb->findAnyParameterChanged());
 
-    auto masterVolume = eb->findParameterByID({ 247, VoiceGroup::Global });
-    REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getDefaultValue()));
-    auto masterTune = eb->findParameterByID({ 248, VoiceGroup::Global });
-    REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getDefaultValue()));
+    auto masterVolume = eb->findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+    REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getFactoryDefaultValue()));
+    auto masterTune = eb->findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global });
+    REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getFactoryDefaultValue()));
 
     for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
     {
-      auto vgVolume = eb->findParameterByID({ 358, vg });
-      REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getDefaultValue()));
-      auto vgTune = eb->findParameterByID({ 360, vg });
-      REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getDefaultValue()));
+      auto vgVolume = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, vg });
+      REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getFactoryDefaultValue()));
+      auto vgTune = eb->findParameterByID({ C15::PID::Voice_Grp_Tune, vg });
+      REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getFactoryDefaultValue()));
     }
   }
 }

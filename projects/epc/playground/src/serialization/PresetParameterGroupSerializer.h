@@ -2,8 +2,10 @@
 
 #include <serialization/Serializer.h>
 #include <nltools/Types.h>
+#include <presets/PresetParameter.h>
 
 class PresetParameterGroup;
+class PresetParameterSerializer;
 
 class PresetParameterGroupSerializer : public Serializer
 {
@@ -17,6 +19,8 @@ class PresetParameterGroupSerializer : public Serializer
   void writeTagContent(Writer &writer) const override;
   void readTagContent(Reader &reader) const override;
 
-  std::vector<PresetParameterGroup*> m_paramGroups;
+  [[nodiscard]] PresetParameter *findParameter(const ParameterId &id) const;
+
+  std::vector<PresetParameterGroup *> m_paramGroups;
   SoundType m_type;
 };

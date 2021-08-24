@@ -8,6 +8,7 @@
 #include <nltools/logging/Log.h>
 #include <nltools/Assert.h>
 #include <utility>
+#include <parameters/scale-converters/SplitPointScaleConverter.h>
 
 PresetParameterSerializer::PresetParameterSerializer(std::vector<PresetParameter *> param, SoundType type)
     : Serializer(getTagName())
@@ -40,8 +41,8 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
                          auto v = std::stod(text);
                          for(auto &p : m_param)
                          {
-                           auto converted = ParameterImportConversions::get().convert(p->m_id.getNumber(), v,
-                                                                                      reader.getFileVersion(), m_type);
+                           auto &conversion = ParameterImportConversions::get();
+                           auto converted = conversion.convert(p->m_id, v, reader.getFileVersion(), m_type);
                            p->setValue(reader.getTransaction(), converted);
                          }
                        });

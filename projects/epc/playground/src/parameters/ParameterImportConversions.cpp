@@ -3,6 +3,8 @@
 #include <parameters/ParameterImportConversions.h>
 #include <parameter_declarations.h>
 
+#include <utility>
+
 ParameterImportConversions& ParameterImportConversions::get()
 {
   static ParameterImportConversions conversions(true);
@@ -53,21 +55,25 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
 
     registerConverter(46, 2, [=](auto v, auto) { return releaseV2ToV3(v); });
 
-    registerConverter(127, 4, [=](auto v, auto) {
-      if(v > 0.995)
-        return 1.0;
+    registerConverter(127, 4,
+                      [=](auto v, auto)
+                      {
+                        if(v > 0.995)
+                          return 1.0;
 
-      return 0.5 + v / 1.99;
-    });
+                        return 0.5 + v / 1.99;
+                      });
 
     registerMCAmountConverter(C15::PID::Comb_Flt_AP_Res, 4, [=](auto v, auto) { return v / 2.0; });
 
-    registerConverter(C15::PID::Reverb_Color, 4, [=](auto v, auto) {
-      if(v > 0.5)
-        return v;
+    registerConverter(C15::PID::Reverb_Color, 4,
+                      [=](auto v, auto)
+                      {
+                        if(v > 0.5)
+                          return v;
 
-      return v * v * v * 4.0;
-    });
+                        return v * v * v * 4.0;
+                      });
 
     registerConverter(C15::PID::Reverb_Chorus, 4, [=](auto v, auto) { return 0.25 + v * 0.75; });
 
@@ -77,6 +83,8 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::FB_Mix_Drive, 5, [=](auto v, auto) { return driveV5ToV6(v); });
 
     registerConverter(C15::PID::Split_Split_Point, 8, [=](auto v, auto) { return splitV8ToV9(v); });
+    registerExplicitConverter({ C15::PID::Split_Split_Point, VoiceGroup::II }, 8,
+                              [=](auto v, auto) { return splitIIV9ToV10(v); });
 
     registerConverter(C15::PID::MC_Time_A, 5, [=](auto v, auto) { return 0.442; });
     registerConverter(C15::PID::MC_Time_B, 5, [=](auto v, auto) { return 0.442; });
@@ -125,25 +133,35 @@ tControlPositionValue ParameterImportConversions::driveV5ToV6(tControlPositionVa
   return std::min((5.0 / 7.0) * in + (2.0 / 7.0), 1.0);
 }
 
-void ParameterImportConversions::registerConverter(const tParameterID parameterID, const tFileVersion srcVersion,
+void ParameterImportConversions::registerExplicitConverter(const ParameterId& id,
+                                                           ParameterImportConversions::tFileVersion srcVersion,
+                                                           ParameterImportConversions::tConverter c)
+{
+  m_explicitConverters[id].from[srcVersion] = std::move(c);
+}
+
+void ParameterImportConversions::registerConverter(const tParameterNumber parameterID, const tFileVersion srcVersion,
                                                    tConverter c)
 {
-  m_converters[parameterID].from[srcVersion] = c;
+  m_converters[parameterID].from[srcVersion] = std::move(c);
 }
 
-void ParameterImportConversions::registerMCAmountConverter(const tParameterID parameterID,
+void ParameterImportConversions::registerMCAmountConverter(const tParameterNumber parameterID,
                                                            const tFileVersion srcVersion, tConverter c)
 {
-  m_mcAmountConverters[parameterID].from[srcVersion] = c;
+  m_mcAmountConverters[parameterID].from[srcVersion] = std::move(c);
 }
 
-tControlPositionValue ParameterImportConversions::convert(const tParameterID parameterID,
+tControlPositionValue ParameterImportConversions::convert(const ParameterId& parameterID,
                                                           const tControlPositionValue in, const tFileVersion inVersion,
                                                           SoundType type) const
 {
-  auto it = m_converters.find(parameterID);
+  if(auto itExplicit = m_explicitConverters.find(parameterID); itExplicit != m_explicitConverters.end())
+  {
+    return itExplicit->second.convert(in, inVersion, type);
+  }
 
-  if(it != m_converters.end())
+  if(auto it = m_converters.find(parameterID.getNumber()); it != m_converters.end())
   {
     return it->second.convert(in, inVersion, type);
   }
@@ -151,7 +169,7 @@ tControlPositionValue ParameterImportConversions::convert(const tParameterID par
   return in;
 }
 
-tControlPositionValue ParameterImportConversions::convertMCAmount(const tParameterID parameterID,
+tControlPositionValue ParameterImportConversions::convertMCAmount(const tParameterNumber parameterID,
                                                                   const tControlPositionValue in,
                                                                   const tFileVersion inVersion) const
 {
@@ -199,4 +217,10 @@ tControlPositionValue ParameterImportConversions::splitV8ToV9(tControlPositionVa
 {
   auto note = split * 59.0;
   return note / 60.0;
+}
+
+tControlPositionValue ParameterImportConversions::splitIIV9ToV10(tControlPositionValue d) const
+{
+  constexpr auto step = (1.0 / 60.0);
+  return d + step;
 }

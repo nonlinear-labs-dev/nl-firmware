@@ -204,10 +204,12 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
 
     DebugLevel::info("Set given name of MC to", newName);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_givenName);
-      invalidate();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_givenName);
+          invalidate();
+        });
   }
 }
 
@@ -217,10 +219,12 @@ void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, cons
   {
     auto swapData = UNDO::createSwapData(info);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_info);
-      invalidate();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_info);
+          invalidate();
+        });
   }
 }
 

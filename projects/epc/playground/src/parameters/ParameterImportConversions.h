@@ -4,6 +4,7 @@
 #include <nltools/Types.h>
 #include <functional>
 #include <map>
+#include <ParameterId.h>
 
 class ParameterImportConversions
 {
@@ -12,20 +13,22 @@ class ParameterImportConversions
 
   typedef std::function<tControlPositionValue(tControlPositionValue, SoundType)> tConverter;
   typedef int tFileVersion;
-  typedef uint16_t tParameterID;
+  typedef uint16_t tParameterNumber;
 
-  [[nodiscard]] tControlPositionValue convert(tParameterID parameterID, tControlPositionValue in,
+  [[nodiscard]] tControlPositionValue convert(const ParameterId& parameterID, tControlPositionValue in,
                                               tFileVersion inVersion, SoundType type) const;
-  [[nodiscard]] tControlPositionValue convertMCAmount(tParameterID parameterID, tControlPositionValue in,
+  [[nodiscard]] tControlPositionValue convertMCAmount(tParameterNumber parameterID, tControlPositionValue in,
                                                       tFileVersion inVersion) const;
 
   virtual ~ParameterImportConversions();
 
+
  private:
   explicit ParameterImportConversions(bool registerDefaults);
 
-  void registerConverter(tParameterID parameterID, tFileVersion srcVersion, tConverter c);
-  void registerMCAmountConverter(tParameterID parameterID, tFileVersion srcVersion, tConverter c);
+  void registerExplicitConverter(const ParameterId& id, tFileVersion srcVersion, tConverter c);
+  void registerConverter(tParameterNumber parameterID, tFileVersion srcVersion, tConverter c);
+  void registerMCAmountConverter(tParameterNumber parameterID, tFileVersion srcVersion, tConverter c);
 
   [[nodiscard]] tControlPositionValue attackV2ToV3(tControlPositionValue in) const;
   [[nodiscard]] tControlPositionValue decayV2ToV3(tControlPositionValue in) const;
@@ -35,6 +38,7 @@ class ParameterImportConversions
   [[nodiscard]] tControlPositionValue voicesV5ToV6(tControlPositionValue unisonVoices) const;
   [[nodiscard]] tControlPositionValue voicesV7ToV8(tControlPositionValue unisonVoices, SoundType type) const;
   [[nodiscard]] tControlPositionValue splitV8ToV9(tControlPositionValue split) const;
+  [[nodiscard]] tControlPositionValue splitIIV9ToV10(tControlPositionValue d) const;
 
   struct ConvertersBySourceFileVersion
   {
@@ -42,8 +46,9 @@ class ParameterImportConversions
     std::map<tFileVersion, tConverter> from;
   };
 
-  std::map<tParameterID, ConvertersBySourceFileVersion> m_converters;
-  std::map<tParameterID, ConvertersBySourceFileVersion> m_mcAmountConverters;
+  std::map<ParameterId, ConvertersBySourceFileVersion> m_explicitConverters;
+  std::map<tParameterNumber, ConvertersBySourceFileVersion> m_converters;
+  std::map<tParameterNumber, ConvertersBySourceFileVersion> m_mcAmountConverters;
 
   friend class TestableImportConversions;
 };

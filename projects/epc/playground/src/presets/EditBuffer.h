@@ -200,7 +200,6 @@ class EditBuffer : public ParameterGroupSet
   bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 
   bool isPartLabelChanged(VoiceGroup group) const;
-  void cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset *p);
   void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
