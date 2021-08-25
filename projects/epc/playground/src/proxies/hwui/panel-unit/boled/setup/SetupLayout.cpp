@@ -904,7 +904,7 @@ namespace NavTree
       Editor()
           : MenuEditor()
       {
-        getPresetManager()->onMidiBankSelectionHappened([this](auto uuid) { updateOnSettingChanged(); });
+        getPresetManager()->onMidiBankSelectionHappened(sigc::hide(sigc::mem_fun(this, &Editor::updateOnSettingChanged)));
       }
 
      protected:
