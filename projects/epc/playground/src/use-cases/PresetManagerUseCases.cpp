@@ -152,9 +152,10 @@ void PresetManagerUseCases::createBankAndStoreEditBuffer()
   auto transaction = transactionScope->getTransaction();
   auto bank = m_presetManager->addBank(transaction);
   auto preset
-      = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
-  bank->selectPreset(transaction, preset->getUuid());
+      = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
   m_presetManager->selectBank(transaction, bank->getUuid());
+  bank->selectPreset(transaction, preset->getUuid());
+  m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
 
   onStore(transaction, preset);
 }
@@ -207,10 +208,11 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   auto bank = m_presetManager->addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-  auto preset = bank->appendAndLoadPreset(transaction,
+  auto preset = bank->appendPreset(transaction,
                                           std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer(), false));
-  m_presetManager->selectBank(transaction, bank->getUuid());
   bank->selectPreset(transaction, preset->getUuid());
+  m_presetManager->selectBank(transaction, bank->getUuid());
+  m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
 }
 
 void PresetManagerUseCases::selectBank(Bank* bank)
@@ -679,7 +681,8 @@ void PresetManagerUseCases::insertEditBufferAbove(const Uuid& anchor, const Uuid
     auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
     auto transaction = transactionScope->getTransaction();
     auto newPreset = std::make_unique<Preset>(tgtBank, *m_presetManager->getEditBuffer());
-    auto tgtPreset = tgtBank->insertAndLoadPreset(transaction, anchorPos, std::move(newPreset));
+    auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
+    m_presetManager->getEditBuffer()->undoableLoad(transaction, tgtPreset, false);
     tgtPreset->setName(transaction, name);
 
     if(!ebUuid.empty())
@@ -701,7 +704,8 @@ void PresetManagerUseCases::insertEditBufferBelow(const Uuid& anchor, const Uuid
     auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
     auto transaction = transactionScope->getTransaction();
     auto newPreset = std::make_unique<Preset>(tgtBank, *m_presetManager->getEditBuffer());
-    auto tgtPreset = tgtBank->insertAndLoadPreset(transaction, anchorPos, std::move(newPreset));
+    auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
+    m_presetManager->getEditBuffer()->undoableLoad(transaction, tgtPreset, false);
     tgtPreset->setName(transaction, name);
 
     if(!ebUuid.empty())

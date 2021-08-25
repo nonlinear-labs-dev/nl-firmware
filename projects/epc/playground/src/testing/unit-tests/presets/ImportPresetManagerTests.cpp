@@ -31,7 +31,7 @@ TEST_CASE("Import PresetManager consumes memory as expected")
 TEST_CASE("Import PresetManager overwrites banks")
 {
   auto pm = TestHelper::getPresetManager();
-  auto trash = pm->getUndoScope().startTrashTransaction();
+  auto trash = UNDO::Scope::startTrashTransaction();
   pm->clear(trash->getTransaction());
 
   PresetManagerUseCases uc(pm);
@@ -52,7 +52,7 @@ TEST_CASE("Import PresetManager overwrites banks")
 TEST_CASE("Import PresetManager is undoable")
 {
   auto pm = TestHelper::getPresetManager();
-  auto trash = pm->getUndoScope().startTrashTransaction();
+  auto trash = UNDO::Scope::.startTrashTransaction();
   pm->clear(trash->getTransaction());
 
   PresetManagerUseCases uc(pm);

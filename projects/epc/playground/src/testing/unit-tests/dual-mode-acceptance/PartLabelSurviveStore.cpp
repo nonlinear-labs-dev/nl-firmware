@@ -39,7 +39,7 @@ TEST_CASE("Store Presets With Part Names", "[Preset][Store]")
       CHECK(eb->getVoiceGroupName(VoiceGroup::I) == "I");
       CHECK(eb->getVoiceGroupName(VoiceGroup::II) == "II");
 
-      auto storedPreset = bank->insertAndLoadPreset(scope->getTransaction(), 0, std::make_unique<Preset>(bank, *eb));
+      auto storedPreset = bank->insertPreset(scope->getTransaction(), 0, std::make_unique<Preset>(bank, *eb));
 
       CHECK(storedPreset->getUuid() != singlePreset->getUuid());
 
@@ -62,7 +62,7 @@ TEST_CASE("Store Presets With Part Names", "[Preset][Store]")
       CHECK(eb->getVoiceGroupName(VoiceGroup::I) == "I");
       CHECK(eb->getVoiceGroupName(VoiceGroup::II) == "II");
 
-      auto storedPreset = bank->insertAndLoadPreset(scope->getTransaction(), 0, std::make_unique<Preset>(bank, *eb));
+      auto storedPreset = bank->insertPreset(scope->getTransaction(), 0, std::make_unique<Preset>(bank, *eb));
 
       CHECK(storedPreset->getUuid() != layerPreset->getUuid());
 
