@@ -105,10 +105,12 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset([&](auto p) {
-        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
-        i++;
-      });
+      source->forEachPreset(
+          [&](auto p)
+          {
+            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
+            i++;
+          });
     }
   }
 }
@@ -228,3 +230,36 @@ void BankUseCases::exportBankToFile(const std::string& outFile)
   XmlWriter writer(stream);
   serializer.write(writer, VersionAttribute::get());
 }
+
+void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
+{
+  auto pm = m_bank->getPresetManager();
+  auto scope = pm->getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", toInsert->getName(true),
+                                                   m_bank->getName(true));
+  auto transaction = scope->getTransaction();
+  size_t i = 0;
+
+  toInsert->forEachPreset(
+      [&](auto p)
+      {
+        m_bank->insertPreset(transaction, insertPosition + i, std::make_unique<Preset>(m_bank, *p, true));
+        i++;
+      });
+}
+
+/*
+ * void BankActions::insertBank(std::shared_ptr<NetworkRequest> request, size_t offset)
+{
+  Glib::ustring anchorUuid = request->get("anchor");
+  Glib::ustring bankUuid = request->get("bank");
+
+  if(auto preset = m_presetManager.findPreset(Uuid { anchorUuid }))
+    if(auto targetBank = static_cast<Bank *>(preset->getParent()))
+      if(auto bank = m_presetManager.findBank(Uuid { bankUuid }))
+        if(bank != targetBank)
+        {
+          auto anchorPos = targetBank->getPresetPosition(Uuid { anchorUuid });
+          insertBank(bank, targetBank, anchorPos + offset);
+        }
+}
+ */

@@ -32,6 +32,10 @@ class BankUseCases
 
   void exportBankToFile(const std::string& basicString);
 
+  void insertBank(Bank* toInsert, size_t insertPosition);
+
+
+
  private:
   bool isDirectLoadActive() const;
   Bank* m_bank;

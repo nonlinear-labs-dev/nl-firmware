@@ -28,6 +28,7 @@
 #include <tools/TimeTools.h>
 #include <libundo/undo/TrashTransaction.h>
 #include <nltools/logging/Log.h>
+#include <proxies/hwui/HWUI.h>
 
 PresetManagerUseCases::PresetManagerUseCases(PresetManager* pm)
     : m_presetManager { pm }
@@ -1063,6 +1064,11 @@ void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y,
   newBank->setAttribute(transaction, "Date of Export File", "");
 
   m_presetManager->ensureBankSelection(transaction);
+
+  if(Application::exists())
+  {
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+  }
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)
