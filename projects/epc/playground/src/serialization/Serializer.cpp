@@ -36,7 +36,6 @@ void Serializer::read(Reader &reader) const
   reader.preProcess();
   readProlog(reader);
   readTagContent(reader);
-  reader.doOnReadFinish();
 }
 
 Serializer::Progress Serializer::getProgressCB() const

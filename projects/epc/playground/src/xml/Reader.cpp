@@ -139,17 +139,3 @@ sigc::connection Reader::onFileVersionRead(sigc::slot<FileVersionCheckResult, in
 {
   return m_sigFileVersionRead.connect(slot);
 }
-
-void Reader::onReadFinished(Reader::tReadFinishedCB cb)
-{
-  m_readFinishedCB = std::move(cb);
-}
-
-void Reader::doOnReadFinish()
-{
-  if(m_readFinishedCB)
-  {
-    m_readFinishedCB(*this);
-    m_readFinishedCB = nullptr;
-  }
-}

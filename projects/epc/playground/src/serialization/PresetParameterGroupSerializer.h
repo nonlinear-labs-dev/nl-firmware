@@ -19,8 +19,6 @@ class PresetParameterGroupSerializer : public Serializer
   void writeTagContent(Writer &writer) const override;
   void readTagContent(Reader &reader) const override;
 
-  [[nodiscard]] PresetParameter *findParameter(const ParameterId &id) const;
-
-  std::vector<PresetParameterGroup *> m_paramGroups;
+  const std::vector<PresetParameterGroup *> m_paramGroups;
   SoundType m_type;
 };

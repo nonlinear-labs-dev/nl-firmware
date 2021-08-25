@@ -44,40 +44,17 @@ void PresetParameterGroupSerializer::readTagContent(Reader &reader) const
                {
                  ParameterId id(attr.get("id"));
 
-                 if(m_paramGroups.size() == 1)
-                 {
-                   if(auto p = findParameter(id))
-                   {
-                     return new PresetParameterSerializer({ p }, m_type);
-                   }
+                 std::vector<PresetParameter *> targetParams {};
+                 for(auto &g : m_paramGroups)
+                   for(auto &p : g->m_parameters)
+                     if(p->getID().getNumber() == id.getNumber())
+                       targetParams.emplace_back(p.get());
 
-                   nltools::Log::warning("PresetParameterSerializer was created without targets. Affected ID:", id);
-                   return new PresetParameterSerializer({}, m_type);
-                 }
-                 else
-                 {
-                   nltools::Log::warning(__FILE__, __LINE__, "Saving Parameter Values into multiple Parameters!");
+                 if(targetParams.empty())
+                   nltools::Log::warning("PresetParameterSerializer was created without targets! Affected ID:", id);
+                 else if(targetParams.size() > 1)
+                   nltools::Log::warning("PresetParameterSerializer for id", id, "has multiple targets!");
 
-                   std::vector<PresetParameter *> params;
-                   for(auto &g : m_paramGroups)
-                     for(auto &p : g->m_parameters)
-                       params.emplace_back(p.get());
-                   return new PresetParameterSerializer(params, m_type);
-                 }
+                 return new PresetParameterSerializer(targetParams, m_type);
                });
-}
-
-PresetParameter *PresetParameterGroupSerializer::findParameter(const ParameterId &id) const
-{
-  for(auto &g : m_paramGroups)
-  {
-    for(auto &p : g->m_parameters)
-    {
-      if(p->getID() == id)
-      {
-        return p.get();
-      }
-    }
-  }
-  return nullptr;
 }
