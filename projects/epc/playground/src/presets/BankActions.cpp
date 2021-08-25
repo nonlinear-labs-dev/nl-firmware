@@ -310,8 +310,9 @@ BankActions::BankActions(PresetManager &presetManager)
     auto fileName = request->get("fileName");
     MemoryInStream stream(xml, false);
 
+    //TODO inject proper Progress CB
     PresetManagerUseCases useCases(&m_presetManager);
-    useCases.importBankFromStream(stream, std::stoi(x), std::stoi(y), fileName);
+    useCases.importBankFromStream(stream, std::stoi(x), std::stoi(y), fileName, [](auto){});
   });
 
   addAction("set-preset-attribute", [&](const std::shared_ptr<NetworkRequest>& request) mutable {

@@ -1022,8 +1022,8 @@ bool PresetManagerUseCases::isDirectLoadActive() const
   return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 }
 
-void PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
-                                               std::function<void(std::string)> progress)
+Bank* PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
+                                               const std::function<void(const std::string&)>& progress)
 {
   FileInfos fileInfos(file);
   FileInStream stream(fileInfos.filePath, false);
@@ -1031,14 +1031,16 @@ void PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_
   if(progress)
     progress(fileInfos.fileName);
 
-  importBankFromStream(stream, 0, 0, fileInfos.fileName);
+  return importBankFromStream(stream, 0, 0, fileInfos.fileName, progress);
 }
 
-void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName)
+Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName,
+                                                 const std::function<void(const std::string&)>& progress)
 {
   auto scope = m_presetManager->getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();
 
+  //TODO add injection for settings?
   std::shared_ptr<BooleanSettings> autoLoadOff = nullptr;
   if(Application::exists())
   {
@@ -1049,7 +1051,7 @@ void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y,
   auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager));
 
   XmlReader reader(stream, transaction);
-  reader.read<PresetBankSerializer>(newBank, Serializer::Progress {}, true);
+  reader.read<PresetBankSerializer>(newBank, progress ? progress : Serializer::Progress {}, true);
 
   newBank->setAttachedToBank(transaction, Uuid::none());
   newBank->setAttachedDirection(transaction, to_string(Bank::AttachmentDirection::none));
@@ -1065,10 +1067,12 @@ void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y,
 
   m_presetManager->ensureBankSelection(transaction);
 
+  //TODO add injection
   if(Application::exists())
   {
     Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
   }
+  return newBank;
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)

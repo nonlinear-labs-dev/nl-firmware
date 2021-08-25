@@ -2,7 +2,6 @@
 
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
-#include <Application.h>
 
 class ClusterEnforcement
 {
@@ -20,45 +19,10 @@ class ClusterEnforcement
     tTreeNodePtr top;
     Bank *bank;
 
-    void assignMaster(const tTreeNodePtr &master)
-    {
-      this->master = master;
-
-      if(right)
-        right->assignMaster(master);
-      if(bottom)
-        bottom->assignMaster(master);
-    }
-
-    size_t getClusterDepth()
-    {
-      if(left)
-        return 1 + left->getClusterDepth();
-      if(top)
-        return 1 + top->getClusterDepth();
-
-      return 0;
-    }
-
-    size_t getColumn()
-    {
-      if(left)
-        return 1 + left->getColumn();
-      if(top)
-        return 0 + top->getColumn();
-
-      return 0;
-    }
-
-    size_t getRow()
-    {
-      if(left)
-        return 0 + left->getRow();
-      if(top)
-        return 1 + top->getRow();
-
-      return 0;
-    }
+    void assignMaster(const tTreeNodePtr &master);
+    size_t getClusterDepth();
+    size_t getColumn();
+    size_t getRow();
   };
   typedef std::shared_ptr<TreeNode> tCluster;
 
@@ -66,7 +30,6 @@ class ClusterEnforcement
   explicit ClusterEnforcement(PresetManager *pm);
   virtual ~ClusterEnforcement();
   void enforceClusterRuleOfOne(UNDO::Transaction *transaction);
-  void sanitizeBankThatWillBeDeleted(UNDO::Transaction *transaction, Bank *bank);
   std::vector<Bank *> sortBanks();
 
  private:

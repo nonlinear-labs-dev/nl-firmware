@@ -8,7 +8,6 @@
 
 TEST_CASE("Export/Import Presets With Part Names", "[Preset][Store][Export][Import]")
 {
-  auto eb = TestHelper::getEditBuffer();
   auto pm = TestHelper::getPresetManager();
 
   auto setVGName
@@ -30,39 +29,41 @@ TEST_CASE("Export/Import Presets With Part Names", "[Preset][Store][Export][Impo
 
     setVGName(trans, layerPreset, VoiceGroup::I, "I");
     setVGName(trans, layerPreset, VoiceGroup::II, "II");
+  }
 
-    auto CHECK_LABELS_PRESENT = [](const Preset* p) {
-      CHECK(p->getVoiceGroupName(VoiceGroup::I) == "I");
-      CHECK(p->getVoiceGroupName(VoiceGroup::II) == "II");
-    };
+  auto CHECK_LABELS_PRESENT = [](const Preset* p) {
+    CHECK(p->getVoiceGroupName(VoiceGroup::I) == "I");
+    CHECK(p->getVoiceGroupName(VoiceGroup::II) == "II");
+  };
 
-    THEN("Export Bank -> Import Bank -> Check Labels")
+  THEN("Export Bank -> Import Bank -> Check Labels")
+  {
+    CHECK_LABELS_PRESENT(singlePreset);
+    CHECK_LABELS_PRESENT(layerPreset);
+
+    auto oldNumPresets = bank->getNumPresets();
+    auto oldBankName = bank->getName(false);
+
     {
-      CHECK_LABELS_PRESENT(singlePreset);
-      CHECK_LABELS_PRESENT(layerPreset);
-
-      auto oldNumPresets = bank->getNumPresets();
-      auto oldBankName = bank->getName(false);
-
-      {
-        PresetBankSerializer serializer(bank, {}, false);
-        FileOutStream stream("/tmp/testbank.xml", false);
-        XmlWriter writer(stream);
-        serializer.write(writer, VersionAttribute::get());
-      }
-
-      auto newBank = [&] {
-        FileInStream stream("/tmp/testbank.xml", false);
-        auto& bankActions = Application::get().getPresetManager()->findActionManager<BankActions>();
-        return bankActions.importBank(trans, stream, "0", "0", "/tmp/testbank.xml");
-      }();
-
-      CHECK_LABELS_PRESENT(newBank->getPresetAt(0));
-      CHECK_LABELS_PRESENT(newBank->getPresetAt(1));
-
-      CHECK(newBank->getNumPresets() == oldNumPresets);
-      CHECK(newBank->getName(false) == oldBankName);
-      pm->deleteBank(trans, newBank->getUuid());
+      PresetBankSerializer serializer(bank, {}, false);
+      FileOutStream stream("/tmp/testbank.xml", false);
+      XmlWriter writer(stream);
+      serializer.write(writer, VersionAttribute::get());
     }
+
+    auto newBank = [&] {
+      FileInStream stream("/tmp/testbank.xml", false);
+      PresetManagerUseCases useCase(TestHelper::getPresetManager());
+      return useCase.importBankFromStream(stream, 0, 0, "/tmp/testbank.xml", [](auto){});
+    }();
+
+    CHECK_LABELS_PRESENT(newBank->getPresetAt(0));
+    CHECK_LABELS_PRESENT(newBank->getPresetAt(1));
+
+    CHECK(newBank->getNumPresets() == oldNumPresets);
+    CHECK(newBank->getName(false) == oldBankName);
+
+    PresetManagerUseCases useCase(pm);
+    useCase.deleteBank(newBank);
   }
 }
