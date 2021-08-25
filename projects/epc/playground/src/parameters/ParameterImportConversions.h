@@ -38,6 +38,7 @@ class ParameterImportConversions
   [[nodiscard]] tControlPositionValue voicesV5ToV6(tControlPositionValue unisonVoices) const;
   [[nodiscard]] tControlPositionValue voicesV7ToV8(tControlPositionValue unisonVoices, SoundType type) const;
   [[nodiscard]] tControlPositionValue splitV8ToV9(tControlPositionValue split) const;
+  [[nodiscard]] tControlPositionValue splitIIV8ToV10(tControlPositionValue d) const;
   [[nodiscard]] tControlPositionValue splitIIV9ToV10(tControlPositionValue d) const;
 
   struct ConvertersBySourceFileVersion

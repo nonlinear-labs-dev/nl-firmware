@@ -83,8 +83,10 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::FB_Mix_Drive, 5, [=](auto v, auto) { return driveV5ToV6(v); });
 
     registerConverter(C15::PID::Split_Split_Point, 8, [=](auto v, auto) { return splitV8ToV9(v); });
-    registerExplicitConverter({ C15::PID::Split_Split_Point, VoiceGroup::II }, 8,
+    registerExplicitConverter({ C15::PID::Split_Split_Point, VoiceGroup::II }, 9,
                               [=](auto v, auto) { return splitIIV9ToV10(v); });
+    registerExplicitConverter({ C15::PID::Split_Split_Point, VoiceGroup::II }, 8,
+                              [=](auto v, auto) { return splitIIV8ToV10(v); });
 
     registerConverter(C15::PID::MC_Time_A, 5, [=](auto v, auto) { return 0.442; });
     registerConverter(C15::PID::MC_Time_B, 5, [=](auto v, auto) { return 0.442; });
@@ -217,6 +219,11 @@ tControlPositionValue ParameterImportConversions::splitV8ToV9(tControlPositionVa
 {
   auto note = split * 59.0;
   return note / 60.0;
+}
+
+tControlPositionValue ParameterImportConversions::splitIIV8ToV10(tControlPositionValue d) const
+{
+  return splitIIV9ToV10(splitV8ToV9(d));
 }
 
 tControlPositionValue ParameterImportConversions::splitIIV9ToV10(tControlPositionValue d) const
