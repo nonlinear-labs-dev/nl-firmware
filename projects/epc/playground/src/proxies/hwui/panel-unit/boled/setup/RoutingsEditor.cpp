@@ -19,11 +19,11 @@ inline auto getPreviewNameForAspect(RoutingSettings::tAspectIndex a)
     case ASP::SEND_PRIMARY:
       return "Send Prim.";
     case ASP::RECEIVE_PRIMARY:
-      return "Rec. Prim.";
+      return "Recv. Prim.";
     case ASP::SEND_SPLIT:
       return "Send Split";
     case ASP::RECEIVE_SPLIT:
-      return "Rec. Split";
+      return "Recv. Split";
     case ASP::LOCAL:
       return "Local";
     default:
@@ -228,16 +228,21 @@ bool RoutingsEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 
 void RoutingsEditor::stepEntry(int inc)
 {
-  const auto length = static_cast<int>(tID::LENGTH);
-  auto currentIdx = static_cast<int>(m_id);
-  currentIdx += inc;
+  constexpr auto len = static_cast<int>(tID::LENGTH);
+  static std::array<tID, len> customOrder {
+    tID::Notes,  tID::ProgramChange, tID::Pedal1,     tID::Pedal2,  tID::Pedal3,
+    tID::Pedal4, tID::Bender,        tID::Aftertouch, tID::Ribbon1, tID::Ribbon2
+  };
 
-  if(currentIdx >= length)
+  auto it = std::find(customOrder.begin(), customOrder.end(), m_id);
+  auto currentIdx = std::distance(customOrder.begin(), it) + inc;
+
+  if(currentIdx >= len)
     currentIdx = 0;
   if(currentIdx < 0)
-    currentIdx = length - 1;
+    currentIdx = len - 1;
 
-  m_id = static_cast<tID>(currentIdx);
+  m_id = customOrder[currentIdx];
 
   if(m_id == tID::ProgramChange)
   {
@@ -252,14 +257,13 @@ void RoutingsEditor::stepEntry(int inc)
 
 void RoutingsEditor::stepAspect(int inc)
 {
-  const auto isProgramChange = m_id == tID::ProgramChange;
+  constexpr auto totalLength = static_cast<int>(tAspect::LENGTH);
+  constexpr auto trimmedLength = totalLength - 1;
 
-  const auto totalLength = static_cast<int>(tAspect::LENGTH);
-  const auto trimmedLength = totalLength - 1;
+  const auto isProgramChange = m_id == tID::ProgramChange;
   const auto length = isProgramChange ? trimmedLength : totalLength;
 
-  auto currentIdx = static_cast<int>(m_aspect);
-  currentIdx += inc;
+  auto currentIdx = static_cast<int>(m_aspect) + inc;
 
   if(currentIdx >= length)
     currentIdx = 0;
