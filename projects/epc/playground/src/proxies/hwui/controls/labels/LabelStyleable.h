@@ -12,7 +12,6 @@ enum class FontDecoration
 
 enum class FontSize
 {
-  Size7 = 7, //This is very ugly, but would be very useful too :/
   Size8 = 8,
   Size9 = 9
 };
