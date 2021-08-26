@@ -53,8 +53,7 @@ void PresetParameterSerializer::readTagContent(Reader &reader) const
                          auto v = std::stod(text);
                          for(auto &p : m_param)
                          {
-                           v = ParameterImportConversions::get().convertMCAmount(p->m_id.getNumber(), v,
-                                                                                 reader.getFileVersion());
+                           v = ParameterImportConversions::get().convertMCAmount(p->m_id, v, reader.getFileVersion());
                            p->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, to_string(v));
                          }
                        });

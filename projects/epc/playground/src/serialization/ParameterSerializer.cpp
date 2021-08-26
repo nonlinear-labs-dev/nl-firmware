@@ -97,7 +97,7 @@ void ParameterSerializer::tryLoadModulateableParameter(Reader &reader) const
     reader.onTextElement("modAmount", [=, &reader](const Glib::ustring &text, const Attributes &) {
       auto v = std::stod(text);
       auto converted
-          = ParameterImportConversions::get().convertMCAmount(m_param->getID().getNumber(), v, reader.getFileVersion());
+          = ParameterImportConversions::get().convertMCAmount(m_param->getID(), v, reader.getFileVersion());
       p->setModulationAmount(reader.getTransaction(), converted);
     });
 

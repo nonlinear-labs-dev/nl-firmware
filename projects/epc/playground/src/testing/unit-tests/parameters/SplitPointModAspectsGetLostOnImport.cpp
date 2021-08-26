@@ -64,3 +64,57 @@ TEST_CASE("Import Preset with ModAspects on Split")
     }
   }
 }
+
+TEST_CASE("Import Conversion for Bank with Version 7 Checks out")
+{
+  auto pm = TestHelper::getPresetManager();
+
+  {
+    auto trash = UNDO::Scope::startTrashTransaction();
+    pm->clear(trash->getTransaction());
+    CHECK(pm->getSelectedBank() == nullptr);
+  }
+
+  PresetManagerUseCases uc(pm);
+  FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/Version7Split.xml", false);
+  uc.importBankFromStream(stream, 0, 0, "Split7");
+
+  auto newBank = pm->getSelectedBank();
+  CHECK(newBank != nullptr);
+
+  auto newPreset = newBank->getPresetAt(0);
+  CHECK(newPreset != nullptr);
+
+  auto oldParam = newPreset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }, false);
+  CHECK(oldParam == nullptr);
+
+  auto splitIDI = ParameterId{ C15::PID::Split_Split_Point, VoiceGroup::I };
+  auto splitIDII = ParameterId{ C15::PID::Split_Split_Point, VoiceGroup::II };
+  auto splitPntI = newPreset->findParameterByID(splitIDI, false);
+  auto splitPntII = newPreset->findParameterByID(splitIDII, false);
+  CHECK(splitPntI != nullptr);
+  CHECK(splitPntII != nullptr);
+
+  constexpr auto splitIIExpectedValue = 0.5 + (1.0 / 60.0);
+
+  THEN("CP Positions are correct")
+  {
+    CHECK(splitPntI->getValue() == 0.5);
+    CHECK(splitPntII->getValue() == splitIIExpectedValue);
+  }
+
+  WHEN("Preset is loaded")
+  {
+    EditBufferUseCases useCase(TestHelper::getEditBuffer());
+    useCase.undoableLoad(newPreset);
+
+    THEN("Values are as expected")
+    {
+      auto eb = TestHelper::getEditBuffer();
+      auto sI = eb->findAndCastParameterByID<SplitPointParameter>(splitIDI);
+      auto sII = eb->findAndCastParameterByID<SplitPointParameter>(splitIDII);
+      CHECK(sI->getControlPositionValue() == 0.5);
+      CHECK(sII->getControlPositionValue() == splitIIExpectedValue);
+    }
+  }
+}

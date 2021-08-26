@@ -7,10 +7,6 @@
 #include <utility>
 #include <nltools/Assert.h>
 
-// change this signature and following serializers to accept a list of groups/parameters
-// read can then directly fill all requested parameters with the values read -> split
-// write will still create the group serializer with only one argument
-
 PresetParameterGroupSerializer::PresetParameterGroupSerializer(std::vector<PresetParameterGroup *> paramGroup,
                                                                SoundType type)
     : Serializer(getTagName())
