@@ -7,10 +7,10 @@ class PresetManager;
 class AudioEngineProxy;
 class HWUI;
 
-class FormerPresetManagerActionManagers : public ContentSection
+class ActionManagers : public ContentSection
 {
  public:
-  FormerPresetManagerActionManagers(UpdateDocumentContributor* parent, PresetManager& pm, AudioEngineProxy& aeProx,
+  ActionManagers(UpdateDocumentContributor* parent, PresetManager& pm, AudioEngineProxy& aeProx,
                                     HWUI& hwui);
   [[nodiscard]] Glib::ustring getPrefix() const override;
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;

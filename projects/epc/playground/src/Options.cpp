@@ -8,6 +8,11 @@
 
 bool Options::s_acceptanceTests = false;
 
+Options::Options()
+{
+  setDefaults();
+}
+
 Options::Options(int &argc, char **&argv)
 {
   setDefaults();

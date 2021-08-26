@@ -1,20 +1,17 @@
 #include <presets/ClusterEnforcement.h>
 #include <tools/PerformanceTimer.h>
 
-ClusterEnforcement::ClusterEnforcement(PresetManager* pm)
+ClusterEnforcement::ClusterEnforcement(PresetManager& pm) : m_presetManager{pm}
 {
-  m_presetManager = pm;
 }
 
-ClusterEnforcement::~ClusterEnforcement()
-{
-}
+ClusterEnforcement::~ClusterEnforcement() = default;
 
 std::vector<Bank*> ClusterEnforcement::getClusterMasters()
 {
   std::vector<Bank*> clusterMaster;
 
-  m_presetManager->forEachBank([&](auto bank) {
+  m_presetManager.forEachBank([&](auto bank) {
     if(bank->getAttachedToBankUuid().empty())
       clusterMaster.push_back(bank);
   });
@@ -27,7 +24,7 @@ void ClusterEnforcement::buildClusterStructure()
   m_clusters.clear();
   m_uuidToTreeNode.clear();
 
-  auto waitingList = m_presetManager->getBanks();
+  auto waitingList = m_presetManager.getBanks();
 
   std::list<Bank*> anotherWaitingList;
 

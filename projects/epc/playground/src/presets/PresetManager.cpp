@@ -689,7 +689,7 @@ size_t PresetManager::getBankPosition(const Uuid &uuid) const
 void PresetManager::sanitizeBankClusterRelations(UNDO::Transaction *transaction)
 {
   resolveCyclicAttachments(transaction);
-  ClusterEnforcement enforcer(this);
+  ClusterEnforcement enforcer(*this);
   enforcer.enforceClusterRuleOfOne(transaction);
 }
 

@@ -246,20 +246,3 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
         i++;
       });
 }
-
-/*
- * void BankActions::insertBank(std::shared_ptr<NetworkRequest> request, size_t offset)
-{
-  Glib::ustring anchorUuid = request->get("anchor");
-  Glib::ustring bankUuid = request->get("bank");
-
-  if(auto preset = m_presetManager.findPreset(Uuid { anchorUuid }))
-    if(auto targetBank = static_cast<Bank *>(preset->getParent()))
-      if(auto bank = m_presetManager.findBank(Uuid { bankUuid }))
-        if(bank != targetBank)
-        {
-          auto anchorPos = targetBank->getPresetPosition(Uuid { anchorUuid });
-          insertBank(bank, targetBank, anchorPos + offset);
-        }
-}
- */

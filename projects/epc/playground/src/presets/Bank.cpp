@@ -97,12 +97,11 @@ Preset *Bank::clonePreset(const Preset *p)
 
 void Bank::load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder, int numBank, int numBanks)
 {
-  auto lastChangedDateOfFile = loadMetadata(transaction, bankFolder, std::function<void(const std::string &)>());
+  auto lastChangedDateOfFile = loadMetadata(transaction, bankFolder, {});
   loadPresets(transaction, bankFolder);
   deleteOldPresetFiles(bankFolder);
 
   m_lastChangedTimestamp = lastChangedDateOfFile;
-  // to be overwritten by PresetBankMetadataSerializer addPostfixCommand, if timestamp exists in file
 }
 
 void Bank::deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder)

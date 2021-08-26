@@ -566,7 +566,7 @@ void PresetManagerUseCases::sortBankNumbers()
   auto scope = m_presetManager->getUndoScope().startTransaction("Sort Bank Numbers");
   auto transaction = scope->getTransaction();
 
-  ClusterEnforcement ce(m_presetManager);
+  ClusterEnforcement ce(*m_presetManager);
   auto newBanks = ce.sortBanks();
   m_presetManager->sortBanks(transaction, newBanks);
 }

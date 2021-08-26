@@ -1,4 +1,4 @@
-#include "FormerPresetManagerActionManagers.h"
+#include "ActionManagers.h"
 
 #include <presets/PresetManagerActions.h>
 #include <presets/BankActions.h>
@@ -6,7 +6,7 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUIActions.h>
 
-FormerPresetManagerActionManagers::FormerPresetManagerActionManagers(UpdateDocumentContributor* parent,
+ActionManagers::ActionManagers(UpdateDocumentContributor* parent,
                                                                      PresetManager& pm, AudioEngineProxy& aeProx,
                                                                      HWUI& hwui)
     : ContentSection(parent)
@@ -17,18 +17,18 @@ FormerPresetManagerActionManagers::FormerPresetManagerActionManagers(UpdateDocum
   m_actionManagers.emplace_back(new HWUIActions(hwui, *pm.getEditBuffer()));
 }
 
-Glib::ustring FormerPresetManagerActionManagers::getPrefix() const
+Glib::ustring ActionManagers::getPrefix() const
 {
   return "presets";
 }
 
-void FormerPresetManagerActionManagers::writeDocument(Writer& writer,
+void ActionManagers::writeDocument(Writer& writer,
                                                       UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   nltools::Log::error("Not Implemented!");
 }
 
-void FormerPresetManagerActionManagers::handleHTTPRequest(std::shared_ptr<NetworkRequest> request,
+void ActionManagers::handleHTTPRequest(std::shared_ptr<NetworkRequest> request,
                                                           const Glib::ustring& path)
 {
   ContentSection::handleHTTPRequest(request, path);

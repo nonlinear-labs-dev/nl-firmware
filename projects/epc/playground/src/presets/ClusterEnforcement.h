@@ -27,13 +27,13 @@ class ClusterEnforcement
   typedef std::shared_ptr<TreeNode> tCluster;
 
  public:
-  explicit ClusterEnforcement(PresetManager *pm);
+  explicit ClusterEnforcement(PresetManager &pm);
   virtual ~ClusterEnforcement();
   void enforceClusterRuleOfOne(UNDO::Transaction *transaction);
   std::vector<Bank *> sortBanks();
 
  private:
-  PresetManager *m_presetManager = nullptr;
+  PresetManager &m_presetManager;
   std::vector<tCluster> m_clusters;
   std::map<Uuid, tTreeNodePtr> m_uuidToTreeNode;
 

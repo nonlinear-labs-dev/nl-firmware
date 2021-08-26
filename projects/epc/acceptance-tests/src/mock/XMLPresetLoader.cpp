@@ -29,9 +29,7 @@ void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir,
   auto transactionScope = undoScope.startTransaction("load");
   auto transaction = transactionScope->getTransaction();
 
-  auto tempArgs = "";
-  auto numArgs = 0;
-  Options opt(numArgs, (char **&) tempArgs);
+  Options opt;
   PresetManager pm(&updateDocMaster, true, opt);
   EditBuffer editBuffer(&pm);
   Preset preset(&pm);
@@ -75,9 +73,7 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth *synth, const std::string 
   auto transactionScope = undoScope.startTransaction("load");
   auto transaction = transactionScope->getTransaction();
 
-  auto tempArgs = "";
-  auto numArgs = 0;
-  Options opt(numArgs, (char **&) tempArgs);
+  Options opt;
   PresetManager pm(&updateDocMaster, true, opt);
   PresetManagerUseCases useCase(&pm);
 

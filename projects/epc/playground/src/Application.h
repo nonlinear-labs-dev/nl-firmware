@@ -8,7 +8,7 @@
 #include <use-cases/PresetManagerUseCases.h>
 #include <use-cases/SoundUseCases.h>
 #include <use-cases/EditBufferUseCases.h>
-#include <use-cases/FormerPresetManagerActionManagers.h>
+#include <use-cases/ActionManagers.h>
 
 class DeviceInformation;
 class WatchDog;
@@ -83,7 +83,7 @@ class Application
   std::unique_ptr<Clipboard> m_clipboard;
   std::unique_ptr<USBChangeListener> m_usbChangeListener;
   std::unique_ptr<WebUISupport> m_webUISupport;
-  FormerPresetManagerActionManagers m_presetActionManager;
+  ActionManagers m_presetActionManager;
 
   bool m_heartbeatState;
   bool m_isQuit;

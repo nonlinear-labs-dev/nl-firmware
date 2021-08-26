@@ -7,6 +7,7 @@ class Options
  public:
   static bool s_acceptanceTests;
 
+  Options();
   Options(int &argc, char **&argv);
 
   [[nodiscard]] const Glib::ustring &getPresetManagerPath() const;
