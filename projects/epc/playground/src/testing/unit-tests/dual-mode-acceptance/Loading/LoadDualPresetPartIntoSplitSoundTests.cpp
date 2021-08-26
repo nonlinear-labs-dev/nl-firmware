@@ -667,7 +667,7 @@ TEST_CASE("Split EditBuffer With Split Modulation Load into Part of already Modu
     CHECK(psII->getModulationAmount() == 0);
   }
 
-  EditBufferUseCases useCases(eb);
+  EditBufferUseCases useCases(*eb);
 
   WHEN("Default split loaded into part of modulated split I -> II")
   {
@@ -738,7 +738,7 @@ TEST_CASE("Single EditBuffer Load into Part of already Modulated Split")
     CHECK(psII->getModulationAmount() == 0);
   }
 
-  EditBufferUseCases useCases(eb);
+  EditBufferUseCases useCases(*eb);
 
   WHEN("Default split loaded into part of modulated split I -> II")
   {
@@ -795,7 +795,7 @@ TEST_CASE("Load To Part of Split could lead to missing assignements")
 
     WHEN("Default Single Sound loaded to Part II")
     {
-      EditBufferUseCases useCases(eb);
+      EditBufferUseCases useCases(*eb);
       useCases.undoableLoadToPart(presets.getSinglePreset(), VoiceGroup::I, VoiceGroup::II);
 
       THEN("No Gap was created as Split params were not loaded")
@@ -807,7 +807,7 @@ TEST_CASE("Load To Part of Split could lead to missing assignements")
 
     WHEN("Default Split Sound loaded to Part II")
     {
-      EditBufferUseCases useCases(eb);
+      EditBufferUseCases useCases(*eb);
       useCases.undoableLoadToPart(presets.getSplitPreset(), VoiceGroup::I, VoiceGroup::II);
 
       THEN("No Gap was created as Split params were not loaded")
@@ -819,7 +819,7 @@ TEST_CASE("Load To Part of Split could lead to missing assignements")
 
     WHEN("Default Layer Sound loaded to Part II")
     {
-      EditBufferUseCases useCases(eb);
+      EditBufferUseCases useCases(*eb);
       useCases.undoableLoadToPart(presets.getLayerPreset(), VoiceGroup::I, VoiceGroup::II);
 
       THEN("No Gap was created as Split params were not loaded")

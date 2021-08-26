@@ -46,6 +46,11 @@ namespace TestHelper
     return getPresetManager()->getEditBuffer();
   }
 
+  inline const Options& getOptions()
+  {
+    return *Application::get().getOptions();
+  }
+
   inline std::unique_ptr<UNDO::TransactionCreationScope> createTestScope()
   {
     return std::move(getPresetManager()->getUndoScope().startTestTransaction());

@@ -36,7 +36,7 @@ Carousel *ModulationRouterParameterSelectLayout2::createCarousel(const Rect &rec
 bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases ebUseCases { eb };
+  EditBufferUseCases ebUseCases { *eb };
 
   if(down)
   {

@@ -47,7 +47,7 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto eb = app.getPresetManager()->getEditBuffer();
   auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
 
-  EditBufferUseCases useCase(eb);
+  EditBufferUseCases useCase(*eb);
   if(hwui->isInLoadToPart() && eb->isDual())
   {
     if(auto preset = eb->getParent()->getSelectedPreset())

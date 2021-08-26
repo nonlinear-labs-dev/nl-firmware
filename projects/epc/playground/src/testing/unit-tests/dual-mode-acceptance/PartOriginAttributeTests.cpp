@@ -26,7 +26,7 @@ namespace detail
 TEST_CASE("Part Origin Attribute")
 {
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
 
   auto hwui = Application::get().getHWUI();
 

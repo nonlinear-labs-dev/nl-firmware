@@ -17,7 +17,7 @@ class DirectLoadSetting;
 class EditBufferUseCases
 {
  public:
-  explicit EditBufferUseCases(EditBuffer* eb);
+  explicit EditBufferUseCases(EditBuffer& eb);
 
   void setParameter(const ParameterId& id, tControlPositionValue cp);
   void setSplits(const ParameterId& id, tControlPositionValue cp, tControlPositionValue otherCp);
@@ -63,5 +63,5 @@ class EditBufferUseCases
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;
 
-  EditBuffer* m_editBuffer;
+  EditBuffer& m_editBuffer;
 };

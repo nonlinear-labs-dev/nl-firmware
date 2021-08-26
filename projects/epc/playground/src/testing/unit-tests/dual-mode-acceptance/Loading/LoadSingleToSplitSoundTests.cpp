@@ -42,7 +42,7 @@ TEST_CASE("Load Pre 1.7 Preset into Mono Enabled part resets Mono Enable")
 TEST_CASE("Load Single into Split Part I")
 {
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 
@@ -166,7 +166,7 @@ TEST_CASE("Load Single into Split Part I")
 TEST_CASE("Load Single into Split Part II")
 {
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 

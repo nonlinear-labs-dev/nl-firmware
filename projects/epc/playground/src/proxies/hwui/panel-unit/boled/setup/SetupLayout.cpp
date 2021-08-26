@@ -1096,9 +1096,6 @@ namespace NavTree
 
     [[nodiscard]] Glib::ustring getName() const override
     {
-      if(FileOutStream::getKioskMode())
-        return "Setup (Kiosk)";
-
       return "Setup";
     }
 

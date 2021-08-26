@@ -59,7 +59,7 @@ TEST_CASE("Load Presets", "[Benchmark]")
   preparePresets(presets2, 1.0);
 
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
 
   constexpr auto cNumTests = 10;
 

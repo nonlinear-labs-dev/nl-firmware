@@ -13,6 +13,7 @@
 #include <fstream>
 #include <use-cases/PresetManagerUseCases.h>
 #include <presets/Bank.h>
+#include <Options.h>
 
 void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir, const std::string &uuid)
 {
@@ -28,7 +29,10 @@ void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir,
   auto transactionScope = undoScope.startTransaction("load");
   auto transaction = transactionScope->getTransaction();
 
-  PresetManager pm(&updateDocMaster, true);
+  auto tempArgs = "";
+  auto numArgs = 0;
+  Options opt(numArgs, (char **&) tempArgs);
+  PresetManager pm(&updateDocMaster, true, opt);
   EditBuffer editBuffer(&pm);
   Preset preset(&pm);
   preset.setUuid(transaction, Uuid { uuid });
@@ -71,10 +75,13 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth *synth, const std::string 
   auto transactionScope = undoScope.startTransaction("load");
   auto transaction = transactionScope->getTransaction();
 
-  PresetManager pm(&updateDocMaster, true);
+  auto tempArgs = "";
+  auto numArgs = 0;
+  Options opt(numArgs, (char **&) tempArgs);
+  PresetManager pm(&updateDocMaster, true, opt);
   PresetManagerUseCases useCase(&pm);
 
-  useCase.importBankFromPath(std::filesystem::directory_entry { presetData });
+  useCase.importBankFromPath(std::filesystem::directory_entry { presetData }, Serializer::Progress{});
 
   auto bank = pm.getBankAt(0);
   auto preset = bank->getPresetAt(0);

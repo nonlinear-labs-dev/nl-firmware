@@ -73,7 +73,7 @@ TEST_CASE("UnisonVoices Conversion rules")
   };
 
   UpdateDocumentMasterMock root;
-  PresetManager pm(&root);
+  PresetManager pm(&root, false, TestHelper::getOptions());
   Bank bank(&pm);
 
   auto readXml = [&](auto xml) {

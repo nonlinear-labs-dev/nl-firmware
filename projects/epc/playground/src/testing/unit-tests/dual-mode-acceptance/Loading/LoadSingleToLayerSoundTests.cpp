@@ -15,7 +15,7 @@ using EBL = EditBufferLogicalParts;
 TEST_CASE("Load Single into Layer Part I")
 {
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
 
@@ -136,7 +136,7 @@ TEST_CASE("Load Single into Layer Part I")
 TEST_CASE("Load Single into Layer Part II")
 {
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
 
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();

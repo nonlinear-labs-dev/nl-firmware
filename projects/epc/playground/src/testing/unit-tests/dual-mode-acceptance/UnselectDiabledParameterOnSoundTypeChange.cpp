@@ -8,7 +8,7 @@ TEST_CASE("FROM Layer")
   MockPresetStorage presets;
 
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
   ebUseCases.undoableLoad(presets.getLayerPreset());
 
   Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
@@ -292,7 +292,7 @@ TEST_CASE("Split Loaded")
   MockPresetStorage presets;
 
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
 
   ebUseCases.undoableLoad(presets.getSplitPreset());
 

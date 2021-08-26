@@ -23,7 +23,6 @@
 #include <device-settings/PresetGlitchSuppression.h>
 #include <device-settings/DateTimeAdjustment.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
-#include <device-settings/KioskModeSetting.h>
 #include <device-settings/BlockingMainThreadIndication.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <http/NetworkRequest.h>
@@ -103,7 +102,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
   addSetting("SignalFlowIndication", new SignalFlowIndicationSetting(*this));
-  addSetting("KioskMode", new KioskModeSetting(*this));
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
   addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));

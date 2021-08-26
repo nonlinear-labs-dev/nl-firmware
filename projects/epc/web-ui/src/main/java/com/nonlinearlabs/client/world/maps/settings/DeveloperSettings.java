@@ -19,7 +19,6 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new DownloadEditBufferAsText(this));
 		addChild(new DownloadErrorReport(this));
 		addChild(new OpenEditBufferAsText(this));
-		addChild(new KioskMode(this));
 		addChild(new TestHWUIDisplay(this));
 		addChild(new BlockingMainThreadIndication(this));
 		addChild(new CrashOnError(this));

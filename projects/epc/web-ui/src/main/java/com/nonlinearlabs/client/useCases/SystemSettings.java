@@ -39,11 +39,6 @@ public class SystemSettings {
 		NonMaps.get().getServerProxy().setSetting("DebugLevel", netify(v.name()));
 	}
 
-	public void setKioskMode(BooleanValues v) {
-		SetupModel.get().systemSettings.kioskMode.setValue(v);
-		NonMaps.get().getServerProxy().setSetting("KioskMode", netify(v.name()));
-	}
-
 	public void setBlockingMainThreadIndication(BooleanValues v) {
 		SetupModel.get().systemSettings.indicateBlockedUI.setValue(v);
 		NonMaps.get().getServerProxy().setSetting("IndicateBlockedUI", netify(v.name()));

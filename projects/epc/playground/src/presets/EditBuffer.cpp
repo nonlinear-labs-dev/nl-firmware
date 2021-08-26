@@ -1482,7 +1482,7 @@ void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
 {
   if(auto selectedPreset = getParent()->getSelectedPreset())
   {
-    EditBufferUseCases useCase(this);
+    EditBufferUseCases useCase(*this);
     useCase.undoableLoadToPart(selectedPreset, from, to);
   }
 }
