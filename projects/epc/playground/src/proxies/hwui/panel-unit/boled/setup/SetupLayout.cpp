@@ -904,7 +904,8 @@ namespace NavTree
       Editor()
           : MenuEditor()
       {
-        getPresetManager()->onMidiBankSelectionHappened(sigc::hide(sigc::mem_fun(this, &Editor::updateOnSettingChanged)));
+        getPresetManager()->onMidiBankSelectionHappened(
+            sigc::hide(sigc::mem_fun(this, &Editor::updateOnSettingChanged)));
       }
 
      protected:
@@ -1024,16 +1025,16 @@ namespace NavTree
     constexpr const char *getName()
     {
       if constexpr(value)
-        return "Set all Routings to True";
+        return "Set all Routings to On";
       else
-        return "Set all Routings to False";
+        return "Set all Routings to Off";
     }
   };
 
   struct MidiRoutings : InnerNode
   {
     explicit MidiRoutings(InnerNode *p)
-        : InnerNode(p, "MIDI Routing")
+        : InnerNode(p, "Routings")
     {
       typedef RoutingSettings::tRoutingIndex tID;
       children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes"));
@@ -1062,7 +1063,7 @@ namespace NavTree
         : InnerNode(parent, "MIDI Settings")
     {
       children.emplace_back(new MidiPanicButton(this));
-      children.emplace_back(new SettingItem<GlobalLocalEnableSetting>(this, "Global Local Enable"));
+      children.emplace_back(new EnumSettingItem<GlobalLocalEnableSetting>(this, "Global Local Enable"));
       children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiChannels(this));
       children.emplace_back(new MidiAssignments(this));
