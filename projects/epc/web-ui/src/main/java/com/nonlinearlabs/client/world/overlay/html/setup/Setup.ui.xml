@@ -477,15 +477,6 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>Enable High-Res. Velocity (CC 88)</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
 							<p>Enable High-Res. CC (enable LSB)</p>
 						</div>
 						<div class="w40p mw-fit-content">
@@ -502,6 +493,15 @@
 						</div>
 						<div class="w20p">
 							<g:Button ui:field="highResMidi">High-Res.</g:Button>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable High-Res. Velocity (CC 88)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
 						</div>
 					</div>
 					<div class="linie"></div>

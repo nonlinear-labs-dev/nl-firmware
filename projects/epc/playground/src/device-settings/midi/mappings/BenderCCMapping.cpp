@@ -1,8 +1,8 @@
 #include "BenderCCMapping.h"
 #include <tools/StringTools.h>
 
-BenderCCMapping::BenderCCMapping(UpdateDocumentContributor& u)
-    : EnumSetting<BenderCC>(u, BenderCC::Pitchbend)
+BenderCCMapping::BenderCCMapping(UpdateDocumentContributor& u, Enable14BitSupport& enable14Bit)
+    : MappingSetting<BenderCC>(u, enable14Bit, BenderCC::Pitchbend)
 {
 }
 
@@ -47,5 +47,14 @@ const std::vector<Glib::ustring>& BenderCCMapping::enumToDisplayString() const
                                             "CC 29 (LSB: CC 61)",
                                             "CC 30 (LSB: CC 62)",
                                             "CC 31 (LSB: CC 63)" };
-  return ret;
+
+  static std::vector<Glib::ustring> retWithoutLSB
+      = { "None",  "Pitchbend", "CC 01", "CC 02", "CC 03", "CC 04", "CC 05", "CC 06", "CC 07", "CC 08", "CC 09",
+          "CC 10", "CC 11",     "CC 12", "CC 13", "CC 14", "CC 15", "CC 16", "CC 17", "CC 18", "CC 19", "CC 20",
+          "CC 21", "CC 22",     "CC 23", "CC 24", "CC 25", "CC 26", "CC 27", "CC 28", "CC 29", "CC 30", "CC 31" };
+
+  if(is14BitSupportEnabled())
+    return ret;
+  else
+    return retWithoutLSB;
 }

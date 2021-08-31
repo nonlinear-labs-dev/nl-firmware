@@ -51,6 +51,18 @@ public class MidiSettings {
             "CC 31 (LSB: CC 63)", "CC 64 (switching)",  "CC 65 (switching)",  "CC 66 (switching)",  "CC 67 (switching)",
             "CC 68 (switching)",  "CC 69 (switching)"
         };
+
+        static public String[] optionsWithoutLSB = { 
+            "None", "CC 01", "CC 02", "CC 03", "CC 04", "CC 05",
+            "CC 06", "CC 07", "CC 08", "CC 09", "CC 10",
+            "CC 11", "CC 12", "CC 13", "CC 14", "CC 15",
+            "CC 16", "CC 17", "CC 18", "CC 19", "CC 20",
+            "CC 21", "CC 22", "CC 23", "CC 24", "CC 25",
+            "CC 26", "CC 27", "CC 28", "CC 29", "CC 30",
+            "CC 31", "CC 64 (switching)",  "CC 65 (switching)",  "CC 66 (switching)",  "CC 67 (switching)",
+            "CC 68 (switching)",  "CC 69 (switching)"
+        };
+
         public int selected = 0;
     }
 
@@ -64,6 +76,17 @@ public class MidiSettings {
             "CC 26 (LSB: CC 58)", "CC 27 (LSB: CC 59)", "CC 28 (LSB: CC 60)", "CC 29 (LSB: CC 61)", "CC 30 (LSB: CC 62)",
             "CC 31 (LSB: CC 63)" 
         };
+
+        static public String[] optionsWithoutLSB = {
+            "None", "CC 01", "CC 02", "CC 03", "CC 04", "CC 05",
+            "CC 06", "CC 07", "CC 08", "CC 09", "CC 10",
+            "CC 11", "CC 12", "CC 13", "CC 14", "CC 15",
+            "CC 16", "CC 17", "CC 18", "CC 19", "CC 20",
+            "CC 21", "CC 22", "CC 23", "CC 24", "CC 25",
+            "CC 26", "CC 27", "CC 28", "CC 29", "CC 30",
+            "CC 31" 
+        };
+
         public int selected = 0;
     }
 
@@ -77,6 +100,17 @@ public class MidiSettings {
             "CC 25 (LSB: CC 57)", "CC 26 (LSB: CC 58)", "CC 27 (LSB: CC 59)", "CC 28 (LSB: CC 60)", "CC 29 (LSB: CC 61)",
             "CC 30 (LSB: CC 62)", "CC 31 (LSB: CC 63)"
         };
+
+        static public String[] optionsWithoutLSB = {
+            "None", "Pitchbend", "CC 01", "CC 02", "CC 03", "CC 04",
+            "CC 05", "CC 06", "CC 07", "CC 08", "CC 09",
+            "CC 10", "CC 11", "CC 12", "CC 13", "CC 14",
+            "CC 15", "CC 16", "CC 17", "CC 18", "CC 19",
+            "CC 20", "CC 21", "CC 22", "CC 23", "CC 24",
+            "CC 25", "CC 26", "CC 27", "CC 28", "CC 29",
+            "CC 30", "CC 31"
+        };
+
         public int selected = 0;
     }
 
@@ -90,6 +124,17 @@ public class MidiSettings {
             "CC 25 (LSB: CC 57)", "CC 26 (LSB: CC 58)", "CC 27 (LSB: CC 59)", "CC 28 (LSB: CC 60)", "CC 29 (LSB: CC 61)",
             "CC 30 (LSB: CC 62)", "CC 31 (LSB: CC 63)", "Pitchbend up", "Pitchbend down"
         };
+
+        static public String[] optionsWithoutLSB = {
+            "None", "Channel Pressure",   "CC 01", "CC 02", "CC 03", "CC 04",
+            "CC 05", "CC 06", "CC 07", "CC 08", "CC 09",
+            "CC 10", "CC 11", "CC 12", "CC 13", "CC 14",
+            "CC 15", "CC 16", "CC 17", "CC 18", "CC 19",
+            "CC 20", "CC 21", "CC 22", "CC 23", "CC 24",
+            "CC 25", "CC 26", "CC 27", "CC 28", "CC 29",
+            "CC 30", "CC 31", "Pitchbend up", "Pitchbend down"
+        };
+
         public int selected = 0;
     }
 
