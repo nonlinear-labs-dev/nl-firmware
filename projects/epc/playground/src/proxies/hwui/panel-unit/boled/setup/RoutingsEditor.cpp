@@ -9,6 +9,7 @@
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/Oleds.h>
 #include <proxies/hwui/controls/labels/LabelStyleable.h>
+#include <proxies/hwui/controls/PNGControl.h>
 #include "RoutingsSettingsHelper.h"
 
 inline auto getPreviewNameForAspect(RoutingSettings::tAspectIndex a)
@@ -19,11 +20,11 @@ inline auto getPreviewNameForAspect(RoutingSettings::tAspectIndex a)
     case ASP::SEND_PRIMARY:
       return "Send Prim.";
     case ASP::RECEIVE_PRIMARY:
-      return "Rec. Prim.";
+      return "Rcv. Prim.";
     case ASP::SEND_SPLIT:
       return "Send Split";
     case ASP::RECEIVE_SPLIT:
-      return "Rec. Split";
+      return "Rcv. Split";
     case ASP::LOCAL:
       return "Local";
     default:
@@ -31,6 +32,18 @@ inline auto getPreviewNameForAspect(RoutingSettings::tAspectIndex a)
       return "";
   }
 };
+
+class TickMark : public PNGControl
+{
+ public:
+  explicit TickMark(const Rect& pos);
+};
+
+TickMark::TickMark(const Rect& pos)
+    : PNGControl(pos)
+{
+  loadImage("tickmark.png");
+}
 
 class AspectList : public Control
 {
@@ -68,7 +81,6 @@ bool AspectList::redraw(FrameBuffer& fb)
   constexpr int paddingX = 1;
   constexpr int paddingY = 1;
 
-  using ASP = RoutingSettings::tAspectIndex;
   const auto& pos = getPosition();
   auto y = pos.getTop();
   const auto x = pos.getLeft();
@@ -76,30 +88,47 @@ bool AspectList::redraw(FrameBuffer& fb)
   const auto totalHeight = pos.getHeight();
   const auto aspectH = totalHeight / 5;
 
-  Label l(getPosition());
-  l.setFontColor(FrameBufferColors::C43);
+  LabelStyleable l(getPosition());
+  LabelStyle style{.size = FontSize::Size8, .decoration = FontDecoration::Regular, .justification = Font::Justification::Left};
+  l.setLabelStyle(style);
+
+  TickMark t({ 0, 0, 10, 10 });
+  t.setColor(FrameBufferColors::C255);
 
   for(auto a : getAspectsForIndex(entry))
   {
     auto aspPos = Rect(x + paddingX, y + paddingY, w - paddingX, aspectH - paddingY);
 
-    auto isEnabled = getState(a);
-    if(isEnabled)
-      fb.setColor(FrameBufferColors::C128);
-    else
-      fb.setColor(FrameBufferColors::C77);
-
-    fb.fillRect(aspPos);
-
-    l.setPosition(aspPos);
-    l.setText(getPreviewNameForAspect(a));
-    l.redraw(fb);
-
     auto isSelected = a == aspect;
+    auto isEnabled = getState(a);
+
     if(isSelected)
     {
-      fb.setColor(FrameBufferColors::C204);
-      fb.drawRect(aspPos);
+      auto backGroundRect = aspPos;
+      backGroundRect.setTop(aspPos.getTop() + 1);
+      backGroundRect.setHeight(aspPos.getHeight() - 2);
+      backGroundRect.setRight(aspPos.getRight() - 1);
+      fb.setColor(FrameBufferColors::C103);
+      fb.fillRect(backGroundRect);
+    }
+
+    if(isEnabled)
+    {
+      auto tickPos = aspPos;
+      tickPos.setTop(aspPos.getTop() + 2);
+      tickPos.setWidth(10);
+      tickPos.setLeft(aspPos.getRight() - 10);
+      t.setPosition(tickPos);
+      t.redraw(fb);
+    }
+
+    {
+      auto labelPos = aspPos;
+      labelPos.setLeft(aspPos.getLeft() + 1);
+      l.setPosition(labelPos);
+      l.setText(getPreviewNameForAspect(a));
+      l.setFontColor(isSelected ? FrameBufferColors::C255 : FrameBufferColors::C128);
+      l.redraw(fb);
     }
 
     y += aspectH;
@@ -132,6 +161,16 @@ class SetupModuleHeader : public Label
   {
     fb.setColor(FrameBufferColors::C43);
   }
+
+  std::shared_ptr<Font> getFont() const override
+  {
+    return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+  }
+
+  int getFontHeight() const override
+  {
+    return 8;
+  }
 };
 
 RoutingsEditor::RoutingsEditor(RoutingSettings::tRoutingIndex id)
@@ -146,7 +185,7 @@ RoutingsEditor::RoutingsEditor(RoutingSettings::tRoutingIndex id)
     setting->onChange(sigc::mem_fun(this, &RoutingsEditor::onSettingChanged));
   }
 
-  addControl(new SetupModuleHeader({ "Routings" }, { 0, 0, 64, 16 }));
+  addControl(new SetupModuleHeader({ "MIDI Routing" }, { 0, 0, 64, 13 }));
 
   LabelStyle entryStyle = { FontSize::Size9, FontDecoration::Bold, Font::Justification::Center };
   m_entryLabel = addControl(new LabelStyleable("Entry", { 64, 0, 128, 16 }, entryStyle));
@@ -154,8 +193,10 @@ RoutingsEditor::RoutingsEditor(RoutingSettings::tRoutingIndex id)
 
   LabelStyle aspectStyle = { FontSize::Size9, FontDecoration::Regular, Font::Justification::Center };
   m_aspectLabel = addControl(new LabelStyleable("Aspect", { 64, 16, 128, 16 }, aspectStyle));
-  LabelStyle valueStyle = { FontSize::Size8, FontDecoration::Regular, Font::Justification::Center };
+
+  LabelStyle valueStyle = { FontSize::Size9, FontDecoration::Regular, Font::Justification::Center };
   m_valueLabel = addControl(new LabelStyleable("Value", { 64, 32, 128, 16 }, valueStyle));
+  m_valueLabel->setHighlight(true);
 
   m_aspectList = addControl(new AspectList(m_id, m_aspect, { 192, 0, 64, 64 }));
   addControl(new Button("Back", Buttons::BUTTON_A));
@@ -228,16 +269,21 @@ bool RoutingsEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 
 void RoutingsEditor::stepEntry(int inc)
 {
-  const auto length = static_cast<int>(tID::LENGTH);
-  auto currentIdx = static_cast<int>(m_id);
-  currentIdx += inc;
+  constexpr auto len = static_cast<int>(tID::LENGTH);
+  static std::array<tID, len> customOrder {
+    tID::Notes,  tID::ProgramChange, tID::Pedal1,     tID::Pedal2,  tID::Pedal3,
+    tID::Pedal4, tID::Bender,        tID::Aftertouch, tID::Ribbon1, tID::Ribbon2
+  };
 
-  if(currentIdx >= length)
+  auto it = std::find(customOrder.begin(), customOrder.end(), m_id);
+  auto currentIdx = std::distance(customOrder.begin(), it) + inc;
+
+  if(currentIdx >= len)
     currentIdx = 0;
   if(currentIdx < 0)
-    currentIdx = length - 1;
+    currentIdx = len - 1;
 
-  m_id = static_cast<tID>(currentIdx);
+  m_id = customOrder[currentIdx];
 
   if(m_id == tID::ProgramChange)
   {
@@ -252,14 +298,13 @@ void RoutingsEditor::stepEntry(int inc)
 
 void RoutingsEditor::stepAspect(int inc)
 {
-  const auto isProgramChange = m_id == tID::ProgramChange;
+  constexpr auto totalLength = static_cast<int>(tAspect::LENGTH);
+  constexpr auto trimmedLength = totalLength - 1;
 
-  const auto totalLength = static_cast<int>(tAspect::LENGTH);
-  const auto trimmedLength = totalLength - 1;
+  const auto isProgramChange = m_id == tID::ProgramChange;
   const auto length = isProgramChange ? trimmedLength : totalLength;
 
-  auto currentIdx = static_cast<int>(m_aspect);
-  currentIdx += inc;
+  auto currentIdx = static_cast<int>(m_aspect) + inc;
 
   if(currentIdx >= length)
     currentIdx = 0;

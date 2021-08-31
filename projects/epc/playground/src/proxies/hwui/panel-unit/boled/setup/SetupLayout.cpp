@@ -904,7 +904,7 @@ namespace NavTree
       Editor()
           : MenuEditor()
       {
-        getPresetManager()->onMidiBankSelectionHappened([this](auto uuid) { updateOnSettingChanged(); });
+        getPresetManager()->onMidiBankSelectionHappened(sigc::hide(sigc::mem_fun(this, &Editor::updateOnSettingChanged)));
       }
 
      protected:
@@ -1033,7 +1033,7 @@ namespace NavTree
   struct MidiRoutings : InnerNode
   {
     explicit MidiRoutings(InnerNode *p)
-        : InnerNode(p, "Routings")
+        : InnerNode(p, "MIDI Routing")
     {
       typedef RoutingSettings::tRoutingIndex tID;
       children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes"));
@@ -1042,10 +1042,10 @@ namespace NavTree
       children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2"));
       children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3"));
       children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4"));
+      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender"));
+      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch"));
       children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1"));
       children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2"));
-      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch"));
-      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender"));
       children.emplace_back(new SetRoutingsTo<true>(this));
       children.emplace_back(new SetRoutingsTo<false>(this));
     }

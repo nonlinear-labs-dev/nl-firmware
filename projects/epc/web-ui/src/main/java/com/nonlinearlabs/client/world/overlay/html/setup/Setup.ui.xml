@@ -506,7 +506,7 @@
 					</div>
 					<div class="linie"></div>
 					<div class="eins-he fl-j-center">
-						<h3 class="uneditable">MidiRoutings</h3>
+						<h3 class="uneditable">Routings</h3>
 					</div>
 					<div class="eins-he table-parent">
 						<table class="midi-table">
@@ -564,7 +564,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Pedal1</td>
+								<td>Pedal 1</td>
 								<td>
 									<div>
 										<g:CheckBox ui:field="pson0" name="ps0" value="true"></g:CheckBox>
@@ -592,7 +592,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Pedal2</td>
+								<td>Pedal 2</td>
 								<td>
 									<div>
 										<g:CheckBox ui:field="pson1" name="ps1" value="true"></g:CheckBox>
@@ -620,7 +620,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Pedal3</td>
+								<td>Pedal 3</td>
 								<td>
 									<div>
 										<g:CheckBox ui:field="pson2" name="ps2" value="true"></g:CheckBox>
@@ -648,7 +648,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Pedal4</td>
+								<td>Pedal 4</td>
 								<td>
 									<div>
 										<g:CheckBox ui:field="pson3" name="ps3" value="true"></g:CheckBox>
@@ -732,7 +732,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Ribbon1</td>
+								<td>Ribbon 1</td>
 								<td>
 									<div>
 										<g:CheckBox ui:field="pson6" name="ps6" value="true"></g:CheckBox>
@@ -760,7 +760,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Ribbon2</td>
+								<td>Ribbon 2</td>
 								<td>
 									<div>
 										<g:CheckBox ui:field="pson7" name="ps7" value="true"></g:CheckBox>

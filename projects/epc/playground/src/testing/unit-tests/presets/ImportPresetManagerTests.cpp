@@ -15,7 +15,7 @@
 TEST_CASE("Import PresetManager consumes memory as expected")
 {
   auto pm = TestHelper::getPresetManager();
-  auto trash = pm->getUndoScope().startTrashTransaction();
+  auto trash = UNDO::Scope::startTrashTransaction();
   pm->clear(trash->getTransaction());
 
   auto memUsage = nltools::Log::MemUsageLogger(nltools::Log::Debug, __PRETTY_FUNCTION__);
