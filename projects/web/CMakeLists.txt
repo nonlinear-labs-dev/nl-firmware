@@ -1,20 +1,12 @@
 project(web)
 
-OPTION(BUILD_ONLINEHELP "Build the C15 html online help" Off)
 configure_file(build-time-info.js ${CMAKE_CURRENT_BINARY_DIR}/build-time-info.js @ONLY)
 configure_file(build.sh.in build.sh @ONLY)
 
-file(GLOB_RECURSE ALL_FILES *.ts *.css *.html *.sh.in)
+add_subdirectory(client)
+add_subdirectory(static)
 
-IF (BUILD_ONLINEHELP)
-    add_subdirectory(online-help)
-ENDIF ()
-
-add_subdirectory(core)
-add_subdirectory(c16-hwui)
-add_subdirectory(nonmaps)
-add_subdirectory(mc-view)
-add_subdirectory(recorder)
+file(GLOB_RECURSE ALL_FILES *.ts *.css *.html *.sh.in *.js)
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Prepare building for web"
@@ -32,16 +24,22 @@ ADD_CUSTOM_COMMAND(
     OUTPUT .web-build
     DEPENDS ${ALL_FILES}
     DEPENDS .prepare-web-build
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/mc-view/bundle.tar.gz
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/nonmaps/bundle.tar.gz
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/online-help/bundle.tar.gz
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/recorder/bundle.tar.gz
     COMMAND ${CMAKE_BINARY_DIR}/build-tools/web/runInWebDocker.sh 
               ${CMAKE_CURRENT_BINARY_DIR}/build.sh 
               ${CMAKE_CURRENT_SOURCE_DIR}
               ${CMAKE_CURRENT_BINARY_DIR}
               "--network none" 
+    COMMAND touch .web-build
 )
 
-ADD_CUSTOM_TARGET(web DEPENDS .web-build)
+ADD_CUSTOM_TARGET(web ALL DEPENDS .web-build)
 
-add_dependencies(web nl-build-container-setup nonmaps recorder mc-view online-help c16-hwui web-core)
+add_dependencies(web nl-build-container-setup nonmaps recorder mc-view online-help web-client)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/out/ USE_SOURCE_PERMISSIONS DESTINATION ${C15_INSTALL_PATH}/web)
 
 # todo
 configure_file(debug.sh.in debug.sh @ONLY)

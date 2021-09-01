@@ -5,7 +5,6 @@ useradd -u ${USER_ID} bob-the-builder
 
 BOBS_SCRIPT=$(cat <<'END_HEREDOC'
 set -e
-
 export PATH=/home/bob-the-builder/.meteor/:$PATH
 
 cd ~/meteor-build/
@@ -14,23 +13,20 @@ rm -rf ./client
 rm -rf ./public
 
 mkdir /tmp/client
-tar -xf /builddir/core/bundle.tar.gz -C /tmp/client
-
-mkdir /tmp/client/c16-hwui
-tar -xf /builddir/c16-hwui/bundle.tar.gz -C /tmp/client/c16-hwui
+tar -xf /builddir/client/bundle.tar.gz -C /tmp/client
 
 # static html projects
-mkdir /tmp/public
-for project in  nonmaps recorder online-help mc-view; do
-  mkdir /tmp/public/$project
-  tar -xf /builddir/$project/bundle.tar.gz -C /tmp/public/$project
+mkdir /tmp/static
+for project in nonmaps recorder online-help mc-view; do
+  mkdir /tmp/static/$project
+  tar -xf /builddir/static/$project/bundle.tar.gz -C /tmp/static/$project
 done
 
 ln -s /builddir/build-time-info.js /tmp/client/build-time-info.js
 ln -s /tmp/client ~/meteor-build/client 
-ln -s /tmp/public ~/meteor-build/public
+ln -s /tmp/static ~/meteor-build/public
 
-node ./node_modules/meteor-build-client/main.js /builddir/web/out
+node ./node_modules/meteor-build-client/main.js /builddir/out
 
 END_HEREDOC
 )
