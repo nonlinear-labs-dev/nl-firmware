@@ -34,6 +34,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.Bank;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCurve;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCCMapping;
@@ -221,14 +222,10 @@ public class Setup extends Composite {
 		fillListboxWithOptions(editParameter, LocalSettings.EditParameter.options);
 		fillListboxWithOptions(scalingFactor, LocalSettings.DisplayScalingFactor.options);
 		fillListboxWithOptions(stripeBrightness, LocalSettings.StripeBrightness.options);
-		fillListboxWithOptions(pedal1Mapping, MidiSettings.PedalMapping.options);
-		fillListboxWithOptions(pedal2Mapping, MidiSettings.PedalMapping.options);
-		fillListboxWithOptions(pedal3Mapping, MidiSettings.PedalMapping.options);
-		fillListboxWithOptions(pedal4Mapping, MidiSettings.PedalMapping.options);
-		fillListboxWithOptions(ribbon1Mapping, MidiSettings.RibbonMapping.options);
-		fillListboxWithOptions(ribbon2Mapping, MidiSettings.RibbonMapping.options);
-		fillListboxWithOptions(benderMapping, MidiSettings.BenderMapping.options);
-		fillListboxWithOptions(aftertouchMapping, MidiSettings.AftertouchMapping.options);
+
+		
+		SetupModel settings = SetupModel.get();
+		setupMappings(settings.systemSettings.enable14BitSupport.getBool());
 
 		fillRadioButtons(presetGlitchSuppressionOn, presetGlitchSuppressionOff,
 				DeviceSettings.PresetGlitchSuppression.options);
@@ -242,6 +239,47 @@ public class Setup extends Composite {
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(globalLocalOn, globalLocalOff, MidiSettings.OnOffOption.options);
+	}
+
+	private void setupMappings(boolean showLSB)
+	{
+		int p1 = pedal1Mapping.getSelectedIndex();
+		int p2 = pedal2Mapping.getSelectedIndex();
+		int p3 = pedal3Mapping.getSelectedIndex();
+		int p4 = pedal4Mapping.getSelectedIndex();
+		int r1 = ribbon1Mapping.getSelectedIndex();
+		int r2 = ribbon2Mapping.getSelectedIndex();
+		int b = benderMapping.getSelectedIndex();
+		int a = aftertouchMapping.getSelectedIndex();
+		
+		if(showLSB) {
+			fillListboxWithOptions(pedal1Mapping, MidiSettings.PedalMapping.options);
+			fillListboxWithOptions(pedal2Mapping, MidiSettings.PedalMapping.options);
+			fillListboxWithOptions(pedal3Mapping, MidiSettings.PedalMapping.options);
+			fillListboxWithOptions(pedal4Mapping, MidiSettings.PedalMapping.options);	
+			fillListboxWithOptions(ribbon1Mapping, MidiSettings.RibbonMapping.options);
+			fillListboxWithOptions(ribbon2Mapping, MidiSettings.RibbonMapping.options);
+			fillListboxWithOptions(benderMapping, MidiSettings.BenderMapping.options);
+			fillListboxWithOptions(aftertouchMapping, MidiSettings.AftertouchMapping.options);
+		} else {
+			fillListboxWithOptions(pedal1Mapping, MidiSettings.PedalMapping.optionsWithoutLSB);
+			fillListboxWithOptions(pedal2Mapping, MidiSettings.PedalMapping.optionsWithoutLSB);
+			fillListboxWithOptions(pedal3Mapping, MidiSettings.PedalMapping.optionsWithoutLSB);
+			fillListboxWithOptions(pedal4Mapping, MidiSettings.PedalMapping.optionsWithoutLSB);	
+			fillListboxWithOptions(ribbon1Mapping, MidiSettings.RibbonMapping.optionsWithoutLSB);
+			fillListboxWithOptions(ribbon2Mapping, MidiSettings.RibbonMapping.optionsWithoutLSB);
+			fillListboxWithOptions(benderMapping, MidiSettings.BenderMapping.optionsWithoutLSB);
+			fillListboxWithOptions(aftertouchMapping, MidiSettings.AftertouchMapping.optionsWithoutLSB);
+		}
+
+		pedal1Mapping.setSelectedIndex(p1);
+		pedal2Mapping.setSelectedIndex(p2);
+		pedal3Mapping.setSelectedIndex(p3);
+		pedal4Mapping.setSelectedIndex(p4);
+		ribbon1Mapping.setSelectedIndex(r1);
+		ribbon2Mapping.setSelectedIndex(r2);
+		benderMapping.setSelectedIndex(b);
+		aftertouchMapping.setSelectedIndex(a);
 	}
 
 	private void onPassphraseChanged(String text)
@@ -507,6 +545,7 @@ public class Setup extends Composite {
 	}
 
 	private void fillListboxWithOptions(ListBox box, String[] options) {
+		box.clear();
 		for (String s : options)
 			box.addItem(s);
 	}
@@ -601,6 +640,7 @@ public class Setup extends Composite {
 		autoStartRecordOn.setValue(t.autoStartRecorder.value);
 		autoStartRecordOff.setValue(!t.autoStartRecorder.value);
 		
+		setupMappings(t.enable14BitCC.value);
 		
 		int hwSource = 0;
 		for(RoutingsMap routing: m_routingMap) {
