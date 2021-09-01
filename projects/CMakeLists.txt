@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 
 OPTION(DEV_PC "Enable debugging features to be run on a development PC" Off)
+OPTION(BUILD_WEB "Build the uis based on web technology" Off)
 
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log -n 1 --pretty='format:%cd' --date=format:'%Y-%m-%d %H:%M:%S'" OUTPUT_VARIABLE LAST_COMMIT_STAMP)
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse --abbrev-ref HEAD" OUTPUT_VARIABLE BRANCH_NAME)
@@ -38,4 +39,7 @@ add_subdirectory(epc)
 add_subdirectory(playcontroller)
 add_subdirectory(shared)
 add_subdirectory(supervisor)
-add_subdirectory(web)
+
+IF(BUILD_WEB)
+  add_subdirectory(web)
+ENDIF()

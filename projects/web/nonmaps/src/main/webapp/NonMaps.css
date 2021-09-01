@@ -1,7 +1,7 @@
 
 @font-face {
   font-family: 'SSP-LW25';
-  src: url('./SSP-LW25-Regular.otf');
+  src: url('./images/SSP-LW25-Regular.otf');
 }
 
 html,body {
@@ -1350,7 +1350,7 @@ canvas {
 	width: 26px;
 	height: 26px;
 	vertical-align: middle;
-	background: url(close.png);
+	background: url(images/close.png);
 	background-position: right 26px;
 	cursor: pointer;
 	position: absolute;
@@ -1365,7 +1365,7 @@ canvas {
 	width: 26px;
 	height: 26px;
 	vertical-align: middle;
-	background: url(close.png);
+	background: url(images/close.png);
 	cursor: pointer;
 	position: absolute;
 	top: 4px;
@@ -1681,7 +1681,7 @@ input.param-name-edit {
   width: 8mm;
   height: 8mm;
   background-size: contain;
-  background-image: url(/NonMaps/war/images/Preset-Comp-Load_Enabled.svg)
+  background-image: url(images/Preset-Comp-Load_Enabled.svg)
 }
 
 .load-button[disabled] {

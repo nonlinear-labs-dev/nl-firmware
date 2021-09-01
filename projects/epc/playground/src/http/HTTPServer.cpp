@@ -17,6 +17,8 @@
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/system/SpawnCommandLine.h>
 #include <nltools/messaging/Message.h>
+#include <filesystem>
+#include "CompileTimeOptions.h"
 
 HTTPServer::HTTPServer()
     : m_contentManager()
@@ -171,12 +173,10 @@ void HTTPServer::redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const
 
 bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
 {
-  static const auto allowedPaths = { "/NonMaps/", "/online-help/", "/playground/resources/", "/tmp/" };
-  for(auto p : allowedPaths)
-    if(path.find(p) == 0)
-      return true;
-
-  return false;
+  std::filesystem::path root = getInstallDir();
+  auto resource = root / std::filesystem::path(path);
+  auto canonical = std::filesystem::canonical(resource);
+  return canonical.string().find(root.string()) == 0;
 }
 
 Glib::ustring HTTPServer::getPathFromMessage(SoupMessage *msg)

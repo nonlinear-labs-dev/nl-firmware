@@ -12,7 +12,10 @@ endforeach()
 ADD_CUSTOM_COMMAND(
     COMMENT "Fetch up-to-date meteor resources"
     OUTPUT .fetch-up-to-date-meteor-resources
-    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/runInWebDocker.sh ${CMAKE_CURRENT_BINARY_DIR}/fetchMeteorResources.sh ${CMAKE_CURRENT_SOURCE_DIR} ""
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/runInWebDocker.sh
+      ${CMAKE_CURRENT_BINARY_DIR}/fetchMeteorResources.sh 
+      ${CMAKE_CURRENT_SOURCE_DIR} 
+      ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 ADD_CUSTOM_COMMAND(
@@ -29,7 +32,7 @@ ADD_CUSTOM_COMMAND(
     COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/meteor-resources-${METEOR_RESOURCES_REVISION}.tar.gz)
 
 ADD_CUSTOM_TARGET(fetch-meteor-resources
-  DEPENDS epc2-setup-host-os
+  DEPENDS nl-build-container-setup
   DEPENDS .pack-up-to-date-meteor-resources
 )
 

@@ -1,4 +1,5 @@
 add_subdirectory(bbb)
+add_subdirectory(build-container)
 add_subdirectory(epc)
 add_subdirectory(epc2)
 add_subdirectory(playcontroller)

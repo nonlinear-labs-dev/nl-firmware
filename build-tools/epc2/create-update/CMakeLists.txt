@@ -1,5 +1,3 @@
-SET(DOCKERNAME nl-epc2-${ARCH_VERSION}-host-os)
-
 ADD_CUSTOM_COMMAND(
     COMMENT "Build Nonlinear Labs binaries in a minmal NonLinux installation"
     DEPENDS epc2-setup-target-os

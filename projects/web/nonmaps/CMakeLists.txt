@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(NonMaps)
-
-add_subdirectory(recorder)
+project(nonmaps)
 
 set(NONMAPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(OBJDIR ${CMAKE_CURRENT_BINARY_DIR}/obj)
@@ -29,14 +27,11 @@ add_custom_command(OUTPUT ${OUTFILE}
 
 configure_file(${NONMAPS_ROOT}/src/main/webapp/NonMaps.js.in ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js @ONLY)
 
-add_custom_target(NonMaps ALL SOURCES ${OUTFILE})
-
 file(WRITE ${OBJDIR}/nonmaps-version.txt ${C15_VERSION})
 
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war DESTINATION ${C15_INSTALL_PATH}/NonMaps)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
-install(DIRECTORY ${NONMAPS_ROOT}/src/main/webapp/ DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps DESTINATION ${C15_INSTALL_PATH}//web)
+install(DIRECTORY ${NONMAPS_ROOT}/src/main/webapp/ DESTINATION ${C15_INSTALL_PATH}//web/nonmaps)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js DESTINATION ${C15_INSTALL_PATH}/web/nonmaps)
+install(FILES ${OBJDIR}/nonmaps-version.txt DESTINATION ${C15_INSTALL_PATH}/web/nonmaps)
 
-install(DIRECTORY MCView DESTINATION ${C15_INSTALL_PATH}/NonMaps)
-install(FILES ${OBJDIR}/nonmaps-version.txt DESTINATION ${C15_INSTALL_PATH}/NonMaps/war)
+add_custom_target(nonmaps ALL SOURCES ${OUTFILE})

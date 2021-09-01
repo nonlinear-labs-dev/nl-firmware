@@ -9,10 +9,9 @@ string(REPLACE ";" " " TARGET_PACKAGES "${TARGET_PACKAGES}")
 string(REPLACE ";" " " ALL_PACKAGES "${ALL_PACKAGES}")
 string(REPLACE ";" " " UPDATE_PACKAGES "${UPDATE_PACKAGES}")
 
-SET(PACCACHEDIR pacman-cache-${ARCH_VERSION})
-SET(PACCONFDIR pacman-conf-${ARCH_VERSION})
+SET(PACCACHEDIR pacman-cache-${BUILD_CONTAINER_VERSION})
+SET(PACCONFDIR pacman-conf-${BUILD_CONTAINER_VERSION})
 
-add_subdirectory(host-os)
 add_subdirectory(target-os)
 add_subdirectory(install-medium)
 add_subdirectory(create-update)

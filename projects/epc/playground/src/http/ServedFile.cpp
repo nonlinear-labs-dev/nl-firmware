@@ -33,7 +33,9 @@ void ServedFile::startServing()
 
 Glib::ustring ServedFile::getFilePathFromMessagePath() const
 {
-  return getInstallDir() + "/" + m_request->getPath();
+  std::filesystem::path root = getInstallDir();
+  auto resource = root / std::filesystem::path(m_request->getPath());
+  return resource.string();
 }
 
 void ServedFile::startServingLocalFile(Glib::RefPtr<Gio::File> file)

@@ -1,0 +1,37 @@
+set -e
+
+ln -s /builddir /home/bob-the-builder
+useradd -u ${USER_ID} bob-the-builder
+
+BOBS_SCRIPT=$(cat <<'END_HEREDOC'
+set -e
+
+export PATH=/home/bob-the-builder/.meteor/:$PATH
+
+cd ~/meteor-build/
+
+rm -f ./core
+rm -f ./c16-hwui
+rm -f ./build-time-info.js
+rm -rf ./nonmaps
+
+ln -s /src/core ./core
+ln -s /src/c16-hwui/ ./c16-hwui
+ln -s /builddir/build-time-info.js ./build-time-info.js
+
+mkdir -p ./nonmaps/war
+
+ln -s /builddir/nonmaps/war/nonmaps ./nonmaps/war/nonmaps
+ln -s /src/main/webapp ./nonmaps/webapp
+ln -s /builddir/NonMaps.js ./nonmaps/NonMaps.js
+ln -s /builddir/obj/nonmaps-version.txt ./nonmaps/nonmaps-version.txt
+
+
+bash
+
+node ./node_modules/meteor-build-client/main.js /builddir/c16-hwui/out
+
+END_HEREDOC
+)
+
+runuser -l bob-the-builder -c "$BOBS_SCRIPT"

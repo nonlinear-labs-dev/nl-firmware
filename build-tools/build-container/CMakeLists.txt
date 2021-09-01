@@ -1,7 +1,6 @@
-SET(DOCKERNAME nl-epc2-${ARCH_VERSION}-host-os)
 SET(USER $ENV{USER})
 
-message("Arch is ${ARCH_VERSION}")
+message("Arch is ${BUILD_CONTAINER_VERSION}")
 
 SET(HOST_PACKAGES ${SHARED_PACKAGES} 
   nano vi mc arch-install-scripts dosfstools cmake make pkgconf gcc git wget unzip 
@@ -10,7 +9,7 @@ SET(HOST_PACKAGES ${SHARED_PACKAGES}
 
 string(REPLACE ";" " " HOST_PACKAGES "${HOST_PACKAGES}")
 
-SET(ARCH_INSTALL_PACKAGES packages_${ARCH_VERSION}.tar.gz)
+SET(ARCH_INSTALL_PACKAGES packages_${BUILD_CONTAINER_VERSION}.tar.gz)
 SET(DOCKER_BUILD docker build --no-cache=true --build-arg tar=${ARCH_INSTALL_PACKAGES} --build-arg packages=${HOST_PACKAGES} -t ${DOCKERNAME} ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile.in ${CMAKE_CURRENT_BINARY_DIR}/Dockerfile COPYONLY)
@@ -18,7 +17,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile.in ${CMAKE_CURRENT_BINARY_
 add_subdirectory(fetch-upstream-packages)
 
 ADD_CUSTOM_COMMAND(
-    COMMENT "Download NonLinux packages for ${ARCH_VERSION}"
+    COMMENT "Download NonLinux packages for ${BUILD_CONTAINER_VERSION}"
     OUTPUT ${ARCH_INSTALL_PACKAGES}
     COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/${ARCH_INSTALL_PACKAGES})
   
@@ -30,4 +29,4 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${DOCKER_BUILD}
     COMMAND touch .${DOCKERNAME}-created)
 
-ADD_CUSTOM_TARGET(epc2-setup-host-os DEPENDS .${DOCKERNAME}-created DEPENDS ${ARCH_INSTALL_PACKAGES})
+ADD_CUSTOM_TARGET(nl-build-container-setup DEPENDS .${DOCKERNAME}-created DEPENDS ${ARCH_INSTALL_PACKAGES})
