@@ -235,14 +235,10 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
   auto scope = pm->getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", toInsert->getName(true),
                                                    m_bank->getName(true));
   auto transaction = scope->getTransaction();
-  size_t i = 0;
 
-  toInsert->forEachPreset(
-      [&](auto p)
-      {
-        m_bank->insertPreset(transaction, insertPosition + i, std::make_unique<Preset>(m_bank, *p, true));
-        i++;
-      });
+  toInsert->forEachPreset([&, i = 0](auto p) mutable {
+    m_bank->insertPreset(transaction, insertPosition + (i++), std::make_unique<Preset>(m_bank, *p));
+  });
 }
 
 Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
@@ -256,5 +252,6 @@ Preset* BankUseCases::appendEditBuffer()
 {
   auto pm = m_bank->getPresetManager();
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
-  return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));;
+  return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));
+  ;
 }

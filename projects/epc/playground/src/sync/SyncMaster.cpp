@@ -2,6 +2,7 @@
 #include "SyncedItem.h"
 #include <sync/JsonAdlSerializers.h>
 #include <nltools/messaging/MockAPI.h>
+#include <nltools/messaging/WebSocketJsonAPI.h>
 
 using namespace std::chrono_literals;
 using namespace nltools::msg;
@@ -30,14 +31,15 @@ std::unique_ptr<SyncMaster::tAPI> SyncMaster::createAPI(SyncMaster::tAPI::Backen
   switch(backend)
   {
     case tAPI::Backend::Websocket:
-      return std::make_unique<WebSocketJsonAPI>(SYNCJS_WEBSOCKET_PORT, [this](auto in) { return api(in); });
+      return std::make_unique<WebSocketJsonAPI>(SYNCJS_WEBSOCKET_PORT,
+                                                [this](const auto &client, auto in) { return api(client, in); });
     default:
     case tAPI::Backend::Mock:
       return std::make_unique<MockAPI>();
   }
 }
 
-nlohmann::json SyncMaster::api(const nlohmann::json &in)
+nlohmann::json SyncMaster::api(const ClientPtr &client, const nlohmann::json &in)
 {
   if(in.is_object())
   {

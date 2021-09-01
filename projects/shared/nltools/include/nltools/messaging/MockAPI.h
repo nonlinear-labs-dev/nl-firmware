@@ -8,6 +8,10 @@ namespace nltools
     class MockAPI : public API
     {
      public:
+      void send(API::ClientConnection* a, const nlohmann::json& msg) override
+      {
+      }
+
       void sendAll(const nlohmann::json& msg) override
       {
       }

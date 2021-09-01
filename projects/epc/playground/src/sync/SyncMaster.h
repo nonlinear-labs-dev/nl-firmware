@@ -16,6 +16,7 @@ class SyncedItem;
 class SyncMaster
 {
  public:
+  using Topic = std::string;
   typedef nltools::msg::API tAPI;
   explicit SyncMaster(tAPI::Backend api);
   ~SyncMaster();
@@ -26,8 +27,8 @@ class SyncMaster
   void removeDirty(SyncedItem *item);
 
  private:
-  using ClientPtr = std::weak_ptr<nltools::msg::WebSocketJsonAPI::ClientConnection>;
-  nlohmann::json api(ClientPtr client, const nlohmann::json &in);
+  using ClientPtr = std::weak_ptr<nltools::msg::API::ClientConnection>;
+  nlohmann::json api(const ClientPtr &client, const nlohmann::json &in);
   void handleDirty();
 
   std::unique_ptr<tAPI> createAPI(tAPI::Backend api);

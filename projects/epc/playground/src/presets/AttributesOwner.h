@@ -29,8 +29,6 @@ class AttributesOwner : public UpdateDocumentContributor
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   void writeDiff(Writer &writer, const AttributesOwner *other) const;
 
-  nlohmann::json toJson() const;
-
  protected:
   virtual void copyFrom(UNDO::Transaction *transaction, const AttributesOwner *other);
 

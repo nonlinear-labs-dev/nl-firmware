@@ -16,7 +16,7 @@ namespace nltools
     class WebSocketJsonAPI : public API
     {
      public:
-      struct ClientConnection
+      struct ClientConnection : API::ClientConnection
       {
         ClientConnection(SoupWebsocketConnection *c);
         ~ClientConnection();
@@ -28,10 +28,10 @@ namespace nltools
       WebSocketJsonAPI(guint port, ReceiveCB cb);
       ~WebSocketJsonAPI();
 
-      void send(ClientConnection *c, const nlohmann::json &msg);
-      void sendAll(const nlohmann::json &msg);
-      void sendAllUpdating(const nlohmann::json &msg);
-      bool hasClients() const;
+      void send(API::ClientConnection *c, const nlohmann::json &msg) override;
+      void sendAll(const nlohmann::json &msg) override;
+      void sendAllUpdating(const nlohmann::json &msg) override;
+      bool hasClients() const override;
 
      private:
       using tGObjectUnref = decltype(*g_object_unref);

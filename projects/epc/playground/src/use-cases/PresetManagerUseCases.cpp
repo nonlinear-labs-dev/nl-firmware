@@ -152,8 +152,7 @@ void PresetManagerUseCases::createBankAndStoreEditBuffer()
   auto transactionScope = scope.startTransaction("Create Bank and Store Preset");
   auto transaction = transactionScope->getTransaction();
   auto bank = m_presetManager->addBank(transaction);
-  auto preset
-      = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
   m_presetManager->selectBank(transaction, bank->getUuid());
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
@@ -209,9 +208,7 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   auto bank = m_presetManager->addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-
-  auto preset
-      = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager->selectBank(transaction, bank->getUuid());
   m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
@@ -1024,7 +1021,7 @@ bool PresetManagerUseCases::isDirectLoadActive() const
 }
 
 Bank* PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
-                                               const std::function<void(const std::string&)>& progress)
+                                                const std::function<void(const std::string&)>& progress)
 {
   FileInfos fileInfos(file);
   FileInStream stream(fileInfos.filePath, false);
@@ -1036,7 +1033,7 @@ Bank* PresetManagerUseCases::importBankFromPath(const std::filesystem::directory
 }
 
 Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName,
-                                                 const std::function<void(const std::string&)>& progress)
+                                                  const std::function<void(const std::string&)>& progress)
 {
   auto scope = m_presetManager->getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();

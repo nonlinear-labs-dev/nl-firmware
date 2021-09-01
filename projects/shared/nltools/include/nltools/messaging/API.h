@@ -8,11 +8,19 @@ namespace nltools
     class API
     {
      public:
-      enum class Backend {
+      struct ClientConnection
+      {
+        ClientConnection() = default;
+        virtual ~ClientConnection() = default;
+      };
+
+      enum class Backend
+      {
         Websocket,
         Mock
       };
 
+      virtual void send(ClientConnection *c, const nlohmann::json &msg) = 0;
       virtual void sendAll(const nlohmann::json &msg) = 0;
       virtual void sendAllUpdating(const nlohmann::json &msg) = 0;
       [[nodiscard]] virtual bool hasClients() const = 0;

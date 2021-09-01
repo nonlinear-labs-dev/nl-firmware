@@ -19,7 +19,7 @@ class PresetDualParameterGroups : public AttributesOwner
  public:
   using GroupPtr = std::unique_ptr<PresetParameterGroup>;
   using GroupsMap = std::map<GroupId, GroupPtr>;
-  typedef std::vector<std::pair<GroupId, const PresetParameterGroup *>> tParameterGroups;
+  typedef std::vector<std::pair<GroupId, const PresetParameterGroup*>> tParameterGroups;
 
   explicit PresetDualParameterGroups(UpdateDocumentContributor* parent);
   PresetDualParameterGroups(UpdateDocumentContributor* parent, const Preset& other);
@@ -48,7 +48,7 @@ class PresetDualParameterGroups : public AttributesOwner
   [[nodiscard]] PresetParameterGroup* findParameterGroup(const GroupId& id) const;
   [[nodiscard]] PresetParameter* findParameterByID(ParameterId id, bool throwIfMissing) const;
 
-  void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction* transaction, std::optional<std::set<GroupId> > whiteList);
+  void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction* transaction, std::optional<std::set<GroupId>> whiteList);
 
   void writeGroups(Writer& writer, const Preset* other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
   PresetParameterGroup* findOrCreateParameterGroup(const GroupId& id);

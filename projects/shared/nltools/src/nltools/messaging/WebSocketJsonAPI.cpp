@@ -36,7 +36,7 @@ namespace nltools
       m_contextThread.wait();
     }
 
-    void WebSocketJsonAPI::send(ClientConnection *a, const nlohmann::json &msg)
+    void WebSocketJsonAPI::send(API::ClientConnection *a, const nlohmann::json &msg)
     {
       m_bgContextQueue->pushMessage([this, msg, a]() {
         std::unique_lock<std::recursive_mutex> l(m_mutex);

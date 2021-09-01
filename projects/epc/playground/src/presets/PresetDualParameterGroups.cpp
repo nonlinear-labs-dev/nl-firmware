@@ -98,8 +98,7 @@ void PresetDualParameterGroups::writeGroups(Writer &writer, const Preset *other,
 
   static std::vector<std::string> parameterGroupsThatAreTreatedAsGlobalForLayerSounds = { "Unison", "Mono" };
 
-  auto isParameterGroupPresentInVGII = [&](GroupId id)
-  {
+  auto isParameterGroupPresentInVGII = [&](GroupId id) {
     auto &v = parameterGroupsThatAreTreatedAsGlobalForLayerSounds;
     auto it = std::find(v.begin(), v.end(), id.getName());
     return it != v.end();
@@ -171,7 +170,7 @@ void PresetDualParameterGroups::setType(UNDO::Transaction *transaction, SoundTyp
   transaction->addUndoSwap(this, m_type, type);
 }
 
-PresetParameter *PresetDualParameterGroups::findParameterByID(const ParameterId& id, bool throwIfMissing) const
+PresetParameter *PresetDualParameterGroups::findParameterByID(ParameterId id, bool throwIfMissing) const
 {
   for(auto &g : m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())])
     if(auto p = g.second->findParameterByID(id))
