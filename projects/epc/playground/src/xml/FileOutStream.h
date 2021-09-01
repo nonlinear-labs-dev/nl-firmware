@@ -8,13 +8,10 @@ typedef struct _GDataOutputStream GDataOutputStream;
 class FileOutStream : public OutStream
 {
  public:
-  FileOutStream(const Glib::ustring &fileName, bool zip);
+  FileOutStream(Glib::ustring fileName, bool zip);
   ~FileOutStream() override;
 
   void commit();
-
-  static void setKioskMode(bool kiosk);
-  static bool getKioskMode();
 
  protected:
   void setAutoCommit(bool ac);
@@ -30,5 +27,4 @@ class FileOutStream : public OutStream
   int m_fileHandle = -1;
 
   bool m_autoCommit = true;
-  bool m_kioskMode = false;
 };

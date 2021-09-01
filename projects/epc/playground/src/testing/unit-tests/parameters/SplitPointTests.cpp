@@ -55,7 +55,7 @@ TEST_CASE("Split Point Helper Functions")
 
   WHEN("Init")
   {
-    TestHelper::initDualEditBuffer<SoundType::Split>();
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     THEN("Default Split Behaviour I|II")
     {
       CHECK(sI->inDefaultSplitBehaviour());
@@ -84,7 +84,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
 
   auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
@@ -99,7 +99,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
   auto createEBWithOverlap = [&] {
     useCases.disableSyncSetting();
-    TestHelper::initDualEditBuffer<SoundType::Split>();
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     sI->stepCPFromHwui(scope->getTransaction(), 2, {});
     CHECK(sI->hasOverlap());
@@ -107,7 +107,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
   pmUseCases.createBankAndStoreEditBuffer();
   b = pm->getSelectedBank();
-  TestHelper::initDualEditBuffer<SoundType::Split>();
+  TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
   CHECK_FALSE(sI->hasOverlap());
   pmUseCases.appendEditBufferToBank(b);
@@ -122,11 +122,11 @@ TEST_CASE("Sync Setting gets updated on store and load")
   WHEN("No Overlap Present")
   {
     useCases.enableSyncSetting();
-    TestHelper::initDualEditBuffer<SoundType::Split>();
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
     WHEN("Preset With Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithOverlap);
+      ebUseCases.load(presetWithOverlap);
       THEN("Sync Setting Disabled")
       {
         CHECK(!syncSetting->get());
@@ -135,7 +135,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset Without Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithoutOverlap);
+      ebUseCases.load(presetWithoutOverlap);
       THEN("Sync Setting Enabled")
       {
         CHECK(syncSetting->get());
@@ -159,7 +159,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset With Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithOverlap);
+      ebUseCases.load(presetWithOverlap);
       THEN("Sync Setting Disabled")
       {
         CHECK(!syncSetting->get());
@@ -168,7 +168,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset Without Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithoutOverlap);
+      ebUseCases.load(presetWithoutOverlap);
       THEN("Sync Setting Enabled")
       {
         CHECK(syncSetting->get());

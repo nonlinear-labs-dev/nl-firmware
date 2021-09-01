@@ -47,7 +47,7 @@ bool MacroControlSmoothingParameterLayout::onButton(Buttons i, bool down, Button
 void MacroControlSmoothingParameterLayout::resetMod()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases ebUseCases { eb };
+  EditBufferUseCases ebUseCases { *eb };
 
   if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
   {
@@ -63,7 +63,7 @@ void MacroControlSmoothingParameterLayout::resetMod()
 void MacroControlSmoothingParameterLayout::selectMacroControl()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases ebUseCases { eb };
+  EditBufferUseCases ebUseCases { *eb };
   if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
   {
     ebUseCases.selectParameter(modTime->getMC(), true);

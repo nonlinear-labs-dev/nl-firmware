@@ -5,20 +5,11 @@
 #include <serialization/PresetBankMetadataSerializer.h>
 #include <tools/FileSystem.h>
 #include <tools/TimeTools.h>
-#include <device-settings/DebugLevel.h>
 #include <nltools/Assert.h>
 #include <glibmm/regex.h>
 #include <giomm/file.h>
-#include <Application.h>
-#include <device-settings/Settings.h>
-#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 std::string to_string(Bank::AttachmentDirection dir);
-
-inline EditBuffer *getEditBuffer()
-{
-  return Application::get().getPresetManager()->getEditBuffer();
-}
 
 Bank::Bank(UpdateDocumentContributor *parent)
     : super(parent)
@@ -52,7 +43,7 @@ Bank::Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuid
 
 Bank::~Bank()
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+  nltools::Log::warning(__PRETTY_FUNCTION__, __LINE__);
 }
 
 SaveResult Bank::save(Glib::RefPtr<Gio::File> bankFolder)
@@ -69,7 +60,7 @@ SaveResult Bank::save(Glib::RefPtr<Gio::File> bankFolder)
   }
   catch(...)
   {
-    DebugLevel::error("Could not save bank", getName(true));
+    nltools::Log::error("Could not save bank", getName(true));
   }
   return SaveResult::Nothing;
 }
@@ -106,12 +97,11 @@ Preset *Bank::clonePreset(const Preset *p)
 
 void Bank::load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder, int numBank, int numBanks)
 {
-  auto lastChangedDateOfFile = loadMetadata(transaction, bankFolder);
+  auto lastChangedDateOfFile = loadMetadata(transaction, bankFolder, {});
   loadPresets(transaction, bankFolder);
   deleteOldPresetFiles(bankFolder);
 
   m_lastChangedTimestamp = lastChangedDateOfFile;
-  // to be overwritten by PresetBankMetadataSerializer addPostfixCommand, if timestamp exists in file
 }
 
 void Bank::deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder)
@@ -140,10 +130,11 @@ void Bank::deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder)
   }
 }
 
-uint64_t Bank::loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder)
+uint64_t Bank::loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder,
+                            std::function<void(const std::string &)> progressCB)
 {
-  return Serializer::read<PresetBankMetadataSerializer>(transaction, bankFolder, ".metadata", this,
-                                                        SplashLayout::addStatus, false);
+  return Serializer::read<PresetBankMetadataSerializer>(transaction, std::move(bankFolder), ".metadata", this,
+                                                        std::move(progressCB), false);
 }
 
 void Bank::loadPresets(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder)
@@ -254,7 +245,7 @@ Preset *Bank::getPresetAt(size_t idx) const
 
 void Bank::forEachPreset(std::function<void(Preset *)> cb) const
 {
-  m_presets.forEach(cb);
+  m_presets.forEach(std::move(cb));
 }
 
 Bank *Bank::getMasterTop() const
@@ -313,12 +304,6 @@ size_t Bank::getPreviousPresetPosition() const
   return m_presets.getPreviousPosition(getSelectedPresetUuid());
 }
 
-void Bank::rename(const Glib::ustring &name)
-{
-  BankUseCases useCase(this);
-  useCase.renameBank(name);
-}
-
 void Bank::attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, Bank::AttachmentDirection dir)
 {
   setAttachedToBank(transaction, otherBank);
@@ -338,11 +323,6 @@ void Bank::setName(UNDO::Transaction *transaction, const std::string &name)
 
 void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 {
-#if _DEVELOPMENT_PC
-  if(auto existing = Application::get().getPresetManager()->findBank(uuid))
-    nltools_assertOnDevPC(existing == this);
-#endif
-
   transaction->addUndoSwap(this, m_uuid, uuid);
   updateLastModifiedTimestamp(transaction);
 }
@@ -408,14 +388,6 @@ Preset *Bank::appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Prese
   return newPreset;
 }
 
-Preset *Bank::appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
-{
-  auto newPreset = appendPreset(transaction, std::move(preset));
-  getEditBuffer()->undoableLoad(transaction, newPreset, false);
-  getPresetManager()->onPresetStored();
-  return newPreset;
-}
-
 Preset *Bank::prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
@@ -424,26 +396,10 @@ Preset *Bank::prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Pres
   return newPreset;
 }
 
-Preset *Bank::prependAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset)
-{
-  auto newPreset = prependPreset(transaction, std::move(preset));
-  getEditBuffer()->undoableLoad(transaction, newPreset, false);
-  getPresetManager()->onPresetStored();
-  return newPreset;
-}
-
 Preset *Bank::insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
 {
   updateLastModifiedTimestamp(transaction);
   return m_presets.insert(transaction, pos, std::move(preset));
-}
-
-Preset *Bank::insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset)
-{
-  auto newPreset = insertPreset(transaction, pos, std::move(preset));
-  getEditBuffer()->undoableLoad(transaction, newPreset, false);
-  getPresetManager()->onPresetStored();
-  return newPreset;
 }
 
 void Bank::movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before)
@@ -493,7 +449,9 @@ void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID kn
 
   writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name), Attribute("x", getX()),
                   Attribute("y", getY()), Attribute("selected-preset", getSelectedPresetUuid().raw()),
-                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed), [&]() {
+                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed),
+                  [&]()
+                  {
                     if(changed)
                     {
                       AttributesOwner::writeDocument(writer, knownRevision);
@@ -574,32 +532,34 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
   bool hadMatch = false;
   int h = 0;
 
-  m_presets.forEach([&](auto p) {
-    Glib::ustring name = p->getName();
-
-    if(name == baseName)
-    {
-      h = std::max(h, 1);
-      hadMatch = true;
-    }
-    else if(name.find(baseName) == 0)
-    {
-      Glib::MatchInfo matchInfo;
-
-      if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
+  m_presets.forEach(
+      [&](auto p)
       {
-        auto presetsBaseName = matchInfo.fetch(1);
+        Glib::ustring name = p->getName();
 
-        if(presetsBaseName == baseName)
+        if(name == baseName)
         {
-          auto number = matchInfo.fetch(2);
-          int newNumber = std::stoi(number);
-          h = std::max(h, newNumber);
+          h = std::max(h, 1);
           hadMatch = true;
         }
-      }
-    }
-  });
+        else if(name.find(baseName) == 0)
+        {
+          Glib::MatchInfo matchInfo;
+
+          if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
+          {
+            auto presetsBaseName = matchInfo.fetch(1);
+
+            if(presetsBaseName == baseName)
+            {
+              auto number = matchInfo.fetch(2);
+              int newNumber = std::stoi(number);
+              h = std::max(h, newNumber);
+              hadMatch = true;
+            }
+          }
+        }
+      });
 
   if(hadMatch)
     return std::max(1, h);
@@ -613,11 +573,15 @@ void Bank::searchPresets(Writer &writer, const SearchQuery &query) const
   auto pos = pm->getBankPosition(getUuid());
 
   writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                  Attribute("order-number", pos), [&]() {
-                    m_presets.forEach([&](auto p) {
-                      if(p->matchesQuery(query))
-                        p->writeDocument(writer, 0);
-                    });
+                  Attribute("order-number", pos),
+                  [&]()
+                  {
+                    m_presets.forEach(
+                        [&](auto p)
+                        {
+                          if(p->matchesQuery(query))
+                            p->writeDocument(writer, 0);
+                        });
                   });
 }
 
@@ -672,7 +636,7 @@ bool Bank::resolveCyclicAttachments(UNDO::Transaction *transaction, std::vector<
 
   stackedBanks.push_back(this);
 
-  auto master = Application::get().getPresetManager()->findBank(getAttachedToBankUuid());
+  auto master = getPresetManager()->findBank(getAttachedToBankUuid());
 
   if(master != nullptr && !master->resolveCyclicAttachments(transaction, stackedBanks))
   {

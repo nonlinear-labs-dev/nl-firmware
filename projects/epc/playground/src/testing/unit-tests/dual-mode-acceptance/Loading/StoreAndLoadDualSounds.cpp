@@ -3,6 +3,7 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
+#include <parameter_declarations.h>
 
 TEST_CASE("Store and Load Preset yields same editbuffer")
 {
@@ -11,27 +12,29 @@ TEST_CASE("Store and Load Preset yields same editbuffer")
   auto layerPreset = presets.getLayerPreset();
 
   using EBL = EditBufferLogicalParts;
-  auto scope = TestHelper::createTestScope();
-  auto transaction = scope->getTransaction();
-  TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
+  TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
 
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases useCase(*eb);
 
   WHEN("Unison Voices Changed")
   {
-    auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
-    voicesI->setCPFromHwui(transaction, 1);  // 12 Voices
+    useCase.setParameter({C15::PID::Unison_Voices, VoiceGroup::I}, 1);
 
     THEN("Stored")
     {
-      layerPreset->copyFrom(transaction, eb);
+      {
+        auto scope = TestHelper::createTestScope();
+        layerPreset->copyFrom(scope->getTransaction(), eb);
+      }
 
       WHEN("Loaded")
       {
-        eb->undoableLoad(transaction, layerPreset, true);
+        useCase.load(layerPreset);
 
         THEN("Unison Voices are 12")
         {
+          auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
           CHECK(voicesI->getDisplayString() == "12 voices");
         }
       }

@@ -26,7 +26,7 @@ namespace detail
 TEST_CASE("Part Origin Attribute")
 {
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
 
   auto hwui = Application::get().getHWUI();
 
@@ -38,7 +38,7 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Load Single Full")
   {
-    ebUseCases.undoableLoad(presets.getSinglePreset());
+    ebUseCases.load(presets.getSinglePreset());
 
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
@@ -51,10 +51,9 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Init Sound Resets")
   {
-    auto scope = TestHelper::createTestScope();
-    eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset(), true);
+    ebUseCases.load(presets.getSplitPreset());
+    ebUseCases.initSound(Defaults::FactoryDefault);
 
-    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 
@@ -66,15 +65,14 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Init Part Resets")
   {
-    auto scope = TestHelper::createTestScope();
-    eb->undoableLoad(scope->getTransaction(), presets.getSinglePreset(), true);
+    ebUseCases.load(presets.getSinglePreset());
+    ebUseCases.initPart(VoiceGroup::I, Defaults::FactoryDefault);
 
-    eb->undoableInitPart(scope->getTransaction(), VoiceGroup::I, Defaults::FactoryDefault);
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     CHECK(originI.presetUUID == Uuid::none());
     CHECK(originI.sourceGroup == VoiceGroup::Global);
 
-    eb->undoableInitPart(scope->getTransaction(), VoiceGroup::II, Defaults::FactoryDefault);
+    ebUseCases.initPart(VoiceGroup::II, Defaults::FactoryDefault);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
     CHECK(originII.presetUUID == Uuid::none());
     CHECK(originII.sourceGroup == VoiceGroup::Global);
@@ -82,7 +80,7 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Load Dual Full")
   {
-    ebUseCases.undoableLoad(presets.getLayerPreset());
+    ebUseCases.load(presets.getLayerPreset());
     auto originI = eb->getPartOrigin(VoiceGroup::I);
     auto originII = eb->getPartOrigin(VoiceGroup::II);
 
@@ -94,7 +92,7 @@ TEST_CASE("Part Origin Attribute")
 
   SECTION("Load Part Of Dual")
   {
-    TestHelper::initDualEditBuffer<SoundType::Layer>();
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
 
     eb->undoableLoadToPart(scope->getTransaction(), presets.getSplitPreset(), VoiceGroup::I, VoiceGroup::I);
@@ -123,7 +121,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   auto bank = presets.getBank();
   auto hwui = Application::get().getHWUI();
 
-  TestHelper::initDualEditBuffer<SoundType::Layer>();
+  TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
 
   auto eb = TestHelper::getEditBuffer();
   auto pm = Application::get().getPresetManager();

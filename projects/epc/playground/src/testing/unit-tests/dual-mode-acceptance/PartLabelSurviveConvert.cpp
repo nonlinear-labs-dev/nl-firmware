@@ -6,21 +6,23 @@
 TEST_CASE("Convert Split to Layer With Part Names")
 {
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases useCase(*eb);
 
   auto setVGName = [&](auto transaction, auto vg, auto name) { eb->setVoiceGroupName(transaction, name, vg); };
 
   {
-    auto scope = TestHelper::createTestScope();
-    auto trans = scope->getTransaction();
-
     THEN("Split -> Layer")
     {
-      TestHelper::initDualEditBuffer<SoundType::Split>(trans);
+      TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
-      setVGName(trans, VoiceGroup::I, "I");
-      setVGName(trans, VoiceGroup::II, "II");
+      {
+        auto scope = TestHelper::createTestScope();
+        auto trans = scope->getTransaction();
+        setVGName(trans, VoiceGroup::I, "I");
+        setVGName(trans, VoiceGroup::II, "II");
+      }
 
-      eb->undoableConvertToDual(trans, SoundType::Layer);
+      useCase.convertToLayer(VoiceGroup::I);
 
       CHECK(eb->getVoiceGroupName(VoiceGroup::I) == "I");
       CHECK(eb->getVoiceGroupName(VoiceGroup::II) == "II");
@@ -28,12 +30,16 @@ TEST_CASE("Convert Split to Layer With Part Names")
 
     THEN("Layer -> Split")
     {
-      TestHelper::initDualEditBuffer<SoundType::Layer>(trans);
+      TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
 
-      setVGName(trans, VoiceGroup::I, "I");
-      setVGName(trans, VoiceGroup::II, "II");
+      {
+        auto scope = TestHelper::createTestScope();
+        auto trans = scope->getTransaction();
+        setVGName(trans, VoiceGroup::I, "I");
+        setVGName(trans, VoiceGroup::II, "II");
+      }
 
-      eb->undoableConvertToDual(trans, SoundType::Split);
+      useCase.convertToSplit(VoiceGroup::I);
 
       CHECK(eb->getVoiceGroupName(VoiceGroup::I) == "I");
       CHECK(eb->getVoiceGroupName(VoiceGroup::II) == "II");

@@ -532,7 +532,7 @@ void PartMasterRecallLayout2::toggleMute() const
 {
   auto pm = Application::get().getPresetManager();
   auto eb = pm->getEditBuffer();
-  EditBufferUseCases useCase(eb);
+  EditBufferUseCases useCase(*eb);
   useCase.toggleMute(m_muteParameter->getID().getVoiceGroup());
 }
 

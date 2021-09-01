@@ -105,10 +105,12 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset([&](auto p) {
-        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
-        i++;
-      });
+      source->forEachPreset(
+          [&](auto p)
+          {
+            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
+            i++;
+          });
     }
   }
 }
@@ -227,4 +229,34 @@ void BankUseCases::exportBankToFile(const std::string& outFile)
   FileOutStream stream(outFile, false);
   XmlWriter writer(stream);
   serializer.write(writer, VersionAttribute::get());
+}
+
+void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
+{
+  auto pm = m_bank->getPresetManager();
+  auto scope = pm->getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", toInsert->getName(true),
+                                                   m_bank->getName(true));
+  auto transaction = scope->getTransaction();
+  size_t i = 0;
+
+  toInsert->forEachPreset(
+      [&](auto p)
+      {
+        m_bank->insertPreset(transaction, insertPosition + i, std::make_unique<Preset>(m_bank, *p, true));
+        i++;
+      });
+}
+
+Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
+{
+  auto pm = m_bank->getPresetManager();
+  auto scope = pm->getUndoScope().startTransaction("Insert Editbuffer into Bank '%0'", m_bank->getName(true));
+  return m_bank->insertPreset(scope->getTransaction(), anchor, std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));
+}
+
+Preset* BankUseCases::appendEditBuffer()
+{
+  auto pm = m_bank->getPresetManager();
+  auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
+  return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));;
 }

@@ -20,18 +20,11 @@
 
 #include <tools/TimeTools.h>
 
-#include <device-settings/DebugLevel.h>
-#include <device-settings/DirectLoadSetting.h>
-#include <device-settings/Settings.h>
-
-#include <proxies/hwui/HWUI.h>
-#include <Application.h>
-
 BankActions::BankActions(PresetManager &presetManager)
     : RPCActionManager("/presets/banks/")
     , m_presetManager(presetManager)
 {
-  addAction("drop-presets-above", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("drop-presets-above", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring csv = request->get("presets");
     Glib::ustring anchorUUID = request->get("anchor");
 
@@ -39,7 +32,7 @@ BankActions::BankActions(PresetManager &presetManager)
     useCase.dropPresets(anchorUUID, PresetManagerUseCases::DropActions::Above, csv);
   });
 
-  addAction("drop-presets-below", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("drop-presets-below", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring csv = request->get("presets");
     Glib::ustring anchorUUID = request->get("anchor");
 
@@ -47,7 +40,7 @@ BankActions::BankActions(PresetManager &presetManager)
     useCase.dropPresets(anchorUUID, PresetManagerUseCases::DropActions::Below, csv);
   });
 
-  addAction("drop-presets-to", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("drop-presets-to", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring csv = request->get("presets");
     Glib::ustring anchorUUID = request->get("anchor");
 
@@ -55,7 +48,7 @@ BankActions::BankActions(PresetManager &presetManager)
     useCase.dropPresets(anchorUUID, PresetManagerUseCases::DropActions::Onto, csv);
   });
 
-  addAction("rename-preset", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("rename-preset", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring uuid = request->get("uuid");
     Glib::ustring newName = request->get("name");
 
@@ -66,7 +59,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("move-preset-above", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("move-preset-above", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto presetToMoveUuid = request->get("presetToMove");
     auto presetAnchorUuid = request->get("anchor");
 
@@ -74,7 +67,7 @@ BankActions::BankActions(PresetManager &presetManager)
     useCase.movePresetAbove(Uuid { presetToMoveUuid }, Uuid { presetAnchorUuid });
   });
 
-  addAction("move-preset-below", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("move-preset-below", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToMoveUuid = request->get("presetToMove");
     auto presetAnchorUuid = request->get("anchor");
 
@@ -82,14 +75,14 @@ BankActions::BankActions(PresetManager &presetManager)
     useCases.movePresetBelow(Uuid { presetToMoveUuid }, Uuid { presetAnchorUuid });
   });
 
-  addAction("move-preset-to", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("move-preset-to", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToOverwrite = request->get("presetToOverwrite");
     auto overwriteWith = request->get("overwriteWith");
     PresetManagerUseCases useCases(&m_presetManager);
     useCases.movePresetTo(Uuid { overwriteWith }, Uuid { presetToOverwrite });
   });
 
-  addAction("overwrite-preset", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("overwrite-preset", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToOverwrite = request->get("presetToOverwrite");
     auto overwriteWith = request->get("overwriteWith");
 
@@ -115,41 +108,41 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("copy-preset-above", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("copy-preset-above", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToCopy = request->get("presetToCopy");
     auto presetAnchor = request->get("anchor");
     PresetManagerUseCases useCases(&m_presetManager);
     useCases.copyPresetAbove(Uuid { presetToCopy }, Uuid { presetAnchor });
   });
 
-  addAction("copy-preset-below", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("copy-preset-below", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToCopy = request->get("presetToCopy");
     auto presetAnchor = request->get("anchor");
     PresetManagerUseCases useCases(&m_presetManager);
     useCases.copyPresetBelow(Uuid { presetToCopy }, Uuid { presetAnchor });
   });
 
-  addAction("insert-editbuffer-above", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("insert-editbuffer-above", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetAnchor = request->get("anchor");
     auto uuid = request->get("uuid");
     PresetManagerUseCases useCases(&m_presetManager);
     useCases.insertEditBufferAbove(Uuid { presetAnchor }, Uuid { uuid });
   });
 
-  addAction("insert-editbuffer-below", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("insert-editbuffer-below", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetAnchor = request->get("anchor");
     auto uuid = request->get("uuid");
     PresetManagerUseCases useCases(&m_presetManager);
     useCases.insertEditBufferBelow(Uuid { presetAnchor }, Uuid { uuid });
   });
 
-  addAction("overwrite-preset-with-editbuffer", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("overwrite-preset-with-editbuffer", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToOverwrite = request->get("presetToOverwrite");
     PresetManagerUseCases useCase(&m_presetManager);
     useCase.overwritePresetWithEditBuffer(Uuid { presetToOverwrite });
   });
 
-  addAction("append-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("append-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto b = m_presetManager.getSelectedBank();
     auto fallBack = b ? b->getUuid().raw() : "";
     auto bankToAppendTo = request->get("bank-uuid", fallBack);
@@ -162,7 +155,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("append-preset-to-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("append-preset-to-bank", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto bankUuid = request->get("bank-uuid");
     auto presetUuid = request->get("preset-uuid");
 
@@ -176,18 +169,18 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("set-order-number", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("set-order-number", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto uuid = request->get("uuid");
     auto orderNumber = std::max(1ULL, std::stoull(request->get("order-number"))) - 1;
 
     if(auto bank = m_presetManager.findBank(Uuid { uuid }))
     {
       PresetManagerUseCases useCase(&m_presetManager);
-      useCase.setOrderNumber(bank, orderNumber);
+      useCase.setOrderNumber(bank, static_cast<int>(orderNumber));
     }
   });
 
-  addAction("insert-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("insert-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto selUuid = request->get("seluuid");
     PresetManagerUseCases useCases(&m_presetManager);
 
@@ -198,13 +191,13 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("select-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("select-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     Glib::ustring presetUUID = request->get("uuid");
     PresetManagerUseCases useCase(&m_presetManager);
     useCase.selectPreset(Uuid { presetUUID });
   });
 
-  addAction("delete-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("delete-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto presetUUID = request->get("uuid");
     auto deleteBank = request->get("delete-bank") == "true";
 
@@ -223,7 +216,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("delete-presets", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("delete-presets", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     std::vector<std::string> strs;
     auto csv = request->get("presets");
     auto deleteBanks = request->get("delete-bank") == "true";
@@ -233,13 +226,13 @@ BankActions::BankActions(PresetManager &presetManager)
     useCase.deletePresets(strs, deleteBanks);
   });
 
-  addAction("load-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("load-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto uuid = request->get("uuid");
-    EditBufferUseCases useCase(m_presetManager.getEditBuffer());
-    useCase.undoableLoad(Uuid { uuid });
+    EditBufferUseCases useCase(*m_presetManager.getEditBuffer());
+    useCase.load(Uuid { uuid });
   });
 
-  addAction("set-position", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("set-position", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto uuid = request->get("uuid");
     auto x = request->get("x");
     auto y = request->get("y");
@@ -250,7 +243,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("create-new-bank-from-preset", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("create-new-bank-from-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto uuid = request->get("preset");
     auto x = request->get("x");
     auto y = request->get("y");
@@ -259,7 +252,7 @@ BankActions::BankActions(PresetManager &presetManager)
     useCase.createBankFromPreset(Uuid { uuid }, x, y);
   });
 
-  addAction("create-new-bank-from-presets", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("create-new-bank-from-presets", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto csv = request->get("presets");
     auto x = request->get("x");
     auto y = request->get("y");
@@ -268,7 +261,7 @@ BankActions::BankActions(PresetManager &presetManager)
     useCase.createBankFromPresets(csv, x, y);
   });
 
-  addAction("drop-bank-on-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("drop-bank-on-bank", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     Glib::ustring receiverUuid = request->get("receiver");
     Glib::ustring bankUuid = request->get("bank");
 
@@ -282,7 +275,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("drop-presets-on-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("drop-presets-on-bank", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     Glib::ustring bankUUID = request->get("bank");
     Glib::ustring csv = request->get("presets");
 
@@ -293,11 +286,11 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("insert-bank-above", [&](std::shared_ptr<NetworkRequest> request) mutable { insertBank(request, 0); });
+  addAction("insert-bank-above", [&](const std::shared_ptr<NetworkRequest>& request) mutable { insertBank(request, 0); });
 
-  addAction("insert-bank-below", [&](std::shared_ptr<NetworkRequest> request) mutable { insertBank(request, 1); });
+  addAction("insert-bank-below", [&](const std::shared_ptr<NetworkRequest>& request) mutable { insertBank(request, 1); });
 
-  addAction("overwrite-preset-with-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("overwrite-preset-with-bank", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto anchorUuid = request->get("anchor");
     auto bankUuid = request->get("bank");
     if(auto srcbank = m_presetManager.findBank(Uuid { bankUuid }))
@@ -310,16 +303,19 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("import-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("import-bank", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto xml = request->get("xml");
     auto x = request->get("x");
     auto y = request->get("y");
     auto fileName = request->get("fileName");
     MemoryInStream stream(xml, false);
-    importBank(stream, x, y, fileName);
+
+    //TODO inject proper Progress CB
+    PresetManagerUseCases useCases(&m_presetManager);
+    useCases.importBankFromStream(stream, std::stoi(x), std::stoi(y), fileName, [](auto){});
   });
 
-  addAction("set-preset-attribute", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("set-preset-attribute", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto presetUUID = request->get("uuid");
     auto key = request->get("key");
     auto value = request->get("value");
@@ -331,7 +327,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("set-bank-attribute", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("set-bank-attribute", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto bankUUID = request->get("uuid");
     auto key = request->get("key");
     auto value = request->get("value");
@@ -343,7 +339,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("set-bank-collapse", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("set-bank-collapse", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto bankUUID = request->get("uuid");
     auto value = request->get("value");
 
@@ -354,7 +350,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("move", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("move", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto bankUUID = request->get("bank");
     auto value = request->get("direction");
 
@@ -369,7 +365,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("insert-bank-in-cluster", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("insert-bank-in-cluster", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     const auto insertedUUID = request->get("bank-to-insert");
     const auto insertedAtUUID = request->get("bank-inserted-at");
     const auto orientation = request->get("orientation");
@@ -385,7 +381,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("dock-banks", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("dock-banks", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     const auto droppedOntoBankUuid = request->get("droppedOntoBank");
     const auto draggedBankUuid = request->get("draggedBank");
     const auto droppedAt = request->get("droppedAt");
@@ -425,7 +421,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("undock-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("undock-bank", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     const auto uuid = request->get("uuid");
     const auto x = request->get("x");
     const auto y = request->get("y");
@@ -446,7 +442,7 @@ BankActions::BankActions(PresetManager &presetManager)
     }
   });
 
-  addAction("move-all-banks", [&](std::shared_ptr<NetworkRequest> request) mutable {
+  addAction("move-all-banks", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto x = std::stof(request->get("x"));
     auto y = std::stof(request->get("y"));
     PresetManagerUseCases useCases(&m_presetManager);
@@ -460,36 +456,9 @@ BankActions::BankActions(PresetManager &presetManager)
 }
 
 BankActions::~BankActions()
-{
-}
+= default;
 
-void BankActions::insertBank(std::shared_ptr<NetworkRequest> request, size_t offset)
-{
-  Glib::ustring anchorUuid = request->get("anchor");
-  Glib::ustring bankUuid = request->get("bank");
 
-  if(auto preset = m_presetManager.findPreset(Uuid { anchorUuid }))
-    if(auto targetBank = static_cast<Bank *>(preset->getParent()))
-      if(auto bank = m_presetManager.findBank(Uuid { bankUuid }))
-        if(bank != targetBank)
-        {
-          auto anchorPos = targetBank->getPresetPosition(Uuid { anchorUuid });
-          insertBank(bank, targetBank, anchorPos + offset);
-        }
-}
-
-void BankActions::insertBank(Bank *bank, Bank *targetBank, size_t insertPos)
-{
-  auto scope = m_presetManager.getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", bank->getName(true),
-                                                               targetBank->getName(true));
-  auto transaction = scope->getTransaction();
-  size_t i = 0;
-
-  bank->forEachPreset([&](auto p) {
-    targetBank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(targetBank, *p, true));
-    i++;
-  });
-}
 
 bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request)
 {
@@ -530,7 +499,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
       XmlWriter writer(stream);
       Glib::ustring uuid = httpRequest->get("uuid");
 
-      Preset *preset = nullptr;
+      Preset *preset;
       auto ebAsPreset = std::make_unique<Preset>(&m_presetManager, *m_presetManager.getEditBuffer());
 
       if(uuid.empty())
@@ -543,7 +512,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
       }
       else
       {
-        DebugLevel::warning("Could not download Preset!");
+        nltools::Log::warning("Could not download Preset!");
         return false;
       }
 
@@ -559,51 +528,24 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
   return false;
 }
 
-Bank *BankActions::importBank(InStream &stream, Glib::ustring x, Glib::ustring y, const Glib::ustring &fileName)
+void BankActions::insertBank(const std::shared_ptr<NetworkRequest>& request, size_t offset)
 {
-  UNDO::Scope::tTransactionScopePtr scope = m_presetManager.getUndoScope().startTransaction("Import new Bank");
-  auto transaction = scope->getTransaction();
-  return importBank(transaction, stream, x, y, fileName);
-}
+  auto anchorUuid = request->get("anchor");
+  auto bankUuid = request->get("bank");
 
-Bank *BankActions::importBank(UNDO::Transaction *transaction, InStream &stream, Glib::ustring x, Glib::ustring y,
-                              const Glib::ustring &fileName)
-{
-  auto autoLoadOff = Application::get().getSettings()->getSetting<DirectLoadSetting>()->scopedOverlay(
-      BooleanSettings::BOOLEAN_SETTING_FALSE);
-
-  auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
-
-  XmlReader reader(stream, transaction);
-  reader.read<PresetBankSerializer>(newBank, Serializer::Progress {}, true);
-
-  newBank->setAttachedToBank(transaction, Uuid::none());
-  newBank->setAttachedDirection(transaction, to_string(Bank::AttachmentDirection::none));
-
-  if(x.empty() || y.empty())
+  if(auto preset = m_presetManager.findPreset(Uuid { anchorUuid }))
   {
-    auto pos = m_presetManager.calcDefaultBankPositionFor(newBank);
-    x = to_string(pos.first);
-    y = to_string(pos.second);
+    if(auto targetBank = dynamic_cast<Bank *>(preset->getParent()))
+    {
+      if(auto bank = m_presetManager.findBank(Uuid { bankUuid }))
+      {
+        if(bank != targetBank)
+        {
+          auto anchorPos = targetBank->getPresetPosition(Uuid { anchorUuid });
+          BankUseCases useCase(targetBank);
+          useCase.insertBank(bank, anchorPos + offset);
+        }
+      }
+    }
   }
-
-  newBank->setX(transaction, x);
-  newBank->setY(transaction, y);
-
-  newBank->ensurePresetSelection(transaction);
-  newBank->setAttribute(transaction, "Name of Import File", fileName);
-  newBank->setAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
-  newBank->setAttribute(transaction, "Name of Export File", "");
-  newBank->setAttribute(transaction, "Date of Export File", "");
-
-  m_presetManager.ensureBankSelection(transaction);
-
-  Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
-
-  return newBank;
-}
-
-void BankActions::insertBankInCluster(Bank *bankToInsert, Bank *bankAtInsert,
-                                      const Glib::ustring directionSeenFromBankInCluster)
-{
 }

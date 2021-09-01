@@ -47,9 +47,9 @@ void PresetParameterGroupSerializer::readTagContent(Reader &reader) const
                        targetParams.emplace_back(p.get());
 
                  if(targetParams.empty())
-                   nltools::Log::warning("PresetParameterSerializer was created without targets! Affected ID:", id);
+                   nltools::Log::debug("PresetParameterSerializer was created without targets! Affected ID:", id);
                  else if(targetParams.size() > 1)
-                   nltools::Log::warning("PresetParameterSerializer for id", id, "has multiple targets!");
+                   nltools::Log::debug("PresetParameterSerializer for id", id, "has multiple targets!");
 
                  return new PresetParameterSerializer(targetParams, m_type);
                });

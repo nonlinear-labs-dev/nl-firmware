@@ -1,31 +1,19 @@
-#include <Application.h>
 #include <http/UndoScope.h>
-#include <device-settings/DebugLevel.h>
-#include <device-settings/Settings.h>
-#include <errno.h>
 #include <fcntl.h>
 #include <gio/gunixoutputstream.h>
 #include <glib/gstdio.h>
 #include <Options.h>
-#include <presets/PresetManager.h>
-#include <proxies/hwui/HWUI.h>
-#include <proxies/hwui/panel-unit/boled/BOLED.h>
-#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
-#include <proxies/hwui/panel-unit/EditPanel.h>
-#include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <xml/FileOutStream.h>
 #include <tools/FileSystem.h>
 
-FileOutStream::FileOutStream(const Glib::ustring &fileName, bool zip)
-    : m_filename(fileName)
+#include <utility>
+#include <nltools/logging/Log.h>
+
+FileOutStream::FileOutStream(Glib::ustring fileName, bool zip)
+    : m_filename(std::move(fileName))
 {
-  m_kioskMode = getKioskMode();
-
-  if(m_kioskMode)
-    return;
-
   auto tmpFileName = getTmpFileName();
   g_unlink(tmpFileName.c_str());
 
@@ -53,9 +41,6 @@ FileOutStream::FileOutStream(const Glib::ustring &fileName, bool zip)
 
 FileOutStream::~FileOutStream()
 {
-  if(m_kioskMode)
-    return;
-
   if(m_autoCommit)
     commit();
 
@@ -74,9 +59,6 @@ void FileOutStream::setAutoCommit(bool ac)
 
 void FileOutStream::commit()
 {
-  if(m_kioskMode)
-    return;
-
   if(m_stream && m_fileHandle >= 0)
   {
     GError *error = nullptr;
@@ -84,7 +66,7 @@ void FileOutStream::commit()
 
     if(error)
     {
-      DebugLevel::error(__PRETTY_FUNCTION__, __LINE__, error->message);
+      nltools::Log::error(__PRETTY_FUNCTION__, __LINE__, error->message);
       g_error_free(error);
     }
 
@@ -101,24 +83,18 @@ void FileOutStream::commit()
 
 void FileOutStream::implWrite(const Glib::ustring &str)
 {
-  if(m_kioskMode)
-    return;
-
   GError *error = nullptr;
   g_data_output_stream_put_string(m_stream, str.c_str(), nullptr, &error);
 
   if(error)
   {
-    DebugLevel::error(error->message);
+    nltools::Log::error(error->message);
     g_error_free(error);
   }
 }
 
 void FileOutStream::implWrite(const void *buf, size_t numBytes)
 {
-  if(m_kioskMode)
-    return;
-
   GError *error = nullptr;
   gsize bytesWritten = 0;
 
@@ -126,39 +102,9 @@ void FileOutStream::implWrite(const void *buf, size_t numBytes)
   {
     if(error)
     {
-      DebugLevel::error(error->message);
+      nltools::Log::error(error->message);
       g_error_free(error);
     }
     throw std::runtime_error("writing to file failed");
   }
-}
-
-void FileOutStream::setKioskMode(bool kiosk)
-{
-  if(kiosk)
-  {
-    auto ret = FileSystem::writeToFile(Application::get().getOptions()->getKioskModeFile(), "1");
-    DebugLevel::warning("writing kioskMode: ", ret, "path: ", Application::get().getOptions()->getKioskModeFile());
-  }
-  else
-  {
-    auto ret = FileSystem::writeToFile(Application::get().getOptions()->getKioskModeFile(), "0");
-    DebugLevel::warning("writing kioskMode: ", ret, "path: ", Application::get().getOptions()->getKioskModeFile());
-
-    auto &app = Application::get();
-    auto pm = app.getPresetManager();
-    auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
-
-    SplashLayout::start();
-    app.getSettings()->reload();
-    pm->init();
-    SplashLayout::finish();
-  }
-}
-
-bool FileOutStream::getKioskMode()
-{
-  return FileSystem::readFromFile(Application::get().getOptions()->getKioskModeFile()).find("1") != Glib::ustring::npos
-      ? true
-      : false;
 }
