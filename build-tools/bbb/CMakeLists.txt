@@ -112,6 +112,10 @@ add_custom_command(
         "make"
         "cp /fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
         "chown ${USER_ID}.${GROUP_ID} /workdir/rootfs.tar.gz"
+        "cp /fs/nonlinux/output/images/MLO /workdir/"
+        "chown ${USER_ID}.${GROUP_ID} /workdir/MLO"
+        "cp /fs/nonlinux/output/images/u-boot.img /workdir/"
+        "chown ${USER_ID}.${GROUP_ID} /workdir/u-boot.img"
     COMMAND echo "The final rootfs is located at ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz"
 )
 
@@ -147,6 +151,18 @@ add_custom_command(
         bbb
 )
 
+add_custom_command(
+    COMMENT "Build install medium (to be run with prefix BBB_INSTALL_MEDIUM=/dev/sdX)"
+    OUTPUT .bbb-install-medium
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh
+        \${BBB_INSTALL_MEDIUM}
+        ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 add_custom_target(bbb-ota-update
     DEPENDS ${CMAKE_BINARY_DIR}/nonlinear-bbb-update.tar
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/c15-ota-update.sh
@@ -158,4 +174,5 @@ add_custom_target(bbb-ota-update
 add_custom_target(bbb-rootfs DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz)
 add_custom_target(bbb-prepare-build-dir DEPENDS .nonlinux-setup)
 add_custom_target(bbb-console DEPENDS .nonlinux-console )
+add_custom_target(bbb-install-medium DEPENDS .bbb-install-medium)
 
