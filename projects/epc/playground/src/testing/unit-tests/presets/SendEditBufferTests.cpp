@@ -45,7 +45,7 @@ TEST_CASE("Preset Load sends EditBuffer")
   EditBufferUseCases ebUseCases(*eb);
 
   MockPresetStorage presets;
-  ebUseCases.undoableLoad(presets.getSinglePreset());
+  ebUseCases.load(presets.getSinglePreset());
 
   TestHelper::doMainLoop(1s, 1s, [&] { return singleMessageRecieved; });
   c.disconnect();
@@ -68,10 +68,7 @@ TEST_CASE("Store Action do not send EditBuffer")
 
   bool singleMessageReceived = false;
 
-  {
-    auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-  }
+  TestHelper::initSingleEditBuffer();
 
   CHECK(waitForConnection(EndPoint::AudioEngine));
   auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,

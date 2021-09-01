@@ -26,6 +26,7 @@
 #include <parameter_declarations.h>
 #include <presets/PresetParameter.h>
 #include <set>
+#include <use-cases/EditBufferUseCases.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
@@ -831,8 +832,7 @@ void PresetManager::stressLoad(int numTransactions)
       [=]()
       {
         int numSteps = numTransactions;
-        auto transactionScope = getUndoScope().startTransaction("Stressing by Preset loading");
-        auto transaction = transactionScope->getTransaction();
+        EditBufferUseCases ebUseCases(*getEditBuffer());
 
         while(numSteps > 0)
         {
@@ -842,7 +842,7 @@ void PresetManager::stressLoad(int numTransactions)
                 b->forEachPreset(
                     [&](auto p)
                     {
-                      m_editBuffer->undoableLoad(transaction, p, true);
+                      ebUseCases.load(p);
                       numSteps--;
                     });
               });

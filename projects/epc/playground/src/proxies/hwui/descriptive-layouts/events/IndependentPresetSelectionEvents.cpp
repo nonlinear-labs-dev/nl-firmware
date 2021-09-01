@@ -61,7 +61,7 @@ namespace DescriptiveLayouts
           auto eb = Application::get().getPresetManager()->getEditBuffer();
           EditBufferUseCases useCase(*eb);
           auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
-          useCase.undoableLoadToPart(preset, VoiceGroup::I, currentVG);
+          useCase.loadToPart(preset, VoiceGroup::I, currentVG);
           Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
         }
         break;

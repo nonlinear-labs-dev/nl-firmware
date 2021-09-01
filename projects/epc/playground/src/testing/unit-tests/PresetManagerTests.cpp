@@ -50,19 +50,17 @@ namespace EditBufferHelper
 {
   template <SoundType tSoundType> void convertEditBufferToDual()
   {
-    auto scope = TestHelper::createTestScope();
     auto eb = TestHelper::getEditBuffer();
-
-    eb->undoableConvertToDual(scope->getTransaction(), tSoundType);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToDual(tSoundType, VoiceGroup::I);
     REQUIRE(eb->getType() == tSoundType);
   }
 
   void convertEditBufferToSingle()
   {
-    auto scope = TestHelper::createTestScope();
     auto eb = TestHelper::getEditBuffer();
-
-    eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+    EditBufferUseCases useCases(*eb);
+    useCases.convertToSingle( VoiceGroup::I);
     REQUIRE(eb->getType() == SoundType::Single);
   }
 

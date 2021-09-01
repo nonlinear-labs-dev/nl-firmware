@@ -42,37 +42,37 @@ void EditBufferUseCases::resetCustomScale()
   scaleGroup->undoableReset(scope->getTransaction(), Initiator::EXPLICIT_USECASE);
 }
 
-void EditBufferUseCases::undoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to)
+void EditBufferUseCases::loadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to)
 {
   auto transactionName = preset->buildUndoTransactionTitle("Load Part " + toString(from) + " To Part " + toString(to));
   auto scope = m_editBuffer.getUndoScope().startTransaction(transactionName);
   m_editBuffer.undoableLoadToPart(scope->getTransaction(), preset, from, to);
 }
 
-void EditBufferUseCases::undoableLoad(const Uuid& uuid)
+void EditBufferUseCases::load(const Uuid& uuid)
 {
   if(auto pm = m_editBuffer.getParent())
   {
     if(auto preset = pm->findPreset(uuid))
     {
-      undoableLoad(preset);
+      load(preset);
     }
   }
 }
 
-void EditBufferUseCases::undoableLoad(const Preset* preset)
+void EditBufferUseCases::load(const Preset* preset)
 {
-  undoableLoad(preset, preset->buildUndoTransactionTitle("Load"));
+  load(preset, preset->buildUndoTransactionTitle("Load"));
 }
 
-void EditBufferUseCases::undoableLoad(const Preset* preset, const std::string& transactionName)
+void EditBufferUseCases::load(const Preset* preset, const std::string& transactionName)
 {
   auto& undoScope = m_editBuffer.getUndoScope();
   auto scope = undoScope.startContinuousTransaction(preset->getParent(), std::chrono::seconds(5), transactionName);
   m_editBuffer.undoableLoad(scope->getTransaction(), preset, true);
 }
 
-std::unique_ptr<ParameterUseCases> EditBufferUseCases::getUseCase(ParameterId id)
+std::unique_ptr<ParameterUseCases> EditBufferUseCases::getUseCase(const ParameterId& id)
 {
   if(auto parameter = m_editBuffer.findParameterByID(id))
     return std::move(std::make_unique<ParameterUseCases>(parameter));
@@ -80,14 +80,14 @@ std::unique_ptr<ParameterUseCases> EditBufferUseCases::getUseCase(ParameterId id
   return nullptr;
 }
 
-std::unique_ptr<ModParameterUseCases> EditBufferUseCases::getModParamUseCase(ParameterId id)
+std::unique_ptr<ModParameterUseCases> EditBufferUseCases::getModParamUseCase(const ParameterId& id)
 {
   if(auto parameter = m_editBuffer.findAndCastParameterByID<ModulateableParameter>(id))
     return std::move(std::make_unique<ModParameterUseCases>(parameter));
   return nullptr;
 }
 
-std::unique_ptr<MacroControlParameterUseCases> EditBufferUseCases::getMCUseCase(ParameterId id)
+std::unique_ptr<MacroControlParameterUseCases> EditBufferUseCases::getMCUseCase(const ParameterId& id)
 {
   if(auto parameter = m_editBuffer.findAndCastParameterByID<MacroControlParameter>(id))
     return std::move(std::make_unique<MacroControlParameterUseCases>(parameter));
@@ -312,11 +312,62 @@ void EditBufferUseCases::undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui
     if(loadToPartActive)
     {
       auto load = hwui->getPresetPartSelection(currentVoiceGroup);
-      undoableLoadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
+      loadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
     }
     else
     {
-      undoableLoad(pPreset);
+      load(pPreset);
     }
+  }
+}
+
+void EditBufferUseCases::initSound(Defaults defaults)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Init Sound");
+  m_editBuffer.undoableInitSound(scope->getTransaction(), defaults);
+}
+
+void EditBufferUseCases::initPart(VoiceGroup part, Defaults defaults)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Init Part");
+  m_editBuffer.undoableInitPart(scope->getTransaction(), part, defaults);
+}
+
+void EditBufferUseCases::convertToLayer(VoiceGroup currentSelectedVoiceGroup)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Sound to Layer");
+  auto transaction = scope->getTransaction();
+  m_editBuffer.undoableConvertToDual(transaction, SoundType::Layer, currentSelectedVoiceGroup);
+}
+
+void EditBufferUseCases::convertToSingle(VoiceGroup partToUse)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Sound to Single");
+  auto transaction = scope->getTransaction();
+  m_editBuffer.undoableConvertToSingle(transaction, partToUse);
+}
+
+void EditBufferUseCases::convertToSplit(VoiceGroup currentSelectedVoiceGroup)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Sound to Split");
+  auto transaction = scope->getTransaction();
+  m_editBuffer.undoableConvertToDual(transaction, SoundType::Split, currentSelectedVoiceGroup);
+}
+
+void EditBufferUseCases::convertToDual(SoundType type, VoiceGroup group)
+{
+  switch(type)
+  {
+    case SoundType::Single:
+      convertToSingle(group);
+      break;
+    case SoundType::Split:
+      convertToSplit(group);
+      break;
+    case SoundType::Layer:
+      convertToLayer(group);
+      break;
+    case SoundType::Invalid:
+      break;
   }
 }

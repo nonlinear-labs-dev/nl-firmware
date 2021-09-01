@@ -220,6 +220,9 @@ PresetParameterGroup *PresetDualParameterGroups::findOrCreateParameterGroup(cons
     vgMap[id] = std::make_unique<PresetParameterGroup>(*schemeGroup);
     return findParameterGroup(id);
   }
+  std::stringstream ss;
+  ss << "Could not find Parameter in Preset nor EditBuffer. ID: " << id.toString();
+  nltools_detailedAssertAlways(false, ss.str());
 }
 
 PresetDualParameterGroups::tParameterGroups PresetDualParameterGroups::getGroups(const VoiceGroup &vg) const

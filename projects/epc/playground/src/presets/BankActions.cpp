@@ -229,7 +229,7 @@ BankActions::BankActions(PresetManager &presetManager)
   addAction("load-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto uuid = request->get("uuid");
     EditBufferUseCases useCase(*m_presetManager.getEditBuffer());
-    useCase.undoableLoad(Uuid { uuid });
+    useCase.load(Uuid { uuid });
   });
 
   addAction("set-position", [&](const std::shared_ptr<NetworkRequest>& request) mutable {

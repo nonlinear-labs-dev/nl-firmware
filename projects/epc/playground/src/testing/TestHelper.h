@@ -56,26 +56,24 @@ namespace TestHelper
     return std::move(getPresetManager()->getUndoScope().startTestTransaction());
   }
 
-  template <SoundType tType> inline void initDualEditBuffer(UNDO::Transaction* transaction)
+  template <SoundType tType> inline void initDualEditBuffer(VoiceGroup currentSelectedVG)
   {
     auto eb = getEditBuffer();
-    eb->undoableUnlockAllGroups(transaction);
-    eb->undoableConvertToDual(transaction, tType);
-    eb->undoableInitSound(transaction, Defaults::FactoryDefault);
+    EditBufferUseCases useCases(*eb);
+
+    useCases.unlockAllGroups();
+    useCases.convertToDual(tType, currentSelectedVG);
+    useCases.initSound(Defaults::FactoryDefault);
   }
 
-  template <SoundType tType> inline void initDualEditBuffer()
-  {
-    auto scope = UNDO::Scope::startTrashTransaction();
-    initDualEditBuffer<tType>(scope->getTransaction());
-  }
-
-  inline void initSingleEditBuffer(UNDO::Transaction* transaction)
+  inline void initSingleEditBuffer()
   {
     auto eb = getEditBuffer();
-    eb->undoableUnlockAllGroups(transaction);
-    eb->undoableConvertToSingle(transaction, VoiceGroup::I);
-    eb->undoableInitSound(transaction, Defaults::FactoryDefault);
+    EditBufferUseCases useCases(*eb);
+
+    useCases.unlockAllGroups();
+    useCases.convertToSingle(VoiceGroup::I);
+    useCases.initSound(Defaults::FactoryDefault);
   }
 
   inline void forceParameterChange(UNDO::Transaction* transaction, Parameter* param)
@@ -91,6 +89,12 @@ namespace TestHelper
       param->setCPFromHwui(transaction, decNext);
     else
       nltools_detailedAssertAlways(false, "Unable to change Parameter Value in either direction");
+  }
+
+  inline void forceParameterChange(Parameter* param)
+  {
+    auto scope = TestHelper::createTestScope();
+    forceParameterChange(scope->getTransaction(), param);
   }
 
   template <typename tCB> inline void forEachParameter(const tCB& cb, EditBuffer* eb)

@@ -24,7 +24,7 @@ TEST_CASE("Load Pre 1.7 Preset into Mono Enabled part resets Mono Enable")
   PreDualModePresetBank bank;
   auto preset = bank.createMockPreset();
 
-  TestHelper::initDualEditBuffer<SoundType::Split>();
+  TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
   auto scope = TestHelper::createTestScope();
   auto transaction = scope->getTransaction();
@@ -49,9 +49,9 @@ TEST_CASE("Load Single into Split Part I")
   CHECK(preset->getType() == SoundType::Single);
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Split>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
@@ -84,7 +84,7 @@ TEST_CASE("Load Single into Split Part I")
     const auto oldVoicesIIHash = EBL::createHashOfVector(EBL::getVoices<VoiceGroup::II>());
     const auto oldFadeIIHash = EBL::createHashOfVector(EBL::getFade<VoiceGroup::II>());
 
-    ebUseCases.undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::I);
+    ebUseCases.loadToPart(preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("Type is Same")
     {
@@ -173,9 +173,9 @@ TEST_CASE("Load Single into Split Part II")
   CHECK(preset->getType() == SoundType::Single);
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Split>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
@@ -208,7 +208,7 @@ TEST_CASE("Load Single into Split Part II")
     const auto oldFadeIHash = EBL::createHashOfVector(EBL::getFade<VoiceGroup::I>());
     const auto oldVoicesIHash = EBL::createHashOfVector(EBL::getVoices<VoiceGroup::I>());
 
-    ebUseCases.undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::II);
+    ebUseCases.loadToPart(preset, VoiceGroup::I, VoiceGroup::II);
 
     THEN("Type is Same")
     {

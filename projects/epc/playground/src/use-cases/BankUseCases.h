@@ -34,7 +34,9 @@ class BankUseCases
 
   void insertBank(Bank* toInsert, size_t insertPosition);
 
+  Preset* insertEditBufferAtPosition(int anchor);
 
+  Preset* appendEditBuffer();
 
  private:
   bool isDirectLoadActive() const;

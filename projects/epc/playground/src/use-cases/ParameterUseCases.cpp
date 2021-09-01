@@ -58,3 +58,20 @@ void ParameterUseCases::setControlPosition(tControlPositionValue cp)
   auto scope = m_parameter->getUndoScope().startContinuousTransaction(m_parameter, "Set '%0'", name);
   m_parameter->setCPFromHwui(scope->getTransaction(), cp);
 }
+
+void ParameterUseCases::loadDefault(Defaults defaults)
+{
+  auto name = m_parameter->getGroupAndParameterName();
+  auto scope = m_parameter->getUndoScope().startTransaction("Set Default '%0'", name);
+  m_parameter->loadDefault(scope->getTransaction(), defaults);
+}
+
+void ParameterUseCases::stepControlPosition(int steps, bool fine, bool shift)
+{
+  ButtonModifiers mod;
+  mod[ButtonModifier::SHIFT] = shift;
+  mod[ButtonModifier::FINE] = fine;
+  auto name = m_parameter->getGroupAndParameterName();
+  auto scope = m_parameter->getUndoScope().startTransaction("Set '%0", name);
+  m_parameter->stepCPFromHwui(scope->getTransaction(), steps, mod);
+}

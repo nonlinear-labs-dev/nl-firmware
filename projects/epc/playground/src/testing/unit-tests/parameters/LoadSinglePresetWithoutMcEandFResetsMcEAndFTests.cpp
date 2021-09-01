@@ -12,8 +12,8 @@ TEST_CASE("Load Single Preset Without MacroControl E and F defaults MC E and F")
   auto mockPreset = PreDualModePresetBank::createMockPreset();
 
   auto eb = TestHelper::getEditBuffer();
-  auto scope = TestHelper::createTestScope();
-  TestHelper::initSingleEditBuffer(scope->getTransaction());
+  EditBufferUseCases useCase(*eb);
+  TestHelper::initSingleEditBuffer();
 
   auto mcE = dynamic_cast<MacroControlParameter*>(eb->findParameterByID({ C15::PID::MC_E, VoiceGroup::Global }));
   auto mcF = dynamic_cast<MacroControlParameter*>(eb->findParameterByID({ C15::PID::MC_F, VoiceGroup::Global }));
@@ -23,19 +23,22 @@ TEST_CASE("Load Single Preset Without MacroControl E and F defaults MC E and F")
   auto partTune
       = dynamic_cast<ModulateableParameter*>(eb->findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I }));
 
-  partVolume->setModulationSource(scope->getTransaction(), MacroControls::MC5);
-  partVolume->setModulationAmount(scope->getTransaction(), 0.2);
-  partTune->setModulationSource(scope->getTransaction(), MacroControls::MC6);
-  partTune->setModulationAmount(scope->getTransaction(), 0.4);
+  {
+    auto scope = TestHelper::createTestScope();
+    partVolume->setModulationSource(scope->getTransaction(), MacroControls::MC5);
+    partVolume->setModulationAmount(scope->getTransaction(), 0.2);
+    partTune->setModulationSource(scope->getTransaction(), MacroControls::MC6);
+    partTune->setModulationAmount(scope->getTransaction(), 0.4);
 
-  mcE->undoableSetGivenName(scope->getTransaction(), "EE");
-  mcF->undoableSetGivenName(scope->getTransaction(), "FF");
-  mcE->setCPFromHwui(scope->getTransaction(), 0.75);
-  mcF->setCPFromHwui(scope->getTransaction(), 0.25);
+    mcE->undoableSetGivenName(scope->getTransaction(), "EE");
+    mcF->undoableSetGivenName(scope->getTransaction(), "FF");
+    mcE->setCPFromHwui(scope->getTransaction(), 0.75);
+    mcF->setCPFromHwui(scope->getTransaction(), 0.25);
+  }
 
   THEN("Loading old Preset resets non existing parameters")
   {
-    eb->undoableLoad(scope->getTransaction(), mockPreset.get(), true);
+    useCase.load(mockPreset.get());
     CHECK(mcE->getGivenName().empty());
     CHECK(mcF->getGivenName().empty());
     CHECK(partTune->getModulationSource() == MacroControls::NONE);

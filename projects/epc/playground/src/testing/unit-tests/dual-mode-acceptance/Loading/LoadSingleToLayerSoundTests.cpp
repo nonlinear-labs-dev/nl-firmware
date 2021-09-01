@@ -22,9 +22,9 @@ TEST_CASE("Load Single into Layer Part I")
   REQUIRE(preset->getType() == SoundType::Single);
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
@@ -58,7 +58,7 @@ TEST_CASE("Load Single into Layer Part I")
     const auto oldCrossFBIHash = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>());
     const auto oldVoicesIHash = EBL::createHashOfVector(EBL::getVoices<VoiceGroup::I>());
 
-    ebUseCases.undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::I);
+    ebUseCases.loadToPart(preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("Type is Same")
     {
@@ -144,9 +144,9 @@ TEST_CASE("Load Single into Layer Part II")
   REQUIRE(preset->getType() == SoundType::Single);
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
@@ -182,7 +182,7 @@ TEST_CASE("Load Single into Layer Part II")
     const auto oldCrossFBIIHash = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>());
     const auto oldVoicesIHash = EBL::createHashOfVector(EBL::getVoices<VoiceGroup::I>());
 
-    ebUseCases.undoableLoadToPart(preset, VoiceGroup::I, VoiceGroup::II);
+    ebUseCases.loadToPart(preset, VoiceGroup::I, VoiceGroup::II);
 
     THEN("Voice Group Label was loaded")
     {

@@ -276,8 +276,8 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::InitSound, [eb] {
-      SoundUseCases useCases { eb, eb->getParent() };
-      useCases.initSound();
+      EditBufferUseCases useCases { *eb };
+      useCases.initSound(Defaults::UserDefault);
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
 

@@ -21,7 +21,7 @@ TEST_CASE("Import Preset with ModAspects on Split")
 
   PresetManagerUseCases uc(pm);
   FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/Fuxi_Split.xml", false);
-  uc.importBankFromStream(stream, 0, 0, "Fuxi-Split");
+  uc.importBankFromStream(stream, 0, 0, "Fuxi-Split", Serializer::Progress{});
 
   auto fuxiesSplit = pm->getSelectedBank();
   CHECK(fuxiesSplit != nullptr);
@@ -49,8 +49,8 @@ TEST_CASE("Import Preset with ModAspects on Split")
 
   WHEN("Preset is loaded")
   {
-    EditBufferUseCases useCase(TestHelper::getEditBuffer());
-    useCase.undoableLoad(firstPreset);
+    EditBufferUseCases useCase(*TestHelper::getEditBuffer());
+    useCase.load(firstPreset);
 
     THEN("Mod Aspects are present")
     {
@@ -77,7 +77,7 @@ TEST_CASE("Import Conversion for Bank with Version 7 Checks out")
 
   PresetManagerUseCases uc(pm);
   FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/Version7Split.xml", false);
-  uc.importBankFromStream(stream, 0, 0, "Split7");
+  uc.importBankFromStream(stream, 0, 0, "Split7", Serializer::Progress{});
 
   auto newBank = pm->getSelectedBank();
   CHECK(newBank != nullptr);
@@ -105,8 +105,8 @@ TEST_CASE("Import Conversion for Bank with Version 7 Checks out")
 
   WHEN("Preset is loaded")
   {
-    EditBufferUseCases useCase(TestHelper::getEditBuffer());
-    useCase.undoableLoad(newPreset);
+    EditBufferUseCases useCase(*TestHelper::getEditBuffer());
+    useCase.load(newPreset);
 
     THEN("Values are as expected")
     {

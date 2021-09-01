@@ -339,7 +339,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
 
           if(auto currentSelectedPreset = pm->getSelectedPreset())
           {
-            useCases.undoableLoad(currentSelectedPreset);
+            useCases.load(currentSelectedPreset);
             if(currentSelectedPreset->getUuid() == oldPreset)
             {
               animateSelectedPreset([] {});

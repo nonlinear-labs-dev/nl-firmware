@@ -1075,6 +1075,12 @@ Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y
   return newBank;
 }
 
+Bank* PresetManagerUseCases::addBank()
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("Add Bank");
+  return m_presetManager->addBank(scope->getTransaction());
+}
+
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)
 {
   auto ebName = eb->getName();

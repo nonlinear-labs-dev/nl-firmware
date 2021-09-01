@@ -140,6 +140,8 @@ class PresetManagerUseCases
   Bank* importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName,
                              const std::function<void(const std::string&)>& progress);
 
+  Bank* addBank();
+
  private:
   [[nodiscard]] bool isDirectLoadActive() const;
 

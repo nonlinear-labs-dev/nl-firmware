@@ -31,13 +31,13 @@ TEST_CASE("Load to Part should lead to changed star and recall buffer unchanged"
   EditBufferUseCases ebUseCases(*eb);
 
   auto loadPresetAndCheck = [&](auto preset, auto from, auto to) {
-    ebUseCases.undoableLoadToPart(preset, from, to);
+    ebUseCases.loadToPart(preset, from, to);
     CHECK(eb->findAnyParameterChanged());
   };
 
   WHEN("EB is Split")
   {
-    TestHelper::initDualEditBuffer<SoundType::Split>();
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     WHEN("Single Preset loaded into I")
     {
       loadPresetAndCheck(singlePreset, VoiceGroup::I, VoiceGroup::I);
@@ -71,7 +71,7 @@ TEST_CASE("Load to Part should lead to changed star and recall buffer unchanged"
 
   WHEN("EB is Layer")
   {
-    TestHelper::initDualEditBuffer<SoundType::Layer>();
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     WHEN("Single Preset loaded into I")
     {
       loadPresetAndCheck(singlePreset, VoiceGroup::I, VoiceGroup::I);

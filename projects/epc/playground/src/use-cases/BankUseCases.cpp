@@ -246,3 +246,17 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
         i++;
       });
 }
+
+Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
+{
+  auto pm = m_bank->getPresetManager();
+  auto scope = pm->getUndoScope().startTransaction("Insert Editbuffer into Bank '%0'", m_bank->getName(true));
+  return m_bank->insertPreset(scope->getTransaction(), anchor, std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));
+}
+
+Preset* BankUseCases::appendEditBuffer()
+{
+  auto pm = m_bank->getPresetManager();
+  auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
+  return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));;
+}
