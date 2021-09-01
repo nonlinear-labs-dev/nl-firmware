@@ -122,16 +122,20 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("ReceiveAftertouchCurve", new MidiReceiveAftertouchCurveSetting(*this));
   addSetting("ReceiveVelocityCurve", new MidiReceiveVelocityCurveSetting(*this));
 
-  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this));
-  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this));
-  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this));
-  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this));
-  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this));
-  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this));
-  addSetting("BenderMapping", new BenderCCMapping(*this));
-  addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
-  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
+
   addSetting("HighResCC", new Enable14BitSupport(*this));
+  auto enable14Bit = getSetting<Enable14BitSupport>();
+
+  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this, *enable14Bit));
+  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this, *enable14Bit));
+  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this, *enable14Bit));
+  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this, *enable14Bit));
+  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this, *enable14Bit));
+  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this, *enable14Bit));
+  addSetting("BenderMapping", new BenderCCMapping(*this, *enable14Bit));
+  addSetting("AftertouchMapping", new AftertouchCCMapping(*this, *enable14Bit));
+
+  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
   addSetting("RoutingSettings", new RoutingSettings(*this));
   addSetting("GlobalLocalEnable", new GlobalLocalEnableSetting(*this));

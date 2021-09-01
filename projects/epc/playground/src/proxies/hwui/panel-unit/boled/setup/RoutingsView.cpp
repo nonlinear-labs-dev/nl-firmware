@@ -37,7 +37,7 @@ bool RoutingsView::redraw(FrameBuffer& fb)
   const auto pos = getPosition();
   const auto width = pos.getWidth();
   const auto height = pos.getHeight();
-  const auto boxWidth = width / (size + 1);
+  const auto boxWidth = width / size;
   const int y = pos.getTop();
 
   int x = pos.getLeft();
@@ -76,5 +76,6 @@ void RoutingsView::onSettingChanged(const Setting* s)
       m_data[id++] = r->getState(m_id, a);
       id %= size;
     }
+    setDirty();
   }
 }

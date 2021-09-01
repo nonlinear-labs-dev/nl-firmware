@@ -29,6 +29,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <use-cases/PhysicalControlParameterUseCases.h>
 #include <use-cases/SettingsUseCases.h>
+#include <use-cases/BankUseCases.h>
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
     : m_presetManager { pm }

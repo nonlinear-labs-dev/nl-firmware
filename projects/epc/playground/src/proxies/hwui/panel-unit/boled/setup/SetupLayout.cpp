@@ -852,10 +852,10 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<RibbonCCMapping<2>>(this, "Ribbon 2"));
       children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Bender"));
       children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
-      children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res. Velocity (CC 88)"));
       children.emplace_back(new EnumSettingItem<Enable14BitSupport>(this, "High-Res. CCs (use LSB)"));
       children.emplace_back(new ResetMidiSettingsToClassic(this));
       children.emplace_back(new ResetMidiSettingsToHighRes(this));
+      children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res. Velocity (CC 88)"));
     }
   };
 
@@ -904,7 +904,8 @@ namespace NavTree
       Editor()
           : MenuEditor()
       {
-        getPresetManager()->onMidiBankSelectionHappened(sigc::hide(sigc::mem_fun(this, &Editor::updateOnSettingChanged)));
+        getPresetManager()->onMidiBankSelectionHappened(
+            sigc::hide(sigc::mem_fun(this, &Editor::updateOnSettingChanged)));
       }
 
      protected:
@@ -1024,16 +1025,16 @@ namespace NavTree
     constexpr const char *getName()
     {
       if constexpr(value)
-        return "Set all Routings to True";
+        return "Set all Routings to On";
       else
-        return "Set all Routings to False";
+        return "Set all Routings to Off";
     }
   };
 
   struct MidiRoutings : InnerNode
   {
     explicit MidiRoutings(InnerNode *p)
-        : InnerNode(p, "MIDI Routing")
+        : InnerNode(p, "Routings")
     {
       typedef RoutingSettings::tRoutingIndex tID;
       children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes"));
@@ -1062,7 +1063,7 @@ namespace NavTree
         : InnerNode(parent, "MIDI Settings")
     {
       children.emplace_back(new MidiPanicButton(this));
-      children.emplace_back(new SettingItem<GlobalLocalEnableSetting>(this, "Global Local Enable"));
+      children.emplace_back(new EnumSettingItem<GlobalLocalEnableSetting>(this, "Global Local Enable"));
       children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiChannels(this));
       children.emplace_back(new MidiAssignments(this));
