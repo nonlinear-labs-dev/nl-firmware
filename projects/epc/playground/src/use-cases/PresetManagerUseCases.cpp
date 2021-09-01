@@ -152,8 +152,7 @@ void PresetManagerUseCases::createBankAndStoreEditBuffer()
   auto transactionScope = scope.startTransaction("Create Bank and Store Preset");
   auto transaction = transactionScope->getTransaction();
   auto bank = m_presetManager->addBank(transaction);
-  auto preset
-      = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
   m_presetManager->selectBank(transaction, bank->getUuid());
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
@@ -209,8 +208,8 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   auto bank = m_presetManager->addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-  auto preset = bank->appendPreset(transaction,
-                                          std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer(), false));
+  auto preset
+      = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer(), false));
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager->selectBank(transaction, bank->getUuid());
   m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
@@ -574,7 +573,8 @@ void PresetManagerUseCases::sortBankNumbers()
 void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetManagerUseCases::DropActions action,
                                         const Glib::ustring& csv)
 {
-  auto actionToOffset = [](DropActions action) {
+  auto actionToOffset = [](DropActions action)
+  {
     switch(action)
     {
       case DropActions::Above:
@@ -763,67 +763,72 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
     m_presetManager->getEditBuffer()->undoableLoad(transaction, newBank->getPresetAt(0), true);
 }
 
-PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(FileInStream& in,
-                                                                              ProgressIndication progress)
+PresetManagerUseCases::ImportExitCode
+    PresetManagerUseCases::importBackupFile(FileInStream& in, const ProgressIndication& progress, AudioEngineProxy& ae)
 {
   if(!in.eof())
   {
     if(auto lock = m_presetManager->getLoadingLock())
     {
       auto scope = m_presetManager->getUndoScope().startTransaction("Import Presetmanager Backup");
-      if(importBackupFile(scope->getTransaction(), in, progress))
+      if(importBackupFile(scope->getTransaction(), in, progress, ae))
         return ImportExitCode::OK;
     }
   }
   return ImportExitCode::Unsupported;
 }
 
-bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress)
+bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae)
 {
   if(auto lock = m_presetManager->getLoadingLock())
   {
     auto scope = m_presetManager->getUndoScope().startTransaction("Import all Banks");
     MemoryInStream in(buffer, true);
-    return importBackupFile(scope->getTransaction(), in, progress);
+    return importBackupFile(scope->getTransaction(), in, progress, ae);
   }
   return false;
 }
 
-bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in, ProgressIndication progress)
+bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in,
+                                             const ProgressIndication& progress, AudioEngineProxy& aeProxy)
 {
   auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
 
-  transaction->addSimpleCommand([pm = m_presetManager, pg = progress, swap](auto) {
-    pg.start();
-    ZippedMemoryOutStream stream;
-    XmlWriter writer(stream);
-    PresetManagerSerializer serializer(pm, pg._update);
-    serializer.write(writer, VersionAttribute::get());
-    std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
-    swap->swapWith(zippedPresetManagerXml);
+  transaction->addSimpleCommand(
+      [pm = m_presetManager, pg = progress, &ae = aeProxy, swap](auto)
+      {
+        pg.start();
+        ZippedMemoryOutStream stream;
+        XmlWriter writer(stream);
+        PresetManagerSerializer serializer(pm, pg._update);
+        serializer.write(writer, VersionAttribute::get());
+        std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
+        swap->swapWith(zippedPresetManagerXml);
 
-    if(!zippedPresetManagerXml.empty())
-    {
-      auto trash = pm->getUndoScope().startTrashTransaction();
-      MemoryInStream inStream(zippedPresetManagerXml, true);
-      XmlReader reader(inStream, trash->getTransaction());
-      pm->clear(trash->getTransaction());
-      reader.read<PresetManagerSerializer>(pm, pg._update);
-      pm->getEditBuffer()->sendToAudioEngine();
-    }
-    pg.finish();
-  });
+        if(!zippedPresetManagerXml.empty())
+        {
+          auto trash = UNDO::Scope::startTrashTransaction();
+          MemoryInStream inStream(zippedPresetManagerXml, true);
+          XmlReader reader(inStream, trash->getTransaction());
+          pm->clear(trash->getTransaction());
+          reader.read<PresetManagerSerializer>(pm, pg._update);
+          ae.sendEditBuffer();
+        }
+        pg.finish();
+      });
 
   // fill preset manager with trash transaction, as snapshot above will
   // care about undo
-  auto trash = m_presetManager->getUndoScope().startTrashTransaction();
+  auto trash = UNDO::Scope::startTrashTransaction();
   XmlReader reader(in, trash->getTransaction());
 
-  reader.onFileVersionRead([&](int version) {
-    if(version > VersionAttribute::getCurrentFileVersion())
-      return Reader::FileVersionCheckResult::Unsupported;
-    return Reader::FileVersionCheckResult::OK;
-  });
+  reader.onFileVersionRead(
+      [&](int version)
+      {
+        if(version > VersionAttribute::getCurrentFileVersion())
+          return Reader::FileVersionCheckResult::Unsupported;
+        return Reader::FileVersionCheckResult::OK;
+      });
 
   progress.start();
   m_presetManager->clear(trash->getTransaction());
@@ -833,7 +838,7 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
     progress.finish();
     return false;
   }
-  m_presetManager->getEditBuffer()->sendToAudioEngine();
+  aeProxy.sendEditBuffer();
   progress.finish();
   return true;
 }
@@ -1023,7 +1028,7 @@ bool PresetManagerUseCases::isDirectLoadActive() const
 }
 
 Bank* PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
-                                               const std::function<void(const std::string&)>& progress)
+                                                const std::function<void(const std::string&)>& progress)
 {
   FileInfos fileInfos(file);
   FileInStream stream(fileInfos.filePath, false);
@@ -1035,7 +1040,7 @@ Bank* PresetManagerUseCases::importBankFromPath(const std::filesystem::directory
 }
 
 Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName,
-                                                 const std::function<void(const std::string&)>& progress)
+                                                  const std::function<void(const std::string&)>& progress)
 {
   auto scope = m_presetManager->getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();

@@ -33,7 +33,7 @@ class PresetManager : public ContentSection
   explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options);
   ~PresetManager() override;
 
-  void init();
+  void init(AudioEngineProxy *aeProxy);
   void invalidate();
 
   // debug
@@ -113,7 +113,8 @@ class PresetManager : public ContentSection
 
  private:
   void loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
-                                                     const Glib::RefPtr<Gio::File> &pmFolder);
+                                                     const Glib::RefPtr<Gio::File> &pmFolder,
+                                                     AudioEngineProxy *aeProxy);
   void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder);
   void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);

@@ -7,6 +7,7 @@
 #include <xml/FileInStream.h>
 #include <clipboard/Clipboard.h>
 #include <filesystem>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 class PresetManager;
 class Preset;
@@ -114,9 +115,11 @@ class PresetManagerUseCases
     FinishProgressIndication _finish;
   };
 
-  ImportExitCode importBackupFile(FileInStream& in, ProgressIndication progress);
-  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress);
-  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, ProgressIndication progress);
+  PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,
+                                                         AudioEngineProxy& ae);
+  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae);
+  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, const ProgressIndication& progress,
+                        AudioEngineProxy& aeProxy);
 
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 

@@ -13,6 +13,7 @@ namespace UNDO
 class PresetManager;
 class Preset;
 class HTTPRequest;
+class AudioEngineProxy;
 
 class PresetManagerActions : public RPCActionManager
 {
@@ -21,8 +22,9 @@ class PresetManagerActions : public RPCActionManager
   PresetManager& m_presetManager;
   PresetManagerUseCases pmUseCases;
   SoundUseCases soundUseCases;
+  AudioEngineProxy& m_aeProxy;
 
  public:
-  explicit PresetManagerActions(PresetManager& presetManager);
+  explicit PresetManagerActions(PresetManager& presetManager, AudioEngineProxy& aeProxy);
   bool handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request) override;
 };

@@ -67,6 +67,9 @@ class EditBufferUseCases
 
   void undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui);
 
+  void randomize(double amount);
+  void randomizePart(VoiceGroup part, double amount);
+
  private:
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;

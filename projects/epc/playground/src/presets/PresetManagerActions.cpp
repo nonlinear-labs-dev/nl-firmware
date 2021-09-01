@@ -25,11 +25,12 @@
 #include <Application.h>
 #include <presets/SendEditBufferScopeGuard.h>
 
-PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
+PresetManagerActions::PresetManagerActions(PresetManager &presetManager, AudioEngineProxy &aeProxy)
     : RPCActionManager("/presets/")
     , m_presetManager(presetManager)
     , pmUseCases { &m_presetManager }
     , soundUseCases { m_presetManager.getEditBuffer(), &m_presetManager }
+    , m_aeProxy{ aeProxy }
 {
   addAction("new-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
     auto x = request->get("x");
@@ -83,7 +84,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
       auto *buffer = http->getFlattenedBuffer();
 
       PresetManagerUseCases useCase(&m_presetManager);
-      if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }))
+      if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, m_aeProxy))
         http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
 
       soup_buffer_free(buffer);

@@ -112,7 +112,8 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     SplashLayout::addStatus("Restoring Backup from File!");
 
     PresetManagerUseCases useCase(app.getPresetManager());
-    auto ret = useCase.importBackupFile(in, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish });
+    auto& ae = *app.getAudioEngineProxy();
+    auto ret = useCase.importBackupFile(in, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, ae);
     switch(ret)
     {
       case PresetManagerUseCases::ImportExitCode::Unsupported:

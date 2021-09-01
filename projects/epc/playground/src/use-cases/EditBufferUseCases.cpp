@@ -371,3 +371,15 @@ void EditBufferUseCases::convertToDual(SoundType type, VoiceGroup group)
       break;
   }
 }
+
+void EditBufferUseCases::randomize(double amount)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Randomize Sound");
+  m_editBuffer.undoableRandomize(scope->getTransaction(), Initiator::EXPLICIT_HWUI, amount);
+}
+
+void EditBufferUseCases::randomizePart(VoiceGroup part, double amount)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Randomize Part");
+  m_editBuffer.undoableRandomizePart(scope->getTransaction(), part, Initiator::EXPLICIT_WEBUI, amount);
+}

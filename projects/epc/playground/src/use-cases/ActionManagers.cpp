@@ -4,16 +4,18 @@
 #include <presets/BankActions.h>
 #include <presets/EditBufferActions.h>
 #include <presets/PresetManager.h>
+
 #include <proxies/hwui/HWUIActions.h>
 
-ActionManagers::ActionManagers(UpdateDocumentContributor* parent,
-                                                                     PresetManager& pm, AudioEngineProxy& aeProx,
-                                                                     HWUI& hwui)
+#include <device-settings/Settings.h>
+
+ActionManagers::ActionManagers(UpdateDocumentContributor* parent, PresetManager& pm, AudioEngineProxy& aeProx,
+                               HWUI& hwui, Settings& settings)
     : ContentSection(parent)
 {
-  m_actionManagers.emplace_back(new PresetManagerActions(pm));
+  m_actionManagers.emplace_back(new PresetManagerActions(pm, aeProx));
   m_actionManagers.emplace_back(new BankActions(pm));
-  m_actionManagers.emplace_back(new EditBufferActions(*pm.getEditBuffer(), aeProx));
+  m_actionManagers.emplace_back(new EditBufferActions(*pm.getEditBuffer(), aeProx, settings));
   m_actionManagers.emplace_back(new HWUIActions(hwui, *pm.getEditBuffer()));
 }
 

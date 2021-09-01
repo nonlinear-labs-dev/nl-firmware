@@ -90,7 +90,8 @@ Application::Application(int numArgs, char **argv)
     , m_isQuit(false)
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_presetActionManager(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui)
+    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui,
+                            *m_settings)
 {
 #ifdef _PROFILING
   Profiler::get().enable(true);
@@ -99,7 +100,7 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init();
+  m_presetManager->init(m_audioEngineProxy.get());
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
 
