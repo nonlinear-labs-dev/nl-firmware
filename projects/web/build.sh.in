@@ -10,28 +10,30 @@ export PATH=/home/bob-the-builder/.meteor/:$PATH
 
 cd ~/meteor-build/
 
-rm -f ./core
-rm -f ./c16-hwui
-rm -f ./build-time-info.js
-rm -rf ./nonmaps
+rm -rf ./client
+rm -rf ./public
 
-ln -s /src/core ./core
-ln -s /src/c16-hwui/ ./c16-hwui
-ln -s /builddir/build-time-info.js ./build-time-info.js
+mkdir /tmp/client
+tar -xf /builddir/core/bundle.tar.gz -C /tmp/client
 
-mkdir -p ./nonmaps/war
+mkdir /tmp/client/c16-hwui
+tar -xf /builddir/c16-hwui/bundle.tar.gz -C /tmp/client/c16-hwui
 
-ln -s /builddir/nonmaps/war/nonmaps ./nonmaps/war/nonmaps
-ln -s /src/main/webapp ./nonmaps/webapp
-ln -s /builddir/NonMaps.js ./nonmaps/NonMaps.js
-ln -s /builddir/obj/nonmaps-version.txt ./nonmaps/nonmaps-version.txt
+# static html projects
+mkdir /tmp/public
+for project in  nonmaps recorder online-help mc-view; do
+  mkdir /tmp/public/$project
+  tar -xf /builddir/$project/bundle.tar.gz -C /tmp/public/$project
+done
 
+ln -s /builddir/build-time-info.js /tmp/client/build-time-info.js
+ln -s /tmp/client ~/meteor-build/client 
+ln -s /tmp/public ~/meteor-build/public
 
-bash
-
-node ./node_modules/meteor-build-client/main.js /builddir/c16-hwui/out
+node ./node_modules/meteor-build-client/main.js /builddir/web/out
 
 END_HEREDOC
 )
 
 runuser -l bob-the-builder -c "$BOBS_SCRIPT"
+
