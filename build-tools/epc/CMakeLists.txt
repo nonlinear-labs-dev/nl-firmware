@@ -98,7 +98,7 @@ add_custom_command(
     DEPENDS .filesystem-created
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
-        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh
 )
@@ -145,10 +145,16 @@ add_custom_target(epc-ota-update
         \${UNIT_PASSWORD}
     )
 
-add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
-add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
-add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
-add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
+
+IF(NOT ${TARGET_PLATFORM} STREQUAL "epc2")  
+  IF(NOT ${TARGET_PLATFORM} STREQUAL "epc")
+    add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
+    add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
+    add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
+    add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
+    add_dependencies(epc-create-update web)
+  ENDIF()
+ENDIF()
 
 
 

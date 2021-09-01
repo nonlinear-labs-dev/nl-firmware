@@ -3,7 +3,7 @@ ARG packages
 ARG tar
 COPY ${tar} /packages/
 RUN mkdir -p /extracted-packages
-RUN cd /extracted-packages && tar -xvzf /packages/${tar}
+RUN cd /extracted-packages && tar -xzf /packages/${tar}
 RUN ls -la /extracted-packages/
 
 RUN echo "" > /etc/pacman.d/mirrorlist

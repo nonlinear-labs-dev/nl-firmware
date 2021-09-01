@@ -1,6 +1,6 @@
 set -e
 
-BUILD_SWITCHES="-DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On"
+BUILD_SWITCHES="-DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEB=Off"
 
 setup_overlay() {
     mkdir -p /run/shm
@@ -67,6 +67,8 @@ build_binaries() {
     DESTDIR=/overlay-fs cmake -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release ${BUILD_SWITCHES} -S /source -B /build
     make -j8 -C /build
     DESTDIR=/overlay-fs make -C /build install 
+    
+    cp -r /web /overlay-fs/usr/local/C15/
 }
 
 create_update() {

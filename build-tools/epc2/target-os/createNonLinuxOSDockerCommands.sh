@@ -1,8 +1,9 @@
 set -e
+set -x
 
 mkdir -p /extracted-packages
 cd /extracted-packages
-tar -xvzf /packages/packages_${BUILD_CONTAINER_VERSION}.tar.gz
+tar -xzf /packages/packages_${BUILD_CONTAINER_VERSION}.tar.gz
 
 echo "Server=file:///extracted-packages" > /etc/pacman.d/mirrorlist
 sed -i 's/\[core\]//g' /etc/pacman.conf
@@ -11,7 +12,6 @@ sed -i 's/\[community\]//g' /etc/pacman.conf
 echo "[nonlinux]" >> /etc/pacman.conf
 echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
 echo "Server=file:///extracted-packages" >> /etc/pacman.conf
-
 
 pacman --noconfirm -Syyu
 pacman --noconfirm --overwrite '*' -S ${INSTALL_PACKAGES}

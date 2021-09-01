@@ -25,7 +25,4 @@ ADD_CUSTOM_COMMAND(
         ${CMAKE_CURRENT_SOURCE_DIR}
         )
  
-ADD_CUSTOM_TARGET(epc2-fetch-upstream-packages 
-  DEPENDS .fetch-upstream-packages 
-  DEPENDS .${DOCKERNAME}-created
-)
+ADD_CUSTOM_TARGET(fetch-build-container-upstream-packages DEPENDS .fetch-upstream-packages DEPENDS .${DOCKERNAME}-created)

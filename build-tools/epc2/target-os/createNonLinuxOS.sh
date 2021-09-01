@@ -3,7 +3,7 @@
 DOCKERNAME="$1"
 OUT_DIR=$(realpath $2)
 IN_DIR=$(realpath $3)
-PACKAGES_DIR=$OUT_DIR/../host-os
+PACKAGES_DIR=$OUT_DIR/../../build-container
 INSTALL_PACKAGES="$4"
 BUILD_CONTAINER_VERSION="$5"
 

@@ -40,7 +40,8 @@ namespace nltools
     {
       m_bgContextQueue->pushMessage([this, msg, a]() {
         std::unique_lock<std::recursive_mutex> l(m_mutex);
-        m_connections.remove_if([this, msg, a](auto &c) { return (a == c.get()) && !doSend(c->connection, msg); });
+        m_connections.remove_if(
+            [this, msg, a](auto &c) { return (a == c.get()) && !this->doSend(c->connection, msg); });
       });
     }
 
@@ -48,7 +49,7 @@ namespace nltools
     {
       m_bgContextQueue->pushMessage([this, msg]() {
         std::unique_lock<std::recursive_mutex> l(m_mutex);
-        m_connections.remove_if([this, msg](auto &c) { return !doSend(c->connection, msg); });
+        m_connections.remove_if([this, msg](auto &c) { return !this->doSend(c->connection, msg); });
       });
     }
 
@@ -60,7 +61,7 @@ namespace nltools
       if(!m_bgContextQueue->isPending())
         m_bgContextQueue->pushMessage([this, msg]() {
           std::unique_lock<std::recursive_mutex> l(m_mutex);
-          m_connections.remove_if([this, msg](auto &c) { return !doSend(c->connection, m_pendingUpdateMsg); });
+          m_connections.remove_if([this, msg](auto &c) { return !this->doSend(c->connection, m_pendingUpdateMsg); });
           m_pendingUpdateMsg.clear();
         });
     }
