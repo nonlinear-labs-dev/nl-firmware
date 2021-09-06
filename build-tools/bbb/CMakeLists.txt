@@ -161,6 +161,7 @@ add_custom_command(
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh
         \${BBB_INSTALL_MEDIUM}
         ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(bbb-ota-update
