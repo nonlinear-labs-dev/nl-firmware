@@ -8,6 +8,7 @@ BINARY_DIR=$2
 SOURCE_DIR=$3
 MOUNT_POINT_ROOT="$2/rootfs-mnt"
 MOUNT_POINT_BOOT="$2/boot-mnt"
+MMC_INSTALL_DIR="${MOUNT_POINT_ROOT}/mmc_install"
 
 [ ! -z "$DEVICE" ] || error "You have to specifiy the target device like this: \"BBB_INSTALL_MEDIUM=/dev/sdX make bbb-install-medium\""
 #which fatlabel || error "The binary 'fatlabel' has to be installed on the dev pc"
@@ -97,53 +98,39 @@ sync_rootfs() {
 }
 
 prepare_installation_dir() {
-    if ! sudo mkdir ${MOUNT_POINT_ROOT}/install; then
+    if ! sudo mkdir ${MMC_INSTALL_DIR}; then
         printf "Cannot create installation directory on root. Aborting...\n"
         exit -1
     fi
 
-    sudo cp ${BINARY_DIR}/MLO ${MOUNT_POINT_ROOT}/install &&
-    sudo cp ${BINARY_DIR}/u-boot.img ${MOUNT_POINT_ROOT}/install &&
-    sudo cp ${SOURCE_DIR}/runme.sh ${MOUNT_POINT_ROOT}/install
+    sudo cp ${BINARY_DIR}/MLO ${MMC_INSTALL_DIR}&&
+    sudo cp ${BINARY_DIR}/u-boot.img ${MMC_INSTALL_DIR} &&
+    sudo cp ${SOURCE_DIR}/runme.sh ${MMC_INSTALL_DIR}
     if [ $? -ne 0 ]; then
         printf "Could not copy insallation files. Aborting...\n"
         exit -1
     fi
-    sudo sync
-}
 
-write_uenv_file() {
-    printf "Rewriting uEnv.txt...\n"
-    MMC_CMDS="uenvcmd=mmc rescan"
-    MMC_CMDS="${MMC_CMDS}; load mmc 1:1 \${loadaddr} boot/uImage"
-    MMC_CMDS="${MMC_CMDS}; load mmc 1:1 \${fdtaddr} boot/nonlinear-labs-2D.dtb"
-    MMC_CMDS="${MMC_CMDS}; setenv mmcroot /dev/mmcblk0p1 ro"
-    MMC_CMDS="${MMC_CMDS}; setenv mmcrootfstype ext4 rootwait"
-    MMC_CMDS="${MMC_CMDS}; setenv bootargs console=\${console} \${optargs} root=\${mmcroot} rootfstype=\${mmcrootfstype}"
-    MMC_CMDS="${MMC_CMDS}; bootm \${loadaddr} - \${fdtaddr}\n"
-    MMC_CMDS="${MMC_CMDS}uname_r=nonlinear\n"
-    MMC_CMDS="${MMC_CMDS}uname_boot=mmc rescan"
-    MMC_CMDS="${MMC_CMDS}; load mmc 1:1 \${loadaddr} boot/uImage"
-    MMC_CMDS="${MMC_CMDS}; load mmc 1:1 \${fdtaddr} boot/nonlinear-labs-2D.dtb"
-    MMC_CMDS="${MMC_CMDS}; setenv mmcroot /dev/mmcblk0p1 ro"
-    MMC_CMDS="${MMC_CMDS}; setenv mmcrootfstype ext4 rootwait"
-    MMC_CMDS="${MMC_CMDS}; setenv bootargs console=\${console} \${optargs} root=\${mmcroot} rootfstype=\${mmcrootfstype}"
-    MMC_CMDS="${MMC_CMDS}; bootm \${loadaddr} - \${fdtaddr}"
+    for i in rsync mke2fs; do
+        if ! sudo cp $(sudo find ${MOUNT_POINT_ROOT} -type f -name "${i}" | head -n 1) ${MMC_INSTALL_DIR}; then
+            echo "could not get ${i} from rootfs"
+            exit -1
+        fi
+    done
 
-    if ! sudo chmod 777 ${MOUNT_POINT_ROOT}/root; then
-        printf "Cannot set permission to root. Aborting...\n"
-        exit -1
-    fi
+    for i in rsync mke2fs runme.sh; do
+        if ! sudo chmod +x "${MMC_INSTALL_DIR}/${i}"; then
+          echo "could not make ${i} executable"
+          exit -1
+        fi
+    done
 
-    if ! sudo rm ${MOUNT_POINT_ROOT}/root/uEnv.txt; then
-        printf "Cannot remove old uEnv.txt. Aborting...\n"
-        exit -1
-    fi
-
-    if ! sudo echo -e "${MMC_CMDS}" > ${MOUNT_POINT_ROOT}/root/uEnv.txt; then
-        printf "Cannot create uEnv.txt on root. Aborting...\n"
-        exit -1
-    fi
+    for lib in libpopt.so.0.0.0 libpopt.so.0 libpopt.so; do
+        if ! sudo cp $(sudo find ${MOUNT_POINT_ROOT}/lib/ -name "${lib}") ${MMC_INSTALL_DIR}; then
+            echo "could not get library ${lib} from rootfs"
+            exit -1
+        fi
+    done
     sudo sync
 }
 
@@ -181,7 +168,7 @@ main() {
     if [ -b "${DEVICE}" ]; then
         check_if_mounted_and_unmount
     else
-        printf "Device \"$1\" does not seem to be a block device!\n"
+        printf "Device \"${DEVICE}\" does not seem to be a block device!\n"
         exit -1
     fi
 
