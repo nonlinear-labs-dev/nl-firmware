@@ -48,21 +48,21 @@ rewrite_partition() {
     sync
 }
 
-mount_root() {
-    printf "Mounting root partition at ${MOUNT_POINT_ROOT}\n"
-    mkdir -p ${MOUNT_POINT_ROOT}
-    if ! mount ${EMMC_DEVICE_P1} ${MOUNT_POINT_ROOT}; then
+mount_emmc() {
+    printf "Mounting root partition at ${EMMC_ROOTFS_DIR}\n"
+    mkdir -p ${EMMC_ROOTFS_DIR}
+    if ! mount ${EMMC_DEVICE_P1} ${EMMC_ROOTFS_DIR}; then
         printf "Can not mount ${EMMC_DEVICE_P1}. Aborting...\n"
         exit -1
     fi
-    printf "Mounting root partition at ${MOUNT_POINT_ROOT} done!\n"
+    printf "Mounting root partition at ${EMMC_ROOTFS_DIR} done!\n"
 }
 
 sync_rootfs() {
     printf "Syncing rootfs to eMMC...\n"
     LD_LIBRARY_PATH="/mmc_install/"
 
-    if ! /mmc_install/rsync -cax --exclude '/mmc_install' --exclude '/tmp' / ${MOUNT_POINT_ROOT}; then
+    if ! /mmc_install/rsync -cax --exclude '/mmc_install' / ${EMMC_ROOTFS_DIR}; then
         printf "Can not sync ${EMMC_DEVICE_P1}. Aborting...\n"
         exit -1
     fi

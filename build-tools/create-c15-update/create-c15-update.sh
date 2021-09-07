@@ -3,14 +3,16 @@
 # Date:         12.02.2020
 # vom Cmake übergebene Pfade zu den .tarS
 
-EPC_UPDATE=$1
-EPC_2_UPDATE=$2
-BBB_UPDATE=$3
-PLAYCONTROLLER_UPDATE=$4
-BINARY_DIR=$5
-SOURCE_DIR=$6/build-tools/create-c15-update
-OUTNAME=$7
-ASPECTS=$8
+EPC_UPDATE=$1 && shift
+EPC_2_UPDATE=$1 && shift
+BBB_UPDATE=$1 && shift
+BBB_MLO=$1 && shift
+BBB_UBOOT_IMG=$1 && shift
+PLAYCONTROLLER_UPDATE=$1 && shift
+BINARY_DIR=$1 && shift
+SOURCE_DIR=$1/build-tools/create-c15-update && shift
+OUTNAME=$1 && shift
+ASPECTS=$1 && shift
 OUT_DIRECTORY=$BINARY_DIR/$OUTNAME
 OUT_TAR=$BINARY_DIR/$OUTNAME.tar
 
@@ -61,8 +63,16 @@ deploy_updates() {
     echo "Deploying updates..."
 
     if [ $UPDATE_BBB == 1 ]; then
-        echo "Will deploy BBB update."
+        echo "Will deploy BBB updates."
         cp $BBB_UPDATE $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/rootfs.tar.gz || fail_and_exit;
+        cp $BBB_MLO $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/MLO || fail_and_exit;
+        cp $BBB_UBOOT_IMG $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/u-boot.img || fail_and_exit;
+
+        SUM=$(md5sum $OUT_DIRECTORY/BBB/MLO)
+        echo $SUM | cut -d' ' -f1 >> $OUT_DIRECTORY/BBB/MLO_sum
+
+        SUM=$(md5sum $OUT_DIRECTORY/BBB/u-boot.img)
+        echo $SUM | cut -d' ' -f1 >> $OUT_DIRECTORY/BBB/UBOOT_sum
     fi
 
     if [ $UPDATE_EPC == 1 ]; then

@@ -63,7 +63,7 @@ move_files(){
     return 0
 }
 
-update(){
+update_rootfs(){
     systemctl status accesspoint
     ACCESSPOINT_RUNNING=$?
 
@@ -92,13 +92,48 @@ update(){
     rm -rf /update/BBB/rootfs
 }
 
+set_emmc_device() {
+    EMMC_DEVICE=""
+    for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
+        if [ -b ${d}boot0 ]; then
+            EMMC_DEVICE=${d}
+        fi
+    done
+}
+
+update_bootloader() {
+    # update u-boot.img
+    dd if=${BOOT_DEVICE} of=/tmp/u-boot.img.dd bs=512 skip=768 count=1024 conv=notrunc
+    truncate -s $(wc -c < /update/BBB/u-boot.img) /tmp/u-boot.img.dd
+
+    if [ $(md5sum /tmp/u-boot.img.dd | cut -d' ' -f1) -ne $(cat /update/BBB/UBOOT_sum) ]; then
+        dd if=/update/BBB/u-boot.img of=${EMMC_DEVICE} bs=512 seek=256 count=256 conv=notrunc
+        if [ $? -ne 0 ]; then report_and_quit "ERR. BBB update: Failed to update u-boot.img ..." "ERROR"; fi
+    fi
+
+    # update MLO
+    dd if=${BOOT_DEVICE} of=/tmp/MLO.dd bs=512 skip=768 count=1024 conv=notrunc
+    truncate -s $(wc -c < /update/BBB/MLO) /tmp/MLO.dd
+
+    if [ $(md5sum /tmp/MLO.dd | cut -d' ' -f1) -ne $(cat /update/BBB/MLO_sum) ]; then
+        dd if=/update/BBB/MLO of=${EMMC_DEVICE} bs=512 seek=256 count=256 conv=notrunc
+        if [ $? -ne 0 ]; then report_and_quit "ERR. BBB update: Failed to update MLO ..." "ERROR"; fi
+    fi
+}
+
+sync_to_emmc() {
+
+
+}
+
 main() {
     
     if [ ! -z "$EPC_IP" ]; then
         move_files
     fi
-    update
-
+    update_rootfs
+    update_bootloader
+    sync_to_emmc
     return 0
 }
 
