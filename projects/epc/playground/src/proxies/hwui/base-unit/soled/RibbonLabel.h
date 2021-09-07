@@ -19,6 +19,7 @@ class RibbonLabel : public Label
   RibbonLabel(const RibbonLabel &other) = delete;
   RibbonLabel &operator=(const RibbonLabel &) = delete;
 
+  static Glib::ustring cropMidiCC(const Glib::ustring &text);
  private:
   Glib::ustring crop(const Glib::ustring &text) const;
   Glib::ustring binarySearchLength(const Glib::ustring &text, int min, int max) const;
