@@ -741,7 +741,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     auto isRibbon2 = routingIndex == RoutingIndex::Ribbon2;
     auto isRibbon = isRibbon1 || isRibbon2;
     auto sourceIsLocal = source == DSPInterface::HWChangeSource::TCD;
-    auto isDisabled = m_options->shouldAllowLocal(routingIndex);
+    auto isDisabled = !m_options->shouldAllowLocal(routingIndex);
     return isRibbon && isDisabled && sourceIsLocal;
   };
 
@@ -755,6 +755,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
   }
   else if(isRibbonDisabled(source, routingIndex))
   {
+    nltools::Log::error(__PRETTY_FUNCTION__, (int)routingIndex, "pos", pos);
     m_ribbonWithLocalDisabledCB(routingIndex, pos);
   }
 

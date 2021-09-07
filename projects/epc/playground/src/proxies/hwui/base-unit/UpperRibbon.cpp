@@ -90,6 +90,8 @@ int UpperRibbon::posToLedID(int pos) const
 
 void UpperRibbon::onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, msg.ribbonId, "pos", msg.position);
+
   if(msg.ribbonId == nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1)
   {
     setLEDsForValueUniPolar(msg.position);

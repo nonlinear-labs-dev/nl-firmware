@@ -67,6 +67,8 @@ void LowerRibbon::indicateBlockingMainThread(bool onOff)
 
 void LowerRibbon::onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue &msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, msg.ribbonId, "pos", msg.position);
+
   if(msg.ribbonId == nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2)
   {
     setLEDsForValueUniPolar(msg.position);
