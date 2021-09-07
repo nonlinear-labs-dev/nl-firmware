@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include "Ribbon.h"
+#include <nltools/messaging/Message.h>
 #include <sigc++/connection.h>
 
 class Application;
@@ -17,6 +18,7 @@ class UpperRibbon : public Ribbon
   ~UpperRibbon() override;
 
  private:
+  void onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue& msg);
   void onParamSelectionChanged(Parameter* oldOne, Parameter* newOne);
   void onParamValueChanged(const Parameter* param);
 

@@ -12,13 +12,16 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
+    , m_queuedRibbonPositions(128)
     , m_queuedChannelModeMessages(128)  // @hhoegelow how would I estimate the needed size for this member??
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
     , m_syncPlaygroundTask(std::async(std::launch::async, [this] { syncPlaygroundLoop(); }))
     , m_syncChannelModeMessagesTask(std::async(std::launch::async, [this] { syncChannelModeMessageLoop(); }))
+    , m_syncRibbonPositionsTask(std::async(std::launch::async, [this]{ syncLocalDisabledRibbonPositionLoop(); }))
     , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncPlaygroundWaiter.notify_all(); },
                           [this](auto msg) { queueExternalMidiOut(msg); },
-                          [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
+                          [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); },
+                          [this](InputEventStage::RoutingIndex idx, float pos) { queueLocalDisabledRibbonPositionUpdate(idx, pos); }}
 {
   m_playgroundHwSourceKnownValues.fill(0);
 
@@ -242,6 +245,21 @@ void C15Synth::syncExternalMidiBridge()
   }
 }
 
+void C15Synth::syncLocalDisabledRibbonPositionLoop()
+{
+  std::unique_lock<std::mutex> lock(m_syncRibbonPositionsMutex);
+
+  while(!m_quit)
+  {
+    m_syncRibbonPositionsWaiter.wait(lock);
+    if(m_queuedRibbonPositions.peek())
+    {
+      auto data = m_queuedRibbonPositions.pop();
+      nltools::msg::send(nltools::msg::EndPoint::Playground, data);
+    }
+  }
+}
+
 void C15Synth::syncPlayground()
 {
   using namespace nltools::msg;
@@ -444,6 +462,12 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
     m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
+}
+
+void C15Synth::queueLocalDisabledRibbonPositionUpdate(InputEventStage::RoutingIndex idx, float pos)
+{
+  m_queuedRibbonPositions.push({idx, pos});
+  m_syncRibbonPositionsWaiter.notify_all();
 }
 
 void C15Synth::queueChannelModeMessage(MidiChannelModeMessages function)

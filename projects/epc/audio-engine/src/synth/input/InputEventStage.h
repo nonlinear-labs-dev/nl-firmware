@@ -32,11 +32,12 @@ class InputEventStage
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
   using HWChangedNotification = std::function<void()>;
+  using RibbonLocalDisabledCB = std::function<void(RoutingIndex, float)>;
   using ChannelModeMessageCB = std::function<void(MidiChannelModeMessages)>;
 
   //use reference
   InputEventStage(DSPInterface* dspHost, MidiRuntimeOptions* options, HWChangedNotification hwChangedCB, MIDIOut outCB,
-                  ChannelModeMessageCB specialFunctionOut);
+                  ChannelModeMessageCB specialFunctionOut, RibbonLocalDisabledCB ribbonCB);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
@@ -109,6 +110,8 @@ class InputEventStage
   MidiRuntimeOptions* m_options;
   HWChangedNotification m_hwChangedCB;
   ChannelModeMessageCB m_channelModeMessageCB;
+  RibbonLocalDisabledCB m_ribbonWithLocalDisabledCB;
+
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
   std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions {};

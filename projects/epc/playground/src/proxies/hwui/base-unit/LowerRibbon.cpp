@@ -8,6 +8,7 @@
 #include "device-settings/DebugLevel.h"
 #include <glib.h>
 #include <math.h>
+#include <nltools/messaging/Message.h>
 
 static Parameter *getParameter()
 {
@@ -19,6 +20,8 @@ LowerRibbon::LowerRibbon()
 {
   initLEDs();
   getParameter()->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onParamValueChanged));
+  nltools::msg::receive<nltools::msg::UpdateLocalDisabledRibbonValue>(
+      nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &LowerRibbon::onRibbonValueMessage));
 }
 
 int LowerRibbon::posToLedID(int pos) const
@@ -59,5 +62,13 @@ void LowerRibbon::indicateBlockingMainThread(bool onOff)
   else
   {
     onParamValueChanged(getParameter());
+  }
+}
+
+void LowerRibbon::onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue &msg)
+{
+  if(msg.ribbonId == nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2)
+  {
+    setLEDsForValueUniPolar(msg.position);
   }
 }

@@ -70,12 +70,14 @@ class C15Synth : public Synth, public sigc::trackable
  private:
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
   void queueChannelModeMessage(MidiChannelModeMessages function);
+  void queueLocalDisabledRibbonPositionUpdate(InputEventStage::RoutingIndex idx, float pos);
 
   void syncChannelModeMessageLoop();
   void syncExternalsLoop();
   void syncPlaygroundLoop();
   void syncExternalMidiBridge();
   void syncPlayground();
+  void syncLocalDisabledRibbonPositionLoop();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
   std::array<float, 8> m_playgroundHwSourceKnownValues;
@@ -84,17 +86,24 @@ class C15Synth : public Synth, public sigc::trackable
 
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
+  RingBuffer<nltools::msg::UpdateLocalDisabledRibbonValue> m_queuedRibbonPositions;
 
   std::mutex m_syncExternalsMutex;
   std::mutex m_syncPlaygroundMutex;
   std::mutex m_syncChannelModeMessagesMutex;
+  std::mutex m_syncRibbonPositionsMutex;
+
   std::condition_variable m_syncExternalsWaiter;
   std::condition_variable m_syncPlaygroundWaiter;
   std::condition_variable m_syncChannelModeMessagesWaiter;
-  std::atomic<bool> m_quit { false };
+  std::condition_variable m_syncRibbonPositionsWaiter;
+
   std::future<void> m_syncExternalsTask;
   std::future<void> m_syncPlaygroundTask;
   std::future<void> m_syncChannelModeMessagesTask;
+  std::future<void> m_syncRibbonPositionsTask;
+
+  std::atomic<bool> m_quit { false };
 
   InputEventStage m_inputEventStage;
   void doChannelModeMessageFunctions();

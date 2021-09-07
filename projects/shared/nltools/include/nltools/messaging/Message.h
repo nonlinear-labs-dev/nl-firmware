@@ -368,6 +368,17 @@ namespace nltools
       ReturnMode returnMode;
     };
 
+    struct UpdateLocalDisabledRibbonValue
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::UpdateLocalDisabledRibbon;
+      }
+
+      Setting::MidiSettingsMessage::RoutingIndex ribbonId;
+      tControlPosition position;
+    };
+
     struct HWAmountChangedMessage
     {
       constexpr static MessageType getType()
