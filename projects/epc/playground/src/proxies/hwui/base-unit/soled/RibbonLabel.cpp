@@ -31,13 +31,13 @@ StringAndSuffix RibbonLabel::getText() const
   static auto settings = Application::get().getSettings();
   static const auto routingsSetting = settings->getSetting<RoutingSettings>();
 
-  const auto isRibbon1Enabled = routingsSetting->getState(rIDX::Ribbon1, aIDX::LOCAL);
-  const auto isRibbon2Enabled = routingsSetting->getState(rIDX::Ribbon2, aIDX::LOCAL);
+  const auto isRibbon1 = m_parameterID == ParameterId { C15::PID::Ribbon_1, VoiceGroup::Global };
+  const auto isRibbon2 = m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };
 
-  const auto isRibbon1 = isRibbon1Enabled && m_parameterID == ParameterId { C15::PID::Ribbon_1, VoiceGroup::Global };
-  const auto isRibbon2 = isRibbon2Enabled && m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };
+  const auto isRibbon1Enabled = isRibbon1 && routingsSetting->getState(rIDX::Ribbon1, aIDX::LOCAL);
+  const auto isRibbon2Enabled = isRibbon2 && routingsSetting->getState(rIDX::Ribbon2, aIDX::LOCAL);
 
-  const auto isRibbonEnabled = isRibbon1 || isRibbon2;
+  const auto isRibbonEnabled = isRibbon1Enabled || isRibbon2Enabled;
 
   if(isRibbonEnabled)
   {
@@ -52,7 +52,7 @@ StringAndSuffix RibbonLabel::getText() const
     else if(isRibbon2)
       return crop(settings->getSetting<RibbonCCMapping<2>>()->getDisplayString());
   }
-  
+
   return "";
 }
 
