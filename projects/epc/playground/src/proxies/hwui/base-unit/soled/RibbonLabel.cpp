@@ -5,24 +5,41 @@
 #include "parameters/PhysicalControlParameter.h"
 #include "proxies/hwui/HWUI.h"
 #include <groups/ParameterGroup.h>
+#include <device-settings/Settings.h>
+#include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
 
 RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
     : super(rect)
     , m_parameterID(paramID)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->getParameterGroupByID({ "CS", VoiceGroup::Global })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })->onGroupChanged(mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID({ "CS", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
+  eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
+  auto settings = Application::get().getSettings()->onSettingsChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
 }
 
 RibbonLabel::~RibbonLabel() = default;
 
 StringAndSuffix RibbonLabel::getText() const
 {
-  auto param = dynamic_cast<PhysicalControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->findParameterByID(m_parameterID));
-  return StringAndSuffix { crop(param->generateName()) };
+  static auto eb = Application::get().getPresetManager()->getEditBuffer();
+  static auto settings = Application::get().getSettings();
+  static const auto routings = settings->getSetting<RoutingSettings>();
+  const auto isRibbon1Enabled
+      = routings->getState(RoutingSettings::tRoutingIndex::Ribbon1, RoutingSettings::tAspectIndex::LOCAL);
+
+  if(isRibbon1Enabled)
+  {
+    static auto param = dynamic_cast<PhysicalControlParameter *>(eb->findParameterByID(m_parameterID));
+    return StringAndSuffix { crop(param->generateName()) };
+  }
+  else
+  {
+    auto mappedCC = settings->getSetting<RibbonCCMapping<1>>();
+    return crop(mappedCC->getDisplayString());
+  }
 }
 
 Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const
