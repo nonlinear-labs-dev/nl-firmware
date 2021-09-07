@@ -18,10 +18,7 @@ TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
   auto preset = bank.getPreset(0);
   auto eb = TestHelper::getEditBuffer();
 
-  {
-    auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-  }
+  TestHelper::initSingleEditBuffer();
 
   WHEN("Unison Voices Correct")
   {
@@ -36,9 +33,8 @@ TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
 
     THEN("Load Preset -> voices == 8")
     {
-      auto scope = TestHelper::createTestScope();
-      auto transaction = scope->getTransaction();
-      eb->undoableLoad(transaction, preset, true);
+      EditBufferUseCases useCase(*eb);
+      useCase.load(preset);
 
       CHECK(eb->getType() == SoundType::Single);
       CHECK(voicesI->getDisplayString() == "8 voices");
@@ -73,7 +69,7 @@ TEST_CASE("UnisonVoices Conversion rules")
   };
 
   UpdateDocumentMasterMock root;
-  PresetManager pm(&root);
+  PresetManager pm(&root, false, TestHelper::getOptions());
   Bank bank(&pm);
 
   auto readXml = [&](auto xml) {

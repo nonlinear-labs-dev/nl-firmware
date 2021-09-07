@@ -332,7 +332,6 @@ public class SetupModel {
 		public ValueDataModelEntity editSmoothingTime = new ValueDataModelEntity();
 		public ValueDataModelEntity encoderAcceleration = new ValueDataModelEntity();
 		public BooleanDataModelEntity indicateBlockedUI = new BooleanDataModelEntity();
-		public BooleanDataModelEntity kioskMode = new BooleanDataModelEntity();
 		public IntegerDataModelEntity noteShift = new IntegerDataModelEntity();
 		public EnumDataModelEntity<EditModeRibbonBehaviour> editmodeRibbonBehavior = createEnumDataModelEntity(
 				EditModeRibbonBehaviour.class, EditModeRibbonBehaviour.absolute);

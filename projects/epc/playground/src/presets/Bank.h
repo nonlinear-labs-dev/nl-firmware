@@ -65,7 +65,6 @@ class Bank : public AttributesOwner
   Bank *getSlaveBottom() const;
   time_t getLastChangedTimestamp() const;
 
-  void rename(const Glib::ustring &name);
   void attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, AttachmentDirection dir);
   void invalidate();
 
@@ -88,10 +87,6 @@ class Bank : public AttributesOwner
   Preset *appendPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
   Preset *prependPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
   Preset *insertPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
-
-  Preset *appendAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
-  Preset *prependAndLoadPreset(UNDO::Transaction *transaction, std::unique_ptr<Preset> preset);
-  Preset *insertAndLoadPreset(UNDO::Transaction *transaction, size_t pos, std::unique_ptr<Preset> preset);
 
   void movePreset(UNDO::Transaction *transaction, const Preset *toMove, const Preset *before);
   void movePresetBetweenBanks(UNDO::Transaction *transaction, Preset *presetToMove, Bank *tgtBank,
@@ -119,7 +114,8 @@ class Bank : public AttributesOwner
  private:
   using Attributes = std::map<std::string, std::string>;
 
-  uint64_t loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder);
+  uint64_t loadMetadata(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder,
+                        std::function<void(const std::string &)> progressCB);
   void loadPresets(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder);
   void deleteOldPresetFiles(Glib::RefPtr<Gio::File> bankFolder);
 

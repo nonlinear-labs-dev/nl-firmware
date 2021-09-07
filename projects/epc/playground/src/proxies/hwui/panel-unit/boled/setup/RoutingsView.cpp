@@ -43,7 +43,7 @@ bool RoutingsView::redraw(FrameBuffer& fb)
   int x = pos.getLeft();
 
   LabelStyleable text(pos);
-  text.setLabelStyle({.size = FontSize::Size7, .decoration = FontDecoration::Regular});
+  text.setLabelStyle({.size = FontSize::Size8, .decoration = FontDecoration::Regular});
 
   int idx = 0;
   for(auto& a : m_aspectList)
@@ -52,6 +52,7 @@ bool RoutingsView::redraw(FrameBuffer& fb)
     idx %= size;
     //Draw Box in color with labels
     auto bgColor = (not state) ? FrameBufferColors::C77 : FrameBufferColors::C103;
+    text.setHighlight(state);
     fb.setColor(bgColor);
 
     Rect boxPos = { x, y, boxWidth, height };

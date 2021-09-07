@@ -70,7 +70,7 @@ void PresetParameter::setField(UNDO::Transaction *transaction, Fields field, con
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  nltools_assertAlways(m_id == other->m_id);
+  nltools_assertAlways(m_id.getNumber() == other->m_id.getNumber());
   transaction->addUndoSwap(eb, m_value, other->m_value);
   transaction->addUndoSwap(eb, m_fields, other->m_fields);
 }
@@ -78,7 +78,7 @@ void PresetParameter::copyFrom(UNDO::Transaction *transaction, const PresetParam
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const ::Parameter *other)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  nltools_assertAlways(m_id == other->getID());
+  nltools_assertAlways(m_id.getNumber() == other->getID().getNumber());
   transaction->addUndoSwap(eb, m_fields, {});
   other->copyTo(transaction, this);
 }

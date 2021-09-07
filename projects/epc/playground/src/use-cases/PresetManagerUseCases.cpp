@@ -28,6 +28,7 @@
 #include <tools/TimeTools.h>
 #include <libundo/undo/TrashTransaction.h>
 #include <nltools/logging/Log.h>
+#include <proxies/hwui/HWUI.h>
 
 PresetManagerUseCases::PresetManagerUseCases(PresetManager* pm)
     : m_presetManager { pm }
@@ -152,9 +153,10 @@ void PresetManagerUseCases::createBankAndStoreEditBuffer()
   auto transaction = transactionScope->getTransaction();
   auto bank = m_presetManager->addBank(transaction);
   auto preset
-      = bank->appendAndLoadPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
-  bank->selectPreset(transaction, preset->getUuid());
+      = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer()));
   m_presetManager->selectBank(transaction, bank->getUuid());
+  bank->selectPreset(transaction, preset->getUuid());
+  m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
 
   onStore(transaction, preset);
 }
@@ -207,10 +209,11 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   auto bank = m_presetManager->addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-  auto preset = bank->appendAndLoadPreset(transaction,
+  auto preset = bank->appendPreset(transaction,
                                           std::make_unique<Preset>(bank, *m_presetManager->getEditBuffer(), false));
-  m_presetManager->selectBank(transaction, bank->getUuid());
   bank->selectPreset(transaction, preset->getUuid());
+  m_presetManager->selectBank(transaction, bank->getUuid());
+  m_presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
 }
 
 void PresetManagerUseCases::selectBank(Bank* bank)
@@ -563,7 +566,7 @@ void PresetManagerUseCases::sortBankNumbers()
   auto scope = m_presetManager->getUndoScope().startTransaction("Sort Bank Numbers");
   auto transaction = scope->getTransaction();
 
-  ClusterEnforcement ce(m_presetManager);
+  ClusterEnforcement ce(*m_presetManager);
   auto newBanks = ce.sortBanks();
   m_presetManager->sortBanks(transaction, newBanks);
 }
@@ -679,7 +682,8 @@ void PresetManagerUseCases::insertEditBufferAbove(const Uuid& anchor, const Uuid
     auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
     auto transaction = transactionScope->getTransaction();
     auto newPreset = std::make_unique<Preset>(tgtBank, *m_presetManager->getEditBuffer());
-    auto tgtPreset = tgtBank->insertAndLoadPreset(transaction, anchorPos, std::move(newPreset));
+    auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
+    m_presetManager->getEditBuffer()->undoableLoad(transaction, tgtPreset, false);
     tgtPreset->setName(transaction, name);
 
     if(!ebUuid.empty())
@@ -701,7 +705,8 @@ void PresetManagerUseCases::insertEditBufferBelow(const Uuid& anchor, const Uuid
     auto transactionScope = undoScope.startTransaction("Save new Preset in Bank '%0'", tgtBank->getName(true));
     auto transaction = transactionScope->getTransaction();
     auto newPreset = std::make_unique<Preset>(tgtBank, *m_presetManager->getEditBuffer());
-    auto tgtPreset = tgtBank->insertAndLoadPreset(transaction, anchorPos, std::move(newPreset));
+    auto tgtPreset = tgtBank->insertPreset(transaction, anchorPos, std::move(newPreset));
+    m_presetManager->getEditBuffer()->undoableLoad(transaction, tgtPreset, false);
     tgtPreset->setName(transaction, name);
 
     if(!ebUuid.empty())
@@ -1017,8 +1022,8 @@ bool PresetManagerUseCases::isDirectLoadActive() const
   return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
 }
 
-void PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
-                                               std::function<void(std::string)> progress)
+Bank* PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_entry& file,
+                                               const std::function<void(const std::string&)>& progress)
 {
   FileInfos fileInfos(file);
   FileInStream stream(fileInfos.filePath, false);
@@ -1026,14 +1031,16 @@ void PresetManagerUseCases::importBankFromPath(const std::filesystem::directory_
   if(progress)
     progress(fileInfos.fileName);
 
-  importBankFromStream(stream, 0, 0, fileInfos.fileName);
+  return importBankFromStream(stream, 0, 0, fileInfos.fileName, progress);
 }
 
-void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName)
+Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName,
+                                                 const std::function<void(const std::string&)>& progress)
 {
   auto scope = m_presetManager->getUndoScope().startTransaction("Import new Bank");
   auto transaction = scope->getTransaction();
 
+  //TODO add injection for settings?
   std::shared_ptr<BooleanSettings> autoLoadOff = nullptr;
   if(Application::exists())
   {
@@ -1044,7 +1051,7 @@ void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y,
   auto newBank = m_presetManager->addBank(transaction, std::make_unique<Bank>(m_presetManager));
 
   XmlReader reader(stream, transaction);
-  reader.read<PresetBankSerializer>(newBank, Serializer::Progress {}, true);
+  reader.read<PresetBankSerializer>(newBank, progress ? progress : Serializer::Progress {}, true);
 
   newBank->setAttachedToBank(transaction, Uuid::none());
   newBank->setAttachedDirection(transaction, to_string(Bank::AttachmentDirection::none));
@@ -1059,6 +1066,19 @@ void PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y,
   newBank->setAttribute(transaction, "Date of Export File", "");
 
   m_presetManager->ensureBankSelection(transaction);
+
+  //TODO add injection
+  if(Application::exists())
+  {
+    Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+  }
+  return newBank;
+}
+
+Bank* PresetManagerUseCases::addBank()
+{
+  auto scope = m_presetManager->getUndoScope().startTransaction("Add Bank");
+  return m_presetManager->addBank(scope->getTransaction());
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)

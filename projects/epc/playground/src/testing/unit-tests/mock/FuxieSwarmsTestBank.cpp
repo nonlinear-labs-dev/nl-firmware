@@ -3,27 +3,15 @@
 FuxieSwarmsTestBank::FuxieSwarmsTestBank()
 {
   const auto bankFile = getSourceDir() + "/projects/epc/playground/test-resources/Fuxi_Swarms.xml";
-  auto scope = TestHelper::createTestScope();
-  auto transaction = scope->getTransaction();
-  auto eb = TestHelper::getEditBuffer();
-  auto pm = eb->getParent();
-
-  m_bank = [&] {
-    FileInStream stream(bankFile, false);
-    auto useCase = pm->findActionManager<BankActions>();
-    return useCase.importBank(transaction, stream, "0", "0", bankFile);
-  }();
+  FileInStream stream(bankFile, false);
+  PresetManagerUseCases useCase(TestHelper::getPresetManager());
+  m_bank = useCase.importBankFromStream(stream, 0, 0, bankFile, [](auto) {});
 }
 
 FuxieSwarmsTestBank::~FuxieSwarmsTestBank()
 {
-  const auto bankFile = getSourceDir() + "/projects/epc/playground/test-resources/Fuxi_Swarms.xml";
-  auto scope = TestHelper::createTestScope();
-  auto transaction = scope->getTransaction();
-  auto eb = TestHelper::getEditBuffer();
-  auto pm = eb->getParent();
-
-  pm->deleteBank(transaction, m_bank->getUuid());
+  PresetManagerUseCases useCase(TestHelper::getPresetManager());
+  useCase.deleteBank(m_bank);
 }
 
 Preset* FuxieSwarmsTestBank::getPreset(int index)

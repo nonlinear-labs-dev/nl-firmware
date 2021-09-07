@@ -27,7 +27,6 @@ public class SetupUpdater extends Updater {
 		m.put("EditSmoothingTime", SetupModel.get().systemSettings.editSmoothingTime);
 		m.put("EncoderAcceleration", SetupModel.get().systemSettings.encoderAcceleration);
 		m.put("IndicateBlockedUI", SetupModel.get().systemSettings.indicateBlockedUI);
-		m.put("KioskMode", SetupModel.get().systemSettings.kioskMode);
 		m.put("NoteShift", SetupModel.get().systemSettings.noteShift);
 		m.put("ParameterEditModeRibbonBehaviour", SetupModel.get().systemSettings.editmodeRibbonBehavior);
 		m.put("Passphrase", SetupModel.get().systemSettings.passPhrase);

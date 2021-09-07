@@ -10,16 +10,16 @@
 SCENARIO("Single sound with modulation aspects on mod-param")
 {
   MockPresetStorage storage;
+  auto single = storage.getSinglePreset();
 
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases useCase(*eb);
+
   auto modParamI = dynamic_cast<ModulateableParameter*>(eb->findParameterByID({ 0, VoiceGroup::I }));
   auto modParamII = dynamic_cast<ModulateableParameter*>(eb->findParameterByID({ 0, VoiceGroup::II }));
 
-  {
-    auto scope = TestHelper::createTestScope();
-    eb->undoableLoad(scope->getTransaction(), storage.getSinglePreset(), true);
-    eb->undoableInitSound(scope->getTransaction(), Defaults::FactoryDefault);
-  }
+  useCase.load(single);
+  useCase.initSound(Defaults::FactoryDefault);
 
   REQUIRE(modParamI);
   REQUIRE(modParamII);
@@ -37,10 +37,7 @@ SCENARIO("Single sound with modulation aspects on mod-param")
 
     WHEN("sound is converted to layer")
     {
-      {
-        auto scope = TestHelper::createTestScope();
-        eb->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
-      }
+      useCase.convertToLayer(VoiceGroup::I);
 
       REQUIRE(eb->getType() == SoundType::Layer);
 
@@ -55,10 +52,7 @@ SCENARIO("Single sound with modulation aspects on mod-param")
 
     WHEN("sound is converted to split")
     {
-      {
-        auto scope = TestHelper::createTestScope();
-        eb->undoableConvertToDual(scope->getTransaction(), SoundType::Split);
-      }
+      useCase.convertToSplit(VoiceGroup::I);
 
       REQUIRE(eb->getType() == SoundType::Split);
 

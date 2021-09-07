@@ -43,10 +43,8 @@ class EditBuffer : public ParameterGroupSet
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p, bool sendReselectionSignal);
   void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id, bool sendReselectionSignal);
 
-  void undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine);
   void undoableLoadToPart(UNDO::Transaction *trans, const Preset *p, VoiceGroup from, VoiceGroup to);
 
-  void undoableLoadSelectedPreset(UNDO::Transaction *transaction, VoiceGroup loadInto);
   void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
 
   void fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group);
@@ -54,7 +52,6 @@ class EditBuffer : public ParameterGroupSet
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
   void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator);
   void undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup currentVoiceGroup, Initiator initiator);
-  void undoableInitSound(UNDO::Transaction *transaction, Defaults mode);
   void undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *values);
   void undoableLockAllGroups(UNDO::Transaction *transaction);
   void undoableUnlockAllGroups(UNDO::Transaction *transaction);
@@ -102,15 +99,9 @@ class EditBuffer : public ParameterGroupSet
 
   SoundType getType() const;
 
-  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type);
-  void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-
-  void undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup vg);
   void undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup to);
 
   static bool isDualParameterForSoundType(const Parameter *parameter, SoundType type);
-
-  void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group, Defaults mode);
 
   void TEST_doDeferredJobs();
 
@@ -134,14 +125,9 @@ class EditBuffer : public ParameterGroupSet
 
   PartOrigin getPartOrigin(VoiceGroup vg) const;
 
-  bool isParameterFocusLocked() const;
-
  private:
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
-
-  void undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
-                                      VoiceGroup copyTo);
 
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;
@@ -149,6 +135,20 @@ class EditBuffer : public ParameterGroupSet
   Parameter *searchForAnyParameterWithLock(VoiceGroup vg) const;
   UNDO::Scope &getUndoScope() override;
 
+  //Load
+  void undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine);
+  void undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                      VoiceGroup copyTo);
+
+  //init
+  void undoableInitSound(UNDO::Transaction *transaction, Defaults mode);
+  void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group, Defaults mode);
+
+  //convert
+  void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup currentVG);
+  void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+
+  //Setters
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
   void undoableSetTypeFromConvert(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
@@ -183,7 +183,7 @@ class EditBuffer : public ParameterGroupSet
   void undoableConvertSingleToLayer(UNDO::Transaction *transaction);
   void undoableConvertSingleToSplit(UNDO::Transaction *transaction);
   void undoableConvertLayerToSplit(UNDO::Transaction *transaction);
-  void undoableConvertSplitToLayer(UNDO::Transaction *transaction);
+  void undoableConvertSplitToLayer(UNDO::Transaction *transaction, VoiceGroup currentVG);
   void calculateSplitPointFromFadeParams(UNDO::Transaction *transaction);
   void copySinglePresetMasterToPartMaster(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup targetGroup);
   std::vector<Parameter *> getCrossFBParameters(const VoiceGroup &to) const;
@@ -200,7 +200,6 @@ class EditBuffer : public ParameterGroupSet
   bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 
   bool isPartLabelChanged(VoiceGroup group) const;
-  void cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset *p);
   void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
@@ -241,4 +240,9 @@ class EditBuffer : public ParameterGroupSet
   mutable Preset *m_originCache { nullptr };
 
   std::unique_ptr<LoadedPresetLog> m_loadedPresetLog;
+
+  friend class EditBufferUseCases;
+  friend class BankUseCases;
+  friend class PresetManagerUseCases;
+  friend class SoundUseCases;
 };

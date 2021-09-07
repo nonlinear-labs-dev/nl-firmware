@@ -293,11 +293,6 @@ bool EditBuffer::isDual() const
   return getType() != SoundType::Single;
 }
 
-bool EditBuffer::isParameterFocusLocked() const
-{
-  return m_lockParameterFocusChanges;
-}
-
 void EditBuffer::lockParameterFocusChanges()
 {
   m_lockParameterFocusChanges = true;
@@ -417,31 +412,6 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
       });
 }
 
-bool isLoadToPartActive()
-{
-  auto hwui = Application::get().getHWUI();
-  return hwui->isInLoadToPart();
-}
-
-void EditBuffer::undoableLoadSelectedPreset(UNDO::Transaction *transaction, VoiceGroup loadInto)
-{
-  if(auto bank = getParent()->getSelectedBank())
-  {
-    if(auto preset = bank->getSelectedPreset())
-    {
-      if(isLoadToPartActive() && isDual())
-      {
-        if(!preset->isDual())
-          undoableLoadPresetIntoDualSound(transaction, preset, loadInto);
-      }
-      else
-      {
-        undoableLoad(transaction, preset, true);
-      }
-    }
-  }
-}
-
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
 {
   if(auto p = dynamic_cast<UNDO::ContinuousTransaction *>(transaction))
@@ -462,11 +432,6 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *pres
 
   copyFrom(transaction, preset);
   undoableSetLoadedPresetInfo(transaction, preset);
-
-  if(preset->getType() == SoundType::Split)
-  {
-    cleanupSplitPointIfOldPreset(transaction, preset);
-  }
 
   if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
@@ -798,7 +763,7 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   }
 }
 
-void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type)
+void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup currentVG)
 {
   const auto oldType = m_type;
 
@@ -816,7 +781,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   else if(oldType == SoundType::Layer && type == SoundType::Split)
     undoableConvertLayerToSplit(transaction);
   else if(oldType == SoundType::Split && type == SoundType::Layer)
-    undoableConvertSplitToLayer(transaction);
+    undoableConvertSplitToLayer(transaction, currentVG);
 
   initCrossFB(transaction);
   undoableUnmuteLayers(transaction);
@@ -880,11 +845,6 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
       onChange();
     });
   }
-}
-
-void EditBuffer::undoableLoadPresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup vg)
-{
-  undoableLoadSinglePresetIntoDualSound(transaction, preset, vg);
 }
 
 void EditBuffer::undoableLoadSinglePresetIntoDualSound(UNDO::Transaction *transaction, const Preset *preset,
@@ -1285,9 +1245,8 @@ void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
   initFadeFrom(transaction, VoiceGroup::II);
 }
 
-void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction)
+void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction, VoiceGroup currentVG)
 {
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
   copyVoicesGroups(transaction, currentVG, invert(currentVG));
   defaultFadeParameters(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
@@ -1482,8 +1441,8 @@ void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
 {
   if(auto selectedPreset = getParent()->getSelectedPreset())
   {
-    EditBufferUseCases useCase(this);
-    useCase.undoableLoadToPart(selectedPreset, from, to);
+    EditBufferUseCases useCase(*this);
+    useCase.loadToPart(selectedPreset, from, to);
   }
 }
 
@@ -1593,15 +1552,6 @@ bool EditBuffer::isPartLabelChanged(VoiceGroup group) const
     return preset->getVoiceGroupName(group) != getVoiceGroupName(group);
   }
   return false;
-}
-
-void EditBuffer::cleanupSplitPointIfOldPreset(UNDO::Transaction *transaction, const Preset *p)
-{
-  //if global split point is present we have loaded an old preset -> split II should be incremented by one
-  if(p->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }, false))
-  {
-    findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II })->stepCPFromHwui(transaction, 1, {});
-  }
 }
 
 void EditBuffer::setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction)

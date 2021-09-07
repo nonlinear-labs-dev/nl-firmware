@@ -8,6 +8,11 @@
 
 bool Options::s_acceptanceTests = false;
 
+Options::Options()
+{
+  setDefaults();
+}
+
 Options::Options(int &argc, char **&argv)
 {
   setDefaults();
@@ -99,7 +104,6 @@ void Options::setDefaults()
     m_settingsFile = ".settings.xml";
   }
 
-  m_kioskModeFile = "./kiosk-mode.stamp";
   m_layoutFolder = getResourcesDir() + std::string("/templates/");
 }
 
@@ -154,11 +158,6 @@ const Glib::ustring &Options::getMidiBridge() const
 const Glib::ustring &Options::getSettingsFile() const
 {
   return m_settingsFile;
-}
-
-const Glib::ustring &Options::getKioskModeFile() const
-{
-  return m_kioskModeFile;
 }
 
 const Glib::ustring &Options::getLayoutFolder() const

@@ -1,20 +1,17 @@
 #include <presets/ClusterEnforcement.h>
 #include <tools/PerformanceTimer.h>
 
-ClusterEnforcement::ClusterEnforcement(PresetManager* pm)
+ClusterEnforcement::ClusterEnforcement(PresetManager& pm) : m_presetManager{pm}
 {
-  m_presetManager = Application::get().getPresetManager();
 }
 
-ClusterEnforcement::~ClusterEnforcement()
-{
-}
+ClusterEnforcement::~ClusterEnforcement() = default;
 
 std::vector<Bank*> ClusterEnforcement::getClusterMasters()
 {
   std::vector<Bank*> clusterMaster;
 
-  Application::get().getPresetManager()->forEachBank([&](auto bank) {
+  m_presetManager.forEachBank([&](auto bank) {
     if(bank->getAttachedToBankUuid().empty())
       clusterMaster.push_back(bank);
   });
@@ -27,7 +24,7 @@ void ClusterEnforcement::buildClusterStructure()
   m_clusters.clear();
   m_uuidToTreeNode.clear();
 
-  auto waitingList = m_presetManager->getBanks();
+  auto waitingList = m_presetManager.getBanks();
 
   std::list<Bank*> anotherWaitingList;
 
@@ -77,47 +74,6 @@ void ClusterEnforcement::enforceClusterRuleOfOne(UNDO::Transaction* transaction)
   } while(applyRule(transaction));
 }
 
-void ClusterEnforcement::sanitizeBankThatWillBeDeleted(UNDO::Transaction* transaction, Bank* bank)
-{
-  buildClusterStructure();
-
-  if(auto deletedTreeNode = findTreeNode(bank->getUuid()))
-  {
-    auto left = deletedTreeNode->left;
-    auto right = deletedTreeNode->right;
-    auto top = deletedTreeNode->top;
-    auto bottom = deletedTreeNode->bottom;
-
-    constexpr auto topDir = Bank::AttachmentDirection::top;
-    constexpr auto leftDir = Bank::AttachmentDirection::left;
-    constexpr auto noneDir = Bank::AttachmentDirection::none;
-
-    if(top)
-    {
-      ruleDelete(transaction, bottom, right, top->bank->getUuid(), topDir);
-    }
-    else if(left)
-    {
-      ruleDelete(transaction, bottom, right, left->bank->getUuid(), leftDir);
-    }
-    else
-    {
-      ruleDelete(transaction, bottom, right, Uuid::none(), noneDir);
-
-      if(bottom)
-      {
-        bottom->bank->setX(transaction, bank->getX());
-        bottom->bank->setY(transaction, bank->getY());
-      }
-      else if(right)
-      {
-        right->bank->setX(transaction, bank->getX());
-        right->bank->setY(transaction, bank->getY());
-      }
-    }
-  }
-}
-
 void ClusterEnforcement::ruleDelete(UNDO::Transaction* transaction, ClusterEnforcement::tTreeNodePtr bottom,
                                     ClusterEnforcement::tTreeNodePtr right, Uuid newMasterUuid,
                                     Bank::AttachmentDirection dir)
@@ -142,14 +98,7 @@ void ClusterEnforcement::ruleDelete(UNDO::Transaction* transaction, ClusterEnfor
 
 bool ClusterEnforcement::applyRule(UNDO::Transaction* transaction)
 {
-  for(const auto& clusterMaster : m_clusters)
-  {
-    if(applyRule(transaction, clusterMaster))
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::any_of(m_clusters.begin(), m_clusters.end(), [&](auto& c) { return applyRule(transaction, c); });
 }
 
 bool ClusterEnforcement::applyRule(UNDO::Transaction* transaction, tTreeNodePtr node)
@@ -286,4 +235,44 @@ std::vector<Bank*> ClusterEnforcement::sortBanks()
   });
 
   return buildVectorFromNodeVector(treeNodes);
+}
+
+void ClusterEnforcement::TreeNode::assignMaster(const ClusterEnforcement::tTreeNodePtr& master)
+{
+  this->master = master;
+
+  if(right)
+    right->assignMaster(master);
+  if(bottom)
+    bottom->assignMaster(master);
+}
+
+size_t ClusterEnforcement::TreeNode::getClusterDepth()
+{
+  if(left)
+    return 1 + left->getClusterDepth();
+  if(top)
+    return 1 + top->getClusterDepth();
+
+  return 0;
+}
+
+size_t ClusterEnforcement::TreeNode::getColumn()
+{
+  if(left)
+    return 1 + left->getColumn();
+  if(top)
+    return 0 + top->getColumn();
+
+  return 0;
+}
+
+size_t ClusterEnforcement::TreeNode::getRow()
+{
+  if(left)
+    return 0 + left->getRow();
+  if(top)
+    return 1 + top->getRow();
+
+  return 0;
 }

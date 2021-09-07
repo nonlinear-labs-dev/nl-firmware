@@ -6,10 +6,7 @@
 
 TEST_CASE("Setting Ribbon to Return to center leads to HW-Amt to be 50% if boolean was on")
 {
-  {
-    auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-  }
+  TestHelper::initSingleEditBuffer();
 
   auto eb = TestHelper::getEditBuffer();
   auto ribbonParam = eb->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_1, VoiceGroup::Global });
@@ -65,10 +62,7 @@ TEST_CASE("Setting Ribbon to Return to center leads to HW-Amt to be 50% if boole
 
 TEST_CASE("Setting Ribbon to Return to center leads to unchanged HW-Amt if boolean was off")
 {
-  {
-    auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-  }
+  TestHelper::initSingleEditBuffer();
 
   auto eb = TestHelper::getEditBuffer();
   auto ribbonParam = eb->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_1, VoiceGroup::Global });

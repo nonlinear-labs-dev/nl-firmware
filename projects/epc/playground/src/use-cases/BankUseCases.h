@@ -32,6 +32,12 @@ class BankUseCases
 
   void exportBankToFile(const std::string& basicString);
 
+  void insertBank(Bank* toInsert, size_t insertPosition);
+
+  Preset* insertEditBufferAtPosition(int anchor);
+
+  Preset* appendEditBuffer();
+
  private:
   bool isDirectLoadActive() const;
   Bank* m_bank;

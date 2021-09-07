@@ -8,7 +8,7 @@ class PresetParameter;
 class PresetParameterSerializer : public Serializer
 {
  public:
-  PresetParameterSerializer(PresetParameter* param, SoundType type);
+  PresetParameterSerializer(std::vector<PresetParameter*> param, SoundType type);
 
   static Glib::ustring getTagName();
 
@@ -16,6 +16,6 @@ class PresetParameterSerializer : public Serializer
   void writeTagContent(Writer& writer) const override;
   void readTagContent(Reader& reader) const override;
 
-  PresetParameter* m_param = nullptr;
+  std::vector<PresetParameter*> m_param;
   SoundType m_type;
 };

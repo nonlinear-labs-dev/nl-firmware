@@ -198,18 +198,21 @@ void ParameterGroupSet::writeDocument(Writer &writer, UpdateDocumentContributor:
 {
   super::writeDocument(writer, knownRevision);
 
-  auto writePerVoiceGroup = [&](auto id, auto tag) {
+  auto writePerVoiceGroup = [&](auto id, auto tag)
+  {
     auto &groups = getParameterGroups(id);
     auto anyGroupChanged = false;
 
     for(auto &p : groups)
       anyGroupChanged |= p->didChangeSince(knownRevision);
 
-    writer.writeTag(tag, Attribute("changed", anyGroupChanged), [&] {
-      if(anyGroupChanged)
-        for(auto &p : groups)
-          p->writeDocument(writer, knownRevision);
-    });
+    writer.writeTag(tag, Attribute("changed", anyGroupChanged),
+                    [&]
+                    {
+                      if(anyGroupChanged)
+                        for(auto &p : groups)
+                          p->writeDocument(writer, knownRevision);
+                    });
   };
 
   writePerVoiceGroup(VoiceGroup::Global, "global-parameters");

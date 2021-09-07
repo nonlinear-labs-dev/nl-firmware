@@ -24,9 +24,9 @@ TEST_CASE("Convert Split (II) to Single")
   auto envAIIAttack = EBL::getParameter({ 0, VoiceGroup::II });
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Split>(transaction);
 
     voicesII->loadDefault(transaction, Defaults::FactoryDefault);
     voicesII->stepCPFromHwui(transaction, 12, {});
@@ -81,11 +81,9 @@ TEST_CASE("Convert Split (II) to Single")
 
     const auto localNormalIIHash = EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::II>());
 
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
-
-    eb->undoableConvertToSingle(transaction, VoiceGroup::II);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToSingle(VoiceGroup::II);
 
     THEN("Unison Voices Correct")
     {
@@ -184,9 +182,9 @@ TEST_CASE("Convert Layer (II) to Single")
   auto envAIIAttack = EBL::getParameter({ 0, VoiceGroup::II });
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
 
     voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
@@ -234,11 +232,9 @@ TEST_CASE("Convert Layer (II) to Single")
     const auto oldPartVolumeModSrc = EBL::getPartVolume<VoiceGroup::II>()->getModulationSource();
     const auto oldPartVolumeModAmt = EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount();
 
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
-
-    eb->undoableConvertToSingle(transaction, VoiceGroup::II);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToSingle(VoiceGroup::II);
 
     THEN("Unison Voices Correct")
     {
@@ -317,9 +313,9 @@ TEST_CASE("Convert Layer (I) to Single")
   auto envAIIAttack = EBL::getParameter({ 0, VoiceGroup::II });
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
 
     voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
@@ -367,11 +363,9 @@ TEST_CASE("Convert Layer (I) to Single")
     const auto oldPartVolumeModSrc = EBL::getPartVolume<VoiceGroup::I>()->getModulationSource();
     const auto oldPartVolumeModAmt = EBL::getPartVolume<VoiceGroup::I>()->getModulationAmount();
 
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
-
-    eb->undoableConvertToSingle(transaction, VoiceGroup::I);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToSingle(VoiceGroup::I);
 
     THEN("Unison Voices Correct")
     {

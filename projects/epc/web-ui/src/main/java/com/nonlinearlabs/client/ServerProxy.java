@@ -1141,7 +1141,7 @@ public class ServerProxy {
 
 	public void syncVoiceGroup() {
 		VoiceGroup vg = EditBufferModel.get().voiceGroup.getValue();
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-part-from-webui");
+		StaticURI.Path path = new StaticURI.Path("hwui", "select-part-from-webui");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", vg.toString()));
 		queueJob(uri, true);
 	}
@@ -1175,7 +1175,7 @@ public class ServerProxy {
 	}
 
 	public void exportSoled() {
-		downloadFile("/presets/param-editor/download-soled-as-png", new DownloadHandler() {
+		downloadFile("/hwui/download-soled-as-png", new DownloadHandler() {
 
 			@Override
 			public void onFileDownloaded(String text) {
@@ -1190,7 +1190,7 @@ public class ServerProxy {
 	}
 
 	public void exportBoled() {
-		downloadFile("/presets/param-editor/download-boled-as-png", new DownloadHandler() {
+		downloadFile("/hwui/download-boled-as-png", new DownloadHandler() {
 
 			@Override
 			public void onFileDownloaded(String text) {

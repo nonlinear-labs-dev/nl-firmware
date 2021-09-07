@@ -1,9 +1,9 @@
 #include <parameters/ModulateableParameter.h>
-#include "RecallParameter.h"
-#include "RecallParameterGroups.h"
-#include "parameters/Parameter.h"
-#include "parameters/MacroControlParameter.h"
-#include "xml/Writer.h"
+#include <presets/recall/RecallParameter.h>
+#include <presets/recall/RecallParameterGroups.h>
+#include <parameters/Parameter.h>
+#include <parameters/MacroControlParameter.h>
+#include <xml/Writer.h>
 #include <xml/Attribute.h>
 #include <glib.h>
 
