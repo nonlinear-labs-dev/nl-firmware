@@ -9,6 +9,7 @@
 #include "groups/HardwareSourcesGroup.h"
 #include <proxies/hwui/HWUI.h>
 #include <nltools/messaging/Message.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 UpperRibbon::UpperRibbon()
 {
@@ -90,10 +91,11 @@ int UpperRibbon::posToLedID(int pos) const
 
 void UpperRibbon::onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue& msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, msg.ribbonId, "pos", msg.position);
+  static auto playcontrollerProxy = Application::get().getPlaycontrollerProxy();
 
   if(msg.ribbonId == nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1)
   {
+    playcontrollerProxy->notifyRibbonTouch(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber());
     setLEDsForValueUniPolar(msg.position);
   }
 }

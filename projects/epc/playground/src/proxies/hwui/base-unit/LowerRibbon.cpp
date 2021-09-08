@@ -5,10 +5,10 @@
 #include "presets/EditBuffer.h"
 #include "presets/PresetManager.h"
 #include <groups/HardwareSourcesGroup.h>
-#include "device-settings/DebugLevel.h"
 #include <glib.h>
-#include <math.h>
+#include <cmath>
 #include <nltools/messaging/Message.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 static Parameter *getParameter()
 {
@@ -67,10 +67,11 @@ void LowerRibbon::indicateBlockingMainThread(bool onOff)
 
 void LowerRibbon::onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue &msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, msg.ribbonId, "pos", msg.position);
+  static auto playcontroller = Application::get().getPlaycontrollerProxy();
 
   if(msg.ribbonId == nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2)
   {
+    playcontroller->notifyRibbonTouch(HardwareSourcesGroup::getLowerRibbonParameterID().getNumber());
     setLEDsForValueUniPolar(msg.position);
   }
 }
