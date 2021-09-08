@@ -18,3 +18,4 @@ add_custom_command(
               "--network none")
 
 add_custom_target(recorder ALL DEPENDS bundle.tar.gz)
+add_dependencies(recorder nl-build-container-setup)

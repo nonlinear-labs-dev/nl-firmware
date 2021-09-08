@@ -10,6 +10,9 @@ ADD_CUSTOM_COMMAND(
 IF(NOT ${TARGET_PLATFORM} STREQUAL "epc2")
   IF(NOT ${TARGET_PLATFORM} STREQUAL "epc")
     ADD_CUSTOM_TARGET(epc2-create-update DEPENDS epc2-update.tar)
-    add_dependencies(epc2-create-update web)
+
+    IF(BUILD_WEB)
+      add_dependencies(epc2-create-update web)
+    ENDIF()    
   ENDIF()
 ENDIF()

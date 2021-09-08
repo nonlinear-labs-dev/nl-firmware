@@ -152,7 +152,10 @@ IF(NOT ${TARGET_PLATFORM} STREQUAL "epc2")
     add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
     add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
     add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
-    add_dependencies(epc-create-update web)
+
+    IF(BUILD_WEB)
+        add_dependencies(epc-create-update web)
+    ENDIF()
   ENDIF()
 ENDIF()
 
