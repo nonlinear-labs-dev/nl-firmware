@@ -27,7 +27,7 @@ SoundType MockDSPHost::getType()
   return m_type;
 }
 
-VoiceGroup MockDSPHost::getSplitPartForKeyDown(int key)
+VoiceGroup MockDSPHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
 {
   return VoiceGroup::I;
 }
@@ -77,7 +77,7 @@ bool PassOnKeyDownHost::didReceiveKeyDown() const
   return m_receivedKeyDown;
 }
 
-VoiceGroup PassOnKeyDownHost::getSplitPartForKeyDown(int key)
+VoiceGroup PassOnKeyDownHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
 {
   return VoiceGroup::Global;
 }
@@ -94,7 +94,7 @@ PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, Voi
 {
 }
 
-VoiceGroup PassOnKeyUpHost::getSplitPartForKeyDown(int key)
+VoiceGroup PassOnKeyUpHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
 {
   return VoiceGroup::Global;
 }
@@ -171,8 +171,13 @@ C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
   return C15::Properties::HW_Return_Behavior::Stay;
 }
 
-VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
+VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
 {
+  if(m_hardcodedSplitKey.has_value())
+  {
+    return key > m_hardcodedSplitKey.value() ? VoiceGroup::II : VoiceGroup::I;
+  }
+
   if(m_getSplitPartForKey)
     return m_getSplitPartForKey(key);
 
@@ -181,6 +186,11 @@ VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
 
 VoiceGroup ConfigureableDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
 {
+  if(m_hardcodedSplitKey.has_value())
+  {
+    return key > m_hardcodedSplitKey.value() ? VoiceGroup::II : VoiceGroup::I;
+  }
+
   // not sure here...
   if(m_getSplitPartForKey)
     return m_getSplitPartForKey(key);
@@ -234,4 +244,9 @@ void ConfigureableDSPHost::setOnKeyDownCB(std::function<void(int, float, InputEv
 void ConfigureableDSPHost::setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb)
 {
   m_onKeyUpSplit = cb;
+}
+
+void ConfigureableDSPHost::setSplitPointKey(int i)
+{
+  m_hardcodedSplitKey = i;
 }

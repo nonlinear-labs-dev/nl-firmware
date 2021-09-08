@@ -2361,9 +2361,11 @@ SoundType dsp_host_dual::getType()
   return SoundType::Invalid;  // should never be reached
 }
 
-VoiceGroup dsp_host_dual::getSplitPartForKeyDown(int key)
+VoiceGroup dsp_host_dual::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
 {
-  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyDown(key));
+  auto state = m_alloc.getSplitPartForKeyDown(key);
+  m_alloc.hotFIX(key, getInputSourceId(_inputSource), state);
+  return getVoiceGroupFromAllocatorId(state);
 }
 
 VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)

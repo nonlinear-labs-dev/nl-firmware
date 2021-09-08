@@ -495,7 +495,7 @@ VoiceGroup InputEventStage::calculateSplitPartForKeyDown(DSPInterface::InputEven
   {
     case DSPInterface::InputEventSource::Internal:
     case DSPInterface::InputEventSource::External_Use_Split:
-      return m_dspHost->getSplitPartForKeyDown(keyNumber);
+      return m_dspHost->getSplitPartForKeyDown(keyNumber, inputEvent);
     case DSPInterface::InputEventSource::External_Primary:
       return VoiceGroup::I;
     case DSPInterface::InputEventSource::External_Secondary:
@@ -514,7 +514,7 @@ VoiceGroup InputEventStage::calculateSplitPartForKeyUp(DSPInterface::InputEventS
   {
     case DSPInterface::InputEventSource::Internal:
     case DSPInterface::InputEventSource::External_Use_Split:
-      return m_dspHost->getSplitPartForKeyUp(keyNumber, inputEvent);
+      return m_dspHost->getSplitPartForKeyUp(keyNumber, inputEvent); //DEBUG: NumGroups gets returned here
     case DSPInterface::InputEventSource::External_Primary:
       return VoiceGroup::I;
     case DSPInterface::InputEventSource::External_Secondary:

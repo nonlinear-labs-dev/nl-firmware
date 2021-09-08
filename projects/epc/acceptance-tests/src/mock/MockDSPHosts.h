@@ -10,7 +10,7 @@ class MockDSPHost : public DSPInterface
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
   SoundType getType() override;
-  VoiceGroup getSplitPartForKeyDown(int key) override;
+  VoiceGroup getSplitPartForKeyDown(int key, InputEventSource _inputSource) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
@@ -28,7 +28,7 @@ class ConfigureableDSPHost : public MockDSPHost
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
-  VoiceGroup getSplitPartForKeyDown(int key) override;
+  VoiceGroup getSplitPartForKeyDown(int key, InputEventSource _inputSource) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
@@ -41,6 +41,8 @@ class ConfigureableDSPHost : public MockDSPHost
   void setOnKeyDownSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb);
   void setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb);
 
+  void setSplitPointKey(int i);
+
  private:
   std::function<void(uint32_t, float, bool)> m_onHWChanged;
   std::function<void(int, float, InputEventSource)> m_onKeyDown;
@@ -49,6 +51,8 @@ class ConfigureableDSPHost : public MockDSPHost
   std::function<VoiceGroup(int)> m_getSplitPartForKey;
   std::function<void(int, float, VoiceGroup, InputEventSource)> m_onKeyDownSplit;
   std::function<void(int, float, VoiceGroup, InputEventSource)> m_onKeyUpSplit;
+
+  std::optional<int> m_hardcodedSplitKey;
 };
 
 class PassOnKeyDownHost : public MockDSPHost
@@ -58,7 +62,7 @@ class PassOnKeyDownHost : public MockDSPHost
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   [[nodiscard]] bool didReceiveKeyDown() const;
-  VoiceGroup getSplitPartForKeyDown(int key) override;
+  VoiceGroup getSplitPartForKeyDown(int key, InputEventSource _inputSource) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
 
  protected:
@@ -75,7 +79,7 @@ class PassOnKeyUpHost : public MockDSPHost
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
   [[nodiscard]] bool didReceiveKeyUp() const;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
-  VoiceGroup getSplitPartForKeyDown(int key) override;
+  VoiceGroup getSplitPartForKeyDown(int key, InputEventSource _inputSource) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
 
  private:

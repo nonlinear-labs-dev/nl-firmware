@@ -92,7 +92,7 @@ class DSPInterface
   virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
   virtual SoundType getType() = 0;
-  virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
+  virtual VoiceGroup getSplitPartForKeyDown(int key, InputEventSource _inputSource) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
   virtual void onMidiSettingsReceived() = 0;
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
@@ -110,7 +110,7 @@ class DSPInterface
       case InputEventSource::External_Secondary:
         return 2;
     }
-    // should never be reached
+    nltools_assertOnDevPC(false);
     return 0;
   }
 };
@@ -174,7 +174,7 @@ class dsp_host_dual : public DSPInterface
   using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
   HWSourceValues getHWSourceValues() const;
   SoundType getType() override;
-  VoiceGroup getSplitPartForKeyDown(int key) override;
+  VoiceGroup getSplitPartForKeyDown(int key, InputEventSource _inputSource) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;

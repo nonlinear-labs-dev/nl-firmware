@@ -636,6 +636,12 @@ class VoiceAllocation
     return AllocatorId::None;
   }
 
+  inline void hotFIX(const uint32_t _keyPos, const uint32_t _inputSourceId, AllocatorId state)
+  {
+    KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
+    keyState->m_origin = state;
+  }
+
   inline AllocatorId getSplitPartForKeyUp(const uint32_t _keyPos, const uint32_t _inputSourceId)
   {
     KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];

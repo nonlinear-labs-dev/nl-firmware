@@ -1,5 +1,6 @@
 #include "DspHostDualTester.h"
 #include <synth/c15-audio-engine/dsp_host_dual.h>
+#include <ParameterId.h>
 
 DspHostDualTester::DspHostDualTester(dsp_host_dual* _host)
     : m_host { _host }
@@ -233,4 +234,18 @@ float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const uns
 {
   nltools_assertAlways(_unison > 0 && _unison <= _polyphony);
   return static_cast<float>(_unison - 1) / static_cast<float>(_polyphony - 1);
+}
+
+void DspHostDualTester::setSplit(VoiceGroup vg, float pos)
+{
+  nltools::msg::ModulateableParameterChangedMessage msg{};
+  msg.controlPosition = static_cast<double>(pos);
+  msg.parameterId = C15::PID::Split_Split_Point;
+  msg.voiceGroup = vg;
+
+  auto element = m_host->getParameter(msg.parameterId);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
+  {
+    m_host->globalParChg(element.m_param.m_index, msg);
+  }
 }

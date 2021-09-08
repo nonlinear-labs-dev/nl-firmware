@@ -40,7 +40,7 @@ namespace SecTests
       return SoundType::Split;
     }
 
-    VoiceGroup getSplitPartForKeyDown(int key) override
+    VoiceGroup getSplitPartForKeyDown(int key, InputEventSource _inputSource) override
     {
       if(key == 64)
         return VoiceGroup::Global;
@@ -147,7 +147,8 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   {
    public:
     using PassOnKeyDownHost::PassOnKeyDownHost;
-    VoiceGroup getSplitPartForKeyDown(int key) override
+
+    VoiceGroup getSplitPartForKeyDown(int key, InputEventSource src) override
     {
       if(key == 64)
         return VoiceGroup::Global;
