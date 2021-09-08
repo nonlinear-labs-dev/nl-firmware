@@ -10,7 +10,7 @@ error() {
 
 copy_running_os() {
     echo "Copying running os..."
-    if tar -C /internal/os -exclude=.wh..wh..opq --exclude=./build/CMakeFiles -czf /update-scratch/update/NonLinuxOverlay.tar.gz .; then
+    if tar -C /internal/os --exclude=.wh..wh..opq --exclude=./build/CMakeFiles -czf /update-scratch/update/NonLinuxOverlay.tar.gz .; then
         echo "Copying running os done."
         return 0
     fi
