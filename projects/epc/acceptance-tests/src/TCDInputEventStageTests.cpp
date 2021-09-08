@@ -74,9 +74,9 @@ TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnKeyDownHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
-  InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
-                               [](auto) {} };
+  InputEventStage eventStage { &dsp,        &settings,
+                               [] {},       [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
+                               [](auto) {}, [](auto, auto) {} };
 
   WHEN("Keypos and KeyDown is received")
   {
@@ -115,9 +115,9 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnKeyUpHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
-  InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
-                               [](auto) {} };
+  InputEventStage eventStage { &dsp,        &settings,
+                               [] {},       [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
+                               [](auto) {}, [](auto, auto) {} };
 
   WHEN("Keypos and KeyUp is received")
   {
@@ -149,7 +149,6 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
       CHECK(sendMessages[3].rawBytes[2] == 127);
     }
   }
-
 
   WHEN("Keypos and KeyUp is received and global Local is Disabled")
   {
@@ -200,9 +199,9 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
   PassOnHWReceived dsp { Pedal1, 1.0 };
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings();
-  InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
-                               [](auto) {} };
+  InputEventStage eventStage { &dsp,        &settings,
+                               [] {},       [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
+                               [](auto) {}, [](auto, auto) {} };
   const auto sixteenThousand = 0b11111010000000;
 
   WHEN("HW Change Received")

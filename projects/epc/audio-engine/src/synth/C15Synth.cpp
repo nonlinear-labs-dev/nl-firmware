@@ -12,16 +12,20 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
-    , m_queuedRibbonPositions(128)
+    , m_queuedRibbonPositions({ std::numeric_limits<float>::max(), std::numeric_limits<float>::max() })
+    , m_lastRibbonPositions({ 0, 0 })
     , m_queuedChannelModeMessages(128)  // @hhoegelow how would I estimate the needed size for this member??
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
     , m_syncPlaygroundTask(std::async(std::launch::async, [this] { syncPlaygroundLoop(); }))
     , m_syncChannelModeMessagesTask(std::async(std::launch::async, [this] { syncChannelModeMessageLoop(); }))
-    , m_syncRibbonPositionsTask(std::async(std::launch::async, [this]{ syncLocalDisabledRibbonPositionLoop(); }))
-    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncPlaygroundWaiter.notify_all(); },
+    , m_syncRibbonPositionsTask(std::async(std::launch::async, [this] { syncLocalDisabledRibbonPositionLoop(); }))
+    , m_inputEventStage { m_dsp.get(),
+                          &m_midiOptions,
+                          [this] { m_syncPlaygroundWaiter.notify_all(); },
                           [this](auto msg) { queueExternalMidiOut(msg); },
                           [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); },
-                          [this](InputEventStage::RoutingIndex idx, float pos) { queueLocalDisabledRibbonPositionUpdate(idx, pos); }}
+                          [this](InputEventStage::RoutingIndex idx, float pos)
+                          { queueLocalDisabledRibbonPositionUpdate(idx, pos); } }
 {
   m_playgroundHwSourceKnownValues.fill(0);
 
@@ -146,17 +150,20 @@ C15Synth::~C15Synth()
     std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
     std::unique_lock<std::mutex> lockPg(m_syncPlaygroundMutex);
     std::unique_lock<std::mutex> midiFunctionsLock(m_syncChannelModeMessagesMutex);
+    std::unique_lock<std::mutex> ribbonLock(m_syncRibbonPositionsMutex);
 
     m_quit = true;
 
     m_syncExternalsWaiter.notify_all();
     m_syncPlaygroundWaiter.notify_all();
     m_syncChannelModeMessagesWaiter.notify_all();
+    m_syncRibbonPositionsWaiter.notify_all();
   }
 
   m_syncExternalsTask.wait();
   m_syncPlaygroundTask.wait();
   m_syncChannelModeMessagesTask.wait();
+  m_syncRibbonPositionsTask.wait();
 }
 
 dsp_host_dual* C15Synth::getDsp() const
@@ -252,10 +259,21 @@ void C15Synth::syncLocalDisabledRibbonPositionLoop()
   while(!m_quit)
   {
     m_syncRibbonPositionsWaiter.wait(lock);
-    if(m_queuedRibbonPositions.peek())
+
+    for(auto idx = 0; idx < 2; idx++)
     {
-      auto data = m_queuedRibbonPositions.pop();
-      nltools::msg::send(nltools::msg::EndPoint::Playground, data);
+      auto queued = m_queuedRibbonPositions[idx];
+      auto known = m_lastRibbonPositions[idx];
+
+      if(known != queued)
+      {
+        using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+        m_lastRibbonPositions[idx] = queued;
+        nltools::msg::UpdateLocalDisabledRibbonValue msg {};
+        msg.position = static_cast<double>(queued);
+        msg.ribbonId = idx == 0 ? RoutingIndex::Ribbon1 : RoutingIndex::Ribbon2;
+        nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
+      }
     }
   }
 }
@@ -466,7 +484,8 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
 
 void C15Synth::queueLocalDisabledRibbonPositionUpdate(InputEventStage::RoutingIndex idx, float pos)
 {
-  m_queuedRibbonPositions.push({idx, pos});
+  auto index = idx == InputEventStage::RoutingIndex::Ribbon1 ? 0 : 1;
+  m_queuedRibbonPositions[index] = pos;
   m_syncRibbonPositionsWaiter.notify_all();
 }
 

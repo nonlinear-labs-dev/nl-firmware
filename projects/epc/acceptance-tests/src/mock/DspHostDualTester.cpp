@@ -11,7 +11,7 @@ unsigned int DspHostDualTester::getActiveVoices(const VoiceGroup _group)
   // retrieving the polyphonic Gate Envelope signal from both Poly Sections/Parts (12 Voices per Part)
   // (per Voice: Gate Signal is 1.0 (immediately) after KeyPress, and (almost immediately) 0.0 after KeyRelease)
 
-  const uint32_t gateSignalIndex = static_cast<uint32_t>(C15::Signals::Truepoly_Signals::Env_G_Sig);
+  const auto gateSignalIndex = static_cast<uint32_t>(C15::Signals::Truepoly_Signals::Env_G_Sig);
   float gateSignal;
 
   // obtain specific Part if desired, otherwise both Parts

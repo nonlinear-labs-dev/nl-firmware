@@ -32,7 +32,7 @@ TEST_CASE("Special Midi functions are recognises as such when received via midi"
                         {
                           if(currentCallback)
                             currentCallback(f);
-                        } };
+                        }, [](auto, auto){} };
 
   WHEN("Panic CC is Send with value 0")
   {

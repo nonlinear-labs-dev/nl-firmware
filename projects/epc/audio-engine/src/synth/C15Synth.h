@@ -86,7 +86,9 @@ class C15Synth : public Synth, public sigc::trackable
 
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
-  RingBuffer<nltools::msg::UpdateLocalDisabledRibbonValue> m_queuedRibbonPositions;
+
+  std::array<float, 2> m_queuedRibbonPositions;
+  std::array<float, 2> m_lastRibbonPositions;
 
   std::mutex m_syncExternalsMutex;
   std::mutex m_syncPlaygroundMutex;
