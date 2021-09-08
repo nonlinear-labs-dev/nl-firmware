@@ -1,5 +1,4 @@
 set -e
-set -x
 
 mkdir -p /extracted-packages
 cd /extracted-packages

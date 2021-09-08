@@ -253,5 +253,4 @@ Preset* BankUseCases::appendEditBuffer()
   auto pm = m_bank->getPresetManager();
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
   return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));
-  ;
 }
