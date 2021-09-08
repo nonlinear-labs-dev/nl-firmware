@@ -14,11 +14,13 @@ RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
     : super(rect)
     , m_parameterID(paramID)
 {
+  auto settings = Application::get().getSettings();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->getParameterGroupByID({ "CS", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
   eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
   eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
-  auto settings = Application::get().getSettings()->onSettingsChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
+  settings->onSettingsChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
+  m_parameter = eb->findAndCastParameterByID<PhysicalControlParameter>(m_parameterID);
 }
 
 RibbonLabel::~RibbonLabel() = default;
@@ -39,11 +41,9 @@ StringAndSuffix RibbonLabel::getText() const
 
   const auto isRibbonEnabled = isRibbon1Enabled || isRibbon2Enabled;
 
-  if(isRibbonEnabled)
+  if(isRibbonEnabled && m_parameter)
   {
-    static auto eb = Application::get().getPresetManager()->getEditBuffer();
-    static auto param = dynamic_cast<PhysicalControlParameter *>(eb->findParameterByID(m_parameterID));
-    return StringAndSuffix { crop(param->generateName()) };
+    return StringAndSuffix { crop(m_parameter->generateName()) };
   }
   else
   {
@@ -75,8 +75,8 @@ Glib::ustring RibbonLabel::cropMidiCC(const Glib::ustring &text)
 
 Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const
 {
-  int min = 0;
-  int max = text.length();
+  auto min = 0ul;
+  auto max = text.length();
 
   auto w = getFont()->getStringWidth(text);
 
@@ -86,7 +86,7 @@ Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const
   return binarySearchLength(text, min, max);
 }
 
-Glib::ustring RibbonLabel::binarySearchLength(const Glib::ustring &text, int min, int max) const
+Glib::ustring RibbonLabel::binarySearchLength(const Glib::ustring &text, unsigned long min, unsigned long max) const
 {
   if(max == 0)
     return "";
@@ -94,9 +94,9 @@ Glib::ustring RibbonLabel::binarySearchLength(const Glib::ustring &text, int min
   if((min + 1) == max)
     return text.substr(0, min) + "..";
 
-  int halfIdx = min + (max - min) / 2;
-  Glib::ustring half = text.substr(0, halfIdx);
-  Glib::ustring toMeasure = half + "..";
+  auto halfIdx = min + (max - min) / 2;
+  auto half = text.substr(0, halfIdx);
+  auto toMeasure = half + "..";
 
   auto w = getFont()->getStringWidth(toMeasure);
 
