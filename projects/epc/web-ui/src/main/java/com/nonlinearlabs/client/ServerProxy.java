@@ -231,6 +231,7 @@ public class ServerProxy {
 	}
 
 	public void selectParameter(ParameterId id) {
+		GWT.log("select Parameter: " + id.toString());
 		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
 		queueJob(uri, true);
@@ -289,6 +290,7 @@ public class ServerProxy {
 	}
 
 	public void loadPreset(String presetuuid) {
+		GWT.log("loading preset with uuid" + presetuuid);
 		StaticURI.Path path = new StaticURI.Path("presets", "banks", "load-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", presetuuid));
 		queueJob(uri, false);

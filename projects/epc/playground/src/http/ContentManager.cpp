@@ -91,6 +91,7 @@ void ContentManager::addContentSections()
   addContentSection(static_cast<ContentSection *>(Application::get().getSettings()));
   addContentSection(static_cast<ContentSection *>(Application::get().getDeviceInformation()));
   addContentSection(static_cast<ContentSection *>(Application::get().getClipboard()));
+  addContentSection(static_cast<ContentSection *>(Application::get().getActionManagers()));
 }
 
 void ContentManager::addContentSection(tContentSectionPtr section)

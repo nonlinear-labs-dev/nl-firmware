@@ -3,8 +3,9 @@
 #include <presets/PresetManager.h>
 #include <libundo/undo/Scope.h>
 
-HWUIActions::HWUIActions(HWUI& hwui, EditBuffer& eb)
+HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb)
     : RPCActionManager("/hwui/")
+    , ContentSection(parent)
 {
   addAction("download-soled-as-png",
             [&](const std::shared_ptr<NetworkRequest>& request)
@@ -35,4 +36,23 @@ HWUIActions::HWUIActions(HWUI& hwui, EditBuffer& eb)
                 hwui.setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
               }
             });
+}
+
+void HWUIActions::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring& path)
+{
+  handleRequest(path, request);
+}
+
+bool HWUIActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)
+{
+  return RPCActionManager::handleRequest(path, request);
+}
+
+Glib::ustring HWUIActions::getPrefix() const
+{
+  return "/hwui/";
+}
+
+void HWUIActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
 }

@@ -17,7 +17,6 @@ class HTTPRequest;
 class PresetManagerActions : public RPCActionManager
 {
  private:
-  typedef RPCActionManager super;
   PresetManager& m_presetManager;
   PresetManagerUseCases pmUseCases;
   SoundUseCases soundUseCases;

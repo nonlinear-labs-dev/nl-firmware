@@ -8,10 +8,8 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
-#include <xml/MemoryInStream.h>
 #include <xml/ZippedMemoryOutStream.h>
 #include <xml/OutStream.h>
-#include <xml/VersionAttribute.h>
 #include <boost/algorithm/string.hpp>
 #include <tools/StringTools.h>
 #include <device-settings/Settings.h>
@@ -21,104 +19,123 @@
 #include <tools/TimeTools.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include <device-settings/DebugLevel.h>
-#include <nltools/Assert.h>
 #include <Application.h>
-#include <presets/SendEditBufferScopeGuard.h>
 
-PresetManagerActions::PresetManagerActions(PresetManager &presetManager)
+PresetManagerActions::PresetManagerActions(PresetManager& presetManager)
     : RPCActionManager("/presets/")
     , m_presetManager(presetManager)
     , pmUseCases { &m_presetManager }
     , soundUseCases { m_presetManager.getEditBuffer(), &m_presetManager }
 {
-  addAction("new-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto x = request->get("x");
-    auto y = request->get("y");
-    auto name = request->get("name");
-    pmUseCases.newBank(x, y, name);
-  });
+  addAction("new-bank",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              auto x = request->get("x");
+              auto y = request->get("y");
+              auto name = request->get("name");
+              pmUseCases.newBank(x, y, name);
+            });
 
-  addAction("new-bank-from-edit-buffer", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto x = request->get("x");
-    auto y = request->get("y");
-    pmUseCases.newBank(x, y);
-  });
+  addAction("new-bank-from-edit-buffer",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              auto x = request->get("x");
+              auto y = request->get("y");
+              pmUseCases.newBank(x, y);
+            });
 
-  addAction("rename-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto uuid = request->get("uuid");
-    auto newName = request->get("name");
-    if(auto b = m_presetManager.findBank(Uuid { uuid }))
-    {
-      BankUseCases useCase(b);
-      useCase.renameBank(newName);
-    }
-  });
+  addAction("rename-bank",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              auto uuid = request->get("uuid");
+              auto newName = request->get("name");
+              if(auto b = m_presetManager.findBank(Uuid { uuid }))
+              {
+                BankUseCases useCase(b);
+                useCase.renameBank(newName);
+              }
+            });
 
-  addAction("select-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto uuid = request->get("uuid");
-    pmUseCases.selectBank(Uuid(uuid));
-  });
+  addAction("select-bank",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              auto uuid = request->get("uuid");
+              pmUseCases.selectBank(Uuid(uuid));
+            });
 
-  addAction("delete-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto uuid = request->get("uuid");
-    pmUseCases.deleteBank(Uuid(uuid));
-  });
+  addAction("delete-bank",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              auto uuid = request->get("uuid");
+              pmUseCases.deleteBank(Uuid(uuid));
+            });
 
-  addAction("find-unique-preset-name", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      Glib::ustring basedOn = request->get("based-on");
-      Glib::ustring result = presetManager.createPresetNameBasedOn(basedOn);
-      httpRequest->respond(result);
-    }
-  });
+  addAction("find-unique-preset-name",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
+              {
+                Glib::ustring basedOn = request->get("based-on");
+                Glib::ustring result = presetManager.createPresetNameBasedOn(basedOn);
+                httpRequest->respond(result);
+              }
+            });
 
-  addAction("store-init", [&](std::shared_ptr<NetworkRequest>) mutable { soundUseCases.storeInitSound(); });
+  addAction("store-init", [&](const auto&) mutable { soundUseCases.storeInitSound(); });
 
-  addAction("reset-init", [&](std::shared_ptr<NetworkRequest>) mutable { soundUseCases.resetInitSound(); });
+  addAction("reset-init", [&](const auto&) mutable { soundUseCases.resetInitSound(); });
 
-  addAction("import-all-banks", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      auto *buffer = http->getFlattenedBuffer();
-
-      PresetManagerUseCases useCase(&m_presetManager);
-      if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }))
-        http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
-
-      soup_buffer_free(buffer);
-    }
-  });
-
-  addAction("load-preset-from-xml", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      auto xml = http->get("xml", "");
-      PresetManagerUseCases useCase(&m_presetManager);
-      if(!useCase.loadPresetFromCompareXML(xml))
+  addAction(
+      "import-all-banks",
+      [&](const std::shared_ptr<NetworkRequest>& request) mutable
       {
-        http->respond("Invalid File!");
-      }
-    }
-  });
+        if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
+        {
+          auto* buffer = http->getFlattenedBuffer();
 
-  addAction("move-cluster", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto csv = request->get("csv");
-    std::vector<std::string> uuids;
-    boost::split(uuids, csv, boost::is_any_of(","));
-    pmUseCases.moveBankCluster(uuids);
-  });
+          PresetManagerUseCases useCase(&m_presetManager);
+          if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }))
+            http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
 
-  addAction("select-midi-bank", [&](std::shared_ptr<NetworkRequest> request) mutable {
-    auto bankUuid = request->get("bank", "");
-    auto bank = Application::get().getPresetManager()->findBank(Uuid { bankUuid });
-    pmUseCases.selectMidiBank(bank);
-  });
+          soup_buffer_free(buffer);
+        }
+      });
+
+  addAction("load-preset-from-xml",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
+              {
+                auto xml = http->get("xml", "");
+                PresetManagerUseCases useCase(&m_presetManager);
+                if(!useCase.loadPresetFromCompareXML(xml))
+                {
+                  http->respond("Invalid File!");
+                }
+              }
+            });
+
+  addAction("move-cluster",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              auto csv = request->get("csv");
+              std::vector<std::string> uuids;
+              boost::split(uuids, csv, boost::is_any_of(","));
+              pmUseCases.moveBankCluster(uuids);
+            });
+
+  addAction("select-midi-bank",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              auto bankUuid = request->get("bank", "");
+              auto bank = Application::get().getPresetManager()->findBank(Uuid { bankUuid });
+              pmUseCases.selectMidiBank(bank);
+            });
 }
 
-bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request)
+bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)
 {
-  if(super::handleRequest(path, request))
+  if(RPCActionManager::handleRequest(path, request))
     return true;
 
   if(path.find("/presets/search-preset") == 0)
@@ -132,14 +149,16 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
       std::vector<SearchQuery::Fields> fields;
 
       auto splitFieldStrings = StringTools::splitStringOnAnyDelimiter(field, ',');
-      std::for_each(splitFieldStrings.begin(), splitFieldStrings.end(), [&](const std::string &t) {
-        if(t == "name")
-          fields.push_back(SearchQuery::Fields::Name);
-        else if(t == "comment")
-          fields.push_back(SearchQuery::Fields::Comment);
-        else if(t == "devicename")
-          fields.push_back(SearchQuery::Fields::DeviceName);
-      });
+      std::for_each(splitFieldStrings.begin(), splitFieldStrings.end(),
+                    [&](const std::string& t)
+                    {
+                      if(t == "name")
+                        fields.push_back(SearchQuery::Fields::Name);
+                      else if(t == "comment")
+                        fields.push_back(SearchQuery::Fields::Comment);
+                      else if(t == "devicename")
+                        fields.push_back(SearchQuery::Fields::DeviceName);
+                    });
 
       auto stream = request->createStream("text/xml", false);
       XmlWriter writer(*stream);
