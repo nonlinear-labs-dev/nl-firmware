@@ -86,15 +86,16 @@ class DSPInterface
   };
 
   virtual void onHWChanged(const uint32_t id, float value, bool didBehaviourChange) = 0;
-  virtual void onKeyDown(const int note, float velocity, InputEventSource from) = 0;
-  virtual void onKeyUp(const int note, float velocity, InputEventSource from) = 0;
-  virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
-  virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
+  virtual bool onKeyDown(const int note, float velocity, InputEventSource from) = 0;
+  virtual bool onKeyUp(const int note, float velocity, InputEventSource from) = 0;
+  virtual bool onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
+  virtual bool onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
   virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
-  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
+  virtual bool registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
+  virtual bool unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
   virtual void onMidiSettingsReceived() = 0;
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
@@ -138,10 +139,10 @@ class dsp_host_dual : public DSPInterface
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(const uint32_t id, float value, bool didBehaviourChange) override;
-  void onKeyDown(const int note, float velocity, InputEventSource from) override;
-  void onKeyUp(const int note, float velocity, InputEventSource from) override;
-  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
-  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool onKeyDown(const int note, float velocity, InputEventSource from) override;
+  bool onKeyUp(const int note, float velocity, InputEventSource from) override;
+  bool onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
 
   // event bindings: Preset Messages
@@ -177,7 +178,8 @@ class dsp_host_dual : public DSPInterface
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
-  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  bool registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  bool unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;

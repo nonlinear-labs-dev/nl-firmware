@@ -505,6 +505,45 @@ class VoiceAllocation
     }
     return validity;
   }
+  inline bool registerNonLocalSplitKeyAssignment(const uint32_t _keyPos, const uint32_t _inputSourceId,
+                                                 const AllocatorId _determinedPart)
+  {
+    // validation 1 - keyPos_in_range ?
+    bool validity = _keyPos < Keys;
+    if(validity)
+    {
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
+      // validation 2 - key_released ?
+      validity = !keyState->m_active;
+      if(validity)
+      {
+        // store key assignment with determined association without allocating voices
+        keyState->m_inputSourceId = _inputSourceId;
+        keyState->m_origin = _determinedPart;
+        keyDown_confirm(keyState);
+      }
+    }
+    return validity;
+  }
+  inline bool unregisterNonLocalSplitKeyAssignment(const uint32_t _keyPos, const uint32_t _inputSourceId,
+                                                   const AllocatorId _determinedPart)
+  {
+    // validation 1 - keyPos_in_range ?
+    bool validity = _keyPos < Keys;
+    if(validity)
+    {
+      KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
+      // validation 2 - key_pressed ?
+      validity = keyState->m_active && (keyState->m_origin == _determinedPart);
+      if(validity)
+      {
+        // reset key assignment with determined association without de-allocating voices
+        keyState->m_inputSourceId = _inputSourceId;
+        keyUp_confirm(keyState);
+      }
+    }
+    return validity;
+  }
   inline bool setSplitPoint(const uint32_t _keyPos, const uint32_t _layerIndex)
   {
     // validation - keyPos_in_range ?
@@ -634,12 +673,6 @@ class VoiceAllocation
         break;
     }
     return AllocatorId::None;
-  }
-
-  inline void hotFIX(const uint32_t _keyPos, const uint32_t _inputSourceId, AllocatorId state)
-  {
-    KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
-    keyState->m_origin = state;
   }
 
   inline AllocatorId getSplitPartForKeyUp(const uint32_t _keyPos, const uint32_t _inputSourceId)

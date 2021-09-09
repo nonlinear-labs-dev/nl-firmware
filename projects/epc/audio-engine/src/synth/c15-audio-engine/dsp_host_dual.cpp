@@ -2371,12 +2371,53 @@ VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
   return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from)));
 }
 
-void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+bool dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
 {
   // TODO va: register key assignment despite local off (similar to splitKeyDown, but not quite)
+  const uint32_t inputSourceId = getInputSourceId(from);
+  bool valid = false;
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:  // applies to Part I only
+        valid = m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:  // applies to Part II only
+        valid = m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:  // applies to both Parts I, II at once
+        valid = m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
+        break;
+    }
+  }
+  return valid;
 }
 
-void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)
+bool dsp_host_dual::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+  // TODO va: register key assignment despite local off (similar to splitKeyDown, but not quite)
+  const uint32_t inputSourceId = getInputSourceId(from);
+  bool valid = false;
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:  // applies to Part I only
+        valid = m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:  // applies to Part II only
+        valid = m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:  // applies to both Parts I, II at once
+        valid = m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
+        break;
+    }
+  }
+  return valid;
+}
+
+bool dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
@@ -2401,9 +2442,10 @@ void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource f
   {
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", inputSourceId, ", pos:", note, ") failed!");
   }
+  return valid;
 }
 
-void dsp_host_dual::onKeyUp(const int note, float velocity, InputEventSource from)
+bool dsp_host_dual::onKeyUp(const int note, float velocity, InputEventSource from)
 {
   // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
   // Secondary only exists in Split Sounds, so the final sourceId should be either TCD (0) or Primary (1)
@@ -2427,9 +2469,10 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputEventSource fro
   {
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", inputSourceId, ", pos:", note, ") failed!");
   }
+  return valid;
 }
 
-void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+bool dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
   const uint32_t inputSourceId = getInputSourceId(from);
   bool valid = false;
@@ -2456,27 +2499,12 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
   {
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", inputSourceId, ", pos:", note, ") failed!");
   }
+  return valid;
 }
 
-void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+bool dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
-  // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
-  // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
-  uint32_t inputSourceId = 0;
-  switch(from)
-  {
-    case InputEventSource::Internal:
-      break;
-    case InputEventSource::External_Use_Split:
-    case InputEventSource::External_Primary:
-    case InputEventSource::External_Both:
-      inputSourceId = 1;
-      break;
-    case InputEventSource::External_Secondary:
-      inputSourceId = 2;
-      break;
-  }
-
+  const uint32_t inputSourceId = getInputSourceId(from);
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
   {
@@ -2501,6 +2529,7 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
   {
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", inputSourceId, ", pos:", note, ") failed!");
   }
+  return valid;
 }
 
 void dsp_host_dual::onMidiSettingsReceived()

@@ -5,12 +5,14 @@ void MockDSPHost::onHWChanged(const uint32_t id, float value, bool)
 {
 }
 
-void MockDSPHost::onKeyDown(const int note, float velocity, InputEventSource from)
+bool MockDSPHost::onKeyDown(const int note, float velocity, InputEventSource from)
 {
+  return true;
 }
 
-void MockDSPHost::onKeyUp(const int note, float velocity, InputEventSource from)
+bool MockDSPHost::onKeyUp(const int note, float velocity, InputEventSource from)
 {
+  return true;
 }
 
 void MockDSPHost::onMidiSettingsReceived()
@@ -37,17 +39,24 @@ VoiceGroup MockDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
   return VoiceGroup::I;
 }
 
-void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+bool MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
 {
-  // TODO: clarify what to do within the Mock host..?
+  return true;
 }
 
-void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+bool MockDSPHost::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
 {
+  return true;
 }
 
-void MockDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+bool MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
+  return true;
+}
+
+bool MockDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+{
+  return true;
 }
 
 void MockDSPHost::setType(SoundType type)
@@ -62,19 +71,21 @@ PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo,
 {
 }
 
-void PassOnKeyDownHost::onKeyDown(const int note, float velocity, InputEventSource from)
+bool PassOnKeyDownHost::onKeyDown(const int note, float velocity, InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
   m_receivedKeyDown = true;
+  return m_receivedKeyDown;
 }
 
-void PassOnKeyDownHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part,
+bool PassOnKeyDownHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part,
                                        DSPInterface::InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
   m_receivedKeyDown = true;
+  return m_receivedKeyDown;
 }
 
 bool PassOnKeyDownHost::didReceiveKeyDown() const
@@ -109,18 +120,20 @@ VoiceGroup PassOnKeyUpHost::getSplitPartForKeyUp(int key, InputEventSource from)
   return VoiceGroup::Global;
 }
 
-void PassOnKeyUpHost::onKeyUp(const int note, float velocity, InputEventSource from)
+bool PassOnKeyUpHost::onKeyUp(const int note, float velocity, InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
   m_receivedKeyUp = true;
+  return m_receivedKeyUp;
 }
 
-void PassOnKeyUpHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
+bool PassOnKeyUpHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
   CHECK(m_note == note);
   CHECK(m_vel == velocity);
   m_receivedKeyUp = true;
+  return m_receivedKeyUp;
 }
 
 bool PassOnKeyUpHost::didReceiveKeyUp() const
@@ -157,16 +170,18 @@ void ConfigureableDSPHost::onHWChanged(uint32_t id, float value, bool behaviourC
     m_onHWChanged(id, value, behaviourChanged);
 }
 
-void ConfigureableDSPHost::onKeyDown(const int note, float velocity, DSPInterface::InputEventSource from)
+bool ConfigureableDSPHost::onKeyDown(const int note, float velocity, DSPInterface::InputEventSource from)
 {
   if(m_onKeyDown)
     m_onKeyDown(note, velocity, from);
+  return true;
 }
 
-void ConfigureableDSPHost::onKeyUp(const int note, float velocity, DSPInterface::InputEventSource from)
+bool ConfigureableDSPHost::onKeyUp(const int note, float velocity, DSPInterface::InputEventSource from)
 {
   if(m_onKeyUp)
     m_onKeyUp(note, velocity, from);
+  return true;
 }
 
 C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
@@ -203,17 +218,19 @@ VoiceGroup ConfigureableDSPHost::getSplitPartForKeyUp(int key, InputEventSource 
   return VoiceGroup::I;
 }
 
-void ConfigureableDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part,
+bool ConfigureableDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part,
                                           DSPInterface::InputEventSource from)
 {
   if(m_onKeyDownSplit)
     m_onKeyDownSplit(note, velocity, part, from);
+  return true;
 }
-void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part,
+bool ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGroup part,
                                         DSPInterface::InputEventSource from)
 {
   if(m_onKeyUpSplit)
     m_onKeyUpSplit(note, velocity, part, from);
+  return true;
 }
 
 void ConfigureableDSPHost::setOnHWChangedCB(std::function<void(uint32_t, float, bool)>&& cb)

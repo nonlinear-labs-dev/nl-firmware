@@ -6,15 +6,16 @@ class MockDSPHost : public DSPInterface
 {
  public:
   void onHWChanged(uint32_t id, float value, bool didBehaviourChange) override;
-  void onKeyDown(const int note, float velocity, InputEventSource from) override;
-  void onKeyUp(const int note, float velocity, InputEventSource from) override;
+  bool onKeyDown(const int note, float velocity, InputEventSource from) override;
+  bool onKeyUp(const int note, float velocity, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
-  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
-  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
-  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  bool unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  bool onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onMidiSettingsReceived() override;
   void setType(SoundType type);
 
@@ -26,13 +27,13 @@ class ConfigureableDSPHost : public MockDSPHost
 {
  public:
   void onHWChanged(uint32_t id, float value, bool didChange) override;
-  void onKeyDown(const int note, float velocity, InputEventSource from) override;
-  void onKeyUp(const int note, float velocity, InputEventSource from) override;
+  bool onKeyDown(const int note, float velocity, InputEventSource from) override;
+  bool onKeyUp(const int note, float velocity, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
-  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
-  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
 
   void setOnHWChangedCB(std::function<void(uint32_t, float, bool)>&& cb);
   void setOnKeyDownCB(std::function<void(int, float, InputEventSource)>&& cb);
@@ -60,8 +61,8 @@ class PassOnKeyDownHost : public MockDSPHost
 {
  public:
   PassOnKeyDownHost(int expectedNote, float expectedVelo, VoiceGroup expectedPart);
-  void onKeyDown(const int note, float velocity, InputEventSource from) override;
-  void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool onKeyDown(const int note, float velocity, InputEventSource from) override;
+  bool onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   [[nodiscard]] bool didReceiveKeyDown() const;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
@@ -77,9 +78,9 @@ class PassOnKeyUpHost : public MockDSPHost
 {
  public:
   PassOnKeyUpHost(int expectedNote, float expectedVelo, VoiceGroup expectedPart);
-  void onKeyUp(const int note, float velocity, InputEventSource from) override;
+  bool onKeyUp(const int note, float velocity, InputEventSource from) override;
   [[nodiscard]] bool didReceiveKeyUp() const;
-  void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
+  bool onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
 
