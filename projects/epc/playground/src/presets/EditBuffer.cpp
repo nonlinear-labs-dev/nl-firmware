@@ -1537,14 +1537,13 @@ void EditBuffer::setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *t
   {
     const auto sI = findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
 
+    auto settings = Application::get().getSettings();
+    SyncSplitSettingUseCases useCase(*settings->getSetting<SplitPointSyncParameters>(), *getParent());
+
     if(sI->hasOverlap())
-    {
-      SyncSplitSettingUseCases::get().disableSyncSetting(transaction);
-    }
+      useCase.disableSyncSetting(transaction);
     else
-    {
-      SyncSplitSettingUseCases::get().enableSyncSetting(transaction);
-    }
+      useCase.enableSyncSetting(transaction);
   }
 }
 

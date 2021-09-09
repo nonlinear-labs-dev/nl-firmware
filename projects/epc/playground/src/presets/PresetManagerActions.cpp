@@ -25,10 +25,11 @@
 #include <Application.h>
 #include <presets/SendEditBufferScopeGuard.h>
 
-PresetManagerActions::PresetManagerActions(PresetManager &presetManager, AudioEngineProxy &aeProxy)
+PresetManagerActions::PresetManagerActions(PresetManager& presetManager, AudioEngineProxy& aeProxy, Settings& settings)
     : RPCActionManager("/presets/")
-    , m_presetManager(presetManager)
-    , pmUseCases { &m_presetManager }
+    , m_presetManager{ presetManager }
+    , m_settings{ settings }
+    , pmUseCases { m_presetManager, settings }
     , soundUseCases { m_presetManager.getEditBuffer(), &m_presetManager }
     , m_aeProxy{ aeProxy }
 {
@@ -83,8 +84,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager, AudioEn
     {
       auto *buffer = http->getFlattenedBuffer();
 
-      PresetManagerUseCases useCase(&m_presetManager);
-      if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, m_aeProxy))
+      if(!pmUseCases.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, m_aeProxy))
         http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
 
       soup_buffer_free(buffer);
@@ -95,8 +95,7 @@ PresetManagerActions::PresetManagerActions(PresetManager &presetManager, AudioEn
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       auto xml = http->get("xml", "");
-      PresetManagerUseCases useCase(&m_presetManager);
-      if(!useCase.loadPresetFromCompareXML(xml))
+      if(!pmUseCases.loadPresetFromCompareXML(xml))
       {
         http->respond("Invalid File!");
       }
@@ -144,7 +143,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring &path, std::shared_
 
       auto stream = request->createStream("text/xml", false);
       XmlWriter writer(*stream);
-      Application::get().getPresetManager()->searchPresets(writer, query, mode, std::move(fields));
+      m_presetManager.searchPresets(writer, query, mode, std::move(fields));
       return true;
     }
   }

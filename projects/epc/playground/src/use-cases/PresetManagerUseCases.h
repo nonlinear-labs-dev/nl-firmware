@@ -12,6 +12,7 @@
 class PresetManager;
 class Preset;
 class Bank;
+class Settings;
 
 class PresetManagerUseCases
 {
@@ -31,7 +32,7 @@ class PresetManagerUseCases
     OK
   };
 
-  explicit PresetManagerUseCases(PresetManager* pm);
+  explicit PresetManagerUseCases(PresetManager& pm, Settings& settings);
 
   //Preset
   //Store Actions
@@ -43,7 +44,7 @@ class PresetManagerUseCases
   void appendEditBufferToBank(Bank* bank);
   void appendPreset(Bank* bank, Preset* preset);
   void appendEditBufferAsPresetWithUUID(Bank* bank, const std::string& uuid);
-  void createBankAndStoreEditBuffer();
+  Bank* createBankAndStoreEditBuffer();
   void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
   void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
@@ -85,6 +86,8 @@ class PresetManagerUseCases
   void sortBankNumbers();
 
   void dropPresets(const std::string& anchorUuid, DropActions action, const Glib::ustring& csv);
+
+  void clear();
 
   using StartProgressIndication = std::function<void()>;
   using UpdateProgressIndication = std::function<void(const std::string&)>;
@@ -148,7 +151,8 @@ class PresetManagerUseCases
  private:
   [[nodiscard]] bool isDirectLoadActive() const;
 
-  PresetManager* m_presetManager;
+  PresetManager& m_presetManager;
+  Settings& m_settings;
 
   void onStore(UNDO::Transaction* transaction, Preset* preset);
   void updateSyncSettingOnPresetStore(UNDO::Transaction* transaction) const;

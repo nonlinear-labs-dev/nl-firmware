@@ -68,7 +68,6 @@
 
 Settings::Settings(UpdateDocumentMaster *master)
     : super(master)
-    , m_actions(std::make_unique<SettingsActions>(*this))
     , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
@@ -155,7 +154,7 @@ Settings::tUpdateID Settings::onChange(uint64_t flags)
 
 Glib::ustring Settings::getPrefix() const
 {
-  return m_actions->getBasePath().substr(1);
+  return "settings";
 }
 
 void Settings::init()
@@ -267,11 +266,6 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
                       }
                     }
                   });
-}
-
-void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
-{
-  m_actions->handleRequest(request);
 }
 
 bool Settings::isLoading() const

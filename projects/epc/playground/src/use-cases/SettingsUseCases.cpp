@@ -11,24 +11,26 @@
 #include <nltools/messaging/Message.h>
 #include <device-settings/Passphrase.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
+#include <device-settings/SplitPointSyncParameters.h>
+#include <presets/PresetManager.h>
 
-SettingsUseCases::SettingsUseCases(Settings *s)
+SettingsUseCases::SettingsUseCases(Settings &s)
     : m_settings { s }
 {
 }
 
 void SettingsUseCases::setMappingsToHighRes()
 {
-  auto fourteenBitSupport = m_settings->getSetting<Enable14BitSupport>();
-  auto velCC = m_settings->getSetting<EnableHighVelocityCC>();
-  auto p1 = m_settings->getSetting<PedalCCMapping<1>>();
-  auto p2 = m_settings->getSetting<PedalCCMapping<2>>();
-  auto p3 = m_settings->getSetting<PedalCCMapping<3>>();
-  auto p4 = m_settings->getSetting<PedalCCMapping<4>>();
-  auto r1 = m_settings->getSetting<RibbonCCMapping<1>>();
-  auto r2 = m_settings->getSetting<RibbonCCMapping<2>>();
-  auto at = m_settings->getSetting<AftertouchCCMapping>();
-  auto be = m_settings->getSetting<BenderCCMapping>();
+  static auto fourteenBitSupport = m_settings.getSetting<Enable14BitSupport>();
+  static auto velCC = m_settings.getSetting<EnableHighVelocityCC>();
+  static auto p1 = m_settings.getSetting<PedalCCMapping<1>>();
+  static auto p2 = m_settings.getSetting<PedalCCMapping<2>>();
+  static auto p3 = m_settings.getSetting<PedalCCMapping<3>>();
+  static auto p4 = m_settings.getSetting<PedalCCMapping<4>>();
+  static auto r1 = m_settings.getSetting<RibbonCCMapping<1>>();
+  static auto r2 = m_settings.getSetting<RibbonCCMapping<2>>();
+  static auto at = m_settings.getSetting<AftertouchCCMapping>();
+  static auto be = m_settings.getSetting<BenderCCMapping>();
 
   fourteenBitSupport->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
   velCC->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
@@ -44,16 +46,16 @@ void SettingsUseCases::setMappingsToHighRes()
 
 void SettingsUseCases::setMappingsToClassicMidi()
 {
-  auto fourteenBitSupport = m_settings->getSetting<Enable14BitSupport>();
-  auto velCC = m_settings->getSetting<EnableHighVelocityCC>();
-  auto p1 = m_settings->getSetting<PedalCCMapping<1>>();
-  auto p2 = m_settings->getSetting<PedalCCMapping<2>>();
-  auto p3 = m_settings->getSetting<PedalCCMapping<3>>();
-  auto p4 = m_settings->getSetting<PedalCCMapping<4>>();
-  auto r1 = m_settings->getSetting<RibbonCCMapping<1>>();
-  auto r2 = m_settings->getSetting<RibbonCCMapping<2>>();
-  auto at = m_settings->getSetting<AftertouchCCMapping>();
-  auto be = m_settings->getSetting<BenderCCMapping>();
+  static auto fourteenBitSupport = m_settings.getSetting<Enable14BitSupport>();
+  static auto velCC = m_settings.getSetting<EnableHighVelocityCC>();
+  static auto p1 = m_settings.getSetting<PedalCCMapping<1>>();
+  static auto p2 = m_settings.getSetting<PedalCCMapping<2>>();
+  static auto p3 = m_settings.getSetting<PedalCCMapping<3>>();
+  static auto p4 = m_settings.getSetting<PedalCCMapping<4>>();
+  static auto r1 = m_settings.getSetting<RibbonCCMapping<1>>();
+  static auto r2 = m_settings.getSetting<RibbonCCMapping<2>>();
+  static auto at = m_settings.getSetting<AftertouchCCMapping>();
+  static auto be = m_settings.getSetting<BenderCCMapping>();
 
   fourteenBitSupport->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
   velCC->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
@@ -69,7 +71,7 @@ void SettingsUseCases::setMappingsToClassicMidi()
 
 void SettingsUseCases::updateRoutingAspect(int entry, int aspect, bool value)
 {
-  if(auto s = m_settings->getSetting<RoutingSettings>())
+  if(auto s = m_settings.getSetting<RoutingSettings>())
   {
     if(entry < (int) RoutingSettings::tRoutingIndex::LENGTH && aspect < (int) RoutingSettings::tAspectIndex::LENGTH)
     {
@@ -88,7 +90,7 @@ void SettingsUseCases::panicAudioEngine()
 
 void SettingsUseCases::setAllRoutingEntries(bool state)
 {
-  if(auto s = m_settings->getSetting<RoutingSettings>())
+  if(auto s = m_settings.getSetting<RoutingSettings>())
   {
     s->setAllValues(state);
   }
@@ -96,7 +98,7 @@ void SettingsUseCases::setAllRoutingEntries(bool state)
 
 void SettingsUseCases::setGlobalLocal(bool state)
 {
-  if(auto s = m_settings->getSetting<GlobalLocalEnableSetting>())
+  if(auto s = m_settings.getSetting<GlobalLocalEnableSetting>())
   {
     s->set(state ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE);
   }
@@ -104,7 +106,7 @@ void SettingsUseCases::setGlobalLocal(bool state)
 
 void SettingsUseCases::dicePassphrase()
 {
-  if(auto passwd = m_settings->getSetting<Passphrase>())
+  if(auto passwd = m_settings.getSetting<Passphrase>())
   {
     passwd->dice();
   }
@@ -112,22 +114,22 @@ void SettingsUseCases::dicePassphrase()
 
 void SettingsUseCases::defaultPassphrase()
 {
-  if(auto passwd = m_settings->getSetting<Passphrase>())
+  if(auto passwd = m_settings.getSetting<Passphrase>())
   {
     passwd->resetToDefault();
   }
 }
 
-void SettingsUseCases::setSettingFromWebUI(const Glib::ustring &key, const Glib::ustring& value)
+void SettingsUseCases::setSettingFromWebUI(const Glib::ustring& key, const Glib::ustring& value, PresetManager& pm)
 {
   if(key == "SyncSplit")
   {
-    auto useCases = SyncSplitSettingUseCases::get();
-    useCases.updateFromWebUI(value);
+    SyncSplitSettingUseCases useCase(*m_settings.getSetting<SplitPointSyncParameters>(), pm);
+    useCase.updateFromWebUI(value);
     return;
   }
 
-  if(auto s = m_settings->getSetting(key))
+  if(auto s = m_settings.getSetting(key))
   {
     s->setSetting(Initiator::EXPLICIT_WEBUI, value);
   }

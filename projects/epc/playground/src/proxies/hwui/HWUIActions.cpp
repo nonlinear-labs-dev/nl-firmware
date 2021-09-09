@@ -1,5 +1,6 @@
 #include <http/HTTPRequest.h>
 #include "HWUIActions.h"
+#include "TestLayout.h"
 #include <presets/PresetManager.h>
 #include <libundo/undo/Scope.h>
 
@@ -33,6 +34,25 @@ HWUIActions::HWUIActions(HWUI& hwui, EditBuffer& eb)
                 auto str = toString(part);
                 auto scope = eb.getParent()->getUndoScope().startTransaction("Select Part " + str);
                 hwui.setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
+              }
+            });
+
+  addAction("inc-test-display",
+            [&](const std::shared_ptr<NetworkRequest>& request)
+            {
+              auto& boled = hwui.getPanelUnit().getEditPanel().getBoled();
+              auto& soled = hwui.getBaseUnit().getPlayPanel().getSOLED();
+              auto panelTestLayout = dynamic_cast<TestLayout*>(boled.getLayout().get());
+              auto baseTestLayout = dynamic_cast<TestLayout*>(soled.getLayout().get());
+              if(panelTestLayout && baseTestLayout)
+              {
+                baseTestLayout->iterate();
+                panelTestLayout->iterate();
+              }
+              else
+              {
+                boled.setOverlay(new TestLayout(boled));
+                soled.setOverlay(new TestLayout(soled));
               }
             });
 }

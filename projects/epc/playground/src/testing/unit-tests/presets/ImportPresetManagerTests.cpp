@@ -22,7 +22,8 @@ TEST_CASE("Import PresetManager consumes memory as expected")
 
   auto memUsage = nltools::Log::MemUsageLogger(nltools::Log::Debug, __PRETTY_FUNCTION__);
   {
-    PresetManagerUseCases uc(pm);
+    auto settings = TestHelper::getSettings();
+    PresetManagerUseCases uc(*pm, *settings);
     FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/one_bank.xml.tar", true);
     uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
   }
@@ -33,12 +34,10 @@ TEST_CASE("Import PresetManager consumes memory as expected")
 TEST_CASE("Import PresetManager overwrites banks")
 {
   auto pm = TestHelper::getPresetManager();
-  {
-    auto trash = UNDO::Scope::startTrashTransaction();
-    pm->clear(trash->getTransaction());
-  }
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases uc(*pm, *settings);
+  uc.clear();
 
-  PresetManagerUseCases uc(pm);
   auto memUsage = nltools::Log::MemUsageLogger(nltools::Log::Debug, __PRETTY_FUNCTION__);
   FileInStream oneStream(getSourceDir() + "/projects/epc/playground/test-resources/one_bank.xml.tar", true);
   uc.importBackupFile(oneStream, {}, TestHelper::getAudioEngineProxy());
@@ -56,12 +55,10 @@ TEST_CASE("Import PresetManager overwrites banks")
 TEST_CASE("Import PresetManager is undoable")
 {
   auto pm = TestHelper::getPresetManager();
-  {
-    auto trash = UNDO::Scope::startTrashTransaction();
-    pm->clear(trash->getTransaction());
-  }
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases uc(*pm, *settings);
+  uc.clear();
 
-  PresetManagerUseCases uc(pm);
   auto memUsage = nltools::Log::MemUsageLogger(nltools::Log::Debug, __PRETTY_FUNCTION__);
   FileInStream oneStream(getSourceDir() + "/projects/epc/playground/test-resources/one_bank.xml.tar", true);
   uc.importBackupFile(oneStream, {}, TestHelper::getAudioEngineProxy());

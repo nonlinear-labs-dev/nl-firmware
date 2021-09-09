@@ -41,6 +41,11 @@ namespace TestHelper
     return Application::get().getPresetManager();
   }
 
+  inline Settings* getSettings()
+  {
+    return Application::get().getSettings();
+  }
+
   inline AudioEngineProxy& getAudioEngineProxy()
   {
     return *Application::get().getAudioEngineProxy();

@@ -101,6 +101,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
   using namespace std::chrono_literals;
   auto &app = Application::get();
   auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
+  auto settings = app.getSettings();
 
   if(file != std::filesystem::directory_entry())
   {
@@ -111,7 +112,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     boled.setOverlay(new SplashLayout());
     SplashLayout::addStatus("Restoring Backup from File!");
 
-    PresetManagerUseCases useCase(app.getPresetManager());
+    PresetManagerUseCases useCase(*app.getPresetManager(), *settings);
     auto& ae = *app.getAudioEngineProxy();
     auto ret = useCase.importBackupFile(in, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, ae);
     switch(ret)

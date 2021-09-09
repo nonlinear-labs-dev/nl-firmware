@@ -124,6 +124,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
 
   auto eb = TestHelper::getEditBuffer();
+  auto settings = TestHelper::getSettings();
   auto pm = Application::get().getPresetManager();
 
   Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
@@ -148,7 +149,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
     dlUseCase.enableDirectLoadFromWebUI(nullptr, VoiceGroup::Global, VoiceGroup::Global);
 
     {
-      PresetManagerUseCases useCase(pm);
+      PresetManagerUseCases useCase(*pm, *settings);
       useCase.selectPreset(bank->getPresetAt(0));
       Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     }

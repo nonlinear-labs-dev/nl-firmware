@@ -14,17 +14,19 @@ class PresetManager;
 class Preset;
 class HTTPRequest;
 class AudioEngineProxy;
+class Settings;
 
 class PresetManagerActions : public RPCActionManager
 {
  private:
   typedef RPCActionManager super;
   PresetManager& m_presetManager;
+  Settings& m_settings;
   PresetManagerUseCases pmUseCases;
   SoundUseCases soundUseCases;
   AudioEngineProxy& m_aeProxy;
 
  public:
-  explicit PresetManagerActions(PresetManager& presetManager, AudioEngineProxy& aeProxy);
+  explicit PresetManagerActions(PresetManager& presetManager, AudioEngineProxy& aeProxy, Settings& settings);
   bool handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request) override;
 };

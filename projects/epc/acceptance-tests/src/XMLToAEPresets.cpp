@@ -5,11 +5,21 @@
 #include <AudioEngineOptions.h>
 #include <Toolbox.h>
 #include <testing/TestHelper.h>
+#include <mock/UpdateDocumentMasterMock.h>
+#include <mock/MockSettingsObject.h>
 
 TEST_CASE("Load XML Preset into AE")
 {
+  auto config = nltools::msg::getConfig();
+  config.useEndpoints = {nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone};
+  config.offerEndpoints = {nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone};
+  nltools::msg::init(config);
+
   auto options = Tests::createEmptyAudioEngineOptions();
   auto synth = std::make_unique<C15Synth>(options.get());
+
+  UpdateDocumentMasterMock master;
+  MockSettingsObject settings(&master);
 
   //Prepare Midi Settings
   {
@@ -24,9 +34,11 @@ TEST_CASE("Load XML Preset into AE")
     synth->onMidiSettingsMessage(msg);
   }
 
+  auto settingBasePtr = static_cast<Settings*>(&settings);
+
   WHEN("Init Preset is Loaded")
   {
-    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "Init");
+    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "Init", *settingBasePtr);
     THEN("Note Played produces no Sound")
     {
       synth->doMidi({ 0x90, 127, 127 });
@@ -37,7 +49,7 @@ TEST_CASE("Load XML Preset into AE")
 
   WHEN("Init Preset with Mixer A up, is Loaded")
   {
-    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix");
+    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr);
     THEN("Note Played produces Sound")
     {
       synth->doMidi({ 0x90, 127, 127 });
