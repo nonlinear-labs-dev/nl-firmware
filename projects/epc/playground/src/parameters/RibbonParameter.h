@@ -56,5 +56,4 @@ class RibbonParameter : public PhysicalControlParameter
   RibbonTouchBehaviour m_touchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
   RibbonReturnMode m_returnMode = RibbonReturnMode::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;
-  bool shouldBeSendToRibbonLeds() const;
 };
