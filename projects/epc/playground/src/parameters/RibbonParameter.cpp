@@ -17,6 +17,11 @@
 #include <presets/PresetParameter.h>
 #include <nltools/messaging/Message.h>
 
+#include <device-settings/Settings.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/GlobalLocalEnableSetting.h>
+
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
@@ -146,7 +151,6 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
     onChange();
   }
 }
-
 
 void RibbonParameter::undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction,
                                                                 const RibbonReturnMode &mode) const
@@ -331,7 +335,36 @@ size_t RibbonParameter::getHash() const
 void RibbonParameter::sendToPlaycontroller() const
 {
   Parameter::sendToPlaycontroller();
-  auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
-                                                                         : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
-  Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
+
+  if(shouldBeSendToRibbonLeds())
+  {
+    auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID()
+        ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
+        : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
+    Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
+  }
+}
+
+bool RibbonParameter::shouldBeSendToRibbonLeds() const
+{
+  static auto settings = Application::get().getSettings();
+  static auto globalLocalSetting = settings->getSetting<GlobalLocalEnableSetting>();
+  static auto routingSettings = settings->getSetting<RoutingSettings>();
+
+  using RoutingIndex = RoutingSettings::tRoutingIndex;
+  using AspectIndex = RoutingSettings::tAspectIndex;
+
+  static auto upper = HardwareSourcesGroup::getUpperRibbonParameterID();
+  static auto lower = HardwareSourcesGroup::getLowerRibbonParameterID();
+
+  const auto isUpper = getID() == upper;
+  const auto isLower = getID() == lower;
+
+  if((isUpper || isLower) && globalLocalSetting->get())
+  {
+    const auto idx = isUpper ? RoutingIndex::Ribbon1 : RoutingIndex::Ribbon2;
+    return routingSettings->getState(idx, AspectIndex::LOCAL);
+  }
+
+  return false;
 }
