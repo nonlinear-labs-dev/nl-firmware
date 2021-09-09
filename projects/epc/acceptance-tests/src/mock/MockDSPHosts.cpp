@@ -27,7 +27,7 @@ SoundType MockDSPHost::getType()
   return m_type;
 }
 
-VoiceGroup MockDSPHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
+VoiceGroup MockDSPHost::getSplitPartForKeyDown(int key)
 {
   return VoiceGroup::I;
 }
@@ -35,6 +35,11 @@ VoiceGroup MockDSPHost::getSplitPartForKeyDown(int key, InputEventSource _inputS
 VoiceGroup MockDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
 {
   return VoiceGroup::I;
+}
+
+void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+  // TODO: clarify what to do within the Mock host..?
 }
 
 void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
@@ -51,9 +56,9 @@ void MockDSPHost::setType(SoundType type)
 }
 
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
@@ -77,7 +82,7 @@ bool PassOnKeyDownHost::didReceiveKeyDown() const
   return m_receivedKeyDown;
 }
 
-VoiceGroup PassOnKeyDownHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
+VoiceGroup PassOnKeyDownHost::getSplitPartForKeyDown(int key)
 {
   return VoiceGroup::Global;
 }
@@ -88,13 +93,13 @@ VoiceGroup PassOnKeyDownHost::getSplitPartForKeyUp(int key, InputEventSource fro
 }
 
 PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
-VoiceGroup PassOnKeyUpHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
+VoiceGroup PassOnKeyUpHost::getSplitPartForKeyDown(int key)
 {
   return VoiceGroup::Global;
 }
@@ -124,8 +129,8 @@ bool PassOnKeyUpHost::didReceiveKeyUp() const
 }
 
 PassOnHWReceived::PassOnHWReceived(int expectedId, float expectedValue)
-    : m_id { expectedId }
-    , m_value { expectedValue }
+    : m_id{ expectedId }
+    , m_value{ expectedValue }
 {
 }
 
@@ -171,7 +176,7 @@ C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
   return C15::Properties::HW_Return_Behavior::Stay;
 }
 
-VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key, InputEventSource _inputSource)
+VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
 {
   if(m_hardcodedSplitKey.has_value())
   {
