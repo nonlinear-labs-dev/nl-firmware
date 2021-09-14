@@ -26,13 +26,9 @@
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer& editBuffer);
 
-bool EditBufferActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)
-{
-  return RPCActionManager::handleRequest(path, request);
-}
-
-EditBufferActions::EditBufferActions(EditBuffer& editBuffer, AudioEngineProxy& aeProxy)
-    : super("/presets/param-editor/")
+EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuffer& editBuffer,
+                                     AudioEngineProxy& aeProxy)
+    : super(parent, "/param-editor/")
 {
   addAction("sync-audioengine",
             [&aeProxy](const std::shared_ptr<NetworkRequest>& request) mutable { aeProxy.sendEditBuffer(); });

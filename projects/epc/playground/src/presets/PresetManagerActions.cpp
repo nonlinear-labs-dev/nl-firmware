@@ -21,8 +21,8 @@
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
 
-PresetManagerActions::PresetManagerActions(PresetManager& presetManager)
-    : RPCActionManager("/presets/")
+PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager)
+    : SectionAndActionManager(parent, "/presets/")
     , m_presetManager(presetManager)
     , pmUseCases { &m_presetManager }
     , soundUseCases { m_presetManager.getEditBuffer(), &m_presetManager }
@@ -131,6 +131,11 @@ PresetManagerActions::PresetManagerActions(PresetManager& presetManager)
               auto bank = Application::get().getPresetManager()->findBank(Uuid { bankUuid });
               pmUseCases.selectMidiBank(bank);
             });
+}
+
+void PresetManagerActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  m_presetManager.writeDocument(writer, knownRevision);
 }
 
 bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)

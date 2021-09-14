@@ -25,7 +25,7 @@ class NetworkRequest;
 class AudioEngineProxy;
 class Options;
 
-class PresetManager : public ContentSection
+class PresetManager : public UpdateDocumentContributor
 {
   using SaveSubTask = std::function<SaveResult()>;
 
@@ -46,8 +46,8 @@ class PresetManager : public ContentSection
 
   // supported interfaces
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
-  Glib::ustring getPrefix() const override;
-  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+
+  void writeDocument(Writer &writer, tUpdateID knownRevision) const;
 
   bool isLoading() const;
   std::shared_ptr<ScopedGuard::Lock> getLoadingLock();

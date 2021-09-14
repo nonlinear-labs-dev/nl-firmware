@@ -20,8 +20,8 @@
 
 #include <tools/TimeTools.h>
 
-BankActions::BankActions(PresetManager& presetManager)
-    : RPCActionManager("/presets/banks/")
+BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& presetManager)
+    : SectionAndActionManager(parent, "/banks/")
     , m_presetManager(presetManager)
 {
   addAction("drop-presets-above",
@@ -535,10 +535,10 @@ BankActions::~BankActions() = default;
 
 bool BankActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)
 {
-  if(RPCActionManager::handleRequest(path, request))
+  if(SectionAndActionManager::handleRequest(path, request))
     return true;
 
-  if(path.find("/presets/banks/download-bank/") == 0)
+  if(path.find("/banks/download-bank/") == 0)
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
@@ -564,7 +564,7 @@ bool BankActions::handleRequest(const Glib::ustring& path, std::shared_ptr<Netwo
     }
   }
 
-  if(path.find("/presets/banks/download-preset/") == 0)
+  if(path.find("/banks/download-preset/") == 0)
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {

@@ -232,13 +232,13 @@ public class ServerProxy {
 
 	public void selectParameter(ParameterId id) {
 		GWT.log("select Parameter: " + id.toString());
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "select-param");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "select-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
 		queueJob(uri, true);
 	}
 
 	public void setParameter(ParameterId id, double v, boolean oracle) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-param");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
 				new StaticURI.KeyValue("value", v));
 
@@ -246,7 +246,7 @@ public class ServerProxy {
 	}
 
 	public void setSplitPoints(ParameterId id, Double value, Double value2, boolean oracle) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-splits");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-splits");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
 				new StaticURI.KeyValue("value", value), new StaticURI.KeyValue("other-value", value2));
 
@@ -254,7 +254,7 @@ public class ServerProxy {
 	}
 
 	public void selectPreset(String uuid) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "select-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "select-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
 	}
@@ -291,13 +291,13 @@ public class ServerProxy {
 
 	public void loadPreset(String presetuuid) {
 		GWT.log("loading preset with uuid" + presetuuid);
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "load-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "load-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", presetuuid));
 		queueJob(uri, false);
 	}
 
 	public void createNewBankFromPreset(NonPosition nonPosition, IPreset p) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "create-new-bank-from-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "create-new-bank-from-preset");
 		StaticURI.KeyValue x = new StaticURI.KeyValue("x", nonPosition.getX());
 		StaticURI.KeyValue y = new StaticURI.KeyValue("y", nonPosition.getY());
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset", p.getUUID()), x, y);
@@ -305,7 +305,7 @@ public class ServerProxy {
 	}
 
 	public void createNewBankFromPresets(NonPosition nonPosition, String csv) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "create-new-bank-from-presets");
+		StaticURI.Path path = new StaticURI.Path("banks", "create-new-bank-from-presets");
 		StaticURI.KeyValue x = new StaticURI.KeyValue("x", nonPosition.getX());
 		StaticURI.KeyValue y = new StaticURI.KeyValue("y", nonPosition.getY());
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv), x, y);
@@ -313,7 +313,7 @@ public class ServerProxy {
 	}
 
 	public void renamePreset(String uuid, String newName) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "rename-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "rename-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid),
 				new StaticURI.KeyValue("name", newName));
 		queueJob(uri, false);
@@ -321,7 +321,7 @@ public class ServerProxy {
 
 	public void onBankPositionChanged(Bank bank) {
 		NonPosition bankPos = bank.getNonPosition().getPosition();
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-position");
+		StaticURI.Path path = new StaticURI.Path("banks", "set-position");
 		StaticURI.KeyValue x = new StaticURI.KeyValue("x", bankPos.getX());
 		StaticURI.KeyValue y = new StaticURI.KeyValue("y", bankPos.getY());
 		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", bank.getUUID());
@@ -330,7 +330,7 @@ public class ServerProxy {
 	}
 
 	public void setBankOrderNumber(Bank bank, int newOrderNumber) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-order-number");
+		StaticURI.Path path = new StaticURI.Path("banks", "set-order-number");
 		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", bank.getUUID());
 		StaticURI.KeyValue order = new StaticURI.KeyValue("order-number", newOrderNumber);
 		StaticURI uri = new StaticURI(path, uuid, order);
@@ -338,7 +338,7 @@ public class ServerProxy {
 	}
 
 	public void dropPresetsAbove(String csv, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-above");
+		StaticURI.Path path = new StaticURI.Path("banks", "drop-presets-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
 				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
@@ -346,7 +346,7 @@ public class ServerProxy {
 	}
 
 	public void dropPresetsBelow(String csv, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-below");
+		StaticURI.Path path = new StaticURI.Path("banks", "drop-presets-below");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
 				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
@@ -354,56 +354,56 @@ public class ServerProxy {
 	}
 
 	public void dropPresetsTo(String csv, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-to");
+		StaticURI.Path path = new StaticURI.Path("banks", "drop-presets-to");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
 				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void movePresetAbove(IPreset p, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-preset-above");
+		StaticURI.Path path = new StaticURI.Path("banks", "move-preset-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToMove", p.getUUID()),
 				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void movePresetBelow(IPreset p, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-preset-below");
+		StaticURI.Path path = new StaticURI.Path("banks", "move-preset-below");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToMove", p.getUUID()),
 				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void overwritePresetWith(IPreset p, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "overwrite-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()),
 				new StaticURI.KeyValue("overwriteWith", p.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void overwritePreset() {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "overwrite-preset");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 		RenameDialog.awaitNewPreset(NonMaps.get().getNonLinearWorld().getPresetManager().getSelectedPresetUUID());
 	}
 
 	public void movePresetTo(IPreset p, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-preset-to");
+		StaticURI.Path path = new StaticURI.Path("banks", "move-preset-to");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()),
 				new StaticURI.KeyValue("overwriteWith", p.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertPresetCopyAbove(IPreset p, IPreset preset) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "copy-preset-above");
+		StaticURI.Path path = new StaticURI.Path("banks", "copy-preset-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToCopy", p.getUUID()),
 				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertPresetCopyBelow(IPreset p, IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "copy-preset-below");
+		StaticURI.Path path = new StaticURI.Path("banks", "copy-preset-below");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToCopy", p.getUUID()),
 				new StaticURI.KeyValue("anchor", actionAnchor.getUUID()));
 		queueJob(uri, false);
@@ -411,7 +411,7 @@ public class ServerProxy {
 
 	public void insertEditBufferAbove(IPreset actionAnchor) {
 		String uuid = Uuid.random();
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-editbuffer-above");
+		StaticURI.Path path = new StaticURI.Path("banks", "insert-editbuffer-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()),
 				new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
@@ -420,7 +420,7 @@ public class ServerProxy {
 
 	public void insertEditBufferBelow(IPreset actionAnchor) {
 		String uuid = Uuid.random();
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-editbuffer-below");
+		StaticURI.Path path = new StaticURI.Path("banks", "insert-editbuffer-below");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("anchor", actionAnchor.getUUID()),
 				new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
@@ -428,7 +428,7 @@ public class ServerProxy {
 	}
 
 	public void overwritePresetWithEditBuffer(IPreset actionAnchor) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset-with-editbuffer");
+		StaticURI.Path path = new StaticURI.Path("banks", "overwrite-preset-with-editbuffer");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presetToOverwrite", actionAnchor.getUUID()));
 		queueJob(uri, false);
 
@@ -437,14 +437,14 @@ public class ServerProxy {
 	}
 
 	public void deletePreset(IPreset preset, boolean withBank) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "delete-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", preset.getUUID()),
 				new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
 	}
 
 	public void deletePresets(String csv, boolean withBank) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "delete-presets");
+		StaticURI.Path path = new StaticURI.Path("banks", "delete-presets");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("presets", csv),
 				new StaticURI.KeyValue("delete-bank", withBank ? "true" : "false"));
 		queueJob(uri, false);
@@ -457,7 +457,7 @@ public class ServerProxy {
 	}
 
 	public void appendPreset(IPreset srcPreset, Bank targetBank) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-preset-to-bank");
+		StaticURI.Path path = new StaticURI.Path("banks", "append-preset-to-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", targetBank.getUUID()),
 				new StaticURI.KeyValue("preset-uuid", srcPreset.getUUID()));
 		queueJob(uri, false);
@@ -465,7 +465,7 @@ public class ServerProxy {
 
 	public void appendEditBuffer(IBank bank) {
 		String uuid = Uuid.random();
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "append-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-uuid", bank.getUUID()),
 				new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
@@ -486,7 +486,7 @@ public class ServerProxy {
 		} else {
 			String uuidOfSelectedPreset = selPreset.getUUID();
 			String uuid = Uuid.random();
-			StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-preset");
+			StaticURI.Path path = new StaticURI.Path("banks", "insert-preset");
 			StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid),
 					new StaticURI.KeyValue("seluuid", uuidOfSelectedPreset));
 			queueJob(uri, false);
@@ -496,14 +496,14 @@ public class ServerProxy {
 
 	public void appendPreset() {
 		String uuid = Uuid.random();
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "append-preset");
+		StaticURI.Path path = new StaticURI.Path("banks", "append-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", uuid));
 		queueJob(uri, false);
 		RenameDialog.awaitNewPreset(uuid);
 	}
 
 	public void setModulationAmount(double amount, ParameterId id) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-amount");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-mod-amount");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("amount", amount), new StaticURI.KeyValue("id", id));
 		if (id.getNumber() == 356)
 			queueJob(uri, false);
@@ -512,7 +512,7 @@ public class ServerProxy {
 	}
 
 	public void setModulationSource(ModSource src, ParameterId id) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-mod-src");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-mod-src");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("source", src.toInt()),
 				new StaticURI.KeyValue("id", id));
 		if (id.getNumber() == 356)
@@ -539,7 +539,7 @@ public class ServerProxy {
 	}
 
 	public void resetEditBuffer() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "reset");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "reset");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
@@ -597,7 +597,7 @@ public class ServerProxy {
 	}
 
 	public void insertBankInCluster(Bank other, Orientation orientation, Bank parent) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-in-cluster");
+		StaticURI.Path path = new StaticURI.Path("banks", "insert-bank-in-cluster");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank-to-insert", other.getUUID()),
 				new StaticURI.KeyValue("bank-inserted-at", parent.getUUID()),
 				new StaticURI.KeyValue("orientation", orientation.name()));
@@ -659,7 +659,7 @@ public class ServerProxy {
 	}
 
 	public void dropPresetsOnBank(String csv, Bank targetBank) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-presets-on-bank");
+		StaticURI.Path path = new StaticURI.Path("banks", "drop-presets-on-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", targetBank.getUUID()),
 				new StaticURI.KeyValue("presets", csv));
 		queueJob(uri, false);
@@ -670,56 +670,56 @@ public class ServerProxy {
 	}
 
 	public void dropBankOnBank(IBank dragged, IBank b) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "drop-bank-on-bank");
+		StaticURI.Path path = new StaticURI.Path("banks", "drop-bank-on-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("receiver", b.getUUID()),
 				new StaticURI.KeyValue("bank", dragged.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertBankAbove(IBank bank, IPreset preset) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-above");
+		StaticURI.Path path = new StaticURI.Path("banks", "insert-bank-above");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
 				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void insertBankBelow(IBank bank, IPreset preset) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "insert-bank-below");
+		StaticURI.Path path = new StaticURI.Path("banks", "insert-bank-below");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
 				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void overwritePresetWithBank(IBank bank, IPreset preset) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "overwrite-preset-with-bank");
+		StaticURI.Path path = new StaticURI.Path("banks", "overwrite-preset-with-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
 				new StaticURI.KeyValue("anchor", preset.getUUID()));
 		queueJob(uri, false);
 	}
 
 	public void renameMacroControl(ParameterId id, String newName) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-mc");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "rename-mc");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
 				new StaticURI.KeyValue("new-name", newName));
 		queueJob(uri, false);
 	}
 
 	public void setRibbonReturnMode(int ribbonsParameterId, String mode) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-ribbon-return-mode");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-ribbon-return-mode");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId),
 				new StaticURI.KeyValue("mode", mode));
 		queueJob(uri, false);
 	}
 
 	public void setPedalMode(int pedalParameterId, String mode) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-pedal-mode");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-pedal-mode");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", pedalParameterId),
 				new StaticURI.KeyValue("mode", mode));
 		queueJob(uri, false);
 	}
 
 	public void resetModulation(int id, VoiceGroup vg) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "reset-modulation");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "reset-modulation");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id),
 				new StaticURI.KeyValue("voice-group", vg.toString()));
 		queueJob(uri, false);
@@ -759,7 +759,7 @@ public class ServerProxy {
 	}
 
 	private void doImportBank(String fileName, String text, NonPosition p) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "import-bank");
+		StaticURI.Path path = new StaticURI.Path("banks", "import-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("xml", text), new StaticURI.KeyValue("x", p.getX()),
 				new StaticURI.KeyValue("y", p.getY()), new StaticURI.KeyValue("fileName", fileName));
 		final XMLHttpRequest xhr = XMLHttpRequest.create();
@@ -768,7 +768,7 @@ public class ServerProxy {
 	}
 
 	public void setBankAttribute(Bank theBank, String key, String value) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-bank-attribute");
+		StaticURI.Path path = new StaticURI.Path("banks", "set-bank-attribute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()),
 				new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
@@ -776,7 +776,7 @@ public class ServerProxy {
 
 
 	public void setBankCollapsed(Bank theBank, String collapsed) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-bank-collapse");
+		StaticURI.Path path = new StaticURI.Path("banks", "set-bank-collapse");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()), 
 		new StaticURI.KeyValue("value", collapsed));
 		queueJob(uri, false);
@@ -801,7 +801,7 @@ public class ServerProxy {
 	}
 
 	public void sortBank(Bank bank, boolean asc) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "sort-bank");
+		StaticURI.Path path = new StaticURI.Path("banks", "sort-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", bank.getUUID()),
 				new StaticURI.KeyValue("asc", asc));
 		queueJob(uri, false);
@@ -814,19 +814,19 @@ public class ServerProxy {
 	}
 
 	public void syncAudioEngine() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "sync-audioengine");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "sync-audioengine");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
 
 	public void initSound() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "init-sound");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "init-sound");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
 
 	public void randomizeSound() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "randomize-sound");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "randomize-sound");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
@@ -852,13 +852,13 @@ public class ServerProxy {
 	}
 
 	public void setMacroControlInfo(ParameterId id, String text) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-macrocontrol-info");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-macrocontrol-info");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id), new StaticURI.KeyValue("info", text));
 		queueJob(uri, false);
 	}
 
 	public void setPresetAttribute(Preset thePreset, String key, String value) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "set-preset-attribute");
+		StaticURI.Path path = new StaticURI.Path("banks", "set-preset-attribute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", thePreset.getUUID()),
 				new StaticURI.KeyValue("key", key), new StaticURI.KeyValue("value", value));
 		queueJob(uri, false);
@@ -866,7 +866,7 @@ public class ServerProxy {
 
 	public void setModulationAmountAndValue(ModulatableParameter param, VoiceGroup vg, double newModAmount,
 			double newValue) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modamount-and-value");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-modamount-and-value");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", param.getParameterNumber()),
 				new StaticURI.KeyValue("voice-group", vg.toString()),
 				new StaticURI.KeyValue("mod-amount", newModAmount), new StaticURI.KeyValue("value", newValue));
@@ -874,7 +874,7 @@ public class ServerProxy {
 	}
 
 	public void moveBy(Bank bank, String dir) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move");
+		StaticURI.Path path = new StaticURI.Path("banks", "move");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("bank", bank.getUUID()),
 				new StaticURI.KeyValue("direction", dir));
 		queueJob(uri, false);
@@ -980,7 +980,7 @@ public class ServerProxy {
 	}
 
 	public void undockBank(Bank slave) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "undock-bank");
+		StaticURI.Path path = new StaticURI.Path("banks", "undock-bank");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", slave.getUUID()),
 				new StaticURI.KeyValue("x", slave.getNonPosition().getPosition().getX()),
 				new StaticURI.KeyValue("y", slave.getNonPosition().getPosition().getY()));
@@ -988,32 +988,32 @@ public class ServerProxy {
 	}
 
 	public void unlockAllGroups() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "unlock-all-groups");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "unlock-all-groups");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
 
 	public void lockAllGroups() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "lock-all-groups");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "lock-all-groups");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
 
 	public void toggleGroupLock(String id) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "toggle-group-lock");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "toggle-group-lock");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("group", id));
 		queueJob(uri, false);
 	}
 
 	public void moveAllBanks(NonDimension distance) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "move-all-banks");
+		StaticURI.Path path = new StaticURI.Path("banks", "move-all-banks");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("x", distance.getWidth()),
 				new StaticURI.KeyValue("y", distance.getHeight()));
 		queueJob(uri, false);
 	}
 
 	public void dockBanks(Bank droppedOnto, Orientation droppedAt, Bank dragged, NonPosition pos) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "dock-banks");
+		StaticURI.Path path = new StaticURI.Path("banks", "dock-banks");
 
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("droppedOntoBank", droppedOnto.getUUID()),
 				new StaticURI.KeyValue("draggedBank", dragged.getUUID()),
@@ -1025,13 +1025,13 @@ public class ServerProxy {
 	}
 
 	public void resetScaling() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "reset-scale");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "reset-scale");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
 
 	public void downloadPreset(String uuid, DownloadHandler downloadHandler) {
-		downloadFile("/presets/banks/download-preset/?uuid=" + URL.encodeQueryString(uuid), downloadHandler);
+		downloadFile("/banks/download-preset/?uuid=" + URL.encodeQueryString(uuid), downloadHandler);
 	}
 
 	public void loadPresetFromXML(Document xml) {
@@ -1043,48 +1043,48 @@ public class ServerProxy {
 	}
 
 	public void renameEditBuffer(String text) {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "rename-editbuffer");
+		StaticURI.Path path = new StaticURI.Path("banks", "rename-editbuffer");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("name", text));
 		queueJob(uri, false);
 	}
 
 	public void sortBankNumbers() {
-		StaticURI.Path path = new StaticURI.Path("presets", "banks", "sort-bank-numbers");
+		StaticURI.Path path = new StaticURI.Path("banks", "sort-bank-numbers");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}
 
 	public void recallCurrentParameterFromPreset(ParameterId id) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-current-from-preset");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "recall-current-from-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, false);
 	}
 
 	public void recallMCPosForCurrentParameter(ParameterId id) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-for-current-mod-param");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "recall-mc-for-current-mod-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, false);
 	}
 
 	public void recallMcAmountForCurrentParameter(ParameterId id) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "recall-mc-amount-for-current-mod-param");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "recall-mc-amount-for-current-mod-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id));
 		queueJob(uri, false);
 	}
 
 	public void convertToSingle(VoiceGroup vg) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-single");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-single");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("voice-group", vg.toString()));
 		queueJob(uri, false);
 	}
 
 	public void convertToSplit() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-split");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-split");
 		queueJob(new StaticURI(path), false);
 	}
 
 	public void convertToLayer() {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "convert-to-layer");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-layer");
 		queueJob(new StaticURI(path), false);
 	}
 
@@ -1097,7 +1097,7 @@ public class ServerProxy {
 	}
 
 	public void loadPresetPartIntoPart(String presetUUID, VoiceGroup presetPart, VoiceGroup loadTo) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "load-preset-part-into-editbuffer-part");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "load-preset-part-into-editbuffer-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("preset-part", presetPart.toString()),
 				new StaticURI.KeyValue("editbuffer-part", loadTo.toString()),
 				new StaticURI.KeyValue("preset-uuid", presetUUID));
@@ -1105,38 +1105,38 @@ public class ServerProxy {
 	}
 
 	public void initPart(VoiceGroup part) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "init-part");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "init-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()));
 		queueJob(uri, false);
 	}
 
 	public void renamePart(VoiceGroup part, String newName) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "rename-part");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "rename-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()),
 				new StaticURI.KeyValue("name", newName));
 		queueJob(uri, false);
 	}
 
 	public void randomizePart(VoiceGroup part) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "randomize-part");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "randomize-part");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", part.toString()));
 		queueJob(uri, false);
 	}
 
 	public void unmutePart(VoiceGroup group) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "unmute");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "unmute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
 		queueJob(uri, false);
 	}
 
 	public void mutePart(VoiceGroup group) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "mute");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "mute");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
 		queueJob(uri, false);
 	}
 
 	public void setMuteForPartAndUnmuteOther(VoiceGroup group) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "mute-part-unmute-other");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "mute-part-unmute-other");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("part", group.toString()));
 		queueJob(uri, false);
 	}
@@ -1149,14 +1149,14 @@ public class ServerProxy {
 	}
 
 	public void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "set-modulation-limit");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-modulation-limit");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()),
 				new StaticURI.KeyValue("mod-amt", newAmount), new StaticURI.KeyValue("param-val", newParameterValue));
 		queueJob(uri, false);
 	}
 
 	public void defaultParameter(ParameterId id) {
-		StaticURI.Path path = new StaticURI.Path("presets", "param-editor", "default-param");
+		StaticURI.Path path = new StaticURI.Path("param-editor", "default-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
 		queueJob(uri, false);
 	}
