@@ -2,9 +2,12 @@
 
 #include <http/RPCActionManager.h>
 #include <presets/EditBuffer.h>
+#include <http/ContentSection.h>
+#include <http/SectionAndActionManager.h>
 #include "HWUI.h"
-class HWUIActions : public RPCActionManager
+
+class HWUIActions : public SectionAndActionManager
 {
  public:
-  HWUIActions(HWUI& hwui, EditBuffer& eb);
+  HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb);
 };
