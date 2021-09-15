@@ -61,6 +61,8 @@ class Application
   void runWatchDog();
   void stopWatchDog();
 
+  ActionManagers *getActionManagers();
+
  private:
   bool heartbeat();
   static std::unique_ptr<Options> initStatic(Application *app, std::unique_ptr<Options> options);
@@ -83,7 +85,7 @@ class Application
   std::unique_ptr<Clipboard> m_clipboard;
   std::unique_ptr<USBChangeListener> m_usbChangeListener;
   std::unique_ptr<WebUISupport> m_webUISupport;
-  ActionManagers m_presetActionManager;
+  ActionManagers m_actionManagers;
 
   bool m_heartbeatState;
   bool m_isQuit;

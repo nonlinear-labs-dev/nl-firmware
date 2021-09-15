@@ -33,7 +33,7 @@
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
 PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options)
-    : ContentSection(parent)
+    : UpdateDocumentContributor(parent)
     , SyncedItem(parent->getRoot()->getSyncMaster(), "/preset-manager")
     , m_banks(*this, nullptr)
     , m_editBuffer(std::make_unique<EditBuffer>(this))
@@ -58,7 +58,7 @@ PresetManager::~PresetManager()
   }
 }
 
-void PresetManager::init()
+void PresetManager::init(AudioEngineProxy *aeProxy)
 {
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
@@ -74,7 +74,7 @@ void PresetManager::init()
   if(file->query_exists())
   {
     nltools::Log::notify("Loading presetmanager at", path);
-    loadMetadataAndSendEditBufferToPlaycontroller(transaction, file);
+    loadMetadataAndSendEditBufferToPlaycontroller(transaction, file, aeProxy);
     loadInitSound(transaction, file);
     loadBanks(transaction, file);
     fixMissingPresetSelections(transaction);
@@ -87,12 +87,6 @@ void PresetManager::init()
 void PresetManager::invalidate()
 {
   onChange(ChangeFlags::Generic);
-}
-
-Glib::ustring PresetManager::getPrefix() const
-{
-  //TODO is this needed anymore?
-  return "not-presets-anymore";
 }
 
 UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
@@ -233,12 +227,13 @@ std::shared_ptr<ScopedGuard::Lock> PresetManager::getLoadingLock()
 }
 
 void PresetManager::loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
-                                                                  const Glib::RefPtr<Gio::File> &pmFolder)
+                                                                  const Glib::RefPtr<Gio::File> &pmFolder,
+                                                                  AudioEngineProxy *aeProxy)
 {
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
   Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, SplashLayout::addStatus);
-  m_editBuffer->sendToAudioEngine();
+  aeProxy->sendEditBuffer();
 }
 
 void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder)

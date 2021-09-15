@@ -3,11 +3,11 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <testing/TestRootDocument.h>
 #include <testing/unit-tests/mock/MockSettingsObject.h>
+#include <sync/SyncMasterMockRoot.h>
 
 TEST_CASE("MockSettingsObject onChange is called when Setting calls notify")
 {
-  TestRootDocument mockOrigin;
-  MockSettingsObject settings(&mockOrigin);
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
   auto setting = settings.getSetting<RoutingSettings>();
 
   bool parentSubRecChanges = false;

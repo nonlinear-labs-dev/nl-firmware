@@ -8,7 +8,6 @@
 #include "presets/EditBuffer.h"
 #include "event-sources/base/EventSource.h"
 #include "GlobalEventSinkBroker.h"
-#include "GlobalEventSourceBroker.h"
 #include "presets/PresetManagerCursor.h"
 #include "http/UndoScope.h"
 #include "device-settings/Settings.h"
@@ -77,7 +76,8 @@ namespace DescriptiveLayouts
     }
 
     auto pm = Application::get().getPresetManager();
-    PresetManagerUseCases useCases(pm);
+    auto settings = Application::get().getSettings();
+    PresetManagerUseCases useCases(*pm, *settings);
     if(auto b = cursor.getBank())
     {
       auto currentBank = pm->getSelectedBank();

@@ -23,11 +23,14 @@
 #include <use-cases/EditBufferUseCases.h>
 #include <use-cases/SoundUseCases.h>
 
+#include <device-settings/RandomizeAmount.h>
+#include <device-settings/Settings.h>
+
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer& editBuffer);
 
-EditBufferActions::EditBufferActions(EditBuffer& editBuffer, AudioEngineProxy& aeProxy)
-    : super("/presets/param-editor/")
+EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuffer& editBuffer, AudioEngineProxy& aeProxy, Settings& settings)
+    : SectionAndActionManager(parent, "/param-editor/")
 {
   addAction("sync-audioengine", [&aeProxy](const std::shared_ptr<NetworkRequest>& request) mutable {
     aeProxy.sendEditBuffer();
@@ -164,9 +167,10 @@ EditBufferActions::EditBufferActions(EditBuffer& editBuffer, AudioEngineProxy& a
     }
   });
 
-  addAction("randomize-sound", [&editBuffer](const std::shared_ptr<NetworkRequest>&) mutable {
-    SoundUseCases soundUseCases { &editBuffer, editBuffer.getParent() };
-    soundUseCases.randomizeSound();
+  addAction("randomize-sound", [&editBuffer, &s = settings](const std::shared_ptr<NetworkRequest>&) mutable {
+    auto amount = s.getSetting<RandomizeAmount>()->get();
+    EditBufferUseCases useCase { editBuffer };
+    useCase.randomize(amount);
   });
 
   addAction("init-sound", [&editBuffer](const std::shared_ptr<NetworkRequest>&) mutable {
@@ -186,9 +190,10 @@ EditBufferActions::EditBufferActions(EditBuffer& editBuffer, AudioEngineProxy& a
     soundUseCases.renamePart(vg, name);
   });
 
-  addAction("randomize-part", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {
-    SoundUseCases soundUseCases { &editBuffer, editBuffer.getParent() };
-    soundUseCases.randomizePart(to<VoiceGroup>(request->get("part")));
+  addAction("randomize-part", [&editBuffer, &s = settings](const std::shared_ptr<NetworkRequest>& request) mutable {
+    auto amount = s.getSetting<RandomizeAmount>()->get();
+    EditBufferUseCases useCase { editBuffer };
+    useCase.randomizePart(to<VoiceGroup>(request->get("part")), amount);
   });
 
   addAction("mute", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {

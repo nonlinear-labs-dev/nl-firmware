@@ -16,5 +16,7 @@ void ContentSection::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, 
 
 bool ContentSection::contains(const Glib::ustring &path) const
 {
-  return path.find(getPrefix()) == 1;  // 1 for respecting the leading '/'
+  auto prefix = getPrefix();
+  auto found = path.find(prefix) == 1;
+  return found;  // 1 for respecting the leading '/'
 }

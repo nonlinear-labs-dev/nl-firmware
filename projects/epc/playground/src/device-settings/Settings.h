@@ -46,7 +46,6 @@ class Settings : public ContentSection
   void sendGlobalPlaycontrollerInitSettings();
   void sendPresetSettingsToPlaycontroller();
 
-  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
   Glib::ustring getPrefix() const override;
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
@@ -63,7 +62,6 @@ class Settings : public ContentSection
   void load();
   void sanitize();
 
-  std::unique_ptr<SettingsActions> m_actions;
   tMap m_settings;
   DelayedJob m_saveJob;
   ScopedGuard m_isLoading;

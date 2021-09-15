@@ -1,16 +1,15 @@
 #pragma once
 
+#include <presets/PresetManager.h>
+#include <http/SectionAndActionManager.h>
 #include "http/RPCActionManager.h"
 
 class Settings;
 
-class SettingsActions : public RPCActionManager
+class SettingsActions : public SectionAndActionManager
 {
- private:
-  typedef RPCActionManager super;
-
  public:
-  explicit SettingsActions(Settings& settings);
+  explicit SettingsActions(UpdateDocumentContributor* parent, Settings& settings, PresetManager& pm);
   ~SettingsActions() override;
 
   SettingsActions(const SettingsActions& other) = delete;

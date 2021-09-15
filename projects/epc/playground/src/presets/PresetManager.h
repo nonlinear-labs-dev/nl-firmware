@@ -27,7 +27,7 @@ class NetworkRequest;
 class AudioEngineProxy;
 class Options;
 
-class PresetManager : public ContentSection, public SyncedItem
+class PresetManager : public UpdateDocumentContributor, public SyncedItem
 {
   using SaveSubTask = std::function<SaveResult()>;
 
@@ -35,7 +35,7 @@ class PresetManager : public ContentSection, public SyncedItem
   explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options);
   ~PresetManager() override;
 
-  void init();
+  void init(AudioEngineProxy *aeProxy);
   void invalidate();
 
   // debug
@@ -48,8 +48,8 @@ class PresetManager : public ContentSection, public SyncedItem
 
   // supported interfaces
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
-  Glib::ustring getPrefix() const override;
-  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+
+  void writeDocument(Writer &writer, tUpdateID knownRevision) const;
 
   bool isLoading() const;
   std::shared_ptr<ScopedGuard::Lock> getLoadingLock();
@@ -116,7 +116,8 @@ class PresetManager : public ContentSection, public SyncedItem
  private:
   nlohmann::json serialize() const override;
   void loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
-                                                     const Glib::RefPtr<Gio::File> &pmFolder);
+                                                     const Glib::RefPtr<Gio::File> &pmFolder,
+                                                     AudioEngineProxy *aeProxy);
   void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder);
   void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);

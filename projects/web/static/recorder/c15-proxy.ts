@@ -248,7 +248,7 @@ class C15Proxy extends C15ProxyIface {
         var bar = this.getBars().get(this.getCurrentPlayPosition());
         if (bar) {
             var r = new XMLHttpRequest();
-            var url = "http://" + hostName + playgroundHttpPort + "/presets/param-editor/restore?timestamp=" + bar.recordTime;
+            var url = "http://" + hostName + playgroundHttpPort + "/param-editor/restore?timestamp=" + bar.recordTime;
             r.open("GET", url, true);
             r.send();
         }

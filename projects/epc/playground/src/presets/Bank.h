@@ -73,7 +73,6 @@ class Bank : public AttributesOwner, public SyncedItem
   Preset *clonePreset(const Preset *p);
 
   // transactions
-  void copyFrom(UNDO::Transaction *transaction, const Bank *other);
   void setName(UNDO::Transaction *transaction, const std::string &name);
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
   void selectPreset(UNDO::Transaction *transaction, const Uuid &uuid);

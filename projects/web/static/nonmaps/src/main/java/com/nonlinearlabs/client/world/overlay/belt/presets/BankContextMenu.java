@@ -75,7 +75,7 @@ public abstract class BankContextMenu extends ContextMenu {
 				@Override
 				public Control click(Position eventPoint) {
 					String bankName = URL.encodePathSegment(bank.getCurrentName());
-					String uri = "/presets/banks/download-bank/" + bankName + ".xml?uuid=" + bank.getUUID();
+					String uri = "/banks/download-bank/" + bankName + ".xml?uuid=" + bank.getUUID();
 					Window.open(uri, "", "");
 					return super.click(eventPoint);
 				}

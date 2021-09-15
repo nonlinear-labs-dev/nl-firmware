@@ -3,11 +3,11 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <testing/TestRootDocument.h>
 #include <testing/unit-tests/mock/MockSettingsObject.h>
+#include <sync/SyncMasterMockRoot.h>
 
 TEST_CASE("setAllValues will not notify if no values Changed")
 {
-  TestRootDocument mockOrigin;
-  MockSettingsObject settings(&mockOrigin);
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
 
   auto setting = settings.getSetting<RoutingSettings>();
 

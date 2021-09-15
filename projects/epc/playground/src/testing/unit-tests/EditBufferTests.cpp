@@ -528,35 +528,26 @@ void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases useCases(*eb);
 
+  useCases.randomize(0.5);
+  eb->TEST_doDeferredJobs();
+  REQUIRE(eb->isModified());
+  REQUIRE(eb->findAnyParameterChanged());
+
+  useCases.initSound(Defaults::FactoryDefault);
+  REQUIRE_FALSE(eb->isModified());
+  REQUIRE_FALSE(eb->findAnyParameterChanged());
+
+  auto masterVolume = eb->findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getFactoryDefaultValue()));
+  auto masterTune = eb->findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global });
+  REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getFactoryDefaultValue()));
+
+  for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
   {
-
-    //setup randomize amount
-    {
-      auto scope = TestHelper::createTestScope();
-      Application::get().getSettings()->getSetting<RandomizeAmount>()->set(0.5);
-      eb->undoableRandomize(scope->getTransaction(), Initiator::EXPLICIT_OTHER);
-    }
-
-    eb->TEST_doDeferredJobs();
-    REQUIRE(eb->isModified());
-    REQUIRE(eb->findAnyParameterChanged());
-
-    useCases.initSound(Defaults::FactoryDefault);
-    REQUIRE_FALSE(eb->isModified());
-    REQUIRE_FALSE(eb->findAnyParameterChanged());
-
-    auto masterVolume = eb->findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
-    REQUIRE(!masterVolume->isValueDifferentFrom(masterVolume->getFactoryDefaultValue()));
-    auto masterTune = eb->findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global });
-    REQUIRE(!masterTune->isValueDifferentFrom(masterTune->getFactoryDefaultValue()));
-
-    for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
-    {
-      auto vgVolume = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, vg });
-      REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getFactoryDefaultValue()));
-      auto vgTune = eb->findParameterByID({ C15::PID::Voice_Grp_Tune, vg });
-      REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getFactoryDefaultValue()));
-    }
+    auto vgVolume = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, vg });
+    REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getFactoryDefaultValue()));
+    auto vgTune = eb->findParameterByID({ C15::PID::Voice_Grp_Tune, vg });
+    REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getFactoryDefaultValue()));
   }
 }
 

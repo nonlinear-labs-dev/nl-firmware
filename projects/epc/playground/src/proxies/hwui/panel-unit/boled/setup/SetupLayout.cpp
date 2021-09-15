@@ -5,7 +5,6 @@
 #include <groups/HardwareSourcesGroup.h>
 #include <parameters/PedalParameter.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/Oleds.h>
@@ -818,7 +817,7 @@ namespace NavTree
         : OneShotEntry(parent, "Set to High-Res. Defaults",
                        []()
                        {
-                         SettingsUseCases useCases(Application::get().getSettings());
+                         SettingsUseCases useCases(*Application::get().getSettings());
                          useCases.setMappingsToHighRes();
                        })
     {
@@ -832,7 +831,7 @@ namespace NavTree
         : OneShotEntry(parent, "Set to Classic MIDI Defaults",
                        []()
                        {
-                         SettingsUseCases useCases(Application::get().getSettings());
+                         SettingsUseCases useCases(*Application::get().getSettings());
                          useCases.setMappingsToClassicMidi();
                        })
     {
@@ -912,7 +911,8 @@ namespace NavTree
       void incSetting(int inc) override
       {
         auto pm = getPresetManager();
-        PresetManagerUseCases useCase(pm);
+        auto settings = Application::get().getSettings();
+        PresetManagerUseCases useCase(*pm, *settings);
         const auto numBanks = pm->getNumBanks();
 
         if(getMidiBank())
@@ -1016,7 +1016,7 @@ namespace NavTree
         : OneShotEntry(parent, getName(),
                        []()
                        {
-                         SettingsUseCases useCases(Application::get().getSettings());
+                         SettingsUseCases useCases(*Application::get().getSettings());
                          useCases.setAllRoutingEntries(value);
                        })
     {

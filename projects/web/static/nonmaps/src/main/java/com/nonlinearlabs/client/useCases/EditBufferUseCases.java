@@ -436,8 +436,8 @@ public class EditBufferUseCases {
 	}
 
 	public void selectVoiceGroup(VoiceGroup group) {
-		EditBufferModel.get().voiceGroup.setValue(group);
-		if (SetupModel.get().systemSettings.syncVoiceGroups.getBool()) {
+		boolean changed = EditBufferModel.get().voiceGroup.setValue(group);
+		if (SetupModel.get().systemSettings.syncVoiceGroups.getBool() && changed) {
 			NonMaps.theMaps.getServerProxy().syncVoiceGroup();
 		}
 	}

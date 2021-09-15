@@ -9,11 +9,11 @@
 #include <catch.hpp>
 #include <parameter_declarations.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
+#include <sync/SyncMasterMockRoot.h>
 
 TEST_CASE("Split Point Display Value")
 {
-  TestRootDocument root;
-  TestGroupSet set { &root };
+  TestGroupSet set { &SyncMasterMockRoot::get() };
   TestGroup group(&set, VoiceGroup::I);
   group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::I }));
   group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::II }));
@@ -22,7 +22,10 @@ TEST_CASE("Split Point Display Value")
   auto splitII = dynamic_cast<SplitPointParameter*>(group.findParameterByID({ 1, VoiceGroup::II }));
   g_assert(splitI != nullptr);
 
-  auto useCases = SyncSplitSettingUseCases::get();
+  auto settings = TestHelper::getSettings();
+  auto pm = TestHelper::getPresetManager();
+
+  SyncSplitSettingUseCases useCases(*settings->getSetting<SplitPointSyncParameters>(), *pm);
 
   auto transScope = UNDO::Scope::startTrashTransaction();
   auto transaction = transScope->getTransaction();
@@ -49,9 +52,11 @@ TEST_CASE("Split Point Display Value")
 TEST_CASE("Split Point Helper Functions")
 {
   auto eb = TestHelper::getEditBuffer();
+  auto settings = TestHelper::getSettings();
+  auto pm = TestHelper::getPresetManager();
   auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
-  auto useCases = SyncSplitSettingUseCases::get();
+  SyncSplitSettingUseCases useCases(*settings->getSetting<SplitPointSyncParameters>(), *pm);
 
   WHEN("Init")
   {
@@ -84,12 +89,13 @@ TEST_CASE("Sync Setting gets updated on store and load")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
+  auto settings = TestHelper::getSettings();
   EditBufferUseCases ebUseCases(*eb);
 
   auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
-  auto useCases = SyncSplitSettingUseCases::get();
-  PresetManagerUseCases pmUseCases(pm);
+  SyncSplitSettingUseCases useCases(*settings->getSetting<SplitPointSyncParameters>(), *pm);
+  PresetManagerUseCases pmUseCases(*pm, *settings);
 
   useCases.disableSyncSetting();
 

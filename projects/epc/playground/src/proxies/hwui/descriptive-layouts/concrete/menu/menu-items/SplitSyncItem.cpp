@@ -8,8 +8,10 @@
 
 void SplitSyncItem::doAction()
 {
-  auto useCases = SyncSplitSettingUseCases::get();
-  useCases.toggleSyncSetting();
+  auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+  auto pm = Application::get().getPresetManager();
+  SyncSplitSettingUseCases useCase(*setting, *pm);
+  useCase.toggleSyncSetting();
 }
 
 SplitSyncItem::SplitSyncItem(const Rect& r)

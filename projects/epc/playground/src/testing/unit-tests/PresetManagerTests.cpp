@@ -5,25 +5,7 @@
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
-
-namespace Helper
-{
-
-  void clearPresetManager()
-  {
-    auto pm = TestHelper::getPresetManager();
-    auto scope = TestHelper::createTestScope();
-    pm->clear(scope->getTransaction());
-    REQUIRE(pm->getNumBanks() == 0);
-  }
-
-  Bank* getBank(const Preset* p)
-  {
-    auto bank = dynamic_cast<Bank*>(p->getParent());
-    REQUIRE(bank != nullptr);
-    return bank;
-  }
-}
+#include <use-cases/PresetUseCases.h>
 
 TEST_CASE("Preset Manager Init")
 {
@@ -34,12 +16,13 @@ TEST_CASE("Preset Manager Init")
 TEST_CASE("Create Bank")
 {
   auto pm = TestHelper::getPresetManager();
-  Helper::clearPresetManager();
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
+  useCase.clear();
 
   SECTION("New Bank")
   {
-    auto scope = TestHelper::createTestScope();
-    auto newBank = pm->addBank(scope->getTransaction());
+    auto newBank = useCase.createBankAndStoreEditBuffer();
     REQUIRE(newBank != nullptr);
     REQUIRE(pm->findBank(newBank->getUuid()) == newBank);
     REQUIRE(pm->getNumBanks() == 1);
@@ -66,18 +49,22 @@ namespace EditBufferHelper
 
   void overwritePresetWithEditBuffer(Preset* p)
   {
-    auto scope = TestHelper::createTestScope();
     auto eb = TestHelper::getEditBuffer();
-
     auto ebType = eb->getType();
-    p->copyFrom(scope->getTransaction(), eb);
+
+    PresetUseCases useCase(p);
+    useCase.overwriteWithEditBuffer(*eb);
+
     REQUIRE(p->getType() == ebType);
   }
 }
 
 TEST_CASE("Overwrite Presets")
 {
-  Helper::clearPresetManager();
+  auto pm = TestHelper::getPresetManager();
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
+  useCase.clear();
   MockPresetStorage presets;
 
   SECTION("Overwrite Single with Single")
@@ -137,10 +124,15 @@ TEST_CASE("Overwrite Presets")
 
 TEST_CASE("Midi Selection Sends Signals Appropriately")
 {
-  Helper::clearPresetManager();
+  auto pm = TestHelper::getPresetManager();
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
+  useCase.clear();
+
+  CHECK(pm->getNumBanks() == 0);
+
   MockPresetStorage presets;
   MockPresetStorage presets2;
-  auto pm = TestHelper::getPresetManager();
 
   CHECK(pm->getNumBanks() == 2);
 
@@ -149,13 +141,9 @@ TEST_CASE("Midi Selection Sends Signals Appropriately")
     const auto oldMidiUuid = pm->getMidiSelectedBank();
     Uuid receivedMidiUuid;
 
-    auto c = pm->onMidiBankSelectionHappened([&](Uuid id) { receivedMidiUuid = id; });
+    auto c = pm->onMidiBankSelectionHappened([&](const Uuid& id) { receivedMidiUuid = id; });
 
-    {
-      auto scope = TestHelper::createTestScope();
-      auto transaction = scope->getTransaction();
-      pm->selectMidiBank(transaction, presets.getBank()->getUuid());
-    }
+    useCase.selectMidiBank(presets.getBank());
 
     CHECK(presets.getBank()->getUuid() == receivedMidiUuid);
 
@@ -177,9 +165,10 @@ TEST_CASE("Midi Selection Sends Signals Appropriately")
 
 TEST_CASE("Delete Current Midi Bank resets attribute")
 {
-  Helper::clearPresetManager();
   auto pm = TestHelper::getPresetManager();
-  PresetManagerUseCases useCases(pm);
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCases(*pm, *settings);
+  useCases.clear();
 
   //Create bank to use
   useCases.createBankAndStoreEditBuffer();
@@ -201,9 +190,10 @@ TEST_CASE("Delete Current Midi Bank resets attribute")
 
 TEST_CASE("When Midi Bank is Selected new and old midi selection banks get notified via onChange")
 {
-  Helper::clearPresetManager();
   auto pm = TestHelper::getPresetManager();
-  PresetManagerUseCases useCases(pm);
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCases(*pm, *settings);
+  useCases.clear();
 
   useCases.createBankAndStoreEditBuffer();
   auto b1 = pm->getSelectedBank();

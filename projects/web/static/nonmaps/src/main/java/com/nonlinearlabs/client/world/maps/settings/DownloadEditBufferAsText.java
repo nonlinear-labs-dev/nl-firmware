@@ -14,7 +14,7 @@ public class DownloadEditBufferAsText extends Setting {
 
 	@Override
 	public Control onValueButtonMouseDown(Position eventPoint) {
-		Window.open("/presets/param-editor/download-editbuffer-as-text", "", "");
+		Window.open("/param-editor/download-editbuffer-as-text", "", "");
 		return this;
 	}
 

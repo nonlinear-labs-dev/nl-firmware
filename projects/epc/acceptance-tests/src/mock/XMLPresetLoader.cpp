@@ -14,6 +14,7 @@
 #include <use-cases/PresetManagerUseCases.h>
 #include <presets/Bank.h>
 #include <Options.h>
+#include <device-settings/Settings.h>
 
 void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir, const std::string &uuid)
 {
@@ -56,8 +57,8 @@ void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir,
   }
 }
 
-void XMLPresetLoader::loadTestPresetFromBank(C15Synth *synth, const std::string &subDir,
-                                             const std::string &bankFileName)
+void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string& subDir,
+                                             const std::string& bankFileName, Settings& settings)
 {
   UpdateDocumentMasterMock updateDocMaster;
   UNDO::Scope undoScope(&updateDocMaster);
@@ -75,7 +76,7 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth *synth, const std::string 
 
   Options opt;
   PresetManager pm(&updateDocMaster, true, opt);
-  PresetManagerUseCases useCase(&pm);
+  PresetManagerUseCases useCase(pm, settings);
 
   useCase.importBankFromPath(std::filesystem::directory_entry { presetData }, Serializer::Progress{});
 

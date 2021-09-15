@@ -1,11 +1,12 @@
 #pragma once
 #include <glibmm/ustring.h>
+#include <presets/PresetManager.h>
 class Settings;
 
 class SettingsUseCases
 {
  public:
-  explicit SettingsUseCases(Settings* s);
+  explicit SettingsUseCases(Settings& s);
   void setMappingsToHighRes();
   void setMappingsToClassicMidi();
 
@@ -18,8 +19,8 @@ class SettingsUseCases
 
   void dicePassphrase();
   void defaultPassphrase();
-  void setSettingFromWebUI(const Glib::ustring& key, const Glib::ustring& value);
+  void setSettingFromWebUI(const Glib::ustring& key, const Glib::ustring& value, PresetManager& pm);
 
  private:
-  Settings* m_settings;
+  Settings& m_settings;
 };
