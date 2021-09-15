@@ -1,5 +1,6 @@
 #pragma once
 #include <device-settings/Settings.h>
+#include <functional>
 
 class MockSettingsObject : public Settings
 {

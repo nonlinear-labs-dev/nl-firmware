@@ -8,11 +8,12 @@
 class PresetManager;
 class Preset;
 class Bank;
+class Settings;
 
 class BankActions : public SectionAndActionManager
 {
  public:
-  explicit BankActions(UpdateDocumentContributor* parent, PresetManager& presetManager);
+  explicit BankActions(UpdateDocumentContributor* parent, PresetManager &presetManager, Settings &settings);
   ~BankActions() override;
 
   bool handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request) override;
@@ -21,4 +22,5 @@ class BankActions : public SectionAndActionManager
 
   void insertBank(const std::shared_ptr<NetworkRequest>& request, size_t offset);
   PresetManager &m_presetManager;
+  Settings& m_settings;
 };

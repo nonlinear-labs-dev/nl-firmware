@@ -587,7 +587,7 @@ public class ServerProxy {
 	}
 
 	public void incDisplayTest() {
-		StaticURI.Path path = new StaticURI.Path("settings", "inc-test-display");
+		StaticURI.Path path = new StaticURI.Path("hwui", "inc-test-display");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}

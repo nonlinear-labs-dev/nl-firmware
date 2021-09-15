@@ -5,6 +5,7 @@
 #include "nltools/GenericScopeGuard.h"
 #include <nltools/threading/Expiration.h>
 #include <tools/DelayedJob.h>
+#include <tools/ScopedGuard.h>
 #include <tools/Uuid.h>
 #include <utility>
 
@@ -50,8 +51,7 @@ class EditBuffer : public ParameterGroupSet
   void fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group);
   void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
-  void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator);
-  void undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup currentVoiceGroup, Initiator initiator);
+
   void undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *values);
   void undoableLockAllGroups(UNDO::Transaction *transaction);
   void undoableUnlockAllGroups(UNDO::Transaction *transaction);
@@ -91,7 +91,6 @@ class EditBuffer : public ParameterGroupSet
   sigc::connection onEditBufferConverted(const sigc::slot<void, SoundType> &s);
 
   bool isModified() const;
-  void sendToAudioEngine();
 
   //RECALL
   RecallParameterGroups &getRecallParameterSet();
@@ -125,6 +124,9 @@ class EditBuffer : public ParameterGroupSet
 
   PartOrigin getPartOrigin(VoiceGroup vg) const;
 
+  std::shared_ptr<ScopedGuard::Lock> getParameterFocusLockGuard();
+  bool isParameterFocusLocked() const;
+
  private:
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
@@ -144,11 +146,14 @@ class EditBuffer : public ParameterGroupSet
   void undoableInitSound(UNDO::Transaction *transaction, Defaults mode);
   void undoableInitPart(UNDO::Transaction *transaction, VoiceGroup group, Defaults mode);
 
-  //convert
+  //randomize
+  void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
+  void undoableRandomizePart(UNDO::Transaction *transaction, VoiceGroup currentVoiceGroup, Initiator initiator,
+                             double amount);
+
+  //Convert
   void undoableConvertToDual(UNDO::Transaction *transaction, SoundType type, VoiceGroup currentVG);
   void undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-
-  //Setters
   void undoableSetType(UNDO::Transaction *transaction, SoundType type);
   void undoableSetTypeFromConvert(UNDO::Transaction *transaction, SoundType type);
   void undoableConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
@@ -158,8 +163,6 @@ class EditBuffer : public ParameterGroupSet
   void doDeferedJobs();
   void checkModified();
 
-  void lockParameterFocusChanges();
-  void unlockParameterFocusChanges();
   void initUnisonVoicesScaling(SoundType newType);
 
   void initToFX(UNDO::Transaction *transaction);
@@ -230,7 +233,6 @@ class EditBuffer : public ParameterGroupSet
 
   DelayedJob m_deferredJobs;
 
-  bool m_lockParameterFocusChanges = false;
   bool m_isModified;
   RecallParameterGroups m_recallSet;
   SoundType m_type;
@@ -240,6 +242,7 @@ class EditBuffer : public ParameterGroupSet
   mutable Preset *m_originCache { nullptr };
 
   std::unique_ptr<LoadedPresetLog> m_loadedPresetLog;
+  ScopedGuard m_parameterFocusLock;
 
   friend class EditBufferUseCases;
   friend class BankUseCases;

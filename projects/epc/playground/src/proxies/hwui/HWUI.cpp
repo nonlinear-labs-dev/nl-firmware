@@ -4,7 +4,7 @@
 #include <libundo/undo/SwapData.h>
 #include <libundo/undo/Transaction.h>
 #include <libundo/undo/TransactionCreationScope.h>
-#include <math.h>
+#include <cmath>
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/value/QuantizedValue.h>
 #include <presets/EditBuffer.h>
@@ -601,9 +601,10 @@ void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction 
 
 void HWUI::toggleCurrentVoiceGroup()
 {
-  auto scope = getParameterFocusLockGuard();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto scope = eb->getParameterFocusLockGuard();
 
-  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+  if(eb->getType() == SoundType::Single)
     return;
 
   if(m_currentVoiceGroup == VoiceGroup::I)
@@ -839,7 +840,9 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
 {
   unsetFineMode();
 
-  if(!isParameterFocusLocked())
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  if(!eb->isParameterFocusLocked())
   {
     if(getFocusAndMode().focus == UIFocus::Sound)
     {
@@ -855,12 +858,4 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
   }
 }
 
-bool HWUI::isParameterFocusLocked() const
-{
-  return m_parameterFocusLock.isLocked();
-}
 
-std::shared_ptr<ScopedGuard::Lock> HWUI::getParameterFocusLockGuard()
-{
-  return m_parameterFocusLock.lock();
-}

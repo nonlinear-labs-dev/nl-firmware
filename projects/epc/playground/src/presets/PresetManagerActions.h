@@ -14,16 +14,18 @@ namespace UNDO
 class PresetManager;
 class Preset;
 class HTTPRequest;
+class AudioEngineProxy;
+class Settings;
 
 class PresetManagerActions : public SectionAndActionManager
 {
- private:
-  PresetManager& m_presetManager;
-  PresetManagerUseCases pmUseCases;
-  SoundUseCases soundUseCases;
-
  public:
-  explicit PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager);
+  explicit PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager, AudioEngineProxy& aeProxy, Settings& settings);
   bool handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request) override;
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
+
+ private:
+  PresetManager& m_presetManager;
+  Settings& m_settings;
+  AudioEngineProxy& m_aeProxy;
 };

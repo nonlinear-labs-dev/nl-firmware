@@ -90,12 +90,8 @@ class HWUI
   std::string exportSoled();
   std::string exportBoled();
 
-  std::shared_ptr<ScopedGuard::Lock> getParameterFocusLockGuard();
-
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
-
-  bool isParameterFocusLocked() const;
 
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);

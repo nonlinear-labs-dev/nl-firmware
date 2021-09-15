@@ -14,37 +14,14 @@
 #include <device-settings/Passphrase.h>
 #include <http/HTTPRequest.h>
 
-SettingsActions::SettingsActions(Settings &settings)
-    : super("/settings/")
+SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& settings, PresetManager& pm)
+    : SectionAndActionManager(parent, "/settings/")
 {
-  addAction("set-setting", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("set-setting", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring key = request->get("key");
     Glib::ustring value = request->get("value");
-
-    if(Application::exists() && !key.empty())
-    {
-      SettingsUseCases useCases(Application::get().getSettings());
-      useCases.setSettingFromWebUI(key, value);
-    }
-  });
-
-  addAction("inc-test-display", [&](std::shared_ptr<NetworkRequest> request) {
-    auto &app = Application::get();
-    auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
-    auto &soled = app.getHWUI()->getBaseUnit().getPlayPanel().getSOLED();
-    auto panelTestLayout = dynamic_cast<TestLayout *>(boled.getLayout().get());
-    auto baseTestLayout = dynamic_cast<TestLayout *>(soled.getLayout().get());
-
-    if(panelTestLayout && baseTestLayout)
-    {
-      baseTestLayout->iterate();
-      panelTestLayout->iterate();
-    }
-    else
-    {
-      boled.setOverlay(new TestLayout(boled));
-      soled.setOverlay(new TestLayout(soled));
-    }
+    SettingsUseCases useCases(settings);
+    useCases.setSettingFromWebUI(key, value, pm);
   });
 
   addAction("set-direct-load-with-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
@@ -78,12 +55,12 @@ SettingsActions::SettingsActions(Settings &settings)
   });
 
   addAction("default-high-res", [&](auto request) {
-    SettingsUseCases useCase(Application::get().getSettings());
+    SettingsUseCases useCase(settings);
     useCase.setMappingsToHighRes();
   });
 
   addAction("default-classic-midi", [&](auto request) {
-    SettingsUseCases useCase(Application::get().getSettings());
+    SettingsUseCases useCase(settings);
     useCase.setMappingsToClassicMidi();
   });
 
@@ -94,7 +71,7 @@ SettingsActions::SettingsActions(Settings &settings)
       auto aspect = std::stoi(request->get("aspect"));
       auto value = request->get("value") == "1";
 
-      SettingsUseCases useCase(Application::get().getSettings());
+      SettingsUseCases useCase(settings);
       useCase.updateRoutingAspect(hw, aspect, value);
     }
     catch(...)
@@ -109,7 +86,7 @@ SettingsActions::SettingsActions(Settings &settings)
 
   addAction("set-all-routings-to-value", [&](auto request) {
     auto requestedState = request->get("state") == "1";
-    SettingsUseCases useCase(Application::get().getSettings());
+    SettingsUseCases useCase(settings);
     useCase.setAllRoutingEntries(requestedState);
     nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
   });
@@ -133,18 +110,14 @@ SettingsActions::SettingsActions(Settings &settings)
     }
   });
 
-  addAction("dice-passphrase", [](auto) {
-      if(Application::exists()) {
-        SettingsUseCases useCases(Application::get().getSettings());
-        useCases.dicePassphrase();
-      }
+  addAction("dice-passphrase", [&](auto) {
+    SettingsUseCases useCases(settings);
+    useCases.dicePassphrase();
   });
 
-  addAction("default-passphrase", [](auto) {
-    if(Application::exists()) {
-      SettingsUseCases useCases(Application::get().getSettings());
-      useCases.defaultPassphrase();
-    }
+  addAction("default-passphrase", [&](auto) {
+    SettingsUseCases useCases(settings);
+    useCases.defaultPassphrase();
   });
 }
 

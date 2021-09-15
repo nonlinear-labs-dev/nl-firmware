@@ -7,10 +7,12 @@
 #include <xml/FileInStream.h>
 #include <clipboard/Clipboard.h>
 #include <filesystem>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 class PresetManager;
 class Preset;
 class Bank;
+class Settings;
 
 class PresetManagerUseCases
 {
@@ -30,7 +32,7 @@ class PresetManagerUseCases
     OK
   };
 
-  explicit PresetManagerUseCases(PresetManager* pm);
+  explicit PresetManagerUseCases(PresetManager& pm, Settings& settings);
 
   //Preset
   //Store Actions
@@ -42,7 +44,7 @@ class PresetManagerUseCases
   void appendEditBufferToBank(Bank* bank);
   void appendPreset(Bank* bank, Preset* preset);
   void appendEditBufferAsPresetWithUUID(Bank* bank, const std::string& uuid);
-  void createBankAndStoreEditBuffer();
+  Bank* createBankAndStoreEditBuffer();
   void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
   void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
@@ -85,6 +87,8 @@ class PresetManagerUseCases
 
   void dropPresets(const std::string& anchorUuid, DropActions action, const Glib::ustring& csv);
 
+  void clear();
+
   using StartProgressIndication = std::function<void()>;
   using UpdateProgressIndication = std::function<void(const std::string&)>;
   using FinishProgressIndication = std::function<void()>;
@@ -114,9 +118,11 @@ class PresetManagerUseCases
     FinishProgressIndication _finish;
   };
 
-  ImportExitCode importBackupFile(FileInStream& in, ProgressIndication progress);
-  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress);
-  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, ProgressIndication progress);
+  PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,
+                                                         AudioEngineProxy& ae);
+  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae);
+  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, const ProgressIndication& progress,
+                        AudioEngineProxy& aeProxy);
 
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 
@@ -145,7 +151,8 @@ class PresetManagerUseCases
  private:
   [[nodiscard]] bool isDirectLoadActive() const;
 
-  PresetManager* m_presetManager;
+  PresetManager& m_presetManager;
+  Settings& m_settings;
 
   void onStore(UNDO::Transaction* transaction, Preset* preset);
   void updateSyncSettingOnPresetStore(UNDO::Transaction* transaction) const;

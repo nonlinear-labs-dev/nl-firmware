@@ -73,7 +73,8 @@ bool AppendOverwriteInsertButtonMenu::animate()
 void AppendOverwriteInsertButtonMenu::executeAction()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases useCases(pm);
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCases(*pm, *settings);
   auto actionPosition = m_parent.getSelectedPosition();
 
   if(auto selectedBank = pm->getBankAt(actionPosition.first))

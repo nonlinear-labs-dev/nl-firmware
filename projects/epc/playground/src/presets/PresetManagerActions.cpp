@@ -21,11 +21,11 @@
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
 
-PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager)
+PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager, AudioEngineProxy& aeProxy, Settings& settings)
     : SectionAndActionManager(parent, "/presets/")
-    , m_presetManager(presetManager)
-    , pmUseCases { &m_presetManager }
-    , soundUseCases { m_presetManager.getEditBuffer(), &m_presetManager }
+    , m_presetManager{presetManager}
+    , m_aeProxy{ aeProxy }
+    , m_settings{settings}
 {
   addAction("new-bank",
             [&](const std::shared_ptr<NetworkRequest>& request) mutable
@@ -33,7 +33,8 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               auto x = request->get("x");
               auto y = request->get("y");
               auto name = request->get("name");
-              pmUseCases.newBank(x, y, name);
+              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              useCase.newBank(x, y, name);
             });
 
   addAction("new-bank-from-edit-buffer",
@@ -41,7 +42,8 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
             {
               auto x = request->get("x");
               auto y = request->get("y");
-              pmUseCases.newBank(x, y);
+              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              useCase.newBank(x, y);
             });
 
   addAction("rename-bank",
@@ -60,14 +62,16 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
             [&](const std::shared_ptr<NetworkRequest>& request) mutable
             {
               auto uuid = request->get("uuid");
-              pmUseCases.selectBank(Uuid(uuid));
+              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              useCase.selectBank(Uuid(uuid));
             });
 
   addAction("delete-bank",
             [&](const std::shared_ptr<NetworkRequest>& request) mutable
             {
               auto uuid = request->get("uuid");
-              pmUseCases.deleteBank(Uuid(uuid));
+              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              useCase.deleteBank(Uuid(uuid));
             });
 
   addAction("find-unique-preset-name",
@@ -81,9 +85,17 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               }
             });
 
-  addAction("store-init", [&](const auto&) mutable { soundUseCases.storeInitSound(); });
+  addAction("store-init", [&](const auto&) mutable
+            {
+              SoundUseCases useCase(m_presetManager.getEditBuffer(), &m_presetManager);
+              useCase.storeInitSound();
+            });
 
-  addAction("reset-init", [&](const auto&) mutable { soundUseCases.resetInitSound(); });
+  addAction("reset-init", [&](const auto&) mutable
+            {
+              SoundUseCases useCase(m_presetManager.getEditBuffer(), &m_presetManager);
+              useCase.resetInitSound();
+            });
 
   addAction(
       "import-all-banks",
@@ -93,8 +105,8 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
         {
           auto* buffer = http->getFlattenedBuffer();
 
-          PresetManagerUseCases useCase(&m_presetManager);
-          if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }))
+          PresetManagerUseCases useCase(m_presetManager, m_settings);
+          if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, m_aeProxy))
             http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
 
           soup_buffer_free(buffer);
@@ -107,7 +119,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
               {
                 auto xml = http->get("xml", "");
-                PresetManagerUseCases useCase(&m_presetManager);
+                PresetManagerUseCases useCase(m_presetManager, m_settings);
                 if(!useCase.loadPresetFromCompareXML(xml))
                 {
                   http->respond("Invalid File!");
@@ -121,7 +133,8 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               auto csv = request->get("csv");
               std::vector<std::string> uuids;
               boost::split(uuids, csv, boost::is_any_of(","));
-              pmUseCases.moveBankCluster(uuids);
+              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              useCase.moveBankCluster(uuids);
             });
 
   addAction("select-midi-bank",
@@ -129,13 +142,9 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
             {
               auto bankUuid = request->get("bank", "");
               auto bank = Application::get().getPresetManager()->findBank(Uuid { bankUuid });
-              pmUseCases.selectMidiBank(bank);
+              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              useCase.selectMidiBank(bank);
             });
-}
-
-void PresetManagerActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
-{
-  m_presetManager.writeDocument(writer, knownRevision);
 }
 
 bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)
@@ -167,7 +176,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
 
       auto stream = request->createStream("text/xml", false);
       XmlWriter writer(*stream);
-      Application::get().getPresetManager()->searchPresets(writer, query, mode, std::move(fields));
+      m_presetManager.searchPresets(writer, query, mode, std::move(fields));
       return true;
     }
   }
@@ -213,4 +222,9 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
   }
 
   return false;
+}
+
+void PresetManagerActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  m_presetManager.writeDocument(writer, knownRevision);
 }

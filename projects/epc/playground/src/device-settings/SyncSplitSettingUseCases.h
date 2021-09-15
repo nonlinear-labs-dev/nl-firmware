@@ -2,11 +2,13 @@
 #include <libundo/undo/Transaction.h>
 
 class SplitPointSyncParameters;
+class SplitPointParameter;
+class PresetManager;
 
 class SyncSplitSettingUseCases
 {
  public:
-  static SyncSplitSettingUseCases& get();
+  SyncSplitSettingUseCases(SplitPointSyncParameters& setting, PresetManager& pm);
 
   void updateFromWebUI(const Glib::ustring& value);
   void enableSyncSetting();
@@ -18,7 +20,10 @@ class SyncSplitSettingUseCases
 
  private:
   void undoableSetSetting(UNDO::Transaction* transaction, bool state);
-  static SplitPointSyncParameters* getSyncSetting();
 
-  SyncSplitSettingUseCases() = default;
+  SplitPointSyncParameters& m_setting;
+  PresetManager& m_presetManager;
+
+  SplitPointParameter* m_splitI;
+  SplitPointParameter* m_splitII;
 };
