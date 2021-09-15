@@ -29,9 +29,8 @@
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer& editBuffer);
 
-EditBufferActions::EditBufferActions(EditBuffer& editBuffer, AudioEngineProxy& aeProxy, Settings& settings)
-    : super("/presets/param-editor/")
-    , m_settings{settings}
+EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuffer& editBuffer, AudioEngineProxy& aeProxy, Settings& settings)
+    : SectionAndActionManager(parent, "/param-editor/")
 {
   addAction("sync-audioengine", [&aeProxy](const std::shared_ptr<NetworkRequest>& request) mutable {
     aeProxy.sendEditBuffer();
@@ -168,7 +167,7 @@ EditBufferActions::EditBufferActions(EditBuffer& editBuffer, AudioEngineProxy& a
     }
   });
 
-  addAction("randomize-sound", [&editBuffer, &s = m_settings](const std::shared_ptr<NetworkRequest>&) mutable {
+  addAction("randomize-sound", [&editBuffer, &s = settings](const std::shared_ptr<NetworkRequest>&) mutable {
     auto amount = s.getSetting<RandomizeAmount>()->get();
     EditBufferUseCases useCase { editBuffer };
     useCase.randomize(amount);
@@ -191,7 +190,7 @@ EditBufferActions::EditBufferActions(EditBuffer& editBuffer, AudioEngineProxy& a
     soundUseCases.renamePart(vg, name);
   });
 
-  addAction("randomize-part", [&editBuffer, &s = m_settings](const std::shared_ptr<NetworkRequest>& request) mutable {
+  addAction("randomize-part", [&editBuffer, &s = settings](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto amount = s.getSetting<RandomizeAmount>()->get();
     EditBufferUseCases useCase { editBuffer };
     useCase.randomizePart(to<VoiceGroup>(request->get("part")), amount);

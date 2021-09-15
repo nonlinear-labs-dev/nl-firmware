@@ -4,8 +4,8 @@
 #include <presets/PresetManager.h>
 #include <libundo/undo/Scope.h>
 
-HWUIActions::HWUIActions(HWUI& hwui, EditBuffer& eb)
-    : RPCActionManager("/hwui/")
+HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb)
+    : SectionAndActionManager(parent, "/hwui/")
 {
   addAction("download-soled-as-png",
             [&](const std::shared_ptr<NetworkRequest>& request)

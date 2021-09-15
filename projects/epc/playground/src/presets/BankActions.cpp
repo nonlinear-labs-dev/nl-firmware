@@ -20,8 +20,8 @@
 
 #include <tools/TimeTools.h>
 
-BankActions::BankActions(PresetManager& presetManager, Settings& settings)
-    : RPCActionManager("/presets/banks/")
+BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& presetManager, Settings& settings)
+    : SectionAndActionManager(parent, "/banks/")
     , m_presetManager(presetManager)
     , m_settings{settings}
 {
@@ -459,12 +459,12 @@ BankActions::BankActions(PresetManager& presetManager, Settings& settings)
 BankActions::~BankActions()
 = default;
 
-bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request)
+bool BankActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)
 {
-  if(super::handleRequest(path, request))
+  if(SectionAndActionManager::handleRequest(path, request))
     return true;
 
-  if(path.find("/presets/banks/download-bank/") == 0)
+  if(path.find("/banks/download-bank/") == 0)
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
@@ -490,7 +490,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
     }
   }
 
-  if(path.find("/presets/banks/download-preset/") == 0)
+  if(path.find("/banks/download-preset/") == 0)
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
@@ -498,7 +498,7 @@ bool BankActions::handleRequest(const Glib::ustring &path, std::shared_ptr<Netwo
       XmlWriter writer(stream);
       Glib::ustring uuid = httpRequest->get("uuid");
 
-      Preset *preset;
+      Preset* preset;
       auto ebAsPreset = std::make_unique<Preset>(&m_presetManager, *m_presetManager.getEditBuffer());
 
       if(uuid.empty())
@@ -534,7 +534,7 @@ void BankActions::insertBank(const std::shared_ptr<NetworkRequest>& request, siz
 
   if(auto preset = m_presetManager.findPreset(Uuid { anchorUuid }))
   {
-    if(auto targetBank = dynamic_cast<Bank *>(preset->getParent()))
+    if(auto targetBank = dynamic_cast<Bank*>(preset->getParent()))
     {
       if(auto bank = m_presetManager.findBank(Uuid { bankUuid }))
       {

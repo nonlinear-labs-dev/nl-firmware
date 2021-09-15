@@ -14,8 +14,8 @@
 #include <device-settings/Passphrase.h>
 #include <http/HTTPRequest.h>
 
-SettingsActions::SettingsActions(Settings& settings, PresetManager& pm)
-    : super("/settings/")
+SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& settings, PresetManager& pm)
+    : SectionAndActionManager(parent, "/settings/")
 {
   addAction("set-setting", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring key = request->get("key");
@@ -23,8 +23,6 @@ SettingsActions::SettingsActions(Settings& settings, PresetManager& pm)
     SettingsUseCases useCases(settings);
     useCases.setSettingFromWebUI(key, value, pm);
   });
-
-  //TODO move into C15-Specific-Actions
 
   addAction("set-direct-load-with-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto pm = Application::get().getPresetManager();

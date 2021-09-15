@@ -31,7 +31,7 @@
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
 PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options)
-    : ContentSection(parent)
+    : UpdateDocumentContributor(parent)
     , m_banks(*this, nullptr)
     , m_editBuffer(std::make_unique<EditBuffer>(this))
     , m_initSound(std::make_unique<Preset>(this))
@@ -84,12 +84,6 @@ void PresetManager::init(AudioEngineProxy *aeProxy)
 void PresetManager::invalidate()
 {
   onChange(ChangeFlags::Generic);
-}
-
-Glib::ustring PresetManager::getPrefix() const
-{
-  //TODO is this needed anymore?
-  return "not-presets-anymore";
 }
 
 UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)

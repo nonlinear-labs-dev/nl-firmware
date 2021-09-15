@@ -44,7 +44,7 @@ public class OracleTests extends TestWithSteps {
     private void selectPresetViaNewWebSocket() {
         addStep(() -> {
             documentReceived = false;
-            webSocket.send("/presets/banks/select-preset?uuid=" + findBank().getPreset(0).getUUID().toString() + "&isOracle=true");
+            webSocket.send("/banks/select-preset?uuid=" + findBank().getPreset(0).getUUID().toString() + "&isOracle=true");
         }, () -> {
             boolean wasOracleOfServer = server.lastDocumentCouldOmitOracles();
             return !wasOracleOfServer && documentReceived;

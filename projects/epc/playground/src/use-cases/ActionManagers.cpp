@@ -12,31 +12,15 @@
 
 ActionManagers::ActionManagers(UpdateDocumentContributor* parent, PresetManager& pm, AudioEngineProxy& aeProx,
                                HWUI& hwui, Settings& settings)
-    : ContentSection(parent)
 {
-  m_actionManagers.emplace_back(new SettingsActions(settings, pm));
-  m_actionManagers.emplace_back(new PresetManagerActions(pm, aeProx, settings));
-  m_actionManagers.emplace_back(new BankActions(pm, settings));
-  m_actionManagers.emplace_back(new EditBufferActions(*pm.getEditBuffer(), aeProx, settings));
-  m_actionManagers.emplace_back(new HWUIActions(hwui, *pm.getEditBuffer()));
+  m_actionManagers.emplace_back(new SettingsActions(parent, settings, pm));
+  m_actionManagers.emplace_back(new PresetManagerActions(parent, pm, aeProx, settings));
+  m_actionManagers.emplace_back(new BankActions(parent, pm, settings));
+  m_actionManagers.emplace_back(new EditBufferActions(parent, *pm.getEditBuffer(), aeProx, settings));
+  m_actionManagers.emplace_back(new HWUIActions(parent, hwui, *pm.getEditBuffer()));
 }
 
-Glib::ustring ActionManagers::getPrefix() const
+std::list<ActionManagers::tManagerPtr>& ActionManagers::getManagers()
 {
-  return "presets";
-}
-
-void ActionManagers::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
-{
-  nltools::Log::error("Not Implemented!");
-}
-
-void ActionManagers::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring& path)
-{
-  ContentSection::handleHTTPRequest(request, path);
-
-  for(auto& actionManager : m_actionManagers)
-    if(actionManager->matches(path))
-      if(actionManager->handleRequest(path, request))
-        return;
+  return m_actionManagers;
 }

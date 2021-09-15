@@ -306,3 +306,8 @@ bool Application::heartbeat()
 
   return true;
 }
+
+ActionManagers *Application::getActionManagers()
+{
+  return &m_actionManagers;
+}
