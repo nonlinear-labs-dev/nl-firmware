@@ -84,7 +84,7 @@ void BankUseCases::dropPresets(const std::string& csv)
     {
       if(auto src = pm->findPreset(Uuid { uuid }))
       {
-        m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *src, true));
+        m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *src));
 
         if(m_bank == src->getParent())
           m_bank->deletePreset(transaction, Uuid { uuid });
@@ -105,12 +105,10 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset(
-          [&](auto p)
-          {
-            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p, true));
-            i++;
-          });
+      source->forEachPreset([&](auto p) {
+        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p));
+        i++;
+      });
     }
   }
 }
@@ -129,7 +127,7 @@ void BankUseCases::dropBankOnPreset(const Bank* sourceBank, const Uuid& presetAn
 
     for(size_t i = 0; i < numPresets; i++)
     {
-      auto p = std::make_unique<Preset>(m_bank, *sourceBank->getPresetAt(i), true);
+      auto p = std::make_unique<Preset>(m_bank, *sourceBank->getPresetAt(i));
       m_bank->insertPreset(transaction, insertPos + i, std::move(p));
     }
 
@@ -237,14 +235,10 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
   auto scope = pm->getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", toInsert->getName(true),
                                                    m_bank->getName(true));
   auto transaction = scope->getTransaction();
-  size_t i = 0;
 
-  toInsert->forEachPreset(
-      [&](auto p)
-      {
-        m_bank->insertPreset(transaction, insertPosition + i, std::make_unique<Preset>(m_bank, *p, true));
-        i++;
-      });
+  toInsert->forEachPreset([&, i = 0](auto p) mutable {
+    m_bank->insertPreset(transaction, insertPosition + (i++), std::make_unique<Preset>(m_bank, *p));
+  });
 }
 
 Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
@@ -258,5 +252,5 @@ Preset* BankUseCases::appendEditBuffer()
 {
   auto pm = m_bank->getPresetManager();
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
-  return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));;
+  return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));
 }

@@ -116,6 +116,18 @@ template <typename TItemPtr> class IntrusiveList
     }
   }
 
+  template <typename Callback> void forEach(Callback cb) const
+  {
+    tItemPtr walker = first;
+
+    while(walker)
+    {
+      tItemPtr next = walker->tItem::next;
+      cb(walker);
+      walker = next;
+    }
+  }
+
   void deleteItems()
   {
     forEach([](tItemPtr p) { delete p; });

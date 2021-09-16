@@ -7,6 +7,7 @@
 #include <tools/FlagOwner.h>
 #include <ParameterId.h>
 #include <tools/Signal.h>
+#include <sync/SyncedItem.h>
 
 class Layout;
 class Writer;
@@ -34,7 +35,8 @@ enum class Defaults
 
 class Parameter : public UpdateDocumentContributor,
                   public IntrusiveListItem<Parameter *>,
-                  public FlagOwner<ParameterFlags, uint8_t>
+                  public FlagOwner<ParameterFlags, uint8_t>,
+                  public SyncedItem
 {
  public:
   enum class Step
@@ -160,6 +162,7 @@ class Parameter : public UpdateDocumentContributor,
   virtual tControlPositionValue getNextStepValue(int incs, bool fine, bool shift) const;
 
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
+  nlohmann::json serialize() const override;
 
  private:
   mutable Signal<void, const Parameter *> m_signalParamChanged;

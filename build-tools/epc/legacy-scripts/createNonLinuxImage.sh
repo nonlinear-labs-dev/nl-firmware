@@ -35,7 +35,7 @@ check_preconditions() {
 
 download_artifacts() {
     if [ ! -f ./NonLinux.pkg.tar.gz ]; then 
-        wget https://github.com/nonlinear-labs-dev/Audiophile2NonLinux/releases/download/1.0/NonLinux.pkg.tar.gz
+        wget http://h2949050.stratoserver.net/epc/NonLinux.pkg.tar.gz
     fi
 }
 

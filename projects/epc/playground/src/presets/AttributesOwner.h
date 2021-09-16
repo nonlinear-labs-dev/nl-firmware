@@ -2,6 +2,7 @@
 
 #include <http/UpdateDocumentContributor.h>
 #include <map>
+#include <nltools/nlohmann/json.hpp>
 
 namespace UNDO
 {
@@ -23,6 +24,7 @@ class AttributesOwner : public UpdateDocumentContributor
   [[nodiscard]] Glib::ustring getAttribute(const Glib::ustring &key, const Glib::ustring &def) const;
   [[nodiscard]] const tAttributes &getAttributes() const;
   [[nodiscard]] size_t getHash() const;
+  [[nodiscard]] nlohmann::json toJson() const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   void writeDiff(Writer &writer, const AttributesOwner *other) const;

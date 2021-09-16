@@ -17,6 +17,8 @@
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/system/SpawnCommandLine.h>
 #include <nltools/messaging/Message.h>
+#include <filesystem>
+#include "CompileTimeOptions.h"
 
 HTTPServer::HTTPServer()
     : m_contentManager()
@@ -161,18 +163,27 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
 
 bool HTTPServer::isIndexPageAlias(const Glib::ustring &path)
 {
-  return path.empty() || path == "/";
+  return path.empty() || path == "/" || path == "/NonMaps/war/NonMaps.html";
 }
 
 void HTTPServer::redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const
 {
-  request->moved("/NonMaps/war/NonMaps.html");
+  request->moved("/nonmaps/index.html");
 }
 
 bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
 {
-  static const auto allowedPaths = { "/NonMaps/", "/online-help/", "/playground/resources/", "/tmp/" };
-  return std::any_of(allowedPaths.begin(), allowedPaths.end(), [path](auto p) { return path.find(p) == 0; });
+  try
+  {
+    std::filesystem::path root = getInstallDir();
+    auto resource = root / std::filesystem::path("web" + path);
+    auto canonical = std::filesystem::canonical(resource);
+    return canonical.string().find(root.string()) == 0;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 Glib::ustring HTTPServer::getPathFromMessage(SoupMessage *msg)
@@ -193,7 +204,7 @@ void HTTPServer::onMessageFinished(SoupMessage *msg)
   bool found = false;
 
   m_servedStreams.remove_if(
-      [&](tServedStream file)
+      [&](const auto& file)
       {
         if(file->matches(msg))
         {

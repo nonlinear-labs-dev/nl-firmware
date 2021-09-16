@@ -35,15 +35,13 @@ add_custom_command(
 add_custom_command(
     COMMENT "Download APLinux image to ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
-    #COMMAND wget https://netix.dl.sourceforge.net/project/ap-linux/AP-Linux-V.4.0.iso
-    COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/AP-Linux-V.4.0.iso
+    COMMAND wget ${DOWNLOAD_LOCATION}/epc/AP-Linux-V.4.0.iso
 )
 
 add_custom_command(
     COMMENT "Download update packages"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
-    #COMMAND wget https://github.com/nonlinear-labs-dev/Audiophile2NonLinux/releases/download/1.0/NonLinux.pkg.tar.gz
-    COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/NonLinux.pkg.tar.gz
+    COMMAND wget ${DOWNLOAD_LOCATION}/epc/NonLinux.pkg.tar.gz
 )
 
 add_custom_command(
@@ -74,7 +72,7 @@ add_custom_command(
 add_custom_command(
   COMMENT "Download gwt"
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip
-  COMMAND wget https://goo.gl/pZZPXS -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip)
+  COMMAND wget ${DOWNLOAD_LOCATION}/web/gwt-2.8.2.zip -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip)
 
 add_custom_command(
     COMMENT "Create local rootfs"
@@ -98,7 +96,7 @@ add_custom_command(
     DEPENDS .filesystem-created
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
-        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh
 )
@@ -145,10 +143,19 @@ add_custom_target(epc-ota-update
         \${UNIT_PASSWORD}
     )
 
-add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
-add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
-add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
-add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
+
+IF(NOT ${TARGET_PLATFORM} STREQUAL "epc2")  
+  IF(NOT ${TARGET_PLATFORM} STREQUAL "epc")
+    add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
+    add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
+    add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
+    add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
+
+    IF(BUILD_WEB)
+        add_dependencies(epc-create-update web)
+    ENDIF()
+  ENDIF()
+ENDIF()
 
 
 
