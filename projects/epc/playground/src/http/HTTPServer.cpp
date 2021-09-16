@@ -173,10 +173,17 @@ void HTTPServer::redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const
 
 bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
 {
-  std::filesystem::path root = getInstallDir();
-  auto resource = root / std::filesystem::path("web" + path);
-  auto canonical = std::filesystem::canonical(resource);
-  return canonical.string().find(root.string()) == 0;
+  try
+  {
+    std::filesystem::path root = getInstallDir();
+    auto resource = root / std::filesystem::path("web" + path);
+    auto canonical = std::filesystem::canonical(resource);
+    return canonical.string().find(root.string()) == 0;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 Glib::ustring HTTPServer::getPathFromMessage(SoupMessage *msg)

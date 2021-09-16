@@ -515,7 +515,7 @@ caption {
 	width: 60px;
 	height: 30px;
 	margin: 0px 0px 0 0;
-	background: url(comp.png) 0px top no-repeat;
+	background: url(images/comp.png) 0px top no-repeat;
 	cursor: pointer;
 }
 
@@ -524,7 +524,7 @@ caption {
 	width: 60px;
 	height: 30px;
 	margin: 0px 0px 0 0;
-	background: url(comp.png) -60px top no-repeat;
+	background: url(images/comp.png) -60px top no-repeat;
 	cursor: pointer;
 }
 
@@ -533,7 +533,7 @@ caption {
 	width: 30px;
 	height: 30px;
 	margin: 0px 0px 0 0;
-	background: url(comp.png) 0px top no-repeat;
+	background: url(images/comp.png) 0px top no-repeat;
 	/*     cursor: pointer;	 */
 }
 
@@ -542,7 +542,7 @@ caption {
 	width: 30px;
 	height: 30px;
 	margin: 0px 0px 0 0;
-	background: url(comp.png) -30px top no-repeat;
+	background: url(images/comp.png) -30px top no-repeat;
 	cursor: pointer;
 }
 
@@ -657,14 +657,14 @@ input[type="checkbox"] {
 	width: 20px;
 	height: 20px;
 	margin-right: 10px;
-	background: url(checkbox.png) -20px top no-repeat;
+	background: url(images/checkbox.png) -20px top no-repeat;
 	vertical-align: middle;
 }
 
 .gwt-CheckBox>input[type="checkbox"]:checked+label::before {
 	display: inline-block;
 	content: "";
-	background: url(checkbox.png) 0px top no-repeat;
+	background: url(images/checkbox.png) 0px top no-repeat;
 }
 
 /*****************************/
@@ -693,14 +693,14 @@ input[type="radio"] {
 	width: 20px;
 	height: 20px;
 	margin-right: 10px;
-	background: url(checkbox.png) -60px center no-repeat;
+	background: url(images/checkbox.png) -60px center no-repeat;
 	vertical-align: middle;
 }
 
 .gwt-RadioButton>input[type="radio"]:checked+label::before {
 	display: inline-block;
 	content: "";
-	background: url(checkbox.png) -40px center no-repeat;
+	background: url(images/checkbox.png) -40px center no-repeat;
 }
 
 /*****************************/
@@ -770,7 +770,7 @@ input[type="text"]+button.reset {
 textarea+button.reset:active {
 	border: none;
 	outline: none;
-	background:	url(erasetoleft.svg);
+	background:	url(images/erasetoleft.svg);
 }
 
 /*****************************/
@@ -827,7 +827,7 @@ select {
 	margin: 0.2em auto;
 	text-align: center;
 	text-align-last: center;
-	background: url(dd-select.png) no-repeat 100% 50% #121623;
+	background: url(images/dd-select.png) no-repeat 100% 50% #121623;
 	background-size: 24px 24px;
 }
 
@@ -866,7 +866,7 @@ option {
 	width: 26px;
 	height: 26px;
 	vertical-align: middle;
-	background: url(close.png) no-repeat;
+	background: url(images/close.png) no-repeat;
 	cursor: pointer;
 	position: absolute;
 	top: 0.4em;
@@ -874,7 +874,7 @@ option {
 }
 
 .close:active {
-	background: url(close.png) -26px top no-repeat;
+	background: url(images/close.png) -26px top no-repeat;
 }
 
 /*****************************/
@@ -1073,7 +1073,7 @@ input[type="range"]::-moz-range-track {
 	left: 0.3em;
 	width: 224px;
 	height: 242px;
-	background: url(pipette.png) top left;
+	background: url(images/pipette.png) top left;
 	z-index: 1;
 }
 
@@ -1750,7 +1750,7 @@ input[type="range"]::-moz-range-track {
 }
 
 .progress-bar {
-	background-image: url(loader.gif);
+	background-image: url(images/loader.gif);
     min-width: 20px;
     min-height: 20px;
     width: 20px;

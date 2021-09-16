@@ -1,7 +1,7 @@
 
 @font-face {
   font-family: 'SSP-LW25';
-  src: url('./images/SSP-LW25-Regular.otf');
+  src: url('images/SSP-LW25-Regular.otf');
 }
 
 html,body {
@@ -1645,7 +1645,7 @@ input.param-name-edit {
   line-height: 15px;
   color: #838383;
 */
-  background: url(close.png);
+  background: url(images/close.png);
     background-size: cover;
 
 }
@@ -1685,11 +1685,11 @@ input.param-name-edit {
 }
 
 .load-button[disabled] {
-  background-image: url(/NonMaps/war/images/Preset-Comp-Load_Disabled.svg)
+  background-image: url(images/Preset-Comp-Load_Disabled.svg)
 }
 
 .load-button:active {
-  background-image: url(/NonMaps/war/images/Preset-Comp-Load_Active.svg)
+  background-image: url(images/Preset-Comp-Load_Active.svg)
 }
 
 .prev-next-button-div {
@@ -1710,7 +1710,7 @@ input.param-name-edit {
 }
 
 .refresh-button {
-  background-image: url(/NonMaps/war/images/PresetComp-Refresh_Enabled.svg);
+  background-image: url(images/PresetComp-Refresh_Enabled.svg);
   background-position: center;
   background-size: cover;
   width: 60px;
@@ -1723,7 +1723,7 @@ button {
 }
 
 .refresh-button:active {
-  background-image: url(/NonMaps/war/images/PresetComp-Refresh_Active.svg);
+  background-image: url(images/PresetComp-Refresh_Active.svg);
 }
 
 .gwt-TabPanelBottom {
