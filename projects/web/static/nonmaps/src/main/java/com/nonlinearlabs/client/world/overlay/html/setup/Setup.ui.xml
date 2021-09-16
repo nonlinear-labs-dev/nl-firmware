@@ -486,6 +486,15 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
+							<p>Enable High-Res. Velocity (CC 88)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
 							<p>Set to Defaults:</p>
 						</div>
 						<div class="w20p">
@@ -493,15 +502,6 @@
 						</div>
 						<div class="w20p">
 							<g:Button ui:field="highResMidi">High-Res.</g:Button>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Enable High-Res. Velocity (CC 88)</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
 						</div>
 					</div>
 					<div class="linie"></div>
@@ -791,16 +791,13 @@
 						</table>
 					</div>
 					<div class="eins-he">
-						<div class="w60p">
-							<p>Set to Defaults:</p>
-						</div>
-						<div class="w20p">
+						<div class="w25p"></div>
+						<div class="w50p fl-j-center">
 							<g:Button ui:field="routingsOn">All On</g:Button>
-						</div>
-						<div class="w20p">
 							<g:Button ui:field="routingsOff">All Off</g:Button>
 						</div>
-					</div>
+						<div class="w25p"></div>
+					</div>		
 				</div>
 			</div>
 
