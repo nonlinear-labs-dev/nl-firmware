@@ -97,14 +97,16 @@ Bank *MockPresetStorage::createBank()
 {
   auto eb = getEditBuffer();
   auto pm = eb->getParent();
-  PresetManagerUseCases useCase(pm);
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
   return useCase.addBank();
 }
 
 DualPresetBank::DualPresetBank()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases pmUseCase(pm);
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases pmUseCase(*pm, *settings);
   m_bank = pmUseCase.addBank();
   BankUseCases bankUseCases(m_bank);
 
@@ -124,7 +126,8 @@ DualPresetBank::DualPresetBank()
 DualPresetBank::~DualPresetBank()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases useCases(pm);
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCases(*pm, *settings);
   useCases.deleteBank(m_bank);
 }
 

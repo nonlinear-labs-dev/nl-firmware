@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <testing/TestRootDocument.h>
 #include "EditBuffer.h"
 #include "PresetDualParameterGroups.h"
 #include "PresetManager.h"
@@ -237,6 +236,6 @@ PresetDualParameterGroups::tParameterGroups PresetDualParameterGroups::getGroups
 
 ParameterGroupSet &PresetDualParameterGroups::getDataScheme()
 {
-  static ParameterGroupSet sDataScheme(nullptr);
+  static ParameterGroupSet sDataScheme(&SyncMasterMockRoot::get());
   return sDataScheme;
 }

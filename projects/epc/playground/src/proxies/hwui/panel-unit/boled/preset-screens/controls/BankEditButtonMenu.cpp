@@ -117,7 +117,8 @@ void BankEditButtonMenu::selectButton(size_t i)
 void BankEditButtonMenu::newBank()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases useCases(pm);
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCases(*pm, *settings);
   auto pos = pm->calcDefaultBankPositionForNewBank();
   useCases.newBank(std::to_string(pos.first), std::to_string(pos.second), std::nullopt);
 
@@ -139,7 +140,9 @@ void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_ent
   if(file != std::filesystem::directory_entry())
   {
     SplashLayout::start();
-    PresetManagerUseCases useCase(Application::get().getPresetManager());
+    auto pm = Application::get().getPresetManager();
+    auto settings = Application::get().getSettings();
+    PresetManagerUseCases useCase(*pm, *settings);
     useCase.importBankFromPath(file, [](const std::string& name) { SplashLayout::addStatus("Importing " + name); });
     SplashLayout::finish();
   }
@@ -219,10 +222,11 @@ void BankEditButtonMenu::pasteBank()
 void BankEditButtonMenu::deleteBank()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases useCases(pm);
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
   if(auto bank = pm->getSelectedBank())
   {
-    useCases.deleteBank(bank);
+    useCase.deleteBank(bank);
   }
 
   auto hwui = Application::get().getHWUI();
@@ -233,7 +237,8 @@ void BankEditButtonMenu::deleteBank()
 void BankEditButtonMenu::moveLeft()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases useCase(pm);
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
   if(auto bank = pm->getSelectedBank())
     useCase.moveLeft(bank);
 }
@@ -241,7 +246,8 @@ void BankEditButtonMenu::moveLeft()
 void BankEditButtonMenu::moveRight()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases useCase(pm);
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
 
   if(auto bank = pm->getSelectedBank())
     useCase.moveRight(bank);
@@ -250,15 +256,18 @@ void BankEditButtonMenu::moveRight()
 void BankEditButtonMenu::selectMidi()
 {
   auto pm = Application::get().getPresetManager();
+  auto settings = Application::get().getSettings();
   auto bank = pm->getSelectedBank();
-  PresetManagerUseCases useCases(pm);
-  useCases.selectMidiBank(bank);
+  PresetManagerUseCases useCase(*pm, *settings);
+  useCase.selectMidiBank(bank);
 }
 
 void BankEditButtonMenu::removeMidi()
 {
-  PresetManagerUseCases useCases(Application::get().getPresetManager());
-  useCases.selectMidiBank(nullptr);
+  auto pm = Application::get().getPresetManager();
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
+  useCase.selectMidiBank(nullptr);
 }
 
 void BankEditButtonMenu::correctMenuSelection()

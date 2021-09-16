@@ -17,7 +17,7 @@ void BaseUnitPresetsMode::setup()
     if(state)
       installButtonRepeat([]() {
         auto pm = Application::get().getPresetManager();
-        PresetManagerUseCases useCase(pm);
+        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
         useCase.selectPreviousPreset();
       });
     else
@@ -30,7 +30,7 @@ void BaseUnitPresetsMode::setup()
     if(state)
       installButtonRepeat([]() {
         auto pm = Application::get().getPresetManager();
-        PresetManagerUseCases useCase(pm);
+        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
         useCase.selectNextPreset();
       });
     else

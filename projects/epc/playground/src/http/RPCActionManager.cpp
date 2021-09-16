@@ -29,7 +29,8 @@ bool RPCActionManager::matches(const Glib::ustring &path) const
 
 bool RPCActionManager::handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request)
 {
-  const auto &it = m_actions.find(path.substr(m_basePath.length()));
+  auto actionPath = path.substr(m_basePath.length());
+  const auto &it = m_actions.find(actionPath);
 
   if(it != m_actions.end())
   {

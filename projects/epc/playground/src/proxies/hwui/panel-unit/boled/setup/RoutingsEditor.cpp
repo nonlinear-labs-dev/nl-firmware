@@ -222,7 +222,7 @@ void RoutingsEditor::incSetting(int inc)
   if(Application::exists())
   {
     static auto settings = Application::get().getSettings();
-    SettingsUseCases useCases(settings);
+    SettingsUseCases useCases(*settings);
     auto idx = static_cast<int>(m_id);
     auto asp = static_cast<int>(m_aspect);
     useCases.updateRoutingAspect(idx, asp, inc > 0);

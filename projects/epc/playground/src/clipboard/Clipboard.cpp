@@ -206,9 +206,9 @@ void Clipboard::pasteBankOnBackground(const Glib::ustring &transactionName, cons
                                       const Glib::ustring &y, const UpdateDocumentContributor *content)
 {
   auto pm = Application::get().getPresetManager();
-
+  auto settings = Application::get().getSettings();
   auto srcBank = dynamic_cast<const Bank *>(content);
-  PresetManagerUseCases useCase(pm);
+  PresetManagerUseCases useCase(*pm, *settings);
   useCase.pasteBankOnBackground(transactionName, x, y, srcBank, this);
 }
 
@@ -249,8 +249,9 @@ void Clipboard::pasteMultiplePresetsOnPreset(const Uuid &presetUuid)
 void Clipboard::pastePresetOnBackground(const Glib::ustring &x, const Glib::ustring &y)
 {
   auto pm = Application::get().getPresetManager();
+  auto settings = Application::get().getSettings();
   auto srcPreset = dynamic_cast<Preset *>(m_content.get());
-  PresetManagerUseCases useCases(pm);
+  PresetManagerUseCases useCases(*pm, *settings);
   useCases.pastePresetOnBackground(x, y, srcPreset, this);
 }
 
@@ -283,10 +284,11 @@ void Clipboard::pastePresetOnBank(const Uuid &bankUuid)
   if(containsPreset())
   {
     auto pm = Application::get().getPresetManager();
+    auto settings = Application::get().getSettings();
 
     if(auto target = pm->findBank(bankUuid))
     {
-      PresetManagerUseCases useCase(pm);
+      PresetManagerUseCases useCase(*pm, *settings);
       auto source = dynamic_cast<const Preset *>(m_content.get());
       useCase.pastePresetOnBank(target, source, this);
     }
@@ -325,10 +327,11 @@ void Clipboard::pasteBankOnPreset(const Glib::ustring &transactionName, const Uu
 void Clipboard::pastePresetOnPreset(const Uuid &presetUuid)
 {
   auto pm = Application::get().getPresetManager();
+  auto settings = Application::get().getSettings();
 
   if(auto targetPreset = pm->findPreset(presetUuid))
   {
-    PresetManagerUseCases useCase(pm);
+    PresetManagerUseCases useCase(*pm, *settings);
     auto source = dynamic_cast<Preset *>(m_content.get());
     useCase.pastePresetOnPreset(targetPreset, source, this);
   }

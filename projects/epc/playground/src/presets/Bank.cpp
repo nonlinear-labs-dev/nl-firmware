@@ -475,17 +475,17 @@ bool Bank::empty() const
   return m_presets.empty();
 }
 
-void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other)
-{
-  setName(transaction, other->getName(false));
-  setX(transaction, other->getX());
-  setY(transaction, other->getY());
-
-  AttributesOwner::copyFrom(transaction, other);
-  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, *p)); });
-
-  updateLastModifiedTimestamp(transaction);
-}
+//void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other)
+//{
+//  setName(transaction, other->getName(false));
+//  setX(transaction, other->getX());
+//  setY(transaction, other->getY());
+//
+//  AttributesOwner::copyFrom(transaction, other);
+//  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, *p, ignoreUuids)); });
+//
+//  updateLastModifiedTimestamp(transaction);
+//}
 
 std::string to_string(Bank::AttachmentDirection dir)
 {

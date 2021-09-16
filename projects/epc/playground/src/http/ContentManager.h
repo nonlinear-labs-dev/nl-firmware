@@ -21,7 +21,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
   ~ContentManager() override;
 
   void init();
-  void handleRequest(std::shared_ptr<NetworkRequest> request);
+  void handleRequest(const std::shared_ptr<NetworkRequest>& request);
   void onSectionMessageFinished(SoupMessage *msg);
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
@@ -42,13 +42,13 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
   void addContentSection(tContentSectionPtr section);
   void onSectionChanged();
 
-  void deliverResponse(std::shared_ptr<HTTPRequest> request, tUpdateID clientsUpdateID);
-  void deliverContentSectionResponse(ContentManager::tContentSectionPtr section,
-                                     std::shared_ptr<NetworkRequest> request);
-  void delayResponseUntilChanged(std::shared_ptr<HTTPRequest> request);
+  void deliverResponse(const std::shared_ptr<HTTPRequest>& request, tUpdateID clientsUpdateID);
+  static void deliverContentSectionResponse(ContentManager::tContentSectionPtr section,
+                                     const std::shared_ptr<NetworkRequest>& request);
+  void delayResponseUntilChanged(const std::shared_ptr<HTTPRequest>& request);
 
-  bool tryHandlingContentSectionRequest(ContentManager::tContentSectionPtr section,
-                                        std::shared_ptr<NetworkRequest> request);
+  static bool tryHandlingContentSectionRequest(ContentManager::tContentSectionPtr section,
+                                        const std::shared_ptr<NetworkRequest>& request);
 
   void writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision, bool omitOracles) const;
   void sendResponses();
@@ -68,7 +68,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
     explicit WebsocketConnection(SoupWebsocketConnection *c);
     ~WebsocketConnection();
 
-    void onWebsocketRequestDone(std::shared_ptr<WebSocketRequest> request, tUpdateID oldID, tUpdateID newId);
+    void onWebsocketRequestDone(const std::shared_ptr<WebSocketRequest>& request, tUpdateID oldID, tUpdateID newId);
     SoupWebsocketConnection *getConnection();
     [[nodiscard]] tUpdateID getLastSentUpdateId() const;
     void setLastSentUpdateId(int currentUpdateId);
@@ -85,7 +85,7 @@ class ContentManager : public PendingHTTPRequests, public UpdateDocumentMaster, 
 
   void feedWebSockets(bool trustOracles);
   bool feedWebSocket(const tWebsocketConnection &ws, bool trustOracles);
-  void onUpdateIdChangedByNetworkRequest(std::shared_ptr<NetworkRequest> request,
+  void onUpdateIdChangedByNetworkRequest(const std::shared_ptr<NetworkRequest>& request,
                                          UpdateDocumentContributor::tUpdateID oldUpdateID,
                                          UpdateDocumentContributor::tUpdateID newUpdateID);
 

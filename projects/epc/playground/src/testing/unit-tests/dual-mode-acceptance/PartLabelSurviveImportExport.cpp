@@ -52,8 +52,9 @@ TEST_CASE("Export/Import Presets With Part Names", "[Preset][Store][Export][Impo
     }
 
     auto newBank = [&] {
+      auto settings = TestHelper::getSettings();
       FileInStream stream("/tmp/testbank.xml", false);
-      PresetManagerUseCases useCase(TestHelper::getPresetManager());
+      PresetManagerUseCases useCase(*TestHelper::getPresetManager(), *settings);
       return useCase.importBankFromStream(stream, 0, 0, "/tmp/testbank.xml", [](auto){});
     }();
 
@@ -63,7 +64,8 @@ TEST_CASE("Export/Import Presets With Part Names", "[Preset][Store][Export][Impo
     CHECK(newBank->getNumPresets() == oldNumPresets);
     CHECK(newBank->getName(false) == oldBankName);
 
-    PresetManagerUseCases useCase(pm);
+    auto settings = TestHelper::getSettings();
+    PresetManagerUseCases useCase(*pm, *settings);
     useCase.deleteBank(newBank);
   }
 }

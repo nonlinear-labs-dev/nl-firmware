@@ -14,7 +14,7 @@ public class OpenEditBufferAsText extends Setting {
 
 	@Override
 	public Control onValueButtonMouseDown(Position eventPoint) {
-		Window.open("/presets/param-editor/open-editbuffer-as-text", "", "");
+		Window.open("/param-editor/open-editbuffer-as-text", "", "");
 		return this;
 	}
 

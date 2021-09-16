@@ -73,7 +73,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground,
                                                         [=](const auto &msg)
                                                         {
-                                                            SettingsUseCases useCases(&m_settings);
+                                                            SettingsUseCases useCases(m_settings);
                                                             useCases.setGlobalLocal(msg.m_state);
                                                         });
 

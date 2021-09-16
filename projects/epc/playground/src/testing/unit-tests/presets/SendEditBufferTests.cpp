@@ -65,6 +65,7 @@ TEST_CASE("Store Action do not send EditBuffer")
   ScopedMessagingConfiguration scopeEndPoint { configuration };
 
   auto pm = TestHelper::getPresetManager();
+  auto settings = TestHelper::getSettings();
 
   bool singleMessageReceived = false;
 
@@ -73,7 +74,7 @@ TEST_CASE("Store Action do not send EditBuffer")
   CHECK(waitForConnection(EndPoint::AudioEngine));
   auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,
                                         [&](const auto &singleEditMessage) { singleMessageReceived = true; });
-  PresetManagerUseCases useCases(pm);
+  PresetManagerUseCases useCases(*pm, *settings);
 
   //Store EditBuffer as new Bank
   auto oldNumBanks = pm->getNumBanks();
