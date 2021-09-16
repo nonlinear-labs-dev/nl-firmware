@@ -19,7 +19,7 @@ add_subdirectory(fetch-upstream-packages)
 ADD_CUSTOM_COMMAND(
     COMMENT "Download NonLinux packages for ${BUILD_CONTAINER_VERSION}"
     OUTPUT ${ARCH_INSTALL_PACKAGES}
-    COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/${ARCH_INSTALL_PACKAGES})
+    COMMAND wget ${DOWNLOAD_LOCATION}/build-container/${ARCH_INSTALL_PACKAGES})
   
 ADD_CUSTOM_COMMAND(
     COMMENT "Create docker container running a minimal ARCH based host os"
