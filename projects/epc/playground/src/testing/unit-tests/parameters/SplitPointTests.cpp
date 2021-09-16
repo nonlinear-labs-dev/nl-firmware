@@ -1,7 +1,6 @@
 #include <parameters/scale-converters/dimension/SplitPointDimension.h>
 #include "testing/parameter/TestGroupSet.h"
 #include "testing/parameter/TestGroup.h"
-#include "testing/TestRootDocument.h"
 #include "parameters/SplitPointParameter.h"
 #include "testing/TestHelper.h"
 #include "device-settings/Settings.h"

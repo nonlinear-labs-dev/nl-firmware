@@ -1,7 +1,6 @@
 #include <testing/TestHelper.h>
 #include <device-settings/Settings.h>
 #include <device-settings/midi/RoutingSettings.h>
-#include <testing/TestRootDocument.h>
 #include <testing/unit-tests/mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
 
