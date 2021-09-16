@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <testing/TestRootDocument.h>
 #include "EditBuffer.h"
 #include "PresetDualParameterGroups.h"
 #include "PresetManager.h"
