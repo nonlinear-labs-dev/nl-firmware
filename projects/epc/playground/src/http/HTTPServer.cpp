@@ -203,14 +203,16 @@ void HTTPServer::onMessageFinished(SoupMessage *msg)
 {
   bool found = false;
 
-  m_servedStreams.remove_if([&](tServedStream file) {
-    if(file->matches(msg))
-    {
-      found = true;
-      return true;
-    }
-    return false;
-  });
+  m_servedStreams.remove_if(
+      [&](const auto& file)
+      {
+        if(file->matches(msg))
+        {
+          found = true;
+          return true;
+        }
+        return false;
+      });
 
   if(!found)
     m_contentManager.onSectionMessageFinished(msg);
