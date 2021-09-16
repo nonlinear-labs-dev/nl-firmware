@@ -9,7 +9,7 @@
 class PresetParameterGroup;
 class ParameterGroupSet;
 
-class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListItem<ParameterGroup *>
+class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListItem<ParameterGroup *>, public SyncedItem
 {
  private:
   typedef UpdateDocumentContributor super;
@@ -84,6 +84,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
 
  protected:
   tParameterPtr appendParameter(Parameter *p);
+  nlohmann::json serialize() const override;
 
  private:
   const GroupId m_id;

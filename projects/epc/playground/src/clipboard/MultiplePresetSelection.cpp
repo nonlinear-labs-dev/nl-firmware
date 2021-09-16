@@ -15,7 +15,7 @@ void MultiplePresetSelection::addPreset(UNDO::Transaction *transaction, const Pr
 {
   if(presetToCopy)
   {
-    auto swapData = UNDO::createSwapData(std::make_unique<Preset>(this, *presetToCopy, true));
+    auto swapData = UNDO::createSwapData(std::make_unique<Preset>(this, *presetToCopy));
     transaction->addSimpleCommand(
         [=](UNDO::Command::State) mutable {
           std::unique_ptr<Preset> p;

@@ -1,7 +1,6 @@
 #include <parameters/scale-converters/dimension/SplitPointDimension.h>
 #include "testing/parameter/TestGroupSet.h"
 #include "testing/parameter/TestGroup.h"
-#include "testing/TestRootDocument.h"
 #include "parameters/SplitPointParameter.h"
 #include "testing/TestHelper.h"
 #include "device-settings/Settings.h"
@@ -9,11 +8,11 @@
 #include <catch.hpp>
 #include <parameter_declarations.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
+#include <sync/SyncMasterMockRoot.h>
 
 TEST_CASE("Split Point Display Value")
 {
-  TestRootDocument root;
-  TestGroupSet set { &root };
+  TestGroupSet set { &SyncMasterMockRoot::get() };
   TestGroup group(&set, VoiceGroup::I);
   group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::I }));
   group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::II }));

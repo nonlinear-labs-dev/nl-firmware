@@ -1,6 +1,6 @@
 #include "TestGroupSet.h"
 
-TestGroupSet::TestGroupSet(TestRootDocument *root)
+TestGroupSet::TestGroupSet(UpdateDocumentContributor *root)
     : ParameterGroupSet(root)
 {
 }

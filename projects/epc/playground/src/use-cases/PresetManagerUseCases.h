@@ -17,8 +17,6 @@ class Settings;
 class PresetManagerUseCases
 {
  public:
-  typename std::function<void(void)> ImportVersionMismatchCallback;
-
   enum class DropActions
   {
     Above,

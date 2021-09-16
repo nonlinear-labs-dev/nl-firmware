@@ -104,3 +104,8 @@ void AttributesOwner::writeDiff(Writer &writer, const AttributesOwner *other) co
     }
   }
 }
+
+nlohmann::json AttributesOwner::toJson() const
+{
+  return m_attributes;
+}

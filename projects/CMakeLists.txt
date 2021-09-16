@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 
 OPTION(DEV_PC "Enable debugging features to be run on a development PC" Off)
+OPTION(BUILD_WEB "Build the uis based on web technology" Off)
 
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "log -n 1 --pretty='format:%cd' --date=format:'%Y-%m-%d %H:%M:%S'" OUTPUT_VARIABLE LAST_COMMIT_STAMP)
 EXEC_PROGRAM("git" ${CMAKE_CURRENT_SOURCE_DIR} ARGS "rev-parse --abbrev-ref HEAD" OUTPUT_VARIABLE BRANCH_NAME)
@@ -22,6 +23,7 @@ SET(RECORDER_WEBSOCKET_PORT 8889)
 SET(RECORDER_HTTPSERVER_PORT 8890)
 SET(PLAYGROUND_OLED_WEBSOCKET_PORT 8891)
 SET(PLAYGROUND_PRESETLOAD_LOG_PORT 8892)
+SET(SYNCJS_WEBSOCKET_PORT 8893)
 
 add_definitions(
   -DPLAYGROUND_HTTPSERVER_PORT=${PLAYGROUND_HTTPSERVER_PORT} 
@@ -29,6 +31,7 @@ add_definitions(
   -DRECORDER_HTTPSERVER_PORT=${RECORDER_HTTPSERVER_PORT}
   -DPLAYGROUND_OLED_WEBSOCKET_PORT=${PLAYGROUND_OLED_WEBSOCKET_PORT}
   -DPLAYGROUND_PRESETLOAD_LOG_PORT=${PLAYGROUND_PRESETLOAD_LOG_PORT}
+  -DSYNCJS_WEBSOCKET_PORT=${SYNCJS_WEBSOCKET_PORT}
   )
 
 add_subdirectory(bbb)
@@ -36,3 +39,7 @@ add_subdirectory(epc)
 add_subdirectory(playcontroller)
 add_subdirectory(shared)
 add_subdirectory(supervisor)
+
+IF(BUILD_WEB)
+  add_subdirectory(web)
+ENDIF()

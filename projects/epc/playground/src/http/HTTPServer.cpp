@@ -17,6 +17,8 @@
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/system/SpawnCommandLine.h>
 #include <nltools/messaging/Message.h>
+#include <filesystem>
+#include "CompileTimeOptions.h"
 
 HTTPServer::HTTPServer()
     : m_contentManager()
@@ -126,7 +128,7 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
       }
 
-      nltools::msg::Update::UpdateUploadedNotification msg{};
+      nltools::msg::Update::UpdateUploadedNotification msg {};
       nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
 
       request->okAndComplete();
@@ -161,22 +163,27 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
 
 bool HTTPServer::isIndexPageAlias(const Glib::ustring &path)
 {
-  return path.empty() || path == "/";
+  return path.empty() || path == "/" || path == "/NonMaps/war/NonMaps.html";
 }
 
 void HTTPServer::redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const
 {
-  request->moved("/NonMaps/war/NonMaps.html");
+  request->moved("/nonmaps/index.html");
 }
 
 bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
 {
-  static const auto allowedPaths = { "/NonMaps/", "/online-help/", "/playground/resources/", "/tmp/" };
-  for(auto p : allowedPaths)
-    if(path.find(p) == 0)
-      return true;
-
-  return false;
+  try
+  {
+    std::filesystem::path root = getInstallDir();
+    auto resource = root / std::filesystem::path("web" + path);
+    auto canonical = std::filesystem::canonical(resource);
+    return canonical.string().find(root.string()) == 0;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 Glib::ustring HTTPServer::getPathFromMessage(SoupMessage *msg)

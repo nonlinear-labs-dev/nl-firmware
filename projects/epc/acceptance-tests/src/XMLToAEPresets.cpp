@@ -5,8 +5,8 @@
 #include <AudioEngineOptions.h>
 #include <Toolbox.h>
 #include <testing/TestHelper.h>
-#include <mock/UpdateDocumentMasterMock.h>
 #include <mock/MockSettingsObject.h>
+#include <sync/SyncMasterMockRoot.h>
 
 TEST_CASE("Load XML Preset into AE")
 {
@@ -18,8 +18,7 @@ TEST_CASE("Load XML Preset into AE")
   auto options = Tests::createEmptyAudioEngineOptions();
   auto synth = std::make_unique<C15Synth>(options.get());
 
-  UpdateDocumentMasterMock master;
-  MockSettingsObject settings(&master);
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
 
   //Prepare Midi Settings
   {

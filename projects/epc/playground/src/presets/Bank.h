@@ -10,6 +10,7 @@
 
 #include <serialization/PresetBankSerializer.h>
 #include <tools/Uuid.h>
+#include <sync/SyncedItem.h>
 
 class Preset;
 class PresetManager;
@@ -17,7 +18,7 @@ class SearchQuery;
 
 using PresetPtr = std::unique_ptr<Preset>;
 
-class Bank : public AttributesOwner
+class Bank : public AttributesOwner, public SyncedItem
 {
  private:
   using super = AttributesOwner;
@@ -32,7 +33,7 @@ class Bank : public AttributesOwner
   };
 
   explicit Bank(UpdateDocumentContributor *parent);
-  Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids);
+  Bank(UpdateDocumentContributor *parent, const Bank &other);
   ~Bank() override;
 
   void load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder, int numBank, int numBanks);
@@ -43,7 +44,6 @@ class Bank : public AttributesOwner
 
   // accessors
   bool empty() const;
-  const Uuid &getUuid() const;
   std::string getName(bool withFallback) const;
   std::string getX() const;
   std::string getY() const;
@@ -64,6 +64,8 @@ class Bank : public AttributesOwner
   Bank *getSlaveRight() const;
   Bank *getSlaveBottom() const;
   time_t getLastChangedTimestamp() const;
+  const Uuid &getUuid() const;
+  nlohmann::json serialize() const override;
 
   void attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, AttachmentDirection dir);
   void invalidate();
@@ -71,7 +73,6 @@ class Bank : public AttributesOwner
   Preset *clonePreset(const Preset *p);
 
   // transactions
-  void copyFrom(UNDO::Transaction *transaction, const Bank *other, bool ignoreUuids);
   void setName(UNDO::Transaction *transaction, const std::string &name);
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
   void selectPreset(UNDO::Transaction *transaction, const Uuid &uuid);
@@ -128,7 +129,6 @@ class Bank : public AttributesOwner
   size_t getNextPresetPosition() const;
   size_t getPreviousPresetPosition() const;
 
-  Uuid m_uuid;
   Uuid m_attachedToBankWithUuid;
   std::string m_name;
   std::string m_serializationDate;
@@ -143,6 +143,7 @@ class Bank : public AttributesOwner
   tUpdateID m_presetsLastSavedForUpdateID = 0;
 
   Signal<void> m_sigBankChanged;
+  Uuid m_uuid;
 
   friend class PresetBankSerializer;
   friend class PresetBankMetadataSerializer;
