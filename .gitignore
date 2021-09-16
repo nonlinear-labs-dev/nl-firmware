@@ -5,6 +5,8 @@ CMakeLists.txt.user
 *.war
 .idea
 .project
+projects/web/c16/src/.meteor
+projects/web/c16/src/node_modules
 projects/playground/src/libundo/undo/Makefile.am
 projects/playground/src/libundo/docs/Makefile.am
 projects/playground/src/libundo/Makefile.am
