@@ -10,7 +10,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/NonMaps.js.in ${CMAKE
 add_custom_command(
   COMMENT "Download gwt"
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}.zip
-  COMMAND wget https://storage.googleapis.com/gwt-releases/gwt-${GWT_VERSION}.zip -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}.zip)
+  COMMAND wget ${DOWNLOAD_LOCATION}/web/gwt-${GWT_VERSION}.zip -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}.zip)
 
 add_custom_command(
   COMMENT "Unpack gwt"

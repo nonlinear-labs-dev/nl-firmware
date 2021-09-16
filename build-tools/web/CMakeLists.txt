@@ -29,7 +29,7 @@ ADD_CUSTOM_COMMAND(
 ADD_CUSTOM_COMMAND(
     COMMENT "Download Meteor packages for ${METEOR_RESOURCES_REVISION}"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/meteor-resources-${METEOR_RESOURCES_REVISION}.tar.gz
-    COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/meteor-resources-${METEOR_RESOURCES_REVISION}.tar.gz)
+    COMMAND wget ${DOWNLOAD_LOCATION}/web/meteor-resources-${METEOR_RESOURCES_REVISION}.tar.gz)
 
 ADD_CUSTOM_TARGET(fetch-meteor-resources
   DEPENDS nl-build-container-setup
