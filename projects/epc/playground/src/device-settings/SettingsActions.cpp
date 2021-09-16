@@ -16,6 +16,7 @@
 
 SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& settings, PresetManager& pm)
     : SectionAndActionManager(parent, "/settings/")
+    , m_settings{settings}
 {
   addAction("set-setting", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring key = request->get("key");
@@ -119,6 +120,11 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
     SettingsUseCases useCases(settings);
     useCases.defaultPassphrase();
   });
+}
+
+void SettingsActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  m_settings.writeDocument(writer, knownRevision);
 }
 
 SettingsActions::~SettingsActions() = default;

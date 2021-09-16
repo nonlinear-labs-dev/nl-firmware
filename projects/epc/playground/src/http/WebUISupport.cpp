@@ -24,7 +24,7 @@ namespace
 WebUISupport::WebUISupport(UpdateDocumentContributor *master)
     : SectionAndActionManager(master, "/webui-support/")
 {
-  addAction("enum/get-strings", [&](const std::shared_ptr<NetworkRequest>& request) {
+  addAction("enum-get-strings", [&](const std::shared_ptr<NetworkRequest>& request) {
     if(auto h = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       h->setStatusOK();

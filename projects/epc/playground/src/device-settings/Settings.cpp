@@ -67,7 +67,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
-    : super(master)
+    : UpdateDocumentContributor(master)
     , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
@@ -149,12 +149,7 @@ Settings::tUpdateID Settings::onChange(uint64_t flags)
 {
   m_saveJob.trigger();
   m_sigChanged.emit();
-  return super::onChange(flags);
-}
-
-Glib::ustring Settings::getPrefix() const
-{
-  return "settings";
+  return UpdateDocumentContributor::onChange(flags);
 }
 
 void Settings::init()

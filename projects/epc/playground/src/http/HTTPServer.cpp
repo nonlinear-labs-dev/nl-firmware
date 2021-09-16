@@ -126,7 +126,7 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
       }
 
-      nltools::msg::Update::UpdateUploadedNotification msg{};
+      nltools::msg::Update::UpdateUploadedNotification msg {};
       nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
 
       request->okAndComplete();
@@ -172,11 +172,7 @@ void HTTPServer::redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const
 bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
 {
   static const auto allowedPaths = { "/NonMaps/", "/online-help/", "/playground/resources/", "/tmp/" };
-  for(auto p : allowedPaths)
-    if(path.find(p) == 0)
-      return true;
-
-  return false;
+  return std::any_of(allowedPaths.begin(), allowedPaths.end(), [path](auto p) { return path.find(p) == 0; });
 }
 
 Glib::ustring HTTPServer::getPathFromMessage(SoupMessage *msg)
@@ -196,14 +192,16 @@ void HTTPServer::onMessageFinished(SoupMessage *msg)
 {
   bool found = false;
 
-  m_servedStreams.remove_if([&](tServedStream file) {
-    if(file->matches(msg))
-    {
-      found = true;
-      return true;
-    }
-    return false;
-  });
+  m_servedStreams.remove_if(
+      [&](tServedStream file)
+      {
+        if(file->matches(msg))
+        {
+          found = true;
+          return true;
+        }
+        return false;
+      });
 
   if(!found)
     m_contentManager.onSectionMessageFinished(msg);

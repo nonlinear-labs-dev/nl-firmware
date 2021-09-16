@@ -1207,7 +1207,7 @@ public class ServerProxy {
 	}
 
 	public void downloadEnumStrings(String enumName, Consumer<String[]> c) {
-		downloadFile("/webui-support/enum/get-strings?name=" + URL.encodeQueryString(enumName), new DownloadHandler() {
+		downloadFile("/webui-support/enum-get-strings?name=" + URL.encodeQueryString(enumName), new DownloadHandler() {
 
 			@Override
 			public void onFileDownloaded(String text) {
