@@ -1,35 +1,39 @@
 #!/bin/sh
 
+set -e
+
 BINARY_DIR=$(realpath $1)
 shift
 SOURCE_DIR=$(realpath $1)
 shift
-DOCKER_ARGS="$1"
-shift
 
 SSH_DIR=$(realpath "$HOME/.ssh")
+USER_ID=$(id -u)
 
-TMPSCRIPT=$(mktemp)
-TMPSCRIPTBASE=$(basename $TMPSCRIPT)
-TMPDIRNAME="$BINARY_DIR/tmp"
-TMPSCRIPT="$TMPDIRNAME/$TMPSCRIPTBASE"
-mkdir -p $TMPDIRNAME
-
-# COPY local ssh files into the docker container to be able to push onto github
-echo "
+SCRIPT="
+set -e
 mkdir -p /docker-ssh
 rsync -a /host-ssh/ /docker-ssh
 chown -R root /docker-ssh
 if ! grep \"/docker-ssh\" /etc/ssh/ssh_config; then
  echo \"IdentityFile /docker-ssh/id_rsa\" >> /etc/ssh/ssh_config
 fi
-set -e
-" > $TMPSCRIPT
+
+useradd -m -u ${USER_ID} bob-the-builder
+cd /home/bob-the-builder
+
+runuser -l bob-the-builder -c \"
+"
 
 for var in "$@"
 do
-    echo $var >> $TMPSCRIPT
+    SCRIPT="$SCRIPT
+    $var"
 done
 
+SCRIPT="$SCRIPT\""
+
+tty && TTY=" -ti "
+
 DOCKERNAME="nl-cross-build-environment"
-docker run $DOCKER_ARGS --privileged --rm -v $SSH_DIR:/host-ssh -v $TMPDIRNAME:/script -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash /script/$TMPSCRIPTBASE
+docker run $TTY --privileged --rm -v $SSH_DIR:/host-ssh -v $BINARY_DIR:/workdir -v $SOURCE_DIR:/sources $DOCKERNAME bash -c "$SCRIPT"
