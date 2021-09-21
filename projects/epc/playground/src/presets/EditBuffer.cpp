@@ -37,7 +37,7 @@
 #include "LoadedPresetLog.h"
 #include <sync/JsonAdlSerializers.h>
 
-EditBuffer::EditBuffer(PresetManager *parent)
+EditBuffer::EditBuffer(PresetManager *parent, Settings& settings, std::unique_ptr<AudioEngineProxy>& aeContainer)
     : ParameterGroupSet(parent)
     , SyncedItem(parent->getRoot()->getSyncMaster(), "/editbuffer")
     , m_deferredJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
@@ -46,6 +46,8 @@ EditBuffer::EditBuffer(PresetManager *parent)
     , m_type(SoundType::Single)
     , m_lastSelectedParameter { 0, VoiceGroup::I }
     , m_loadedPresetLog(std::make_unique<LoadedPresetLog>())
+    , m_settings { settings }
+    , m_audioEngineProxyContainer { aeContainer }
 {
   m_hashOnStore = getHash();
 }
@@ -1626,4 +1628,17 @@ std::shared_ptr<ScopedGuard::Lock> EditBuffer::getParameterFocusLockGuard()
 bool EditBuffer::isParameterFocusLocked() const
 {
   return m_parameterFocusLock.isLocked();
+}
+
+AudioEngineProxy& EditBuffer::getAudioEngineProxy() const
+{
+  if(auto ae = m_audioEngineProxyContainer.get())
+    return *ae;
+
+  nltools_assertAlways(false);
+}
+
+Settings& EditBuffer::getSettings() const
+{
+  return m_settings;
 }

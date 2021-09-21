@@ -16,6 +16,10 @@
 #include <presets/ParameterGroupSet.h>
 #include <presets/PresetParameter.h>
 #include <nltools/messaging/Message.h>
+#include <presets/EditBuffer.h>
+#include <device-settings/Settings.h>
+#include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/GlobalLocalEnableSetting.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -253,9 +257,29 @@ void RibbonParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *ot
 
 void RibbonParameter::boundToMacroControl(tControlPositionValue v)
 {
-  getValue().setRawValue(Initiator::INDIRECT, v);
-  onChange();
-  invalidate();
+  if(isLocalEnabled())
+  {
+    getValue().setRawValue(Initiator::INDIRECT, v);
+    onChange();
+    invalidate();
+  }
+}
+
+bool RibbonParameter::isLocalEnabled() const
+{
+  if(auto eb = getParentEditBuffer())
+  {
+    using tIndex = RoutingSettings::tRoutingIndex;
+    using tAspect = RoutingSettings::tAspectIndex;
+    auto &s = eb->getSettings();
+    const auto setting = s.getSetting<RoutingSettings>();
+    const auto globalState = s.getSetting<GlobalLocalEnableSetting>()->get();
+
+    const auto ribbonIDX = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? tIndex::Ribbon1 : tIndex::Ribbon2;
+    auto state = setting->getState(ribbonIDX, tAspect::LOCAL);
+    return state && globalState;
+  }
+  return false;
 }
 
 bool RibbonParameter::hasBehavior() const
