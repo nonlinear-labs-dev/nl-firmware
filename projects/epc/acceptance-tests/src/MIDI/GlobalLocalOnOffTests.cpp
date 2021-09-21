@@ -16,7 +16,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
 
   MidiRuntimeOptions options {};
   InputEventStage eS(
-      &dsp, &options, []() {}, [&](auto) {}, [](auto) {});
+      &dsp, &options, []() {}, [&](auto) {}, [](auto) {}, [](auto, auto) {});
 
   WHEN("All Routings are On")
   {
@@ -86,7 +86,8 @@ TEST_CASE("Key Events Local enable disable")
 
   MidiRuntimeOptions options;
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
-  InputEventStage input { &host, &options, []() {}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto) {} };
+  InputEventStage input { &host,       &options,         []() {}, [&](auto m) { sendMidi.emplace_back(m); },
+                          [](auto) {}, [](auto, auto) {} };
 
   WHEN("All routings are on")
   {

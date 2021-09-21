@@ -16,7 +16,7 @@ TEST_CASE("HW Source Enable Tests")
       []() {
 
       },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
+      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {}, [](auto, auto) {});
 
   InputEventStageTester eventStage(&eS);
 
@@ -209,7 +209,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
       []() {
 
       },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
+      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {}, [](auto, auto){});
 
   InputEventStageTester eventStage(&eS);
 
@@ -307,8 +307,8 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
     dsp.setOnHWChangedCB(
         [&didReceive](auto hwID, auto, auto)
         {
-            didReceive = true;
-            CHECK(hwID == Bender);
+          didReceive = true;
+          CHECK(hwID == Bender);
         });
 
     THEN("TCD gets send on Prim")

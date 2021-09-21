@@ -8,6 +8,8 @@
 #include "device-settings/Settings.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <proxies/hwui/HWUI.h>
+#include <nltools/messaging/Message.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 UpperRibbon::UpperRibbon()
 {
@@ -17,6 +19,8 @@ UpperRibbon::UpperRibbon()
       sigc::mem_fun(this, &UpperRibbon::onParamSelectionChanged), {});
   m_settingChangedSignal = Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
       sigc::mem_fun(this, &UpperRibbon::onSettingChanged));
+  nltools::msg::receive<nltools::msg::UpdateLocalDisabledRibbonValue>(
+      nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &UpperRibbon::onRibbonValueMessage));
 }
 
 UpperRibbon::~UpperRibbon()
@@ -83,4 +87,15 @@ void UpperRibbon::onParamValueChanged(const Parameter* param)
 int UpperRibbon::posToLedID(int pos) const
 {
   return 2 * pos + 1;
+}
+
+void UpperRibbon::onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue& msg)
+{
+  static auto playcontrollerProxy = Application::get().getPlaycontrollerProxy();
+
+  if(msg.ribbonId == nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1)
+  {
+    playcontrollerProxy->notifyRibbonTouch(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber());
+    setLEDsForValueUniPolar(msg.position);
+  }
 }

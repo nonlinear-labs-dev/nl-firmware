@@ -76,7 +76,8 @@ TEST_CASE("Secondary Channel", "[MIDI][TCD]")
   //Construct Objects
   SecTests::SplitDSPMock host;
   std::vector<nltools::msg::Midi::SimpleMessage> midiOut;
-  InputEventStage eventStage { &host, &settings, [] {}, [&](auto m) { midiOut.emplace_back(m); }, [](auto){} };
+  InputEventStage eventStage{ &host,       &settings,        [] {}, [&](auto m) { midiOut.emplace_back(m); },
+                              [](auto) {}, [](auto, auto) {} };
 
   WHEN("TCD key is pressed on Part I")
   {
@@ -147,6 +148,7 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   {
    public:
     using PassOnKeyDownHost::PassOnKeyDownHost;
+
     VoiceGroup getSplitPartForKeyDown(int key) override
     {
       if(key == 64)
@@ -176,8 +178,8 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   settings.setReceiveChannel(MidiReceiveChannel::CH_1);
   settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_2);
   std::vector<nltools::msg::Midi::SimpleMessage> sendMIDI;
-  InputEventStage eventStage(
-      &hostPartI, &settings, [] {}, [&](auto m) { sendMIDI.emplace_back(m); }, [](auto) {});
+  InputEventStage eventStage(&hostPartI, &settings, [] {}, [&](auto m) { sendMIDI.emplace_back(m); }, [](auto) {},
+                             [](auto, auto) {});
 
   WHEN("MIDI In on Prim. Channel 1, receive")
   {
@@ -221,8 +223,7 @@ TEST_CASE("Receive MIDI Special Receive Channel Settings leads to Note Down", "[
 
   PassOnKeyDownHostSingle host(77, 1.0, VoiceGroup::I);
   auto settings = createSpecialSettings();
-  InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto m) { CHECK(false); },[](auto) {});
+  InputEventStage eventStage(&host, &settings, [] {}, [&](auto m) { CHECK(false); }, [](auto) {}, [](auto, auto) {});
 
   WHEN("MIDI In with CH1 & CH1")
   {

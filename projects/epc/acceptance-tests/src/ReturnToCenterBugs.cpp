@@ -49,7 +49,7 @@ TEST_CASE("Ribbon 1 Return to Center")
 
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings2();
-  InputEventStage eventStage { &dsp, &settings, [] {}, [](auto) {}, [](auto) {}};
+  InputEventStage eventStage { &dsp, &settings, [] {}, [](auto) {}, [](auto) {}, [](auto, auto){}};
   const auto zero = 0;
 
   CHECK_FALSE(dsp.didReceiveHW());

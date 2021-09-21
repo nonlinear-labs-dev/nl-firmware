@@ -2,7 +2,7 @@
 
 #include "playground.h"
 #include "Ribbon.h"
-
+#include <nltools/messaging/Message.h>
 #include <sigc++/trackable.h>
 
 class Application;
@@ -19,6 +19,7 @@ class LowerRibbon : public Ribbon, public sigc::trackable
 
  private:
   void onParamValueChanged(const Parameter* param);
+  void onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue& msg);
 
   int posToLedID(int pos) const override;
 

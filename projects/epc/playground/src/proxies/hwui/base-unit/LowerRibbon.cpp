@@ -5,9 +5,10 @@
 #include "presets/EditBuffer.h"
 #include "presets/PresetManager.h"
 #include <groups/HardwareSourcesGroup.h>
-#include "device-settings/DebugLevel.h"
 #include <glib.h>
-#include <math.h>
+#include <cmath>
+#include <nltools/messaging/Message.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 static Parameter *getParameter()
 {
@@ -19,6 +20,8 @@ LowerRibbon::LowerRibbon()
 {
   initLEDs();
   getParameter()->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onParamValueChanged));
+  nltools::msg::receive<nltools::msg::UpdateLocalDisabledRibbonValue>(
+      nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &LowerRibbon::onRibbonValueMessage));
 }
 
 int LowerRibbon::posToLedID(int pos) const
@@ -59,5 +62,16 @@ void LowerRibbon::indicateBlockingMainThread(bool onOff)
   else
   {
     onParamValueChanged(getParameter());
+  }
+}
+
+void LowerRibbon::onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue &msg)
+{
+  static auto playcontroller = Application::get().getPlaycontrollerProxy();
+
+  if(msg.ribbonId == nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2)
+  {
+    playcontroller->notifyRibbonTouch(HardwareSourcesGroup::getLowerRibbonParameterID().getNumber());
+    setLEDsForValueUniPolar(msg.position);
   }
 }

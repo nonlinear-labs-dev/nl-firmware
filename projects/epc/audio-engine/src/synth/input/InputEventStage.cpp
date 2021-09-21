@@ -4,17 +4,19 @@
 #include "synth/c15-audio-engine/dsp_host_dual.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
-                                 InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
-    : m_dspHost { dspHost }
-    , m_options { options }
+                                 InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB,
+                                 RibbonLocalDisabledCB ribbonCB)
+    : m_dspHost{ dspHost }
+    , m_options{ options }
     , m_channelModeMessageCB(std::move(specialCB))
     , m_hwChangedCB(std::move(hwChangedCB))
-    , m_midiOut { std::move(outCB) }
+    , m_midiOut{ std::move(outCB) }
     , m_midiDecoder(dspHost, options)
     , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
+    , m_ribbonWithLocalDisabledCB(std::move(ribbonCB))
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 template <>
@@ -110,8 +112,16 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
+      else if(isSplitSound)
+      {
+        // despite the suppression of internal notes due to local off,
+        // we still need to latch the determined part for subsequent key up events (unfortunate, but not avoidable)
+        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart, interface);
+      }
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
+      {
         convertToAndSendMIDI(decoder, determinedPart);
+      }
 
       break;
     }
@@ -133,8 +143,16 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
+      else if(isSplitSound)
+      {
+        // despite the suppression of internal notes due to local off,
+        // we still want to clear the key assingment
+        m_dspHost->unregisterNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart, interface);
+      }
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
+      {
         convertToAndSendMIDI(decoder, determinedPart);
+      }
 
       break;
     }
@@ -268,7 +286,8 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
-         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common) && m_options->shouldSendMIDINotesOnPrimary())
+         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common)
+     && m_options->shouldSendMIDINotesOnPrimary())
   {
     auto mainC = static_cast<uint8_t>(mainChannel);
     const uint8_t keyStatus = keyType | mainC;
@@ -332,7 +351,8 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
-         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common) && m_options->shouldSendMIDINotesOnPrimary())
+         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common)
+     && m_options->shouldSendMIDINotesOnPrimary())
   {
     const uint8_t keyStatus = keyType | mainC;
     uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
@@ -510,7 +530,7 @@ VoiceGroup InputEventStage::calculateSplitPartForKeyUp(DSPInterface::InputEventS
   {
     case DSPInterface::InputEventSource::Internal:
     case DSPInterface::InputEventSource::External_Use_Split:
-      return m_dspHost->getSplitPartForKeyUp(keyNumber, inputEvent);
+      return m_dspHost->getSplitPartForKeyUp(keyNumber, inputEvent);  //DEBUG: NumGroups gets returned here
     case DSPInterface::InputEventSource::External_Primary:
       return VoiceGroup::I;
     case DSPInterface::InputEventSource::External_Secondary:
@@ -707,8 +727,7 @@ int InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary,
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
-  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
-  {
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit) {
     const auto routingIndex = static_cast<RoutingIndex>(hwID);
 
     switch(source)
@@ -731,11 +750,27 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     }
   };
 
+  auto isRibbonDisabled = [&](auto source, auto routingIndex) {
+    auto isRibbon1 = routingIndex == RoutingIndex::Ribbon1;
+    auto isRibbon2 = routingIndex == RoutingIndex::Ribbon2;
+    auto isRibbon = isRibbon1 || isRibbon2;
+    auto sourceIsLocal = source == DSPInterface::HWChangeSource::TCD;
+    auto isDisabled = !m_options->shouldAllowLocal(routingIndex);
+    return isRibbon && isDisabled && sourceIsLocal;
+  };
+
+  auto routingIndex = static_cast<RoutingIndex>(hwID);
+
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
     if(source != DSPInterface::HWChangeSource::UI)
       m_hwChangedCB();
+  }
+  else if(isRibbonDisabled(source, routingIndex))
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, (int) routingIndex, "pos", pos);
+    m_ribbonWithLocalDisabledCB(routingIndex, pos);
   }
 
   if(source != DSPInterface::HWChangeSource::MIDI)
