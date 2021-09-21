@@ -17,7 +17,8 @@ TEST_CASE("When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
   options.update(msg);
-  eventStage.onMidiSettingsMessageReceived(msg, false, false);
+  eventStage.handlePressedNotesOnMidiSettingsChanged(msg, false, false, false, false, MidiSendChannel::CH_9,
+                                                     MidiSendChannelSplit::CH_9);
 
   WHEN("Previous Notes Enable is disabled")
   {
@@ -29,11 +30,14 @@ TEST_CASE("When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]
     WHEN("DSPHost is Single")
     {
       host.setType(SoundType::Single);
-      eventStage.onMidiSettingsMessageReceived(msg, true, true);
+      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, true, true, false, false, MidiSendChannel::CH_9,
+                                                         MidiSendChannelSplit::CH_9);
 
       THEN("All Notes Off was send")
       {
         REQUIRE(sendMidi.size() == 1);
+        auto channel = sendMidi[0].rawBytes[0] & 0b00001111;
+        CHECK(channel == 0);
         CHECK(sendMidi[0].rawBytes[1] == 123);
         CHECK(sendMidi[0].rawBytes[2] == 0);
       }
@@ -42,13 +46,78 @@ TEST_CASE("When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]
     WHEN("DSPHost is Split")
     {
       host.setType(SoundType::Split);
-      eventStage.onMidiSettingsMessageReceived(msg, true, true);
+      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, true, true, false, false, MidiSendChannel::CH_9,
+                                                         MidiSendChannelSplit::CH_9);
 
       THEN("All Notes Off was send")
       {
         REQUIRE(sendMidi.size() == 2);
+        auto channel = sendMidi[0].rawBytes[0] & 0b00001111;
+        CHECK(channel == 0);
         CHECK(sendMidi[0].rawBytes[1] == 123);
         CHECK(sendMidi[0].rawBytes[2] == 0);
+        auto channelSec = sendMidi[1].rawBytes[0] & 0b00001111;
+        CHECK(channelSec == 1);
+        CHECK(sendMidi[1].rawBytes[1] == 123);
+        CHECK(sendMidi[1].rawBytes[2] == 0);
+      }
+    }
+  }
+}
+
+TEST_CASE("When Send Channels change Note off gets send on previous Channels", "[MIDI][TCD]")
+{
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
+  std::vector<MidiChannelModeMessages> messages;
+  MockDSPHost host;
+  MidiRuntimeOptions options;
+  InputEventStage eventStage(&host, &options, {}, [&](auto m){ sendMidi.emplace_back(m); }, [&](auto c){ messages.emplace_back(c); });
+
+  auto msg = nltools::msg::Setting::MidiSettingsMessage{};
+  msg.routings = TestHelper::createFullMappings(true);
+  msg.sendChannel = MidiSendChannel::CH_1;
+  msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+  options.update(msg);
+  eventStage.handlePressedNotesOnMidiSettingsChanged(msg, false, false, false, false, MidiSendChannel::CH_1,
+                                                     MidiSendChannelSplit::CH_2);
+
+  WHEN("Previous Notes Enable is disabled")
+  {
+    msg.sendChannel = MidiSendChannel::CH_3;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_4;
+    options.update(msg);
+
+    WHEN("DSPHost is Single")
+    {
+      host.setType(SoundType::Single);
+      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, true, true, true, true, MidiSendChannel::CH_1,
+                                                         MidiSendChannelSplit::CH_2);
+
+      THEN("All Notes Off was send")
+      {
+        REQUIRE(sendMidi.size() == 1);
+        auto channel = sendMidi[0].rawBytes[0] & 0b00001111;
+        CHECK(channel == 0);
+        CHECK(sendMidi[0].rawBytes[1] == 123);
+        CHECK(sendMidi[0].rawBytes[2] == 0);
+      }
+    }
+
+    WHEN("DSPHost is Split")
+    {
+      host.setType(SoundType::Split);
+      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, true, true, true, true, MidiSendChannel::CH_1,
+                                                         MidiSendChannelSplit::CH_2);
+
+      THEN("All Notes Off was send")
+      {
+        REQUIRE(sendMidi.size() == 2);
+        auto channel = sendMidi[0].rawBytes[0] & 0b00001111;
+        CHECK(channel == 0);
+        CHECK(sendMidi[0].rawBytes[1] == 123);
+        CHECK(sendMidi[0].rawBytes[2] == 0);
+        auto channelSec = sendMidi[1].rawBytes[0] & 0b00001111;
+        CHECK(channelSec == 1);
         CHECK(sendMidi[1].rawBytes[1] == 123);
         CHECK(sendMidi[1].rawBytes[2] == 0);
       }

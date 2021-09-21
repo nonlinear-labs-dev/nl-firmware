@@ -268,7 +268,8 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
-         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common) && m_options->shouldSendMIDINotesOnPrimary())
+         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common)
+     && m_options->shouldSendMIDINotesOnPrimary())
   {
     auto mainC = static_cast<uint8_t>(mainChannel);
     const uint8_t keyStatus = keyType | mainC;
@@ -332,7 +333,8 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
-         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common) && m_options->shouldSendMIDINotesOnPrimary())
+         || m_options->getMIDISplitSendChannel() == MidiSendChannelSplit::Common)
+     && m_options->shouldSendMIDINotesOnPrimary())
   {
     const uint8_t keyStatus = keyType | mainC;
     uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
@@ -954,36 +956,54 @@ void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
   m_channelModeMessageCB(MidiRuntimeOptions::createChannelModeMessageEnum(cc, msbCCvalue));
 }
 
-void InputEventStage::onMidiSettingsMessageReceived(const nltools::msg::Setting::MidiSettingsMessage &msg,
-                                                    bool oldPrimSendState, bool oldSecSendState)
+void InputEventStage::handlePressedNotesOnMidiSettingsChanged(const nltools::msg::Setting::MidiSettingsMessage &msg,
+                                                              bool oldPrimSendState, bool oldSecSendState,
+                                                              bool didPrimChange, bool didSecChange,
+                                                              MidiSendChannel oldPrimSendChannel,
+                                                              MidiSendChannelSplit oldSplitSendChannel)
 {
   constexpr auto Notes = static_cast<int>(RoutingIndex::Notes);
   constexpr auto SendPrim = static_cast<int>(RoutingAspect::SEND_PRIMARY);
   constexpr auto SendSplit = static_cast<int>(RoutingAspect::SEND_SPLIT);
+  constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+  constexpr uint8_t CCModeChange = 0b10110000;
+
+  const auto isSplit = m_dspHost->getType() == SoundType::Split;
+
   const auto isSendPrim = msg.routings[Notes][SendPrim];
   const auto isSendSplit = msg.routings[Notes][SendSplit];
-  constexpr uint8_t CCModeChange = 0b10110000;
-  constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
 
-  if(!isSendPrim && oldPrimSendState)
+  const auto primIsNowDisabled = !isSendPrim && oldPrimSendState;
+  const auto splitIsNowDisabled = !isSendSplit && oldSecSendState;
+
+  auto sendNotesOffOnChannel = [&](auto channel){
+    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
+
+    if(iChannel != -1)
+    {
+      m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
+    }
+  };
+
+  if(primIsNowDisabled)
   {
     const auto prim = m_options->getMIDIPrimarySendChannel();
-    const auto iPrim = MidiRuntimeOptions::channelEnumToInt(prim);
-
-    if(iPrim != -1)
-    {
-      m_midiOut({static_cast<uint8_t>(CCModeChange | iPrim), CCNum, 0});
-    }
+    sendNotesOffOnChannel(prim);
   }
 
-  if(!isSendSplit && oldSecSendState)
+  if(didPrimChange)
+  {
+    sendNotesOffOnChannel(oldPrimSendChannel);
+  }
+
+  if(splitIsNowDisabled && isSplit)
   {
     const auto sec = m_options->getMIDISplitSendChannel();
-    const auto iSec = MidiRuntimeOptions::channelEnumToInt(sec);
+    sendNotesOffOnChannel(sec);
+  }
 
-    if(iSec != -1 && m_dspHost->getType() == SoundType::Split)
-    {
-      m_midiOut({static_cast<uint8_t>(CCModeChange | iSec), CCNum, 0});
-    }
+  if(didSecChange && isSplit)
+  {
+    sendNotesOffOnChannel(oldSplitSendChannel);
   }
 }

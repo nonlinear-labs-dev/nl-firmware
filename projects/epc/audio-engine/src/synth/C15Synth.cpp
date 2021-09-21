@@ -502,8 +502,18 @@ void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMe
 {
   const auto oldPrimSendState = m_midiOptions.shouldSendMIDINotesOnPrimary();
   const auto oldSecSendState = m_midiOptions.shouldSendMIDINotesOnSplit();
+  const auto oldPrimChannel = m_midiOptions.getMIDIPrimarySendChannel();
+  const auto oldSplitChannel = m_midiOptions.getMIDISplitSendChannel();
+  const auto newPrimChannel = msg.sendChannel;
+  const auto newSplitChannel = msg.sendSplitChannel;
+  const auto didPrimChange = oldPrimChannel != newPrimChannel;
+  const auto didSplitChange = oldSplitChannel != newSplitChannel;
+
   m_midiOptions.update(msg);
-  m_inputEventStage.onMidiSettingsMessageReceived(msg, oldPrimSendState, oldSecSendState);
+
+  m_inputEventStage.handlePressedNotesOnMidiSettingsChanged(msg, oldPrimSendState, oldSecSendState, didPrimChange,
+                                                            didSplitChange, oldPrimChannel,
+                                                            oldSplitChannel);
   m_dsp->onMidiSettingsReceived();
 }
 

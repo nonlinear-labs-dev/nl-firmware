@@ -42,8 +42,10 @@ class InputEventStage
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
   void setNoteShift(int i);
-  void onMidiSettingsMessageReceived(const nltools::msg::Setting::MidiSettingsMessage& msg, bool oldPrimSendState,
-                                     bool oldSecSendState);
+  void handlePressedNotesOnMidiSettingsChanged(const nltools::msg::Setting::MidiSettingsMessage& msg,
+                                               bool oldPrimSendState, bool oldSecSendState, bool didPrimChange,
+                                               bool didSecChange, MidiSendChannel oldPrimSendChannel,
+                                               MidiSendChannelSplit oldSplitSendChannel);
 
   static int parameterIDToHWID(int id);
 
