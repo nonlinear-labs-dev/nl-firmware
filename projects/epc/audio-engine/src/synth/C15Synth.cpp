@@ -500,7 +500,10 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
+  const auto oldPrimSendState = m_midiOptions.shouldSendMIDINotesOnPrimary();
+  const auto oldSecSendState = m_midiOptions.shouldSendMIDINotesOnSplit();
   m_midiOptions.update(msg);
+  m_inputEventStage.onMidiSettingsMessageReceived(msg, oldPrimSendState, oldSecSendState);
   m_dsp->onMidiSettingsReceived();
 }
 

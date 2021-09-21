@@ -953,3 +953,37 @@ void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
 {
   m_channelModeMessageCB(MidiRuntimeOptions::createChannelModeMessageEnum(cc, msbCCvalue));
 }
+
+void InputEventStage::onMidiSettingsMessageReceived(const nltools::msg::Setting::MidiSettingsMessage &msg,
+                                                    bool oldPrimSendState, bool oldSecSendState)
+{
+  constexpr auto Notes = static_cast<int>(RoutingIndex::Notes);
+  constexpr auto SendPrim = static_cast<int>(RoutingAspect::SEND_PRIMARY);
+  constexpr auto SendSplit = static_cast<int>(RoutingAspect::SEND_SPLIT);
+  const auto isSendPrim = msg.routings[Notes][SendPrim];
+  const auto isSendSplit = msg.routings[Notes][SendSplit];
+  constexpr uint8_t CCModeChange = 0b10110000;
+  constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+
+  if(!isSendPrim && oldPrimSendState)
+  {
+    const auto prim = m_options->getMIDIPrimarySendChannel();
+    const auto iPrim = MidiRuntimeOptions::channelEnumToInt(prim);
+
+    if(iPrim != -1)
+    {
+      m_midiOut({static_cast<uint8_t>(CCModeChange | iPrim), CCNum, 0});
+    }
+  }
+
+  if(!isSendSplit && oldSecSendState)
+  {
+    const auto sec = m_options->getMIDISplitSendChannel();
+    const auto iSec = MidiRuntimeOptions::channelEnumToInt(sec);
+
+    if(iSec != -1 && m_dspHost->getType() == SoundType::Split)
+    {
+      m_midiOut({static_cast<uint8_t>(CCModeChange | iSec), CCNum, 0});
+    }
+  }
+}
