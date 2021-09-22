@@ -32,6 +32,8 @@ public class LocalSettings {
 		load("BitmapCache", SetupModel.get().localSettings.bitmapCache, SetupModel.BooleanValues.on.name());
 		load("ShowDeveloperOptions", SetupModel.get().localSettings.showDeveloperOptions,
 				SetupModel.BooleanValues.off.name());
+		load("AlertOnBufferUnderruns", SetupModel.get().localSettings.alertOnBufferUnderruns,
+				SetupModel.BooleanValues.off.name());
 	}
 
 	private void load(String key, DataModelEntityBase setting, String def) {
@@ -87,6 +89,11 @@ public class LocalSettings {
 	public void setBitmapCache(BooleanValues v) {
 		SetupModel.get().localSettings.bitmapCache.setValue(v);
 		storage.store("BitmapCache", v.name());
+	}
+
+	public void alertOnBufferUnderruns(BooleanValues v) {
+		SetupModel.get().localSettings.alertOnBufferUnderruns.setValue(v);
+		storage.store("AlertOnBufferUnderruns", v.name());
 	}
 
 	public void showDeveloperOptions(BooleanValues v) {

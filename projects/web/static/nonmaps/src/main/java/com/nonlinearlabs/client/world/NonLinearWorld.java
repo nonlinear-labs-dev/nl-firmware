@@ -17,6 +17,7 @@ import com.nonlinearlabs.client.contextStates.StopWatchState;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.integrationTests.IntegrationTests;
+import com.nonlinearlabs.client.presenters.DeviceInformationProvider;
 import com.nonlinearlabs.client.world.maps.IContextMenu;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
@@ -49,6 +50,7 @@ public class NonLinearWorld extends MapsLayout {
 	private boolean isCtrlDown = false;
 
 	private double maxLevelOfDetail = 0;
+	private String numBufferUnderruns = "0";
 
 	private TransitionDamper scrollAnimation = new TransitionDamper(0.9, new TransitionDamper.Client() {
 
@@ -86,6 +88,19 @@ public class NonLinearWorld extends MapsLayout {
 			invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 			return true;
 		});
+
+		DeviceInformationProvider.get().register(v -> {
+
+			if (SetupModel.get().localSettings.alertOnBufferUnderruns.isTrue()) {
+				if (numBufferUnderruns != v.bufferUnderruns) {
+					numBufferUnderruns = v.bufferUnderruns;
+					Window.alert("Buffer Underruns: " + numBufferUnderruns);
+				}
+			}
+
+			return true;
+		});
+
 	}
 
 	public void init() {
@@ -473,11 +488,11 @@ public class NonLinearWorld extends MapsLayout {
 			if (event.getNativeKeyCode() == com.google.gwt.event.dom.client.KeyCodes.KEY_T)
 				IntegrationTests.doAllTests();
 
-		if(event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
+		if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
 			isShiftDown = true;
-		if(event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
+		if (event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
 			isSpaceDown = true;
-		if(event.getNativeKeyCode() == KeyCodes.KEY_CTRL)
+		if (event.getNativeKeyCode() == KeyCodes.KEY_CTRL)
 			isCtrlDown = true;
 
 		Control ctrl = recurseChildren(new ControlFinder() {
@@ -531,7 +546,7 @@ public class NonLinearWorld extends MapsLayout {
 
 	@Override
 	public Control doubleClick(Position pos) {
-		if(presetManager.hasStoredViewportPosition()) {
+		if (presetManager.hasStoredViewportPosition()) {
 			presetManager.resetView();
 		} else {
 			zoomTo(parameterEditor);

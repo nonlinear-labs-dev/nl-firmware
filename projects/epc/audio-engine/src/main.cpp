@@ -13,6 +13,7 @@
 #include <nltools/logging/Log.h>
 #include <nltools/StringTools.h>
 #include <nltools/messaging/Messaging.h>
+#include <nltools/messaging/Message.h>
 
 #include <glibmm.h>
 #include <iostream>
@@ -38,12 +39,6 @@ static void connectSignals()
 static const AudioEngineOptions *getOptions()
 {
   return theOptions.get();
-}
-
-static void runMainLoop()
-{
-  theMainLoop = Glib::MainLoop::create();
-  theMainLoop->run();
 }
 
 static void setupMessaging(const AudioEngineOptions *o)
@@ -118,6 +113,19 @@ static std::unique_ptr<MidiInput> createTCDIn(const std::string &name, Synth *sy
                       : std::make_unique<AlsaMidiInput>(name, [synth](auto event) { synth->pushTcdEvent(event); });
 }
 
+static bool checkBufferUnderruns(AudioOutput *out)
+{
+  static size_t knownUnderruns = 0;
+  const auto currentUnderruns = out->getNumUnderruns();
+
+  if(std::exchange(knownUnderruns, currentUnderruns) != currentUnderruns)
+  {
+    using namespace nltools::msg;
+    send<BufferUnderrunsChangedMessage>(EndPoint::Playground, { currentUnderruns });
+  }
+  return true;
+}
+
 template <typename... A> static void start(A &... a)
 {
   auto start = [](auto &p) {
@@ -160,7 +168,12 @@ int main(int args, char *argv[])
   CommandlinePerformanceWatch watch(audioOut.get());
 
   start(audioOut, midiIn, tcdIn);
-  runMainLoop();
+
+  theMainLoop = Glib::MainLoop::create();
+  theMainLoop->get_context()->signal_timeout().connect_seconds(
+      sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
+  theMainLoop->run();
+
   stop(audioOut, midiIn, tcdIn);
 
   return EXIT_SUCCESS;

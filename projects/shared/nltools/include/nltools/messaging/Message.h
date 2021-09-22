@@ -217,6 +217,16 @@ namespace nltools
       }
     };
 
+    struct BufferUnderrunsChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::BufferUnderrunsChanged;
+      }
+
+      uint64_t numUnderruns = 0;
+    };
+
     namespace Setting
     {
       struct NoteShiftMessage
