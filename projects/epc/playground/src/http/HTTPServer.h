@@ -53,6 +53,7 @@ class HTTPServer
   static bool isStaticFileURL(const Glib::ustring &path);
 
   SoupServer *m_server = nullptr;
+  SoupServer *m_redirectingServer = nullptr;
   ContentManager m_contentManager;
   MCViewContentManager m_mcviewManager;
 
