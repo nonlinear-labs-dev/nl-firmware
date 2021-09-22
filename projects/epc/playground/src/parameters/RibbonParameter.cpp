@@ -265,6 +265,13 @@ void RibbonParameter::boundToMacroControl(tControlPositionValue v)
   }
 }
 
+void RibbonParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
+                                     tControlPositionValue newValue)
+{
+  nltools::Log::error(__PRETTY_FUNCTION__, toString(initiator), "old:", oldValue, "new:",newValue, "id", getID().toString());
+  PhysicalControlParameter::onValueChanged(initiator, oldValue, newValue);
+}
+
 bool RibbonParameter::isLocalEnabled() const
 {
   if(auto eb = getParentEditBuffer())

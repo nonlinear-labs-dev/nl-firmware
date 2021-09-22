@@ -82,6 +82,31 @@ enum class Initiator
   INDIRECT
 };
 
+inline std::string toString(Initiator initiator)
+{
+  switch(initiator)
+  {
+    case Initiator::EXPLICIT_LOAD:
+      return "EXPLICIT_LOAD";
+    case Initiator::EXPLICIT_WEBUI:
+      return "EXPLICIT_WEBUI";
+    case Initiator::EXPLICIT_HWUI:
+      return "EXPLICIT_HWUI";
+    case Initiator::EXPLICIT_PLAYCONTROLLER:
+      return "EXPLICIT_PLAYCONTROLLER";
+    case Initiator::EXPLICIT_OTHER:
+      return "EXPLICIT_OTHER";
+    case Initiator::EXPLICIT_MCVIEW:
+      return "EXPLICIT_MCVIEW";
+    case Initiator::EXPLICIT_USECASE:
+      return "EXPLICIT_USECASE";
+    case Initiator::INDIRECT_SPLIT_SYNC:
+      return "INDIRECT_SPLIT_SYNC";
+    case Initiator::INDIRECT:
+      return "INDIRECT";
+  }
+}
+
 enum class PresetType : uint8_t
 {
   Single,
