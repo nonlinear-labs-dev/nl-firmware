@@ -24,11 +24,16 @@ class AudioOutput
   Performance exhaustPerformance();
   void resetPerformance();
 
+  size_t getNumUnderruns() const;
+
  protected:
   void reportPerformanceRatio(double ratio);
+  void reportBufferUnderrun();
 
  private:
   Performance m_performance;
   std::atomic<bool> m_resetPerformance = true;
   std::atomic<bool> m_exhaustPerformance = true;
+
+  size_t m_numUnderruns = 0;
 };

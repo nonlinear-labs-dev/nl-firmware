@@ -138,6 +138,8 @@ void AlsaAudioOutput::handleWriteError(snd_pcm_sframes_t result)
 {
   if(result < 0)
   {
+    reportBufferUnderrun();
+
     if(m_options->areXRunsFatal())
     {
       throw std::runtime_error("XRun");

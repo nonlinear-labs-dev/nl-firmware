@@ -10,4 +10,5 @@ public class DeviceInformation {
 	public String commitDate = "---";
 	public String totalRam = "---";
 	public String usedRam = "---";
+	public String bufferUnderruns = "0";
 }
