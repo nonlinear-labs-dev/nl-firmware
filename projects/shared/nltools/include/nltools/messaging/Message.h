@@ -291,9 +291,8 @@ namespace nltools
           LENGTH = 5
         };
 
-        typedef std::array<std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)>,
-                           static_cast<size_t>(RoutingIndex::LENGTH)>
-            tRoutingMappings;
+        typedef std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)> tEntry;
+        typedef std::array<tEntry, static_cast<size_t>(RoutingIndex::LENGTH)> tRoutingMappings;
 
         MidiReceiveChannel receiveChannel;
         MidiReceiveChannelSplit receiveSplitChannel;

@@ -29,6 +29,7 @@ class InputEventStage
 {
  public:
   using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+  using RoutingAspect = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
   using HWChangedNotification = std::function<void()>;
@@ -41,6 +42,10 @@ class InputEventStage
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
   void setNoteShift(int i);
+  void handlePressedNotesOnMidiSettingsChanged(const nltools::msg::Setting::MidiSettingsMessage& msg,
+                                               bool oldPrimSendState, bool oldSecSendState, bool didPrimChange,
+                                               bool didSecChange, MidiSendChannel oldPrimSendChannel,
+                                               MidiSendChannelSplit oldSplitSendChannel);
 
   static int parameterIDToHWID(int id);
 
