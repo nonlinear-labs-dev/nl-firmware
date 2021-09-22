@@ -63,7 +63,8 @@ TEST_CASE("MC Smoothing A-D set to 20ms")
 TEST_CASE("UnisonVoices Conversion rules")
 {
   MockSettingsObject mockSettings(&SyncMasterMockRoot::get());
-  PresetManager pm(&SyncMasterMockRoot::get(), false, TestHelper::getOptions(), mockSettings, <#initializer #>);
+  std::unique_ptr<AudioEngineProxy> aeContainer;
+  PresetManager pm(&SyncMasterMockRoot::get(), false, TestHelper::getOptions(), mockSettings, aeContainer);
   Bank bank(&pm);
 
   auto readXml = [&](auto xml) {
