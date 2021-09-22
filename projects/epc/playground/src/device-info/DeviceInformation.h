@@ -34,5 +34,4 @@ class DeviceInformation : public ContentSection
  private:
   tItemList m_items;
   RPCActionManager m_actions;
-  uint64_t m_numBufferUnderrunsDetected = 0;
 };
