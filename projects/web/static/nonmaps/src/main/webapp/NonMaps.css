@@ -1528,6 +1528,11 @@ select[disabled='disabled'] {
   min-width: 8 em;
 }
 
+.dialogContent table.midi-table tr td {
+    display: table-cell; 
+    width:10%
+}
+
 .dialogContent .compare-tree tr td {
   display: table-cell;
   text-align: center;

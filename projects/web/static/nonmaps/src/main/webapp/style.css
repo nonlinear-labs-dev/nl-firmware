@@ -1800,3 +1800,18 @@ input[type="range"]::-moz-range-track {
     width: 0;
     height: unset;
 }
+
+.midi-tab .gwt-Button {
+  min-width: 2cm;
+}
+
+.midi-tab .button-row td {
+    border:  none;
+    display: flex;
+}
+
+.midi-tab .button-row td button{
+    margin-left: 2em;
+    margin-right: 2em;
+    
+}
