@@ -753,6 +753,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
+    // We will have to suppress modulation routing from HW sources that are local-disabled ?!
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
     if(source != DSPInterface::HWChangeSource::UI)
       m_hwChangedCB();
