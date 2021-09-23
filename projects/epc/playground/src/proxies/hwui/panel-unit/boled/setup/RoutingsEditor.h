@@ -27,6 +27,8 @@ class RoutingsEditor : public MenuEditor
   void stepEntry(int inc);
   void stepAspect(int inc);
 
+  void onModifiersChanged(ButtonModifiers modifiers);
+
  private:
   LabelStyleable* m_entryLabel;
   LabelStyleable* m_aspectLabel;
