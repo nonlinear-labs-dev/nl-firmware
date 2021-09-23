@@ -356,7 +356,8 @@ AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
 
 bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed) const
 {
-  auto enumIsInSwitching = [](PedalCC cc) -> bool {
+  auto enumIsInSwitching = [](PedalCC cc) -> bool
+  {
     switch(cc)
     {
       case PedalCC::CC64:
@@ -541,4 +542,18 @@ void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
   constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
   constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::LOCAL);
   m_routingMappings[idx][aspect] = b;
+}
+
+bool MidiRuntimeOptions::isGlobalLocalEnabled()
+{
+  return m_globalLocalEnable;
+}
+
+MidiRuntimeOptions::tRoutingEntry MidiRuntimeOptions::getPackedNotesRoutings()
+{
+  constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
+  const auto index = static_cast<int>(tRoutingIndex::Notes);
+  auto rawLocal = m_routingMappings[index][local];
+  return { shouldSendMIDINotesOnPrimary(), shouldReceiveMIDINotesOnPrimary(), shouldSendMIDINotesOnSplit(),
+           shouldReceiveMIDINotesOnSplit(), rawLocal };
 }

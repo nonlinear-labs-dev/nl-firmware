@@ -42,10 +42,23 @@ class InputEventStage
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
   void setNoteShift(int i);
+
+  using tRow = nltools::msg::Setting::MidiSettingsMessage::tEntry;
+
+  struct OldSettingSnapshot
+  {
+    explicit OldSettingSnapshot(MidiRuntimeOptions& opt);
+
+    bool globalLocalState = false;
+    tRow oldNotesData;
+    MidiSendChannel oldPrimSendChannel;
+    MidiSendChannelSplit oldSplitSendChannel;
+    MidiReceiveChannel oldPrimReceiveChannel;
+    MidiReceiveChannelSplit oldSplitReceiveChannel;
+  };
+
   void handlePressedNotesOnMidiSettingsChanged(const nltools::msg::Setting::MidiSettingsMessage& msg,
-                                               bool oldPrimSendState, bool oldSecSendState, bool didPrimChange,
-                                               bool didSecChange, MidiSendChannel oldPrimSendChannel,
-                                               MidiSendChannelSplit oldSplitSendChannel);
+                                               OldSettingSnapshot channelConfig);
 
   static int parameterIDToHWID(int id);
 

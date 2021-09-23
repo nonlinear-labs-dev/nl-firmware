@@ -957,26 +957,47 @@ void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
 }
 
 void InputEventStage::handlePressedNotesOnMidiSettingsChanged(const nltools::msg::Setting::MidiSettingsMessage &msg,
-                                                              bool oldPrimSendState, bool oldSecSendState,
-                                                              bool didPrimChange, bool didSecChange,
-                                                              MidiSendChannel oldPrimSendChannel,
-                                                              MidiSendChannelSplit oldSplitSendChannel)
+                                                              OldSettingSnapshot channelConfig)
 {
+  auto &oldNotesData = channelConfig.oldNotesData;
+
   constexpr auto Notes = static_cast<int>(RoutingIndex::Notes);
   constexpr auto SendPrim = static_cast<int>(RoutingAspect::SEND_PRIMARY);
   constexpr auto SendSplit = static_cast<int>(RoutingAspect::SEND_SPLIT);
+  constexpr auto RecvPrim = static_cast<int>(RoutingAspect::RECEIVE_PRIMARY);
+  constexpr auto RecvSplit = static_cast<int>(RoutingAspect::RECEIVE_SPLIT);
+  constexpr auto Local = static_cast<int>(RoutingAspect::LOCAL);
+
   constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
   constexpr uint8_t CCModeChange = 0b10110000;
+
+  const auto oldPrimSendState = oldNotesData[SendPrim];
+  const auto oldSecSendState = oldNotesData[SendSplit];
+  const auto oldReceivePrimState = oldNotesData[RecvPrim];
+  const auto oldReceiveSplitState = oldNotesData[RecvSplit];
+  const auto oldLocalState = oldNotesData[Local] && channelConfig.globalLocalState;
 
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
 
   const auto isSendPrim = msg.routings[Notes][SendPrim];
   const auto isSendSplit = msg.routings[Notes][SendSplit];
+  const auto isReceivePrim = msg.routings[Notes][RecvPrim];
+  const auto isReceiveSplit = msg.routings[Notes][RecvSplit];
+  const auto isLocalEnabled = msg.routings[Notes][Local] && msg.globalLocalEnable;
 
-  const auto primIsNowDisabled = !isSendPrim && oldPrimSendState;
-  const auto splitIsNowDisabled = !isSendSplit && oldSecSendState;
+  const auto primSendNowDisabled = !isSendPrim && oldPrimSendState;
+  const auto splitSendNowDisabled = !isSendSplit && oldSecSendState;
+  const auto primReceiveNowDisabled = !isReceivePrim && oldReceivePrimState;
+  const auto splitReceiveNowDisabled = !isReceiveSplit && oldReceiveSplitState;
+  const auto localNowDisabled = !isLocalEnabled && oldLocalState;
 
-  auto sendNotesOffOnChannel = [&](auto channel){
+  const auto didPrimSendChange = msg.sendChannel != channelConfig.oldPrimSendChannel;
+  const auto didSecSendChange = msg.sendSplitChannel != channelConfig.oldSplitSendChannel;
+  const auto didPrimRecChange = msg.receiveChannel != channelConfig.oldPrimReceiveChannel;
+  const auto didSecRecChange = msg.receiveSplitChannel != channelConfig.oldSplitReceiveChannel;
+
+  auto sendNotesOffOnChannel = [&](auto channel)
+  {
     const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
 
     if(iChannel != -1)
@@ -985,25 +1006,65 @@ void InputEventStage::handlePressedNotesOnMidiSettingsChanged(const nltools::msg
     }
   };
 
-  if(primIsNowDisabled)
+  auto sendFadeAndMuteToDSP = [&]() { m_channelModeMessageCB(MidiChannelModeMessages::AllSoundOff); };
+
+  const auto prim = m_options->getMIDIPrimarySendChannel();
+  const auto sec = m_options->getMIDISplitSendChannel();
+
+  bool didScheduleAllSoundsOff = false;
+
+  if(primSendNowDisabled)
   {
-    const auto prim = m_options->getMIDIPrimarySendChannel();
     sendNotesOffOnChannel(prim);
   }
-
-  if(didPrimChange)
+  else if(primReceiveNowDisabled || didPrimRecChange)
   {
-    sendNotesOffOnChannel(oldPrimSendChannel);
+    sendFadeAndMuteToDSP();
+    didScheduleAllSoundsOff = true;
+  }
+  else if(didPrimSendChange)
+  {
+    sendNotesOffOnChannel(channelConfig.oldPrimSendChannel);
+  }
+  else if(localNowDisabled)
+  {
+    sendFadeAndMuteToDSP();
+    sendNotesOffOnChannel(msg.sendChannel);
+    didScheduleAllSoundsOff = true;
   }
 
-  if(splitIsNowDisabled && isSplit)
+  if(isSplit)
   {
-    const auto sec = m_options->getMIDISplitSendChannel();
-    sendNotesOffOnChannel(sec);
+    if(splitSendNowDisabled)
+    {
+      sendNotesOffOnChannel(sec);
+    }
+    else if(splitReceiveNowDisabled || didSecRecChange)
+    {
+      if(!didScheduleAllSoundsOff)
+        sendFadeAndMuteToDSP();
+      didScheduleAllSoundsOff = true;
+    }
+    else if(didSecSendChange)
+    {
+      sendNotesOffOnChannel(channelConfig.oldSplitSendChannel);
+    }
+    else if(localNowDisabled)
+    {
+      if(!didScheduleAllSoundsOff)
+        sendFadeAndMuteToDSP();
+      sendNotesOffOnChannel(msg.sendSplitChannel);
+      didScheduleAllSoundsOff = true;
+    }
   }
+}
 
-  if(didSecChange && isSplit)
-  {
-    sendNotesOffOnChannel(oldSplitSendChannel);
-  }
+InputEventStage::OldSettingSnapshot::OldSettingSnapshot(MidiRuntimeOptions &opt)
+    : globalLocalState { opt.isGlobalLocalEnabled() }
+    , oldNotesData { opt.getPackedNotesRoutings() }
+    , oldPrimSendChannel { opt.getMIDIPrimarySendChannel() }
+    , oldSplitSendChannel { opt.getMIDISplitSendChannel() }
+    , oldPrimReceiveChannel { opt.getMIDIPrimaryReceiveChannel() }
+    , oldSplitReceiveChannel { opt.getMIDISplitReceiveChannel() }
+{
 }

@@ -509,15 +509,29 @@ void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMe
   const auto didPrimChange = oldPrimChannel != newPrimChannel;
   const auto didSplitChange = oldSplitChannel != newSplitChannel;
 
+  InputEventStage::OldSettingSnapshot snap(m_midiOptions);
   m_midiOptions.update(msg);
-
-  m_inputEventStage.handlePressedNotesOnMidiSettingsChanged(msg, oldPrimSendState, oldSecSendState, didPrimChange,
-                                                            didSplitChange, oldPrimChannel,
-                                                            oldSplitChannel);
+  m_inputEventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap);
   m_dsp->onMidiSettingsReceived();
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)
 {
+  auto sendNotesOffOnChannel = [&](auto channel)
+  {
+    constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+    constexpr uint8_t CCModeChange = 0b10110000;
+    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
+
+    if(iChannel != -1)
+    {
+      queueExternalMidiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
+    }
+  };
+
   resetDSP();
+
+  sendNotesOffOnChannel(m_midiOptions.getMIDIPrimarySendChannel());
+  if(m_dsp->getType() == SoundType::Split)
+    sendNotesOffOnChannel(m_midiOptions.getMIDISplitSendChannel());
 }

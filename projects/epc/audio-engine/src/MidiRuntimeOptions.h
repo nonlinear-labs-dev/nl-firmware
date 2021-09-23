@@ -8,7 +8,9 @@ class MidiRuntimeOptions
 {
  public:
   typedef nltools::msg::Setting::MidiSettingsMessage tMidiSettingMessage;
+  typedef tMidiSettingMessage::tEntry tRoutingEntry;
   typedef tMidiSettingMessage::RoutingAspect tRoutingAspect;
+  typedef tMidiSettingMessage::RoutingIndex tRoutingIndex;
 
   enum class MidiChannelModeMessageCCs : int {
     AllSoundOff = 120,
@@ -118,6 +120,9 @@ class MidiRuntimeOptions
   void setReceiveChannel(MidiReceiveChannel c);
   void setSplitReceiveChannel(MidiReceiveChannelSplit c);
   void set14BitSupportEnabled(bool e);
+
+  bool isGlobalLocalEnabled();
+  tRoutingEntry getPackedNotesRoutings();
 
  private:
   //Mappings
