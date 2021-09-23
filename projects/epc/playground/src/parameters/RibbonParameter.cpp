@@ -151,7 +151,6 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
   }
 }
 
-
 void RibbonParameter::undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction,
                                                                 const RibbonReturnMode &mode) const
 {
@@ -268,7 +267,7 @@ void RibbonParameter::boundToMacroControl(tControlPositionValue v)
 void RibbonParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
                                      tControlPositionValue newValue)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, toString(initiator), "old:", oldValue, "new:",newValue, "id", getID().toString());
+  nltools::Log::error(toString(initiator), "old:", oldValue, "new:", newValue, "id", getID().toString());
   PhysicalControlParameter::onValueChanged(initiator, oldValue, newValue);
 }
 
@@ -282,7 +281,8 @@ bool RibbonParameter::isLocalEnabled() const
     const auto setting = s.getSetting<RoutingSettings>();
     const auto globalState = s.getSetting<GlobalLocalEnableSetting>()->get();
 
-    const auto ribbonIDX = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? tIndex::Ribbon1 : tIndex::Ribbon2;
+    const auto ribbonIDX
+        = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? tIndex::Ribbon1 : tIndex::Ribbon2;
     auto state = setting->getState(ribbonIDX, tAspect::LOCAL);
     return state && globalState;
   }
