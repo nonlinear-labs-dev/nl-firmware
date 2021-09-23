@@ -19,4 +19,5 @@ public class DeviceInformation {
 	public StringDataModelEntity date = new StringDataModelEntity();
 	public StringDataModelEntity usedRam = new StringDataModelEntity();
 	public StringDataModelEntity totalRam = new StringDataModelEntity();
+	public StringDataModelEntity bufferUnderruns = new StringDataModelEntity("0");
 }

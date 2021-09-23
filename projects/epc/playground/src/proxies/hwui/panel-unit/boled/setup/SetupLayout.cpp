@@ -1,6 +1,7 @@
 #include <Application.h>
 #include <device-info/DateTimeInfo.h>
 #include <device-info/SoftwareVersion.h>
+#include <device-info/BufferUnderruns.h>
 #include <device-settings/PedalType.h>
 #include <groups/HardwareSourcesGroup.h>
 #include <parameters/PedalParameter.h>
@@ -332,13 +333,11 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     explicit StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.storeInitSound();
-                       })
+        : OneShotEntry(p, "Store Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.storeInitSound();
+        })
     {
     }
   };
@@ -346,13 +345,11 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     explicit ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.resetInitSound();
-                       })
+        : OneShotEntry(p, "Reset Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.resetInitSound();
+        })
     {
     }
   };
@@ -593,7 +590,6 @@ namespace NavTree
       RamUsageLabel()
           : SetupLabel("", Rect(0, 0, 0, 0))
       {
-
         Application::get().getSettings()->getSetting<UsedRAM>()->onChange(
             sigc::mem_fun(this, &RamUsageLabel::onSettingChanged));
       }
@@ -621,6 +617,35 @@ namespace NavTree
     }
   };
 
+  struct BufferUnderrunsNode : Leaf
+  {
+    struct BufferUnderrunsLabel : public SetupLabel
+    {
+      BufferUnderrunsLabel()
+          : SetupLabel("", Rect(0, 0, 0, 0))
+      {
+        Application::get().getDeviceInformation()->getItem<BufferUnderruns>()->onChange(
+            sigc::mem_fun(this, &BufferUnderrunsLabel::onSettingChanged));
+      }
+
+      void onSettingChanged(const DeviceInformationItem *s)
+      {
+        if(auto used = dynamic_cast<const BufferUnderruns *>(s))
+          setText(used->getDisplayString());
+      }
+    };
+
+    explicit BufferUnderrunsNode(InnerNode *parent)
+        : Leaf(parent, "Buffer Underruns:")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new BufferUnderrunsLabel();
+    }
+  };
+
   struct SystemInfo : InnerNode
   {
     explicit SystemInfo(InnerNode *parent)
@@ -635,6 +660,7 @@ namespace NavTree
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
+      children.emplace_back(new BufferUnderrunsNode(this));
     }
   };
 
@@ -814,12 +840,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, "Set to High-Res. Defaults",
-                       []()
-                       {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setMappingsToHighRes();
-                       })
+        : OneShotEntry(parent, "Set to High-Res. Defaults", []() {
+          SettingsUseCases useCases(*Application::get().getSettings());
+          useCases.setMappingsToHighRes();
+        })
     {
     }
   };
@@ -828,12 +852,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, "Set to Classic MIDI Defaults",
-                       []()
-                       {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setMappingsToClassicMidi();
-                       })
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults", []() {
+          SettingsUseCases useCases(*Application::get().getSettings());
+          useCases.setMappingsToClassicMidi();
+        })
     {
     }
   };
@@ -1013,12 +1035,10 @@ namespace NavTree
   {
 
     explicit SetRoutingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setAllRoutingEntries(value);
-                       })
+        : OneShotEntry(parent, getName(), []() {
+          SettingsUseCases useCases(*Application::get().getSettings());
+          useCases.setAllRoutingEntries(value);
+        })
     {
     }
 
