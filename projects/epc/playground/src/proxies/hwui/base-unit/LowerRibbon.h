@@ -19,7 +19,6 @@ class LowerRibbon : public Ribbon, public sigc::trackable
 
  private:
   void onParamValueChanged(const Parameter* param);
-  void onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue& msg);
 
   int posToLedID(int pos) const override;
 

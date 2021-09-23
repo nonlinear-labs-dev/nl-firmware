@@ -480,8 +480,17 @@
 							<p>Enable High-Res. CC (enable LSB)</p>
 						</div>
 						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="enable14Bit" name="rad_14BitCC" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="disable14Bit" name="rad_14BitCC" value="false"></g:RadioButton>
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="enable14Bit" name="rad_14BitCC" value="true"></g:RadioButton>
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="disable14Bit" name="rad_14BitCC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable High-Res. Velocity (CC 88)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
 						</div>
 					</div>
 					<div class="eins-he">
@@ -493,15 +502,6 @@
 						</div>
 						<div class="w20p">
 							<g:Button ui:field="highResMidi">High-Res.</g:Button>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Enable High-Res. Velocity (CC 88)</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
 						</div>
 					</div>
 					<div class="linie"></div>
@@ -787,19 +787,17 @@
 									</div>
 								</td>
 							</tr>
+              
+              <tr class="button-row">
+                <td></td>
+                <td colspan="5">
+                  <g:Button ui:field="routingsOn">All On</g:Button>
+                  <g:Button ui:field="routingsOff">All Off</g:Button>
+                </td>
+              </tr>
+
 							</tbody>
 						</table>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
-							<p>Set to Defaults:</p>
-						</div>
-						<div class="w20p">
-							<g:Button ui:field="routingsOn">All On</g:Button>
-						</div>
-						<div class="w20p">
-							<g:Button ui:field="routingsOff">All Off</g:Button>
-						</div>
 					</div>
 				</div>
 			</div>

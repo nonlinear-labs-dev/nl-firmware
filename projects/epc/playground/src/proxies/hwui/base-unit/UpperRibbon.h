@@ -18,7 +18,6 @@ class UpperRibbon : public Ribbon
   ~UpperRibbon() override;
 
  private:
-  void onRibbonValueMessage(const nltools::msg::UpdateLocalDisabledRibbonValue& msg);
   void onParamSelectionChanged(Parameter* oldOne, Parameter* newOne);
   void onParamValueChanged(const Parameter* param);
 

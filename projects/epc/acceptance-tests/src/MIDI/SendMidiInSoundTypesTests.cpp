@@ -13,7 +13,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Aftertouch, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) };
+      = { {BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127)} };
 
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
@@ -21,7 +21,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
   InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {}, [](auto, auto){});
+      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
 
   //set settings to not interfere with CC01
   {
@@ -94,7 +94,6 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
     }
   };
 
-
   WHEN("Split Channel is Channel 2")
   {
     std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 2 } };
@@ -134,7 +133,7 @@ TEST_CASE("Send Note Off with real Synth when local is off")
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   InputEventStage eventStage(
-      synth->getDsp(), &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {}, [](auto, auto){});
+      synth->getDsp(), &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
 
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
@@ -191,7 +190,6 @@ TEST_CASE("Send Note Off with real Synth when local is off")
     eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(107));
     eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
 
-
     THEN("midi got send")
     {
       REQUIRE(sendMidiMessages.size() == 1);
@@ -217,7 +215,7 @@ TEST_CASE("Send Note Off when local is off")
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {}, [](auto, auto){});
+      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
 
   {
     nltools::msg::Setting::MidiSettingsMessage msg;

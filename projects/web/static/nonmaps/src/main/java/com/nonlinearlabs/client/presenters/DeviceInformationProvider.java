@@ -67,6 +67,12 @@ public class DeviceInformationProvider {
 			notifyClients();
 			return true;
 		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().bufferUnderruns.onChange(v -> {
+			info.bufferUnderruns = v;
+			notifyClients();
+			return true;
+		});
 	}
 
 	protected void notifyClients() {

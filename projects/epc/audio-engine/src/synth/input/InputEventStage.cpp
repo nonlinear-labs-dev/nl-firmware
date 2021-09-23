@@ -4,16 +4,14 @@
 #include "synth/c15-audio-engine/dsp_host_dual.h"
 
 InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *options, HWChangedNotification hwChangedCB,
-                                 InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB,
-                                 RibbonLocalDisabledCB ribbonCB)
-    : m_dspHost{ dspHost }
-    , m_options{ options }
-    , m_channelModeMessageCB(std::move(specialCB))
-    , m_hwChangedCB(std::move(hwChangedCB))
-    , m_midiOut{ std::move(outCB) }
+                                 InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
+    : m_tcdDecoder(dspHost, options, &m_shifteable_keys)
     , m_midiDecoder(dspHost, options)
-    , m_tcdDecoder(dspHost, options, &m_shifteable_keys)
-    , m_ribbonWithLocalDisabledCB(std::move(ribbonCB))
+    , m_dspHost{ dspHost }
+    , m_options{ options }
+    , m_hwChangedCB(std::move(hwChangedCB))
+    , m_channelModeMessageCB(std::move(specialCB))
+    , m_midiOut{ std::move(outCB) }
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
             std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
@@ -742,7 +740,10 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
         return true;
       }
       case DSPInterface::HWChangeSource::TCD:
-        return m_options->shouldAllowLocal(routingIndex);
+        if(routingIndex == RoutingIndex::Ribbon1 || routingIndex == RoutingIndex::Ribbon2)
+          return true;
+        else
+          return m_options->shouldAllowLocal(routingIndex);
       case DSPInterface::HWChangeSource::UI:
         return true;
       default:
@@ -750,27 +751,11 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     }
   };
 
-  auto isRibbonDisabled = [&](auto source, auto routingIndex) {
-    auto isRibbon1 = routingIndex == RoutingIndex::Ribbon1;
-    auto isRibbon2 = routingIndex == RoutingIndex::Ribbon2;
-    auto isRibbon = isRibbon1 || isRibbon2;
-    auto sourceIsLocal = source == DSPInterface::HWChangeSource::TCD;
-    auto isDisabled = !m_options->shouldAllowLocal(routingIndex);
-    return isRibbon && isDisabled && sourceIsLocal;
-  };
-
-  auto routingIndex = static_cast<RoutingIndex>(hwID);
-
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
     if(source != DSPInterface::HWChangeSource::UI)
       m_hwChangedCB();
-  }
-  else if(isRibbonDisabled(source, routingIndex))
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__, (int) routingIndex, "pos", pos);
-    m_ribbonWithLocalDisabledCB(routingIndex, pos);
   }
 
   if(source != DSPInterface::HWChangeSource::MIDI)
@@ -987,4 +972,56 @@ bool InputEventStage::ccIsMappedToChannelModeMessage(int cc)
 void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
 {
   m_channelModeMessageCB(MidiRuntimeOptions::createChannelModeMessageEnum(cc, msbCCvalue));
+}
+
+void InputEventStage::handlePressedNotesOnMidiSettingsChanged(const nltools::msg::Setting::MidiSettingsMessage &msg,
+                                                              bool oldPrimSendState, bool oldSecSendState,
+                                                              bool didPrimChange, bool didSecChange,
+                                                              MidiSendChannel oldPrimSendChannel,
+                                                              MidiSendChannelSplit oldSplitSendChannel)
+{
+  constexpr auto Notes = static_cast<int>(RoutingIndex::Notes);
+  constexpr auto SendPrim = static_cast<int>(RoutingAspect::SEND_PRIMARY);
+  constexpr auto SendSplit = static_cast<int>(RoutingAspect::SEND_SPLIT);
+  constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+  constexpr uint8_t CCModeChange = 0b10110000;
+
+  const auto isSplit = m_dspHost->getType() == SoundType::Split;
+
+  const auto isSendPrim = msg.routings[Notes][SendPrim];
+  const auto isSendSplit = msg.routings[Notes][SendSplit];
+
+  const auto primIsNowDisabled = !isSendPrim && oldPrimSendState;
+  const auto splitIsNowDisabled = !isSendSplit && oldSecSendState;
+
+  auto sendNotesOffOnChannel = [&](auto channel){
+    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
+
+    if(iChannel != -1)
+    {
+      m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
+    }
+  };
+
+  if(primIsNowDisabled)
+  {
+    const auto prim = m_options->getMIDIPrimarySendChannel();
+    sendNotesOffOnChannel(prim);
+  }
+
+  if(didPrimChange)
+  {
+    sendNotesOffOnChannel(oldPrimSendChannel);
+  }
+
+  if(splitIsNowDisabled && isSplit)
+  {
+    const auto sec = m_options->getMIDISplitSendChannel();
+    sendNotesOffOnChannel(sec);
+  }
+
+  if(didSecChange && isSplit)
+  {
+    sendNotesOffOnChannel(oldSplitSendChannel);
+  }
 }

@@ -10,7 +10,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) };
+      = { {BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127)} };
 
   bool receivedHW = false;
   ConfigureableDSPHost host {};
@@ -24,7 +24,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
   InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {}, [](auto, auto){});
+      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
 
   //set settings to not interfere with CC01
   {
@@ -52,7 +52,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
 
     WHEN("Send CC01, 1.0")
     {
-      eventStage.onMIDIMessage({ 0xB0, 0x01, 127 });
+      eventStage.onMIDIMessage({ {0xB0, 0x01, 127} });
       CHECK(receivedHW);
     }
   }
@@ -69,7 +69,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
         receivedHW = true;
       });
 
-      eventStage.onMIDIMessage({ 0xB0, 69, 50 });
+      eventStage.onMIDIMessage({ {0xB0, 69, 50} });
       CHECK(receivedHW);
     }
 
@@ -81,13 +81,13 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
         receivedHW = true;
       });
 
-      eventStage.onMIDIMessage({ 0xB0, 69, 80 });
+      eventStage.onMIDIMessage({ {0xB0, 69, 80} });
       CHECK(receivedHW);
     }
 
     WHEN("Send CC01")
     {
-      eventStage.onMIDIMessage({ 0xB0, 1, 127 });
+      eventStage.onMIDIMessage({ {0xB0, 1, 127} });
       CHECK_FALSE(receivedHW);
     }
   }
@@ -112,7 +112,7 @@ TEST_CASE("Pedal Mappings", "[MIDI][TCD]")
         receivedHW = true;
       });
 
-      eventStage.onMIDIMessage({ 0xB0, 1, 127 });
+      eventStage.onMIDIMessage({ {0xB0, 1, 127} });
 
       THEN("Pedal 1 and Pedal 2 received same value")
       {

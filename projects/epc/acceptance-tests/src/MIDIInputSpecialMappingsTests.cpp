@@ -76,13 +76,11 @@ TEST_CASE("Secondary Channel", "[MIDI][TCD]")
   //Construct Objects
   SecTests::SplitDSPMock host;
   std::vector<nltools::msg::Midi::SimpleMessage> midiOut;
-  InputEventStage eventStage{ &host,       &settings,        [] {}, [&](auto m) { midiOut.emplace_back(m); },
-                              [](auto) {}, [](auto, auto) {} };
-
+  InputEventStage eventStage { &host, &settings, []() {}, [&](auto m) { midiOut.emplace_back(m); }, [](auto) {} };
   WHEN("TCD key is pressed on Part I")
   {
-    eventStage.onTCDMessage({ BASE_TCD | TCD_KEY_POS, TCD_UNUSED_VAL, 17 });
-    eventStage.onTCDMessage({ BASE_TCD | TCD_KEY_DOWN, 127, 127 });
+    eventStage.onTCDMessage({ { BASE_TCD | TCD_KEY_POS, TCD_UNUSED_VAL, 17 } });
+    eventStage.onTCDMessage({ { BASE_TCD | TCD_KEY_DOWN, 127, 127 } });
 
     THEN("MIDI keyDown was send on Channel 2")
     {
@@ -99,8 +97,8 @@ TEST_CASE("Secondary Channel", "[MIDI][TCD]")
 
   WHEN("TCD key is pressed on Part II")
   {
-    eventStage.onTCDMessage({ BASE_TCD | TCD_KEY_POS, TCD_UNUSED_VAL, 66 });
-    eventStage.onTCDMessage({ BASE_TCD | TCD_KEY_DOWN, 127, 127 });
+    eventStage.onTCDMessage({ { BASE_TCD | TCD_KEY_POS, TCD_UNUSED_VAL, 66 } });
+    eventStage.onTCDMessage({ { BASE_TCD | TCD_KEY_DOWN, 127, 127 } });
 
     THEN("MIDI keyDown was send on Channel 1")
     {
@@ -117,8 +115,8 @@ TEST_CASE("Secondary Channel", "[MIDI][TCD]")
 
   WHEN("TCD key is pressed on Overlap")
   {
-    eventStage.onTCDMessage({ BASE_TCD | TCD_KEY_POS, TCD_UNUSED_VAL, 64 });
-    eventStage.onTCDMessage({ BASE_TCD | TCD_KEY_DOWN, 127, 127 });
+    eventStage.onTCDMessage({ { BASE_TCD | TCD_KEY_POS, TCD_UNUSED_VAL, 64 } });
+    eventStage.onTCDMessage({ { BASE_TCD | TCD_KEY_DOWN, 127, 127 } });
 
     THEN("MIDI keyDown was send on Channel 1 & 2")
     {
@@ -178,19 +176,18 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   settings.setReceiveChannel(MidiReceiveChannel::CH_1);
   settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_2);
   std::vector<nltools::msg::Midi::SimpleMessage> sendMIDI;
-  InputEventStage eventStage(&hostPartI, &settings, [] {}, [&](auto m) { sendMIDI.emplace_back(m); }, [](auto) {},
-                             [](auto, auto) {});
+  InputEventStage eventStage(&hostPartI, &settings, [](){}, [&](auto m) { sendMIDI.emplace_back(m); }, [](auto){});
 
   WHEN("MIDI In on Prim. Channel 1, receive")
   {
-    eventStage.onMIDIMessage({ 0x90, 17, 127 });
+    eventStage.onMIDIMessage({ { 0x90, 17, 127 } });
     CHECK(hostPartI.didReceiveKeyDown());
   }
 
   WHEN("MIDI In on Prim. Channel 1, receive")
   {
     hostPartI.setExpectedKey(77);
-    eventStage.onMIDIMessage({ 0x90, 77, 127 });
+    eventStage.onMIDIMessage({ { 0x90, 77, 127 } });
     CHECK(hostPartI.didReceiveKeyDown());
   }
 
@@ -198,13 +195,13 @@ TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "
   {
     hostPartI.setExpectedPart(VoiceGroup::II);
     hostPartI.setExpectedKey(77);
-    eventStage.onMIDIMessage({ 0x91, 77, 127 });
+    eventStage.onMIDIMessage({ { 0x91, 77, 127 } });
     CHECK(hostPartI.didReceiveKeyDown());
   }
 
   WHEN("MIDI In on Channel 3, no receive")
   {
-    eventStage.onMIDIMessage({ 0x92, 17, 127 });
+    eventStage.onMIDIMessage({ { 0x92, 17, 127 } });
     CHECK(!hostPartI.didReceiveKeyDown());
   }
 }
@@ -223,13 +220,14 @@ TEST_CASE("Receive MIDI Special Receive Channel Settings leads to Note Down", "[
 
   PassOnKeyDownHostSingle host(77, 1.0, VoiceGroup::I);
   auto settings = createSpecialSettings();
-  InputEventStage eventStage(&host, &settings, [] {}, [&](auto m) { CHECK(false); }, [](auto) {}, [](auto, auto) {});
+  InputEventStage eventStage(
+      &host, &settings, []() {}, [&](auto m) { CHECK(false); }, [](auto) {});
 
   WHEN("MIDI In with CH1 & CH1")
   {
     settings.setReceiveChannel(MidiReceiveChannel::CH_1);
     settings.setSplitReceiveChannel(MidiReceiveChannelSplit::CH_1);
-    eventStage.onMIDIMessage({ 0x90, 77, 127 });
+    eventStage.onMIDIMessage({ { 0x90, 77, 127 } });
     CHECK(host.didReceiveKeyDown());
   }
 
@@ -237,7 +235,7 @@ TEST_CASE("Receive MIDI Special Receive Channel Settings leads to Note Down", "[
   {
     settings.setReceiveChannel(MidiReceiveChannel::CH_1);
     settings.setSplitReceiveChannel(MidiReceiveChannelSplit::Common);
-    eventStage.onMIDIMessage({ 0x90, 77, 127 });
+    eventStage.onMIDIMessage({ { 0x90, 77, 127 } });
     CHECK(host.didReceiveKeyDown());
   }
 }

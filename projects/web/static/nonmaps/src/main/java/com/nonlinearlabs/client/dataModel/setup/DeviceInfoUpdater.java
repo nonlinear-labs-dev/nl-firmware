@@ -20,6 +20,7 @@ public class DeviceInfoUpdater extends Updater {
 		m.put("software-version", DeviceInformation.get().softwareVersion);
 		m.put("date-time", DeviceInformation.get().dateTime);
 		m.put("date-time-display", DeviceInformation.get().dateTimeDisplay);
+		m.put("buffer-underruns", DeviceInformation.get().bufferUnderruns);
 
 		return m;
 	}
@@ -32,7 +33,7 @@ public class DeviceInfoUpdater extends Updater {
 				if (info.getNodeType() == Node.ELEMENT_NODE) {
 					String value = getText(info);
 					DataModelEntityBase s = findDeviceInfoFromTagName(info.getNodeName());
-					if(s != null)
+					if (s != null)
 						s.fromString(value);
 
 				}

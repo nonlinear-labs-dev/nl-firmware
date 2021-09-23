@@ -11,12 +11,7 @@ TEST_CASE("HW Source Enable Tests")
   MidiRuntimeOptions options {};
 
   std::vector<InputEventStage::MIDIOutType> sendMidiMessages;
-  InputEventStage eS(
-      &dsp, &options,
-      []() {
-
-      },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {}, [](auto, auto) {});
+  InputEventStage eS(&dsp, &options, [](){}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto){});
 
   InputEventStageTester eventStage(&eS);
 
@@ -60,10 +55,10 @@ TEST_CASE("HW Source Enable Tests")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
-  constexpr MidiEvent pedal1PressureMIDIEvent = { 0xB0, 1, 69 };
-  constexpr MidiEvent pedal1PressureMIDIEvent_split = { 0xB1, 1, 69 };
+  constexpr MidiEvent pedal1PressureMIDIEvent = { { 0xB0, 1, 69 } };
+  constexpr MidiEvent pedal1PressureMIDIEvent_split = { { 0xB1, 1, 69 } };
 
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingAspect tMAPPING_INDEX;
 
@@ -204,12 +199,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
   MidiRuntimeOptions options {};
 
   std::vector<InputEventStage::MIDIOutType> sendMidiMessages;
-  InputEventStage eS(
-      &dsp, &options,
-      []() {
-
-      },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {}, [](auto, auto){});
+  InputEventStage eS(&dsp, &options, [](){}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto){});
 
   InputEventStageTester eventStage(&eS);
 
@@ -258,10 +248,10 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEventAftertouch
-      = { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
   constexpr MidiEvent fullPressureTCDEventBender
-      = { BASE_TCD | Bender, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { { BASE_TCD | Bender, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingAspect tMAPPING_INDEX;
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingIndex tHW_INDEX;

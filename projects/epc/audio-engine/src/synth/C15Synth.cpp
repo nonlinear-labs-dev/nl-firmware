@@ -11,25 +11,13 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     : Synth(options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
+    , m_ribbonData { { std::numeric_limits<float>::max(), std::numeric_limits<float>::max() }, { 0, 0 } }
     , m_externalMidiOutBuffer(2048)
-    , m_ribbonData{{ std::numeric_limits<float>::max(), std::numeric_limits<float>::max() }, { 0, 0 }}
     , m_queuedChannelModeMessages(128)
-    , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); } ))
-    , m_inputEventStage { m_dsp.get(),
-                          &m_midiOptions,
-                          [this] { m_syncExternalsWaiter.notify_all(); },
-                          [this](auto msg)
-                          {
-                            queueExternalMidiOut(msg);
-                          },
-                          [this](MidiChannelModeMessages func)
-                          {
-                            queueChannelModeMessage(func);
-                          },
-                          [this](InputEventStage::RoutingIndex idx, float pos)
-                          {
-                            queueLocalDisabledRibbonPositionUpdate(idx, pos);
-                          } }
+    , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
+    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncExternalsWaiter.notify_all(); },
+                          [this](auto msg) { queueExternalMidiOut(msg); },
+                          [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
 {
   m_playgroundHwSourceKnownValues.fill(0);
 
@@ -63,16 +51,17 @@ C15Synth::C15Synth(AudioEngineOptions* options)
   receive<Keyboard::NoteUp>(EndPoint::AudioEngine,
                             [this](const Keyboard::NoteUp& noteUp)
                             {
-                              m_inputEventStage.onMIDIMessage({ 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 });
+                              m_inputEventStage.onMIDIMessage({ { 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 } });
                               m_syncExternalsWaiter.notify_all();
                             });
 
-  receive<Keyboard::NoteDown>(EndPoint::AudioEngine,
-                              [this](const Keyboard::NoteDown& noteDown)
-                              {
-                                m_inputEventStage.onMIDIMessage({ 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 });
-                                m_syncExternalsWaiter.notify_all();
-                              });
+  receive<Keyboard::NoteDown>(
+      EndPoint::AudioEngine,
+      [this](const Keyboard::NoteDown& noteDown)
+      {
+        m_inputEventStage.onMIDIMessage({ { 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 } });
+        m_syncExternalsWaiter.notify_all();
+      });
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(
@@ -173,7 +162,6 @@ void C15Synth::syncExternalsLoop()
     doSyncExternalMidiBridge();
     doSyncPlayground();
     doChannelModeMessageFunctions();
-    doSendLocalDisabledQueuedRibbonPositions();
   }
 }
 
@@ -218,26 +206,6 @@ void C15Synth::doSyncExternalMidiBridge()
     auto msg = m_externalMidiOutBuffer.pop();
     auto copy = msg;
     send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, copy);
-  }
-}
-
-void C15Synth::doSendLocalDisabledQueuedRibbonPositions()
-{
-  for(auto idx = 0; idx < 2; idx++)
-  {
-    auto& data = m_ribbonData;
-    auto& queued = data.queuedPositions[idx];
-    auto& known = data.lastSendPositions[idx];
-
-    if(known != queued)
-    {
-      using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
-      data.lastSendPositions[idx] = queued;
-      nltools::msg::UpdateLocalDisabledRibbonValue msg {};
-      msg.position = static_cast<double>(queued);
-      msg.ribbonId = idx == 0 ? RoutingIndex::Ribbon1 : RoutingIndex::Ribbon2;
-      nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
-    }
   }
 }
 
@@ -445,13 +413,6 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   }
 }
 
-void C15Synth::queueLocalDisabledRibbonPositionUpdate(InputEventStage::RoutingIndex idx, float pos)
-{
-  auto index = idx == InputEventStage::RoutingIndex::Ribbon1 ? 0 : 1;
-  m_ribbonData.queuedPositions[index] = pos;
-  m_syncExternalsWaiter.notify_all();
-}
-
 void C15Synth::queueChannelModeMessage(MidiChannelModeMessages function)
 {
   m_queuedChannelModeMessages.push(function);
@@ -506,7 +467,19 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
+  const auto oldPrimSendState = m_midiOptions.shouldSendMIDINotesOnPrimary();
+  const auto oldSecSendState = m_midiOptions.shouldSendMIDINotesOnSplit();
+  const auto oldPrimChannel = m_midiOptions.getMIDIPrimarySendChannel();
+  const auto oldSplitChannel = m_midiOptions.getMIDISplitSendChannel();
+  const auto newPrimChannel = msg.sendChannel;
+  const auto newSplitChannel = msg.sendSplitChannel;
+  const auto didPrimChange = oldPrimChannel != newPrimChannel;
+  const auto didSplitChange = oldSplitChannel != newSplitChannel;
+
   m_midiOptions.update(msg);
+
+  m_inputEventStage.handlePressedNotesOnMidiSettingsChanged(msg, oldPrimSendState, oldSecSendState, didPrimChange,
+                                                            didSplitChange, oldPrimChannel, oldSplitChannel);
   m_dsp->onMidiSettingsReceived();
 }
 
