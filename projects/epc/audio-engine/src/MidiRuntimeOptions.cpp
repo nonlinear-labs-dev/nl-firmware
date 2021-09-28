@@ -3,6 +3,8 @@
 
 void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 {
+  m_lastMessage = msg;
+
   m_midiPrimaryReceiveChannel = msg.receiveChannel;
   m_midiSplitReceiveChannel = msg.receiveSplitChannel;
 
@@ -556,4 +558,9 @@ MidiRuntimeOptions::tRoutingEntry MidiRuntimeOptions::getPackedNotesRoutings()
   auto rawLocal = m_routingMappings[index][local];
   return { shouldSendMIDINotesOnPrimary(), shouldReceiveMIDINotesOnPrimary(), shouldSendMIDINotesOnSplit(),
            shouldReceiveMIDINotesOnSplit(), rawLocal };
+}
+
+const nltools::msg::Setting::MidiSettingsMessage& MidiRuntimeOptions::getLastReceivedMessage() const
+{
+  return m_lastMessage;
 }

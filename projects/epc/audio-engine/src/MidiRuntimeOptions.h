@@ -44,6 +44,7 @@ class MidiRuntimeOptions
   [[nodiscard]] bool shouldSendMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const;
   [[nodiscard]] bool shouldAllowLocal(tMidiSettingMessage::RoutingIndex routingIndex) const;
 
+  const nltools::msg::Setting::MidiSettingsMessage& getLastReceivedMessage() const;
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
   static int channelEnumToInt(MidiSendChannel channel);
@@ -156,6 +157,8 @@ class MidiRuntimeOptions
   BenderCC benderCC;
 
   nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings;
+
+  nltools::msg::Setting::MidiSettingsMessage m_lastMessage;
 
   friend class MidiRuntimeOptionsTester;
 };

@@ -468,7 +468,6 @@ void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMe
   InputEventStage::OldSettingSnapshot snap(m_midiOptions);
   m_midiOptions.update(msg);
   m_inputEventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap);
-  m_dsp->onMidiSettingsReceived();
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)
