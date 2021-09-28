@@ -16,21 +16,20 @@ TEST_CASE("When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]
   msg.routings = TestHelper::createFullMappings(true);
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
-  InputEventStage::OldSettingSnapshot snap(options);
   options.update(msg);
+  auto old = options.getLastReceivedMessage();
 
   WHEN("Previous Notes Enable is disabled")
   {
     msg.routings = TestHelper::createFullMappings(true);
     TestHelper::updateMappings(msg.routings, nltools::msg::Setting::MidiSettingsMessage::RoutingAspect::SEND_PRIMARY, false);
     TestHelper::updateMappings(msg.routings, nltools::msg::Setting::MidiSettingsMessage::RoutingAspect::SEND_SPLIT, false);
-    InputEventStage::OldSettingSnapshot snap2(options);
     options.update(msg);
 
     WHEN("DSPHost is Single")
     {
       host.setType(SoundType::Single);
-      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap2);
+      eventStage.onMidiSettingsMessageWasReceived(msg, old);
 
       THEN("All Notes Off was send")
       {
@@ -45,7 +44,7 @@ TEST_CASE("When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]
     WHEN("DSPHost is Split")
     {
       host.setType(SoundType::Split);
-      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap2);
+      eventStage.onMidiSettingsMessageWasReceived(msg, old);
 
       THEN("All Notes Off was send")
       {
@@ -75,20 +74,19 @@ TEST_CASE("When Send Channels change Note off gets send on previous Channels", "
   msg.routings = TestHelper::createFullMappings(true);
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
-  InputEventStage::OldSettingSnapshot snap(options);
   options.update(msg);
+  auto old = options.getLastReceivedMessage();
 
   WHEN("Previous Notes Enable is disabled")
   {
     msg.sendChannel = MidiSendChannel::CH_3;
     msg.sendSplitChannel = MidiSendChannelSplit::CH_4;
-    InputEventStage::OldSettingSnapshot snap2(options);
     options.update(msg);
 
     WHEN("DSPHost is Single")
     {
       host.setType(SoundType::Single);
-      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap2);
+      eventStage.onMidiSettingsMessageWasReceived(msg, old);
 
       THEN("All Notes Off was send")
       {
@@ -103,7 +101,7 @@ TEST_CASE("When Send Channels change Note off gets send on previous Channels", "
     WHEN("DSPHost is Split")
     {
       host.setType(SoundType::Split);
-      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap2);
+      eventStage.onMidiSettingsMessageWasReceived(msg, old);
 
       THEN("All Notes Off was send")
       {
@@ -135,20 +133,19 @@ TEST_CASE("When Receive Channels change DSP->Flush should get called", "[MIDI][T
   msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
   msg.receiveChannel = MidiReceiveChannel::CH_10;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_11;
-  InputEventStage::OldSettingSnapshot snap(options);
   options.update(msg);
+  auto old = options.getLastReceivedMessage();
 
   WHEN("ReceiveChannels changed")
   {
     msg.receiveChannel = MidiReceiveChannel::CH_3;
     msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
-    InputEventStage::OldSettingSnapshot snap2(options);
     options.update(msg);
 
     WHEN("DSPHost is Single")
     {
       host.setType(SoundType::Single);
-      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap2);
+      eventStage.onMidiSettingsMessageWasReceived(msg, old);
 
       THEN("No Midi was send")
       {
@@ -165,7 +162,7 @@ TEST_CASE("When Receive Channels change DSP->Flush should get called", "[MIDI][T
     WHEN("DSPHost is Split")
     {
       host.setType(SoundType::Split);
-      eventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap2);
+      eventStage.onMidiSettingsMessageWasReceived(msg, old);
 
       THEN("No Midi was send")
       {

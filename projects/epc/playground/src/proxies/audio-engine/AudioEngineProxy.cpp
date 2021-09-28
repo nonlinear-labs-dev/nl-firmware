@@ -523,7 +523,7 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
 
         msg.routings = m_settings.getSetting<RoutingSettings>()->getRaw();
 
-        msg.globalLocalEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
+        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       });

@@ -95,6 +95,8 @@ class DSPInterface
   virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
   virtual void onMidiSettingsReceived() = 0;
+  virtual float getReturnValueFor(int hwid) { return 0; };
+  virtual void resetReturningHWSource(int hwui) {};
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
     // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
@@ -133,7 +135,8 @@ class dsp_host_dual : public DSPInterface
   // event bindings: Playcontroller or MIDI Device (in Dev_PC mode)
 
   using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
-
+  float getReturnValueFor(int hwid) override;
+  void resetReturningHWSource(int hwui) override;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(const uint32_t id, float value, bool didBehaviourChange) override;

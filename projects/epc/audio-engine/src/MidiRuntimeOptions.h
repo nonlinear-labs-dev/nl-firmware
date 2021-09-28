@@ -142,7 +142,7 @@ class MidiRuntimeOptions
   MidiSendChannel m_midiPrimarySendChannel;
   MidiSendChannelSplit m_midiSplitSendChannel;
 
-  bool m_globalLocalEnable = true;
+  bool m_localEnable = true;
 
   bool m_enableHighVelCC = false;
   bool m_enable14BitCC = false;

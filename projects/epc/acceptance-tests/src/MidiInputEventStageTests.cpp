@@ -84,7 +84,7 @@ TEST_CASE("MIDI input on Secondary channel is ignored if not in split", "[MIDI]"
                                         s.receiveChannel = MidiReceiveChannel::CH_1;
                                         s.receiveSplitChannel = MidiReceiveChannelSplit::CH_2;
                                         s.routings = TestHelper::createFullMappings(true);
-                                        s.globalLocalEnable = true;
+                                        s.localEnable = true;
                                       });
 
   dsp.setType(SoundType::Single);
@@ -106,7 +106,7 @@ TEST_CASE("MIDI input on Secondary channel is ignored if not in split", "[MIDI]"
         {
           s.receiveChannel = MidiReceiveChannel::CH_1;
           s.receiveSplitChannel = MidiReceiveChannelSplit::CH_2;
-          s.globalLocalEnable = true;
+          s.localEnable = true;
           constexpr auto idx = static_cast<int>(MidiRuntimeOptions::tMidiSettingMessage::RoutingIndex::Notes);
           constexpr auto aspect
               = static_cast<int>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::RECEIVE_SPLIT);

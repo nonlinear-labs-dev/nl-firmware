@@ -465,9 +465,9 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
-  InputEventStage::OldSettingSnapshot snap(m_midiOptions);
+  auto oldMsg = m_midiOptions.getLastReceivedMessage();
   m_midiOptions.update(msg);
-  m_inputEventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap);
+  m_inputEventStage.onMidiSettingsMessageWasReceived(msg, oldMsg);
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)

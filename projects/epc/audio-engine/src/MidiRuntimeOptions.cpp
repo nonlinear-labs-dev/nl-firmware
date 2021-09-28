@@ -24,7 +24,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   m_enable14BitCC = msg.highResCCEnabled;
 
   m_routingMappings = msg.routings;
-  m_globalLocalEnable = msg.globalLocalEnable;
+  m_localEnable = msg.localEnable;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getMIDIPrimaryReceiveChannel() const
@@ -107,7 +107,7 @@ bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
 {
   constexpr auto idx = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingIndex::Notes);
   constexpr auto aspect = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::LOCAL);
-  return m_routingMappings[idx][aspect] && m_globalLocalEnable;
+  return m_routingMappings[idx][aspect] && m_localEnable;
 }
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
@@ -494,7 +494,7 @@ bool MidiRuntimeOptions::shouldAllowLocal(tMidiSettingMessage::RoutingIndex rout
 {
   constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
   const auto index = static_cast<int>(routingIndex);
-  return m_routingMappings[index][local] && m_globalLocalEnable;
+  return m_routingMappings[index][local] && m_localEnable;
 }
 
 bool MidiRuntimeOptions::isCCMappedToChannelModeMessage(int cc)
@@ -548,7 +548,7 @@ void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
 
 bool MidiRuntimeOptions::isGlobalLocalEnabled()
 {
-  return m_globalLocalEnable;
+  return m_localEnable;
 }
 
 MidiRuntimeOptions::tRoutingEntry MidiRuntimeOptions::getPackedNotesRoutings()

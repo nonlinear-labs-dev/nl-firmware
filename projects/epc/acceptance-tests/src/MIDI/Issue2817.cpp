@@ -14,9 +14,9 @@ TEST_CASE("Issue 2817")
 
   auto onSettingsReceived = [&](auto msg)
   {
-    InputEventStage::OldSettingSnapshot snap(options);
+    auto old = options.getLastReceivedMessage();
     options.update(msg);
-    eventStage.handlePressedNotesOnMidiSettingsChanged(msg, snap);
+    eventStage.onMidiSettingsMessageWasReceived(msg, old);
   };
 
   WHEN("All Settings On")
@@ -29,7 +29,7 @@ TEST_CASE("Issue 2817")
     msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
     msg.receiveChannel = MidiReceiveChannel::CH_3;
     msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
-    msg.globalLocalEnable = true;
+    msg.localEnable = true;
     msg.aftertouchcc = AftertouchCC::CC01;
     msg.bendercc = BenderCC::CC02;
     msg.pedal1cc = PedalCC::CC03;
@@ -147,22 +147,105 @@ TEST_CASE("Issue 2817")
       }
     }
 
+    WHEN("Receive Prim Channel gets changed")
+    {
+      msg.receiveChannel = MidiReceiveChannel::CH_10;
+      onSettingsReceived(msg);
+
+      THEN("VA and ENV got reset")
+      {
+        REQUIRE(sendSpecialFuncs.size() == 1);
+        CHECK(sendSpecialFuncs[0] == MidiChannelModeMessages::AllSoundOff);
+      }
+
+      THEN("no All Notes off got send")
+      {
+        REQUIRE(sendMidi.empty());
+      }
+    }
+
+    WHEN("Receive Split Channel gets changed")
+    {
+      host.setType(SoundType::Split);
+      msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_10;
+      onSettingsReceived(msg);
+
+      THEN("VA and ENV got reset")
+      {
+        REQUIRE(sendSpecialFuncs.size() == 1);
+        CHECK(sendSpecialFuncs[0] == MidiChannelModeMessages::AllSoundOff);
+      }
+
+      THEN("no All Notes off got send")
+      {
+        REQUIRE(sendMidi.empty());
+      }
+    }
+
     WHEN("Global Local gets changed")
     {
-      msg.globalLocalEnable = false;
+      msg.localEnable = false;
       onSettingsReceived(msg);
 
       THEN("All Notes OFF got send")
       {
-        REQUIRE(sendMidi.size() == 2);
-        REQUIRE((sendMidi[0].rawBytes[0] & 0b00001111) == 0);
-        REQUIRE((sendMidi[1].rawBytes[0] & 0b00001111) == 1);
+        REQUIRE(sendMidi.empty());
       }
 
       THEN("VA and ENV got reset")
       {
         REQUIRE(sendSpecialFuncs.size() == 1);
         CHECK(sendSpecialFuncs[0] == MidiChannelModeMessages::AllSoundOff);
+      }
+    }
+
+    WHEN("HW Source no longer gets send")
+    {
+      TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Bender, tMSG::RoutingAspect::SEND_PRIMARY,
+                                     false);
+
+      host.setGetBehaviourCB([](auto hwID) { return C15::Properties::HW_Return_Behavior::Center; });
+
+      onSettingsReceived(msg);
+
+      THEN("Default Position got send via MIDI")
+      {
+        REQUIRE(sendMidi.size() == 1);
+        REQUIRE((sendMidi[0].rawBytes[0] & 0b00001111) == 0);
+        auto benderCC = options.getBenderMSBCC().value_or(-1);
+        CHECK(benderCC != -1);
+        REQUIRE(sendMidi[0].rawBytes[1] == benderCC);
+        REQUIRE(sendMidi[0].rawBytes[2] == 64); // 0 bipolar as we are the Bender
+      }
+
+      THEN("VA and ENV not reset")
+      {
+        REQUIRE(sendSpecialFuncs.empty());
+      }
+    }
+
+    WHEN("HW Source CC gets changed")
+    {
+      msg.bendercc = BenderCC::CC10;
+
+      host.setGetBehaviourCB([](auto hwID) { return C15::Properties::HW_Return_Behavior::Center; });
+
+      onSettingsReceived(msg);
+
+      THEN("Default Position got send via MIDI on old CC")
+      {
+        REQUIRE(sendMidi.size() == 1);
+        REQUIRE((sendMidi[0].rawBytes[0] & 0b00001111) == 0);
+        auto newBenderCC = options.getBenderMSBCC().value_or(-1);
+        CHECK(newBenderCC == 9);
+        REQUIRE(sendMidi[0].rawBytes[1] != newBenderCC);
+        REQUIRE(sendMidi[0].rawBytes[1] == 2);
+        REQUIRE(sendMidi[0].rawBytes[2] == 64); // 0 bipolar as we are the Bender
+      }
+
+      THEN("VA and ENV not reset")
+      {
+        REQUIRE(sendSpecialFuncs.empty());
       }
     }
   }

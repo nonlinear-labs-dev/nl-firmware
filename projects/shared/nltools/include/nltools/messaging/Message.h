@@ -322,7 +322,7 @@ namespace nltools
         AftertouchCC aftertouchcc;
         BenderCC bendercc;
 
-        bool globalLocalEnable = true;
+        bool localEnable = true;
         tRoutingMappings routings {};
       };
 

@@ -43,28 +43,20 @@ class InputEventStage
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
   void setNoteShift(int i);
 
-  using tRow = nltools::msg::Setting::MidiSettingsMessage::tEntry;
+  using tMSG = nltools::msg::Setting::MidiSettingsMessage;
+  using tRow = tMSG::tEntry;
 
-  struct OldSettingSnapshot
-  {
-    explicit OldSettingSnapshot(MidiRuntimeOptions& opt);
-
-    bool globalLocalState = false;
-    tRow oldNotesData;
-    MidiSendChannel oldPrimSendChannel;
-    MidiSendChannelSplit oldSplitSendChannel;
-    MidiReceiveChannel oldPrimReceiveChannel;
-    MidiReceiveChannelSplit oldSplitReceiveChannel;
-  };
-
-  void handlePressedNotesOnMidiSettingsChanged(const nltools::msg::Setting::MidiSettingsMessage& msg,
-                                               OldSettingSnapshot channelConfig);
+  void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
 
   static int parameterIDToHWID(int id);
-
   bool getAndResetKeyBedStatus();
 
  private:
+
+  void handlePressedNotesOnMidiSettingsChanged(const tMSG& msg, const tMSG& oldmsg);
+  void handleHWSourcesWhichGotTurnedOff(const tMSG& msg, const tMSG& snapshot);
+  void handleHWSourcesWhichCCsChanged(const tMSG& message, const tMSG& snapshot);
+
   void setAndScheduleKeybedNotify();
 
   using CC_Range_Vel = Midi::clipped14BitVelRange;
@@ -145,4 +137,10 @@ class InputEventStage
   friend class InputEventStageTester;
   static bool ccIsMappedToChannelModeMessage(int cc);
   void queueChannelModeMessage(int cc, uint8_t msbCCvalue);
+
+  void sendHardwareChangeAsMidiOnExplicitChannel(const int id, float value, int channel);
+  void sendCCOutOnExplicitChannel(int hwID, float value, int msbCC, int lsbCC, int channel);
+  void doSendCCOutOnExplicitChannel(uint16_t value, int msbCC, int lsbCC, int hwID, int channel);
+  void doSendBenderOutOnExplicitChannel(float value, int channel);
+  void doSendAftertouchOutOnExplicitChannel(float value, int channel);
 };

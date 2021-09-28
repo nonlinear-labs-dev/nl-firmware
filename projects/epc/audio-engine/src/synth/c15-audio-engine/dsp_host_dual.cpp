@@ -2517,3 +2517,14 @@ bool dsp_host_dual::updateBehaviour(C15::ParameterDescriptor& element, ReturnMod
   auto param = m_params.get_hw_src(element.m_param.m_index);
   return param->update_behavior(getBehavior(mode));
 }
+
+float dsp_host_dual::getReturnValueFor(int hwid)
+{
+  return 0;
+}
+
+void dsp_host_dual::resetReturningHWSource(int hwui)
+{
+  //TODO implement reset!!
+  DSPInterface::resetReturningHWSource(hwui);
+}
