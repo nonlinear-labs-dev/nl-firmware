@@ -11,7 +11,6 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     : Synth(options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
-    , m_ribbonData { { std::numeric_limits<float>::max(), std::numeric_limits<float>::max() }, { 0, 0 } }
     , m_externalMidiOutBuffer(2048)
     , m_queuedChannelModeMessages(128)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))

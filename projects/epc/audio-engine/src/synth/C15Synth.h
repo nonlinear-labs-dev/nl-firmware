@@ -70,19 +70,12 @@ class C15Synth : public Synth, public sigc::trackable
  private:
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
   void queueChannelModeMessage(MidiChannelModeMessages function);
-  void queueLocalDisabledRibbonPositionUpdate(InputEventStage::RoutingIndex idx, float pos);
 
   void syncExternalsLoop();
 
   void doSyncExternalMidiBridge();
   void doSyncPlayground();
   void doChannelModeMessageFunctions();
-  void doSendLocalDisabledQueuedRibbonPositions();
-
-  struct LocalDisabledRibbonData {
-    std::array<float, 2> queuedPositions;
-    std::array<float, 2> lastSendPositions;
-  };
 
   std::unique_ptr<dsp_host_dual> m_dsp;
   AudioEngineOptions* m_options;
@@ -90,7 +83,6 @@ class C15Synth : public Synth, public sigc::trackable
 
   //Latch-Filters, Queues
   std::array<float, 8> m_playgroundHwSourceKnownValues{};
-  LocalDisabledRibbonData m_ribbonData;
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 
