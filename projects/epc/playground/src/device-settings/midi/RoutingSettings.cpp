@@ -3,7 +3,7 @@
 
 RoutingSettings::RoutingSettings(Settings& s)
     : Setting(s)
-    , m_data{}
+    , m_data {}
 {
   for(auto& row : m_data)
   {
@@ -33,7 +33,9 @@ void RoutingSettings::load(const Glib::ustring& text, Initiator initiator)
         }
         catch(...)
         {
-            nltools::Log::error(__PRETTY_FUNCTION__, "Encountered exception while trying to update Routing for indices: (entry)(aspect)", idx, settingIdx);
+          nltools::Log::error(__PRETTY_FUNCTION__,
+                              "Encountered exception while trying to update Routing for indices: (entry)(aspect)", idx,
+                              settingIdx);
         }
       }
 
@@ -61,7 +63,8 @@ Glib::ustring RoutingSettings::getDisplayString() const
   return { "Not Used" };
 }
 
-void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx, bool state)
+void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx,
+                               bool state)
 {
   auto& val = m_data.at(static_cast<size_t>(hwIdx)).at(static_cast<size_t>(settingIdx));
   if(val != state)
@@ -79,11 +82,27 @@ const RoutingSettings::tData& RoutingSettings::getRaw() const
 void RoutingSettings::setAllValues(bool value)
 {
   bool anyChanged = false;
-  for(auto& entry: m_data) {
-    for(auto& aspect: entry) {
+  for(auto& entry : m_data)
+  {
+    for(auto& aspect : entry)
+    {
       anyChanged |= (aspect != value);
       aspect = value;
     }
+  }
+
+  if(anyChanged)
+    notify();
+}
+
+void RoutingSettings::setAllAspectsForIndex(RoutingSettings::tRoutingIndex hwIdx, bool state)
+{
+  bool anyChanged = false;
+  auto& entry = m_data[static_cast<int>(hwIdx)];
+  for(auto& aspect : entry)
+  {
+    anyChanged |= (aspect != state);
+    aspect = state;
   }
 
   if(anyChanged)
