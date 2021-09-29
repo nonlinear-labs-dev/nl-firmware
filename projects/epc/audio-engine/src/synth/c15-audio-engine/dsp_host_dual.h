@@ -115,6 +115,8 @@ class DSPInterface
     nltools_assertOnDevPC(false);
     return 0;
   }
+
+  virtual void mockHWChange(int hwID, float pos) {}
 };
 
 class dsp_host_dual : public DSPInterface
@@ -144,7 +146,7 @@ class dsp_host_dual : public DSPInterface
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
-
+  void mockHWChange(int hwID, float pos) override;
   // event bindings: Preset Messages
   void onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
   void onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
@@ -175,6 +177,7 @@ class dsp_host_dual : public DSPInterface
 
   using HWSourceValues = std::array<float, static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_)>;
   HWSourceValues getHWSourceValues() const;
+  HWSourceValues getHWSourceLocalDisabledValues() const;
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;

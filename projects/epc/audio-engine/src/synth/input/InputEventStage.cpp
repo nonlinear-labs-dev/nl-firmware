@@ -740,9 +740,6 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
         return true;
       }
       case DSPInterface::HWChangeSource::TCD:
-        if(routingIndex == RoutingIndex::Ribbon1 || routingIndex == RoutingIndex::Ribbon2)
-          return true;
-        else
           return m_options->shouldAllowLocal(routingIndex);
       case DSPInterface::HWChangeSource::UI:
         return true;
@@ -757,6 +754,11 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
     if(source != DSPInterface::HWChangeSource::UI)
       m_hwChangedCB();
+  }
+  else if(source == DSPInterface::HWChangeSource::TCD)
+  {
+    m_dspHost->mockHWChange(hwID, pos);
+    m_hwChangedCB();
   }
 
   if(source != DSPInterface::HWChangeSource::MIDI)

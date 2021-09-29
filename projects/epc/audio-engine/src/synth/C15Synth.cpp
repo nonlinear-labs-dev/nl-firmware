@@ -218,11 +218,16 @@ void C15Synth::doSyncPlayground()
   }
 
   auto engineHWSourceValues = m_dsp->getHWSourceValues();
+  auto disabledHWSourceValues = m_dsp->getHWSourceLocalDisabledValues();
+
   for(size_t i = 0; i < std::tuple_size_v<dsp_host_dual::HWSourceValues>; i++)
   {
-    if(std::exchange(m_playgroundHwSourceKnownValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
+    const auto isLocalEnabled = m_midiOptions.isLocalEnabled(static_cast<C15::Parameters::Hardware_Sources>(i));
+    auto currentValue = isLocalEnabled ? engineHWSourceValues[i] : disabledHWSourceValues[i];
+    
+    if(std::exchange(m_playgroundHwSourceKnownValues[i], currentValue) != currentValue)
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
+      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(currentValue) });
     }
   }
 }

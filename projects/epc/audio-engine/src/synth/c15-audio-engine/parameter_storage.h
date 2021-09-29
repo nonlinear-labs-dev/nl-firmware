@@ -76,6 +76,7 @@ namespace Engine
     {
       C15::Properties::HW_Return_Behavior m_behavior = C15::Properties::HW_Return_Behavior::Stay;
       uint32_t m_offset = 0;
+      float m_localDisabledPosition = 0;
       inline bool update_behavior(const C15::Properties::HW_Return_Behavior _behavior)
       {
         if(_behavior != m_behavior)

@@ -542,3 +542,30 @@ void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
   constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::LOCAL);
   m_routingMappings[idx][aspect] = b;
 }
+
+
+bool MidiRuntimeOptions::isLocalEnabled(C15::Parameters::Hardware_Sources sources)
+{
+  switch(sources)
+  {
+    case C15::Parameters::Hardware_Sources::Pedal_1:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal1);
+    case C15::Parameters::Hardware_Sources::Pedal_2:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal2);
+    case C15::Parameters::Hardware_Sources::Pedal_3:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal3);
+    case C15::Parameters::Hardware_Sources::Pedal_4:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal4);
+    case C15::Parameters::Hardware_Sources::Bender:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Bender);
+    case C15::Parameters::Hardware_Sources::Aftertouch:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Aftertouch);
+    case C15::Parameters::Hardware_Sources::Ribbon_1:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1);
+    case C15::Parameters::Hardware_Sources::Ribbon_2:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal2);
+    case C15::Parameters::Hardware_Sources::_LENGTH_:
+      return false;
+  }
+  return false;
+}

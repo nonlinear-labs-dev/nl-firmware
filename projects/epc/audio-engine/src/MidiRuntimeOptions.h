@@ -119,6 +119,8 @@ class MidiRuntimeOptions
   void setSplitReceiveChannel(MidiReceiveChannelSplit c);
   void set14BitSupportEnabled(bool e);
 
+  bool isLocalEnabled(C15::Parameters::Hardware_Sources sources);
+
  private:
   //Mappings
   static std::optional<int> decodeEnumMSB(PedalCC);

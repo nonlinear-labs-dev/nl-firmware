@@ -1004,6 +1004,15 @@ void dsp_host_dual::reset()
   });
 }
 
+dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceLocalDisabledValues() const
+{
+  dsp_host_dual::HWSourceValues ret;
+  std::transform(m_params.m_global.m_source, m_params.m_global.m_source + ret.size(), ret.begin(),
+                 [](const auto& a) { return a.m_localDisabledPosition; });
+  return ret;
+
+}
+
 dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
 {
   dsp_host_dual::HWSourceValues ret;
@@ -2337,8 +2346,15 @@ void dsp_host_dual::onHWChanged(const uint32_t id, float value, bool didBehaviou
   auto source = m_params.get_hw_src(id);
   const float inc = value - source->m_position;
   source->m_position = value;
+  source->m_localDisabledPosition = value;
   if(!didBehaviourChange)
     hwModChain(source, id, inc);
+}
+
+void dsp_host_dual::mockHWChange(int hwID, float pos)
+{
+  auto source = m_params.get_hw_src(hwID);
+  source->m_localDisabledPosition = pos;
 }
 
 C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
