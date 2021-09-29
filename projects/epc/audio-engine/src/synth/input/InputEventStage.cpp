@@ -1334,5 +1334,62 @@ void InputEventStage::handleHWSourcesWhichCCsChanged(const tMSG& message,
   const auto didRibbon2Change = message.ribbon2cc != snapshot.ribbon2cc;
   const auto didAftertouchChange = message.aftertouchcc != snapshot.aftertouchcc;
   const auto didBenderChange = message.bendercc != snapshot.bendercc;
-  //TODO finish this to fix tests
+
+  const auto pedal1Returning = m_dspHost->getBehaviour(HWID::PEDAL1) != C15::Properties::HW_Return_Behavior::Stay;
+  const auto pedal2Returning = m_dspHost->getBehaviour(HWID::PEDAL2) != C15::Properties::HW_Return_Behavior::Stay;
+  const auto pedal3Returning = m_dspHost->getBehaviour(HWID::PEDAL3) != C15::Properties::HW_Return_Behavior::Stay;
+  const auto pedal4Returning = m_dspHost->getBehaviour(HWID::PEDAL4) != C15::Properties::HW_Return_Behavior::Stay;
+  const auto ribbon1Returning = m_dspHost->getBehaviour(HWID::RIBBON1) != C15::Properties::HW_Return_Behavior::Stay;
+  const auto ribbon2Returning = m_dspHost->getBehaviour(HWID::RIBBON2) != C15::Properties::HW_Return_Behavior::Stay;
+  const auto aftertouchReturning = m_dspHost->getBehaviour(HWID::AFTERTOUCH) != C15::Properties::HW_Return_Behavior::Stay;
+  const auto benderReturning = m_dspHost->getBehaviour(HWID::BENDER) != C15::Properties::HW_Return_Behavior::Stay;
+
+  if(didPedal1Change && pedal1Returning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal1cc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal1cc);
+    doSendCCOut(HWID::PEDAL1, 0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
+  if(didPedal2Change && pedal2Returning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal2cc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal2cc);
+    doSendCCOut(HWID::PEDAL2, 0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
+  if(didPedal3Change && pedal3Returning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal3cc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal3cc);
+    doSendCCOut(HWID::PEDAL3, 0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
+  if(didPedal4Change && pedal4Returning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal4cc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal4cc);
+    doSendCCOut(HWID::PEDAL4, 0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
+  if(didRibbon1Change && ribbon1Returning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.ribbon1cc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.ribbon1cc);
+    doSendCCOut(HWID::RIBBON1, 0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
+  if(didRibbon2Change && ribbon2Returning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.ribbon2cc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.ribbon2cc);
+    doSendCCOut(HWID::RIBBON2, 0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
+  if(didBenderChange && benderReturning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.bendercc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.bendercc);
+    sendCCOut(HWID::BENDER,0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
+  if(didAftertouchChange && aftertouchReturning)
+  {
+    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.aftertouchcc);
+    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.aftertouchcc);
+    doSendCCOut(HWID::AFTERTOUCH, 0, oldmsb.value_or(-1), oldlsb.value_or(-1));
+  }
 }

@@ -379,15 +379,6 @@ namespace Tests
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
           }
         }
-        WHEN("MIDI Settings Message")
-        {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
-          synth->measurePerformance(20ms);
-          THEN("No Active Voices")
-          {
-            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-          }
-        }
       }
       WHEN("Parameter Changed Messages")
       {
@@ -484,15 +475,6 @@ namespace Tests
         WHEN("Reset Synth")
         {
           synth->resetDSP();
-          synth->measurePerformance(20ms);
-          THEN("No Active Voices")
-          {
-            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-          }
-        }
-        WHEN("MIDI Settings Message")
-        {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
           synth->measurePerformance(20ms);
           THEN("No Active Voices")
           {
@@ -679,15 +661,6 @@ namespace Tests
         WHEN("Reset Synth")
         {
           synth->resetDSP();
-          synth->measurePerformance(20ms);
-          THEN("No Active Voices")
-          {
-            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-          }
-        }
-        WHEN("MIDI Settings Message")
-        {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
           synth->measurePerformance(20ms);
           THEN("No Active Voices")
           {

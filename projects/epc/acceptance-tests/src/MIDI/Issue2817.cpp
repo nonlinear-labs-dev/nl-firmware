@@ -228,6 +228,7 @@ TEST_CASE("Issue 2817")
     {
       msg.bendercc = BenderCC::CC10;
 
+      host.setType(SoundType::Single);
       host.setGetBehaviourCB([](auto hwID) { return C15::Properties::HW_Return_Behavior::Center; });
 
       onSettingsReceived(msg);
@@ -237,10 +238,10 @@ TEST_CASE("Issue 2817")
         REQUIRE(sendMidi.size() == 1);
         REQUIRE((sendMidi[0].rawBytes[0] & 0b00001111) == 0);
         auto newBenderCC = options.getBenderMSBCC().value_or(-1);
-        CHECK(newBenderCC == 9);
+        CHECK(newBenderCC == 10);
         REQUIRE(sendMidi[0].rawBytes[1] != newBenderCC);
         REQUIRE(sendMidi[0].rawBytes[1] == 2);
-        REQUIRE(sendMidi[0].rawBytes[2] == 64); // 0 bipolar as we are the Bender
+        REQUIRE(sendMidi[0].rawBytes[2] == 64);
       }
 
       THEN("VA and ENV not reset")

@@ -125,8 +125,6 @@ class MidiRuntimeOptions
   bool isGlobalLocalEnabled();
   tRoutingEntry getPackedNotesRoutings();
 
- private:
-  //Mappings
   static std::optional<int> decodeEnumMSB(PedalCC);
   static std::optional<int> decodeEnumLSB(PedalCC);
   static std::optional<int> decodeEnumMSB(RibbonCC);
@@ -136,7 +134,7 @@ class MidiRuntimeOptions
   static std::optional<int> decodeEnumLSB(AftertouchCC cc);
   static std::optional<int> decodeEnumMSB(BenderCC cc);
   static std::optional<int> decodeEnumLSB(BenderCC cc);
-
+ private:
   MidiReceiveChannel m_midiPrimaryReceiveChannel;
   MidiReceiveChannelSplit m_midiSplitReceiveChannel;
   MidiSendChannel m_midiPrimarySendChannel;
