@@ -757,7 +757,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
   }
   else if(source == DSPInterface::HWChangeSource::TCD)
   {
-    m_dspHost->mockHWChange(hwID, pos);
+    m_localDisabledPositions[hwID] = pos;
     m_hwChangedCB();
   }
 
@@ -1027,4 +1027,11 @@ void InputEventStage::handlePressedNotesOnMidiSettingsChanged(const nltools::msg
   {
     sendNotesOffOnChannel(oldSplitSendChannel);
   }
+}
+
+float InputEventStage::getHWSourcePositionIfLocalDisabled(size_t hwid) const
+{
+  if(hwid < NUM_HW)
+    return m_localDisabledPositions[hwid];
+  return 0;
 }
