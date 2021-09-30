@@ -8,5 +8,5 @@ PhysicalControlParameterUseCases::PhysicalControlParameterUseCases(PhysicalContr
 
 void PhysicalControlParameterUseCases::changeFromPlaycontroller(double value, bool shouldModulate)
 {
-  m_physicalParam->onChangeFromPlaycontroller(value, false);
+  m_physicalParam->onChangeFromPlaycontroller(value, shouldModulate);
 }
