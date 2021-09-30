@@ -3,7 +3,7 @@ SET(DOCKERNAME nl-epc-build-environment)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 file(GLOB_RECURSE ALL_BUILD_TOOLS_FILES ${CMAKE_SOURCE_DIR}/build-tools/*)
-file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/epc/web-ui/target/*)
+file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/web/static/nonmaps/target/*)
 file(GLOB_RECURSE PlaycontrollerX_FILES ${CMAKE_SOURCE_DIR}/projects/playcontroller/firmware/.metadata/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET_FILES})
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${PlaycontrollerX_FILES})

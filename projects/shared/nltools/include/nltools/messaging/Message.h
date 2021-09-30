@@ -225,6 +225,17 @@ namespace nltools
       }
 
       uint64_t numUnderruns = 0;
+      int32_t framesPerPeriod = 0;
+    };
+
+    struct SetFramesPerPeriod
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetFramesPerPeriod;
+      }
+
+      int32_t framesPerPeriod = 0;
     };
 
     namespace Setting
