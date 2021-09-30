@@ -750,8 +750,8 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
 
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
-    // We will have to suppress modulation routing from HW sources that are local-disabled ?!
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
+    m_localDisabledPositions[hwID] = pos;
     m_hwChangedCB();
   }
   else if(source == DSPInterface::HWChangeSource::TCD)
@@ -893,6 +893,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         const auto lsb = hwRes.undecodedValueBytes[1];
         float realVal = processMidiForHWSource(m_dspHost, hwID, msb, lsb);
         m_dspHost->onHWChanged(hwID, realVal, false);
+        m_localDisabledPositions[hwID] = realVal;
         m_hwChangedCB();
       }
       else
