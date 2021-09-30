@@ -6,7 +6,7 @@ PhysicalControlParameterUseCases::PhysicalControlParameterUseCases(PhysicalContr
 {
 }
 
-void PhysicalControlParameterUseCases::changeFromPlaycontroller(double value)
+void PhysicalControlParameterUseCases::changeFromPlaycontroller(double value, bool shouldModulate)
 {
-  m_physicalParam->onChangeFromPlaycontroller(value);
+  m_physicalParam->onChangeFromPlaycontroller(value, false);
 }

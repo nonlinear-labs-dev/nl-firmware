@@ -79,7 +79,9 @@ enum class Initiator
   EXPLICIT_MCVIEW,
   EXPLICIT_USECASE,
   INDIRECT_SPLIT_SYNC,
-  INDIRECT
+  INDIRECT,
+  EXPLICIT_TCD,
+  EXPLICIT_MIDI
 };
 
 inline std::string toString(Initiator initiator)

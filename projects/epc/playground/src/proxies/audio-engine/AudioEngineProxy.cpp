@@ -50,10 +50,8 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
         {
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
-
             PhysicalControlParameterUseCases useCase(p);
-            useCase.changeFromPlaycontroller(msg.position);
-
+            useCase.changeFromPlaycontroller(msg.position, msg.shouldModulateInPG);
             m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
           }
         }

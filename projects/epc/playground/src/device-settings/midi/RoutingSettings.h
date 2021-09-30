@@ -16,6 +16,7 @@ class RoutingSettings : public Setting
   Glib::ustring getDisplayString() const override;
   Glib::ustring save() const override;
 
+  bool getState(int hwId, tAspectIndex aspect) const;
   bool getState(tRoutingIndex hwIdx, tAspectIndex settingIdx) const;
   void setState(tRoutingIndex hwIdx, tAspectIndex settingIdx, bool state);
   const tData& getRaw() const;

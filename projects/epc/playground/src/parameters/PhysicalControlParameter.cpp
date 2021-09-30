@@ -28,9 +28,12 @@ bool PhysicalControlParameter::isChangedFromLoaded() const
   return false;
 }
 
-void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newVal)
+void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newValue, bool shouldModulate)
 {
-  getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newVal));
+  if(shouldModulate)
+    getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));
+  else
+    getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newValue));
 }
 
 void PhysicalControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
@@ -54,7 +57,7 @@ void PhysicalControlParameter::onValueChanged(Initiator initiator, tControlPosit
 
   if(initiator != Initiator::INDIRECT)
   {
-    if(isLocalEnabled())
+    if(isLocalEnabled() || initiator == Initiator::EXPLICIT_MIDI)
     {
       if(getReturnMode() != ReturnMode::None)
       {

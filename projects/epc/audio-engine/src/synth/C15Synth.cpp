@@ -226,7 +226,7 @@ void C15Synth::doSyncPlayground()
 
     if(std::exchange(m_playgroundHwSourceKnownValues[i], currentValue) != currentValue)
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(currentValue) });
+      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(currentValue), isLocalEnabled });
     }
   }
 }
