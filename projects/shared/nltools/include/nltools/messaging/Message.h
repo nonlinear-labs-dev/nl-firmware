@@ -236,7 +236,7 @@ namespace nltools
           return MessageType::NoteShiftSetting;
         }
 
-        int m_shift;
+        int m_shift = 0;
       };
 
       struct FlacRecorderAutoStart

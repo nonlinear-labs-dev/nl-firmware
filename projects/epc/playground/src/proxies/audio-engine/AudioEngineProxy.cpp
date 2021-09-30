@@ -31,6 +31,7 @@
 #include <use-cases/SettingsUseCases.h>
 #include <use-cases/BankUseCases.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <device-settings/NoteShift.h>
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
     : m_presetManager { pm }
@@ -41,6 +42,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
+  onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendNoteShift));
 
   receive<HardwareSourceChangedNotification>(
       EndPoint::Playground,
@@ -532,4 +534,10 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
 void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)
 {
   m_lastMIDIKnownProgramNumber = pc;
+}
+
+void AudioEngineProxy::sendNoteShift()
+{
+  auto setting = m_settings.getSetting<NoteShift>();
+  setting->syncExternals(SendReason::HeartBeatDropped);
 }
