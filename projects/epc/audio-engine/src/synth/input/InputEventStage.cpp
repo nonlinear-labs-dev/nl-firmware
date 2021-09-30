@@ -484,6 +484,7 @@ void InputEventStage::doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID
 
 void InputEventStage::setNoteShift(int i)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__ , "old shift:", m_shifteable_keys.getNoteShift());
   m_shifteable_keys.setNoteShift(i);
 }
 

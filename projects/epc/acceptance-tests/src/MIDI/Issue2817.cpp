@@ -1,6 +1,7 @@
 #include <testing/TestHelper.h>
 #include <synth/input/InputEventStage.h>
 #include <mock/MockDSPHosts.h>
+#include <mock/TCDHelpers.h>
 
 TEST_CASE("Issue 2817")
 {
@@ -247,6 +248,87 @@ TEST_CASE("Issue 2817")
       THEN("VA and ENV not reset")
       {
         REQUIRE(sendSpecialFuncs.empty());
+      }
+    }
+//
+//    WHEN("New Option is On")
+//    {
+//      msg.shouldResetInternal = true;
+//    }
+//
+//    WHEN("New Option is Off")
+//    {
+//
+//      msg.shouldResetInternal = false;
+//    }
+  }
+}
+
+TEST_CASE("Local Off + Split Sound -> Sends Note Off")
+{
+  ConfigureableDSPHost host;
+  MidiRuntimeOptions options;
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
+  std::vector<MidiChannelModeMessages> sendSpecialFuncs;
+  InputEventStage eventStage(
+      &host, &options, []() {}, [&](auto midi) { sendMidi.emplace_back(midi); },
+      [&](auto specialFunc) { sendSpecialFuncs.emplace_back(specialFunc); });
+
+  auto onSettingsReceived = [&](auto msg)
+  {
+    auto old = options.getLastReceivedMessage();
+    options.update(msg);
+    eventStage.onMidiSettingsMessageWasReceived(msg, old);
+  };
+
+  WHEN("All Settings On")
+  {
+    auto msg = options.getLastReceivedMessage();
+    msg.routings = TestHelper::createFullMappings(true);
+    msg.highResCCEnabled = false;
+    msg.highVeloCCEnabled = false;
+    msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+    msg.receiveChannel = MidiReceiveChannel::CH_3;
+    msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
+    msg.localEnable = false;
+    msg.aftertouchcc = AftertouchCC::CC01;
+    msg.bendercc = BenderCC::CC02;
+    msg.pedal1cc = PedalCC::CC03;
+    msg.pedal2cc = PedalCC::CC04;
+    msg.pedal3cc = PedalCC::CC05;
+    msg.pedal4cc = PedalCC::CC06;
+    msg.ribbon1cc = RibbonCC::CC07;
+    msg.ribbon2cc = RibbonCC::CC08;
+    onSettingsReceived(msg);
+
+    sendSpecialFuncs.clear();
+    sendMidi.clear();
+
+    using tMSG = decltype(msg);
+    constexpr auto CHANNEL_MASK = 0b00001111;
+    constexpr auto EVENT_TYPE_MASK = 0b11110000;
+    constexpr auto EVENT_TYPE_NOTE_ON = 0b10010000;
+    constexpr auto EVENT_TYPE_NOTE_OFF = 0b10000000;
+
+    WHEN("Key Pressed")
+    {
+      const auto keyPos = TCD_HELPER::createKeyPosEvent(12);
+      const auto keyDown = TCD_HELPER::createKeyDownEvent(127, 64);
+      eventStage.onTCDMessage(keyPos);
+      eventStage.onTCDMessage(keyDown);
+      CHECK(sendMidi.size() == 1);
+      CHECK((sendMidi[0].rawBytes[0] & CHANNEL_MASK) == 0);
+      CHECK((sendMidi[0].rawBytes[0] & EVENT_TYPE_MASK) == EVENT_TYPE_NOTE_ON);
+
+      WHEN("Key Released")
+      {
+        const auto keyUp = TCD_HELPER::createKeyUpEvent(127, 64);
+        eventStage.onTCDMessage(keyPos);
+        eventStage.onTCDMessage(keyUp);
+        CHECK(sendMidi.size() == 2);
+        CHECK((sendMidi[1].rawBytes[0] & CHANNEL_MASK) == 0);
+        CHECK((sendMidi[1].rawBytes[0] & EVENT_TYPE_MASK) == EVENT_TYPE_NOTE_OFF);
       }
     }
   }

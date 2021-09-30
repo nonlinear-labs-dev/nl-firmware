@@ -131,6 +131,12 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
       return _keyPos;
     }
   }
+
+  int getNoteShift()
+  {
+    return m_shift;
+  }
+
   void setNoteShift(const int32_t& _shift)
   {
     m_shift = _shift;

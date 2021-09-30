@@ -440,6 +440,7 @@ void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 
 void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, "Shift:", msg.m_shift);
   m_inputEventStage.setNoteShift(msg.m_shift);
 }
 

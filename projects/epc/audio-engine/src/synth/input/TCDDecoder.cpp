@@ -55,8 +55,11 @@ bool TCDDecoder::decode(const MidiEvent &event)
     }
     else if(channel == 15)  //Key Up
     {
+      nltools::Log::error(__PRETTY_FUNCTION__, "raw:", keyOrController);
       uint32_t arg = _data1 + (_data0 << 7);
       keyOrController = m_keyShift->keyUp(keyOrController);
+      nltools::Log::error(__PRETTY_FUNCTION__, "shifted:", keyOrController);
+
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {
         value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383
