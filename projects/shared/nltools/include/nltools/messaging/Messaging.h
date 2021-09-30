@@ -44,7 +44,7 @@ namespace nltools
          MidiSimpleMessage, MidiAck, MidiProgramChange, MidiBridgeSettings, MidiSettings, MidiHardwareChange,
 
          SyncFS, UpdateUploaded, AutoStartRecorderMessage, AEPanic, GlobalLocalSetting, WifiDevBBBEnable,
-         BufferUnderrunsChanged);
+         BufferUnderrunsChanged, SetFramesPerPeriod);
 
     namespace detail
     {

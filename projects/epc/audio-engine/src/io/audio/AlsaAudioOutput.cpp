@@ -84,6 +84,7 @@ void AlsaAudioOutput::open(const std::string& deviceName)
 
 void AlsaAudioOutput::start()
 {
+  AudioOutput::start();
   m_run = true;
   m_task = std::make_unique<HighPriorityTask>(0, [=]() { doBackgroundWork(); });
 }
@@ -92,6 +93,7 @@ void AlsaAudioOutput::stop()
 {
   m_run = false;
   m_task.reset();
+  AudioOutput::stop();
 }
 
 void AlsaAudioOutput::doBackgroundWork()
