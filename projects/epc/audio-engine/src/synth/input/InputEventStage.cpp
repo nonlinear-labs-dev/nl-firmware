@@ -752,8 +752,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, DSPInterface::HWChangeSou
   {
     // We will have to suppress modulation routing from HW sources that are local-disabled ?!
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
-    if(source != DSPInterface::HWChangeSource::UI)
-      m_hwChangedCB();
+    m_hwChangedCB();
   }
   else if(source == DSPInterface::HWChangeSource::TCD)
   {
