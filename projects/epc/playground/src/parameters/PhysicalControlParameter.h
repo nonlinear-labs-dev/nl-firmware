@@ -13,7 +13,7 @@ class PhysicalControlParameter : public Parameter
                            int coarseDenominator, int fineDenominator);
 
   bool isChangedFromLoaded() const override;
-  virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, bool shouldModulate);
+  virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source);
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;

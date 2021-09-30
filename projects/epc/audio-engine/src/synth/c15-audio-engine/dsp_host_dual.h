@@ -68,12 +68,7 @@ class DSPInterface
  public:
   //remove or move somewhere else
   //TCD and MIDI should not be known to DSP
-  enum class HWChangeSource
-  {
-    TCD,
-    MIDI,
-    UI
-  };
+
 
   enum class InputEventSource
   {

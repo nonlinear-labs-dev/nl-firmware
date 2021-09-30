@@ -223,10 +223,11 @@ void C15Synth::doSyncPlayground()
   {
     const auto isLocalEnabled = m_midiOptions.isLocalEnabled(static_cast<C15::Parameters::Hardware_Sources>(i));
     auto currentValue = isLocalEnabled ? engineHWSourceValues[i] : m_inputEventStage.getHWSourcePositionIfLocalDisabled(i);
+    auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(i);
 
     if(std::exchange(m_playgroundHwSourceKnownValues[i], currentValue) != currentValue)
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(currentValue), !isLocalEnabled });
+      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(currentValue), valueSource });
     }
   }
 }

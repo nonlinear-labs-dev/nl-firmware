@@ -28,9 +28,9 @@ bool PhysicalControlParameter::isChangedFromLoaded() const
   return false;
 }
 
-void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newValue, bool shouldModulate)
+void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source)
 {
-  if(shouldModulate)
+  if(source == HWChangeSource::MIDI)
     getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));
   else
     getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newValue));
