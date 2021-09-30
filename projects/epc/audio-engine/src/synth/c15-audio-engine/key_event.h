@@ -116,7 +116,7 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
     }
     else
     {
-      return _keyPos;
+      return static_cast<int32_t>(_keyPos);
     }
   }
   int32_t keyUp(const uint32_t _keyPos)
@@ -128,7 +128,7 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
     }
     else
     {
-      return _keyPos;
+      return static_cast<int32_t>(_keyPos);
     }
   }
 
@@ -137,8 +137,9 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
     return m_shift;
   }
 
-  void setNoteShift(const int32_t& _shift)
+  void setNoteShift(int32_t _shift)
   {
+    nltools::Log::error(__PRETTY_FUNCTION__ , "old shift:", m_shift, "new shift:", _shift);
     m_shift = _shift;
   }
 };
