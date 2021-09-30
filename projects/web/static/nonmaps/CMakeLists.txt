@@ -3,7 +3,7 @@ project(nonmaps)
 
 set(GWT_VERSION 2.9.0)
 
-file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
+file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt ${C15_VERSION})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/NonMaps.js.in ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js @ONLY)
 

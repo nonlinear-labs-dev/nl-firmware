@@ -7,6 +7,7 @@ AudioOutput::AudioOutput()
 
 void AudioOutput::start()
 {
+  m_numUnderruns = 0;
 }
 
 void AudioOutput::stop()

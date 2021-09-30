@@ -65,6 +65,7 @@
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/AlsaFramesPerPeriod.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : UpdateDocumentContributor(master)
@@ -121,7 +122,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("ReceiveAftertouchCurve", new MidiReceiveAftertouchCurveSetting(*this));
   addSetting("ReceiveVelocityCurve", new MidiReceiveVelocityCurveSetting(*this));
 
-
   addSetting("HighResCC", new Enable14BitSupport(*this));
   auto enable14Bit = getSetting<Enable14BitSupport>();
 
@@ -138,6 +138,8 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
   addSetting("RoutingSettings", new RoutingSettings(*this));
   addSetting("GlobalLocalEnable", new GlobalLocalEnableSetting(*this));
+
+  addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
 }
 
 Settings::~Settings()
@@ -250,17 +252,15 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("settings", Attribute("changed", changed),
-                  [&]()
-                  {
-                    if(changed)
-                    {
-                      for(auto &setting : m_settings)
-                      {
-                        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
-                      }
-                    }
-                  });
+  writer.writeTag("settings", Attribute("changed", changed), [&]() {
+    if(changed)
+    {
+      for(auto &setting : m_settings)
+      {
+        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
+      }
+    }
+  });
 }
 
 bool Settings::isLoading() const
