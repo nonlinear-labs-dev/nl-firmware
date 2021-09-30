@@ -12,8 +12,6 @@
 
 #include <nltools/logging/Log.h>
 #include <nltools/StringTools.h>
-#include <nltools/messaging/Messaging.h>
-#include <nltools/messaging/Message.h>
 
 #include <glibmm.h>
 #include <iostream>
@@ -115,15 +113,34 @@ static std::unique_ptr<MidiInput> createTCDIn(const std::string &name, Synth *sy
 
 static bool checkBufferUnderruns(AudioOutput *out)
 {
-  static size_t knownUnderruns = 0;
-  const auto currentUnderruns = out->getNumUnderruns();
+  using namespace nltools::msg;
+  static BufferUnderrunsChangedMessage lastSent = { 0, 0 };
+  BufferUnderrunsChangedMessage msg { out->getNumUnderruns(), theOptions->getFramesPerPeriod() };
 
-  if(std::exchange(knownUnderruns, currentUnderruns) != currentUnderruns)
+  if(lastSent.numUnderruns != msg.numUnderruns || lastSent.framesPerPeriod != msg.framesPerPeriod)
   {
-    using namespace nltools::msg;
-    send<BufferUnderrunsChangedMessage>(EndPoint::Playground, { currentUnderruns });
+    send<BufferUnderrunsChangedMessage>(EndPoint::Playground, msg);
+    lastSent = msg;
   }
   return true;
+}
+
+sigc::connection connectFramesPerPeriodMessage(AlsaAudioOutput *out)
+{
+  return nltools::msg::receive<nltools::msg::SetFramesPerPeriod>(
+      nltools::msg::EndPoint::AudioEngine,
+      [out = out, defaultFramesPerPeriod = theOptions->getFramesPerPeriod()](const auto &msg) {
+        auto desiredFPP = msg.framesPerPeriod ? msg.framesPerPeriod : defaultFramesPerPeriod;
+
+        if(theOptions->getFramesPerPeriod() != desiredFPP)
+        {
+          theOptions->setFramesPerPeriod(desiredFPP);
+          out->stop();
+          out->close();
+          out->open(theOptions->getAudioOutputDeviceName());
+          out->start();
+        }
+      });
 }
 
 template <typename... A> static void start(A &... a)
@@ -168,12 +185,14 @@ int main(int args, char *argv[])
   CommandlinePerformanceWatch watch(audioOut.get());
 
   start(audioOut, midiIn, tcdIn);
+  {
+    auto c = connectFramesPerPeriodMessage(dynamic_cast<AlsaAudioOutput *>(audioOut.get()));
 
-  theMainLoop = Glib::MainLoop::create();
-  theMainLoop->get_context()->signal_timeout().connect_seconds(
-      sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
-  theMainLoop->run();
-
+    theMainLoop = Glib::MainLoop::create();
+    theMainLoop->get_context()->signal_timeout().connect_seconds(
+        sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
+    theMainLoop->run();
+  }
   stop(audioOut, midiIn, tcdIn);
 
   return EXIT_SUCCESS;

@@ -14,4 +14,5 @@ class BufferUnderruns : public DeviceInformationItem
  private:
   sigc::connection m_msgConnection;
   uint64_t m_numUnderruns = 0;
+  int m_framesPerPeriod = 0;
 };

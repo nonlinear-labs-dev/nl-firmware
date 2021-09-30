@@ -88,6 +88,15 @@ void SettingsUseCases::panicAudioEngine()
   send<PanicAudioEngine>(EndPoint::AudioEngine, msg);
 }
 
+void SettingsUseCases::setRoutingAspectsForEntry(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex index, bool b)
+{
+  if(auto s = m_settings.getSetting<RoutingSettings>())
+  {
+    s->setAllAspectsForIndex(index, b);
+  }
+}
+
+
 void SettingsUseCases::setAllRoutingEntries(bool state)
 {
   if(auto s = m_settings.getSetting<RoutingSettings>())

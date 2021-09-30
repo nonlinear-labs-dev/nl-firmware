@@ -19,6 +19,7 @@ class RoutingSettings : public Setting
   bool getState(int hwId, tAspectIndex aspect) const;
   bool getState(tRoutingIndex hwIdx, tAspectIndex settingIdx) const;
   void setState(tRoutingIndex hwIdx, tAspectIndex settingIdx, bool state);
+  void setAllAspectsForIndex(tRoutingIndex hwIdx, bool state);
   const tData& getRaw() const;
   void setAllValues(bool value);
  private:
