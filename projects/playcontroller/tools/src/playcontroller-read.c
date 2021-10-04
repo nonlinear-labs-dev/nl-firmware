@@ -175,6 +175,7 @@ void Usage(char const *const string, int const exitCode)
   puts(" p   Parameter");
   puts(" s   Sensors raw data");
   puts(" u   hexdump of Unknown messages");
+  puts(" 6   64bit unique hardware ID");
   exit(exitCode);
 }
 
@@ -286,6 +287,11 @@ int main(int argc, char *argv[])
       displayFlags |= NO_UNKNOWN;
     else if (strncmp(argv[1], "+u", 2) == 0)
       displayFlags &= ~NO_UNKNOWN;
+
+    else if (strncmp(argv[1], "-6", 2) == 0)
+      displayFlags |= NO_UHID;
+    else if (strncmp(argv[1], "+6", 2) == 0)
+      displayFlags &= ~NO_UHID;
 
     else
       Usage("unknown option", 3);

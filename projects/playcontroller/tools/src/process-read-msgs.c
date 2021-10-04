@@ -2,6 +2,7 @@
 #include "shared/playcontroller/playcontroller-defs.h"
 #include "shared/playcontroller/playcontroller-converters.h"
 #include "globals.h"
+#incude < inttypes.h>
 
 char paramNameTable[][NUM_HW_SOURCES] = {
   "EHC 1     ",
@@ -255,6 +256,9 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         case PLAYCONTROLLER_NOTIFICATION_ID_STAT_DATA:
           printf("NOTIFICATION : Status Data sent\n");
           break;
+        case PLAYCONTROLLER_NOTIFICATION_ID_UHID64:
+          printf("NOTIFICATION : UHID64 sent\n");
+          break;
         case PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT:
           printf("NOTIFICATION : Status Data cleared\n");
           break;
@@ -336,6 +340,23 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       printf("  Keybed:        : %5d missed events (Scanner)\n", data[11]);
       printf("  Keybed:        : %5d missed events (TCD)\n", data[12]);
 #endif
+      lastMessage = cmd << 16;
+      return;
+
+    case PLAYCONTROLLER_BB_MSG_TYPE_UHID64:
+      if (flags & NO_UHID)
+        return;
+      dump(cmd, len, data, flags);
+      if (len != 4)
+      {
+        printf("STATUS : wrong length of %d\n", len);
+        return;
+      }
+      if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+        cursorUp(1);
+      displayCounter();
+      uint64_t uhid = (uint64_t) data[0] | (uint64_t) data[1] << 16 | (uint64_t) data[2] << 32 | (uint64_t) data[3] << 48;
+      printf("Unique Hardware ID (64bit): %#016" PRIx64 "\n", uhid);
       lastMessage = cmd << 16;
       return;
 
@@ -919,6 +940,9 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           break;
         case PLAYCONTROLLER_REQUEST_ID_STAT_DATA:
           printf("profiling data\n");
+          break;
+        case PLAYCONTROLLER_REQUEST_ID_UHID64:
+          printf("unique hardware ID (64bit)\n");
           break;
         case PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE:
           printf("save EHC data to EEPROM\n");
