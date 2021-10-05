@@ -753,7 +753,7 @@ void InputEventStage::onHWChanged(int hwID, float pos, HWChangeSource source, bo
     m_localDisabledPositions[hwID] = {pos, source};
     m_hwChangedCB();
   }
-  else if(source == HWChangeSource::TCD || source == HWChangeSource::UI)
+  else if(source != HWChangeSource::MIDI)
   {
     m_localDisabledPositions[hwID] = {pos, source};
     m_hwChangedCB();

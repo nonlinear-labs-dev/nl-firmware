@@ -46,6 +46,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
       EndPoint::Playground,
       [this](auto &msg)
       {
+        nltools::Log::error(__PRETTY_FUNCTION__, msg.hwSource, msg.position, msg.source);
         if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
         {
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))

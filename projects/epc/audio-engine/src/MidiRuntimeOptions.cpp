@@ -536,14 +536,6 @@ MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc,
   return MidiChannelModeMessages::NOOP;
 }
 
-void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
-{
-  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
-  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::LOCAL);
-  m_routingMappings[idx][aspect] = b;
-}
-
-
 bool MidiRuntimeOptions::isLocalEnabled(C15::Parameters::Hardware_Sources sources)
 {
   switch(sources)
@@ -568,4 +560,9 @@ bool MidiRuntimeOptions::isLocalEnabled(C15::Parameters::Hardware_Sources source
       return false;
   }
   return false;
+}
+
+void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
+{
+  m_globalLocalEnable = b;
 }
