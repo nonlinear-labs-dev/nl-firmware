@@ -228,9 +228,6 @@ void C15Synth::doSyncPlayground()
         = isLocalEnabled ? engineHWSourceValues[i] : m_inputEventStage.getHWSourcePositionIfLocalDisabled(i);
     auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(i);
 
-    nltools::Log::error(__LINE__, "id:", i, "isLocalEnabled", isLocalEnabled, " current Value: ", currentValue,
-                        " old Value:", m_playgroundHwSourceKnownValues[i]);
-
     if(std::exchange(m_playgroundHwSourceKnownValues[i], currentValue) != currentValue)
     {
       send(EndPoint::Playground,

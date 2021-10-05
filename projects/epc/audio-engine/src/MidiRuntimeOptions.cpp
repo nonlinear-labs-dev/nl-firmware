@@ -555,7 +555,7 @@ bool MidiRuntimeOptions::isLocalEnabled(C15::Parameters::Hardware_Sources source
     case C15::Parameters::Hardware_Sources::Ribbon_1:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1);
     case C15::Parameters::Hardware_Sources::Ribbon_2:
-      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal2);
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2);
     case C15::Parameters::Hardware_Sources::_LENGTH_:
       return false;
   }

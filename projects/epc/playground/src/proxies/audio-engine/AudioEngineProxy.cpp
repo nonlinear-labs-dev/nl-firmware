@@ -34,8 +34,8 @@
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
     : m_presetManager { pm }
-    , m_settings{settings}
-    , m_playcontrollerProxy{playProxy}
+    , m_settings { settings }
+    , m_playcontrollerProxy { playProxy }
 {
   using namespace nltools::msg;
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
@@ -46,7 +46,6 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
       EndPoint::Playground,
       [this](auto &msg)
       {
-        nltools::Log::error(__PRETTY_FUNCTION__, msg.hwSource, msg.position, msg.source);
         if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
         {
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
@@ -73,8 +72,8 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground,
                                                         [=](const auto &msg)
                                                         {
-                                                            SettingsUseCases useCases(m_settings);
-                                                            useCases.setGlobalLocal(msg.m_state);
+                                                          SettingsUseCases useCases(m_settings);
+                                                          useCases.setGlobalLocal(msg.m_state);
                                                         });
 
   m_presetManager.onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
@@ -484,7 +483,8 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
                           PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
                           RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping,
-                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(&m_settings);
+                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(
+      &m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
       [this](const Setting *s)

@@ -750,12 +750,12 @@ void InputEventStage::onHWChanged(int hwID, float pos, HWChangeSource source, bo
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
-    m_localDisabledPositions[hwID] = {pos, source};
+    m_localDisabledPositions[hwID] = { pos, source };
     m_hwChangedCB();
   }
   else if(source != HWChangeSource::MIDI)
   {
-    m_localDisabledPositions[hwID] = {pos, source};
+    m_localDisabledPositions[hwID] = { pos, source };
     m_hwChangedCB();
   }
 
@@ -892,7 +892,7 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         const auto lsb = hwRes.undecodedValueBytes[1];
         float realVal = processMidiForHWSource(m_dspHost, hwID, msb, lsb);
         m_dspHost->onHWChanged(hwID, realVal, false);
-        m_localDisabledPositions[hwID] = {realVal, HWChangeSource::MIDI};
+        m_localDisabledPositions[hwID] = { realVal, HWChangeSource::MIDI };
         m_hwChangedCB();
       }
       else
