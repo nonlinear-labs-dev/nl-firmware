@@ -1,4 +1,5 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 
 public class PhysicalControlParameterModel extends BasicParameterModel {
 	public PhysicalControlParameterModel(ParameterId id) {
@@ -16,8 +17,8 @@ public class PhysicalControlParameterModel extends BasicParameterModel {
 	public boolean isLocalEnabled()
 	{
 		SetupModel model = SetupModel.get();
-		boolean globalEnable = model.globalLocalEnable;
-		boolean hwEnabled = model.isLocalEnabled(this);
+		boolean globalEnable = model.systemSettings.globalLocalEnable.getBool();
+		boolean hwEnabled = model.systemSettings.routingAspects.getValue().isLocalEnabled(this);
 		return hwEnabled && globalEnable;
 	}
 

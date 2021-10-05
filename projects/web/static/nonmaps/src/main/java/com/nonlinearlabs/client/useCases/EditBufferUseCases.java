@@ -124,8 +124,8 @@ public class EditBufferUseCases {
 
 				if (physicalControlID.getNumber() == ribbon1 || physicalControlID.getNumber() == ribbon2) {
 					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
-
-					if (!ribbon.isReturning()) {
+					
+					if (!ribbon.isReturning() && ribbon.isLocalEnabled()) {
 						ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
 					}
 				}

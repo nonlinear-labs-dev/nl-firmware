@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.dataModel;
 
 import com.google.gwt.core.client.GWT;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 
@@ -52,7 +53,7 @@ public class RoutingAspectsSetting {
         return ret;
     }
 
-    private int idToIndex(ParameterID id)
+    private int idToIndex(ParameterId id)
     {
         switch(id.getNumber())
         {
@@ -73,6 +74,8 @@ public class RoutingAspectsSetting {
             case 279:
                 return 5;
         }
+
+        return 0;
     }
 
     public boolean isLocalEnabled(PhysicalControlParameterModel param)
