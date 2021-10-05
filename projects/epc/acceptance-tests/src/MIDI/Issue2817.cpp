@@ -305,6 +305,8 @@ TEST_CASE("Local Off + Split Sound -> Sends Note Off")
     sendSpecialFuncs.clear();
     sendMidi.clear();
 
+    host.setType(SoundType::Split);
+
     using tMSG = decltype(msg);
     constexpr auto CHANNEL_MASK = 0b00001111;
     constexpr auto EVENT_TYPE_MASK = 0b11110000;

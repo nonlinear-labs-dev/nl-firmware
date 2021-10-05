@@ -11,6 +11,7 @@
 *******************************************************************************/
 
 #include <stdint.h>
+#include <nltools/logging/Log.h>
 
 struct PolyKeyEvent
 {
