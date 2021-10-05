@@ -1,5 +1,4 @@
 #pragma once
-
 #include <stdint.h>
 
 void FLASH_Init(void);

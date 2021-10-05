@@ -8,7 +8,7 @@
 #include <errno.h>
 #include "shared/version.h"
 
-#define VERSION_STRING "1.0"
+#define VERSION_STRING "1.1"
 #define PROGNAME       "lpc-read"
 
 void printVersion(void)
@@ -99,11 +99,13 @@ int readWord(uint16_t *const data)
 }
 
 // ===================
-void readMessages(void)
+int readMessages(void)
 {
   static int step  = 0;
   static int count = 0;
   uint16_t   word;
+
+  int ret = 0;
 
   switch (step)
   {
@@ -139,10 +141,15 @@ void readMessages(void)
         step = 3;
       break;
     case 3:
-      processReadMsgs(id, len, &data[0], displayFlags);
+    {
+      int didPrint = processReadMsgs(id, len, &data[0], displayFlags);
+      if (didPrint && ((displayFlags & NO_QUIT) == 0))
+        ret = 1;
       step = 0;
       break;
+    }
   }
+  return ret;
 }
 
 void writeMessages(void)
@@ -161,7 +168,7 @@ void Usage(char const *const string, int const exitCode)
   puts("  @filename : specify input file rather than using /dev/lpc_bb_driver");
   puts("  <options> is a white-space seperated list of letters, preceeded");
   puts("            by either a + or -, turning the display on or off");
-  puts("  default is +a -d -i");
+  puts("  default is +a -d -i -q -r");
   puts(" a   All options");
   puts(" r   oveRlay messages of same type");
   puts(" c   diagnostiC status data");
@@ -172,7 +179,9 @@ void Usage(char const *const string, int const exitCode)
   puts(" k   Key logging and key counters");
   puts(" m   Mute status");
   puts(" n   Notificiation");
+  puts(" o   reduced Output (entity value only)");
   puts(" p   Parameter");
+  puts(" q   print single message, then Quit");
   puts(" s   Sensors raw data");
   puts(" u   hexdump of Unknown messages");
   puts(" 6   64bit unique hardware ID");
@@ -219,7 +228,7 @@ int main(int argc, char *argv[])
   flags = getDriverFlags(driverFileNo);
   makeDriverBlocking(driverFileNo, flags);
 
-  displayFlags = NO_HEXDUMP + NO_RIBBONS;
+  displayFlags = NO_HEXDUMP + NO_RIBBONS + NO_QUIT + NO_REDUCED;
 
   while (argc > 1)
   {
@@ -273,10 +282,20 @@ int main(int argc, char *argv[])
     else if (strncmp(argv[1], "+n", 2) == 0)
       displayFlags &= ~NO_NOTIFICATION;
 
+    else if (strncmp(argv[1], "-o", 2) == 0)
+      displayFlags |= NO_REDUCED;
+    else if (strncmp(argv[1], "+o", 2) == 0)
+      displayFlags &= ~NO_REDUCED;
+
     else if (strncmp(argv[1], "-p", 2) == 0)
       displayFlags |= NO_PARAMS;
     else if (strncmp(argv[1], "+p", 2) == 0)
       displayFlags &= ~NO_PARAMS;
+
+    else if (strncmp(argv[1], "-q", 2) == 0)
+      displayFlags |= NO_QUIT;
+    else if (strncmp(argv[1], "+q", 2) == 0)
+      displayFlags &= ~NO_QUIT;
 
     else if (strncmp(argv[1], "-s", 2) == 0)
       displayFlags |= NO_SENSORSRAW;
@@ -304,9 +323,11 @@ int main(int argc, char *argv[])
 
   while (1)
   {
-    readMessages();
+    int quit = readMessages();
     fflush(stdout);
     writeMessages();
+    if (quit)
+      break;
   }
   return 0;
 }

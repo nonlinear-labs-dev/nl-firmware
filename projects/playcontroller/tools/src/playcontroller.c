@@ -12,7 +12,7 @@
 
 #include "linuxgpio.h"
 
-#define VERSION_STRING "1.1"
+#define VERSION_STRING "1.2"
 #define PROGNAME       "playcontroller"
 
 void printVersion(void)
