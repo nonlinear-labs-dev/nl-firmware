@@ -740,9 +740,8 @@ void InputEventStage::onHWChanged(int hwID, float pos, HWChangeSource source, bo
         return true;
       }
       case HWChangeSource::TCD:
-        return m_options->shouldAllowLocal(routingIndex);
       case HWChangeSource::UI:
-        return true;
+        return m_options->shouldAllowLocal(routingIndex);
       default:
         nltools_assertNotReached();
     }
