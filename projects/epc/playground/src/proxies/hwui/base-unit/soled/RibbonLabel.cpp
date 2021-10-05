@@ -9,6 +9,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 #include <parameter_declarations.h>
+#include <device-settings/GlobalLocalEnableSetting.h>
 
 RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
     : super(rect)
@@ -36,9 +37,10 @@ StringAndSuffix RibbonLabel::getText() const
   const auto isRibbon1 = m_parameterID == ParameterId { C15::PID::Ribbon_1, VoiceGroup::Global };
   const auto isRibbon2 = m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };
 
-  const auto isRibbon1Enabled = isRibbon1 && routingsSetting->getState(rIDX::Ribbon1, aIDX::LOCAL);
-  const auto isRibbon2Enabled = isRibbon2 && routingsSetting->getState(rIDX::Ribbon2, aIDX::LOCAL);
+  const auto isLocalEnabled = settings->getSetting<GlobalLocalEnableSetting>()->get();
 
+  const auto isRibbon1Enabled = isRibbon1 && routingsSetting->getState(rIDX::Ribbon1, aIDX::LOCAL) && isLocalEnabled;
+  const auto isRibbon2Enabled = isRibbon2 && routingsSetting->getState(rIDX::Ribbon2, aIDX::LOCAL) && isLocalEnabled;
   const auto isRibbonEnabled = isRibbon1Enabled || isRibbon2Enabled;
 
   if(isRibbonEnabled && m_parameter)
