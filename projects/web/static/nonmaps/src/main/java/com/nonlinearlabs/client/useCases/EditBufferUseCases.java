@@ -40,7 +40,9 @@ public class EditBufferUseCases {
 
 		if (p instanceof PhysicalControlParameterModel) {
 			PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
-			applyPhysicalControlModulation(m, diff);
+			if(m.isLocalEnabled()) {
+				applyPhysicalControlModulation(m, diff);
+			}
 
 			if (m.isReturning()) {
 				if (setAnimationTimeout)

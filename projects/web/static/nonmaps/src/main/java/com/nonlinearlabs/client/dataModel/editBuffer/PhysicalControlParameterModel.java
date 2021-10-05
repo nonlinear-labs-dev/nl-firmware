@@ -13,4 +13,12 @@ public class PhysicalControlParameterModel extends BasicParameterModel {
 		return ParameterFactory.getModulationRouters(id);
 	}
 
+	public boolean isLocalEnabled()
+	{
+		SetupModel model = SetupModel.get();
+		boolean globalEnable = model.globalLocalEnable;
+		boolean hwEnabled = model.isLocalEnabled(this);
+		return hwEnabled && globalEnable;
+	}
+
 }
