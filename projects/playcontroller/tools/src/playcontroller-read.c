@@ -215,8 +215,6 @@ int main(int argc, char *argv[])
     }
   }
 
-  printf("\nOutput from '%s' :\n", path);
-
   driver = fopen(path, "r+");
   if (!driver)
     Error("cannot open driver or input file");
@@ -320,6 +318,9 @@ int main(int argc, char *argv[])
 
   if (!(displayFlags & NO_HEXDUMP))
     displayFlags |= NO_OVERLAY;
+
+  if (displayFlags & NO_REDUCED)
+    printf("\nOutput from '%s' :\n", path);
 
   while (1)
   {

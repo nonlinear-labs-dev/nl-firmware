@@ -351,7 +351,6 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         printf("STATUS : wrong length of %d\n", len);
         return 3;
       }
-      uint64_t uhid = (uint64_t) data[0] | (uint64_t) data[1] << 16 | (uint64_t) data[2] << 32 | (uint64_t) data[3] << 48;
       if (flags & NO_REDUCED)
       {
         if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
@@ -359,7 +358,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         displayCounter();
         printf("Unique Hardware ID (64bit): ");
       }
-      printf("%16llX\n", uhid);
+      printf("%04X-%04X-%04X-%04X\n", data[3], data[2], data[1], data[0]);
       lastMessage = cmd << 16;
       return 1;
 
@@ -965,4 +964,5 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
       dump(cmd, len, data, flags);
       return 1;
   }
+  return 0;
 }
