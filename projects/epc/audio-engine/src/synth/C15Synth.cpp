@@ -212,6 +212,8 @@ void C15Synth::doSyncPlayground()
 {
   using namespace nltools::msg;
 
+  nltools::Log::error(__PRETTY_FUNCTION__);
+
   if(m_inputEventStage.getAndResetKeyBedStatus())
   {
     send(EndPoint::Playground, Keyboard::NoteEventHappened {});
@@ -222,12 +224,17 @@ void C15Synth::doSyncPlayground()
   for(size_t i = 0; i < std::tuple_size_v<dsp_host_dual::HWSourceValues>; i++)
   {
     const auto isLocalEnabled = m_midiOptions.isLocalEnabled(static_cast<C15::Parameters::Hardware_Sources>(i));
-    auto currentValue = isLocalEnabled ? engineHWSourceValues[i] : m_inputEventStage.getHWSourcePositionIfLocalDisabled(i);
+    auto currentValue
+        = isLocalEnabled ? engineHWSourceValues[i] : m_inputEventStage.getHWSourcePositionIfLocalDisabled(i);
     auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(i);
+
+    nltools::Log::error(__LINE__, "id:", i, "isLocalEnabled", isLocalEnabled, " current Value: ", currentValue,
+                        " old Value:", m_playgroundHwSourceKnownValues[i]);
 
     if(std::exchange(m_playgroundHwSourceKnownValues[i], currentValue) != currentValue)
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(currentValue), valueSource });
+      send(EndPoint::Playground,
+           HardwareSourceChangedNotification { i, static_cast<double>(currentValue), valueSource });
     }
   }
 }
