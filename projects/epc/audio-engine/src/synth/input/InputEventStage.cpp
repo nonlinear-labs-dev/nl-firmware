@@ -342,8 +342,8 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
   constexpr const uint8_t keyType = 0x80;
   constexpr const uint8_t ccType = 0xB0;
 
-  nltools::Log::error(__PRETTY_FUNCTION__, "determinedPart:", toString(determinedPart), "primChannel:", mainC,
-                      "secChannel:", secC);
+  nltools::Log::error(__PRETTY_FUNCTION__, "determinedPart:", toString(determinedPart), "primChannel:", (int)mainC,
+                      "secChannel:", (int)secC);
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)

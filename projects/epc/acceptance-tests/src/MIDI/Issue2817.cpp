@@ -400,6 +400,16 @@ TEST_CASE("Local Off + Split Sound -> Sends Note Off")
         CHECK((sendMidi[1].rawBytes[0] & CHANNEL_MASK) == 0);
         CHECK((sendMidi[1].rawBytes[0] & EVENT_TYPE_MASK) == EVENT_TYPE_NOTE_OFF);
       }
+
+      WHEN("Key Released with velocity 0")
+      {
+        const auto keyUp = TCD_HELPER::createKeyUpEvent(0, 0);
+        eventStage.onTCDMessage(keyPos);
+        eventStage.onTCDMessage(keyUp);
+        CHECK(sendMidi.size() == 2);
+        CHECK((sendMidi[1].rawBytes[0] & CHANNEL_MASK) == 0);
+        CHECK((sendMidi[1].rawBytes[0] & EVENT_TYPE_MASK) == EVENT_TYPE_NOTE_OFF);
+      }
     }
   }
 }
