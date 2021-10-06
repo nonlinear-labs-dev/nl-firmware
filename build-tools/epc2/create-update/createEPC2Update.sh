@@ -19,5 +19,5 @@ docker run $TTY_OPTION --privileged --env UPDATE_PACKAGES="$UPDATE_PACKAGES" \
         -v $SOURCES_DIR:/source -v $FILESYSTEMS_DIR:/in \
         -v $OUT_DIR/build-tools/epc2/create-update:/out \
         -v $OUT_DIR/build-tools/epc2/create-update/build:/build \
-        -v $OUT_DIR/projects/web/out:/web \
+        -v $OUT_DIR/projects/web:/web \
         ${DOCKERNAME} bash -c "$SCRIPT"
