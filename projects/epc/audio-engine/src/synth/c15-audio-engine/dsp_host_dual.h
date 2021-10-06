@@ -202,8 +202,8 @@ class dsp_host_dual : public DSPInterface
         return VoiceGroup::Global;
         break;
     }
-    Environment::printStackTrace(0);
-    nltools_assertAlways(false);
+
+    nltools_detailedAssertAlways(false, __PRETTY_FUNCTION__);
     return VoiceGroup::NumGroups;
   }
   using LayerMode = C15::Properties::LayerMode;
