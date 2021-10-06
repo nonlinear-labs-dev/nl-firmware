@@ -126,7 +126,7 @@ TEST_CASE("MIDI input on Secondary channel is ignored if not in split", "[MIDI]"
 
 TEST_CASE("Input Event Mapping CC to HW", "[MIDI]")
 {
-  PassOnHWReceived dsp { 0, 1.0 };
+  PassOnHWReceived dsp { HardwareSource::PEDAL1, 1.0 };
   auto settings = createMidiSettings();
   InputEventStage eventStage(
       &dsp, &settings, [] {}, [](nltools::msg::Midi::SimpleMessage msg) { CHECK(false); }, [](auto) {});
@@ -211,7 +211,7 @@ TEST_CASE("Input Event Stage MIDI In KeyUp", "[MIDI]")
 
 TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
 {
-  PassOnHWReceived dsp { 0, 1 };
+  PassOnHWReceived dsp { HardwareSource::PEDAL1, 1 };
 
   auto settings = createMidiSettings();
   InputEventStage eventStage(
@@ -242,7 +242,7 @@ TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
 
 TEST_CASE("MIDI in of PitchBender as Channel Pitchbend", "[MIDI]")
 {
-  PassOnHWReceived dsp { 4, 1 };
+  PassOnHWReceived dsp { HardwareSource::BENDER, 1 };
   auto settings = createMidiSettings();
   InputEventStage eventStage(
       &dsp, &settings, [] {}, [](auto msg) { CHECK(false); }, [](auto) {});
@@ -252,7 +252,7 @@ TEST_CASE("MIDI in of PitchBender as Channel Pitchbend", "[MIDI]")
 
 TEST_CASE("MIDI in of PitchBender as Control Change", "[MIDI]")
 {
-  PassOnHWReceived dsp { 4, 1 };
+  PassOnHWReceived dsp { HardwareSource::BENDER, 1 };
   auto settings = createMidiSettings();
   settings.setBenderCC(BenderCC::CC01);
 
@@ -275,7 +275,7 @@ TEST_CASE("MIDI in of PitchBender as Control Change", "[MIDI]")
 
 TEST_CASE("MIDI in of Aftertouch as Channel Pressure", "[MIDI]")
 {
-  PassOnHWReceived dsp { 5, 1 };
+  PassOnHWReceived dsp { HardwareSource::AFTERTOUCH, 1 };
   auto settings = createMidiSettings();
   settings.setAftertouchCC(AftertouchCC::ChannelPressure);
 
@@ -287,7 +287,7 @@ TEST_CASE("MIDI in of Aftertouch as Channel Pressure", "[MIDI]")
 
 TEST_CASE("MIDI in of Aftertouch as Control Change", "[MIDI]")
 {
-  PassOnHWReceived dsp { 5, 1 };
+  PassOnHWReceived dsp { HardwareSource::AFTERTOUCH, 1 };
   auto settings = createMidiSettings();
   settings.setAftertouchCC(AftertouchCC::CC01);
 

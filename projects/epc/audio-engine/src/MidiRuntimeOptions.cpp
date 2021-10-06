@@ -356,7 +356,7 @@ AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
   return aftertouchCC;
 }
 
-bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed) const
+bool MidiRuntimeOptions::isSwitchingCC(HardwareSource hwid) const
 {
   auto enumIsInSwitching = [](PedalCC cc) -> bool
   {
@@ -374,15 +374,15 @@ bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed) const
     }
   };
 
-  switch(pedalZeroIndexed)
+  switch(hwid)
   {
-    case 0:
+    case HardwareSource::PEDAL1:
       return enumIsInSwitching(pedal1CC);
-    case 1:
+    case HardwareSource::PEDAL2:
       return enumIsInSwitching(pedal2CC);
-    case 2:
+    case HardwareSource::PEDAL3:
       return enumIsInSwitching(pedal3CC);
-    case 3:
+    case HardwareSource::PEDAL4:
       return enumIsInSwitching(pedal4CC);
     default:
       return false;
@@ -394,29 +394,30 @@ bool MidiRuntimeOptions::enableHighVelCC() const
   return m_enableHighVelCC;
 }
 
-int MidiRuntimeOptions::getMSBCCForHWID(int hwID) const
+int MidiRuntimeOptions::getMSBCCForHWID(HardwareSource hwID) const
 {
   auto bender = getBenderMSBCC();
   auto aftertouch = getAftertouchMSBCC();
 
   switch(hwID)
   {
-    case 0:
+    case HardwareSource::PEDAL1:
       return getCCFor<Midi::MSB::Ped1>();
-    case 1:
+    case HardwareSource::PEDAL2:
       return getCCFor<Midi::MSB::Ped2>();
-    case 2:
+    case HardwareSource::PEDAL3:
       return getCCFor<Midi::MSB::Ped3>();
-    case 3:
+    case HardwareSource::PEDAL4:
       return getCCFor<Midi::MSB::Ped4>();
-    case 4:
+    case HardwareSource::BENDER:
       return bender.value_or(-1);
-    case 5:
+    case HardwareSource::AFTERTOUCH:
       return aftertouch.value_or(-1);
-    case 6:
+    case HardwareSource::RIBBON1:
       return getCCFor<Midi::MSB::Rib1>();
-    case 7:
+    case HardwareSource::RIBBON2:
       return getCCFor<Midi::MSB::Rib2>();
+    case HardwareSource::NONE:
     default:
       return -1;
   }

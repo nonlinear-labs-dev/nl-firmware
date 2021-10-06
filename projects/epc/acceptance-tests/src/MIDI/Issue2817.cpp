@@ -242,7 +242,7 @@ TEST_CASE("Issue 2817")
         CHECK(newBenderCC == 10);
         REQUIRE(sendMidi[0].rawBytes[1] != newBenderCC);
         REQUIRE(sendMidi[0].rawBytes[1] == 2);
-        REQUIRE(sendMidi[0].rawBytes[2] == 64);
+        REQUIRE(sendMidi[0].rawBytes[2] == 0);
       }
 
       THEN("VA and ENV not reset")
@@ -302,6 +302,32 @@ TEST_CASE("KeyShift offset by 5")
 
     WHEN("Init")
     {
+      CHECK(eventStage.getNoteShift() == 0);
+    }
+
+    WHEN("Noteshift recevied")
+    {
+      eventStage.setNoteShift(0);
+      CHECK(eventStage.getNoteShift() == 0);
+
+      WHEN("TCD note down")
+      {
+        auto pos = TCD_HELPER::createKeyPosEvent(63);
+        auto down = TCD_HELPER::createKeyDownEvent(127, 126);
+
+        eventStage.onTCDMessage(pos);
+        eventStage.onTCDMessage(down);
+        CHECK(eventStage.getNoteShift() == 0);
+      }
+    }
+
+    WHEN("TCD note down")
+    {
+      auto pos = TCD_HELPER::createKeyPosEvent(63);
+      auto down = TCD_HELPER::createKeyDownEvent(127, 126);
+
+      eventStage.onTCDMessage(pos);
+      eventStage.onTCDMessage(down);
       CHECK(eventStage.getNoteShift() == 0);
     }
   }

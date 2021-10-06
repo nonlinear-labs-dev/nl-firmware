@@ -24,7 +24,8 @@ bool TCDDecoder::decode(const MidiEvent &event)
       uint32_t arg = _data1 + (_data0 << 7);
       value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
 
-      const auto behaviour = m_dsp->getBehaviour(channel);
+      auto hwid = static_cast<HardwareSource>(channel);
+      const auto behaviour = m_dsp->getBehaviour(hwid);
 
       if(behaviour == C15::Properties::HW_Return_Behavior::Center)
       {
@@ -45,10 +46,8 @@ bool TCDDecoder::decode(const MidiEvent &event)
     }
     else if(channel == 14)  //Key Down
     {
-      nltools::Log::error(__PRETTY_FUNCTION__, "KeyDown raw:", keyOrController);
       uint32_t arg = _data1 + (_data0 << 7);
       keyOrController = m_keyShift->keyDown(keyOrController);
-      nltools::Log::error(__PRETTY_FUNCTION__, "KeyDown shifted:", keyOrController);
 
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {
@@ -58,10 +57,8 @@ bool TCDDecoder::decode(const MidiEvent &event)
     }
     else if(channel == 15)  //Key Up
     {
-      nltools::Log::error(__PRETTY_FUNCTION__, "KeyUp raw:", keyOrController);
       uint32_t arg = _data1 + (_data0 << 7);
       keyOrController = m_keyShift->keyUp(keyOrController);
-      nltools::Log::error(__PRETTY_FUNCTION__, "KeyUp shifted:", keyOrController);
 
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {

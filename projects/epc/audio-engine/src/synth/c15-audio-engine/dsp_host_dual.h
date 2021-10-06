@@ -25,6 +25,7 @@
 #include "midi_handle.h"
 
 #include <array>
+#include <Types.h>
 
 // developer switches
 inline constexpr unsigned int SAMPLE_COUNT = 0;  // 0: normal, 1: acceptance-test: does host really render?
@@ -85,18 +86,18 @@ class DSPInterface
     Invalid
   };
 
-  virtual void onHWChanged(const uint32_t id, float value, bool didBehaviourChange) = 0;
+  virtual void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) = 0;
   virtual void onKeyDown(const int note, float velocity, InputEventSource from) = 0;
   virtual void onKeyUp(const int note, float velocity, InputEventSource from) = 0;
   virtual void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
   virtual void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) = 0;
-  virtual C15::Properties::HW_Return_Behavior getBehaviour(int id) = 0;
+  virtual C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) = 0;
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
   virtual void onMidiSettingsReceived() = 0;
-  virtual float getReturnValueFor(int hwid) { return 0; };
-  virtual void resetReturningHWSource(int hwui) {};
+  virtual float getReturnValueFor(HardwareSource hwid) { return 0; };
+  virtual void resetReturningHWSource(HardwareSource hwui) {};
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
     // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
@@ -135,16 +136,16 @@ class dsp_host_dual : public DSPInterface
   // event bindings: Playcontroller or MIDI Device (in Dev_PC mode)
 
   using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
-  float getReturnValueFor(int hwid) override;
-  void resetReturningHWSource(int hwui) override;
+  float getReturnValueFor(HardwareSource hwid) override;
+  void resetReturningHWSource(HardwareSource hwui) override;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
-  void onHWChanged(const uint32_t id, float value, bool didBehaviourChange) override;
+  void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) override;
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
-  C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
+  C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override;
 
   // event bindings: Preset Messages
   void onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);

@@ -39,13 +39,13 @@ TEST_CASE("Ribbon 1 Return to Center")
    public:
     using PassOnHWReceived::PassOnHWReceived;
 
-    C15::Properties::HW_Return_Behavior getBehaviour(int id) override
+    C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override
     {
       return C15::Properties::HW_Return_Behavior::Center;
     }
   };
 
-  MyTestHost dsp { Ribbon1, -1 };
+  MyTestHost dsp { HardwareSource::RIBBON1, -1 };
 
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings2();

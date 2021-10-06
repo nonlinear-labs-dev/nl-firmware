@@ -5,10 +5,10 @@
 class MockDSPHost : public DSPInterface
 {
  public:
-  void onHWChanged(uint32_t id, float value, bool didBehaviourChange) override;
+  void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) override;
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
-  C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
+  C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override;
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
@@ -24,28 +24,28 @@ class MockDSPHost : public DSPInterface
 class ConfigureableDSPHost : public MockDSPHost
 {
  public:
-  void onHWChanged(uint32_t id, float value, bool didChange) override;
+  void onHWChanged(HardwareSource id, float value, bool didChange) override;
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
   void onKeyUp(const int note, float velocity, InputEventSource from) override;
-  C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
+  C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
 
-  void setOnHWChangedCB(std::function<void(uint32_t, float, bool)>&& cb);
+  void setOnHWChangedCB(std::function<void(HardwareSource, float, bool)>&& cb);
   void setOnKeyDownCB(std::function<void(int, float, InputEventSource)>&& cb);
   void setOnKeyUpCB(std::function<void(int, float, InputEventSource)>&& cb);
-  void setGetBehaviourCB(std::function<C15::Properties::HW_Return_Behavior(int id)>&& cb);
+  void setGetBehaviourCB(std::function<C15::Properties::HW_Return_Behavior(HardwareSource id)>&& cb);
   void setGetSplitPartForKeyCB(std::function<VoiceGroup(int)>&& cb);
   void setOnKeyDownSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb);
   void setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb);
 
  private:
-  std::function<void(uint32_t, float, bool)> m_onHWChanged;
+  std::function<void(HardwareSource, float, bool)> m_onHWChanged;
   std::function<void(int, float, InputEventSource)> m_onKeyDown;
   std::function<void(int, float, InputEventSource)> m_onKeyUp;
-  std::function<C15::Properties::HW_Return_Behavior(int id)> m_getBehaviour;
+  std::function<C15::Properties::HW_Return_Behavior(HardwareSource id)> m_getBehaviour;
   std::function<VoiceGroup(int)> m_getSplitPartForKey;
   std::function<void(int, float, VoiceGroup, InputEventSource)> m_onKeyDownSplit;
   std::function<void(int, float, VoiceGroup, InputEventSource)> m_onKeyUpSplit;
@@ -88,13 +88,13 @@ class PassOnKeyUpHost : public MockDSPHost
 class PassOnHWReceived : public MockDSPHost
 {
  public:
-  PassOnHWReceived(int expectedId, float expectedValue);
-  void onHWChanged(uint32_t id, float value, bool) override;
+  PassOnHWReceived(HardwareSource expectedId, float expectedValue);
+  void onHWChanged(HardwareSource id, float value, bool) override;
   [[nodiscard]] bool didReceiveHW() const;
-  void setExpectedHW(int hw);
+  void setExpectedHW(HardwareSource hw);
 
  private:
   bool m_receivedHW = false;
-  int m_id;
+  HardwareSource m_id;
   const float m_value;
 };

@@ -20,7 +20,7 @@ TEST_CASE("HW Source Enable Tests")
 
   InputEventStageTester eventStage(&eS);
 
-  std::vector<std::pair<uint32_t, float>> receivedHWMsg;
+  std::vector<std::pair<HardwareSource, float>> receivedHWMsg;
   dsp.setOnHWChangedCB([&](auto id, auto pos, auto) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
 
   //prepare default settings
@@ -72,13 +72,16 @@ TEST_CASE("HW Source Enable Tests")
     initSettings({});
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB([&didReceive](auto, auto, auto) { didReceive = true; });
+    dsp.setOnHWChangedCB([&didReceive](auto id, auto, auto) {
+                           nltools::Log::error("id", id);
+                           didReceive = true;
+                         });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
     eventStage.onMIDIMessage(pedal1PressureMIDIEvent);
 
     CHECK(sendMidiMessages.empty());
-    CHECK(!didReceive);
+    CHECK(didReceive == false);
   }
 
   WHEN("local")
@@ -102,7 +105,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     eventStage.onMIDIMessage(pedal1PressureMIDIEvent);
@@ -120,7 +123,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
@@ -138,7 +141,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     WHEN("is Split")
@@ -172,7 +175,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     WHEN("is Split")
@@ -213,7 +216,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
 
   InputEventStageTester eventStage(&eS);
 
-  std::vector<std::pair<uint32_t, float>> receivedHWMsg;
+  std::vector<std::pair<HardwareSource, float>> receivedHWMsg;
   dsp.setOnHWChangedCB([&](auto id, auto pos, auto) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
 
   //prepare default settings
@@ -275,7 +278,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == Aftertouch);
+          CHECK(hwID == HardwareSource::AFTERTOUCH);
         });
 
     THEN("TCD gets send on Prim")
@@ -308,7 +311,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
             didReceive = true;
-            CHECK(hwID == Bender);
+            CHECK(hwID == HardwareSource::BENDER);
         });
 
     THEN("TCD gets send on Prim")

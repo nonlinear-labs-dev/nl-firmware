@@ -11,6 +11,7 @@
 *******************************************************************************/
 
 #include <stdint.h>
+#include <nltools/Assert.h>
 #include <nltools/logging/Log.h>
 
 struct PolyKeyEvent
@@ -99,6 +100,7 @@ template <uint32_t Voices, uint32_t PivotKey> class PolyKeyPacket
   uint32_t m_index = 0, m_length = 0, m_propagation_from = 0;
 };
 
+//36, 96
 template <uint32_t From, uint32_t To> class ShifteableKeys
 {
   static constexpr uint32_t Keys = 1 + To - From;
@@ -107,20 +109,13 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
   // note: this could be the right place for key remapping as well (if we decide to implement it)
 
  public:
-  ShifteableKeys()
-  {
-    nltools::Log::error("shifts:[");
-    for(auto& v: m_shiftedKeys)
-    {
-      nltools::Log::error(v,",");
-    }
-    nltools::Log::error("]");
-  }
+  //63
   int32_t keyDown(const uint32_t _keyPos)
   {
     if((_keyPos >= From) && (_keyPos <= To))
     {
       const uint32_t keyIdx = _keyPos - From;
+      nltools_assertAlways(keyIdx < Keys);
       m_shiftedKeys[keyIdx] = m_shift;
       return _keyPos + m_shiftedKeys[keyIdx];
     }
@@ -129,6 +124,7 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
       return static_cast<int32_t>(_keyPos);
     }
   }
+
   int32_t keyUp(const uint32_t _keyPos)
   {
     if((_keyPos >= From) && (_keyPos <= To))
@@ -144,13 +140,11 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
 
   [[nodiscard]] int getNoteShift() const
   {
-    nltools::Log::error(__PRETTY_FUNCTION__ , "shift:", m_shift);
     return m_shift;
   }
 
   void setNoteShift(int32_t _shift)
   {
-    nltools::Log::error(__PRETTY_FUNCTION__ , "old shift:", m_shift, "new shift:", _shift);
     m_shift = _shift;
   }
 };

@@ -3,6 +3,7 @@
 #include <variant>
 #include <synth/c15-audio-engine/midi_handle.h>
 #include <synth/input/MidiChannelModeMessages.h>
+#include <Types.h>
 
 class MidiRuntimeOptions
 {
@@ -98,10 +99,10 @@ class MidiRuntimeOptions
   [[nodiscard]] std::optional<int> getAftertouchLSBCC() const;
 
 
-  [[nodiscard]] bool isSwitchingCC(int pedalZeroIndexed) const;
+  [[nodiscard]] bool isSwitchingCC(HardwareSource hwid) const;
   [[nodiscard]] bool enableHighVelCC() const;
   [[nodiscard]] bool is14BitSupportEnabled() const;
-  [[nodiscard]] int getMSBCCForHWID(int hwID) const;
+  [[nodiscard]] int getMSBCCForHWID(HardwareSource hwID) const;
 
   static bool isCCMappedToChannelModeMessage(int cc);
   static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);

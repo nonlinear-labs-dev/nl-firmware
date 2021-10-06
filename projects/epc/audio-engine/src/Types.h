@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <chrono>
+#include <initializer_list>
 
 using Sample = float;
 using SamplePosition = uint64_t;
@@ -19,6 +20,23 @@ enum class DecoderEventType
   HardwareChange,
   UNKNOWN
 };
+
+enum class HardwareSource : int8_t
+{
+  PEDAL1 = 0,
+  PEDAL2 = 1,
+  PEDAL3 = 2,
+  PEDAL4 = 3,
+  BENDER = 4,
+  AFTERTOUCH = 5,
+  RIBBON1 = 6,
+  RIBBON2 = 7,
+  NONE = -1
+};
+
+static auto sHardwareSources
+    = { HardwareSource::PEDAL1, HardwareSource::PEDAL2,     HardwareSource::PEDAL3,  HardwareSource::PEDAL4,
+        HardwareSource::BENDER, HardwareSource::AFTERTOUCH, HardwareSource::RIBBON1, HardwareSource::RIBBON2 };
 
 struct SampleFrame
 {
