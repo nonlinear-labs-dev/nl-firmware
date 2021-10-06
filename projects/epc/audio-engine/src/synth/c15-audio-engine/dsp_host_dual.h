@@ -113,8 +113,8 @@ class DSPInterface
       case InputEventSource::External_Secondary:
         return 2;
     }
-    // should never be reached
-    return 0;
+    nltools_assertAlways(false);
+    return std::numeric_limits<uint32_t>::max();
   }
 };
 
@@ -202,7 +202,8 @@ class dsp_host_dual : public DSPInterface
         return VoiceGroup::Global;
         break;
     }
-    // fail safety
+    Environment::printStackTrace(0);
+    nltools_assertAlways(false);
     return VoiceGroup::NumGroups;
   }
   using LayerMode = C15::Properties::LayerMode;

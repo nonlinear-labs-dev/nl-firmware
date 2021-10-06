@@ -127,6 +127,7 @@ void InputEventStage::onTCDEvent()
     case DecoderEventType::KeyUp:
     {
       const bool isSplitSound = (soundType == SoundType::Split);
+      nltools::Log::error("interface:", (int)interface);
       const VoiceGroup determinedPart
           = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
       if(m_options->shouldReceiveLocalNotes())
