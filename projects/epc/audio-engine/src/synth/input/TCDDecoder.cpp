@@ -63,7 +63,6 @@ bool TCDDecoder::decode(const MidiEvent &event)
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {
         value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383
-        nltools::Log::error("key up received with key:", keyOrController, "vel:", value);
         m_type = DecoderEventType::KeyUp;
       }
     }
