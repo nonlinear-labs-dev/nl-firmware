@@ -376,7 +376,6 @@ TEST_CASE("Local Off + Split Sound -> Sends Note Off")
 
     host.setType(SoundType::Split);
 
-    using tMSG = decltype(msg);
     constexpr auto CHANNEL_MASK = 0b00001111;
     constexpr auto EVENT_TYPE_MASK = 0b11110000;
     constexpr auto EVENT_TYPE_NOTE_ON = 0b10010000;
@@ -394,7 +393,7 @@ TEST_CASE("Local Off + Split Sound -> Sends Note Off")
 
       WHEN("Key Released")
       {
-        const auto keyUp = TCD_HELPER::createKeyUpEvent(127, 64);
+        const auto keyUp = TCD_HELPER::createKeyUpEvent(4, 4);
         eventStage.onTCDMessage(keyPos);
         eventStage.onTCDMessage(keyUp);
         CHECK(sendMidi.size() == 2);

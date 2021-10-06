@@ -216,6 +216,8 @@ void InputEventStage::onMIDIEvent()
 
 void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, toString(determinedPart));
+
   switch(pDecoder->getEventType())
   {
     case DecoderEventType::KeyDown:
@@ -339,6 +341,9 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
   const auto secC = static_cast<uint8_t>(secondaryChannel);
   constexpr const uint8_t keyType = 0x80;
   constexpr const uint8_t ccType = 0xB0;
+
+  nltools::Log::error(__PRETTY_FUNCTION__, "determinedPart:", toString(determinedPart), "primChannel:", mainC,
+                      "secChannel:", secC);
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)
