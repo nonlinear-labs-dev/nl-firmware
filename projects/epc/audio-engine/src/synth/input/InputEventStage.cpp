@@ -23,8 +23,6 @@ bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::LSBAndMSB>(Har
 {
   auto didChange = false;
   const auto idx = static_cast<int>(hwID);
-  nltools_assertAlways(idx < 8);
-  nltools_assertAlways(idx >= 0);
   auto &latchedPos = m_latchedHWPositions[idx];
 
   if(latchedPos[0] != lsb)
@@ -47,8 +45,6 @@ bool InputEventStage::latchHWPosition<InputEventStage::LatchMode::OnlyMSB>(Hardw
 {
   auto didChange = false;
   const auto idx = static_cast<int>(hwID);
-  nltools_assertAlways(idx < 8);
-  nltools_assertAlways(idx >= 0);
   auto &latchedPos = m_latchedHWPositions[idx];
 
   if(latchedPos[1] != msb)
@@ -94,7 +90,6 @@ void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
 void InputEventStage::onTCDEvent()
 {
   auto decoder = &m_tcdDecoder;
-  nltools_assertOnDevPC(decoder != nullptr);
   const SoundType soundType = m_dspHost->getType();
   const bool soundValid = soundType != SoundType::Invalid;
   const auto interface = DSPInterface::InputEventSource::Internal;
@@ -127,7 +122,6 @@ void InputEventStage::onTCDEvent()
     case DecoderEventType::KeyUp:
     {
       const bool isSplitSound = (soundType == SoundType::Split);
-      nltools::Log::error("interface:", (int)interface);
       const VoiceGroup determinedPart
           = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
       if(m_options->shouldReceiveLocalNotes())
@@ -162,7 +156,6 @@ void InputEventStage::onTCDEvent()
 void InputEventStage::onMIDIEvent()
 {
   auto decoder = &m_midiDecoder;
-  nltools_assertOnDevPC(decoder != nullptr);
   const auto soundType = m_dspHost->getType();
   const bool soundValid = soundType != SoundType::Invalid;
 
@@ -217,8 +210,6 @@ void InputEventStage::onMIDIEvent()
 
 void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGroup &determinedPart)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, toString(determinedPart));
-
   switch(pDecoder->getEventType())
   {
     case DecoderEventType::KeyDown:
@@ -342,9 +333,6 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
   const auto secC = static_cast<uint8_t>(secondaryChannel);
   constexpr const uint8_t keyType = 0x80;
   constexpr const uint8_t ccType = 0xB0;
-
-  nltools::Log::error(__PRETTY_FUNCTION__, "determinedPart:", toString(determinedPart), "primChannel:", (int)mainC,
-                      "secChannel:", (int)secC);
 
   if(mainChannel != -1
      && ((determinedPart == VoiceGroup::I || determinedPart == VoiceGroup::Global)

@@ -115,7 +115,6 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
     if((_keyPos >= From) && (_keyPos <= To))
     {
       const uint32_t keyIdx = _keyPos - From;
-      nltools_assertAlways(keyIdx < Keys);
       m_shiftedKeys[keyIdx] = m_shift;
       return _keyPos + m_shiftedKeys[keyIdx];
     }
