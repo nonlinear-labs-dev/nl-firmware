@@ -107,6 +107,15 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
   // note: this could be the right place for key remapping as well (if we decide to implement it)
 
  public:
+  ShifteableKeys()
+  {
+    nltools::Log::error("shifts:[");
+    for(auto& v: m_shiftedKeys)
+    {
+      nltools::Log::error(v,",");
+    }
+    nltools::Log::error("]");
+  }
   int32_t keyDown(const uint32_t _keyPos)
   {
     if((_keyPos >= From) && (_keyPos <= To))
@@ -133,8 +142,9 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
     }
   }
 
-  int getNoteShift()
+  [[nodiscard]] int getNoteShift() const
   {
+    nltools::Log::error(__PRETTY_FUNCTION__ , "shift:", m_shift);
     return m_shift;
   }
 

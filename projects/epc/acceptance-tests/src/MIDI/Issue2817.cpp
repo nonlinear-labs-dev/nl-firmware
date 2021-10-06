@@ -216,7 +216,7 @@ TEST_CASE("Issue 2817")
         auto benderCC = options.getBenderMSBCC().value_or(-1);
         CHECK(benderCC != -1);
         REQUIRE(sendMidi[0].rawBytes[1] == benderCC);
-        REQUIRE(sendMidi[0].rawBytes[2] == 64); // 0 bipolar as we are the Bender
+        REQUIRE(sendMidi[0].rawBytes[2] == 64);  // 0 bipolar as we are the Bender
       }
 
       THEN("VA and ENV not reset")
@@ -250,17 +250,60 @@ TEST_CASE("Issue 2817")
         REQUIRE(sendSpecialFuncs.empty());
       }
     }
-//
-//    WHEN("New Option is On")
-//    {
-//      msg.shouldResetInternal = true;
-//    }
-//
-//    WHEN("New Option is Off")
-//    {
-//
-//      msg.shouldResetInternal = false;
-//    }
+    //
+    //    WHEN("New Option is On")
+    //    {
+    //      msg.shouldResetInternal = true;
+    //    }
+    //
+    //    WHEN("New Option is Off")
+    //    {
+    //
+    //      msg.shouldResetInternal = false;
+    //    }
+  }
+}
+
+TEST_CASE("KeyShift offset by 5")
+{
+  ConfigureableDSPHost host;
+  MidiRuntimeOptions options;
+  InputEventStage eventStage(
+      &host, &options, []() {}, [&](auto) {}, [&](auto) {});
+
+  auto onSettingsReceived = [&](auto msg)
+  {
+    auto old = options.getLastReceivedMessage();
+    options.update(msg);
+    eventStage.onMidiSettingsMessageWasReceived(msg, old);
+  };
+
+
+  WHEN("All Settings On")
+  {
+    auto msg = options.getLastReceivedMessage();
+    msg.routings = TestHelper::createFullMappings(true);
+    msg.highResCCEnabled = false;
+    msg.highVeloCCEnabled = false;
+    msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+    msg.receiveChannel = MidiReceiveChannel::CH_3;
+    msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
+    msg.localEnable = false;
+    msg.aftertouchcc = AftertouchCC::CC01;
+    msg.bendercc = BenderCC::CC02;
+    msg.pedal1cc = PedalCC::CC03;
+    msg.pedal2cc = PedalCC::CC04;
+    msg.pedal3cc = PedalCC::CC05;
+    msg.pedal4cc = PedalCC::CC06;
+    msg.ribbon1cc = RibbonCC::CC07;
+    msg.ribbon2cc = RibbonCC::CC08;
+    onSettingsReceived(msg);
+
+    WHEN("Init")
+    {
+      CHECK(eventStage.getNoteShift() == 0);
+    }
   }
 }
 

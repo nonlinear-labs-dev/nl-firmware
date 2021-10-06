@@ -487,6 +487,11 @@ void InputEventStage::setNoteShift(int i)
   m_shifteable_keys.setNoteShift(i);
 }
 
+int InputEventStage::getNoteShift() const
+{
+  return m_shifteable_keys.getNoteShift();
+}
+
 VoiceGroup InputEventStage::calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, const int keyNumber)
 {
   switch(inputEvent)

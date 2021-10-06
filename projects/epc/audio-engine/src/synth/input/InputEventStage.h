@@ -42,6 +42,7 @@ class InputEventStage
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
   void setNoteShift(int i);
+  [[nodiscard]] int getNoteShift() const;
 
   using tMSG = nltools::msg::Setting::MidiSettingsMessage;
   using tRow = tMSG::tEntry;
