@@ -212,8 +212,6 @@ void C15Synth::doSyncPlayground()
 {
   using namespace nltools::msg;
 
-  nltools::Log::error(__PRETTY_FUNCTION__);
-
   if(m_inputEventStage.getAndResetKeyBedStatus())
   {
     send(EndPoint::Playground, Keyboard::NoteEventHappened {});
