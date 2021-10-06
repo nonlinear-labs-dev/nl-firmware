@@ -2367,6 +2367,7 @@ SoundType dsp_host_dual::getType()
     case LayerMode::Layer:
       return SoundType::Layer;
   }
+  nltools_detailedAssertAlways(true, __PRETTY_FUNCTION__);
   return SoundType::Invalid;  // should never be reached
 }
 
