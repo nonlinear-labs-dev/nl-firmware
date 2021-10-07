@@ -43,27 +43,30 @@ void BankUseCases::stepPresetSelection(int inc)
   if(auto presetManager = m_bank->getPresetManager())
   {
     const bool directLoad = isDirectLoadActive();
-    auto current = m_bank->getSelectedPreset();
-    auto currentPos = m_bank->getPresetPosition(current);
-    auto presetPosToSelect = std::max(0, std::min<int>(m_bank->getNumPresets() - 1, currentPos + inc));
-    auto selectedPreset = presetManager->getSelectedPreset();
-
-    if(auto presetToSelect = m_bank->getPresetAt(presetPosToSelect))
+    if(auto current = m_bank->getSelectedPreset())
     {
-      if(presetToSelect != selectedPreset)
+      auto currentPos = m_bank->getPresetPosition(current);
+      auto presetPosToSelect = std::max(0, std::min<int>(m_bank->getNumPresets() - 1, currentPos + inc));
+      if(auto selectedPreset = presetManager->getSelectedPreset())
       {
-        Glib::ustring name {};
-        if(directLoad)
-          name = presetToSelect->buildUndoTransactionTitle("Select and Load Preset");
-        else
-          name = presetToSelect->buildUndoTransactionTitle("Select Preset");
-
-        auto scope = m_bank->getUndoScope().startContinuousTransaction(m_bank, std::chrono::hours(1), name);
-        m_bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
-
-        if(directLoad)
+        if(auto presetToSelect = m_bank->getPresetAt(presetPosToSelect))
         {
-          presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+          if(presetToSelect != selectedPreset)
+          {
+            Glib::ustring name {};
+            if(directLoad)
+              name = presetToSelect->buildUndoTransactionTitle("Select and Load Preset");
+            else
+              name = presetToSelect->buildUndoTransactionTitle("Select Preset");
+
+            auto scope = m_bank->getUndoScope().startContinuousTransaction(m_bank, std::chrono::hours(1), name);
+            m_bank->selectPreset(scope->getTransaction(), presetToSelect->getUuid());
+
+            if(directLoad)
+            {
+              presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+            }
+          }
         }
       }
     }
