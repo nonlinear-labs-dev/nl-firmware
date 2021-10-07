@@ -190,7 +190,7 @@ public class SystemSettings {
 
 	public void setGlobalLocal(BooleanValues b)
 	{
-		SetupModel.get().systemSettings.globalLocalEnable.setValue(b);
+		SetupModel.get().systemSettings.local.setValue(b);
 		NonMaps.theMaps.getServerProxy().setSetting("GlobalLocalEnable", netify(b.name()));
 	}
 

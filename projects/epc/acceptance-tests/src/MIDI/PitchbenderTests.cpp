@@ -9,9 +9,9 @@ TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
   host.setOnHWChangedCB(
-      [&](int hwID, float hwPos, auto)
+      [&](auto hwID, float hwPos, auto)
       {
-        CHECK(hwID == 4);
+        CHECK(hwID == HardwareSource::BENDER);
         CHECK(hwPos == 1.0f);
         receivedHW = true;
       });

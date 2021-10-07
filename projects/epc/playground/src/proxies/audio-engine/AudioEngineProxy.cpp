@@ -31,6 +31,7 @@
 #include <use-cases/SettingsUseCases.h>
 #include <use-cases/BankUseCases.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <device-settings/NoteShift.h>
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
     : m_presetManager { pm }
@@ -483,8 +484,7 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
                           PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
                           RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping,
-                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(
-      &m_settings);
+                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings>(&m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
       [this](const Setting *s)
@@ -521,7 +521,9 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
         msg.highResCCEnabled = m_settings.getSetting<Enable14BitSupport>()->get();
 
         msg.routings = m_settings.getSetting<RoutingSettings>()->getRaw();
-        msg.globalLocalEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
+        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
+
+        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       });
