@@ -48,7 +48,7 @@ Preset *MockPresetStorage::createSinglePreset()
   EditBufferUseCases ebU(*editBuffer);
   ebU.convertToSingle(VoiceGroup::I);
 
-  BankUseCases bankU(m_bank);
+  BankUseCases bankU(m_bank, *TestHelper::getSettings());
   auto preset = bankU.appendEditBuffer();
 
   PresetUseCases presetU(preset, *TestHelper::getSettings());
@@ -64,7 +64,7 @@ Preset *MockPresetStorage::createSplitPreset()
   ebU.convertToSingle(VoiceGroup::I);
   ebU.convertToSplit(VoiceGroup::I);
 
-  BankUseCases bankU(m_bank);
+  BankUseCases bankU(m_bank, *TestHelper::getSettings());
   auto preset = bankU.appendEditBuffer();
 
   PresetUseCases presetU(preset, *TestHelper::getSettings());
@@ -79,7 +79,7 @@ Preset *MockPresetStorage::createLayerPreset()
   EditBufferUseCases ebU(*editBuffer);
   ebU.convertToLayer(VoiceGroup::I);
 
-  BankUseCases bankU(m_bank);
+  BankUseCases bankU(m_bank, *TestHelper::getSettings());
   auto preset = bankU.appendEditBuffer();
 
   PresetUseCases presetU(preset, *TestHelper::getSettings());
@@ -108,7 +108,7 @@ DualPresetBank::DualPresetBank()
   auto settings = Application::get().getSettings();
   PresetManagerUseCases pmUseCase(*pm, *settings);
   m_bank = pmUseCase.addBank();
-  BankUseCases bankUseCases(m_bank);
+  BankUseCases bankUseCases(m_bank, *TestHelper::getSettings());
 
   auto editBuffer = getEditBuffer();
   EditBufferUseCases useCase(*editBuffer);

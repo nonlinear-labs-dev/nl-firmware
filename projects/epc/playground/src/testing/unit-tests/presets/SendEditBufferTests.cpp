@@ -85,7 +85,7 @@ TEST_CASE("Store Action do not send EditBuffer")
 
   auto bank = pm->getSelectedBank();
   CHECK(bank != nullptr);
-  BankUseCases bankUseCases(bank);
+  BankUseCases bankUseCases(bank, *TestHelper::getSettings());
 
   //Append preset into bank
   auto oldNumPresets = bank->getNumPresets();

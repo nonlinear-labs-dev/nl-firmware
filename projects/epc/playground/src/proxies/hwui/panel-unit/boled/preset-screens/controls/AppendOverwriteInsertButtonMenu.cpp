@@ -80,7 +80,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 
   if(auto selectedBank = pm->getBankAt(actionPosition.first))
   {
-    BankUseCases bankUseCases(selectedBank);
+    BankUseCases bankUseCases(selectedBank, *settings);
     if(auto selectedPreset = selectedBank->getPresetAt(actionPosition.second))
     {
       PresetUseCases presetUseCases(selectedPreset, *settings);

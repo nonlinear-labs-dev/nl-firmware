@@ -65,7 +65,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
                                           if(auto bank = m_presetManager.findMidiSelectedBank())
                                           {
                                             setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
-                                            BankUseCases useCase(bank);
+                                            BankUseCases useCase(bank, m_settings);
                                             useCase.selectPreset(msg.program);
                                           }
                                       });
@@ -487,7 +487,7 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           EnableHighVelocityCC, Enable14BitSupport, RoutingSettings>(&m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
-      [this](const Setting *s)
+      [](const Setting *s)
       {
         auto as = static_cast<const AutoStartRecorderSetting *>(s);
         const auto shouldAutoStart = as->get();

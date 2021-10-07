@@ -37,65 +37,6 @@ PresetManagerUseCases::PresetManagerUseCases(PresetManager& pm, Settings& settin
 {
 }
 
-void PresetManagerUseCases::overwritePresetWithEditBuffer(const Uuid& uuid)
-{
-  if(auto preset = m_presetManager.findPreset(uuid))
-  {
-    PresetUseCases useCase(preset, m_settings);
-    useCase.overwriteWithEditBuffer(*m_presetManager.getEditBuffer());
-  }
-}
-
-void PresetManagerUseCases::overwritePresetWithPreset(Preset* target, Preset* source)
-{
-  auto scope = Application::get().getUndoScope()->startTransaction("Overwrite preset '%0' with '%1'", target->getName(),
-                                                                   source->getName());
-  if(auto targetBank = dynamic_cast<Bank*>(target->getParent()))
-  {
-    auto transaction = scope->getTransaction();
-    target->copyFrom(transaction, source);
-    targetBank->selectPreset(transaction, target->getUuid());
-    m_presetManager.selectBank(transaction, targetBank->getUuid());
-
-    StoreUseCaseHelper::onStore(transaction, *target, m_presetManager, m_settings);
-
-    assert(m_presetManager.getSelectedBank() == targetBank);
-    assert(targetBank->getSelectedPreset() == target);
-  }
-}
-
-void PresetManagerUseCases::insertEditBufferAsPresetWithUUID(Bank* bank, size_t pos, const std::string& uuid)
-{
-  Uuid id;
-
-  if(uuid.empty())
-  {
-    id.generate();
-  }
-  else
-  {
-    id = Uuid { uuid };
-  }
-
-  auto pm = Application::get().getPresetManager();
-  auto scope = Application::get().getUndoScope()->startTransaction("Insert preset at position %0", pos + 1);
-  auto transaction = scope->getTransaction();
-  auto ebIsModified = m_presetManager.getEditBuffer()->isModified();
-
-  auto preset = bank->insertPreset(transaction, pos, std::make_unique<Preset>(bank, *pm->getEditBuffer(), id));
-
-  m_presetManager.selectBank(transaction, bank->getUuid());
-  bank->selectPreset(transaction, preset->getUuid());
-
-  if(ebIsModified)
-    preset->guessName(transaction);
-
-  StoreUseCaseHelper::onStore(transaction, *preset, m_presetManager, m_settings);
-
-  assert(m_presetManager.getSelectedBank() == bank);
-  assert(bank->getSelectedPreset() == preset);
-}
-
 void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("Append preset to Bank %0", bank->getName(true));
@@ -111,11 +52,6 @@ void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
 
   assert(m_presetManager.getSelectedBank() == bank);
   assert(bank->getSelectedPreset() == newPreset);
-}
-
-void PresetManagerUseCases::appendEditBufferAsPresetWithUUID(Bank* bank, const std::string& uuid)
-{
-  insertEditBufferAsPresetWithUUID(bank, bank->getNumPresets(), uuid);
 }
 
 Bank* PresetManagerUseCases::createBankAndStoreEditBuffer()

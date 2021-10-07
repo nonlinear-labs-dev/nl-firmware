@@ -21,7 +21,7 @@ TEST_CASE("Store Preset will change EditBuffer Origin and 'mark saved Preset as 
     REQUIRE(bank != nullptr);
     REQUIRE(!bank->hasPresets());
 
-    BankUseCases bankUseCase(bank);
+    BankUseCases bankUseCase(bank, *TestHelper::getSettings());
 
     WHEN("EditBuffer is prepared")
     {

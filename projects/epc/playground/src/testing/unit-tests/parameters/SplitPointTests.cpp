@@ -112,7 +112,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
   pmUseCases.createBankAndStoreEditBuffer();
   b = pm->getSelectedBank();
-  BankUseCases bankUseCases(b);
+  BankUseCases bankUseCases(b, *TestHelper::getSettings());
   TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
   CHECK_FALSE(sI->hasOverlap());

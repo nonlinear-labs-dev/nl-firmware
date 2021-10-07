@@ -131,7 +131,7 @@ void PresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) con
 {
   if(bank)
   {
-    BankUseCases useCase(bank);
+    BankUseCases useCase(bank, *Application::get().getSettings());
     useCase.stepPresetSelection(inc);
   }
 }

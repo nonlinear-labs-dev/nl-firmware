@@ -106,7 +106,7 @@ void PresetEditButtonMenu::deletePreset()
   {
     if(auto preset = bank->getSelectedPreset())
     {
-      BankUseCases useCase(bank);
+      BankUseCases useCase(bank, *Application::get().getSettings());
       useCase.deletePreset(preset);
     }
   }

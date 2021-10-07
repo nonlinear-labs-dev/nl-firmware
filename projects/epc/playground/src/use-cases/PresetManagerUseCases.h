@@ -32,13 +32,7 @@ class PresetManagerUseCases
 
   explicit PresetManagerUseCases(PresetManager& pm, Settings& settings);
 
-  //Preset
-  //Store Actions
-  void overwritePresetWithEditBuffer(const Uuid& uuid);
-  void overwritePresetWithPreset(Preset* target, Preset* source);
-  void insertEditBufferAsPresetWithUUID(Bank* bank, size_t pos, const std::string& uuid);
   void appendPreset(Bank* bank, Preset* preset);
-  void appendEditBufferAsPresetWithUUID(Bank* bank, const std::string& uuid);
   Bank* createBankAndStoreEditBuffer();
   void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
   void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);

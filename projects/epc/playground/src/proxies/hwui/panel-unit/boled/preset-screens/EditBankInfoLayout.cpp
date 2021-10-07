@@ -20,7 +20,7 @@ void EditBankInfoLayout::commit(const Glib::ustring &comment)
 {
   if(m_currentBank)
   {
-    BankUseCases useCase(m_currentBank);
+    BankUseCases useCase(m_currentBank, *Application::get().getSettings());
     useCase.setBankComment(comment);
   }
 }

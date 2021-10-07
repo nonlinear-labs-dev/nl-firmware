@@ -1,10 +1,12 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
+#include <utility>
 #include "BankUseCases.h"
 #include "presets/Bank.h"
 #include "presets/PresetManager.h"
 #include "presets/Preset.h"
 #include "presets/EditBuffer.h"
+#include "StoreUseCaseHelper.h"
 #include <device-settings/Settings.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <Application.h>
@@ -13,8 +15,9 @@
 #include <xml/FileOutStream.h>
 #include <xml/VersionAttribute.h>
 
-BankUseCases::BankUseCases(Bank* bank)
+BankUseCases::BankUseCases(Bank* bank, Settings& settings)
     : m_bank { bank }
+    , m_settings{ settings }
 {
   nltools_assertAlways(m_bank != nullptr);
 }
@@ -263,4 +266,43 @@ Preset* BankUseCases::appendEditBuffer()
   eb->undoableSetLoadedPresetInfo(transaction, preset);
   m_bank->selectPreset(transaction, preset->getUuid());
   return preset;
+}
+
+Preset* BankUseCases::appendEditBufferAsPresetWithUUID(Uuid uuid)
+{
+  return insertEditBufferAsPresetWithUUID(m_bank->getNumPresets(), std::move(uuid));
+}
+
+Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
+{
+  auto pm = getPresetManager();
+  if(!pm)
+    return nullptr;
+
+  if(uuid.empty())
+    uuid.generate();
+
+  auto scope = pm->getUndoScope().startTransaction("Insert preset at position %0", pos + 1);
+  auto transaction = scope->getTransaction();
+  auto ebIsModified = pm->getEditBuffer()->isModified();
+
+  auto preset = m_bank->insertPreset(transaction, pos, std::make_unique<Preset>(m_bank, *pm->getEditBuffer(), uuid));
+
+  pm->selectBank(transaction, m_bank->getUuid());
+  m_bank->selectPreset(transaction, preset->getUuid());
+
+  if(ebIsModified)
+    preset->guessName(transaction);
+
+  StoreUseCaseHelper::onStore(transaction, *preset, *pm, m_settings);
+
+  assert(pm->getSelectedBank() == m_bank);
+  assert(m_bank->getSelectedPreset() == preset);
+
+  return preset;
+}
+
+PresetManager* BankUseCases::getPresetManager() const
+{
+  return m_bank->getPresetManager();
 }
