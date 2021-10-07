@@ -197,10 +197,14 @@ void BankUseCases::selectPreset(int pos)
 
 void BankUseCases::setAttribute(const Glib::ustring& key, const Glib::ustring& value)
 {
-  auto scope = m_bank->getUndoScope().startTransaction("Set Bank attribute");
-  auto transaction = scope->getTransaction();
-  m_bank->setAttribute(transaction, key, value);
-  m_bank->updateLastModifiedTimestamp(transaction);
+  const auto oldValue = m_bank->getAttribute(key, "");
+  if(oldValue != value)
+  {
+    auto scope = m_bank->getUndoScope().startTransaction("Set Bank attribute");
+    auto transaction = scope->getTransaction();
+    m_bank->setAttribute(transaction, key, value);
+    m_bank->updateLastModifiedTimestamp(transaction);
+  }
 }
 
 bool BankUseCases::isDirectLoadActive() const
@@ -210,11 +214,15 @@ bool BankUseCases::isDirectLoadActive() const
 
 void BankUseCases::setCollapsed(bool b)
 {
-  std::string name = b ? "Collapse" : "Maximize";
-  auto scope = m_bank->getUndoScope().startTransaction(name + " Bank");
-  auto transaction = scope->getTransaction();
-  m_bank->setAttribute(transaction, "collapsed", b ? "true" : "false");
-  m_bank->updateLastModifiedTimestamp(transaction);
+  if(m_bank->isCollapsed() != b)
+  {
+    std::string name = b ? "Collapse" : "Maximize";
+    auto bankName = m_bank->getName(true);
+    auto scope = m_bank->getUndoScope().startTransaction(name + " Bank " + bankName);
+    auto transaction = scope->getTransaction();
+    m_bank->setAttribute(transaction, "collapsed", b ? "true" : "false");
+    m_bank->updateLastModifiedTimestamp(transaction);
+  }
 }
 
 void BankUseCases::exportBankToFile(const std::string& outFile)
