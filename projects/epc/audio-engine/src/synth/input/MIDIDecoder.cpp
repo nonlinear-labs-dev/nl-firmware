@@ -88,14 +88,6 @@ float MIDIDecoder::getValue() const
   return value;
 }
 
-void MIDIDecoder::processMidiForHWSource(int id, uint32_t _data)
-{
-  if(m_dsp->getBehaviour(id) == C15::Properties::HW_Return_Behavior::Center)
-    processBipolarMidiController<CC_Range_14_Bit>(_data, id);
-  else
-    processUnipolarMidiController<CC_Range_14_Bit>(_data, id);
-}
-
 template <typename Range> void MIDIDecoder::processBipolarMidiController(const uint32_t dataByte, int id)
 {
   auto midiVal = (dataByte << 7) + std::exchange(m_MidiLSB, 0);

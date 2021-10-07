@@ -3,6 +3,8 @@
 
 void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 {
+  m_lastMessage = msg;
+
   m_midiPrimaryReceiveChannel = msg.receiveChannel;
   m_midiSplitReceiveChannel = msg.receiveSplitChannel;
 
@@ -22,7 +24,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   m_enable14BitCC = msg.highResCCEnabled;
 
   m_routingMappings = msg.routings;
-  m_globalLocalEnable = msg.globalLocalEnable;
+  m_localEnable = msg.localEnable;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getMIDIPrimaryReceiveChannel() const
@@ -105,7 +107,7 @@ bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
 {
   constexpr auto idx = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingIndex::Notes);
   constexpr auto aspect = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::LOCAL);
-  return m_routingMappings[idx][aspect] && m_globalLocalEnable;
+  return m_routingMappings[idx][aspect] && m_localEnable;
 }
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
@@ -354,9 +356,10 @@ AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
   return aftertouchCC;
 }
 
-bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed) const
+bool MidiRuntimeOptions::isSwitchingCC(HardwareSource hwid) const
 {
-  auto enumIsInSwitching = [](PedalCC cc) -> bool {
+  auto enumIsInSwitching = [](PedalCC cc) -> bool
+  {
     switch(cc)
     {
       case PedalCC::CC64:
@@ -371,15 +374,15 @@ bool MidiRuntimeOptions::isSwitchingCC(int pedalZeroIndexed) const
     }
   };
 
-  switch(pedalZeroIndexed)
+  switch(hwid)
   {
-    case 0:
+    case HardwareSource::PEDAL1:
       return enumIsInSwitching(pedal1CC);
-    case 1:
+    case HardwareSource::PEDAL2:
       return enumIsInSwitching(pedal2CC);
-    case 2:
+    case HardwareSource::PEDAL3:
       return enumIsInSwitching(pedal3CC);
-    case 3:
+    case HardwareSource::PEDAL4:
       return enumIsInSwitching(pedal4CC);
     default:
       return false;
@@ -391,29 +394,30 @@ bool MidiRuntimeOptions::enableHighVelCC() const
   return m_enableHighVelCC;
 }
 
-int MidiRuntimeOptions::getMSBCCForHWID(int hwID) const
+int MidiRuntimeOptions::getMSBCCForHWID(HardwareSource hwID) const
 {
   auto bender = getBenderMSBCC();
   auto aftertouch = getAftertouchMSBCC();
 
   switch(hwID)
   {
-    case 0:
+    case HardwareSource::PEDAL1:
       return getCCFor<Midi::MSB::Ped1>();
-    case 1:
+    case HardwareSource::PEDAL2:
       return getCCFor<Midi::MSB::Ped2>();
-    case 2:
+    case HardwareSource::PEDAL3:
       return getCCFor<Midi::MSB::Ped3>();
-    case 3:
+    case HardwareSource::PEDAL4:
       return getCCFor<Midi::MSB::Ped4>();
-    case 4:
+    case HardwareSource::BENDER:
       return bender.value_or(-1);
-    case 5:
+    case HardwareSource::AFTERTOUCH:
       return aftertouch.value_or(-1);
-    case 6:
+    case HardwareSource::RIBBON1:
       return getCCFor<Midi::MSB::Rib1>();
-    case 7:
+    case HardwareSource::RIBBON2:
       return getCCFor<Midi::MSB::Rib2>();
+    case HardwareSource::NONE:
     default:
       return -1;
   }
@@ -491,7 +495,7 @@ bool MidiRuntimeOptions::shouldAllowLocal(tMidiSettingMessage::RoutingIndex rout
 {
   constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
   const auto index = static_cast<int>(routingIndex);
-  return m_routingMappings[index][local] && m_globalLocalEnable;
+  return m_routingMappings[index][local] && m_localEnable;
 }
 
 bool MidiRuntimeOptions::isCCMappedToChannelModeMessage(int cc)
@@ -536,27 +540,28 @@ MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc,
   return MidiChannelModeMessages::NOOP;
 }
 
-bool MidiRuntimeOptions::isLocalEnabled(C15::Parameters::Hardware_Sources sources)
+bool MidiRuntimeOptions::isLocalEnabled(HardwareSource source)
 {
-  switch(sources)
+  switch(source)
   {
-    case C15::Parameters::Hardware_Sources::Pedal_1:
+    case HardwareSource::PEDAL1:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal1);
-    case C15::Parameters::Hardware_Sources::Pedal_2:
+    case HardwareSource::PEDAL2:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal2);
-    case C15::Parameters::Hardware_Sources::Pedal_3:
+    case HardwareSource::PEDAL3:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal3);
-    case C15::Parameters::Hardware_Sources::Pedal_4:
+    case HardwareSource::PEDAL4:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal4);
-    case C15::Parameters::Hardware_Sources::Bender:
+    case HardwareSource::BENDER:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Bender);
-    case C15::Parameters::Hardware_Sources::Aftertouch:
+    case HardwareSource::AFTERTOUCH:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Aftertouch);
-    case C15::Parameters::Hardware_Sources::Ribbon_1:
+    case HardwareSource::RIBBON1:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1);
-    case C15::Parameters::Hardware_Sources::Ribbon_2:
+    case HardwareSource::RIBBON2:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2);
-    case C15::Parameters::Hardware_Sources::_LENGTH_:
+    default:
+    case HardwareSource::NONE:
       return false;
   }
   return false;
@@ -564,5 +569,15 @@ bool MidiRuntimeOptions::isLocalEnabled(C15::Parameters::Hardware_Sources source
 
 void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
 {
-  m_globalLocalEnable = b;
+  m_localEnable = b;
+}
+
+bool MidiRuntimeOptions::isGlobalLocalEnabled()
+{
+  return m_localEnable;
+}
+
+const nltools::msg::Setting::MidiSettingsMessage& MidiRuntimeOptions::getLastReceivedMessage() const
+{
+  return m_lastMessage;
 }

@@ -22,7 +22,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                         [](MidiOptionsHelper::tMSG& msg)
                                         {
                                           msg.routings = TestHelper::createFullMappings(true);
-                                          msg.globalLocalEnable = true;
+                                          msg.localEnable = true;
                                         });
 
     bool didReceive = false;
@@ -40,7 +40,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                           [](MidiOptionsHelper::tMSG& msg)
                                           {
                                             msg.routings = TestHelper::createFullMappings(false);
-                                            msg.globalLocalEnable = true;
+                                            msg.localEnable = true;
                                           });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
@@ -53,7 +53,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                           [](MidiOptionsHelper::tMSG& msg)
                                           {
                                             msg.routings = TestHelper::createFullMappings(true);
-                                            msg.globalLocalEnable = false;
+                                            msg.localEnable = false;
                                           });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
@@ -66,7 +66,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                           [](MidiOptionsHelper::tMSG& msg)
                                           {
                                             msg.routings = TestHelper::createFullMappings(false);
-                                            msg.globalLocalEnable = false;
+                                            msg.localEnable = false;
                                           });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
@@ -97,7 +97,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(true);
-                                            s.globalLocalEnable = true;
+                                            s.localEnable = true;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));
@@ -115,7 +115,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(true);
-                                            s.globalLocalEnable = false;
+                                            s.localEnable = false;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));
@@ -139,7 +139,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(false);
-                                            s.globalLocalEnable = false;
+                                            s.localEnable = false;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));
@@ -157,7 +157,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(false);
-                                            s.globalLocalEnable = true;
+                                            s.localEnable = true;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));

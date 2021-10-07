@@ -160,7 +160,7 @@ public class MidiSettings {
     }
 
     //Global
-    public OnOffOption globalLocalEnable = new OnOffOption();
+    public OnOffOption local = new OnOffOption();
 
     //Channels
     public SendChannel sendChannel = new SendChannel();

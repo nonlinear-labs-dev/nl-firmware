@@ -157,7 +157,7 @@ TEST_CASE("Send Note Off with real Synth when local is off")
     msg.aftertouchcc = AftertouchCC::CC30;
 
     //disable global local and notes local
-    msg.globalLocalEnable = false;
+    msg.localEnable = false;
     using tR = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
     using tA = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
     TestHelper::updateMappingForHW(msg.routings, tR::Notes, tA::LOCAL, false);
@@ -239,7 +239,7 @@ TEST_CASE("Send Note Off when local is off")
     msg.aftertouchcc = AftertouchCC::CC30;
 
     //disable global local and notes local
-    msg.globalLocalEnable = false;
+    msg.localEnable = false;
     using tR = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
     using tA = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
     TestHelper::updateMappingForHW(msg.routings, tR::Notes, tA::LOCAL, false);

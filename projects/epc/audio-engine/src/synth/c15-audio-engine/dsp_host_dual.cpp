@@ -2332,18 +2332,27 @@ void dsp_host_dual::debugLevels()
           ->m_scaled);
 }
 
-void dsp_host_dual::onHWChanged(const uint32_t id, float value, bool didBehaviourChange)
+void dsp_host_dual::onHWChanged(HardwareSource id, float value, bool didBehaviourChange)
 {
-  auto source = m_params.get_hw_src(id);
-  const float inc = value - source->m_position;
-  source->m_position = value;
-  if(!didBehaviourChange)
-    hwModChain(source, id, inc);
+  if(id != HardwareSource::NONE)
+  {
+    auto idx = static_cast<int>(id);
+    auto source = m_params.get_hw_src(idx);
+    const float inc = value - source->m_position;
+    source->m_position = value;
+    if(!didBehaviourChange)
+      hwModChain(source, idx, inc);
+  }
 }
 
-C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
+C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(HardwareSource id)
 {
-  return m_params.get_hw_src(id)->m_behavior;
+  if(id != HardwareSource::NONE)
+  {
+    auto idx = static_cast<int>(id);
+    return m_params.get_hw_src(idx)->m_behavior;
+  }
+  return C15::Properties::HW_Return_Behavior::Stay;
 }
 
 SoundType dsp_host_dual::getType()
@@ -2358,6 +2367,7 @@ SoundType dsp_host_dual::getType()
     case LayerMode::Layer:
       return SoundType::Layer;
   }
+  nltools_detailedAssertAlways(true, __PRETTY_FUNCTION__);
   return SoundType::Invalid;  // should never be reached
 }
 
@@ -2542,4 +2552,15 @@ bool dsp_host_dual::updateBehaviour(C15::ParameterDescriptor& element, ReturnMod
 {
   auto param = m_params.get_hw_src(element.m_param.m_index);
   return param->update_behavior(getBehavior(mode));
+}
+
+float dsp_host_dual::getReturnValueFor(HardwareSource hwid)
+{
+  return 0;
+}
+
+void dsp_host_dual::resetReturningHWSource(HardwareSource hwui)
+{
+  //TODO implement reset!!
+  DSPInterface::resetReturningHWSource(hwui);
 }

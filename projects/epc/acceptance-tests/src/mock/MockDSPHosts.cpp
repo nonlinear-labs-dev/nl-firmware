@@ -1,7 +1,7 @@
 #include "MockDSPHosts.h"
 #include <catch.hpp>
 
-void MockDSPHost::onHWChanged(const uint32_t id, float value, bool)
+void MockDSPHost::onHWChanged(HardwareSource id, float value, bool)
 {
 }
 
@@ -17,7 +17,7 @@ void MockDSPHost::onMidiSettingsReceived()
 {
 }
 
-C15::Properties::HW_Return_Behavior MockDSPHost::getBehaviour(int id)
+C15::Properties::HW_Return_Behavior MockDSPHost::getBehaviour(HardwareSource id)
 {
   return C15::Properties::HW_Return_Behavior::Zero;
 }
@@ -131,13 +131,13 @@ bool PassOnKeyUpHost::didReceiveKeyUp() const
   return m_receivedKeyUp;
 }
 
-PassOnHWReceived::PassOnHWReceived(int expectedId, float expectedValue)
-    : m_id{ expectedId }
-    , m_value{ expectedValue }
+PassOnHWReceived::PassOnHWReceived(HardwareSource expectedId, float expectedValue)
+    : m_id { expectedId }
+    , m_value { expectedValue }
 {
 }
 
-void PassOnHWReceived::onHWChanged(const uint32_t id, float value, bool)
+void PassOnHWReceived::onHWChanged(HardwareSource id, float value, bool)
 {
   CHECK(m_id == id);
   CHECK(m_value == value);
@@ -149,12 +149,12 @@ bool PassOnHWReceived::didReceiveHW() const
   return m_receivedHW;
 }
 
-void PassOnHWReceived::setExpectedHW(int hw)
+void PassOnHWReceived::setExpectedHW(HardwareSource hw)
 {
   m_id = hw;
 }
 
-void ConfigureableDSPHost::onHWChanged(uint32_t id, float value, bool behaviourChanged)
+void ConfigureableDSPHost::onHWChanged(HardwareSource id, float value, bool behaviourChanged)
 {
   if(m_onHWChanged)
     m_onHWChanged(id, value, behaviourChanged);
@@ -172,7 +172,7 @@ void ConfigureableDSPHost::onKeyUp(const int note, float velocity, DSPInterface:
     m_onKeyUp(note, velocity, from);
 }
 
-C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
+C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(HardwareSource id)
 {
   if(m_getBehaviour)
     return m_getBehaviour(id);
@@ -219,7 +219,7 @@ void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGro
     m_onKeyUpSplit(note, velocity, part, from);
 }
 
-void ConfigureableDSPHost::setOnHWChangedCB(std::function<void(uint32_t, float, bool)>&& cb)
+void ConfigureableDSPHost::setOnHWChangedCB(std::function<void(HardwareSource, float, bool)>&& cb)
 {
   m_onHWChanged = cb;
 }
@@ -234,7 +234,7 @@ void ConfigureableDSPHost::setOnKeyDownSplitCB(std::function<void(int, float, Vo
   m_onKeyDownSplit = cb;
 }
 
-void ConfigureableDSPHost::setGetBehaviourCB(std::function<C15::Properties::HW_Return_Behavior(int)>&& cb)
+void ConfigureableDSPHost::setGetBehaviourCB(std::function<C15::Properties::HW_Return_Behavior(HardwareSource)>&& cb)
 {
   m_getBehaviour = cb;
 }

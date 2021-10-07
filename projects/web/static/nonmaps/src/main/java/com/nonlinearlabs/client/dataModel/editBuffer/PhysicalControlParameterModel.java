@@ -17,7 +17,7 @@ public class PhysicalControlParameterModel extends BasicParameterModel {
 	public boolean isLocalEnabled()
 	{
 		SetupModel model = SetupModel.get();
-		boolean globalEnable = model.systemSettings.globalLocalEnable.getBool();
+		boolean globalEnable = model.systemSettings.local.getBool();
 		boolean hwEnabled = model.systemSettings.routingAspects.getValue().isLocalEnabled(this);
 		return hwEnabled && globalEnable;
 	}

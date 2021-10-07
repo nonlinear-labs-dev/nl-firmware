@@ -379,7 +379,7 @@ public class SetupModel {
 		public BooleanDataModelEntity autoStartRecorder = new BooleanDataModelEntity();
 
 		public RoutingAspectsDataModelEntity routingAspects = new RoutingAspectsDataModelEntity();
-		public BooleanDataModelEntity globalLocalEnable = new BooleanDataModelEntity();
+		public BooleanDataModelEntity local = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {
