@@ -35,14 +35,13 @@
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
     : m_presetManager { pm }
-    , m_settings{settings}
-    , m_playcontrollerProxy{playProxy}
+    , m_settings { settings }
+    , m_playcontrollerProxy { playProxy }
 {
   using namespace nltools::msg;
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
-  onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendNoteShift));
 
   receive<HardwareSourceChangedNotification>(
       EndPoint::Playground,
@@ -52,10 +51,8 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
         {
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
-
             PhysicalControlParameterUseCases useCase(p);
-            useCase.changeFromPlaycontroller(msg.position);
-
+            useCase.changeFromPlaycontroller(msg.position, msg.source);
             m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
           }
         }
@@ -76,8 +73,8 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground,
                                                         [=](const auto &msg)
                                                         {
-                                                            SettingsUseCases useCases(m_settings);
-                                                            useCases.setGlobalLocal(msg.m_state);
+                                                          SettingsUseCases useCases(m_settings);
+                                                          useCases.setGlobalLocal(msg.m_state);
                                                         });
 
   m_presetManager.onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
@@ -487,7 +484,7 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
                           PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
                           RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping,
-                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(&m_settings);
+                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings>(&m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
       [this](const Setting *s)
@@ -524,6 +521,7 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
         msg.highResCCEnabled = m_settings.getSetting<Enable14BitSupport>()->get();
 
         msg.routings = m_settings.getSetting<RoutingSettings>()->getRaw();
+        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
         msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
@@ -534,10 +532,4 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
 void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)
 {
   m_lastMIDIKnownProgramNumber = pc;
-}
-
-void AudioEngineProxy::sendNoteShift()
-{
-  auto setting = m_settings.getSetting<NoteShift>();
-  setting->syncExternals(SendReason::HeartBeatDropped);
 }

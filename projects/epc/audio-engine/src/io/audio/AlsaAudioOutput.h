@@ -21,11 +21,10 @@ class AlsaAudioOutput : public AudioOutput
 
   void start() override;
   void stop() override;
+  void open(const std::string &deviceName);
+  void close();
 
  private:
-  void open(const std::string &deviceName);
-
-  void close();
   void doBackgroundWork();
   void handleWriteError(snd_pcm_sframes_t result);
   void playback(SampleFrame *frames, size_t numFrames);

@@ -8,7 +8,6 @@
 #include "scale-converters/ScaleConverter.h"
 #include "proxies/playcontroller/MessageComposer.h"
 #include "http/UpdateDocumentMaster.h"
-#include "Application.h"
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 #include "proxies/audio-engine/AudioEngineProxy.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
@@ -290,8 +289,7 @@ tControlPositionValue Parameter::getNextStepValue(int incs, bool fine, bool shif
 
 const RecallParameter *Parameter::getOriginalParameter() const
 {
-  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  return eb->getRecallParameterSet().findParameterByID(getID());
+  return getParentEditBuffer()->getRecallParameterSet().findParameterByID(getID());
 }
 
 bool Parameter::isChangedFromLoaded() const
@@ -320,6 +318,11 @@ const ParameterGroup *Parameter::getParentGroup() const
 ParameterGroup *Parameter::getParentGroup()
 {
   return static_cast<ParameterGroup *>(getParent());
+}
+
+EditBuffer* Parameter::getParentEditBuffer() const
+{
+  return dynamic_cast<EditBuffer *>(getParentGroup()->getParent());
 }
 
 ParameterId Parameter::getID() const
@@ -611,7 +614,8 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 
 void Parameter::sendParameterMessage() const
 {
-  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<Parameter>(this);
+  if(auto eb = getParentEditBuffer())
+    eb->getAudioEngineProxy().createAndSendParameterMessage<Parameter>(this);
 }
 
 bool Parameter::isValueDifferentFrom(double d) const

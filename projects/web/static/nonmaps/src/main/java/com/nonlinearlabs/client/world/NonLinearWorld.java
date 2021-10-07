@@ -52,6 +52,8 @@ public class NonLinearWorld extends MapsLayout {
 	private double maxLevelOfDetail = 0;
 	private String numBufferUnderruns = "0";
 
+	private Throttler bufferUnderrunAlertThrottler = new Throttler(5000);
+
 	private TransitionDamper scrollAnimation = new TransitionDamper(0.9, new TransitionDamper.Client() {
 
 		@Override
@@ -90,17 +92,18 @@ public class NonLinearWorld extends MapsLayout {
 		});
 
 		DeviceInformationProvider.get().register(v -> {
-
 			if (SetupModel.get().localSettings.alertOnBufferUnderruns.isTrue()) {
 				if (numBufferUnderruns != v.bufferUnderruns) {
 					numBufferUnderruns = v.bufferUnderruns;
-					Window.alert("Buffer Underruns: " + numBufferUnderruns);
+
+					bufferUnderrunAlertThrottler.schedule(() -> {
+						Window.alert("Buffer Underruns: " + numBufferUnderruns);
+					});
 				}
 			}
 
 			return true;
 		});
-
 	}
 
 	public void init() {

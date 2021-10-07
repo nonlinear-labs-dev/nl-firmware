@@ -540,25 +540,41 @@ MidiChannelModeMessages MidiRuntimeOptions::createChannelModeMessageEnum(int cc,
   return MidiChannelModeMessages::NOOP;
 }
 
+bool MidiRuntimeOptions::isLocalEnabled(HardwareSource source)
+{
+  switch(source)
+  {
+    case HardwareSource::PEDAL1:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal1);
+    case HardwareSource::PEDAL2:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal2);
+    case HardwareSource::PEDAL3:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal3);
+    case HardwareSource::PEDAL4:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal4);
+    case HardwareSource::BENDER:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Bender);
+    case HardwareSource::AFTERTOUCH:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Aftertouch);
+    case HardwareSource::RIBBON1:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1);
+    case HardwareSource::RIBBON2:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2);
+    default:
+    case HardwareSource::NONE:
+      return false;
+  }
+  return false;
+}
+
 void MidiRuntimeOptions::setGlobalLocalEnabled(bool b)
 {
-  constexpr auto idx = static_cast<size_t>(tMidiSettingMessage::RoutingIndex::Notes);
-  constexpr auto aspect = static_cast<size_t>(tMidiSettingMessage::RoutingAspect::LOCAL);
-  m_routingMappings[idx][aspect] = b;
+  m_localEnable = b;
 }
 
 bool MidiRuntimeOptions::isGlobalLocalEnabled()
 {
   return m_localEnable;
-}
-
-MidiRuntimeOptions::tRoutingEntry MidiRuntimeOptions::getPackedNotesRoutings()
-{
-  constexpr auto local = static_cast<int>(tRoutingAspect::LOCAL);
-  const auto index = static_cast<int>(tRoutingIndex::Notes);
-  auto rawLocal = m_routingMappings[index][local];
-  return { shouldSendMIDINotesOnPrimary(), shouldReceiveMIDINotesOnPrimary(), shouldSendMIDINotesOnSplit(),
-           shouldReceiveMIDINotesOnSplit(), rawLocal };
 }
 
 const nltools::msg::Setting::MidiSettingsMessage& MidiRuntimeOptions::getLastReceivedMessage() const

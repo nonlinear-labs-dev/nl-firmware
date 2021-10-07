@@ -16,6 +16,8 @@ class PresetManager;
 class HWUI;
 class SplitPointParameter;
 class LoadedPresetLog;
+class Settings;
+class AudioEngineProxy;
 
 class EditBuffer : public ParameterGroupSet, public SyncedItem
 {
@@ -23,7 +25,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   typedef ParameterGroupSet super;
 
  public:
-  explicit EditBuffer(PresetManager *parent);
+  explicit EditBuffer(PresetManager *parent, Settings& settings, std::unique_ptr<AudioEngineProxy>& aeProxyContainer);
   ~EditBuffer() override;
 
   Glib::ustring getName() const;
@@ -63,8 +65,11 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   Uuid getUUIDOfLastLoadedPreset() const;
+
   PresetManager *getParent();
   const PresetManager *getParent() const;
+  AudioEngineProxy& getAudioEngineProxy() const;
+  Settings& getSettings() const;
 
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
@@ -247,6 +252,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   std::unique_ptr<LoadedPresetLog> m_loadedPresetLog;
   ScopedGuard m_parameterFocusLock;
+  Settings& m_settings;
+  std::unique_ptr<AudioEngineProxy>& m_audioEngineProxyContainer;
 
   friend class EditBufferUseCases;
   friend class BankUseCases;

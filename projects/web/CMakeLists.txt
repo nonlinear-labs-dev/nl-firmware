@@ -21,22 +21,23 @@ ADD_CUSTOM_COMMAND(
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Build for web"
-    OUTPUT .web-build
+    OUTPUT web.tar.gz
     DEPENDS ${ALL_FILES}
     DEPENDS .prepare-web-build
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/mc-view/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/nonmaps/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/online-help/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/recorder/bundle.tar.gz
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/out
     COMMAND ${CMAKE_BINARY_DIR}/build-tools/web/runInWebDocker.sh 
               ${CMAKE_CURRENT_BINARY_DIR}/build.sh 
               ${CMAKE_CURRENT_SOURCE_DIR}
               ${CMAKE_CURRENT_BINARY_DIR}
               "--network none" 
-    COMMAND touch .web-build
+    COMMAND tar cfz ${CMAKE_CURRENT_BINARY_DIR}/web.tar.gz ./*
 )
 
-ADD_CUSTOM_TARGET(web ALL DEPENDS .web-build)
+ADD_CUSTOM_TARGET(web ALL DEPENDS web.tar.gz)
 
 add_dependencies(web nl-build-container-setup nonmaps recorder mc-view online-help web-client)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/out/ USE_SOURCE_PERMISSIONS DESTINATION ${C15_INSTALL_PATH}/web)

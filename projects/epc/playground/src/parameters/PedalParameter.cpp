@@ -21,6 +21,10 @@
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <xml/Writer.h>
 #include <presets/EditBuffer.h>
+#include <device-settings/GlobalLocalEnableSetting.h>
+#include <device-settings/midi/RoutingSettings.h>
+#include <presets/EditBuffer.h>
+#include <parameter_declarations.h>
 
 void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -246,4 +250,41 @@ size_t PedalParameter::getHash() const
   size_t hash = super::getHash();
   hash_combine(hash, (int) m_mode);
   return hash;
+}
+
+bool PedalParameter::isLocalEnabled() const
+{
+  if(auto eb = getParentEditBuffer())
+  {
+    using tIndex = RoutingSettings::tRoutingIndex;
+    using tAspect = RoutingSettings::tAspectIndex;
+    auto &s = eb->getSettings();
+    const auto setting = s.getSetting<RoutingSettings>();
+    const auto globalState = s.getSetting<GlobalLocalEnableSetting>()->get();
+
+    tIndex index = tIndex::LENGTH;
+
+    switch(getID().getNumber())
+    {
+      case C15::PID::Pedal_1:
+        index = tIndex::Pedal1;
+        break;
+      case C15::PID::Pedal_2:
+        index = tIndex::Pedal2;
+        break;
+      case C15::PID::Pedal_3:
+        index = tIndex::Pedal3;
+        break;
+      case C15::PID::Pedal_4:
+        index = tIndex::Pedal4;
+        break;
+    }
+
+    if(index != tIndex::LENGTH)
+    {
+      auto state = setting->getState(index, tAspect::LOCAL);
+      return state && globalState;
+    }
+  }
+  return false;
 }

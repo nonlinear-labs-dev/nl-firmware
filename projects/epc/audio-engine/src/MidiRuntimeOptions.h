@@ -107,8 +107,6 @@ class MidiRuntimeOptions
   static bool isCCMappedToChannelModeMessage(int cc);
   static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);
 
-  //Mapping Setters
-  void setGlobalLocalEnabled(bool b);
   void setPedal1(PedalCC cc);
   void setPedal2(PedalCC cc);
   void setPedal3(PedalCC cc);
@@ -124,8 +122,10 @@ class MidiRuntimeOptions
   void set14BitSupportEnabled(bool e);
 
   bool isGlobalLocalEnabled();
-  tRoutingEntry getPackedNotesRoutings();
+  void setGlobalLocalEnabled(bool b);
+  bool isLocalEnabled(HardwareSource source);
 
+  //Mappings
   static std::optional<int> decodeEnumMSB(PedalCC);
   static std::optional<int> decodeEnumLSB(PedalCC);
   static std::optional<int> decodeEnumMSB(RibbonCC);

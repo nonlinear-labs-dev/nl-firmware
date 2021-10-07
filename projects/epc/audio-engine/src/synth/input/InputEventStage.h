@@ -34,6 +34,9 @@ class InputEventStage
   using tMSG = nltools::msg::Setting::MidiSettingsMessage;
   using tRow = tMSG::tEntry;
 
+  [[nodiscard]] float getHWSourcePositionIfLocalDisabled(HardwareSource hwid) const;
+  [[nodiscard]] HWChangeSource getHWSourcePositionSource(HardwareSource hwid) const;
+
   void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
 
   static HardwareSource parameterIDToHWID(int id);
@@ -57,7 +60,7 @@ class InputEventStage
   void onMIDIHWChanged(MIDIDecoder* decoder);
 
   //Algorithm
-  void onHWChanged(HardwareSource hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit,
+  void onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit,
                    bool didBehaviourChange);
 
   VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, int keyNumber);
@@ -106,9 +109,15 @@ class InputEventStage
   MidiRuntimeOptions* m_options;
   HWChangedNotification m_hwChangedCB;
   ChannelModeMessageCB m_channelModeMessageCB;
+
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions {};
+  constexpr static auto NUM_HW = 8;
+  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions {};
+
+  using tHWPosEntry = std::tuple<float, HWChangeSource>;
+  std::array<tHWPosEntry, NUM_HW> m_localDisabledPositions;
+
   bool m_notifyKeyBedActionStatus = false;
 
   enum class LatchMode

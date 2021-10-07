@@ -21,7 +21,7 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createNonLinuxReleasePackages.sh 
         ${DOCKERNAME} 
         ${CMAKE_CURRENT_BINARY_DIR}/../${ARCH_INSTALL_PACKAGES}
-        "${ALL_PACKAGES} ${UPDATE_PACKAGES}"
+        "${ALL_PACKAGES}"
         ${CMAKE_CURRENT_SOURCE_DIR}
         )
  

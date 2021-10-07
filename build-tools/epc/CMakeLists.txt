@@ -3,7 +3,7 @@ SET(DOCKERNAME nl-epc-build-environment)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 file(GLOB_RECURSE ALL_BUILD_TOOLS_FILES ${CMAKE_SOURCE_DIR}/build-tools/*)
-file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/epc/web-ui/target/*)
+file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/web/static/nonmaps/target/*)
 file(GLOB_RECURSE PlaycontrollerX_FILES ${CMAKE_SOURCE_DIR}/projects/playcontroller/firmware/.metadata/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET_FILES})
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${PlaycontrollerX_FILES})
@@ -90,6 +90,7 @@ add_custom_command(
     DEPENDS .nonlinux-local-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
     DEPENDS .filesystem-created
+    DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
         ${CMAKE_BINARY_DIR}
@@ -117,7 +118,6 @@ add_custom_command(
     DEPENDS epc2-create-update
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
     DEPENDS bbb-rootfs
-    DEPENDS bbb-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
@@ -143,11 +143,11 @@ add_custom_target(epc-ota-update
 IF(NOT ${TARGET_PLATFORM} STREQUAL "epc2")  
   IF(NOT ${TARGET_PLATFORM} STREQUAL "epc")
     add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
-    add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
     add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
     add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
 
     IF(BUILD_WEB)
+        add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
         add_dependencies(epc-create-update web)
     ENDIF()
   ENDIF()

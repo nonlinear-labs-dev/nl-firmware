@@ -225,6 +225,17 @@ namespace nltools
       }
 
       uint64_t numUnderruns = 0;
+      int32_t framesPerPeriod = 0;
+    };
+
+    struct SetFramesPerPeriod
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetFramesPerPeriod;
+      }
+
+      int32_t framesPerPeriod = 0;
     };
 
     namespace Setting
@@ -540,6 +551,7 @@ namespace nltools
 
       size_t hwSource = 0;  // 0...7
       double position = 0;  // -1...1
+      HWChangeSource source;
     };
 
     namespace detail
