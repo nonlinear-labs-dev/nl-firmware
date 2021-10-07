@@ -68,12 +68,7 @@ class DSPInterface
  public:
   //remove or move somewhere else
   //TCD and MIDI should not be known to DSP
-  enum class HWChangeSource
-  {
-    TCD,
-    MIDI,
-    UI
-  };
+
 
   enum class InputEventSource
   {
@@ -94,6 +89,8 @@ class DSPInterface
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
+  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
+  virtual void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
   virtual void onMidiSettingsReceived() = 0;
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
@@ -110,7 +107,7 @@ class DSPInterface
       case InputEventSource::External_Secondary:
         return 2;
     }
-    // should never be reached
+    nltools_assertOnDevPC(false);
     return 0;
   }
 };
@@ -142,7 +139,6 @@ class dsp_host_dual : public DSPInterface
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   C15::Properties::HW_Return_Behavior getBehaviour(int id) override;
-
   // event bindings: Preset Messages
   void onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
   void onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
@@ -176,6 +172,8 @@ class dsp_host_dual : public DSPInterface
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
+  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
@@ -273,9 +271,5 @@ class dsp_host_dual : public DSPInterface
                     const nltools::msg::ParameterGroups::MonoGroup& _mono);
   void debugLevels();
 
-  static inline MidiOut getNullMidiOut()
-  {
-    return [](const SimpleRawMidiMessage&) {};
-  }
   friend class DspHostDualTester;
 };

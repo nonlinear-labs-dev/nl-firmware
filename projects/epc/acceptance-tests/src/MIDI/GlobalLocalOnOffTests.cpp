@@ -5,7 +5,6 @@
 #include <mock/InputEventStageTester.h>
 #include <mock/MidiOptionsHelpers.h>
 #include <mock/TCDHelpers.h>
-#include <device-settings/midi/RoutingSettings.h>
 
 TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
 {
@@ -15,8 +14,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
   dsp.setType(SoundType::Split);
 
   MidiRuntimeOptions options {};
-  InputEventStage eS(
-      &dsp, &options, []() {}, [&](auto) {}, [](auto) {});
+  InputEventStage eS(&dsp, &options, [](){}, [](auto){}, [](auto){});
 
   WHEN("All Routings are On")
   {
@@ -86,7 +84,7 @@ TEST_CASE("Key Events Local enable disable")
 
   MidiRuntimeOptions options;
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
-  InputEventStage input { &host, &options, []() {}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto) {} };
+  InputEventStage input { &host, &options, [](){}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto){} };
 
   WHEN("All routings are on")
   {

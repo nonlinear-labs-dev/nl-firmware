@@ -16,7 +16,7 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   tSrcParameterPtr m_srcParameter;
 
  public:
-  ModulationRoutingParameter(ParameterGroup *group, ParameterId id, tSrcParameterPtr srcParam, tMCParameterPtr tgtParam,
+  ModulationRoutingParameter(ParameterGroup *group, const ParameterId& id, tSrcParameterPtr srcParam, tMCParameterPtr tgtParam,
                              const ScaleConverter *scaling);
   ~ModulationRoutingParameter() override;
 

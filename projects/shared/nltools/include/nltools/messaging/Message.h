@@ -551,6 +551,7 @@ namespace nltools
 
       size_t hwSource = 0;  // 0...7
       double position = 0;  // -1...1
+      HWChangeSource source;
     };
 
     namespace detail

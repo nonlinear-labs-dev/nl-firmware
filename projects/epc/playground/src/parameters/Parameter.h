@@ -10,6 +10,7 @@
 #include <sync/SyncedItem.h>
 
 class Layout;
+class EditBuffer;
 class Writer;
 class ParameterGroup;
 class MessageComposer;
@@ -60,6 +61,7 @@ class Parameter : public UpdateDocumentContributor,
 
   const ParameterGroup *getParentGroup() const;
   ParameterGroup *getParentGroup();
+  EditBuffer* getParentEditBuffer() const;
   ParameterId getID() const;
 
   bool isBiPolar() const;

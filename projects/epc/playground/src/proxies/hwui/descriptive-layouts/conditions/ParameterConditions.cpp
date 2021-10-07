@@ -38,11 +38,6 @@ bool ParameterConditions::IsParameterModulateable::check() const
   return conditiondetail::getModulateableParameter() != nullptr;
 }
 
-bool ParameterConditions::IsParameterUnmodulateable::check() const
-{
-  return !IsParameterModulateable::check();
-}
-
 bool ParameterConditions::HasNoMcSelected::check() const
 {
   if(auto parameter = conditiondetail::getModulateableParameter())
@@ -50,11 +45,6 @@ bool ParameterConditions::HasNoMcSelected::check() const
     return parameter->getModulationSource() == MacroControls::NONE;
   }
   return true;
-}
-
-bool ParameterConditions::HasMcSelected::check() const
-{
-  return !HasNoMcSelected::check();
 }
 
 ParameterConditions::ParameterCondition::ParameterCondition()

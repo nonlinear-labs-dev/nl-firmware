@@ -37,6 +37,14 @@ VoiceGroup MockDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
   return VoiceGroup::I;
 }
 
+void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+}
+
+void MockDSPHost::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+}
+
 void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
 }
@@ -51,9 +59,9 @@ void MockDSPHost::setType(SoundType type)
 }
 
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
@@ -88,9 +96,9 @@ VoiceGroup PassOnKeyDownHost::getSplitPartForKeyUp(int key, InputEventSource fro
 }
 
 PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
@@ -124,8 +132,8 @@ bool PassOnKeyUpHost::didReceiveKeyUp() const
 }
 
 PassOnHWReceived::PassOnHWReceived(int expectedId, float expectedValue)
-    : m_id { expectedId }
-    , m_value { expectedValue }
+    : m_id{ expectedId }
+    , m_value{ expectedValue }
 {
 }
 
@@ -173,6 +181,11 @@ C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
 
 VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
 {
+  if(m_hardcodedSplitKey.has_value())
+  {
+    return key > m_hardcodedSplitKey.value() ? VoiceGroup::II : VoiceGroup::I;
+  }
+
   if(m_getSplitPartForKey)
     return m_getSplitPartForKey(key);
 
@@ -181,6 +194,11 @@ VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
 
 VoiceGroup ConfigureableDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
 {
+  if(m_hardcodedSplitKey.has_value())
+  {
+    return key > m_hardcodedSplitKey.value() ? VoiceGroup::II : VoiceGroup::I;
+  }
+
   // not sure here...
   if(m_getSplitPartForKey)
     return m_getSplitPartForKey(key);
@@ -234,4 +252,9 @@ void ConfigureableDSPHost::setOnKeyDownCB(std::function<void(int, float, InputEv
 void ConfigureableDSPHost::setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb)
 {
   m_onKeyUpSplit = cb;
+}
+
+void ConfigureableDSPHost::setSplitPointKey(int i)
+{
+  m_hardcodedSplitKey = i;
 }

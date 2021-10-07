@@ -40,7 +40,9 @@ public class EditBufferUseCases {
 
 		if (p instanceof PhysicalControlParameterModel) {
 			PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
-			applyPhysicalControlModulation(m, diff);
+			if(m.isLocalEnabled()) {
+				applyPhysicalControlModulation(m, diff);
+			}
 
 			if (m.isReturning()) {
 				if (setAnimationTimeout)
@@ -122,8 +124,8 @@ public class EditBufferUseCases {
 
 				if (physicalControlID.getNumber() == ribbon1 || physicalControlID.getNumber() == ribbon2) {
 					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
-
-					if (!ribbon.isReturning()) {
+					
+					if (!ribbon.isReturning() && ribbon.isLocalEnabled()) {
 						ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
 					}
 				}
