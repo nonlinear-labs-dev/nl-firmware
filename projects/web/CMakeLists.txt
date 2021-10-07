@@ -21,19 +21,26 @@ ADD_CUSTOM_COMMAND(
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Build for web"
-    OUTPUT web.tar.gz
+    OUTPUT .do-web-build
     DEPENDS ${ALL_FILES}
     DEPENDS .prepare-web-build
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/mc-view/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/nonmaps/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/online-help/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/recorder/bundle.tar.gz
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/out
     COMMAND ${CMAKE_BINARY_DIR}/build-tools/web/runInWebDocker.sh 
               ${CMAKE_CURRENT_BINARY_DIR}/build.sh 
               ${CMAKE_CURRENT_SOURCE_DIR}
               ${CMAKE_CURRENT_BINARY_DIR}
               "--network none" 
+    COMMAND touch .do-web-build
+)
+
+ADD_CUSTOM_COMMAND(
+    COMMENT "Package web build"
+    OUTPUT web.tar.gz
+    DEPENDS .do-web-build
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/out
     COMMAND tar cfz ${CMAKE_CURRENT_BINARY_DIR}/web.tar.gz ./*
 )
 
