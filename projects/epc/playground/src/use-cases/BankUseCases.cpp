@@ -244,13 +244,23 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
 Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
 {
   auto pm = m_bank->getPresetManager();
+  auto eb = pm->getEditBuffer();
   auto scope = pm->getUndoScope().startTransaction("Insert Editbuffer into Bank '%0'", m_bank->getName(true));
-  return m_bank->insertPreset(scope->getTransaction(), anchor, std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));
+  auto transaction = scope->getTransaction();
+  auto preset = m_bank->insertPreset(transaction, anchor, std::make_unique<Preset>(m_bank, *eb));
+  eb->undoableSetLoadedPresetInfo(transaction, preset);
+  m_bank->selectPreset(transaction, preset->getUuid());
+  return preset;
 }
 
 Preset* BankUseCases::appendEditBuffer()
 {
   auto pm = m_bank->getPresetManager();
+  auto eb = pm->getEditBuffer();
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
-  return m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *pm->getEditBuffer()));
+  auto transaction = scope->getTransaction();
+  auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *eb));
+  eb->undoableSetLoadedPresetInfo(transaction, preset);
+  m_bank->selectPreset(transaction, preset->getUuid());
+  return preset;
 }

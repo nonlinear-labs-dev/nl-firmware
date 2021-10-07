@@ -683,3 +683,8 @@ bool Bank::isMidiSelectedBank() const
 {
   return getPresetManager()->getMidiSelectedBank() == getUuid();
 }
+
+bool Bank::hasPresets() const
+{
+  return !m_presets.empty();
+}

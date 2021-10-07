@@ -51,7 +51,7 @@ Preset *MockPresetStorage::createSinglePreset()
   BankUseCases bankU(m_bank);
   auto preset = bankU.appendEditBuffer();
 
-  PresetUseCases presetU(preset);
+  PresetUseCases presetU(preset, *TestHelper::getSettings());
   presetU.rename("Single Preset");
 
   return preset;
@@ -67,7 +67,7 @@ Preset *MockPresetStorage::createSplitPreset()
   BankUseCases bankU(m_bank);
   auto preset = bankU.appendEditBuffer();
 
-  PresetUseCases presetU(preset);
+  PresetUseCases presetU(preset, *TestHelper::getSettings());
   presetU.rename("Split Preset");
 
   return preset;
@@ -82,7 +82,7 @@ Preset *MockPresetStorage::createLayerPreset()
   BankUseCases bankU(m_bank);
   auto preset = bankU.appendEditBuffer();
 
-  PresetUseCases presetU(preset);
+  PresetUseCases presetU(preset, *TestHelper::getSettings());
   presetU.rename("Layer Preset");
 
   return preset;
@@ -117,7 +117,7 @@ DualPresetBank::DualPresetBank()
   for(int i = 0; i < 5; i++)
   {
     auto preset = bankUseCases.appendEditBuffer();
-    PresetUseCases pUseCase(preset);
+    PresetUseCases pUseCase(preset, *TestHelper::getSettings());
     pUseCase.rename("Layer Preset");
     nltools_assertOnDevPC(preset->getType() == SoundType::Layer);
   }

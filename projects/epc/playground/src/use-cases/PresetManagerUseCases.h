@@ -35,19 +35,16 @@ class PresetManagerUseCases
   //Preset
   //Store Actions
   void overwritePresetWithEditBuffer(const Uuid& uuid);
-  void overwritePresetWithEditBuffer(Preset* preset);
   void overwritePresetWithPreset(Preset* target, Preset* source);
   void insertEditBufferAsPresetWithUUID(Bank* bank, size_t pos, const std::string& uuid);
-  void insertEditBufferAsPresetAtPosition(Bank* bank, size_t pos);
-  void appendEditBufferToBank(Bank* bank);
   void appendPreset(Bank* bank, Preset* preset);
   void appendEditBufferAsPresetWithUUID(Bank* bank, const std::string& uuid);
   Bank* createBankAndStoreEditBuffer();
   void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
   void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
-  void newBank(const Glib::ustring& x, const Glib::ustring& y, const std::optional<Glib::ustring>& name);
-  void newBank(const Glib::ustring& x, const Glib::ustring& y);
+  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y, const std::optional<Glib::ustring>& name);
+  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y);
 
   void selectPreset(const Uuid& uuid);
   void selectPreset(const Preset* preset);
@@ -151,7 +148,4 @@ class PresetManagerUseCases
 
   PresetManager& m_presetManager;
   Settings& m_settings;
-
-  void onStore(UNDO::Transaction* transaction, Preset* preset);
-  void updateSyncSettingOnPresetStore(UNDO::Transaction* transaction) const;
 };

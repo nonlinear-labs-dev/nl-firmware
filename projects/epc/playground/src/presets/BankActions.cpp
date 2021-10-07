@@ -55,7 +55,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto p = m_presetManager.findPreset(Uuid { uuid }))
     {
-      PresetUseCases useCase(p);
+      PresetUseCases useCase(p, m_settings);
       useCase.rename(newName);
     }
   });
@@ -94,13 +94,15 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(targetPreset)
     {
+      PresetUseCases targetUseCases(targetPreset, m_settings);
       if(sourcePreset)
       {
+        targetUseCases.overwriteWithPreset(sourcePreset);
         useCases.overwritePresetWithPreset(targetPreset, sourcePreset);
       }
       else
       {
-        useCases.overwritePresetWithEditBuffer(targetPreset);
+        targetUseCases.overwriteWithEditBuffer(*m_presetManager.getEditBuffer());
       }
     }
     else
@@ -187,8 +189,9 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto bank = m_presetManager.findBankWithPreset(Uuid { selUuid }))
     {
+      BankUseCases bankUseCases(bank);
       auto desiredPresetPos = bank->getPresetPosition(Uuid { selUuid }) + 1;
-      useCases.insertEditBufferAsPresetAtPosition(bank, desiredPresetPos);
+      bankUseCases.insertEditBufferAtPosition(desiredPresetPos);
     }
   });
 
@@ -323,7 +326,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto preset = m_presetManager.findPreset(Uuid { presetUUID }))
     {
-      PresetUseCases useCase(preset);
+      PresetUseCases useCase(preset, m_settings);
       useCase.setAttribute(key, value);
     }
   });
