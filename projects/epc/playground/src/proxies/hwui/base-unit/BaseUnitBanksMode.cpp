@@ -10,6 +10,9 @@ void BaseUnitBanksMode::setup()
   super::setup();
 
   setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
+    if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
+      return true;
+
     if(state)
       installButtonRepeat([] {
         PresetManagerUseCases useCase(*Application::get().getPresetManager(), *Application::get().getSettings());
@@ -22,6 +25,9 @@ void BaseUnitBanksMode::setup()
   });
 
   setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
+    if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_PLUS, state))
+      return true;
+
     if(state)
       installButtonRepeat([] {
         PresetManagerUseCases useCase(*Application::get().getPresetManager(), *Application::get().getSettings());
