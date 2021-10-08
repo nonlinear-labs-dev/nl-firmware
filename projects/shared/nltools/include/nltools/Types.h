@@ -44,6 +44,8 @@ ENUM(AftertouchCurves, int8_t, AFTERTOUCH_CURVE_SOFT = 0, AFTERTOUCH_CURVE_NORMA
 ENUM(VelocityCurves, int8_t, VELOCITY_CURVE_VERY_SOFT = 0, VELOCITY_CURVE_SOFT = 1, VELOCITY_CURVE_NORMAL = 2,
      VELOCITY_CURVE_HARD = 3, VELOCITY_CURVE_VERY_HARD = 4)
 
+ENUM(HWChangeSource, int8_t, TCD, MIDI, UI)
+
 template <typename T> inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type differs(T a, T b)
 {
   return std::abs(a - b) > std::numeric_limits<T>::epsilon();

@@ -2332,18 +2332,27 @@ void dsp_host_dual::debugLevels()
           ->m_scaled);
 }
 
-void dsp_host_dual::onHWChanged(const uint32_t id, float value, bool didBehaviourChange)
+void dsp_host_dual::onHWChanged(HardwareSource id, float value, bool didBehaviourChange)
 {
-  auto source = m_params.get_hw_src(id);
-  const float inc = value - source->m_position;
-  source->m_position = value;
-  if(!didBehaviourChange)
-    hwModChain(source, id, inc);
+  if(id != HardwareSource::NONE)
+  {
+    auto idx = static_cast<int>(id);
+    auto source = m_params.get_hw_src(idx);
+    const float inc = value - source->m_position;
+    source->m_position = value;
+    if(!didBehaviourChange)
+      hwModChain(source, idx, inc);
+  }
 }
 
-C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(int id)
+C15::Properties::HW_Return_Behavior dsp_host_dual::getBehaviour(HardwareSource id)
 {
-  return m_params.get_hw_src(id)->m_behavior;
+  if(id != HardwareSource::NONE)
+  {
+    auto idx = static_cast<int>(id);
+    return m_params.get_hw_src(idx)->m_behavior;
+  }
+  return C15::Properties::HW_Return_Behavior::Stay;
 }
 
 SoundType dsp_host_dual::getType()
@@ -2358,6 +2367,7 @@ SoundType dsp_host_dual::getType()
     case LayerMode::Layer:
       return SoundType::Layer;
   }
+  nltools_detailedAssertAlways(true, __PRETTY_FUNCTION__);
   return SoundType::Invalid;  // should never be reached
 }
 
@@ -2369,6 +2379,48 @@ VoiceGroup dsp_host_dual::getSplitPartForKeyDown(int key)
 VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
 {
   return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from)));
+}
+
+void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+  // register key assignment despite local off (similar to splitKeyDown, but not quite)
+  const uint32_t inputSourceId = getInputSourceId(from);
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:  // applies to Part I only
+        m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:  // applies to Part II only
+        m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:  // applies to both Parts I, II at once
+        m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
+        break;
+    }
+  }
+}
+
+void dsp_host_dual::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+  // unregister key assignment despite local off (similar to splitKeyUp, but not quite)
+  const uint32_t inputSourceId = getInputSourceId(from);
+  if(m_layer_mode == LayerMode::Split)
+  {
+    switch(part)
+    {
+      case VoiceGroup::I:  // applies to Part I only
+        m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_I);
+        break;
+      case VoiceGroup::II:  // applies to Part II only
+        m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_II);
+        break;
+      case VoiceGroup::Global:  // applies to both Parts I, II at once
+        m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
+        break;
+    }
+  }
 }
 
 void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)
@@ -2455,23 +2507,7 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
 
 void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
-  // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
-  // Secondary can exist, so the SourceId can be 0 (TCD), 1 (Primary) or 2 (Secondary) -- Both translates to Primary
-  uint32_t inputSourceId = 0;
-  switch(from)
-  {
-    case InputEventSource::Internal:
-      break;
-    case InputEventSource::External_Use_Split:
-    case InputEventSource::External_Primary:
-    case InputEventSource::External_Both:
-      inputSourceId = 1;
-      break;
-    case InputEventSource::External_Secondary:
-      inputSourceId = 2;
-      break;
-  }
-
+  const uint32_t inputSourceId = getInputSourceId(from);
   bool valid = false;
   if(m_layer_mode == LayerMode::Split)
   {
@@ -2516,4 +2552,15 @@ bool dsp_host_dual::updateBehaviour(C15::ParameterDescriptor& element, ReturnMod
 {
   auto param = m_params.get_hw_src(element.m_param.m_index);
   return param->update_behavior(getBehavior(mode));
+}
+
+float dsp_host_dual::getReturnValueFor(HardwareSource hwid)
+{
+  return 0;
+}
+
+void dsp_host_dual::resetReturningHWSource(HardwareSource hwui)
+{
+  //TODO implement reset!!
+  DSPInterface::resetReturningHWSource(hwui);
 }

@@ -2,7 +2,7 @@
 
 #include "playground.h"
 #include "Ribbon.h"
-
+#include <nltools/messaging/Message.h>
 #include <sigc++/trackable.h>
 
 class Application;

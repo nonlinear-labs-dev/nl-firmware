@@ -67,8 +67,8 @@ build_binaries() {
     DESTDIR=/overlay-fs cmake -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release ${BUILD_SWITCHES} -S /source -B /build
     make -j8 -C /build
     DESTDIR=/overlay-fs make -C /build install 
-    
-    cp -r /web /overlay-fs/usr/local/C15/
+    mkdir -p /overlay-fs/usr/local/C15/web
+    tar -xzf /web/web.tar.gz -C /overlay-fs/usr/local/C15/web
 }
 
 create_update() {

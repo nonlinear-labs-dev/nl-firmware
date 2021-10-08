@@ -12,7 +12,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
-    , m_queuedChannelModeMessages(128)  // @hhoegelow how would I estimate the needed size for this member??
+    , m_queuedChannelModeMessages(128)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
     , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncExternalsWaiter.notify_all(); },
                           [this](auto msg) { queueExternalMidiOut(msg); },
@@ -50,16 +50,17 @@ C15Synth::C15Synth(AudioEngineOptions* options)
   receive<Keyboard::NoteUp>(EndPoint::AudioEngine,
                             [this](const Keyboard::NoteUp& noteUp)
                             {
-                              m_inputEventStage.onMIDIMessage({ 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 });
+                              m_inputEventStage.onMIDIMessage({ { 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 } });
                               m_syncExternalsWaiter.notify_all();
                             });
 
-  receive<Keyboard::NoteDown>(EndPoint::AudioEngine,
-                              [this](const Keyboard::NoteDown& noteDown)
-                              {
-                                m_inputEventStage.onMIDIMessage({ 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 });
-                                m_syncExternalsWaiter.notify_all();
-                              });
+  receive<Keyboard::NoteDown>(
+      EndPoint::AudioEngine,
+      [this](const Keyboard::NoteDown& noteDown)
+      {
+        m_inputEventStage.onMIDIMessage({ { 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 } });
+        m_syncExternalsWaiter.notify_all();
+      });
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(
@@ -217,11 +218,19 @@ void C15Synth::doSyncPlayground()
   }
 
   auto engineHWSourceValues = m_dsp->getHWSourceValues();
-  for(size_t i = 0; i < std::tuple_size_v<dsp_host_dual::HWSourceValues>; i++)
+
+  for(auto hw : sHardwareSources)
   {
-    if(std::exchange(m_playgroundHwSourceKnownValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
+    const auto idx = static_cast<unsigned int>(hw);
+    const auto isLocalEnabled = m_midiOptions.isLocalEnabled(hw);
+    auto currentValue
+        = isLocalEnabled ? engineHWSourceValues[idx] : m_inputEventStage.getHWSourcePositionIfLocalDisabled(hw);
+    auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
+
+    if(std::exchange(m_playgroundHwSourceKnownValues[idx], currentValue) != currentValue)
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
+      send(EndPoint::Playground,
+           HardwareSourceChangedNotification { idx, static_cast<double>(currentValue), valueSource });
     }
   }
 }
@@ -403,10 +412,10 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   auto element = m_dsp->getParameter(msg.parameterId);
   auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
 
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HWID::INVALID)
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
-    m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
+    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
 }
@@ -440,6 +449,7 @@ void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 
 void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, "Shift:", msg.m_shift);
   m_inputEventStage.setNoteShift(msg.m_shift);
 }
 
@@ -465,23 +475,28 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
-  const auto oldPrimSendState = m_midiOptions.shouldSendMIDINotesOnPrimary();
-  const auto oldSecSendState = m_midiOptions.shouldSendMIDINotesOnSplit();
-  const auto oldPrimChannel = m_midiOptions.getMIDIPrimarySendChannel();
-  const auto oldSplitChannel = m_midiOptions.getMIDISplitSendChannel();
-  const auto newPrimChannel = msg.sendChannel;
-  const auto newSplitChannel = msg.sendSplitChannel;
-  const auto didPrimChange = oldPrimChannel != newPrimChannel;
-  const auto didSplitChange = oldSplitChannel != newSplitChannel;
-
+  auto oldMsg = m_midiOptions.getLastReceivedMessage();
   m_midiOptions.update(msg);
-
-  m_inputEventStage.handlePressedNotesOnMidiSettingsChanged(msg, oldPrimSendState, oldSecSendState, didPrimChange,
-                                                            didSplitChange, oldPrimChannel, oldSplitChannel);
-  m_dsp->onMidiSettingsReceived();
+  m_inputEventStage.onMidiSettingsMessageWasReceived(msg, oldMsg);
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)
 {
+  auto sendNotesOffOnChannel = [&](auto channel)
+  {
+    constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+    constexpr uint8_t CCModeChange = 0b10110000;
+    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
+
+    if(iChannel != -1)
+    {
+      queueExternalMidiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
+    }
+  };
+
   resetDSP();
+
+  sendNotesOffOnChannel(m_midiOptions.getMIDIPrimarySendChannel());
+  if(m_dsp->getType() == SoundType::Split)
+    sendNotesOffOnChannel(m_midiOptions.getMIDISplitSendChannel());
 }

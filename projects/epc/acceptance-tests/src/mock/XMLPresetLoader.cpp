@@ -1,4 +1,5 @@
 #include "XMLPresetLoader.h"
+#include "MockSettingsObject.h"
 #include <AudioEngineOptions.h>
 #include <http/UpdateDocumentMaster.h>
 #include <libundo/undo/Scope.h>
@@ -31,8 +32,10 @@ void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir,
   auto transaction = transactionScope->getTransaction();
 
   Options opt;
-  PresetManager pm(&SyncMasterMockRoot::get(), true, opt);
-  EditBuffer editBuffer(&pm);
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
+  std::unique_ptr<AudioEngineProxy> proxy;
+  PresetManager pm(&SyncMasterMockRoot::get(), true, opt, settings, proxy);
+  auto& editBuffer = *pm.getEditBuffer();
   Preset preset(&pm);
   preset.setUuid(transaction, Uuid { uuid });
   preset.load(transaction, file);
@@ -70,7 +73,8 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
   auto file = Gio::File::create_for_path(presetData);
 
   Options opt;
-  PresetManager pm(&SyncMasterMockRoot::get(), true, opt);
+  std::unique_ptr<AudioEngineProxy> proxy;
+  PresetManager pm(&SyncMasterMockRoot::get(), true, opt, settings, proxy);
   PresetManagerUseCases useCase(pm, settings);
 
   useCase.importBankFromPath(std::filesystem::directory_entry { presetData }, Serializer::Progress{});

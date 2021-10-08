@@ -32,11 +32,12 @@
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
-PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options)
+PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options,
+                             Settings &settings, std::unique_ptr<AudioEngineProxy> &aeProxyContainer)
     : UpdateDocumentContributor(parent)
     , SyncedItem(parent->getRoot()->getSyncMaster(), "/preset-manager")
     , m_banks(*this, nullptr)
-    , m_editBuffer(std::make_unique<EditBuffer>(this))
+    , m_editBuffer(std::make_unique<EditBuffer>(this, settings, aeProxyContainer))
     , m_initSound(std::make_unique<Preset>(this))
     , m_saveJob([this] { doSaveTask(); })
     , m_readOnly(readOnly)

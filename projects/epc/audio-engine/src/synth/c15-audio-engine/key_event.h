@@ -11,6 +11,8 @@
 *******************************************************************************/
 
 #include <stdint.h>
+#include <nltools/Assert.h>
+#include <nltools/logging/Log.h>
 
 struct PolyKeyEvent
 {
@@ -98,6 +100,7 @@ template <uint32_t Voices, uint32_t PivotKey> class PolyKeyPacket
   uint32_t m_index = 0, m_length = 0, m_propagation_from = 0;
 };
 
+//36, 96
 template <uint32_t From, uint32_t To> class ShifteableKeys
 {
   static constexpr uint32_t Keys = 1 + To - From;
@@ -106,6 +109,7 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
   // note: this could be the right place for key remapping as well (if we decide to implement it)
 
  public:
+  //63
   int32_t keyDown(const uint32_t _keyPos)
   {
     if((_keyPos >= From) && (_keyPos <= To))
@@ -116,9 +120,10 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
     }
     else
     {
-      return _keyPos;
+      return static_cast<int32_t>(_keyPos);
     }
   }
+
   int32_t keyUp(const uint32_t _keyPos)
   {
     if((_keyPos >= From) && (_keyPos <= To))
@@ -128,10 +133,16 @@ template <uint32_t From, uint32_t To> class ShifteableKeys
     }
     else
     {
-      return _keyPos;
+      return static_cast<int32_t>(_keyPos);
     }
   }
-  void setNoteShift(const int32_t& _shift)
+
+  [[nodiscard]] int getNoteShift() const
+  {
+    return m_shift;
+  }
+
+  void setNoteShift(int32_t _shift)
   {
     m_shift = _shift;
   }

@@ -1,7 +1,7 @@
 #include "MockDSPHosts.h"
 #include <catch.hpp>
 
-void MockDSPHost::onHWChanged(const uint32_t id, float value, bool)
+void MockDSPHost::onHWChanged(HardwareSource id, float value, bool)
 {
 }
 
@@ -17,7 +17,7 @@ void MockDSPHost::onMidiSettingsReceived()
 {
 }
 
-C15::Properties::HW_Return_Behavior MockDSPHost::getBehaviour(int id)
+C15::Properties::HW_Return_Behavior MockDSPHost::getBehaviour(HardwareSource id)
 {
   return C15::Properties::HW_Return_Behavior::Zero;
 }
@@ -37,6 +37,14 @@ VoiceGroup MockDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
   return VoiceGroup::I;
 }
 
+void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+}
+
+void MockDSPHost::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+{
+}
+
 void MockDSPHost::onKeyDownSplit(const int note, float velocity, VoiceGroup part, DSPInterface::InputEventSource from)
 {
 }
@@ -51,9 +59,9 @@ void MockDSPHost::setType(SoundType type)
 }
 
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
@@ -88,9 +96,9 @@ VoiceGroup PassOnKeyDownHost::getSplitPartForKeyUp(int key, InputEventSource fro
 }
 
 PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note { expectedNote }
-    , m_vel { expectedVelo }
-    , m_part { expectedPart }
+    : m_note{ expectedNote }
+    , m_vel{ expectedVelo }
+    , m_part{ expectedPart }
 {
 }
 
@@ -123,13 +131,13 @@ bool PassOnKeyUpHost::didReceiveKeyUp() const
   return m_receivedKeyUp;
 }
 
-PassOnHWReceived::PassOnHWReceived(int expectedId, float expectedValue)
+PassOnHWReceived::PassOnHWReceived(HardwareSource expectedId, float expectedValue)
     : m_id { expectedId }
     , m_value { expectedValue }
 {
 }
 
-void PassOnHWReceived::onHWChanged(const uint32_t id, float value, bool)
+void PassOnHWReceived::onHWChanged(HardwareSource id, float value, bool)
 {
   CHECK(m_id == id);
   CHECK(m_value == value);
@@ -141,12 +149,12 @@ bool PassOnHWReceived::didReceiveHW() const
   return m_receivedHW;
 }
 
-void PassOnHWReceived::setExpectedHW(int hw)
+void PassOnHWReceived::setExpectedHW(HardwareSource hw)
 {
   m_id = hw;
 }
 
-void ConfigureableDSPHost::onHWChanged(uint32_t id, float value, bool behaviourChanged)
+void ConfigureableDSPHost::onHWChanged(HardwareSource id, float value, bool behaviourChanged)
 {
   if(m_onHWChanged)
     m_onHWChanged(id, value, behaviourChanged);
@@ -164,7 +172,7 @@ void ConfigureableDSPHost::onKeyUp(const int note, float velocity, DSPInterface:
     m_onKeyUp(note, velocity, from);
 }
 
-C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
+C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(HardwareSource id)
 {
   if(m_getBehaviour)
     return m_getBehaviour(id);
@@ -173,6 +181,11 @@ C15::Properties::HW_Return_Behavior ConfigureableDSPHost::getBehaviour(int id)
 
 VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
 {
+  if(m_hardcodedSplitKey.has_value())
+  {
+    return key > m_hardcodedSplitKey.value() ? VoiceGroup::II : VoiceGroup::I;
+  }
+
   if(m_getSplitPartForKey)
     return m_getSplitPartForKey(key);
 
@@ -181,6 +194,11 @@ VoiceGroup ConfigureableDSPHost::getSplitPartForKeyDown(int key)
 
 VoiceGroup ConfigureableDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
 {
+  if(m_hardcodedSplitKey.has_value())
+  {
+    return key > m_hardcodedSplitKey.value() ? VoiceGroup::II : VoiceGroup::I;
+  }
+
   // not sure here...
   if(m_getSplitPartForKey)
     return m_getSplitPartForKey(key);
@@ -201,7 +219,7 @@ void ConfigureableDSPHost::onKeyUpSplit(const int note, float velocity, VoiceGro
     m_onKeyUpSplit(note, velocity, part, from);
 }
 
-void ConfigureableDSPHost::setOnHWChangedCB(std::function<void(uint32_t, float, bool)>&& cb)
+void ConfigureableDSPHost::setOnHWChangedCB(std::function<void(HardwareSource, float, bool)>&& cb)
 {
   m_onHWChanged = cb;
 }
@@ -216,7 +234,7 @@ void ConfigureableDSPHost::setOnKeyDownSplitCB(std::function<void(int, float, Vo
   m_onKeyDownSplit = cb;
 }
 
-void ConfigureableDSPHost::setGetBehaviourCB(std::function<C15::Properties::HW_Return_Behavior(int)>&& cb)
+void ConfigureableDSPHost::setGetBehaviourCB(std::function<C15::Properties::HW_Return_Behavior(HardwareSource)>&& cb)
 {
   m_getBehaviour = cb;
 }
@@ -234,4 +252,9 @@ void ConfigureableDSPHost::setOnKeyDownCB(std::function<void(int, float, InputEv
 void ConfigureableDSPHost::setOnKeyUpSplitCB(std::function<void(int, float, VoiceGroup, InputEventSource)>&& cb)
 {
   m_onKeyUpSplit = cb;
+}
+
+void ConfigureableDSPHost::setSplitPointKey(int i)
+{
+  m_hardcodedSplitKey = i;
 }

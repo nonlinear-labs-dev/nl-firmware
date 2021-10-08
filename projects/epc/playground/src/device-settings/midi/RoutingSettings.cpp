@@ -1,5 +1,6 @@
 #include "RoutingSettings.h"
 #include <tools/StringTools.h>
+#include <playcontroller/playcontroller-defs.h>
 
 RoutingSettings::RoutingSettings(Settings& s)
     : Setting(s)
@@ -93,6 +94,41 @@ void RoutingSettings::setAllValues(bool value)
 
   if(anyChanged)
     notify();
+}
+
+bool RoutingSettings::getState(int hwId, RoutingSettings::tAspectIndex aspect) const
+{
+  tRoutingIndex idx = tRoutingIndex::LENGTH;
+  switch(hwId)
+  {
+      case HW_SOURCE_ID_PEDAL_1:
+        idx = tRoutingIndex::Pedal1;
+        break;
+      case HW_SOURCE_ID_PEDAL_2:
+        idx = tRoutingIndex::Pedal2;
+        break;
+      case HW_SOURCE_ID_PEDAL_3:
+        idx = tRoutingIndex::Pedal3;
+        break;
+      case HW_SOURCE_ID_PEDAL_4:
+        idx = tRoutingIndex::Pedal4;
+        break;
+      case HW_SOURCE_ID_PITCHBEND:
+        idx = tRoutingIndex::Bender;
+        break;
+      case HW_SOURCE_ID_AFTERTOUCH:
+        idx = tRoutingIndex::Aftertouch;
+        break;
+      case HW_SOURCE_ID_RIBBON_1:
+        idx = tRoutingIndex::Ribbon1;
+        break;
+      case HW_SOURCE_ID_RIBBON_2:
+        idx = tRoutingIndex::Ribbon2;
+        break;
+      default:
+        break;
+  }
+  return getState(idx, aspect);
 }
 
 void RoutingSettings::setAllAspectsForIndex(RoutingSettings::tRoutingIndex hwIdx, bool state)

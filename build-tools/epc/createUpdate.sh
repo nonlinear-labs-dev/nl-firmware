@@ -132,8 +132,8 @@ setup_install_overlay() {
 install_update() {
 	cp /workdir/update-packages/* /internal/epc-update-partition/update-packages
 	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install"
-  mkdir -p /internal/epc-update-partition/usr/local/C15/web
-  cp -r /bindir/projects/web/out/* /internal/epc-update-partition/usr/local/C15/web
+    mkdir -p /internal/epc-update-partition/usr/local/C15/web
+    tar -xzf /bindir/projects/web/web.tar.gz -C /internal/epc-update-partition/usr/local/C15/web
 	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
 		cd /update-packages
 		rm /var/lib/pacman/db.lck

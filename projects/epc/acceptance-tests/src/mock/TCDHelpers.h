@@ -2,6 +2,21 @@
 
 namespace MIDI_HELPER
 {
+  enum class MIDI_PROTOCOL : uint8_t {
+    CHANNEL_MASK = 0b00001111,
+    STATUS_MASK = 0b11110000
+  };
+
+  inline uint8_t to(MIDI_PROTOCOL p)
+  {
+    return static_cast<uint8_t>(p);
+  }
+
+  inline uint8_t getChannel(uint8_t statusByte)
+  {
+    return statusByte & to(MIDI_PROTOCOL::CHANNEL_MASK);
+  }
+
   inline MidiEvent createSimpleKeyDownEvent(int channel, int note, int vel)
   {
     const uint8_t status = 0x90 | channel;

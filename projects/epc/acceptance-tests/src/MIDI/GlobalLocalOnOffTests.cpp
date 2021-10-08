@@ -5,7 +5,6 @@
 #include <mock/InputEventStageTester.h>
 #include <mock/MidiOptionsHelpers.h>
 #include <mock/TCDHelpers.h>
-#include <device-settings/midi/RoutingSettings.h>
 
 TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
 {
@@ -15,8 +14,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
   dsp.setType(SoundType::Split);
 
   MidiRuntimeOptions options {};
-  InputEventStage eS(
-      &dsp, &options, []() {}, [&](auto) {}, [](auto) {});
+  InputEventStage eS(&dsp, &options, [](){}, [](auto){}, [](auto){});
 
   WHEN("All Routings are On")
   {
@@ -24,7 +22,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                         [](MidiOptionsHelper::tMSG& msg)
                                         {
                                           msg.routings = TestHelper::createFullMappings(true);
-                                          msg.globalLocalEnable = true;
+                                          msg.localEnable = true;
                                         });
 
     bool didReceive = false;
@@ -42,7 +40,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                           [](MidiOptionsHelper::tMSG& msg)
                                           {
                                             msg.routings = TestHelper::createFullMappings(false);
-                                            msg.globalLocalEnable = true;
+                                            msg.localEnable = true;
                                           });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
@@ -55,7 +53,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                           [](MidiOptionsHelper::tMSG& msg)
                                           {
                                             msg.routings = TestHelper::createFullMappings(true);
-                                            msg.globalLocalEnable = false;
+                                            msg.localEnable = false;
                                           });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
@@ -68,7 +66,7 @@ TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
                                           [](MidiOptionsHelper::tMSG& msg)
                                           {
                                             msg.routings = TestHelper::createFullMappings(false);
-                                            msg.globalLocalEnable = false;
+                                            msg.localEnable = false;
                                           });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
@@ -86,7 +84,7 @@ TEST_CASE("Key Events Local enable disable")
 
   MidiRuntimeOptions options;
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
-  InputEventStage input { &host, &options, []() {}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto) {} };
+  InputEventStage input { &host, &options, [](){}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto){} };
 
   WHEN("All routings are on")
   {
@@ -99,7 +97,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(true);
-                                            s.globalLocalEnable = true;
+                                            s.localEnable = true;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));
@@ -117,7 +115,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(true);
-                                            s.globalLocalEnable = false;
+                                            s.localEnable = false;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));
@@ -141,7 +139,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(false);
-                                            s.globalLocalEnable = false;
+                                            s.localEnable = false;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));
@@ -159,7 +157,7 @@ TEST_CASE("Key Events Local enable disable")
                                           [](auto& s)
                                           {
                                             s.routings = TestHelper::createFullMappings(false);
-                                            s.globalLocalEnable = true;
+                                            s.localEnable = true;
                                           });
 
       input.onTCDMessage(createKeyPosEvent(12));
