@@ -94,11 +94,13 @@ Here, it gets even more complicated:
 ### BUILD_LPC
 
 (required for complete update)
+
 This target will build the realtime-software for our LPC processor. It will generate blobs for both, the M0 and the M4 core.
 
 ### BUILD_WEB
 
 (required for complete update)
+
 Dockerize NonMaps and future UI components.
 
 ### BUILD_WEB AND BUILD_BBB AND BUILD_EPC AND BUILD_LPC
