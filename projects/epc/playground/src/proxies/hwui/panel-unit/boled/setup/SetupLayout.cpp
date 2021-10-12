@@ -1019,7 +1019,7 @@ namespace NavTree
   struct MidiPanicButton : OneShotEntry
   {
     explicit MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic Button", []() { SettingsUseCases::panicAudioEngine(); })
+        : OneShotEntry(p, "Panic", []() { SettingsUseCases::panicAudioEngine(); })
     {
     }
   };
@@ -1099,7 +1099,7 @@ namespace NavTree
         : InnerNode(parent, "MIDI Settings")
     {
       children.emplace_back(new MidiPanicButton(this));
-      children.emplace_back(new EnumSettingItem<GlobalLocalEnableSetting>(this, "Global Local Enable"));
+      children.emplace_back(new EnumSettingItem<GlobalLocalEnableSetting>(this, "Local Enable"));
       children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiChannels(this));
       children.emplace_back(new MidiAssignments(this));

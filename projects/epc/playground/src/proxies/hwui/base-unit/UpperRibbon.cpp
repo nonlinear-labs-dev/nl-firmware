@@ -8,6 +8,8 @@
 #include "device-settings/Settings.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <proxies/hwui/HWUI.h>
+#include <nltools/messaging/Message.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 UpperRibbon::UpperRibbon()
 {

@@ -3,12 +3,15 @@
 #include <variant>
 #include <synth/c15-audio-engine/midi_handle.h>
 #include <synth/input/MidiChannelModeMessages.h>
+#include <Types.h>
 
 class MidiRuntimeOptions
 {
  public:
   typedef nltools::msg::Setting::MidiSettingsMessage tMidiSettingMessage;
+  typedef tMidiSettingMessage::tEntry tRoutingEntry;
   typedef tMidiSettingMessage::RoutingAspect tRoutingAspect;
+  typedef tMidiSettingMessage::RoutingIndex tRoutingIndex;
 
   enum class MidiChannelModeMessageCCs : int {
     AllSoundOff = 120,
@@ -42,6 +45,7 @@ class MidiRuntimeOptions
   [[nodiscard]] bool shouldSendMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const;
   [[nodiscard]] bool shouldAllowLocal(tMidiSettingMessage::RoutingIndex routingIndex) const;
 
+  const nltools::msg::Setting::MidiSettingsMessage& getLastReceivedMessage() const;
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
   static int channelEnumToInt(MidiSendChannel channel);
@@ -95,16 +99,14 @@ class MidiRuntimeOptions
   [[nodiscard]] std::optional<int> getAftertouchLSBCC() const;
 
 
-  [[nodiscard]] bool isSwitchingCC(int pedalZeroIndexed) const;
+  [[nodiscard]] bool isSwitchingCC(HardwareSource hwid) const;
   [[nodiscard]] bool enableHighVelCC() const;
   [[nodiscard]] bool is14BitSupportEnabled() const;
-  [[nodiscard]] int getMSBCCForHWID(int hwID) const;
+  [[nodiscard]] int getMSBCCForHWID(HardwareSource hwID) const;
 
   static bool isCCMappedToChannelModeMessage(int cc);
   static MidiChannelModeMessages createChannelModeMessageEnum(int cc, uint8_t ccValue);
 
-  //Mapping Setters
-  void setGlobalLocalEnabled(bool b);
   void setPedal1(PedalCC cc);
   void setPedal2(PedalCC cc);
   void setPedal3(PedalCC cc);
@@ -119,7 +121,10 @@ class MidiRuntimeOptions
   void setSplitReceiveChannel(MidiReceiveChannelSplit c);
   void set14BitSupportEnabled(bool e);
 
- private:
+  bool isGlobalLocalEnabled();
+  void setGlobalLocalEnabled(bool b);
+  bool isLocalEnabled(HardwareSource source);
+
   //Mappings
   static std::optional<int> decodeEnumMSB(PedalCC);
   static std::optional<int> decodeEnumLSB(PedalCC);
@@ -130,13 +135,13 @@ class MidiRuntimeOptions
   static std::optional<int> decodeEnumLSB(AftertouchCC cc);
   static std::optional<int> decodeEnumMSB(BenderCC cc);
   static std::optional<int> decodeEnumLSB(BenderCC cc);
-
+ private:
   MidiReceiveChannel m_midiPrimaryReceiveChannel;
   MidiReceiveChannelSplit m_midiSplitReceiveChannel;
   MidiSendChannel m_midiPrimarySendChannel;
   MidiSendChannelSplit m_midiSplitSendChannel;
 
-  bool m_globalLocalEnable = true;
+  bool m_localEnable = true;
 
   bool m_enableHighVelCC = false;
   bool m_enable14BitCC = false;
@@ -151,6 +156,8 @@ class MidiRuntimeOptions
   BenderCC benderCC;
 
   nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings;
+
+  nltools::msg::Setting::MidiSettingsMessage m_lastMessage;
 
   friend class MidiRuntimeOptionsTester;
 };

@@ -6,3 +6,4 @@ Before=install-update-from-usb.service
 [Service]
 Type=oneshot
 ExecStart=-@C15_INSTALL_PATH@/scripts/reset-playcontroller.sh
+ExecStart=-@C15_INSTALL_PATH@/scripts/display-splashscreen.sh showUHID

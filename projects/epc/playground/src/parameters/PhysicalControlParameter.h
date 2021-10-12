@@ -13,7 +13,7 @@ class PhysicalControlParameter : public Parameter
                            int coarseDenominator, int fineDenominator);
 
   bool isChangedFromLoaded() const override;
-  virtual void onChangeFromPlaycontroller(tControlPositionValue newValue);
+  virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source);
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
@@ -24,6 +24,7 @@ class PhysicalControlParameter : public Parameter
   Glib::ustring getDisplayString() const override;
 
   virtual ReturnMode getReturnMode() const = 0;
+
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   bool lockingEnabled() const override;
   void setUiSelectedModulationRouter(const ParameterId &paramNumber);
@@ -47,6 +48,7 @@ class PhysicalControlParameter : public Parameter
 
  private:
   void sendParameterMessage() const override;
+  virtual bool isLocalEnabled() const = 0;
 
  private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;

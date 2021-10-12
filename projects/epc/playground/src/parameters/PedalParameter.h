@@ -39,6 +39,7 @@ class PedalParameter : public PhysicalControlParameter
   void sendModeToPlaycontroller() const;
   tControlPositionValue getDefValueAccordingToMode() const;
   void setRoutersModeAccordingToReturnMode();
+  bool isLocalEnabled() const override;
 
   PedalModes m_mode = PedalModes::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;

@@ -26,13 +26,15 @@ class RPCActionManager;
 class NetworkRequest;
 class AudioEngineProxy;
 class Options;
+class Settings;
 
 class PresetManager : public UpdateDocumentContributor, public SyncedItem
 {
   using SaveSubTask = std::function<SaveResult()>;
 
  public:
-  explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options);
+  explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options, Settings &settings,
+                         std::unique_ptr<AudioEngineProxy> &aeProxyContainer);
   ~PresetManager() override;
 
   void init(AudioEngineProxy *aeProxy);
