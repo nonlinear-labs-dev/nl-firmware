@@ -21,9 +21,10 @@ class MessageParser
     HEARTBEAT = 0x0B00
   };
 
-  enum NotificationTypes
+  enum PlaycontrollerRequestTypes
   {
-    SOFTWARE_VERSION = 0x0000
+    SOFTWARE_VERSION = 0x0000,
+    UHID64 = 0x0008
   };
 
   struct NLMessage

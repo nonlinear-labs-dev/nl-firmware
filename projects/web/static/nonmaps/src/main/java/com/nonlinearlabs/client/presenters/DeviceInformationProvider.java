@@ -73,6 +73,12 @@ public class DeviceInformationProvider {
 			notifyClients();
 			return true;
 		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().serialNumber.onChange(v -> {
+			info.serialNumber = v;
+			notifyClients();
+			return true;
+		});
 	}
 
 	protected void notifyClients() {

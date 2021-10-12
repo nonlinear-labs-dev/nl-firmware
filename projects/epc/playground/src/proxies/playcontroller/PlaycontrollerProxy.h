@@ -67,8 +67,10 @@ class PlaycontrollerProxy
   sigc::connection onRibbonTouched(const sigc::slot<void, int>& s);
   sigc::connection onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s);
   sigc::connection onLastKeyChanged(sigc::slot<void> s);
+  sigc::connection onUHIDChanged(const sigc::slot<void, uint64_t>& s);
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;
+  uint64_t getUHID() const;
   Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
   void notifyRibbonTouch(int ribbonsParameterID);
 
@@ -96,11 +98,13 @@ class PlaycontrollerProxy
   int m_lastTouchedRibbon;
   Signal<void, int> m_signalRibbonTouched;
   Signal<void, int> m_signalPlaycontrollerSoftwareVersionChanged;
+  Signal<void, uint64_t> m_signalUHIDChanged;
   Signal<void> m_lastKeyChanged;
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
   int m_playcontrollerSoftwareVersion = -1;
+  uint64_t m_uhid = 0;
 
   Throttler m_throttledRelativeParameterChange;
   gint32 m_throttledRelativeParameterAccumulator = 0;
@@ -112,5 +116,7 @@ class PlaycontrollerProxy
 
   void onHeartbeatStumbled();
   void requestPlaycontrollerSoftwareVersion();
+  void requestPlaycontrollerUHID();
+  void sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type);
   void notifyKeyBedActionHappened();
 };
