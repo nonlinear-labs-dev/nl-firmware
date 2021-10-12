@@ -150,7 +150,15 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
         auto shifted = val << (i * 16);
         uhid += shifted;
       }
-      //TODO continue here!
+      if(m_uhid != uhid)
+      {
+        m_uhid = uhid;
+        m_signalUHIDChanged.send(m_uhid);
+      }
+    }
+    else if(msg.params.size() == 1)
+    {
+      nltools::Log::info("received ack: ", msg.params[0]);
     }
   }
 }
@@ -402,10 +410,20 @@ void PlaycontrollerProxy::notifyKeyBedActionHappened()
   m_lastKeyChanged.send();
 }
 
-void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::NotificationTypes type)
+void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type)
 {
   tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
   uint16_t v = type;
   *cmp << v;
   queueToPlaycontroller(cmp);
+}
+
+sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t>& s)
+{
+  return m_signalUHIDChanged.connectAndInit(s, m_uhid);
+}
+
+uint64_t PlaycontrollerProxy::getUHID() const
+{
+  return m_uhid;
 }
