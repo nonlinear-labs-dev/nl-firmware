@@ -17,7 +17,7 @@ Then:
 - create a build folder, for example ~/builds/C15
 - change into that folder and type 
 ```sh
-cmake -DDEV_PC=On|Off -DBUILD_AUDIOENGINE=On|Off -DBUILD_BBBB=On|Off -DBUILD_PLAYGROUND=On|Off -DBUILD_ONLINEHELP=On|Off -DBUILD_TEXT2SOLED=On|Off -DBUILD_TESTING=On|Off -DBUILD_BBB=On|Off -DBUILD_EPC=On|Off -DCMAKE_BUILD_TYPE=Debug|Release ~/C15
+cmake -DDEV_PC=On|Off -DBUILD_AUDIOENGINE=On|Off -DBUILD_BBBB=On|Off -DBUILD_PLAYGROUND=On|Off -DBUILD_ONLINEHELP=On|Off -DBUILD_TEXT2SOLED=On|Off -DBUILD_TESTING=On|Off -DBUILD_BBB=On|Off -DBUILD_EPC=On|Off -DBUILD_WEB=On|Off -DCMAKE_BUILD_TYPE=Debug|Release ~/C15
 ```
 ### DEV_PC
 
@@ -91,9 +91,9 @@ Here, it gets even more complicated:
 
 This target will build the realtime-software for our LPC processor. It will generate blobs for both, the M0 and the M4 core.
 
-### BUILD_BBB AND BUILD_EPC AND BUILD_LPC
+### BUILD_WEB AND BUILD_BBB AND BUILD_EPC AND BUILD_LPC
 
-If BUILD_BBB, BUILD_EPC and BUILD_LPC are switched On, there will be another target, *c15-update*. This will combine updates for all C15 components and bundle it into a single update file.
+If BUILD_WEB, BUILD_BBB, BUILD_EPC and BUILD_LPC are switched On, there will be another target, *c15-update*. This will combine updates for all C15 components and bundle it into a single update file.
 
 The "c15-ota-update" target will create a complete c15 update.tar and immediately try to update the device handed in by the environment variables UNIT_NAME and UNIT_PASSWORD like this:
 
