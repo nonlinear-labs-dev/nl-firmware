@@ -9,18 +9,20 @@ class MessageParser
   MessageParser();
   virtual ~MessageParser();
 
-  enum MessageTypes
+  enum MessageTypes // -> PLAYCONTROLLER_BB_MESSAGE_TYPES
   {
     PRESET_DIRECT = 0x0100,
     // Deprecated HARDWARE_SOURCE = 0x0400,
     EDIT_CONTROL = 0x0500,
     SETTING = 0x0700,
     NOTIFICATION = 0x0800,
+    PAYLOAD_UHID64 = 0x1500,
     ASSERTION = 0x0900,
     REQUEST = 0x0A00,
     HEARTBEAT = 0x0B00
   };
 
+  // use this PLAYCONTROLLER_REQUEST_ID_UHID64
   enum PlaycontrollerRequestTypes
   {
     SOFTWARE_VERSION = 0x0000,

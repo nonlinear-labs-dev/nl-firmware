@@ -90,6 +90,10 @@ void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
   {
     onAssertionMessageReceived(msg);
   }
+  else if(msg.type == MessageParser::PAYLOAD_UHID64)
+  {
+    onUHIDReceived(msg);
+  }
   else if(msg.type == MessageParser::NOTIFICATION)
   {
     onNotificationMessageReceived(msg);
@@ -139,7 +143,12 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
       m_signalPlaycontrollerSoftwareVersionChanged.send(m_playcontrollerSoftwareVersion);
     }
   }
-  else if(id == MessageParser::UHID64)
+}
+
+void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
+{
+  auto id = msg.params[0];
+  if(id == MessageParser::UHID64)
   {
     if(msg.params.size() == 4)
     {
@@ -155,10 +164,6 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
         m_uhid = uhid;
         m_signalUHIDChanged.send(m_uhid);
       }
-    }
-    else if(msg.params.size() == 1)
-    {
-      nltools::Log::info("received ack: ", msg.params[0]);
     }
   }
 }
@@ -422,7 +427,6 @@ sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint6
 {
   return m_signalUHIDChanged.connectAndInit(s, m_uhid);
 }
-
 uint64_t PlaycontrollerProxy::getUHID() const
 {
   return m_uhid;
