@@ -11,4 +11,5 @@ public class DeviceInformation {
 	public String totalRam = "---";
 	public String usedRam = "---";
 	public String bufferUnderruns = "0";
+	public String serialNumber = "0";
 }

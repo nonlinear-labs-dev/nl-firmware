@@ -90,6 +90,10 @@ void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
   {
     onAssertionMessageReceived(msg);
   }
+  else if(msg.type == MessageParser::PAYLOAD_UHID64)
+  {
+    onUHIDReceived(msg);
+  }
   else if(msg.type == MessageParser::NOTIFICATION)
   {
     onNotificationMessageReceived(msg);
@@ -141,10 +145,31 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
   }
 }
 
+void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
+{
+  if(msg.params.size() == 4)
+  {
+    uint64_t uhid = 0;
+    for(auto i = 0; i < 4; i++)
+    {
+      uint64_t val = msg.params[i];
+      auto shifted = val << (i * 16);
+      uhid += shifted;
+    }
+
+    if(m_uhid != uhid)
+    {
+      m_uhid = uhid;
+      m_signalUHIDChanged.send(m_uhid);
+    }
+  }
+}
+
 void PlaycontrollerProxy::onPlaycontrollerConnected()
 {
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -352,6 +377,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   settings->sendPresetSettingsToPlaycontroller();
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -366,12 +392,14 @@ sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void> s)
 
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
-  uint16_t v = MessageParser::SOFTWARE_VERSION;
-  *cmp << v;
-  queueToPlaycontroller(cmp);
+  sendRequestToPlaycontroller(MessageParser::SOFTWARE_VERSION);
+  nltools::Log::info("sending request SOFTWARE_VERSION to LPC");
+}
 
-  DebugLevel::info("sending request SOFTWARE_VERSION to LPC");
+void PlaycontrollerProxy::requestPlaycontrollerUHID()
+{
+  sendRequestToPlaycontroller(MessageParser::UHID64);
+  nltools::Log::info("sending request UHID64 to LPC");
 }
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
@@ -382,4 +410,21 @@ std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
 void PlaycontrollerProxy::notifyKeyBedActionHappened()
 {
   m_lastKeyChanged.send();
+}
+
+void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type)
+{
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
+  uint16_t v = type;
+  *cmp << v;
+  queueToPlaycontroller(cmp);
+}
+
+sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t>& s)
+{
+  return m_signalUHIDChanged.connectAndInit(s, m_uhid);
+}
+uint64_t PlaycontrollerProxy::getUHID() const
+{
+  return m_uhid;
 }

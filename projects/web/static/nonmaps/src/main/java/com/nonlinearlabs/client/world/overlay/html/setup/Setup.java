@@ -89,7 +89,7 @@ public class Setup extends Composite {
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
-			editSmoothingTimeDisplayString, freeMemory, uiVersion, dateTime, uiHead, uiBranch, uiCommits, uiCommitDate, uiUsedRam, uiTotalRam;
+			editSmoothingTimeDisplayString, freeMemory, uiVersion, dateTime, uiHead, uiBranch, uiCommits, uiCommitDate, uiUsedRam, uiTotalRam, serialNumber;
 
 	@UiField
 	InputElement pedal1Slider, pedal2Slider, pedal3Slider, pedal4Slider;
@@ -617,6 +617,7 @@ public class Setup extends Composite {
 		uiCommitDate.setText(t.commitDate);
 		uiUsedRam.setText(t.usedRam);
 		uiTotalRam.setText(t.totalRam);
+		serialNumber.setText(t.serialNumber);
 	}
 
 	private void applyPresenter(MidiSettings t) {
