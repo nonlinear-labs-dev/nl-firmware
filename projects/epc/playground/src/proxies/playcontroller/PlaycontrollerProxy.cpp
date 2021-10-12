@@ -147,23 +147,20 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
 
 void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
 {
-  auto id = msg.params[0];
-  if(id == MessageParser::UHID64)
+  if(msg.params.size() == 4)
   {
-    if(msg.params.size() == 4)
+    uint64_t uhid = 0;
+    for(auto i = 0; i < 4; i++)
     {
-      uint64_t uhid = 0;
-      for(auto i = 0; i < 4; i++)
-      {
-        uint64_t val = msg.params[i];
-        auto shifted = val << (i * 16);
-        uhid += shifted;
-      }
-      if(m_uhid != uhid)
-      {
-        m_uhid = uhid;
-        m_signalUHIDChanged.send(m_uhid);
-      }
+      uint64_t val = msg.params[i];
+      auto shifted = val << (i * 16);
+      uhid += shifted;
+    }
+
+    if(m_uhid != uhid)
+    {
+      m_uhid = uhid;
+      m_signalUHIDChanged.send(m_uhid);
     }
   }
 }
