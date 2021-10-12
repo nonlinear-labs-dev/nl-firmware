@@ -139,12 +139,27 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
       m_signalPlaycontrollerSoftwareVersionChanged.send(m_playcontrollerSoftwareVersion);
     }
   }
+  else if(id == MessageParser::UHID64)
+  {
+    if(msg.params.size() == 4)
+    {
+      uint64_t uhid = 0;
+      for(auto i = 0; i < 4; i++)
+      {
+        uint64_t val = msg.params[i];
+        auto shifted = val << (i * 16);
+        uhid += shifted;
+      }
+      //TODO continue here!
+    }
+  }
 }
 
 void PlaycontrollerProxy::onPlaycontrollerConnected()
 {
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -352,6 +367,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   settings->sendPresetSettingsToPlaycontroller();
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -366,12 +382,14 @@ sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void> s)
 
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
-  uint16_t v = MessageParser::SOFTWARE_VERSION;
-  *cmp << v;
-  queueToPlaycontroller(cmp);
+  sendRequestToPlaycontroller(MessageParser::SOFTWARE_VERSION);
+  nltools::Log::info("sending request SOFTWARE_VERSION to LPC");
+}
 
-  DebugLevel::info("sending request SOFTWARE_VERSION to LPC");
+void PlaycontrollerProxy::requestPlaycontrollerUHID()
+{
+  sendRequestToPlaycontroller(MessageParser::UHID64);
+  nltools::Log::info("sending request UHID64 to LPC");
 }
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
@@ -382,4 +400,12 @@ std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
 void PlaycontrollerProxy::notifyKeyBedActionHappened()
 {
   m_lastKeyChanged.send();
+}
+
+void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::NotificationTypes type)
+{
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
+  uint16_t v = type;
+  *cmp << v;
+  queueToPlaycontroller(cmp);
 }

@@ -23,7 +23,8 @@ class MessageParser
 
   enum NotificationTypes
   {
-    SOFTWARE_VERSION = 0x0000
+    SOFTWARE_VERSION = 0x0000,
+    UHID64 = 0x0008
   };
 
   struct NLMessage

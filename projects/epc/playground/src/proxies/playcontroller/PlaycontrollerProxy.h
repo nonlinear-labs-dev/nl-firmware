@@ -112,5 +112,7 @@ class PlaycontrollerProxy
 
   void onHeartbeatStumbled();
   void requestPlaycontrollerSoftwareVersion();
+  void requestPlaycontrollerUHID();
+  void sendRequestToPlaycontroller(MessageParser::NotificationTypes type);
   void notifyKeyBedActionHappened();
 };
