@@ -82,7 +82,7 @@ Application::Application(int numArgs, char **argv)
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
-    , m_hwui(new HWUI())
+    , m_hwui(new HWUI(*m_settings.get()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
@@ -103,7 +103,9 @@ Application::Application(int numArgs, char **argv)
   m_http->init();
   m_presetManager->init(m_audioEngineProxy.get());
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
-  m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+
+  auto panelUnitFocusAndModeSetting = m_settings->getSetting<PanelUnitFocusAndMode>();
+  m_hwui->setFocusAndMode(panelUnitFocusAndModeSetting->getState());
 
   runWatchDog();
 

@@ -5,7 +5,8 @@
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/ScreenSaverUsageMode.h>
 
-HardwareUserInterfaceUnit::HardwareUserInterfaceUnit()
+HardwareUserInterfaceUnit::HardwareUserInterfaceUnit(Settings& settings)
+  : m_settings{ settings }
 {
   Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
       sigc::mem_fun(this, &HardwareUserInterfaceUnit::onScreenSaverStateChanged));
@@ -66,4 +67,9 @@ std::shared_ptr<UsageMode> HardwareUserInterfaceUnit::getScreenSaverUsageMode() 
 {
   static auto sScreenSaver = std::make_shared<ScreenSaverUsageMode>();
   return sScreenSaver;
+}
+
+Settings& HardwareUserInterfaceUnit::getSettings() const
+{
+  return m_settings;
 }

@@ -6,12 +6,13 @@
 #include <memory>
 
 class UsageMode;
+class Settings;
 
 class HardwareUserInterfaceUnit
 {
  private:
  public:
-  HardwareUserInterfaceUnit();
+  HardwareUserInterfaceUnit(Settings& settings);
   virtual ~HardwareUserInterfaceUnit();
 
   HardwareUserInterfaceUnit(const HardwareUserInterfaceUnit& other) = delete;
@@ -25,8 +26,11 @@ class HardwareUserInterfaceUnit
   [[nodiscard]] std::shared_ptr<UsageMode> getUsageMode() const;
   [[nodiscard]] std::shared_ptr<UsageMode> getScreenSaverUsageMode() const;
 
+ protected:
+  [[nodiscard]] Settings& getSettings() const;
  private:
   void onScreenSaverStateChanged(bool state);
   bool m_screenSaverActive = false;
   std::shared_ptr<UsageMode> m_usageMode;
+  Settings& m_settings;
 };

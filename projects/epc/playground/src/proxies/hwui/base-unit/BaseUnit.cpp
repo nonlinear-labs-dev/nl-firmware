@@ -8,8 +8,10 @@
 #include "device-settings/BaseUnitUIMode.h"
 #include <nltools/messaging/Message.h>
 #include <proxies/hwui/HWUI.h>
+#include <device-settings/PanelUnitFocusAndMode.h>
 
-BaseUnit::BaseUnit()
+BaseUnit::BaseUnit(Settings& settings)
+    : super(settings)
 {
   Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(mem_fun(this, &BaseUnit::respectUsageMode));
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::RibbonLed,
@@ -17,6 +19,11 @@ BaseUnit::BaseUnit()
 }
 
 BaseUnit::~BaseUnit() = default;
+
+void BaseUnit::setupFocusAndMode(FocusAndMode focusAndMode)
+{
+  HardwareUserInterfaceUnit::setupFocusAndMode(focusAndMode);
+}
 
 void BaseUnit::init()
 {

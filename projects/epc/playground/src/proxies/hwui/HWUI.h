@@ -17,6 +17,7 @@
 
 class Application;
 class UsageMode;
+class Settings;
 
 namespace UNDO
 {
@@ -33,7 +34,7 @@ class PresetPartSelection;
 class HWUI
 {
  public:
-  HWUI();
+  HWUI(Settings &settings);
   virtual ~HWUI();
 
   void init();

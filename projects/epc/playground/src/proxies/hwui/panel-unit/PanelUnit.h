@@ -16,7 +16,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
  public:
   typedef std::shared_ptr<TwoStateLED> tLed;
 
-  PanelUnit();
+  PanelUnit(Settings& settings);
   ~PanelUnit() override;
 
   void setupFocusAndMode(FocusAndMode focusAndMode) override;
@@ -47,4 +47,5 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   std::shared_ptr<UsageMode> m_overlayUsageMode;
 
   sigc::connection m_signalInitializeInstalledLayoutOnce;
+  PanelUnitFocusAndMode& m_panelFocusAndModeSetting;
 };

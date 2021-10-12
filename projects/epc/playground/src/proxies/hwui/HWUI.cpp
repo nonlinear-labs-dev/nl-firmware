@@ -34,17 +34,21 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 
-HWUI::HWUI()
+HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
     , m_currentVoiceGroup { VoiceGroup::I }
+    , m_panelUnit { settings }
+    , m_baseUnit { settings }
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
-    , m_setupJob(1, [this] {
-      m_panelUnit.setupFocusAndMode(m_focusAndMode);
-      m_baseUnit.setupFocusAndMode(m_focusAndMode);
-    })
+    , m_setupJob(1,
+                 [this]
+                 {
+                   m_panelUnit.setupFocusAndMode(m_focusAndMode);
+                   m_baseUnit.setupFocusAndMode(m_focusAndMode);
+                 })
 {
 
   if(isatty(fileno(stdin)))
@@ -519,11 +523,13 @@ void HWUI::undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode 
   auto swapData = UNDO::createSwapData(restrictFocusAndMode(focusAndMode));
   auto oldSwap = UNDO::createSwapData(m_focusAndMode);
 
-  transaction->addSimpleCommand([=](UNDO::Command::State) {
-    swapData->swapWith(m_focusAndMode);
-    oldSwap->swapWith(m_oldFocusAndMode);
-    setupFocusAndMode();
-  });
+  transaction->addSimpleCommand(
+      [=](UNDO::Command::State)
+      {
+        swapData->swapWith(m_focusAndMode);
+        oldSwap->swapWith(m_oldFocusAndMode);
+        setupFocusAndMode();
+      });
 }
 
 FocusAndMode HWUI::getFocusAndMode() const
@@ -857,5 +863,3 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
     }
   }
 }
-
-
