@@ -10,6 +10,6 @@ class UniqueHardwareID : public DeviceInformationItem
   void onIDReceived(uint64_t id);
 
  private:
-  uint64_t m_id;
+  uint64_t m_id = std::numeric_limits<uint64_t>::max();
   sigc::connection m_connection;
 };
