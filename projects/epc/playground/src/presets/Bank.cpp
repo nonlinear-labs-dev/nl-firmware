@@ -475,17 +475,11 @@ bool Bank::empty() const
   return m_presets.empty();
 }
 
-//void Bank::copyFrom(UNDO::Transaction *transaction, const Bank *other)
-//{
-//  setName(transaction, other->getName(false));
-//  setX(transaction, other->getX());
-//  setY(transaction, other->getY());
-//
-//  AttributesOwner::copyFrom(transaction, other);
-//  other->forEachPreset([&](auto p) { m_presets.append(transaction, std::make_unique<Preset>(this, *p, ignoreUuids)); });
-//
-//  updateLastModifiedTimestamp(transaction);
-//}
+bool Bank::isCollapsed() const
+{
+  const auto value = getAttribute("collapsed", "false");
+  return value == "true";
+}
 
 std::string to_string(Bank::AttachmentDirection dir)
 {
