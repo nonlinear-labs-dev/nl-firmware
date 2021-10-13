@@ -88,7 +88,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
-#include <device-info/SerialNumber.h>
+#include <device-info/UniqueHardwareID.h>
 
 namespace NavTree
 {
@@ -546,16 +546,16 @@ namespace NavTree
     }
   };
 
-  struct SerialNumber : Leaf
+  struct UniqueHardwareID : Leaf
   {
-    explicit SerialNumber(InnerNode *parent)
-        : Leaf(parent, "Serial Number")
+    explicit UniqueHardwareID(InnerNode *parent)
+        : Leaf(parent, "Device Hardware ID ")
     {
     }
 
     Control *createView() override
     {
-      auto info = Application::get().getDeviceInformation()->getItem<::SerialNumber>().get();
+      auto info = Application::get().getDeviceInformation()->getItem<::UniqueHardwareID>().get();
       return new DeviceInfoItemView(info);
     }
   };
@@ -673,7 +673,7 @@ namespace NavTree
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
-      children.emplace_back(new SerialNumber(this));
+      children.emplace_back(new UniqueHardwareID(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
       children.emplace_back(new BufferUnderrunsNode(this));

@@ -74,8 +74,8 @@ public class DeviceInformationProvider {
 			return true;
 		});
 
-		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().serialNumber.onChange(v -> {
-			info.serialNumber = v;
+                com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().UniqueHardwareID.onChange(v -> {
+                        info.UniqueHardwareID = v;
 			notifyClients();
 			return true;
 		});

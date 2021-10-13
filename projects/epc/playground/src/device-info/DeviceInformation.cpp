@@ -8,7 +8,7 @@
 #include "BufferUnderruns.h"
 #include "DateTimeInfo.h"
 #include "RTSoftwareVersion.h"
-#include "SerialNumber.h"
+#include "UniqueHardwareID.h"
 #include <Application.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <http/NetworkRequest.h>
@@ -23,7 +23,7 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
   m_items.emplace_back(new RTSoftwareVersion(this));
   m_items.emplace_back(new BuildVersion(this));
   m_items.emplace_back(new BufferUnderruns(this));
-  m_items.emplace_back(new SerialNumber(this));
+  m_items.emplace_back(new UniqueHardwareID(this));
 }
 
 DeviceInformation::~DeviceInformation() = default;

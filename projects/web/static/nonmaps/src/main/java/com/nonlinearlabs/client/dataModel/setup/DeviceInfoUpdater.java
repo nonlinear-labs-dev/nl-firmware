@@ -21,7 +21,7 @@ public class DeviceInfoUpdater extends Updater {
 		m.put("date-time", DeviceInformation.get().dateTime);
 		m.put("date-time-display", DeviceInformation.get().dateTimeDisplay);
 		m.put("buffer-underruns", DeviceInformation.get().bufferUnderruns);
-		m.put("serial-number", DeviceInformation.get().serialNumber);
+                m.put("serial-number", DeviceInformation.get().UniqueHardwareID);
 
 		return m;
 	}
