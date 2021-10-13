@@ -25,21 +25,21 @@ digraph {
   "rpi-update-packages (docker)" [color = gray]
   "c16-update (docker)" [color = gray]
 
-  "/APLinux.iso" -> "epc1-base-linux (docker)"
-  "/epc1/package" -> "epc1-base-linux (docker)"
-  "epc1-package-list"-> "epc1-base-linux (docker)"
+  "/APLinux.iso" -> "epc1-install-medium (docker)"
+  "/epc1/package" -> "epc1-install-medium (docker)"
+  "epc1-package-list"-> "epc1-install-medium (docker)"
   "epc1-package-list" -> "fetch-and-upload-missing-epc1-packages"
 
-  "epc1-base-linux (docker)" -> "epc1-install-medium (docker)"
+  "epc1-install-medium (docker)" -> "epc1-base-linux (docker)"
   "epc1-base-linux (docker)" -> "epc1-update.tar (docker)"
   "epc1-update.tar (docker)" -> "c15-update (docker)"
 
-  "/ArchLinux.iso" -> "epc2-base-linux (docker)"
-  "/epc2/package" -> "epc2-base-linux (docker)"
-  "epc2-package-list"-> "epc2-base-linux (docker)"
+  "/ArchLinux.iso" -> "epc2-install-medium (docker)"
+  "/epc2/package" -> "epc2-install-medium (docker)"
+  "epc2-package-list"-> "epc2-install-medium (docker)"
   "epc2-package-list" -> "fetch-and-upload-missing-epc2-packages"
 
-  "epc2-base-linux (docker)" -> "epc2-install-medium (docker)"
+  "epc2-install-medium (docker)" -> "epc2-base-linux (docker)"
   "epc2-base-linux (docker)" -> "epc2-update.tar (docker)"
   "epc2-update.tar (docker)" -> "c15-update (docker)"
 
