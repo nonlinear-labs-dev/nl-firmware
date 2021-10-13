@@ -11,5 +11,5 @@ public class DeviceInformation {
 	public String totalRam = "---";
 	public String usedRam = "---";
 	public String bufferUnderruns = "0";
-        public String UniqueHardwareID = "0";
+	public String uniqueHardwareID = "0";
 }

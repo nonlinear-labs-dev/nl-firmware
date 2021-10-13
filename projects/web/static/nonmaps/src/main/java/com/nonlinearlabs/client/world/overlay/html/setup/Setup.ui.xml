@@ -889,10 +889,10 @@
 
 					<div class="halb-he">
 						<div class="w40p">
-                                                        <p>Device Hardware ID</p>
+							<p>Device Hardware ID</p>
 						</div>
 						<div class="w60p">
-                                                        <g:Label ui:field="UniqueHardwareID"></g:Label>
+							<g:Label ui:field="uniqueHardwareID"></g:Label>
 						</div>
 					</div>
 
