@@ -11,7 +11,18 @@ SerialNumber::SerialNumber(DeviceInformation* p)
 
 Glib::ustring SerialNumber::get() const
 {
-  return std::to_string(m_id);
+  if(m_id == 0)
+    return "0000-0000-0000-0000";
+
+  using i16 = uint16_t;
+  const i16 p0 = m_id >> 48;
+  const i16 p1 = m_id >> 32;
+  const i16 p2 = m_id >> 16;
+  const i16 p3 = m_id;
+
+  std::stringstream ss;
+  ss << std::hex << std::uppercase << p0 << "-" << p1 << "-" << p2 << "-" << p3;
+  return ss.str();
 }
 
 void SerialNumber::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
