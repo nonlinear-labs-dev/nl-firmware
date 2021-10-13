@@ -20,4 +20,5 @@ public class DeviceInformation {
 	public StringDataModelEntity usedRam = new StringDataModelEntity();
 	public StringDataModelEntity totalRam = new StringDataModelEntity();
 	public StringDataModelEntity bufferUnderruns = new StringDataModelEntity("0");
+	public StringDataModelEntity uniqueHardwareID = new StringDataModelEntity("0");
 }

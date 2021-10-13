@@ -28,6 +28,7 @@
 #include "sys/crc.h"
 #include "io/pins.h"
 #include "sys/nl_version.h"
+#include "sys/nl_uhid.h"
 #include "version.h"
 
 #define DBG_CLOCK_MONITOR (0)
@@ -68,6 +69,9 @@ void Init(void)
 
   /* I/O pins */
   PINS_Init();
+
+  /* Unique Hardware ID */
+  UHID_Init();
 
   /* supervisor */
   SUP_Init();

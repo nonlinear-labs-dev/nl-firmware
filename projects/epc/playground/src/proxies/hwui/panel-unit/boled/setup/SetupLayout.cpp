@@ -88,6 +88,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <device-info/UniqueHardwareID.h>
 
 namespace NavTree
 {
@@ -545,6 +546,20 @@ namespace NavTree
     }
   };
 
+  struct UniqueHardwareID : Leaf
+  {
+    explicit UniqueHardwareID(InnerNode *parent)
+        : Leaf(parent, "Device Hardware ID ")
+    {
+    }
+
+    Control *createView() override
+    {
+      auto info = Application::get().getDeviceInformation()->getItem<::UniqueHardwareID>().get();
+      return new DeviceInfoItemView(info);
+    }
+  };
+
   struct DateTime : EditableLeaf
   {
     explicit DateTime(InnerNode *parent)
@@ -658,6 +673,7 @@ namespace NavTree
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
+      children.emplace_back(new UniqueHardwareID(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
       children.emplace_back(new BufferUnderrunsNode(this));
