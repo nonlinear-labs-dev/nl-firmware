@@ -82,23 +82,23 @@ gint16 PlaycontrollerProxy::separateSignedBitToComplementary(uint16_t v)
 
 void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
-  if(msg.type == MessageParser::EDIT_CONTROL)
+  if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_EDIT_CONTROL)
   {
     onEditControlMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::ASSERTION)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_ASSERTION)
   {
     onAssertionMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::PAYLOAD_UHID64)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_UHID64)
   {
     onUHIDReceived(msg);
   }
-  else if(msg.type == MessageParser::NOTIFICATION)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION)
   {
     onNotificationMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::HEARTBEAT)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_HEARTBEAT)
   {
     onHeartbeatReceived(msg);
   }
@@ -135,7 +135,7 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
   uint16_t id = msg.params[0];
   uint16_t value = msg.params[1];
 
-  if(id == MessageParser::SOFTWARE_VERSION)
+  if(id == MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION)
   {
     if(m_playcontrollerSoftwareVersion != value)
     {
@@ -157,11 +157,7 @@ void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
       uhid += shifted;
     }
 
-    if(m_uhid != uhid)
-    {
-      m_uhid = uhid;
-      m_signalUHIDChanged.send(m_uhid);
-    }
+    setUHID(uhid);
   }
 }
 
@@ -331,7 +327,7 @@ void PlaycontrollerProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) con
 
 void PlaycontrollerProxy::sendSetting(uint16_t key, uint16_t value)
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::SETTING));
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_SETTING));
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
@@ -361,7 +357,7 @@ void PlaycontrollerProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType,
 
 void PlaycontrollerProxy::sendSetting(uint16_t key, gint16 value)
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::SETTING));
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_SETTING));
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
@@ -392,13 +388,13 @@ sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void> s)
 
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
-  sendRequestToPlaycontroller(MessageParser::SOFTWARE_VERSION);
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION);
   nltools::Log::info("sending request SOFTWARE_VERSION to LPC");
 }
 
 void PlaycontrollerProxy::requestPlaycontrollerUHID()
 {
-  sendRequestToPlaycontroller(MessageParser::UHID64);
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_UHID64);
   nltools::Log::info("sending request UHID64 to LPC");
 }
 
@@ -414,7 +410,7 @@ void PlaycontrollerProxy::notifyKeyBedActionHappened()
 
 void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type)
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_REQUEST));
   uint16_t v = type;
   *cmp << v;
   queueToPlaycontroller(cmp);
@@ -424,7 +420,17 @@ sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint6
 {
   return m_signalUHIDChanged.connectAndInit(s, m_uhid);
 }
+
 uint64_t PlaycontrollerProxy::getUHID() const
 {
   return m_uhid;
+}
+
+void PlaycontrollerProxy::setUHID(uint64_t uhid)
+{
+  if(m_uhid != uhid)
+  {
+    m_uhid = uhid;
+    m_signalUHIDChanged.send(m_uhid);
+  }
 }

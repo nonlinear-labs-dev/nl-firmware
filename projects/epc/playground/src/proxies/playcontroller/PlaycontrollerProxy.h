@@ -73,6 +73,7 @@ class PlaycontrollerProxy
   uint64_t getUHID() const;
   Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
   void notifyRibbonTouch(int ribbonsParameterID);
+  void setUHID(uint64_t uhid);
 
  private:
   void onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg);

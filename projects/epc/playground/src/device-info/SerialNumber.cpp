@@ -11,8 +11,10 @@ SerialNumber::SerialNumber(DeviceInformation* p)
 
 Glib::ustring SerialNumber::get() const
 {
-  using i16 = uint16_t;
+  if(m_id == 0)
+    return "0000-0000-0000-0000";
 
+  using i16 = uint16_t;
   const i16 p0 = m_id >> 48;
   const i16 p1 = m_id >> 32;
   const i16 p2 = m_id >> 16;
