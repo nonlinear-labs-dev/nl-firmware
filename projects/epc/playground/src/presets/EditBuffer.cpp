@@ -508,25 +508,22 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
     }
     else
     {
-      auto pm = getParent();
-
-      if(auto preset = pm->findPreset(newId))
+      if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
       {
-        if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
-        {
-          auto pPos = bank->getPresetPosition(preset);
-          auto bPos = pm->getBankPosition(bank->getUuid());
-          auto bName = bank->getName(true);
-          presetOriginDescription
-              = StringTools::buildString(bPos + 1, ": ", bName, " / ", pPos + 1, ": ", preset->getName());
-        }
-        else
-        {
-          presetOriginDescription = preset->getName();
-        }
+        auto pPos = bank->getPresetPosition(preset);
+        auto bPos = getParent()->getBankPosition(bank->getUuid());
+        auto bName = bank->getName(true);
+        presetOriginDescription
+            = StringTools::buildString(bPos + 1, ": ", bName, " / ", pPos + 1, ": ", preset->getName());
+      }
+      else
+      {
+        presetOriginDescription = preset->getName();
       }
     }
   }
+
+  resetModifiedIndicator(transaction);
 
   auto swap = UNDO::createSwapData(std::move(newId), std::move(presetOriginDescription));
 
@@ -816,6 +813,7 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
   initRecallValues(transaction);
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
+  m_deferredJobs.trigger();
 }
 
 void EditBuffer::undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg)

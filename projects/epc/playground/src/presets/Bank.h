@@ -110,6 +110,7 @@ class Bank : public AttributesOwner, public SyncedItem
   PresetManager *getPresetManager() const;
 
   bool isMidiSelectedBank() const;
+  bool hasPresets() const;
   Glib::ustring getComment();
 
  private:

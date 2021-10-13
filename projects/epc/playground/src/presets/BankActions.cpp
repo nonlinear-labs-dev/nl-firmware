@@ -55,7 +55,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto p = m_presetManager.findPreset(Uuid { uuid }))
     {
-      PresetUseCases useCase(p);
+      PresetUseCases useCase(p, m_settings);
       useCase.rename(newName);
     }
   });
@@ -94,13 +94,14 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(targetPreset)
     {
+      PresetUseCases targetUseCases(targetPreset, m_settings);
       if(sourcePreset)
       {
-        useCases.overwritePresetWithPreset(targetPreset, sourcePreset);
+        targetUseCases.overwriteWithPreset(sourcePreset);
       }
       else
       {
-        useCases.overwritePresetWithEditBuffer(targetPreset);
+        targetUseCases.overwriteWithEditBuffer(*m_presetManager.getEditBuffer());
       }
     }
     else
@@ -139,8 +140,8 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
   addAction("overwrite-preset-with-editbuffer", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToOverwrite = request->get("presetToOverwrite");
-    PresetManagerUseCases useCase(m_presetManager, m_settings);
-    useCase.overwritePresetWithEditBuffer(Uuid { presetToOverwrite });
+    PresetUseCases useCase(m_presetManager.findPreset(Uuid{ presetToOverwrite }), m_settings);
+    useCase.overwriteWithEditBuffer(*m_presetManager.getEditBuffer());
   });
 
   addAction("append-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
@@ -151,8 +152,8 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto bank = m_presetManager.findBank(Uuid { bankToAppendTo }))
     {
-      PresetManagerUseCases useCase(m_presetManager, m_settings);
-      useCase.appendEditBufferAsPresetWithUUID(bank, uuid);
+      BankUseCases bankUseCases(bank, m_settings);
+      bankUseCases.appendEditBufferAsPresetWithUUID(Uuid{uuid});
     }
   });
 
@@ -183,12 +184,12 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
   addAction("insert-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto selUuid = request->get("seluuid");
-    PresetManagerUseCases useCases(m_presetManager, m_settings);
 
     if(auto bank = m_presetManager.findBankWithPreset(Uuid { selUuid }))
     {
+      BankUseCases bankUseCases(bank, m_settings);
       auto desiredPresetPos = bank->getPresetPosition(Uuid { selUuid }) + 1;
-      useCases.insertEditBufferAsPresetAtPosition(bank, desiredPresetPos);
+      bankUseCases.insertEditBufferAtPosition(desiredPresetPos);
     }
   });
 
@@ -211,7 +212,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
       }
       else
       {
-        BankUseCases useCae(srcBank);
+        BankUseCases useCae(srcBank, m_settings);
         useCae.deletePreset(Uuid { presetUUID });
       }
     }
@@ -239,7 +240,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
     auto y = request->get("y");
     if(auto bank = m_presetManager.findBank(Uuid { uuid }))
     {
-      BankUseCases useCase(bank);
+      BankUseCases useCase(bank, m_settings);
       useCase.moveBank(x, y);
     }
   });
@@ -270,7 +271,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
     {
       if(auto srcBank = m_presetManager.findBank(Uuid { bankUuid }))
       {
-        BankUseCases useCase(tgtBank);
+        BankUseCases useCase(tgtBank, m_settings);
         useCase.dropBank(srcBank);
       }
     }
@@ -282,7 +283,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto tgtBank = m_presetManager.findBank(Uuid { bankUUID }))
     {
-      BankUseCases useCase(tgtBank);
+      BankUseCases useCase(tgtBank, m_settings);
       useCase.dropPresets(csv);
     }
   });
@@ -298,7 +299,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
     {
       if(auto tgtBank = m_presetManager.findBankWithPreset(Uuid { anchorUuid }))
       {
-        BankUseCases useCase(tgtBank);
+        BankUseCases useCase(tgtBank, m_settings);
         useCase.dropBankOnPreset(srcbank, Uuid { anchorUuid });
       }
     }
@@ -323,7 +324,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto preset = m_presetManager.findPreset(Uuid { presetUUID }))
     {
-      PresetUseCases useCase(preset);
+      PresetUseCases useCase(preset, m_settings);
       useCase.setAttribute(key, value);
     }
   });
@@ -335,7 +336,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto bank = m_presetManager.findBank(Uuid { bankUUID }))
     {
-      BankUseCases useCase(bank);
+      BankUseCases useCase(bank, m_settings);
       useCase.setAttribute(key, value);
     }
   });
@@ -346,7 +347,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto bank = m_presetManager.findBank(Uuid { bankUUID }))
     {
-      BankUseCases useCase(bank);
+      BankUseCases useCase(bank, m_settings);
       useCase.setCollapsed(value == "true");
     }
   });
@@ -541,7 +542,7 @@ void BankActions::insertBank(const std::shared_ptr<NetworkRequest>& request, siz
         if(bank != targetBank)
         {
           auto anchorPos = targetBank->getPresetPosition(Uuid { anchorUuid });
-          BankUseCases useCase(targetBank);
+          BankUseCases useCase(targetBank, m_settings);
           useCase.insertBank(bank, anchorPos + offset);
         }
       }
