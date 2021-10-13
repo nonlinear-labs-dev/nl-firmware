@@ -20,6 +20,8 @@
 #include "device-settings/Settings.h"
 #include "device-settings/SplitPointSyncParameters.h"
 #include "parameters/SplitPointParameter.h"
+#include "PresetUseCases.h"
+#include "StoreUseCaseHelper.h"
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
 #include <xml/VersionAttribute.h>
@@ -35,94 +37,6 @@ PresetManagerUseCases::PresetManagerUseCases(PresetManager& pm, Settings& settin
 {
 }
 
-void PresetManagerUseCases::overwritePresetWithEditBuffer(const Uuid& uuid)
-{
-  if(auto preset = m_presetManager.findPreset(uuid))
-  {
-    overwritePresetWithEditBuffer(preset);
-  }
-}
-
-void PresetManagerUseCases::overwritePresetWithEditBuffer(Preset* preset)
-{
-  auto scope = Application::get().getUndoScope()->startTransaction("Overwrite preset '%0'", preset->getName());
-  auto transaction = scope->getTransaction();
-
-  if(auto bank = dynamic_cast<Bank*>(preset->getParent()))
-  {
-    preset->copyFrom(transaction, m_presetManager.getEditBuffer());
-    m_presetManager.getEditBuffer()->undoableLoad(transaction, preset, false);
-    bank->selectPreset(transaction, preset->getUuid());
-    m_presetManager.selectBank(transaction, bank->getUuid());
-
-    onStore(transaction, preset);
-
-    assert(m_presetManager.getSelectedBank() == bank);
-    assert(bank->getSelectedPreset() == preset);
-    assert(m_presetManager.getEditBuffer()->getUUIDOfLastLoadedPreset() == preset->getUuid());
-  }
-}
-
-void PresetManagerUseCases::overwritePresetWithPreset(Preset* target, Preset* source)
-{
-  auto scope = Application::get().getUndoScope()->startTransaction("Overwrite preset '%0' with '%1'", target->getName(),
-                                                                   source->getName());
-  if(auto targetBank = dynamic_cast<Bank*>(target->getParent()))
-  {
-    auto transaction = scope->getTransaction();
-    target->copyFrom(transaction, source);
-    targetBank->selectPreset(transaction, target->getUuid());
-    m_presetManager.selectBank(transaction, targetBank->getUuid());
-
-    onStore(transaction, target);
-
-    assert(m_presetManager.getSelectedBank() == targetBank);
-    assert(targetBank->getSelectedPreset() == target);
-  }
-}
-
-void PresetManagerUseCases::insertEditBufferAsPresetWithUUID(Bank* bank, size_t pos, const std::string& uuid)
-{
-  Uuid id;
-
-  if(uuid.empty())
-  {
-    id.generate();
-  }
-  else
-  {
-    id = Uuid { uuid };
-  }
-
-  auto pm = Application::get().getPresetManager();
-  auto scope = Application::get().getUndoScope()->startTransaction("Insert preset at position %0", pos + 1);
-  auto transaction = scope->getTransaction();
-  auto ebIsModified = m_presetManager.getEditBuffer()->isModified();
-
-  auto preset = bank->insertPreset(transaction, pos, std::make_unique<Preset>(bank, *pm->getEditBuffer(), id));
-
-  m_presetManager.selectBank(transaction, bank->getUuid());
-  bank->selectPreset(transaction, preset->getUuid());
-
-  if(ebIsModified)
-    preset->guessName(transaction);
-
-  onStore(transaction, preset);
-
-  assert(m_presetManager.getSelectedBank() == bank);
-  assert(bank->getSelectedPreset() == preset);
-}
-
-void PresetManagerUseCases::insertEditBufferAsPresetAtPosition(Bank* bank, size_t pos)
-{
-  insertEditBufferAsPresetWithUUID(bank, pos, "");
-}
-
-void PresetManagerUseCases::appendEditBufferToBank(Bank* bank)
-{
-  insertEditBufferAsPresetWithUUID(bank, bank->getNumPresets(), "");
-}
-
 void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("Append preset to Bank %0", bank->getName(true));
@@ -134,15 +48,10 @@ void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
   m_presetManager.selectBank(transaction, bank->getUuid());
   bank->selectPreset(transaction, newPreset->getUuid());
 
-  onStore(transaction, newPreset);
+  StoreUseCaseHelper::onStore(transaction, *newPreset, m_presetManager, m_settings);
 
   assert(m_presetManager.getSelectedBank() == bank);
   assert(bank->getSelectedPreset() == newPreset);
-}
-
-void PresetManagerUseCases::appendEditBufferAsPresetWithUUID(Bank* bank, const std::string& uuid)
-{
-  insertEditBufferAsPresetWithUUID(bank, bank->getNumPresets(), uuid);
 }
 
 Bank* PresetManagerUseCases::createBankAndStoreEditBuffer()
@@ -155,39 +64,11 @@ Bank* PresetManagerUseCases::createBankAndStoreEditBuffer()
   m_presetManager.selectBank(transaction, bank->getUuid());
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager.getEditBuffer()->undoableLoad(transaction, preset, false);
-  onStore(transaction, preset);
+  StoreUseCaseHelper::onStore(transaction, *preset, m_presetManager, m_settings);
   return bank;
 }
 
-void PresetManagerUseCases::onStore(UNDO::Transaction* transaction, Preset* preset)
-{
-  if(preset->getType() == SoundType::Split)
-  {
-    updateSyncSettingOnPresetStore(transaction);
-  }
-
-  m_presetManager.onPresetStored();
-}
-
-void PresetManagerUseCases::updateSyncSettingOnPresetStore(UNDO::Transaction* transaction) const
-{
-  auto eb = m_presetManager.getEditBuffer();
-  if(auto s = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I }))
-  {
-    SyncSplitSettingUseCases useCase(*m_settings.getSetting<SplitPointSyncParameters>(), m_presetManager);
-
-    if(s->hasOverlap())
-    {
-      useCase.disableSyncSetting(transaction);
-    }
-    else
-    {
-      useCase.enableSyncSetting(transaction);
-    }
-  }
-}
-
-void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y,
+Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y,
                                     const std::optional<Glib::ustring>& name)
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("New Bank");
@@ -200,9 +81,10 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
     bank->setName(scope->getTransaction(), name.value());
 
   m_presetManager.selectBank(scope->getTransaction(), bank->getUuid());
+  return bank;
 }
 
-void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y)
+Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y)
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("New Bank");
   auto transaction = scope->getTransaction();
@@ -213,6 +95,7 @@ void PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring&
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager.selectBank(transaction, bank->getUuid());
   m_presetManager.getEditBuffer()->undoableLoad(transaction, preset, false);
+  return bank;
 }
 
 void PresetManagerUseCases::selectBank(Bank* bank)

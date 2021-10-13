@@ -53,7 +53,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               auto newName = request->get("name");
               if(auto b = m_presetManager.findBank(Uuid { uuid }))
               {
-                BankUseCases useCase(b);
+                BankUseCases useCase(b, m_settings);
                 useCase.renameBank(newName);
               }
             });
