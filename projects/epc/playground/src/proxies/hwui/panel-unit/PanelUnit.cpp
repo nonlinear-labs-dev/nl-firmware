@@ -139,7 +139,7 @@ void PanelUnit::setupFocusAndMode()
 
 void PanelUnit::setupFocusAndMode(FocusAndMode focusAndMode)
 {
-  m_panelFocusAndModeSetting.updateFromHWUI(focusAndMode);
+  m_panelFocusAndModeSetting.set(focusAndMode);
   installUsageMode(focusAndMode);
 
   m_editPanel.setupFocusAndMode(focusAndMode);

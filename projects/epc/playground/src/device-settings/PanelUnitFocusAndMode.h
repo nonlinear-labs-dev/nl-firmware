@@ -6,7 +6,7 @@ class PanelUnitFocusAndMode : public Setting
 {
  public:
   using Setting::Setting;
-  void updateFromHWUI(FocusAndMode focusAndMode);
+  void set(FocusAndMode fam);
   [[nodiscard]] FocusAndMode getState() const;
 
   void load(const Glib::ustring& text, Initiator initiator) override;

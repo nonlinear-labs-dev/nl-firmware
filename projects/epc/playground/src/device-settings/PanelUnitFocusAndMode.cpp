@@ -3,11 +3,7 @@
 void PanelUnitFocusAndMode::load(const Glib::ustring& text, Initiator initiator)
 {
   auto newFocus = FocusAndMode::decode(text);
-  if(newFocus != m_focusAndMode)
-  {
-    m_focusAndMode = newFocus;
-    notify();
-  }
+  set(newFocus);
 }
 
 Glib::ustring PanelUnitFocusAndMode::save() const
@@ -20,7 +16,7 @@ Glib::ustring PanelUnitFocusAndMode::getDisplayString() const
   return "unused";
 }
 
-void PanelUnitFocusAndMode::updateFromHWUI(FocusAndMode fam)
+void PanelUnitFocusAndMode::set(FocusAndMode fam)
 {
   if(fam != m_focusAndMode)
   {
