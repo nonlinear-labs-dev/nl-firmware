@@ -30,7 +30,7 @@ Glib::ustring UniqueHardwareID::get() const
 
 void UniqueHardwareID::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-  writer.writeTextElement("serial-number", std::to_string(m_id));
+  writer.writeTextElement("unique-hardware-id", std::to_string(m_id));
 }
 
 void UniqueHardwareID::onIDReceived(uint64_t id)
