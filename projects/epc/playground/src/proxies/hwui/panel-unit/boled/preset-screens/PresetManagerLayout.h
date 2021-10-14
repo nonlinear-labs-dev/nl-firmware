@@ -34,6 +34,7 @@ class PresetManagerLayout : public Layout
   bool onRotary(int inc, ButtonModifiers modifiers) override;
 
   bool animateSelectedPreset(std::function<void()> cb);
+  bool animateSomePreset(Preset* preset, std::function<void()> cb);
   void animateSelectedPresetIfInLoadPartMode(std::function<void()> cb);
 
   std::pair<size_t, size_t> getSelectedPosition() const;

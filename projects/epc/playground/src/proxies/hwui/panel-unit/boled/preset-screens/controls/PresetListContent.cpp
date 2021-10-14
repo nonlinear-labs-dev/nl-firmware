@@ -2,6 +2,7 @@
 #include "PresetListEntry.h"
 #include "Application.h"
 #include <presets/Bank.h>
+#include <presets/Preset.h>
 
 #include <utility>
 #include "presets/PresetManager.h"
@@ -20,6 +21,20 @@ bool PresetListContent::animateSelectedPreset(std::function<void()> cb)
   {
     m_secondPreset->animate(std::move(cb));
     return true;
+  }
+  return false;
+}
+
+bool PresetListContent::animateSomePreset(Preset* p, std::function<void()> cb)
+{
+  if(p)
+  {
+    if(auto targetBank = dynamic_cast<Bank *>(p->getParent()))
+    {
+      auto presetPos = targetBank->getPresetPosition(p);
+      setup(targetBank, presetPos);
+      return animateSelectedPreset(std::move(cb));
+    }
   }
   return false;
 }

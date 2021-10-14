@@ -28,8 +28,9 @@ class AppendOverwriteInsertButtonMenu : public ButtonMenu
   PresetStoreModeSettings indexToEnum(size_t i) const;
   size_t enumToIndex(PresetStoreModeSettings i) const;
 
-  void pushRenameScreen();
-  bool animate();
+  void pushRenameScreen(Preset* target);
+  bool animateSelectedPreset();
+  bool animateSomePreset(Preset* target);
 
   void executeAction();
 

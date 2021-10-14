@@ -363,6 +363,11 @@ bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
   return m_presets->animateSelectedPreset(std::move(cb));
 }
 
+bool PresetManagerLayout::animateSomePreset(Preset *preset, std::function<void()> cb)
+{
+  return m_presets->animateSomePreset(preset, std::move(cb));
+}
+
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
   if(Application::get().getHWUI()->isInLoadToPart())

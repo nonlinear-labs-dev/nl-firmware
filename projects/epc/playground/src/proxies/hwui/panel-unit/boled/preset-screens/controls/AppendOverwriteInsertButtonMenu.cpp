@@ -53,7 +53,7 @@ size_t AppendOverwriteInsertButtonMenu::enumToIndex(PresetStoreModeSettings i) c
   return static_cast<size_t>(i);
 }
 
-bool AppendOverwriteInsertButtonMenu::animate()
+bool AppendOverwriteInsertButtonMenu::animateSelectedPreset()
 {
   auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout();
 
@@ -67,6 +67,23 @@ bool AppendOverwriteInsertButtonMenu::animate()
     Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
   }
 
+  return false;
+}
+
+bool AppendOverwriteInsertButtonMenu::animateSomePreset(Preset* target)
+{
+  auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout();
+
+  if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout*>(currentLayout.get()))
+  {
+    return presetManagerLayout->animateSomePreset(target, [] {
+                                                    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode{UIFocus::Presets, UIMode::Select});
+    });
+  }
+  else
+  {
+    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode{UIFocus::Presets, UIMode::Select});
+  }
   return false;
 }
 
@@ -93,53 +110,48 @@ void AppendOverwriteInsertButtonMenu::executeAction()
       switch(setting)
       {
         case PresetStoreModeSettings::PRESET_STORE_MODE_APPEND:
-          bankUseCases.appendEditBuffer();
           if(modified)
-          {
-            pushRenameScreen();
-          }
+            pushRenameScreen(bankUseCases.appendEditBuffer());
+          else
+            bankUseCases.appendEditBuffer();
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_INSERT:
-          bankUseCases.insertEditBufferAtPosition(selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
-
           if(modified)
-            pushRenameScreen();
+            pushRenameScreen(bankUseCases.insertEditBufferAtPosition(selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1));
           else
-            animate();
+          {
+            auto newPreset = bankUseCases.insertEditBufferAtPosition(selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
+            animateSomePreset(newPreset);
+          }
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_OVERWRITE:
           presetUseCases.overwriteWithEditBuffer(*eb);
-          animate();
+          animateSelectedPreset();
           break;
       }
     }
     else
     {
-      bankUseCases.insertEditBufferAtPosition(0);
-      pushRenameScreen();
+      auto preset = bankUseCases.insertEditBufferAtPosition(0);
+      pushRenameScreen(preset);
     }
   }
   else
   {
-    useCases.createBankAndStoreEditBuffer();
+    auto newBank = useCases.createBankAndStoreEditBuffer();
+    animateSomePreset(newBank->getPresetAt(0));
   }
 }
 
-void AppendOverwriteInsertButtonMenu::pushRenameScreen()
+void AppendOverwriteInsertButtonMenu::pushRenameScreen(Preset* target)
 {
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new RenamePresetLayout(
       [=](const Glib::ustring& newName) {
-        if(auto bank = Application::get().getPresetManager()->getSelectedBank())
-        {
-          if(auto preset = bank->getSelectedPreset())
-          {
-            PresetUseCases useCases(preset, *Application::get().getSettings());
-            useCases.rename(newName);
-          }
-        }
-        animate();
+        PresetUseCases useCases(target, *Application::get().getSettings());
+        useCases.rename(newName);
+        animateSomePreset(target);
       },
-      [=]() { animate(); }));
+      [=]() { animateSelectedPreset(); }));
 }

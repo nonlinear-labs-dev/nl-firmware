@@ -51,3 +51,8 @@ bool PresetListBase::animateSelectedPreset(std::function<void()> cb)
 {
   return m_content->animateSelectedPreset(std::move(cb));
 }
+
+bool PresetListBase::animateSomePreset(Preset* target, std::function<void()> cb)
+{
+  return m_content->animateSomePreset(target, std::move(cb));
+}
