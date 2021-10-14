@@ -1,9 +1,9 @@
 [Unit]
-Description=safety reset the playcontroller, and obtain, save and display Unique Hardware ID
+Description=safety reset the playcontroller (for older motherboards), obtain and save the Unique Hardware ID
 After=systemd-modules-load.service
 Before=install-update-from-usb.service
 
 [Service]
 Type=oneshot
 ExecStart=-@C15_INSTALL_PATH@/scripts/reset-playcontroller.sh
-ExecStart=-@C15_INSTALL_PATH@/scripts/display-splashscreen.sh showUHID
+ExecStart=-@C15_INSTALL_PATH@/scripts/display-splashscreen.sh
