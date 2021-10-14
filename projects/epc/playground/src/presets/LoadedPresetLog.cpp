@@ -14,7 +14,7 @@ namespace std
 LoadedPresetLog::LoadedPresetLog()
     : m_throttler(std::chrono::milliseconds(500))
     , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(PLAYGROUND_PRESETLOAD_LOG_PORT,
-                                                             [this](const auto &in) { return onApiCall(in); }))
+                                                             [this](auto, const auto &in) { return onApiCall(in); }))
 {
 }
 

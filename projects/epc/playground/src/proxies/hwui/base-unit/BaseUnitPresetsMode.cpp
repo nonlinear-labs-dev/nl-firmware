@@ -17,7 +17,7 @@ void BaseUnitPresetsMode::setup()
     if(state)
       installButtonRepeat([]() {
         auto pm = Application::get().getPresetManager();
-        PresetManagerUseCases useCase(pm);
+        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
         useCase.selectPreviousPreset();
       });
     else
@@ -30,7 +30,7 @@ void BaseUnitPresetsMode::setup()
     if(state)
       installButtonRepeat([]() {
         auto pm = Application::get().getPresetManager();
-        PresetManagerUseCases useCase(pm);
+        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
         useCase.selectNextPreset();
       });
     else
@@ -47,14 +47,14 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto eb = app.getPresetManager()->getEditBuffer();
   auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
 
-  EditBufferUseCases useCase(eb);
+  EditBufferUseCases useCase(*eb);
   if(hwui->isInLoadToPart() && eb->isDual())
   {
     if(auto preset = eb->getParent()->getSelectedPreset())
-      useCase.undoableLoadToPart(preset, VoiceGroup::I, currentVoiceGroup);
+      useCase.loadToPart(preset, VoiceGroup::I, currentVoiceGroup);
   }
   else
   {
-    useCase.undoableLoad(eb->getParent()->getSelectedPreset());
+    useCase.load(eb->getParent()->getSelectedPreset());
   }
 }

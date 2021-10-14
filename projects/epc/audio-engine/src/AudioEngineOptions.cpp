@@ -21,7 +21,6 @@ void add(Glib::OptionGroup &mainGroup, T &ref, const std::string &longName, cons
 
 AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
 {
-
   Glib::ustring additionalMidiDelayString;
 
   Glib::OptionGroup mainGroup("common", "common options");
@@ -110,6 +109,11 @@ std::string AudioEngineOptions::getAudioOutputDeviceName() const
 int AudioEngineOptions::getFramesPerPeriod() const
 {
   return m_framesPerPeriod;
+}
+
+void AudioEngineOptions::setFramesPerPeriod(int f)
+{
+  m_framesPerPeriod = f;
 }
 
 int AudioEngineOptions::getNumPeriods() const

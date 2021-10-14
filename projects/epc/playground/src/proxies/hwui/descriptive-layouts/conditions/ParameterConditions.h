@@ -24,17 +24,23 @@ namespace DescriptiveLayouts
       sigc::connection m_paramConnection;
     };
 
+    template<typename tCondition>
+    class InvertedCondition : public tCondition
+    {
+     public:
+      bool check() const override {
+        return !tCondition::check();
+      }
+    };
+
     class IsParameterModulateable : public ParameterCondition
     {
      public:
       bool check() const override;
     };
 
-    class IsParameterUnmodulateable : public IsParameterModulateable
-    {
-     public:
-      bool check() const override;
-    };
+    class IsParameterUnmodulateable : public InvertedCondition<IsParameterModulateable>
+    {};
 
     class HasNoMcSelected : public ParameterCondition
     {
@@ -42,10 +48,8 @@ namespace DescriptiveLayouts
       bool check() const override;
     };
 
-    class HasMcSelected : public HasNoMcSelected
+    class HasMcSelected : public InvertedCondition<HasNoMcSelected>
     {
-     public:
-      bool check() const override;
     };
   };
 }

@@ -217,6 +217,27 @@ namespace nltools
       }
     };
 
+    struct BufferUnderrunsChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::BufferUnderrunsChanged;
+      }
+
+      uint64_t numUnderruns = 0;
+      int32_t framesPerPeriod = 0;
+    };
+
+    struct SetFramesPerPeriod
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetFramesPerPeriod;
+      }
+
+      int32_t framesPerPeriod = 0;
+    };
+
     namespace Setting
     {
       struct NoteShiftMessage
@@ -226,7 +247,7 @@ namespace nltools
           return MessageType::NoteShiftSetting;
         }
 
-        int m_shift;
+        int m_shift = 0;
       };
 
       struct FlacRecorderAutoStart
@@ -291,9 +312,8 @@ namespace nltools
           LENGTH = 5
         };
 
-        typedef std::array<std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)>,
-                           static_cast<size_t>(RoutingIndex::LENGTH)>
-            tRoutingMappings;
+        typedef std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)> tEntry;
+        typedef std::array<tEntry, static_cast<size_t>(RoutingIndex::LENGTH)> tRoutingMappings;
 
         MidiReceiveChannel receiveChannel;
         MidiReceiveChannelSplit receiveSplitChannel;
@@ -313,7 +333,7 @@ namespace nltools
         AftertouchCC aftertouchcc;
         BenderCC bendercc;
 
-        bool globalLocalEnable = true;
+        bool localEnable = true;
         tRoutingMappings routings {};
       };
 
@@ -531,6 +551,7 @@ namespace nltools
 
       size_t hwSource = 0;  // 0...7
       double position = 0;  // -1...1
+      HWChangeSource source;
     };
 
     namespace detail

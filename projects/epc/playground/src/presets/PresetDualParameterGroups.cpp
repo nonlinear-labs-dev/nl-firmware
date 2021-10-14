@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <testing/TestRootDocument.h>
 #include "EditBuffer.h"
 #include "PresetDualParameterGroups.h"
 #include "PresetManager.h"
@@ -8,6 +7,7 @@
 #include <presets/PresetParameterGroup.h>
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
+#include <sync/SyncMasterMockRoot.h>
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent)
     : AttributesOwner(parent)
@@ -97,8 +97,7 @@ void PresetDualParameterGroups::writeGroups(Writer &writer, const Preset *other,
 
   static std::vector<std::string> parameterGroupsThatAreTreatedAsGlobalForLayerSounds = { "Unison", "Mono" };
 
-  auto isParameterGroupPresentInVGII = [&](GroupId id)
-  {
+  auto isParameterGroupPresentInVGII = [&](GroupId id) {
     auto &v = parameterGroupsThatAreTreatedAsGlobalForLayerSounds;
     auto it = std::find(v.begin(), v.end(), id.getName());
     return it != v.end();
@@ -220,6 +219,9 @@ PresetParameterGroup *PresetDualParameterGroups::findOrCreateParameterGroup(cons
     vgMap[id] = std::make_unique<PresetParameterGroup>(*schemeGroup);
     return findParameterGroup(id);
   }
+  std::stringstream ss;
+  ss << "Could not find Parameter in Preset nor EditBuffer. ID: " << id.toString();
+  nltools_detailedAssertAlways(false, ss.str());
 }
 
 PresetDualParameterGroups::tParameterGroups PresetDualParameterGroups::getGroups(const VoiceGroup &vg) const
@@ -234,6 +236,6 @@ PresetDualParameterGroups::tParameterGroups PresetDualParameterGroups::getGroups
 
 ParameterGroupSet &PresetDualParameterGroups::getDataScheme()
 {
-  static ParameterGroupSet sDataScheme(nullptr);
+  static ParameterGroupSet sDataScheme(&SyncMasterMockRoot::get());
   return sDataScheme;
 }

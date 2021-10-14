@@ -277,3 +277,8 @@ void ParameterGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transa
     setAttribute(transaction, "origin-I-vg", toString(VoiceGroup::II));
   }
 }
+
+const ParameterGroupSet::tParamArray &ParameterGroupSet::getParameters() const
+{
+  return m_parameterGroups;
+}

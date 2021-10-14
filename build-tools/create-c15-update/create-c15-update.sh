@@ -201,6 +201,7 @@ print_C15_version_strings() {
     if [ $UPDATE_EPC == 1 ]; then
         FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
         rm -f $FILE
+	mkdir -p $BINARY_DIR/build-tools/epc/tmp 
         tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar ./update/NonLinuxOverlay.tar.gz
         tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/NonLinuxOverlay.tar.gz ./usr/local/C15/playground/playground
         FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground

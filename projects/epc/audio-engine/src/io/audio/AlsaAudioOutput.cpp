@@ -84,6 +84,7 @@ void AlsaAudioOutput::open(const std::string& deviceName)
 
 void AlsaAudioOutput::start()
 {
+  AudioOutput::start();
   m_run = true;
   m_task = std::make_unique<HighPriorityTask>(0, [=]() { doBackgroundWork(); });
 }
@@ -92,6 +93,7 @@ void AlsaAudioOutput::stop()
 {
   m_run = false;
   m_task.reset();
+  AudioOutput::stop();
 }
 
 void AlsaAudioOutput::doBackgroundWork()
@@ -138,6 +140,8 @@ void AlsaAudioOutput::handleWriteError(snd_pcm_sframes_t result)
 {
   if(result < 0)
   {
+    reportBufferUnderrun();
+
     if(m_options->areXRunsFatal())
     {
       throw std::runtime_error("XRun");

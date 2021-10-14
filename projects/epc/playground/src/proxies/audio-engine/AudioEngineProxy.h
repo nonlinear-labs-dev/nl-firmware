@@ -4,8 +4,6 @@
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <groups/MonoGroup.h>
 #include <tools/RecursionGuard.h>
-#include <presets/PresetManager.h>
-#include "playground.h"
 
 namespace UNDO
 {
@@ -15,11 +13,13 @@ namespace UNDO
 class EditBuffer;
 class Uuid;
 class Settings;
+class PresetManager;
+class PlaycontrollerProxy;
 
 class AudioEngineProxy : public sigc::trackable
 {
  public:
-  AudioEngineProxy();
+  AudioEngineProxy(PresetManager& pm, Settings& settings, PlaycontrollerProxy& playProxy);
 
   template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
   {
@@ -75,4 +75,7 @@ class AudioEngineProxy : public sigc::trackable
   Throttler m_sendMidiSettingThrottler { std::chrono::milliseconds { 250 } };
 
   std::vector<sigc::connection> m_settingConnections;
+  PresetManager& m_presetManager;
+  Settings& m_settings;
+  PlaycontrollerProxy& m_playcontrollerProxy;
 };

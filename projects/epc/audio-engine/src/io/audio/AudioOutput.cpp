@@ -7,10 +7,16 @@ AudioOutput::AudioOutput()
 
 void AudioOutput::start()
 {
+  m_numUnderruns = 0;
 }
 
 void AudioOutput::stop()
 {
+}
+
+size_t AudioOutput::getNumUnderruns() const
+{
+  return m_numUnderruns;
 }
 
 AudioOutput::Performance AudioOutput::exhaustPerformance()
@@ -53,4 +59,9 @@ void AudioOutput::reportPerformanceRatio(double ratio)
 
   m_performance.overallMin = std::min(m_performance.overallMin, ratio);
   m_performance.overallMax = std::max(m_performance.overallMax, ratio);
+}
+
+void AudioOutput::reportBufferUnderrun()
+{
+  m_numUnderruns++;
 }

@@ -1,0 +1,32 @@
+set -e
+
+useradd -m -u ${USER_ID} bob-the-builder
+cd /home/bob-the-builder
+
+BOBS_SCRIPT=$(cat <<'END_HEREDOC'
+set -e
+cd /home/bob-the-builder
+curl https://install.meteor.com/ | sh
+export PATH=/home/bob-the-builder/.meteor:$PATH
+
+meteor create --minimal meteor-build
+cd meteor-build
+
+for m in @METEOR_PACKAGES@; do
+  meteor add $m
+done
+
+for m in @NPM_PACKAGES@; do
+  npm install $m
+done
+
+meteor remove static-html
+
+END_HEREDOC
+)
+
+runuser -l bob-the-builder -c "$BOBS_SCRIPT"
+
+DIFFDIR=$(mount | grep overlay | grep -o "upperdir=.*" | sed 's/upperdir=\([^,]*\).*/\1/g')
+rm -f /builddir/diff
+ln -s ${DIFFDIR}/home/bob-the-builder /builddir/diff

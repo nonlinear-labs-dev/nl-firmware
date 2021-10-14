@@ -73,13 +73,18 @@ bool AppendOverwriteInsertButtonMenu::animate()
 void AppendOverwriteInsertButtonMenu::executeAction()
 {
   auto pm = Application::get().getPresetManager();
-  PresetManagerUseCases useCases(pm);
+  auto eb = pm->getEditBuffer();
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCases(*pm, *settings);
   auto actionPosition = m_parent.getSelectedPosition();
 
   if(auto selectedBank = pm->getBankAt(actionPosition.first))
   {
+    BankUseCases bankUseCases(selectedBank, *settings);
     if(auto selectedPreset = selectedBank->getPresetAt(actionPosition.second))
     {
+      PresetUseCases presetUseCases(selectedPreset, *settings);
+
       Application::get().getUndoScope()->resetCukooTransaction();
 
       auto setting = Application::get().getSettings()->getSetting<PresetStoreModeSetting>()->get();
@@ -88,7 +93,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
       switch(setting)
       {
         case PresetStoreModeSettings::PRESET_STORE_MODE_APPEND:
-          useCases.appendEditBufferToBank(selectedBank);
+          bankUseCases.appendEditBuffer();
           if(modified)
           {
             pushRenameScreen();
@@ -96,8 +101,8 @@ void AppendOverwriteInsertButtonMenu::executeAction()
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_INSERT:
-          useCases.insertEditBufferAsPresetAtPosition(selectedBank,
-                                                      selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
+          bankUseCases.insertEditBufferAtPosition(selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
+
           if(modified)
             pushRenameScreen();
           else
@@ -105,14 +110,14 @@ void AppendOverwriteInsertButtonMenu::executeAction()
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_OVERWRITE:
-          useCases.overwritePresetWithEditBuffer(selectedPreset);
+          presetUseCases.overwriteWithEditBuffer(*eb);
           animate();
           break;
       }
     }
     else
     {
-      useCases.insertEditBufferAsPresetAtPosition(selectedBank, 0);
+      bankUseCases.insertEditBufferAtPosition(0);
       pushRenameScreen();
     }
   }
@@ -130,7 +135,7 @@ void AppendOverwriteInsertButtonMenu::pushRenameScreen()
         {
           if(auto preset = bank->getSelectedPreset())
           {
-            PresetUseCases useCases(preset);
+            PresetUseCases useCases(preset, *Application::get().getSettings());
             useCases.rename(newName);
           }
         }

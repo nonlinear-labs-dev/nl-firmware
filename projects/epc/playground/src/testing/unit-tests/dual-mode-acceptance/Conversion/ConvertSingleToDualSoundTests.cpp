@@ -21,10 +21,9 @@ TEST_CASE("Convert Single Sound to Split")
   auto globalVolume = EBL::getMasterVolume();
 
   {
+    TestHelper::initSingleEditBuffer();
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-
-    TestHelper::initSingleEditBuffer(transaction);
     voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "13 voices");
@@ -50,10 +49,9 @@ TEST_CASE("Convert Single Sound to Split")
 
     const auto globalMasterHash = EBL::createValueHash(EBL::getMaster());
 
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
-    eb->undoableConvertToDual(transaction, SoundType::Split);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToSplit(VoiceGroup::I);
 
     THEN("Unison Voices Correct")
     {
@@ -132,10 +130,10 @@ TEST_CASE("Convert Single Sound to Layer")
   auto globalVolume = EBL::getMasterVolume();
 
   {
+    TestHelper::initSingleEditBuffer();
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    TestHelper::initSingleEditBuffer(transaction);
     voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "13 voices");
@@ -160,10 +158,10 @@ TEST_CASE("Convert Single Sound to Layer")
 
     const auto oldMasterHash = EBL::createValueHash(EBL::getMaster());
 
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
+
     auto eb = TestHelper::getEditBuffer();
-    eb->undoableConvertToDual(transaction, SoundType::Layer);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToLayer(VoiceGroup::I);
 
     THEN("Unison Voices Correct")
     {

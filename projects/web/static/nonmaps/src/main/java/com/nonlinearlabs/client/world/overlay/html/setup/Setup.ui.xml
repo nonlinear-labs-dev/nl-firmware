@@ -1,0 +1,1016 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+	<g:HTMLPanel>
+		<div class="tabcontainer w36 html-dialog">
+
+			<div class="tab">
+				<g:Button styleName="tabheader" ui:field="deviceSettingsButton">Device Settings
+				</g:Button>
+				<g:Button styleName="tabheader" ui:field="uiSettingsButton">GUI Settings
+				</g:Button>
+				<g:Button styleName="tabheader" ui:field="uiMidiButton">MIDI Settings
+				</g:Button>
+				<g:Button styleName="tabheader" ui:field="uiFlacButton">Recorder
+				</g:Button>
+				<g:Button styleName="tabheader" ui:field="systemInfoButton">System Info
+				</g:Button>
+				<g:Button styleName="tabheader" ui:field="aboutButton">About</g:Button>
+			</div>
+
+			<div ui:field="deviceSettings" class="tabcontent">
+				<div class="forms-container">
+					<div class="mt1"></div>
+					<div class="eins-he">
+						<div class="w70p">
+							<p>Velocity Curve</p>
+						</div>
+						<div class="w30p">
+							<g:ListBox ui:field="velocityCurve">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w70p">
+							<p>Aftertouch Curve</p>
+						</div>
+						<div class="w30p">
+							<g:ListBox ui:field="aftertouchCurve">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w70p">
+							<p>Bender Curve</p>
+						</div>
+						<div class="w30p">
+							<g:ListBox ui:field="benderCurve">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Pedal Settings</h3>
+					</div>
+
+					<div class="eins-he">
+						<div class="w20p">
+							<p>Pedal 1</p>
+						</div>
+						<div class="w15p">
+							<g:Label ui:field="pedal1DisplayString" styleName="gui-label-1">90 %</g:Label>
+						</div>
+						<div class="w25p">
+							<input type="range" ui:field="pedal1Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
+						</div>
+						<div class="w5p"></div>
+						<div class="w35p">
+							<g:ListBox ui:field="pedal1Type">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w20p">
+							<p>Pedal 2</p>
+						</div>
+						<div class="w15p">
+							<g:Label ui:field="pedal2DisplayString" styleName="gui-label-1">90 %</g:Label>
+						</div>
+						<div class="w25p">
+							<input type="range" ui:field="pedal2Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
+						</div>
+						<div class="w5p"></div>
+						<div class="w35p">
+							<g:ListBox ui:field="pedal2Type">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w20p">
+							<p>Pedal 3</p>
+						</div>
+						<div class="w15p">
+							<g:Label ui:field="pedal3DisplayString" styleName="gui-label-1">90 %</g:Label>
+						</div>
+						<div class="w25p">
+							<input type="range" ui:field="pedal3Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
+						</div>
+						<div class="w5p"></div>
+						<div class="w35p">
+							<g:ListBox ui:field="pedal3Type">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w20p">
+							<p>Pedal 4</p>
+						</div>
+						<div class="w15p">
+							<g:Label ui:field="pedal4DisplayString" styleName="gui-label-1">90 %</g:Label>
+						</div>
+						<div class="w25p">
+							<input type="range" ui:field="pedal4Slider" class="slider-b" min="0" max="1" step="0.001" disabled="disabled"></input>
+						</div>
+						<div class="w5p"></div>
+						<div class="w35p">
+							<g:ListBox ui:field="pedal4Type">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w70p">
+							<p>Preset Glitch Suppression</p>
+						</div>
+						<div class="w30p mw-fit-content">
+							<g:RadioButton ui:field="presetGlitchSuppressionOn"
+								name="rad_pgs" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="presetGlitchSuppressionOff"
+								name="rad_pgs" value="false"></g:RadioButton>
+						</div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w70p">
+							<p>Sync Parts across User Interfaces</p>
+						</div>
+						<div class="w30p mw-fit-content">
+							<g:RadioButton ui:field="syncPartsOn"
+								name="rad_syncvg" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="syncPartsOff"
+								name="rad_syncvg" value="false"></g:RadioButton>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w35p">
+							<p>Edit Smoothing Time</p>
+						</div>
+						<div class="w25p">
+							<g:Label ui:field="editSmoothingTimeDisplayString" styleName="gui-label-1">90 %</g:Label>
+						</div>
+						<div class="w40p">
+							<input type="range" ui:field="editSmoothingTimeSlider" class="slider-a" min="0" max="1" step="0.001" value="0"></input>
+						</div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w35p">
+							<p>Transition Time</p>
+						</div>
+						<div class="w25p">
+							<g:Label ui:field="transitionTimeDisplayString" styleName="gui-label-1"></g:Label>
+						</div>
+						<div class="w40p">
+							<input type="range" ui:field="transitionTimeSlider" class="slider-a" min="0" max="1" step="0.001" value="0"></input>
+						</div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w35p">
+							<p>Tune Reference</p>
+						</div>
+						<div class="w25p">
+							<g:Label ui:field="tuneReferenceDisplayString" styleName="gui-label-1"></g:Label>
+						</div>
+						<div class="w40p">
+							<input type="range" ui:field="tuneReferenceSlider" class="slider-a" min="0" max="1" step="0.0001" value="0"></input>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Init Sound</p>
+						</div>
+						<div class="w20p fl-j-center">
+							<g:Button ui:field="storeInitSound" ui:text="Store"></g:Button>
+						</div>
+						<div class="w20p fl-j-center">
+							<g:Button ui:field="resetInitSound" ui:text="Reset"></g:Button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div ui:field="uiSettings" class="tabcontent">
+
+				<div class="forms-container">
+					<div class="mt1"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Selection Auto Scroll</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="selectionAutoScroll">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Edit Parameter</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="editParameter">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Highlight Changed Parameters</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="highlightChangedOn" name="rad_hcp" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="highlightChangedOff" name="rad_hcp" value="false"></g:RadioButton>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Show Context Menus</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="showContextMenusOn" name="rad_scm" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="showContextMenusOff" name="rad_scm" value="false"></g:RadioButton>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Preset Drag and Drop</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="presetDragDropOn" name="rad_pdd" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="presetDragDropOff" name="rad_pdd" value="false"></g:RadioButton>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Display Scaling Factor</p>
+						</div>
+
+						<div class="w40p">
+							<g:ListBox ui:field="scalingFactor">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Stripe Brightness</p>
+						</div>
+
+						<div class="w40p">
+							<g:ListBox ui:field="stripeBrightness">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Bitmap Cache</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="bitmapCacheOn" name="rad_bmpc" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="bitmapCacheOff" name="rad_bmpc" value="false"></g:RadioButton>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Show Developer Options</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="developerOptionsOn" name="rad_devop" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="developerOptionsOff" name="rad_devop" value="false"></g:RadioButton>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div ui:field="midiSettings" class="tabcontent midi-tab">
+				<div class="forms-container">
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Panic</p>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="panicAE">All Sounds Off</g:Button>
+						</div>
+						<div class="w20p">
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Local Enable</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="globalLocalOn" name="rad_globalLocal" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="globalLocalOff" name="rad_globalLocal" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Program Change Bank</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pcBanks">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Channels</h3>
+					</div>
+					<div class="eins-he fl-j-center">
+						<h2>Send</h2>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Primary Channel</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiSendChannel">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Split Channel (Part II)</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiSendChannelSplit">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he fl-j-center">
+						<h2>Receive</h2>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Primary Channel</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiReceiveChannel">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Split Channel (Part II)</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="midiReceiveChannelSplit">
+							</g:ListBox>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Assignments</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 1</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal1Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 2</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal2Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 3</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal3Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Pedal 4</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="pedal4Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Ribbon 1</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon1Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Ribbon 2</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon2Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Bender</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="benderMapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Aftertouch</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="aftertouchMapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable High-Res. CC (enable LSB)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="enable14Bit" name="rad_14BitCC" value="true"></g:RadioButton>
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="disable14Bit" name="rad_14BitCC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Enable High-Res. Velocity (CC 88)</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="highVeloCCOn" name="rad_highVeloCC" value="true"></g:RadioButton>
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="highVeloCCOff" name="rad_highVeloCC" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Set to Defaults:</p>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="classicMidi">Classic</g:Button>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="highResMidi">High-Res.</g:Button>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Routings</h3>
+					</div>
+					<div class="eins-he table-parent">
+						<table class="midi-table">
+							<thead>
+							<tr>
+								<th class="no-table-border"></th>
+								<th colspan="2">Primary Channel</th>
+								<th colspan="2">Split Channel</th>
+								<th class="no-table-border"></th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<th class="no-table-border"></th>
+								<th>Send</th>
+								<th>Receive</th>
+								<th>Send</th>
+								<th>Receive</th>
+								<th>Local</th>
+							</tr>
+							<tr>
+								<td>Notes</td>
+								<td>
+									<g:CheckBox ui:field="psonNotes" name="psNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="pronNotes" name="prNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="ssonNotes" name="ssNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="sronNotes" name="srNotes" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="lonNotes" name="lNotes" value="true"></g:CheckBox>
+								</td>
+							</tr>
+							<tr>
+								<td>Prog. Change</td>
+								<td>
+									<g:CheckBox ui:field="psonPC" name="psPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="pronPC" name="prPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="ssonPC" name="ssPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<g:CheckBox ui:field="sronPC" name="srPC" value="true"></g:CheckBox>
+								</td>
+								<td>
+									<p>n.a.</p>
+								</td>
+							</tr>
+							<tr>
+								<td>Pedal 1</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson0" name="ps0" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron0" name="pr0" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson0" name="ss0" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron0" name="sr0" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon0" name="l0" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Pedal 2</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson1" name="ps1" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron1" name="pr1" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson1" name="ss1" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron1" name="sr1" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon1" name="l1" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Pedal 3</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson2" name="ps2" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron2" name="pr2" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson2" name="ss2" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron2" name="sr2" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon2" name="l2" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Pedal 4</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson3" name="ps3" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron3" name="pr3" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson3" name="ss3" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron3" name="sr3" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon3" name="l3" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Bender</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson4" name="ps4" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron4" name="pr4" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson4" name="ss4" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron4" name="sr4" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon4" name="l4" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Aftertouch</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson5" name="ps5" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron5" name="pr5" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson5" name="ss5" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron5" name="sr5" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon5" name="l5" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Ribbon 1</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson6" name="ps6" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron6" name="pr6" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson6" name="ss6" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron6" name="sr6" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon6" name="l6" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Ribbon 2</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson7" name="ps7" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron7" name="pr7" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson7" name="ss7" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron7" name="sr7" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon7" name="l7" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+              
+              <tr class="button-row">
+                <td></td>
+                <td colspan="5">
+                  <g:Button ui:field="routingsOn">All On</g:Button>
+                  <g:Button ui:field="routingsOff">All Off</g:Button>
+                </td>
+              </tr>
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div ui:field="flacSettings" class="tabcontent">
+				<div class="forms-container">
+					<div class="eins-he fl-j-center">
+						<h3 class="uneditable">Recorder</h3>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Auto-Start Recorder</p>
+						</div>
+						<div class="w40p mw-fit-content">
+							<g:RadioButton ui:field="autoStartRecordOn" name="rad_autoStartRecord" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="autoStartRecordOff" name="rad_autoStartRecord" value="false"></g:RadioButton>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div ui:field="systemInfo" class="tabcontent">
+
+				<div class="forms-container">
+
+					<div class="mt1"></div>
+
+					<div class="eins-he">
+						<div class="w40p">
+							<p>Device Name</p>
+						</div>
+						<div class="w30p">
+							<g:TextArea ui:field="deviceName" styleName="editable w100p txt-oneline" visibleLines="1"></g:TextArea>
+						</div>
+						<div class="w10p fl-j-left">
+							<g:Button ui:field="saveDeviceName" text="Save"></g:Button>
+						</div>
+						<div class="w20p fl-j-right"></div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w40p">
+							<p>Passphrase</p>
+						</div>
+						<div class="w30p">
+							<g:TextArea ui:field="passphrase" styleName="editable w100p txt-oneline" visibleLines="1"></g:TextArea>
+						</div>
+						<div class="w10p fl-j-left">
+							<g:Button ui:field="savePassphrase" text="Save"></g:Button>
+						</div>
+						<div class="w10p fl-j-right">
+							<g:Button ui:field="dicePassphrase" text="Dice"></g:Button>
+						</div>
+						<div class="w10p fl-j-right">
+							<g:Button ui:field="defaultPassphrase" text="Default"></g:Button>
+						</div>
+					</div>
+
+					<div class="eins-he">
+						<div class="w40p">
+							<p>Free Disk Space</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="freeMemory"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Date/Time</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="dateTime"></g:Label>
+						</div>
+					</div>
+
+					<div class="linie"></div>
+
+					<div class="mt05"></div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Software Version</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiVersion"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Device Hardware ID</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uniqueHardwareID"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Branch</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiBranch"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Head</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiHead"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Commits</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiCommits"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Commit Date</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiCommitDate"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>RAM usage</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiUsedRam"></g:Label>
+							<g:Label>/</g:Label>
+							<g:Label ui:field="uiTotalRam"></g:Label>
+							<g:Label>MB</g:Label>
+						</div>
+					</div>
+
+					<div class="mb05"></div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Upload Software Update</p>
+						</div>
+						<div class="w60p">
+							<g:FileUpload ui:field="updateFile"></g:FileUpload>
+						</div>
+						<div class="progress-bar hidden" ui:field="updateSpinner">
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+
+
+			<div ui:field="about" class="tabcontent">
+
+				<div class="forms-container">
+
+					<div class="mt1"></div>
+
+					<h2 class="h-blau">C15 Development &amp; Design Team</h2>
+					<div class="txt-area">
+
+						<p>Stephan Schmitt,
+							Daniel Tzschentke,
+							Simone Fabbri,
+							Henry Högelow,
+							Matthias Seeber,
+							Tino Meinert,
+							Justus Scheil,
+							Klaus Strohhäcker,
+							Anton Schmied,
+							Pascal Hürst,
+							Nemanja Nikodijevic,
+							Gabriel Mulzer,
+							Mike Daliot,
+							Paul Schulz,
+							Ulrich Wappler
+						</p>
+					</div>
+
+					<div class="t-center mt2 mb1 h-blau">
+						<small>
+							<p>
+								NONLINEAR LABS GmbH
+								<br />
+								Helmholtzstraße 2-9 E
+								<br />
+								10587
+								Berlin Germany
+							</p>
+							<p>
+								www.nonlinear-labs.de
+								<br />
+								E-Mail: info@nonlinear-labs.de
+							</p>
+						</small>
+					</div>
+
+				</div>
+			</div>
+
+
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

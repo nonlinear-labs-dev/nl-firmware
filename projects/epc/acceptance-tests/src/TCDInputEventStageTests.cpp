@@ -115,9 +115,7 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnKeyUpHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
-  InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
-                               [](auto) {} };
+  InputEventStage eventStage { &dsp, &settings, [](){}, [&](auto msg) { sendMessages.push_back(msg); }, [](auto){} };
 
   WHEN("Keypos and KeyUp is received")
   {
@@ -149,7 +147,6 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
       CHECK(sendMessages[3].rawBytes[2] == 127);
     }
   }
-
 
   WHEN("Keypos and KeyUp is received and global Local is Disabled")
   {
@@ -197,17 +194,13 @@ constexpr static uint8_t Ribbon2 = 0b00000111;
 TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
-  PassOnHWReceived dsp { Pedal1, 1.0 };
+  PassOnHWReceived dsp { HardwareSource::PEDAL1, 1.0 };
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings();
-  InputEventStage eventStage { &dsp, &settings, [] {},
-                               [&](nltools::msg::Midi::SimpleMessage msg) { sendMessages.push_back(msg); },
-                               [](auto) {} };
-  const auto sixteenThousand = 0b11111010000000;
+  InputEventStage eventStage { &dsp, &settings, [](){}, [&](auto msg) { sendMessages.push_back(msg); }, [](auto){} };
 
   WHEN("HW Change Received")
   {
-
     THEN("DSP got notified")
     {
       eventStage.onTCDMessage(TCD_HELPER::createFullPressureHWEvent(TCD_HELPER::TCD_HW_IDS::Pedal1));
@@ -233,7 +226,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
     {
       settings.setBenderCC(BenderCC::None);
       settings.set14BitSupportEnabled(true);
-      dsp.setExpectedHW(4);
+      dsp.setExpectedHW(HardwareSource::BENDER);
 
       WHEN("Bender value is received from Internal")
       {
@@ -249,7 +242,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
     {
       settings.setRibbon1(RibbonCC::None);
       settings.set14BitSupportEnabled(true);
-      dsp.setExpectedHW(6);
+      dsp.setExpectedHW(HardwareSource::RIBBON1);
 
       WHEN("Ribbon value is received from Internal")
       {
@@ -265,7 +258,7 @@ TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
     {
       settings.setAftertouchCC(AftertouchCC::None);
       settings.set14BitSupportEnabled(true);
-      dsp.setExpectedHW(5);
+      dsp.setExpectedHW(HardwareSource::AFTERTOUCH);
 
       WHEN("Aftertouch value is received from Internal")
       {

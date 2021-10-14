@@ -27,7 +27,6 @@ void BankAndPresetNumberLabel::onEditBufferChanged()
 bool BankAndPresetNumberLabel::redraw(FrameBuffer &fb)
 {
   auto pm = Application::get().getPresetManager();
-  auto hwui = Application::get().getHWUI();
   auto uuid = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
   Glib::ustring text = "";
 

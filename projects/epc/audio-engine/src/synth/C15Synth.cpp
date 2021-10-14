@@ -12,11 +12,9 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_dsp(std::make_unique<dsp_host_dual>())
     , m_options(options)
     , m_externalMidiOutBuffer(2048)
-    , m_queuedChannelModeMessages(128)  // @hhoegelow how would I estimate the needed size for this member??
+    , m_queuedChannelModeMessages(128)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
-    , m_syncPlaygroundTask(std::async(std::launch::async, [this] { syncPlaygroundLoop(); }))
-    , m_syncChannelModeMessagesTask(std::async(std::launch::async, [this] { syncChannelModeMessageLoop(); }))
-    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncPlaygroundWaiter.notify_all(); },
+    , m_inputEventStage { m_dsp.get(), &m_midiOptions, [this] { m_syncExternalsWaiter.notify_all(); },
                           [this](auto msg) { queueExternalMidiOut(msg); },
                           [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
 {
@@ -52,16 +50,17 @@ C15Synth::C15Synth(AudioEngineOptions* options)
   receive<Keyboard::NoteUp>(EndPoint::AudioEngine,
                             [this](const Keyboard::NoteUp& noteUp)
                             {
-                              m_inputEventStage.onMIDIMessage({ 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 });
+                              m_inputEventStage.onMIDIMessage({ { 0, static_cast<uint8_t>(noteUp.m_keyPos), 0 } });
                               m_syncExternalsWaiter.notify_all();
                             });
 
-  receive<Keyboard::NoteDown>(EndPoint::AudioEngine,
-                              [this](const Keyboard::NoteDown& noteDown)
-                              {
-                                m_inputEventStage.onMIDIMessage({ 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 });
-                                m_syncExternalsWaiter.notify_all();
-                              });
+  receive<Keyboard::NoteDown>(
+      EndPoint::AudioEngine,
+      [this](const Keyboard::NoteDown& noteDown)
+      {
+        m_inputEventStage.onMIDIMessage({ { 100, static_cast<uint8_t>(noteDown.m_keyPos), 0 } });
+        m_syncExternalsWaiter.notify_all();
+      });
 
   // receive program changes from playground and dispatch it to midi-over-ip
   receive<nltools::msg::Midi::ProgramChangeMessage>(
@@ -70,7 +69,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
       {
         bool scheduled = false;
 
-        const int sendPrimChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDIPrimarySendChannel());
+        const int sendPrimChannel = MidiRuntimeOptions::channelEnumToInt(m_midiOptions.getMIDIPrimarySendChannel());
         if(sendPrimChannel != -1 && m_midiOptions.shouldSendMIDIProgramChangesOnPrimary())
         {
           const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendPrimChannel;
@@ -78,7 +77,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
           scheduled = true;
         }
 
-        const int sendSecChannel = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDISplitSendChannel());
+        const int sendSecChannel = MidiRuntimeOptions::channelEnumToInt(m_midiOptions.getMIDISplitSendChannel());
         if(sendSecChannel != -1 && m_midiOptions.shouldSendMIDIProgramChangesOnSplit())
         {
           const uint8_t newStatus = MIDI_PROGRAMCHANGE_PATTERN | sendSecChannel;
@@ -105,9 +104,9 @@ C15Synth::C15Synth(AudioEngineOptions* options)
           const auto isSplitOmniReceive = m_midiOptions.getMIDISplitReceiveChannel() == MidiReceiveChannelSplit::Omni;
 
           const auto receivedChannelMatchesPrimary
-              = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDIPrimaryReceiveChannel()) == receivedChannel;
+              = MidiRuntimeOptions::channelEnumToInt(m_midiOptions.getMIDIPrimaryReceiveChannel()) == receivedChannel;
           const auto receivedChannelMatchedSplit
-              = m_midiOptions.channelEnumToInt(m_midiOptions.getMIDISplitReceiveChannel()) == receivedChannel;
+              = MidiRuntimeOptions::channelEnumToInt(m_midiOptions.getMIDISplitReceiveChannel()) == receivedChannel;
 
           if(isPrimaryOmniReceive || receivedChannelMatchesPrimary)
           {
@@ -140,20 +139,11 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 C15Synth::~C15Synth()
 {
   {
-    std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
-    std::unique_lock<std::mutex> lockPg(m_syncPlaygroundMutex);
-    std::unique_lock<std::mutex> midiFunctionsLock(m_syncChannelModeMessagesMutex);
-
+    std::unique_lock<std::mutex> inputEventStageLock(m_syncExternalsMutex);
     m_quit = true;
-
     m_syncExternalsWaiter.notify_all();
-    m_syncPlaygroundWaiter.notify_all();
-    m_syncChannelModeMessagesWaiter.notify_all();
   }
-
   m_syncExternalsTask.wait();
-  m_syncPlaygroundTask.wait();
-  m_syncChannelModeMessagesTask.wait();
 }
 
 dsp_host_dual* C15Synth::getDsp() const
@@ -163,37 +153,13 @@ dsp_host_dual* C15Synth::getDsp() const
 
 void C15Synth::syncExternalsLoop()
 {
-  constexpr auto sizeA = std::tuple_size_v<dsp_host_dual::HWSourceValues>;
-  constexpr auto sizeB = std::tuple_size_v<decltype(m_playgroundHwSourceKnownValues)>;
-  static_assert(sizeA == sizeB, "Types do not match!");
-
   std::unique_lock<std::mutex> lock(m_syncExternalsMutex);
 
   while(!m_quit)
   {
     m_syncExternalsWaiter.wait(lock);
-    syncExternalMidiBridge();
-  }
-}
-
-void C15Synth::syncPlaygroundLoop()
-{
-  std::unique_lock<std::mutex> lock(m_syncPlaygroundMutex);
-
-  while(!m_quit)
-  {
-    m_syncPlaygroundWaiter.wait(lock);
-    syncPlayground();
-  }
-}
-
-void C15Synth::syncChannelModeMessageLoop()
-{
-  std::unique_lock<std::mutex> lock(m_syncChannelModeMessagesMutex);
-
-  while(!m_quit)
-  {
-    m_syncChannelModeMessagesWaiter.wait(lock);
+    doSyncExternalMidiBridge();
+    doSyncPlayground();
     doChannelModeMessageFunctions();
   }
 }
@@ -232,7 +198,7 @@ void C15Synth::doChannelModeMessageFunctions()
   }
 }
 
-void C15Synth::syncExternalMidiBridge()
+void C15Synth::doSyncExternalMidiBridge()
 {
   while(!m_externalMidiOutBuffer.empty())
   {
@@ -242,7 +208,7 @@ void C15Synth::syncExternalMidiBridge()
   }
 }
 
-void C15Synth::syncPlayground()
+void C15Synth::doSyncPlayground()
 {
   using namespace nltools::msg;
 
@@ -252,11 +218,19 @@ void C15Synth::syncPlayground()
   }
 
   auto engineHWSourceValues = m_dsp->getHWSourceValues();
-  for(size_t i = 0; i < std::tuple_size_v<dsp_host_dual::HWSourceValues>; i++)
+
+  for(auto hw : sHardwareSources)
   {
-    if(std::exchange(m_playgroundHwSourceKnownValues[i], engineHWSourceValues[i]) != engineHWSourceValues[i])
+    const auto idx = static_cast<unsigned int>(hw);
+    const auto isLocalEnabled = m_midiOptions.isLocalEnabled(hw);
+    auto currentValue
+        = isLocalEnabled ? engineHWSourceValues[idx] : m_inputEventStage.getHWSourcePositionIfLocalDisabled(hw);
+    auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
+
+    if(std::exchange(m_playgroundHwSourceKnownValues[idx], currentValue) != currentValue)
     {
-      send(EndPoint::Playground, HardwareSourceChangedNotification { i, static_cast<double>(engineHWSourceValues[i]) });
+      send(EndPoint::Playground,
+           HardwareSourceChangedNotification { idx, static_cast<double>(currentValue), valueSource });
     }
   }
 }
@@ -438,10 +412,10 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   auto element = m_dsp->getParameter(msg.parameterId);
   auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
 
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HWID::INVALID)
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
-    m_playgroundHwSourceKnownValues[latchIndex] = static_cast<float>(msg.controlPosition);
+    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
 }
@@ -449,7 +423,7 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
 void C15Synth::queueChannelModeMessage(MidiChannelModeMessages function)
 {
   m_queuedChannelModeMessages.push(function);
-  m_syncChannelModeMessagesWaiter.notify_all();
+  m_syncExternalsWaiter.notify_all();
 }
 
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)
@@ -475,6 +449,7 @@ void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 
 void C15Synth::onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, "Shift:", msg.m_shift);
   m_inputEventStage.setNoteShift(msg.m_shift);
 }
 
@@ -500,11 +475,28 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
+  auto oldMsg = m_midiOptions.getLastReceivedMessage();
   m_midiOptions.update(msg);
-  m_dsp->onMidiSettingsReceived();
+  m_inputEventStage.onMidiSettingsMessageWasReceived(msg, oldMsg);
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)
 {
+  auto sendNotesOffOnChannel = [&](auto channel)
+  {
+    constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+    constexpr uint8_t CCModeChange = 0b10110000;
+    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
+
+    if(iChannel != -1)
+    {
+      queueExternalMidiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
+    }
+  };
+
   resetDSP();
+
+  sendNotesOffOnChannel(m_midiOptions.getMIDIPrimarySendChannel());
+  if(m_dsp->getType() == SoundType::Split)
+    sendNotesOffOnChannel(m_midiOptions.getMIDISplitSendChannel());
 }

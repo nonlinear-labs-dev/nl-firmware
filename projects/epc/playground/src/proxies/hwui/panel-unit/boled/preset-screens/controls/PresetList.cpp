@@ -81,7 +81,8 @@ bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
   {
     auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
     auto pm = Application::get().getPresetManager();
-    PresetManagerUseCases useCase(pm);
+    auto settings = Application::get().getSettings();
+    PresetManagerUseCases useCase(*pm, *settings);
 
     switch(i)
     {
@@ -121,7 +122,8 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 
 void PresetList::stepBankSelection(int inc, const ButtonModifiers& modifiers, PresetManager* pm) const
 {
-  PresetManagerUseCases useCase(pm);
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
   useCase.stepBankSelection(inc, modifiers[SHIFT]);
 }
 
@@ -129,7 +131,7 @@ void PresetList::stepPresetSelection(int inc, PresetManager* pm, Bank* bank) con
 {
   if(bank)
   {
-    BankUseCases useCase(bank);
+    BankUseCases useCase(bank, *Application::get().getSettings());
     useCase.stepPresetSelection(inc);
   }
 }

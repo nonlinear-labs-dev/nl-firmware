@@ -12,7 +12,7 @@
 
 #include "linuxgpio.h"
 
-#define VERSION_STRING "1.1"
+#define VERSION_STRING "1.2"
 #define PROGNAME       "playcontroller"
 
 void printVersion(void)
@@ -81,6 +81,7 @@ Retry:
 #define CLEAR_STAT      "clear-status"
 #define STAT_DATA       "status"
 #define EHC_SAVE_EEPROM "save-ehc"
+#define UHID64          "uhid64"
 #if LPC_KEYBED_DIAG
 #define KEY_CNTRS "key-counters"
 #endif
@@ -133,6 +134,7 @@ void Usage(void)
   puts("     status       : get diagnostic status data");
   puts("     clear-status : clear diagnostic status data");
   puts("     save-ehc     : save current EHC config data to EEPROM");
+  puts("     uhid64       : get unique hardware ID (64bit)");
 #if LPC_KEYBED_DIAG
   puts("     key-counters : get diagnostic key error counters");
 #endif
@@ -277,6 +279,12 @@ int main(int argc, char const *argv[])
     if (strncmp(argv[2], EHC_SAVE_EEPROM, sizeof EHC_SAVE_EEPROM) == 0)
     {
       REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], UHID64, sizeof UHID64) == 0)
+    {
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_UHID64;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }

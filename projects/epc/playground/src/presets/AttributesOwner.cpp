@@ -2,7 +2,6 @@
 #include <libundo/undo/Transaction.h>
 #include <xml/Writer.h>
 #include <unordered_set>
-#include <device-settings/DebugLevel.h>
 #include <xml/Attribute.h>
 
 AttributesOwner::AttributesOwner(UpdateDocumentContributor *parent)
@@ -104,4 +103,9 @@ void AttributesOwner::writeDiff(Writer &writer, const AttributesOwner *other) co
       writer.writeTextElement(key, "", Attribute("a", va), Attribute("b", vb));
     }
   }
+}
+
+nlohmann::json AttributesOwner::toJson() const
+{
+  return m_attributes;
 }

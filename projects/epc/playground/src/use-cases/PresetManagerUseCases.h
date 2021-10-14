@@ -7,16 +7,16 @@
 #include <xml/FileInStream.h>
 #include <clipboard/Clipboard.h>
 #include <filesystem>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 class PresetManager;
 class Preset;
 class Bank;
+class Settings;
 
 class PresetManagerUseCases
 {
  public:
-  typename std::function<void(void)> ImportVersionMismatchCallback;
-
   enum class DropActions
   {
     Above,
@@ -30,24 +30,15 @@ class PresetManagerUseCases
     OK
   };
 
-  explicit PresetManagerUseCases(PresetManager* pm);
+  explicit PresetManagerUseCases(PresetManager& pm, Settings& settings);
 
-  //Preset
-  //Store Actions
-  void overwritePresetWithEditBuffer(const Uuid& uuid);
-  void overwritePresetWithEditBuffer(Preset* preset);
-  void overwritePresetWithPreset(Preset* target, Preset* source);
-  void insertEditBufferAsPresetWithUUID(Bank* bank, size_t pos, const std::string& uuid);
-  void insertEditBufferAsPresetAtPosition(Bank* bank, size_t pos);
-  void appendEditBufferToBank(Bank* bank);
   void appendPreset(Bank* bank, Preset* preset);
-  void appendEditBufferAsPresetWithUUID(Bank* bank, const std::string& uuid);
-  void createBankAndStoreEditBuffer();
+  Bank* createBankAndStoreEditBuffer();
   void createBankFromPreset(const Uuid& uuid, const std::string& x, const std::string& y);
   void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
-  void newBank(const Glib::ustring& x, const Glib::ustring& y, const std::optional<Glib::ustring>& name);
-  void newBank(const Glib::ustring& x, const Glib::ustring& y);
+  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y, const std::optional<Glib::ustring>& name);
+  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y);
 
   void selectPreset(const Uuid& uuid);
   void selectPreset(const Preset* preset);
@@ -85,6 +76,8 @@ class PresetManagerUseCases
 
   void dropPresets(const std::string& anchorUuid, DropActions action, const Glib::ustring& csv);
 
+  void clear();
+
   using StartProgressIndication = std::function<void()>;
   using UpdateProgressIndication = std::function<void(const std::string&)>;
   using FinishProgressIndication = std::function<void()>;
@@ -114,9 +107,11 @@ class PresetManagerUseCases
     FinishProgressIndication _finish;
   };
 
-  ImportExitCode importBackupFile(FileInStream& in, ProgressIndication progress);
-  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress);
-  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, ProgressIndication progress);
+  PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,
+                                                         AudioEngineProxy& ae);
+  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae);
+  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, const ProgressIndication& progress,
+                        AudioEngineProxy& aeProxy);
 
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 
@@ -135,15 +130,16 @@ class PresetManagerUseCases
                              const Bank* source, Clipboard* pClipboard);
 
   void pastePresetOnBackground(const Glib::ustring& x, const Glib::ustring& y, Preset* source, Clipboard* clipboard);
-  void importBankFromPath(const std::filesystem::directory_entry& file,
-                          std::function<void(std::string)> onFileNameReadCallback = nullptr);
-  void importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName);
+  Bank* importBankFromPath(const std::filesystem::directory_entry& file,
+                           const std::function<void(const std::string&)>& progress);
+  Bank* importBankFromStream(InStream& stream, int x, int y, const Glib::ustring& fileName,
+                             const std::function<void(const std::string&)>& progress);
+
+  Bank* addBank();
 
  private:
   [[nodiscard]] bool isDirectLoadActive() const;
 
-  PresetManager* m_presetManager;
-
-  void onStore(UNDO::Transaction* transaction, Preset* preset);
-  void updateSyncSettingOnPresetStore(UNDO::Transaction* transaction) const;
+  PresetManager& m_presetManager;
+  Settings& m_settings;
 };

@@ -24,9 +24,9 @@ TEST_CASE("Load Part I of Split into Layer Part I")
   CHECK_NOTHROW(preset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }, true));
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
@@ -171,9 +171,9 @@ TEST_CASE("Load Part I of Split into Layer Part II")
   CHECK(preset->getType() == SoundType::Split);
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
@@ -318,9 +318,9 @@ TEST_CASE("Load Part I of Layer into Layer Part I")
   REQUIRE(preset->getType() == SoundType::Layer);
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
@@ -474,9 +474,9 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
   REQUIRE(preset->getType() == SoundType::Layer);
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
     Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);

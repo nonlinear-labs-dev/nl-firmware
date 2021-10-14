@@ -11,16 +11,11 @@ TEST_CASE("HW Source Enable Tests")
   MidiRuntimeOptions options {};
 
   std::vector<InputEventStage::MIDIOutType> sendMidiMessages;
-  InputEventStage eS(
-      &dsp, &options,
-      []() {
-
-      },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
+  InputEventStage eS(&dsp, &options, [](){}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto){});
 
   InputEventStageTester eventStage(&eS);
 
-  std::vector<std::pair<uint32_t, float>> receivedHWMsg;
+  std::vector<std::pair<HardwareSource, float>> receivedHWMsg;
   dsp.setOnHWChangedCB([&](auto id, auto pos, auto) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
 
   //prepare default settings
@@ -60,10 +55,10 @@ TEST_CASE("HW Source Enable Tests")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
-  constexpr MidiEvent pedal1PressureMIDIEvent = { 0xB0, 1, 69 };
-  constexpr MidiEvent pedal1PressureMIDIEvent_split = { 0xB1, 1, 69 };
+  constexpr MidiEvent pedal1PressureMIDIEvent = { { 0xB0, 1, 69 } };
+  constexpr MidiEvent pedal1PressureMIDIEvent_split = { { 0xB1, 1, 69 } };
 
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingAspect tMAPPING_INDEX;
 
@@ -72,13 +67,16 @@ TEST_CASE("HW Source Enable Tests")
     initSettings({});
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB([&didReceive](auto, auto, auto) { didReceive = true; });
+    dsp.setOnHWChangedCB([&didReceive](auto id, auto, auto) {
+                           nltools::Log::error("id", id);
+                           didReceive = true;
+                         });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
     eventStage.onMIDIMessage(pedal1PressureMIDIEvent);
 
     CHECK(sendMidiMessages.empty());
-    CHECK(!didReceive);
+    CHECK(didReceive == false);
   }
 
   WHEN("local")
@@ -102,7 +100,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     eventStage.onMIDIMessage(pedal1PressureMIDIEvent);
@@ -120,7 +118,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
@@ -138,7 +136,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     WHEN("is Split")
@@ -172,7 +170,7 @@ TEST_CASE("HW Source Enable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == 0);
+          CHECK(hwID == HardwareSource::PEDAL1);
         });
 
     WHEN("is Split")
@@ -204,16 +202,11 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
   MidiRuntimeOptions options {};
 
   std::vector<InputEventStage::MIDIOutType> sendMidiMessages;
-  InputEventStage eS(
-      &dsp, &options,
-      []() {
-
-      },
-      [&](InputEventStage::MIDIOutType m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
+  InputEventStage eS(&dsp, &options, [](){}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto){});
 
   InputEventStageTester eventStage(&eS);
 
-  std::vector<std::pair<uint32_t, float>> receivedHWMsg;
+  std::vector<std::pair<HardwareSource, float>> receivedHWMsg;
   dsp.setOnHWChangedCB([&](auto id, auto pos, auto) { receivedHWMsg.emplace_back(std::make_pair(id, pos)); });
 
   //prepare default settings
@@ -258,10 +251,10 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEventAftertouch
-      = { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
   constexpr MidiEvent fullPressureTCDEventBender
-      = { BASE_TCD | Bender, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) };
+      = { { BASE_TCD | Bender, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingAspect tMAPPING_INDEX;
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingIndex tHW_INDEX;
@@ -275,7 +268,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
           didReceive = true;
-          CHECK(hwID == Aftertouch);
+          CHECK(hwID == HardwareSource::AFTERTOUCH);
         });
 
     THEN("TCD gets send on Prim")
@@ -308,7 +301,7 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
         [&didReceive](auto hwID, auto, auto)
         {
             didReceive = true;
-            CHECK(hwID == Bender);
+            CHECK(hwID == HardwareSource::BENDER);
         });
 
     THEN("TCD gets send on Prim")

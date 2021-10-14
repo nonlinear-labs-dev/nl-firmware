@@ -1,11 +1,11 @@
 #include <Application.h>
 #include <device-info/DateTimeInfo.h>
 #include <device-info/SoftwareVersion.h>
+#include <device-info/BufferUnderruns.h>
 #include <device-settings/PedalType.h>
 #include <groups/HardwareSourcesGroup.h>
 #include <parameters/PedalParameter.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/Oleds.h>
@@ -88,6 +88,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <device-info/UniqueHardwareID.h>
 
 namespace NavTree
 {
@@ -333,13 +334,11 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     explicit StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.storeInitSound();
-                       })
+        : OneShotEntry(p, "Store Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.storeInitSound();
+        })
     {
     }
   };
@@ -347,13 +346,11 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     explicit ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound",
-                       []
-                       {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.resetInitSound();
-                       })
+        : OneShotEntry(p, "Reset Init Sound", [] {
+          auto pm = Application::get().getPresetManager();
+          SoundUseCases useCases(pm->getEditBuffer(), pm);
+          useCases.resetInitSound();
+        })
     {
     }
   };
@@ -549,6 +546,20 @@ namespace NavTree
     }
   };
 
+  struct UniqueHardwareID : Leaf
+  {
+    explicit UniqueHardwareID(InnerNode *parent)
+        : Leaf(parent, "Device Hardware ID ")
+    {
+    }
+
+    Control *createView() override
+    {
+      auto info = Application::get().getDeviceInformation()->getItem<::UniqueHardwareID>().get();
+      return new DeviceInfoItemView(info);
+    }
+  };
+
   struct DateTime : EditableLeaf
   {
     explicit DateTime(InnerNode *parent)
@@ -594,7 +605,6 @@ namespace NavTree
       RamUsageLabel()
           : SetupLabel("", Rect(0, 0, 0, 0))
       {
-
         Application::get().getSettings()->getSetting<UsedRAM>()->onChange(
             sigc::mem_fun(this, &RamUsageLabel::onSettingChanged));
       }
@@ -622,6 +632,35 @@ namespace NavTree
     }
   };
 
+  struct BufferUnderrunsNode : Leaf
+  {
+    struct BufferUnderrunsLabel : public SetupLabel
+    {
+      BufferUnderrunsLabel()
+          : SetupLabel("", Rect(0, 0, 0, 0))
+      {
+        Application::get().getDeviceInformation()->getItem<BufferUnderruns>()->onChange(
+            sigc::mem_fun(this, &BufferUnderrunsLabel::onSettingChanged));
+      }
+
+      void onSettingChanged(const DeviceInformationItem *s)
+      {
+        if(auto used = dynamic_cast<const BufferUnderruns *>(s))
+          setText(used->getDisplayString());
+      }
+    };
+
+    explicit BufferUnderrunsNode(InnerNode *parent)
+        : Leaf(parent, "Buffer Underruns:")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new BufferUnderrunsLabel();
+    }
+  };
+
   struct SystemInfo : InnerNode
   {
     explicit SystemInfo(InnerNode *parent)
@@ -634,8 +673,10 @@ namespace NavTree
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
+      children.emplace_back(new UniqueHardwareID(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
+      children.emplace_back(new BufferUnderrunsNode(this));
     }
   };
 
@@ -815,12 +856,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, "Set to High-Res. Defaults",
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToHighRes();
-                       })
+        : OneShotEntry(parent, "Set to High-Res. Defaults", []() {
+          SettingsUseCases useCases(*Application::get().getSettings());
+          useCases.setMappingsToHighRes();
+        })
     {
     }
   };
@@ -829,12 +868,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, "Set to Classic MIDI Defaults",
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setMappingsToClassicMidi();
-                       })
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults", []() {
+          SettingsUseCases useCases(*Application::get().getSettings());
+          useCases.setMappingsToClassicMidi();
+        })
     {
     }
   };
@@ -912,7 +949,8 @@ namespace NavTree
       void incSetting(int inc) override
       {
         auto pm = getPresetManager();
-        PresetManagerUseCases useCase(pm);
+        auto settings = Application::get().getSettings();
+        PresetManagerUseCases useCase(*pm, *settings);
         const auto numBanks = pm->getNumBanks();
 
         if(getMidiBank())
@@ -981,7 +1019,7 @@ namespace NavTree
   struct MidiPanicButton : OneShotEntry
   {
     explicit MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic Button", []() { SettingsUseCases::panicAudioEngine(); })
+        : OneShotEntry(p, "Panic", []() { SettingsUseCases::panicAudioEngine(); })
     {
     }
   };
@@ -1013,12 +1051,10 @@ namespace NavTree
   {
 
     explicit SetRoutingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       []()
-                       {
-                         SettingsUseCases useCases(Application::get().getSettings());
-                         useCases.setAllRoutingEntries(value);
-                       })
+        : OneShotEntry(parent, getName(), []() {
+          SettingsUseCases useCases(*Application::get().getSettings());
+          useCases.setAllRoutingEntries(value);
+        })
     {
     }
 
@@ -1063,7 +1099,7 @@ namespace NavTree
         : InnerNode(parent, "MIDI Settings")
     {
       children.emplace_back(new MidiPanicButton(this));
-      children.emplace_back(new EnumSettingItem<GlobalLocalEnableSetting>(this, "Global Local Enable"));
+      children.emplace_back(new EnumSettingItem<GlobalLocalEnableSetting>(this, "Local Enable"));
       children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiChannels(this));
       children.emplace_back(new MidiAssignments(this));
@@ -1097,9 +1133,6 @@ namespace NavTree
 
     [[nodiscard]] Glib::ustring getName() const override
     {
-      if(FileOutStream::getKioskMode())
-        return "Setup (Kiosk)";
-
       return "Setup";
     }
 

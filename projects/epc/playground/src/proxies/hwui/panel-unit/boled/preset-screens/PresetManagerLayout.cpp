@@ -333,13 +333,13 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
         else if(m_focusAndMode.mode == UIMode::Select)
         {
           auto pm = Application::get().getPresetManager();
-          EditBufferUseCases useCases(pm->getEditBuffer());
+          EditBufferUseCases useCases(*pm->getEditBuffer());
 
           auto oldPreset = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
 
           if(auto currentSelectedPreset = pm->getSelectedPreset())
           {
-            useCases.undoableLoad(currentSelectedPreset);
+            useCases.load(currentSelectedPreset);
             if(currentSelectedPreset->getUuid() == oldPreset)
             {
               animateSelectedPreset([] {});

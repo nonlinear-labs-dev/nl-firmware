@@ -11,6 +11,7 @@
 #include <proxies/hwui/controls/labels/LabelStyleable.h>
 #include <proxies/hwui/controls/PNGControl.h>
 #include "RoutingsSettingsHelper.h"
+#include <proxies/hwui/HWUI.h>
 
 inline auto getPreviewNameForAspect(RoutingSettings::tAspectIndex a)
 {
@@ -51,6 +52,9 @@ class AspectList : public Control
   AspectList(RoutingSettings::tRoutingIndex e, RoutingSettings::tAspectIndex a, const Rect& r);
   void update(RoutingSettings::tRoutingIndex entry, RoutingSettings::tAspectIndex aspect);
 
+  void setAllAspectsSelected(bool state);
+  bool areAllAspectsSelected() const;
+
  public:
   bool redraw(FrameBuffer& fb) override;
 
@@ -67,6 +71,7 @@ class AspectList : public Control
 
   RoutingSettings::tRoutingIndex entry;
   RoutingSettings::tAspectIndex aspect;
+  bool m_forceAllAspectsSelected = false;
 };
 
 void AspectList::update(RoutingSettings::tRoutingIndex e, RoutingSettings::tAspectIndex a)
@@ -102,7 +107,7 @@ bool AspectList::redraw(FrameBuffer& fb)
     auto isSelected = a == aspect;
     auto isEnabled = getState(a);
 
-    if(isSelected)
+    if(isSelected || m_forceAllAspectsSelected)
     {
       auto backGroundRect = aspPos;
       backGroundRect.setTop(aspPos.getTop() + 1);
@@ -144,6 +149,20 @@ AspectList::AspectList(RoutingSettings::tRoutingIndex e, RoutingSettings::tAspec
 {
 }
 
+void AspectList::setAllAspectsSelected(bool state)
+{
+  if(m_forceAllAspectsSelected != state)
+  {
+    m_forceAllAspectsSelected = state;
+    setDirty();
+  }
+}
+
+bool AspectList::areAllAspectsSelected() const
+{
+  return m_forceAllAspectsSelected;
+}
+
 class SetupModuleHeader : public Label
 {
  public:
@@ -183,6 +202,9 @@ RoutingsEditor::RoutingsEditor(RoutingSettings::tRoutingIndex id)
   {
     auto setting = Application::get().getSettings()->getSetting<RoutingSettings>();
     setting->onChange(sigc::mem_fun(this, &RoutingsEditor::onSettingChanged));
+
+    auto hwui = Application::get().getHWUI();
+    hwui->onModifiersChanged(sigc::mem_fun(this, &RoutingsEditor::onModifiersChanged));
   }
 
   addControl(new SetupModuleHeader({ "MIDI Routing" }, { 0, 0, 64, 13 }));
@@ -222,10 +244,18 @@ void RoutingsEditor::incSetting(int inc)
   if(Application::exists())
   {
     static auto settings = Application::get().getSettings();
-    SettingsUseCases useCases(settings);
+    SettingsUseCases useCases(*settings);
     auto idx = static_cast<int>(m_id);
-    auto asp = static_cast<int>(m_aspect);
-    useCases.updateRoutingAspect(idx, asp, inc > 0);
+
+    if(m_aspectList->areAllAspectsSelected())
+    {
+      useCases.setRoutingAspectsForEntry(m_id, inc > 0);
+    }
+    else
+    {
+      auto asp = static_cast<int>(m_aspect);
+      useCases.updateRoutingAspect(idx, asp, inc > 0);
+    }
     update();
   }
 }
@@ -317,10 +347,33 @@ void RoutingsEditor::stepAspect(int inc)
 
 void RoutingsEditor::update()
 {
+  static auto isTrue = [](auto a){ return a; };
+  static auto isFalse = [](auto b){ return !b; };
+
   m_aspectList->update(m_id, m_aspect);
   m_entryLabel->setText(getTextFor(m_id));
-  m_aspectLabel->setText(getTextFor(m_aspect));
-  m_valueLabel->setText(getValueText());
+
+  if(m_aspectList->areAllAspectsSelected())
+  {
+    static auto setting = Application::get().getSettings()->getSetting<RoutingSettings>();
+    const auto row = setting->getRaw()[static_cast<int>(m_id)];
+    const auto allAspectsOn = std::all_of(row.begin(), row.end(), isTrue);
+    const auto allAspectsOff = std::all_of(row.begin(), row.end(), isFalse);
+
+    m_aspectLabel->setText("All");
+
+    if(allAspectsOn)
+      m_valueLabel->setText("On");
+    else if(allAspectsOff)
+      m_valueLabel->setText("Off");
+    else
+      m_valueLabel->setText("On and Off");
+  }
+  else
+  {
+    m_aspectLabel->setText(getTextFor(m_aspect));
+    m_valueLabel->setText(getValueText());
+  }
   ControlWithChildren::setDirty();
 }
 
@@ -344,4 +397,10 @@ const Glib::ustring& RoutingsEditor::getValueText() const
   static std::vector<Glib::ustring> ret = { "On", "Off" };
   auto active = getSetting()->getState(m_id, m_aspect);
   return active ? ret[0] : ret[1];
+}
+
+void RoutingsEditor::onModifiersChanged(ButtonModifiers modifiers)
+{
+  m_aspectList->setAllAspectsSelected(modifiers[ButtonModifier::SHIFT]);
+  update();
 }
