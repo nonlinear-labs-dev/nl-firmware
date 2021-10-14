@@ -1,6 +1,7 @@
 #include <Application.h>
 #include "UniqueHardwareID.h"
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
+#include <iomanip>
 
 UniqueHardwareID::UniqueHardwareID(DeviceInformation* p)
     : DeviceInformationItem(p)
