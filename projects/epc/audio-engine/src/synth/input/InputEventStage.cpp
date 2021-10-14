@@ -101,6 +101,13 @@ void InputEventStage::onTCDEvent()
       const bool isSplitSound = (soundType == SoundType::Split);
       const VoiceGroup determinedPart
           = isSplitSound ? calculateSplitPartForKeyDown(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+
+      if(determinedPart == VoiceGroup::NumGroups)
+      {
+        nltools::Log::error("Got invalid determinedPart for KeyDown!");
+        break;
+      }
+
       if(m_options->shouldReceiveLocalNotes())
       {
         if(isSplitSound)
@@ -132,6 +139,13 @@ void InputEventStage::onTCDEvent()
       const bool isSplitSound = (soundType == SoundType::Split);
       const VoiceGroup determinedPart
           = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+
+      if(determinedPart == VoiceGroup::NumGroups)
+      {
+        nltools::Log::error("Got KeyUp for Note that is not internaly referenced anymore!");
+        break;
+      }
+
       if(m_options->shouldReceiveLocalNotes())
       {
         if(isSplitSound)
@@ -550,6 +564,7 @@ VoiceGroup InputEventStage::calculateSplitPartForKeyUp(DSPInterface::InputEventS
     case DSPInterface::InputEventSource::External_Both:
       return VoiceGroup::Global;
     case DSPInterface::InputEventSource::Invalid:
+      nltools::Log::error(__PRETTY_FUNCTION__, "INVALID for keyNum:", keyNumber);
       break;
   }
   nltools_assertNotReached();

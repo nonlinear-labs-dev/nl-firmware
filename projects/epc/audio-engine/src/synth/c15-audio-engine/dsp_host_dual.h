@@ -200,9 +200,12 @@ class dsp_host_dual : public DSPInterface
       case AllocatorId::Local_Both:
         return VoiceGroup::Global;
         break;
+      case AllocatorId::None:
+        nltools::Log::error("got invalid State AllocatorID::None");
+        break;
     }
 
-    nltools_detailedAssertAlways(false, __PRETTY_FUNCTION__);
+//    nltools_detailedAssertAlways(false, __PRETTY_FUNCTION__);
     return VoiceGroup::NumGroups;
   }
   using LayerMode = C15::Properties::LayerMode;

@@ -2373,12 +2373,14 @@ SoundType dsp_host_dual::getType()
 
 VoiceGroup dsp_host_dual::getSplitPartForKeyDown(int key)
 {
-  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyDown(key));
+  const auto allocID = m_alloc.getSplitPartForKeyDown(key);
+  return getVoiceGroupFromAllocatorId(allocID);
 }
 
 VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
 {
-  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from)));
+  const auto allocID = m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from));
+  return getVoiceGroupFromAllocatorId(allocID);
 }
 
 void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
