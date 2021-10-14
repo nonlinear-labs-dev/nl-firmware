@@ -380,6 +380,7 @@ public class SetupModel {
 
 		public RoutingAspectsDataModelEntity routingAspects = new RoutingAspectsDataModelEntity();
 		public BooleanDataModelEntity local = new BooleanDataModelEntity();
+		public BooleanDataModelEntity safeMode = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {

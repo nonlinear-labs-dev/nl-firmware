@@ -2534,16 +2534,14 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
   }
 }
 
-void dsp_host_dual::onMidiSettingsReceived()
+void dsp_host_dual::fadeOutResetVoiceAllocAndEnvelopes()
 {
   m_fade.muteAndDo([&] {
-    // reset voice allocation
     m_alloc.reset();
-    // reset envelopes in both parts
-    for(uint32_t layerId = 0; layerId < Engine::Param_Handle::m_layer_count; layerId++)
+    for(auto & layerId : m_poly)
     {
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_key_active = 0;
+      layerId.resetEnvelopes();
+      layerId.m_key_active = 0;
     }
   });
 }

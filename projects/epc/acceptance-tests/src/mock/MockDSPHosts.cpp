@@ -13,7 +13,7 @@ void MockDSPHost::onKeyUp(const int note, float velocity, InputEventSource from)
 {
 }
 
-void MockDSPHost::onMidiSettingsReceived()
+void MockDSPHost::fadeOutResetVoiceAllocAndEnvelopes()
 {
 }
 

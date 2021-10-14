@@ -161,6 +161,7 @@ public class MidiSettings {
 
     //Global
     public OnOffOption local = new OnOffOption();
+    public OnOffOption safeMode = new OnOffOption();
 
     //Channels
     public SendChannel sendChannel = new SendChannel();

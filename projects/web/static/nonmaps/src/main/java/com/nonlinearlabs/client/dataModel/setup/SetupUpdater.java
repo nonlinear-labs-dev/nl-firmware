@@ -71,6 +71,7 @@ public class SetupUpdater extends Updater {
 		m.put("AutoStartRecorder", SetupModel.get().systemSettings.autoStartRecorder);
 		m.put("RoutingSettings", SetupModel.get().systemSettings.routingAspects);
 		m.put("GlobalLocalEnable", SetupModel.get().systemSettings.local);
+		m.put("MidiSafeMode", SetupModel.get().systemSettings.safeMode);
 		return m;
 	}
 

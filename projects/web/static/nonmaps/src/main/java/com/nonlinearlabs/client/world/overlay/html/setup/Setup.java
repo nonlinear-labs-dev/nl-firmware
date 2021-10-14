@@ -97,8 +97,9 @@ public class Setup extends Composite {
 	@UiField
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
-			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, 
-			globalLocalOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
+			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, globalLocalOff, 
+			highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff, 
+			midiSafeOn, midiSafeOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -239,6 +240,7 @@ public class Setup extends Composite {
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(globalLocalOn, globalLocalOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(midiSafeOn, midiSafeOff, MidiSettings.OnOffOption.options);
 	}
 
 	private void setupMappings(boolean showLSB)
@@ -420,6 +422,9 @@ public class Setup extends Composite {
 
 		globalLocalOn.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.on));
 		globalLocalOff.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.off));
+
+		midiSafeOn.addValueChangeHandler(e -> settings.setSafeMode(BooleanValues.on));
+		midiSafeOff.addValueChangeHandler(e -> settings.setSafeMode(BooleanValues.off));
 
 		updateFile.addChangeHandler(new ChangeHandler() {
 
@@ -640,7 +645,13 @@ public class Setup extends Composite {
 		disable14Bit.setValue(!t.enable14BitCC.value);
 		autoStartRecordOn.setValue(t.autoStartRecorder.value);
 		autoStartRecordOff.setValue(!t.autoStartRecorder.value);
+
+		globalLocalOn.setValue(t.local.value);
+		globalLocalOff.setValue(!t.local.value);
 		
+		midiSafeOn.setValue(t.safeMode.value);
+		midiSafeOff.setValue(!t.safeMode.value);
+
 		setupMappings(t.enable14BitCC.value);
 		
 		int hwSource = 0;

@@ -25,6 +25,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 
   m_routingMappings = msg.routings;
   m_localEnable = msg.localEnable;
+  m_safeMode = msg.safeMode;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getMIDIPrimaryReceiveChannel() const
@@ -580,4 +581,9 @@ bool MidiRuntimeOptions::isGlobalLocalEnabled()
 const nltools::msg::Setting::MidiSettingsMessage& MidiRuntimeOptions::getLastReceivedMessage() const
 {
   return m_lastMessage;
+}
+
+bool MidiRuntimeOptions::isMidiSafeModeEnabled()
+{
+  return m_safeMode;
 }

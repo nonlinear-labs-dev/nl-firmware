@@ -92,7 +92,7 @@ class DSPInterface
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
   virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
   virtual void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
-  virtual void onMidiSettingsReceived() = 0;
+  virtual void fadeOutResetVoiceAllocAndEnvelopes() = 0;
   virtual float getReturnValueFor(HardwareSource hwid) { return 0; };
   virtual void resetReturningHWSource(HardwareSource hwui) {};
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
@@ -118,7 +118,7 @@ class DSPInterface
 class dsp_host_dual : public DSPInterface
 {
  public:
-  void onMidiSettingsReceived() override;
+  void fadeOutResetVoiceAllocAndEnvelopes() override;
   // public members
   float m_mainOut_R = 0.0f, m_mainOut_L = 0.0f;
   uint32_t m_sample_counter = 0;

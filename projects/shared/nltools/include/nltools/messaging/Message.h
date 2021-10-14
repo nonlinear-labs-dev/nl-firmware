@@ -334,6 +334,7 @@ namespace nltools
         BenderCC bendercc;
 
         bool localEnable = true;
+        bool safeMode = true;
         tRoutingMappings routings {};
       };
 

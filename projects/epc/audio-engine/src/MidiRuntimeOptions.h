@@ -121,6 +121,8 @@ class MidiRuntimeOptions
   void setSplitReceiveChannel(MidiReceiveChannelSplit c);
   void set14BitSupportEnabled(bool e);
 
+  bool isMidiSafeModeEnabled();
+
   bool isGlobalLocalEnabled();
   void setGlobalLocalEnabled(bool b);
   bool isLocalEnabled(HardwareSource source);
@@ -135,12 +137,14 @@ class MidiRuntimeOptions
   static std::optional<int> decodeEnumLSB(AftertouchCC cc);
   static std::optional<int> decodeEnumMSB(BenderCC cc);
   static std::optional<int> decodeEnumLSB(BenderCC cc);
+
  private:
   MidiReceiveChannel m_midiPrimaryReceiveChannel;
   MidiReceiveChannelSplit m_midiSplitReceiveChannel;
   MidiSendChannel m_midiPrimarySendChannel;
   MidiSendChannelSplit m_midiSplitSendChannel;
 
+  bool m_safeMode = true;
   bool m_localEnable = true;
 
   bool m_enableHighVelCC = false;

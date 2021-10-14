@@ -187,8 +187,17 @@ public class MidiSettingsProvider {
 
         s.local.onChange(t -> {
             boolean val = t.equals(BooleanValues.on);
-            if(val != settings.local.value != val) {
+            if(val != settings.local.value) {
                 settings.local.value = val;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.safeMode.onChange(t -> {
+            boolean val = t.equals(BooleanValues.on);
+            if(val != settings.safeMode.value) {
+                settings.safeMode.value = val;
                 notifyClients();
             }
             return true;
