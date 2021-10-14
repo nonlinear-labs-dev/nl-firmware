@@ -141,14 +141,14 @@ get_tools_from_rootfs() {
     rm -rf $BINARY_DIR/build-tools/bbb/rootfs
     mkdir $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
 
-    for i in mxli sshpass text2soled rsync socat thttpd playcontroller; do
+    for i in mxli sshpass text2soled rsync socat thttpd playcontroller mke2fs; do
         if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs -type f -name "$i" | head -n 1) $OUT_DIRECTORY/utilities/; then
           echo "could not get $i from rootfs"
           return 1
         fi
     done
 
-    for i in sshpass text2soled rsync socat thttpd mxli playcontroller; do
+    for i in sshpass text2soled rsync socat thttpd mxli playcontroller mke2fs; do
         if ! chmod +x $OUT_DIRECTORY/utilities/"$i"; then
           echo "could not make $i executable"
           return 1

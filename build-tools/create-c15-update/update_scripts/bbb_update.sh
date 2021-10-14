@@ -92,48 +92,66 @@ update_rootfs(){
     rm -rf /update/BBB/rootfs
 }
 
-set_emmc_device() {
-    EMMC_DEVICE=""
+check_bootloader() {
+    BOOT_DEVICE=""
     for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
-        if [ -b ${d}boot0 ]; then
-            EMMC_DEVICE=${d}
-        fi
+        [ -b ${d}boot0 ] && BOOT_DEVICE="${d}"
     done
-}
 
-update_bootloader() {
-    # update u-boot.img
     dd if=${BOOT_DEVICE} of=/tmp/u-boot.img.dd bs=512 skip=768 count=1024 conv=notrunc
     truncate -s $(wc -c < /update/BBB/u-boot.img) /tmp/u-boot.img.dd
+    [ $(md5sum /tmp/u-boot.img.dd | cut -d' ' -f1) != $(cat /update/BBB/UBOOT_sum) ] && return 1
 
-    if [ $(md5sum /tmp/u-boot.img.dd | cut -d' ' -f1) -ne $(cat /update/BBB/UBOOT_sum) ]; then
-        dd if=/update/BBB/u-boot.img of=${EMMC_DEVICE} bs=512 seek=256 count=256 conv=notrunc
-        if [ $? -ne 0 ]; then report_and_quit "ERR. BBB update: Failed to update u-boot.img ..." "ERROR"; fi
-    fi
-
-    # update MLO
-    dd if=${BOOT_DEVICE} of=/tmp/MLO.dd bs=512 skip=768 count=1024 conv=notrunc
+    dd if=${BOOT_DEVICE} of=/tmp/MLO.dd bs=512 seek=256 count=256 conv=notrunc
     truncate -s $(wc -c < /update/BBB/MLO) /tmp/MLO.dd
+    [ $(md5sum /tmp/MLO.dd | cut -d' ' -f1) != $(cat /update/BBB/MLO_sum) ] && return 1
 
-    if [ $(md5sum /tmp/MLO.dd | cut -d' ' -f1) -ne $(cat /update/BBB/MLO_sum) ]; then
-        dd if=/update/BBB/MLO of=${EMMC_DEVICE} bs=512 seek=256 count=256 conv=notrunc
-        if [ $? -ne 0 ]; then report_and_quit "ERR. BBB update: Failed to update MLO ..." "ERROR"; fi
-    fi
+    printf "Bootloader up to date! Nothing to do!"
+    return 0
 }
 
-sync_to_emmc() {
 
+update_bootloader() {
+    EMMC_DEVICE=""
+    for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
+        [ -b ${d}boot0 ] && EMMC_DEVICE="${d}"
+    done
 
+    dd if=/update/BBB/u-boot.img of=${EMMC_DEVICE} bs=512 seek=768 count=1024 conv=notrunc
+    if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to update u-boot.img ..." "60"; fi
+
+    dd if=/update/BBB/MLO of=${EMMC_DEVICE} bs=512 seek=256 count=256 conv=notrunc
+    if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to update MLO ..." "60"; fi
+
+    return 0
+}
+
+sync_emmc() {
+    EMMC_DEVICE_P1=""
+    for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
+        [ -b ${d}boot0 ] && EMMC_DEVICE_P1="${d}p1"
+    done
+
+    [ "$(cat /proc/mounts | grep ${EMMC_DEVICE_P1})" = "" ] || umount "${EMMC_DEVICE_P1}"
+    dd if=/dev/zero of=${EMMC_DEVICE_P1} bs=1024 count=1024 2>/dev/null 1>/dev/null && sync \
+    && echo 'yes' | mkfs.ext4 ${EMMC_DEVICE_P1} && sync
+    if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to clean part. ..." "60"; fi
+
+    EMMC_MOUNTPOINT="/tmp/emmc_rootfs"
+    mkdir ${EMMC_MOUNTPOINT} && mount ${EMMC_DEVICE_P1} ${EMMC_MOUNTPOINT} \
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '${EMMC_MOUNTPOINT}' / ${EMMC_MOUNTPOINT} \
+    && umount ${EMMC_DEVICE_P1}
+    if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to sync part. ..." "60"; fi
+
+    return 0
 }
 
 main() {
-    
     if [ ! -z "$EPC_IP" ]; then
         move_files
     fi
     update_rootfs
-    update_bootloader
-    sync_to_emmc
+    check_bootloader || { sync_emmc && update_bootloader; }
     return 0
 }
 
