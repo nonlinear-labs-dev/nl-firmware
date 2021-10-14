@@ -3,64 +3,72 @@
 set -x
 set -e
 
-mkdir /rootfs
+install_package() {
+    name="$1"
+    pacstrap -c /rootfs $name && return 0
+    echo "Could not install package $name in version $version."
+    return 1
+}
 
-bash
+install_packages() {
+    while read package; do
+        name=$(echo $package | cut -f1 -d " ")
+        install_package $name $version || return 1
+    done < /epc2-binary-dir/.epc2-base-os-final-packages
 
-for PACKAGE in $PACKAGES; do
-  FILE=$(find /downloads/ -name $PACKAGE*)
-  pacstrap -U -c /rootfs $FILE
-done;
 
-bash
+    arch-chroot /rootfs mkinitcpio -p linux-rt
+    return 0
+}
 
-exit 0;
+create_package_database() {
+    mkdir /packages
+    cp /downloads/epc2/packages/* /packages/
+    cd /packages
+    repo-add /packages/nonlinux.db.tar.gz /packages/*
+    echo "[nonlinux]" > /etc/pacman.conf
+    echo "Server = file:///packages" >> /etc/pacman.conf
+    pacman -Sy
+}
 
-mkdir -p /extracted-packages
-cd /extracted-packages
-tar -xzf /packages/packages_${BUILD_CONTAINER_VERSION}.tar.gz
+perform_tweaks() {
+    cp /current-source-dir/install/nlhook /rootfs/lib/initcpio/install/nlhook
+    cp /current-source-dir/install/oroot /rootfs/lib/initcpio/install/oroot
+    cp /current-source-dir/hook/nlhook /rootfs/lib/initcpio/hooks/nlhook
+    cp /current-source-dir/hook/oroot /rootfs/lib/initcpio/hooks/oroot
 
-echo "Server=file:///extracted-packages" > /etc/pacman.d/mirrorlist
-sed -i 's/\[core\]//g' /etc/pacman.conf
-sed -i 's/\[extra\]//g' /etc/pacman.conf
-sed -i 's/\[community\]//g' /etc/pacman.conf
-echo "[nonlinux]" >> /etc/pacman.conf
-echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
-echo "Server=file:///extracted-packages" >> /etc/pacman.conf
+    sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=1/' /rootfs/etc/default/grub
+    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT="quiet ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2"/' /rootfs/etc/default/grub
 
-pacman --noconfirm -Syyu
-pacman --noconfirm --overwrite '*' -S ${INSTALL_PACKAGES}
-yes | truncate -s 8G /out/rootfs.ext4
-yes | truncate -s 512M /out/bootfs.fat
-yes | mkfs.ext4 /out/rootfs.ext4
-yes | mkfs.fat /out/bootfs.fat
-pacman --noconfirm -Sw ${INSTALL_PACKAGES}
-mount -o loop /out/rootfs.ext4 /mnt
-mkdir /mnt/boot
-mount -o loop /out/bootfs.fat /mnt/boot/
-mkdir -p /run/shm
+    sed -i 's/^HOOKS=.*$/HOOKS=\"base udev oroot block filesystems autodetect modconf keyboard net nlhook\"/' /rootfs/etc/mkinitcpio.conf
+    sed -i 's/^BINARIES=.*$/BINARIES=\"tar rsync gzip lsblk udevadm\"/' /rootfs/etc/mkinitcpio.conf
+    sed -i 's/^MODULES=.*$/MODULES=\"e1000e\"/' /rootfs/etc/mkinitcpio.conf
+    sed -i "s/#governor=.*$/governor='performance'/" /rootfs/etc/default/cpupower
 
-pacstrap -c /mnt base ${INSTALL_PACKAGES}
+    echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" >> /rootfs/etc/fstab
 
-cp /in/install/nlhook /mnt/lib/initcpio/install/nlhook
-cp /in/install/oroot /mnt/lib/initcpio/install/oroot
-cp /in/hook/nlhook /mnt/lib/initcpio/hooks/nlhook
-cp /in/hook/oroot /mnt/lib/initcpio/hooks/oroot
+    arch-chroot /rootfs /bin/bash -c "systemctl enable cpupower"
+    arch-chroot /rootfs /bin/bash -c "systemctl enable sshd"
+    arch-chroot /rootfs bash -c "useradd -m sscl"
 
-sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=1/' /mnt/etc/default/grub
-sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT="quiet ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2"/' /mnt/etc/default/grub
-sed -i 's/^HOOKS=.*$/HOOKS=\"base udev oroot block filesystems autodetect modconf keyboard net nlhook\"/' /mnt/etc/mkinitcpio.conf
-sed -i 's/^BINARIES=.*$/BINARIES=\"tar rsync gzip lsblk udevadm\"/' /mnt/etc/mkinitcpio.conf
-sed -i 's/^MODULES=.*$/MODULES=\"e1000e\"/' /mnt/etc/mkinitcpio.conf
-sed -i "s/#governor=.*$/governor='performance'/" /mnt/etc/default/cpupower
+    echo "sscl:sscl" | chpasswd -R /rootfs
+    echo "sscl   ALL=(ALL) NOPASSWD:ALL" >> /rootfs/etc/sudoers
+}
 
-echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" >> /mnt/etc/fstab
+create_mountpoint() {
+    mkdir /rootfs
+    yes | truncate -s 8G /current-binary-dir/rootfs.ext4
+    yes | truncate -s 512M /current-binary-dir/bootfs.fat
+    yes | mkfs.ext4 /current-binary-dir/rootfs.ext4
+    yes | mkfs.fat /current-binary-dir/bootfs.fat
+    mount -o loop /current-binary-dir/rootfs.ext4 /rootfs
+    mkdir /rootfs/boot
+    mount -o loop /current-binary-dir/bootfs.fat /rootfs/boot/
+    mkdir -p /run/shm
+}
 
-arch-chroot /mnt /bin/bash -c "systemctl enable cpupower"
-arch-chroot /mnt /bin/bash -c "systemctl enable sshd"
+create_mountpoint
+create_package_database
+install_packages /rootfs || exit 1
+perform_tweaks
 
-arch-chroot /mnt bash -c "useradd -m sscl"
-echo "sscl:sscl" | chpasswd -R /mnt
-echo "sscl   ALL=(ALL) NOPASSWD:ALL" >> /mnt/etc/sudoers
-
-arch-chroot /mnt bash -c "mkinitcpio -p linux-rt"
