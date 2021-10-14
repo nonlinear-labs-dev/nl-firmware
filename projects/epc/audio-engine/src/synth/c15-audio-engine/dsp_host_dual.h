@@ -188,25 +188,18 @@ class dsp_host_dual : public DSPInterface
  private:
   static inline VoiceGroup getVoiceGroupFromAllocatorId(const AllocatorId _id)
   {
-    // a little inconvenient and redundant...
     switch(_id)
     {
       case AllocatorId::Local_I:
         return VoiceGroup::I;
-        break;
       case AllocatorId::Local_II:
         return VoiceGroup::II;
-        break;
       case AllocatorId::Local_Both:
         return VoiceGroup::Global;
-        break;
+      default:
       case AllocatorId::None:
-        nltools::Log::error("got invalid State AllocatorID::None");
-        break;
+        return VoiceGroup::Invalid;
     }
-
-//    nltools_detailedAssertAlways(false, __PRETTY_FUNCTION__);
-    return VoiceGroup::NumGroups;
   }
   using LayerMode = C15::Properties::LayerMode;
   // parameters

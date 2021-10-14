@@ -28,6 +28,8 @@ unsigned int DspHostDualTester::getActiveVoices(const VoiceGroup _group)
       gateSignal = sumUp(m_host->m_poly[0].m_signals.get_poly(gateSignalIndex))
           + sumUp(m_host->m_poly[1].m_signals.get_poly(gateSignalIndex));
       break;
+    case VoiceGroup::Invalid:
+      break;
   }
 
   // having summed up all voices, we obtain the number of "active" Voices (0 ... 24)
