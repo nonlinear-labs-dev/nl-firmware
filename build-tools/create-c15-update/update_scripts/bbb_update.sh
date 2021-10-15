@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x
 
 # version : 2.0
 #
@@ -97,6 +98,7 @@ check_bootloader() {
     for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
         [ -b ${d}boot0 ] && BOOT_DEVICE="${d}"
     done
+    printf "Boot Device is $BOOT_DEVICE"
 
     dd if=${BOOT_DEVICE} of=/tmp/u-boot.img.dd bs=512 skip=768 count=1024 conv=notrunc
     truncate -s $(wc -c < /update/BBB/u-boot.img) /tmp/u-boot.img.dd
@@ -117,24 +119,26 @@ update_bootloader() {
         [ -b ${d}boot0 ] && EMMC_DEVICE="${d}"
     done
 
-    dd if=/update/BBB/u-boot.img of=${EMMC_DEVICE} bs=512 seek=768 count=1024 conv=notrunc
+    dd if=/update/BBB/u-boot.img of=${EMMC_DEVICE} bs=512 seek=768 count=1024 conv=notrunc && sync
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to update u-boot.img ..." "60"; fi
 
-    dd if=/update/BBB/MLO of=${EMMC_DEVICE} bs=512 seek=256 count=256 conv=notrunc
+    dd if=/update/BBB/MLO of=${EMMC_DEVICE} bs=512 seek=256 count=256 conv=notrunc && sync
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to update MLO ..." "60"; fi
 
     return 0
 }
 
 sync_emmc() {
-    EMMC_DEVICE_P1=""
+    EMMC_DEVICE=""
     for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
-        [ -b ${d}boot0 ] && EMMC_DEVICE_P1="${d}p1"
+        [ -b ${d}boot0 ] && EMMC_DEVICE="${d}" && EMMC_DEVICE_P1="${d}p1"
     done
 
-    [ "$(cat /proc/mounts | grep ${EMMC_DEVICE_P1})" = "" ] || umount "${EMMC_DEVICE_P1}"
+    [ "$(mount | grep " / " | cut -d' ' -f1)" == "$EMMC_DEVICE_P1" ] \
+    && { printf "root mounted on $EMMC_DEVICE_P1, will not sync emmc!"; return 1; }
+
     dd if=/dev/zero of=${EMMC_DEVICE_P1} bs=1024 count=1024 2>/dev/null 1>/dev/null && sync \
-    && echo 'yes' | mkfs.ext4 ${EMMC_DEVICE_P1} && sync
+    && echo 'yes' | mkfs.ext4 ${EMMC_DEVICE_P1} && hdparm -z "${EMMC_DEVICE}" && sync
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to clean part. ..." "60"; fi
 
     EMMC_MOUNTPOINT="/tmp/emmc_rootfs"
