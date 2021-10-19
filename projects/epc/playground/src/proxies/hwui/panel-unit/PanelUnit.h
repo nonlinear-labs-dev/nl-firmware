@@ -22,7 +22,6 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   void setupFocusAndMode(FocusAndMode focusAndMode) override;
   bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state) override;
 
-  void setupFocusAndMode();
   void onTimeout();
   tLed getLED(Buttons id);
 

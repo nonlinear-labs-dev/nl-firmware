@@ -8,6 +8,7 @@ class PanelUnitFocusAndMode : public Setting
   using Setting::Setting;
   void set(FocusAndMode fam);
   [[nodiscard]] FocusAndMode getState() const;
+  [[nodiscard]] FocusAndMode getOldState() const;
 
   void load(const Glib::ustring& text, Initiator initiator) override;
   Glib::ustring save() const override;
@@ -16,4 +17,5 @@ class PanelUnitFocusAndMode : public Setting
 
  private:
   FocusAndMode m_focusAndMode;
+  FocusAndMode m_oldFocusAndMode;
 };

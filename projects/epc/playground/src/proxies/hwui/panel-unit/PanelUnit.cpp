@@ -132,14 +132,8 @@ void PanelUnit::turnLedsOff()
     led->setState(TwoStateLED::OFF);
 }
 
-void PanelUnit::setupFocusAndMode()
-{
-  setupFocusAndMode(Application::get().getHWUI()->getFocusAndMode());
-}
-
 void PanelUnit::setupFocusAndMode(FocusAndMode focusAndMode)
 {
-  m_panelFocusAndModeSetting.set(focusAndMode);
   installUsageMode(focusAndMode);
 
   m_editPanel.setupFocusAndMode(focusAndMode);

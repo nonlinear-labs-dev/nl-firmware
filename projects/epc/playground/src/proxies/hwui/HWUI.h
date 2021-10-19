@@ -82,6 +82,7 @@ class HWUI
 
   sigc::connection onModifiersChanged(const sigc::slot<void, ButtonModifiers> &cb);
   sigc::connection connectToBlinkTimer(const sigc::slot<void, int> &cb);
+  sigc::connection onFocusAndModeInstalled(const sigc::slot<void, FocusAndMode> &cb);
   void deInit();
 
   void toggleLoadToPart();
@@ -150,6 +151,7 @@ class HWUI
 
   Signal<void, ButtonModifiers> m_modifersChanged;
   Signal<void, int> m_blinkTimer;
+  Signal<void, FocusAndMode> m_signalFocusAndMode;
 
   std::array<bool, (size_t) Buttons::NUM_BUTTONS> m_buttonStates;
 
@@ -165,4 +167,8 @@ class HWUI
 
   DelayedJob m_setupJob;
   ScopedGuard m_parameterFocusLock;
+
+  [[nodiscard]] FocusAndMode getFocusAndModeState() const;
+  [[nodiscard]] FocusAndMode getOldFocusAndModeState() const;
+  PanelUnitFocusAndMode& m_famSetting;
 };

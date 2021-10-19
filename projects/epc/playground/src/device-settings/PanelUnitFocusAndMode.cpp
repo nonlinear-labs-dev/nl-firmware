@@ -20,6 +20,7 @@ void PanelUnitFocusAndMode::set(FocusAndMode fam)
 {
   if(fam != m_focusAndMode)
   {
+    m_oldFocusAndMode = m_focusAndMode;
     m_focusAndMode = fam;
     notify();
   }
@@ -29,6 +30,12 @@ FocusAndMode PanelUnitFocusAndMode::getState() const
 {
   return m_focusAndMode;
 }
+
+FocusAndMode PanelUnitFocusAndMode::getOldState() const
+{
+  return m_oldFocusAndMode;
+}
+
 
 bool PanelUnitFocusAndMode::persistent() const
 {

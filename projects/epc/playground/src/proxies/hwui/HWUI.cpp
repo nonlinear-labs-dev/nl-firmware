@@ -41,14 +41,13 @@ HWUI::HWUI(Settings &settings)
     , m_baseUnit { settings }
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
-    , m_focusAndMode(UIFocus::Parameters, UIMode::Select)
     , m_blinkCount(0)
     , m_setupJob(1,
                  [this]
                  {
-                   m_panelUnit.setupFocusAndMode(m_focusAndMode);
-                   m_baseUnit.setupFocusAndMode(m_focusAndMode);
+                   m_signalFocusAndMode.send(getFocusAndModeState());
                  })
+    , m_famSetting(*settings.getSetting<PanelUnitFocusAndMode>())
 {
 
   if(isatty(fileno(stdin)))
@@ -351,9 +350,9 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
       {
         if(buttonID == Buttons::BUTTON_SETUP && state)
         {
-          if(m_focusAndMode.focus == UIFocus::Setup)
+          if(getFocusAndModeState().focus == UIFocus::Setup)
           {
-            undoableSetFocusAndMode(getOldFocusAndMode());
+            undoableSetFocusAndMode(getOldFocusAndModeState());
           }
           else
           {
@@ -862,4 +861,19 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
       setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     }
   }
+}
+
+sigc::connection HWUI::onFocusAndModeInstalled(const sigc::slot<void, FocusAndMode> &cb)
+{
+  return m_signalFocusAndMode.connect(cb);
+}
+
+FocusAndMode HWUI::getFocusAndModeState() const
+{
+  return m_famSetting.getState();
+}
+
+FocusAndMode HWUI::getOldFocusAndModeState() const
+{
+  return m_famSetting.getOldState();
 }

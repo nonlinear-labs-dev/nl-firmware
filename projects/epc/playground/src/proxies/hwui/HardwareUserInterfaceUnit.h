@@ -30,6 +30,7 @@ class HardwareUserInterfaceUnit
   [[nodiscard]] Settings& getSettings() const;
  private:
   void onScreenSaverStateChanged(bool state);
+  void onFocusAndModeChanged(const Setting* s);
   bool m_screenSaverActive = false;
   std::shared_ptr<UsageMode> m_usageMode;
   Settings& m_settings;
