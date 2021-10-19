@@ -342,7 +342,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
             useCases.load(currentSelectedPreset);
             if(currentSelectedPreset->getUuid() == oldPreset)
             {
-              animateSelectedPreset([] {});
+              animateSomePreset(currentSelectedPreset, [] {});
             }
           }
         }
@@ -358,20 +358,17 @@ bool PresetManagerLayout::onRotary(int inc, ButtonModifiers modifiers)
   return Layout::onRotary(inc, modifiers);
 }
 
-bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
-{
-  return m_presets->animateSelectedPreset(std::move(cb));
-}
-
 bool PresetManagerLayout::animateSomePreset(Preset *preset, std::function<void()> cb)
 {
-  return m_presets->animateSomePreset(preset, std::move(cb));
+  return m_presets->animatePreset(preset, std::move(cb));
 }
 
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
-  if(Application::get().getHWUI()->isInLoadToPart())
-    m_presets->animateSelectedPreset(std::move(cb));
+  auto pm = getPresetManager();
+  auto selPreset = pm->getSelectedPreset();
+  if(Application::get().getHWUI()->isInLoadToPart() && selPreset)
+    m_presets->animatePreset(selPreset, std::move(cb));
   else
     cb();
 }

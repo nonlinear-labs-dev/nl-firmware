@@ -17,17 +17,16 @@ AppendOverwriteInsertButtonMenu::AppendOverwriteInsertButtonMenu(PresetManagerLa
     : super(rect)
     , m_parent(parent)
 {
-  Application::get().getPresetManager()->onNumBanksChanged(
-      sigc::hide<0>(mem_fun(this, &AppendOverwriteInsertButtonMenu::buildMenu)));
+  m_prestmanager = Application::get().getPresetManager();
+  m_prestmanager->onNumBanksChanged(sigc::hide<0>(mem_fun(this, &AppendOverwriteInsertButtonMenu::buildMenu)));
 }
 
 void AppendOverwriteInsertButtonMenu::buildMenu()
 {
   clear();
 
-  auto pm = Application::get().getPresetManager();
   addButton("Append", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
-  if(pm->getSelectedBank() && pm->getSelectedBank()->getNumPresets() != 0)
+  if(m_prestmanager->getSelectedBank() && m_prestmanager->getSelectedBank()->getNumPresets() != 0)
     addButton("Overwrite", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
   addButton("Insert", std::bind(&AppendOverwriteInsertButtonMenu::executeAction, this));
 
@@ -55,36 +54,23 @@ size_t AppendOverwriteInsertButtonMenu::enumToIndex(PresetStoreModeSettings i) c
 
 bool AppendOverwriteInsertButtonMenu::animateSelectedPreset()
 {
-  auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout();
-
-  if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout*>(currentLayout.get()))
+  if(auto selBank = m_prestmanager->getSelectedBank())
   {
-    return presetManagerLayout->animateSelectedPreset(
-        [] { Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select)); });
+    if(auto selPreset = selBank->getSelectedPreset())
+    {
+      return animatePreset(selPreset);
+    }
   }
-  else
-  {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
-  }
-
   return false;
 }
 
-bool AppendOverwriteInsertButtonMenu::animateSomePreset(Preset* target)
+bool AppendOverwriteInsertButtonMenu::animatePreset(Preset* target)
 {
-  auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout();
-
-  if(auto presetManagerLayout = dynamic_cast<PresetManagerLayout*>(currentLayout.get()))
-  {
-    return presetManagerLayout->animateSomePreset(target, [] {
-                                                    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode{UIFocus::Presets, UIMode::Select});
-    });
-  }
-  else
-  {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode{UIFocus::Presets, UIMode::Select});
-  }
-  return false;
+  auto hwuiPtr = Application::get().getHWUI();
+  return m_parent.animateSomePreset(target,
+                             [hwuiPtr] {
+                               hwuiPtr->undoableSetFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
+                             });
 }
 
 void AppendOverwriteInsertButtonMenu::executeAction()
@@ -118,11 +104,13 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_INSERT:
           if(modified)
-            pushRenameScreen(bankUseCases.insertEditBufferAtPosition(selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1));
+            pushRenameScreen(bankUseCases.insertEditBufferAtPosition(
+                selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1));
           else
           {
-            auto newPreset = bankUseCases.insertEditBufferAtPosition(selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
-            animateSomePreset(newPreset);
+            auto newPreset = bankUseCases.insertEditBufferAtPosition(
+                selectedBank->getPresetPosition(selectedPreset->getUuid()) + 1);
+            animatePreset(newPreset);
           }
           break;
 
@@ -141,17 +129,18 @@ void AppendOverwriteInsertButtonMenu::executeAction()
   else
   {
     auto newBank = useCases.createBankAndStoreEditBuffer();
-    animateSomePreset(newBank->getPresetAt(0));
+    animatePreset(newBank->getPresetAt(0));
   }
 }
 
 void AppendOverwriteInsertButtonMenu::pushRenameScreen(Preset* target)
 {
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new RenamePresetLayout(
-      [=](const Glib::ustring& newName) {
+      [=](const Glib::ustring& newName)
+      {
         PresetUseCases useCases(target, *Application::get().getSettings());
         useCases.rename(newName);
-        animateSomePreset(target);
+        animatePreset(target);
       },
       [=]() { animateSelectedPreset(); }));
 }

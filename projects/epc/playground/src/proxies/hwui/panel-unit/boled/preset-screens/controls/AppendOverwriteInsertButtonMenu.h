@@ -6,6 +6,7 @@
 class PresetManagerLayout;
 class Preset;
 class Bank;
+class PresetManager;
 
 namespace UNDO
 {
@@ -30,9 +31,10 @@ class AppendOverwriteInsertButtonMenu : public ButtonMenu
 
   void pushRenameScreen(Preset* target);
   bool animateSelectedPreset();
-  bool animateSomePreset(Preset* target);
+  bool animatePreset(Preset* target);
 
   void executeAction();
 
   PresetManagerLayout& m_parent;
+  PresetManager* m_prestmanager;
 };

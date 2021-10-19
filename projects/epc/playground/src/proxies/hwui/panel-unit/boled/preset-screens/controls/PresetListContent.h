@@ -17,15 +17,14 @@ class PresetListContent : public ControlWithChildren
   explicit PresetListContent(const Rect &pos);
   ~PresetListContent() override;
 
-  void setup(Bank *bank, size_t focussedPresetPos);
-  bool animateSelectedPreset(std::function<void()> cb);
-  bool animateSomePreset(Preset* preset, std::function<void()> cb);
+  void setup(const Bank *bank, size_t focussedPresetPos);
+  bool animateSomePreset(const Preset* preset, std::function<void()> cb);
 
  protected:
   bool isTransparent() const override;
 
  private:
-  Preset *getPresetAtPosition(Bank *bank, int pos) const;
+  Preset *getPresetAtPosition(const Bank *bank, int pos) const;
 
   PresetListEntry *m_firstPreset = nullptr;
   PresetListEntry *m_secondPreset = nullptr;
