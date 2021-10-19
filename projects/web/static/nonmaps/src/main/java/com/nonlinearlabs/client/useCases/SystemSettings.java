@@ -197,7 +197,7 @@ public class SystemSettings {
 	public void setSafeMode(BooleanValues b)
 	{
 		SetupModel.get().systemSettings.safeMode.setValue(b);
-		NonMaps.theMaps.getServerProxy().setSetting("MidiSafeMode", netify(b.name()));
+		NonMaps.theMaps.getServerProxy().setSetting("MIDISafeMode", netify(b.name()));
 	}
 
 	public void setReceiveMidiChannelSplit(MidiReceiveChannelSplit midiReceiveChannelSplit) {

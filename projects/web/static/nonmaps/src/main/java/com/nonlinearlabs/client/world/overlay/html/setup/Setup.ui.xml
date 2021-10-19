@@ -336,7 +336,7 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>Midi Safe Mode</p>
+							<p>MIDI Safe Mode</p>
 						</div>
 						<div class="w40p mw-fit-content">
 							<g:RadioButton ui:field="midiSafeOn" name="rad_midiSafe" value="true"></g:RadioButton>
