@@ -2373,12 +2373,14 @@ SoundType dsp_host_dual::getType()
 
 VoiceGroup dsp_host_dual::getSplitPartForKeyDown(int key)
 {
-  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyDown(key));
+  const auto allocID = m_alloc.getSplitPartForKeyDown(key);
+  return getVoiceGroupFromAllocatorId(allocID);
 }
 
 VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
 {
-  return getVoiceGroupFromAllocatorId(m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from)));
+  const auto allocID = m_alloc.getSplitPartForKeyUp(key, getInputSourceId(from));
+  return getVoiceGroupFromAllocatorId(allocID);
 }
 
 void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
@@ -2397,6 +2399,10 @@ void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGrou
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
         m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
+        break;
+      default:
+      case VoiceGroup::NumGroups:
+      case VoiceGroup::Invalid:
         break;
     }
   }
@@ -2418,6 +2424,10 @@ void dsp_host_dual::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGr
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
         m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
+        break;
+      default:
+      case VoiceGroup::NumGroups:
+      case VoiceGroup::Invalid:
         break;
     }
   }
@@ -2493,6 +2503,11 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
       case VoiceGroup::Global:  // applies to both Parts I, II at once
         valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, AllocatorId::Local_Both);
         break;
+      default:
+      case VoiceGroup::NumGroups:
+      case VoiceGroup::Invalid:
+        valid = false;
+        break;
     }
   }
   if(valid)
@@ -2521,6 +2536,11 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
         valid = m_alloc.onSplitKeyUp(note, velocity, inputSourceId, AllocatorId::Local_Both);
+        break;
+      default:
+      case VoiceGroup::NumGroups:
+      case VoiceGroup::Invalid:
+        valid = false;
         break;
     }
   }

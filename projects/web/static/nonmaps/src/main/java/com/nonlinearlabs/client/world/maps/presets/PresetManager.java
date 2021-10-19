@@ -710,10 +710,10 @@ public class PresetManager extends MapsLayout {
 			closeMultiSelection();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-			Window.open("/NonMaps/MCView/index.html", "", "");
+			Window.open("/MCView/index.html", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_R
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-			Window.open("/NonMaps/recorder/index.html", "", "");
+			Window.open("/recorder/index.html", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ONE
 				|| keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_NUM_ONE) {
 			EditBufferUseCases.get().selectVoiceGroup(VoiceGroup.I);
