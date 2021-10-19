@@ -25,6 +25,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/LocalOffPedalParameterEditLayout2.h>
 
 void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -214,11 +215,17 @@ Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
       return new ParameterInfoLayout();
 
     case UIMode::Edit:
-      return new PedalParameterEditLayout2();
+      if(isLocalEnabled())
+        return new PedalParameterEditLayout2();
+      else
+        return new LocalOffPedalParameterEditLayout2();
 
     case UIMode::Select:
     default:
-      return new PedalParameterSelectLayout2();
+      if(isLocalEnabled())
+        return new PedalParameterSelectLayout2();
+      else
+        return new LocalOffPedalParameterSelectLayout2();
   }
 
   return super::createLayout(focusAndMode);

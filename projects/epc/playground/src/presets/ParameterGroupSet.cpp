@@ -40,7 +40,11 @@
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
 {
-  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this));
+}
+
+void ParameterGroupSet::init(OptRefSettings settings)
+{
+  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, settings));
   auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
   appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
 

@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ParameterGroup.h"
+#include <parameter_descriptor.h>
+#include <parameters/ParameterTypes.h>
+#include <parameters/ParameterTypes.h>
 
 class ModulationRoutingParameter;
 class PhysicalControlParameter;
@@ -9,7 +12,7 @@ class MacroControlParameter;
 class HardwareSourcesGroup : public ParameterGroup
 {
  public:
-  explicit HardwareSourcesGroup(ParameterGroupSet* parent);
+  explicit HardwareSourcesGroup(ParameterGroupSet* parent, OptRefSettings anOptional);
   ~HardwareSourcesGroup() override;
 
   typedef PhysicalControlParameter* tPhysicalControlParameter;
@@ -18,43 +21,46 @@ class HardwareSourcesGroup : public ParameterGroup
 
   static ParameterId getUpperRibbonParameterID()
   {
-    return { 284, VoiceGroup::Global };
+    return { C15::PID::Ribbon_1, VoiceGroup::Global };
   }
 
   static ParameterId getLowerRibbonParameterID()
   {
-    return { 289, VoiceGroup::Global };
+    return { C15::PID::Ribbon_2, VoiceGroup::Global };
   }
 
   static ParameterId getPedal1ParameterID()
   {
-    return { 254, VoiceGroup::Global };
+    return { C15::PID::Pedal_1, VoiceGroup::Global };
   }
 
   static ParameterId getPedal2ParameterID()
   {
-    return { 259, VoiceGroup::Global };
+    return { C15::PID::Pedal_2, VoiceGroup::Global };
   }
 
   static ParameterId getPedal3ParameterID()
   {
-    return { 264, VoiceGroup::Global };
+    return { C15::PID::Pedal_3, VoiceGroup::Global };
   }
 
   static ParameterId getPedal4ParameterID()
   {
-    return { 269, VoiceGroup::Global };
+    return { C15::PID::Pedal_4, VoiceGroup::Global };
   }
 
   static ParameterId getPitchbendParameterID()
   {
-    return { 274, VoiceGroup::Global };
+    return { C15::PID::Bender, VoiceGroup::Global };
   }
 
   static ParameterId getAftertouchParameterID()
   {
-    return { 279, VoiceGroup::Global };
+    return { C15::PID::Aftertouch, VoiceGroup::Global };
   }
 
-  virtual void init() override;
+  void init() override;
+
+ private:
+  OptRefSettings m_settings;
 };
