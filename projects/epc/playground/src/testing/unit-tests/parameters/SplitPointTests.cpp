@@ -13,6 +13,7 @@
 TEST_CASE("Split Point Display Value")
 {
   TestGroupSet set { &SyncMasterMockRoot::get() };
+  set.init(std::nullopt);
   TestGroup group(&set, VoiceGroup::I);
   group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::I }));
   group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::II }));

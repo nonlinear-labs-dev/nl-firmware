@@ -31,6 +31,21 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
   }
 }
 
+Glib::ustring HardwareSourceSendParameter::getLongName() const
+{
+  return getID().toString();
+}
+
+Glib::ustring HardwareSourceSendParameter::getShortName() const
+{
+  return getID().toString();
+}
+
+Glib::ustring HardwareSourceSendParameter::getInfoText() const
+{
+  return getID().toString();
+}
+
 void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 {
   if(auto localSetting = dynamic_cast<const GlobalLocalEnableSetting*>(setting))

@@ -15,7 +15,6 @@ class Preset;
 class ParameterGroup;
 class Settings;
 
-z
 class ParameterGroupSet : public AttributesOwner
 {
  private:
@@ -25,7 +24,8 @@ class ParameterGroupSet : public AttributesOwner
   explicit ParameterGroupSet(UpdateDocumentContributor *parent);
   ~ParameterGroupSet() override;
 
-  void init(OptRefSettings settings);
+  virtual void init(OptRefSettings settings);
+  [[nodiscard]] bool isInitialized() const;
   typedef ParameterGroup *tParameterGroupPtr;
   typedef IntrusiveList<tParameterGroupPtr> tParamGroups;
   typedef std::map<int, Parameter *> tParamMap;
@@ -69,6 +69,7 @@ class ParameterGroupSet : public AttributesOwner
  private:
   tParamArray m_parameterGroups;
   tParamMapArray m_idToParameterMap;
+  bool m_isInitialized = false;
 
   void copyGlobalSplitIntoDualSplit(UNDO::Transaction *transaction, const Preset *other);
 };

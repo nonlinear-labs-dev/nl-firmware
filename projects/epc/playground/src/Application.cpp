@@ -26,6 +26,7 @@
 #include <presets/PresetManagerActions.h>
 #include <presets/BankActions.h>
 #include <presets/EditBufferActions.h>
+#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 using namespace std::chrono_literals;
 
@@ -101,7 +102,7 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get());
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, SplashLayout::addStatus);
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
 

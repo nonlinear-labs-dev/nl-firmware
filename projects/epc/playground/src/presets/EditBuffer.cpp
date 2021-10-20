@@ -52,6 +52,12 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings& settings, std::unique_pt
   m_hashOnStore = getHash();
 }
 
+void EditBuffer::init(OptRefSettings settings)
+{
+  ParameterGroupSet::init(settings);
+  m_recallSet.init();
+}
+
 EditBuffer::~EditBuffer()
 {
   m_voiceGroupConnection.disconnect();

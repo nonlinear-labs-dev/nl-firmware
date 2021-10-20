@@ -9,6 +9,7 @@
 TEST_CASE("Modulateable Parameter")
 {
   TestGroupSet groupSet(&SyncMasterMockRoot::get());
+  groupSet.init(std::nullopt);
   TestGroup group(&groupSet, VoiceGroup::I);
 
   SECTION("1.4pct to 112 playcontroller")

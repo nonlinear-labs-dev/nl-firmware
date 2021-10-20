@@ -10,6 +10,9 @@ class HardwareSourceSendParameter : public Parameter
   HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, const ParameterId& id, const ScaleConverter* converter, double def,
                      int coarseDenominator, int fineDenominator,
                      OptRefSettings settings);
+  Glib::ustring getLongName() const override;
+  Glib::ustring getShortName() const override;
+  Glib::ustring getInfoText() const override;
 
  private:
   OptRefSettings m_settings;
@@ -18,5 +21,5 @@ class HardwareSourceSendParameter : public Parameter
 
   bool m_localIsEnabled = false;
   bool m_routingIsEnabled = false;
-  RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
+  static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
 };

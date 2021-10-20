@@ -44,6 +44,9 @@ ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
 
 void ParameterGroupSet::init(OptRefSettings settings)
 {
+  if(isInitialized())
+    return;
+
   auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, settings));
   auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
   appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
@@ -79,6 +82,7 @@ void ParameterGroupSet::init(OptRefSettings settings)
   appendParameterGroup(new ScaleGroup(this));
 
   m_idToParameterMap[static_cast<size_t>(VoiceGroup::Global)] = getParametersSortedByNumber(VoiceGroup::Global);
+  m_isInitialized = true;
 }
 
 ParameterGroupSet::~ParameterGroupSet()
@@ -99,7 +103,8 @@ ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::getParameterGroupByID(c
 ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup(ParameterGroup *p)
 {
   p->init();
-  g_assert(getParameterGroupByID(p->getID()) == nullptr);
+  auto id = p->getID();
+  nltools_assertAlways(getParameterGroupByID(id) == nullptr);
   auto wrapped = tParameterGroupPtr(p);
   m_parameterGroups[static_cast<size_t>(p->getID().getVoiceGroup())].append(wrapped);
   return wrapped;
@@ -285,4 +290,9 @@ void ParameterGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transa
 const ParameterGroupSet::tParamArray &ParameterGroupSet::getParameters() const
 {
   return m_parameterGroups;
+}
+
+bool ParameterGroupSet::isInitialized() const
+{
+  return m_isInitialized;
 }

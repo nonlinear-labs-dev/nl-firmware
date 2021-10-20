@@ -86,6 +86,10 @@ bool ParameterId::isGlobal() const
 
 bool ParameterId::isGlobal(int number)
 {
+  //TDOD remove hack
+  if(number >= 1000 && number <= 1007)
+    return true;
+
   if(number >= 400 || number < 0)
     return false;
 

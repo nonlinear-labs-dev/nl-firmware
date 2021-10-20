@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.DateDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
@@ -96,8 +97,8 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	public BasicParameterModel getParameter(ParameterId id) {
 		BasicParameterModel r = byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.get(id.getNumber());
 
-		if (r == null)
-			throw new IllegalArgumentException();
+		// if (r == null)
+		// 	throw new IllegalArgumentException();
 
 		return r;
 	}
