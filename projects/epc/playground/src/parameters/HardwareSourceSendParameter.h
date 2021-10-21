@@ -31,6 +31,7 @@ class HardwareSourceSendParameter : public Parameter
 
  protected:
   nlohmann::json serialize() const override;
+  void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
 
   const PhysicalControlParameter* m_sibling;
 };

@@ -6,6 +6,7 @@
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/PhysicalControlParameter.h>
+#include <xml/Writer.h>
 
 /*
  *
@@ -65,7 +66,7 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
     if(m_localIsEnabled != local)
     {
       m_localIsEnabled = local;
-      onChange();
+      invalidate();
     }
   }
 }
@@ -78,7 +79,7 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
     if(state != m_routingIsEnabled)
     {
       m_routingIsEnabled = state;
-      onChange();
+      invalidate();
     }
   }
 }
@@ -118,6 +119,13 @@ nlohmann::json HardwareSourceSendParameter::serialize() const
   auto param = Parameter::serialize();
   param.push_back({"is-enabled", isEnabled() });
   return param;
+}
+
+void HardwareSourceSendParameter::writeDocProperties(Writer& writer,
+                                                     UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  Parameter::writeDocProperties(writer, knownRevision);
+  writer.writeTextElement("local-enabled", std::to_string(isEnabled()));
 }
 
 bool HardwareSourceSendParameter::isEnabled() const

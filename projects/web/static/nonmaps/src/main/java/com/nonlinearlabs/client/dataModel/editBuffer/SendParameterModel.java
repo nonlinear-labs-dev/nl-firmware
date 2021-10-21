@@ -2,7 +2,6 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
-import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.Updater;
 
 public class SendParameterModel extends BasicParameterModel {
@@ -16,7 +15,6 @@ public class SendParameterModel extends BasicParameterModel {
 
 	@Override
 	public Updater createUpdater(Node c) {
-		return new SendParameterUpdater(c, this);
+		return new SendParameterModelUpdater(c, this);
 	}
-
 }

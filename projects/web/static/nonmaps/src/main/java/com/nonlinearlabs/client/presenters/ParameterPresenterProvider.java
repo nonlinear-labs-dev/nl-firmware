@@ -22,6 +22,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.ReturnModes;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
@@ -118,6 +119,15 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		return containsElement(num, ParameterFactory.hiddenParametersBySoundType.get(type));
 	}
 
+	private boolean isLocalDisabled(BasicParameterModel m) {
+		SendParameterModel spm = (SendParameterModel)m;
+		if(spm != null)
+		{
+			return !spm.enabled.getBool();
+		}
+		return false;
+	}
+
 	private boolean isParameterDisabled(int num) {
 		SoundType type = EditBufferModel.get().soundType.getValue();
 		return containsElement(num, ParameterFactory.disabledParametersBySoundType.get(type));
@@ -141,6 +151,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.disabled = isParameterDisabled(e);
 		presenter.hidden = isParameterHidden(e);
 		presenter.isDefault = presenter.controlPosition == presenter.defaultPosition;
+		presenter.isLocalDisabled = false;
+		presenter.enableLocalDisable = false;
 
 		if(presenter.id.getNumber() == 396) {
 			Tracer.log("isDefault for VG "+ presenter.id.getVoiceGroup().toString() + " is:" + presenter.isDefault);
@@ -165,6 +177,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		if (e instanceof PhysicalControlParameterModel)
 			updatePresenter((PhysicalControlParameterModel) e);
+
+		if (e instanceof SendParameterModel)
+			updatePresenter((SendParameterModel) e);
 
 		boolean McMetaChanged = false;
 
@@ -228,6 +243,11 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		PhysicalControlParameterModel m = (PhysicalControlParameterModel) EditBufferModel.get()
 				.getParameter(p.getAssociatedPhysicalControlID());
 		presenter.isBoolean = !m.isReturning();
+	}
+
+	private void updatePresenter(SendParameterModel p) {
+		presenter.enableLocalDisable = true;
+		presenter.isLocalDisabled = isLocalDisabled(p);
 	}
 
 	private void updatePresenter(ModulateableParameterModel p) {
