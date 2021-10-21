@@ -83,28 +83,36 @@ void FileOutStream::commit()
 
 void FileOutStream::implWrite(const Glib::ustring &str)
 {
-  GError *error = nullptr;
-  g_data_output_stream_put_string(m_stream, str.c_str(), nullptr, &error);
-
-  if(error)
+  if(m_stream && m_fileHandle > 0)
   {
-    nltools::Log::error(error->message);
-    g_error_free(error);
-  }
-}
+    GError *error = nullptr;
 
-void FileOutStream::implWrite(const void *buf, size_t numBytes)
-{
-  GError *error = nullptr;
-  gsize bytesWritten = 0;
+    g_data_output_stream_put_string(m_stream, str.c_str(), nullptr, &error);
 
-  if(!g_output_stream_write_all(G_OUTPUT_STREAM(m_stream), buf, numBytes, &bytesWritten, nullptr, &error))
-  {
     if(error)
     {
       nltools::Log::error(error->message);
       g_error_free(error);
     }
-    throw std::runtime_error("writing to file failed");
+  }
+}
+
+void FileOutStream::implWrite(const void *buf, size_t numBytes)
+{
+  if(m_stream && m_fileHandle > 0)
+  {
+    GError *error = nullptr;
+
+    gsize bytesWritten = 0;
+
+    if(!g_output_stream_write_all(G_OUTPUT_STREAM(m_stream), buf, numBytes, &bytesWritten, nullptr, &error))
+    {
+      if(error)
+      {
+        nltools::Log::error(error->message);
+        g_error_free(error);
+      }
+      throw std::runtime_error("writing to file failed");
+    }
   }
 }

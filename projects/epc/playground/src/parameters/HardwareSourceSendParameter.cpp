@@ -3,6 +3,9 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include "HardwareSourceSendParameter.h"
+#include <presets/EditBuffer.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
+#include <parameters/PhysicalControlParameter.h>
 
 /*
  *
@@ -15,11 +18,13 @@ Ribbon LEDs zeigen den Send Status an, nicht den Receive.
  *
  */
 
-HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, const ParameterId& id,
-                                       const ScaleConverter* converter, double def, int coarseDenominator,
-                                       int fineDenominator, OptRefSettings s)
+HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter* sibling,
+                                                         const ParameterId& id, const ScaleConverter* converter,
+                                                         double def, int coarseDenominator, int fineDenominator,
+                                                         OptRefSettings settings)
     : Parameter(pGroup, id, converter, def, coarseDenominator, fineDenominator)
-    , m_settings(s)
+    , m_settings(settings)
+    , m_sibling{sibling}
 {
   if(m_settings.has_value())
   {
@@ -46,11 +51,22 @@ Glib::ustring HardwareSourceSendParameter::getInfoText() const
   return getID().toString();
 }
 
+void HardwareSourceSendParameter::sendParameterMessage() const
+{
+  if(auto eb = getParentEditBuffer())
+    eb->getAudioEngineProxy().createAndSendParameterMessage<HardwareSourceSendParameter>(this);
+}
+
 void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 {
   if(auto localSetting = dynamic_cast<const GlobalLocalEnableSetting*>(setting))
   {
-    m_localIsEnabled = localSetting->get();
+    auto local = localSetting->get();
+    if(m_localIsEnabled != local)
+    {
+      m_localIsEnabled = local;
+      onChange();
+    }
   }
 }
 
@@ -58,7 +74,12 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
 {
   if(auto routings = dynamic_cast<const RoutingSettings*>(setting))
   {
-    m_routingIsEnabled = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
+    auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
+    if(state != m_routingIsEnabled)
+    {
+      m_routingIsEnabled = state;
+      onChange();
+    }
   }
 }
 
@@ -90,4 +111,21 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
       return tIdx::Ribbon2;
   }
   nltools_assertNotReached();
+}
+
+nlohmann::json HardwareSourceSendParameter::serialize() const
+{
+  auto param = Parameter::serialize();
+  param.push_back({"is-enabled", isEnabled() });
+  return param;
+}
+
+bool HardwareSourceSendParameter::isEnabled() const
+{
+  return m_routingIsEnabled && m_localIsEnabled;
+}
+
+ReturnMode HardwareSourceSendParameter::getReturnMode() const
+{
+  return m_sibling->getReturnMode();
 }

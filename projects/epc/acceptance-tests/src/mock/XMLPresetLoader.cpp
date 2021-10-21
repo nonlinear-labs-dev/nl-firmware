@@ -19,6 +19,7 @@
 #include <sync/SyncMasterMockRoot.h>
 #include <use-cases/EditBufferUseCases.h>
 #include <presets/PresetParameter.h>
+#include <testing/TestHelper.h>
 
 void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir, const std::string &uuid)
 {
@@ -75,6 +76,8 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
   auto file = Gio::File::create_for_path(presetData);
 
   Options opt;
+  auto oldPath = opt.getPresetManagerPath();
+  opt.setPresetManagerPath(presetData);
   auto pproxy = std::make_unique<PlaycontrollerProxy>();
 
   std::unique_ptr<AudioEngineProxy> proxy;
@@ -83,6 +86,7 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
   pm.init(proxy.get(), settings, Serializer::MockProgress);
   PresetManagerUseCases useCase(pm, settings);
 
+  useCase.clear();
   useCase.importBankFromPath(std::filesystem::directory_entry { presetData }, Serializer::MockProgress);
 
   auto bank = pm.getBankAt(0);
@@ -94,11 +98,12 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
   EditBufferUseCases ebUseCase(*pm.getEditBuffer());
   ebUseCase.load(preset);
 
+  TestHelper::doMainLoopFor(std::chrono::milliseconds(50));
+
   auto& eb = *pm.getEditBuffer();
-  auto p = eb.findParameterByID({C15::PID::Out_Mix_A_Lvl, VoiceGroup::I});
-  auto pp = preset->findParameterByID({C15::PID::Out_Mix_A_Lvl, VoiceGroup::I}, true);
-//  nltools::Log::error(p->getDisplayString());
-//  nltools::Log::error(pp->getValue());
+  auto p = eb.findParameterByID({ C15::PID::Out_Mix_A_Lvl, VoiceGroup::I });
+  auto pp = preset->findParameterByID({ C15::PID::Out_Mix_A_Lvl, VoiceGroup::I }, true);
+
   switch(eb.getType())
   {
     case SoundType::Single:
@@ -116,4 +121,6 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
     default:
       break;
   }
+
+  opt.setPresetManagerPath(oldPath);
 }

@@ -10,19 +10,15 @@
 
 TEST_CASE("Load XML Preset into AE")
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, __LINE__);
-
   auto config = nltools::msg::getConfig();
   config.useEndpoints = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine,
                           nltools::msg::EndPoint::BeagleBone, nltools::msg::EndPoint::Playcontroller };
   config.offerEndpoints = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine,
                             nltools::msg::EndPoint::BeagleBone, nltools::msg::EndPoint::Playcontroller };
   nltools::msg::init(config);
-  nltools::Log::error(__PRETTY_FUNCTION__, __LINE__);
 
   auto options = Tests::createEmptyAudioEngineOptions();
   auto synth = std::make_unique<C15Synth>(options.get());
-  nltools::Log::error(__PRETTY_FUNCTION__, __LINE__);
 
   MockSettingsObject settings(&SyncMasterMockRoot::get());
 
@@ -44,7 +40,7 @@ TEST_CASE("Load XML Preset into AE")
     CHECK_NOTHROW(XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "Init", *settingBasePtr));
     THEN("Note Played produces no Sound")
     {
-      synth->doMidi({ 0x90, 127, 127 });
+      synth->doMidi({ { 0x90, 127, 127 } });
       auto res = synth->measurePerformance(std::chrono::milliseconds(250));
       CHECK(Tests::getMaxLevel(std::get<0>(res)) == 0);
     }
@@ -55,7 +51,7 @@ TEST_CASE("Load XML Preset into AE")
     CHECK_NOTHROW(XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr));
     THEN("Note Played produces Sound")
     {
-      synth->doMidi({ 0x90, 127, 127 });
+      synth->doMidi({ { 0x90, 127, 127 } });
       auto res = synth->measurePerformance(std::chrono::milliseconds(250));
       CHECK(Tests::getMaxLevel(std::get<0>(res)) > 0.2f);
     }

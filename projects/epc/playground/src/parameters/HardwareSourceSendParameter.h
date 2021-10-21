@@ -4,15 +4,20 @@
 #include "ParameterTypes.h"
 #include <device-settings/midi/RoutingSettings.h>
 
+class PhysicalControlParameter;
+
 class HardwareSourceSendParameter : public Parameter
 {
  public:
-  HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, const ParameterId& id, const ScaleConverter* converter, double def,
-                     int coarseDenominator, int fineDenominator,
-                     OptRefSettings settings);
+  HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter* sibling, const ParameterId& id,
+                              const ScaleConverter* converter, double def, int coarseDenominator, int fineDenominator,
+                              OptRefSettings settings);
   Glib::ustring getLongName() const override;
   Glib::ustring getShortName() const override;
   Glib::ustring getInfoText() const override;
+
+  [[nodiscard]] bool isEnabled() const;
+  [[nodiscard]] ReturnMode getReturnMode() const;
 
  private:
   OptRefSettings m_settings;
@@ -22,4 +27,10 @@ class HardwareSourceSendParameter : public Parameter
   bool m_localIsEnabled = false;
   bool m_routingIsEnabled = false;
   static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
+  void sendParameterMessage() const override;
+
+ protected:
+  nlohmann::json serialize() const override;
+
+  const PhysicalControlParameter* m_sibling;
 };

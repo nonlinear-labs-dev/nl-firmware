@@ -233,10 +233,15 @@ void PresetManager::loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transact
                                                                   AudioEngineProxy *aeProxy,
                                                                   Serializer::Progress progress)
 {
-  DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
-  progress("Loading Edit Buffer");
-  Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, progress);
-  aeProxy->sendEditBuffer();
+  auto folder = std::filesystem::path(pmFolder->get_uri());
+  auto filePath = folder / ".metadata";
+  if(std::filesystem::exists(filePath))
+  {
+    DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
+    progress("Loading Edit Buffer");
+    Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, progress);
+    aeProxy->sendEditBuffer();
+  }
 }
 
 void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder,

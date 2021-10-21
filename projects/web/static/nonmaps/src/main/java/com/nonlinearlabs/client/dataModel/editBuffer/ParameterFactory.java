@@ -38,7 +38,9 @@ public class ParameterFactory {
 
 	static private int[] pedals = { 254, 259, 264, 269 };
 	static private int[] ribbons = { 284, 289 };
-	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 }; //1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007
+	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 }; //
+
+	static private int[] sendParams = { 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007 };
 
 	static private int[] macroControls = { 243, 244, 245, 246, 369, 371 };
 	static private int[] modulationRouters = { 255, 256, 257, 258, 260, 261, 262, 263, 265, 266, 267, 268, 270, 271,
@@ -89,6 +91,9 @@ public class ParameterFactory {
 
 		if (Arrays.binarySearch(ribbons, id.getNumber()) >= 0)
 			return new RibbonParameterModel(id);
+
+		if (Arrays.binarySearch(sendParams, id.getNumber()) >= 0)
+			return new SendParameterModel(id);
 
 		if (id.getNumber() == 274)
 			return new BenderParameterModel(id);

@@ -169,3 +169,8 @@ bool Options::sendBBBBTurnaroundTimestamps() const
 {
   return m_sendBBBTurnaroundTimes;
 }
+
+void Options::setPresetManagerPath(std::basic_string<char, std::char_traits<char>, std::allocator<char>> basicString)
+{
+  m_pmPath = basicString;
+}
