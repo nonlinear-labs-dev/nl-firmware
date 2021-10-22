@@ -7,10 +7,12 @@
 #include <testing/TestHelper.h>
 #include <mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
+#include <mock/DspHostDualTester.h>
+#include <mock/TCDHelpers.h>
 
 TEST_CASE("Midi Safe Mode disabled")
 {
-  // Prepare Configuration
+  // prepare Configuration
   auto config = nltools::msg::getConfig();
   config.useEndpoints
       = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
@@ -19,96 +21,73 @@ TEST_CASE("Midi Safe Mode disabled")
   nltools::msg::init(config);
   auto options = Tests::createEmptyAudioEngineOptions();
   auto synth = std::make_unique<C15Synth>(options.get());
+  DspHostDualTester tester{ synth->getDsp() };
   MockSettingsObject settings(&SyncMasterMockRoot::get());
 
-  // Prepare Midi Settings
+  // prepare Scenario
+  constexpr int MeasureTimeMs = 100;
+  constexpr int NumberOfNotes = 3;
+  constexpr int Notes[NumberOfNotes] = { 48, 52, 55 };
+
+  // prepare Preset
+  auto settingBasePtr = static_cast<Settings*>(&settings);
+  XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
+  synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+
+  // prepare Midi Settings
   using tMSG = nltools::msg::Setting::MidiSettingsMessage;
   tMSG msg;
   TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::LOCAL, true);
-  msg.localEnable = true;
+  msg.localEnable = false;
   msg.safeMode = false;
   synth->onMidiSettingsMessage(msg);
 
-  // Prepare Preset
-  auto settingBasePtr = static_cast<Settings*>(&settings);
-  XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
-  synth->measurePerformance(std::chrono::milliseconds(250));
-
-  // play TCD Notes:
-  synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-  synth->doTcd({ 0xED, 0, 52 });     // keyPos 52 (E2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-  synth->doTcd({ 0xED, 0, 55 });     // keyPos 55 (G2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-
-  // get level for later comparison
-  const auto resultingLevel
-      = Tests::getMaxLevel(std::get<0>(synth->measurePerformance(std::chrono::milliseconds(250))));
-
-  // release TCD Notes:
-  synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
-  synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)
-  synth->doTcd({ 0xED, 0, 52 });     // keyPos 52 (E2)
-  synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)
-  synth->doTcd({ 0xED, 0, 55 });     // keyPos 55 (G2)
-  synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)
-
-  synth->measurePerformance(std::chrono::milliseconds(250));
-
-  // Prepare Settings
-  msg.localEnable = false;
-  synth->onMidiSettingsMessage(msg);
-  synth->measurePerformance(std::chrono::milliseconds(250));
-
-  // play TCD Notes:
-  synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-  synth->doTcd({ 0xED, 0, 52 });     // keyPos 52 (E2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-  synth->doTcd({ 0xED, 0, 55 });     // keyPos 55 (G2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
+  // play TCD Notes
+  for(auto note : Notes)
+  {
+    synth->doTcd(TCD_HELPER::createKeyPosEvent(note));
+    synth->doTcd(TCD_HELPER::createKeyDownEvent(127, 127));
+  }
 
   WHEN("multiple Notes played with Split Sound and Local disabled")
   {
-    auto res = synth->measurePerformance(std::chrono::milliseconds(250));
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+
     THEN("produces no Sound")
     {
-      CHECK(Tests::getMaxLevel(std::get<0>(res)) == 0);
+      CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
     }
   }
 
   WHEN("multiple Notes played/held with Split Sound and Local re-enabled")
   {
-    synth->measurePerformance(std::chrono::milliseconds(250));
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
 
     // update settings (Notes still active)
     msg.localEnable = true;
     synth->onMidiSettingsMessage(msg);
-    synth->measurePerformance(std::chrono::milliseconds(250));
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
 
-    // release TCD Notes:
-    synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
-    synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)Wir können den letzten Check the
-    synth->doTcd({ 0xED, 0, 52 });     // keyPos 52 (E2)
-    synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)
-    synth->doTcd({ 0xED, 0, 55 });     // keyPos 55 (G2)
-    synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)
+    // release TCD Notes
+    for(auto note : Notes)
+    {
+      synth->doTcd(TCD_HELPER::createKeyPosEvent(note));
+      synth->doTcd(TCD_HELPER::createKeyUpEvent(127, 127));
+    }
 
-    synth->measurePerformance(std::chrono::milliseconds(250));
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
 
-    // play TCD Notes (again):
-    synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
-    synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-    synth->doTcd({ 0xED, 0, 52 });     // keyPos 52 (E2)
-    synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-    synth->doTcd({ 0xED, 0, 55 });     // keyPos 55 (G2)
-    synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
+    // play TCD Notes (again)
+    for(auto note : Notes)
+    {
+      synth->doTcd(TCD_HELPER::createKeyPosEvent(note));
+      synth->doTcd(TCD_HELPER::createKeyDownEvent(127, 127));
+    }
 
     THEN("multiple Notes played again produces multiple active Voices")
     {
-      auto res = synth->measurePerformance(std::chrono::milliseconds(250));
-      CHECK(Tests::getMaxLevel(std::get<0>(res)) == resultingLevel);
+      synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+      CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
     }
   }
 }
