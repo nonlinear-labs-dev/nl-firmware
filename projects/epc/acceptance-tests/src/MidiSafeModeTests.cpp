@@ -31,10 +31,8 @@ TEST_CASE("Midi Safe Mode disabled")
 
   // Prepare Preset
   auto settingBasePtr = static_cast<Settings*>(&settings);
-  // fails (SIGSEGV):
   XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
-  // useless preset:
-  // XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr);
+  synth->measurePerformance(std::chrono::milliseconds(250));
 
   // play TCD Notes:
   synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
@@ -61,6 +59,7 @@ TEST_CASE("Midi Safe Mode disabled")
   // Prepare Settings
   msg.localEnable = false;
   synth->onMidiSettingsMessage(msg);
+  synth->measurePerformance(std::chrono::milliseconds(250));
 
   // play TCD Notes:
   synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
@@ -86,10 +85,11 @@ TEST_CASE("Midi Safe Mode disabled")
     // update settings (Notes still active)
     msg.localEnable = true;
     synth->onMidiSettingsMessage(msg);
+    synth->measurePerformance(std::chrono::milliseconds(250));
 
     // release TCD Notes:
     synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
-    synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)
+    synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)Wir können den letzten Check the
     synth->doTcd({ 0xED, 0, 52 });     // keyPos 52 (E2)
     synth->doTcd({ 0xEF, 127, 127 });  // keyUp (100% Velocity)
     synth->doTcd({ 0xED, 0, 55 });     // keyPos 55 (G2)
