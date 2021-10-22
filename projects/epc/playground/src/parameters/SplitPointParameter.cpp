@@ -38,7 +38,10 @@ Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                                      bool dosendToPlaycontroller)
 {
-  const auto syncActive = Application::get().getSettings()->getSetting<SplitPointSyncParameters>()->get();
+  auto eb = getParentEditBuffer();
+  auto& settings = eb->getSettings();
+  const auto syncActive = settings.getSetting<SplitPointSyncParameters>()->get();
+
   if(syncActive && isAtExtremes(value) && initiator != Initiator::INDIRECT_SPLIT_SYNC)
   {
     clampToExtremes(transaction, dosendToPlaycontroller);
