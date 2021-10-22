@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><bank version="9">
- <bank-serialize-date>2021-10-22T10:22:48Z</bank-serialize-date>
+ <bank-serialize-date>2021-10-22T12:28:08Z</bank-serialize-date>
  <name>SplitPlateau</name>
  <uuid>7230c95e-056a-42ce-80bf-369eeaa8f6c6</uuid>
  <x>-980.9375</x>
@@ -11,10 +11,12 @@
   <uuid>C64C3749-B1D5-4BEB-A040-C510DFA0D266</uuid>
  </preset-order>
  <attributes>
+  <attribute name="Date of Export File">2021-10-22T10:22:48Z</attribute>
+  <attribute name="Name of Export File">(via Browser)</attribute>
  </attributes>
- <last-changed-timestamp>1634898163</last-changed-timestamp>
+ <last-changed-timestamp>1634905642</last-changed-timestamp>
  <preset pos="0">
-  <name>SplitPlateau</name>
+  <name>Init Sound</name>
   <uuid>C64C3749-B1D5-4BEB-A040-C510DFA0D266</uuid>
   <type>Split</type>
   <vg-I-name>Init Sound</vg-I-name>
@@ -23,8 +25,12 @@
    <attribute name="DeviceName">Unit-00027</attribute>
    <attribute name="SoftwareVersion">21-33</attribute>
    <attribute name="StoreCounter">1877</attribute>
-   <attribute name="StoreTime">2021-10-22T10:22:43Z</attribute>
+   <attribute name="StoreTime">2021-10-22T12:27:22Z</attribute>
    <attribute name="color">none</attribute>
+   <attribute name="origin-I">C64C3749-B1D5-4BEB-A040-C510DFA0D266</attribute>
+   <attribute name="origin-I-vg">I</attribute>
+   <attribute name="origin-II">C64C3749-B1D5-4BEB-A040-C510DFA0D266</attribute>
+   <attribute name="origin-II-vg">II</attribute>
   </attributes>
   <parameter-groups>
    <parameter-group id="Global-CS">
@@ -485,7 +491,7 @@
      <modAmount>0</modAmount>
     </parameter>
     <parameter id="I-14">
-     <value>0.5</value>
+     <value>0</value>
     </parameter>
     <parameter id="I-15">
      <value>0</value>
@@ -779,7 +785,7 @@
    </parameter-group>
    <parameter-group id="I-Mixer">
     <parameter id="I-169">
-     <value>0.5</value>
+     <value>0.20000000000000001</value>
      <modSrc>0</modSrc>
      <modAmount>0</modAmount>
     </parameter>
@@ -822,7 +828,7 @@
      <value>0</value>
     </parameter>
     <parameter id="I-185">
-     <value>0.38</value>
+     <value>0.5</value>
      <modSrc>0</modSrc>
      <modAmount>0</modAmount>
     </parameter>
@@ -1345,7 +1351,7 @@
      <modAmount>0</modAmount>
     </parameter>
     <parameter id="II-14">
-     <value>0.5</value>
+     <value>0</value>
     </parameter>
     <parameter id="II-15">
      <value>0</value>
@@ -1639,7 +1645,7 @@
    </parameter-group>
    <parameter-group id="II-Mixer">
     <parameter id="II-169">
-     <value>0.5</value>
+     <value>0.20000000000000001</value>
      <modSrc>0</modSrc>
      <modAmount>0</modAmount>
     </parameter>
