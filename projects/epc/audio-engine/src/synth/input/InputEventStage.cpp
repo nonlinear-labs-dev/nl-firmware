@@ -134,15 +134,18 @@ void InputEventStage::onTCDEvent()
     case DecoderEventType::KeyUp:
     {
       const bool isSplitSound = (soundType == SoundType::Split);
+      const bool shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
+      const auto determinedPartForLocalEnabled
+          = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+      const auto determinedPart = shouldReceiveLocalNotes
+          ? determinedPartForLocalEnabled
+          : m_dspHost->getNonlocalSplitPartForKeyUp(decoder->getKeyOrController());
 
-      if(m_options->shouldReceiveLocalNotes())
+      if(determinedPart == VoiceGroup::Invalid)
+        break;
+
+      if(shouldReceiveLocalNotes)
       {
-        const auto determinedPart
-            = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
-
-        if(determinedPart == VoiceGroup::Invalid)
-          break;
-
         if(isSplitSound)
         {
           m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
@@ -162,7 +165,7 @@ void InputEventStage::onTCDEvent()
       }
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
       {
-        convertToAndSendMIDI(decoder, m_dspHost->getNonlocalSplitPartForKeyUp(decoder->getKeyOrController()));
+        convertToAndSendMIDI(decoder, determinedPart);
       }
 
       break;
@@ -1016,13 +1019,10 @@ bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg
 
 void InputEventStage::onMidiSettingsMessageWasReceived(const tMSG &msg, const tMSG &oldmsg)
 {
-  if(m_options->isMidiSafeModeEnabled())
+  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->resetIsNecessary())
   {
-    if(didRelevantSectionsChange(msg, oldmsg))
-    {
-      doInternalReset();
-      doExternalReset(msg, oldmsg);
-    }
+    doInternalReset();
+    doExternalReset(msg, oldmsg);
   }
 }
 
