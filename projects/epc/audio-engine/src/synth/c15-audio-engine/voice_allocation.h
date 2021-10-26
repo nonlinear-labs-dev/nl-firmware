@@ -211,7 +211,10 @@ template <uint32_t Voices> class PolyVoiceAllocator
     {
       m_oldest_released = _voiceId;
     }
-    m_num_assigned--;
+    if(m_num_assigned > 0)
+    {
+      m_num_assigned--;
+    }
     if(m_oldest_assigned == _voiceId)
     {
       m_oldest_assigned = m_next_assigned[_voiceId];
