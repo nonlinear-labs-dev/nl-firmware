@@ -89,8 +89,9 @@ class DSPInterface
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
-  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
-  virtual void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
+  virtual VoiceGroup getNonlocalSplitPartForKeyUp(int key) = 0;
+  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part) = 0;
+  virtual void unregisterNonLocalSplitKeyAssignment(const int note) = 0;
   virtual void fadeOutResetVoiceAllocAndEnvelopes() = 0;
   virtual float getReturnValueFor(HardwareSource hwid)
   {
@@ -186,8 +187,9 @@ class dsp_host_dual : public DSPInterface
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
-  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
-  void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  VoiceGroup getNonlocalSplitPartForKeyUp(int key) override;
+  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part) override;
+  void unregisterNonLocalSplitKeyAssignment(const int note) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;

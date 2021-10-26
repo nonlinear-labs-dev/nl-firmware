@@ -2383,22 +2383,27 @@ VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
   return getVoiceGroupFromAllocatorId(allocID);
 }
 
-void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+VoiceGroup dsp_host_dual::getNonlocalSplitPartForKeyUp(int key)
+{
+  const auto allocID = m_alloc.getNonlocalSplitPartForKeyUp(key);
+  return getVoiceGroupFromAllocatorId(allocID);
+}
+
+void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part)
 {
   // register key assignment despite local off (similar to splitKeyDown, but not quite)
-  const uint32_t inputSourceId = getInputSourceId(from);
   if(m_layer_mode == LayerMode::Split)
   {
     switch(part)
     {
       case VoiceGroup::I:  // applies to Part I only
-        m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_I);
+        m_alloc.registerNonLocalSplitKeyAssignment(note, AllocatorId::Local_I);
         break;
       case VoiceGroup::II:  // applies to Part II only
-        m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_II);
+        m_alloc.registerNonLocalSplitKeyAssignment(note, AllocatorId::Local_II);
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
-        m_alloc.registerNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
+        m_alloc.registerNonLocalSplitKeyAssignment(note, AllocatorId::Local_Both);
         break;
       default:
       case VoiceGroup::NumGroups:
@@ -2408,29 +2413,10 @@ void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGrou
   }
 }
 
-void dsp_host_dual::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+void dsp_host_dual::unregisterNonLocalSplitKeyAssignment(const int note)
 {
   // unregister key assignment despite local off (similar to splitKeyUp, but not quite)
-  const uint32_t inputSourceId = getInputSourceId(from);
-  if(m_layer_mode == LayerMode::Split)
-  {
-    switch(part)
-    {
-      case VoiceGroup::I:  // applies to Part I only
-        m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_I);
-        break;
-      case VoiceGroup::II:  // applies to Part II only
-        m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_II);
-        break;
-      case VoiceGroup::Global:  // applies to both Parts I, II at once
-        m_alloc.unregisterNonLocalSplitKeyAssignment(note, inputSourceId, AllocatorId::Local_Both);
-        break;
-      default:
-      case VoiceGroup::NumGroups:
-      case VoiceGroup::Invalid:
-        break;
-    }
-  }
+  m_alloc.unregisterNonLocalSplitKeyAssignment(note);
 }
 
 void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)

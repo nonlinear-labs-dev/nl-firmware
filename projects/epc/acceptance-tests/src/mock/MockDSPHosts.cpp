@@ -37,11 +37,16 @@ VoiceGroup MockDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
   return VoiceGroup::I;
 }
 
-void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+VoiceGroup MockDSPHost::getNonlocalSplitPartForKeyUp(int key)
+{
+  return VoiceGroup::I;
+}
+
+void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part)
 {
 }
 
-void MockDSPHost::unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from)
+void MockDSPHost::unregisterNonLocalSplitKeyAssignment(const int note)
 {
 }
 
@@ -132,8 +137,8 @@ bool PassOnKeyUpHost::didReceiveKeyUp() const
 }
 
 PassOnHWReceived::PassOnHWReceived(HardwareSource expectedId, float expectedValue)
-    : m_id { expectedId }
-    , m_value { expectedValue }
+    : m_id{ expectedId }
+    , m_value{ expectedValue }
 {
 }
 
