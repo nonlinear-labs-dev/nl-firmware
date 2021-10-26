@@ -266,7 +266,7 @@ class VoiceAllocation
 {
  public:
   PolyKeyPacket<GlobalVoices, PivotKey> m_traversal;
-  uint32_t m_unison = {};
+  uint32_t m_unison = {}, m_assigned_keys = {};
   inline VoiceAllocation()
   {
   }
@@ -284,6 +284,8 @@ class VoiceAllocation
     {
       m_keyState[0][k].m_keyNumber = m_keyState[1][k].m_keyNumber = m_keyState[2][k].m_keyNumber = k;
     }
+    //
+    m_assigned_keys = 0;
   }
   inline bool onSingleKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId)
   {
@@ -900,11 +902,16 @@ class VoiceAllocation
   inline void keyDown_confirm(KeyAssignment* _keyState)
   {
     _keyState->m_active = true;
+    m_assigned_keys++;
   }
   inline void keyUp_confirm(KeyAssignment* _keyState)
   {
     _keyState->m_origin = AllocatorId::None;
     _keyState->m_active = false;
+    if(m_assigned_keys > 0)
+    {
+      m_assigned_keys--;
+    }
   }
   // for overlapping split points, we have to be a little more careful
   inline void keyUp_confirm(KeyAssignment* _keyState, const uint32_t _layerIndex)
