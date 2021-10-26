@@ -2558,7 +2558,7 @@ void dsp_host_dual::fadeOutResetVoiceAllocAndEnvelopes()
 {
   m_fade.muteAndDo([&] {
     m_alloc.reset();
-    for(auto & layerId : m_poly)
+    for(auto& layerId : m_poly)
     {
       layerId.resetEnvelopes();
       layerId.m_key_active = 0;
@@ -2581,4 +2581,9 @@ void dsp_host_dual::resetReturningHWSource(HardwareSource hwui)
 {
   //TODO implement reset!!
   DSPInterface::resetReturningHWSource(hwui);
+}
+
+bool dsp_host_dual::resetIsNecessary()
+{
+  return m_alloc.m_assigned_keys > 0;
 }
