@@ -15,19 +15,13 @@ install_packages() {
         install_package $name $version || return 1
     done < /epc2-binary-dir/.epc2-base-os-final-packages
 
-    bash
-
     arch-chroot /rootfs mkinitcpio -p linux-rt || return 1
     return 0
 }
 
 create_package_database() {
-    mkdir /packages
-    cp /downloads/epc2/packages/* /packages/
-    cd /packages
-    repo-add /packages/nonlinux.db.tar.gz /packages/* > /dev/null
     echo "[nonlinux]" > /etc/pacman.conf
-    echo "Server = file:///packages" >> /etc/pacman.conf
+    echo "Server = file:///downloads/epc2/packages/" >> /etc/pacman.conf
     pacman -Sy > /dev/null
 }
 

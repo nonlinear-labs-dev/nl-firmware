@@ -38,11 +38,17 @@ ADD_CUSTOM_COMMAND(
 ADD_CUSTOM_COMMAND(
   COMMENT "Fetch packages from nl servers"
   OUTPUT .nl-files-fetched
+  OUTPUT ${DOWNLOAD_DIR}/epc2/packages/nonlinux.files.tar.gz
+  OUTPUT ${DOWNLOAD_DIR}/epc2/packages/nonlinux.db.tar.gz
   DEPENDS .epc2-base-os-final-packages
   DEPENDS .epc2-update-os-final-packages
   COMMAND mkdir -p ${DOWNLOAD_DIR}/epc2/packages
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fetch/download.sh ${DOWNLOAD_BASE_URL} ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/.epc2-base-os-final-packages
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fetch/download.sh ${DOWNLOAD_BASE_URL} ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/.epc2-update-os-final-packages
+  COMMAND wget -q  ${DOWNLOAD_BASE_URL}/nonlinux.db.tar.gz -O ${DOWNLOAD_DIR}/epc2/packages/nonlinux.db.tar.gz
+  COMMAND wget -q  ${DOWNLOAD_BASE_URL}/nonlinux.files.tar.gz -O ${DOWNLOAD_DIR}/epc2/packages/nonlinux.files.tar.gz
+  COMMAND ln -s ./nonlinux.files.tar.gz ${DOWNLOAD_DIR}/epc2/packages/nonlinux.files
+  COMMAND ln -s ./nonlinux.db.tar.gz ${DOWNLOAD_DIR}/epc2/packages/nonlinux.db
   COMMAND touch .nl-files-fetched
 )
 
