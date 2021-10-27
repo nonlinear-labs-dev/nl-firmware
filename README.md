@@ -15,9 +15,9 @@ sudo apt install libfreetype-dev libglibmm-2.4-dev libgio2.0-cil-dev libsoup2.4-
 Then:
 - checkout the repository, for example git clone https://github.com/nonlinear-labs-dev/C15.git ~/C15
 - create a build folder, for example ~/builds/C15
-- change into that folder and type 
+- change into that folder and type (select -DBUILD_xxx switches to On or Off as required)
 ```sh
-cmake -DDEV_PC=On|Off -DBUILD_AUDIOENGINE=On|Off -DBUILD_BBBB=On|Off -DBUILD_PLAYGROUND=On|Off -DBUILD_ONLINEHELP=On|Off -DBUILD_TEXT2SOLED=On|Off -DBUILD_TESTING=On|Off -DBUILD_BBB=On|Off -DBUILD_EPC=On|Off -DBUILD_WEB=On|Off -DCMAKE_BUILD_TYPE=Debug|Release ~/C15
+cmake -DDEV_PC=On|Off -DBUILD_AUDIOENGINE=On|Off -DBUILD_BBBB=On|Off -DBUILD_PLAYGROUND=On|Off -DBUILD_ONLINEHELP=On|Off -DBUILD_TEXT2SOLED=On|Off -DBUILD_TESTING=On|Off -DBUILD_BBB=On|Off -DBUILD_EPC=On|Off -DBUILD_LPC=On|Off -DBUILD_WEB=On|Off -DCMAKE_BUILD_TYPE=Debug|Release ~/C15
 ```
 ### DEV_PC
 
@@ -64,6 +64,8 @@ The option will enable building the playground-test binary, which contains most 
 
 ### BUILD_BBB
 
+(required for complete update)
+
 This option will enable a cross compiling build system. Here, it becomes really complicated, but, in a nutshell:
 - a docker image (based on Ubuntu 16.04) will be created
 - inside the docker, the nonlinux-buildroot repository (https://github.com/nonlinear-labs-dev/nonlinux.git) will be checked out
@@ -74,8 +76,10 @@ This option will enable a cross compiling build system. Here, it becomes really 
 
 The BUILD_BBB option enables the *bbb-rootfs* target. When reqested, it will make the file `~/builds/C15/build-tools/bbb/rootfs.tar.gz` containing the whole root fdile system for the BeagleBone.
 
-### BUILD_EPC
+### BUILD_EPC 
 
+(required for complete update)
+ 
 Here, it gets even more complicated:
 - Again, a docker image is created, based on Ubuntu 19.10.
 - The docker is used to enable building the following targets:
@@ -89,7 +93,15 @@ Here, it gets even more complicated:
   
 ### BUILD_LPC
 
+(required for complete update)
+
 This target will build the realtime-software for our LPC processor. It will generate blobs for both, the M0 and the M4 core.
+
+### BUILD_WEB
+
+(required for complete update)
+
+Dockerize NonMaps and future UI components.
 
 ### BUILD_WEB AND BUILD_BBB AND BUILD_EPC AND BUILD_LPC
 

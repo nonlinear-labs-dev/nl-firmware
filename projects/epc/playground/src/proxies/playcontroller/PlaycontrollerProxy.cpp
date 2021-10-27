@@ -82,19 +82,23 @@ gint16 PlaycontrollerProxy::separateSignedBitToComplementary(uint16_t v)
 
 void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
-  if(msg.type == MessageParser::EDIT_CONTROL)
+  if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_EDIT_CONTROL)
   {
     onEditControlMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::ASSERTION)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_ASSERTION)
   {
     onAssertionMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::NOTIFICATION)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_UHID64)
+  {
+    onUHIDReceived(msg);
+  }
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION)
   {
     onNotificationMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::HEARTBEAT)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_HEARTBEAT)
   {
     onHeartbeatReceived(msg);
   }
@@ -131,7 +135,7 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
   uint16_t id = msg.params[0];
   uint16_t value = msg.params[1];
 
-  if(id == MessageParser::SOFTWARE_VERSION)
+  if(id == MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION)
   {
     if(m_playcontrollerSoftwareVersion != value)
     {
@@ -141,10 +145,27 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
   }
 }
 
+void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
+{
+  if(msg.params.size() == 4)
+  {
+    uint64_t uhid = 0;
+    for(auto i = 0; i < 4; i++)
+    {
+      uint64_t val = msg.params[i];
+      auto shifted = val << (i * 16);
+      uhid += shifted;
+    }
+
+    setUHID(uhid);
+  }
+}
+
 void PlaycontrollerProxy::onPlaycontrollerConnected()
 {
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -306,7 +327,7 @@ void PlaycontrollerProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) con
 
 void PlaycontrollerProxy::sendSetting(uint16_t key, uint16_t value)
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::SETTING));
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_SETTING));
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
@@ -336,7 +357,7 @@ void PlaycontrollerProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType,
 
 void PlaycontrollerProxy::sendSetting(uint16_t key, gint16 value)
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::SETTING));
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_SETTING));
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
@@ -352,6 +373,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   settings->sendPresetSettingsToPlaycontroller();
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -366,12 +388,14 @@ sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void> s)
 
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
-  uint16_t v = MessageParser::SOFTWARE_VERSION;
-  *cmp << v;
-  queueToPlaycontroller(cmp);
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION);
+  nltools::Log::info("sending request SOFTWARE_VERSION to LPC");
+}
 
-  DebugLevel::info("sending request SOFTWARE_VERSION to LPC");
+void PlaycontrollerProxy::requestPlaycontrollerUHID()
+{
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_UHID64);
+  nltools::Log::info("sending request UHID64 to LPC");
 }
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
@@ -382,4 +406,31 @@ std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
 void PlaycontrollerProxy::notifyKeyBedActionHappened()
 {
   m_lastKeyChanged.send();
+}
+
+void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type)
+{
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_REQUEST));
+  uint16_t v = type;
+  *cmp << v;
+  queueToPlaycontroller(cmp);
+}
+
+sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t>& s)
+{
+  return m_signalUHIDChanged.connectAndInit(s, m_uhid);
+}
+
+uint64_t PlaycontrollerProxy::getUHID() const
+{
+  return m_uhid;
+}
+
+void PlaycontrollerProxy::setUHID(uint64_t uhid)
+{
+  if(m_uhid != uhid)
+  {
+    m_uhid = uhid;
+    m_signalUHIDChanged.send(m_uhid);
+  }
 }

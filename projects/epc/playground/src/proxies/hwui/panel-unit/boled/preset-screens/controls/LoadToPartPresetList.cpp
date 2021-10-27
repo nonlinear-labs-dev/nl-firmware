@@ -197,7 +197,7 @@ void LoadToPartPresetList::onEnterButtonPressed()
     ebUseCases.loadToPart(selection->m_preset, selection->m_voiceGroup, currentVG);
 
     if(oldPartInGroup.presetUUID == selection->m_preset->getUuid())
-      animateSelectedPreset([=] {});
+      animatePreset(selection->m_preset, [=] {});
   }
 }
 

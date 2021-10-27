@@ -21,6 +21,7 @@
 #include "sys/nl_coos.h"
 #include "sys/nl_version.h"
 #include "sys/nl_watchdog.h"
+#include "sys/nl_uhid.h"
 #include "heartbeat/nl_heartbeat.h"
 #include "playcontroller/playcontroller-defs.h"
 
@@ -400,6 +401,13 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         NL_STAT_GetData(buffer);
         BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_STAT_DATA, words, buffer);
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_STAT_DATA, 1);
+        BB_MSG_SendTheBuffer();
+        break;
+      }
+      case PLAYCONTROLLER_REQUEST_ID_UHID64:
+      {
+        BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_UHID64, 4, (uint16_t*) &NL_uhid64);
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_UHID64, 1);
         BB_MSG_SendTheBuffer();
         break;
       }

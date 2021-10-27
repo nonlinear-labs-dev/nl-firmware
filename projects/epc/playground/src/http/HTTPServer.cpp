@@ -175,7 +175,7 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         redirectToIndexPage(http);
         return;
       }
-      else if(isStaticFileURL(path))
+      else if(isStaticFileURL(path) || isTMPStaticFile(path))
       {
         serveStaticFile(http);
         return;
@@ -206,6 +206,17 @@ bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
     return canonical.string().find(root.string()) == 0;
   }
   catch(...)
+  {
+    return false;
+  }
+}
+
+bool HTTPServer::isTMPStaticFile(const Glib::ustring& path)
+{
+  try {
+    std::filesystem::path p{path.c_str()};
+    return p.string().find("/tmp/") == 0;
+  } catch(...)
   {
     return false;
   }

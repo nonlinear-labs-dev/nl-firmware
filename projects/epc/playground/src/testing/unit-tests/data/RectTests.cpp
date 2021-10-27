@@ -1,5 +1,6 @@
 #include <testing/TestHelper.h>
 #include <proxies/hwui/controls/Rect.h>
+#include <limits>
 
 TEST_CASE("Rect Basic", "[Rect]")
 {

@@ -51,6 +51,7 @@ class HTTPServer
   void redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const;
 
   static bool isStaticFileURL(const Glib::ustring &path);
+  static bool isTMPStaticFile(const Glib::ustring &path);
 
   SoupServer *m_server = nullptr;
   SoupServer *m_redirectingServer = nullptr;

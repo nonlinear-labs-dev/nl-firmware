@@ -99,8 +99,12 @@ void InputEventStage::onTCDEvent()
     case DecoderEventType::KeyDown:
     {
       const bool isSplitSound = (soundType == SoundType::Split);
-      const VoiceGroup determinedPart
+      const auto determinedPart
           = isSplitSound ? calculateSplitPartForKeyDown(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+
+      if(determinedPart == VoiceGroup::Invalid)
+        break;
+
       if(m_options->shouldReceiveLocalNotes())
       {
         if(isSplitSound)
@@ -130,8 +134,12 @@ void InputEventStage::onTCDEvent()
     case DecoderEventType::KeyUp:
     {
       const bool isSplitSound = (soundType == SoundType::Split);
-      const VoiceGroup determinedPart
+      const auto determinedPart
           = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+
+      if(determinedPart == VoiceGroup::Invalid)
+        break;
+
       if(m_options->shouldReceiveLocalNotes())
       {
         if(isSplitSound)
@@ -160,8 +168,8 @@ void InputEventStage::onTCDEvent()
     }
 
     case DecoderEventType::HardwareChange:
-      onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(),
-                  HWChangeSource::TCD, false, false, false);
+      onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
+                  false, false, false);
 
       break;
     case DecoderEventType::UNKNOWN:
@@ -550,6 +558,7 @@ VoiceGroup InputEventStage::calculateSplitPartForKeyUp(DSPInterface::InputEventS
     case DSPInterface::InputEventSource::External_Both:
       return VoiceGroup::Global;
     case DSPInterface::InputEventSource::Invalid:
+      nltools::Log::error(__PRETTY_FUNCTION__, "INVALID for keyNum:", keyNumber);
       break;
   }
   nltools_assertNotReached();
@@ -732,13 +741,13 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
       return HardwareSource::RIBBON1;
     case C15::PID::Ribbon_2:
       return HardwareSource::RIBBON2;
+    default:
+      return HardwareSource::NONE;
   }
-
-  return HardwareSource::NONE;
 }
 
-void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source,
-                                  bool wasMIDIPrimary, bool wasMIDISplit, bool didBehaviourChange)
+void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
+                                  bool wasMIDISplit, bool didBehaviourChange)
 {
   auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
   {
@@ -918,8 +927,8 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         {
           if(m_options->getBenderSetting() == BenderCC::Pitchbend)
           {
-            onHWChanged(HardwareSource::BENDER, decoder->getValue(), HWChangeSource::MIDI,
-                        isPrimaryChannel, isSplitChannel, false);
+            onHWChanged(HardwareSource::BENDER, decoder->getValue(), HWChangeSource::MIDI, isPrimaryChannel,
+                        isSplitChannel, false);
           }
         }
 
@@ -929,8 +938,8 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
           {
             if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
             {
-              onHWChanged(HardwareSource::AFTERTOUCH, decoder->getValue(), HWChangeSource::MIDI,
-                          isPrimaryChannel, isSplitChannel, false);
+              onHWChanged(HardwareSource::AFTERTOUCH, decoder->getValue(), HWChangeSource::MIDI, isPrimaryChannel,
+                          isSplitChannel, false);
             }
           }
 
@@ -941,14 +950,14 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
             if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
             {
               pitchbendValue = std::max(0.0f, pitchbendValue);
-              onHWChanged(HardwareSource::AFTERTOUCH, pitchbendValue, HWChangeSource::MIDI,
-                          isPrimaryChannel, isSplitChannel, false);
+              onHWChanged(HardwareSource::AFTERTOUCH, pitchbendValue, HWChangeSource::MIDI, isPrimaryChannel,
+                          isSplitChannel, false);
             }
             else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
             {
               pitchbendValue = -std::min(0.0f, pitchbendValue);
-              onHWChanged(HardwareSource::AFTERTOUCH, pitchbendValue, HWChangeSource::MIDI,
-                          isPrimaryChannel, isSplitChannel, false);
+              onHWChanged(HardwareSource::AFTERTOUCH, pitchbendValue, HWChangeSource::MIDI, isPrimaryChannel,
+                          isSplitChannel, false);
             }
           }
         }

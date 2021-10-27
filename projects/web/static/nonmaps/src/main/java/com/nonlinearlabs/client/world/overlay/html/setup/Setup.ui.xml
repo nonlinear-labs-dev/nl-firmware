@@ -889,6 +889,15 @@
 
 					<div class="halb-he">
 						<div class="w40p">
+							<p>Device Hardware ID</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uniqueHardwareID"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
 							<p>Branch</p>
 						</div>
 						<div class="w60p">

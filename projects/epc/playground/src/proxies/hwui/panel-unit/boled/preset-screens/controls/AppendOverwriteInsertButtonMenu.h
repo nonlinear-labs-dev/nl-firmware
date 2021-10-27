@@ -6,6 +6,7 @@
 class PresetManagerLayout;
 class Preset;
 class Bank;
+class PresetManager;
 
 namespace UNDO
 {
@@ -28,10 +29,12 @@ class AppendOverwriteInsertButtonMenu : public ButtonMenu
   PresetStoreModeSettings indexToEnum(size_t i) const;
   size_t enumToIndex(PresetStoreModeSettings i) const;
 
-  void pushRenameScreen();
-  bool animate();
+  void pushRenameScreen(Preset* target);
+  bool animateSelectedPreset();
+  bool animatePreset(Preset* target);
 
   void executeAction();
 
   PresetManagerLayout& m_parent;
+  PresetManager* m_prestmanager;
 };
