@@ -262,7 +262,9 @@ Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
   auto scope = pm->getUndoScope().startTransaction("Insert Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->insertPreset(transaction, anchor, std::make_unique<Preset>(m_bank, *eb));
+  preset->guessName(transaction);
   eb->undoableSetLoadedPresetInfo(transaction, preset);
+  pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
   return preset;
 }
@@ -274,7 +276,9 @@ Preset* BankUseCases::appendEditBuffer()
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *eb));
+  preset->guessName(transaction);
   eb->undoableSetLoadedPresetInfo(transaction, preset);
+  pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
   return preset;
 }
@@ -287,6 +291,7 @@ Preset* BankUseCases::appendEditBufferAsPresetWithUUID(Uuid uuid)
 Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
 {
   auto pm = getPresetManager();
+  auto eb = pm->getEditBuffer();
   if(!pm)
     return nullptr;
 
@@ -295,10 +300,12 @@ Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
 
   auto scope = pm->getUndoScope().startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
-  auto ebIsModified = pm->getEditBuffer()->isModified();
+  auto ebIsModified = eb->isModified();
 
-  auto preset = m_bank->insertPreset(transaction, pos, std::make_unique<Preset>(m_bank, *pm->getEditBuffer(), uuid));
+  auto preset = m_bank->insertPreset(transaction, pos, std::make_unique<Preset>(m_bank, *eb, uuid));
 
+  preset->guessName(transaction);
+  eb->undoableSetLoadedPresetInfo(transaction, preset);
   pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
 
