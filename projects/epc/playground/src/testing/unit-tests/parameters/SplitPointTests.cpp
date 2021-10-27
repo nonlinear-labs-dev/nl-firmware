@@ -12,14 +12,12 @@
 
 TEST_CASE("Split Point Display Value")
 {
-  TestGroupSet set { &SyncMasterMockRoot::get() };
-  TestGroup group(&set, VoiceGroup::I);
-  group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::I }));
-  group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::II }));
+  auto eb = TestHelper::getEditBuffer();
 
-  auto splitI = dynamic_cast<SplitPointParameter*>(group.findParameterByID({ 1, VoiceGroup::I }));
-  auto splitII = dynamic_cast<SplitPointParameter*>(group.findParameterByID({ 1, VoiceGroup::II }));
+  auto splitI = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }));
+  auto splitII = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }));
   g_assert(splitI != nullptr);
+  g_assert(splitII != nullptr);
 
   auto settings = TestHelper::getSettings();
   auto pm = TestHelper::getPresetManager();

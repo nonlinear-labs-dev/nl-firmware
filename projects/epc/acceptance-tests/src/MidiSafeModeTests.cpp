@@ -7,10 +7,12 @@
 #include <testing/TestHelper.h>
 #include <mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
+#include <mock/DspHostDualTester.h>
+#include <mock/TCDHelpers.h>
 
-TEST_CASE("Midi Safe Mode Disabled")
+TEST_CASE("Midi Safe Mode disabled")
 {
-  // Prepare Configuration
+  // prepare Configuration
   auto config = nltools::msg::getConfig();
   config.useEndpoints
       = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
@@ -19,30 +21,34 @@ TEST_CASE("Midi Safe Mode Disabled")
   nltools::msg::init(config);
   auto options = Tests::createEmptyAudioEngineOptions();
   auto synth = std::make_unique<C15Synth>(options.get());
-  MockSettingsObject settings(&SyncMasterMockRoot::get());
 
   //Prepare Midi Settings
+  DspHostDualTester tester{ synth->getDsp() };
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
+
+  // prepare Scenario
+  constexpr int MeasureTimeMs = 100;
+  constexpr int NumberOfNotes = 3;
+  constexpr int Notes[NumberOfNotes] = { 48, 52, 55 };
+
+  // prepare Midi Settings
   using tMSG = nltools::msg::Setting::MidiSettingsMessage;
   tMSG msg;
   TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::LOCAL, true);
   msg.localEnable = false;
-  msg.safeMode = false;
   synth->onMidiSettingsMessage(msg);
 
   // Prepare Preset
   auto settingBasePtr = static_cast<Settings*>(&settings);
-  // fails (SIGSEGV):
   XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
-  // useless preset:
-  //  XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr);
+  synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
 
-  // TCD Notes:
-  synth->doTcd({ 0xED, 0, 48 });     // keyPos 48 (C2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-  synth->doTcd({ 0xED, 0, 52 });     // keyPos 48 (E2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
-  synth->doTcd({ 0xED, 0, 55 });     // keyPos 48 (G2)
-  synth->doTcd({ 0xEE, 127, 127 });  // keyDown (100% Velocity)
+  // play TCD Notes
+  for(auto note : Notes)
+  {
+    synth->doTcd(TCD_HELPER::createKeyPosEvent(note));
+    synth->doTcd(TCD_HELPER::createKeyDownEvent(127, 127));
+  }
 
   WHEN("Split Sound with Local Disabled")
   {
@@ -53,25 +59,45 @@ TEST_CASE("Midi Safe Mode Disabled")
     }
   }
 
-  //  WHEN("Init Preset is Loaded")
-  //  {
-  //    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "Init", *settingBasePtr);
-  //    THEN("Note Played produces no Sound")
-  //    {
-  //      synth->doMidi({ 0x90, 127, 127 });
-  //      auto res = synth->measurePerformance(std::chrono::milliseconds(250));
-  //      CHECK(Tests::getMaxLevel(std::get<0>(res)) == 0);
-  //    }
-  //  }
+  WHEN("multiple Notes played with Split Sound and Local disabled")
+  {
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
 
-  //  WHEN("Init Preset with Mixer A up, is Loaded")
-  //  {
-  //    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr);
-  //    THEN("Note Played produces Sound")
-  //    {
-  //      synth->doMidi({ 0x90, 127, 127 });
-  //      auto res = synth->measurePerformance(std::chrono::milliseconds(250));
-  //      CHECK(Tests::getMaxLevel(std::get<0>(res)) > 0.2f);
-  //    }
-  //  }
+    THEN("produces no Sound")
+    {
+      CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
+    }
+  }
+
+  WHEN("multiple Notes played/held with Split Sound and Local re-enabled")
+  {
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+
+    // update settings (Notes still active)
+    msg.localEnable = true;
+    synth->onMidiSettingsMessage(msg);
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+
+    // release TCD Notes
+    for(auto note : Notes)
+    {
+      synth->doTcd(TCD_HELPER::createKeyPosEvent(note));
+      synth->doTcd(TCD_HELPER::createKeyUpEvent(127, 127));
+    }
+
+    synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+
+    // play TCD Notes (again)
+    for(auto note : Notes)
+    {
+      synth->doTcd(TCD_HELPER::createKeyPosEvent(note));
+      synth->doTcd(TCD_HELPER::createKeyDownEvent(127, 127));
+    }
+
+    THEN("multiple Notes played again produces multiple active Voices")
+    {
+      synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+      CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
+    }
+  }
 }

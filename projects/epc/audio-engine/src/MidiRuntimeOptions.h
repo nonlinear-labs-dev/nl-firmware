@@ -121,8 +121,6 @@ class MidiRuntimeOptions
   void setSplitReceiveChannel(MidiReceiveChannelSplit c);
   void set14BitSupportEnabled(bool e);
 
-  bool isMidiSafeModeEnabled();
-
   bool isGlobalLocalEnabled();
   void setGlobalLocalEnabled(bool b);
   bool isLocalEnabled(HardwareSource source);
@@ -144,7 +142,6 @@ class MidiRuntimeOptions
   MidiSendChannel m_midiPrimarySendChannel;
   MidiSendChannelSplit m_midiSplitSendChannel;
 
-  bool m_safeMode = true;
   bool m_localEnable = true;
 
   bool m_enableHighVelCC = false;

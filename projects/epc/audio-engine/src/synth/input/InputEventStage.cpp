@@ -7,14 +7,14 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
                                  InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
     : m_tcdDecoder(dspHost, options, &m_shifteable_keys)
     , m_midiDecoder(dspHost, options)
-    , m_dspHost { dspHost }
-    , m_options { options }
+    , m_dspHost{ dspHost }
+    , m_options{ options }
     , m_hwChangedCB(std::move(hwChangedCB))
     , m_channelModeMessageCB(std::move(specialCB))
-    , m_midiOut { std::move(outCB) }
+    , m_midiOut{ std::move(outCB) }
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 template <>
@@ -122,7 +122,7 @@ void InputEventStage::onTCDEvent()
       {
         // despite the suppression of internal notes due to local off,
         // we still need to latch the determined part for subsequent key up events (unfortunate, but not avoidable)
-        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart, interface);
+        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart);
       }
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
       {
@@ -134,13 +134,17 @@ void InputEventStage::onTCDEvent()
     case DecoderEventType::KeyUp:
     {
       const bool isSplitSound = (soundType == SoundType::Split);
-      const auto determinedPart
+      const bool shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
+      const auto determinedPartForLocalEnabled
           = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+      const auto determinedPart = shouldReceiveLocalNotes
+          ? determinedPartForLocalEnabled
+          : m_dspHost->getNonlocalSplitPartForKeyUp(decoder->getKeyOrController());
 
       if(determinedPart == VoiceGroup::Invalid)
         break;
 
-      if(m_options->shouldReceiveLocalNotes())
+      if(shouldReceiveLocalNotes)
       {
         if(isSplitSound)
         {
@@ -157,7 +161,7 @@ void InputEventStage::onTCDEvent()
       {
         // despite the suppression of internal notes due to local off,
         // we still want to clear the key assingment
-        m_dspHost->unregisterNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart, interface);
+        m_dspHost->unregisterNonLocalSplitKeyAssignment(decoder->getKeyOrController());
       }
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
       {
@@ -749,8 +753,7 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
-  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
-  {
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit) {
     const auto routingIndex = static_cast<RoutingIndex>(hwID);
 
     switch(source)
@@ -1002,8 +1005,7 @@ void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
   m_channelModeMessageCB(MidiRuntimeOptions::createChannelModeMessageEnum(cc, msbCCvalue));
 }
 
-bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg,
-                                                const InputEventStage::tMSG &oldmsg)
+bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg, const InputEventStage::tMSG &oldmsg)
 {
   auto didChange = false;
   didChange |= msg.localEnable != oldmsg.localEnable;
@@ -1017,13 +1019,10 @@ bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg
 
 void InputEventStage::onMidiSettingsMessageWasReceived(const tMSG &msg, const tMSG &oldmsg)
 {
-  if(m_options->isMidiSafeModeEnabled())
+  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->resetIsNecessary())
   {
-    if(didRelevantSectionsChange(msg, oldmsg))
-    {
-      doInternalReset();
-      doExternalReset(msg, oldmsg);
-    }
+    doInternalReset();
+    doExternalReset(msg, oldmsg);
   }
 }
 

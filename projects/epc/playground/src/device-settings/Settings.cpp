@@ -66,7 +66,6 @@
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/AlsaFramesPerPeriod.h>
-#include <device-settings/midi/MIDISafeMode.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
     : UpdateDocumentContributor(master)
@@ -139,7 +138,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
   addSetting("RoutingSettings", new RoutingSettings(*this));
   addSetting("GlobalLocalEnable", new GlobalLocalEnableSetting(*this));
-  addSetting("MIDISafeMode", new MIDISafeMode(*this));
 
   addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
 }

@@ -89,7 +89,6 @@
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-info/UniqueHardwareID.h>
-#include <device-settings/midi/MIDISafeMode.h>
 
 namespace NavTree
 {
@@ -1101,7 +1100,6 @@ namespace NavTree
     {
       children.emplace_back(new MidiPanicButton(this));
       children.emplace_back(new EnumSettingItem<GlobalLocalEnableSetting>(this, "Local Enable"));
-      children.emplace_back(new EnumSettingItem<MIDISafeMode>(this, "MIDI Safe Mode"));
       children.emplace_back(new MidiProgramChangeBank(this));
       children.emplace_back(new MidiChannels(this));
       children.emplace_back(new MidiAssignments(this));

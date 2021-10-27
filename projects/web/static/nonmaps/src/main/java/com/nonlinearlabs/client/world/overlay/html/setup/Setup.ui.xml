@@ -336,15 +336,6 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>MIDI Safe Mode</p>
-						</div>
-						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="midiSafeOn" name="rad_midiSafe" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="midiSafeOff" name="rad_midiSafe" value="false"></g:RadioButton>
-						</div>
-					</div>
-					<div class="eins-he">
-						<div class="w60p">
 							<p>Local Enable</p>
 						</div>
 						<div class="w40p mw-fit-content">
