@@ -1,6 +1,5 @@
 #!/bin/sh
 
-set -x
 set -e
 
 install_package() {
@@ -16,8 +15,9 @@ install_packages() {
         install_package $name $version || return 1
     done < /epc2-binary-dir/.epc2-base-os-final-packages
 
+    bash
 
-    arch-chroot /rootfs mkinitcpio -p linux-rt
+    arch-chroot /rootfs mkinitcpio -p linux-rt || return 1
     return 0
 }
 
@@ -25,10 +25,10 @@ create_package_database() {
     mkdir /packages
     cp /downloads/epc2/packages/* /packages/
     cd /packages
-    repo-add /packages/nonlinux.db.tar.gz /packages/*
+    repo-add /packages/nonlinux.db.tar.gz /packages/* > /dev/null
     echo "[nonlinux]" > /etc/pacman.conf
     echo "Server = file:///packages" >> /etc/pacman.conf
-    pacman -Sy
+    pacman -Sy > /dev/null
 }
 
 perform_tweaks() {
@@ -50,8 +50,7 @@ perform_tweaks() {
     arch-chroot /rootfs /bin/bash -c "systemctl enable cpupower"
     arch-chroot /rootfs /bin/bash -c "systemctl enable sshd"
     arch-chroot /rootfs bash -c "useradd -m sscl"
-
-    echo "sscl:sscl" | chpasswd -R /rootfs
+    arch-chroot /rootfs bash -c "echo 'sscl:sscl' | chpasswd"
     echo "sscl   ALL=(ALL) NOPASSWD:ALL" >> /rootfs/etc/sudoers
 }
 
@@ -61,6 +60,8 @@ create_mountpoint() {
     yes | truncate -s 512M /current-binary-dir/bootfs.fat
     yes | mkfs.ext4 /current-binary-dir/rootfs.ext4
     yes | mkfs.fat /current-binary-dir/bootfs.fat
+    chown $USER_ID:$GROUP_ID /current-binary-dir/rootfs.ext4
+    chown $USER_ID:$GROUP_ID /current-binary-dir/bootfs.fat
     mount -o loop /current-binary-dir/rootfs.ext4 /rootfs
     mkdir /rootfs/boot
     mount -o loop /current-binary-dir/bootfs.fat /rootfs/boot/
@@ -71,4 +72,3 @@ create_mountpoint
 create_package_database
 install_packages /rootfs || exit 1
 perform_tweaks
-

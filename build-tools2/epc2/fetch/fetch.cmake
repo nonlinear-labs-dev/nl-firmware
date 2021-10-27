@@ -27,7 +27,10 @@ ADD_CUSTOM_COMMAND(
   DEPENDS .base-files-fetched
   DEPENDS .update-files-fetched
   VERBATIM
-  COMMAND docker run -v ${CMAKE_CURRENT_BINARY_DIR}/fetched:/nonlinux archlinux:20200908 bash -c "cd /nonlinux && repo-add /nonlinux/nonlinux.db.tar.gz /nonlinux/* || true"
+  COMMAND docker run 
+  -v ${CMAKE_CURRENT_BINARY_DIR}/fetched:/nonlinux 
+  archlinux:20200908 
+  bash -c "cd / && repo-add -q /nonlinux/nonlinux.db.tar.gz /nonlinux/*.xz /nonlinux/*.zst"
   COMMAND rsync -r --progress ${CMAKE_CURRENT_BINARY_DIR}/fetched/ ${NL_SERVER}:${NL_UPLOAD_PATH}
 )
 
@@ -38,8 +41,9 @@ ADD_CUSTOM_COMMAND(
   DEPENDS .epc2-base-os-final-packages
   DEPENDS .epc2-update-os-final-packages
   COMMAND mkdir -p ${DOWNLOAD_DIR}/epc2/packages
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/download.sh ${DOWNLOAD_BASE_URL} ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/.epc2-base-os-final-packages
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/download.sh ${DOWNLOAD_BASE_URL} ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/.epc2-update-os-final-packages
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fetch/download.sh ${DOWNLOAD_BASE_URL} ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/.epc2-base-os-final-packages
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fetch/download.sh ${DOWNLOAD_BASE_URL} ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/.epc2-update-os-final-packages
+  COMMAND touch .nl-files-fetched
 )
 
 ADD_CUSTOM_TARGET(bt2-epc2-fetch-and-upload-resources DEPENDS .files-uploaded)

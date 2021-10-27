@@ -1,6 +1,11 @@
 # create NL customized rootfs out of arch packages and some tweaks
 SET(DOCKERNAME epc2os-create-rootfs-container)
 
+EXECUTE_PROCESS(OUTPUT_VARIABLE GROUP_ID COMMAND sh -c "id -g $USER")
+STRING(STRIP ${GROUP_ID} GROUP_ID)
+EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
+STRING(STRIP ${USER_ID} USER_ID)
+
 ADD_CUSTOM_COMMAND(
     COMMENT "Create Docker container for epc2os rootfs creation"
     OUTPUT .${DOCKERNAME}
@@ -12,11 +17,13 @@ ADD_CUSTOM_COMMAND(
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Create epc2os rootfs"
-    OUTPUT epc2os.rootfs.tar.gz
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rootfs.ext4 ${CMAKE_CURRENT_BINARY_DIR}/bootfs.fat
     DEPENDS .${DOCKERNAME}
     COMMAND docker run
     --privileged
     -ti
+    --env USER_ID=${USER_ID}
+    --env GROUP_ID=${GROUP_ID}
     -v ${DOWNLOAD_DIR}:/downloads
     -v ${CMAKE_CURRENT_SOURCE_DIR}:/current-source-dir
     -v ${CMAKE_CURRENT_BINARY_DIR}:/current-binary-dir
@@ -25,6 +32,7 @@ ADD_CUSTOM_COMMAND(
 )
 
 ADD_CUSTOM_TARGET(bt2-epc2os-rootfs
-  DEPENDS epc2os.rootfs.tar.gz
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/rootfs.ext4 
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/bootfs.fat
   DEPENDS bt2-epc2-fetch-nl-resources
 )

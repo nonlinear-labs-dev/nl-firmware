@@ -3,8 +3,6 @@
 SET(EPC2_ARCH_LINUX_VERSION "2020.09.01")
 
 SET(EPC2_BASE_ARCH_DOCKERNAME "epc2-base-arch")
-
-# WARNING linux-rt  should be added
 SET(EPC2_BASE_ADDITIONAL_PACKAGES "sudo cpupower base mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr linux-firmware")
 
 # UR-LINUX
