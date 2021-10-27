@@ -13,7 +13,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { {BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127)} };
+      = { { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
@@ -209,13 +209,21 @@ TEST_CASE("Send Note Off with real Synth when local is off")
 
 TEST_CASE("Send Note Off when local is off")
 {
-  ConfigureableDSPHost host {};
-  host.setType(SoundType::Split);
+  auto config = nltools::msg::getConfig();
+  config.useEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  config.offerEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  nltools::msg::init(config);
+  auto options = Tests::createEmptyAudioEngineOptions();
+  auto synth = std::make_unique<C15Synth>(options.get());
+  DspHostDualTester tester { synth->getDsp() };
+  tester.applyMalformedSplitPreset({}, {}, 0.5);
   MidiRuntimeOptions settings;
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
+      synth->getDsp(), &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
 
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
@@ -244,10 +252,9 @@ TEST_CASE("Send Note Off when local is off")
     using tA = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
     TestHelper::updateMappingForHW(msg.routings, tR::Notes, tA::LOCAL, false);
 
+    synth->onMidiSettingsMessage(msg);
     settings.update(msg);
   }
-
-  host.setSplitPointKey(64);
 
   WHEN("Key Down Sends one Midi Event on Channel 1")
   {
