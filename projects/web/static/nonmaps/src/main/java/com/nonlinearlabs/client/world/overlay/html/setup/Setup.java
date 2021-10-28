@@ -641,8 +641,8 @@ public class Setup extends Composite {
 		autoStartRecordOn.setValue(t.autoStartRecorder.value);
 		autoStartRecordOff.setValue(!t.autoStartRecorder.value);
 
-		globalLocalOn.setValue(t.local.value);
-		globalLocalOff.setValue(!t.local.value);
+		globalLocalOn.setValue(t.localEnabled.value);
+		globalLocalOff.setValue(!t.localEnabled.value);
 
 		setupMappings(t.enable14BitCC.value);
 		

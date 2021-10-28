@@ -190,14 +190,8 @@ public class SystemSettings {
 
 	public void setGlobalLocal(BooleanValues b)
 	{
-		SetupModel.get().systemSettings.local.setValue(b);
+		SetupModel.get().systemSettings.localEnabled.setValue(b);
 		NonMaps.theMaps.getServerProxy().setSetting("GlobalLocalEnable", netify(b.name()));
-	}
-
-	public void setSafeMode(BooleanValues b)
-	{
-		SetupModel.get().systemSettings.safeMode.setValue(b);
-		NonMaps.theMaps.getServerProxy().setSetting("MIDISafeMode", netify(b.name()));
 	}
 
 	public void setReceiveMidiChannelSplit(MidiReceiveChannelSplit midiReceiveChannelSplit) {
