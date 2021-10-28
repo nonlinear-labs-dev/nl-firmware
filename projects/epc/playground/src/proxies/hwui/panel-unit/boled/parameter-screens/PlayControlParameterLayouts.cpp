@@ -110,6 +110,7 @@ void PlayControlParameterLayout2::setMode(uint8_t desiredMode)
       highlight<ParameterNameLabel>();
       highlight<PhysicalControlSlider>();
       highlight<SelectedParameterValue>();
+      highlight<PhysicalControlValueLabel>();
       break;
 
     case Mode::Select:
@@ -269,6 +270,11 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
   addControl(createParameterValueControl());
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterValue>();
+}
+
+Control *PlayControlParameterSelectLayout2::createParameterValueControl()
+{
+  return new PhysicalControlValueLabel(Rect(90, 33, 76, 12));
 }
 
 Carousel *PlayControlParameterSelectLayout2::createCarousel(const Rect &rect)
@@ -556,17 +562,28 @@ void PedalParameterSelectLayout2::setMode(uint8_t desiredMode)
   noHighlight();
   setDirty();
 
+  auto selParameterValue = findControlOfType<SelectedParameterValue>();
+  auto selPhysControlValue = findControlOfType<PhysicalControlValueLabel>();
+
   switch(desiredMode)
   {
     case Behaviour:
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
+      if(selParameterValue)
+        selParameterValue->setVisible(false);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(false);
+
       findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
       break;
     default:
 
       findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+      if(selParameterValue)
+        selParameterValue->setVisible(true);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(true);
+
       super2::setMode(desiredMode);
   }
 

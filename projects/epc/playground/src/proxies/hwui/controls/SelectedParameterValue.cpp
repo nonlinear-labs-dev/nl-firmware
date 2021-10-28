@@ -6,6 +6,7 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
+#include <proxies/hwui/controls/labels/LabelStyleable.h>
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)
@@ -86,4 +87,85 @@ void SelectedParameterValue::onSoundTypeChanged()
   auto selected
       = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
   setVisible(!selected->isDisabled());
+}
+
+PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
+    : ControlWithChildren(rect)
+{
+  const auto &pos = rect;
+  auto hW = pos.getWidth() / 2;
+  auto left = Rect(0, 0, hW, pos.getHeight());
+  auto right = Rect(hW, 0, hW, pos.getHeight());
+
+  LabelStyle style { .size = FontSize::Size8,
+                     .decoration = FontDecoration::Regular,
+                     .justification = Font::Justification::Center,
+                     .backgroundColor = FrameBufferColors::Transparent };
+
+  m_localEnabledLabel = addControl(new LabelStyleable({ 0, 0, pos.getWidth(), pos.getHeight() }));
+  m_localDisabledLabelSnd = addControl(new LabelStyleable(left));
+  m_localDisabledLabelRcv = addControl(new LabelStyleable(right));
+  m_localEnabledLabel->setLabelStyle(style);
+  m_localDisabledLabelSnd->setLabelStyle(style);
+  m_localDisabledLabelRcv->setLabelStyle(style);
+
+  auto settings = Application::get().getSettings();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  eb->onSelectionChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onParameterSelectionHappened),
+                         VoiceGroup::Global);
+}
+
+void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *old, Parameter *newP)
+{
+  if(auto hw = dynamic_cast<PhysicalControlParameter *>(newP))
+  {
+    m_hw = hw;
+    m_snd = hw->getSendParameter();
+  }
+
+  if(auto snd = dynamic_cast<HardwareSourceSendParameter *>(newP))
+  {
+    m_hw = snd->getSiblingParameter();
+    m_snd = snd;
+  }
+
+  m_hwChanged.disconnect();
+  m_sndChanged.disconnect();
+
+  if(m_snd)
+    m_sndChanged = m_snd->onParameterChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onSendChanged), true);
+  if(m_hw)
+    m_hwChanged = m_hw->onParameterChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onHWChanged), true);
+}
+
+bool PhysicalControlValueLabel::redraw(FrameBuffer &fb)
+{
+  ControlWithChildren::drawBackground(fb);
+
+  m_localEnabledLabel->setVisible(m_isLocalEnabled);
+  m_localDisabledLabelSnd->setVisible(!m_isLocalEnabled);
+  m_localDisabledLabelRcv->setVisible(!m_isLocalEnabled);
+
+  return ControlWithChildren::redraw(fb);
+}
+
+void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
+{
+  if(auto send = dynamic_cast<const HardwareSourceSendParameter *>(p))
+  {
+    m_isLocalEnabled = send->isLocalEnabled();
+    m_localDisabledLabelSnd->setText({ send->getDisplayString() });
+    ControlWithChildren::setDirty();
+  }
+}
+
+void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
+{
+  if(auto hw = dynamic_cast<const PhysicalControlParameter *>(p))
+  {
+    m_isLocalEnabled = hw->isLocalEnabled();
+    m_localEnabledLabel->setText({ hw->getDisplayString() });
+    m_localDisabledLabelRcv->setText({ hw->getDisplayString() });
+    ControlWithChildren::setDirty();
+  }
 }

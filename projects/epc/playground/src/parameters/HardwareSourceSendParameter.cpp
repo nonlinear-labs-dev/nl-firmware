@@ -117,7 +117,7 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
 nlohmann::json HardwareSourceSendParameter::serialize() const
 {
   auto param = Parameter::serialize();
-  param.push_back({"is-enabled", isEnabled() });
+  param.push_back({"is-enabled", isLocalEnabled() });
   return param;
 }
 
@@ -125,10 +125,10 @@ void HardwareSourceSendParameter::writeDocProperties(Writer& writer,
                                                      UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
-  writer.writeTextElement("local-enabled", std::to_string(isEnabled()));
+  writer.writeTextElement("local-enabled", std::to_string(isLocalEnabled()));
 }
 
-bool HardwareSourceSendParameter::isEnabled() const
+bool HardwareSourceSendParameter::isLocalEnabled() const
 {
   return m_routingIsEnabled && m_localIsEnabled;
 }
@@ -141,4 +141,9 @@ ReturnMode HardwareSourceSendParameter::getReturnMode() const
 Layout* HardwareSourceSendParameter::createLayout(FocusAndMode focusAndMode) const
 {
   return m_sibling->createLayout(focusAndMode);
+}
+
+PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() const
+{
+  return m_sibling;
 }

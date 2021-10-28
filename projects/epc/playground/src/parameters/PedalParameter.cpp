@@ -213,19 +213,11 @@ Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
   {
     case UIMode::Info:
       return new ParameterInfoLayout();
-
     case UIMode::Edit:
-      if(isLocalEnabled())
-        return new PedalParameterEditLayout2();
-      else
-        return new LocalOffPedalParameterEditLayout2();
-
+      return new PedalParameterEditLayout2();
     case UIMode::Select:
     default:
-      if(isLocalEnabled())
-        return new PedalParameterSelectLayout2();
-      else
-        return new LocalOffPedalParameterSelectLayout2();
+      return new PedalParameterSelectLayout2();
   }
 
   return super::createLayout(focusAndMode);

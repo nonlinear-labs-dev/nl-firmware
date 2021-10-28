@@ -16,8 +16,9 @@ class HardwareSourceSendParameter : public Parameter
   Glib::ustring getShortName() const override;
   Glib::ustring getInfoText() const override;
 
-  [[nodiscard]] bool isEnabled() const;
+  [[nodiscard]] bool isLocalEnabled() const;
   [[nodiscard]] ReturnMode getReturnMode() const;
+  [[nodiscard]] PhysicalControlParameter* getSiblingParameter() const;
 
  private:
   OptRefSettings m_settings;
@@ -37,5 +38,5 @@ class HardwareSourceSendParameter : public Parameter
   nlohmann::json serialize() const override;
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
 
-  const PhysicalControlParameter* m_sibling;
+  PhysicalControlParameter* m_sibling;
 };

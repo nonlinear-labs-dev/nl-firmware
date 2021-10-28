@@ -59,6 +59,46 @@ class HardwareSourcesGroup : public ParameterGroup
     return { C15::PID::Aftertouch, VoiceGroup::Global };
   }
 
+  static ParameterId getPedal1SendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Pedal1_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getPedal2SendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Pedal2_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getPedal3SendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Pedal3_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getPedal4SendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Pedal4_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getRibbon1SendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Ribbon1_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getRibbon2SendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Ribbon2_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getAftertouchSendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Aftertouch_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getBenderSendID()
+  {
+    return { static_cast<int>(PlaceholderIDS::Bender_Send), VoiceGroup::Global };
+  }
+
   void init() override;
 
  private:

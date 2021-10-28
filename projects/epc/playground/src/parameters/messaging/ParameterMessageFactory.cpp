@@ -45,8 +45,7 @@ namespace ParameterMessageFactory
       return nltools::msg::HWSourceSendChangedMessage {
         param->getID().getNumber(),
         param->getControlPositionValue(),
-        param->getReturnMode(),
-        param->isEnabled()
+        param->getReturnMode(), param->isLocalEnabled()
       };
     }
   }

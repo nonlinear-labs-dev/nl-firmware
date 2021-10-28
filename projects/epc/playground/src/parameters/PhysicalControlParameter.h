@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parameter.h"
+#include "HardwareSourceSendParameter.h"
 
 class ModulationRoutingParameter;
 
@@ -42,13 +43,14 @@ class PhysicalControlParameter : public Parameter
 
   size_t getHash() const override;
   bool isLocked() const override;
+  virtual bool isLocalEnabled() const = 0;
+  HardwareSourceSendParameter *getSendParameter() const;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
  private:
   void sendParameterMessage() const override;
-  virtual bool isLocalEnabled() const = 0;
 
  private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;

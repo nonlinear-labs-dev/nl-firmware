@@ -32,7 +32,10 @@ void Slider::setParameter(Parameter *param)
     m_paramValueConnection.disconnect();
 
     if(param)
+    {
       m_paramValueConnection = param->onParameterChanged(sigc::mem_fun(this, &Slider::onParamValueChanged));
+      m_signalParameterSelected.emit(param);
+    }
     else
       setValue(0, false);
 
@@ -93,4 +96,9 @@ void Slider::drawBackground(FrameBuffer &fb)
 {
   if(isVisible())
     Control::drawBackground(fb);
+}
+
+sigc::connection Slider::onParameterSelected(const sigc::slot<void, Parameter*>& cb)
+{
+  return m_signalParameterSelected.connect(cb);
 }

@@ -21,7 +21,7 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
     
     @Override
     public void dragLeave() {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             super.dragLeave();
         return;
     }
@@ -29,7 +29,7 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
 
     @Override
     public Control drop(Position pos, DragProxy dragProxy) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.drop(pos, dragProxy);
         return this;
     }
@@ -37,7 +37,7 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
 
     @Override
     public Control longLeftPress(Position eventPoint) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.longLeftPress(eventPoint);
         return this;
     }
@@ -45,7 +45,7 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
 
     @Override
     public Control longPress(Position eventPoint) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.longPress(eventPoint);
         return this;
     }
@@ -53,7 +53,7 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
 
     @Override
     public Control longRightPress(Position eventPoint) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.longRightPress(eventPoint);
         return this;
     }
@@ -61,56 +61,56 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
 
     @Override
     public Control mouseUp(Position eventPoint) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.mouseUp(eventPoint);
         return this;
     }
     
     @Override
     public Control mouseDown(Position eventPoint) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.mouseDown(eventPoint);
         return this;
     }
 
     @Override
     public Control onKey(KeyDownEvent event) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
            return super.onKey(event);
         return this;
     }
   
     @Override
     public Control doubleClick(Position pos) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.doubleClick(pos);
         return this;
     }
   
     @Override
     public Control click(Position eventPoint) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.click(eventPoint);
         return this;
     }
     
     @Override
     public Control drag(Position pos, DragProxy dragProxy) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.drag(pos, dragProxy);
         return this;
     }
 
     @Override
     public Control drag(Rect rect, DragProxy dragProxy) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             return super.drag(rect, dragProxy);
         return this;
     }
 
     @Override
     public void draw(Context2d ctx, int invalidationMask) {
-        if(!presenter.isLocalDisabled)
+        if(presenter.isLocalDisabled)
             super.draw(ctx, invalidationMask);
     }
 }

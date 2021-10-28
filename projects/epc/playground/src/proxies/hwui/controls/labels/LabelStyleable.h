@@ -22,9 +22,12 @@ class LabelStyle
   FontSize size = FontSize::Size8;
   FontDecoration decoration = FontDecoration::Regular;
   Font::Justification justification = Font::Justification::Center;
+  FrameBufferColors backgroundColor = FrameBufferColors::C43;
 
-  bool operator!=(LabelStyle& other) const {
-    return size != other.size || decoration != other.decoration || justification != other.justification;
+  bool operator!=(LabelStyle& other) const
+  {
+    return size != other.size || decoration != other.decoration || justification != other.justification
+        || backgroundColor != other.backgroundColor;
   }
 };
 
@@ -44,6 +47,7 @@ class LabelStyleable : public Label
 
  protected:
   Font::Justification getJustification() const override;
+  void setBackgroundColor(FrameBuffer& fb) const override;
 
  private:
   LabelStyle m_styleSheet;
