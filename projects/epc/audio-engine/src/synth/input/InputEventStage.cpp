@@ -132,13 +132,12 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::KeyUp:
     {
+      const auto key = decoder->getKeyOrController();
       const auto isSplitSound = (soundType == SoundType::Split);
       const auto shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
-      const auto determinedPartForNonSplit = VoiceGroup::Global;
-      const auto determinedPartForLocalEnabled = calculateSplitPartForKeyUp(interface, decoder->getKeyOrController());
-      const auto determinedPartForNonLocalEnabled = m_dspHost->getNonLocalSplitKeyAssignmentForKeyUp(decoder->getKeyOrController());
-      const auto determinedPartForSplit = shouldReceiveLocalNotes ? determinedPartForLocalEnabled : determinedPartForNonLocalEnabled;
-      const auto determinedPart = isSplitSound ? determinedPartForSplit : determinedPartForNonSplit;
+      const auto determinedSplitPart = shouldReceiveLocalNotes ? calculateSplitPartForKeyUp(interface, key)
+                                                               : m_dspHost->getNonLocalSplitKeyAssignmentForKeyUp(key);
+      const auto determinedPart = isSplitSound ? determinedSplitPart : VoiceGroup::Global;
 
       if(determinedPart == VoiceGroup::Invalid)
         break;
@@ -147,18 +146,18 @@ void InputEventStage::onTCDEvent()
       {
         if(isSplitSound)
         {
-          m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
+          m_dspHost->onKeyUpSplit(key, decoder->getValue(), determinedPart, interface);
         }
         else if(soundValid)
         {
-          m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
+          m_dspHost->onKeyUp(key, decoder->getValue(), interface);
         }
 
         setAndScheduleKeybedNotify();
       }
       else if(isSplitSound)
       {
-        m_dspHost->unregisterNonLocalSplitKeyAssignment(decoder->getKeyOrController());
+        m_dspHost->unregisterNonLocalSplitKeyAssignment(key);
       }
 
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
