@@ -137,3 +137,8 @@ ReturnMode HardwareSourceSendParameter::getReturnMode() const
 {
   return m_sibling->getReturnMode();
 }
+
+Layout* HardwareSourceSendParameter::createLayout(FocusAndMode focusAndMode) const
+{
+  return m_sibling->createLayout(focusAndMode);
+}

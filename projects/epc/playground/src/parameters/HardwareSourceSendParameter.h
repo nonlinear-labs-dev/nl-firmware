@@ -24,6 +24,10 @@ class HardwareSourceSendParameter : public Parameter
   void onLocalChanged(const Setting* setting);
   void onRoutingsChanged(const Setting* setting);
 
+ public:
+  Layout* createLayout(FocusAndMode focusAndMode) const override;
+
+ private:
   bool m_localIsEnabled = false;
   bool m_routingIsEnabled = false;
   static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
