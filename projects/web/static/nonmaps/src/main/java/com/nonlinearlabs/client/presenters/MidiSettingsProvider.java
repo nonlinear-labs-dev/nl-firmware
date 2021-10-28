@@ -185,10 +185,10 @@ public class MidiSettingsProvider {
             return true;
         });
 
-        s.local.onChange(t -> {
+        s.localEnabled.onChange(t -> {
             boolean val = t.equals(BooleanValues.on);
-            if(val != settings.local.value != val) {
-                settings.local.value = val;
+            if(val != settings.localEnable.value != val) {
+                settings.localEnable.value = val;
                 notifyClients();
             }
             return true;
