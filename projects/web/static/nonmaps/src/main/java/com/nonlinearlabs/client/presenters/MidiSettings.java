@@ -159,9 +159,10 @@ public class MidiSettings {
         public RoutingEntry routings[] = new RoutingEntry[numRoutings]; 
     }
 
-    //Global
-    public OnOffOption localEnable = new OnOffOption();
 
+    //Global
+    public OnOffOption localEnabled = new OnOffOption();
+    
     //Channels
     public SendChannel sendChannel = new SendChannel();
     public SendChannelSplit sendChannelSplit = new SendChannelSplit();

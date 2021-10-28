@@ -43,10 +43,6 @@ class InputEventStage
   bool getAndResetKeyBedStatus();
 
  private:
-  void handlePressedNotesOnMidiSettingsChanged(const tMSG& msg, const tMSG& oldmsg);
-  void handleHWSourcesWhichGotTurnedOff(const tMSG& msg, const tMSG& snapshot);
-  void handleHWSourcesWhichCCsChanged(const tMSG& message, const tMSG& snapshot);
-
   void setAndScheduleKeybedNotify();
 
   using CC_Range_Vel = Midi::clipped14BitVelRange;
@@ -134,10 +130,9 @@ class InputEventStage
   static bool ccIsMappedToChannelModeMessage(int cc);
   void queueChannelModeMessage(int cc, uint8_t msbCCvalue);
 
-  void sendHardwareChangeAsMidiOnExplicitChannel(HardwareSource id, float value, int channel);
-  void sendCCOutOnExplicitChannel(HardwareSource hwID, float value, int msbCC, int lsbCC, int channel);
   void doSendCCOutOnExplicitChannel(uint16_t value, int msbCC, int lsbCC, HardwareSource hwID, int channel);
-  void doSendBenderOutOnExplicitChannel(float value, int channel);
-  void doSendAftertouchOutOnExplicitChannel(float value, int channel);
   RoutingIndex toRoutingIndex(HardwareSource source);
+  bool didRelevantSectionsChange(const tMSG& message, const tMSG& message1);
+  void doInternalReset();
+  void doExternalReset(const tMSG newMessage, const tMSG oldMessage);
 };

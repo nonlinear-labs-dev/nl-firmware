@@ -187,8 +187,8 @@ public class MidiSettingsProvider {
 
         s.localEnabled.onChange(t -> {
             boolean val = t.equals(BooleanValues.on);
-            if(val != settings.localEnable.value != val) {
-                settings.localEnable.value = val;
+            if(val != settings.localEnabled.value) {
+                settings.localEnabled.value = val;
                 notifyClients();
             }
             return true;

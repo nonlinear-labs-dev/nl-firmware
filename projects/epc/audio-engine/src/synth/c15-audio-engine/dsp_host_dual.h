@@ -70,7 +70,6 @@ class DSPInterface
   //remove or move somewhere else
   //TCD and MIDI should not be known to DSP
 
-
   enum class InputEventSource
   {
     Internal,            //TCD -> use split
@@ -90,11 +89,21 @@ class DSPInterface
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
-  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
-  virtual void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
-  virtual void onMidiSettingsReceived() = 0;
-  virtual float getReturnValueFor(HardwareSource hwid) { return 0; };
-  virtual void resetReturningHWSource(HardwareSource hwui) {};
+  virtual VoiceGroup getNonLocalSplitKeyAssignmentForKeyUp(int key) = 0;
+  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part) = 0;
+  virtual void unregisterNonLocalSplitKeyAssignment(const int note) = 0;
+  virtual void fadeOutResetVoiceAllocAndEnvelopes() = 0;
+  virtual float getReturnValueFor(HardwareSource hwid)
+  {
+    return 0;
+  }
+  virtual void resetReturningHWSource(HardwareSource hwui)
+  {
+  }
+  virtual bool resetIsNecessary()
+  {
+    return true;
+  }
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
     // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
@@ -118,7 +127,7 @@ class DSPInterface
 class dsp_host_dual : public DSPInterface
 {
  public:
-  void onMidiSettingsReceived() override;
+  void fadeOutResetVoiceAllocAndEnvelopes() override;
   // public members
   float m_mainOut_R = 0.0f, m_mainOut_L = 0.0f;
   uint32_t m_sample_counter = 0;
@@ -135,6 +144,7 @@ class dsp_host_dual : public DSPInterface
   using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
   float getReturnValueFor(HardwareSource hwid) override;
   void resetReturningHWSource(HardwareSource hwui) override;
+  bool resetIsNecessary() override;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) override;
@@ -177,8 +187,9 @@ class dsp_host_dual : public DSPInterface
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
-  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
-  void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  VoiceGroup getNonLocalSplitKeyAssignmentForKeyUp(int key) override;
+  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part) override;
+  void unregisterNonLocalSplitKeyAssignment(const int note) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
