@@ -118,12 +118,11 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      else if(isSplitSound)
+      else
       {
-        // despite the suppression of internal notes due to local off,
-        // we still need to latch the determined part for subsequent key up events (unfortunate, but not avoidable)
-        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart);
+        m_dspHost->registerNonLocalKeyAssignment(decoder->getKeyOrController(), determinedPart);
       }
+
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
       {
         convertToAndSendMIDI(decoder, determinedPart);
@@ -139,7 +138,7 @@ void InputEventStage::onTCDEvent()
           = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
       const auto determinedPart = shouldReceiveLocalNotes
           ? determinedPartForLocalEnabled
-          : m_dspHost->getNonlocalSplitPartForKeyUp(decoder->getKeyOrController());
+          : m_dspHost->getNonLocalKeyAssignmentForKeyUp(decoder->getKeyOrController());
 
       if(determinedPart == VoiceGroup::Invalid)
         break;
@@ -157,12 +156,11 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      else if(isSplitSound)
+      else
       {
-        // despite the suppression of internal notes due to local off,
-        // we still want to clear the key assingment
-        m_dspHost->unregisterNonLocalSplitKeyAssignment(decoder->getKeyOrController());
+        m_dspHost->unregisterNonLocalKeyAssignment(decoder->getKeyOrController());
       }
+
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
       {
         convertToAndSendMIDI(decoder, determinedPart);
