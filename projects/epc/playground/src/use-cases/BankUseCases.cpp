@@ -35,7 +35,7 @@ void BankUseCases::renameBank(const Glib::ustring& name)
   auto transaction = transactionScope->getTransaction();
   m_bank->setName(transaction, name);
 
-  if(auto pm = m_bank->getPresetManager())
+  if(auto pm = getPresetManager())
   {
     pm->getEditBuffer()->undoableUpdateLoadedPresetInfo(transaction);
   }
@@ -43,13 +43,13 @@ void BankUseCases::renameBank(const Glib::ustring& name)
 
 void BankUseCases::stepPresetSelection(int inc)
 {
-  if(auto presetManager = m_bank->getPresetManager())
+  if(auto presetManager = getPresetManager())
   {
     const bool directLoad = isDirectLoadActive();
     if(auto current = m_bank->getSelectedPreset())
     {
       auto currentPos = m_bank->getPresetPosition(current);
-      auto presetPosToSelect = std::max(0, std::min<int>(m_bank->getNumPresets() - 1, currentPos + inc));
+      auto presetPosToSelect = std::max(0ul, std::min(m_bank->getNumPresets() - 1, currentPos + inc));
       if(auto selectedPreset = presetManager->getSelectedPreset())
       {
         if(auto presetToSelect = m_bank->getPresetAt(presetPosToSelect))
@@ -78,7 +78,7 @@ void BankUseCases::stepPresetSelection(int inc)
 
 void BankUseCases::dropPresets(const std::string& csv)
 {
-  if(auto pm = m_bank->getPresetManager())
+  if(auto pm = getPresetManager())
   {
     auto scope = m_bank->getUndoScope().startTransaction("Drop Presets on Bank");
     auto transaction = scope->getTransaction();
@@ -101,7 +101,7 @@ void BankUseCases::dropPresets(const std::string& csv)
 
 void BankUseCases::dropBank(const Bank* source)
 {
-  if(auto pm = m_bank->getPresetManager())
+  if(auto pm = getPresetManager())
   {
     if(m_bank != source && source)
     {
@@ -167,20 +167,22 @@ void BankUseCases::deletePreset(const Uuid& uuid)
     auto scope = m_bank->getUndoScope().startTransaction("Delete preset '%0'", preset->getName());
     m_bank->deletePreset(scope->getTransaction(), preset->getUuid());
 
-    if(auto pm = m_bank->getPresetManager())
+    if(auto pm = getPresetManager())
     {
-      pm->getEditBuffer()->undoableUpdateLoadedPresetInfo(scope->getTransaction());
+      auto eb = pm->getEditBuffer();
+      eb->undoableUpdateLoadedPresetInfo(scope->getTransaction());
     }
   }
 }
 
 void BankUseCases::selectPreset(int pos)
 {
+  auto pm = getPresetManager();
   if(pos < m_bank->getNumPresets())
   {
     if(auto presetToSelect = m_bank->getPresetAt(pos))
     {
-      if(m_bank->getPresetManager()->getSelectedPreset() != presetToSelect)
+      if(pm->getSelectedPreset() != presetToSelect)
       {
         const auto directLoad = isDirectLoadActive();
         Glib::ustring name {};
@@ -194,7 +196,8 @@ void BankUseCases::selectPreset(int pos)
 
         if(isDirectLoadActive())
         {
-          m_bank->getPresetManager()->getEditBuffer()->undoableLoad(scope->getTransaction(), presetToSelect, true);
+          auto eb = pm->getEditBuffer();
+          eb->undoableLoad(scope->getTransaction(), presetToSelect, true);
         }
       }
     }
@@ -215,7 +218,7 @@ void BankUseCases::setAttribute(const Glib::ustring& key, const Glib::ustring& v
 
 bool BankUseCases::isDirectLoadActive() const
 {
-  return Application::get().getSettings()->getSetting<DirectLoadSetting>()->get();
+  return m_settings.getSetting<DirectLoadSetting>()->get();
 }
 
 void BankUseCases::setCollapsed(bool b)
@@ -245,7 +248,7 @@ void BankUseCases::exportBankToFile(const std::string& outFile)
 
 void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
 {
-  auto pm = m_bank->getPresetManager();
+  auto pm = getPresetManager();
   auto scope = pm->getUndoScope().startTransaction("Drop bank '%0' into bank '%1'", toInsert->getName(true),
                                                    m_bank->getName(true));
   auto transaction = scope->getTransaction();
@@ -257,24 +260,28 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
 
 Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
 {
-  auto pm = m_bank->getPresetManager();
+  auto pm = getPresetManager();
   auto eb = pm->getEditBuffer();
   auto scope = pm->getUndoScope().startTransaction("Insert Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->insertPreset(transaction, anchor, std::make_unique<Preset>(m_bank, *eb));
+  preset->guessName(transaction);
   eb->undoableSetLoadedPresetInfo(transaction, preset);
+  pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
   return preset;
 }
 
 Preset* BankUseCases::appendEditBuffer()
 {
-  auto pm = m_bank->getPresetManager();
+  auto pm = getPresetManager();
   auto eb = pm->getEditBuffer();
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *eb));
+  preset->guessName(transaction);
   eb->undoableSetLoadedPresetInfo(transaction, preset);
+  pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
   return preset;
 }
@@ -287,18 +294,19 @@ Preset* BankUseCases::appendEditBufferAsPresetWithUUID(Uuid uuid)
 Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
 {
   auto pm = getPresetManager();
-  if(!pm)
-    return nullptr;
+  auto eb = pm->getEditBuffer();
 
   if(uuid.empty())
     uuid.generate();
 
   auto scope = pm->getUndoScope().startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
-  auto ebIsModified = pm->getEditBuffer()->isModified();
+  auto ebIsModified = eb->isModified();
 
-  auto preset = m_bank->insertPreset(transaction, pos, std::make_unique<Preset>(m_bank, *pm->getEditBuffer(), uuid));
+  auto preset = m_bank->insertPreset(transaction, pos, std::make_unique<Preset>(m_bank, *eb, uuid));
 
+  preset->guessName(transaction);
+  eb->undoableSetLoadedPresetInfo(transaction, preset);
   pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
 
@@ -315,5 +323,7 @@ Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
 
 PresetManager* BankUseCases::getPresetManager() const
 {
-  return m_bank->getPresetManager();
+  auto pm = m_bank->getPresetManager();
+  nltools_assertOnDevPC(pm != nullptr);
+  return pm;
 }
