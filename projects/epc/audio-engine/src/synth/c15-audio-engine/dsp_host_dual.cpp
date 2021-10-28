@@ -2383,13 +2383,13 @@ VoiceGroup dsp_host_dual::getSplitPartForKeyUp(int key, InputEventSource from)
   return getVoiceGroupFromAllocatorId(allocID);
 }
 
-VoiceGroup dsp_host_dual::getNonLocalKeyAssignmentForKeyUp(int key)
+VoiceGroup dsp_host_dual::getNonLocalSplitKeyAssignmentForKeyUp(int key)
 {
   const auto allocID = m_alloc.getNonlocalSplitPartForKeyUp(key);
   return getVoiceGroupFromAllocatorId(allocID);
 }
 
-void dsp_host_dual::registerNonLocalKeyAssignment(const int note, VoiceGroup part)
+void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part)
 {
   // register key assignment despite local off (similar to splitKeyDown, but not quite)
   if(m_layer_mode == LayerMode::Split)
@@ -2413,7 +2413,7 @@ void dsp_host_dual::registerNonLocalKeyAssignment(const int note, VoiceGroup par
   }
 }
 
-void dsp_host_dual::unregisterNonLocalKeyAssignment(const int note)
+void dsp_host_dual::unregisterNonLocalSplitKeyAssignment(const int note)
 {
   // unregister key assignment despite local off (similar to splitKeyUp, but not quite)
   m_alloc.unregisterNonLocalSplitKeyAssignment(note);

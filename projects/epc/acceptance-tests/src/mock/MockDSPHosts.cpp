@@ -37,16 +37,16 @@ VoiceGroup MockDSPHost::getSplitPartForKeyUp(int key, InputEventSource from)
   return VoiceGroup::I;
 }
 
-VoiceGroup MockDSPHost::getNonLocalKeyAssignmentForKeyUp(int key)
+VoiceGroup MockDSPHost::getNonLocalSplitKeyAssignmentForKeyUp(int key)
 {
   return VoiceGroup::I;
 }
 
-void MockDSPHost::registerNonLocalKeyAssignment(const int note, VoiceGroup part)
+void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part)
 {
 }
 
-void MockDSPHost::unregisterNonLocalKeyAssignment(const int note)
+void MockDSPHost::unregisterNonLocalSplitKeyAssignment(const int note)
 {
 }
 

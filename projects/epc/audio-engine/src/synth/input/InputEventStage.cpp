@@ -7,14 +7,14 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
                                  InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
     : m_tcdDecoder(dspHost, options, &m_shifteable_keys)
     , m_midiDecoder(dspHost, options)
-    , m_dspHost{ dspHost }
-    , m_options{ options }
+    , m_dspHost { dspHost }
+    , m_options { options }
     , m_hwChangedCB(std::move(hwChangedCB))
     , m_channelModeMessageCB(std::move(specialCB))
-    , m_midiOut{ std::move(outCB) }
+    , m_midiOut { std::move(outCB) }
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 template <>
@@ -118,9 +118,9 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      else
+      else if(isSplitSound)
       {
-        m_dspHost->registerNonLocalKeyAssignment(decoder->getKeyOrController(), determinedPart);
+        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart);
       }
 
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
@@ -132,13 +132,13 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::KeyUp:
     {
-      const bool isSplitSound = (soundType == SoundType::Split);
-      const bool shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
-      const auto determinedPartForLocalEnabled
-          = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
-      const auto determinedPart = shouldReceiveLocalNotes
-          ? determinedPartForLocalEnabled
-          : m_dspHost->getNonLocalKeyAssignmentForKeyUp(decoder->getKeyOrController());
+      const auto isSplitSound = (soundType == SoundType::Split);
+      const auto shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
+      const auto determinedPartForNonSplit = VoiceGroup::Global;
+      const auto determinedPartForLocalEnabled = calculateSplitPartForKeyUp(interface, decoder->getKeyOrController());
+      const auto determinedPartForNonLocalEnabled = m_dspHost->getNonLocalSplitKeyAssignmentForKeyUp(decoder->getKeyOrController());
+      const auto determinedPartForSplit = shouldReceiveLocalNotes ? determinedPartForLocalEnabled : determinedPartForNonLocalEnabled;
+      const auto determinedPart = isSplitSound ? determinedPartForSplit : determinedPartForNonSplit;
 
       if(determinedPart == VoiceGroup::Invalid)
         break;
@@ -156,9 +156,9 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      else
+      else if(isSplitSound)
       {
-        m_dspHost->unregisterNonLocalKeyAssignment(decoder->getKeyOrController());
+        m_dspHost->unregisterNonLocalSplitKeyAssignment(decoder->getKeyOrController());
       }
 
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
@@ -751,7 +751,8 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
-  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit) {
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
+  {
     const auto routingIndex = static_cast<RoutingIndex>(hwID);
 
     switch(source)
@@ -1102,7 +1103,8 @@ void InputEventStage::doInternalReset()
 
 void InputEventStage::doExternalReset(const tMSG newMessage, const tMSG oldMessage)
 {
-  auto sendNotesOff = [this](auto channel) {
+  auto sendNotesOff = [this](auto channel)
+  {
     constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
     constexpr uint8_t CCModeChange = 0b10110000;
     const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
