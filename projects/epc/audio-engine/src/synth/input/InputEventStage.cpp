@@ -120,10 +120,9 @@ void InputEventStage::onTCDEvent()
       }
       else if(isSplitSound)
       {
-        // despite the suppression of internal notes due to local off,
-        // we still need to latch the determined part for subsequent key up events (unfortunate, but not avoidable)
-        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart, interface);
+        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart);
       }
+
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
       {
         convertToAndSendMIDI(decoder, determinedPart);
@@ -133,32 +132,34 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::KeyUp:
     {
-      const bool isSplitSound = (soundType == SoundType::Split);
-      const auto determinedPart
-          = isSplitSound ? calculateSplitPartForKeyUp(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+      const auto key = decoder->getKeyOrController();
+      const auto isSplitSound = (soundType == SoundType::Split);
+      const auto shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
+      const auto determinedSplitPart = shouldReceiveLocalNotes ? calculateSplitPartForKeyUp(interface, key)
+                                                               : m_dspHost->getNonLocalSplitKeyAssignmentForKeyUp(key);
+      const auto determinedPart = isSplitSound ? determinedSplitPart : VoiceGroup::Global;
 
       if(determinedPart == VoiceGroup::Invalid)
         break;
 
-      if(m_options->shouldReceiveLocalNotes())
+      if(shouldReceiveLocalNotes)
       {
         if(isSplitSound)
         {
-          m_dspHost->onKeyUpSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
+          m_dspHost->onKeyUpSplit(key, decoder->getValue(), determinedPart, interface);
         }
         else if(soundValid)
         {
-          m_dspHost->onKeyUp(decoder->getKeyOrController(), decoder->getValue(), interface);
+          m_dspHost->onKeyUp(key, decoder->getValue(), interface);
         }
 
         setAndScheduleKeybedNotify();
       }
       else if(isSplitSound)
       {
-        // despite the suppression of internal notes due to local off,
-        // we still want to clear the key assingment
-        m_dspHost->unregisterNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart, interface);
+        m_dspHost->unregisterNonLocalSplitKeyAssignment(key);
       }
+
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
       {
         convertToAndSendMIDI(decoder, determinedPart);
@@ -1002,271 +1003,25 @@ void InputEventStage::queueChannelModeMessage(int cc, uint8_t msbCCvalue)
   m_channelModeMessageCB(MidiRuntimeOptions::createChannelModeMessageEnum(cc, msbCCvalue));
 }
 
+bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg, const InputEventStage::tMSG &oldmsg)
+{
+  auto didChange = false;
+  didChange |= msg.localEnable != oldmsg.localEnable;
+  didChange |= msg.routings != oldmsg.routings;
+  didChange |= msg.sendSplitChannel != oldmsg.sendSplitChannel;
+  didChange |= msg.sendChannel != oldmsg.sendChannel;
+  didChange |= msg.receiveChannel != oldmsg.receiveChannel;
+  didChange |= msg.receiveSplitChannel != oldmsg.receiveSplitChannel;
+  return didChange;
+}
+
 void InputEventStage::onMidiSettingsMessageWasReceived(const tMSG &msg, const tMSG &oldmsg)
 {
-  handlePressedNotesOnMidiSettingsChanged(msg, oldmsg);
-  handleHWSourcesWhichGotTurnedOff(msg, oldmsg);
-  handleHWSourcesWhichCCsChanged(msg, oldmsg);
-}
-
-void InputEventStage::handlePressedNotesOnMidiSettingsChanged(const tMSG &msg, const tMSG &oldConfig)
-{
-
-  constexpr auto Notes = static_cast<int>(RoutingIndex::Notes);
-  constexpr auto SendPrim = static_cast<int>(RoutingAspect::SEND_PRIMARY);
-  constexpr auto SendSplit = static_cast<int>(RoutingAspect::SEND_SPLIT);
-  constexpr auto RecvPrim = static_cast<int>(RoutingAspect::RECEIVE_PRIMARY);
-  constexpr auto RecvSplit = static_cast<int>(RoutingAspect::RECEIVE_SPLIT);
-  constexpr auto Local = static_cast<int>(RoutingAspect::LOCAL);
-
-  const auto &oldNotesData = oldConfig.routings[Notes];
-
-  constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
-  constexpr uint8_t CCModeChange = 0b10110000;
-
-  const auto oldPrimSendState = oldNotesData[SendPrim];
-  const auto oldSecSendState = oldNotesData[SendSplit];
-  const auto oldReceivePrimState = oldNotesData[RecvPrim];
-  const auto oldReceiveSplitState = oldNotesData[RecvSplit];
-  const auto oldLocalState = oldNotesData[Local] && oldConfig.localEnable;
-
-  const auto isSplit = m_dspHost->getType() == SoundType::Split;
-
-  const auto isSendPrim = msg.routings[Notes][SendPrim];
-  const auto isSendSplit = msg.routings[Notes][SendSplit];
-  const auto isReceivePrim = msg.routings[Notes][RecvPrim];
-  const auto isReceiveSplit = msg.routings[Notes][RecvSplit];
-  const auto isLocalEnabled = msg.routings[Notes][Local] && msg.localEnable;
-
-  const auto primSendNowDisabled = !isSendPrim && oldPrimSendState;
-  const auto splitSendNowDisabled = !isSendSplit && oldSecSendState;
-  const auto primReceiveNowDisabled = !isReceivePrim && oldReceivePrimState;
-  const auto splitReceiveNowDisabled = !isReceiveSplit && oldReceiveSplitState;
-  const auto localNowDisabled = !isLocalEnabled && oldLocalState;
-
-  const auto didPrimSendChange = msg.sendChannel != oldConfig.sendChannel;
-  const auto didSecSendChange = msg.sendSplitChannel != oldConfig.sendSplitChannel;
-  const auto didPrimRecChange = msg.receiveChannel != oldConfig.receiveChannel;
-  const auto didSecRecChange = msg.receiveSplitChannel != oldConfig.receiveSplitChannel;
-
-  const auto primIsNowDisabled = !isSendPrim && oldPrimSendState;
-  const auto splitIsNowDisabled = !isSendSplit && oldSecSendState;
-
-  auto sendNotesOffOnChannel = [&](auto channel)
+  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->resetIsNecessary())
   {
-    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
-
-    if(iChannel != -1)
-    {
-      m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
-    }
-  };
-
-  auto sendFadeAndMuteToDSP = [&]() { m_channelModeMessageCB(MidiChannelModeMessages::AllSoundOff); };
-
-  const auto prim = m_options->getMIDIPrimarySendChannel();
-  const auto sec = m_options->getMIDISplitSendChannel();
-
-  bool didScheduleAllSoundsOff = false;
-
-  if(primSendNowDisabled)
-  {
-    sendNotesOffOnChannel(prim);
+    doInternalReset();
+    doExternalReset(msg, oldmsg);
   }
-  else if(primReceiveNowDisabled || didPrimRecChange)
-  {
-    sendFadeAndMuteToDSP();
-    didScheduleAllSoundsOff = true;
-  }
-  else if(didPrimSendChange)
-  {
-    sendNotesOffOnChannel(oldConfig.sendChannel);
-  }
-  else if(localNowDisabled)
-  {
-    sendFadeAndMuteToDSP();
-    didScheduleAllSoundsOff = true;
-  }
-
-  if(isSplit)
-  {
-    if(splitSendNowDisabled)
-    {
-      sendNotesOffOnChannel(sec);
-    }
-    else if(splitReceiveNowDisabled || didSecRecChange)
-    {
-      if(!didScheduleAllSoundsOff)
-        sendFadeAndMuteToDSP();
-      didScheduleAllSoundsOff = true;
-    }
-    else if(didSecSendChange)
-    {
-      sendNotesOffOnChannel(oldConfig.sendSplitChannel);
-    }
-    else if(localNowDisabled)
-    {
-      if(!didScheduleAllSoundsOff)
-        sendFadeAndMuteToDSP();
-      didScheduleAllSoundsOff = true;
-    }
-  }
-}
-
-void InputEventStage::handleHWSourcesWhichGotTurnedOff(const tMSG &msg, const tMSG &oldmsg)
-{
-  auto to = [](auto x) { return static_cast<int>(x); };
-  auto from = [](auto x) { return static_cast<tMSG::RoutingIndex>(x); };
-  auto idToID = [](tMSG::RoutingIndex x)
-  {
-    switch(x)
-    {
-      case RoutingIndex::Pedal1:
-        return HardwareSource::PEDAL1;
-      case RoutingIndex::Pedal2:
-        return HardwareSource::PEDAL2;
-      case RoutingIndex::Pedal3:
-        return HardwareSource::PEDAL3;
-      case RoutingIndex::Pedal4:
-        return HardwareSource::PEDAL4;
-      case RoutingIndex::Bender:
-        return HardwareSource::BENDER;
-      case RoutingIndex::Aftertouch:
-        return HardwareSource::AFTERTOUCH;
-      case RoutingIndex::Ribbon1:
-        return HardwareSource::RIBBON1;
-      case RoutingIndex::Ribbon2:
-        return HardwareSource::RIBBON2;
-      default:
-      case RoutingIndex::ProgramChange:
-      case RoutingIndex::Notes:
-      case RoutingIndex::LENGTH:
-        return HardwareSource::NONE;
-    }
-  };
-
-  const auto primSendChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
-  const auto oldPrimSendChannel = MidiRuntimeOptions::channelEnumToInt(oldmsg.sendChannel);
-  const auto splitSendChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
-  const auto oldSplitSendChannel = MidiRuntimeOptions::channelEnumToInt(oldmsg.sendSplitChannel);
-  const auto primReceiveChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimaryReceiveChannel());
-  const auto oldPrimReceiveChannel = MidiRuntimeOptions::channelEnumToInt(oldmsg.receiveChannel);
-  const auto splitReceiveChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitReceiveChannel());
-  const auto oldSplitReceiveChannel = MidiRuntimeOptions::channelEnumToInt(oldmsg.receiveSplitChannel);
-
-  const auto didPrimSendChannelChange = primSendChannel != oldPrimSendChannel;
-  const auto didSplitSendChannelChange = splitSendChannel != oldSplitSendChannel;
-  const auto didPrimReceiveChannelChange = primReceiveChannel != oldPrimReceiveChannel;
-  const auto didSplitReceiveChannelChange = splitReceiveChannel != oldSplitReceiveChannel;
-
-  int hwIdx = 0;
-  for(auto &hw : msg.routings)
-  {
-
-    if(from(hwIdx) != tMSG::RoutingIndex::Notes && from(hwIdx) != tMSG::RoutingIndex::ProgramChange)
-    {
-      const auto didPrimReceiveChange = hw[to(tMSG::RoutingAspect::RECEIVE_PRIMARY)]
-          != oldmsg.routings[hwIdx][to(tMSG::RoutingAspect::RECEIVE_PRIMARY)];
-      const auto didSplitReceiveChange = hw[to(tMSG::RoutingAspect::RECEIVE_SPLIT)]
-          != oldmsg.routings[hwIdx][to(tMSG::RoutingAspect::RECEIVE_SPLIT)];
-      const auto didPrimSendChange
-          = hw[to(tMSG::RoutingAspect::SEND_PRIMARY)] != oldmsg.routings[hwIdx][to(tMSG::RoutingAspect::SEND_PRIMARY)];
-      const auto didSplitSendChange
-          = hw[to(tMSG::RoutingAspect::SEND_SPLIT)] != oldmsg.routings[hwIdx][to(tMSG::RoutingAspect::SEND_SPLIT)];
-      const auto didLocalChange
-          = hw[to(tMSG::RoutingAspect::LOCAL)] != oldmsg.routings[hwIdx][to(tMSG::RoutingAspect::LOCAL)];
-      const auto hwID = idToID(from(hwIdx));
-
-      if(m_dspHost->getBehaviour(hwID) != C15::Properties::HW_Return_Behavior::Stay)
-      {
-        auto value = m_dspHost->getReturnValueFor(hwID);
-        if(didPrimSendChange)
-          sendHardwareChangeAsMidiOnExplicitChannel(hwID, value, primSendChannel);
-        if(didSplitSendChange && m_dspHost->getType() == SoundType::Split)
-          sendHardwareChangeAsMidiOnExplicitChannel(hwID, value, splitSendChannel);
-        if(didPrimReceiveChange)
-          m_dspHost->resetReturningHWSource(hwID);
-        if(didSplitReceiveChange && m_dspHost->getType() == SoundType::Split)
-          m_dspHost->resetReturningHWSource(hwID);
-        if(didLocalChange)
-        {
-          m_dspHost->resetReturningHWSource(hwID);
-          sendHardwareChangeAsMidiOnExplicitChannel(hwID, value, primSendChannel);
-          if(m_dspHost->getType() == SoundType::Split)
-            sendHardwareChangeAsMidiOnExplicitChannel(hwID, value, splitSendChannel);
-        }
-
-        if(didPrimSendChannelChange)
-          sendHardwareChangeAsMidiOnExplicitChannel(hwID, value, oldPrimSendChannel);
-
-        if(didSplitSendChannelChange && m_dspHost->getType() == SoundType::Split)
-          sendHardwareChangeAsMidiOnExplicitChannel(hwID, value, oldSplitSendChannel);
-
-        if(didPrimReceiveChannelChange)
-          m_dspHost->resetReturningHWSource(hwID);
-        if(didSplitReceiveChannelChange && m_dspHost->getType() == SoundType::Split)
-          m_dspHost->resetReturningHWSource(hwID);
-      }
-    }
-    hwIdx++;
-  }
-}
-
-void InputEventStage::sendHardwareChangeAsMidiOnExplicitChannel(HardwareSource id, float value, int channel)
-{
-  switch(id)
-  {
-    case HardwareSource::PEDAL1:
-      sendCCOutOnExplicitChannel(HardwareSource::PEDAL1, value, m_options->getCCFor<Midi::MSB::Ped1>(),
-                                 m_options->getCCFor<Midi::LSB::Ped1>(), channel);
-      break;
-
-    case HardwareSource::PEDAL2:
-      sendCCOutOnExplicitChannel(HardwareSource::PEDAL2, value, m_options->getCCFor<Midi::MSB::Ped2>(),
-                                 m_options->getCCFor<Midi::LSB::Ped2>(), channel);
-      break;
-
-    case HardwareSource::PEDAL3:
-      sendCCOutOnExplicitChannel(HardwareSource::PEDAL3, value, m_options->getCCFor<Midi::MSB::Ped3>(),
-                                 m_options->getCCFor<Midi::LSB::Ped3>(), channel);
-      break;
-
-    case HardwareSource::PEDAL4:
-      sendCCOutOnExplicitChannel(HardwareSource::PEDAL4, value, m_options->getCCFor<Midi::MSB::Ped4>(),
-                                 m_options->getCCFor<Midi::LSB::Ped4>(), channel);
-      break;
-
-    case HardwareSource::BENDER:
-      doSendBenderOutOnExplicitChannel(value, channel);
-      break;
-
-    case HardwareSource::AFTERTOUCH:
-      doSendAftertouchOutOnExplicitChannel(value, channel);
-      break;
-
-    case HardwareSource::RIBBON1:
-      sendCCOutOnExplicitChannel(HardwareSource::RIBBON1, value, m_options->getCCFor<Midi::MSB::Rib1>(),
-                                 m_options->getCCFor<Midi::LSB::Rib1>(), channel);
-      break;
-
-    case HardwareSource::RIBBON2:
-      sendCCOutOnExplicitChannel(HardwareSource::RIBBON2, value, m_options->getCCFor<Midi::MSB::Rib2>(),
-                                 m_options->getCCFor<Midi::LSB::Rib2>(), channel);
-      break;
-
-    default:
-      break;
-  }
-}
-
-void InputEventStage::sendCCOutOnExplicitChannel(HardwareSource hwID, float value, int msbCC, int lsbCC, int channel)
-{
-  using CC_Range_14_Bit = Midi::clipped14BitCCRange;
-
-  if(m_dspHost->getBehaviour(hwID) == C15::Properties::HW_Return_Behavior::Center)
-    doSendCCOutOnExplicitChannel(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, hwID, channel);
-  else
-    doSendCCOutOnExplicitChannel(CC_Range_14_Bit::encodeUnipolarMidiValue(value), msbCC, lsbCC, hwID, channel);
 }
 
 void InputEventStage::doSendCCOutOnExplicitChannel(uint16_t value, int msbCC, int lsbCC, HardwareSource hwID,
@@ -1294,173 +1049,6 @@ void InputEventStage::doSendCCOutOnExplicitChannel(uint16_t value, int msbCC, in
     {
       m_midiOut({ mainStatus, static_cast<uint8_t>(msbCC), msbValByte });
     }
-  }
-}
-
-void InputEventStage::doSendBenderOutOnExplicitChannel(float value, int channel)
-{
-  auto benderLSB = m_options->getBenderLSBCC();
-  auto benderMSB = m_options->getBenderMSBCC();
-
-  if(benderLSB.has_value() && benderMSB.has_value())
-  {
-    using CC_Range_14_Bit = Midi::clipped14BitCCRange;
-    auto lsbCC = benderLSB.value();
-    auto msbCC = benderMSB.value();
-    doSendCCOutOnExplicitChannel(CC_Range_14_Bit::encodeBipolarMidiValue(value), msbCC, lsbCC, HardwareSource::BENDER,
-                                 channel);
-  }
-  else if(m_options->getBenderSetting() != BenderCC::None)
-  {
-    using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
-
-    auto v = CC_Range_Bender::encodeBipolarMidiValue(value);
-    auto lsb = static_cast<uint8_t>(v & 0x7F);
-    auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
-
-    if(!latchHWPosition<LatchMode::LSBAndMSB>(HardwareSource::BENDER, lsb, msb))
-      return;
-
-    const auto mainC = static_cast<uint8_t>(channel);
-    auto statusByte = static_cast<uint8_t>(0xE0);
-
-    if(channel != -1)
-    {
-      auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
-      m_midiOut({ mainStatus, lsb, msb });
-    }
-  }
-}
-
-void InputEventStage::doSendAftertouchOutOnExplicitChannel(float value, int channel)
-{
-  using CC_Range_14_Bit = Midi::clipped14BitCCRange;
-
-  auto atLSB = m_options->getAftertouchLSBCC();
-  auto atMSB = m_options->getAftertouchMSBCC();
-
-  if(atLSB.has_value() && atMSB.has_value())
-  {
-    doSendCCOutOnExplicitChannel(CC_Range_14_Bit::encodeUnipolarMidiValue(value), atMSB.value(), atLSB.value(),
-                                 HardwareSource::AFTERTOUCH, channel);
-  }
-  else if(m_options->getAftertouchSetting() == AftertouchCC::ChannelPressure)
-  {
-    const auto mainC = static_cast<uint8_t>(channel);
-
-    auto atStatusByte = static_cast<uint8_t>(0xD0);
-    uint8_t valByte = CC_Range_7_Bit::encodeUnipolarMidiValue(value);  //msb
-
-    if(!latchHWPosition<LatchMode::OnlyMSB>(HardwareSource::AFTERTOUCH, 0, valByte))
-      return;
-
-    if(channel != -1)
-    {
-      auto mainStatus = static_cast<uint8_t>(atStatusByte | mainC);
-      m_midiOut({ mainStatus, valByte });
-    }
-  }
-  else if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown
-          || m_options->getAftertouchSetting() == AftertouchCC::PitchbendUp)
-  {
-    if(m_options->getAftertouchSetting() == AftertouchCC::PitchbendDown)
-      value *= -1.f;
-
-    using CC_Range_Bender = Midi::FullCCRange<Midi::Formats::_14_Bits_>;
-
-    auto v = CC_Range_Bender::encodeBipolarMidiValue(value);
-    auto lsb = static_cast<uint8_t>(v & 0x7F);
-    auto msb = static_cast<uint8_t>((v >> 7) & 0x7F);
-
-    if(!latchHWPosition<LatchMode::LSBAndMSB>(HardwareSource::AFTERTOUCH, lsb, msb))
-      return;
-
-    const auto mainC = static_cast<uint8_t>(channel);
-    auto statusByte = static_cast<uint8_t>(0xE0);
-
-    if(channel != -1)
-    {
-      auto mainStatus = static_cast<uint8_t>(statusByte | mainC);
-      m_midiOut({ mainStatus, lsb, msb });
-    }
-  }
-}
-
-void InputEventStage::handleHWSourcesWhichCCsChanged(const tMSG &message, const tMSG &snapshot)
-{
-  const auto didPedal1Change = message.pedal1cc != snapshot.pedal1cc;
-  const auto didPedal2Change = message.pedal2cc != snapshot.pedal2cc;
-  const auto didPedal3Change = message.pedal3cc != snapshot.pedal3cc;
-  const auto didPedal4Change = message.pedal4cc != snapshot.pedal4cc;
-  const auto didRibbon1Change = message.ribbon1cc != snapshot.ribbon1cc;
-  const auto didRibbon2Change = message.ribbon2cc != snapshot.ribbon2cc;
-  const auto didAftertouchChange = message.aftertouchcc != snapshot.aftertouchcc;
-  const auto didBenderChange = message.bendercc != snapshot.bendercc;
-
-  const auto pedal1Returning
-      = m_dspHost->getBehaviour(HardwareSource::PEDAL1) != C15::Properties::HW_Return_Behavior::Stay;
-  const auto pedal2Returning
-      = m_dspHost->getBehaviour(HardwareSource::PEDAL2) != C15::Properties::HW_Return_Behavior::Stay;
-  const auto pedal3Returning
-      = m_dspHost->getBehaviour(HardwareSource::PEDAL3) != C15::Properties::HW_Return_Behavior::Stay;
-  const auto pedal4Returning
-      = m_dspHost->getBehaviour(HardwareSource::PEDAL4) != C15::Properties::HW_Return_Behavior::Stay;
-  const auto ribbon1Returning
-      = m_dspHost->getBehaviour(HardwareSource::RIBBON1) != C15::Properties::HW_Return_Behavior::Stay;
-  const auto ribbon2Returning
-      = m_dspHost->getBehaviour(HardwareSource::RIBBON2) != C15::Properties::HW_Return_Behavior::Stay;
-  const auto aftertouchReturning
-      = m_dspHost->getBehaviour(HardwareSource::AFTERTOUCH) != C15::Properties::HW_Return_Behavior::Stay;
-  const auto benderReturning
-      = m_dspHost->getBehaviour(HardwareSource::BENDER) != C15::Properties::HW_Return_Behavior::Stay;
-
-  if(didPedal1Change && pedal1Returning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal1cc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal1cc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::PEDAL1);
-  }
-  if(didPedal2Change && pedal2Returning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal2cc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal2cc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::PEDAL2);
-  }
-  if(didPedal3Change && pedal3Returning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal3cc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal3cc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::PEDAL3);
-  }
-  if(didPedal4Change && pedal4Returning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.pedal4cc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.pedal4cc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::PEDAL4);
-  }
-  if(didRibbon1Change && ribbon1Returning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.ribbon1cc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.ribbon1cc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::RIBBON1);
-  }
-  if(didRibbon2Change && ribbon2Returning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.ribbon2cc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.ribbon2cc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::RIBBON2);
-  }
-  if(didBenderChange && benderReturning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.bendercc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.bendercc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::BENDER);
-  }
-  if(didAftertouchChange && aftertouchReturning)
-  {
-    auto oldmsb = MidiRuntimeOptions::decodeEnumMSB(snapshot.aftertouchcc);
-    auto oldlsb = MidiRuntimeOptions::decodeEnumLSB(snapshot.aftertouchcc);
-    doSendCCOut(0, oldmsb.value_or(-1), oldlsb.value_or(-1), HardwareSource::AFTERTOUCH);
   }
 }
 
@@ -1496,7 +1084,6 @@ float InputEventStage::getHWSourcePositionIfLocalDisabled(HardwareSource hwid) c
   if(hwid != HardwareSource::NONE)
     return std::get<0>(m_localDisabledPositions[static_cast<unsigned int>(hwid)]);
 
-  nltools::Log::error(__PRETTY_FUNCTION__, "got HardwareSource:", toString(hwid));
   nltools_assertAlways(false);
 }
 
@@ -1505,6 +1092,42 @@ HWChangeSource InputEventStage::getHWSourcePositionSource(HardwareSource hwid) c
   if(hwid != HardwareSource::NONE)
     return std::get<1>(m_localDisabledPositions[static_cast<unsigned int>(hwid)]);
 
-  nltools::Log::error(__PRETTY_FUNCTION__, "got HardwareSource:", toString(hwid));
   nltools_assertAlways(false);
+}
+
+void InputEventStage::doInternalReset()
+{
+  m_dspHost->fadeOutResetVoiceAllocAndEnvelopes();
+}
+
+void InputEventStage::doExternalReset(const tMSG newMessage, const tMSG oldMessage)
+{
+  auto sendNotesOff = [this](auto channel)
+  {
+    constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+    constexpr uint8_t CCModeChange = 0b10110000;
+    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
+
+    if(iChannel != -1)
+    {
+      m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
+    }
+  };
+
+  const auto isSplit = m_dspHost->getType() == SoundType::Split;
+  const auto didPrimSendChannelChange = newMessage.sendChannel != oldMessage.sendChannel;
+  const auto didSplitSendChannelChange = newMessage.sendSplitChannel != oldMessage.sendSplitChannel;
+
+  if(didPrimSendChannelChange)
+    sendNotesOff(oldMessage.sendChannel);
+  else
+    sendNotesOff(newMessage.sendChannel);
+
+  if(isSplit)
+  {
+    if(didSplitSendChannelChange)
+      sendNotesOff(oldMessage.sendSplitChannel);
+    else
+      sendNotesOff(newMessage.sendSplitChannel);
+  }
 }

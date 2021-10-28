@@ -189,7 +189,7 @@ void C15Synth::doChannelModeMessageFunctions()
       }
       break;
       case AllNotesOff:
-        m_dsp->onMidiSettingsReceived();  // NOTE: currently resets all (internal AND external) notes
+        m_dsp->fadeOutResetVoiceAllocAndEnvelopes();  // NOTE: currently resets all (internal AND external) notes
         break;
       default:
       case NOOP:

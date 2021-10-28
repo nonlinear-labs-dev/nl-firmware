@@ -20,6 +20,8 @@ class SplitPointSyncParameters : public Setting
   void setState(bool s);
   void init() override;
 
+  void undoableSet(UNDO::Transaction* transaction, bool newState);
+
  private:
   void onSoundConverted(SoundType type);
   bool m_state = true;

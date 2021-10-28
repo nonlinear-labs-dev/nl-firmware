@@ -135,6 +135,7 @@ class MidiRuntimeOptions
   static std::optional<int> decodeEnumLSB(AftertouchCC cc);
   static std::optional<int> decodeEnumMSB(BenderCC cc);
   static std::optional<int> decodeEnumLSB(BenderCC cc);
+
  private:
   MidiReceiveChannel m_midiPrimaryReceiveChannel;
   MidiReceiveChannelSplit m_midiSplitReceiveChannel;

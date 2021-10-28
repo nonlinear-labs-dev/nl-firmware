@@ -97,8 +97,8 @@ public class Setup extends Composite {
 	@UiField
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
-			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, 
-			globalLocalOff, highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
+			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, globalLocalOff, 
+			highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -640,7 +640,10 @@ public class Setup extends Composite {
 		disable14Bit.setValue(!t.enable14BitCC.value);
 		autoStartRecordOn.setValue(t.autoStartRecorder.value);
 		autoStartRecordOff.setValue(!t.autoStartRecorder.value);
-		
+
+		globalLocalOn.setValue(t.localEnabled.value);
+		globalLocalOff.setValue(!t.localEnabled.value);
+
 		setupMappings(t.enable14BitCC.value);
 		
 		int hwSource = 0;

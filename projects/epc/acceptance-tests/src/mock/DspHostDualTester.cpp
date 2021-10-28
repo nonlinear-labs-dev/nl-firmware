@@ -251,3 +251,18 @@ void DspHostDualTester::setSplit(VoiceGroup vg, float pos)
     m_host->localParChg(element.m_param.m_index, msg);
   }
 }
+
+void DspHostDualTester::applyMalformedSplitPreset(const DspHostDualTester::MalformedPresetDescriptor& _partI,
+                                                  const DspHostDualTester::MalformedPresetDescriptor& _partII,
+                                                  float split)
+{
+  nltools::msg::SplitPresetMessage msg;
+  msg.mono[0].monoEnable.controlPosition = static_cast<float>(_partI.m_mono);
+  msg.mono[1].monoEnable.controlPosition = static_cast<float>(_partII.m_mono);
+  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
+  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
+  msg.splitpoint[0].controlPosition = split;
+  msg.splitpoint[1].controlPosition = split + (1.0 / 61.0);
+  // propagate message
+  m_host->onPresetMessage(msg);
+}

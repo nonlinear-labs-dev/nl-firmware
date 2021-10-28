@@ -484,7 +484,7 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
                           PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
                           RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping,
-                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings>(&m_settings);
+                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(&m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
       [](const Setting *s)
