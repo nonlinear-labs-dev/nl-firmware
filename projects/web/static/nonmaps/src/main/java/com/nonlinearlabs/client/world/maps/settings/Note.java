@@ -50,7 +50,7 @@ public enum Note {
 		return toDisplayString();
 	}
 
-	static public Note decode(String str) {
+	static public Note fromString(String str) {
 		for (Note i : values())
 			if (str.equals(i.toString()))
 				return i;
