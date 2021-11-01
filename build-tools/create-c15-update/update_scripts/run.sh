@@ -218,7 +218,7 @@ playcontroller_update() {
     chmod +x /update/playcontroller/playcontroller_check.sh
     rm -f /update/mxli.log
 
-    /bin/sh /update/playcontroller/playcontroller_update.sh /update/playcontroller/main.bin A && sleep 1 && /bin/sh /update/playcontroller/playcontroller_check.sh 5
+    /bin/sh /update/playcontroller/playcontroller_update.sh /update/playcontroller/main.bin && sleep 1 && /bin/sh /update/playcontroller/playcontroller_check.sh 5
 
     # error codes 30...39
     return_code=$?
