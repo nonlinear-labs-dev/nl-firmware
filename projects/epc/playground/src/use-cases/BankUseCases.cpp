@@ -48,8 +48,9 @@ void BankUseCases::stepPresetSelection(int inc)
     const bool directLoad = isDirectLoadActive();
     if(auto current = m_bank->getSelectedPreset())
     {
-      auto currentPos = m_bank->getPresetPosition(current);
-      auto presetPosToSelect = std::max(0ul, std::min(m_bank->getNumPresets() - 1, currentPos + inc));
+      int currentPos = static_cast<int>(m_bank->getPresetPosition(current));
+      int numPresets = static_cast<int>(m_bank->getNumPresets());
+      auto presetPosToSelect = std::max(0, std::min(numPresets - 1, currentPos + inc));
       if(auto selectedPreset = presetManager->getSelectedPreset())
       {
         if(auto presetToSelect = m_bank->getPresetAt(presetPosToSelect))
