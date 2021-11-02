@@ -49,17 +49,22 @@ check_lpc() {
     LPC=`/update/utilities/mxli -i -d /dev/ttyUSB0 -N LPC43xx -E -b115200 -T500 -c12000000 -F1kix1 -M1ki@0 -I0 | grep LPC43 | cut -d',' -f1`
 }
 
+LPC4337="-N LPC4337 -F8kix8,64kix7 -B1024,4096 -A0x1A000000,0x1B000000 -M32ki@0x10000000 -I0xA001CA30,0xXXXXXX00 -R0x200@0x1008000,-288@0x10000000 -S8@7"
+
+# ToDo: check these params for correctness once fitted boards are available
+LPC4323="-N LPC4323 -F8kix8,64kix3 -B1024,4096 -A0x1A000000,0x1B000000 -M32ki@0x10000000 -I0xA00BCB3C,0xXXXXXX44 -R0x200@0x1008000,-288@0x10000000 -S8@7"
+LPC4322="-N LPC4322 -F8kix8,64kix7 -B1024,4096 -A0x1A000000            -M32ki@0x10000000 -I0xA00BCB3C,0xXXXXXX80 -R0x200@0x1008000,-288@0x10000000 -S8@7"
+
 write_blob() {
     # in-service programming of the playcontroller, errors are appended to file "/update/mxli.log"
     case ${LPC} in
     
-        "LPC4337")
-            /update/utilities/mxli -v -d /dev/ttyUSB0 -N LPC4337 -E -b115200 -T500 -c12000000 -F8kix8,64kix7 -B1024,4096 -A0x1A000000,0x1B000000 -M32ki@0x10000000 -I0xA001CA30,0xXXXXXX00 -R0x200@0x1008000,-288@0x10000000 -S8@7 $PLAYCONTROLLER_FIRMWARE  2>> /update/mxli.log
+        "LPC4337" | "LPC4323" | "LPC4322")
+            /update/utilities/mxli -v -d /dev/ttyUSB0 -E -b115200 -T500 -c12000000 ${!LPC} $PLAYCONTROLLER_FIRMWARE  2>> /update/mxli.log
         ;;
-
-        # default
-        *)
-            echo "LPC model not supported" 2>> /update/mxli.log
+        
+        *) # default
+            echo "LPC model not detected or not supported" 2>> /update/mxli.log
             return 1;
         ;;
     
