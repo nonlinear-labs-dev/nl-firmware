@@ -10,7 +10,7 @@
 // ==== V 205 ====
 // fix for max. Velocity und max. HWSource, added keybed press sent to BBBB
 // Velocity-Auflösung 14 Bit statt 12 Bit
-// #define SW_VERSION 205
+
 
 // ==== V 206 ====
 // complete revised "pedals" (aka external controllers) proccessing
@@ -21,9 +21,15 @@
 // 62 == release candidate, beta test, introduce jitter on ESPI and keybed scanner for EMC, add key mapping
 // 63 == release candidate, rewritten MIDI buffering
 
+
 // ==== V 207 ====
 // added "recall Unique Hardware ID" feature
-#define SW_VERSION 207
+
+
+// ==== V 208 ====
+// restructured to allow smaller chips than the LPC4337
+
+#define SW_VERSION 208
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros
@@ -35,4 +41,4 @@
 #error "either CORE_M4 or CORE_M0 must be defined!"
 #endif
 
-static const char VERSION_STRING[] = "\n\nC15 RT-SYS, LPC4337 Core " CORE ", FIRMWARE VERSION: " STR(SW_VERSION) " \n\n\0\0\0";
+static const char VERSION_STRING[] = "\n\nC15 RT-SYS, LPC43xx Core " CORE ", FIRMWARE VERSION: " STR(SW_VERSION) " \n\n\0\0\0";
