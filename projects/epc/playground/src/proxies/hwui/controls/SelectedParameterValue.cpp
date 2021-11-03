@@ -8,6 +8,10 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include <proxies/hwui/controls/labels/LabelStyleable.h>
 #include <nltools/StringTools.h>
+#include <device-settings/midi/mappings/RibbonCCMapping.h>
+#include <device-settings/midi/mappings/PedalCCMapping.h>
+#include <device-settings/midi/mappings/AftertouchCCMapping.h>
+#include <device-settings/midi/mappings/BenderCCMapping.h>
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)
@@ -179,4 +183,85 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
     m_localDisabledLabelRcv->setText({ shorter });
     ControlWithChildren::setDirty();
   }
+}
+
+HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)
+    : Label(e)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  eb->onSelectionChanged(sigc::mem_fun(this, &HardwareSourceCCLabel::onParameterSelectionHappened), VoiceGroup::Global);
+}
+
+void HardwareSourceCCLabel::onParameterSelectionHappened(const Parameter *old, const Parameter *newP)
+{
+  auto settings = Application::get().getSettings();
+  const Parameter* param = newP;
+  if(auto send = dynamic_cast<const HardwareSourceSendParameter*>(newP))
+  {
+    param = send->getSiblingParameter();
+  }
+
+  m_settingConnection.disconnect();
+
+  if(param)
+  {
+    switch(newP->getID().getNumber())
+    {
+      case C15::PID::Pedal_1:
+      {
+        auto setting = settings->getSetting<PedalCCMapping<1>>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+      case C15::PID::Pedal_2:
+      {
+        auto setting = settings->getSetting<PedalCCMapping<2>>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+      case C15::PID::Pedal_3:
+      {
+        auto setting = settings->getSetting<PedalCCMapping<3>>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+      case C15::PID::Pedal_4:
+      {
+        auto setting = settings->getSetting<PedalCCMapping<4>>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+      case C15::PID::Ribbon_1:
+      {
+        auto setting = settings->getSetting<RibbonCCMapping<1>>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+      case C15::PID::Ribbon_2:
+      {
+        auto setting = settings->getSetting<RibbonCCMapping<2>>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+      case C15::PID::Bender:
+      {
+        auto setting = settings->getSetting<BenderCCMapping>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+      case C15::PID::Aftertouch:
+      {
+        auto setting = settings->getSetting<AftertouchCCMapping>();
+        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
+        break;
+      }
+    }
+  }
+}
+
+void HardwareSourceCCLabel::onSettingsChanged(const Setting *changed)
+{
+  auto str = changed->getDisplayString();
+  auto onlyNumbersAndSpaces = nltools::string::truncateNonSpacesAndNonNumbers(str);
+  setText({"CC:" + onlyNumbersAndSpaces});
 }

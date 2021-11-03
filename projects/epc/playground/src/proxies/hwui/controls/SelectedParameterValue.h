@@ -6,6 +6,7 @@
 
 class Application;
 class Parameter;
+class Setting;
 
 class SelectedParameterValue : public Label
 {
@@ -58,4 +59,15 @@ class PhysicalControlValueLabel : public ControlWithChildren
   sigc::connection m_hwChanged;
 
   bool m_isLocalEnabled = true;
+};
+
+class HardwareSourceCCLabel : public Label
+{
+ public:
+  explicit HardwareSourceCCLabel(const Rect& e);
+
+  void onParameterSelectionHappened(const Parameter* old, const Parameter* newP);
+  void onSettingsChanged(const Setting* changed);
+ private:
+  sigc::connection m_settingConnection;
 };

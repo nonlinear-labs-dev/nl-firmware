@@ -66,5 +66,32 @@ namespace nltools
           ret += c;
       return ret;
     }
+
+    std::string truncateNonSpacesAndNonNumbers(const std::string& s)
+    {
+      std::string ret{};
+      bool wasNumberLast = false;
+      bool wasDelim = false;
+      for(auto c: s)
+      {
+        if(std::isdigit(c))
+        {
+          wasNumberLast = true;
+          wasDelim = false;
+          ret += c;
+        }
+        else if(wasNumberLast && !wasDelim)
+        {
+          ret += '/';
+          wasNumberLast = false;
+          wasDelim = true;
+        }
+      }
+
+      if(ret.back() == '/')
+        ret.pop_back();
+
+      return ret;
+    }
   }
 }

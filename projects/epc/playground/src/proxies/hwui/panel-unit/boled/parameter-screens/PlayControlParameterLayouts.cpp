@@ -268,6 +268,7 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("HW Amt..", Buttons::BUTTON_C));
   addControl(createParameterValueControl());
+  addControl(new HardwareSourceCCLabel(Rect{10, 22, 45, 10}));
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterValue>();
 }
