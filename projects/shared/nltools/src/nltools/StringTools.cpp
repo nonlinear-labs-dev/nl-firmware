@@ -55,4 +55,16 @@ namespace nltools
       return {};
     }
   }
+
+  namespace string
+  {
+    std::string truncate(const std::string& in)
+    {
+      std::string ret{};
+      for(auto c: in)
+        if(c != ' ')
+          ret += c;
+      return ret;
+    }
+  }
 }

@@ -7,6 +7,7 @@
 #include <sigc++/sigc++.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include <proxies/hwui/controls/labels/LabelStyleable.h>
+#include <nltools/StringTools.h>
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)
@@ -121,12 +122,16 @@ void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *ol
   {
     m_hw = hw;
     m_snd = hw->getSendParameter();
+    m_localDisabledLabelSnd->setHighlight(false);
+    m_localDisabledLabelRcv->setHighlight(true);
   }
 
   if(auto snd = dynamic_cast<HardwareSourceSendParameter *>(newP))
   {
     m_hw = snd->getSiblingParameter();
     m_snd = snd;
+    m_localDisabledLabelSnd->setHighlight(true);
+    m_localDisabledLabelRcv->setHighlight(false);
   }
 
   m_hwChanged.disconnect();
@@ -154,7 +159,10 @@ void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
   if(auto send = dynamic_cast<const HardwareSourceSendParameter *>(p))
   {
     m_isLocalEnabled = send->isLocalEnabled();
-    m_localDisabledLabelSnd->setText({ send->getDisplayString() });
+    auto str = send->getDisplayString();
+    auto display = "S:" + str;
+    auto shorter = nltools::string::truncate(display);
+    m_localDisabledLabelSnd->setText({ shorter });
     ControlWithChildren::setDirty();
   }
 }
@@ -164,8 +172,11 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
   if(auto hw = dynamic_cast<const PhysicalControlParameter *>(p))
   {
     m_isLocalEnabled = hw->isLocalEnabled();
-    m_localEnabledLabel->setText({ hw->getDisplayString() });
-    m_localDisabledLabelRcv->setText({ hw->getDisplayString() });
+    auto str = hw->getDisplayString();
+    auto display = "R:" + str;
+    auto shorter = nltools::string::truncate(display);
+    m_localEnabledLabel->setText({ str });
+    m_localDisabledLabelRcv->setText({ shorter });
     ControlWithChildren::setDirty();
   }
 }

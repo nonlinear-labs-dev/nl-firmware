@@ -274,7 +274,7 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
 
 Control *PlayControlParameterSelectLayout2::createParameterValueControl()
 {
-  return new PhysicalControlValueLabel(Rect(90, 33, 76, 12));
+  return new PhysicalControlValueLabel(Rect(70, 33, 116, 12));
 }
 
 Carousel *PlayControlParameterSelectLayout2::createCarousel(const Rect &rect)
