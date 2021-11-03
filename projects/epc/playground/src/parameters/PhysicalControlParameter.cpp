@@ -57,18 +57,15 @@ void PhysicalControlParameter::onValueChanged(Initiator initiator, tControlPosit
 
   if(initiator != Initiator::INDIRECT)
   {
-    if(isLocalEnabled() || initiator == Initiator::EXPLICIT_MIDI)
+    if(getReturnMode() != ReturnMode::None)
     {
-      if(getReturnMode() != ReturnMode::None)
-      {
-        for(ModulationRoutingParameter *target : m_targets)
-          target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
-      }
-      else
-      {
-        for(ModulationRoutingParameter *target : m_targets)
-          target->applyAbsolutePlaycontrollerPhysicalControl(newValue);
-      }
+      for(ModulationRoutingParameter *target : m_targets)
+        target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
+    }
+    else
+    {
+      for(ModulationRoutingParameter *target : m_targets)
+        target->applyAbsolutePlaycontrollerPhysicalControl(newValue);
     }
   }
 
