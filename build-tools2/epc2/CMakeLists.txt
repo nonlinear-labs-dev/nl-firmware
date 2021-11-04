@@ -68,12 +68,12 @@ ADD_CUSTOM_COMMAND(
 # UPDATE
 
 SET(EPC2_UPDATE_ARCH_DOCKERNAME "epc2-update-arch")
-SET(EPC2_UPDATE_PACKAGES "libsoup flac lm_sensors dnsmasq")
+SET(EPC2_UPDATE_PACKAGES "libsoup flac lm_sensors dnsmasq glibmm libsoup freetype2 libpng png++ boost alsa")
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Creating Docker container holding our update arch"
     OUTPUT .epc2-update-os-docker
-    DEPENDS .epc2-base-os-docker
+    DEPENDS .epc2-build-os-docker
     DEPENDS update/createUpdate.sh
     DEPENDS update/Dockerfile
     COMMAND docker build --build-arg PACKAGES=${EPC2_UPDATE_PACKAGES} -t ${EPC2_UPDATE_ARCH_DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR}/update
@@ -123,8 +123,14 @@ ADD_CUSTOM_COMMAND(
     COMMENT "Build epc2 update"
     OUTPUT epc2-update.tar
     DEPENDS .epc2-update-os-docker
+    DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
     VERBATIM
-    COMMAND docker run -ti -v ${CMAKE_SOURCE_DIR}:/srcdir -v ${CMAKE_CURRENT_BINARY_DIR}/update:/bindir ${EPC2_UPDATE_ARCH_DOCKERNAME} /createUpdate.sh
+    COMMAND docker run 
+    --privileged 
+    -v ${CMAKE_SOURCE_DIR}:/srcdir 
+    -v ${CMAKE_CURRENT_BINARY_DIR}/update:/bindir 
+    -v ${CMAKE_BINARY_DIR}/projects/web:/web
+    ${EPC2_UPDATE_ARCH_DOCKERNAME} /createUpdate.sh
     )
 
 INCLUDE(fetch/fetch.cmake)
@@ -133,4 +139,4 @@ ADD_SUBDIRECTORY(rootfs)
 ADD_SUBDIRECTORY(install-medium)
 
 
-ADD_CUSTOM_TARGET(hook DEPENDS epc2-update.tar)
+ADD_CUSTOM_TARGET(bt2-epc2-update DEPENDS web epc2-update.tar)

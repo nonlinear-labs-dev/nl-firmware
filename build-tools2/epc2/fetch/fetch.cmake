@@ -47,8 +47,8 @@ ADD_CUSTOM_COMMAND(
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fetch/download.sh ${DOWNLOAD_BASE_URL} ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/.epc2-update-os-final-packages
   COMMAND wget -q  ${DOWNLOAD_BASE_URL}/nonlinux.db.tar.gz -O ${DOWNLOAD_DIR}/epc2/packages/nonlinux.db.tar.gz
   COMMAND wget -q  ${DOWNLOAD_BASE_URL}/nonlinux.files.tar.gz -O ${DOWNLOAD_DIR}/epc2/packages/nonlinux.files.tar.gz
-  COMMAND ln -s ./nonlinux.files.tar.gz ${DOWNLOAD_DIR}/epc2/packages/nonlinux.files
-  COMMAND ln -s ./nonlinux.db.tar.gz ${DOWNLOAD_DIR}/epc2/packages/nonlinux.db
+  COMMAND ln -s ./nonlinux.files.tar.gz ${DOWNLOAD_DIR}/epc2/packages/nonlinux.files || true
+  COMMAND ln -s ./nonlinux.db.tar.gz ${DOWNLOAD_DIR}/epc2/packages/nonlinux.db || true
   COMMAND touch .nl-files-fetched
 )
 

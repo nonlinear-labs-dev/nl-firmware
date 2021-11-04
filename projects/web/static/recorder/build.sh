@@ -3,7 +3,14 @@
 set -e
 
 cd /builddir
+
+echo "1"
+
+ls -la /builddir
+
 tsc --project /builddir/tsconfig.json
+
+echo "2"
 
 rm -rf /builddir/bundle
 mkdir -p /builddir/bundle
