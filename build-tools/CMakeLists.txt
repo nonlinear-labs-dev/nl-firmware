@@ -1,7 +1,9 @@
 SET(SHARED_PACKAGES sudo glibmm libsoup freetype2 libpng png++ boost alsa) 
-SET(TARGET_PACKAGES cpupower base linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr alsa-tools alsa-utils linux-firmware shared-mime-info)
+SET(TARGET_PACKAGES cpupower base linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils
+                    rsync grub openssh sshfs efibootmgr alsa-tools alsa-utils linux-firmware shared-mime-info)
 SET(UPDATE_PACKAGES lm_sensors flac dnsmasq)
-SET(HOST_PACKAGES nano vi mc arch-install-scripts dosfstools cmake make pkgconf gcc git wget unzip jdk11-openjdk fuse-overlayfs fuse3 pacman-contrib typescript archiso linux mkinitcpio-archiso syslinux npm rsync)
+SET(HOST_PACKAGES nano vi mc arch-install-scripts dosfstools cmake make pkgconf gcc git wget unzip jdk11-openjdk
+                   fuse-overlayfs fuse3 pacman-contrib typescript archiso linux mkinitcpio-archiso syslinux npm rsync)
 SET(ALL_PACKAGES ${TARGET_PACKAGES} ${SHARED_PACKAGES} ${UPDATE_PACKAGES} ${HOST_PACKAGES})
 
 string(REPLACE ";" " " SHARED_PACKAGES "${SHARED_PACKAGES}")

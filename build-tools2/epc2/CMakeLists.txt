@@ -3,7 +3,12 @@
 SET(EPC2_ARCH_LINUX_VERSION "2020.09.01")
 
 SET(EPC2_BASE_ARCH_DOCKERNAME "epc2-base-arch")
-SET(EPC2_BASE_ADDITIONAL_PACKAGES "sudo cpupower base mc mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr linux-firmware linux-rt alsa networkmanager nano alsa-tools alsa-utils shared-mime-info glibmm libsoup freetype2 libpng png++ boost alsa")
+SET(EPC2_BASE_ADDITIONAL_PACKAGES "alsa alsa-tools alsa-utils base boost cpupower efibootmgr freetype2 glibmm grub \
+    libpng libsoup linux-firmware linux-rt mc mkinitcpio mkinitcpio-nfs-utils nano networkmanager openssh \
+    png++ rsync shared-mime-info sudo sshfs")
+
+SET(EPC2_UPDATE_PACKAGES "flac lm_sensors dnsmasq arch-install-scripts rtirq")
+
 
 # UR-LINUX
 ADD_CUSTOM_COMMAND(
@@ -68,7 +73,6 @@ ADD_CUSTOM_COMMAND(
 # UPDATE
 
 SET(EPC2_UPDATE_ARCH_DOCKERNAME "epc2-update-arch")
-SET(EPC2_UPDATE_PACKAGES "libsoup flac lm_sensors dnsmasq glibmm libsoup freetype2 libpng png++ boost alsa")
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Creating Docker container holding our update arch"
@@ -127,9 +131,12 @@ ADD_CUSTOM_COMMAND(
     VERBATIM
     COMMAND docker run 
     --privileged 
+    -ti
+    -v /var/lib/docker/overlay2:/host-docker
     -v ${CMAKE_SOURCE_DIR}:/srcdir 
     -v ${CMAKE_CURRENT_BINARY_DIR}/update:/bindir 
     -v ${CMAKE_BINARY_DIR}/projects/web:/web
+    --env PACKAGES=${EPC2_UPDATE_PACKAGES}
     ${EPC2_UPDATE_ARCH_DOCKERNAME} /createUpdate.sh
     )
 
