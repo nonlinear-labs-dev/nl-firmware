@@ -3,6 +3,7 @@
 #include <presets/Preset.h>
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
+#include <use-cases/PresetUseCases.h>
 
 inline EditBuffer *getEditBuffer()
 {
@@ -11,14 +12,10 @@ inline EditBuffer *getEditBuffer()
 
 MockPresetStorage::MockPresetStorage()
 {
-  auto scope = UNDO::Scope::startTrashTransaction();
-  auto transaction = scope->getTransaction();
-
-  m_bank = createBank(transaction);
-
-  m_single = createSinglePreset(transaction);
-  m_layer = createLayerPreset(transaction);
-  m_split = createSplitPreset(transaction);
+  m_bank = createBank();
+  m_single = createSinglePreset();
+  m_layer = createLayerPreset();
+  m_split = createSplitPreset();
 }
 
 MockPresetStorage::~MockPresetStorage()
@@ -45,31 +42,49 @@ Preset *MockPresetStorage::getLayerPreset()
   return m_layer;
 }
 
-Preset *MockPresetStorage::createSinglePreset(UNDO::Transaction *transaction)
+Preset *MockPresetStorage::createSinglePreset()
 {
   auto editBuffer = getEditBuffer();
-  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
-  auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *editBuffer));
-  preset->setName(transaction, "Single Preset");
+  EditBufferUseCases ebU(*editBuffer);
+  ebU.convertToSingle(VoiceGroup::I);
+
+  BankUseCases bankU(m_bank, *TestHelper::getSettings());
+  auto preset = bankU.appendEditBuffer();
+
+  PresetUseCases presetU(preset, *TestHelper::getSettings());
+  presetU.rename("Single Preset");
+
   return preset;
 }
 
-Preset *MockPresetStorage::createSplitPreset(UNDO::Transaction *transaction)
+Preset *MockPresetStorage::createSplitPreset()
 {
   auto editBuffer = getEditBuffer();
-  editBuffer->undoableConvertToSingle(transaction, VoiceGroup::I);
-  editBuffer->undoableConvertToDual(transaction, SoundType::Split);
-  auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *editBuffer));
-  preset->setName(transaction, "Split Preset");
+  EditBufferUseCases ebU(*editBuffer);
+  ebU.convertToSingle(VoiceGroup::I);
+  ebU.convertToSplit(VoiceGroup::I);
+
+  BankUseCases bankU(m_bank, *TestHelper::getSettings());
+  auto preset = bankU.appendEditBuffer();
+
+  PresetUseCases presetU(preset, *TestHelper::getSettings());
+  presetU.rename("Split Preset");
+
   return preset;
 }
 
-Preset *MockPresetStorage::createLayerPreset(UNDO::Transaction *transaction)
+Preset *MockPresetStorage::createLayerPreset()
 {
   auto editBuffer = getEditBuffer();
-  editBuffer->undoableConvertToDual(transaction, SoundType::Layer);
-  auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *editBuffer));
-  preset->setName(transaction, "Layer Preset");
+  EditBufferUseCases ebU(*editBuffer);
+  ebU.convertToLayer(VoiceGroup::I);
+
+  BankUseCases bankU(m_bank, *TestHelper::getSettings());
+  auto preset = bankU.appendEditBuffer();
+
+  PresetUseCases presetU(preset, *TestHelper::getSettings());
+  presetU.rename("Layer Preset");
+
   return preset;
 }
 
@@ -78,25 +93,32 @@ Bank *MockPresetStorage::getBank()
   return m_bank;
 }
 
-Bank *MockPresetStorage::createBank(UNDO::Transaction *transaction)
+Bank *MockPresetStorage::createBank()
 {
   auto eb = getEditBuffer();
   auto pm = eb->getParent();
-  return pm->addBank(transaction);
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCase(*pm, *settings);
+  return useCase.addBank();
 }
 
 DualPresetBank::DualPresetBank()
 {
   auto pm = Application::get().getPresetManager();
-  auto scope = TestHelper::createTestScope();
-  m_bank = pm->addBank(scope->getTransaction());
+  auto settings = Application::get().getSettings();
+  PresetManagerUseCases pmUseCase(*pm, *settings);
+  m_bank = pmUseCase.addBank();
+  BankUseCases bankUseCases(m_bank, *TestHelper::getSettings());
 
   auto editBuffer = getEditBuffer();
-  editBuffer->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+  EditBufferUseCases useCase(*editBuffer);
+  useCase.convertToLayer(VoiceGroup::I);
+
   for(int i = 0; i < 5; i++)
   {
-    auto preset = m_bank->appendPreset(scope->getTransaction(), std::make_unique<Preset>(m_bank, *editBuffer));
-    preset->setName(scope->getTransaction(), "Layer Preset");
+    auto preset = bankUseCases.appendEditBuffer();
+    PresetUseCases pUseCase(preset, *TestHelper::getSettings());
+    pUseCase.rename("Layer Preset");
     nltools_assertOnDevPC(preset->getType() == SoundType::Layer);
   }
 }
@@ -104,8 +126,9 @@ DualPresetBank::DualPresetBank()
 DualPresetBank::~DualPresetBank()
 {
   auto pm = Application::get().getPresetManager();
-  auto scope = TestHelper::createTestScope();
-  pm->deleteBank(scope->getTransaction(), m_bank->getUuid());
+  auto settings = TestHelper::getSettings();
+  PresetManagerUseCases useCases(*pm, *settings);
+  useCases.deleteBank(m_bank);
 }
 
 Bank *DualPresetBank::getBank()

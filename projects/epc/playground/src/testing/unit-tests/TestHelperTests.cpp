@@ -19,3 +19,32 @@ TEST_CASE("PARAMETER VALUE ASSERT")
       });
   }
 }
+
+TEST_CASE("unique_ptr can be access if referenced before creation")
+{
+  struct Foo {
+    void bar() {
+      m_foo++;
+    }
+
+    int m_foo = 0;
+  };
+  
+  std::unique_ptr<Foo> m_ptrContainer{nullptr};
+  auto& reference = m_ptrContainer;
+
+  WHEN("Foo is not created")
+  {
+    CHECK(m_ptrContainer.get() == nullptr);
+    CHECK(reference.get() == nullptr);
+  }
+
+  WHEN("Foo is created")
+  {
+    m_ptrContainer = std::make_unique<Foo>();
+
+    CHECK(m_ptrContainer.get() != nullptr);
+    CHECK(reference.get() != nullptr);
+    CHECK(reference.get() == m_ptrContainer.get());
+  }
+}

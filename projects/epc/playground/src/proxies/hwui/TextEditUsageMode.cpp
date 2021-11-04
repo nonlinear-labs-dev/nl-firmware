@@ -194,7 +194,7 @@ bool TextEditUsageMode::onButtonPressed(Buttons buttonID, ButtonModifiers modifi
       return handleSpecialChar(uni);
     }
   }
-  catch(std::out_of_range ex)
+  catch(const std::out_of_range&)
   {
   }
 

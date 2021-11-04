@@ -5,6 +5,7 @@
 TEST_CASE("Init Part Tests")
 {
   auto editBuffer = TestHelper::getEditBuffer();
+  EditBufferUseCases useCase(*editBuffer);
   auto tuneI = editBuffer->findParameterByID({ 358, VoiceGroup::I });
   auto tuneII = editBuffer->findParameterByID({ 358, VoiceGroup::II });
   auto masterTune = editBuffer->findParameterByID({ 247, VoiceGroup::Global });
@@ -20,8 +21,7 @@ TEST_CASE("Init Part Tests")
 
   WHEN("Init Part I")
   {
-    auto scope = TestHelper::createTestScope();
-    editBuffer->undoableInitPart(scope->getTransaction(), VoiceGroup::I, Defaults::FactoryDefault);
+    useCase.initPart(VoiceGroup::I, Defaults::FactoryDefault);
 
     THEN("Tune I init | Tune II && Master untouched")
     {
@@ -33,8 +33,7 @@ TEST_CASE("Init Part Tests")
 
   WHEN("Init Part II")
   {
-    auto scope = TestHelper::createTestScope();
-    editBuffer->undoableInitPart(scope->getTransaction(), VoiceGroup::II, Defaults::FactoryDefault);
+    useCase.initPart(VoiceGroup::II, Defaults::FactoryDefault);
 
     THEN("Tune II init | Tune I && Master untouched")
     {

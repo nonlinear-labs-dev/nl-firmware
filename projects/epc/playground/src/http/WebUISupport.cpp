@@ -5,7 +5,6 @@
 #include <http/HTTPRequest.h>
 #include <Application.h>
 #include <device-settings/Settings.h>
-#include <device-settings/PedalType.h>
 #include <proxies/hwui/HWUI.h>
 
 namespace
@@ -15,7 +14,7 @@ namespace
     std::string result;
     auto names = Application::get().getSettings()->getSetting<PedalType>()->getDisplayStrings();
 
-    for(const auto name : names)
+    for(const auto& name : names)
       result.append(result.empty() ? 0 : 1, '\n').append(name);
 
     return result;
@@ -23,10 +22,9 @@ namespace
 }
 
 WebUISupport::WebUISupport(UpdateDocumentContributor *master)
-    : ContentSection(master)
-    , RPCActionManager("/webui-support/")
+    : SectionAndActionManager(master, "/webui-support/")
 {
-  addAction("enum/get-strings", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("enum-get-strings", [&](const std::shared_ptr<NetworkRequest>& request) {
     if(auto h = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
       h->setStatusOK();
@@ -37,16 +35,6 @@ WebUISupport::WebUISupport(UpdateDocumentContributor *master)
       h->okAndComplete();
     }
   });
-}
-
-void WebUISupport::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &)
-{
-  RPCActionManager::handleRequest(request);
-}
-
-Glib::ustring WebUISupport::getPrefix() const
-{
-  return getBasePath().substr(1);
 }
 
 void WebUISupport::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID) const

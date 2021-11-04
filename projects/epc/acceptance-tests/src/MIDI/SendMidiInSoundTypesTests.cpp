@@ -1,8 +1,10 @@
 #include <testing/TestHelper.h>
 #include <Types.h>
 #include <mock/MockDSPHosts.h>
-
-//This ensures that this ticket is fixed:
+#include <mock/TCDHelpers.h>
+#include <Toolbox.h>
+#include <AudioEngineOptions.h>
+#include <mock/DspHostDualTester.h>
 
 TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 {
@@ -11,7 +13,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { BASE_TCD | Aftertouch, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) };
+      = { { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
 
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
@@ -28,7 +30,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
 
-    msg.hwMappings = TestHelper::createFullMappings(true);
+    msg.routings = TestHelper::createFullMappings(true);
 
     msg.highResCCEnabled = false;
     msg.pedal1cc = PedalCC::CC02;
@@ -92,7 +94,6 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
     }
   };
 
-
   WHEN("Split Channel is Channel 2")
   {
     std::map<SoundType, int> expected = { { SoundType::Single, 1 }, { SoundType::Layer, 1 }, { SoundType::Split, 2 } };
@@ -115,5 +116,313 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
 
     settings.setSendSplitChannel(MidiSendChannelSplit::Common);
     doTests(expected);
+  }
+}
+
+TEST_CASE("Send Note Off with real Synth when local is off")
+{
+  using namespace std::chrono_literals;
+
+  auto options = Tests::createEmptyAudioEngineOptions();
+  auto synth = std::make_unique<C15Synth>(options.get());
+  DspHostDualTester host { synth->getDsp() };
+  host.applyMalformedSplitPreset({}, {});
+  host.setSplit(VoiceGroup::I, 0.5);
+  host.setSplit(VoiceGroup::II, 0.5 + (1.0 / 61.0));
+  MidiRuntimeOptions settings;
+
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
+  InputEventStage eventStage(
+      synth->getDsp(), &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
+
+  {
+    nltools::msg::Setting::MidiSettingsMessage msg;
+    msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+    msg.receiveChannel = MidiReceiveChannel::CH_3;
+    msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
+
+    msg.routings = TestHelper::createFullMappings(true);
+
+    msg.highResCCEnabled = false;
+    msg.highVeloCCEnabled = false;
+
+    msg.pedal1cc = PedalCC::CC02;
+    msg.pedal2cc = PedalCC::CC02;
+    msg.pedal3cc = PedalCC::CC02;
+    msg.pedal4cc = PedalCC::CC02;
+    msg.ribbon1cc = RibbonCC::CC02;
+    msg.ribbon2cc = RibbonCC::CC02;
+    msg.bendercc = BenderCC::CC02;
+    msg.aftertouchcc = AftertouchCC::CC30;
+
+    //disable global local and notes local
+    msg.localEnable = false;
+    using tR = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+    using tA = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
+    TestHelper::updateMappingForHW(msg.routings, tR::Notes, tA::LOCAL, false);
+
+    settings.update(msg);
+  }
+
+  WHEN("Key Down Sends one Midi Event on Channel 1")
+  {
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
+
+    THEN("midi got send")
+    {
+      REQUIRE(sendMidiMessages.size() == 1);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[0].rawBytes[0]) == 0);
+    }
+
+    WHEN("Key Up sends Event")
+    {
+      eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+      eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(0, 0));
+      REQUIRE(sendMidiMessages.size() == 2);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[1].rawBytes[0]) == 0);
+    }
+  }
+
+  WHEN("Key Down Sends one Midi Event on Channel 2")
+  {
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(107));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
+
+    THEN("midi got send")
+    {
+      REQUIRE(sendMidiMessages.size() == 1);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[0].rawBytes[0]) == 1);
+    }
+
+    WHEN("Key Up sends Event")
+    {
+      eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(107));
+      eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(0, 0));
+
+      REQUIRE(sendMidiMessages.size() == 2);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[1].rawBytes[0]) == 1);
+    }
+  }
+}
+
+TEST_CASE("Send Note Off when local is off Split")
+{
+  auto config = nltools::msg::getConfig();
+  config.useEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  config.offerEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  nltools::msg::init(config);
+  auto options = Tests::createEmptyAudioEngineOptions();
+  auto synth = std::make_unique<C15Synth>(options.get());
+  DspHostDualTester tester { synth->getDsp() };
+  tester.applyMalformedSplitPreset({}, {}, 0.5);
+  MidiRuntimeOptions settings;
+
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
+  InputEventStage eventStage(
+      synth->getDsp(), &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
+
+  {
+    nltools::msg::Setting::MidiSettingsMessage msg;
+    msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+    msg.receiveChannel = MidiReceiveChannel::CH_3;
+    msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
+
+    msg.routings = TestHelper::createFullMappings(true);
+
+    msg.highResCCEnabled = false;
+    msg.highVeloCCEnabled = false;
+
+    msg.pedal1cc = PedalCC::CC02;
+    msg.pedal2cc = PedalCC::CC02;
+    msg.pedal3cc = PedalCC::CC02;
+    msg.pedal4cc = PedalCC::CC02;
+    msg.ribbon1cc = RibbonCC::CC02;
+    msg.ribbon2cc = RibbonCC::CC02;
+    msg.bendercc = BenderCC::CC02;
+    msg.aftertouchcc = AftertouchCC::CC30;
+
+    //disable global local and notes local
+    msg.localEnable = false;
+    using tR = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+    using tA = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
+    TestHelper::updateMappingForHW(msg.routings, tR::Notes, tA::LOCAL, false);
+
+    synth->onMidiSettingsMessage(msg);
+    settings.update(msg);
+  }
+
+  WHEN("Key Down Sends one Midi Event on Channel 1")
+  {
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
+
+    REQUIRE(sendMidiMessages.size() == 1);
+    CHECK(MIDI_HELPER::getChannel(sendMidiMessages[0].rawBytes[0]) == 0);
+
+    WHEN("Key Up sends Event")
+    {
+      eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+      eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(0, 0));
+      REQUIRE(sendMidiMessages.size() == 2);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[1].rawBytes[0]) == 0);
+    }
+  }
+
+  WHEN("Key Down Sends one Midi Event on Channel 2")
+  {
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(107));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
+
+    REQUIRE(sendMidiMessages.size() == 1);
+    CHECK(MIDI_HELPER::getChannel(sendMidiMessages[0].rawBytes[0]) == 1);
+
+    WHEN("Key Up sends Event")
+    {
+      eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(107));
+      eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(0, 0));
+
+      REQUIRE(sendMidiMessages.size() == 2);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[1].rawBytes[0]) == 1);
+    }
+  }
+}
+
+TEST_CASE("Send Note Off when local is off Layer")
+{
+  auto config = nltools::msg::getConfig();
+  config.useEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  config.offerEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  nltools::msg::init(config);
+  auto options = Tests::createEmptyAudioEngineOptions();
+  auto synth = std::make_unique<C15Synth>(options.get());
+  DspHostDualTester tester { synth->getDsp() };
+  tester.applyMalformedLayerPreset({});
+  MidiRuntimeOptions settings;
+
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
+  InputEventStage eventStage(
+      synth->getDsp(), &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
+
+  {
+    nltools::msg::Setting::MidiSettingsMessage msg;
+    msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+    msg.receiveChannel = MidiReceiveChannel::CH_3;
+    msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
+
+    msg.routings = TestHelper::createFullMappings(true);
+
+    msg.highResCCEnabled = false;
+    msg.highVeloCCEnabled = false;
+
+    msg.pedal1cc = PedalCC::CC02;
+    msg.pedal2cc = PedalCC::CC02;
+    msg.pedal3cc = PedalCC::CC02;
+    msg.pedal4cc = PedalCC::CC02;
+    msg.ribbon1cc = RibbonCC::CC02;
+    msg.ribbon2cc = RibbonCC::CC02;
+    msg.bendercc = BenderCC::CC02;
+    msg.aftertouchcc = AftertouchCC::CC30;
+
+    //disable global local and notes local
+    msg.localEnable = false;
+    using tR = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+    using tA = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
+    TestHelper::updateMappingForHW(msg.routings, tR::Notes, tA::LOCAL, false);
+
+    synth->onMidiSettingsMessage(msg);
+    settings.update(msg);
+  }
+
+  WHEN("Key Down Sends one Midi Event on Channel 1")
+  {
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
+
+    REQUIRE(sendMidiMessages.size() == 1);
+    CHECK(MIDI_HELPER::getChannel(sendMidiMessages[0].rawBytes[0]) == 0);
+
+    WHEN("Key Up sends Event")
+    {
+      eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+      eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(0, 0));
+      REQUIRE(sendMidiMessages.size() == 2);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[1].rawBytes[0]) == 0);
+    }
+  }
+}
+
+
+TEST_CASE("Send Note Off when local is off Single")
+{
+  auto config = nltools::msg::getConfig();
+  config.useEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  config.offerEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  nltools::msg::init(config);
+  auto options = Tests::createEmptyAudioEngineOptions();
+  auto synth = std::make_unique<C15Synth>(options.get());
+  DspHostDualTester tester { synth->getDsp() };
+  tester.applyMalformedSinglePreset({});
+  MidiRuntimeOptions settings;
+
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
+  InputEventStage eventStage(
+      synth->getDsp(), &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
+
+  {
+    nltools::msg::Setting::MidiSettingsMessage msg;
+    msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+    msg.receiveChannel = MidiReceiveChannel::CH_3;
+    msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
+
+    msg.routings = TestHelper::createFullMappings(true);
+
+    msg.highResCCEnabled = false;
+    msg.highVeloCCEnabled = false;
+
+    msg.pedal1cc = PedalCC::CC02;
+    msg.pedal2cc = PedalCC::CC02;
+    msg.pedal3cc = PedalCC::CC02;
+    msg.pedal4cc = PedalCC::CC02;
+    msg.ribbon1cc = RibbonCC::CC02;
+    msg.ribbon2cc = RibbonCC::CC02;
+    msg.bendercc = BenderCC::CC02;
+    msg.aftertouchcc = AftertouchCC::CC30;
+
+    //disable global local and notes local
+    msg.localEnable = false;
+    using tR = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+    using tA = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
+    TestHelper::updateMappingForHW(msg.routings, tR::Notes, tA::LOCAL, false);
+
+    synth->onMidiSettingsMessage(msg);
+    settings.update(msg);
+  }
+
+  WHEN("Key Down Sends one Midi Event on Channel 1")
+  {
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
+
+    REQUIRE(sendMidiMessages.size() == 1);
+    CHECK(MIDI_HELPER::getChannel(sendMidiMessages[0].rawBytes[0]) == 0);
+
+    WHEN("Key Up sends Event")
+    {
+      eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+      eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(0, 0));
+      REQUIRE(sendMidiMessages.size() == 2);
+      CHECK(MIDI_HELPER::getChannel(sendMidiMessages[1].rawBytes[0]) == 0);
+    }
   }
 }

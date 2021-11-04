@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <chrono>
+#include <initializer_list>
+#include <string>
 
 using Sample = float;
 using SamplePosition = uint64_t;
@@ -19,6 +21,50 @@ enum class DecoderEventType
   HardwareChange,
   UNKNOWN
 };
+
+enum class HardwareSource : int8_t
+{
+  PEDAL1 = 0,
+  PEDAL2 = 1,
+  PEDAL3 = 2,
+  PEDAL4 = 3,
+  BENDER = 4,
+  AFTERTOUCH = 5,
+  RIBBON1 = 6,
+  RIBBON2 = 7,
+  NONE = -1
+};
+
+inline std::string toString(HardwareSource s)
+{
+  switch(s)
+  {
+    case HardwareSource::PEDAL1:
+      return "PEDAL1";
+    case HardwareSource::PEDAL2:
+      return "PEDAL2";
+    case HardwareSource::PEDAL3:
+      return "PEDAL3";
+    case HardwareSource::PEDAL4:
+      return "PEDAL4";
+    case HardwareSource::BENDER:
+      return "BENDER";
+    case HardwareSource::AFTERTOUCH:
+      return "AFTERTOUCH";
+    case HardwareSource::RIBBON1:
+      return "RIBBON1";
+    case HardwareSource::RIBBON2:
+      return "RIBBON2";
+    case HardwareSource::NONE:
+      return "NONE";
+    default:
+      return std::to_string(static_cast<int>(s));
+  }
+}
+
+static auto sHardwareSources
+    = { HardwareSource::PEDAL1, HardwareSource::PEDAL2,     HardwareSource::PEDAL3,  HardwareSource::PEDAL4,
+        HardwareSource::BENDER, HardwareSource::AFTERTOUCH, HardwareSource::RIBBON1, HardwareSource::RIBBON2 };
 
 struct SampleFrame
 {

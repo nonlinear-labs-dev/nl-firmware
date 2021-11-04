@@ -1,0 +1,2 @@
+syncPort = ":@SYNCJS_WEBSOCKET_PORT@";
+playgroundPort = ":@PLAYGROUND_HTTPSERVER_PORT@";

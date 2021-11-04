@@ -109,7 +109,6 @@ namespace DescriptiveLayouts
 
   bool GenericLayout::handleDefaults(Buttons buttons, bool down, ::ButtonModifiers modifiers)
   {
-#warning "Move into Global Event Sink Broker"
     if(down)
     {
       switch(buttons)

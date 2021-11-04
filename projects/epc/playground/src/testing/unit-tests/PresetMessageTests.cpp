@@ -107,28 +107,29 @@ void assertNoIDTwice(const nltools::msg::LayerPresetMessage &msg)
 TEST_CASE("Single Preset Message")
 {
   MockPresetStorage presets;
+  auto single = presets.getSinglePreset();
+  auto split = presets.getSplitPreset();
+  auto layer = presets.getLayerPreset();
   auto editBuffer = TestHelper::getEditBuffer();
+  EditBufferUseCases useCase(*editBuffer);
 
   SECTION("Single Message not duplicate IDs")
   {
-    auto scope = TestHelper::createTestScope();
-    editBuffer->undoableLoad(scope->getTransaction(), presets.getSinglePreset(), true);
+    useCase.load(single);
     auto message = AudioEngineProxy::createSingleEditBufferMessage(*editBuffer);
     assertNoIDTwice(message);
   }
 
   SECTION("Split Message no duplicate IDs")
   {
-    auto scope = TestHelper::createTestScope();
-    editBuffer->undoableLoad(scope->getTransaction(), presets.getSplitPreset(), true);
+    useCase.load(split);
     auto message = AudioEngineProxy::createSplitEditBufferMessage(*editBuffer);
     assertNoIDTwice(message);
   }
 
   SECTION("Layer Message no duplicate IDs")
   {
-    auto scope = TestHelper::createTestScope();
-    editBuffer->undoableLoad(scope->getTransaction(), presets.getLayerPreset(), true);
+    useCase.load(layer);
     auto message = AudioEngineProxy::createLayerEditBufferMessage(*editBuffer);
     assertNoIDTwice(message);
   }

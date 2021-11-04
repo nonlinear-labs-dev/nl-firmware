@@ -9,22 +9,21 @@ TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
   host.setOnHWChangedCB(
-      [&](int hwID, float hwPos, auto)
+      [&](auto hwID, float hwPos, auto)
       {
-        CHECK(hwID == 4);
+        CHECK(hwID == HardwareSource::BENDER);
         CHECK(hwPos == 1.0f);
         receivedHW = true;
       });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
-  InputEventStage eventStage(
-      &host, &settings, [] {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
+  InputEventStage eventStage(&host, &settings, [](){}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto){});
 
   //set settings to not interfere with CC01
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.hwMappings = TestHelper::createFullMappings(true);
+    msg.routings = TestHelper::createFullMappings(true);
     msg.receiveChannel = MidiReceiveChannel::CH_1;
     msg.sendChannel = MidiSendChannel::CH_1;
     msg.pedal1cc = PedalCC::CC02;
@@ -43,13 +42,13 @@ TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
 
     WHEN("Send MIDI Channel Pitchbend")
     {
-      eventStage.onMIDIMessage({ 0xE0, 127, 127 });
+      eventStage.onMIDIMessage({ {0xE0, 127, 127} });
       CHECK(receivedHW);
     }
 
     WHEN("Send CC01")
     {
-      eventStage.onMIDIMessage({ 0xB0, 0x01, 127 });
+      eventStage.onMIDIMessage({ {0xB0, 0x01, 127} });
       CHECK_FALSE(receivedHW);
     }
   }
@@ -60,13 +59,13 @@ TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
 
     WHEN("Send MIDI Channel Pitchbend")
     {
-      eventStage.onMIDIMessage({ 0xE0, 127, 127 });
+      eventStage.onMIDIMessage({ {0xE0, 127, 127} });
       CHECK_FALSE(receivedHW);
     }
 
     WHEN("Send CC01")
     {
-      eventStage.onMIDIMessage({ 0xB0, 0x01, 127 });
+      eventStage.onMIDIMessage({ {0xB0, 0x01, 127} });
       CHECK(receivedHW);
     }
   }

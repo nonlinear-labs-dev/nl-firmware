@@ -15,19 +15,22 @@ ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
 
 void ConvertSoundMenu::convertSoundTo(SoundType newType)
 {
+  auto hwui = Application::get().getHWUI();
   auto pm = Application::get().getPresetManager();
-  SoundUseCases useCases(pm->getEditBuffer(), pm);
+  EditBufferUseCases useCases(*pm->getEditBuffer());
+
+  const auto currentVG = hwui->getCurrentVoiceGroup();
 
   switch(newType)
   {
     case SoundType::Single:
-      useCases.convertToSingle(Application::get().getHWUI()->getCurrentVoiceGroup());
+      useCases.convertToSingle(currentVG);
       break;
     case SoundType::Layer:
-      useCases.convertToLayer();
+      useCases.convertToLayer(currentVG);
       break;
     case SoundType::Split:
-      useCases.convertToSplit();
+      useCases.convertToSplit(currentVG);
       break;
   }
   Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });

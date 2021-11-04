@@ -40,6 +40,12 @@ enum class MonoPriority
 
 // Primitive Data Structures
 
+struct PrimitiveKeyAssignment
+{
+  AllocatorId m_origin = AllocatorId::None;
+  bool m_active = false;
+};
+
 struct KeyAssignment
 {
   AllocatorId m_origin = AllocatorId::None;
@@ -211,7 +217,10 @@ template <uint32_t Voices> class PolyVoiceAllocator
     {
       m_oldest_released = _voiceId;
     }
-    m_num_assigned--;
+    if(m_num_assigned > 0)
+    {
+      m_num_assigned--;
+    }
     if(m_oldest_assigned == _voiceId)
     {
       m_oldest_assigned = m_next_assigned[_voiceId];
@@ -263,7 +272,7 @@ class VoiceAllocation
 {
  public:
   PolyKeyPacket<GlobalVoices, PivotKey> m_traversal;
-  uint32_t m_unison = {};
+  uint32_t m_unison = {}, m_assigned_keys = {};
   inline VoiceAllocation()
   {
   }
@@ -281,6 +290,8 @@ class VoiceAllocation
     {
       m_keyState[0][k].m_keyNumber = m_keyState[1][k].m_keyNumber = m_keyState[2][k].m_keyNumber = k;
     }
+    //
+    m_assigned_keys = 0;
   }
   inline bool onSingleKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId)
   {
@@ -306,6 +317,7 @@ class VoiceAllocation
         keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
+        m_assigned_keys++;
       }
     }
     return validity;
@@ -378,6 +390,7 @@ class VoiceAllocation
         {
           // confirm
           keyDown_confirm(keyState);
+          m_assigned_keys++;
         }
       }
     }
@@ -408,6 +421,7 @@ class VoiceAllocation
         keyDown_unisonLoop(keyState->m_position[0], LocalVoices + firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
+        m_assigned_keys++;
       }
     }
     return validity;
@@ -432,6 +446,10 @@ class VoiceAllocation
         keyUp_unisonLoop(firstVoice, unisonVoices);
       }
       keyUp_confirm(keyState);
+      if(m_assigned_keys > 0)
+      {
+        m_assigned_keys--;
+      }
     }
     return validity;
   }
@@ -478,6 +496,10 @@ class VoiceAllocation
         }
       }
       keyUp_confirm(keyState);
+      if(m_assigned_keys > 0)
+      {
+        m_assigned_keys--;
+      }
     }
     return validity;
   }
@@ -502,6 +524,51 @@ class VoiceAllocation
         keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
       }
       keyUp_confirm(keyState);
+      if(m_assigned_keys > 0)
+      {
+        m_assigned_keys--;
+      }
+    }
+    return validity;
+  }
+  inline bool registerNonLocalSplitKeyAssignment(const uint32_t _keyPos, const AllocatorId _determinedPart)
+  {
+    // validation 1 - keyPos_in_range ?
+    bool validity = _keyPos < Keys;
+    if(validity)
+    {
+      PrimitiveKeyAssignment* keyState = &m_externalKeyState[_keyPos];
+      // validation 2 - key_released ?
+      validity = !keyState->m_active;
+      if(validity)
+      {
+        // store key assignment with determined association without allocating voices
+        keyState->m_active = true;
+        keyState->m_origin = _determinedPart;
+        m_assigned_keys++;
+      }
+    }
+    return validity;
+  }
+  inline bool unregisterNonLocalSplitKeyAssignment(const uint32_t _keyPos)
+  {
+    // validation 1 - keyPos_in_range ?
+    bool validity = _keyPos < Keys;
+    if(validity)
+    {
+      PrimitiveKeyAssignment* keyState = &m_externalKeyState[_keyPos];
+      // validation 2 - key_pressed ?
+      validity = keyState->m_active;
+      if(validity)
+      {
+        // reset key assignment with determined association without de-allocating voices
+        keyState->m_active = false;
+        keyState->m_origin = AllocatorId::None;
+        if(m_assigned_keys > 0)
+        {
+          m_assigned_keys--;
+        }
+      }
     }
     return validity;
   }
@@ -616,6 +683,15 @@ class VoiceAllocation
   inline void reset()
   {
     clear_keyState();
+    for(PrimitiveKeyAssignment& keyState : m_externalKeyState)
+    {
+      if(keyState.m_active)
+      {
+        keyState.m_active = false;
+        keyState.m_origin = AllocatorId::None;
+      }
+    }
+    m_assigned_keys = 0;
   }
 
   inline AllocatorId getSplitPartForKeyDown(const uint32_t _key)
@@ -642,12 +718,19 @@ class VoiceAllocation
     return keyState->m_origin;
   }
 
+  inline AllocatorId getNonlocalSplitPartForKeyUp(const uint32_t _keyPos)
+  {
+    PrimitiveKeyAssignment* keyState = &m_externalKeyState[_keyPos];
+    return keyState->m_origin;
+  }
+
  private:
   PolyVoiceAllocator<GlobalVoices> m_global;
   PolyVoiceAllocator<LocalVoices> m_local[2];
   MonoVoiceAllocator<Keys> m_global_mono;
   MonoVoiceAllocator<Keys> m_local_mono[2];
   KeyAssignment m_keyState[3][Keys];
+  PrimitiveKeyAssignment m_externalKeyState[Keys];
   VoiceAssignment m_voiceState[GlobalVoices];
   uint32_t m_localIndex[GlobalVoices] = {}, m_localVoice[GlobalVoices] = {}, m_splitPoint[2] = {};
   bool m_glideAllowance[GlobalVoices] = {};

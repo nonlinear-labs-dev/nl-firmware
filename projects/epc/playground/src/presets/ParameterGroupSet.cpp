@@ -198,18 +198,21 @@ void ParameterGroupSet::writeDocument(Writer &writer, UpdateDocumentContributor:
 {
   super::writeDocument(writer, knownRevision);
 
-  auto writePerVoiceGroup = [&](auto id, auto tag) {
+  auto writePerVoiceGroup = [&](auto id, auto tag)
+  {
     auto &groups = getParameterGroups(id);
     auto anyGroupChanged = false;
 
     for(auto &p : groups)
       anyGroupChanged |= p->didChangeSince(knownRevision);
 
-    writer.writeTag(tag, Attribute("changed", anyGroupChanged), [&] {
-      if(anyGroupChanged)
-        for(auto &p : groups)
-          p->writeDocument(writer, knownRevision);
-    });
+    writer.writeTag(tag, Attribute("changed", anyGroupChanged),
+                    [&]
+                    {
+                      if(anyGroupChanged)
+                        for(auto &p : groups)
+                          p->writeDocument(writer, knownRevision);
+                    });
   };
 
   writePerVoiceGroup(VoiceGroup::Global, "global-parameters");
@@ -273,4 +276,9 @@ void ParameterGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transa
     setAttribute(transaction, "origin-II", p->getUuid().raw());
     setAttribute(transaction, "origin-I-vg", toString(VoiceGroup::II));
   }
+}
+
+const ParameterGroupSet::tParamArray &ParameterGroupSet::getParameters() const
+{
+  return m_parameterGroups;
 }

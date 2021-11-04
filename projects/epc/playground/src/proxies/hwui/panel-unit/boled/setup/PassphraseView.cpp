@@ -11,9 +11,7 @@ PassphraseView::PassphraseView()
       mem_fun(this, &PassphraseView::onSettingChanged));
 }
 
-PassphraseView::~PassphraseView()
-{
-}
+PassphraseView::~PassphraseView() = default;
 
 void PassphraseView::onSettingChanged(const Setting *s)
 {

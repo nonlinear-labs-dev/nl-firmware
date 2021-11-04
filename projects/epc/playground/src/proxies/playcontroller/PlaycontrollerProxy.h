@@ -64,13 +64,16 @@ class PlaycontrollerProxy
 
   void sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset);
 
-  sigc::connection onRibbonTouched(sigc::slot<void, int> s);
+  sigc::connection onRibbonTouched(const sigc::slot<void, int>& s);
   sigc::connection onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s);
-  sigc::connection onLastKeyChanged(sigc::slot<void, int> s);
+  sigc::connection onLastKeyChanged(sigc::slot<void> s);
+  sigc::connection onUHIDChanged(const sigc::slot<void, uint64_t>& s);
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;
+  uint64_t getUHID() const;
   Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
   void notifyRibbonTouch(int ribbonsParameterID);
+  void setUHID(uint64_t uhid);
 
  private:
   void onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg);
@@ -79,7 +82,7 @@ class PlaycontrollerProxy
   typedef std::shared_ptr<MessageComposer> tMessageComposerPtr;
   void queueToPlaycontroller(const tMessageComposerPtr &cmp);
 
-  gint16 separateSignedBitToComplementary(uint16_t v) const;
+  static gint16 separateSignedBitToComplementary(uint16_t v) ;
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
 
   void onEditControlMessageReceived(const MessageParser::NLMessage &msg);
@@ -96,11 +99,13 @@ class PlaycontrollerProxy
   int m_lastTouchedRibbon;
   Signal<void, int> m_signalRibbonTouched;
   Signal<void, int> m_signalPlaycontrollerSoftwareVersionChanged;
-  Signal<void, int> m_lastKeyChanged;
+  Signal<void, uint64_t> m_signalUHIDChanged;
+  Signal<void> m_lastKeyChanged;
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
   int m_playcontrollerSoftwareVersion = -1;
+  uint64_t m_uhid = 0;
 
   Throttler m_throttledRelativeParameterChange;
   gint32 m_throttledRelativeParameterAccumulator = 0;
@@ -112,5 +117,8 @@ class PlaycontrollerProxy
 
   void onHeartbeatStumbled();
   void requestPlaycontrollerSoftwareVersion();
-  void notifyLastKey(gint16 key);
+  void requestPlaycontrollerUHID();
+  void sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type);
+  void notifyKeyBedActionHappened();
+  void onUHIDReceived(const MessageParser::NLMessage &message);
 };

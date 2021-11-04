@@ -7,16 +7,21 @@
 TEST_CASE("Special Midi functions are recognises as such when received via midi")
 {
   auto createCCMidiMessage = [](uint8_t channel, uint8_t cc, uint8_t value) {
-      return MidiEvent{ static_cast<uint8_t>(0xB0 | channel), cc, value };
+      return MidiEvent{ {static_cast<uint8_t>(0xB0 | channel), cc, value} };
   };
 
   MidiRuntimeOptions options;
 
   {
-    nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.hwMappings = TestHelper::createFullMappings(true);
+    using tMSG = nltools::msg::Setting::MidiSettingsMessage;
+    tMSG msg;
+    msg.routings = TestHelper::createFullMappings(true);
     msg.receiveChannel = MidiReceiveChannel::Omni;
-    msg.receiveNotes = true;
+    TestHelper::updateMappingForHW(msg.routings,
+                                   tMSG::RoutingIndex::Notes,
+                                   tMSG::RoutingAspect::RECEIVE_PRIMARY,
+                                   true);
+
     options.update(msg);
   }
 
@@ -27,7 +32,7 @@ TEST_CASE("Special Midi functions are recognises as such when received via midi"
                         {
                           if(currentCallback)
                             currentCallback(f);
-                        } };
+                        }};
 
   WHEN("Panic CC is Send with value 0")
   {

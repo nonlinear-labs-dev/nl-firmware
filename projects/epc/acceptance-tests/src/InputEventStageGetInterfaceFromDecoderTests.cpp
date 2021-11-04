@@ -3,15 +3,16 @@
 #include <synth/C15Synth.h>
 #include <mock/MockDSPHosts.h>
 #include <mock/InputEventStageTester.h>
+#include <testing/TestHelper.h>
 
 using InputEvent = DSPInterface::InputEventSource;
+using tMSG = nltools::msg::Setting::MidiSettingsMessage;
 
 TEST_CASE("Interface correct", "[MIDI]")
 {
   MockDSPHost host;
   MidiRuntimeOptions options;
-  InputEventStage eventStage(
-      &host, &options, [] {}, [](auto) {}, [](auto) {});
+  InputEventStage eventStage { &host, &options, [](){}, [](auto){}, [](auto){} };
   InputEventStageTester testObject(&eventStage);
 
   WHEN("Mappings: prim = none, sec = Common")
@@ -19,9 +20,10 @@ TEST_CASE("Interface correct", "[MIDI]")
 
     {
       nltools::msg::Setting::MidiSettingsMessage msg;
-      msg.receiveNotes = true;
       msg.receiveChannel = MidiReceiveChannel::None;
       msg.receiveSplitChannel = MidiReceiveChannelSplit::Common;
+      TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::RECEIVE_PRIMARY,
+                                     true);
       options.update(msg);
     }
 
@@ -35,7 +37,9 @@ TEST_CASE("Interface correct", "[MIDI]")
   {
     {
       nltools::msg::Setting::MidiSettingsMessage msg;
-      msg.receiveNotes = true;
+      TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::RECEIVE_PRIMARY,
+                                     true);
+
       msg.receiveChannel = MidiReceiveChannel::CH_1;
       msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_1;
       options.update(msg);
@@ -51,7 +55,9 @@ TEST_CASE("Interface correct", "[MIDI]")
   {
     {
       nltools::msg::Setting::MidiSettingsMessage msg;
-      msg.receiveNotes = true;
+      TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::RECEIVE_PRIMARY,
+                                     true);
+
       msg.receiveChannel = MidiReceiveChannel::CH_1;
       msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_2;
       options.update(msg);
@@ -79,7 +85,8 @@ namespace CCBitDetail
   void setSettings(MidiRuntimeOptions& options, MidiReceiveChannel r, MidiReceiveChannelSplit rs)
   {
     nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.receiveNotes = true;
+    TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::RECEIVE_PRIMARY, true);
+
     msg.receiveChannel = r;
     msg.receiveSplitChannel = rs;
     options.update(msg);
@@ -90,7 +97,7 @@ TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
 {
   MockDSPHost host;
   MidiRuntimeOptions options;
-  InputEventStage eventStage { &host, &options, [] {}, [](auto) {}, [](auto) {}};
+  InputEventStage eventStage { &host, &options, [](){}, [](auto){}, [](auto){} };
   InputEventStageTester t(&eventStage);
 
   // specific tests

@@ -17,8 +17,8 @@ void doLoadWithoutLoadToPartIfEnabled(DirectLoadSetting *s)
     {
       if(auto selectedPreset = pm->getSelectedPreset())
       {
-        EditBufferUseCases useCase(pm->getEditBuffer());
-        useCase.undoableLoad(selectedPreset);
+        EditBufferUseCases useCase(*pm->getEditBuffer());
+        useCase.load(selectedPreset);
       }
     }
   }
@@ -39,8 +39,8 @@ void DirectLoadUseCases::toggleDirectLoadFromHWUI(HWUI *pHwui)
     {
       if(auto preset = load->m_preset)
       {
-        EditBufferUseCases useCase(pm->getEditBuffer());
-        useCase.undoableLoadToPart(preset, load->m_voiceGroup, vg);
+        EditBufferUseCases useCase(*pm->getEditBuffer());
+        useCase.loadToPart(preset, load->m_voiceGroup, vg);
       }
     }
   }
@@ -65,14 +65,14 @@ void DirectLoadUseCases::disableDirectLoad()
 void DirectLoadUseCases::enableDirectLoadFromWebUI(Preset *pPreset, VoiceGroup from, VoiceGroup to)
 {
   auto pm = Application::get().getPresetManager();
-  EditBufferUseCases useCase(pm->getEditBuffer());
+  EditBufferUseCases useCase(*pm->getEditBuffer());
 
   m_setting->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
 
   if(pPreset)
-    useCase.undoableLoadToPart(pPreset, from, to);
+    useCase.loadToPart(pPreset, from, to);
   else if(auto selectedPreset = pm->getSelectedPreset())
-    useCase.undoableLoad(selectedPreset);
+    useCase.load(selectedPreset);
 }
 
 void DirectLoadUseCases::setDirectLoad(bool b)
@@ -84,8 +84,8 @@ void DirectLoadUseCases::setDirectLoad(bool b)
     auto pm = Application::get().getPresetManager();
     if(auto selPreset = pm->getSelectedPreset())
     {
-      EditBufferUseCases useCase(pm->getEditBuffer());
-      useCase.undoableLoad(selPreset);
+      EditBufferUseCases useCase(*pm->getEditBuffer());
+      useCase.load(selPreset);
     }
   }
 }

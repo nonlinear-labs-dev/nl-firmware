@@ -23,7 +23,7 @@ void RenameVoiceGroupLayout::cancel()
 void RenameVoiceGroupLayout::commit(const Glib::ustring& newName)
 {
   auto eb = getEditBuffer();
-  EditBufferUseCases useCase(eb);
+  EditBufferUseCases useCase(*eb);
   useCase.renamePart(m_targetGroup, newName);
 
   Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));

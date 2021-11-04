@@ -71,7 +71,7 @@ bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers 
 
 void ScaleParameterSelectLayout::reset()
 {
-  EditBufferUseCases ebUseCases(Application::get().getPresetManager()->getEditBuffer());
+  EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
   ebUseCases.resetCustomScale();
 }
 
@@ -86,7 +86,7 @@ void ScaleParameterSelectLayout::selectParameter(int inc)
 {
   static const auto ids = std::vector<int> { 312, 391, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323 };
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases ebUseCases { eb };
+  EditBufferUseCases ebUseCases { *eb };
   auto id = eb->getSelectedParameterNumber();
 
   auto idIt = std::find(ids.begin(), ids.end(), id);

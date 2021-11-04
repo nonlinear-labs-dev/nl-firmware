@@ -4,7 +4,6 @@
 #include "libundo/undo/Transaction.h"
 #include <algorithm>
 #include <tools/PerformanceTimer.h>
-#include <Application.h>
 #include <Options.h>
 #include <serialization/PresetManagerMetadataSerializer.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
@@ -17,7 +16,6 @@
 #include <xml/VersionAttribute.h>
 #include <proxies/hwui/HWUI.h>
 #include <serialization/PresetSerializer.h>
-#include <device-settings/DirectLoadSetting.h>
 #include <device-settings/Settings.h>
 #include <groups/ParameterGroup.h>
 #include <glibmm.h>
@@ -27,21 +25,24 @@
 #include <presets/PresetPartSelection.h>
 #include <parameter_declarations.h>
 #include <presets/PresetParameter.h>
+#include <http/UpdateDocumentMaster.h>
 #include <set>
+#include <use-cases/EditBufferUseCases.h>
+#include <sync/JsonAdlSerializers.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
-PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly)
-    : ContentSection(parent)
+PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options,
+                             Settings &settings, std::unique_ptr<AudioEngineProxy> &aeProxyContainer)
+    : UpdateDocumentContributor(parent)
+    , SyncedItem(parent->getRoot()->getSyncMaster(), "/preset-manager")
     , m_banks(*this, nullptr)
-    , m_editBuffer(std::make_unique<EditBuffer>(this))
+    , m_editBuffer(std::make_unique<EditBuffer>(this, settings, aeProxyContainer))
     , m_initSound(std::make_unique<Preset>(this))
-    , m_saveJob(std::bind(&PresetManager::doSaveTask, this))
+    , m_saveJob([this] { doSaveTask(); })
     , m_readOnly(readOnly)
+    , m_options { options }
 {
-  m_actionManagers.emplace_back(new PresetManagerActions(*this));
-  m_actionManagers.emplace_back(new BankActions(*this));
-  m_actionManagers.emplace_back(new EditBufferActions(m_editBuffer.get()));
   onRestoreHappened([&]() { invalidate(); });
 }
 
@@ -58,15 +59,15 @@ PresetManager::~PresetManager()
   }
 }
 
-void PresetManager::init()
+void PresetManager::init(AudioEngineProxy *aeProxy)
 {
   PerformanceTimer timer(__PRETTY_FUNCTION__);
 
   auto loadingLock = m_isLoading.lock();
 
-  auto scope = getUndoScope().startTrashTransaction();
+  auto scope = UNDO::Scope::startTrashTransaction();
   auto transaction = scope->getTransaction();
-  auto path = Application::get().getOptions()->getPresetManagerPath();
+  const auto &path = m_options.getPresetManagerPath();
   auto file = Gio::File::create_for_path(path);
 
   clear(transaction);
@@ -74,15 +75,12 @@ void PresetManager::init()
   if(file->query_exists())
   {
     nltools::Log::notify("Loading presetmanager at", path);
-    loadMetadataAndSendEditBufferToPlaycontroller(transaction, file);
+    loadMetadataAndSendEditBufferToPlaycontroller(transaction, file, aeProxy);
     loadInitSound(transaction, file);
     loadBanks(transaction, file);
     fixMissingPresetSelections(transaction);
   }
 
-  auto hwui = Application::get().getHWUI();
-  hwui->getPanelUnit().getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndMode());
-  hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_sigLoadHappened.send();
   onChange();
 }
@@ -92,40 +90,24 @@ void PresetManager::invalidate()
   onChange(ChangeFlags::Generic);
 }
 
-Glib::ustring PresetManager::getPrefix() const
-{
-  return "presets";
-}
-
 UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
 {
   scheduleSave();
   auto ret = UpdateDocumentContributor::onChange(flags);
   m_sigNumBanksChanged.send(getNumBanks());
   m_sigBankSelection.send(getSelectedBankUuid());
+  setDirty();
   return ret;
-}
-
-void PresetManager::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
-{
-  ContentSection::handleHTTPRequest(request, path);
-
-  for(auto &actionManager : m_actionManagers)
-    if(actionManager->matches(path))
-      if(actionManager->handleRequest(path, request))
-        return;
-
-  DebugLevel::warning("could not handle request", path);
 }
 
 std::list<PresetManager::SaveSubTask> PresetManager::createListOfSaveSubTasks()
 {
-  auto path = Application::get().getOptions()->getPresetManagerPath();
+  auto path = m_options.getPresetManagerPath();
   auto file = Gio::File::create_for_path(path);
   g_file_make_directory_with_parents(file->gobj(), nullptr, nullptr);
 
-  return { std::bind(&PresetManager::saveMetadata, this, file), std::bind(&PresetManager::saveInitSound, this, file),
-           std::bind(&PresetManager::saveBanks, this, file) };
+  return { [this, file] { return saveMetadata(file); }, [this, file] { return saveInitSound(file); },
+           [this, file] { return saveBanks(file); } };
 }
 
 SaveResult PresetManager::saveMetadata(Glib::RefPtr<Gio::File> pmFolder)
@@ -235,24 +217,6 @@ SaveResult PresetManager::saveBanks(Glib::RefPtr<Gio::File> pmFolder)
   return SaveResult::Nothing;
 }
 
-void PresetManager::undoableLoadSelectedPreset(UNDO::Transaction *currentTransactionPtr)
-{
-  if(auto lock = m_isLoading.lock())
-  {
-    auto hwui = Application::get().getHWUI();
-    FocusAndMode focusAndMode = hwui->getFocusAndMode();
-
-    bool isPresetManagerActive = (focusAndMode.focus == UIFocus::Banks || focusAndMode.focus == UIFocus::Presets);
-    bool isStoring = (focusAndMode.mode == UIMode::Store);
-    bool isStoringPreset = isPresetManagerActive && isStoring;
-
-    if(!isStoringPreset)
-    {
-      undoableLoadSelectedPresetAccordingToLoadType(currentTransactionPtr);
-    }
-  }
-}
-
 bool PresetManager::isLoading() const
 {
   return m_isLoading.isLocked();
@@ -264,12 +228,13 @@ std::shared_ptr<ScopedGuard::Lock> PresetManager::getLoadingLock()
 }
 
 void PresetManager::loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
-                                                                  const Glib::RefPtr<Gio::File> &pmFolder)
+                                                                  const Glib::RefPtr<Gio::File> &pmFolder,
+                                                                  AudioEngineProxy *aeProxy)
 {
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
   SplashLayout::addStatus("Loading Edit Buffer");
   Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, SplashLayout::addStatus);
-  m_editBuffer->sendToAudioEngine();
+  aeProxy->sendEditBuffer();
 }
 
 void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder)
@@ -290,11 +255,14 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::
 
   int numBanks = static_cast<int>(m_banks.size());
 
-  m_banks.forEach([&, currentBank = 1](Bank *bank) mutable {
-    DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
-    auto bankFolder = pmFolder->get_child(bank->getUuid().raw());
-    bank->load(transaction, bankFolder, currentBank++, numBanks);
-  });
+  m_banks.forEach(
+      [&, currentBank = 1](Bank *bank) mutable
+      {
+        DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
+        auto bankFolder = pmFolder->get_child(bank->getUuid().raw());
+        bank->load(transaction, bankFolder, currentBank++, numBanks);
+        SplashLayout::addStatus("Reading bank " + bank->getName(true));
+      });
 }
 
 void PresetManager::fixMissingPresetSelections(UNDO::Transaction *transaction)
@@ -583,17 +551,21 @@ void PresetManager::resetInitSound(UNDO::Transaction *transaction)
   auto eb = getEditBuffer();
   auto cleanPreset = std::make_unique<Preset>(this, *eb);
 
-  cleanPreset->forEachParameter([&](PresetParameter *p) {
-    auto src = eb->findParameterByID(p->getID());
-    p->setValue(transaction, src->getValue().getFactoryDefaultValue());
-  });
+  cleanPreset->forEachParameter(
+      [&](PresetParameter *p)
+      {
+        auto src = eb->findParameterByID(p->getID());
+        p->setValue(transaction, src->getValue().getFactoryDefaultValue());
+      });
 
   auto swap = UNDO::createSwapData(std::move(cleanPreset));
 
-  transaction->addSimpleCommand([swap, this](auto) {
-    swap->swapWith(m_initSound);
-    this->onChange();
-  });
+  transaction->addSimpleCommand(
+      [swap, this](auto)
+      {
+        swap->swapWith(m_initSound);
+        this->onChange();
+      });
 
   m_editBuffer->undoableSetDefaultValues(transaction, m_initSound.get());
 }
@@ -624,9 +596,10 @@ void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const 
 {
   SearchQuery query(q, mode, std::move(fieldsToSearch));
 
-  writer.writeTag("preset-manager", [&]() {
-    writer.writeTag("banks", [&]() { m_banks.forEach([&](auto b) { b->searchPresets(writer, query); }); });
-  });
+  writer.writeTag(
+      "preset-manager",
+      [&]()
+      { writer.writeTag("banks", [&]() { m_banks.forEach([&](auto b) { b->searchPresets(writer, query); }); }); });
 }
 
 Glib::ustring PresetManager::getBaseName(const Glib::ustring &basedOn) const
@@ -659,19 +632,21 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionForNewBank() con
 {
   const Bank *rightMost = nullptr;
 
-  m_banks.forEach([&](auto other) {
-    if(!rightMost)
-    {
-      rightMost = other;
-      return;
-    }
+  m_banks.forEach(
+      [&](auto other)
+      {
+        if(!rightMost)
+        {
+          rightMost = other;
+          return;
+        }
 
-    auto x = std::stod(other->getX());
-    auto currentX = std::stod(rightMost->getX());
+        auto x = std::stod(other->getX());
+        auto currentX = std::stod(rightMost->getX());
 
-    if(x > currentX)
-      rightMost = other;
-  });
+        if(x > currentX)
+          rightMost = other;
+      });
 
   if(rightMost)
     return std::make_pair(std::stod(rightMost->getX()) + 300, std::stod(rightMost->getY()));
@@ -683,22 +658,24 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *
 {
   const Bank *rightMost = nullptr;
 
-  m_banks.forEach([&](auto other) {
-    if(other != bank)
-    {
-      if(!rightMost)
+  m_banks.forEach(
+      [&](auto other)
       {
-        rightMost = other;
-        return;
-      }
+        if(other != bank)
+        {
+          if(!rightMost)
+          {
+            rightMost = other;
+            return;
+          }
 
-      auto x = std::stod(other->getX());
-      auto currentX = std::stod(rightMost->getX());
+          auto x = std::stod(other->getX());
+          auto currentX = std::stod(rightMost->getX());
 
-      if(x > currentX)
-        rightMost = other;
-    }
-  });
+          if(x > currentX)
+            rightMost = other;
+        }
+      });
 
   if(rightMost)
     return std::make_pair(std::stod(rightMost->getX()) + 300, std::stod(rightMost->getY()));
@@ -708,21 +685,26 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *
 
 size_t PresetManager::getBankPosition(const Uuid &uuid) const
 {
-  return m_banks.getIndexOf(uuid);
+  try
+  {
+    return m_banks.getIndexOf(uuid);
+  }
+  catch(...)
+  {
+    return 0;
+  }
 }
 
 void PresetManager::sanitizeBankClusterRelations(UNDO::Transaction *transaction)
 {
   resolveCyclicAttachments(transaction);
-  ClusterEnforcement enforcer(this);
+  ClusterEnforcement enforcer(*this);
   enforcer.enforceClusterRuleOfOne(transaction);
 }
 
-void PresetManager::resolveCyclicAttachments(UNDO::Transaction *transaction)
+void PresetManager::resolveCyclicAttachments(UNDO::Transaction *transaction) const
 {
-  auto presetManager = Application::get().getPresetManager();
-  auto allBanks = presetManager->getBanks();
-  for(auto bank : allBanks)
+  for(auto bank : getBanks())
   {
     bank->resolveCyclicAttachments(transaction);
   }
@@ -739,7 +721,9 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("preset-manager", Attribute("changed", changed),
-                  Attribute("file-version", VersionAttribute::getCurrentFileVersion()), [&]() {
+                  Attribute("file-version", VersionAttribute::getCurrentFileVersion()),
+                  [&]()
+                  {
                     if(changed)
                     {
                       m_editBuffer->writeDocument(writer, knownRevision);
@@ -751,7 +735,9 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
 
                       writer.writeTag("banks", Attribute("changed", anyBankChanged),
                                       Attribute("selected-bank", getSelectedBankUuid().raw()),
-                                      Attribute("selected-midi-bank", getMidiSelectedBank().raw()), [&]() {
+                                      Attribute("selected-midi-bank", getMidiSelectedBank().raw()),
+                                      [&]()
+                                      {
                                         if(anyBankChanged)
                                           forEachBank([&](auto bank) { bank->writeDocument(writer, knownRevision); });
                                       });
@@ -762,7 +748,8 @@ void PresetManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUp
 void PresetManager::stress(int numTransactions)
 {
   Glib::MainContext::get_default()->signal_timeout().connect_once(
-      [=]() {
+      [=]()
+      {
         {
           auto transactionScope = getUndoScope().startTransaction("Stressing Undo System");
           m_editBuffer->undoableSelectParameter(transactionScope->getTransaction(),
@@ -804,7 +791,8 @@ void PresetManager::stressParam(UNDO::Transaction *trans, Parameter *param)
 void PresetManager::stressAllParams(int numParamChangedForEachParameter)
 {
   Glib::MainContext::get_default()->signal_timeout().connect_once(
-      [=]() {
+      [=]()
+      {
         auto scope = getUndoScope().startTransaction("Stress All Parameters");
         auto trans = scope->getTransaction();
 
@@ -849,19 +837,23 @@ void PresetManager::stressBlocking(int numTransactions)
 void PresetManager::stressLoad(int numTransactions)
 {
   Glib::MainContext::get_default()->signal_timeout().connect_once(
-      [=]() {
+      [=]()
+      {
         int numSteps = numTransactions;
-        auto transactionScope = getUndoScope().startTransaction("Stressing by Preset loading");
-        auto transaction = transactionScope->getTransaction();
+        EditBufferUseCases ebUseCases(*getEditBuffer());
 
         while(numSteps > 0)
         {
-          forEachBank([&](auto b) {
-            b->forEachPreset([&](auto p) {
-              m_editBuffer->undoableLoad(transaction, p, true);
-              numSteps--;
-            });
-          });
+          forEachBank(
+              [&](auto b)
+              {
+                b->forEachPreset(
+                    [&](auto p)
+                    {
+                      ebUseCases.load(p);
+                      numSteps--;
+                    });
+              });
         }
       },
       0);
@@ -870,7 +862,8 @@ void PresetManager::stressLoad(int numTransactions)
 void PresetManager::incAllParamsFine()
 {
   Glib::MainContext::get_default()->signal_timeout().connect_once(
-      [=]() {
+      [=]()
+      {
         auto scope = getUndoScope().startTransaction("Inc All Parameters Fine");
         auto trans = scope->getTransaction();
 
@@ -900,44 +893,12 @@ Preset *PresetManager::getSelectedPreset()
   return nullptr;
 }
 
-void PresetManager::undoableLoadSelectedPresetAccordingToLoadType(UNDO::Transaction *transaction) const
+nlohmann::json PresetManager::serialize() const
 {
-  nltools_assertAlways(transaction != nullptr);
-
-  auto eb = getEditBuffer();
-  auto hwui = Application::get().getHWUI();
-  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
-
-  if(auto bank = getSelectedBank())
-  {
-    if(auto selPreset = bank->getSelectedPreset())
-    {
-      auto directLoadSetting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
-      auto loadToPartActive = Application::get().getHWUI()->isInLoadToPart();
-
-      switch(selPreset->getType())
-      {
-        case SoundType::Single:
-          eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
-
-          break;
-        case SoundType::Layer:
-        case SoundType::Split:
-          if(loadToPartActive)
-          {
-            auto load = hwui->getPresetPartSelection(currentVoiceGroup);
-            eb->undoableLoadToPart(transaction, load->m_preset, load->m_voiceGroup, currentVoiceGroup);
-          }
-          else
-          {
-            eb->undoableLoadSelectedPreset(transaction, currentVoiceGroup);
-          }
-          break;
-        default:
-          break;
-      }
-    }
-  }
+  return { { "file-version", VersionAttribute::getCurrentFileVersion() },
+           { "banks", m_banks },
+           { "selected-bank", getSelectedBankUuid().raw() },
+           { "selected-midi-bank", getMidiSelectedBank().raw() } };
 }
 
 void PresetManager::onPresetStored()
@@ -945,7 +906,7 @@ void PresetManager::onPresetStored()
   m_presetStoreHappened.deferedSend();
 }
 
-sigc::connection PresetManager::onPresetStoreHappened(sigc::slot<void> cb)
+sigc::connection PresetManager::onPresetStoreHappened(const sigc::slot<void> &cb)
 {
   return m_presetStoreHappened.connect(cb);
 }
@@ -959,18 +920,20 @@ void PresetManager::selectMidiBank(UNDO::Transaction *trans, const Uuid &uuid)
 {
   auto swapData = UNDO::createSwapData(uuid);
 
-  trans->addSimpleCommand([=, newUuid = uuid](auto) {
-    const auto oldMidiBankUuid = m_midiSelectedBank;
+  trans->addSimpleCommand(
+      [=, newUuid = uuid](auto)
+      {
+        const auto oldMidiBankUuid = m_midiSelectedBank;
 
-    swapData->swapWith(m_midiSelectedBank);
-    m_sigMidiBankSelection.send(m_midiSelectedBank);
+        swapData->swapWith(m_midiSelectedBank);
+        m_sigMidiBankSelection.send(m_midiSelectedBank);
 
-    if(auto oldMidiBank = findBank(oldMidiBankUuid))
-      oldMidiBank->invalidate();
+        if(auto oldMidiBank = findBank(oldMidiBankUuid))
+          oldMidiBank->invalidate();
 
-    if(auto newMidiBank = findBank(newUuid))
-      newMidiBank->invalidate();
-  });
+        if(auto newMidiBank = findBank(newUuid))
+          newMidiBank->invalidate();
+      });
 }
 
 sigc::connection PresetManager::onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb)
@@ -983,7 +946,7 @@ Bank *PresetManager::findMidiSelectedBank() const
   return m_banks.find(getMidiSelectedBank());
 }
 
-sigc::connection PresetManager::onLoadHappened(sigc::slot<void> cb)
+sigc::connection PresetManager::onLoadHappened(const sigc::slot<void> &cb)
 {
   return m_sigLoadHappened.connect(cb);
 }

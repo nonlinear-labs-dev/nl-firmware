@@ -42,10 +42,10 @@ TEST_CASE("Preset Load sends EditBuffer")
                                         [&](const auto &singleEditMessage) { singleMessageRecieved = true; });
 
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  EditBufferUseCases ebUseCases(*eb);
 
   MockPresetStorage presets;
-  ebUseCases.undoableLoad(presets.getSinglePreset());
+  ebUseCases.load(presets.getSinglePreset());
 
   TestHelper::doMainLoop(1s, 1s, [&] { return singleMessageRecieved; });
   c.disconnect();
@@ -65,18 +65,16 @@ TEST_CASE("Store Action do not send EditBuffer")
   ScopedMessagingConfiguration scopeEndPoint { configuration };
 
   auto pm = TestHelper::getPresetManager();
+  auto settings = TestHelper::getSettings();
 
   bool singleMessageReceived = false;
 
-  {
-    auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-  }
+  TestHelper::initSingleEditBuffer();
 
   CHECK(waitForConnection(EndPoint::AudioEngine));
   auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,
                                         [&](const auto &singleEditMessage) { singleMessageReceived = true; });
-  PresetManagerUseCases useCases(pm);
+  PresetManagerUseCases useCases(*pm, *settings);
 
   //Store EditBuffer as new Bank
   auto oldNumBanks = pm->getNumBanks();
@@ -86,16 +84,18 @@ TEST_CASE("Store Action do not send EditBuffer")
   CHECK(newNumBanks > oldNumBanks);
 
   auto bank = pm->getSelectedBank();
+  CHECK(bank != nullptr);
+  BankUseCases bankUseCases(bank, *TestHelper::getSettings());
 
   //Append preset into bank
   auto oldNumPresets = bank->getNumPresets();
-  useCases.appendEditBufferToBank(bank);
+  const auto appendedPreset = bankUseCases.appendEditBuffer();
   auto newNumPresets = bank->getNumPresets();
   CHECK(newNumPresets > oldNumPresets);
 
   //Insert preset into bank at pos 0
   oldNumPresets = bank->getNumPresets();
-  useCases.insertEditBufferAsPresetAtPosition(bank, 0);
+  auto insertedPreset = bankUseCases.insertEditBufferAtPosition(0);
   newNumPresets = bank->getNumPresets();
   CHECK(newNumPresets > oldNumPresets);
 

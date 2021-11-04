@@ -15,6 +15,9 @@
 #define NO_OVERLAY      (0x0200)
 #define NO_KEY_LOG      (0x0400)
 #define NO_RIBBONS      (0x0800)
-#define NO_ALL          (0x0FFF)
+#define NO_UHID         (0x1000)
+#define NO_REDUCED      (0x2000)
+#define NO_QUIT         (0x4000)
+#define NO_ALL          (0x7FFF)
 
-void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t* const data, uint16_t flags);
+int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t* const data, uint16_t flags);

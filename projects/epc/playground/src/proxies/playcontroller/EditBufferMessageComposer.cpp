@@ -2,6 +2,6 @@
 #include "MessageParser.h"
 
 EditBufferMessageComposer::EditBufferMessageComposer()
-    : super(MessageParser::PRESET_DIRECT)
+    : super(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_PRESET_DIRECT)
 {
 }

@@ -8,26 +8,15 @@
 #include <nltools/messaging/Message.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
 #include "MidiChannelModeMessages.h"
+#include <Types.h>
 
 class MidiRuntimeOptions;
-
-namespace HWID
-{
-  constexpr static auto PEDAL1 = 0;
-  constexpr static auto PEDAL2 = 1;
-  constexpr static auto PEDAL3 = 2;
-  constexpr static auto PEDAL4 = 3;
-  constexpr static auto BENDER = 4;
-  constexpr static auto AFTERTOUCH = 5;
-  constexpr static auto RIBBON1 = 6;
-  constexpr static auto RIBBON2 = 7;
-
-  constexpr static auto INVALID = -1;
-};
 
 class InputEventStage
 {
  public:
+  using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+  using RoutingAspect = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
   using MIDIOutType = nltools::msg::Midi::SimpleMessage;
   using MIDIOut = std::function<void(MIDIOutType)>;
   using HWChangedNotification = std::function<void()>;
@@ -40,9 +29,17 @@ class InputEventStage
   void onMIDIMessage(const MidiEvent& midiEvent);
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
   void setNoteShift(int i);
+  [[nodiscard]] int getNoteShift() const;
 
-  static int parameterIDToHWID(int id);
+  using tMSG = nltools::msg::Setting::MidiSettingsMessage;
+  using tRow = tMSG::tEntry;
 
+  [[nodiscard]] float getHWSourcePositionIfLocalDisabled(HardwareSource hwid) const;
+  [[nodiscard]] HWChangeSource getHWSourcePositionSource(HardwareSource hwid) const;
+
+  void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
+
+  static HardwareSource parameterIDToHWID(int id);
   bool getAndResetKeyBedStatus();
 
  private:
@@ -59,11 +56,11 @@ class InputEventStage
   void onMIDIHWChanged(MIDIDecoder* decoder);
 
   //Algorithm
-  void onHWChanged(int hwID, float pos, DSPInterface::HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit,
+  void onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary, bool wasMIDISplit,
                    bool didBehaviourChange);
 
-  VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, const int keyNumber);
-  VoiceGroup calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, const int keyNumber);
+  VoiceGroup calculateSplitPartForKeyDown(DSPInterface::InputEventSource inputEvent, int keyNumber);
+  VoiceGroup calculateSplitPartForKeyUp(DSPInterface::InputEventSource inputEvent, int keyNumber);
   DSPInterface::InputEventSource getInputSourceFromParsedChannel(MidiReceiveChannel channel);
 
   static constexpr uint16_t midiReceiveChannelMask(const MidiReceiveChannel& _channel);
@@ -73,12 +70,12 @@ class InputEventStage
   void convertToAndSendMIDI(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void sendKeyDownAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
   void sendKeyUpAsMidi(TCDDecoder* pDecoder, const VoiceGroup& determinedPart);
-  void sendHardwareChangeAsMidi(int hwID, float value);
+  void sendHardwareChangeAsMidi(HardwareSource hwID, float value);
   void doSendAftertouchOut(float value);
   void doSendBenderOut(float value);
 
-  void sendCCOut(int hwID, float value, int msbCC, int lsbCC);
-  void doSendCCOut(uint16_t value, int msbCC, int lsbCC, int hwID);
+  void sendCCOut(HardwareSource hwID, float value, int msbCC, int lsbCC);
+  void doSendCCOut(uint16_t value, int msbCC, int lsbCC, HardwareSource hwID);
 
   static constexpr uint16_t c_midiReceiveMaskTable[19] = {
     0x0000,  // None (no bit is set)
@@ -108,9 +105,15 @@ class InputEventStage
   MidiRuntimeOptions* m_options;
   HWChangedNotification m_hwChangedCB;
   ChannelModeMessageCB m_channelModeMessageCB;
+
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<std::array<uint16_t, 2>, 8> m_latchedHWPositions;
+  constexpr static auto NUM_HW = 8;
+  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions {};
+
+  using tHWPosEntry = std::tuple<float, HWChangeSource>;
+  std::array<tHWPosEntry, NUM_HW> m_localDisabledPositions;
+
   bool m_notifyKeyBedActionStatus = false;
 
   enum class LatchMode
@@ -120,10 +123,16 @@ class InputEventStage
     OnlyMSB
   };
 
-  template <LatchMode> bool latchHWPosition(int hwID, uint8_t lsb, uint8_t msb);
+  template <LatchMode> bool latchHWPosition(HardwareSource hwID, uint8_t lsb, uint8_t msb);
   [[nodiscard]] bool isSplitDSP() const;
 
   friend class InputEventStageTester;
-  bool ccIsMappedToChannelModeMessage(int cc);
+  static bool ccIsMappedToChannelModeMessage(int cc);
   void queueChannelModeMessage(int cc, uint8_t msbCCvalue);
+
+  void doSendCCOutOnExplicitChannel(uint16_t value, int msbCC, int lsbCC, HardwareSource hwID, int channel);
+  RoutingIndex toRoutingIndex(HardwareSource source);
+  bool didRelevantSectionsChange(const tMSG& message, const tMSG& message1);
+  void doInternalReset();
+  void doExternalReset(const tMSG newMessage, const tMSG oldMessage);
 };

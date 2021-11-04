@@ -13,11 +13,8 @@ class Application;
 class Setting;
 class SettingsActions;
 
-class Settings : public ContentSection
+class Settings : public UpdateDocumentContributor
 {
- private:
-  typedef ContentSection super;
-
  public:
   typedef std::shared_ptr<Setting> tSettingPtr;
   typedef std::map<Glib::ustring, tSettingPtr> tMap;
@@ -46,23 +43,20 @@ class Settings : public ContentSection
   void sendGlobalPlaycontrollerInitSettings();
   void sendPresetSettingsToPlaycontroller();
 
-  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
-  Glib::ustring getPrefix() const override;
-
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
   sigc::connection onSettingsChanged(sigc::slot<void(void)> s);
 
   bool isLoading() const;
+  void writeDocument(Writer &writer, tUpdateID knownRevision) const;
 
  protected:
-  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  virtual const Glib::ustring &getSettingFileNameToLoadFrom() const;
 
  private:
   void save();
   void load();
   void sanitize();
 
-  std::unique_ptr<SettingsActions> m_actions;
   tMap m_settings;
   DelayedJob m_saveJob;
   ScopedGuard m_isLoading;

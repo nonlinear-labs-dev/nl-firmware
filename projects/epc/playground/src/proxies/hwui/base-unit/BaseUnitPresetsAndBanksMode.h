@@ -18,12 +18,14 @@ class BaseUnitPresetsAndBanksMode : public UsageMode
  protected:
   void installButtonRepeat(const std::function<void()>& cb);
   void removeButtonRepeat();
+  bool checkPanicAffenGriff(Buttons b, bool state);
 
  private:
   virtual void onFuncButtonDown();
   void modeButtonShortPress();
   void modeButtonLongPress();
 
+  std::unordered_map<Buttons, bool> m_buttonStates;
   ShortVsLongPress m_modeButtonHandler;
   ShortVsLongPress m_funcButtonHandler;
 

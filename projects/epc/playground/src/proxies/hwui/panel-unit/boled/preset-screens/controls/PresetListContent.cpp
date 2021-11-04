@@ -2,6 +2,7 @@
 #include "PresetListEntry.h"
 #include "Application.h"
 #include <presets/Bank.h>
+#include <presets/Preset.h>
 
 #include <utility>
 #include "presets/PresetManager.h"
@@ -14,12 +15,22 @@ PresetListContent::PresetListContent(const Rect &pos)
 
 PresetListContent::~PresetListContent() = default;
 
-bool PresetListContent::animateSelectedPreset(std::function<void()> cb)
+bool PresetListContent::animateSomePreset(const Preset* p, std::function<void()> cb)
 {
-  if(m_secondPreset)
+  if(p)
   {
-    m_secondPreset->animate(std::move(cb));
-    return true;
+    if(auto targetBank = dynamic_cast<const Bank *>(p->getParent()))
+    {
+      auto presetPos = targetBank->getPresetPosition(p);
+      setup(targetBank, presetPos);
+
+      if(m_secondPreset)
+      {
+        m_secondPreset->animate(std::move(cb));
+        return true;
+      }
+      return false;
+    }
   }
   return false;
 }
@@ -29,14 +40,14 @@ bool PresetListContent::isTransparent() const
   return true;
 }
 
-Preset *PresetListContent::getPresetAtPosition(Bank *bank, int pos) const
+Preset *PresetListContent::getPresetAtPosition(const Bank *bank, int pos) const
 {
   if(pos >= 0 && pos < bank->getNumPresets())
     return bank->getPresetAt(pos);
   return nullptr;
 }
 
-void PresetListContent::setup(Bank *bank, size_t focussedPresetPos)
+void PresetListContent::setup(const Bank *bank, size_t focussedPresetPos)
 {
   auto hasBank = bank != nullptr;
   auto hasPresets = bank && bank->getNumPresets();

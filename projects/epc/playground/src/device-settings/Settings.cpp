@@ -23,7 +23,6 @@
 #include <device-settings/PresetGlitchSuppression.h>
 #include <device-settings/DateTimeAdjustment.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
-#include <device-settings/KioskModeSetting.h>
 #include <device-settings/BlockingMainThreadIndication.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <http/NetworkRequest.h>
@@ -48,6 +47,7 @@
 #include "UsedRAM.h"
 #include "SyncVoiceGroupsAcrossUIS.h"
 #include "SplitPointSyncParameters.h"
+#include "GlobalLocalEnableSetting.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -55,16 +55,8 @@
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <iostream>
 #include <device-settings/midi/MidiChannelSettings.h>
-#include <device-settings/midi/local/LocalControllersSetting.h>
-#include <device-settings/midi/local/LocalNotesSetting.h>
-#include <device-settings/midi/send/MidiSendControllersSetting.h>
-#include <device-settings/midi/send/MidiSendNotesSetting.h>
-#include <device-settings/midi/send/MidiSendProgramChangesSetting.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
-#include <device-settings/midi/receive/MidiReceiveControllersSetting.h>
-#include <device-settings/midi/receive/MidiReceiveNotesSetting.h>
-#include <device-settings/midi/receive/MidiReceiveProgramChangesSetting.h>
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
@@ -72,11 +64,11 @@
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
-#include <device-settings/midi/HardwareControlEnables.h>
+#include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/AlsaFramesPerPeriod.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
-    : super(master)
-    , m_actions(std::make_unique<SettingsActions>(*this))
+    : UpdateDocumentContributor(master)
     , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
@@ -102,16 +94,14 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  std::shared_ptr<EpcWifi> LocalWifi = std::make_shared<EpcWifi>();
-
-  addSetting("SSID", new SSID(*this, LocalWifi));
-  addSetting("Passphrase", new Passphrase(*this, LocalWifi));
-  addSetting("WifiSetting", new WifiSetting(*this, LocalWifi));
+  auto localWifi = std::make_shared<EpcWifi>();
+  addSetting("SSID", new SSID(*this, localWifi));
+  addSetting("Passphrase", new Passphrase(*this, localWifi));
+  addSetting("WifiSetting", new WifiSetting(*this, localWifi));
 
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
   addSetting("SignalFlowIndication", new SignalFlowIndicationSetting(*this));
-  addSetting("KioskMode", new KioskModeSetting(*this));
   addSetting("IndicateBlockedUI", new BlockingMainThreadIndication(*this, false));
   addSetting("HighlightChangedParameters", new HighlightChangedParametersSetting(*this));
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
@@ -123,32 +113,33 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
   addSetting("SyncSplit", new SplitPointSyncParameters(*this));
 
-  addSetting("LocalNotes", new LocalNotesSetting(*this));
-
   addSetting("ReceiveChannel", new MidiReceiveChannelSetting(*this));
   addSetting("ReceiveChannelSplit", new MidiReceiveChannelSplitSetting(*this));
-  addSetting("ReceiveProgramChanges", new MidiReceiveProgramChangesSetting(*this));
-  addSetting("ReceiveNotes", new MidiReceiveNotesSetting(*this));
+  addSetting("SendChannel", new MidiSendChannelSetting(*this));
+  addSetting("SendChannelSplit", new MidiSendChannelSplitSetting(*this));
+
+  //Unused:
   addSetting("ReceiveAftertouchCurve", new MidiReceiveAftertouchCurveSetting(*this));
   addSetting("ReceiveVelocityCurve", new MidiReceiveVelocityCurveSetting(*this));
 
-  addSetting("SendChannel", new MidiSendChannelSetting(*this));
-  addSetting("SendChannelSplit", new MidiSendChannelSplitSetting(*this));
-  addSetting("SendProgramChanges", new MidiSendProgramChangesSetting(*this));
-  addSetting("SendNotes", new MidiSendNotesSetting(*this));
-
-  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this));
-  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this));
-  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this));
-  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this));
-  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this));
-  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this));
-  addSetting("BenderMapping", new BenderCCMapping(*this));
-  addSetting("AftertouchMapping", new AftertouchCCMapping(*this));
-  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
   addSetting("HighResCC", new Enable14BitSupport(*this));
+  auto enable14Bit = getSetting<Enable14BitSupport>();
+
+  addSetting("Pedal1Mapping", new PedalCCMapping<1>(*this, *enable14Bit));
+  addSetting("Pedal2Mapping", new PedalCCMapping<2>(*this, *enable14Bit));
+  addSetting("Pedal3Mapping", new PedalCCMapping<3>(*this, *enable14Bit));
+  addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this, *enable14Bit));
+  addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this, *enable14Bit));
+  addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this, *enable14Bit));
+  addSetting("BenderMapping", new BenderCCMapping(*this, *enable14Bit));
+  addSetting("AftertouchMapping", new AftertouchCCMapping(*this, *enable14Bit));
+
+  addSetting("HighVeloCC", new EnableHighVelocityCC(*this));
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
-  addSetting("HardwareControlEnables", new HardwareControlEnables(*this));
+  addSetting("RoutingSettings", new RoutingSettings(*this));
+  addSetting("GlobalLocalEnable", new GlobalLocalEnableSetting(*this));
+
+  addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
 }
 
 Settings::~Settings()
@@ -160,12 +151,7 @@ Settings::tUpdateID Settings::onChange(uint64_t flags)
 {
   m_saveJob.trigger();
   m_sigChanged.emit();
-  return super::onChange(flags);
-}
-
-Glib::ustring Settings::getPrefix() const
-{
-  return m_actions->getBasePath().substr(1);
+  return UpdateDocumentContributor::onChange(flags);
 }
 
 void Settings::init()
@@ -183,6 +169,11 @@ void Settings::reload()
   load();
 }
 
+const Glib::ustring &Settings::getSettingFileNameToLoadFrom() const
+{
+  return Application::get().getOptions()->getSettingsFile();
+}
+
 void Settings::load()
 {
   auto lock = m_isLoading.lock();
@@ -192,7 +183,7 @@ void Settings::load()
   try
   {
     DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
-    FileInStream in(Application::get().getOptions()->getSettingsFile(), false);
+    FileInStream in(getSettingFileNameToLoadFrom(), false);
     XmlReader reader(in, nullptr);
     reader.read<SettingsSerializer>(std::ref(*this));
   }
@@ -270,11 +261,6 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
       }
     }
   });
-}
-
-void Settings::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
-{
-  m_actions->handleRequest(request);
 }
 
 bool Settings::isLoading() const

@@ -78,7 +78,8 @@ namespace nltools
         int m_keyPos;
       };
 
-      struct ActionHappened {
+      struct NoteEventHappened
+      {
         constexpr static MessageType getType()
         {
           return MessageType::NoteAction;
@@ -140,12 +141,12 @@ namespace nltools
             std::copy(s.begin(), s.end() + 1, data);
           }
 
-          std::string get() const
+          [[nodiscard]] std::string get() const
           {
             return data;
           }
 
-          char data[tSize + 1];
+          char data[tSize + 1] {};
         };
       }
 
@@ -170,31 +171,42 @@ namespace nltools
 
       struct SetWiFiPasswordMessage
       {
+        constexpr static auto maxSize = 16;
+
         constexpr static MessageType getType()
         {
           return MessageType::WiFiSetPassword;
         }
 
-        SetWiFiPasswordMessage()
-        {
-        }
+        SetWiFiPasswordMessage() = default;
 
-        template <typename T> SetWiFiPasswordMessage(const T& password)
+        template <typename T> explicit SetWiFiPasswordMessage(const T& password)
         {
           m_password.set(password);
         }
 
-        Helper::StringWrapper<8> m_password;
+        Helper::StringWrapper<maxSize> m_password;
       };
 
       struct EnableWiFiMessage
       {
-        constexpr static auto getType() {
+        constexpr static MessageType getType()
+        {
           return MessageType::WiFiEnable;
         }
 
-        bool m_enable;
+        EnableWiFiMessage()
+            : m_state { false }
+        {
+        }
+        explicit EnableWiFiMessage(bool state)
+            : m_state { state }
+        {
+        }
+
+        bool m_state {};
       };
+
     }
 
     struct PanicAudioEngine
@@ -203,6 +215,27 @@ namespace nltools
       {
         return MessageType::AEPanic;
       }
+    };
+
+    struct BufferUnderrunsChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::BufferUnderrunsChanged;
+      }
+
+      uint64_t numUnderruns = 0;
+      int32_t framesPerPeriod = 0;
+    };
+
+    struct SetFramesPerPeriod
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::SetFramesPerPeriod;
+      }
+
+      int32_t framesPerPeriod = 0;
     };
 
     namespace Setting
@@ -214,7 +247,7 @@ namespace nltools
           return MessageType::NoteShiftSetting;
         }
 
-        int m_shift;
+        int m_shift = 0;
       };
 
       struct FlacRecorderAutoStart
@@ -254,7 +287,7 @@ namespace nltools
           return MessageType::MidiSettings;
         }
 
-        enum class HW_INDEX : std::size_t
+        enum class RoutingIndex : std::size_t
         {
           Pedal1 = 0,
           Pedal2 = 1,
@@ -264,10 +297,12 @@ namespace nltools
           Aftertouch = 5,
           Ribbon1 = 6,
           Ribbon2 = 7,
-          LENGTH = 8
+          ProgramChange = 8,
+          Notes = 9,
+          LENGTH = 10
         };
 
-        enum class MAPPING_INDEX : std::size_t
+        enum class RoutingAspect : std::size_t
         {
           SEND_PRIMARY = 0,
           RECEIVE_PRIMARY = 1,
@@ -277,23 +312,14 @@ namespace nltools
           LENGTH = 5
         };
 
-        typedef std::array<std::array<bool, static_cast<size_t>(MAPPING_INDEX::LENGTH)>,
-                           static_cast<size_t>(HW_INDEX::LENGTH)>
-            tHWMappingType;
+        typedef std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)> tEntry;
+        typedef std::array<tEntry, static_cast<size_t>(RoutingIndex::LENGTH)> tRoutingMappings;
 
         MidiReceiveChannel receiveChannel;
         MidiReceiveChannelSplit receiveSplitChannel;
 
         MidiSendChannel sendChannel;
         MidiSendChannelSplit sendSplitChannel;
-
-        bool receiveProgramChange = false;
-        bool receiveNotes = false;
-
-        bool sendProgramChange = false;
-        bool sendNotes = false;
-
-        bool localNotes = false;
 
         bool highVeloCCEnabled = true;
         bool highResCCEnabled = true;
@@ -307,7 +333,26 @@ namespace nltools
         AftertouchCC aftertouchcc;
         BenderCC bendercc;
 
-        tHWMappingType hwMappings;
+        bool localEnable = true;
+        tRoutingMappings routings {};
+      };
+
+      struct EnableBBBWifiFromDevSettings
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::WifiDevBBBEnable;
+        }
+      };
+
+      struct SetGlobalLocalSetting
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::GlobalLocalSetting;
+        }
+
+        bool m_state;
       };
 
       struct TransitionTimeMessage
@@ -455,7 +500,7 @@ namespace nltools
       }
 
       uint64_t messageId = 0;
-      uint8_t pixels[256][96];
+      uint8_t pixels[256][96] {};
     };
 
     struct OLEDState
@@ -475,8 +520,8 @@ namespace nltools
         return MessageType::SetOLEDTimestamped;
       }
 
-      SetOLEDMessage m_oledMessage;
-      int64_t m_timestamp;
+      SetOLEDMessage m_oledMessage {};
+      int64_t m_timestamp {};
     };
 
     struct PlaycontrollerMessage
@@ -506,6 +551,7 @@ namespace nltools
 
       size_t hwSource = 0;  // 0...7
       double position = 0;  // -1...1
+      HWChangeSource source;
     };
 
     namespace detail

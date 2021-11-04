@@ -1,18 +1,21 @@
 #pragma once
 #include <nltools/Types.h>
-#include <device-settings/EnumSetting.h>
-#include <Application.h>
+#include <device-settings/midi/mappings/MappingSetting.h>
 #include <tools/StringTools.h>
+#include <nltools/Assert.h>
 
-template <int numRibbon> class RibbonCCMapping : public EnumSetting<RibbonCC>
+class Enable14BitSupport;
+
+template <int numRibbon> class RibbonCCMapping : public MappingSetting<RibbonCC>
 {
  public:
   constexpr static auto RibbonID = numRibbon;
 
-  RibbonCCMapping(UpdateDocumentContributor& u)
-      : EnumSetting<RibbonCC>(u, getDefault(RibbonID))
+  static_assert(RibbonID == 1 || RibbonID == 2, "Ribbon ID should be either 1 or 2");
+
+  RibbonCCMapping(UpdateDocumentContributor& u, Enable14BitSupport& enable14Bit)
+      : MappingSetting<RibbonCC>(u, enable14Bit, getDefault(RibbonID))
   {
-    static_assert(RibbonID > 0 && RibbonID <= 2, "Ribbon ID should be either 1 or 2");
   }
 
   static constexpr RibbonCC getDefault(int id)
@@ -68,5 +71,14 @@ template <int numRibbon> const std::vector<Glib::ustring>& RibbonCCMapping<numRi
                                             "CC 29 (LSB: CC 61)",
                                             "CC 30 (LSB: CC 62)",
                                             "CC 31 (LSB: CC 63)" };
-  return ret;
+
+  static std::vector<Glib::ustring> retWithoutLSB
+      = { "None",  "CC 01", "CC 02", "CC 03", "CC 04", "CC 05", "CC 06", "CC 07", "CC 08", "CC 09", "CC 10",
+          "CC 11", "CC 12", "CC 13", "CC 14", "CC 15", "CC 16", "CC 17", "CC 18", "CC 19", "CC 20", "CC 21",
+          "CC 22", "CC 23", "CC 24", "CC 25", "CC 26", "CC 27", "CC 28", "CC 29", "CC 30", "CC 31" };
+
+  if(is14BitSupportEnabled())
+    return ret;
+  else
+    return retWithoutLSB;
 }

@@ -3,9 +3,9 @@
 DOCKERNAME="$1"
 OUT_DIR=$(realpath $2)
 IN_DIR=$(realpath $3)
-PACKAGES_DIR=$OUT_DIR/../host-os
+PACKAGES_DIR=$OUT_DIR/../../build-container
 INSTALL_PACKAGES="$4"
-ARCH_VERSION="$5"
+BUILD_CONTAINER_VERSION="$5"
 
 SCRIPT=$(cat $IN_DIR/createNonLinuxOSDockerCommands.sh)
 
@@ -14,7 +14,7 @@ if tty; then
 fi
 
 docker run $TTY_OPTION --privileged \
-  --env ARCH_VERSION="$ARCH_VERSION" \
+  --env BUILD_CONTAINER_VERSION="$BUILD_CONTAINER_VERSION" \
   --env INSTALL_PACKAGES="$INSTALL_PACKAGES" \
   -v $PACKAGES_DIR:/packages \
   -v $OUT_DIR:/out \

@@ -1,8 +1,9 @@
 #include "DspHostDualTester.h"
 #include <synth/c15-audio-engine/dsp_host_dual.h>
+#include <ParameterId.h>
 
 DspHostDualTester::DspHostDualTester(dsp_host_dual* _host)
-    : m_host { _host }
+    : m_host{ _host }
 {
 }
 
@@ -11,7 +12,7 @@ unsigned int DspHostDualTester::getActiveVoices(const VoiceGroup _group)
   // retrieving the polyphonic Gate Envelope signal from both Poly Sections/Parts (12 Voices per Part)
   // (per Voice: Gate Signal is 1.0 (immediately) after KeyPress, and (almost immediately) 0.0 after KeyRelease)
 
-  const uint32_t gateSignalIndex = static_cast<uint32_t>(C15::Signals::Truepoly_Signals::Env_G_Sig);
+  const auto gateSignalIndex = static_cast<uint32_t>(C15::Signals::Truepoly_Signals::Env_G_Sig);
   float gateSignal;
 
   // obtain specific Part if desired, otherwise both Parts
@@ -26,6 +27,8 @@ unsigned int DspHostDualTester::getActiveVoices(const VoiceGroup _group)
     default:
       gateSignal = sumUp(m_host->m_poly[0].m_signals.get_poly(gateSignalIndex))
           + sumUp(m_host->m_poly[1].m_signals.get_poly(gateSignalIndex));
+      break;
+    case VoiceGroup::Invalid:
       break;
   }
 
@@ -53,8 +56,8 @@ unsigned int DspHostDualTester::getAssignableVoices()
 void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup _group)
 {
   // prepare default message
-  nltools::msg::UnmodulateableParameterChangedMessage msg { C15::PID::Mono_Grp_Enable, static_cast<float>(_mono),
-                                                            VoiceGroup::Global };
+  nltools::msg::UnmodulateableParameterChangedMessage msg{ C15::PID::Mono_Grp_Enable, static_cast<float>(_mono),
+                                                           VoiceGroup::Global };
   // overwrite voiceGroup in non-single sounds
   switch(m_host->getType())
   {
@@ -70,7 +73,7 @@ void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup
 void DspHostDualTester::applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group)
 {
   // prepare default message
-  nltools::msg::UnmodulateableParameterChangedMessage msg { C15::PID::Unison_Voices, 0.0f, VoiceGroup::Global };
+  nltools::msg::UnmodulateableParameterChangedMessage msg{ C15::PID::Unison_Voices, 0.0f, VoiceGroup::Global };
   // act according to sound type
   switch(m_host->getType())
   {
@@ -233,4 +236,33 @@ float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const uns
 {
   nltools_assertAlways(_unison > 0 && _unison <= _polyphony);
   return static_cast<float>(_unison - 1) / static_cast<float>(_polyphony - 1);
+}
+
+void DspHostDualTester::setSplit(VoiceGroup vg, float pos)
+{
+  nltools::msg::ModulateableParameterChangedMessage msg{};
+  msg.controlPosition = static_cast<double>(pos);
+  msg.parameterId = C15::PID::Split_Split_Point;
+  msg.voiceGroup = vg;
+
+  auto element = m_host->getParameter(msg.parameterId);
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
+  {
+    m_host->localParChg(element.m_param.m_index, msg);
+  }
+}
+
+void DspHostDualTester::applyMalformedSplitPreset(const DspHostDualTester::MalformedPresetDescriptor& _partI,
+                                                  const DspHostDualTester::MalformedPresetDescriptor& _partII,
+                                                  float split)
+{
+  nltools::msg::SplitPresetMessage msg;
+  msg.mono[0].monoEnable.controlPosition = static_cast<float>(_partI.m_mono);
+  msg.mono[1].monoEnable.controlPosition = static_cast<float>(_partII.m_mono);
+  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
+  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
+  msg.splitpoint[0].controlPosition = split;
+  msg.splitpoint[1].controlPosition = split + (1.0 / 61.0);
+  // propagate message
+  m_host->onPresetMessage(msg);
 }

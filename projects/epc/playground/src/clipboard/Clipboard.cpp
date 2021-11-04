@@ -131,7 +131,7 @@ void Clipboard::copyBank(const Uuid &bankUuid)
   {
     m_currentContentWasCut = false;
     auto scope = getUndoScope().startTrashTransaction();
-    m_content = std::make_unique<Bank>(this, *bank, false);
+    m_content = std::make_unique<Bank>(this, *bank);
     onChange(UpdateDocumentContributor::ChangeFlags::Generic);
   }
 }
@@ -163,7 +163,7 @@ bool Clipboard::copyPreset(const Uuid &presetUuid)
   {
     m_currentContentWasCut = false;
     auto scope = getUndoScope().startTrashTransaction();
-    m_content = std::make_unique<Preset>(this, *preset, false);
+    m_content = std::make_unique<Preset>(this, *preset);
     onChange(UpdateDocumentContributor::ChangeFlags::Generic);
     return true;
   }
@@ -206,9 +206,9 @@ void Clipboard::pasteBankOnBackground(const Glib::ustring &transactionName, cons
                                       const Glib::ustring &y, const UpdateDocumentContributor *content)
 {
   auto pm = Application::get().getPresetManager();
-
+  auto settings = Application::get().getSettings();
   auto srcBank = dynamic_cast<const Bank *>(content);
-  PresetManagerUseCases useCase(pm);
+  PresetManagerUseCases useCase(*pm, *settings);
   useCase.pasteBankOnBackground(transactionName, x, y, srcBank, this);
 }
 
@@ -219,7 +219,7 @@ std::unique_ptr<Bank> multiplePresetsToBank(const MultiplePresetSelection &mulPr
   auto b = std::make_unique<Bank>(Application::get().getPresetManager());
 
   for(auto &preset : mulPresets.getPresets())
-    b->prependPreset(transaction, std::make_unique<Preset>(b.get(), *preset.get(), true));
+    b->prependPreset(transaction, std::make_unique<Preset>(b.get(), *preset.get()));
 
   b->ensurePresetSelection(transaction);
   return b;
@@ -249,8 +249,9 @@ void Clipboard::pasteMultiplePresetsOnPreset(const Uuid &presetUuid)
 void Clipboard::pastePresetOnBackground(const Glib::ustring &x, const Glib::ustring &y)
 {
   auto pm = Application::get().getPresetManager();
+  auto settings = Application::get().getSettings();
   auto srcPreset = dynamic_cast<Preset *>(m_content.get());
-  PresetManagerUseCases useCases(pm);
+  PresetManagerUseCases useCases(*pm, *settings);
   useCases.pastePresetOnBackground(x, y, srcPreset, this);
 }
 
@@ -270,7 +271,7 @@ void Clipboard::pasteBankOnBank(const Glib::ustring &transactionName, const Uuid
     auto transaction = scope->getTransaction();
     auto source = dynamic_cast<const Bank *>(content);
     source->forEachPreset([&](auto preset) {
-      auto newPreset = std::make_unique<Preset>(target, *preset, true);
+      auto newPreset = std::make_unique<Preset>(target, *preset);
       target->appendPreset(transaction, std::move(newPreset));
     });
 
@@ -283,10 +284,11 @@ void Clipboard::pastePresetOnBank(const Uuid &bankUuid)
   if(containsPreset())
   {
     auto pm = Application::get().getPresetManager();
+    auto settings = Application::get().getSettings();
 
     if(auto target = pm->findBank(bankUuid))
     {
-      PresetManagerUseCases useCase(pm);
+      PresetManagerUseCases useCase(*pm, *settings);
       auto source = dynamic_cast<const Preset *>(m_content.get());
       useCase.pastePresetOnBank(target, source, this);
     }
@@ -313,7 +315,7 @@ void Clipboard::pasteBankOnPreset(const Glib::ustring &transactionName, const Uu
       auto insertPos = targetBank->getPresetPosition(presetUuid) + 1;
 
       source->forEachPreset([&](auto srcPreset) {
-        auto cp = std::make_unique<Preset>(targetBank, *srcPreset, true);
+        auto cp = std::make_unique<Preset>(targetBank, *srcPreset);
         targetBank->insertPreset(transaction, insertPos++, std::move(cp));
       });
 
@@ -325,10 +327,11 @@ void Clipboard::pasteBankOnPreset(const Glib::ustring &transactionName, const Uu
 void Clipboard::pastePresetOnPreset(const Uuid &presetUuid)
 {
   auto pm = Application::get().getPresetManager();
+  auto settings = Application::get().getSettings();
 
   if(auto targetPreset = pm->findPreset(presetUuid))
   {
-    PresetManagerUseCases useCase(pm);
+    PresetManagerUseCases useCase(*pm, *settings);
     auto source = dynamic_cast<Preset *>(m_content.get());
     useCase.pastePresetOnPreset(targetPreset, source, this);
   }

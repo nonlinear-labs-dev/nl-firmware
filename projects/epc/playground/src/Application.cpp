@@ -23,6 +23,9 @@
 #include <giomm.h>
 #include <proxies/usb/USBChangeListener.h>
 #include <http/WebUISupport.h>
+#include <presets/PresetManagerActions.h>
+#include <presets/BankActions.h>
+#include <presets/EditBufferActions.h>
 
 using namespace std::chrono_literals;
 
@@ -75,9 +78,10 @@ Application::Application(int numArgs, char **argv)
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
-    , m_presetManager(new PresetManager(m_http->getUpdateDocumentMaster()))
+    , m_presetManager(
+          new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
-    , m_audioEngineProxy(new AudioEngineProxy)
+    , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
     , m_hwui(new HWUI())
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
@@ -87,6 +91,8 @@ Application::Application(int numArgs, char **argv)
     , m_isQuit(false)
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
+    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui,
+                            *m_settings)
 {
 #ifdef _PROFILING
   Profiler::get().enable(true);
@@ -95,8 +101,10 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init();
+  m_presetManager->init(m_audioEngineProxy.get());
+  m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+
   runWatchDog();
 
   getMainContext()->signal_timeout().connect(sigc::mem_fun(this, &Application::heartbeat), 500);
@@ -298,4 +306,9 @@ bool Application::heartbeat()
   }
 
   return true;
+}
+
+ActionManagers *Application::getActionManagers()
+{
+  return &m_actionManagers;
 }

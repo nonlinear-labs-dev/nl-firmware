@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include "Ribbon.h"
+#include <nltools/messaging/Message.h>
 #include <sigc++/connection.h>
 
 class Application;

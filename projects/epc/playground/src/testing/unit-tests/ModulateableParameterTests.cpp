@@ -4,11 +4,11 @@
 #include <testing/parameter/TestGroup.h>
 #include <testing/parameter/TestGroupSet.h>
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
+#include <sync/SyncMasterMockRoot.h>
 
 TEST_CASE("Modulateable Parameter")
 {
-  TestRootDocument root;
-  TestGroupSet groupSet(&root);
+  TestGroupSet groupSet(&SyncMasterMockRoot::get());
   TestGroup group(&groupSet, VoiceGroup::I);
 
   SECTION("1.4pct to 112 playcontroller")

@@ -134,7 +134,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
-  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
 
@@ -160,7 +160,7 @@ void PresetManagerLayout::setupBankStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_presets->setBankFocus();
@@ -230,7 +230,7 @@ void PresetManagerLayout::setupPresetSelect()
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
-  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
 }
 
 void PresetManagerLayout::setupPresetStore()
@@ -243,7 +243,7 @@ void PresetManagerLayout::setupPresetStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect(17, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
 }
@@ -333,16 +333,16 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
         else if(m_focusAndMode.mode == UIMode::Select)
         {
           auto pm = Application::get().getPresetManager();
-          EditBufferUseCases useCases(pm->getEditBuffer());
+          EditBufferUseCases useCases(*pm->getEditBuffer());
 
           auto oldPreset = pm->getEditBuffer()->getUUIDOfLastLoadedPreset();
 
           if(auto currentSelectedPreset = pm->getSelectedPreset())
           {
-            useCases.undoableLoad(currentSelectedPreset);
+            useCases.load(currentSelectedPreset);
             if(currentSelectedPreset->getUuid() == oldPreset)
             {
-              animateSelectedPreset([] {});
+              animateSomePreset(currentSelectedPreset, [] {});
             }
           }
         }
@@ -358,15 +358,17 @@ bool PresetManagerLayout::onRotary(int inc, ButtonModifiers modifiers)
   return Layout::onRotary(inc, modifiers);
 }
 
-bool PresetManagerLayout::animateSelectedPreset(std::function<void()> cb)
+bool PresetManagerLayout::animateSomePreset(Preset *preset, std::function<void()> cb)
 {
-  return m_presets->animateSelectedPreset(std::move(cb));
+  return m_presets->animatePreset(preset, std::move(cb));
 }
 
 void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<void()> cb)
 {
-  if(Application::get().getHWUI()->isInLoadToPart())
-    m_presets->animateSelectedPreset(std::move(cb));
+  auto pm = getPresetManager();
+  auto selPreset = pm->getSelectedPreset();
+  if(Application::get().getHWUI()->isInLoadToPart() && selPreset)
+    m_presets->animatePreset(selPreset, std::move(cb));
   else
     cb();
 }

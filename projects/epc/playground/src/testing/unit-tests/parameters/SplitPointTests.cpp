@@ -1,7 +1,6 @@
 #include <parameters/scale-converters/dimension/SplitPointDimension.h>
 #include "testing/parameter/TestGroupSet.h"
 #include "testing/parameter/TestGroup.h"
-#include "testing/TestRootDocument.h"
 #include "parameters/SplitPointParameter.h"
 #include "testing/TestHelper.h"
 #include "device-settings/Settings.h"
@@ -9,20 +8,21 @@
 #include <catch.hpp>
 #include <parameter_declarations.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
+#include <sync/SyncMasterMockRoot.h>
 
 TEST_CASE("Split Point Display Value")
 {
-  TestRootDocument root;
-  TestGroupSet set { &root };
-  TestGroup group(&set, VoiceGroup::I);
-  group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::I }));
-  group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::II }));
+  auto eb = TestHelper::getEditBuffer();
 
-  auto splitI = dynamic_cast<SplitPointParameter*>(group.findParameterByID({ 1, VoiceGroup::I }));
-  auto splitII = dynamic_cast<SplitPointParameter*>(group.findParameterByID({ 1, VoiceGroup::II }));
+  auto splitI = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }));
+  auto splitII = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }));
   g_assert(splitI != nullptr);
+  g_assert(splitII != nullptr);
 
-  auto useCases = SyncSplitSettingUseCases::get();
+  auto settings = TestHelper::getSettings();
+  auto pm = TestHelper::getPresetManager();
+
+  SyncSplitSettingUseCases useCases(*settings->getSetting<SplitPointSyncParameters>(), *pm);
 
   auto transScope = UNDO::Scope::startTrashTransaction();
   auto transaction = transScope->getTransaction();
@@ -49,13 +49,15 @@ TEST_CASE("Split Point Display Value")
 TEST_CASE("Split Point Helper Functions")
 {
   auto eb = TestHelper::getEditBuffer();
+  auto settings = TestHelper::getSettings();
+  auto pm = TestHelper::getPresetManager();
   auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
-  auto useCases = SyncSplitSettingUseCases::get();
+  SyncSplitSettingUseCases useCases(*settings->getSetting<SplitPointSyncParameters>(), *pm);
 
   WHEN("Init")
   {
-    TestHelper::initDualEditBuffer<SoundType::Split>();
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     THEN("Default Split Behaviour I|II")
     {
       CHECK(sI->inDefaultSplitBehaviour());
@@ -84,12 +86,13 @@ TEST_CASE("Sync Setting gets updated on store and load")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
-  EditBufferUseCases ebUseCases(eb);
+  auto settings = TestHelper::getSettings();
+  EditBufferUseCases ebUseCases(*eb);
 
   auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
-  auto useCases = SyncSplitSettingUseCases::get();
-  PresetManagerUseCases pmUseCases(pm);
+  SyncSplitSettingUseCases useCases(*settings->getSetting<SplitPointSyncParameters>(), *pm);
+  PresetManagerUseCases pmUseCases(*pm, *settings);
 
   useCases.disableSyncSetting();
 
@@ -99,7 +102,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
   auto createEBWithOverlap = [&] {
     useCases.disableSyncSetting();
-    TestHelper::initDualEditBuffer<SoundType::Split>();
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     sI->stepCPFromHwui(scope->getTransaction(), 2, {});
     CHECK(sI->hasOverlap());
@@ -107,26 +110,27 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
   pmUseCases.createBankAndStoreEditBuffer();
   b = pm->getSelectedBank();
-  TestHelper::initDualEditBuffer<SoundType::Split>();
+  BankUseCases bankUseCases(b, *TestHelper::getSettings());
+  TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
   CHECK_FALSE(sI->hasOverlap());
-  pmUseCases.appendEditBufferToBank(b);
-  presetWithoutOverlap = pm->getSelectedPreset();
+  presetWithoutOverlap = bankUseCases.appendEditBuffer();
+  CHECK(presetWithoutOverlap == pm->getSelectedPreset());
 
   createEBWithOverlap();
-  pmUseCases.appendEditBufferToBank(b);
-  presetWithOverlap = pm->getSelectedPreset();
+  presetWithOverlap = bankUseCases.appendEditBuffer();
+  CHECK(presetWithOverlap == pm->getSelectedPreset());
 
   auto syncSetting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
 
   WHEN("No Overlap Present")
   {
     useCases.enableSyncSetting();
-    TestHelper::initDualEditBuffer<SoundType::Split>();
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
     WHEN("Preset With Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithOverlap);
+      ebUseCases.load(presetWithOverlap);
       THEN("Sync Setting Disabled")
       {
         CHECK(!syncSetting->get());
@@ -135,7 +139,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset Without Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithoutOverlap);
+      ebUseCases.load(presetWithoutOverlap);
       THEN("Sync Setting Enabled")
       {
         CHECK(syncSetting->get());
@@ -144,7 +148,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("gets Stored")
     {
-      pmUseCases.appendEditBufferToBank(b);
+      bankUseCases.appendEditBuffer();
       THEN("Sync Setting stays Enabled")
       {
         CHECK(syncSetting->get());
@@ -159,7 +163,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset With Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithOverlap);
+      ebUseCases.load(presetWithOverlap);
       THEN("Sync Setting Disabled")
       {
         CHECK(!syncSetting->get());
@@ -168,7 +172,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("Preset Without Overlap Loaded")
     {
-      ebUseCases.undoableLoad(presetWithoutOverlap);
+      ebUseCases.load(presetWithoutOverlap);
       THEN("Sync Setting Enabled")
       {
         CHECK(syncSetting->get());
@@ -177,7 +181,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("gets Stored")
     {
-      pmUseCases.appendEditBufferToBank(b);
+      bankUseCases.appendEditBuffer();
       THEN("Sync Setting stays Disabled")
       {
         CHECK(!syncSetting->get());

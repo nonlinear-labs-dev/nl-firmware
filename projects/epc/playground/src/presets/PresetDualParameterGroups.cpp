@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <testing/TestRootDocument.h>
 #include "EditBuffer.h"
 #include "PresetDualParameterGroups.h"
 #include "PresetManager.h"
@@ -8,6 +7,7 @@
 #include <presets/PresetParameterGroup.h>
 #include <xml/Attribute.h>
 #include <xml/Writer.h>
+#include <sync/SyncMasterMockRoot.h>
 
 PresetDualParameterGroups::PresetDualParameterGroups(UpdateDocumentContributor *parent)
     : AttributesOwner(parent)
@@ -149,10 +149,8 @@ void PresetDualParameterGroups::init(const Preset *preset)
 
 void PresetDualParameterGroups::initEmpty()
 {
-  static ParameterGroupSet sDataScheme(nullptr);
-
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
-    for(auto &group : sDataScheme.getParameterGroups(vg))
+    for(auto &group : getDataScheme().getParameterGroups(vg))
       m_parameterGroups[static_cast<size_t>(vg)][group->getID()] = std::make_unique<PresetParameterGroup>(*group);
 }
 
@@ -215,21 +213,18 @@ PresetParameterGroup *PresetDualParameterGroups::findOrCreateParameterGroup(cons
   {
     return ret;
   }
-  else
+  else if(auto schemeGroup = getDataScheme().getParameterGroupByID(id))
   {
     auto &vgMap = m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())];
-    vgMap[id] = std::make_unique<PresetParameterGroup>(id.getVoiceGroup());
+    vgMap[id] = std::make_unique<PresetParameterGroup>(*schemeGroup);
     return findParameterGroup(id);
   }
+  std::stringstream ss;
+  ss << "Could not find Parameter in Preset nor EditBuffer. ID: " << id.toString();
+  nltools_detailedAssertAlways(false, ss.str());
 }
 
-size_t PresetDualParameterGroups::getNumGroups(const VoiceGroup &vg) const
-{
-  return m_parameterGroups[static_cast<size_t>(vg)].size();
-}
-
-std::vector<std::pair<GroupId, const PresetParameterGroup *>>
-    PresetDualParameterGroups::getGroups(const VoiceGroup &vg) const
+PresetDualParameterGroups::tParameterGroups PresetDualParameterGroups::getGroups(const VoiceGroup &vg) const
 {
   std::vector<std::pair<GroupId, const PresetParameterGroup *>> ret;
   for(const auto &g : m_parameterGroups[static_cast<size_t>(vg)])
@@ -237,4 +232,10 @@ std::vector<std::pair<GroupId, const PresetParameterGroup *>>
     ret.emplace_back(std::make_pair(g.first, g.second.get()));
   }
   return ret;
+}
+
+ParameterGroupSet &PresetDualParameterGroups::getDataScheme()
+{
+  static ParameterGroupSet sDataScheme(&SyncMasterMockRoot::get());
+  return sDataScheme;
 }

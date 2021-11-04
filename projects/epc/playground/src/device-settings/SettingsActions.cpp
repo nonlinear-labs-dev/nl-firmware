@@ -1,6 +1,5 @@
 #include "SettingsActions.h"
 #include "Settings.h"
-#include "Setting.h"
 #include "SyncSplitSettingUseCases.h"
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
@@ -11,46 +10,19 @@
 #include <tools/ExceptionTools.h>
 #include <use-cases/DirectLoadUseCases.h>
 #include <presets/PresetManager.h>
+#include <nltools/messaging/Message.h>
+#include <device-settings/Passphrase.h>
+#include <http/HTTPRequest.h>
 
-SettingsActions::SettingsActions(Settings &settings)
-    : super("/settings/")
+SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& settings, PresetManager& pm)
+    : SectionAndActionManager(parent, "/settings/")
+    , m_settings{settings}
 {
-  addAction("set-setting", [&](std::shared_ptr<NetworkRequest> request) {
+  addAction("set-setting", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring key = request->get("key");
     Glib::ustring value = request->get("value");
-
-    DebugLevel::warning("Setting: ", key, " changed to: ", value);
-
-    if(key == "SyncSplit")
-    {
-      auto useCases = SyncSplitSettingUseCases::get();
-      useCases.updateFromWebUI(value);
-      return;
-    }
-
-    if(auto s = settings.getSetting(key))
-    {
-      s->setSetting(Initiator::EXPLICIT_WEBUI, value);
-    }
-  });
-
-  addAction("inc-test-display", [&](std::shared_ptr<NetworkRequest> request) {
-    auto &app = Application::get();
-    auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
-    auto &soled = app.getHWUI()->getBaseUnit().getPlayPanel().getSOLED();
-    auto panelTestLayout = dynamic_cast<TestLayout *>(boled.getLayout().get());
-    auto baseTestLayout = dynamic_cast<TestLayout *>(soled.getLayout().get());
-
-    if(panelTestLayout && baseTestLayout)
-    {
-      baseTestLayout->iterate();
-      panelTestLayout->iterate();
-    }
-    else
-    {
-      boled.setOverlay(new TestLayout(boled));
-      soled.setOverlay(new TestLayout(soled));
-    }
+    SettingsUseCases useCases(settings);
+    useCases.setSettingFromWebUI(key, value, pm);
   });
 
   addAction("set-direct-load-with-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
@@ -84,35 +56,75 @@ SettingsActions::SettingsActions(Settings &settings)
   });
 
   addAction("default-high-res", [&](auto request) {
-    SettingsUseCases useCase(Application::get().getSettings());
+    SettingsUseCases useCase(settings);
     useCase.setMappingsToHighRes();
   });
 
   addAction("default-classic-midi", [&](auto request) {
-    SettingsUseCases useCase(Application::get().getSettings());
+    SettingsUseCases useCase(settings);
     useCase.setMappingsToClassicMidi();
   });
 
-  addAction("hw-source-enable-set", [&](auto request) {
+  addAction("set-routing-aspect", [&](auto request) {
     try
     {
-      auto hw = std::stoi(request->get("hw"));
+      auto hw = std::stoi(request->get("routing-entry"));
       auto aspect = std::stoi(request->get("aspect"));
       auto value = request->get("value") == "1";
 
-      SettingsUseCases useCase(Application::get().getSettings());
-      useCase.updateHWSourceEnable(hw, aspect, value);
+      SettingsUseCases useCase(settings);
+      useCase.updateRoutingAspect(hw, aspect, value);
     }
     catch(...)
     {
-      nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+      ExceptionTools::errorLogCurrentException();
     }
    });
 
   addAction("panic-audio-engine", [](auto request) {
-    SettingsUseCases useCase(Application::get().getSettings());
-    useCase.panicAudioEngine();
+    SettingsUseCases::panicAudioEngine();
   });
+
+  addAction("set-all-routings-to-value", [&](auto request) {
+    auto requestedState = request->get("state") == "1";
+    SettingsUseCases useCase(settings);
+    useCase.setAllRoutingEntries(requestedState);
+    nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
+  });
+
+  addAction("enable-bbb-wifi-for-epc2", [](auto) {
+    nltools::msg::Setting::EnableBBBWifiFromDevSettings msg{};
+    nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
+  });
+
+  addAction("is-valid-passphrase", [](auto request) {
+    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
+    {
+      auto passphrase = http->get("text");
+      if(!passphrase.empty())
+      {
+        auto val = Passphrase::isValidPassword(passphrase);
+        http->setStatusOK();
+        http->respond(val ? "1" : "0");
+        http->okAndComplete();
+      }
+    }
+  });
+
+  addAction("dice-passphrase", [&](auto) {
+    SettingsUseCases useCases(settings);
+    useCases.dicePassphrase();
+  });
+
+  addAction("default-passphrase", [&](auto) {
+    SettingsUseCases useCases(settings);
+    useCases.defaultPassphrase();
+  });
+}
+
+void SettingsActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  m_settings.writeDocument(writer, knownRevision);
 }
 
 SettingsActions::~SettingsActions() = default;
