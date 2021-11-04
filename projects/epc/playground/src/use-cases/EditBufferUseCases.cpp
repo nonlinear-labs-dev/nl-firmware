@@ -383,3 +383,9 @@ void EditBufferUseCases::randomizePart(VoiceGroup part, double amount)
   auto scope = m_editBuffer.getUndoScope().startTransaction("Randomize Part");
   m_editBuffer.undoableRandomizePart(scope->getTransaction(), part, Initiator::EXPLICIT_WEBUI, amount);
 }
+
+void EditBufferUseCases::setName(const Glib::ustring& string)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Rename EditBuffer to %s", string);
+  m_editBuffer.setName(scope->getTransaction(), string);
+}
