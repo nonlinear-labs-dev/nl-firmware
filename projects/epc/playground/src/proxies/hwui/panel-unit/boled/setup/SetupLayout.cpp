@@ -845,10 +845,10 @@ namespace NavTree
     explicit MidiChannels(InnerNode *parent)
         : InnerNode(parent, "Channels")
     {
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Receive Split Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Send Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Send Split Channel"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Receive Split Channel"));
     }
   };
 
