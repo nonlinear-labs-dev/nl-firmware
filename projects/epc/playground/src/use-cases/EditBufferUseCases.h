@@ -70,8 +70,6 @@ class EditBufferUseCases
   void randomize(double amount);
   void randomizePart(VoiceGroup part, double amount);
 
-  void setName(const Glib::ustring& string);
-
  private:
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;
