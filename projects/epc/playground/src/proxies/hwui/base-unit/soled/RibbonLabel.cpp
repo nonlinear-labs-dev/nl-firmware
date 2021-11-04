@@ -26,7 +26,18 @@ RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
 
 RibbonLabel::~RibbonLabel() = default;
 
-StringAndSuffix RibbonLabel::getText() const
+int RibbonLabel::getXOffset() const
+{
+  const auto isRibbon1 = m_parameterID == ParameterId { C15::PID::Ribbon_1, VoiceGroup::Global };
+  const auto isRibbon2 = m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };
+  auto [r1Enable, r2Enable] = getRibbonEnabledStates();
+  if((isRibbon1 && !r1Enable) || (isRibbon2 && !r2Enable))
+    return 4;
+
+  return Label::getXOffset();
+}
+
+RibbonLabel::tRibbonEnables RibbonLabel::getRibbonEnabledStates() const
 {
   using rIDX = RoutingSettings::tRoutingIndex;
   using aIDX = RoutingSettings::tAspectIndex;
@@ -38,10 +49,20 @@ StringAndSuffix RibbonLabel::getText() const
   const auto isRibbon2 = m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };
 
   const auto isLocalEnabled = settings->getSetting<GlobalLocalEnableSetting>()->get();
-
   const auto isRibbon1Enabled = isRibbon1 && routingsSetting->getState(rIDX::Ribbon1, aIDX::LOCAL) && isLocalEnabled;
   const auto isRibbon2Enabled = isRibbon2 && routingsSetting->getState(rIDX::Ribbon2, aIDX::LOCAL) && isLocalEnabled;
-  const auto isRibbonEnabled = isRibbon1Enabled || isRibbon2Enabled;
+  return std::make_pair(isRibbon1Enabled, isRibbon2Enabled);
+}
+
+StringAndSuffix RibbonLabel::getText() const
+{
+  static auto settings = Application::get().getSettings();
+
+  const auto isRibbon1 = m_parameterID == ParameterId { C15::PID::Ribbon_1, VoiceGroup::Global };
+  const auto isRibbon2 = m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };
+
+  auto [ribbonOneEnabled, ribbonTwoEnabled] = getRibbonEnabledStates();
+  const auto isRibbonEnabled = ribbonOneEnabled || ribbonTwoEnabled;
 
   if(isRibbonEnabled && m_parameter)
   {

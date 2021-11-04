@@ -25,6 +25,12 @@ class RibbonLabel : public Label
   Glib::ustring crop(const Glib::ustring &text) const;
   Glib::ustring binarySearchLength(const Glib::ustring &text, unsigned long min, unsigned long max) const;
 
+ protected:
+  int getXOffset() const override;
+  using tRibbonEnables = std::pair<bool, bool>;
+  tRibbonEnables getRibbonEnabledStates() const;
+
+ private:
   ParameterId m_parameterID;
   PhysicalControlParameter* m_parameter;
 };
