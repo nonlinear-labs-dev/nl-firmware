@@ -21,16 +21,17 @@ class RibbonLabel : public Label
   RibbonLabel &operator=(const RibbonLabel &) = delete;
 
   static Glib::ustring cropMidiCC(const Glib::ustring &text);
+
+ protected:
+  int getXOffset() const override;
+
  private:
   Glib::ustring crop(const Glib::ustring &text) const;
   Glib::ustring binarySearchLength(const Glib::ustring &text, unsigned long min, unsigned long max) const;
 
- protected:
-  int getXOffset() const override;
   using tRibbonEnables = std::pair<bool, bool>;
   tRibbonEnables getRibbonEnabledStates() const;
 
- private:
   ParameterId m_parameterID;
-  PhysicalControlParameter* m_parameter;
+  PhysicalControlParameter *m_parameter;
 };
