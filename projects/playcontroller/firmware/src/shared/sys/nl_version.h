@@ -11,7 +11,6 @@
 // fix for max. Velocity und max. HWSource, added keybed press sent to BBBB
 // Velocity-Auflösung 14 Bit statt 12 Bit
 
-
 // ==== V 206 ====
 // complete revised "pedals" (aka external controllers) proccessing
 // 58 == release candidate, beta test
@@ -21,10 +20,8 @@
 // 62 == release candidate, beta test, introduce jitter on ESPI and keybed scanner for EMC, add key mapping
 // 63 == release candidate, rewritten MIDI buffering
 
-
 // ==== V 207 ====
 // added "recall Unique Hardware ID" feature
-
 
 // ==== V 208 ====
 // restructured to allow smaller chips than the LPC4337

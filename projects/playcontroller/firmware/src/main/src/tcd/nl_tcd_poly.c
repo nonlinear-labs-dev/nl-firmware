@@ -146,7 +146,7 @@ static void ProcessKeyEvent(uint32_t const keyEvent, enum KeyLog_T const logFlag
 
   MSG_KeyPosition(logicalKey);
 
-  uint32_t time = M0_PERIOD_62_5NS * (keyEvent >> IPC_KEYBUFFER_TIME_SHIFT);  // us
+  uint32_t time = KBS_MICROSECS_PER_SCAN * (keyEvent >> IPC_KEYBUFFER_TIME_SHIFT);  // us
 
   //--- Calc On velocity
   uint32_t vel;
@@ -190,7 +190,7 @@ void ForceKey(uint16_t const hardwareKeyNumber, int time)
     time = -time;
   else
     forcedKeyEvent |= IPC_KEYBUFFER_NOTEON;
-  forcedKeyEvent |= ((time / M0_PERIOD_62_5NS) + 1) << IPC_KEYBUFFER_TIME_SHIFT;
+  forcedKeyEvent |= ((time / KBS_MICROSECS_PER_SCAN) + 1) << IPC_KEYBUFFER_TIME_SHIFT;
   ProcessKeyEvent(forcedKeyEvent, LOG_OFF);  // emulated key, never log it
 }
 
