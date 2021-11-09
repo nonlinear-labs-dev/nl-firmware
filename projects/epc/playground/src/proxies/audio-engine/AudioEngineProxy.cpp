@@ -531,3 +531,9 @@ void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)
 {
   m_lastMIDIKnownProgramNumber = pc;
 }
+
+void AudioEngineProxy::sendConvertedMessage()
+{
+  using namespace nltools::msg;
+  send(EndPoint::AudioEngine, ConvertedMessage {});
+}

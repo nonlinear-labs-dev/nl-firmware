@@ -38,6 +38,7 @@ class InputEventStage
   [[nodiscard]] HWChangeSource getHWSourcePositionSource(HardwareSource hwid) const;
 
   void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
+  void onSoundConversionHappened();
 
   static HardwareSource parameterIDToHWID(int id);
   bool getAndResetKeyBedStatus();

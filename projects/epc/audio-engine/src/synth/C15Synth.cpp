@@ -134,6 +134,8 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   receive<nltools::msg::PanicAudioEngine>(EndPoint::AudioEngine,
                                           sigc::mem_fun(this, &C15Synth::onPanicNotificationReceived));
+
+  receive<ConvertedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSoundConversionHappened));
 }
 
 C15Synth::~C15Synth()
@@ -499,4 +501,9 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
   sendNotesOffOnChannel(m_midiOptions.getMIDIPrimarySendChannel());
   if(m_dsp->getType() == SoundType::Split)
     sendNotesOffOnChannel(m_midiOptions.getMIDISplitSendChannel());
+}
+
+void C15Synth::onSoundConversionHappened(const nltools::msg::ConvertedMessage& msg)
+{
+  m_inputEventStage.onSoundConversionHappened();
 }

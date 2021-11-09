@@ -750,6 +750,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   setVoiceGroupName(transaction, "", VoiceGroup::II);
 
   initRecallValues(transaction);
+
+  getAudioEngineProxy().sendConvertedMessage();
 }
 
 void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)

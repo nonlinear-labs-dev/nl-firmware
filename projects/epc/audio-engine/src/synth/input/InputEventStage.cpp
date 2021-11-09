@@ -1131,3 +1131,10 @@ void InputEventStage::doExternalReset(const tMSG newMessage, const tMSG oldMessa
       sendNotesOff(newMessage.sendSplitChannel);
   }
 }
+
+void InputEventStage::onSoundConversionHappened()
+{
+  doInternalReset();
+  auto msg = m_options->getLastReceivedMessage();
+  doExternalReset(msg, msg);
+}

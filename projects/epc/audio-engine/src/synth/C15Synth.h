@@ -64,6 +64,7 @@ class C15Synth : public Synth, public sigc::trackable
 
   void onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg);
   void onPanicNotificationReceived(const nltools::msg::PanicAudioEngine& msg);
+  void onSoundConversionHappened(const nltools::msg::ConvertedMessage& msg);
 
   unsigned int getRenderedSamples();
 
@@ -82,7 +83,7 @@ class C15Synth : public Synth, public sigc::trackable
   MidiRuntimeOptions m_midiOptions;
 
   //Latch-Filters, Queues
-  std::array<float, 8> m_playgroundHwSourceKnownValues{};
+  std::array<float, 8> m_playgroundHwSourceKnownValues {};
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 
