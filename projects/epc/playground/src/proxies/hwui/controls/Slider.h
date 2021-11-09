@@ -21,7 +21,6 @@ class Slider : public Control
 
   virtual void setSliderColor(FrameBuffer &fb);
   void drawBackground(FrameBuffer &fb) override;
-  sigc::connection onParameterSelected(const sigc::slot<void, Parameter*>& cb);
 
  protected:
   virtual bool hasBorder() const;
@@ -33,6 +32,5 @@ class Slider : public Control
   tDisplayValue m_value;
   bool m_bipolar;
   sigc::connection m_paramValueConnection;
-  sigc::signal<void, Parameter*> m_signalParameterSelected;
   Parameter *m_param = nullptr;
 };

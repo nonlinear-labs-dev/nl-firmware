@@ -8,31 +8,19 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <xml/Writer.h>
 
-/*
- *
- *  - [ ] Wenn Local Off, bildet Send den physischen Status der HW-Sources ab, also das, was
-    - [ ] nach draußen geschickt wird. Receive bildet die Werte ab, die an die AE weitergeleitet
-werden (über MIDI empfangen oder über verstellte MCs bei bidirektionalen Sources).
-Auf Send haben HW-Source und Encoder Einfluss
-Ribbon LEDs zeigen den Send Status an, nicht den Receive.
-Äquivalent zum Pedal, das auch dort steht, wo es physisch hinbewegt wurd
- *
- */
-
 HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter* sibling,
                                                          const ParameterId& id, const ScaleConverter* converter,
                                                          double def, int coarseDenominator, int fineDenominator,
-                                                         OptRefSettings settings)
+                                                         Settings* settings)
     : Parameter(pGroup, id, converter, def, coarseDenominator, fineDenominator)
-    , m_settings(settings)
     , m_sibling{sibling}
+    , m_settings(settings)
 {
-  if(m_settings.has_value())
+  if(m_settings)
   {
-    auto settingsWrapper = m_settings.value();
-    auto local = settingsWrapper.get().getSetting<GlobalLocalEnableSetting>();
+    auto local = settings->getSetting<GlobalLocalEnableSetting>();
     local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
-    auto routings = settingsWrapper.get().getSetting<RoutingSettings>();
+    auto routings = settings->getSetting<RoutingSettings>();
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
 }

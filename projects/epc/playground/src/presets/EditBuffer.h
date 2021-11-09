@@ -132,7 +132,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   std::shared_ptr<ScopedGuard::Lock> getParameterFocusLockGuard();
   bool isParameterFocusLocked() const;
-  void init(OptRefSettings settings) override;
+  void init(Settings* settings) override;
 
  private:
   friend class PresetManager;

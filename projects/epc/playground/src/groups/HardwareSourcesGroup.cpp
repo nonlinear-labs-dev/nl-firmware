@@ -7,9 +7,9 @@
 #include <parameters/AftertouchParameter.h>
 #include <parameters/HardwareSourceSendParameter.h>
 
-HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet* parent, OptRefSettings anOptional)
+HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet* parent, Settings* settings)
     : ParameterGroup(parent, { "CS", VoiceGroup::Global }, "HW Source", "Hardware Source", "Hardware Source")
-    , m_settings(anOptional)
+    , m_settings(settings)
 {
 }
 

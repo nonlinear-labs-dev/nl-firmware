@@ -12,5 +12,3 @@ enum class PlaceholderIDS : int {
   Bender_Send = 1006,
   Aftertouch_Send = 1007
 };
-
-using OptRefSettings = std::optional<std::reference_wrapper<Settings>>;

@@ -236,9 +236,11 @@ PresetDualParameterGroups::tParameterGroups PresetDualParameterGroups::getGroups
 
 ParameterGroupSet &PresetDualParameterGroups::getDataScheme()
 {
+  static auto isInitialized = false;
   static ParameterGroupSet sDataScheme(&SyncMasterMockRoot::get());
-  if(!sDataScheme.isInitialized()) {
-    sDataScheme.init(std::nullopt);
+  if(!isInitialized) {
+    sDataScheme.init(nullptr);
+    isInitialized = true;
   }
   return sDataScheme;
 }

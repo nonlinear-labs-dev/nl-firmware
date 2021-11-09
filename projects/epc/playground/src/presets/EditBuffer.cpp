@@ -52,7 +52,7 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_pt
   m_hashOnStore = getHash();
 }
 
-void EditBuffer::init(OptRefSettings settings)
+void EditBuffer::init(Settings* settings)
 {
   ParameterGroupSet::init(settings);
   m_recallSet.init();

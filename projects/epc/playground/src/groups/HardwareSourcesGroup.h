@@ -12,7 +12,7 @@ class MacroControlParameter;
 class HardwareSourcesGroup : public ParameterGroup
 {
  public:
-  explicit HardwareSourcesGroup(ParameterGroupSet* parent, OptRefSettings anOptional);
+  explicit HardwareSourcesGroup(ParameterGroupSet* parent, Settings* settings);
   ~HardwareSourcesGroup() override;
 
   typedef PhysicalControlParameter* tPhysicalControlParameter;
@@ -102,5 +102,5 @@ class HardwareSourcesGroup : public ParameterGroup
   void init() override;
 
  private:
-  OptRefSettings m_settings;
+  Settings* m_settings;
 };

@@ -12,8 +12,6 @@ PhysicalControlSlider::PhysicalControlSlider(const Rect &rect)
   auto settings = Application::get().getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->onChange(sigc::hide(sigc::mem_fun(this, &PhysicalControlSlider::setDirty)));
   settings->getSetting<RoutingSettings>()->onChange(sigc::hide(sigc::mem_fun(this, &PhysicalControlSlider::setDirty)));
-
-  onParameterSelected(sigc::mem_fun(this, &PhysicalControlSlider::onParameterSelectionChanged));
 }
 
 PhysicalControlParameter* getPhysicalControlParameter(Parameter* p)
@@ -24,6 +22,12 @@ PhysicalControlParameter* getPhysicalControlParameter(Parameter* p)
 HardwareSourceSendParameter* getSendParameter(Parameter* p)
 {
   return dynamic_cast<HardwareSourceSendParameter*>(p);
+}
+
+void PhysicalControlSlider::setParameter(Parameter *param)
+{
+  Slider::setParameter(param);
+  onParameterSelectionChanged(param);
 }
 
 void PhysicalControlSlider::onParameterSelectionChanged(Parameter *p)
@@ -87,11 +91,6 @@ bool PhysicalControlSlider::redrawLocalDisabled(FrameBuffer &buffer)
   DotSlider sliderHW(hwSrc, right);
   sliderHW.setValue(hwSrc->getValue().getQuantizedClipped(), hwSrc->isBiPolar());
   sliderHW.redraw(buffer);
-
-//  buffer.setColor(FrameBufferColors::C204);
-//  buffer.fillCircle(left.getCenter(), 40);
-//  buffer.setColor(FrameBufferColors::C255);
-//  buffer.fillCircle(right.getCenter(), 40);
   return true;
 }
 

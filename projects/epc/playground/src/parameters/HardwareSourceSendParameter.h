@@ -11,32 +11,30 @@ class HardwareSourceSendParameter : public Parameter
  public:
   HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter* sibling, const ParameterId& id,
                               const ScaleConverter* converter, double def, int coarseDenominator, int fineDenominator,
-                              OptRefSettings settings);
+                              Settings* settings);
   Glib::ustring getLongName() const override;
   Glib::ustring getShortName() const override;
   Glib::ustring getInfoText() const override;
+  Layout* createLayout(FocusAndMode focusAndMode) const override;
 
   [[nodiscard]] bool isLocalEnabled() const;
   [[nodiscard]] ReturnMode getReturnMode() const;
   [[nodiscard]] PhysicalControlParameter* getSiblingParameter() const;
-
- private:
-  OptRefSettings m_settings;
-  void onLocalChanged(const Setting* setting);
-  void onRoutingsChanged(const Setting* setting);
-
- public:
-  Layout* createLayout(FocusAndMode focusAndMode) const override;
-
- private:
-  bool m_localIsEnabled = false;
-  bool m_routingIsEnabled = false;
-  static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
-  void sendParameterMessage() const override;
 
  protected:
   nlohmann::json serialize() const override;
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
 
   PhysicalControlParameter* m_sibling;
+
+ private:
+  void sendParameterMessage() const override;
+
+  void onLocalChanged(const Setting* setting);
+  void onRoutingsChanged(const Setting* setting);
+  static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
+
+  Settings* m_settings;
+  bool m_localIsEnabled = false;
+  bool m_routingIsEnabled = false;
 };

@@ -42,11 +42,8 @@ ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
 {
 }
 
-void ParameterGroupSet::init(OptRefSettings settings)
+void ParameterGroupSet::init(Settings* settings)
 {
-  if(isInitialized())
-    return;
-
   auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, settings));
   auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
   appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
@@ -82,7 +79,6 @@ void ParameterGroupSet::init(OptRefSettings settings)
   appendParameterGroup(new ScaleGroup(this));
 
   m_idToParameterMap[static_cast<size_t>(VoiceGroup::Global)] = getParametersSortedByNumber(VoiceGroup::Global);
-  m_isInitialized = true;
 }
 
 ParameterGroupSet::~ParameterGroupSet()
@@ -290,9 +286,4 @@ void ParameterGroupSet::loadSinglePresetIntoVoiceGroup(UNDO::Transaction *transa
 const ParameterGroupSet::tParamArray &ParameterGroupSet::getParameters() const
 {
   return m_parameterGroups;
-}
-
-bool ParameterGroupSet::isInitialized() const
-{
-  return m_isInitialized;
 }

@@ -88,13 +88,16 @@ Application::Application(int numArgs, char **argv)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
-    , m_heartbeatState(false)
-    , m_isQuit(false)
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
     , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui,
-                            *m_settings)
+          *m_settings)
+    , m_heartbeatState(false)
+    , m_isQuit(false)
 {
+  if(Options::s_acceptanceTests)
+    m_options->setPresetManagerPath("/tmp/pg-test-pm/");
+
 #ifdef _PROFILING
   Profiler::get().enable(true);
 #endif

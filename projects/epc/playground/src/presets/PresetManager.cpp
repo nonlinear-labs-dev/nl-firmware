@@ -45,7 +45,7 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, c
     , m_readOnly(readOnly)
     , m_options { options }
 {
-  m_editBuffer->init(settings);
+  m_editBuffer->init(&settings);
   onRestoreHappened([&]() { invalidate(); });
 }
 

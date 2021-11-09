@@ -192,6 +192,30 @@ HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)
   eb->onSelectionChanged(sigc::mem_fun(this, &HardwareSourceCCLabel::onParameterSelectionHappened), VoiceGroup::Global);
 }
 
+Setting* getMappingSetting(int id, Settings* settings)
+{
+  switch(id)
+  {
+    case C15::PID::Pedal_1:
+      return settings->getSetting<PedalCCMapping<1>>().get();
+    case C15::PID::Pedal_2:
+      return settings->getSetting<PedalCCMapping<2>>().get();
+    case C15::PID::Pedal_3:
+      return settings->getSetting<PedalCCMapping<3>>().get();
+    case C15::PID::Pedal_4:
+      return settings->getSetting<PedalCCMapping<4>>().get();
+    case C15::PID::Ribbon_1:
+      return settings->getSetting<RibbonCCMapping<1>>().get();
+    case C15::PID::Ribbon_2:
+      return settings->getSetting<RibbonCCMapping<2>>().get();
+    case C15::PID::Bender:
+      return settings->getSetting<BenderCCMapping>().get();
+    case C15::PID::Aftertouch:
+      return settings->getSetting<AftertouchCCMapping>().get();
+  }
+  return nullptr;
+}
+
 void HardwareSourceCCLabel::onParameterSelectionHappened(const Parameter *old, const Parameter *newP)
 {
   auto settings = Application::get().getSettings();
@@ -205,56 +229,9 @@ void HardwareSourceCCLabel::onParameterSelectionHappened(const Parameter *old, c
 
   if(param)
   {
-    switch(newP->getID().getNumber())
+    if(auto setting = getMappingSetting(newP->getID().getNumber(), settings))
     {
-      case C15::PID::Pedal_1:
-      {
-        auto setting = settings->getSetting<PedalCCMapping<1>>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
-      case C15::PID::Pedal_2:
-      {
-        auto setting = settings->getSetting<PedalCCMapping<2>>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
-      case C15::PID::Pedal_3:
-      {
-        auto setting = settings->getSetting<PedalCCMapping<3>>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
-      case C15::PID::Pedal_4:
-      {
-        auto setting = settings->getSetting<PedalCCMapping<4>>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
-      case C15::PID::Ribbon_1:
-      {
-        auto setting = settings->getSetting<RibbonCCMapping<1>>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
-      case C15::PID::Ribbon_2:
-      {
-        auto setting = settings->getSetting<RibbonCCMapping<2>>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
-      case C15::PID::Bender:
-      {
-        auto setting = settings->getSetting<BenderCCMapping>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
-      case C15::PID::Aftertouch:
-      {
-        auto setting = settings->getSetting<AftertouchCCMapping>();
-        m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
-        break;
-      }
+      m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
     }
   }
 }

@@ -13,6 +13,7 @@ class PhysicalControlSlider : public SelectedParameterDotSlider
  public:
   explicit PhysicalControlSlider(const Rect& rect);
   bool redraw(FrameBuffer& fb) override;
+  void setParameter(Parameter* param) override;
 
  protected:
   void onParameterSelectionChanged(Parameter* p);

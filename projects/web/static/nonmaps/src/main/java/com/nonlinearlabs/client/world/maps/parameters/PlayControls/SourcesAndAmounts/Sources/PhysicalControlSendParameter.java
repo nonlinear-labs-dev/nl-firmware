@@ -15,9 +15,6 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
     public PhysicalControlSendParameter(MapsLayout parent, int parameterID) {
         super(parent, parameterID);
     }
-
-    //This does not work as I intended, maybe put a event-handler div on top of this control if presenter.isLocalDisabled 
-    //, that handles all events instead of passing them down into the children controls
     
     @Override
     public void dragLeave() {
