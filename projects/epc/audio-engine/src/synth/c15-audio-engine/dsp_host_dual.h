@@ -79,6 +79,7 @@ class DSPInterface
     External_Both,       //Both   E.G Prim: CH1 + Sec: CH1
     Invalid
   };
+  using OutputResetEventSource = AllocatorId;  // Reset Detection (return type for C15Synth)
 
   virtual void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) = 0;
   virtual void onKeyDown(const int note, float velocity, InputEventSource from) = 0;
@@ -155,9 +156,9 @@ class dsp_host_dual : public DSPInterface
   C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override;
 
   // event bindings: Preset Messages
-  void onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
-  void onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
-  void onPresetMessage(const nltools::msg::LayerPresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::LayerPresetMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
@@ -165,8 +166,8 @@ class dsp_host_dual : public DSPInterface
   void globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
+  OutputResetEventSource localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
+  OutputResetEventSource localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   bool updateBehaviour(C15::ParameterDescriptor& param, ReturnMode mode);
@@ -266,9 +267,9 @@ class dsp_host_dual : public DSPInterface
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _monoEnable);
   void evalVoiceFadeChg(const uint32_t _layer);
-  void recallSingle(const nltools::msg::SinglePresetMessage& _msg);
-  void recallSplit(const nltools::msg::SplitPresetMessage& _msg);
-  void recallLayer(const nltools::msg::LayerPresetMessage& _msg);
+  OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);
+  OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);
+  OutputResetEventSource recallLayer(const nltools::msg::LayerPresetMessage& _msg);
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter& _param);
