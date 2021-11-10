@@ -683,7 +683,7 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
         pg.start();
         ZippedMemoryOutStream stream;
         XmlWriter writer(stream);
-        PresetManagerSerializer serializer(&pm, pg._update);
+        PresetManagerSerializer serializer(&pm, [](auto){});
         serializer.write(writer, VersionAttribute::get());
         std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
         swap->swapWith(zippedPresetManagerXml);
@@ -694,7 +694,7 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
           MemoryInStream inStream(zippedPresetManagerXml, true);
           XmlReader reader(inStream, trash->getTransaction());
           pm.clear(trash->getTransaction());
-          reader.read<PresetManagerSerializer>(&pm, pg._update);
+          reader.read<PresetManagerSerializer>(&pm, [](auto){});
           ae.sendEditBuffer();
         }
         pg.finish();

@@ -48,8 +48,9 @@ void BankUseCases::stepPresetSelection(int inc)
     const bool directLoad = isDirectLoadActive();
     if(auto current = m_bank->getSelectedPreset())
     {
-      auto currentPos = m_bank->getPresetPosition(current);
-      auto presetPosToSelect = std::max(0ul, std::min(m_bank->getNumPresets() - 1, currentPos + inc));
+      int currentPos = static_cast<int>(m_bank->getPresetPosition(current));
+      int numPresets = static_cast<int>(m_bank->getNumPresets());
+      auto presetPosToSelect = std::max(0, std::min(numPresets - 1, currentPos + inc));
       if(auto selectedPreset = presetManager->getSelectedPreset())
       {
         if(auto presetToSelect = m_bank->getPresetAt(presetPosToSelect))
@@ -262,10 +263,12 @@ Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
 {
   auto pm = getPresetManager();
   auto eb = pm->getEditBuffer();
+  const auto ebWasModified = eb->isModified();
   auto scope = pm->getUndoScope().startTransaction("Insert Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->insertPreset(transaction, anchor, std::make_unique<Preset>(m_bank, *eb));
-  preset->guessName(transaction);
+  if(ebWasModified)
+    preset->guessName(transaction);
   eb->undoableSetLoadedPresetInfo(transaction, preset);
   pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
@@ -276,10 +279,12 @@ Preset* BankUseCases::appendEditBuffer()
 {
   auto pm = getPresetManager();
   auto eb = pm->getEditBuffer();
+  const auto ebWasModified = eb->isModified();
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *eb));
-  preset->guessName(transaction);
+  if(ebWasModified)
+    preset->guessName(transaction);
   eb->undoableSetLoadedPresetInfo(transaction, preset);
   pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());
@@ -301,7 +306,7 @@ Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
 
   auto scope = pm->getUndoScope().startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();
-  auto ebIsModified = eb->isModified();
+  const auto ebIsModified = eb->isModified();
 
   auto preset = m_bank->insertPreset(transaction, pos, std::make_unique<Preset>(m_bank, *eb, uuid));
 
