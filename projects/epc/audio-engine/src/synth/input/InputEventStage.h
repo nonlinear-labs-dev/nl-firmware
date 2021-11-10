@@ -38,7 +38,7 @@ class InputEventStage
   [[nodiscard]] HWChangeSource getHWSourcePositionSource(HardwareSource hwid) const;
 
   void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
-  void onSoundConversionHappened();
+  void requestExternalReset(DSPInterface::OutputResetEventSource resetTarget);
 
   static HardwareSource parameterIDToHWID(int id);
   bool getAndResetKeyBedStatus();
@@ -136,4 +136,6 @@ class InputEventStage
   bool didRelevantSectionsChange(const tMSG& message, const tMSG& message1);
   void doInternalReset();
   void doExternalReset(const tMSG newMessage, const tMSG oldMessage);
+
+  template <typename tChannelEnum> void doSendAllNotesOff(tChannelEnum tEnum);
 };

@@ -238,14 +238,6 @@ namespace nltools
       int32_t framesPerPeriod = 0;
     };
 
-    struct ConvertedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::SoundConverted;
-      }
-    };
-
     namespace Setting
     {
       struct NoteShiftMessage

@@ -8,7 +8,7 @@ static std::chrono::nanoseconds framesToNanos(size_t frames)
 
 FlacEncoder::Frame::Frame(const FLAC__byte *buffer, size_t bytes, Sample max,
                           std::chrono::system_clock::time_point timestamp)
-    : buffer{ buffer, buffer + bytes }
+    : buffer { buffer, buffer + bytes }
     , recordTime(timestamp)
     , id(getNextId())
     , max(static_cast<uint8_t>(std::min(max, 1.0f) * std::numeric_limits<uint8_t>::max()))

@@ -52,8 +52,6 @@ class AudioEngineProxy : public sigc::trackable
   static nltools::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);
   static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
-  void sendConvertedMessage();
-
  private:
   static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
   static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
