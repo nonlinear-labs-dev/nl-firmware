@@ -22,5 +22,3 @@ string(REPLACE ";" " " NPM_PACKAGES "${NPM_PACKAGES}")
 
 add_subdirectory(projects)
 add_subdirectory(build-tools)
-add_subdirectory(build-tools2)
-

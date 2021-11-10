@@ -1,3 +1,6 @@
+SET(DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/../nonlinear-labs-downloads" CACHE STRING "Where to store downloads needed for NonlinearLabs-Builds")
+SET(NL_SERVER h2949050.stratoserver.net)
+
 SET(SHARED_PACKAGES sudo glibmm libsoup freetype2 libpng png++ boost alsa) 
 SET(TARGET_PACKAGES cpupower base linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils
                     rsync grub openssh sshfs efibootmgr alsa-tools alsa-utils linux-firmware shared-mime-info)
@@ -25,17 +28,14 @@ add_custom_command(
     COMMENT "Build C15 update"
     OUTPUT ${CMAKE_BINARY_DIR}/nonlinear-c15-update.tar
     DEPENDS epc-create-update
-    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
     DEPENDS epc2-create-update
-    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
     DEPENDS bbb-rootfs
-    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
     DEPENDS playcontroller-blobs
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/playcontroller/projects/playcontroller/firmware/src/main/main.bin
     DEPENDS ${SOURCE_FILES}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
-        ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
+        ${CMAKE_BINARY_DIR}/build-tools/epc2/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
         ${CMAKE_BINARY_DIR}/build-tools/playcontroller/projects/playcontroller/firmware/src/main/main.bin
         ${CMAKE_BINARY_DIR}

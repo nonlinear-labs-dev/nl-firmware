@@ -31,8 +31,8 @@ ADD_CUSTOM_COMMAND(
     ${DOCKERNAME}
 )
 
-ADD_CUSTOM_TARGET(bt2-epc2os-rootfs
+ADD_CUSTOM_TARGET(epc2os-rootfs
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/rootfs.ext4 
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/bootfs.fat
-  DEPENDS bt2-epc2-fetch-nl-resources
+  DEPENDS epc2-fetch-nl-resources
 )

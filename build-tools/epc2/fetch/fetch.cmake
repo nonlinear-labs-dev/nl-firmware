@@ -52,5 +52,5 @@ ADD_CUSTOM_COMMAND(
   COMMAND touch .nl-files-fetched
 )
 
-ADD_CUSTOM_TARGET(bt2-epc2-fetch-and-upload-resources DEPENDS .files-uploaded)
-ADD_CUSTOM_TARGET(bt2-epc2-fetch-nl-resources DEPENDS .nl-files-fetched)
+ADD_CUSTOM_TARGET(epc2-fetch-and-upload-resources DEPENDS .files-uploaded)
+ADD_CUSTOM_TARGET(epc2-fetch-nl-resources DEPENDS .nl-files-fetched)
