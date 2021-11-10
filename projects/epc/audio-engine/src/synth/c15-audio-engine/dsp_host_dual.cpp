@@ -581,6 +581,8 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
     switch(static_cast<C15::Parameters::Local_Modulateables>(_id))
     {
       case C15::Parameters::Local_Modulateables::Unison_Detune:
+      case C15::Parameters::Local_Modulateables::Unison_Phase:
+      case C15::Parameters::Local_Modulateables::Unison_Pan:
       case C15::Parameters::Local_Modulateables::Mono_Grp_Glide:
         if(m_layer_mode != LayerMode::Split)
         {
@@ -644,20 +646,6 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
         if(m_layer_mode == LayerMode::Layer)
         {
           evalVoiceFadeChg(layerId);
-        }
-        break;
-      case C15::Parameters::Local_Unmodulateables::Unison_Phase:
-      case C15::Parameters::Local_Unmodulateables::Unison_Pan:
-        if(m_layer_mode != LayerMode::Split)
-        {
-          for(uint32_t lId = 0; lId < m_params.m_layer_count; lId++)
-          {
-            localTransition(lId, param, m_edit_time.m_dx);
-          }
-        }
-        else
-        {
-          localTransition(layerId, param, m_edit_time.m_dx);
         }
         break;
       default:
