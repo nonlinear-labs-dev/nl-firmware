@@ -1813,7 +1813,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
     debugLevels();
   }
   // return detected reset event
-  return resetDetected ? OutputResetEventSource::Global : OutputResetEventSource::None;
+  if(resetDetected)
+  {
+    return oldLayerMode == LayerMode::Split ? OutputResetEventSource::Local_Both : OutputResetEventSource::Global;
+  }
+  return OutputResetEventSource::None;
 }
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
@@ -1973,18 +1977,22 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
     debugLevels();
   }
   // return detected reset event
-  switch(resetDetected[0] + (resetDetected[1] << 1))
+  if(resetDetected[0] || resetDetected[1])
   {
-    case 1:
-      return OutputResetEventSource::Local_I;
-    case 2:
-      return OutputResetEventSource::Local_II;
-    case 3:
-      return OutputResetEventSource::Local_Both;
-    case 0:
-    default:
-      return OutputResetEventSource::None;
+    //return oldLayerMode == LayerMode::Split ? OutputResetEventSource::Local_Both : OutputResetEventSource::Global;
+    if(oldLayerMode != LayerMode::Split)
+      return OutputResetEventSource::Global;
+    switch(resetDetected[0] + (resetDetected[1] << 1))
+    {
+      case 1:
+        return OutputResetEventSource::Local_I;
+      case 2:
+        return OutputResetEventSource::Local_II;
+      case 3:
+        return OutputResetEventSource::Local_Both;
+    }
   }
+  return OutputResetEventSource::None;
 }
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
@@ -2142,7 +2150,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
     debugLevels();
   }
   // return detected reset event
-  return resetDetected ? OutputResetEventSource::Global : OutputResetEventSource::None;
+  if(resetDetected)
+  {
+    return oldLayerMode == LayerMode::Split ? OutputResetEventSource::Local_Both : OutputResetEventSource::Global;
+  }
+  return OutputResetEventSource::None;
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter& _param)
