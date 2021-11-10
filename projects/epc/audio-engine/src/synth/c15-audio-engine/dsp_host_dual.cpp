@@ -359,7 +359,7 @@ void dsp_host_dual::logStatus()
   }
 }
 
-void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _msg)
+DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _msg)
 {
   if(LOG_RECALL)
   {
@@ -369,6 +369,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
 
   if(m_glitch_suppression)
   {
+    OutputResetEventSource result;
     // glitch suppression: start outputMute fade
     m_fade.muteAndDo([&] {
       // global flush
@@ -376,21 +377,22 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage& _ms
       m_poly[1].flushDSP();
       m_mono[0].flushDSP();
       m_mono[1].flushDSP();
-      recallSingle(_msg);
+      result = recallSingle(_msg);
     });
 
     if(LOG_RECALL)
     {
       nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
     }
+    return result;  // return detected reset event
   }
   else
   {
-    recallSingle(_msg);
+    return recallSingle(_msg);  // return detected reset event
   }
 }
 
-void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg)
+DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg)
 {
   if(LOG_RECALL)
   {
@@ -399,6 +401,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
 
   if(m_glitch_suppression)
   {
+    OutputResetEventSource result;
     // glitch suppression: start outputMute fade
     m_fade.muteAndDo([&] {
       // global flush
@@ -406,21 +409,22 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage& _msg
       m_poly[1].flushDSP();
       m_mono[0].flushDSP();
       m_mono[1].flushDSP();
-      recallSplit(_msg);
+      result = recallSplit(_msg);
     });
 
     if(LOG_RECALL)
     {
       nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
     }
+    return result;  // return detected reset event
   }
   else
   {
-    recallSplit(_msg);
+    return recallSplit(_msg);  // return detected reset event
   }
 }
 
-void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg)
+DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg)
 {
   if(LOG_RECALL)
   {
@@ -428,6 +432,7 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
   }
   if(m_glitch_suppression)
   {
+    OutputResetEventSource result;
     // glitch suppression: start outputMute fade
     m_fade.muteAndDo([&] {
       // global flush
@@ -435,17 +440,18 @@ void dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage& _msg
       m_poly[1].flushDSP();
       m_mono[0].flushDSP();
       m_mono[1].flushDSP();
-      recallLayer(_msg);
+      result = recallLayer(_msg);
     });
 
     if(LOG_RECALL)
     {
       nltools::Log::info(__PRETTY_FUNCTION__, m_fade.getNumMuteSamplesRendered(), "mute samples rendered.");
     }
+    return result;  // return detected reset event
   }
   else
   {
-    recallLayer(_msg);
+    return recallLayer(_msg);  // return detected reset event
   }
 }
 
@@ -677,7 +683,8 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
   }
 }
 
-void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
+DSPInterface::OutputResetEventSource
+    dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
 {
   const uint32_t layerId = getLayerId(_msg.voiceGroup);
   auto param = m_params.get_local_unison_voices(getLayer(_msg.voiceGroup));
@@ -706,10 +713,21 @@ void dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParam
         m_poly[lId].m_key_active = 0;
       }
     });
+    // return detected reset event
+    if(m_layer_mode != LayerMode::Split)
+    {
+      return OutputResetEventSource::Global;
+    }
+    else
+    {
+      return layerId == 0 ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+    }
   }
+  return OutputResetEventSource::None;
 }
 
-void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
+DSPInterface::OutputResetEventSource
+    dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
 {
   const uint32_t layerId = getLayerId(_msg.voiceGroup);
   auto param = m_params.get_local_mono_enable(getLayer(_msg.voiceGroup));
@@ -735,7 +753,17 @@ void dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParamet
         m_poly[lId].m_key_active = 0;
       }
     });
+    // return detected reset event
+    if(m_layer_mode != LayerMode::Split)
+    {
+      return OutputResetEventSource::Global;
+    }
+    else
+    {
+      return layerId == 0 ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+    }
   }
+  return OutputResetEventSource::None;
 }
 
 void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg)
@@ -1636,7 +1664,7 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
   }
 }
 
-void dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage& _msg)
+DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage& _msg)
 {
   auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Single);
   auto layerChanged = oldLayerMode != m_layer_mode;
@@ -1649,7 +1677,8 @@ void dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage& _msg)
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  if(layerChanged || polyChanged)
+  const bool resetDetected = layerChanged || polyChanged;
+  if(resetDetected)
   {
     if(LOG_RESET)
     {
@@ -1783,9 +1812,11 @@ void dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage& _msg)
   {
     debugLevels();
   }
+  // return detected reset event
+  return resetDetected ? OutputResetEventSource::Global : OutputResetEventSource::None;
 }
 
-void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
+DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
 {
   auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Split);
   auto layerChanged = oldLayerMode != m_layer_mode;
@@ -1796,6 +1827,7 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   }
 
   auto msg = &_msg;
+  bool resetDetected[2];
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
@@ -1804,7 +1836,8 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
     auto polyChanged = evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
 
     // reset detection
-    if(layerChanged || polyChanged)
+    resetDetected[layerId] = layerChanged || polyChanged;
+    if(resetDetected[layerId])
     {
       if(LOG_RESET)
       {
@@ -1939,9 +1972,22 @@ void dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
   {
     debugLevels();
   }
+  // return detected reset event
+  switch(resetDetected[0] + (resetDetected[1] << 1))
+  {
+    case 1:
+      return OutputResetEventSource::Local_I;
+    case 2:
+      return OutputResetEventSource::Local_II;
+    case 3:
+      return OutputResetEventSource::Local_Both;
+    case 0:
+    default:
+      return OutputResetEventSource::None;
+  }
 }
 
-void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
+DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
 {
   auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Layer);
   auto layerChanged = oldLayerMode != m_layer_mode;
@@ -1954,7 +2000,8 @@ void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  if(layerChanged || polyChanged)
+  const bool resetDetected = layerChanged || polyChanged;
+  if(resetDetected)
   {
     if(LOG_RESET)
     {
@@ -2094,6 +2141,8 @@ void dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
   {
     debugLevels();
   }
+  // return detected reset event
+  return resetDetected ? OutputResetEventSource::Global : OutputResetEventSource::None;
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter& _param)
