@@ -13,7 +13,8 @@ class MidiRuntimeOptions
   typedef tMidiSettingMessage::RoutingAspect tRoutingAspect;
   typedef tMidiSettingMessage::RoutingIndex tRoutingIndex;
 
-  enum class MidiChannelModeMessageCCs : int {
+  enum class MidiChannelModeMessageCCs : int
+  {
     AllSoundOff = 120,
     ResetAllControllers = 121,
     LocalControlOnOff = 122,
@@ -54,7 +55,7 @@ class MidiRuntimeOptions
   static int channelEnumToInt(MidiReceiveChannelSplit channel);
   static MidiReceiveChannelSplit normalToSplitChannel(MidiReceiveChannel ch);
 
-  template <Midi::LSB::HWSourceMidiCC tLSB> [[nodiscard]] int getCCFor() const
+  template <Midi::LSB::HWSourceMidiCC tLSB>[[nodiscard]] int getCCFor() const
   {
     if constexpr(tLSB == Midi::LSB::Ped1)
       return decodeEnumLSB(pedal1CC).value_or(-1);
@@ -71,7 +72,7 @@ class MidiRuntimeOptions
     else
       nltools_assertNotReached();
   }
-  template <Midi::MSB::HWSourceMidiCC tMSB> [[nodiscard]] int getCCFor() const
+  template <Midi::MSB::HWSourceMidiCC tMSB>[[nodiscard]] int getCCFor() const
   {
     if constexpr(tMSB == Midi::MSB::Ped1)
       return decodeEnumMSB(pedal1CC).value_or(-1);
@@ -97,7 +98,6 @@ class MidiRuntimeOptions
   [[nodiscard]] std::optional<int> getBenderLSBCC() const;
   [[nodiscard]] std::optional<int> getAftertouchMSBCC() const;
   [[nodiscard]] std::optional<int> getAftertouchLSBCC() const;
-
 
   [[nodiscard]] bool isSwitchingCC(HardwareSource hwid) const;
   [[nodiscard]] bool enableHighVelCC() const;

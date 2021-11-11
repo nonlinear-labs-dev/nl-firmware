@@ -750,8 +750,7 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
-  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
-  {
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit) {
     const auto routingIndex = static_cast<RoutingIndex>(hwID);
 
     switch(source)
@@ -1100,34 +1099,59 @@ void InputEventStage::doInternalReset()
   m_dspHost->fadeOutResetVoiceAllocAndEnvelopes();
 }
 
+template <typename tChannelEnum> void InputEventStage::doSendAllNotesOff(tChannelEnum channel)
+{
+  constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
+  constexpr uint8_t CCModeChange = 0b10110000;
+  const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
+
+  if(iChannel != -1)
+  {
+    m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
+  }
+}
+
 void InputEventStage::doExternalReset(const tMSG newMessage, const tMSG oldMessage)
 {
-  auto sendNotesOff = [this](auto channel)
-  {
-    constexpr auto CCNum = static_cast<uint8_t>(MidiRuntimeOptions::MidiChannelModeMessageCCs::AllNotesOff);
-    constexpr uint8_t CCModeChange = 0b10110000;
-    const auto iChannel = MidiRuntimeOptions::channelEnumToInt(channel);
-
-    if(iChannel != -1)
-    {
-      m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
-    }
-  };
-
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
   const auto didPrimSendChannelChange = newMessage.sendChannel != oldMessage.sendChannel;
   const auto didSplitSendChannelChange = newMessage.sendSplitChannel != oldMessage.sendSplitChannel;
 
   if(didPrimSendChannelChange)
-    sendNotesOff(oldMessage.sendChannel);
+    doSendAllNotesOff(oldMessage.sendChannel);
   else
-    sendNotesOff(newMessage.sendChannel);
+    doSendAllNotesOff(newMessage.sendChannel);
 
   if(isSplit)
   {
     if(didSplitSendChannelChange)
-      sendNotesOff(oldMessage.sendSplitChannel);
+      doSendAllNotesOff(oldMessage.sendSplitChannel);
     else
-      sendNotesOff(newMessage.sendSplitChannel);
+      doSendAllNotesOff(newMessage.sendSplitChannel);
+  }
+}
+
+void InputEventStage::requestExternalReset(DSPInterface::OutputResetEventSource reset)
+{
+  using ResetEvent = DSPInterface::OutputResetEventSource;
+
+  auto primSend = m_options->getMIDIPrimarySendChannel();
+  auto secSend = m_options->getMIDISplitSendChannel();
+
+  switch(reset)
+  {
+    case ResetEvent::Global:
+    case ResetEvent::Local_I:
+      doSendAllNotesOff(primSend);
+      break;
+    case ResetEvent::Local_II:
+      doSendAllNotesOff(secSend);
+      break;
+    case ResetEvent::Local_Both:
+      doSendAllNotesOff(primSend);
+      doSendAllNotesOff(secSend);
+      break;
+    default:
+      break;
   }
 }
