@@ -94,7 +94,9 @@ bool AspectList::redraw(FrameBuffer& fb)
   const auto aspectH = totalHeight / 5;
 
   LabelStyleable l(getPosition());
-  LabelStyle style{.size = FontSize::Size8, .decoration = FontDecoration::Regular, .justification = Font::Justification::Left};
+  LabelStyle style { .size = FontSize::Size8,
+                     .decoration = FontDecoration::Regular,
+                     .justification = Font::Justification::Left };
   l.setLabelStyle(style);
 
   TickMark t({ 0, 0, 10, 10 });
@@ -192,9 +194,10 @@ class SetupModuleHeader : public Label
   }
 };
 
-RoutingsEditor::RoutingsEditor(RoutingSettings::tRoutingIndex id)
+RoutingsEditor::RoutingsEditor(RoutingSettings::tRoutingIndex id, tID& selection)
     : MenuEditor()
     , m_id { id }
+    , m_parentSelection { selection }
 {
   clear();
 
@@ -323,6 +326,7 @@ void RoutingsEditor::stepEntry(int inc)
     }
   }
 
+  m_parentSelection = m_id;
   update();
 }
 
@@ -347,8 +351,8 @@ void RoutingsEditor::stepAspect(int inc)
 
 void RoutingsEditor::update()
 {
-  static auto isTrue = [](auto a){ return a; };
-  static auto isFalse = [](auto b){ return !b; };
+  static auto isTrue = [](auto a) { return a; };
+  static auto isFalse = [](auto b) { return !b; };
 
   m_aspectList->update(m_id, m_aspect);
   m_entryLabel->setText(getTextFor(m_id));
