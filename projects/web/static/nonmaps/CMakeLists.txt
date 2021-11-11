@@ -27,6 +27,7 @@ add_custom_command(
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/.staging
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/compilation-mappings.txt
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt
   COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/bundle
   COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/bundle
   COMMAND cp -r ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/* ${CMAKE_CURRENT_BINARY_DIR}/bundle
