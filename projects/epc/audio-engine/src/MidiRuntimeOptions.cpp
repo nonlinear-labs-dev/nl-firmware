@@ -358,8 +358,7 @@ AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
 
 bool MidiRuntimeOptions::isSwitchingCC(HardwareSource hwid) const
 {
-  auto enumIsInSwitching = [](PedalCC cc) -> bool
-  {
+  auto enumIsInSwitching = [](PedalCC cc) -> bool {
     switch(cc)
     {
       case PedalCC::CC64:
