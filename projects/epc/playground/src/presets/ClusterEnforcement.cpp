@@ -158,11 +158,15 @@ void ClusterEnforcement::connectToClusterStructure(tTreeNodePtr masterNode, tTre
   switch(toAttachDirection(myNode->bank->getAttachDirection()))
   {
     case Bank::AttachmentDirection::left:
+      nltools_assertOnDevPC(myNode->left == nullptr);
+      nltools_assertOnDevPC(masterNode->right == nullptr);
       myNode->left = masterNode;
       masterNode->right = myNode;
       break;
 
     case Bank::AttachmentDirection::top:
+      nltools_assertOnDevPC(myNode->top == nullptr);
+      nltools_assertOnDevPC(masterNode->bottom == nullptr);
       myNode->top = masterNode;
       masterNode->bottom = myNode;
       break;
