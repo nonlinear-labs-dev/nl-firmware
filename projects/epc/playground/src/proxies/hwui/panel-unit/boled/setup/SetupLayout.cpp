@@ -114,6 +114,11 @@ namespace NavTree
       return false;
     }
 
+    virtual Node* onEditModeExited()
+    {
+      return nullptr;
+    }
+
     [[nodiscard]] virtual Glib::ustring getName() const
     {
       return name;
@@ -1027,9 +1032,10 @@ namespace NavTree
   struct RoutingsEntry : public EditableLeaf
   {
    public:
-    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
+    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text, RoutingSettings::tRoutingIndex& parentSelection)
         : EditableLeaf(p, text)
         , m_id { id }
+        , m_parentSelection { parentSelection }
     {
     }
 
@@ -1040,11 +1046,12 @@ namespace NavTree
 
     Control *createEditor() override
     {
-      return new RoutingsEditor(m_id);
+      return new RoutingsEditor(m_id, m_parentSelection);
     }
 
    private:
     const RoutingSettings::tRoutingIndex m_id;
+    RoutingSettings::tRoutingIndex& m_parentSelection;
   };
 
   template <bool value> struct SetRoutingsTo : public OneShotEntry
@@ -1067,24 +1074,64 @@ namespace NavTree
     }
   };
 
+  static RoutingSettings::tRoutingIndex selectedRouting = RoutingSettings::tRoutingIndex::Notes;
+
   struct MidiRoutings : InnerNode
   {
     explicit MidiRoutings(InnerNode *p)
         : InnerNode(p, "Routings")
     {
       typedef RoutingSettings::tRoutingIndex tID;
-      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes"));
-      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch."));
-      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4"));
-      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender"));
-      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch"));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1"));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2"));
+      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch.", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2", selectedRouting));
       children.emplace_back(new SetRoutingsTo<true>(this));
       children.emplace_back(new SetRoutingsTo<false>(this));
+    }
+
+
+    Node *onEditModeExited() override
+    {
+      auto at = [](auto& list, auto n)
+      {
+        auto it = list.begin();
+        std::advance(it, n);
+        return it->get();
+      };
+
+      switch(selectedRouting)
+      {
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal1:
+          return at(children, 2);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal2:
+          return at(children, 3);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal3:
+          return at(children, 4);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal4:
+          return at(children, 5);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Bender:
+          return at(children, 6);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Aftertouch:
+          return at(children, 7);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1:
+          return at(children, 8);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2:
+          return at(children, 9);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::ProgramChange:
+          return at(children, 1);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Notes:
+          return at(children, 0);
+        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::LENGTH:
+          break;
+      }
+      return nullptr;
     }
 
     Control *createView() override
@@ -1144,6 +1191,26 @@ namespace NavTree
         return true;
       }
       return false;
+    }
+
+    void diveOutOfEditMode()
+    {
+      auto focusNode = (*focus).get();
+
+      if(auto pa = focusNode->parent)
+      {
+        if(auto newFocus = pa->onEditModeExited())
+        {
+          for(auto it = pa->children.begin(); it != pa->children.end(); it++)
+          {
+            if(it->get() == newFocus)
+            {
+              focus = it;
+              return;
+            }
+          }
+        }
+      }
     }
 
     bool diveUp()
@@ -1325,7 +1392,10 @@ bool SetupLayout::addEditor()
 void SetupLayout::diveUp()
 {
   if(m_focusAndMode.mode == UIMode::Edit)
+  {
     m_focusAndMode.mode = UIMode::Select;
+    m_tree->diveOutOfEditMode();
+  }
   else
     m_tree->diveUp();
 
