@@ -114,7 +114,7 @@ namespace NavTree
       return false;
     }
 
-    virtual Node* onEditModeExited()
+    virtual Node*getDesiredFocusChangeOnEditModeExited()
     {
       return nullptr;
     }
@@ -1074,30 +1074,27 @@ namespace NavTree
     }
   };
 
-  static RoutingSettings::tRoutingIndex selectedRouting = RoutingSettings::tRoutingIndex::Notes;
-
   struct MidiRoutings : InnerNode
   {
+    typedef RoutingSettings::tRoutingIndex tID;
     explicit MidiRoutings(InnerNode *p)
         : InnerNode(p, "Routings")
     {
-      typedef RoutingSettings::tRoutingIndex tID;
-      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch.", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1", selectedRouting));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2", selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch.", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2", m_selectedRouting));
       children.emplace_back(new SetRoutingsTo<true>(this));
       children.emplace_back(new SetRoutingsTo<false>(this));
     }
 
-
-    Node *onEditModeExited() override
+    Node *getDesiredFocusChangeOnEditModeExited() override
     {
       auto at = [](auto& list, auto n)
       {
@@ -1106,29 +1103,29 @@ namespace NavTree
         return it->get();
       };
 
-      switch(selectedRouting)
+      switch(m_selectedRouting)
       {
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal1:
+        case tID::Pedal1:
           return at(children, 2);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal2:
+        case tID::Pedal2:
           return at(children, 3);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal3:
+        case tID::Pedal3:
           return at(children, 4);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Pedal4:
+        case tID::Pedal4:
           return at(children, 5);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Bender:
+        case tID::Bender:
           return at(children, 6);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Aftertouch:
+        case tID::Aftertouch:
           return at(children, 7);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1:
+        case tID::Ribbon1:
           return at(children, 8);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2:
+        case tID::Ribbon2:
           return at(children, 9);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::ProgramChange:
+        case tID::ProgramChange:
           return at(children, 1);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Notes:
+        case tID::Notes:
           return at(children, 0);
-        case nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::LENGTH:
+        case tID::LENGTH:
           break;
       }
       return nullptr;
@@ -1138,6 +1135,9 @@ namespace NavTree
     {
       return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
+
+   private:
+    tID m_selectedRouting = tID::Notes;
   };
 
   struct MidiSettings : InnerNode
@@ -1199,7 +1199,7 @@ namespace NavTree
 
       if(auto pa = focusNode->parent)
       {
-        if(auto newFocus = pa->onEditModeExited())
+        if(auto newFocus = pa->getDesiredFocusChangeOnEditModeExited())
         {
           for(auto it = pa->children.begin(); it != pa->children.end(); it++)
           {
