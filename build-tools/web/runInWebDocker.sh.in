@@ -4,11 +4,6 @@ SCRIPT=$(cat $1)
 SOURCE_DIR="$2"
 BINARY_DIR="$3"
 DOCKER_OPTIONS="$4"
-
-if tty; then
-    TTY_OPTION=" -ti "
-fi
-
 USER_ID=$(id -u)
 
-docker run -e USER_ID=$USER_ID --privileged $DOCKER_OPTIONS $TTY_OPTION -v $BINARY_DIR:/builddir -v $SOURCE_DIR:/src @DOCKERNAME@ bash -c "$SCRIPT"
+docker run -e USER_ID=$USER_ID --privileged $DOCKER_OPTIONS -v $BINARY_DIR:/builddir -v $SOURCE_DIR:/src @DOCKERNAME@ bash -c "$SCRIPT"
