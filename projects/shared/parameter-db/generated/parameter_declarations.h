@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2020-12-05, 14:53
-    @version    1.7B-8
+    @date       2021-11-10, 16:47
+    @version    1.7B-9
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
     @todo
@@ -25,7 +25,8 @@ namespace C15
       Global_Modulateable,
       Global_Unmodulateable,
       Local_Modulateable,
-      Local_Unmodulateable
+      Local_Unmodulateable,
+      Display_Parameter
     };
 
     enum class SmootherSection
@@ -88,6 +89,19 @@ namespace C15
       Aftertouch,
       Ribbon_1,
       Ribbon_2,
+      _LENGTH_
+    };
+
+    enum class Display_Parameters
+    {
+      Pedal_1_Send,
+      Pedal_2_Send,
+      Pedal_3_Send,
+      Pedal_4_Send,
+      Bender_Send,
+      Aftertouch_Send,
+      Ribbon_1_Send,
+      Ribbon_2_Send,
       _LENGTH_
     };
 
@@ -1166,7 +1180,15 @@ namespace C15
       Osc_B_Reset = 394,
       Voice_Grp_Mute = 395,
       Voice_Grp_Fade_From = 396,
-      Voice_Grp_Fade_Range = 397
+      Voice_Grp_Fade_Range = 397,
+      Pedal_1_Send = 398,
+      Pedal_2_Send = 399,
+      Pedal_3_Send = 400,
+      Pedal_4_Send = 401,
+      Bender_Send = 402,
+      Aftertouch_Send = 403,
+      Ribbon_1_Send = 404,
+      Ribbon_2_Send = 405
     };
 
   }  // namespace C15::PID

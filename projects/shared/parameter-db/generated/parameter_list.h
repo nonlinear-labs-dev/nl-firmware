@@ -1,11 +1,11 @@
 #pragma once
 
 /******************************************************************************/
-/**	@file	parameter_list.h
-    @date	2020-12-15, 17:30
-    @version	1.7B-8
-    @author	M. Seeber
-    @brief	complete list of parameters (and their properties) in TCD order
+/**	@file       parameter_list.h
+    @date       2021-11-10, 16:47
+    @version    1.7B-9
+    @author     M. Seeber
+    @brief      complete list of parameters (and their properties) in TCD order
     @todo
 *******************************************************************************/
 
@@ -2200,8 +2200,46 @@ namespace C15
         "From\". For Part II the fade-out applies to keys below the breakpoint set by \"Fade From\".\nWith a Fade "
         "Range of zero the Part is muted for all keys beyond the breakpoint, which is the default behavior. You can "
         "set this parameter in fractions of semitones to make subtle changes to the curve of the fade-out." } },
-    { None },
-    { None }
+    { Parameters::Display_Parameters::Pedal_1_Send,
+      PID::Pedal_1_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 1 Send", "Pedal 1 Snd", "n/a" } },
+    { Parameters::Display_Parameters::Pedal_2_Send,
+      PID::Pedal_2_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 2 Send", "Pedal 2 Snd", "n/a" } },
+    { Parameters::Display_Parameters::Pedal_3_Send,
+      PID::Pedal_3_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 3 Send", "Pedal 3 Snd", "n/a" } },
+    { Parameters::Display_Parameters::Pedal_4_Send,
+      PID::Pedal_4_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 4 Send", "Pedal 4 Snd", "n/a" } },
+    { Parameters::Display_Parameters::Bender_Send,
+      PID::Bender_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Bender Send", "Bender Snd", "n/a" } },
+    { Parameters::Display_Parameters::Aftertouch_Send,
+      PID::Aftertouch_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Aftertouch Send", "Aftertouch Snd", "n/a" } },
+    { Parameters::Display_Parameters::Ribbon_1_Send,
+      PID::Ribbon_1_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 1 Send", "Ribbon 1 Snd", "n/a" } },
+    { Parameters::Display_Parameters::Ribbon_2_Send,
+      PID::Ribbon_2_Send,
+      0.0f,
+      {},
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 2 Send", "Ribbon 2 Snd", "n/a" } },
   };
 
 }  // namespace C15
