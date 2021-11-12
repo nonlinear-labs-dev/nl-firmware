@@ -116,7 +116,7 @@ add_custom_command(
     DEPENDS epc-create-update
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
     DEPENDS epc2-create-update
-    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc2/update.tar
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
     DEPENDS bbb-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
