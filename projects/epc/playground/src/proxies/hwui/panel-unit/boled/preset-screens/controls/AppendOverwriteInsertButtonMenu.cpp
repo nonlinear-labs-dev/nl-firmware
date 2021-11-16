@@ -99,7 +99,10 @@ void AppendOverwriteInsertButtonMenu::executeAction()
           if(modified)
             pushRenameScreen(bankUseCases.appendEditBuffer());
           else
-            bankUseCases.appendEditBuffer();
+          {
+            auto newPreset = bankUseCases.appendEditBuffer();
+            animatePreset(newPreset);
+          }
           break;
 
         case PresetStoreModeSettings::PRESET_STORE_MODE_INSERT:
