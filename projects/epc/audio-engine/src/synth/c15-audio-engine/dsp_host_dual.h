@@ -101,7 +101,7 @@ class DSPInterface
   virtual void resetReturningHWSource(HardwareSource hwui)
   {
   }
-  virtual bool resetIsNecessary()
+  virtual bool resetIsNecessary(SoundType _current)
   {
     return true;
   }
@@ -145,7 +145,7 @@ class dsp_host_dual : public DSPInterface
   using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
   float getReturnValueFor(HardwareSource hwid) override;
   void resetReturningHWSource(HardwareSource hwui) override;
-  bool resetIsNecessary() override;
+  bool resetIsNecessary(SoundType _current) override;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) override;
@@ -213,8 +213,19 @@ class dsp_host_dual : public DSPInterface
         return VoiceGroup::Invalid;
     }
   }
-
   using LayerMode = C15::Properties::LayerMode;
+  static inline SoundType fromType(const LayerMode& _current)
+  {
+    switch(_current)
+    {
+      case LayerMode::Single:
+        return SoundType::Single;
+      case LayerMode::Split:
+        return SoundType::Split;
+      case LayerMode::Layer:
+        return SoundType::Layer;
+    }
+  }
   // parameters
   Engine::Param_Handle m_params;
   Time_Param m_edit_time, m_transition_time;
@@ -268,6 +279,7 @@ class dsp_host_dual : public DSPInterface
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _monoEnable);
   void evalVoiceFadeChg(const uint32_t _layer);
+  OutputResetEventSource determineOutputEventSource(const bool _detected, const LayerMode _type);
   OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);
   OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);
   OutputResetEventSource recallLayer(const nltools::msg::LayerPresetMessage& _msg);

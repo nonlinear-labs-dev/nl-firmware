@@ -7,14 +7,14 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
                                  InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
     : m_tcdDecoder(dspHost, options, &m_shifteable_keys)
     , m_midiDecoder(dspHost, options)
-    , m_dspHost { dspHost }
-    , m_options { options }
+    , m_dspHost{ dspHost }
+    , m_options{ options }
     , m_hwChangedCB(std::move(hwChangedCB))
     , m_channelModeMessageCB(std::move(specialCB))
-    , m_midiOut { std::move(outCB) }
+    , m_midiOut{ std::move(outCB) }
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 }
 
 template <>
@@ -1016,7 +1016,7 @@ bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg
 
 void InputEventStage::onMidiSettingsMessageWasReceived(const tMSG &msg, const tMSG &oldmsg)
 {
-  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->resetIsNecessary())
+  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->resetIsNecessary(m_dspHost->getType()))
   {
     doInternalReset();
     doExternalReset(msg, oldmsg);
@@ -1110,7 +1110,7 @@ template <typename tChannelEnum> void InputEventStage::doSendAllNotesOff(tChanne
     m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
   }
 }
-
+// QUESTION: do we need to check the new/old message (was already checked, we just need the OutputRestEventSource (?)
 void InputEventStage::doExternalReset(const tMSG newMessage, const tMSG oldMessage)
 {
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
