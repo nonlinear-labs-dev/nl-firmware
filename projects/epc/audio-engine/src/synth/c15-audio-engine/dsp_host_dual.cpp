@@ -1677,7 +1677,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = (layerChanged || polyChanged) && getActiveVoices(VoiceGroup::Global);
+  const bool resetDetected = (layerChanged || polyChanged) && resetIsNecessary();
   if(resetDetected)
   {
     if(LOG_RESET)
@@ -1840,7 +1840,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
     auto polyChanged = evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
 
     // reset detection
-    resetDetected[layerId] = (layerChanged || polyChanged) && getActiveVoices(layerId == 0 ? VoiceGroup::I : VoiceGroup::II);
+    resetDetected[layerId] = (layerChanged || polyChanged) && resetIsNecessary();
     if(resetDetected[layerId])
     {
       if(LOG_RESET)
@@ -2008,7 +2008,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = (layerChanged || polyChanged) && getActiveVoices(VoiceGroup::Global);
+  const bool resetDetected = (layerChanged || polyChanged) && resetIsNecessary();
   if(resetDetected)
   {
     if(LOG_RESET)
@@ -2633,35 +2633,4 @@ void dsp_host_dual::resetReturningHWSource(HardwareSource hwui)
 bool dsp_host_dual::resetIsNecessary()
 {
   return m_alloc.m_assigned_keys > 0;
-}
-
-unsigned int dsp_host_dual::getActiveVoices(const VoiceGroup _group)
-{
-  // retrieving the polyphonic Gate Envelope signal from both Poly Sections/Parts (12 Voices per Part)
-  // (per Voice: Gate Signal is 1.0 (immediately) after KeyPress, and (almost immediately) 0.0 after KeyRelease)
-
-  const auto gateSignalIndex = static_cast<uint32_t>(C15::Signals::Truepoly_Signals::Env_G_Sig);
-  float gateSignal;
-
-  // obtain specific Part if desired, otherwise both Parts
-  switch(_group)
-  {
-    case VoiceGroup::I:
-      gateSignal = sumUp(m_poly[0].m_signals.get_poly(gateSignalIndex));
-      break;
-    case VoiceGroup::II:
-      gateSignal = sumUp(m_poly[1].m_signals.get_poly(gateSignalIndex));
-      break;
-    default:
-      gateSignal = sumUp(m_poly[0].m_signals.get_poly(gateSignalIndex))
-                   + sumUp(m_poly[1].m_signals.get_poly(gateSignalIndex));
-      break;
-    case VoiceGroup::Invalid:
-      break;
-  }
-
-  // having summed up all voices, we obtain the number of "active" Voices (0 ... 24)
-  // the obtained value should be sample-precise and is not dependant from Sustain or Level Parameters
-
-  return static_cast<uint8_t>(gateSignal);  // 0 : no voice active / 1, 2, ... 23, 24 : n voices active
 }
