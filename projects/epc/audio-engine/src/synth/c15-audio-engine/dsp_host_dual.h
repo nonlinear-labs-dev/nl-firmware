@@ -213,6 +213,9 @@ class dsp_host_dual : public DSPInterface
         return VoiceGroup::Invalid;
     }
   }
+
+  unsigned int getActiveVoices(const VoiceGroup _group);
+
   using LayerMode = C15::Properties::LayerMode;
   // parameters
   Engine::Param_Handle m_params;
