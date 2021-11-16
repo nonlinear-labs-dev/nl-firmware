@@ -1671,15 +1671,13 @@ DSPInterface::OutputResetEventSource dsp_host_dual::determineOutputEventSource(c
     return OutputResetEventSource::None;
   if(_type != LayerMode::Split)
     return OutputResetEventSource::Global;
-  const uint32_t count
-      = m_alloc.m_internal_and_external_keys.m_local[0] + (2 * m_alloc.m_internal_and_external_keys.m_local[1]);
-  switch(count)
+  switch(m_alloc.m_internal_and_external_keys.pressedLocalKeys())
   {
-    case 1:
+    case AllocatorId::Local_I:
       return OutputResetEventSource::Local_I;
-    case 2:
+    case AllocatorId::Local_II:
       return OutputResetEventSource::Local_II;
-    case 3:
+    case AllocatorId::Local_Both:
       return OutputResetEventSource::Local_Both;
   }
   return OutputResetEventSource::None;
