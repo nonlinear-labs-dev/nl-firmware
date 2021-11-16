@@ -74,6 +74,24 @@ struct AssignedKeyCount  // tracking active keys
     m_local[0] = 0;
     m_local[1] = 0;
   }
+  AllocatorId pressedGlobalKeys()
+  {
+    return m_global > 0 ? AllocatorId::Global : AllocatorId::None;
+  }
+  AllocatorId pressedLocalKeys()
+  {
+    const uint32_t count = (m_local[0] > 0) + (2 * (m_local[1] > 0));
+    switch(count)
+    {
+      case 1:
+        return AllocatorId::Local_I;
+      case 2:
+        return AllocatorId::Local_II;
+      case 3:
+        return AllocatorId::Local_Both;
+    }
+    return AllocatorId::None;
+  }
 };
 
 struct VoiceAssignment

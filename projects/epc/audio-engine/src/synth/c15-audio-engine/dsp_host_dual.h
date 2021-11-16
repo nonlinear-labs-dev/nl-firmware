@@ -218,13 +218,12 @@ class dsp_host_dual : public DSPInterface
   {
     switch(_current)
     {
-      case LayerMode::Single:
-        return SoundType::Single;
       case LayerMode::Split:
         return SoundType::Split;
       case LayerMode::Layer:
         return SoundType::Layer;
     }
+    return SoundType::Single;
   }
   // parameters
   Engine::Param_Handle m_params;

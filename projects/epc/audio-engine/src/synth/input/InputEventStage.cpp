@@ -1110,7 +1110,7 @@ template <typename tChannelEnum> void InputEventStage::doSendAllNotesOff(tChanne
     m_midiOut({ static_cast<uint8_t>(CCModeChange | iChannel), CCNum, 0 });
   }
 }
-// QUESTION: do we need to check the new/old message (was already checked, we just need the OutputRestEventSource (?)
+
 void InputEventStage::doExternalReset(const tMSG newMessage, const tMSG oldMessage)
 {
   const auto isSplit = m_dspHost->getType() == SoundType::Split;
