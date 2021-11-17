@@ -64,6 +64,36 @@ struct KeyAssignment
   }
 };
 
+struct AssignedKeyCount  // tracking active keys
+{
+  uint32_t m_global = 0;           // count global (single, layer) number of assigned keys
+  uint32_t m_local[2] = { 0, 0 };  // count local (split) number of assigned keys (each part)
+  void init()
+  {
+    m_global = 0;
+    m_local[0] = 0;
+    m_local[1] = 0;
+  }
+  AllocatorId pressedGlobalKeys()
+  {
+    return m_global > 0 ? AllocatorId::Global : AllocatorId::None;
+  }
+  AllocatorId pressedLocalKeys()
+  {
+    const uint32_t count = (m_local[0] > 0) + (2 * (m_local[1] > 0));
+    switch(count)
+    {
+      case 1:
+        return AllocatorId::Local_I;
+      case 2:
+        return AllocatorId::Local_II;
+      case 3:
+        return AllocatorId::Local_Both;
+    }
+    return AllocatorId::None;
+  }
+};
+
 struct VoiceAssignment
 {
   uint32_t m_keyNumber = 0, m_inputSourceId = 0;
@@ -272,7 +302,8 @@ class VoiceAllocation
 {
  public:
   PolyKeyPacket<GlobalVoices, PivotKey> m_traversal;
-  uint32_t m_unison = {}, m_assigned_keys = {};
+  AssignedKeyCount m_internal_and_external_keys;  // note: should we need separate int/ext, duplicate
+  uint32_t m_unison = {};
   inline VoiceAllocation()
   {
   }
@@ -291,7 +322,7 @@ class VoiceAllocation
       m_keyState[0][k].m_keyNumber = m_keyState[1][k].m_keyNumber = m_keyState[2][k].m_keyNumber = k;
     }
     //
-    m_assigned_keys = 0;
+    m_internal_and_external_keys.init();
   }
   inline bool onSingleKeyDown(const uint32_t _keyPos, const float _vel, const uint32_t _inputSourceId)
   {
@@ -317,7 +348,7 @@ class VoiceAllocation
         keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
-        m_assigned_keys++;
+        m_internal_and_external_keys.m_global++;
       }
     }
     return validity;
@@ -345,6 +376,7 @@ class VoiceAllocation
         {
           case AllocatorId::Local_I:
             unisonVoices = m_local[0].getUnison();
+            m_internal_and_external_keys.m_local[0]++;
             // mono/poly process
             firstVoice = keyDown_process_split(keyState, unisonVoices, 0, true);
             if(firstVoice != -1)
@@ -356,6 +388,7 @@ class VoiceAllocation
             break;
           case AllocatorId::Local_II:
             unisonVoices = m_local[1].getUnison();
+            m_internal_and_external_keys.m_local[1]++;
             // mono/poly process
             firstVoice = keyDown_process_split(keyState, unisonVoices, 1, true);
             if(firstVoice != -1)
@@ -367,6 +400,8 @@ class VoiceAllocation
             break;
           case AllocatorId::Local_Both:
             unisonVoices = m_local[0].getUnison();
+            m_internal_and_external_keys.m_local[0]++;
+            m_internal_and_external_keys.m_local[1]++;
             // mono/poly process
             firstVoice = keyDown_process_split(keyState, unisonVoices, 0, true);
             if(firstVoice != -1)
@@ -390,7 +425,6 @@ class VoiceAllocation
         {
           // confirm
           keyDown_confirm(keyState);
-          m_assigned_keys++;
         }
       }
     }
@@ -421,7 +455,7 @@ class VoiceAllocation
         keyDown_unisonLoop(keyState->m_position[0], LocalVoices + firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
-        m_assigned_keys++;
+        m_internal_and_external_keys.m_global++;
       }
     }
     return validity;
@@ -446,9 +480,9 @@ class VoiceAllocation
         keyUp_unisonLoop(firstVoice, unisonVoices);
       }
       keyUp_confirm(keyState);
-      if(m_assigned_keys > 0)
+      if(m_internal_and_external_keys.m_global > 0)
       {
-        m_assigned_keys--;
+        m_internal_and_external_keys.m_global--;
       }
     }
     return validity;
@@ -473,12 +507,20 @@ class VoiceAllocation
         {
           case AllocatorId::Local_I:
             unisonVoices = m_local[0].getUnison();
+            if(m_internal_and_external_keys.m_local[0] > 0)
+            {
+              m_internal_and_external_keys.m_local[0]--;
+            }
             firstVoice = keyUp_process_part(keyState, 0, true) * unisonVoices;
             // unison loop
             keyUp_unisonLoop(firstVoice, unisonVoices);
             break;
           case AllocatorId::Local_II:
             unisonVoices = m_local[1].getUnison();
+            if(m_internal_and_external_keys.m_local[1] > 0)
+            {
+              m_internal_and_external_keys.m_local[1]--;
+            }
             firstVoice = keyUp_process_part(keyState, 1, true) * unisonVoices;
             // unison loop
             keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
@@ -486,20 +528,24 @@ class VoiceAllocation
           case AllocatorId::Local_Both:
             // part[I]
             unisonVoices = m_local[0].getUnison();
+            if(m_internal_and_external_keys.m_local[0] > 0)
+            {
+              m_internal_and_external_keys.m_local[0]--;
+            }
             firstVoice = keyUp_process_part(keyState, 0, true) * unisonVoices;
             keyUp_unisonLoop(firstVoice, unisonVoices);
             // part[II]
             unisonVoices = m_local[1].getUnison();
+            if(m_internal_and_external_keys.m_local[1] > 0)
+            {
+              m_internal_and_external_keys.m_local[1]--;
+            }
             firstVoice = keyUp_process_part(keyState, 1, false) * unisonVoices;
             keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
             break;
         }
       }
       keyUp_confirm(keyState);
-      if(m_assigned_keys > 0)
-      {
-        m_assigned_keys--;
-      }
     }
     return validity;
   }
@@ -524,9 +570,9 @@ class VoiceAllocation
         keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
       }
       keyUp_confirm(keyState);
-      if(m_assigned_keys > 0)
+      if(m_internal_and_external_keys.m_global > 0)
       {
-        m_assigned_keys--;
+        m_internal_and_external_keys.m_global--;
       }
     }
     return validity;
@@ -545,7 +591,23 @@ class VoiceAllocation
         // store key assignment with determined association without allocating voices
         keyState->m_active = true;
         keyState->m_origin = _determinedPart;
-        m_assigned_keys++;
+        switch(_determinedPart)
+        {
+          case AllocatorId::Local_I:
+            m_internal_and_external_keys.m_local[0]++;
+            break;
+          case AllocatorId::Local_II:
+            m_internal_and_external_keys.m_local[1]++;
+            break;
+          case AllocatorId::Local_Both:
+            m_internal_and_external_keys.m_local[0]++;
+            m_internal_and_external_keys.m_local[1]++;
+            break;
+          case AllocatorId::Global:
+          case AllocatorId::Dual:
+            m_internal_and_external_keys.m_global++;
+            break;
+        }
       }
     }
     return validity;
@@ -563,11 +625,39 @@ class VoiceAllocation
       {
         // reset key assignment with determined association without de-allocating voices
         keyState->m_active = false;
-        keyState->m_origin = AllocatorId::None;
-        if(m_assigned_keys > 0)
+        switch(keyState->m_origin)
         {
-          m_assigned_keys--;
+          case AllocatorId::Local_I:
+            if(m_internal_and_external_keys.m_local[0] > 0)
+            {
+              m_internal_and_external_keys.m_local[0]--;
+            }
+            break;
+          case AllocatorId::Local_II:
+            if(m_internal_and_external_keys.m_local[1] > 0)
+            {
+              m_internal_and_external_keys.m_local[1]--;
+            }
+            break;
+          case AllocatorId::Local_Both:
+            if(m_internal_and_external_keys.m_local[0] > 0)
+            {
+              m_internal_and_external_keys.m_local[0]--;
+            }
+            if(m_internal_and_external_keys.m_local[1] > 0)
+            {
+              m_internal_and_external_keys.m_local[1]--;
+            }
+            break;
+          case AllocatorId::Global:
+          case AllocatorId::Dual:
+            if(m_internal_and_external_keys.m_global > 0)
+            {
+              m_internal_and_external_keys.m_global--;
+            }
+            break;
         }
+        keyState->m_origin = AllocatorId::None;
       }
     }
     return validity;
@@ -691,7 +781,7 @@ class VoiceAllocation
         keyState.m_origin = AllocatorId::None;
       }
     }
-    m_assigned_keys = 0;
+    m_internal_and_external_keys.init();
   }
 
   inline AllocatorId getSplitPartForKeyDown(const uint32_t _key)
