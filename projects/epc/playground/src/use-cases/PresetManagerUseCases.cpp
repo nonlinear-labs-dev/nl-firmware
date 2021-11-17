@@ -69,7 +69,7 @@ Bank* PresetManagerUseCases::createBankAndStoreEditBuffer()
 }
 
 Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y,
-                                    const std::optional<Glib::ustring>& name)
+                                     const std::optional<Glib::ustring>& name)
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("New Bank");
   auto transaction = scope->getTransaction();
@@ -456,8 +456,7 @@ void PresetManagerUseCases::sortBankNumbers()
 void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetManagerUseCases::DropActions action,
                                         const Glib::ustring& csv)
 {
-  auto actionToOffset = [](DropActions action)
-  {
+  auto actionToOffset = [](DropActions action) {
     switch(action)
     {
       case DropActions::Above:
@@ -677,41 +676,37 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
 {
   auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
 
-  transaction->addSimpleCommand(
-      [&pm = m_presetManager, pg = progress, &ae = aeProxy, swap](auto)
-      {
-        pg.start();
-        ZippedMemoryOutStream stream;
-        XmlWriter writer(stream);
-        PresetManagerSerializer serializer(&pm, [](auto){});
-        serializer.write(writer, VersionAttribute::get());
-        std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
-        swap->swapWith(zippedPresetManagerXml);
+  transaction->addSimpleCommand([& pm = m_presetManager, pg = progress, &ae = aeProxy, swap](auto) {
+    pg.start();
+    ZippedMemoryOutStream stream;
+    XmlWriter writer(stream);
+    PresetManagerSerializer serializer(&pm, pg._update);
+    serializer.write(writer, VersionAttribute::get());
+    std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
+    swap->swapWith(zippedPresetManagerXml);
 
-        if(!zippedPresetManagerXml.empty())
-        {
-          auto trash = UNDO::Scope::startTrashTransaction();
-          MemoryInStream inStream(zippedPresetManagerXml, true);
-          XmlReader reader(inStream, trash->getTransaction());
-          pm.clear(trash->getTransaction());
-          reader.read<PresetManagerSerializer>(&pm, [](auto){});
-          ae.sendEditBuffer();
-        }
-        pg.finish();
-      });
+    if(!zippedPresetManagerXml.empty())
+    {
+      auto trash = UNDO::Scope::startTrashTransaction();
+      MemoryInStream inStream(zippedPresetManagerXml, true);
+      XmlReader reader(inStream, trash->getTransaction());
+      pm.clear(trash->getTransaction());
+      reader.read<PresetManagerSerializer>(&pm, pg._update);
+      ae.sendEditBuffer();
+    }
+    pg.finish();
+  });
 
   // fill preset manager with trash transaction, as snapshot above will
   // care about undo
   auto trash = UNDO::Scope::startTrashTransaction();
   XmlReader reader(in, trash->getTransaction());
 
-  reader.onFileVersionRead(
-      [&](int version)
-      {
-        if(version > VersionAttribute::getCurrentFileVersion())
-          return Reader::FileVersionCheckResult::Unsupported;
-        return Reader::FileVersionCheckResult::OK;
-      });
+  reader.onFileVersionRead([&](int version) {
+    if(version > VersionAttribute::getCurrentFileVersion())
+      return Reader::FileVersionCheckResult::Unsupported;
+    return Reader::FileVersionCheckResult::OK;
+  });
 
   progress.start();
   m_presetManager.clear(trash->getTransaction());
