@@ -1704,6 +1704,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
     {
       nltools::Log::info("recall single voice reset");
     }
+    m_alloc.m_internal_and_external_keys.init();  // reset all pressed keys
     m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
                       m_layer_mode);
     m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
@@ -1864,6 +1865,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
       {
         nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
       }
+      m_alloc.m_internal_and_external_keys.m_local[layerId] = 0;  // reset all pressed keys in part
       m_alloc.setUnison(layerId, m_params.get_local_unison_voices(layer)->m_position, oldLayerMode, m_layer_mode);
       m_alloc.setMonoEnable(layerId, m_params.get_local_mono_enable(layer)->m_position, m_layer_mode);
       const uint32_t uVoice = m_alloc.m_unison - 1;
@@ -1995,6 +1997,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   }
   if(layerChanged)
   {
+    m_alloc.m_internal_and_external_keys.m_global = 0;  // reset all pressed global keys
     // non-split -> split: (global or none)
     return outputEvent;
   }
@@ -2046,6 +2049,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
     {
       nltools::Log::info("recall layer voice reset");
     }
+    m_alloc.m_internal_and_external_keys.init();  // reset all pressed keys
     m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
                       m_layer_mode);
     m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
