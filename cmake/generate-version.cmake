@@ -5,4 +5,4 @@ execute_process(
 )
 
 configure_file(${INPUT_FILE} ${OUTPUT_FILE} @ONLY)
-message("Got Git Version ${LAST_COMMIT_STAMP}")
+message("Got Git Version ${LAST_COMMIT_STAMP}") 

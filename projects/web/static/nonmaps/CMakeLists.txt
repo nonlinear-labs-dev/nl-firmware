@@ -9,6 +9,7 @@ add_custom_command(
   COMMENT "Generate nonmaps-version.txt"
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/nonmaps-version.txt
   DEPENDS ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  DEPENDS ${CMAKE_SOURCE_DIR}/.git/index
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMAND ${CMAKE_COMMAND}
     -D GIT_EXECUTABLE=${GIT_EXECUTABLE}

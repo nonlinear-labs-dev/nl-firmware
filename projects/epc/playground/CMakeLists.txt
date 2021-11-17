@@ -73,6 +73,7 @@ add_custom_command(
   COMMENT "Generate BuildVersion.cpp"
   DEPENDS ${PROJECT_SOURCE_DIR}/src/device-info/BuildVersion.cpp.in
   DEPENDS ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  DEPENDS ${CMAKE_SOURCE_DIR}/.git/index
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMAND ${CMAKE_COMMAND}
     -D INPUT_FILE=${PROJECT_SOURCE_DIR}/src/device-info/BuildVersion.cpp.in
