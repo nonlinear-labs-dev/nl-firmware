@@ -1995,30 +1995,34 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   }
   if(layerChanged)
   {
-    // split -> non split:
-    if(resetDetected[1])
-      // active keys in part II, reset possibly both
-      return outputEvent;
-    if(resetDetected[0])
-      // active keys in part I, reset global
-      return OutputResetEventSource::Global;
-    // no active keys
-    return OutputResetEventSource::None;
+    // non-split -> split: (global or none)
+    return outputEvent;
   }
   else
   {
     // split -> split:
-    switch(m_alloc.m_internal_and_external_keys.pressedLocalKeys())
+    switch(outputEvent)
     {
-      case AllocatorId::Local_I:
-        return OutputResetEventSource::Local_I;
-      case AllocatorId::Local_II:
-        return OutputResetEventSource::Local_II;
-      case AllocatorId::Local_Both:
-        return OutputResetEventSource::Local_Both;
+      case OutputResetEventSource::Local_I:
+        // keys pressed in I - reset detected in I?
+        return resetDetected[0] ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_II:
+        // keys pressed in II - reset detected in II?
+        return resetDetected[1] ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_Both:
+        // keys pressed in both - reset detected in both?
+        switch(m_alloc.m_internal_and_external_keys.pressedLocalKeys(resetDetected[0], resetDetected[1]))
+        {
+          case AllocatorId::Local_I:
+            return OutputResetEventSource::Local_I;
+          case AllocatorId::Local_II:
+            return OutputResetEventSource::Local_II;
+          case AllocatorId::Local_Both:
+            return OutputResetEventSource::Local_Both;
+        }
     }
-    return OutputResetEventSource::None;
   }
+  return OutputResetEventSource::None;
 }
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)

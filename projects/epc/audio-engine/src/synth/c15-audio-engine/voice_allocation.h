@@ -80,7 +80,11 @@ struct AssignedKeyCount  // tracking active keys
   }
   AllocatorId pressedLocalKeys()
   {
-    const uint32_t count = (m_local[0] > 0) + (2 * (m_local[1] > 0));
+    return pressedLocalKeys(m_local[0] > 0, m_local[1] > 0);
+  }
+  AllocatorId pressedLocalKeys(const bool _partI, const bool _partII)
+  {
+    const uint32_t count = _partI + (2 * _partII);
     switch(count)
     {
       case 1:
