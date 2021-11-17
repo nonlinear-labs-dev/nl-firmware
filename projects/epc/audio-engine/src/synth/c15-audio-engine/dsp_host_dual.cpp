@@ -695,7 +695,8 @@ DSPInterface::OutputResetEventSource
     {
       nltools::Log::info("unison_voices_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
-
+    const OutputResetEventSource outputEvent
+        = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
     // application now via fade point
     m_fade.muteAndDo([&] {
       // apply (preloaded) unison change
@@ -706,21 +707,35 @@ DSPInterface::OutputResetEventSource
       m_poly[layerId].m_key_active = 0;
       if(m_layer_mode != LayerMode::Split)
       {
+        m_alloc.m_internal_and_external_keys.m_global = 0;
         // apply reset to other poly components (when not in split mode)
         const uint32_t lId = 1 - layerId;
         m_poly[lId].resetEnvelopes();
         m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
         m_poly[lId].m_key_active = 0;
       }
+      else
+      {
+        m_alloc.m_internal_and_external_keys.m_local[layerId] = 0;
+      }
     });
     // return detected reset event
     if(m_layer_mode != LayerMode::Split)
     {
-      return OutputResetEventSource::Global;
+      return outputEvent;
     }
     else
     {
-      return layerId == 0 ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+      const bool isPartI = layerId == 0;
+      switch(outputEvent)
+      {
+        case OutputResetEventSource::Local_I:
+          return isPartI ? outputEvent : OutputResetEventSource::None;
+        case OutputResetEventSource::Local_II:
+          return !isPartI ? outputEvent : OutputResetEventSource::None;
+        case OutputResetEventSource::Local_Both:
+          return isPartI ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+      }
     }
   }
   return OutputResetEventSource::None;
@@ -737,6 +752,8 @@ DSPInterface::OutputResetEventSource
     {
       nltools::Log::info("mono_enable_edit(layer:", layerId, ", pos:", param->m_position, ")");
     }
+    const OutputResetEventSource outputEvent
+        = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
     m_fade.muteAndDo([&] {
@@ -747,20 +764,34 @@ DSPInterface::OutputResetEventSource
       m_poly[layerId].m_key_active = 0;
       if(m_layer_mode != LayerMode::Split)
       {
+        m_alloc.m_internal_and_external_keys.m_global = 0;
         // apply reset to other poly components (when not in split mode)
         const uint32_t lId = 1 - layerId;
         m_poly[lId].resetEnvelopes();
         m_poly[lId].m_key_active = 0;
       }
+      else
+      {
+        m_alloc.m_internal_and_external_keys.m_local[layerId] = 0;
+      }
     });
     // return detected reset event
     if(m_layer_mode != LayerMode::Split)
     {
-      return OutputResetEventSource::Global;
+      return outputEvent;
     }
     else
     {
-      return layerId == 0 ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+      const bool isPartI = layerId == 0;
+      switch(outputEvent)
+      {
+        case OutputResetEventSource::Local_I:
+          return isPartI ? outputEvent : OutputResetEventSource::None;
+        case OutputResetEventSource::Local_II:
+          return !isPartI ? outputEvent : OutputResetEventSource::None;
+        case OutputResetEventSource::Local_Both:
+          return isPartI ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+      }
     }
   }
   return OutputResetEventSource::None;
