@@ -66,9 +66,6 @@ configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
 
-
-configure_file(src/device-info/BuildVersion.cpp.in src/device-info/BuildVersion.cpp)
-
 add_custom_command(
   COMMENT "Generate BuildVersion.cpp"
   DEPENDS ${PROJECT_SOURCE_DIR}/src/device-info/BuildVersion.cpp.in
