@@ -31,15 +31,15 @@ logarithmic amount of the reduction (negative values) or gain
 
 - [ ] done
 
-#### [Release Velocity ?]
-
-~~~
-Velocity influence on the Release time. The value represents the
-logarithmic amount of the reduction (negative values) or gain
-(positive values) of the Release time by high Note-Off velocities.
-~~~
-
-- [ ] done
+> #### [Release Velocity ?]
+> 
+> ~~~
+> Velocity influence on the Release time. The value represents the
+> logarithmic amount of the reduction (negative values) or gain
+> (positive values) of the Release time by high Note-Off velocities.
+> ~~~
+> 
+> - [x] done
 
 #### Time Key Track
 
