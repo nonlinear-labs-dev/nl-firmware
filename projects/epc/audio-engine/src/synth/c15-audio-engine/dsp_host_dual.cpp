@@ -1696,7 +1696,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = (layerChanged || polyChanged) && resetIsNecessary(fromType(oldLayerMode));
+  const bool resetDetected = (layerChanged || polyChanged) && areKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetected, oldLayerMode);
   if(resetDetected)
   {
@@ -1848,7 +1848,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
 
   auto msg = &_msg;
   bool resetDetected[2] = { false, false };
-  const bool resetDetermined = layerChanged || resetIsNecessary(fromType(oldLayerMode));
+  const bool resetDetermined = layerChanged || areKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetermined, oldLayerMode);
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
@@ -2034,7 +2034,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = (layerChanged || polyChanged) && resetIsNecessary(fromType(oldLayerMode));
+  const bool resetDetected = (layerChanged || polyChanged) && areKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetected, oldLayerMode);
   if(resetDetected)
   {
@@ -2653,7 +2653,7 @@ void dsp_host_dual::resetReturningHWSource(HardwareSource hwui)
   DSPInterface::resetReturningHWSource(hwui);
 }
 
-bool dsp_host_dual::resetIsNecessary(SoundType _current)
+bool dsp_host_dual::areKeysPressed(SoundType _current)
 {
   switch(_current)
   {

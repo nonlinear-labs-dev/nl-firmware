@@ -101,7 +101,8 @@ class DSPInterface
   virtual void resetReturningHWSource(HardwareSource hwui)
   {
   }
-  virtual bool resetIsNecessary(SoundType _current)
+  // areKeysPressed
+  virtual bool areKeysPressed(SoundType _current)
   {
     return true;
   }
@@ -145,7 +146,7 @@ class dsp_host_dual : public DSPInterface
   using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
   float getReturnValueFor(HardwareSource hwid) override;
   void resetReturningHWSource(HardwareSource hwui) override;
-  bool resetIsNecessary(SoundType _current) override;
+  bool areKeysPressed(SoundType _current) override;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) override;

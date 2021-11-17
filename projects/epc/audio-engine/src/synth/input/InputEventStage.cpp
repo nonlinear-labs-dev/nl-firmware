@@ -1016,7 +1016,7 @@ bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg
 
 void InputEventStage::onMidiSettingsMessageWasReceived(const tMSG &msg, const tMSG &oldmsg)
 {
-  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->resetIsNecessary(m_dspHost->getType()))
+  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->areKeysPressed(m_dspHost->getType()))
   {
     doInternalReset();
     doExternalReset(msg, oldmsg);
