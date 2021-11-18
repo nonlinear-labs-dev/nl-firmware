@@ -29,7 +29,7 @@ namespace nltools
          ButtonChanged, Playcontroller, Ping,
 
          SinglePreset, LayerPreset, SplitPreset, UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
-         HWAmountParameter, HWSourceParameter,
+         HWAmountParameter, HWSourceParameter, UpdateLocalDisabledRibbon,
 
          NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,
 
@@ -43,7 +43,8 @@ namespace nltools
 
          MidiSimpleMessage, MidiAck, MidiProgramChange, MidiBridgeSettings, MidiSettings, MidiHardwareChange,
 
-         SyncFS, UpdateUploaded, AutoStartRecorderMessage, AEPanic);
+         SyncFS, UpdateUploaded, AutoStartRecorderMessage, AEPanic, GlobalLocalSetting, WifiDevBBBEnable,
+         BufferUnderrunsChanged, SetFramesPerPeriod);
 
     namespace detail
     {
@@ -73,10 +74,12 @@ namespace nltools
       template <typename Msg>
       sigc::connection receive(MessageType type, EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)
       {
-        return receiveSerialized(type, receivingEndPoint, [=](const SerializedMessage &s) {
-          auto msg = detail::deserialize<Msg>(s);
-          cb(msg);
-        });
+        return receiveSerialized(type, receivingEndPoint,
+                                 [=](const SerializedMessage &s)
+                                 {
+                                   auto msg = detail::deserialize<Msg>(s);
+                                   cb(msg);
+                                 });
       }
 
       sigc::connection receiveSerialized(MessageType type, EndPoint receivingEndPoint,

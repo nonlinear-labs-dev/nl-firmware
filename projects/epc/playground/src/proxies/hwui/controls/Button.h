@@ -18,6 +18,8 @@ class Button : public LabelRegular8
 
   bool redraw(FrameBuffer &fb) override;
   void blind(bool b);
+  void setEnable(bool e);
+  bool isEnabled() const;
 
   static Rect getButtonPos(Buttons n);
 
@@ -25,5 +27,9 @@ class Button : public LabelRegular8
   void setFontColor(FrameBuffer &fb) const override;
 
  private:
+  FrameBufferColors getBackgroundColor() const;
+  FrameBufferColors getForegroundColor() const;
+
   bool m_blind = false;
+  bool m_enabled = true;
 };

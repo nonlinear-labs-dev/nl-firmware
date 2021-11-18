@@ -71,31 +71,26 @@ class C15Synth : public Synth, public sigc::trackable
   void queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m);
   void queueChannelModeMessage(MidiChannelModeMessages function);
 
-  void syncChannelModeMessageLoop();
   void syncExternalsLoop();
-  void syncPlaygroundLoop();
-  void syncExternalMidiBridge();
-  void syncPlayground();
+
+  void doSyncExternalMidiBridge();
+  void doSyncPlayground();
+  void doChannelModeMessageFunctions();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
-  std::array<float, 8> m_playgroundHwSourceKnownValues;
   AudioEngineOptions* m_options;
   MidiRuntimeOptions m_midiOptions;
 
+  //Latch-Filters, Queues
+  std::array<float, 8> m_playgroundHwSourceKnownValues {};
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 
-  std::mutex m_syncExternalsMutex;
-  std::mutex m_syncPlaygroundMutex;
-  std::mutex m_syncChannelModeMessagesMutex;
-  std::condition_variable m_syncExternalsWaiter;
-  std::condition_variable m_syncPlaygroundWaiter;
-  std::condition_variable m_syncChannelModeMessagesWaiter;
-  std::atomic<bool> m_quit { false };
+  //Concurrency
   std::future<void> m_syncExternalsTask;
-  std::future<void> m_syncPlaygroundTask;
-  std::future<void> m_syncChannelModeMessagesTask;
+  std::condition_variable m_syncExternalsWaiter;
+  std::mutex m_syncExternalsMutex;
+  std::atomic<bool> m_quit { false };
 
   InputEventStage m_inputEventStage;
-  void doChannelModeMessageFunctions();
 };

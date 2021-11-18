@@ -13,6 +13,7 @@ class WiFiManager
   void scheduleRestart();
   void enableAndStartAP();
   void disableAndStopAP();
+  void startDEBUGWifi();
 
   std::string m_lastSeenSSID{};
   std::string m_lastSeenPassword{};

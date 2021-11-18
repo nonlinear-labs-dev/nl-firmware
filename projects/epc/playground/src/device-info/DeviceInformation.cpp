@@ -5,8 +5,10 @@
 #include <xml/Writer.h>
 #include "device-settings/DebugLevel.h"
 #include "BuildVersion.h"
+#include "BufferUnderruns.h"
 #include "DateTimeInfo.h"
 #include "RTSoftwareVersion.h"
+#include "UniqueHardwareID.h"
 #include <Application.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <http/NetworkRequest.h>
@@ -20,12 +22,11 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
   m_items.emplace_back(new DateTimeInfo(this));
   m_items.emplace_back(new RTSoftwareVersion(this));
   m_items.emplace_back(new BuildVersion(this));
+  m_items.emplace_back(new BufferUnderruns(this));
+  m_items.emplace_back(new UniqueHardwareID(this));
 }
 
-DeviceInformation::~DeviceInformation()
-{
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-}
+DeviceInformation::~DeviceInformation() = default;
 
 void DeviceInformation::handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path)
 {
@@ -56,13 +57,9 @@ void DeviceInformation::writeDocument(Writer &writer, UpdateDocumentContributor:
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("device-information", Attribute("changed", changed), [&]() {
+  writer.writeTag("device-information", Attribute("changed", changed), [&] {
     if(changed)
-    {
-      for(auto &info : m_items)
-      {
+      for(const auto &info : m_items)
         info->writeDocument(writer, knownRevision);
-      }
-    }
   });
 }

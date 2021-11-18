@@ -7,6 +7,8 @@
 #include <proxies/hwui/controls/ButtonMenuButton.h>
 #include "SingleSoundEditMenuLegacy.h"
 #include <libundo/undo/Scope.h>
+#include <device-settings/Settings.h>
+#include <device-settings/RandomizeAmount.h>
 
 SingleSoundEditMenuLegacy::SingleSoundEditMenuLegacy(const Rect &rect)
     : super(rect)
@@ -32,9 +34,10 @@ void SingleSoundEditMenuLegacy::init()
   });
 
   addButton("Randomize", [=]() {
+    auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
     auto pm = Application::get().getPresetManager();
-    SoundUseCases soundUseCases(pm->getEditBuffer(), pm);
-    soundUseCases.randomizeSound();
+    EditBufferUseCases useCase(*pm->getEditBuffer());
+    useCase.randomize(amount);
   });
 
   addButton("Mono Mode ..", [] {});

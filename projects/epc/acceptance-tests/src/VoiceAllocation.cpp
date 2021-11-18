@@ -23,7 +23,7 @@ namespace Tests
     }
     THEN("Silence")
     {
-      const auto output = synth->measurePerformance(20ms);
+      const auto output = synth->measurePerformance(5ms);
       CHECK(tester.scanOutput(std::get<0>(output)).isSilence());
     }
   }
@@ -36,7 +36,7 @@ namespace Tests
     GIVEN("TCD KeyDown")
     {
       tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       const auto voices = tester.getActiveVoices(VoiceGroup::Global);
       THEN("One Active Voice")
       {
@@ -45,7 +45,7 @@ namespace Tests
       WHEN("Same TCD KeyDown")
       {
         tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices unchanged")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
@@ -54,7 +54,7 @@ namespace Tests
       WHEN("Same TCD KeyUp")
       {
         tester.applyTCDKeyUp(60, 1.0f, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("No Active Voices")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -63,7 +63,7 @@ namespace Tests
       WHEN("Different TCD KeyDown")
       {
         tester.applyTCDKeyDown(61, 1.0f, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices increased")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) > voices);
@@ -72,7 +72,7 @@ namespace Tests
       WHEN("Unpressed TCD KeyUp")
       {
         tester.applyTCDKeyUp(61, 1.0f, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices unchanged")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
@@ -81,7 +81,7 @@ namespace Tests
       WHEN("Same MIDI NoteOn")
       {
         tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices increased")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) > voices);
@@ -89,7 +89,7 @@ namespace Tests
         WHEN("Same MIDI NoteOff")
         {
           tester.applyMidiNoteOff(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("Active Voices decreased")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
@@ -100,7 +100,7 @@ namespace Tests
     GIVEN("MIDI NoteOn")
     {
       tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       const auto voices = tester.getActiveVoices(VoiceGroup::Global);
       THEN("One Active Voice")
       {
@@ -109,7 +109,7 @@ namespace Tests
       WHEN("Same MIDI NoteOn")
       {
         tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices unchanged")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
@@ -118,7 +118,7 @@ namespace Tests
       WHEN("Same MIDI NoteOff")
       {
         tester.applyMidiNoteOff(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("No Active Voices")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -127,7 +127,7 @@ namespace Tests
       WHEN("Different MIDI NoteOn")
       {
         tester.applyMidiNoteOn(61, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices increased")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) > voices);
@@ -136,7 +136,7 @@ namespace Tests
       WHEN("Unpressed MIDI NoteOff")
       {
         tester.applyMidiNoteOff(61, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices unchanged")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
@@ -145,7 +145,7 @@ namespace Tests
       WHEN("Same TCD KeyDown")
       {
         tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("Active Voices increased")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) > voices);
@@ -153,7 +153,7 @@ namespace Tests
         WHEN("Same TCD KeyUp")
         {
           tester.applyTCDKeyUp(60, 1.0f, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("Active Voices decreased")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == voices);
@@ -166,11 +166,11 @@ namespace Tests
       WHEN("Single Sound")
       {
         tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         WHEN("TCD Key Down")
         {
           tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("One Active Voice")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
@@ -178,7 +178,7 @@ namespace Tests
           WHEN("Same MIDI Primary NoteOn")
           {
             tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("Two Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 2);
@@ -186,7 +186,7 @@ namespace Tests
             WHEN("Same MIDI Secondary NoteOn")
             {
               tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Secondary, VoiceGroup::Global);
-              synth->measurePerformance(20ms);
+              synth->measurePerformance(5ms);
               THEN("Active Voices unchanged")
               {
                 CHECK(tester.getActiveVoices(VoiceGroup::Global) == 2);
@@ -198,11 +198,11 @@ namespace Tests
       WHEN("Split Sound")
       {
         tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         WHEN("TCD Key Down in Part I")
         {
           tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::I);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("One Active Voice in Part I")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -210,7 +210,7 @@ namespace Tests
           WHEN("Same MIDI Primary NoteOn in Part I")
           {
             tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::I);
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("Two Active Voices in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 2);
@@ -218,7 +218,7 @@ namespace Tests
             WHEN("Same MIDI Secondary NoteOn in Part I")
             {
               tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Secondary, VoiceGroup::I);
-              synth->measurePerformance(20ms);
+              synth->measurePerformance(5ms);
               THEN("Three Active Voices in Part I")
               {
                 CHECK(tester.getActiveVoices(VoiceGroup::I) == 3);
@@ -230,11 +230,11 @@ namespace Tests
       WHEN("Layer Sound")
       {
         tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         WHEN("TCD Key Down")
         {
           tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("One Active Voice in Part I")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -246,7 +246,7 @@ namespace Tests
           WHEN("Same MIDI Primary NoteOn")
           {
             tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("Two Active Voices in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 2);
@@ -258,7 +258,7 @@ namespace Tests
             WHEN("Same MIDI Secondary NoteOn")
             {
               tester.applyMidiNoteOn(60, 1.0f, MockInputEventSource::Secondary, VoiceGroup::Global);
-              synth->measurePerformance(20ms);
+              synth->measurePerformance(5ms);
               THEN("Active Voices unchanged in Part I")
               {
                 CHECK(tester.getActiveVoices(VoiceGroup::I) == 2);
@@ -282,7 +282,7 @@ namespace Tests
     GIVEN("Lowest TCD KeyDown")
     {
       tester.applyTCDKeyDown(0, 1.0f, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       THEN("One Active Voice")
       {
         CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
@@ -290,7 +290,7 @@ namespace Tests
       WHEN("Lowest TCD KeyUp")
       {
         tester.applyTCDKeyUp(0, 1.0f, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("No Active Voices")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -300,7 +300,7 @@ namespace Tests
     GIVEN("Highest TCD KeyDown")
     {
       tester.applyTCDKeyDown(127, 1.0f, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       THEN("One Active Voice")
       {
         CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
@@ -308,7 +308,7 @@ namespace Tests
       WHEN("Highest TCD KeyUp")
       {
         tester.applyTCDKeyUp(127, 1.0f, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("No Active Voices")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -318,7 +318,7 @@ namespace Tests
     GIVEN("Lowest MIDI NoteOn")
     {
       tester.applyMidiNoteOn(0, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       THEN("One Active Voice")
       {
         CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
@@ -326,7 +326,7 @@ namespace Tests
       WHEN("Lowest MIDI NoteOff")
       {
         tester.applyMidiNoteOff(0, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("No Active Voices")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -336,7 +336,7 @@ namespace Tests
     GIVEN("Highest MIDI NoteOn")
     {
       tester.applyMidiNoteOn(127, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       THEN("One Active Voice")
       {
         CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
@@ -344,7 +344,7 @@ namespace Tests
       WHEN("Highest MIDI NoteOff")
       {
         tester.applyMidiNoteOff(127, 1.0f, MockInputEventSource::Primary, VoiceGroup::Global);
-        synth->measurePerformance(20ms);
+        synth->measurePerformance(5ms);
         THEN("No Active Voices")
         {
           CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -361,9 +361,9 @@ namespace Tests
     GIVEN("Active Voices in Single Sound")
     {
       tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       THEN("One Active Voice")
       {
         CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
@@ -373,16 +373,7 @@ namespace Tests
         WHEN("Reset Synth")
         {
           synth->resetDSP();
-          synth->measurePerformance(20ms);
-          THEN("No Active Voices")
-          {
-            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-          }
-        }
-        WHEN("MIDI Settings Message")
-        {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("No Active Voices")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -394,7 +385,7 @@ namespace Tests
         WHEN("Change Mono Enable Parameter")
         {
           tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("No Active Voices")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -403,7 +394,7 @@ namespace Tests
         WHEN("Change Unison Voices Parameter")
         {
           tester.applyUnisonMessage(2, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("No Active Voices")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -417,7 +408,7 @@ namespace Tests
           WHEN("Single Preset with identical Mono/Unison")
           {
             tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("One Active Voice")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 1);
@@ -426,7 +417,7 @@ namespace Tests
           WHEN("Single Preset with different Mono Enable")
           {
             tester.applyMalformedSinglePreset({ 1, Polyphony::Mono });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -435,7 +426,7 @@ namespace Tests
           WHEN("Single Preset with different Unison Voices")
           {
             tester.applyMalformedSinglePreset({ 2, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -447,7 +438,7 @@ namespace Tests
           WHEN("Split Preset with identical Mono/Unison in both Parts")
           {
             tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -456,7 +447,7 @@ namespace Tests
           WHEN("Layer Preset with identical Mono/Unison")
           {
             tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -468,9 +459,9 @@ namespace Tests
     GIVEN("Active Voices in Split Sound")
     {
       tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       THEN("One Active Voice in Part I")
       {
         CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -484,16 +475,7 @@ namespace Tests
         WHEN("Reset Synth")
         {
           synth->resetDSP();
-          synth->measurePerformance(20ms);
-          THEN("No Active Voices")
-          {
-            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-          }
-        }
-        WHEN("MIDI Settings Message")
-        {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("No Active Voices")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -507,7 +489,7 @@ namespace Tests
           WHEN("Change Mono Enable Parameter")
           {
             tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::I);
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
@@ -520,7 +502,7 @@ namespace Tests
           WHEN("Change Unison Voices Parameter")
           {
             tester.applyUnisonMessage(2, VoiceGroup::I);
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
@@ -536,7 +518,7 @@ namespace Tests
           WHEN("Change Mono Enable Parameter")
           {
             tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::II);
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("One Active Voice in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -549,7 +531,7 @@ namespace Tests
           WHEN("Change Unison Voices Parameter")
           {
             tester.applyUnisonMessage(2, VoiceGroup::II);
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("One Active Voice in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -568,7 +550,7 @@ namespace Tests
           WHEN("Split Preset with identical Mono/Unison in both Parts")
           {
             tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("One Active Voice in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -583,7 +565,7 @@ namespace Tests
             WHEN("In Part I")
             {
               tester.applyMalformedSplitPreset({ 1, Polyphony::Mono }, { 1, Polyphony::Poly });
-              synth->measurePerformance(20ms);
+              synth->measurePerformance(5ms);
               THEN("No Active Voices in Part I")
               {
                 CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
@@ -596,7 +578,7 @@ namespace Tests
             WHEN("In Part II")
             {
               tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Mono });
-              synth->measurePerformance(20ms);
+              synth->measurePerformance(5ms);
               THEN("One Active Voice in Part I")
               {
                 CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -612,7 +594,7 @@ namespace Tests
             WHEN("In Part I")
             {
               tester.applyMalformedSplitPreset({ 2, Polyphony::Poly }, { 1, Polyphony::Poly });
-              synth->measurePerformance(20ms);
+              synth->measurePerformance(5ms);
               THEN("No Active Voices in Part I")
               {
                 CHECK(tester.getActiveVoices(VoiceGroup::I) == 0);
@@ -625,7 +607,7 @@ namespace Tests
             WHEN("In Part II")
             {
               tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 2, Polyphony::Poly });
-              synth->measurePerformance(20ms);
+              synth->measurePerformance(5ms);
               THEN("One Active Voice in Part I")
               {
                 CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -642,7 +624,7 @@ namespace Tests
           WHEN("Single Preset with identical Mono/Unison")
           {
             tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -651,7 +633,7 @@ namespace Tests
           WHEN("Layer Preset with identical Mono/Unison")
           {
             tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -663,9 +645,9 @@ namespace Tests
     GIVEN("Active Voices in Layer Sound")
     {
       tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       tester.applyTCDKeyDown(60, 1.0f, VoiceGroup::Global);
-      synth->measurePerformance(20ms);
+      synth->measurePerformance(5ms);
       THEN("One Active Voice in Part I")
       {
         CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -679,16 +661,7 @@ namespace Tests
         WHEN("Reset Synth")
         {
           synth->resetDSP();
-          synth->measurePerformance(20ms);
-          THEN("No Active Voices")
-          {
-            CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
-          }
-        }
-        WHEN("MIDI Settings Message")
-        {
-          synth->onMidiSettingsMessage(nltools::msg::Setting::MidiSettingsMessage {});
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("No Active Voices")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -700,7 +673,7 @@ namespace Tests
         WHEN("Change Mono Enable Parameter")
         {
           tester.applyMonoMessage(Polyphony::Mono, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("No Active Voices")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -709,7 +682,7 @@ namespace Tests
         WHEN("Change Unison Voices Parameter")
         {
           tester.applyUnisonMessage(2, VoiceGroup::Global);
-          synth->measurePerformance(20ms);
+          synth->measurePerformance(5ms);
           THEN("No Active Voices")
           {
             CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -723,7 +696,7 @@ namespace Tests
           WHEN("Layer Preset with identical Mono/Unison")
           {
             tester.applyMalformedLayerPreset({ 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("One Active Voice in Part I")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::I) == 1);
@@ -736,7 +709,7 @@ namespace Tests
           WHEN("Layer Preset with different Mono Enable")
           {
             tester.applyMalformedLayerPreset({ 1, Polyphony::Mono });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -745,7 +718,7 @@ namespace Tests
           WHEN("Layer Preset with different Unison Voices")
           {
             tester.applyMalformedLayerPreset({ 2, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -757,7 +730,7 @@ namespace Tests
           WHEN("Single Preset with identical Mono/Unison")
           {
             tester.applyMalformedSinglePreset({ 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);
@@ -766,7 +739,7 @@ namespace Tests
           WHEN("Split Preset with identical Mono/Unison in both Parts")
           {
             tester.applyMalformedSplitPreset({ 1, Polyphony::Poly }, { 1, Polyphony::Poly });
-            synth->measurePerformance(20ms);
+            synth->measurePerformance(5ms);
             THEN("No Active Voices")
             {
               CHECK(tester.getActiveVoices(VoiceGroup::Global) == 0);

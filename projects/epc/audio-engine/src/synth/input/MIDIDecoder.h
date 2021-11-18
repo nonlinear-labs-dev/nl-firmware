@@ -57,8 +57,6 @@ class MIDIDecoder
   DSPInterface* m_dsp;
   MidiRuntimeOptions* m_options;
 
-  void processMidiForHWSource(int id, uint32_t _data);
-
   template <typename Range> void processBipolarMidiController(const uint32_t dataByte, int id);
 
   template <typename Range> void processUnipolarMidiController(const uint32_t dataByte, int id);

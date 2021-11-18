@@ -1,18 +1,18 @@
 #include <catch.hpp>
 #include <device-settings/EditSmoothingTime.h>
-#include <testing/settings/TestSettings.h>
 #include <testing/TestHelper.h>
+#include <device-settings/Settings.h>
 
 TEST_CASE("Edit Smoothing Time - Scales")
 {
-  TestSettings settings;
+  Settings settings(nullptr);
   EditSmoothingTime time(settings);
   REQUIRE(time.getParent() != nullptr);
 }
 
 TEST_CASE("Edit Smoothing Time - To String")
 {
-  TestSettings settings;
+  Settings settings(nullptr);
   EditSmoothingTime time(settings);
 
   SECTION("0.000 ms")

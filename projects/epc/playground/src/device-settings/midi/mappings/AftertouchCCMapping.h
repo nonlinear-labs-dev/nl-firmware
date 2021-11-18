@@ -1,13 +1,13 @@
 #pragma once
-#include <device-settings/EnumSetting.h>
+#include <device-settings/midi/mappings/MappingSetting.h>
 #include <nltools/Types.h>
 #include <tools/StringTools.h>
 
-class AftertouchCCMapping : public EnumSetting<AftertouchCC>
+class AftertouchCCMapping : public MappingSetting<AftertouchCC>
 {
  public:
-  AftertouchCCMapping(UpdateDocumentContributor& u)
-      : EnumSetting<AftertouchCC>(u, AftertouchCC::ChannelPressure)
+  AftertouchCCMapping(UpdateDocumentContributor& u, Enable14BitSupport& enable14Bit)
+      : MappingSetting<AftertouchCC>(u, enable14Bit, AftertouchCC::ChannelPressure)
   {
   }
 
@@ -55,6 +55,27 @@ class AftertouchCCMapping : public EnumSetting<AftertouchCC>
                                               "Pitchbend up",
                                               "Pitchbend down" };
 
-    return ret;
+    static std::vector<Glib::ustring> retWithoutLSB = { "None",          "Channel Pressure",
+                                                        "CC 01",         "CC 02",
+                                                        "CC 03",         "CC 04",
+                                                        "CC 05",         "CC 06",
+                                                        "CC 07",         "CC 08",
+                                                        "CC 09",         "CC 10",
+                                                        "CC 11",         "CC 12",
+                                                        "CC 13",         "CC 14",
+                                                        "CC 15",         "CC 16",
+                                                        "CC 17",         "CC 18",
+                                                        "CC 19",         "CC 20",
+                                                        "CC 21",         "CC 22",
+                                                        "CC 23",         "CC 24",
+                                                        "CC 25",         "CC 26",
+                                                        "CC 27",         "CC 28",
+                                                        "CC 29",         "CC 30",
+                                                        "CC 31",         "Pitchbend up",
+                                                        "Pitchbend down" };
+    if(is14BitSupportEnabled())
+      return ret;
+    else
+      return retWithoutLSB;
   }
 };

@@ -18,7 +18,6 @@ using ParameterPtr = std::unique_ptr<PresetParameter>;
 class PresetParameterGroup
 {
  public:
-  explicit PresetParameterGroup(VoiceGroup vg);
   explicit PresetParameterGroup(const ::ParameterGroup &other);
   PresetParameterGroup(const PresetParameterGroup &other);
   ~PresetParameterGroup();

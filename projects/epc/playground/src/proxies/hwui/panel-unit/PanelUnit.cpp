@@ -30,7 +30,7 @@ PanelUnit::PanelUnit()
 
   m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::Selected, [=]() {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    EditBufferUseCases ebUseCases { editBuffer };
+    EditBufferUseCases ebUseCases { *editBuffer };
 
     auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
 
@@ -74,7 +74,7 @@ PanelUnit::PanelUnit()
 
   m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::SelectSource, [=]() {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-    EditBufferUseCases ebUseCases { editBuffer };
+    EditBufferUseCases ebUseCases { *editBuffer };
     auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
     auto currentSource = choseHWBestSourceForMC(p->getID());
     ebUseCases.selectParameter(currentSource, true);

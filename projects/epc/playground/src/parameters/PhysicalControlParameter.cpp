@@ -9,8 +9,7 @@
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/HardwareSourcesGroup.h>
 #include <presets/ParameterGroupSet.h>
-#include <limits>
-#include <math.h>
+#include <cmath>
 #include "ParameterAlgorithm.h"
 #include <http/UpdateDocumentMaster.h>
 #include <Application.h>
@@ -29,9 +28,12 @@ bool PhysicalControlParameter::isChangedFromLoaded() const
   return false;
 }
 
-void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newVal)
+void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source)
 {
-  getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newVal));
+  if(source == HWChangeSource::MIDI)
+    getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));
+  else
+    getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newValue));
 }
 
 void PhysicalControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
@@ -55,15 +57,18 @@ void PhysicalControlParameter::onValueChanged(Initiator initiator, tControlPosit
 
   if(initiator != Initiator::INDIRECT)
   {
-    if(getReturnMode() != ReturnMode::None)
+    if(isLocalEnabled() || initiator == Initiator::EXPLICIT_MIDI)
     {
-      for(ModulationRoutingParameter *target : m_targets)
-        target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
-    }
-    else
-    {
-      for(ModulationRoutingParameter *target : m_targets)
-        target->applyAbsolutePlaycontrollerPhysicalControl(newValue);
+      if(getReturnMode() != ReturnMode::None)
+      {
+        for(ModulationRoutingParameter *target : m_targets)
+          target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
+      }
+      else
+      {
+        for(ModulationRoutingParameter *target : m_targets)
+          target->applyAbsolutePlaycontrollerPhysicalControl(newValue);
+      }
     }
   }
 
@@ -236,7 +241,8 @@ void PhysicalControlParameter::undoableRandomize(UNDO::Transaction *transaction,
 
 void PhysicalControlParameter::sendParameterMessage() const
 {
-  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<PhysicalControlParameter>(this);
+  if(auto eb = getParentEditBuffer())
+    eb->getAudioEngineProxy().createAndSendParameterMessage<PhysicalControlParameter>(this);
 }
 
 bool PhysicalControlParameter::lockingEnabled() const

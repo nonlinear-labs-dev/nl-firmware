@@ -1,26 +1,26 @@
 #include <catch.hpp>
 #include <parameters/UnisonVoicesParameter.h>
 #include "testing/TestHelper.h"
+#include <libundo/undo/Scope.h>
+#include <http/UndoScope.h>
 
 TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
-  auto scope = TestHelper::createTestScope();
-  auto transaction = scope->getTransaction();
-  TestHelper::initSingleEditBuffer(transaction);
+  EditBufferUseCases ebUseCase(*eb);
+  TestHelper::initSingleEditBuffer();
 
   auto unisonVoices = eb->findParameterByID({ 249, VoiceGroup::I });
-  unisonVoices->setCPFromHwui(scope->getTransaction(), 0);
-  REQUIRE(unisonVoices->getDisplayString() == "1 voice (off)");
+  ParameterUseCases unisonUseCases(unisonVoices);
 
   WHEN("Unison Voices: 1")
   {
-    unisonVoices->setCPFromHwui(transaction, 0);  // -> 1
+    unisonUseCases.setControlPosition(0);
     REQUIRE(unisonVoices->getDisplayString() == "1 voice (off)");
 
     WHEN("Converted to Dual")
     {
-      eb->undoableConvertToDual(transaction, SoundType::Layer);
+      ebUseCase.convertToLayer(VoiceGroup::I);
       REQUIRE(unisonVoices->getDisplayString() == "1 voice (off)");
     }
   }
@@ -31,11 +31,11 @@ TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly", "[Unison][P
 
     WHEN("Unison Voices: " + std::to_string(voices))
     {
-      unisonVoices->setCPFromHwui(transaction, 0);
-      unisonVoices->stepCPFromHwui(transaction, steps, {});
+      unisonUseCases.setControlPosition(0);
+      unisonUseCases.stepControlPosition(steps, false, false);
       REQUIRE(unisonVoices->getDisplayString() == std::to_string(voices) + " voices");
 
-      eb->undoableConvertToDual(transaction, SoundType::Layer);
+      ebUseCase.convertToLayer(VoiceGroup::I);
 
       if(voices >= 12)
       {
@@ -52,25 +52,21 @@ TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly", "[Unison][P
 TEST_CASE("Convert Dual to Single Sound", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
-  auto scope = TestHelper::createTestScope();
-  auto transaction = scope->getTransaction();
-
-  eb->undoableConvertToDual(transaction, SoundType::Layer);
-  eb->undoableInitSound(transaction, Defaults::FactoryDefault);
+  EditBufferUseCases useCase(*eb);
+  useCase.convertToLayer(VoiceGroup::I);
+  useCase.initSound(Defaults::FactoryDefault);
 
   auto unisonVoices = eb->findParameterByID({ 249, VoiceGroup::I });
-  unisonVoices->setCPFromHwui(scope->getTransaction(), 0);
-  REQUIRE(unisonVoices->getDisplayString() == "1 voice (off)");
+  ParameterUseCases unisonUseCase(unisonVoices);
 
   WHEN("Unison Voices: 1")
   {
-    unisonVoices->setCPFromHwui(transaction, 0);  // -> 1
+    unisonUseCase.setControlPosition(0);
     REQUIRE(unisonVoices->getDisplayString() == "1 voice (off)");
 
     WHEN("Converted to Single")
     {
-      eb->undoableConvertToSingle(transaction, VoiceGroup::I);
-
+      useCase.convertToSingle(VoiceGroup::I);
       CHECK(unisonVoices->getDisplayString() == "1 voice (off)");
     }
   }
@@ -81,12 +77,11 @@ TEST_CASE("Convert Dual to Single Sound", "[Unison][Parameter]")
 
     WHEN("Unison Voices: " + std::to_string(voices))
     {
-      unisonVoices->setCPFromHwui(transaction, 0);
-      unisonVoices->stepCPFromHwui(transaction, steps, {});
+      unisonUseCase.setControlPosition(0);
+      unisonUseCase.stepControlPosition(steps, false, false);
       REQUIRE(unisonVoices->getDisplayString() == std::to_string(voices) + " voices");
 
-      eb->undoableConvertToSingle(transaction, VoiceGroup::I);
-
+      useCase.convertToSingle(VoiceGroup::I);
       CHECK(unisonVoices->getDisplayString() == std::to_string(voices) + " voices");
     }
   }
@@ -95,42 +90,39 @@ TEST_CASE("Convert Dual to Single Sound", "[Unison][Parameter]")
 TEST_CASE("Undo Convert Sound resets Scaling", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases useCase(*eb);
   auto unisonVoicesI = eb->findParameterByID({ 249, VoiceGroup::I });
   auto unisonVoicesII = eb->findParameterByID({ 249, VoiceGroup::II });
+  ParameterUseCases unisonI(unisonVoicesI);
+  ParameterUseCases unisonII(unisonVoicesII);
 
   SECTION("Single -> Dual")
   {
-    //Init Single
+    useCase.convertToSingle(VoiceGroup::I);
+    REQUIRE(eb->getType() == SoundType::Single);
+    REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 23);
+    REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 23);
+
+    useCase.convertToLayer(VoiceGroup::I);
+
+    REQUIRE(eb->getType() == SoundType::Layer);
+    REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 11);
+    REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 11);
+
+    THEN("Values Match")
     {
-      auto scope = TestHelper::createTestScope();
-      eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
-
-      REQUIRE(eb->getType() == SoundType::Single);
-      REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 23);
-      REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 23);
-    }
-
-    //convert to dual
-    {
-      auto scope = TestHelper::createTestScope();
-      eb->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
-
-      REQUIRE(eb->getType() == SoundType::Layer);
-      REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 11);
-      REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 11);
-
-      unisonVoicesI->setCPFromHwui(scope->getTransaction(), 1);
-      unisonVoicesII->setCPFromHwui(scope->getTransaction(), 1);
+      unisonI.setControlPosition(1);
+      unisonII.setControlPosition(1);
       REQUIRE(unisonVoicesI->getDisplayString() == "12 voices");
       REQUIRE(unisonVoicesII->getDisplayString() == "12 voices");
 
-      unisonVoicesI->setCPFromHwui(scope->getTransaction(), 0);
-      unisonVoicesII->setCPFromHwui(scope->getTransaction(), 0);
+      unisonI.setControlPosition(0);
+      unisonII.setControlPosition(0);
       REQUIRE(unisonVoicesI->getDisplayString() == "1 voice (off)");
       REQUIRE(unisonVoicesII->getDisplayString() == "1 voice (off)");
     }
 
-    //undo
+    WHEN("Undo")
     {
       REQUIRE(eb->getType() == SoundType::Layer);
       eb->getParent()->getUndoScope().undo();
@@ -139,15 +131,15 @@ TEST_CASE("Undo Convert Sound resets Scaling", "[Unison][Parameter]")
       REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 23);
       REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 23);
 
+      THEN("Values Match")
       {
-        auto scope = TestHelper::createTestScope();
-        unisonVoicesI->setCPFromHwui(scope->getTransaction(), 1);
-        unisonVoicesII->setCPFromHwui(scope->getTransaction(), 1);
+        unisonI.setControlPosition(1);
+        unisonII.setControlPosition(1);
         REQUIRE(unisonVoicesI->getDisplayString() == "24 voices");
         REQUIRE(unisonVoicesII->getDisplayString() == "24 voices");
 
-        unisonVoicesI->setCPFromHwui(scope->getTransaction(), 0);
-        unisonVoicesII->setCPFromHwui(scope->getTransaction(), 0);
+        unisonI.setControlPosition(0);
+        unisonII.setControlPosition(0);
         REQUIRE(unisonVoicesI->getDisplayString() == "1 voice (off)");
         REQUIRE(unisonVoicesII->getDisplayString() == "1 voice (off)");
       }
@@ -156,56 +148,54 @@ TEST_CASE("Undo Convert Sound resets Scaling", "[Unison][Parameter]")
 
   SECTION("Dual -> Single")
   {
-    //Init dual
-    {
-      auto scope = TestHelper::createTestScope();
-      eb->undoableConvertToDual(scope->getTransaction(), SoundType::Layer);
+    useCase.convertToLayer(VoiceGroup::I);
 
-      REQUIRE(eb->getType() == SoundType::Layer);
-      REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 11);
-      REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 11);
-    }
+    REQUIRE(eb->getType() == SoundType::Layer);
+    REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 11);
+    REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 11);
 
-    //convert to single
+    THEN("convert to single")
     {
-      auto scope = TestHelper::createTestScope();
-      eb->undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+      useCase.convertToSingle(VoiceGroup::I);
 
       REQUIRE(eb->getType() == SoundType::Single);
       REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 23);
       REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 23);
 
-      unisonVoicesI->setCPFromHwui(scope->getTransaction(), 1);
-      unisonVoicesII->setCPFromHwui(scope->getTransaction(), 1);
-      REQUIRE(unisonVoicesI->getDisplayString() == "24 voices");
-      REQUIRE(unisonVoicesII->getDisplayString() == "24 voices");
-
-      unisonVoicesI->setCPFromHwui(scope->getTransaction(), 0);
-      unisonVoicesII->setCPFromHwui(scope->getTransaction(), 0);
-      REQUIRE(unisonVoicesI->getDisplayString() == "1 voice (off)");
-      REQUIRE(unisonVoicesII->getDisplayString() == "1 voice (off)");
-    }
-
-    //undo
-    {
-      REQUIRE(eb->getType() == SoundType::Single);
-      eb->getParent()->getUndoScope().undo();
-      REQUIRE(eb->getType() == SoundType::Layer);
-
-      REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 11);
-      REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 11);
-
+      THEN("Values Match")
       {
-        auto scope = TestHelper::createTestScope();
-        unisonVoicesI->setCPFromHwui(scope->getTransaction(), 1);
-        unisonVoicesII->setCPFromHwui(scope->getTransaction(), 1);
-        REQUIRE(unisonVoicesI->getDisplayString() == "12 voices");
-        REQUIRE(unisonVoicesII->getDisplayString() == "12 voices");
+        unisonI.setControlPosition(1);
+        unisonII.setControlPosition(1);
+        REQUIRE(unisonVoicesI->getDisplayString() == "24 voices");
+        REQUIRE(unisonVoicesII->getDisplayString() == "24 voices");
 
-        unisonVoicesI->setCPFromHwui(scope->getTransaction(), 0);
-        unisonVoicesII->setCPFromHwui(scope->getTransaction(), 0);
+        unisonI.setControlPosition(0);
+        unisonII.setControlPosition(0);
         REQUIRE(unisonVoicesI->getDisplayString() == "1 voice (off)");
         REQUIRE(unisonVoicesII->getDisplayString() == "1 voice (off)");
+      }
+
+      WHEN("UNDONE")
+      {
+        REQUIRE(eb->getType() == SoundType::Single);
+        eb->getParent()->getUndoScope().undo();
+        REQUIRE(eb->getType() == SoundType::Layer);
+
+        REQUIRE(unisonVoicesI->getValue().getCoarseDenominator() == 11);
+        REQUIRE(unisonVoicesII->getValue().getCoarseDenominator() == 11);
+
+        THEN("Values match")
+        {
+          unisonI.setControlPosition(1);
+          unisonII.setControlPosition(1);
+          REQUIRE(unisonVoicesI->getDisplayString() == "12 voices");
+          REQUIRE(unisonVoicesII->getDisplayString() == "12 voices");
+
+          unisonI.setControlPosition(0);
+          unisonII.setControlPosition(0);
+          REQUIRE(unisonVoicesI->getDisplayString() == "1 voice (off)");
+          REQUIRE(unisonVoicesII->getDisplayString() == "1 voice (off)");
+        }
       }
     }
   }

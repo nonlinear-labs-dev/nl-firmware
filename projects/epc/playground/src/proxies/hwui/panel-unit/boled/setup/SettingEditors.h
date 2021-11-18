@@ -32,6 +32,41 @@ template <typename tSetting> class EnumSettingEditor : public MenuEditor
 
   auto getSetting() const
   {
-    return Application::get().getSettings()->getSetting<tSetting>();
+    if(Application::exists())
+    {
+      return Application::get().getSettings()->getSetting<tSetting>();
+    }
+
+    return std::shared_ptr<tSetting>(nullptr);
+  }
+};
+
+template<typename tSetting>
+class OnOffOrderChangedEnumSettingEditor : public EnumSettingEditor<tSetting>
+{
+  typedef EnumSettingEditor<tSetting> super;
+
+  [[nodiscard]] const std::vector<Glib::ustring>& getDisplayStrings() const override
+  {
+    static auto displays = [this] {
+      auto raw = super::getSetting()->getDisplayStrings();
+      std::reverse(raw.begin(), raw.end());
+      return raw;
+    }();
+
+    return displays;
+  }
+
+  void incSetting(int inc) override
+  {
+    auto reversedInc = inc * -1;
+    super::getSetting()->incDec(reversedInc, false);
+  }
+
+  [[nodiscard]] int getSelectedIndex() const override
+  {
+    static auto numItems = getDisplayStrings().size();
+    auto rawIndex = static_cast<size_t>(super::getSetting()->getEnumIndex());
+    return (numItems - rawIndex) - 1;
   }
 };

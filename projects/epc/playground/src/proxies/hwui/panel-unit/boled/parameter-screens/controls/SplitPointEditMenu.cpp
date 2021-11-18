@@ -11,11 +11,25 @@ void SplitPointEditMenu::addActions()
 
   if(m_syncSetting->get())
   {
-    addButton("Unlink Splitp.", [this]() { SyncSplitSettingUseCases::get().disableSyncSetting(); });
+    addButton("Unlink Splitp.",
+              [this]()
+              {
+                auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+                auto pm = Application::get().getPresetManager();
+                SyncSplitSettingUseCases useCase(*setting, *pm);
+                useCase.disableSyncSetting();
+              });
   }
   else
   {
-    addButton("Link Splitp.", [this]() { SyncSplitSettingUseCases::get().enableSyncSetting(); });
+    addButton("Link Splitp.",
+              [this]()
+              {
+                auto setting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
+                auto pm = Application::get().getPresetManager();
+                SyncSplitSettingUseCases useCase(*setting, *pm);
+                useCase.enableSyncSetting();
+              });
   }
 }
 

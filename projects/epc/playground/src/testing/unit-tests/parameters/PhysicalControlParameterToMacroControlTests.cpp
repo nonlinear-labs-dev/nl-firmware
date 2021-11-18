@@ -4,6 +4,7 @@
 #include <parameter_declarations.h>
 #include <use-cases/RibbonParameterUseCases.h>
 #include <use-cases/PhysicalControlParameterUseCases.h>
+#include <device-settings/midi/RoutingSettings.h>
 
 TEST_CASE("100% HW-Amount of Bipolar Source on MC used to lead to 2x the modulation to happen")
 {
@@ -15,12 +16,12 @@ TEST_CASE("100% HW-Amount of Bipolar Source on MC used to lead to 2x the modulat
   auto connectionParam
       = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global });
 
-  //INIT
-  {
-    auto scope = TestHelper::createTestScope();
-    TestHelper::initSingleEditBuffer(scope->getTransaction());
-  }
+  TestHelper::initSingleEditBuffer();
 
+  auto settings = TestHelper::getSettings();
+  auto routings = settings->getSetting<RoutingSettings>();
+
+  routings->setAllValues(true);
   RibbonParameterUseCases ribbonUseCase(ribbon1);
   ribbonUseCase.setReturnMode(RibbonReturnMode::RETURN);
 

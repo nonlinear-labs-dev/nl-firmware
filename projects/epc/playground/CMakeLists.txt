@@ -62,13 +62,29 @@ IF(DSL_LAYOUTS)
 ENDIF(DSL_LAYOUTS)
 
 # CONFIGURED FILES
-configure_file(src/device-info/BuildVersion.cpp.in src/device-info/BuildVersion.cpp)
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
 
+add_custom_command(
+  COMMENT "Generate BuildVersion.cpp"
+  DEPENDS ${PROJECT_SOURCE_DIR}/src/device-info/BuildVersion.cpp.in
+  DEPENDS ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  DEPENDS ${CMAKE_SOURCE_DIR}/.git/index
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND}
+    -D INPUT_FILE=${PROJECT_SOURCE_DIR}/src/device-info/BuildVersion.cpp.in
+    -D OUTPUT_FILE=${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp
+    -P ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  OUTPUT ${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp
+)
+
 # SOURCE FILE COLLECTIONS
-SET(GENERATED_SOURCES ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp ${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp)
+SET(GENERATED_SOURCES 
+  ${PROJECT_BINARY_DIR}/src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp 
+  ${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp
+)
+
 file(GLOB PARAMETER_DESCRIPTIONS src/parameters/descriptions/*.txt)
 file(GLOB VERSION_INFOS resources/version-infos/*)
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp ${CMAKE_SOURCE_DIR}/projects/shared/playcontroller/*.c)

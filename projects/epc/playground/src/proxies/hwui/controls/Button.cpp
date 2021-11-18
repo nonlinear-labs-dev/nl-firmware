@@ -37,21 +37,34 @@ void Button::setFontColor(FrameBuffer &fb) const
     fb.setColor(FrameBufferColors::C204);
 }
 
+FrameBufferColors Button::getBackgroundColor() const
+{
+  if(!m_enabled)
+    return FrameBufferColors::C43;
+  else if(isHighlight())
+    return FrameBufferColors::C128;
+  else
+    return FrameBufferColors::C77;
+}
+
+FrameBufferColors Button::getForegroundColor() const
+{
+  if(!m_enabled)
+    return FrameBufferColors::C77;
+  else if(isHighlight())
+    return FrameBufferColors::C179;
+  else
+    return FrameBufferColors::C103;
+}
+
 bool Button::redraw(FrameBuffer &fb)
 {
   auto r = getPosition();
 
-  if(isHighlight())
-    fb.setColor(FrameBufferColors::C128);
-  else
-    fb.setColor(FrameBufferColors::C77);
-
+  fb.setColor(getBackgroundColor());
   fb.fillRect(r.getMargined(2, 2));
 
-  if(isHighlight())
-    fb.setColor(FrameBufferColors::C179);
-  else
-    fb.setColor(FrameBufferColors::C103);
+  fb.setColor(getForegroundColor());
 
   fb.drawHorizontalLine(r.getLeft() + 1, r.getTop(), r.getWidth() - 2);
   fb.drawVerticalLine(r.getLeft(), r.getTop() + 1, r.getHeight() - 2);
@@ -62,6 +75,20 @@ bool Button::redraw(FrameBuffer &fb)
     super::redraw(fb);
 
   return true;
+}
+
+void Button::setEnable(bool e)
+{
+  if(isEnabled() != e)
+  {
+    m_enabled = e;
+    setDirty();
+  }
+}
+
+bool Button::isEnabled() const
+{
+  return m_enabled;
 }
 
 Rect Button::getButtonPos(Buttons n)

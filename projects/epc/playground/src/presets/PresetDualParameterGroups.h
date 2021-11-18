@@ -19,6 +19,7 @@ class PresetDualParameterGroups : public AttributesOwner
  public:
   using GroupPtr = std::unique_ptr<PresetParameterGroup>;
   using GroupsMap = std::map<GroupId, GroupPtr>;
+  typedef std::vector<std::pair<GroupId, const PresetParameterGroup*>> tParameterGroups;
 
   explicit PresetDualParameterGroups(UpdateDocumentContributor* parent);
   PresetDualParameterGroups(UpdateDocumentContributor* parent, const Preset& other);
@@ -30,14 +31,12 @@ class PresetDualParameterGroups : public AttributesOwner
 
   GroupsMap& getGroups(VoiceGroup vg);
 
-  SoundType getType() const;
+  [[nodiscard]] SoundType getType() const;
 
   virtual void setType(UNDO::Transaction* transaction, SoundType type);
 
   void forEachParameter(const std::function<void(const PresetParameter*)>& cb) const;
   void forEachParameter(const std::function<void(PresetParameter*)>& cb);
-  PresetParameterGroup* findParameterGroup(const GroupId& id) const;
-  PresetParameter* findParameterByID(ParameterId id, bool throwIfMissing) const;
 
   template <VoiceGroup VG> void forEachParameter(const std::function<void(PresetParameter*)>& cb)
   {
@@ -46,13 +45,15 @@ class PresetDualParameterGroups : public AttributesOwner
         cb(p.get());
   }
 
-  void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction* transaction, std::optional<std::set<GroupId> > whiteList);
+  [[nodiscard]] PresetParameterGroup* findParameterGroup(const GroupId& id) const;
+  [[nodiscard]] PresetParameter* findParameterByID(ParameterId id, bool throwIfMissing) const;
+
+  void copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction* transaction, std::optional<std::set<GroupId>> whiteList);
 
   void writeGroups(Writer& writer, const Preset* other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
   PresetParameterGroup* findOrCreateParameterGroup(const GroupId& id);
 
-  size_t getNumGroups(const VoiceGroup& vg) const;
-  std::vector<std::pair<GroupId, const PresetParameterGroup*> > getGroups(const VoiceGroup& vg) const;
+  [[nodiscard]] tParameterGroups getGroups(const VoiceGroup& vg) const;
 
  protected:
   void copyFrom(UNDO::Transaction* transaction, const PresetDualParameterGroups* other);
@@ -63,6 +64,8 @@ class PresetDualParameterGroups : public AttributesOwner
 
   SoundType m_type;
   std::array<GroupsMap, static_cast<size_t>(VoiceGroup::NumGroups)> m_parameterGroups;
+
+  static ParameterGroupSet& getDataScheme();
 
   friend class PresetParameterVoiceGroupSerializer;
   friend class PresetParameterGroupsSerializer;

@@ -20,9 +20,10 @@ TEST_CASE("Convert Split (II) to Layer")
   auto attI = EBL::getParameter({ 0, VoiceGroup::I });
   auto attII = EBL::getParameter({ 0, VoiceGroup::II });
 
+  TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
+
   {
     auto scope = TestHelper::createTestScope();
-    TestHelper::initDualEditBuffer<SoundType::Split>(scope->getTransaction());
     voicesII->loadDefault(scope->getTransaction(), Defaults::FactoryDefault);
     voicesII->stepCPFromHwui(scope->getTransaction(), 12, {});
     CHECK(voicesII->getDisplayString() == "12 voices");
@@ -73,10 +74,9 @@ TEST_CASE("Convert Split (II) to Layer")
     const auto oldPartMasterHashI = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>());
     const auto oldPartMasterHashII = EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>());
 
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
-    eb->undoableConvertToDual(transaction, SoundType::Layer);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToLayer(VoiceGroup::II);
 
     THEN("Unison Voices Correct")
     {
@@ -169,10 +169,10 @@ TEST_CASE("Convert Layer I to Split")
   auto envAIIAttack = EBL::getParameter({ 0, VoiceGroup::II });
 
   {
+    TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
+
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    TestHelper::initDualEditBuffer<SoundType::Layer>(transaction);
-
     voicesI->loadDefault(transaction, Defaults::FactoryDefault);
     voicesI->stepCPFromHwui(transaction, 12, {});
     CHECK(voicesI->getDisplayString() == "12 voices");
@@ -229,10 +229,9 @@ TEST_CASE("Convert Layer I to Split")
     const auto oldToFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
     const auto oldToFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
 
-    auto scope = TestHelper::createTestScope();
-    auto transaction = scope->getTransaction();
     auto eb = TestHelper::getEditBuffer();
-    eb->undoableConvertToDual(transaction, SoundType::Split);
+    EditBufferUseCases useCase(*eb);
+    useCase.convertToSplit(VoiceGroup::I);
 
     THEN("Unison Voices Correct")
     {

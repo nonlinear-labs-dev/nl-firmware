@@ -10,6 +10,8 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <Application.h>
+#include <device-settings/Settings.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
 
 namespace DETAIL
 {
@@ -91,7 +93,10 @@ SplashLayout::~SplashLayout()
 
 void SplashLayout::start()
 {
-  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+  auto hwui = Application::get().getHWUI();
+  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
+  auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
+  screensaver->endAndReschedule();
   boled.setOverlay(new SplashLayout());
 }
 
@@ -105,6 +110,8 @@ void SplashLayout::finish()
 
 void SplashLayout::setStatus(const std::string &msg)
 {
+  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
   if(s_splash)
   {
     s_splash->setMessage(msg);
@@ -113,6 +120,8 @@ void SplashLayout::setStatus(const std::string &msg)
 
 void SplashLayout::addStatus(const std::string &msg)
 {
+  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
   if(s_splash)
   {
     s_splash->addMessage(msg);

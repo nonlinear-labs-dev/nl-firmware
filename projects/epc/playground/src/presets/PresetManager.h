@@ -15,6 +15,8 @@
 #include <tools/Signal.h>
 #include <nltools/Types.h>
 
+#include <sync/SyncedItem.h>
+
 class Bank;
 class Preset;
 class EditBuffer;
@@ -22,16 +24,20 @@ class Parameter;
 class PresetManagerSerializer;
 class RPCActionManager;
 class NetworkRequest;
+class AudioEngineProxy;
+class Options;
+class Settings;
 
-class PresetManager : public ContentSection
+class PresetManager : public UpdateDocumentContributor, public SyncedItem
 {
   using SaveSubTask = std::function<SaveResult()>;
 
  public:
-  explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly = false);
+  explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options, Settings &settings,
+                         std::unique_ptr<AudioEngineProxy> &aeProxyContainer);
   ~PresetManager() override;
 
-  void init();
+  void init(AudioEngineProxy *aeProxy);
   void invalidate();
 
   // debug
@@ -44,20 +50,9 @@ class PresetManager : public ContentSection
 
   // supported interfaces
   UpdateDocumentContributor::tUpdateID onChange(uint64_t flags = ChangeFlags::Generic) override;
-  Glib::ustring getPrefix() const override;
-  void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;
-  void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
-  template <typename Mgr> Mgr &findActionManager()
-  {
-    for(auto &a : m_actionManagers)
-      if(auto m = std::dynamic_pointer_cast<Mgr>(a))
-        return *m.get();
+  void writeDocument(Writer &writer, tUpdateID knownRevision) const;
 
-    throw std::runtime_error("ActionManager does not exist in object");
-  }
-
-  void undoableLoadSelectedPreset(UNDO::Transaction *currentTransactionPtr);
   bool isLoading() const;
   std::shared_ptr<ScopedGuard::Lock> getLoadingLock();
 
@@ -101,10 +96,8 @@ class PresetManager : public ContentSection
   void clear(UNDO::Transaction *transaction);
   void setOrderNumber(UNDO::Transaction *transaction, const Uuid &bank, size_t targetPos);
   void sanitizeBankClusterRelations(UNDO::Transaction *transaction);
-  void resolveCyclicAttachments(UNDO::Transaction *transaction);
+  void resolveCyclicAttachments(UNDO::Transaction *transaction) const;
   void ensureBankSelection(UNDO::Transaction *transaction);
-
-  void undoableLoadSelectedPresetAccordingToLoadType(UNDO::Transaction *transaction) const;
 
   // algorithms
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;
@@ -115,16 +108,18 @@ class PresetManager : public ContentSection
   sigc::connection onBankSelection(sigc::slot<void, Uuid> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
-  sigc::connection onPresetStoreHappened(sigc::slot<void> cb);
+  sigc::connection onPresetStoreHappened(const sigc::slot<void>& cb);
   sigc::connection onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb);
-  sigc::connection onLoadHappened(sigc::slot<void> cb);
+  sigc::connection onLoadHappened(const sigc::slot<void>& cb);
 
   const Preset *getSelectedPreset() const;
   Preset *getSelectedPreset();
 
  private:
+  nlohmann::json serialize() const override;
   void loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
-                                                     const Glib::RefPtr<Gio::File> &pmFolder);
+                                                     const Glib::RefPtr<Gio::File> &pmFolder,
+                                                     AudioEngineProxy *aeProxy);
   void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder);
   void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
@@ -147,8 +142,6 @@ class PresetManager : public ContentSection
 
   UndoableVector<PresetManager, Bank> m_banks;
 
-  typedef std::shared_ptr<RPCActionManager> tRPCActionManagerPtr;
-  std::list<tRPCActionManagerPtr> m_actionManagers;
   std::unique_ptr<EditBuffer> m_editBuffer;
   std::unique_ptr<Preset> m_initSound;
   Uuid m_midiSelectedBank;
@@ -171,4 +164,6 @@ class PresetManager : public ContentSection
 
   friend class PresetManagerSerializer;
   friend class PresetManagerUseCases;
+
+  const Options& m_options;
 };

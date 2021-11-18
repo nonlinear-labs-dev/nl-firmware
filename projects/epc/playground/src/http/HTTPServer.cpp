@@ -17,6 +17,8 @@
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/system/SpawnCommandLine.h>
 #include <nltools/messaging/Message.h>
+#include <filesystem>
+#include "CompileTimeOptions.h"
 
 HTTPServer::HTTPServer()
     : m_contentManager()
@@ -24,7 +26,13 @@ HTTPServer::HTTPServer()
   startServer();
 }
 
-HTTPServer::~HTTPServer() = default;
+HTTPServer::~HTTPServer()
+{
+  g_object_unref(m_server);
+
+  if(m_redirectingServer)
+    g_object_unref(m_redirectingServer);
+}
 
 UpdateDocumentMaster *HTTPServer::getUpdateDocumentMaster()
 {
@@ -34,6 +42,7 @@ UpdateDocumentMaster *HTTPServer::getUpdateDocumentMaster()
 void HTTPServer::startServer()
 {
   m_server = soup_server_new(nullptr, nullptr);
+  m_redirectingServer = soup_server_new(nullptr, nullptr);
 
   if(m_server)
     initializeServer();
@@ -54,6 +63,24 @@ void HTTPServer::initializeServer()
 
   GError *error = nullptr;
   soup_server_listen_all(m_server, PLAYGROUND_HTTPSERVER_PORT, static_cast<SoupServerListenOptions>(0), &error);
+
+  if(m_redirectingServer)
+  {
+    soup_server_add_handler(
+        m_redirectingServer, nullptr,
+        +[](SoupServer *, SoupMessage *msg, const char *, GHashTable *, SoupClientContext *, gpointer) {
+          SoupURI *uri = soup_message_get_uri(msg);
+          SoupURI *redirect_uri = soup_uri_copy(uri);
+          soup_uri_set_port(redirect_uri, PLAYGROUND_HTTPSERVER_PORT);
+          char *redirect_string = soup_uri_to_string(redirect_uri, FALSE);
+          soup_message_set_redirect(msg, SOUP_STATUS_FOUND, redirect_string);
+          g_free(redirect_string);
+          soup_uri_free(redirect_uri);
+        },
+        this, nullptr);
+
+    soup_server_listen_all(m_redirectingServer, 80, static_cast<SoupServerListenOptions>(0), &error);
+  }
 
   if(error)
   {
@@ -126,7 +153,7 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         }
       }
 
-      nltools::msg::Update::UpdateUploadedNotification msg{};
+      nltools::msg::Update::UpdateUploadedNotification msg {};
       nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
 
       request->okAndComplete();
@@ -148,7 +175,7 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
         redirectToIndexPage(http);
         return;
       }
-      else if(isStaticFileURL(path))
+      else if(isStaticFileURL(path) || isTMPStaticFile(path))
       {
         serveStaticFile(http);
         return;
@@ -161,22 +188,38 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
 
 bool HTTPServer::isIndexPageAlias(const Glib::ustring &path)
 {
-  return path.empty() || path == "/";
+  return path.empty() || path == "/" || path == "/NonMaps/war/NonMaps.html";
 }
 
 void HTTPServer::redirectToIndexPage(std::shared_ptr<HTTPRequest> request) const
 {
-  request->moved("/NonMaps/war/NonMaps.html");
+  request->moved("/nonmaps/index.html");
 }
 
 bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
 {
-  static const auto allowedPaths = { "/NonMaps/", "/online-help/", "/playground/resources/", "/tmp/" };
-  for(auto p : allowedPaths)
-    if(path.find(p) == 0)
-      return true;
+  try
+  {
+    std::filesystem::path root = getInstallDir();
+    auto resource = root / std::filesystem::path("web" + path);
+    auto canonical = std::filesystem::canonical(resource);
+    return canonical.string().find(root.string()) == 0;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
 
-  return false;
+bool HTTPServer::isTMPStaticFile(const Glib::ustring& path)
+{
+  try {
+    std::filesystem::path p{path.c_str()};
+    return p.string().find("/tmp/") == 0;
+  } catch(...)
+  {
+    return false;
+  }
 }
 
 Glib::ustring HTTPServer::getPathFromMessage(SoupMessage *msg)
@@ -196,7 +239,7 @@ void HTTPServer::onMessageFinished(SoupMessage *msg)
 {
   bool found = false;
 
-  m_servedStreams.remove_if([&](tServedStream file) {
+  m_servedStreams.remove_if([&](const auto &file) {
     if(file->matches(msg))
     {
       found = true;

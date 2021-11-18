@@ -257,7 +257,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
-      EditBufferUseCases useCase(eb);
+      EditBufferUseCases useCase(*eb);
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
       if(eb->getType() == SoundType::Split)
         useCase.selectParameter(ParameterId { 364, vg }, true);
@@ -266,29 +266,29 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::OpenPartScreen, [eb]() {
-      EditBufferUseCases ebUseCases { eb };
+      EditBufferUseCases ebUseCases { *eb };
       ebUseCases.selectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() }, true);
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] {
-      EditBufferUseCases ebUseCases { eb };
+      EditBufferUseCases ebUseCases { *eb };
       ebUseCases.selectParameter({ 247, VoiceGroup::Global }, true);
     });
 
     registerEvent(EventSinks::InitSound, [eb] {
-      SoundUseCases useCases { eb, eb->getParent() };
-      useCases.initSound();
+      EditBufferUseCases useCases { *eb };
+      useCases.initSound(Defaults::UserDefault);
       Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
 
     registerEvent(EventSinks::OpenUnisonParameter, [eb]() {
       auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-      EditBufferUseCases ebUseCases { eb };
+      EditBufferUseCases ebUseCases { *eb };
       ebUseCases.selectParameter({ 249, vg }, true);
     });
 
     registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {
-      EditBufferUseCases ebUseCases(eb);
+      EditBufferUseCases ebUseCases(*eb);
       auto currentVG = hwui->getCurrentVoiceGroup();
       if(auto parameterUseCases = ebUseCases.getUseCase({ C15::PID::Split_Split_Point, currentVG }))
       {
@@ -297,7 +297,7 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::DecSplitPoint, [hwui, eb]() {
-      EditBufferUseCases ebUseCases(eb);
+      EditBufferUseCases ebUseCases(*eb);
       auto currentVG = hwui->getCurrentVoiceGroup();
       if(auto parameterUseCases = ebUseCases.getUseCase({ C15::PID::Split_Split_Point, currentVG }))
       {
@@ -310,7 +310,7 @@ namespace DescriptiveLayouts
       auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
       const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
-      EditBufferUseCases useCases(eb);
+      EditBufferUseCases useCases(*eb);
 
       if(!vgIMuted && !vgIIMuted)
       {
@@ -327,7 +327,7 @@ namespace DescriptiveLayouts
       auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
       const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
-      EditBufferUseCases useCases(eb);
+      EditBufferUseCases useCases(*eb);
 
       if(!vgIMuted && !vgIIMuted)
       {

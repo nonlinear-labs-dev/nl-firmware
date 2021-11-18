@@ -113,7 +113,7 @@ void ParameterCarousel::antiTurn()
 {
   auto foundCtrl = std::dynamic_pointer_cast<MiniParameter>(*getControls().rbegin());
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases ebUseCases { eb };
+  EditBufferUseCases ebUseCases { *eb };
   for(const auto& ctrl : getControls())
   {
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))
@@ -133,7 +133,7 @@ void ParameterCarousel::turn()
   bool found = false;
   bool handled = false;
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases ebUseCases { eb };
+  EditBufferUseCases ebUseCases { *eb };
 
   tIfCallback cb = ([&](const tControlPtr& ctrl) -> bool {
     if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))

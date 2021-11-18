@@ -24,7 +24,6 @@
 #include <device-settings/Settings.h>
 #include <filesystem>
 #include <use-cases/IncrementalChangerUseCases.h>
-#include <device-settings/midi/local/LocalControllersSetting.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
@@ -38,6 +37,10 @@ PlaycontrollerProxy::PlaycontrollerProxy()
 
   nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
       nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
+
+  nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
+      nltools::msg::EndPoint::Playground,
+      sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
 }
 
 PlaycontrollerProxy::~PlaycontrollerProxy()
@@ -48,19 +51,19 @@ PlaycontrollerProxy::~PlaycontrollerProxy()
 void PlaycontrollerProxy::onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg)
 {
   gsize numBytes = 0;
-  const uint8_t *buffer = (const uint8_t *) (msg.message->get_data(numBytes));
+  const auto *buffer = (const uint8_t *) (msg.message->get_data(numBytes));
 
   if(numBytes > 0)
   {
     if(m_msgParser->parse(buffer, numBytes) == 0)
     {
-      onMessageReceived(std::move(m_msgParser->getMessage()));
+      onMessageReceived(m_msgParser->getMessage());
       m_msgParser.reset(new MessageParser());
     }
   }
 }
 
-sigc::connection PlaycontrollerProxy::onRibbonTouched(sigc::slot<void, int> s)
+sigc::connection PlaycontrollerProxy::onRibbonTouched(const sigc::slot<void, int> &s)
 {
   return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
 }
@@ -70,28 +73,32 @@ int PlaycontrollerProxy::getLastTouchedRibbonParameterID() const
   return m_lastTouchedRibbon;
 }
 
-gint16 PlaycontrollerProxy::separateSignedBitToComplementary(uint16_t v) const
+gint16 PlaycontrollerProxy::separateSignedBitToComplementary(uint16_t v)
 {
   gint16 sign = (v & 0x8000) ? -1 : 1;
-  gint16 value = (v & 0x7FFF);
-  return sign * value;
+  auto value = static_cast<gint16>(v & 0x7FFF);
+  return static_cast<gint16>(sign * value);
 }
 
 void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
 {
-  if(msg.type == MessageParser::EDIT_CONTROL)
+  if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_EDIT_CONTROL)
   {
     onEditControlMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::ASSERTION)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_ASSERTION)
   {
     onAssertionMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::NOTIFICATION)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_UHID64)
+  {
+    onUHIDReceived(msg);
+  }
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION)
   {
     onNotificationMessageReceived(msg);
   }
-  else if(msg.type == MessageParser::HEARTBEAT)
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_HEARTBEAT)
   {
     onHeartbeatReceived(msg);
   }
@@ -128,7 +135,7 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
   uint16_t id = msg.params[0];
   uint16_t value = msg.params[1];
 
-  if(id == MessageParser::SOFTWARE_VERSION)
+  if(id == MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION)
   {
     if(m_playcontrollerSoftwareVersion != value)
     {
@@ -138,10 +145,27 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
   }
 }
 
+void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
+{
+  if(msg.params.size() == 4)
+  {
+    uint64_t uhid = 0;
+    for(auto i = 0; i < 4; i++)
+    {
+      uint64_t val = msg.params[i];
+      auto shifted = val << (i * 16);
+      uhid += shifted;
+    }
+
+    setUHID(uhid);
+  }
+}
+
 void PlaycontrollerProxy::onPlaycontrollerConnected()
 {
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -162,7 +186,8 @@ void PlaycontrollerProxy::sendCalibrationData()
 
 Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const
 {
-  auto paramId = [](uint16_t id) {
+  auto paramId = [](uint16_t id)
+  {
     switch(id)
     {
       case HW_SOURCE_ID_PEDAL_1:
@@ -228,33 +253,37 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask([this, p]() {
-    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
-      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
+  m_throttledRelativeParameterChange.doTask(
+      [this, p]()
+      {
+        if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+          m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
-    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
-    useCase.changeBy(amount, false);
-    m_throttledRelativeParameterAccumulator = 0;
-  });
+        auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+        IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+        useCase.changeBy(amount, false);
+        m_throttledRelativeParameterAccumulator = 0;
+      });
 }
 
 void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask([this, p]() {
-    ParameterUseCases useCase(p);
+  m_throttledAbsoluteParameterChange.doTask(
+      [this, p]()
+      {
+        ParameterUseCases useCase(p);
 
-    if(p->isBiPolar())
-    {
-      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-    }
-    else
-    {
-      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
-    }
-  });
+        if(p->isBiPolar())
+        {
+          useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+        }
+        else
+        {
+          useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
+        }
+      });
 }
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
@@ -298,7 +327,7 @@ void PlaycontrollerProxy::traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) con
 
 void PlaycontrollerProxy::sendSetting(uint16_t key, uint16_t value)
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::SETTING));
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_SETTING));
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
@@ -328,7 +357,7 @@ void PlaycontrollerProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType,
 
 void PlaycontrollerProxy::sendSetting(uint16_t key, gint16 value)
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::SETTING));
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_SETTING));
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
@@ -344,6 +373,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   settings->sendPresetSettingsToPlaycontroller();
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
+  requestPlaycontrollerUHID();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -351,19 +381,21 @@ sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(con
   return m_signalPlaycontrollerSoftwareVersionChanged.connectAndInit(s, m_playcontrollerSoftwareVersion);
 }
 
-sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void, int> s)
+sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void> s)
 {
   return m_lastKeyChanged.connect(s);
 }
 
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
-  tMessageComposerPtr cmp(new MessageComposer(MessageParser::REQUEST));
-  uint16_t v = MessageParser::SOFTWARE_VERSION;
-  *cmp << v;
-  queueToPlaycontroller(cmp);
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION);
+  nltools::Log::info("sending request SOFTWARE_VERSION to LPC");
+}
 
-  DebugLevel::info("sending request SOFTWARE_VERSION to LPC");
+void PlaycontrollerProxy::requestPlaycontrollerUHID()
+{
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_UHID64);
+  nltools::Log::info("sending request UHID64 to LPC");
 }
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
@@ -371,7 +403,34 @@ std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
   return (m_playcontrollerSoftwareVersion == -1) ? "-" : std::to_string(m_playcontrollerSoftwareVersion);
 }
 
-void PlaycontrollerProxy::notifyLastKey(gint16 key)
+void PlaycontrollerProxy::notifyKeyBedActionHappened()
 {
-  m_lastKeyChanged.send(key);
+  m_lastKeyChanged.send();
+}
+
+void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type)
+{
+  tMessageComposerPtr cmp(new MessageComposer(MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_REQUEST));
+  uint16_t v = type;
+  *cmp << v;
+  queueToPlaycontroller(cmp);
+}
+
+sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t>& s)
+{
+  return m_signalUHIDChanged.connectAndInit(s, m_uhid);
+}
+
+uint64_t PlaycontrollerProxy::getUHID() const
+{
+  return m_uhid;
+}
+
+void PlaycontrollerProxy::setUHID(uint64_t uhid)
+{
+  if(m_uhid != uhid)
+  {
+    m_uhid = uhid;
+    m_signalUHIDChanged.send(m_uhid);
+  }
 }

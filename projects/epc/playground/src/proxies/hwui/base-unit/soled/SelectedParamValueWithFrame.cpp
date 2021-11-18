@@ -6,6 +6,8 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/Oleds.h>
+#include <device-settings/Settings.h>
+#include <device-settings/midi/RoutingSettings.h>
 
 SelectedParamValueWithFrame::SelectedParamValueWithFrame(const Rect &rect)
     : super(rect)

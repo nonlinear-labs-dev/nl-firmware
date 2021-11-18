@@ -7,19 +7,14 @@ MidiRuntimeOptions createTCDSettings2()
 {
   MidiRuntimeOptions options;
   nltools::msg::Setting::MidiSettingsMessage msg;
-  msg.receiveNotes = true;
-  msg.receiveProgramChange = true;
+
   msg.receiveChannel = MidiReceiveChannel::Omni;
   msg.receiveSplitChannel = MidiReceiveChannelSplit::Omni;
 
-  msg.sendProgramChange = true;
-  msg.sendNotes = true;
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_1;
 
-  msg.localNotes = true;
-
-  msg.hwMappings = TestHelper::createFullMappings(true);
+  msg.routings = TestHelper::createFullMappings(true);
 
   msg.bendercc = BenderCC::Pitchbend;
   msg.aftertouchcc = AftertouchCC::ChannelPressure;
@@ -44,13 +39,13 @@ TEST_CASE("Ribbon 1 Return to Center")
    public:
     using PassOnHWReceived::PassOnHWReceived;
 
-    C15::Properties::HW_Return_Behavior getBehaviour(int id) override
+    C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override
     {
       return C15::Properties::HW_Return_Behavior::Center;
     }
   };
 
-  MyTestHost dsp { Ribbon1, -1 };
+  MyTestHost dsp { HardwareSource::RIBBON1, -1 };
 
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings2();

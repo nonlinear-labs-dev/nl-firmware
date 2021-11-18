@@ -17,7 +17,7 @@ class DirectLoadSetting;
 class EditBufferUseCases
 {
  public:
-  explicit EditBufferUseCases(EditBuffer* eb);
+  explicit EditBufferUseCases(EditBuffer& eb);
 
   void setParameter(const ParameterId& id, tControlPositionValue cp);
   void setSplits(const ParameterId& id, tControlPositionValue cp, tControlPositionValue otherCp);
@@ -30,15 +30,23 @@ class EditBufferUseCases
   void selectParameter(const ParameterId& id, bool sendReselectionSignal = false);
   void selectParameter(const Parameter* param, bool sendReselectionSignal = false);
 
+  void convertToLayer(VoiceGroup currentSelectedVoiceGroup);
+  void convertToSingle(VoiceGroup partToUse);
+  void convertToSplit(VoiceGroup currentSelectedVoiceGroup);
+  void convertToDual(SoundType type, VoiceGroup group);
+
+  void initSound(Defaults defaults);
+  void initPart(VoiceGroup part, Defaults defaults);
+
   void mutePart(VoiceGroup part);
   void unmutePart(VoiceGroup part);
   void unmuteBothPartsWithTransactionNameForPart(VoiceGroup part);
   void mutePartUnmuteOtherPart(VoiceGroup part);
 
-  void undoableLoad(const Uuid& uuid);
-  void undoableLoad(const Preset* preset);
-  void undoableLoad(const Preset* preset, const std::string& transactionName);
-  void undoableLoadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to);
+  void load(const Uuid& uuid);
+  void load(const Preset* preset);
+  void load(const Preset* preset, const std::string& transactionName);
+  void loadToPart(const Preset* preset, VoiceGroup from, VoiceGroup to);
 
   void resetScaleGroup();
   void resetCustomScale();
@@ -49,9 +57,9 @@ class EditBufferUseCases
   void unlockGroup(ParameterGroup* group);
   void lockGroup(ParameterGroup* group);
 
-  std::unique_ptr<ParameterUseCases> getUseCase(ParameterId id);
-  std::unique_ptr<ModParameterUseCases> getModParamUseCase(ParameterId id);
-  std::unique_ptr<MacroControlParameterUseCases> getMCUseCase(ParameterId id);
+  std::unique_ptr<ParameterUseCases> getUseCase(const ParameterId& id);
+  std::unique_ptr<ModParameterUseCases> getModParamUseCase(const ParameterId& id);
+  std::unique_ptr<MacroControlParameterUseCases> getMCUseCase(const ParameterId& id);
 
   void toggleMute(VoiceGroup part);
 
@@ -59,9 +67,12 @@ class EditBufferUseCases
 
   void undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui);
 
+  void randomize(double amount);
+  void randomizePart(VoiceGroup part, double amount);
+
  private:
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;
 
-  EditBuffer* m_editBuffer;
+  EditBuffer& m_editBuffer;
 };

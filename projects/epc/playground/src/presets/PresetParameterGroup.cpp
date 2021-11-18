@@ -9,11 +9,6 @@
 #include <presets/EditBuffer.h>
 #include <xml/Attribute.h>
 
-PresetParameterGroup::PresetParameterGroup(VoiceGroup vg)
-    : m_voiceGroup { vg }
-{
-}
-
 PresetParameterGroup::PresetParameterGroup(const ::ParameterGroup &other)
 {
   for(auto &g : other.getParameters())
@@ -67,10 +62,12 @@ void PresetParameterGroup::assignVoiceGroup(UNDO::Transaction *transaction, Voic
 {
   transaction->addUndoSwap(m_voiceGroup, vg);
 
-  transaction->addSimpleCommand([=](auto) {
-    for(auto &g : m_parameters)
-      g->assignVoiceGroup(vg);
-  });
+  transaction->addSimpleCommand(
+      [=](auto)
+      {
+        for(auto &g : m_parameters)
+          g->assignVoiceGroup(vg);
+      });
 }
 
 void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const
@@ -87,27 +84,30 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
   if(!m_parameters.empty())
     name = ParameterDB::get().getLongGroupName(m_parameters.front()->getID()).value_or(name);
 
-  writer.writeTag("group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"), [&] {
-    std::vector<int> writtenParameters;
-
-    for(auto &parameter : m_parameters)
-    {
-      auto otherParameter = other->findParameterByID({ parameter->getID().getNumber(), other->getVoiceGroup() });
-      parameter->writeDiff(writer, parameter->getID(), otherParameter);
-      writtenParameters.emplace_back(parameter->getID().getNumber());
-    }
-
-    for(auto &parameter : other->getParameters())
-    {
-      if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter->getID().getNumber())
-         == writtenParameters.end())
+  writer.writeTag(
+      "group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"),
+      [&]
       {
-        auto paramName = ParameterDB::get().getLongName(parameter->getID());
-        writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
-                        Attribute("bfound", "true"), [] {});
-      }
-    }
-  });
+        std::vector<int> writtenParameters;
+
+        for(auto &parameter : m_parameters)
+        {
+          auto otherParameter = other->findParameterByID({ parameter->getID().getNumber(), other->getVoiceGroup() });
+          parameter->writeDiff(writer, parameter->getID(), otherParameter);
+          writtenParameters.emplace_back(parameter->getID().getNumber());
+        }
+
+        for(auto &parameter : other->getParameters())
+        {
+          if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter->getID().getNumber())
+             == writtenParameters.end())
+          {
+            auto paramName = ParameterDB::get().getLongName(parameter->getID());
+            writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
+                            Attribute("bfound", "true"), [] {});
+          }
+        }
+      });
 }
 
 void PresetParameterGroup::writeDocument(Writer &writer) const

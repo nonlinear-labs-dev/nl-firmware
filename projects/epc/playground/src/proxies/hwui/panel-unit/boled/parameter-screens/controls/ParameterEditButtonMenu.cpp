@@ -99,7 +99,7 @@ void ParameterEditButtonMenu::toggleGroupLock()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto vg = getHWUI()->getCurrentVoiceGroup();
   auto group = eb->getSelected(vg)->getParentGroup();
-  EditBufferUseCases useCases(eb);
+  EditBufferUseCases useCases(*eb);
 
   if(group->areAllParametersLocked())
     useCases.unlockGroup(group);
@@ -112,7 +112,7 @@ void ParameterEditButtonMenu::toggleGroupLock()
 void ParameterEditButtonMenu::unlockAll()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases useCase(eb);
+  EditBufferUseCases useCase(*eb);
   useCase.unlockAllGroups();
   setup();
 }
@@ -120,7 +120,7 @@ void ParameterEditButtonMenu::unlockAll()
 void ParameterEditButtonMenu::lockAll()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases useCase(eb);
+  EditBufferUseCases useCase(*eb);
   useCase.lockAllGroups();
   setup();
 }

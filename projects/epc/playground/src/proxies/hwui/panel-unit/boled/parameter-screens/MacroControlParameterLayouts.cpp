@@ -303,7 +303,7 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
 void MacroControlParameterLayout2::selectSmoothingParameterForMC()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases ebUseCases { eb };
+  EditBufferUseCases ebUseCases { *eb };
 
   if(auto mc = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
   {
