@@ -1880,7 +1880,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
 
   auto msg = &_msg;
   bool resetDetected[2] = { false, false };
-  const bool resetDetermined = layerChanged || areKeysPressed(fromType(oldLayerMode));
+  const bool resetDetermined = layerChanged && areKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetermined, oldLayerMode);
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
