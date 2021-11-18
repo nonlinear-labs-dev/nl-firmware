@@ -4,7 +4,20 @@ project(nonmaps)
 set(GWT_VERSION 2.9.0)
 
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt ${C15_VERSION})
+
+add_custom_command(
+  COMMENT "Generate nonmaps-version.txt"
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/nonmaps-version.txt
+  DEPENDS ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  DEPENDS ${CMAKE_SOURCE_DIR}/.git/index
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND}
+    -D INPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/nonmaps-version.txt
+    -D OUTPUT_FILE=${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt
+    -P ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt     
+)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/NonMaps.js.in ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js @ONLY)
 
 add_custom_command(

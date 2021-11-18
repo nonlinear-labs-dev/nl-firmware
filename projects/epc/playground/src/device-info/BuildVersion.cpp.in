@@ -4,7 +4,7 @@
 
 BuildVersion::BuildVersion(DeviceInformation* parent)
     : DeviceInformationItem(parent)
-    , m_c15VersionString { "@C15_VERSION@" }
+    , m_c15VersionString { "@LAST_COMMIT_STAMP@" }
 {
 }
 
