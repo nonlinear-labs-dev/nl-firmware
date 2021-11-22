@@ -15,7 +15,7 @@ MIDI Input, only affecting the Synth).
 Editing the actual "Pedal 1" parameter will not be reflected.
 ~~~
 
-- [ ] done
+- [x] done
 
 ## #2920
 
@@ -29,9 +29,9 @@ logarithmic amount of the reduction (negative values) or gain
 (positive values) of the Attack time by high Note-On velocities.
 ~~~
 
-- [ ] done
+- [x] done
 
-> #### [Release Velocity ?]
+> #### ~~[Release Velocity ?]~~
 > 
 > ~~~
 > Velocity influence on the Release time. The value represents the
@@ -49,7 +49,7 @@ determines time reduction (negative values) or gain (positive values)
 for higher notes.
 ~~~
 
-- [ ] done
+- [x] done
 
 ### Output Mixer
 
@@ -57,13 +57,13 @@ for higher notes.
 
 ~~~
 Amount of key panning for each note (referring to the key position
-relative to the center at C3 = 60 semitones). At zero, each note
-is centered before being passed to the panning section in the mix.
-At maximum, low notes will be panned to the left, high notes to the
-right. At minimum, the opposite effect applies.
+relative to the center at C3 = 60 semitones). At zero, all notes
+are centered in the stereo mix. At maximum, low notes will be 
+panned to the left, high notes to the right. At minimum, the opposite 
+effect applies.
 ~~~
 
-- [ ] done
+- [x] done
 
 ### 
 
@@ -80,4 +80,4 @@ values, the Gate signal is faded out, allowing for permanent feedback
 at the minimum.
 ~~~
 
-- [ ] done
+- [x] done
