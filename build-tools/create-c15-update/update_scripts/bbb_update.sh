@@ -12,6 +12,9 @@ set -x
 EPC_IP=$1
 BBB_IP=$2
 OLD_MACHINE_ID=$(cat /etc/machine-id)
+EMMC_DEVICE=""
+EMMC_DEVICE_P1=""
+EMMC_MOUNTPOINT="/tmp/emmc_rootfs"
 
 report_and_quit(){
     printf "$1" >> /update/errors.log
@@ -70,7 +73,7 @@ update_rootfs(){
 
     mkdir /update/BBB/rootfs \
     && gzip -dc /update/BBB/rootfs.tar.gz | tar -C /update/BBB/rootfs -xf - \
-    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' --delete /update/BBB/rootfs/ / \
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' --exclude '/usr/C15/scripts/calibration' --delete /update/BBB/rootfs/ / \
     && chown -R root.root /update
 
     UPDATE_RESULT=$?
@@ -93,18 +96,23 @@ update_rootfs(){
     rm -rf /update/BBB/rootfs
 }
 
-check_bootloader() {
-    BOOT_DEVICE=""
+get_emmc_device() {
     for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
-        [ -b ${d}boot0 ] && BOOT_DEVICE="${d}"
+        [ -b ${d}boot0 ] && EMMC_DEVICE="${d}" && EMMC_DEVICE_P1="${d}p1"
     done
-    printf "Boot Device is $BOOT_DEVICE"
+    printf "eMMC device is $EMMC_DEVICE\n"
+    printf "eMMC partition for rootfs is $EMMC_DEVICE_P1\n"
+    return 0
+}
 
-    dd if=${BOOT_DEVICE} of=/tmp/u-boot.img.dd bs=512 skip=768 count=1024 conv=notrunc
+check_bootloader() {
+    get_emmc_device
+
+    dd if=${EMMC_DEVICE} of=/tmp/u-boot.img.dd bs=512 skip=768 count=1024 conv=notrunc
     truncate -s $(wc -c < /update/BBB/u-boot.img) /tmp/u-boot.img.dd
     [ $(md5sum /tmp/u-boot.img.dd | cut -d' ' -f1) != $(cat /update/BBB/UBOOT_sum) ] && return 1
 
-    dd if=${BOOT_DEVICE} of=/tmp/MLO.dd bs=512 seek=256 count=256 conv=notrunc
+    dd if=${EMMC_DEVICE} of=/tmp/MLO.dd bs=512 skip=256 count=256 conv=notrunc
     truncate -s $(wc -c < /update/BBB/MLO) /tmp/MLO.dd
     [ $(md5sum /tmp/MLO.dd | cut -d' ' -f1) != $(cat /update/BBB/MLO_sum) ] && return 1
 
@@ -112,13 +120,7 @@ check_bootloader() {
     return 0
 }
 
-
 update_bootloader() {
-    EMMC_DEVICE=""
-    for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
-        [ -b ${d}boot0 ] && EMMC_DEVICE="${d}"
-    done
-
     dd if=/update/BBB/u-boot.img of=${EMMC_DEVICE} bs=512 seek=768 count=1024 conv=notrunc && sync
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to update u-boot.img ..." "60"; fi
 
@@ -129,19 +131,14 @@ update_bootloader() {
 }
 
 sync_emmc() {
-    EMMC_DEVICE=""
-    for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
-        [ -b ${d}boot0 ] && EMMC_DEVICE="${d}" && EMMC_DEVICE_P1="${d}p1"
-    done
-
     [ "$(mount | grep " / " | cut -d' ' -f1)" == "$EMMC_DEVICE_P1" ] \
     && { printf "root mounted on $EMMC_DEVICE_P1, will not sync emmc!"; return 1; }
 
-    dd if=/dev/zero of=${EMMC_DEVICE_P1} bs=1024 count=1024 2>/dev/null 1>/dev/null && sync \
+    umount ${EMMC_DEVICE_P1}
+    dd if=/dev/zero of=${EMMC_DEVICE_P1} bs=1024 count=1024 2>/dev/null 1>/dev/null \
     && echo 'yes' | mkfs.ext4 ${EMMC_DEVICE_P1} && hdparm -z "${EMMC_DEVICE}" && sync
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to clean part. ..." "60"; fi
 
-    EMMC_MOUNTPOINT="/tmp/emmc_rootfs"
     mkdir ${EMMC_MOUNTPOINT} && mount ${EMMC_DEVICE_P1} ${EMMC_MOUNTPOINT} \
     && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '${EMMC_MOUNTPOINT}' / ${EMMC_MOUNTPOINT} \
     && umount ${EMMC_DEVICE_P1}
