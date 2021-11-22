@@ -4,6 +4,9 @@
 #include <mock/MockDSPHosts.h>
 #include <testing/TestHelper.h>
 #include <mock/TCDHelpers.h>
+#include <mock/DspHostDualTester.h>
+#include "Toolbox.h"
+#include <AudioEngineOptions.h>
 
 MidiRuntimeOptions createTCDSettings()
 {
@@ -110,12 +113,11 @@ TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
   }
 }
 
-TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
+TEST_CASE("TCD in leads to key up", "[MIDI][TCD]")
 {
-  std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnKeyUpHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
-  InputEventStage eventStage { &dsp, &settings, [](){}, [&](auto msg) { sendMessages.push_back(msg); }, [](auto){} };
+  InputEventStage eventStage { &dsp, &settings, [](){}, [&](auto) { }, [](auto){} };
 
   WHEN("Keypos and KeyUp is received")
   {
@@ -125,26 +127,6 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
     THEN("DSP got notified")
     {
       CHECK(dsp.didReceiveKeyUp());
-    }
-
-    THEN("MIDI got send")
-    {
-      REQUIRE(sendMessages.size() == 4);
-      CHECK(sendMessages[0].rawBytes[0] == 0xB0);
-      CHECK(sendMessages[0].rawBytes[1] == 88);
-      CHECK(sendMessages[0].rawBytes[2] == 0);
-
-      CHECK(sendMessages[1].rawBytes[0] == 0x80);
-      CHECK(sendMessages[1].rawBytes[1] == 17);
-      CHECK(sendMessages[1].rawBytes[2] == 127);
-
-      CHECK(sendMessages[2].rawBytes[0] == 0xB0);
-      CHECK(sendMessages[2].rawBytes[1] == 88);
-      CHECK(sendMessages[2].rawBytes[2] == 0);
-
-      CHECK(sendMessages[3].rawBytes[0] == 0x80);
-      CHECK(sendMessages[3].rawBytes[1] == 17);
-      CHECK(sendMessages[3].rawBytes[2] == 127);
     }
   }
 
@@ -159,10 +141,67 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
     {
       CHECK_FALSE(dsp.didReceiveKeyUp());
     }
+  }
+}
+
+TEST_CASE("TCD in leads to send midi", "[MIDI][TCD]")
+{
+  auto config = nltools::msg::getConfig();
+  config.useEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  config.offerEndpoints
+      = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone };
+  nltools::msg::init(config);
+  auto options = Tests::createEmptyAudioEngineOptions();
+  auto synth = std::make_unique<C15Synth>(options.get());
+  DspHostDualTester tester { synth->getDsp() };
+  tester.applyMalformedSplitPreset({}, {});
+  tester.setSplit(VoiceGroup::I, 0.5);
+  tester.setSplit(VoiceGroup::II, 0.5 + (1.0 / 61.0));
+
+  std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
+  auto settings = createTCDSettings();
+  InputEventStage eventStage { synth->getDsp(), &settings, [](){}, [&](auto msg) { sendMessages.push_back(msg); }, [](auto){} };
+
+  {
+    nltools::msg::Setting::MidiSettingsMessage msg;
+    msg.sendChannel = MidiSendChannel::CH_1;
+    msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
+    msg.receiveChannel = MidiReceiveChannel::CH_3;
+    msg.receiveSplitChannel = MidiReceiveChannelSplit::CH_4;
+
+    msg.routings = TestHelper::createFullMappings(true);
+
+    msg.highResCCEnabled = true;
+    msg.highVeloCCEnabled = true;
+
+    msg.pedal1cc = PedalCC::CC02;
+    msg.pedal2cc = PedalCC::CC02;
+    msg.pedal3cc = PedalCC::CC02;
+    msg.pedal4cc = PedalCC::CC02;
+    msg.ribbon1cc = RibbonCC::CC02;
+    msg.ribbon2cc = RibbonCC::CC02;
+    msg.bendercc = BenderCC::CC02;
+    msg.aftertouchcc = AftertouchCC::CC30;
+
+    msg.localEnable = true;
+    synth->onMidiSettingsMessage(msg);
+  }
+
+  WHEN("Keypos and KeyUp is received")
+  {
+    //do keyDown first
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
+
+    sendMessages.clear();
+
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(127, 127));
 
     THEN("MIDI got send")
     {
-      REQUIRE(sendMessages.size() == 4);
+      REQUIRE(sendMessages.size() == 2);
       CHECK(sendMessages[0].rawBytes[0] == 0xB0);
       CHECK(sendMessages[0].rawBytes[1] == 88);
       CHECK(sendMessages[0].rawBytes[2] == 0);
@@ -170,14 +209,35 @@ TEST_CASE("TCD in leads to key up and send midi", "[MIDI][TCD]")
       CHECK(sendMessages[1].rawBytes[0] == 0x80);
       CHECK(sendMessages[1].rawBytes[1] == 17);
       CHECK(sendMessages[1].rawBytes[2] == 127);
+    }
+  }
 
-      CHECK(sendMessages[2].rawBytes[0] == 0xB0);
-      CHECK(sendMessages[2].rawBytes[1] == 88);
-      CHECK(sendMessages[2].rawBytes[2] == 0);
+  WHEN("Keypos and KeyUp is received and global Local is Disabled")
+  {
+    {
+      auto msg = settings.getLastReceivedMessage();
+      msg.localEnable = false;
+      synth->onMidiSettingsMessage(msg);
+    }
+    //do keyDown first
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyDownEvent(127, 127));
 
-      CHECK(sendMessages[3].rawBytes[0] == 0x80);
-      CHECK(sendMessages[3].rawBytes[1] == 17);
-      CHECK(sendMessages[3].rawBytes[2] == 127);
+    sendMessages.clear();
+
+    eventStage.onTCDMessage(TCD_HELPER::createKeyPosEvent(17));
+    eventStage.onTCDMessage(TCD_HELPER::createKeyUpEvent(127, 127));
+
+    THEN("MIDI got send")
+    {
+      REQUIRE(sendMessages.size() == 2);
+      CHECK(sendMessages[0].rawBytes[0] == 0xB0);
+      CHECK(sendMessages[0].rawBytes[1] == 88);
+      CHECK(sendMessages[0].rawBytes[2] == 0);
+
+      CHECK(sendMessages[1].rawBytes[0] == 0x80);
+      CHECK(sendMessages[1].rawBytes[1] == 17);
+      CHECK(sendMessages[1].rawBytes[2] == 127);
     }
   }
 }

@@ -8,10 +8,12 @@
 #include "SyncSplitSettingUseCases.h"
 
 SyncSplitSettingUseCases::SyncSplitSettingUseCases(SplitPointSyncParameters& setting, PresetManager& pm)
-    : m_setting { setting }
-    , m_presetManager { pm }
-    , m_splitI{pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>({C15::PID::Split_Split_Point, VoiceGroup::I})}
-    , m_splitII{pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>({C15::PID::Split_Split_Point, VoiceGroup::II})}
+    : m_setting{ setting }
+    , m_presetManager{ pm }
+    , m_splitI{ pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>(
+          { C15::PID::Split_Split_Point, VoiceGroup::I }) }
+    , m_splitII{ pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>(
+          { C15::PID::Split_Split_Point, VoiceGroup::II }) }
 {
 }
 
@@ -30,16 +32,7 @@ void SyncSplitSettingUseCases::disableSyncSetting(UNDO::Transaction* t)
 
 void SyncSplitSettingUseCases::undoableSetSetting(UNDO::Transaction* transaction, bool state)
 {
-  const auto oldState = m_setting.get();
-  m_setting.setState(state);
-
-  transaction->addSimpleCommand(
-      [this, state](UNDO::Transaction::State s)
-      {
-        if(s == UNDO::Transaction::State::REDOING)
-          m_setting.setState(state);
-      },
-      [this, oldState](auto s) { m_setting.setState(oldState); });
+  m_setting.undoableSet(transaction, state);
 }
 
 void SyncSplitSettingUseCases::enableSyncSetting()

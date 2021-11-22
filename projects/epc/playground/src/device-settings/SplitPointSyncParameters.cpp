@@ -16,6 +16,15 @@ void SplitPointSyncParameters::init()
   Setting::init();
 }
 
+void SplitPointSyncParameters::undoableSet(UNDO::Transaction* transaction, bool newState)
+{
+  auto swap = UNDO::createSwapData(newState);
+  transaction->addSimpleCommand([this, swap](auto) {
+    swap->swapWith(m_state);
+    notify();
+  });
+}
+
 void SplitPointSyncParameters::load(const Glib::ustring& text, Initiator initiator)
 {
   m_state = text == "on";

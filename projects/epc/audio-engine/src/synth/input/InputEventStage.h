@@ -38,15 +38,12 @@ class InputEventStage
   [[nodiscard]] HWChangeSource getHWSourcePositionSource(HardwareSource hwid) const;
 
   void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
+  void requestExternalReset(DSPInterface::OutputResetEventSource resetTarget);
 
   static HardwareSource parameterIDToHWID(int id);
   bool getAndResetKeyBedStatus();
 
  private:
-  void handlePressedNotesOnMidiSettingsChanged(const tMSG& msg, const tMSG& oldmsg);
-  void handleHWSourcesWhichGotTurnedOff(const tMSG& msg, const tMSG& snapshot);
-  void handleHWSourcesWhichCCsChanged(const tMSG& message, const tMSG& snapshot);
-
   void setAndScheduleKeybedNotify();
 
   using CC_Range_Vel = Midi::clipped14BitVelRange;
@@ -113,7 +110,7 @@ class InputEventStage
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
   constexpr static auto NUM_HW = 8;
-  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions {};
+  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions{};
 
   using tHWPosEntry = std::tuple<float, HWChangeSource>;
   std::array<tHWPosEntry, NUM_HW> m_localDisabledPositions;
@@ -134,10 +131,11 @@ class InputEventStage
   static bool ccIsMappedToChannelModeMessage(int cc);
   void queueChannelModeMessage(int cc, uint8_t msbCCvalue);
 
-  void sendHardwareChangeAsMidiOnExplicitChannel(HardwareSource id, float value, int channel);
-  void sendCCOutOnExplicitChannel(HardwareSource hwID, float value, int msbCC, int lsbCC, int channel);
   void doSendCCOutOnExplicitChannel(uint16_t value, int msbCC, int lsbCC, HardwareSource hwID, int channel);
-  void doSendBenderOutOnExplicitChannel(float value, int channel);
-  void doSendAftertouchOutOnExplicitChannel(float value, int channel);
   RoutingIndex toRoutingIndex(HardwareSource source);
+  bool didRelevantSectionsChange(const tMSG& message, const tMSG& message1);
+  void doInternalReset();
+  void doExternalReset(const tMSG newMessage, const tMSG oldMessage);
+
+  template <typename tChannelEnum> void doSendAllNotesOff(tChannelEnum tEnum);
 };

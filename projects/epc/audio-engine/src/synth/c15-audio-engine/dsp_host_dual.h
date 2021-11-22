@@ -70,7 +70,6 @@ class DSPInterface
   //remove or move somewhere else
   //TCD and MIDI should not be known to DSP
 
-
   enum class InputEventSource
   {
     Internal,            //TCD -> use split
@@ -80,6 +79,7 @@ class DSPInterface
     External_Both,       //Both   E.G Prim: CH1 + Sec: CH1
     Invalid
   };
+  using OutputResetEventSource = AllocatorId;  // Reset Detection (return type for C15Synth)
 
   virtual void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) = 0;
   virtual void onKeyDown(const int note, float velocity, InputEventSource from) = 0;
@@ -90,11 +90,22 @@ class DSPInterface
   virtual SoundType getType() = 0;
   virtual VoiceGroup getSplitPartForKeyDown(int key) = 0;
   virtual VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) = 0;
-  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
-  virtual void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) = 0;
-  virtual void onMidiSettingsReceived() = 0;
-  virtual float getReturnValueFor(HardwareSource hwid) { return 0; };
-  virtual void resetReturningHWSource(HardwareSource hwui) {};
+  virtual VoiceGroup getNonLocalSplitKeyAssignmentForKeyUp(int key) = 0;
+  virtual void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part) = 0;
+  virtual void unregisterNonLocalSplitKeyAssignment(const int note) = 0;
+  virtual void fadeOutResetVoiceAllocAndEnvelopes() = 0;
+  virtual float getReturnValueFor(HardwareSource hwid)
+  {
+    return 0;
+  }
+  virtual void resetReturningHWSource(HardwareSource hwui)
+  {
+  }
+  // areKeysPressed
+  virtual bool areKeysPressed(SoundType _current)
+  {
+    return true;
+  }
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
     // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
@@ -118,7 +129,7 @@ class DSPInterface
 class dsp_host_dual : public DSPInterface
 {
  public:
-  void onMidiSettingsReceived() override;
+  void fadeOutResetVoiceAllocAndEnvelopes() override;
   // public members
   float m_mainOut_R = 0.0f, m_mainOut_L = 0.0f;
   uint32_t m_sample_counter = 0;
@@ -135,6 +146,7 @@ class dsp_host_dual : public DSPInterface
   using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
   float getReturnValueFor(HardwareSource hwid) override;
   void resetReturningHWSource(HardwareSource hwui) override;
+  bool areKeysPressed(SoundType _current) override;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
 
   void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) override;
@@ -145,9 +157,9 @@ class dsp_host_dual : public DSPInterface
   C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override;
 
   // event bindings: Preset Messages
-  void onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
-  void onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
-  void onPresetMessage(const nltools::msg::LayerPresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::LayerPresetMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
@@ -155,8 +167,8 @@ class dsp_host_dual : public DSPInterface
   void globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
+  OutputResetEventSource localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
+  OutputResetEventSource localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   bool updateBehaviour(C15::ParameterDescriptor& param, ReturnMode mode);
@@ -177,8 +189,9 @@ class dsp_host_dual : public DSPInterface
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
-  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
-  void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  VoiceGroup getNonLocalSplitKeyAssignmentForKeyUp(int key) override;
+  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part) override;
+  void unregisterNonLocalSplitKeyAssignment(const int note) override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
@@ -188,24 +201,31 @@ class dsp_host_dual : public DSPInterface
  private:
   static inline VoiceGroup getVoiceGroupFromAllocatorId(const AllocatorId _id)
   {
-    // a little inconvenient and redundant...
     switch(_id)
     {
       case AllocatorId::Local_I:
         return VoiceGroup::I;
-        break;
       case AllocatorId::Local_II:
         return VoiceGroup::II;
-        break;
       case AllocatorId::Local_Both:
         return VoiceGroup::Global;
-        break;
+      default:
+      case AllocatorId::None:
+        return VoiceGroup::Invalid;
     }
-
-    nltools_detailedAssertAlways(false, __PRETTY_FUNCTION__);
-    return VoiceGroup::NumGroups;
   }
   using LayerMode = C15::Properties::LayerMode;
+  static inline SoundType fromType(const LayerMode& _current)
+  {
+    switch(_current)
+    {
+      case LayerMode::Split:
+        return SoundType::Split;
+      case LayerMode::Layer:
+        return SoundType::Layer;
+    }
+    return SoundType::Single;
+  }
   // parameters
   Engine::Param_Handle m_params;
   Time_Param m_edit_time, m_transition_time;
@@ -259,9 +279,10 @@ class dsp_host_dual : public DSPInterface
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
                    const nltools::msg::ParameterGroups::UnmodulateableParameter& _monoEnable);
   void evalVoiceFadeChg(const uint32_t _layer);
-  void recallSingle(const nltools::msg::SinglePresetMessage& _msg);
-  void recallSplit(const nltools::msg::SplitPresetMessage& _msg);
-  void recallLayer(const nltools::msg::LayerPresetMessage& _msg);
+  OutputResetEventSource determineOutputEventSource(const bool _detected, const LayerMode _type);
+  OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);
+  OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);
+  OutputResetEventSource recallLayer(const nltools::msg::LayerPresetMessage& _msg);
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter& _param);
   void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter& _param);

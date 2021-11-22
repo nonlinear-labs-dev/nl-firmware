@@ -2,5 +2,10 @@
 
 enum MidiChannelModeMessages
 {
-  AllSoundOff, ResetAllControllers, LocalControllersOn, LocalControllersOff, AllNotesOff, NOOP
+  AllSoundOff,
+  ResetAllControllers,
+  LocalControllersOn,
+  LocalControllersOff,
+  AllNotesOff,
+  NOOP
 };

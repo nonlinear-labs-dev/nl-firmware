@@ -62,8 +62,8 @@ FlacFrameStorage::StreamHandle FlacFrameStorage::startStream(FrameId begin, Fram
     }
   };
 
-  auto beginIt = std::lower_bound(m_frames.begin(), m_frames.end(), begin, Cmp{});
-  auto endIt = std::upper_bound(m_frames.begin(), m_frames.end(), end, Cmp{});
+  auto beginIt = std::lower_bound(m_frames.begin(), m_frames.end(), begin, Cmp {});
+  auto endIt = std::upper_bound(m_frames.begin(), m_frames.end(), end, Cmp {});
 
   if(end <= begin)
     endIt = beginIt;
