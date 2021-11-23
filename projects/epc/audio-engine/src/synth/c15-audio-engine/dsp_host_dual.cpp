@@ -1727,9 +1727,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = (layerChanged || polyChanged) && areKeysPressed(fromType(oldLayerMode));
-  const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetected, oldLayerMode);
-  if(resetDetected)
+  const bool internalReset = layerChanged || polyChanged;
+  const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
+  const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
+  if(internalReset)
   {
     if(LOG_RESET)
     {
@@ -1880,8 +1881,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
 
   auto msg = &_msg;
   bool resetDetected[2] = { false, false };
-  const bool resetDetermined = layerChanged && areKeysPressed(fromType(oldLayerMode));
-  const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetermined, oldLayerMode);
+  const bool externalReset = layerChanged && areKeysPressed(fromType(oldLayerMode));
+  const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
@@ -2072,9 +2073,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = (layerChanged || polyChanged) && areKeysPressed(fromType(oldLayerMode));
-  const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetected, oldLayerMode);
-  if(resetDetected)
+  const bool internalReset = layerChanged || polyChanged;
+  const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
+  const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
+  if(internalReset)
   {
     if(LOG_RESET)
     {
