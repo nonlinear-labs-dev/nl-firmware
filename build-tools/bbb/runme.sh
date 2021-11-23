@@ -1,15 +1,24 @@
 #!/bin/sh
 set -x
 
-# This function should be run, once the BBB has booted from the SD Card.
+# This script should be run, once the BBB has booted from the SD Card.
 # it shall format the eMMC, rsync with the rootfs present on the SD Card,
 # deploy the MLO and u-boot.img, tidy up and be done!
 # After this the eMMC should be happy booting from eMMC without any SD Card Dependancy!
 # boooyah!
 
-EMMC_DEVICE="/dev/mmcblk1"
-EMMC_DEVICE_P1="${EMMC_DEVICE}p1"
+EMMC_DEVICE=""
+EMMC_DEVICE_P1=""
 EMMC_ROOTFS_DIR="/tmp/emmc_rootfs"
+
+get_emmc_device() {
+    for d in "/dev/mmcblk1" "/dev/mmcblk0"; do
+        [ -b ${d}boot0 ] && EMMC_DEVICE="${d}" && EMMC_DEVICE_P1="${d}p1"
+    done
+    printf "eMMC device is $EMMC_DEVICE\n"
+    printf "eMMC partition for rootfs is $EMMC_DEVICE_P1\n"
+    return 0
+}
 
 is_mounted() {
     if [ "$(cat /proc/mounts | grep ${1})" = "" ]; then
@@ -88,6 +97,7 @@ unmount() {
 }
 
 main() {
+    get_emmc_device
     if [ -b "${EMMC_DEVICE}" ]; then
         check_if_mounted_and_unmount
     else
