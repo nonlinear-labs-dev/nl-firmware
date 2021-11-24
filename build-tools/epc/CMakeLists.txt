@@ -123,6 +123,8 @@ add_custom_command(
         ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+        "unused-mlo"
+        "usused-uboot"
         "unused-playcontroller"
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}

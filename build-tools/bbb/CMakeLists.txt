@@ -1,6 +1,6 @@
 SET(USER $ENV{USER})
 SET(DOCKERNAME nl-cross-build-environment)
-SET(NONLINUX nonlinear_2021.23)
+SET(NONLINUX nonlinear_2021.47)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 
@@ -87,6 +87,8 @@ add_custom_command(
         "rm -rf /workdir/fs/nonlinux/output/target/mnt/.not-mounted"
         "make"
         "cp /workdir/fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
+        "cp /workdir/fs/nonlinux/output/images/MLO /workdir/"
+        "cp /workdir/fs/nonlinux/output/images/u-boot.img /workdir/"
     COMMAND echo "The final rootfs is located at ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz"
 )
 
@@ -107,16 +109,33 @@ add_custom_command(
     COMMENT "Build BBB update"
     OUTPUT ${CMAKE_BINARY_DIR}/nonlinear-bbb-update.tar
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
     DEPENDS ${SOURCE_FILES}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         "unused-epc"
         "unused-epc2"
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+        ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
+        ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
         "unused-playcontroller"
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         nonlinear-bbb-update
         bbb
+)
+
+add_custom_command(
+    COMMENT "Build install medium (to be run with prefix BBB_INSTALL_MEDIUM=/dev/sdX)"
+    OUTPUT .bbb-install-medium
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createInstallMedium.sh
+        \${BBB_INSTALL_MEDIUM}
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(bbb-ota-update
@@ -130,4 +149,5 @@ add_custom_target(bbb-ota-update
 add_custom_target(bbb-rootfs DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz)
 add_custom_target(bbb-prepare-build-dir DEPENDS .nonlinux-setup)
 add_custom_target(bbb-console DEPENDS .nonlinux-console )
+add_custom_target(bbb-install-medium DEPENDS .bbb-install-medium)
 
