@@ -34,14 +34,19 @@ void ClusterEnforcement::buildClusterStructure()
 
     for(auto bank : waitingList)
     {
-      if(bank->getAttachedToBankUuid().empty())
+      const auto bankMasterUUID = bank->getAttachedToBankUuid();
+      const auto bankHasMaster = !bankMasterUUID.empty();
+      auto masterBank = m_presetManager.findBank(bankMasterUUID);
+      auto masterNode = findTreeNode(bankMasterUUID);
+
+      if(!bankHasMaster || masterBank == nullptr)
       {
         auto clusterRoot = std::make_shared<TreeNode>();
         clusterRoot->bank = bank;
         clusterRoot->master = nullptr;
         addCluster(clusterRoot);
       }
-      else if(auto masterNode = findTreeNode(bank->getAttachedToBankUuid()))
+      else if(masterNode)
       {
         auto myNode = std::make_shared<TreeNode>();
         myNode->bank = bank;
@@ -180,7 +185,7 @@ void ClusterEnforcement::connectToClusterStructure(tTreeNodePtr masterNode, tTre
 
 bool inCluster(const ClusterEnforcement::tTreeNodePtr& node)
 {
-  return node->top || node->bottom || node->left || node->right;
+  return node->master.get();
 }
 
 std::vector<ClusterEnforcement::tTreeNodePtr>
