@@ -110,11 +110,11 @@ check_bootloader() {
 
     dd if=${EMMC_DEVICE} of=/tmp/u-boot.img.dd bs=512 skip=768 count=1024 conv=notrunc
     truncate -s $(wc -c < /update/BBB/u-boot.img) /tmp/u-boot.img.dd
-    [ $(md5sum /tmp/u-boot.img.dd | cut -d' ' -f1) != $(cat /update/BBB/UBOOT_sum) ] && return 1
+    [ $(md5sum /tmp/u-boot.img.dd | cut -d' ' -f1) == $(cat /update/BBB/UBOOT_sum) ] || return 1
 
     dd if=${EMMC_DEVICE} of=/tmp/MLO.dd bs=512 skip=256 count=256 conv=notrunc
     truncate -s $(wc -c < /update/BBB/MLO) /tmp/MLO.dd
-    [ $(md5sum /tmp/MLO.dd | cut -d' ' -f1) != $(cat /update/BBB/MLO_sum) ] && return 1
+    [ $(md5sum /tmp/MLO.dd | cut -d' ' -f1) == $(cat /update/BBB/MLO_sum) ] || return 1
 
     printf "Bootloader up to date! Nothing to do!"
     return 0
@@ -135,7 +135,7 @@ sync_emmc() {
     && { printf "root mounted on $EMMC_DEVICE_P1, will not sync emmc!"; return 1; }
 
     umount ${EMMC_DEVICE_P1}
-    dd if=/dev/zero of=${EMMC_DEVICE_P1} bs=1024 count=1024 2>/dev/null 1>/dev/null \
+    dd if=/dev/zero of=${EMMC_DEVICE_P1} bs=1024 count=1024 \
     && echo 'yes' | mkfs.ext4 ${EMMC_DEVICE_P1} && hdparm -z "${EMMC_DEVICE}" && sync
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to clean part. ..." "60"; fi
 

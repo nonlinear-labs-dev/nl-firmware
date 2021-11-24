@@ -180,17 +180,6 @@ create_update_tar () {
     return 1
 }
 
-
-#calc_checksum() {
-#    echo "Calc checksum..."
-#    if (cd $OUT_DIRECTORY/ && touch $(sha256sum ./nonlinear-c15-update.tar | grep -o "^[^ ]*").sign); then
-#        echo "Calc checksum done."
-#        return 0
-#    fi
-#    echo "Calc checksum failed."
-#    return 1
-#}
-
 print_version_string()
 {
     [ ! -z "$1" ] && echo " " $(grep -m 1 --binary-files=text "C15 Version" $1 | sed '$ s/\x00*$//') " (" $1 ")"

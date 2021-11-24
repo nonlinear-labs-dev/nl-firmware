@@ -120,6 +120,8 @@ add_custom_command(
         "unused-epc"
         "unused-epc2"
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+        ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
+        ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
         "unused-playcontroller"
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
