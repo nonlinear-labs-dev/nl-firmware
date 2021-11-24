@@ -1664,6 +1664,25 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
   }
 }
 
+DSPInterface::OutputResetEventSource dsp_host_dual::determineOutputEventSource(const bool _detected,
+                                                                               const LayerMode _type)
+{
+  if(!_detected)
+    return OutputResetEventSource::None;
+  if(_type != LayerMode::Split)
+    return OutputResetEventSource::Global;
+  switch(m_alloc.m_internal_and_external_keys.pressedLocalKeys())
+  {
+    case AllocatorId::Local_I:
+      return OutputResetEventSource::Local_I;
+    case AllocatorId::Local_II:
+      return OutputResetEventSource::Local_II;
+    case AllocatorId::Local_Both:
+      return OutputResetEventSource::Local_Both;
+  }
+  return OutputResetEventSource::None;
+}
+
 DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage& _msg)
 {
   auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Single);
@@ -1677,7 +1696,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = layerChanged || polyChanged;
+  const bool resetDetected = (layerChanged || polyChanged) && areKeysPressed(fromType(oldLayerMode));
+  const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetected, oldLayerMode);
   if(resetDetected)
   {
     if(LOG_RESET)
@@ -1813,11 +1833,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
     debugLevels();
   }
   // return detected reset event
-  if(resetDetected)
-  {
-    return oldLayerMode == LayerMode::Split ? OutputResetEventSource::Local_Both : OutputResetEventSource::Global;
-  }
-  return OutputResetEventSource::None;
+  return outputEvent;
 }
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage& _msg)
@@ -1831,17 +1847,18 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   }
 
   auto msg = &_msg;
-  bool resetDetected[2];
+  bool resetDetected[2] = { false, false };
+  const bool resetDetermined = layerChanged || areKeysPressed(fromType(oldLayerMode));
+  const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetermined, oldLayerMode);
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
 
     // update unison and mono groups
     auto polyChanged = evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
-
+    resetDetected[layerId] = polyChanged;
     // reset detection
-    resetDetected[layerId] = layerChanged || polyChanged;
-    if(resetDetected[layerId])
+    if((layerChanged || polyChanged))
     {
       if(LOG_RESET)
       {
@@ -1976,20 +1993,33 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   {
     debugLevels();
   }
-  // return detected reset event
-  if(resetDetected[0] || resetDetected[1])
+  if(layerChanged)
   {
-    //return oldLayerMode == LayerMode::Split ? OutputResetEventSource::Local_Both : OutputResetEventSource::Global;
-    if(oldLayerMode != LayerMode::Split)
-      return OutputResetEventSource::Global;
-    switch(resetDetected[0] + (resetDetected[1] << 1))
+    // non-split -> split: (global or none)
+    return outputEvent;
+  }
+  else
+  {
+    // split -> split:
+    switch(outputEvent)
     {
-      case 1:
-        return OutputResetEventSource::Local_I;
-      case 2:
-        return OutputResetEventSource::Local_II;
-      case 3:
-        return OutputResetEventSource::Local_Both;
+      case OutputResetEventSource::Local_I:
+        // keys pressed in I - reset detected in I?
+        return resetDetected[0] ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_II:
+        // keys pressed in II - reset detected in II?
+        return resetDetected[1] ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_Both:
+        // keys pressed in both - reset detected in both?
+        switch(m_alloc.m_internal_and_external_keys.pressedLocalKeys(resetDetected[0], resetDetected[1]))
+        {
+          case AllocatorId::Local_I:
+            return OutputResetEventSource::Local_I;
+          case AllocatorId::Local_II:
+            return OutputResetEventSource::Local_II;
+          case AllocatorId::Local_Both:
+            return OutputResetEventSource::Local_Both;
+        }
     }
   }
   return OutputResetEventSource::None;
@@ -2008,7 +2038,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   // update unison and mono groups
   auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
   // reset detection
-  const bool resetDetected = layerChanged || polyChanged;
+  const bool resetDetected = (layerChanged || polyChanged) && areKeysPressed(fromType(oldLayerMode));
+  const OutputResetEventSource outputEvent = determineOutputEventSource(resetDetected, oldLayerMode);
   if(resetDetected)
   {
     if(LOG_RESET)
@@ -2150,11 +2181,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
     debugLevels();
   }
   // return detected reset event
-  if(resetDetected)
-  {
-    return oldLayerMode == LayerMode::Split ? OutputResetEventSource::Local_Both : OutputResetEventSource::Global;
-  }
-  return OutputResetEventSource::None;
+  return outputEvent;
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter& _param)
@@ -2630,7 +2657,15 @@ void dsp_host_dual::resetReturningHWSource(HardwareSource hwui)
   DSPInterface::resetReturningHWSource(hwui);
 }
 
-bool dsp_host_dual::resetIsNecessary()
+bool dsp_host_dual::areKeysPressed(SoundType _current)
 {
-  return m_alloc.m_assigned_keys > 0;
+  switch(_current)
+  {
+    case SoundType::Layer:
+    case SoundType::Single:
+      return m_alloc.m_internal_and_external_keys.m_global > 0;
+    case SoundType::Split:
+      return (m_alloc.m_internal_and_external_keys.m_local[0] + m_alloc.m_internal_and_external_keys.m_local[1]) > 0;
+  }
+  return false;
 }
