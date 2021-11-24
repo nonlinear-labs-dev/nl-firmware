@@ -89,9 +89,6 @@ add_custom_command(
         "cp /workdir/fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
         "cp /workdir/fs/nonlinux/output/images/MLO /workdir/"
         "cp /workdir/fs/nonlinux/output/images/u-boot.img /workdir/"
-#        "chown ${USER_ID}.${GROUP_ID} /workdir/rootfs.tar.gz"
-#        "chown ${USER_ID}.${GROUP_ID} /workdir/MLO"
-#        "chown ${USER_ID}.${GROUP_ID} /workdir/u-boot.img"
     COMMAND echo "The final rootfs is located at ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz"
 )
 
