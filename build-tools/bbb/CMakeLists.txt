@@ -1,7 +1,6 @@
 SET(USER $ENV{USER})
 SET(DOCKERNAME nl-cross-build-environment)
-#SET(NONLINUX nonlinear_2021.23)
-SET(NONLINUX add_mke2fs)
+SET(NONLINUX nonlinear_2021.47)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 
@@ -90,9 +89,6 @@ add_custom_command(
         "cp /workdir/fs/nonlinux/output/images/rootfs.tar.gz /workdir/"
         "cp /workdir/fs/nonlinux/output/images/MLO /workdir/"
         "cp /workdir/fs/nonlinux/output/images/u-boot.img /workdir/"
-#        "chown ${USER_ID}.${GROUP_ID} /workdir/rootfs.tar.gz"
-#        "chown ${USER_ID}.${GROUP_ID} /workdir/MLO"
-#        "chown ${USER_ID}.${GROUP_ID} /workdir/u-boot.img"
     COMMAND echo "The final rootfs is located at ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz"
 )
 
