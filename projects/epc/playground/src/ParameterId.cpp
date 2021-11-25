@@ -86,17 +86,8 @@ bool ParameterId::isGlobal() const
 
 bool ParameterId::isGlobal(int number)
 {
-  //TDOD remove hack
-  if(number >= 1000 && number <= 1007)
-    return true;
-
-  if(number >= 400 || number < 0)
+  if(number >= C15::Config::tcd_elements || number < 0)
     return false;
-
-  if(number == C15::PID::Split_Split_Point)
-    return false;
-
-  //TODO change split declaration to be local modulateable
 
   auto &paramDescript = C15::ParameterList[number];
   auto type = paramDescript.m_param.m_type;

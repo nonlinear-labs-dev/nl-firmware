@@ -76,27 +76,23 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
 {
   using tIdx = RoutingSettings::tRoutingIndex;
 
-  constexpr auto to = [](PlaceholderIDS i) {
-    return static_cast<int>(i);
-  };
-
   switch(id.getNumber())
   {
-    case to(PlaceholderIDS::Bender_Send):
+    case C15::PID::Bender_Send:
       return tIdx::Bender;
-    case to(PlaceholderIDS::Aftertouch_Send):
+    case C15::PID::Aftertouch_Send:
       return tIdx::Aftertouch;
-    case to(PlaceholderIDS::Pedal1_Send):
+    case C15::PID::Pedal_1_Send:
       return tIdx::Pedal1;
-    case to(PlaceholderIDS::Pedal2_Send):
+    case C15::PID::Pedal_2_Send:
       return tIdx::Pedal2;
-    case to(PlaceholderIDS::Pedal3_Send):
+    case C15::PID::Pedal_3_Send:
       return tIdx::Pedal3;
-    case to(PlaceholderIDS::Pedal4_Send):
+    case C15::PID::Pedal_4_Send:
       return tIdx::Pedal4;
-    case to(PlaceholderIDS::Ribbon1_Send):
+    case C15::PID::Ribbon_1_Send:
       return tIdx::Ribbon1;
-    case to(PlaceholderIDS::Ribbon2_Send):
+    case C15::PID::Ribbon_2_Send:
       return tIdx::Ribbon2;
   }
   nltools_assertNotReached();
