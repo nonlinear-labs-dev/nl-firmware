@@ -1,5 +1,6 @@
 #!/bin/sh
 # version : 2.0
+set -x
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11

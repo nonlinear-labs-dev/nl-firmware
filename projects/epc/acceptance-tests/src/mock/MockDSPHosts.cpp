@@ -42,11 +42,11 @@ VoiceGroup MockDSPHost::getNonLocalSplitKeyAssignmentForKeyUp(int key)
   return VoiceGroup::I;
 }
 
-void MockDSPHost::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part)
+void MockDSPHost::registerNonLocalKeyAssignment(const int note, VoiceGroup part)
 {
 }
 
-void MockDSPHost::unregisterNonLocalSplitKeyAssignment(const int note)
+void MockDSPHost::unregisterNonLocalKeyAssignment(const int note)
 {
 }
 

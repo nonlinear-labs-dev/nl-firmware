@@ -114,6 +114,11 @@ namespace NavTree
       return false;
     }
 
+    virtual Node*getDesiredFocusChangeOnEditModeExited()
+    {
+      return nullptr;
+    }
+
     [[nodiscard]] virtual Glib::ustring getName() const
     {
       return name;
@@ -845,10 +850,10 @@ namespace NavTree
     explicit MidiChannels(InnerNode *parent)
         : InnerNode(parent, "Channels")
     {
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Receive Split Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Send Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Send Split Channel"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Receive Split Channel"));
     }
   };
 
@@ -1027,9 +1032,10 @@ namespace NavTree
   struct RoutingsEntry : public EditableLeaf
   {
    public:
-    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
+    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text, RoutingSettings::tRoutingIndex& parentSelection)
         : EditableLeaf(p, text)
         , m_id { id }
+        , m_parentSelection { parentSelection }
     {
     }
 
@@ -1040,11 +1046,12 @@ namespace NavTree
 
     Control *createEditor() override
     {
-      return new RoutingsEditor(m_id);
+      return new RoutingsEditor(m_id, m_parentSelection);
     }
 
    private:
     const RoutingSettings::tRoutingIndex m_id;
+    RoutingSettings::tRoutingIndex& m_parentSelection;
   };
 
   template <bool value> struct SetRoutingsTo : public OneShotEntry
@@ -1069,28 +1076,68 @@ namespace NavTree
 
   struct MidiRoutings : InnerNode
   {
+    typedef RoutingSettings::tRoutingIndex tID;
     explicit MidiRoutings(InnerNode *p)
         : InnerNode(p, "Routings")
     {
-      typedef RoutingSettings::tRoutingIndex tID;
-      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes"));
-      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch."));
-      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4"));
-      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender"));
-      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch"));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1"));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2"));
+      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch.", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2", m_selectedRouting));
       children.emplace_back(new SetRoutingsTo<true>(this));
       children.emplace_back(new SetRoutingsTo<false>(this));
+    }
+
+    Node *getDesiredFocusChangeOnEditModeExited() override
+    {
+      auto at = [](auto& list, auto n)
+      {
+        auto it = list.begin();
+        std::advance(it, n);
+        return it->get();
+      };
+
+      switch(m_selectedRouting)
+      {
+        case tID::Pedal1:
+          return at(children, 2);
+        case tID::Pedal2:
+          return at(children, 3);
+        case tID::Pedal3:
+          return at(children, 4);
+        case tID::Pedal4:
+          return at(children, 5);
+        case tID::Bender:
+          return at(children, 6);
+        case tID::Aftertouch:
+          return at(children, 7);
+        case tID::Ribbon1:
+          return at(children, 8);
+        case tID::Ribbon2:
+          return at(children, 9);
+        case tID::ProgramChange:
+          return at(children, 1);
+        case tID::Notes:
+          return at(children, 0);
+        case tID::LENGTH:
+          break;
+      }
+      return nullptr;
     }
 
     Control *createView() override
     {
       return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
+
+   private:
+    tID m_selectedRouting = tID::Notes;
   };
 
   struct MidiSettings : InnerNode
@@ -1144,6 +1191,26 @@ namespace NavTree
         return true;
       }
       return false;
+    }
+
+    void diveOutOfEditMode()
+    {
+      auto focusNode = (*focus).get();
+
+      if(auto pa = focusNode->parent)
+      {
+        if(auto newFocus = pa->getDesiredFocusChangeOnEditModeExited())
+        {
+          for(auto it = pa->children.begin(); it != pa->children.end(); it++)
+          {
+            if(it->get() == newFocus)
+            {
+              focus = it;
+              return;
+            }
+          }
+        }
+      }
     }
 
     bool diveUp()
@@ -1325,7 +1392,10 @@ bool SetupLayout::addEditor()
 void SetupLayout::diveUp()
 {
   if(m_focusAndMode.mode == UIMode::Edit)
+  {
     m_focusAndMode.mode = UIMode::Select;
+    m_tree->diveOutOfEditMode();
+  }
   else
     m_tree->diveUp();
 

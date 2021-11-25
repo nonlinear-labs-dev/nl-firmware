@@ -173,7 +173,7 @@ public class ServerProxy {
 
 	private void checkSoftwareVersionCompatibility() {
 		if (buildVersion != null && !buildVersion.isEmpty() && nonmapsVersion != null && !nonmapsVersion.isEmpty()) {
-			if (!buildVersion.equals(nonmapsVersion)) {
+			if (!buildVersion.trim().equals(nonmapsVersion.trim())) {
 				boolean reload = Window.confirm("WebUI has to be reloaded. The C15 software version is "
 						+ this.buildVersion + " while the WebUI version is " + nonmapsVersion + ".");
 
