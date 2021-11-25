@@ -4,6 +4,7 @@
 #include <nltools/logging/Log.h>
 #include <nltools/Types.h>
 #include <glibmm.h>
+#include <optional>
 
 class EpcWifi : public sigc::trackable
 {
