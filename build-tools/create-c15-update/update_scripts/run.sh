@@ -17,6 +17,7 @@ MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
 MSG_CHECK_LOG="Please check update log!"
 MSG_RESTART_MAN="Please restart!"
 MSG_RESTART_AUT="Will restart now!"
+MSG_UPDATE_PREVENTED="WebUI update forbidden. Use USB Update!"
 
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
@@ -239,7 +240,32 @@ stop_services() {
     return 0
 }
 
+does_update_exist_on_epc_tmp() {
+ return executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
+}
+
+is_any_install_from_epc_service_oneshot() {
+  serviceFile='/usr/lib/systemd/system/install-update-from-epc-oneshot.service'
+  if [[ -f $serviceFile ]]; then
+    cat $serviceFile | grep oneshot
+    return $?
+  fi
+  return 1
+}
+
+abort_if_started_from_dangerous_webui_service() {
+  if does_update_exist_on_epc_tmp -eq 0; then
+    if is_any_install_from_epc_service_oneshot -eq 0; then
+      pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_FAILED_WITH_ERROR_CODE E89" "$MSG_UPDATE_PREVENTED" "$MSG_FAILED_WITH_ERROR_CODE E89"
+      sleep 5
+      determine_termination
+    fi
+  fi
+}
+
 main() {
+    abort_if_started_from_dangerous_webui_service
+
     rm -f /mnt/usb-stick/nonlinear-c15-update.log.txt
     rm -f /update/errors.log
     touch /update/errors.log
