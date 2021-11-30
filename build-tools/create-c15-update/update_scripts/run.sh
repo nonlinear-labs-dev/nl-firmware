@@ -241,7 +241,8 @@ stop_services() {
 }
 
 does_update_exist_on_epc_tmp() {
- return executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
+  executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
+  return $?
 }
 
 is_any_install_from_epc_service_oneshot() {
