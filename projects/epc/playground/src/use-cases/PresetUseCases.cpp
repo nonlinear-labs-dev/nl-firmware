@@ -16,7 +16,16 @@ PresetUseCases::PresetUseCases(Preset* p, Settings& settings)
     : m_preset { p }
     , m_settings{ settings }
 {
+  if(auto bank = dynamic_cast<Bank*>(m_preset->getParent()))
+  {
+    m_bank = bank;
+    m_presetManager = bank->getPresetManager();
+    m_editBuffer = m_presetManager->getEditBuffer();
+  }
   nltools_assertAlways(m_preset != nullptr);
+  nltools_assertAlways(m_bank != nullptr);
+  nltools_assertAlways(m_presetManager != nullptr);
+  nltools_assertAlways(m_editBuffer != nullptr);
 }
 
 void PresetUseCases::rename(const std::string& newName)
@@ -48,23 +57,24 @@ void PresetUseCases::setAttribute(const Glib::ustring& key, const Glib::ustring&
 void PresetUseCases::overwriteWithEditBuffer(EditBuffer& editBuffer)
 {
   auto scope = m_preset->getUndoScope().startTransaction("Overwrite '%0' with Editbuffer", m_preset->getName());
-  m_preset->copyFrom(scope->getTransaction(), &editBuffer);
+  auto transaction = scope->getTransaction();
+  m_preset->copyFrom(transaction, &editBuffer);
+  m_editBuffer->undoableSetLoadedPresetInfo(transaction, m_preset);
+  m_presetManager->selectBank(transaction, m_bank->getUuid());
+  m_bank->selectPreset(transaction, m_preset->getUuid());
+  StoreUseCaseHelper::onStore(transaction, *m_preset, *m_presetManager, m_settings);
+  assert(m_presetManager->getSelectedBank() == m_bank);
+  assert(m_bank->getSelectedPreset() == m_preset);
 }
 
 void PresetUseCases::overwriteWithPreset(Preset* source)
 {
   auto scope = m_preset->getUndoScope().startTransaction("Overwrite preset '%0' with '%1'", m_preset->getName(),source->getName());
-  if(auto targetBank = dynamic_cast<Bank*>(m_preset->getParent()))
-  {
-    if(auto presetManager = targetBank->getPresetManager())
-    {
-      auto transaction = scope->getTransaction();
-      m_preset->copyFrom(transaction, source);
-      targetBank->selectPreset(transaction, m_preset->getUuid());
-      presetManager->selectBank(transaction, targetBank->getUuid());
-      StoreUseCaseHelper::onStore(transaction, *m_preset, *presetManager, m_settings);
-      assert(presetManager->getSelectedBank() == targetBank);
-      assert(targetBank->getSelectedPreset() == m_preset);
-    }
-  }
+  auto transaction = scope->getTransaction();
+  m_preset->copyFrom(transaction, source);
+  m_bank->selectPreset(transaction, m_preset->getUuid());
+  m_presetManager->selectBank(transaction, m_bank->getUuid());
+  StoreUseCaseHelper::onStore(transaction, *m_preset, *m_presetManager, m_settings);
+  assert(m_presetManager->getSelectedBank() == m_bank);
+  assert(m_bank->getSelectedPreset() == m_preset);
 }
