@@ -396,6 +396,7 @@ namespace nltools
       }
 
       tID parameterId;
+      tID siblingId;
       tControlPosition controlPosition;
       ReturnMode returnMode;
       bool m_localEnabled;

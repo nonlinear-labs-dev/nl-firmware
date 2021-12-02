@@ -25,21 +25,6 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
   }
 }
 
-Glib::ustring HardwareSourceSendParameter::getLongName() const
-{
-  return getID().toString();
-}
-
-Glib::ustring HardwareSourceSendParameter::getShortName() const
-{
-  return getID().toString();
-}
-
-Glib::ustring HardwareSourceSendParameter::getInfoText() const
-{
-  return getID().toString();
-}
-
 void HardwareSourceSendParameter::sendParameterMessage() const
 {
   if(auto eb = getParentEditBuffer())

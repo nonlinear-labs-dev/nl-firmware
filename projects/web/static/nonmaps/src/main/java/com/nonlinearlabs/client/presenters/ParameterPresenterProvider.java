@@ -213,9 +213,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		if (presenter.updateHash()) {
 			notifyChanges();
-			if(presenter.id.getNumber() == 396) {
-				Tracer.log("ParameterPresenterProvider notifyChanges() was called because hash has changed!");
-			}
 		}
 	}
 

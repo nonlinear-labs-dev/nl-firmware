@@ -722,6 +722,16 @@ void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMes
   }
 }
 
+void InputEventStage::onSendParameterReceived(const nltools::msg::HWSourceSendChangedMessage &message)
+{
+  auto hwID = InputEventStage::parameterIDToHWID(message.siblingId);
+  if(!message.m_localEnabled)
+  {
+    auto pos = static_cast<float>(message.controlPosition);
+    sendHardwareChangeAsMidi(hwID, pos);
+  }
+}
+
 HardwareSource InputEventStage::parameterIDToHWID(int id)
 {
   switch(id)
@@ -765,8 +775,9 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
         return true;
       }
       case HWChangeSource::TCD:
-      case HWChangeSource::UI:
         return m_options->shouldAllowLocal(routingIndex);
+      case HWChangeSource::UI:
+        return true;
       default:
         nltools_assertNotReached();
     }
@@ -792,7 +803,15 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
       pos = pos >= 0.5f ? 1.0f : 0.0f;
     }
 
-    sendHardwareChangeAsMidi(hwID, pos);
+    if(source == HWChangeSource::UI)
+    {
+      if(m_options->isLocalEnabled(hwID))
+        sendHardwareChangeAsMidi(hwID, pos);
+    }
+    else
+    {
+      sendHardwareChangeAsMidi(hwID, pos);
+    }
   }
 }
 

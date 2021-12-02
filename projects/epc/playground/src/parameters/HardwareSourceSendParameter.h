@@ -12,9 +12,6 @@ class HardwareSourceSendParameter : public Parameter
   HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter* sibling, const ParameterId& id,
                               const ScaleConverter* converter, double def, int coarseDenominator, int fineDenominator,
                               Settings* settings);
-  Glib::ustring getLongName() const override;
-  Glib::ustring getShortName() const override;
-  Glib::ustring getInfoText() const override;
   Layout* createLayout(FocusAndMode focusAndMode) const override;
 
   [[nodiscard]] bool isLocalEnabled() const;
