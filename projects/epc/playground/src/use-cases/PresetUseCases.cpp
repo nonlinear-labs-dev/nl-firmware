@@ -16,14 +16,12 @@ PresetUseCases::PresetUseCases(Preset* p, Settings& settings)
     : m_preset { p }
     , m_settings{ settings }
 {
-  if(auto bank = dynamic_cast<Bank*>(m_preset->getParent()))
-  {
-    m_bank = bank;
-    m_presetManager = bank->getPresetManager();
-    m_editBuffer = m_presetManager->getEditBuffer();
-  }
-  nltools_assertAlways(m_preset != nullptr);
+  m_bank = dynamic_cast<Bank*>(m_preset->getParent());
   nltools_assertAlways(m_bank != nullptr);
+
+  m_presetManager = m_bank->getPresetManager();
+  m_editBuffer = m_presetManager->getEditBuffer();
+  nltools_assertAlways(m_preset != nullptr);
   nltools_assertAlways(m_presetManager != nullptr);
   nltools_assertAlways(m_editBuffer != nullptr);
 }
