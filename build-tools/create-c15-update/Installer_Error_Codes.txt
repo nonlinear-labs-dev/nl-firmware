@@ -37,8 +37,7 @@ List of current Error Messages
 - 86 :: "E86: ePC update missing" "Please retry download!"
 - 87 :: "E87: BBB update missing" "Please retry download!"
 - 88 :: "E88: playcontroller update missing" "Please retry download!"
-- 89 :: "E89: WebUI update forbidden" "Use USB Update!"
-
+- 89 :: "Update aborted! E89" "Please use USB update!"
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------
