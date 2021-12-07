@@ -23,6 +23,25 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
     auto routings = settings->getSetting<RoutingSettings>();
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
+
+  if(m_sibling)
+  {
+    m_sibling->onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
+  }
+}
+
+void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
+{
+  if(auto physicalSrc = dynamic_cast<const PhysicalControlParameter*>(sibling))
+  {
+    auto newMode = physicalSrc->getReturnMode();
+    if(newMode != m_returnMode)
+    {
+      getValue().setScaleConverter(physicalSrc->getValue().getScaleConverter());
+      m_returnMode = newMode;
+      invalidate();
+    }
+  }
 }
 
 void HardwareSourceSendParameter::sendParameterMessage() const
@@ -87,6 +106,7 @@ nlohmann::json HardwareSourceSendParameter::serialize() const
 {
   auto param = Parameter::serialize();
   param.push_back({"is-enabled", isLocalEnabled() });
+  param.push_back({"return-mode", static_cast<int>(m_returnMode) });
   return param;
 }
 
@@ -95,11 +115,17 @@ void HardwareSourceSendParameter::writeDocProperties(Writer& writer,
 {
   Parameter::writeDocProperties(writer, knownRevision);
   writer.writeTextElement("local-enabled", std::to_string(isLocalEnabled()));
+  writer.writeTextElement("return-mode", std::to_string(static_cast<int>(m_returnMode)));
 }
 
 bool HardwareSourceSendParameter::isLocalEnabled() const
 {
   return m_routingIsEnabled && m_localIsEnabled;
+}
+
+bool HardwareSourceSendParameter::lockingEnabled() const
+{
+  return false;
 }
 
 ReturnMode HardwareSourceSendParameter::getReturnMode() const

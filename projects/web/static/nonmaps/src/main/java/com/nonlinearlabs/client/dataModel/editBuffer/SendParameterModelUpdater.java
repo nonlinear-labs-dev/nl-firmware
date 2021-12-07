@@ -15,5 +15,6 @@ public class SendParameterModelUpdater extends BasicParameterModelUpdater  {
         SendParameterModel p = (SendParameterModel) target;
         boolean isTrue = getChildText(root, "local-enabled").equals("1");
         p.enabled.setValue(isTrue);
+        p.mode.fromInt(Integer.parseInt(getChildText(root, "return-mode")));
     }
 }

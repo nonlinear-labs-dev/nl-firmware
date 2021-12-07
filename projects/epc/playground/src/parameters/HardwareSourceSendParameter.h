@@ -17,6 +17,7 @@ class HardwareSourceSendParameter : public Parameter
   [[nodiscard]] bool isLocalEnabled() const;
   [[nodiscard]] ReturnMode getReturnMode() const;
   [[nodiscard]] PhysicalControlParameter* getSiblingParameter() const;
+  bool lockingEnabled() const override;
 
  protected:
   nlohmann::json serialize() const override;
@@ -29,9 +30,11 @@ class HardwareSourceSendParameter : public Parameter
 
   void onLocalChanged(const Setting* setting);
   void onRoutingsChanged(const Setting* setting);
+  void onSiblingChanged(const Parameter* sibling);
   static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
 
   Settings* m_settings;
   bool m_localIsEnabled = false;
   bool m_routingIsEnabled = false;
+  ReturnMode m_returnMode;
 };

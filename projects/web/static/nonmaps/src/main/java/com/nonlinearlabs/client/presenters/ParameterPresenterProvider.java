@@ -28,6 +28,8 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.tools.NLMath;
 import com.nonlinearlabs.client.world.Range;
+import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter.ReturnMode;
+import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.HardwareSendSources;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();
@@ -245,6 +247,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private void updatePresenter(SendParameterModel p) {
 		presenter.enableLocalDisable = true;
 		presenter.isLocalDisabled = isLocalDisabled(p);
+		presenter.drawCenterReturnIndicator = p.mode.getValue() == ReturnMode.Center;
+		presenter.drawZeroReturnIndicator = p.mode.getValue() == ReturnMode.Zero;
+		presenter.isReturning = p.mode.getValue() != ReturnMode.None;
 	}
 
 	private void updatePresenter(ModulateableParameterModel p) {

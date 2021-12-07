@@ -46,6 +46,8 @@ class PhysicalControlParameter : public Parameter
   virtual bool isLocalEnabled() const = 0;
   HardwareSourceSendParameter *getSendParameter() const;
 
+  ParameterId getSiblingID();
+
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
