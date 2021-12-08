@@ -24,6 +24,15 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
     }
 
 
+	@Override
+	public void doFirstLayoutPass(double levelOfDetail) {
+		if (!presenter.isLocalDisabled) {
+			setNonSize(new NonDimension(0, 0));
+		} else {
+			super.doFirstLayoutPass(levelOfDetail);
+		}
+	}
+
     @Override
     public Control drop(Position pos, DragProxy dragProxy) {
         if(presenter.isLocalDisabled)
