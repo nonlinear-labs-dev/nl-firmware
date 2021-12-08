@@ -32,12 +32,11 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
     @Override
     protected boolean onPresenterUpdated(ParameterPresenter p)
     {
-        GWT.log("Invalidating SendParameter " + p.id.toString());
+        GWT.log("Invalidating SendParameter " + p.id.toString() + "is same:" + (p != presenter));
         if(p != presenter)
         {
             presenter = p;
-            getParameterGroup().requestLayout();
-            invalidate(INVALIDATION_FLAG_ZOOMED);
+            invalidate(INVALIDATION_FLAG_UI_CHANGED);
         }
         return true;
     }

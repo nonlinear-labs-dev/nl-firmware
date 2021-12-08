@@ -29,4 +29,8 @@ public class SendParameterModel extends BasicParameterModel {
 		crc.eat(mode.getValue().ordinal());
 		crc.eat(enabled.getBool());
 	}
+
+	public boolean isReturning() {
+		return mode.getValue() != ReturnMode.None;
+	}
 }

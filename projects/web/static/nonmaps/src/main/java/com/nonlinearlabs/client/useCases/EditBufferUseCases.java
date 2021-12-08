@@ -15,8 +15,10 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.tools.NLMath;
+import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.PhysicalControlSendParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 
 public class EditBufferUseCases {
@@ -109,6 +111,10 @@ public class EditBufferUseCases {
 	}
 
 	private void startReturningAnimation(PhysicalControlParameterModel m) {
+		animationManager.startReturnAnimation(m);
+	}
+
+	private void startReturningAnimation(SendParameterModel m) {
 		animationManager.startReturnAnimation(m);
 	}
 
@@ -379,6 +385,12 @@ public class EditBufferUseCases {
 			if (p instanceof PhysicalControlParameterModel) {
 				PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
 				if (m.isReturning())
+					startReturningAnimation(m);
+			}
+
+			if(p instanceof SendParameterModel) {
+				SendParameterModel m = (SendParameterModel)p;
+				if(m.isReturning())
 					startReturningAnimation(m);
 			}
 		});

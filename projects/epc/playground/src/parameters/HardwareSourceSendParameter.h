@@ -18,6 +18,9 @@ class HardwareSourceSendParameter : public Parameter
   [[nodiscard]] ReturnMode getReturnMode() const;
   [[nodiscard]] PhysicalControlParameter* getSiblingParameter() const;
   bool lockingEnabled() const override;
+  void onUnselected() override;
+  void setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
+  void setCPFromWebUI(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
 
  protected:
   nlohmann::json serialize() const override;
@@ -37,4 +40,5 @@ class HardwareSourceSendParameter : public Parameter
   bool m_localIsEnabled = false;
   bool m_routingIsEnabled = false;
   ReturnMode m_returnMode;
+  bool m_lastChangedFromHWUI = false;
 };

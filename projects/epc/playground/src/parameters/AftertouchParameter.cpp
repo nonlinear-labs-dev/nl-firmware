@@ -41,3 +41,8 @@ bool AftertouchParameter::isLocalEnabled() const
   }
   return false;
 }
+
+tControlPositionValue AftertouchParameter::getDefValueAccordingToMode() const
+{
+  return 0;
+}

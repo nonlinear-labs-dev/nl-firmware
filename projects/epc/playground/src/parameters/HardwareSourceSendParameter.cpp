@@ -30,6 +30,31 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
   }
 }
 
+void HardwareSourceSendParameter::setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue)
+{
+  Parameter::setCPFromHwui(transaction, cpValue);
+  m_lastChangedFromHWUI = true;
+}
+
+void HardwareSourceSendParameter::setCPFromWebUI(UNDO::Transaction* transaction, const tControlPositionValue& cpValue)
+{
+  Parameter::setCPFromWebUI(transaction, cpValue);
+  m_lastChangedFromHWUI = false;
+}
+
+void HardwareSourceSendParameter::onUnselected()
+{
+  Parameter::onUnselected();
+
+  if(m_lastChangedFromHWUI && getReturnMode() != ReturnMode::None)
+  {
+    m_lastChangedFromHWUI = false;
+    getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
+    sendToPlaycontroller();
+    onChange(Generic | DontTrustOracle);
+    invalidate();
+  }}
+
 void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
 {
   if(auto physicalSrc = dynamic_cast<const PhysicalControlParameter*>(sibling))
@@ -38,6 +63,10 @@ void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
     if(newMode != m_returnMode)
     {
       getValue().setScaleConverter(physicalSrc->getValue().getScaleConverter());
+      getValue().setCoarseDenominator(physicalSrc->getValue().getCoarseDenominator());
+      getValue().setFineDenominator(physicalSrc->getValue().getFineDenominator());
+      getValue().setIsBoolean(physicalSrc->getValue().isBoolean());
+
       m_returnMode = newMode;
       invalidate();
       setDirty();
