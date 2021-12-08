@@ -42,7 +42,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(number, p -> onPresenterUpdated(p));
 	}
 
-	private boolean onPresenterUpdated(ParameterPresenter p) {
+	protected boolean onPresenterUpdated(ParameterPresenter p) {
+		GWT.log("onPresenterUpdated!" + p.id.toString());
 		presenter = p;
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		return true;
@@ -349,7 +350,8 @@ public abstract class Parameter extends LayoutResizingVertical {
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		if (presenter.hidden) {
-			setNonSize(new NonDimension(0, 0));
+			NonDimension dim = layoutChildren(levelOfDetail);
+			setNonSize(new NonDimension(dim.getWidth(), dim.getHeight()));
 		} else {
 			super.doFirstLayoutPass(levelOfDetail);
 		}

@@ -40,6 +40,8 @@ void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
       getValue().setScaleConverter(physicalSrc->getValue().getScaleConverter());
       m_returnMode = newMode;
       invalidate();
+      setDirty();
+      onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
     }
   }
 }
@@ -59,6 +61,8 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
     {
       m_localIsEnabled = local;
       invalidate();
+      setDirty();
+      onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
     }
   }
 }
@@ -72,6 +76,8 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
     {
       m_routingIsEnabled = state;
       invalidate();
+      setDirty();
+      onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
     }
   }
 }
