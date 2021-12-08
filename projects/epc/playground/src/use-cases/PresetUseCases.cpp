@@ -16,14 +16,12 @@ PresetUseCases::PresetUseCases(Preset* p, Settings& settings)
     : m_preset { p }
     , m_settings{ settings }
 {
-  m_bank = dynamic_cast<Bank*>(m_preset->getParent());
-  nltools_assertAlways(m_bank != nullptr);
-
-  m_presetManager = m_bank->getPresetManager();
-  m_editBuffer = m_presetManager->getEditBuffer();
-  nltools_assertAlways(m_preset != nullptr);
-  nltools_assertAlways(m_presetManager != nullptr);
-  nltools_assertAlways(m_editBuffer != nullptr);
+  if(auto bank = dynamic_cast<Bank*>(m_preset->getParent()))
+  {
+    m_bank = bank;
+    m_presetManager = m_bank->getPresetManager();
+    m_editBuffer = m_presetManager->getEditBuffer();
+  }
 }
 
 void PresetUseCases::rename(const std::string& newName)
@@ -54,6 +52,12 @@ void PresetUseCases::setAttribute(const Glib::ustring& key, const Glib::ustring&
 
 void PresetUseCases::overwriteWithEditBuffer(EditBuffer& editBuffer)
 {
+  if(m_editBuffer == nullptr || m_presetManager == nullptr || m_bank == nullptr)
+  {
+    nltools_assertOnDevPC(false);
+    return;
+  }
+
   auto scope = m_preset->getUndoScope().startTransaction("Overwrite '%0' with Editbuffer", m_preset->getName());
   auto transaction = scope->getTransaction();
   m_preset->copyFrom(transaction, &editBuffer);
@@ -67,6 +71,12 @@ void PresetUseCases::overwriteWithEditBuffer(EditBuffer& editBuffer)
 
 void PresetUseCases::overwriteWithPreset(Preset* source)
 {
+  if(m_presetManager == nullptr || m_bank == nullptr)
+  {
+    nltools_assertOnDevPC(false);
+    return;
+  }
+
   auto scope = m_preset->getUndoScope().startTransaction("Overwrite preset '%0' with '%1'", m_preset->getName(),source->getName());
   auto transaction = scope->getTransaction();
   m_preset->copyFrom(transaction, source);
