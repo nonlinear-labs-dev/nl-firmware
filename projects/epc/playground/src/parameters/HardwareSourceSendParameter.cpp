@@ -52,13 +52,13 @@ void HardwareSourceSendParameter::onUnselected()
     m_lastChangedFromHWUI = false;
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
     sendToPlaycontroller();
-    onChange(Generic | DontTrustOracle);
     invalidate();
   }
 }
 
 void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
 {
+  nltools::Log::error("onSibChanged", getLongName());
   if(auto physicalSrc = dynamic_cast<const PhysicalControlParameter*>(sibling))
   {
     auto newMode = physicalSrc->getReturnMode();
@@ -71,8 +71,6 @@ void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
 
       m_returnMode = newMode;
       invalidate();
-      setDirty();
-      onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
     }
   }
 }
@@ -85,6 +83,7 @@ void HardwareSourceSendParameter::sendParameterMessage() const
 
 void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 {
+  nltools::Log::error("onLocalChanged", getLongName());
   if(auto localSetting = dynamic_cast<const GlobalLocalEnableSetting*>(setting))
   {
     const auto local = localSetting->get();
@@ -98,6 +97,7 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 
 void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
 {
+  nltools::Log::error("onRoutingsChanged", getLongName());
   if(auto routings = dynamic_cast<const RoutingSettings*>(setting))
   {
     const auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
@@ -178,6 +178,7 @@ PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() con
 
 void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
 {
+  nltools::Log::error("calcIfEnabled", getLongName());
   auto oldState = m_isEnabled;
   m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
   if(oldState != m_isEnabled)
@@ -191,8 +192,7 @@ void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
       }
     }
 
+    nltools::Log::error("invalidating", getLongName());
     invalidate();
-    setDirty();
-    onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
   }
 }

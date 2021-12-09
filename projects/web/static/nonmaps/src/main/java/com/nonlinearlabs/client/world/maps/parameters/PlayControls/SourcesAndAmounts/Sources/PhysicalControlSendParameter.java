@@ -21,50 +21,42 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
     public PhysicalControlSendParameter(MapsLayout parent, int parameterID) {
         super(parent, parameterID);
     }
-    
-    @Override
-    public void dragLeave() {
-        if(presenter.isLocalDisabled)
-            super.dragLeave();
-        return;
-    }
 
     @Override
     protected boolean onPresenterUpdated(ParameterPresenter p)
     {
-        GWT.log("Invalidating SendParameter " + p.id.toString() + "is same:" + (p != presenter));
-        if(p != presenter)
+        if(presenter != null && p.hidden != presenter.hidden)
         {
-            presenter = p;
-            invalidate(INVALIDATION_FLAG_UI_CHANGED);
+            requestLayout();
         }
+        super.onPresenterUpdated(p);
         return true;
     }
 
     @Override
     public double getXMargin() {
-        if(presenter.isLocalDisabled)
+        if(!presenter.hidden)
             return super.getXMargin();
         return 0;
     }
 
     @Override
     public double getLeftMargin() {
-        if(presenter.isLocalDisabled)
+        if(!presenter.hidden)
             return super.getLeftMargin();
         return 0;
     }
 
     @Override
     public double getRightMargin() {
-        if(presenter.isLocalDisabled)
+        if(!presenter.hidden)
             return super.getRightMargin();
         return 0;
     }
 
     @Override
     public double getWidthMargin() {
-        if(presenter.isLocalDisabled)
+        if(!presenter.hidden)
             return super.getWidthMargin();
         return 0;
     }
@@ -95,98 +87,11 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
 
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
-		if (!presenter.isLocalDisabled) {
+		if (presenter.hidden) {
             NonRect dim = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().findParameter(getSibling()).getNonPosition();
             setNonSize(new NonDimension(0, dim.getHeight()));
 		} else {
 			super.doFirstLayoutPass(levelOfDetail);
 		}
 	}
-
-    @Override
-    public Control drop(Position pos, DragProxy dragProxy) {
-        if(presenter.isLocalDisabled)
-            return super.drop(pos, dragProxy);
-        return this;
-    }
-
-
-    @Override
-    public Control longLeftPress(Position eventPoint) {
-        if(presenter.isLocalDisabled)
-            return super.longLeftPress(eventPoint);
-        return this;
-    }
-
-
-    @Override
-    public Control longPress(Position eventPoint) {
-        if(presenter.isLocalDisabled)
-            return super.longPress(eventPoint);
-        return this;
-    }
-
-
-    @Override
-    public Control longRightPress(Position eventPoint) {
-        if(presenter.isLocalDisabled)
-            return super.longRightPress(eventPoint);
-        return this;
-    }
-
-
-    @Override
-    public Control mouseUp(Position eventPoint) {
-        if(presenter.isLocalDisabled)
-            return super.mouseUp(eventPoint);
-        return this;
-    }
-    
-    @Override
-    public Control mouseDown(Position eventPoint) {
-        if(presenter.isLocalDisabled)
-            return super.mouseDown(eventPoint);
-        return this;
-    }
-
-    @Override
-    public Control onKey(KeyDownEvent event) {
-        if(presenter.isLocalDisabled)
-           return super.onKey(event);
-        return this;
-    }
-  
-    @Override
-    public Control doubleClick(Position pos) {
-        if(presenter.isLocalDisabled)
-            return super.doubleClick(pos);
-        return this;
-    }
-  
-    @Override
-    public Control click(Position eventPoint) {
-        if(presenter.isLocalDisabled)
-            return super.click(eventPoint);
-        return this;
-    }
-    
-    @Override
-    public Control drag(Position pos, DragProxy dragProxy) {
-        if(presenter.isLocalDisabled)
-            return super.drag(pos, dragProxy);
-        return this;
-    }
-
-    @Override
-    public Control drag(Rect rect, DragProxy dragProxy) {
-        if(presenter.isLocalDisabled)
-            return super.drag(rect, dragProxy);
-        return this;
-    }
-
-    @Override
-    public void draw(Context2d ctx, int invalidationMask) {
-        if(presenter.isLocalDisabled)
-            super.draw(ctx, invalidationMask);
-    }
 }

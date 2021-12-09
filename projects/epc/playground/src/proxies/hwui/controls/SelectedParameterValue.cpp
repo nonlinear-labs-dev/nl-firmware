@@ -229,7 +229,7 @@ void HardwareSourceCCLabel::onParameterSelectionHappened(const Parameter *old, c
 
   if(param)
   {
-    if(auto setting = getMappingSetting(newP->getID().getNumber(), settings))
+    if(auto setting = getMappingSetting(param->getID().getNumber(), settings))
     {
       m_settingConnection = setting->onChange(sigc::mem_fun(this, &HardwareSourceCCLabel::onSettingsChanged));
     }

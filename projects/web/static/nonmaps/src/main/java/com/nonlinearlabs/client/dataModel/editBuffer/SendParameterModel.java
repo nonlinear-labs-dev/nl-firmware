@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
@@ -14,8 +15,16 @@ public class SendParameterModel extends BasicParameterModel {
 
 	public SendParameterModel(ParameterId id) {
 		super(id);
-		enabled.onChange(v -> notifyChanges());
-		mode.onChange(v -> notifyChanges());
+		enabled.onChange(v -> 
+		{
+			notifyChanges();
+			return true;
+		});
+
+		mode.onChange(v -> {
+			notifyChanges();
+			return true;
+		});
 	}
 
 	@Override
@@ -25,7 +34,7 @@ public class SendParameterModel extends BasicParameterModel {
 	
 	@Override
 	public void getHash(Checksum crc) {
-		super.getHash(crc);
+		crc.eat(value.getQuantizedAndClipped(false));
 		crc.eat(mode.getValue().ordinal());
 		crc.eat(enabled.getBool());
 	}

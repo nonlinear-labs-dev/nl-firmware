@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
@@ -121,13 +122,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		return containsElement(num, ParameterFactory.hiddenParametersBySoundType.get(type));
 	}
 
-	private boolean isLocalDisabled(BasicParameterModel m) {
-		SendParameterModel spm = (SendParameterModel)m;
-		if(spm != null)
-		{
-			return !spm.enabled.getBool();
-		}
-		return false;
+	private boolean isLocalDisabled(SendParameterModel m) {
+		return !m.enabled.getBool();
 	}
 
 	private boolean isParameterDisabled(int num) {
@@ -153,8 +149,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.disabled = isParameterDisabled(e);
 		presenter.hidden = isParameterHidden(e);
 		presenter.isDefault = presenter.controlPosition == presenter.defaultPosition;
-		presenter.isLocalDisabled = false;
-		presenter.enableLocalDisable = false;
 
 		if(presenter.id.getNumber() == 396) {
 			Tracer.log("isDefault for VG "+ presenter.id.getVoiceGroup().toString() + " is:" + presenter.isDefault);
@@ -245,8 +239,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	}
 
 	private void updatePresenter(SendParameterModel p) {
-		presenter.enableLocalDisable = true;
-		presenter.isLocalDisabled = isLocalDisabled(p);
+		presenter.hidden = !isLocalDisabled(p);
 		presenter.drawCenterReturnIndicator = p.mode.getValue() == ReturnMode.Center;
 		presenter.drawZeroReturnIndicator = p.mode.getValue() == ReturnMode.Zero;
 		presenter.isReturning = p.mode.getValue() != ReturnMode.None;

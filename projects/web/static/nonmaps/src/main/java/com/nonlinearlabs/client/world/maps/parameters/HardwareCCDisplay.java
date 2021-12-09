@@ -197,27 +197,35 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         String oldString = displayString;
 
         switch(paramerNumber) {
+            case 398:
             case 254:
                 displayString = getPedalString(settings.pedal1Mapping.getValue());
                 break;
+            case 399:
             case 259:
                 displayString = getPedalString(settings.pedal2Mapping.getValue());
                 break;
+            case 400:
             case 264:
                 displayString = getPedalString(settings.pedal3Mapping.getValue());
                 break;
+            case 401:
             case 269:
                 displayString = getPedalString(settings.pedal4Mapping.getValue());
                 break;
+            case 402:
             case 274:
                 displayString = getBenderString(settings.benderMapping.getValue());
                 break;
+            case 403:
             case 279:
                 displayString = getAftertouchString(settings.aftertouchMapping.getValue());
                 break;
+            case 404:
             case 284:
                 displayString = getRibbonString(settings.ribbon1Mapping.getValue());
                 break;
+            case 405:
             case 289:
                 displayString = getRibbonString(settings.ribbon2Mapping.getValue());
                 break;
