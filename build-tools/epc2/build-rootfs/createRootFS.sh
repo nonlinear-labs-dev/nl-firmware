@@ -1,17 +1,18 @@
 #!/bin/sh
 
 set -e
-set -x
 
-install_package() {
+PACKAGES_COLLECTION=""
+
+collect_package() {
     name="$1"
-    pacstrap -c /rootfs $name=$version && return 0
     
     for ENDING in "pkg.tar.xz" "pkg.tar.zst"; do
         for PLATFORM in "x86_64" "any"; do
             fileName="$name-$version-$PLATFORM.$ENDING"
-            if pacstrap -U /rootfs /downloads/epc2/packages/$fileName; then
-                return 0
+            if [ -f /downloads/epc2/packages/$fileName ]; then
+              PACKAGES_COLLECTION="$PACKAGES_COLLECTION /downloads/epc2/packages/$fileName"
+              return 0
             fi
         done
     done
@@ -21,20 +22,15 @@ install_package() {
 }
 
 install_packages() {
-    while read package; do
+    while read -r package; do
         name=$(echo $package | cut -f1 -d " ")
         version=$(echo $package | cut -f2 -d " ")
         echo "install_packages: $package  => $name" 
-        install_package $name $version || return 1
-    done < /epc2-binary-dir/.epc2-base-os-final-packages
-
-    return 0
-}
-
-create_package_database() {
-    echo "[nonlinux]" > /etc/pacman.conf
-    echo "Server = file:///downloads/epc2/packages/" >> /etc/pacman.conf
-    pacman -Sy > /dev/null
+        collect_package $name $version || return 1
+    done < /epc2-binary-dir/collect-packages/base-packages.txt
+    PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
+    pacstrap -U /rootfs $PACKAGES_COLLECTION
+    return $?
 }
 
 perform_tweaks() {
@@ -57,11 +53,11 @@ perform_tweaks() {
     arch-chroot /rootfs /bin/bash -c "systemctl enable sshd"
     arch-chroot /rootfs bash -c "useradd -m sscl"
     arch-chroot /rootfs bash -c "echo 'sscl:sscl' | chpasswd"
-    echo "sscl   ALL=(ALL) NOPASSWD:ALL" >> /rootfs/etc/sudoers
+    echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /rootfs/etc/sudoers
 }
 
 create_mountpoint() {
-    mkdir /rootfs
+    mkdir -p /rootfs
     yes | truncate -s 8G /current-binary-dir/rootfs.ext4
     yes | truncate -s 512M /current-binary-dir/bootfs.fat
     yes | mkfs.ext4 /current-binary-dir/rootfs.ext4
@@ -80,7 +76,6 @@ finalize() {
 }
 
 create_mountpoint
-create_package_database
 install_packages /rootfs || exit 1
 perform_tweaks
 finalize

@@ -9,8 +9,8 @@ ADD_CUSTOM_COMMAND(
     DEPENDS createIso.sh
     DEPENDS runme.sh
     DEPENDS sda.sfdisk
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../rootfs/bootfs.fat
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../rootfs/rootfs.ext4
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../build-rootfs/bootfs.fat
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../build-rootfs/rootfs.ext4
     COMMAND docker build -t ${DOCKERNAME} ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND touch .${DOCKERNAME}
 )
@@ -23,8 +23,6 @@ ADD_CUSTOM_COMMAND(
 )
 
 ADD_CUSTOM_TARGET(epc2-create-iso 
-  DEPENDS epc2os-rootfs
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../rootfs/rootfs.ext4
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../rootfs/bootfs.fat
+  DEPENDS epc2-build-rootfs
   DEPENDS epc2os.iso
 )

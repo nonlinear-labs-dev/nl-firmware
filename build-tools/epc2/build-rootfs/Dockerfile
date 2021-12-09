@@ -1,6 +1,6 @@
 # Build environment for arch rootfs creation
 
-FROM archlinux:base-20211010.0.36274
+FROM archlinux:20200908
 
 COPY createRootFS.sh /
 
