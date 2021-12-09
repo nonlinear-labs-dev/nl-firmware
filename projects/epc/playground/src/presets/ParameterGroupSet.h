@@ -8,7 +8,6 @@
 #include "groups/ParameterGroup.h"
 #include <vector>
 #include <array>
-#include <parameters/ParameterTypes.h>
 
 class Parameter;
 class Preset;

@@ -1,7 +1,6 @@
 #pragma once
 #include <parameters/Parameter.h>
 #include <groups/HardwareSourcesGroup.h>
-#include "ParameterTypes.h"
 #include <device-settings/midi/RoutingSettings.h>
 
 class PhysicalControlParameter;
