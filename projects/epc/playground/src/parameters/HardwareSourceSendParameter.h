@@ -35,10 +35,12 @@ class HardwareSourceSendParameter : public Parameter
   void onRoutingsChanged(const Setting* setting);
   void onSiblingChanged(const Parameter* sibling);
   static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
+  void calculateIfParameterIsEnabled();
 
   Settings* m_settings;
   bool m_localIsEnabled = false;
   bool m_routingIsEnabled = false;
   ReturnMode m_returnMode;
   bool m_lastChangedFromHWUI = false;
+  bool m_isEnabled = false;
 };

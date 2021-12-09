@@ -208,7 +208,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
                                             VoiceGroup copyTo);
   void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
                                              VoiceGroup copyTo);
-  void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
+  void cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
   bool isMonoEnabled(const VoiceGroup &vg) const;
   bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 

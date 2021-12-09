@@ -3,6 +3,7 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include "HardwareSourceSendParameter.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/PhysicalControlParameter.h>
@@ -53,7 +54,8 @@ void HardwareSourceSendParameter::onUnselected()
     sendToPlaycontroller();
     onChange(Generic | DontTrustOracle);
     invalidate();
-  }}
+  }
+}
 
 void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
 {
@@ -85,13 +87,11 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 {
   if(auto localSetting = dynamic_cast<const GlobalLocalEnableSetting*>(setting))
   {
-    auto local = localSetting->get();
-    if(m_localIsEnabled != local)
+    const auto local = localSetting->get();
+    if(local != m_localIsEnabled)
     {
       m_localIsEnabled = local;
-      invalidate();
-      setDirty();
-      onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
+      calculateIfParameterIsEnabled();
     }
   }
 }
@@ -100,13 +100,11 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
 {
   if(auto routings = dynamic_cast<const RoutingSettings*>(setting))
   {
-    auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
+    const auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
     if(state != m_routingIsEnabled)
     {
       m_routingIsEnabled = state;
-      invalidate();
-      setDirty();
-      onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
+      calculateIfParameterIsEnabled();
     }
   }
 }
@@ -155,7 +153,7 @@ void HardwareSourceSendParameter::writeDocProperties(Writer& writer,
 
 bool HardwareSourceSendParameter::isLocalEnabled() const
 {
-  return m_routingIsEnabled && m_localIsEnabled;
+  return m_isEnabled;
 }
 
 bool HardwareSourceSendParameter::lockingEnabled() const
@@ -176,4 +174,25 @@ Layout* HardwareSourceSendParameter::createLayout(FocusAndMode focusAndMode) con
 PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() const
 {
   return m_sibling;
+}
+
+void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
+{
+  auto oldState = m_isEnabled;
+  m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
+  if(oldState != m_isEnabled)
+  {
+    if(m_isEnabled )
+    {
+      if(auto eb = getParentEditBuffer())
+      {
+        EditBufferUseCases useCase(*eb);
+        useCase.selectParameter(getSiblingParameter(), true);
+      }
+    }
+
+    invalidate();
+    setDirty();
+    onChange(ChangeFlags::Generic | ChangeFlags::DontTrustOracle);
+  }
 }
