@@ -34,7 +34,6 @@ public class SendParameterModel extends BasicParameterModel {
 	
 	@Override
 	public void getHash(Checksum crc) {
-		crc.eat(value.getQuantizedAndClipped(false));
 		crc.eat(mode.getValue().ordinal());
 		crc.eat(enabled.getBool());
 	}

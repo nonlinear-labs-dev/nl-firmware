@@ -181,6 +181,7 @@ void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
   nltools::Log::error("calcIfEnabled", getLongName());
   auto oldState = m_isEnabled;
   m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
+  nltools::Log::error("wasEnabled:", oldState, "isEnabled:", m_isEnabled);
   if(oldState != m_isEnabled)
   {
     if(m_isEnabled )

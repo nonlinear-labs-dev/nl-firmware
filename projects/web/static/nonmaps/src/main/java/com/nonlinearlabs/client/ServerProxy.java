@@ -527,13 +527,8 @@ public class ServerProxy {
 		queueJob(uri, true);
 	}
 
-	private boolean isSettingOracle(final String key) {
-		return key.equals("RoutingSettings") || key.equals("GlobalLocalEnable");
-	}
-
 	public void setSetting(final String key, final String value) {
-		boolean oracle = isSettingOracle(key);
-		setSetting(key, value, oracle);
+		setSetting(key, value, false);
 	}
 
 	public void setSetting(final String key, final String value, boolean isOracle) {

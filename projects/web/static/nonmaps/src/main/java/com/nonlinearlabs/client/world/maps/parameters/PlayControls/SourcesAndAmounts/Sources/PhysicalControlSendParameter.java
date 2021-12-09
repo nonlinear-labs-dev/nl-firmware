@@ -1,23 +1,16 @@
 package com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.Tracer;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
-import com.nonlinearlabs.client.world.Control;
-import com.nonlinearlabs.client.world.Position;
-import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonRect;
 import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
-import com.nonlinearlabs.client.world.overlay.DragProxy;
 
 public class PhysicalControlSendParameter extends PhysicalControlParameter {
 
+    private boolean wasLastReceivedVisible = false;
     public PhysicalControlSendParameter(MapsLayout parent, int parameterID) {
         super(parent, parameterID);
     }
@@ -25,40 +18,12 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
     @Override
     protected boolean onPresenterUpdated(ParameterPresenter p)
     {
-        if(presenter != null && p.hidden != presenter.hidden)
-        {
+        super.onPresenterUpdated(p);
+        if(wasLastReceivedVisible != p.hidden) {
             requestLayout();
         }
-        super.onPresenterUpdated(p);
+        wasLastReceivedVisible = p.hidden;
         return true;
-    }
-
-    @Override
-    public double getXMargin() {
-        if(!presenter.hidden)
-            return super.getXMargin();
-        return 0;
-    }
-
-    @Override
-    public double getLeftMargin() {
-        if(!presenter.hidden)
-            return super.getLeftMargin();
-        return 0;
-    }
-
-    @Override
-    public double getRightMargin() {
-        if(!presenter.hidden)
-            return super.getRightMargin();
-        return 0;
-    }
-
-    @Override
-    public double getWidthMargin() {
-        if(!presenter.hidden)
-            return super.getWidthMargin();
-        return 0;
     }
 
     private int getSibling()
