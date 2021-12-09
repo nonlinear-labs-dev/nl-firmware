@@ -6,6 +6,7 @@
 class ModulationRoutingParameter;
 class PhysicalControlParameter;
 class MacroControlParameter;
+class Settings;
 
 class HardwareSourcesGroup : public ParameterGroup
 {

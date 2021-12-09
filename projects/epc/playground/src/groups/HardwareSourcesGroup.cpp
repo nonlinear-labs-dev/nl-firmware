@@ -6,6 +6,7 @@
 #include <parameters/PitchbendParameter.h>
 #include <parameters/AftertouchParameter.h>
 #include <parameters/HardwareSourceSendParameter.h>
+#include <device-settings/Settings.h>
 
 HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet* parent, Settings* settings)
     : ParameterGroup(parent, { "CS", VoiceGroup::Global }, "HW Source", "Hardware Source", "Hardware Source")
