@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
@@ -30,7 +29,6 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.tools.NLMath;
 import com.nonlinearlabs.client.world.Range;
 import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter.ReturnMode;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.HardwareSendSources;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();

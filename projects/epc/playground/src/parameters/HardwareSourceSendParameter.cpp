@@ -58,7 +58,6 @@ void HardwareSourceSendParameter::onUnselected()
 
 void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
 {
-  nltools::Log::error("onSibChanged", getLongName());
   if(auto physicalSrc = dynamic_cast<const PhysicalControlParameter*>(sibling))
   {
     auto newMode = physicalSrc->getReturnMode();
@@ -83,7 +82,6 @@ void HardwareSourceSendParameter::sendParameterMessage() const
 
 void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 {
-  nltools::Log::error("onLocalChanged", getLongName());
   if(auto localSetting = dynamic_cast<const GlobalLocalEnableSetting*>(setting))
   {
     const auto local = localSetting->get();
@@ -97,7 +95,6 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 
 void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
 {
-  nltools::Log::error("onRoutingsChanged", getLongName());
   if(auto routings = dynamic_cast<const RoutingSettings*>(setting))
   {
     const auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
@@ -178,13 +175,11 @@ PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() con
 
 void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
 {
-  nltools::Log::error("calcIfEnabled", getLongName());
   auto oldState = m_isEnabled;
   m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
-  nltools::Log::error("wasEnabled:", oldState, "isEnabled:", m_isEnabled);
   if(oldState != m_isEnabled)
   {
-    if(m_isEnabled )
+    if(m_isEnabled)
     {
       if(auto eb = getParentEditBuffer())
       {
@@ -193,7 +188,6 @@ void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
       }
     }
 
-    nltools::Log::error("invalidating", getLongName());
     invalidate();
   }
 }

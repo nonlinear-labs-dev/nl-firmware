@@ -48,7 +48,7 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 	}
 
 	public void getHash(Checksum crc) {
-		crc.eat(value.getQuantizedAndClipped(false));
+		crc.eat(value.getQuantizedAndClipped(true));
 	}
 
 	public void setGroup(ParameterGroupModel group) {

@@ -1,7 +1,5 @@
 package com.nonlinearlabs.client.dataModel;
 
-import com.google.gwt.core.client.GWT;
-
 public class RoutingAspectsDataModelEntity extends DataModelEntity<RoutingAspectsSetting> {
 
 	public RoutingAspectsDataModelEntity() {

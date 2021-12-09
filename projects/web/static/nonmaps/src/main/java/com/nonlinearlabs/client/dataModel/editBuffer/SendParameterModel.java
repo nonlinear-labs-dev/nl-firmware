@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
