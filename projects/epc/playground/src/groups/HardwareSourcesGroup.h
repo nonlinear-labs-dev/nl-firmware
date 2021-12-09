@@ -2,8 +2,6 @@
 
 #include "ParameterGroup.h"
 #include <parameter_descriptor.h>
-#include <parameters/ParameterTypes.h>
-#include <parameters/ParameterTypes.h>
 
 class ModulationRoutingParameter;
 class PhysicalControlParameter;
