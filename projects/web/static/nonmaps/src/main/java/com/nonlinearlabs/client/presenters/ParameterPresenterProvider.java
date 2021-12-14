@@ -238,6 +238,35 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updatePresenter(SendParameterModel p) {
 		presenter.hidden = !isLocalDisabled(p);
+
+        PhysicalControlParameterModel sibling = p.getSibling();
+
+		if (sibling instanceof RibbonParameterModel) {
+			RibbonParameterModel r = (RibbonParameterModel) sibling;
+			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;
+			presenter.drawZeroReturnIndicator = false;
+			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;
+		}
+
+		if (sibling instanceof PedalParameterModel) {
+			PedalParameterModel r = (PedalParameterModel) sibling;
+			presenter.drawCenterReturnIndicator = r.mode.getValue() == Modes.returnToCenter;
+			presenter.drawZeroReturnIndicator = r.mode.getValue() == Modes.returnToZero;
+			presenter.isReturning = r.mode.getValue() != Modes.stay;
+		}
+
+		if (sibling instanceof BenderParameterModel) {
+			presenter.drawCenterReturnIndicator = true;
+			presenter.drawZeroReturnIndicator = false;
+			presenter.isReturning = true;
+		}
+
+		if (sibling instanceof AftertouchParameterModel) {
+			presenter.drawCenterReturnIndicator = false;
+			presenter.drawZeroReturnIndicator = true;
+			presenter.isReturning = true;
+		}
+
 		presenter.drawCenterReturnIndicator = p.mode.getValue() == ReturnMode.Center;
 		presenter.drawZeroReturnIndicator = p.mode.getValue() == ReturnMode.Zero;
 		presenter.isReturning = p.mode.getValue() != ReturnMode.None;

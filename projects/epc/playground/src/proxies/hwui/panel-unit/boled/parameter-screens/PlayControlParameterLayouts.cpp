@@ -514,15 +514,22 @@ void RibbonParameterSelectLayout2::setMode(uint8_t desiredMode)
   switch(desiredMode)
   {
     case Behaviour:
+    {
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(false);
+      if(auto l = findControlOfType<PhysicalControlBehaviorLabel>())
+        l->setVisible(true);
+    }
       break;
     default:
-
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+    {
+      if(auto b = findControlOfType<PhysicalControlBehaviorLabel>())
+        b->setVisible(false);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(true);
       super2::setMode(desiredMode);
+    }
   }
 
   setDirty();

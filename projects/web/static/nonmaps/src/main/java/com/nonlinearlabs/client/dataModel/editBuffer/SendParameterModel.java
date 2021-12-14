@@ -33,6 +33,7 @@ public class SendParameterModel extends BasicParameterModel {
 	
 	@Override
 	public void getHash(Checksum crc) {
+		super.getHash(crc);
 		crc.eat(mode.getValue().ordinal());
 		crc.eat(enabled.getBool());
 	}
@@ -40,4 +41,28 @@ public class SendParameterModel extends BasicParameterModel {
 	public boolean isReturning() {
 		return mode.getValue() != ReturnMode.None;
 	}
+
+    public PhysicalControlParameterModel getSibling() {
+		EditBufferModel m = EditBufferModel.get();
+		switch(id.getNumber())
+        {
+            case 398:
+                return (PhysicalControlParameterModel)m.getAnyParameter(254);
+            case 399:
+                return (PhysicalControlParameterModel)m.getAnyParameter(259);
+            case 400:
+                return (PhysicalControlParameterModel)m.getAnyParameter(264);
+            case 401:
+                return (PhysicalControlParameterModel)m.getAnyParameter(269);
+            case 402:
+                return (PhysicalControlParameterModel)m.getAnyParameter(274);
+            case 403:
+                return (PhysicalControlParameterModel)m.getAnyParameter(279);
+            case 404:
+                return (PhysicalControlParameterModel)m.getAnyParameter(284);
+            case 405:
+                return (PhysicalControlParameterModel)m.getAnyParameter(289);
+        }
+		return null;
+    }
 }

@@ -20,10 +20,12 @@ class HardwareSourceSendParameter : public Parameter
   void onUnselected() override;
   void setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
   void setCPFromWebUI(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
+  size_t getHash() const override;
 
  protected:
   nlohmann::json serialize() const override;
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
+  bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
 
   PhysicalControlParameter* m_sibling;
 

@@ -140,12 +140,25 @@ nlohmann::json HardwareSourceSendParameter::serialize() const
   return param;
 }
 
+bool HardwareSourceSendParameter::shouldWriteDocProperties(UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  return knownRevision < getUpdateIDOfLastChange();
+}
+
 void HardwareSourceSendParameter::writeDocProperties(Writer& writer,
                                                      UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
   writer.writeTextElement("local-enabled", std::to_string(isLocalEnabled()));
   writer.writeTextElement("return-mode", std::to_string(static_cast<int>(m_returnMode)));
+}
+
+size_t HardwareSourceSendParameter::getHash() const
+{
+  auto hash = Parameter::getHash();
+  hash_combine(hash, isLocalEnabled());
+  hash_combine(hash, static_cast<int>(m_returnMode));
+  return hash;
 }
 
 bool HardwareSourceSendParameter::isLocalEnabled() const
@@ -177,14 +190,19 @@ void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
 {
   auto oldState = m_isEnabled;
   m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
+
   if(oldState != m_isEnabled)
   {
     if(m_isEnabled)
     {
       if(auto eb = getParentEditBuffer())
       {
-        EditBufferUseCases useCase(*eb);
-        useCase.selectParameter(getSiblingParameter(), true);
+        if(eb->getSelected(VoiceGroup::Global) == this)
+        {
+          EditBufferUseCases useCase(*eb);
+          auto sibling = getSiblingParameter();
+          useCase.selectParameter(sibling, true);
+        }
       }
     }
 
