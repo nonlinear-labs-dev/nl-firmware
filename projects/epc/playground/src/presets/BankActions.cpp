@@ -153,7 +153,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
     if(auto bank = m_presetManager.findBank(Uuid { bankToAppendTo }))
     {
       BankUseCases bankUseCases(bank, m_settings);
-      bankUseCases.appendEditBufferAsPresetWithUUID(Uuid{uuid});
+      bankUseCases.appendEditBufferAsPresetWithUUID(Uuid { uuid });
     }
   });
 
