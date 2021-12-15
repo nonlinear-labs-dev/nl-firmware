@@ -12,10 +12,8 @@ public class SendParameterModelUpdater extends BasicParameterModelUpdater  {
     public void doUpdate() {
         super.doUpdate();
         SendParameterModel p = (SendParameterModel) target;
-        if(root.getNodeValue() != null) {
-            boolean isTrue = getChildText(root, "local-enabled").equals("1");
-            p.enabled.setValue(isTrue);
-            p.mode.fromInt(Integer.parseInt(getChildText(root, "return-mode")));
-        }
+        boolean isTrue = getChildText(root, "local-enabled").equals("1");
+        p.enabled.setValue(isTrue);
+        p.mode.fromInt(Integer.parseInt(getChildText(root, "return-mode")));
     }
 }
