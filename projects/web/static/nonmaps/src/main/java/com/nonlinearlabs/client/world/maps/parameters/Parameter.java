@@ -347,8 +347,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		if (presenter.hidden) {
-			NonDimension dim = layoutChildren(levelOfDetail);
-			setNonSize(new NonDimension(dim.getWidth(), dim.getHeight()));
+			setNonSize(new NonDimension(0, 0));
 		} else {
 			super.doFirstLayoutPass(levelOfDetail);
 		}
