@@ -72,22 +72,30 @@ void UpperRibbon::onParamValueChanged(const Parameter* param)
   auto paramVal = param->getControlPositionValue();
   auto s = Application::get().getSettings()->getSetting<BaseUnitUIMode>();
 
+  bool shouldUpdateLeds = false;
+
   if(s->get() == BaseUnitUIModes::ParameterEdit)
   {
     bipol = param->isBiPolar();
+    shouldUpdateLeds = true;
   }
   else  // BASE_UNIT_UI_MODE_PLAY
   {
     if(auto ribbonParameter = dynamic_cast<const RibbonParameter*>(param))
     {
       bipol = ribbonParameter->getRibbonReturnMode() == RibbonReturnMode::RETURN;
+      auto send = ribbonParameter->getSendParameter();
+      shouldUpdateLeds = send->isLocalEnabled();
     }
   }
 
-  if(!bipol)
-    setLEDsForValueUniPolar(paramVal);
-  else
-    setLEDsForValueBiPolar(paramVal);
+  if(shouldUpdateLeds)
+  {
+    if(!bipol)
+      setLEDsForValueUniPolar(paramVal);
+    else
+      setLEDsForValueBiPolar(paramVal);
+  }
 }
 
 void UpperRibbon::onSendValueChanged(const Parameter* param)
