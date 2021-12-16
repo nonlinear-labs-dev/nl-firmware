@@ -1,6 +1,5 @@
 #!/usr/bin/ash
 
-set -x
 IP=192.168.10.11
 
 clean_up() {
@@ -15,19 +14,20 @@ set_up() {
     OVERLAY_PARTITION=$(lsblk -o RM,PATH | grep "^ 0" | grep -o "/dev/sd.3")
 
     mkdir -p /nloverlay
-    mount ${OVERLAY_PARTITION} /nloverlay
+    mount $OVERLAY_PARTITION /nloverlay
     mkdir -p /nloverlay/os-overlay
     mkdir -p /nloverlay/update-scratch
     mkdir -p /nloverlay/runtime-overlay
     mkdir -p /nloverlay/work
     mkdir -p /mnt/usb
 
+
     USB_DELAY_FILE=/sys/module/usb_storage/parameters/delay_use
 
-    if [ ! -f ${USB_DELAY_FILE} ]; then
+    if [ ! -f $USB_DELAY_FILE ]; then
         modprobe usb_storage delay_use=0
     else
-        echo "0" >${USB_DELAY_FILE}
+        echo "0" > $USB_DELAY_FILE
     fi
 
     udevadm settle
@@ -36,7 +36,7 @@ set_up() {
 
 try_update_from_network() {
     echo "Try update from network..."
-    if wget http://${IP}:8000/update.tar --timeout=3 -O /nloverlay/update-scratch/update.tar; then
+    if wget http://$IP:8000/update.tar --timeout=3 -O /nloverlay/update-scratch/update.tar; then
         if try_apply_update; then
             echo "Try update from network done."
             return 0
@@ -51,8 +51,8 @@ try_update_from_usb() {
     echo "Try update from usb..."
     devices=$(lsblk -o RM,PATH | grep "^ 1" | grep -o "/dev/sd.[0-9]")
 
-    for device in ${devices}; do
-        if mount_and_try_applying_update ${device}; then
+    for device in $devices; do
+        if mount_and_try_applying_update $device; then
             echo "Try update from usb done."
             return 0
         fi
@@ -108,9 +108,9 @@ try_open_backdoor() {
     if [ -f /nloverlay/update-scratch/update/backdoor.sh ]; then
         echo "Backdoor found."
         checksum=$(sha256sum /nloverlay/update-scratch/update/backdoor.sh | cut -d " " -f 1)
-        checksumFile=/nloverlay/update-scratch/update/${checksum}.sign
+        checksumFile=/nloverlay/update-scratch/update/$checksum.sign
 
-        if [ -f ${checksumFile} ]; then
+        if [ -f $checksumFile ]; then
             echo "Checksum verified."
             chmod +x /nloverlay/update-scratch/update/backdoor.sh
             if cd /nloverlay/update-scratch/update/ && /usr/bin/ash ./backdoor.sh; then
@@ -130,9 +130,9 @@ try_replace_overlayfs() {
     if [ -f /nloverlay/update-scratch/update/NonLinuxOverlay.tar.gz ]; then
         echo "Source update tar found."
         checksum=$(sha256sum /nloverlay/update-scratch/update/NonLinuxOverlay.tar.gz | cut -d " " -f 1)
-        checksumFile=/nloverlay/update-scratch/update/${checksum}.sign
+        checksumFile=/nloverlay/update-scratch/update/$checksum.sign
 
-        if [ -f ${checksumFile} ]; then
+        if [ -f $checksumFile ]; then
             echo "Checksum verified."
 
             rm -rf /nloverlay/os-overlay/*
@@ -165,7 +165,6 @@ try_update() {
     clean_up
     return 1
 }
-
 
 run_overlay_backdoor() {
     echo "Run overlay backdoor..."

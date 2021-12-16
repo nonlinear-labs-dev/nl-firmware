@@ -1,12 +1,12 @@
+SET(BASE_KERNEL_FILE linux-rt-${EPC2_BASE_KERNEL}-x86_64.pkg.tar.zst)
+SET(UPDATE_KERNEL_FILE linux-rt-${EPC2_UPDATE_KERNEL}-x86_64.pkg.tar.zst)
+
 configure_file(Dockerfile Dockerfile)
 configure_file(backdoor.sh backdoor.sh)
 configure_file(createUpdate.sh createUpdate.sh)
 configure_file(initramfs-hook.sh initramfs-hook.sh)
 configure_file(nlhook_v2 nlhook_v2)
 configure_file(installBuildStagePackages.sh installBuildStagePackages.sh)
-
-SET(BASE_KERNEL_FILE linux-rt-${EPC2_BASE_KERNEL}-x86_64.pkg.tar.zst)
-SET(UPDATE_KERNEL_FILE linux-rt-${EPC2_UPDATE_KERNEL}-x86_64.pkg.tar.zst)
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Creating Docker container holding the update arch"
@@ -15,6 +15,8 @@ ADD_CUSTOM_COMMAND(
     DEPENDS backdoor.sh
     DEPENDS installBuildStagePackages.sh
     DEPENDS Dockerfile
+    DEPENDS nlhook_v2
+    DEPENDS initramfs-hook.sh
     DEPENDS epc2-download-package-cache
     VERBATIM
     COMMAND rsync -av ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}
@@ -32,7 +34,6 @@ ADD_CUSTOM_COMMAND(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../create-kernel-update/update.tar
-    DEPENDS nlhook_v2
     VERBATIM
     COMMAND docker run 
     --privileged -ti

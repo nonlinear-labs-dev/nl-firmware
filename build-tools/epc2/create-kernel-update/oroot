@@ -17,10 +17,11 @@ run_hook() {
    mkdir -p /nloverlay/work
 
    oroot_mount() {
-      echo "Entering custom mount handler oroot_mount"
+      echo "Entering custom mount handler oroot_mount in kexeced kernel"
       mkdir -p /nloverlay
       mount /dev/sda3 /nloverlay
       mount -t overlay -o lowerdir=/nloverlay/os-overlay:/lroot,upperdir=/nloverlay/runtime-overlay,workdir=/nloverlay/work overlay "$1"
+      mount /dev/sda1 /lroot/boot
    }
 
    mount_handler=oroot_mount

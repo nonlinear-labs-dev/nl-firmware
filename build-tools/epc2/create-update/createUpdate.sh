@@ -39,7 +39,10 @@ install_packages() {
 
   done < /bindir-root/build-tools/epc2/collect-packages/update-packages.txt
   
-  # pacman --noconfirm -U /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst
+  pacman --noconfirm -U /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst \
+                        /packages/linux-rt-5.15.3.21.realtime1-1-x86_64.pkg.tar.zst \
+                        /packages/glibc-2.33-5-x86_64.pkg.tar.zst \
+                        /packages/kmod-29-1-x86_64.pkg.tar.zst
 
   PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
   pacman --noconfirm -U $PACKAGES_COLLECTION
@@ -56,19 +59,24 @@ install_overlay_backdoor() {
   cat <<- ENDOFHERE > /usr/local/lib/systemd/system/initramfs-backdoor.service
   [Unit]
   Description=Nonlinear-Labs initramfs backdoor installer
-  Before=systemd-modules-load.service
+  After=multi-user.target
   
   [Service]
+  Type=oneshot
   ExecStart=/usr/local/C15/scripts/installInitramfsBackdoor.sh
     
   [Install]
   WantedBy=multi-user.target
 ENDOFHERE
-    echo "3"
+
+  cat <<- ENDOFHERE > /etc/mkinitcpio.d/linux-rt.preset
+ALL_config="/etc/mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-linux-rt"
+PRESETS=('default')
+default-image="/boot/initramfs-linux-rt.img"
+ENDOFHERE
 
   ln -s ../initramfs-backdoor.service /usr/local/lib/systemd/system/multi-user.target.wants/initramfs-backdoor.service
-  systemctl enable initramfs-backdoor.service
-
   mkdir -p /usr/local/C15/scripts 
   cp /initramfs-hook.sh /usr/local/C15/scripts/
 }
@@ -128,6 +136,12 @@ package_update() {
   OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
   OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
 
+  # remove unneccessary firmware files
+  set -x
+  mkdir /firmware-to-keep
+  cp /usr/lib/firmware/iwlwifi* /firmware-to-keep
+  rm -rf /usr/lib/firmware
+  mv /firmware-to-keep /usr/lib/firmware
 
   rm -rf /bindir/update
   mkdir -p /bindir/update
