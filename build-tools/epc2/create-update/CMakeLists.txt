@@ -1,6 +1,8 @@
 configure_file(Dockerfile Dockerfile)
 configure_file(backdoor.sh backdoor.sh)
 configure_file(createUpdate.sh createUpdate.sh)
+configure_file(initramfs-hook.sh initramfs-hook.sh)
+configure_file(nlhook_v2 nlhook_v2)
 configure_file(installBuildStagePackages.sh installBuildStagePackages.sh)
 
 SET(BASE_KERNEL_FILE linux-rt-${EPC2_BASE_KERNEL}-x86_64.pkg.tar.zst)
@@ -29,6 +31,8 @@ ADD_CUSTOM_COMMAND(
     DEPENDS .epc2-create-update-overlay-docker
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../create-kernel-update/update.tar
+    DEPENDS nlhook_v2
     VERBATIM
     COMMAND docker run 
     --privileged -ti

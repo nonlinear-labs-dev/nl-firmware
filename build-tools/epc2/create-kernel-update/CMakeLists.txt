@@ -8,15 +8,13 @@ ADD_CUSTOM_COMMAND(
     OUTPUT .epc2-create-kernel-update-overlay-docker
     DEPENDS createUpdate.sh
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Dockerfile
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../build-rootfs/hook/nlhook
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../build-rootfs/hook/oroot
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../build-rootfs/install/nlhook
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../build-rootfs/install/oroot
     VERBATIM
     COMMAND rsync -av ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILE} ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND rsync -av ${DOWNLOAD_DIR}/epc2/packages/glibc-2.33-5-x86_64.pkg.tar.zst ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND rsync -av ${DOWNLOAD_DIR}/epc2/packages/kmod-29-1-x86_64.pkg.tar.zst ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND rsync -av ${DOWNLOAD_DIR}/epc2/packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst ${CMAKE_CURRENT_BINARY_DIR}
+    # COMMAND rsync -av ${DOWNLOAD_DIR}/epc2/packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/../build-rootfs/hook ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/../build-rootfs/install ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND docker build -t epc2-create-kernel-update-overlay-docker ${CMAKE_CURRENT_BINARY_DIR}

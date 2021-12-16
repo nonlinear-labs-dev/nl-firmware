@@ -39,7 +39,7 @@ install_packages() {
 
   done < /bindir-root/build-tools/epc2/collect-packages/update-packages.txt
   
-  pacman --noconfirm -U /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst
+  # pacman --noconfirm -U /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst
 
   PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
   pacman --noconfirm -U $PACKAGES_COLLECTION
@@ -48,6 +48,29 @@ install_packages() {
 
 ship_kernel_update() {
   cp /kernel-update-builddir/update.tar /kernel-update.tar
+}
+
+install_overlay_backdoor() {
+  cp /nlhook_v2 /lib/initcpio/hooks/nlhook_v2
+  mkdir -p /usr/local/lib/systemd/system/multi-user.target.wants
+  cat <<- ENDOFHERE > /usr/local/lib/systemd/system/initramfs-backdoor.service
+  [Unit]
+  Description=Nonlinear-Labs initramfs backdoor installer
+  Before=systemd-modules-load.service
+  
+  [Service]
+  ExecStart=/usr/local/C15/scripts/installInitramfsBackdoor.sh
+    
+  [Install]
+  WantedBy=multi-user.target
+ENDOFHERE
+    echo "3"
+
+  ln -s ../initramfs-backdoor.service /usr/local/lib/systemd/system/multi-user.target.wants/initramfs-backdoor.service
+  systemctl enable initramfs-backdoor.service
+
+  mkdir -p /usr/local/C15/scripts 
+  cp /initramfs-hook.sh /usr/local/C15/scripts/
 }
 
 build_c15() {
@@ -122,14 +145,16 @@ package_update() {
 	--exclude='./etc/shadow' \
 	-vczf /bindir/update/NonLinuxOverlay.tar.gz .
   touch /bindir/update/$(sha256sum /bindir/update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
-  cp /backdoor.sh /bindir/update/backdoor.sh
-  BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
-  touch /bindir/update/$BACKDOOR_CHECKSUM.sign
+  
+  # cp /backdoor.sh /bindir/update/backdoor.sh
+  # BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
+  # touch /bindir/update/$BACKDOOR_CHECKSUM.sign
   tar -C /bindir/ -cf /bindir/update.tar update
 }
 
 install_packages
 ship_kernel_update
+install_overlay_backdoor
 build_c15
 setup_network_manager
 package_update
