@@ -46,8 +46,6 @@ class PhysicalControlParameter : public Parameter
   virtual bool isLocalEnabled() const = 0;
   HardwareSourceSendParameter *getSendParameter() const;
 
-  ParameterId getSiblingID();
-
   virtual tControlPositionValue getDefValueAccordingToMode() const = 0;
 
  protected:

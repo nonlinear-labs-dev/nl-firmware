@@ -276,8 +276,3 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
 
   return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
 }
-
-ParameterId PhysicalControlParameter::getSiblingID()
-{
-  return ParameterId(0, VoiceGroup::Invalid);
-}

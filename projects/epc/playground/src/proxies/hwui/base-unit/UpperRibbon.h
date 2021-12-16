@@ -20,6 +20,7 @@ class UpperRibbon : public Ribbon
  private:
   void onParamSelectionChanged(Parameter* oldOne, Parameter* newOne);
   void onParamValueChanged(const Parameter* param);
+  void onSendValueChanged(const Parameter* param);
 
   void onSettingChanged(const Setting* setting);
   void reconnect();
@@ -28,6 +29,7 @@ class UpperRibbon : public Ribbon
   [[nodiscard]] int posToLedID(int pos) const override;  // 0 -> 32 ... 16 -> 0
 
   sigc::connection m_paramConnection;
+  sigc::connection m_sendConnection;
 
   sigc::connection m_parameterSelectionChangedSignal;
   sigc::connection m_settingChangedSignal;
