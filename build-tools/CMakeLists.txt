@@ -35,7 +35,7 @@ add_custom_command(
     DEPENDS ${SOURCE_FILES}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
-        ${CMAKE_BINARY_DIR}/build-tools/epc2/update.tar
+        ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
         ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
         ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img

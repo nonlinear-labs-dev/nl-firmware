@@ -136,12 +136,12 @@ package_update() {
   OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
   OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
 
-  # remove unneccessary firmware files
-  set -x
+  # remove unneccessary files
   mkdir /firmware-to-keep
   cp /usr/lib/firmware/iwlwifi* /firmware-to-keep
   rm -rf /usr/lib/firmware
   mv /firmware-to-keep /usr/lib/firmware
+  rm -rf /usr/share/licenses
 
   rm -rf /bindir/update
   mkdir -p /bindir/update
