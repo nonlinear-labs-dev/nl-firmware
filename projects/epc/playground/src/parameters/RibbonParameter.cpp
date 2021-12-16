@@ -256,12 +256,9 @@ void RibbonParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *ot
 
 void RibbonParameter::boundToMacroControl(tControlPositionValue v)
 {
-  if(isLocalEnabled())
-  {
-    getValue().setRawValue(Initiator::INDIRECT, v);
-    onChange();
-    invalidate();
-  }
+  getValue().setRawValue(Initiator::INDIRECT, v);
+  onChange();
+  invalidate();
 }
 
 bool RibbonParameter::isLocalEnabled() const
