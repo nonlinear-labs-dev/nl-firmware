@@ -3,7 +3,7 @@ SET(COLLECT_PACKAGES_INPUT_ARG ${EPC2_BASE_ADDITIONAL_PACKAGES})
 CONFIGURE_FILE(BaseDockerfile base-packages-docker-container/Dockerfile @ONLY)
 CONFIGURE_FILE(collectPackages.sh base-packages-docker-container/collectPackages.sh @ONLY)
 
-SET(COLLECT_PACKAGES_INPUT_ARG "${EPC2_BASE_ADDITIONAL_PACKAGES} ${EPC2_UPDATE_PACKAGES}")
+SET(COLLECT_PACKAGES_INPUT_ARG "${EPC2_BASE_ADDITIONAL_PACKAGES} ${EPC2_UPDATE_PACKAGES}") 
 CONFIGURE_FILE(UpdateDockerfile update-packages-docker-container/Dockerfile @ONLY)
 CONFIGURE_FILE(collectPackages.sh update-packages-docker-container/collectPackages.sh @ONLY)
 
