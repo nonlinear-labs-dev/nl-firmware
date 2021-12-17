@@ -2,8 +2,13 @@ FROM archlinux:20200908
 
 RUN echo "Server = https://archive.archlinux.org/repos/2020/09/08/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
 RUN mkdir /packages
-COPY linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst /packages/linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst
-RUN repo-add -q /packages/rt.db.tar.gz /packages/linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst
+
+COPY linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst /packages/
+COPY glibc-2.33-5-x86_64.pkg.tar.zst /packages/
+COPY kmod-29-1-x86_64.pkg.tar.zst /packages/
+COPY linux-firmware-20210919.d526e04-1-any.pkg.tar.zst /packages/
+
+RUN repo-add -q /packages/rt.db.tar.gz /packages/linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst /packages/glibc-2.33-5-x86_64.pkg.tar.zst /packages/kmod-29-1-x86_64.pkg.tar.zst /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst
 
 RUN echo "[rt]" >> /etc/pacman.conf
 RUN echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
