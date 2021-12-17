@@ -7,7 +7,7 @@ SET(COLLECT_PACKAGES_INPUT_ARG "${EPC2_BASE_ADDITIONAL_PACKAGES} ${EPC2_UPDATE_P
 CONFIGURE_FILE(UpdateDockerfile update-packages-docker-container/Dockerfile @ONLY)
 CONFIGURE_FILE(collectPackages.sh update-packages-docker-container/collectPackages.sh @ONLY)
 
-SET(COLLECT_PACKAGES_INPUT_ARG "${EPC2_BUILD_TOOLS}")
+SET(COLLECT_PACKAGES_INPUT_ARG "${EPC2_BUILD_TOOLS}") 
 CONFIGURE_FILE(BuildDockerfile build-packages-docker-container/Dockerfile @ONLY)
 CONFIGURE_FILE(collectPackages.sh build-packages-docker-container/collectPackages.sh @ONLY)
 
@@ -47,9 +47,6 @@ ADD_CUSTOM_COMMAND(
       cp ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} > /dev/null || 
       wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} || 
       wget --show-progress -q https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} 
-    COMMAND cp ${DOWNLOAD_DIR}/epc2/packages/glibc-2.33-5-x86_64.pkg.tar.zst ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/ 
-    COMMAND cp ${DOWNLOAD_DIR}/epc2/packages/kmod-29-1-x86_64.pkg.tar.zst ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/
-    COMMAND cp ${DOWNLOAD_DIR}/epc2/packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/
     COMMAND docker build -t collect-update-packages-docker-container ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container
     COMMAND touch .collect-update-packages-docker-container
     )

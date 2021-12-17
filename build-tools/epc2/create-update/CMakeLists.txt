@@ -6,7 +6,7 @@ configure_file(backdoor.sh backdoor.sh)
 configure_file(createUpdate.sh createUpdate.sh)
 configure_file(initramfs-hook.sh initramfs-hook.sh)
 configure_file(nlhook_v2 nlhook_v2)
-configure_file(installBuildStagePackages.sh installBuildStagePackages.sh)
+configure_file(installBuildStagePackages.sh installBuildStagePackages.sh COPYONLY)
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Creating Docker container holding the update arch"
@@ -18,6 +18,7 @@ ADD_CUSTOM_COMMAND(
     DEPENDS nlhook_v2
     DEPENDS initramfs-hook.sh
     DEPENDS epc2-download-package-cache
+    DEPENDS ../CMakeLists.txt
     VERBATIM
     COMMAND rsync -av ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND cp ../collect-packages/build-packages.txt ${CMAKE_CURRENT_BINARY_DIR}

@@ -39,13 +39,13 @@ install_packages() {
 
   done < /bindir-root/build-tools/epc2/collect-packages/update-packages.txt
   
-  pacman --noconfirm -U /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst \
-                        /packages/linux-rt-5.15.3.21.realtime1-1-x86_64.pkg.tar.zst \
-                        /packages/glibc-2.33-5-x86_64.pkg.tar.zst \
-                        /packages/kmod-29-1-x86_64.pkg.tar.zst
+  #pacman --noconfirm -U /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst \
+  #                      /packages/linux-rt-5.15.3.21.realtime1-1-x86_64.pkg.tar.zst \
+  #                      /packages/glibc-2.33-5-x86_64.pkg.tar.zst \
+  #                      /packages/kmod-29-1-x86_64.pkg.tar.zst
 
   PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
-  pacman --noconfirm -U $PACKAGES_COLLECTION
+  yes | pacman -U $PACKAGES_COLLECTION
   return 0
 }
 
@@ -85,7 +85,7 @@ build_c15() {
   mkdir -p /bindir/build
   cd /bindir/build
 
-  cmake _DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
+  cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
   make -j8
   make install 
 

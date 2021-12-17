@@ -19,4 +19,5 @@ RUN pacman --noconfirm -Sy
 RUN pacman --noconfirm -S archlinux-keyring
 RUN pacman --noconfirm -S pacman-contrib
 
-
+RUN echo "Server = https://archive.archlinux.org/repos/2021/11/01/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
+RUN pacman --noconfirm -Sy

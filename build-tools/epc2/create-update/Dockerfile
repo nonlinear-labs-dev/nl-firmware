@@ -1,5 +1,5 @@
 FROM archlinux:20200908
-
+  
 RUN mkdir /packages
 COPY packages /packages
 COPY backdoor.sh /backdoor.sh
