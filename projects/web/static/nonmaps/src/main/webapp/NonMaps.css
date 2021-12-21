@@ -48,6 +48,12 @@ h1 {
   margin: 5px;
 }
 
+.w95-text-input {
+  width: 97%;
+  margin-left: 2px !important;
+  margin-top: 1px !important;
+  display: flex;
+}
 
 body,table td,select,button {
 /*

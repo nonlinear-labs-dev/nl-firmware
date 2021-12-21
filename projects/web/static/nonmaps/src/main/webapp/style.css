@@ -344,7 +344,7 @@ caption {
 	border-bottom: 1px solid #000;
 	border-top-right-radius: 5px;
 	border-top-left-radius: 5px;
-	color: #eee;
+	color: #919191;
 }
 
 .bb-tab button {
@@ -404,6 +404,7 @@ caption {
 	background-color: #1f253e;
 	border: 1px solid #1f253e;
 	border-bottom: 1px solid #1d233b;
+	color: #eee;
 }
 
 .tabcontainer h1, .dialogcontainer h1, .bankcontainer h1 {

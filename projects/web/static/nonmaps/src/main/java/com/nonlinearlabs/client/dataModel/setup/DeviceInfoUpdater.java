@@ -22,6 +22,7 @@ public class DeviceInfoUpdater extends Updater {
 		m.put("date-time-display", DeviceInformation.get().dateTimeDisplay);
 		m.put("buffer-underruns", DeviceInformation.get().bufferUnderruns);
 		m.put("unique-hardware-id", DeviceInformation.get().uniqueHardwareID);
+		m.put("rt-software-version", DeviceInformation.get().uiRTVersion);
 
 		return m;
 	}

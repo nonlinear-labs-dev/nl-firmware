@@ -829,8 +829,8 @@
 						<div class="w40p">
 							<p>Device Name</p>
 						</div>
-						<div class="w30p">
-							<g:TextArea ui:field="deviceName" styleName="editable w100p txt-oneline" visibleLines="1"></g:TextArea>
+						<div class="w30p fl-j-left">
+							<g:TextArea ui:field="deviceName" styleName="editable w95-text-input txt-oneline" visibleLines="1"></g:TextArea>
 						</div>
 						<div class="w10p fl-j-left">
 							<g:Button ui:field="saveDeviceName" text="Save"></g:Button>
@@ -842,20 +842,30 @@
 						<div class="w40p">
 							<p>Passphrase</p>
 						</div>
-						<div class="w30p">
-							<g:TextArea ui:field="passphrase" styleName="editable w100p txt-oneline" visibleLines="1"></g:TextArea>
+						<div class="w30p fl-j-left">
+							<g:TextArea ui:field="passphrase" styleName="editable w95-text-input txt-oneline" visibleLines="1"></g:TextArea>
 						</div>
-						<div class="w10p fl-j-left">
+						<div class="w30p fl-j-left pw-container">
 							<g:Button ui:field="savePassphrase" text="Save"></g:Button>
-						</div>
-						<div class="w10p fl-j-right">
-							<g:Button ui:field="dicePassphrase" text="Dice"></g:Button>
-						</div>
-						<div class="w10p fl-j-right">
+							<g:Button ui:field="dicePassphrase" text="Random"></g:Button>
 							<g:Button ui:field="defaultPassphrase" text="Default"></g:Button>
 						</div>
 					</div>
 
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>Date/Time</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="dateTime"></g:Label>
+						</div>
+					</div>
+
+					<div class="mt05"></div>
+					
+					<div class="linie"></div>
+					
 					<div class="eins-he">
 						<div class="w40p">
 							<p>Free Disk Space</p>
@@ -867,17 +877,20 @@
 
 					<div class="halb-he">
 						<div class="w40p">
-							<p>Date/Time</p>
+							<p>RAM usage</p>
 						</div>
 						<div class="w60p">
-							<g:Label ui:field="dateTime"></g:Label>
+							<g:Label ui:field="uiUsedRam"></g:Label>
+							<g:Label>/</g:Label>
+							<g:Label ui:field="uiTotalRam"></g:Label>
+							<g:Label>MB</g:Label>
 						</div>
 					</div>
 
-					<div class="linie"></div>
-
 					<div class="mt05"></div>
-
+					
+					<div class="linie"></div>
+					
 					<div class="halb-he">
 						<div class="w40p">
 							<p>Software Version</p>
@@ -893,6 +906,15 @@
 						</div>
 						<div class="w60p">
 							<g:Label ui:field="uniqueHardwareID"></g:Label>
+						</div>
+					</div>
+
+					<div class="halb-he">
+						<div class="w40p">
+							<p>RT Version</p>
+						</div>
+						<div class="w60p">
+							<g:Label ui:field="uiRTVersion"></g:Label>
 						</div>
 					</div>
 
@@ -932,19 +954,9 @@
 						</div>
 					</div>
 
-					<div class="halb-he">
-						<div class="w40p">
-							<p>RAM usage</p>
-						</div>
-						<div class="w60p">
-							<g:Label ui:field="uiUsedRam"></g:Label>
-							<g:Label>/</g:Label>
-							<g:Label ui:field="uiTotalRam"></g:Label>
-							<g:Label>MB</g:Label>
-						</div>
-					</div>
-
 					<div class="mb05"></div>
+					
+					<div class="linie"></div>
 
 					<div class="halb-he">
 						<div class="w40p">
