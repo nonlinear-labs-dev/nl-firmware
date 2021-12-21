@@ -15,6 +15,8 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -73,10 +75,10 @@ public class Setup extends Composite {
 	private static SetupUiBinder ourUiBinder = GWT.create(SetupUiBinder.class);
 
 	@UiField
-	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton;
+	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton, chooseFileButton;
 
 	@UiField
-	FileUpload updateFile;
+	FileUpload upload;
 
 	@UiField
 	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about, updateSpinner;
@@ -89,7 +91,7 @@ public class Setup extends Composite {
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
-                        editSmoothingTimeDisplayString, freeMemory, uiVersion, dateTime, uiHead, uiBranch, uiCommits, uiCommitDate, uiUsedRam, uiTotalRam, uniqueHardwareID;
+                        editSmoothingTimeDisplayString, freeMemory, uiVersion, dateTime, uiHead, uiBranch, uiCommits, uiCommitDate, uiUsedRam, uiTotalRam, uniqueHardwareID, choosenFileLabel;
 
 	@UiField
 	InputElement pedal1Slider, pedal2Slider, pedal3Slider, pedal4Slider;
@@ -290,6 +292,11 @@ public class Setup extends Composite {
 		});
 	}
 
+	public static String escapePath(String path)
+	{
+		return path.replace("\\", "\\\\");
+	}
+
 	public void connectEventHandlers() {
 		SystemSettings settings = SystemSettings.get();
 		com.nonlinearlabs.client.useCases.LocalSettings locals = com.nonlinearlabs.client.useCases.LocalSettings.get();
@@ -421,12 +428,25 @@ public class Setup extends Composite {
 		globalLocalOn.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.on));
 		globalLocalOff.addValueChangeHandler(e -> settings.setGlobalLocal(BooleanValues.off));
 
-		updateFile.addChangeHandler(new ChangeHandler() {
+		chooseFileButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent e)
+			{
+				upload.getElement().removeClassName("hidden");
+				upload.click();
+				upload.getElement().addClassName("hidden");
+			}
+		});
+
+		upload.addChangeHandler(new ChangeHandler() {
 
 			@Override
 			public void onChange(ChangeEvent e) {
 				updateSpinner.removeClassName("hidden");
-				updateFile.getElement().addClassName("hidden");
+				upload.getElement().addClassName("hidden");
+				String escapedPath = escapePath(upload.getFilename());
+				String parts[] = escapedPath.split("\\\\");
+				choosenFileLabel.setText(parts[parts.length - 1]);
 
 				loadUpdateFile(e.getNativeEvent(), new TarUploadedHandler(){
 					@Override
@@ -436,7 +456,6 @@ public class Setup extends Composite {
 							@Override
 							public void onUploadFinished(XMLHttpRequest answer) {
 								updateSpinner.addClassName("hidden");
-								updateFile.getElement().removeClassName("hidden");
 							}
 						});
 					}
