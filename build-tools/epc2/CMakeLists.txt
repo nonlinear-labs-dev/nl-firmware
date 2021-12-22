@@ -14,7 +14,7 @@ SET(EPC2_BASE_ADDITIONAL_PACKAGES "alsa-lib alsa-tools alsa-utils base boost cpu
 
 SET(EPC2_UPDATE_ARCH "2021/11/01")
 SET(EPC2_UPDATE_KERNEL "5.15.3.21.realtime1-1")
-SET(EPC2_UPDATE_PACKAGES "flac lm_sensors dnsmasq arch-install-scripts gawk dbus bash kexec-tools linux-rt linux-firmware kmod glibc") #  elfutils gcc libelf gcc-libs
+SET(EPC2_UPDATE_PACKAGES "flac lm_sensors dnsmasq arch-install-scripts gawk dbus bash kexec-tools linux-rt linux-firmware kmod glibc")
 SET(EPC2_BUILD_TOOLS "gcc git cmake make mc pkgconf wget unzip ccache")
 
 ADD_SUBDIRECTORY(collect-packages)

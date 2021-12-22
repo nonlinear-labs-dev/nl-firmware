@@ -18,6 +18,10 @@ ExecStartPre=/usr/bin/bash -c "/usr/bin/systemctl set-environment FRAMES_PER_PER
 ExecStartPre=/usr/bin/bash -c "if cat /proc/cpuinfo | grep \"model name\" | grep \"7010\" > /dev/null; then /usr/bin/systemctl set-environment FRAMES_PER_PERIOD=49; fi"
 ExecStartPre=/usr/bin/bash -c "if cat /proc/cpuinfo | grep \"model name\" | grep \"5010\" > /dev/null; then /usr/bin/systemctl set-environment FRAMES_PER_PERIOD=64; fi"
 
+# WORKAROUND VOLUME BUG ON EPC2 
+ExecStartPre=/usr/bin/amixer -D hw:PCH set Master 99%
+ExecStartPre=/usr/bin/amixer -D hw:PCH set Master 100%
+
 # START THE ENGINE
 ExecStart=@C15_INSTALL_PATH@/audio-engine/audio-engine -t hw:EMPHASE -a hw:PCH -n 3 -s ${FRAMES_PER_PERIOD} -r 48000 --playground-host=localhost --heartbeat=hw:EMPHASE
 

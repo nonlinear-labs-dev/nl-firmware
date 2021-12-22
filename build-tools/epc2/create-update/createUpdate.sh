@@ -4,9 +4,12 @@ set -e
 
 PACKAGES_COLLECTION=""
 
+declare -A versions
+
 collect_package() {
     name="$1"
-
+    version="$2"
+    
     for ENDING in "pkg.tar.xz" "pkg.tar.zst"; do
         for PLATFORM in "x86_64" "any"; do
             fileName="$name-$version-$PLATFORM.$ENDING"
@@ -16,37 +19,50 @@ collect_package() {
             fi
         done
     done
-
+        
     echo "Could not install package $name in version $version."
     return 1
 }
 
-install_packages() {
-  echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-  locale-gen
-
-  while read -r package; do
-    if [ ! -z "$package" ]; then
-      name=$(echo $package | cut -f1 -d " ")
-      version=$(echo $package | cut -f2 -d " ")
-
-      EXISTING=$(pacman -Qi $name 2> /dev/null | grep Version | sed 's/Version\s*: //g')
-      if [ ! "$EXISTING" = "$version" ]; then
-        echo "Installing $name in version $version."
-        collect_package $name $version || return 1
-       fi
+collect_packages() {
+  for name in "${!versions[@]}"; do
+    version="${versions[$name]}"
+      
+    EXISTING=$(pacman -Qi $name 2> /dev/null | grep Version | sed 's/Version\s*: //g')
+    if [ ! "$EXISTING" = "$version" ]; then
+      echo "Installing $name in version $version."
+      collect_package $name $version || return 1
     fi
+  done
+}
 
-  done < /bindir-root/build-tools/epc2/collect-packages/update-packages.txt
+get_package_with_highest_version() {
+  package="$1"
+  if [ ! -z "$package" ]; then
+    name=$(echo $package | cut -f1 -d " ")
+    version=$(echo $package | cut -f2 -d " ")
   
-  #pacman --noconfirm -U /packages/linux-firmware-20210919.d526e04-1-any.pkg.tar.zst \
-  #                      /packages/linux-rt-5.15.3.21.realtime1-1-x86_64.pkg.tar.zst \
-  #                      /packages/glibc-2.33-5-x86_64.pkg.tar.zst \
-  #                      /packages/kmod-29-1-x86_64.pkg.tar.zst
+    if [ -z ${versions[$name]} ]; then
+      versions[$name]=$version
+    elif [[ ${versions[$name]} < $version ]]; then
+      versions[$name]=$version
+    fi
+  fi
+}
 
-  PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
-  yes | pacman -U $PACKAGES_COLLECTION
-  return 0
+install_packages() {
+    echo "Installing packages"
+    
+    while read -r package; do get_package_with_highest_version "$package"; done < /build-packages.txt
+    while read -r package; do get_package_with_highest_version "$package"; done < /update-packages.txt
+    
+    collect_packages
+    
+    PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
+    pacman --noconfirm -Sy
+    echo "Packages $PACKAGES_COLLECTION" 
+    yes | pacman -U $PACKAGES_COLLECTION
+    return 0
 }
 
 ship_kernel_update() {
@@ -59,7 +75,6 @@ install_overlay_backdoor() {
   cat <<- ENDOFHERE > /usr/local/lib/systemd/system/initramfs-backdoor.service
   [Unit]
   Description=Nonlinear-Labs initramfs backdoor installer
-  After=multi-user.target
   
   [Service]
   Type=oneshot
@@ -69,14 +84,15 @@ install_overlay_backdoor() {
   WantedBy=multi-user.target
 ENDOFHERE
 
-  cat <<- ENDOFHERE > /etc/mkinitcpio.d/linux-rt.preset
-ALL_config="/etc/mkinitcpio.conf"
-ALL_kver="/boot/vmlinuz-linux-rt"
-PRESETS=('default')
-default-image="/boot/initramfs-linux-rt.img"
-ENDOFHERE
+# cat <<- ENDOFHERE > /etc/mkinitcpio.d/linux-rt.preset
+#ALL_config="/etc/mkinitcpio.conf"
+#ALL_kver="/boot/vmlinuz-linux-rt"
+#PRESETS=('default')
+#default-image="/boot/initramfs-linux-rt.img"
+#ENDOFHERE
 
   ln -s ../initramfs-backdoor.service /usr/local/lib/systemd/system/multi-user.target.wants/initramfs-backdoor.service
+  systemctl enable initramfs-backdoor 
   mkdir -p /usr/local/C15/scripts 
   cp /initramfs-hook.sh /usr/local/C15/scripts/
 }
@@ -128,13 +144,53 @@ setup_network_manager() {
   [proxy]
 ENDOFHERE
 
+ cat <<- ENDOFHERE > /etc/NetworkManager/system-connections/bbb.nmconnection
+  [connection]
+  id=bbb
+  uuid=bbb79179-6804-4197-b476-eacad1d492e4
+  type=ethernet
+  interface-name=eno1
+  autoconnect=true
+  autoconnect-priority=100
+
+  [ipv4]
+  method=manual
+  address1=192.168.10.10/24
+
+  [ipv6]
+  method=ignore
+ENDOFHERE
+
   chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
+  chmod 600 /etc/NetworkManager/system-connections/bbb.nmconnection
   systemctl enable NetworkManager
+}
+
+perform_tweaks() {
+    sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=1/' /etc/default/grub
+    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT="quiet ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2"/' /etc/default/grub
+    sed -i 's/^HOOKS=.*$/HOOKS=\"base udev oroot block filesystems autodetect modconf keyboard net nlhook\"/' /etc/mkinitcpio.conf
+    sed -i 's/^BINARIES=.*$/BINARIES=\"tar rsync gzip lsblk udevadm\"/' /etc/mkinitcpio.conf
+    sed -i 's/^MODULES=.*$/MODULES=\"e1000e\"/' /etc/mkinitcpio.conf
+    sed -i "s/#governor=.*$/governor='performance'/" /etc/default/cpupower
+
+    echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" >> /etc/fstab
+
+    systemctl enable cpupower
+    systemctl enable sshd
+    useradd -m sscl
+    echo 'sscl:sscl' | chpasswd
+    echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 }
 
 package_update() {
   OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
   OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
+
+  for package in gcc cmake git make pkgconf ccache ; do 
+    name=$(echo $package | cut -f1 -d " ")
+    yes | pacman -R "$name" 
+  done 
 
   # remove unneccessary files
   mkdir /firmware-to-keep
@@ -154,19 +210,19 @@ package_update() {
 	--exclude='./host-docker' \
 	--exclude='./tmp' \
 	--exclude='./root' \
-	--exclude='./etc/passwd' \
-	--exclude='./etc/group' \
-	--exclude='./etc/shadow' \
-	-vczf /bindir/update/NonLinuxOverlay.tar.gz .
+	-czf /bindir/update/NonLinuxOverlay.tar.gz .
   touch /bindir/update/$(sha256sum /bindir/update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
   
-  # cp /backdoor.sh /bindir/update/backdoor.sh
-  # BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
-  # touch /bindir/update/$BACKDOOR_CHECKSUM.sign
+#  cp /backdoor.sh /bindir/update/backdoor.sh
+#  BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
+#  touch /bindir/update/$BACKDOOR_CHECKSUM.sign
   tar -C /bindir/ -cf /bindir/update.tar update
 }
 
+
+
 install_packages
+perform_tweaks
 ship_kernel_update
 install_overlay_backdoor
 build_c15
