@@ -399,7 +399,7 @@ namespace nltools
       tID siblingId;
       tControlPosition controlPosition;
       ReturnMode returnMode;
-      bool m_localEnabled;
+      bool localEnabled;
     };
 
     struct HWAmountChangedMessage

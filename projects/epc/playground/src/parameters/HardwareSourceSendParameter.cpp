@@ -9,10 +9,10 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <xml/Writer.h>
 
-HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter* sibling,
+HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
+                                                         PhysicalControlParameter& sibling,
                                                          const ParameterId& id, const ScaleConverter* converter,
-                                                         double def, int coarseDenominator, int fineDenominator,
-                                                         Settings* settings)
+                                                         double def, int coarseDenominator, int fineDenominator, Settings* settings)
     : Parameter(pGroup, id, converter, def, coarseDenominator, fineDenominator)
     , m_sibling{sibling}
     , m_settings(settings)
@@ -25,10 +25,7 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
 
-  if(m_sibling)
-  {
-    m_sibling->onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
-  }
+  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
 
 void HardwareSourceSendParameter::setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue)
@@ -89,7 +86,7 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
     if(local != m_localIsEnabled)
     {
       m_localIsEnabled = local;
-      calculateIfParameterIsEnabled();
+      updateIsEnabledAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -102,7 +99,7 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
     if(state != m_routingIsEnabled)
     {
       m_routingIsEnabled = state;
-      calculateIfParameterIsEnabled();
+      updateIsEnabledAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -174,20 +171,20 @@ bool HardwareSourceSendParameter::lockingEnabled() const
 
 ReturnMode HardwareSourceSendParameter::getReturnMode() const
 {
-  return m_sibling->getReturnMode();
+  return m_sibling.getReturnMode();
 }
 
 Layout* HardwareSourceSendParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  return m_sibling->createLayout(focusAndMode);
+  return m_sibling.createLayout(focusAndMode);
 }
 
 PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() const
 {
-  return m_sibling;
+  return &m_sibling;
 }
 
-void HardwareSourceSendParameter::calculateIfParameterIsEnabled()
+void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfApplicable()
 {
   auto oldState = m_isEnabled;
   m_isEnabled = m_routingIsEnabled && m_localIsEnabled;

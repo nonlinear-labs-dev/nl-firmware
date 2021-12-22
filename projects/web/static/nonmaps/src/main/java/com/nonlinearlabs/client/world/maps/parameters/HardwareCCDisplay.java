@@ -3,7 +3,6 @@ package com.nonlinearlabs.client.world.maps.parameters;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCCMapping;
@@ -11,17 +10,15 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.RibbonCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
 import com.nonlinearlabs.client.presenters.MidiSettings;
-import com.nonlinearlabs.client.presenters.MidiSettings.PedalMapping;
+import com.nonlinearlabs.client.presenters.MidiSettingsProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.PhysicalControlSendParameter;
 
 public class HardwareCCDisplay extends ZoomReactingControl {
 
     private final int paramerNumber;
-    private final boolean isSendParameter;
     private boolean isVisibleZoomlevel = false;
     private String displayString = new String("CC");
 
@@ -29,49 +26,8 @@ public class HardwareCCDisplay extends ZoomReactingControl {
     {
         super(parent);
         paramerNumber = parameterId;
-        this.isSendParameter = parent instanceof PhysicalControlSendParameter;
 
-        SetupModel.get().systemSettings.pedal1Mapping.onChange(e -> {
-            update(); 
-            return true;
-        });
-
-        SetupModel.get().systemSettings.pedal2Mapping.onChange(e -> {
-            update(); 
-            return true;
-        });
-
-        SetupModel.get().systemSettings.pedal3Mapping.onChange(e -> {
-            update();
-            return true;
-        });
-
-        SetupModel.get().systemSettings.pedal4Mapping.onChange(e -> {
-            update(); 
-            return true;
-        });
-
-        SetupModel.get().systemSettings.ribbon1Mapping.onChange(e -> {
-            update(); 
-            return true;
-        });
-
-        SetupModel.get().systemSettings.ribbon2Mapping.onChange(e -> {
-            update(); 
-            return true;
-        });
-
-        SetupModel.get().systemSettings.benderMapping.onChange(e -> {
-            update(); 
-            return true;
-        });
-
-        SetupModel.get().systemSettings.aftertouchMapping.onChange(e -> {
-            update(); 
-            return true;
-        });
-
-        SetupModel.get().systemSettings.enable14BitSupport.onChange(e -> {
+        MidiSettingsProvider.get().register(e -> {
             update();
             return true;
         });

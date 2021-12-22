@@ -129,8 +129,7 @@ void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *ol
     m_localDisabledLabelSnd->setHighlight(false);
     m_localDisabledLabelRcv->setHighlight(true);
   }
-
-  if(auto snd = dynamic_cast<HardwareSourceSendParameter *>(newP))
+  else if(auto snd = dynamic_cast<HardwareSourceSendParameter *>(newP))
   {
     m_hw = snd->getSiblingParameter();
     m_snd = snd;
@@ -141,10 +140,8 @@ void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *ol
   m_hwChanged.disconnect();
   m_sndChanged.disconnect();
 
-  if(m_snd)
-    m_sndChanged = m_snd->onParameterChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onSendChanged), true);
-  if(m_hw)
-    m_hwChanged = m_hw->onParameterChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onHWChanged), true);
+  m_sndChanged = m_snd->onParameterChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onSendChanged), true);
+  m_hwChanged = m_hw->onParameterChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onHWChanged), true);
 }
 
 bool PhysicalControlValueLabel::redraw(FrameBuffer &fb)
@@ -165,7 +162,7 @@ void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
     m_isLocalEnabled = send->isLocalEnabled();
     auto str = send->getDisplayString();
     auto display = "S:" + str;
-    auto shorter = nltools::string::truncate(display);
+    auto shorter = nltools::string::removeSpaces(display);
     m_localDisabledLabelSnd->setText({ shorter });
     ControlWithChildren::setDirty();
   }
@@ -178,7 +175,7 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
     m_isLocalEnabled = hw->isLocalEnabled();
     auto str = hw->getDisplayString();
     auto display = "R:" + str;
-    auto shorter = nltools::string::truncate(display);
+    auto shorter = nltools::string::removeSpaces(display);
     m_localEnabledLabel->setText({ str });
     m_localDisabledLabelRcv->setText({ shorter });
     ControlWithChildren::setDirty();
@@ -236,9 +233,36 @@ void HardwareSourceCCLabel::onParameterSelectionHappened(const Parameter *old, c
   }
 }
 
+inline std::string truncateNonSpacesAndNonNumbers(const std::string& s)
+{
+  std::string ret{};
+  bool wasNumberLast = false;
+  bool wasDelim = false;
+  for(auto c: s)
+  {
+    if(std::isdigit(c))
+    {
+      wasNumberLast = true;
+      wasDelim = false;
+      ret += c;
+    }
+    else if(wasNumberLast && !wasDelim)
+    {
+      ret += '/';
+      wasNumberLast = false;
+      wasDelim = true;
+    }
+  }
+
+  if(ret.back() == '/')
+    ret.pop_back();
+
+  return ret;
+}
+
 void HardwareSourceCCLabel::onSettingsChanged(const Setting *changed)
 {
   auto str = changed->getDisplayString();
-  auto onlyNumbersAndSpaces = nltools::string::truncateNonSpacesAndNonNumbers(str);
+  auto onlyNumbersAndSpaces = truncateNonSpacesAndNonNumbers(str);
   setText({"CC:" + onlyNumbersAndSpaces});
 }

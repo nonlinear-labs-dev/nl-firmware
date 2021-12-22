@@ -58,40 +58,13 @@ namespace nltools
 
   namespace string
   {
-    std::string truncate(const std::string& in)
+    std::string removeSpaces(const std::string& in)
     {
-      std::string ret{};
-      for(auto c: in)
-        if(c != ' ')
-          ret += c;
-      return ret;
-    }
-
-    std::string truncateNonSpacesAndNonNumbers(const std::string& s)
-    {
-      std::string ret{};
-      bool wasNumberLast = false;
-      bool wasDelim = false;
-      for(auto c: s)
-      {
-        if(std::isdigit(c))
-        {
-          wasNumberLast = true;
-          wasDelim = false;
-          ret += c;
-        }
-        else if(wasNumberLast && !wasDelim)
-        {
-          ret += '/';
-          wasNumberLast = false;
-          wasDelim = true;
-        }
-      }
-
-      if(ret.back() == '/')
-        ret.pop_back();
-
-      return ret;
+      std::string out;
+      std::copy_if(in.begin(), in.end(), std::back_inserter(out), [](auto x) {
+        return x != ' ';
+      });
+      return out;
     }
   }
 }

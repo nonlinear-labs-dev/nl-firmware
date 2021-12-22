@@ -725,7 +725,7 @@ void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMes
 void InputEventStage::onSendParameterReceived(const nltools::msg::HWSourceSendChangedMessage &message)
 {
   auto hwID = InputEventStage::parameterIDToHWID(message.siblingId);
-  if(!message.m_localEnabled)
+  if(!message.localEnabled)
   {
     auto pos = static_cast<float>(message.controlPosition);
     sendHardwareChangeAsMidi(hwID, pos);

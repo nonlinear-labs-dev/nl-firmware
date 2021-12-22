@@ -21,8 +21,8 @@ class PhysicalControlSlider : public SelectedParameterDotSlider
   bool isLocalDisabledForThisParameter();
   bool redrawLocalDisabled(FrameBuffer& buffer);
 
-  HardwareSourceSendParameter* m_snd;
-  PhysicalControlParameter* m_hw;
+  HardwareSourceSendParameter* m_snd = nullptr;
+  PhysicalControlParameter* m_hw = nullptr;
 
   sigc::connection m_sndParamConnection;
   sigc::connection m_hwParamConnection;

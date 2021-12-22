@@ -25,7 +25,6 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/LocalOffPedalParameterEditLayout2.h>
 
 void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
