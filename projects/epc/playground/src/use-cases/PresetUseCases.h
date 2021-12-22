@@ -15,7 +15,7 @@ namespace UNDO {
 class PresetUseCases
 {
  public:
-  explicit PresetUseCases(Preset* p, Settings& settings);
+  explicit PresetUseCases(Preset& p, Settings& settings);
 
   void rename(const std::string& newName);
   void setComment(const Glib::ustring& comment);
@@ -24,9 +24,9 @@ class PresetUseCases
   void overwriteWithPreset(Preset* src);
 
  private:
-  Preset* m_preset;
-  Bank* m_bank;
-  PresetManager* m_presetManager;
-  EditBuffer* m_editBuffer;
+  Preset& m_preset;
   Settings& m_settings;
+  Bank* m_bank = nullptr;
+  PresetManager* m_presetManager = nullptr;
+  EditBuffer* m_editBuffer = nullptr;
 };

@@ -25,7 +25,7 @@ TEST_CASE("Issue 2926")
 
   CHECK(bank->getSelectedPreset() == firstPreset);
 
-  PresetUseCases presetUseCase(lastPreset, settings);
+  PresetUseCases presetUseCase(*lastPreset, settings);
   presetUseCase.overwriteWithEditBuffer(*pm->getEditBuffer());
 
   CHECK(bank->getSelectedPreset() == lastPreset);
