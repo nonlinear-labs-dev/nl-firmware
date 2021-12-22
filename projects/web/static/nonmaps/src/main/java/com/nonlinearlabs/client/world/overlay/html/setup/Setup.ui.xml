@@ -964,7 +964,7 @@
 						</div>
 						<div class="w60p">
 							<g:Button ui:field="chooseFileButton">Choose File</g:Button>
-							<g:Label ui:field="choosenFileLabel">No file choosen</g:Label>
+							<g:Label ui:field="choosenFileLabel" styleName="hidden">No file choosen</g:Label>
 							<g:FileUpload ui:field="upload" styleName="hidden"></g:FileUpload>
 						</div>
 						<div class="progress-bar hidden" ui:field="updateSpinner">

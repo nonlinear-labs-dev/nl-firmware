@@ -1576,10 +1576,18 @@ select[disabled='disabled'] {
 
 .modal-button-button {
 	display: inline-block;
+  width: 5em;
 }
 
 .modal-button-div {
 	text-align: center;
+}
+
+.model-button-center-div {
+  justify-content: space-around;
+  padding-left: 4em;
+  padding-right: 4em;
+  margin: auto;
 }
 
 input.param-name-edit {

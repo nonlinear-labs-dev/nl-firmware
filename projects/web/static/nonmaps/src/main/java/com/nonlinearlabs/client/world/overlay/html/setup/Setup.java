@@ -435,18 +435,18 @@ public class Setup extends Composite {
 				upload.getElement().removeClassName("hidden");
 				upload.click();
 				upload.getElement().addClassName("hidden");
+
+				chooseFileButton.getElement().addClassName("hidden");
+				
+				choosenFileLabel.getElement().removeClassName("hidden");
+				choosenFileLabel.setText("Uploading...");
 			}
 		});
 
 		upload.addChangeHandler(new ChangeHandler() {
-
 			@Override
 			public void onChange(ChangeEvent e) {
 				updateSpinner.removeClassName("hidden");
-				upload.getElement().addClassName("hidden");
-				String escapedPath = escapePath(upload.getFilename());
-				String parts[] = escapedPath.split("\\\\");
-				choosenFileLabel.setText(parts[parts.length - 1]);
 
 				loadUpdateFile(e.getNativeEvent(), new TarUploadedHandler(){
 					@Override
@@ -455,6 +455,8 @@ public class Setup extends Composite {
 
 							@Override
 							public void onUploadFinished(XMLHttpRequest answer) {
+								choosenFileLabel.getElement().addClassName("hidden");
+								chooseFileButton.getElement().removeClassName("hidden");
 								updateSpinner.addClassName("hidden");
 							}
 						});
