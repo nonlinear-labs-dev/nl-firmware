@@ -224,8 +224,8 @@ package_update() {
   # remove unneccessary files
   rm -rf /usr/share/licenses
 
-  cleanup_modules
-  cleanup_firmware
+  # cleanup_modules
+  # cleanup_firmware
 
   rm -rf /bindir/update
   mkdir -p /bindir/update
