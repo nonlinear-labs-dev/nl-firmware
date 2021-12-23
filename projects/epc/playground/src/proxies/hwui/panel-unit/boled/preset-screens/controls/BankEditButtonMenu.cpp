@@ -188,7 +188,7 @@ void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::strin
   if(selBank)
   {
     SplashLayout::addStatus("Exporting " + selBank->getName(true));
-    BankUseCases useCase(selBank);
+    BankUseCases useCase(selBank, *Application::get().getSettings());
     useCase.exportBankToFile(outFile);
   }
 }

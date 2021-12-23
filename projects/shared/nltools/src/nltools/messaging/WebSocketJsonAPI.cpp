@@ -1,14 +1,25 @@
 #include <nltools/messaging/WebSocketJsonAPI.h>
 #include <nltools/logging/Log.h>
 
+#include <utility>
+
 namespace nltools
 {
   namespace msg
   {
+    WebSocketJsonAPI::ClientConnection::ClientConnection(SoupWebsocketConnection *c)
+        : connection(c)
+    {
+    }
 
-    WebSocketJsonAPI::WebSocketJsonAPI(guint port, WebSocketJsonAPI::ReceiveCB cb)
+    WebSocketJsonAPI::ClientConnection::~ClientConnection()
+    {
+      g_object_unref(connection);
+    }
+
+    WebSocketJsonAPI::WebSocketJsonAPI(guint port, ReceiveCB cb)
         : m_port(port)
-        , m_cb(cb)
+        , m_cb(std::move(cb))
         , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
         , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
         , m_messageLoop(Glib::MainLoop::create(Glib::MainContext::create()))
@@ -19,39 +30,51 @@ namespace nltools
 
     WebSocketJsonAPI::~WebSocketJsonAPI()
     {
-      std::unique_lock<std::mutex> l(m_mutex);
+      std::unique_lock<std::recursive_mutex> l(m_mutex);
       m_quit = true;
       m_messageLoop->quit();
       m_contextThread.wait();
     }
 
+    void WebSocketJsonAPI::send(API::ClientConnection *a, const nlohmann::json &msg)
+    {
+      m_bgContextQueue->pushMessage([this, msg, a]() {
+        std::unique_lock<std::recursive_mutex> l(m_mutex);
+        m_connections.remove_if(
+            [this, msg, a](auto &c) { return (a == c.get()) && !this->doSend(c->connection, msg); });
+      });
+    }
+
     void WebSocketJsonAPI::sendAll(const nlohmann::json &msg)
     {
-      m_bgContextQueue->pushMessage(
-          [this, msg]() { m_connections.remove_if([this, msg](tWebSocketPtr &c) { return !send(c.get(), msg); }); });
+      m_bgContextQueue->pushMessage([this, msg]() {
+        std::unique_lock<std::recursive_mutex> l(m_mutex);
+        m_connections.remove_if([this, msg](auto &c) { return !this->doSend(c->connection, msg); });
+      });
     }
 
     void WebSocketJsonAPI::sendAllUpdating(const nlohmann::json &msg)
     {
-      std::unique_lock<std::mutex> l(m_mutex);
+      std::unique_lock<std::recursive_mutex> l(m_mutex);
       m_pendingUpdateMsg = msg;
 
       if(!m_bgContextQueue->isPending())
         m_bgContextQueue->pushMessage([this, msg]() {
-          std::unique_lock<std::mutex> l(m_mutex);
-          m_connections.remove_if([this, msg](tWebSocketPtr &c) { return !send(c.get(), m_pendingUpdateMsg); });
+          std::unique_lock<std::recursive_mutex> l(m_mutex);
+          m_connections.remove_if([this, msg](auto &c) { return !this->doSend(c->connection, m_pendingUpdateMsg); });
           m_pendingUpdateMsg.clear();
         });
     }
 
     bool WebSocketJsonAPI::hasClients() const
     {
+      std::unique_lock<std::recursive_mutex> l(m_mutex);
       return !m_connections.empty();
     }
 
     void WebSocketJsonAPI::backgroundThread()
     {
-      std::unique_lock<std::mutex> l(m_mutex);
+      std::unique_lock<std::recursive_mutex> l(m_mutex);
 
       g_main_context_push_thread_default(m_messageLoop->get_context()->gobj());
 
@@ -74,9 +97,11 @@ namespace nltools
       }
     }
 
-    bool WebSocketJsonAPI::send(SoupWebsocketConnection *c, const nlohmann::json &msg)
+    bool WebSocketJsonAPI::doSend(SoupWebsocketConnection *c, const nlohmann::json &msg)
     {
-      if(std::find_if(m_connections.begin(), m_connections.end(), [&](auto &a) { return c == a.get(); })
+      std::unique_lock<std::recursive_mutex> l(m_mutex);
+
+      if(std::find_if(m_connections.begin(), m_connections.end(), [&](auto &a) { return c == a->connection; })
          == m_connections.end())
         return false;
 
@@ -94,8 +119,18 @@ namespace nltools
                                      WebSocketJsonAPI *pThis)
     {
       g_signal_connect(c, "message", G_CALLBACK(&WebSocketJsonAPI::receiveMessage), pThis);
+      g_signal_connect(c, "closed", G_CALLBACK(&WebSocketJsonAPI::remove), pThis);
       g_object_ref(c);
-      pThis->m_connections.push_back(tWebSocketPtr(c, g_object_unref));
+      std::unique_lock<std::recursive_mutex> l(pThis->m_mutex);
+      pThis->m_connections.push_back(std::make_shared<ClientConnection>(c));
+    }
+
+    void WebSocketJsonAPI::remove(SoupWebsocketConnection *c, WebSocketJsonAPI *pThis)
+    {
+      pThis->m_mainContextQueue->pushMessage([pThis, c] {
+        std::unique_lock<std::recursive_mutex> l(pThis->m_mutex);
+        pThis->m_connections.remove_if([&](auto &e) { return c == e->connection; });
+      });
     }
 
     void WebSocketJsonAPI::receiveMessage(SoupWebsocketConnection *c, gint, GBytes *message, WebSocketJsonAPI *pThis)
@@ -107,7 +142,10 @@ namespace nltools
         pThis->m_mainContextQueue->pushMessage([pThis, c, j = nlohmann::json::parse(ptr, ptr + length)] {
           try
           {
-            pThis->send(c, pThis->m_cb(j));
+            std::unique_lock<std::recursive_mutex> l(pThis->m_mutex);
+            auto it = std::find_if(pThis->m_connections.begin(), pThis->m_connections.end(),
+                                   [&](auto &e) { return c == e->connection; });
+            pThis->doSend(c, pThis->m_cb(*it, j));
           }
           catch(...)
           {

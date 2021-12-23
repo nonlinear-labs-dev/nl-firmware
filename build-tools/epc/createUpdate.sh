@@ -1,6 +1,6 @@
 #!/bin/sh
 
-UPDATE_PACKAGE_SERVERS="https://nonlinearlabs.s3.eu-central-1.amazonaws.com/ https://ind.mirror.pkgbuild.com/community/os/x86_64/ https://sgp.mirror.pkgbuild.com/extra/os/x86_64/"
+UPDATE_PACKAGE_SERVERS="http://h2949050.stratoserver.net/epc/"
 PACKAGES_TO_INSTALL="fuse-common-3.9.0-1-x86_64.pkg.tar.xz fuse3-3.9.0-1-x86_64.pkg.tar.xz sshfs-3.7.0-1-x86_64.pkg.tar.zst mc-4.8.24-2-x86_64.pkg.tar.zst flac-1.3.3-1-x86_64.pkg.tar.xz"
 
 error() {
@@ -10,7 +10,7 @@ error() {
 
 copy_running_os() {
     echo "Copying running os..."
-    if tar -C /internal/os --exclude=./build/CMakeFiles -czf /update-scratch/update/NonLinuxOverlay.tar.gz .; then
+    if tar -C /internal/os --exclude=.wh..wh..opq --exclude=./build/CMakeFiles -czf /update-scratch/update/NonLinuxOverlay.tar.gz .; then
         echo "Copying running os done."
         return 0
     fi
@@ -53,7 +53,7 @@ create_update() {
 }
 
 deploy_update() {
-    mv /update.tar /bindir/update.tar
+    mv /update.tar /bindir/build-tools/epc/update.tar
     return $?
 }
 
@@ -117,7 +117,7 @@ build_update() {
     install_packages || error "Installing the packages failed."
 
     /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
-        cd /build && cmake -DTARGET_PLATFORM=epc -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_ONLINEHELP=On -DBUILD_WEBUI=On /sources && make -j8"
+        cd /build && cmake -DTARGET_PLATFORM=epc -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /sources && make -j8"
     return $?
 }
 
@@ -132,6 +132,8 @@ setup_install_overlay() {
 install_update() {
 	cp /workdir/update-packages/* /internal/epc-update-partition/update-packages
 	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install"
+    mkdir -p /internal/epc-update-partition/usr/local/C15/web
+    tar -xzf /bindir/projects/web/web.tar.gz -C /internal/epc-update-partition/usr/local/C15/web
 	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
 		cd /update-packages
 		rm /var/lib/pacman/db.lck
@@ -151,10 +153,10 @@ update_fstab() {
     return $?
 }
 
-
 main() {
     mkdir -p /workdir || error "Creation of workdir failed"
-    mount -o loop /bindir/fs.ext4 /workdir || error "Mouning filesystem failed."
+    mkdir -p /bindir/build-tools/epc
+    mount -o loop /bindir/build-tools/epc/fs.ext4 /workdir || error "Mouning filesystem failed."
 
     setup_build_overlay || error "Setting up build overlay failed."
     build_update || error "Building the update failed"

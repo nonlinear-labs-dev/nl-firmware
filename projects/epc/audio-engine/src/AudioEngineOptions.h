@@ -22,6 +22,7 @@ class AudioEngineOptions
   // alsa audio
   std::string getAudioOutputDeviceName() const;
   int getFramesPerPeriod() const;
+  void setFramesPerPeriod(int f);
   int getNumPeriods() const;
   int getAlsaRingBufferSize() const;
 

@@ -65,9 +65,10 @@
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
+#include <device-settings/AlsaFramesPerPeriod.h>
 
 Settings::Settings(UpdateDocumentMaster *master)
-    : super(master)
+    : UpdateDocumentContributor(master)
     , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
@@ -121,7 +122,6 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("ReceiveAftertouchCurve", new MidiReceiveAftertouchCurveSetting(*this));
   addSetting("ReceiveVelocityCurve", new MidiReceiveVelocityCurveSetting(*this));
 
-
   addSetting("HighResCC", new Enable14BitSupport(*this));
   auto enable14Bit = getSetting<Enable14BitSupport>();
 
@@ -138,6 +138,8 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("AutoStartRecorder", new AutoStartRecorderSetting(*this));
   addSetting("RoutingSettings", new RoutingSettings(*this));
   addSetting("GlobalLocalEnable", new GlobalLocalEnableSetting(*this));
+
+  addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
 }
 
 Settings::~Settings()
@@ -149,12 +151,7 @@ Settings::tUpdateID Settings::onChange(uint64_t flags)
 {
   m_saveJob.trigger();
   m_sigChanged.emit();
-  return super::onChange(flags);
-}
-
-Glib::ustring Settings::getPrefix() const
-{
-  return "settings";
+  return UpdateDocumentContributor::onChange(flags);
 }
 
 void Settings::init()
@@ -255,17 +252,15 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("settings", Attribute("changed", changed),
-                  [&]()
-                  {
-                    if(changed)
-                    {
-                      for(auto &setting : m_settings)
-                      {
-                        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
-                      }
-                    }
-                  });
+  writer.writeTag("settings", Attribute("changed", changed), [&]() {
+    if(changed)
+    {
+      for(auto &setting : m_settings)
+      {
+        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
+      }
+    }
+  });
 }
 
 bool Settings::isLoading() const

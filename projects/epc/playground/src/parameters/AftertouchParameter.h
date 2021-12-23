@@ -14,4 +14,7 @@ class AftertouchParameter : public PhysicalControlParameter
 
  protected:
   Layout *createLayout(FocusAndMode focusAndMode) const override;
+
+ private:
+  bool isLocalEnabled() const override;
 };

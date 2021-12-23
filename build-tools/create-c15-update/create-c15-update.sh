@@ -3,14 +3,16 @@
 # Date:         12.02.2020
 # vom Cmake übergebene Pfade zu den .tarS
 
-EPC_UPDATE=$1
-EPC_2_UPDATE=$2
-BBB_UPDATE=$3
-PLAYCONTROLLER_UPDATE=$4
-BINARY_DIR=$5
-SOURCE_DIR=$6/build-tools/create-c15-update
-OUTNAME=$7
-ASPECTS=$8
+EPC_UPDATE=$1 && shift
+EPC_2_UPDATE=$1 && shift
+BBB_UPDATE=$1 && shift
+BBB_MLO=$1 && shift
+BBB_UBOOT_IMG=$1 && shift
+PLAYCONTROLLER_UPDATE=$1 && shift
+BINARY_DIR=$1 && shift
+SOURCE_DIR=$1/build-tools/create-c15-update && shift
+OUTNAME=$1 && shift
+ASPECTS=$1 && shift
 OUT_DIRECTORY=$BINARY_DIR/$OUTNAME
 OUT_TAR=$BINARY_DIR/$OUTNAME.tar
 
@@ -61,8 +63,16 @@ deploy_updates() {
     echo "Deploying updates..."
 
     if [ $UPDATE_BBB == 1 ]; then
-        echo "Will deploy BBB update."
+        echo "Will deploy BBB updates."
         cp $BBB_UPDATE $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/rootfs.tar.gz || fail_and_exit;
+        cp $BBB_MLO $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/MLO || fail_and_exit;
+        cp $BBB_UBOOT_IMG $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/u-boot.img || fail_and_exit;
+
+        SUM=$(md5sum $OUT_DIRECTORY/BBB/MLO)
+        echo $SUM | cut -d' ' -f1 >> $OUT_DIRECTORY/BBB/MLO_sum
+
+        SUM=$(md5sum $OUT_DIRECTORY/BBB/u-boot.img)
+        echo $SUM | cut -d' ' -f1 >> $OUT_DIRECTORY/BBB/UBOOT_sum
     fi
 
     if [ $UPDATE_EPC == 1 ]; then
@@ -131,14 +141,14 @@ get_tools_from_rootfs() {
     rm -rf $BINARY_DIR/build-tools/bbb/rootfs
     mkdir $BINARY_DIR/build-tools/bbb/rootfs && tar -xf $BBB_UPDATE --exclude=./dev/* -C $BINARY_DIR/build-tools/bbb/rootfs
 
-    for i in mxli sshpass text2soled rsync socat thttpd playcontroller; do
+    for i in mxli sshpass text2soled rsync socat thttpd playcontroller mke2fs; do
         if ! cp $(find $BINARY_DIR/build-tools/bbb/rootfs -type f -name "$i" | head -n 1) $OUT_DIRECTORY/utilities/; then
           echo "could not get $i from rootfs"
           return 1
         fi
     done
 
-    for i in sshpass text2soled rsync socat thttpd mxli playcontroller; do
+    for i in sshpass text2soled rsync socat thttpd mxli playcontroller mke2fs; do
         if ! chmod +x $OUT_DIRECTORY/utilities/"$i"; then
           echo "could not make $i executable"
           return 1
@@ -170,17 +180,6 @@ create_update_tar () {
     return 1
 }
 
-
-calc_checksum() {
-    echo "Calc checksum..."
-    if (cd $OUT_DIRECTORY/ && touch $(sha256sum ./nonlinear-c15-update.tar | grep -o "^[^ ]*").sign); then
-        echo "Calc checksum done."
-        return 0
-    fi
-    echo "Calc checksum failed."
-    return 1
-}
-
 print_version_string()
 {
     [ ! -z "$1" ] && echo " " $(grep -m 1 --binary-files=text "C15 Version" $1 | sed '$ s/\x00*$//') " (" $1 ")"
@@ -191,6 +190,7 @@ print_C15_version_strings() {
     if [ $UPDATE_EPC == 1 ]; then
         FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
         rm -f $FILE
+	mkdir -p $BINARY_DIR/build-tools/epc/tmp 
         tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar ./update/NonLinuxOverlay.tar.gz
         tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/NonLinuxOverlay.tar.gz ./usr/local/C15/playground/playground
         FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground

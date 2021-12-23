@@ -1,9 +1,10 @@
 #include "RoutingSettings.h"
 #include <tools/StringTools.h>
+#include <playcontroller/playcontroller-defs.h>
 
 RoutingSettings::RoutingSettings(Settings& s)
     : Setting(s)
-    , m_data{}
+    , m_data {}
 {
   for(auto& row : m_data)
   {
@@ -33,7 +34,9 @@ void RoutingSettings::load(const Glib::ustring& text, Initiator initiator)
         }
         catch(...)
         {
-            nltools::Log::error(__PRETTY_FUNCTION__, "Encountered exception while trying to update Routing for indices: (entry)(aspect)", idx, settingIdx);
+          nltools::Log::error(__PRETTY_FUNCTION__,
+                              "Encountered exception while trying to update Routing for indices: (entry)(aspect)", idx,
+                              settingIdx);
         }
       }
 
@@ -61,7 +64,8 @@ Glib::ustring RoutingSettings::getDisplayString() const
   return { "Not Used" };
 }
 
-void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx, bool state)
+void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx,
+                               bool state)
 {
   auto& val = m_data.at(static_cast<size_t>(hwIdx)).at(static_cast<size_t>(settingIdx));
   if(val != state)
@@ -79,11 +83,62 @@ const RoutingSettings::tData& RoutingSettings::getRaw() const
 void RoutingSettings::setAllValues(bool value)
 {
   bool anyChanged = false;
-  for(auto& entry: m_data) {
-    for(auto& aspect: entry) {
+  for(auto& entry : m_data)
+  {
+    for(auto& aspect : entry)
+    {
       anyChanged |= (aspect != value);
       aspect = value;
     }
+  }
+
+  if(anyChanged)
+    notify();
+}
+
+bool RoutingSettings::getState(int hwId, RoutingSettings::tAspectIndex aspect) const
+{
+  tRoutingIndex idx = tRoutingIndex::LENGTH;
+  switch(hwId)
+  {
+      case HW_SOURCE_ID_PEDAL_1:
+        idx = tRoutingIndex::Pedal1;
+        break;
+      case HW_SOURCE_ID_PEDAL_2:
+        idx = tRoutingIndex::Pedal2;
+        break;
+      case HW_SOURCE_ID_PEDAL_3:
+        idx = tRoutingIndex::Pedal3;
+        break;
+      case HW_SOURCE_ID_PEDAL_4:
+        idx = tRoutingIndex::Pedal4;
+        break;
+      case HW_SOURCE_ID_PITCHBEND:
+        idx = tRoutingIndex::Bender;
+        break;
+      case HW_SOURCE_ID_AFTERTOUCH:
+        idx = tRoutingIndex::Aftertouch;
+        break;
+      case HW_SOURCE_ID_RIBBON_1:
+        idx = tRoutingIndex::Ribbon1;
+        break;
+      case HW_SOURCE_ID_RIBBON_2:
+        idx = tRoutingIndex::Ribbon2;
+        break;
+      default:
+        break;
+  }
+  return getState(idx, aspect);
+}
+
+void RoutingSettings::setAllAspectsForIndex(RoutingSettings::tRoutingIndex hwIdx, bool state)
+{
+  bool anyChanged = false;
+  auto& entry = m_data[static_cast<int>(hwIdx)];
+  for(auto& aspect : entry)
+  {
+    anyChanged |= (aspect != state);
+    aspect = state;
   }
 
   if(anyChanged)

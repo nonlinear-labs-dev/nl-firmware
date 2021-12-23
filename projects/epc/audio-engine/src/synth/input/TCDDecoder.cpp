@@ -24,7 +24,8 @@ bool TCDDecoder::decode(const MidiEvent &event)
       uint32_t arg = _data1 + (_data0 << 7);
       value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
 
-      const auto behaviour = m_dsp->getBehaviour(channel);
+      auto hwid = static_cast<HardwareSource>(channel);
+      const auto behaviour = m_dsp->getBehaviour(hwid);
 
       if(behaviour == C15::Properties::HW_Return_Behavior::Center)
       {
@@ -33,7 +34,8 @@ bool TCDDecoder::decode(const MidiEvent &event)
 
       if constexpr(LOG_MIDI_TCD)
       {
-        nltools::Log::warning("Got HW-Src:", channel, "value:", value, "behaviour", static_cast<int>(behaviour), "raw data0", (short)_data0, "raw data1",(short)_data1);
+        nltools::Log::warning("Got HW-Src:", channel, "value:", value, "behaviour", static_cast<int>(behaviour),
+                              "raw data0", (short) _data0, "raw data1", (short) _data1);
       }
 
       keyOrController = channel;
@@ -47,6 +49,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
     {
       uint32_t arg = _data1 + (_data0 << 7);
       keyOrController = m_keyShift->keyDown(keyOrController);
+
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {
         value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383
@@ -57,6 +60,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
     {
       uint32_t arg = _data1 + (_data0 << 7);
       keyOrController = m_keyShift->keyUp(keyOrController);
+
       if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
       {
         value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383

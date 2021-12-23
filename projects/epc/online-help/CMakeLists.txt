@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 3.0)
-project(online-help)
-
-set(ONLINEHELPDIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-install(DIRECTORY ${ONLINEHELPDIR} DESTINATION ${C15_INSTALL_PATH})

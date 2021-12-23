@@ -4,6 +4,7 @@
 #include "presets/recall/RecallParameterGroups.h"
 #include "nltools/GenericScopeGuard.h"
 #include <nltools/threading/Expiration.h>
+#include <sync/SyncedItem.h>
 #include <tools/DelayedJob.h>
 #include <tools/ScopedGuard.h>
 #include <tools/Uuid.h>
@@ -15,14 +16,16 @@ class PresetManager;
 class HWUI;
 class SplitPointParameter;
 class LoadedPresetLog;
+class Settings;
+class AudioEngineProxy;
 
-class EditBuffer : public ParameterGroupSet
+class EditBuffer : public ParameterGroupSet, public SyncedItem
 {
  private:
   typedef ParameterGroupSet super;
 
  public:
-  explicit EditBuffer(PresetManager *parent);
+  explicit EditBuffer(PresetManager *parent, Settings& settings, std::unique_ptr<AudioEngineProxy>& aeProxyContainer);
   ~EditBuffer() override;
 
   Glib::ustring getName() const;
@@ -62,8 +65,11 @@ class EditBuffer : public ParameterGroupSet
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   Uuid getUUIDOfLastLoadedPreset() const;
+
   PresetManager *getParent();
   const PresetManager *getParent() const;
+  AudioEngineProxy& getAudioEngineProxy() const;
+  Settings& getSettings() const;
 
   void resetModifiedIndicator(UNDO::Transaction *transaction);
   void resetModifiedIndicator(UNDO::Transaction *transaction, size_t hash);
@@ -130,6 +136,9 @@ class EditBuffer : public ParameterGroupSet
  private:
   friend class PresetManager;
   friend class LastLoadedPresetInfoSerializer;
+
+  nlohmann::json serialize() const override;
+
 
   Glib::ustring getEditBufferName() const;
   bool findAnyParameterChanged(VoiceGroup vg) const;
@@ -243,6 +252,8 @@ class EditBuffer : public ParameterGroupSet
 
   std::unique_ptr<LoadedPresetLog> m_loadedPresetLog;
   ScopedGuard m_parameterFocusLock;
+  Settings& m_settings;
+  std::unique_ptr<AudioEngineProxy>& m_audioEngineProxyContainer;
 
   friend class EditBufferUseCases;
   friend class BankUseCases;

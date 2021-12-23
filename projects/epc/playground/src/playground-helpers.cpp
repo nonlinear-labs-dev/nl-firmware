@@ -22,7 +22,7 @@ namespace Environment
 {
   void printStackTrace(int i)
   {
-    DebugLevel::warning("Crash signal caught!");
+    nltools::Log::warning("Crash signal caught!");
 
     const size_t max_frames = 64;
     void* addrlist[max_frames + 1];
@@ -36,14 +36,14 @@ namespace Environment
       return;
     }
 
-    DebugLevel::warning("\n\nThe stack trace:");
+    nltools::Log::warning("\n\nThe stack trace:");
 
     // create readable strings to each frame. __attribute__((no_instrument_function))
     char** symbollist = backtrace_symbols(addrlist, addrlen);
 
     // print the stack trace.
     for(guint32 i = 0; i < addrlen; i++)
-      DebugLevel::warning(symbollist[i]);
+      nltools::Log::warning(symbollist[i]);
 
     free(symbollist);
     exit(EXIT_FAILURE);

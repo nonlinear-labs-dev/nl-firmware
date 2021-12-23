@@ -14,7 +14,7 @@ class RoutingsEditor : public MenuEditor
   typedef RoutingSettings::tRoutingIndex tID;
   typedef RoutingSettings::tAspectIndex tAspect;
 
-  explicit RoutingsEditor(tID id);
+  explicit RoutingsEditor(tID id, tID& parentSelection);
   void setPosition(const Rect& r) override;
   void drawBackground(FrameBuffer& fb) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
@@ -27,6 +27,8 @@ class RoutingsEditor : public MenuEditor
   void stepEntry(int inc);
   void stepAspect(int inc);
 
+  void onModifiersChanged(ButtonModifiers modifiers);
+
  private:
   LabelStyleable* m_entryLabel;
   LabelStyleable* m_aspectLabel;
@@ -34,6 +36,7 @@ class RoutingsEditor : public MenuEditor
   AspectList* m_aspectList;
 
   tID m_id;
+  tID& m_parentSelection;
   tAspect m_aspect = tAspect::SEND_PRIMARY;
 
   void update();

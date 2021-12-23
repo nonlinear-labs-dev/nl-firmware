@@ -41,6 +41,8 @@ add_custom_command(
         "unused-epc"
         "unused-epc2"
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+        "unused-mlo"
+        "usused-uboot"
         ${CMAKE_BINARY_DIR}/build-tools/playcontroller/projects/playcontroller/firmware/src/main/main.bin
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}

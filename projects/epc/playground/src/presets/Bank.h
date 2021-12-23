@@ -10,6 +10,7 @@
 
 #include <serialization/PresetBankSerializer.h>
 #include <tools/Uuid.h>
+#include <sync/SyncedItem.h>
 
 class Preset;
 class PresetManager;
@@ -17,7 +18,7 @@ class SearchQuery;
 
 using PresetPtr = std::unique_ptr<Preset>;
 
-class Bank : public AttributesOwner
+class Bank : public AttributesOwner, public SyncedItem
 {
  private:
   using super = AttributesOwner;
@@ -32,7 +33,7 @@ class Bank : public AttributesOwner
   };
 
   explicit Bank(UpdateDocumentContributor *parent);
-  Bank(UpdateDocumentContributor *parent, const Bank &other, bool ignoreUuids);
+  Bank(UpdateDocumentContributor *parent, const Bank &other);
   ~Bank() override;
 
   void load(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> bankFolder, int numBank, int numBanks);
@@ -42,36 +43,38 @@ class Bank : public AttributesOwner
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
   // accessors
-  bool empty() const;
-  const Uuid &getUuid() const;
-  std::string getName(bool withFallback) const;
-  std::string getX() const;
-  std::string getY() const;
-  const Uuid &getSelectedPresetUuid() const;
-  Preset *getSelectedPreset() const;
-  const Uuid &getAttachedToBankUuid() const;
-  std::string getAttachDirection() const;
-  size_t getNumPresets() const;
-  size_t getPresetPosition(const Uuid &uuid) const;
-  size_t getPresetPosition(const Preset *preset) const;
-  Preset *findPreset(const Uuid &uuid) const;
-  Preset *findPresetNear(const Uuid &anchorUuid, int seek) const;
-  Preset *findSelectedPreset() const;
-  Preset *getPresetAt(size_t idx) const;
-  void forEachPreset(std::function<void(Preset *)> cb) const;
-  Bank *getMasterTop() const;
-  Bank *getMasterLeft() const;
-  Bank *getSlaveRight() const;
-  Bank *getSlaveBottom() const;
-  time_t getLastChangedTimestamp() const;
+  [[nodiscard]] bool empty() const;
+  [[nodiscard]] bool isCollapsed() const;
+  [[nodiscard]] std::string getName(bool withFallback) const;
+  [[nodiscard]] std::string getX() const;
+  [[nodiscard]] std::string getY() const;
+  [[nodiscard]] const Uuid &getSelectedPresetUuid() const;
+  [[nodiscard]] Preset *getSelectedPreset() const;
+  [[nodiscard]] const Uuid &getAttachedToBankUuid() const;
+  [[nodiscard]] std::string getAttachDirection() const;
+  [[nodiscard]] size_t getNumPresets() const;
+  [[nodiscard]] size_t getPresetPosition(const Uuid &uuid) const;
+  [[nodiscard]] size_t getPresetPosition(const Preset *preset) const;
+  [[nodiscard]] Preset *findPreset(const Uuid &uuid) const;
+  [[nodiscard]] Preset *findPresetNear(const Uuid &anchorUuid, int seek) const;
+  [[nodiscard]] Preset *findSelectedPreset() const;
+  [[nodiscard]] Preset *getPresetAt(size_t idx) const;
+  [[nodiscard]] Bank *getMasterTop() const;
+  [[nodiscard]] Bank *getMasterLeft() const;
+  [[nodiscard]] Bank *getSlaveRight() const;
+  [[nodiscard]] Bank *getSlaveBottom() const;
+  [[nodiscard]] time_t getLastChangedTimestamp() const;
+  [[nodiscard]] const Uuid &getUuid() const;
+
+  nlohmann::json serialize() const override;
 
   void attachBank(UNDO::Transaction *transaction, const Uuid &otherBank, AttachmentDirection dir);
   void invalidate();
 
+  void forEachPreset(std::function<void(Preset *)> cb) const;
   Preset *clonePreset(const Preset *p);
 
   // transactions
-  void copyFrom(UNDO::Transaction *transaction, const Bank *other, bool ignoreUuids);
   void setName(UNDO::Transaction *transaction, const std::string &name);
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
   void selectPreset(UNDO::Transaction *transaction, const Uuid &uuid);
@@ -109,6 +112,7 @@ class Bank : public AttributesOwner
   PresetManager *getPresetManager() const;
 
   bool isMidiSelectedBank() const;
+  bool hasPresets() const;
   Glib::ustring getComment();
 
  private:
@@ -128,7 +132,6 @@ class Bank : public AttributesOwner
   size_t getNextPresetPosition() const;
   size_t getPreviousPresetPosition() const;
 
-  Uuid m_uuid;
   Uuid m_attachedToBankWithUuid;
   std::string m_name;
   std::string m_serializationDate;
@@ -143,6 +146,7 @@ class Bank : public AttributesOwner
   tUpdateID m_presetsLastSavedForUpdateID = 0;
 
   Signal<void> m_sigBankChanged;
+  Uuid m_uuid;
 
   friend class PresetBankSerializer;
   friend class PresetBankMetadataSerializer;

@@ -65,7 +65,7 @@ FrameBuffer::Offset::~Offset()
 
 FrameBuffer::FrameBuffer()
     : m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(PLAYGROUND_OLED_WEBSOCKET_PORT,
-                                                             [this](auto) { return m_backBuffer; }))
+                                                             [this](auto, auto) { return m_backBuffer; }))
 {
   initStacks();
   openAndMap();

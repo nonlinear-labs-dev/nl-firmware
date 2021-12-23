@@ -27,6 +27,7 @@ List of current Error Messages
 - 57 :: "E57 BBB update: Moving calibration settings to ePC failed ..."
 - 58 :: "E58 BBB update: Syncing rootfs failed ..."
 - 59 :: "E59 BBB update: Files on BBB present, but conditions are bad ..." ==> Update from 1.5 to 1.7: If we don't stop here, we will wipe everything (presets/settings/calirbation!)
+- 60 :: "E60 BBB update: ..." ==> Any errors connected to overwriting the bootloader and syncing from SD card to eMMC
 
 8. General
 - 81 :: "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..."

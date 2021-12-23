@@ -11,6 +11,8 @@
 #include <libundo/undo/Scope.h>
 #include <parameter_declarations.h>
 #include <parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h>
+#include <sync/SyncMasterMockRoot.h>
+#include <testing/unit-tests/mock/MockSettingsObject.h>
 
 TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
 {
@@ -60,21 +62,14 @@ TEST_CASE("MC Smoothing A-D set to 20ms")
 
 TEST_CASE("UnisonVoices Conversion rules")
 {
-  class UpdateDocumentMasterMock : public UpdateDocumentMaster
-  {
-   public:
-    void writeDocument(Writer&, tUpdateID) const override
-    {
-    }
-  };
-
-  UpdateDocumentMasterMock root;
-  PresetManager pm(&root, false, TestHelper::getOptions());
+  MockSettingsObject mockSettings(&SyncMasterMockRoot::get());
+  std::unique_ptr<AudioEngineProxy> aeContainer;
+  PresetManager pm(&SyncMasterMockRoot::get(), false, TestHelper::getOptions(), mockSettings, aeContainer);
   Bank bank(&pm);
 
   auto readXml = [&](auto xml) {
     MemoryInStream stream(xml, false);
-    UNDO::Scope scope(&root);
+    UNDO::Scope scope(&SyncMasterMockRoot::get());
     auto transactionScope = scope.startTransaction("foo");
     XmlReader reader(stream, transactionScope->getTransaction());
     reader.read<PresetBankSerializer>(&bank, Serializer::Progress {});

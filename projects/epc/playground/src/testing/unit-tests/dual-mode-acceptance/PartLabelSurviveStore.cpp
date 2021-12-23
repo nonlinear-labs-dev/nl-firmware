@@ -17,7 +17,7 @@ TEST_CASE("Store Presets With Part Names", "[Preset][Store]")
   auto layerPreset = presets.getLayerPreset();
 
   EditBufferUseCases useCase(*eb);
-  BankUseCases bankUseCase(presets.getBank());
+  BankUseCases bankUseCase(presets.getBank(), *TestHelper::getSettings());
 
   auto bank = static_cast<Bank*>(singlePreset->getParent());
 

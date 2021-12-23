@@ -3,17 +3,13 @@ SET(DOCKERNAME nl-epc-build-environment)
 
 file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${CMAKE_SOURCE_DIR}/projects/*)
 file(GLOB_RECURSE ALL_BUILD_TOOLS_FILES ${CMAKE_SOURCE_DIR}/build-tools/*)
-file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/epc/web-ui/target/*)
+file(GLOB_RECURSE NONMAPS_TARGET_FILES ${CMAKE_SOURCE_DIR}/projects/web/static/nonmaps/target/*)
 file(GLOB_RECURSE PlaycontrollerX_FILES ${CMAKE_SOURCE_DIR}/projects/playcontroller/firmware/.metadata/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET_FILES})
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${PlaycontrollerX_FILES})
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX CMakeLists.txt)
 list(APPEND ALL_FILES_IN_PROJECT ${ALL_BUILD_TOOLS_FILES})
 
-EXECUTE_PROCESS(OUTPUT_VARIABLE GROUP_ID COMMAND sh -c "id -g $USER")
-EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
-string(STRIP ${GROUP_ID} GROUP_ID)
-string(STRIP ${USER_ID} USER_ID)
 file(GLOB_RECURSE EPC_SCRIPTS ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 add_custom_command(
@@ -35,15 +31,13 @@ add_custom_command(
 add_custom_command(
     COMMENT "Download APLinux image to ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/AP-Linux-V.4.0.iso
-    #COMMAND wget https://netix.dl.sourceforge.net/project/ap-linux/AP-Linux-V.4.0.iso
-    COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/AP-Linux-V.4.0.iso
+    COMMAND wget ${DOWNLOAD_LOCATION}/epc/AP-Linux-V.4.0.iso
 )
 
 add_custom_command(
     COMMENT "Download update packages"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/NonLinux.pkg.tar.gz
-    #COMMAND wget https://github.com/nonlinear-labs-dev/Audiophile2NonLinux/releases/download/1.0/NonLinux.pkg.tar.gz
-    COMMAND wget https://nonlinearlabs.s3.eu-central-1.amazonaws.com/NonLinux.pkg.tar.gz
+    COMMAND wget ${DOWNLOAD_LOCATION}/epc/NonLinux.pkg.tar.gz
 )
 
 add_custom_command(
@@ -74,7 +68,7 @@ add_custom_command(
 add_custom_command(
   COMMENT "Download gwt"
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip
-  COMMAND wget https://goo.gl/pZZPXS -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip)
+  COMMAND wget ${DOWNLOAD_LOCATION}/web/gwt-2.8.2.zip -O ${CMAKE_CURRENT_BINARY_DIR}/gwt-2.8.2.zip)
 
 add_custom_command(
     COMMENT "Create local rootfs"
@@ -96,9 +90,10 @@ add_custom_command(
     DEPENDS .nonlinux-local-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
     DEPENDS .filesystem-created
+    DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/update.tar
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
-        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh
 )
@@ -123,12 +118,13 @@ add_custom_command(
     DEPENDS epc2-create-update
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
     DEPENDS bbb-rootfs
-    DEPENDS bbb-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+        "unused-mlo"
+        "usused-uboot"
         "unused-playcontroller"
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}
@@ -145,10 +141,19 @@ add_custom_target(epc-ota-update
         \${UNIT_PASSWORD}
     )
 
-add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
-add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
-add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
-add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
+
+IF(NOT ${TARGET_PLATFORM} STREQUAL "epc2")  
+  IF(NOT ${TARGET_PLATFORM} STREQUAL "epc")
+    add_custom_target(epc-install-medium DEPENDS .nonlinux-install-medium)
+    add_custom_target(epc-nonlinux-iso DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/NonLinuxAP.iso)
+    add_custom_target(epc-nonlinux-vm-installation DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/disk.raw)
+
+    IF(BUILD_WEB)
+        add_custom_target(epc-create-update DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/update.tar)
+        add_dependencies(epc-create-update web)
+    ENDIF()
+  ENDIF()
+ENDIF()
 
 
 

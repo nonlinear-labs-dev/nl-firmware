@@ -15,6 +15,8 @@
 #include <tools/Signal.h>
 #include <nltools/Types.h>
 
+#include <sync/SyncedItem.h>
+
 class Bank;
 class Preset;
 class EditBuffer;
@@ -24,13 +26,15 @@ class RPCActionManager;
 class NetworkRequest;
 class AudioEngineProxy;
 class Options;
+class Settings;
 
-class PresetManager : public UpdateDocumentContributor
+class PresetManager : public UpdateDocumentContributor, public SyncedItem
 {
   using SaveSubTask = std::function<SaveResult()>;
 
  public:
-  explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options);
+  explicit PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options, Settings &settings,
+                         std::unique_ptr<AudioEngineProxy> &aeProxyContainer);
   ~PresetManager() override;
 
   void init(AudioEngineProxy *aeProxy);
@@ -112,6 +116,7 @@ class PresetManager : public UpdateDocumentContributor
   Preset *getSelectedPreset();
 
  private:
+  nlohmann::json serialize() const override;
   void loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
                                                      const Glib::RefPtr<Gio::File> &pmFolder,
                                                      AudioEngineProxy *aeProxy);

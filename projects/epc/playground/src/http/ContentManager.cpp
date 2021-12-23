@@ -72,6 +72,7 @@ bool ContentManager::WebsocketConnection::canOmitOracles(int currentUpdateId) co
 ContentManager::ContentManager()
     : m_lastUpdateSentAt(std::chrono::steady_clock::now())
 {
+  enableSync(nltools::msg::API::Backend::Websocket);
 }
 
 ContentManager::~ContentManager() = default;
@@ -85,7 +86,6 @@ void ContentManager::addContentSections()
 {
   addContentSection(static_cast<ContentSection *>(Application::get().getWebUISupport()));
   addContentSection(static_cast<ContentSection *>(Application::get().getUndoScope()));
-  addContentSection(static_cast<ContentSection *>(Application::get().getSettings()));
   addContentSection(static_cast<ContentSection *>(Application::get().getDeviceInformation()));
   addContentSection(static_cast<ContentSection *>(Application::get().getClipboard()));
 

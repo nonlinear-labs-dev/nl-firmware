@@ -16,7 +16,8 @@ namespace TestHelper
   {
     typedef nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings tHW;
     tHW ret;
-    for(auto& row: ret) {
+    for(auto& row : ret)
+    {
       row.fill(state);
     }
     return ret;
@@ -124,6 +125,15 @@ namespace TestHelper
   void randomizeCrossFBAndToFX(UNDO::Transaction* transaction);
 
   void randomizeFadeParams(UNDO::Transaction* transaction);
+
+  inline void doMainLoopFor(std::chrono::milliseconds time)
+  {
+    Expiration exp;
+    exp.refresh(time);
+
+    while(exp.isPending())
+      g_main_context_iteration(nullptr, TRUE);
+  }
 
   inline void doMainLoop(std::chrono::milliseconds minTime, std::chrono::milliseconds timeout,
                          const std::function<bool()>& test)

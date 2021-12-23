@@ -25,15 +25,19 @@
 #include <presets/PresetPartSelection.h>
 #include <parameter_declarations.h>
 #include <presets/PresetParameter.h>
+#include <http/UpdateDocumentMaster.h>
 #include <set>
 #include <use-cases/EditBufferUseCases.h>
+#include <sync/JsonAdlSerializers.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
-PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options)
+PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options,
+                             Settings &settings, std::unique_ptr<AudioEngineProxy> &aeProxyContainer)
     : UpdateDocumentContributor(parent)
+    , SyncedItem(parent->getRoot()->getSyncMaster(), "/preset-manager")
     , m_banks(*this, nullptr)
-    , m_editBuffer(std::make_unique<EditBuffer>(this))
+    , m_editBuffer(std::make_unique<EditBuffer>(this, settings, aeProxyContainer))
     , m_initSound(std::make_unique<Preset>(this))
     , m_saveJob([this] { doSaveTask(); })
     , m_readOnly(readOnly)
@@ -92,6 +96,7 @@ UpdateDocumentContributor::tUpdateID PresetManager::onChange(uint64_t flags)
   auto ret = UpdateDocumentContributor::onChange(flags);
   m_sigNumBanksChanged.send(getNumBanks());
   m_sigBankSelection.send(getSelectedBankUuid());
+  setDirty();
   return ret;
 }
 
@@ -256,6 +261,7 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::
         DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
         auto bankFolder = pmFolder->get_child(bank->getUuid().raw());
         bank->load(transaction, bankFolder, currentBank++, numBanks);
+        SplashLayout::addStatus("Reading bank " + bank->getName(true));
       });
 }
 
@@ -679,7 +685,14 @@ std::pair<double, double> PresetManager::calcDefaultBankPositionFor(const Bank *
 
 size_t PresetManager::getBankPosition(const Uuid &uuid) const
 {
-  return m_banks.getIndexOf(uuid);
+  try
+  {
+    return m_banks.getIndexOf(uuid);
+  }
+  catch(...)
+  {
+    return 0;
+  }
 }
 
 void PresetManager::sanitizeBankClusterRelations(UNDO::Transaction *transaction)
@@ -878,6 +891,14 @@ Preset *PresetManager::getSelectedPreset()
     return bank->getSelectedPreset();
   }
   return nullptr;
+}
+
+nlohmann::json PresetManager::serialize() const
+{
+  return { { "file-version", VersionAttribute::getCurrentFileVersion() },
+           { "banks", m_banks },
+           { "selected-bank", getSelectedBankUuid().raw() },
+           { "selected-midi-bank", getMidiSelectedBank().raw() } };
 }
 
 void PresetManager::onPresetStored()

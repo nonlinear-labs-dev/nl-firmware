@@ -5,9 +5,10 @@
 #include "presets/EditBuffer.h"
 #include "presets/PresetManager.h"
 #include <groups/HardwareSourcesGroup.h>
-#include "device-settings/DebugLevel.h"
 #include <glib.h>
-#include <math.h>
+#include <cmath>
+#include <nltools/messaging/Message.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 static Parameter *getParameter()
 {

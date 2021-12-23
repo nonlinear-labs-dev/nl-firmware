@@ -2,6 +2,7 @@
 #include <testing/TestHelper.h>
 #include <proxies/hwui/base-unit/Ribbon.h>
 #include <proxies/hwui/base-unit/UpperRibbon.h>
+#include <proxies/hwui/base-unit/soled/RibbonLabel.h>
 
 TEST_CASE("Upper Ribbon", "[HWUI][Ribbon]")
 {
@@ -198,4 +199,14 @@ TEST_CASE("Upper Ribbon", "[HWUI][Ribbon]")
       });
     }
   }
+}
+
+
+TEST_CASE("RibbonLabel With Midi CC Display")
+{
+  CHECK(RibbonLabel::cropMidiCC("CC 13") == "CC 13");
+  CHECK(RibbonLabel::cropMidiCC("CC 1") == "CC 1");
+
+  CHECK(RibbonLabel::cropMidiCC("CC 12 (LSB: CC 53)") == "CC 12 (CC 53)");
+  CHECK(RibbonLabel::cropMidiCC("CC 1 (LSB: CC 1)") == "CC 1 (CC 1)");
 }

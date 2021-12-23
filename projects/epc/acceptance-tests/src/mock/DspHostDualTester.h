@@ -38,12 +38,15 @@ class DspHostDualTester
   // preset generators (beware: preset messages are malformed and completely initial, just unison and mono can be used here)
   struct MalformedPresetDescriptor
   {
-    const unsigned int m_unison;
-    const Polyphony m_mono;
+    const unsigned int m_unison = 1;
+    const Polyphony m_mono = Polyphony::Poly;
   };
+
   void applyMalformedSinglePreset(const MalformedPresetDescriptor& _preset);
   void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII);
+  void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII, float split);
   void applyMalformedLayerPreset(const MalformedPresetDescriptor& _preset);
+  void setSplit(VoiceGroup, float position);
 
   // key generators
   void applyTCDKeyDown(const unsigned int _pitch, const float _velocity, const VoiceGroup _group = VoiceGroup::Global);
@@ -63,5 +66,5 @@ class DspHostDualTester
 
  private:
   dsp_host_dual* m_host;
-  float encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony);
+  double encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony);
 };
