@@ -86,7 +86,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
     BankUseCases bankUseCases(selectedBank, *settings);
     if(auto selectedPreset = selectedBank->getPresetAt(actionPosition.second))
     {
-      PresetUseCases presetUseCases(selectedPreset, *settings);
+      PresetUseCases presetUseCases(*selectedPreset, *settings);
 
       Application::get().getUndoScope()->resetCukooTransaction();
 
@@ -141,7 +141,7 @@ void AppendOverwriteInsertButtonMenu::pushRenameScreen(Preset* target)
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new RenamePresetLayout(
       [=](const Glib::ustring& newName)
       {
-        PresetUseCases useCases(target, *Application::get().getSettings());
+        PresetUseCases useCases(*target, *Application::get().getSettings());
         useCases.rename(newName);
         animatePreset(target);
       },
