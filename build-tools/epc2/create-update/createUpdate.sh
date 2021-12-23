@@ -93,6 +93,7 @@ ENDOFHERE
 
   ln -s ../initramfs-backdoor.service /usr/local/lib/systemd/system/multi-user.target.wants/initramfs-backdoor.service
   systemctl enable initramfs-backdoor 
+
   mkdir -p /usr/local/C15/scripts 
   cp /initramfs-hook.sh /usr/local/C15/scripts/
 }
@@ -183,6 +184,34 @@ perform_tweaks() {
     echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 }
 
+cleanup_modules() {
+  mkdir -p /modules-to-keep
+  for file in $(cat /needed-modules.txt); do
+    if [ -f $file ]; then
+      mkdir -p $(dirname /modules-to-keep$file)
+      mv $file /modules-to-keep$file
+    fi
+  done
+
+  rm -rf /lib/modules/5.15.3.21.realtime1-1-rt
+
+  for file in $(cat /needed-modules.txt); do
+    if [ -f /modules-to-keep$file ]; then
+      mkdir -p $(dirname $file)
+      mv /modules-to-keep$file $file
+    fi
+  done
+
+  rm -rf /modules-to-keep
+}
+
+cleanup_firmware() {
+  mkdir /firmware-to-keep
+  cp /usr/lib/firmware/iwlwifi* /firmware-to-keep
+  rm -rf /usr/lib/firmware
+  mv /firmware-to-keep /usr/lib/firmware
+}
+
 package_update() {
   OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
   OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
@@ -193,11 +222,10 @@ package_update() {
   done 
 
   # remove unneccessary files
-  mkdir /firmware-to-keep
-  cp /usr/lib/firmware/iwlwifi* /firmware-to-keep
-  rm -rf /usr/lib/firmware
-  mv /firmware-to-keep /usr/lib/firmware
   rm -rf /usr/share/licenses
+
+  cleanup_modules
+  cleanup_firmware
 
   rm -rf /bindir/update
   mkdir -p /bindir/update
@@ -210,21 +238,21 @@ package_update() {
 	--exclude='./host-docker' \
 	--exclude='./tmp' \
 	--exclude='./root' \
+  --exclude='./boot' \
 	-czf /bindir/update/NonLinuxOverlay.tar.gz .
   touch /bindir/update/$(sha256sum /bindir/update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
   
-#  cp /backdoor.sh /bindir/update/backdoor.sh
-#  BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
-#  touch /bindir/update/$BACKDOOR_CHECKSUM.sign
+  #cp /backdoor.sh /bindir/update/backdoor.sh
+  #mv /boot /bindir/update/
+  #BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
+  #touch /bindir/update/$BACKDOOR_CHECKSUM.sign
   tar -C /bindir/ -cf /bindir/update.tar update
 }
 
-
-
+install_overlay_backdoor
 install_packages
 perform_tweaks
 ship_kernel_update
-install_overlay_backdoor
 build_c15
 setup_network_manager
 package_update

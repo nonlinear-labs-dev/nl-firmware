@@ -3,12 +3,12 @@ SET(UPDATE_KERNEL_FILE linux-rt-${EPC2_UPDATE_KERNEL}-x86_64.pkg.tar.zst)
 
 file(GLOB_RECURSE PROJECT_SOURCE_FILES ${CMAKE_SOURCE_DIR}/projects/*)
 
-
-configure_file(Dockerfile Dockerfile)
-configure_file(backdoor.sh backdoor.sh)
-configure_file(createUpdate.sh createUpdate.sh COPYONLY)
-configure_file(initramfs-hook.sh initramfs-hook.sh)
-configure_file(nlhook_v2 nlhook_v2)
+configure_file(Dockerfile docker/Dockerfile)
+configure_file(backdoor.sh docker/backdoor.sh)
+configure_file(createUpdate.sh docker/createUpdate.sh COPYONLY)
+configure_file(needed-modules.txt docker/needed-modules.txt COPYONLY)
+configure_file(initramfs-hook.sh docker/initramfs-hook.sh)
+configure_file(nlhook_v2 docker/nlhook_v2)
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Creating Docker container holding the update arch"
@@ -18,16 +18,17 @@ ADD_CUSTOM_COMMAND(
     DEPENDS Dockerfile
     DEPENDS nlhook_v2
     DEPENDS initramfs-hook.sh
+    DEPENDS needed-modules.txt
     DEPENDS epc2-download-package-cache
     DEPENDS ../CMakeLists.txt
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../collect-packages/build-packages.txt
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../collect-packages/base-packages.txt
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../collect-packages/update-packages.txt
     VERBATIM
-    COMMAND cp ../collect-packages/build-packages.txt ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND cp ../collect-packages/base-packages.txt ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND cp ../collect-packages/update-packages.txt ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND docker build -t epc2-create-update-overlay-docker ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND cp ../collect-packages/build-packages.txt ${CMAKE_CURRENT_BINARY_DIR}/docker
+    COMMAND cp ../collect-packages/base-packages.txt ${CMAKE_CURRENT_BINARY_DIR}/docker
+    COMMAND cp ../collect-packages/update-packages.txt ${CMAKE_CURRENT_BINARY_DIR}/docker
+    COMMAND docker build -t epc2-create-update-overlay-docker ${CMAKE_CURRENT_BINARY_DIR}/docker
     COMMAND touch .epc2-create-update-overlay-docker
     )
 
