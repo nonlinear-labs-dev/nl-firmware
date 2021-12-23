@@ -73,7 +73,7 @@ update_rootfs(){
 
     mkdir /update/BBB/rootfs \
     && gzip -dc /update/BBB/rootfs.tar.gz | tar -C /update/BBB/rootfs -xf - \
-    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' --exclude '/usr/C15/scripts/calibration' --delete /update/BBB/rootfs/ / \
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -caxv --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' --exclude '/usr/C15/scripts/calibration' --delete /update/BBB/rootfs/ / \
     && chown -R root.root /update
 
     UPDATE_RESULT=$?
@@ -140,7 +140,7 @@ sync_emmc() {
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to clean part. ..." "60"; fi
 
     mkdir ${EMMC_MOUNTPOINT} && mount ${EMMC_DEVICE_P1} ${EMMC_MOUNTPOINT} \
-    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '${EMMC_MOUNTPOINT}' / ${EMMC_MOUNTPOINT} \
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -caxv --exclude '${EMMC_MOUNTPOINT}' / ${EMMC_MOUNTPOINT} \
     && umount ${EMMC_DEVICE_P1}
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to sync part. ..." "60"; fi
 
