@@ -12,14 +12,12 @@
 
 TEST_CASE("Split Point Display Value")
 {
-  TestGroupSet set { &SyncMasterMockRoot::get() };
-  TestGroup group(&set, VoiceGroup::I);
-  group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::I }));
-  group.addParameter(new SplitPointParameter(&group, ParameterId { 1, VoiceGroup::II }));
+  auto eb = TestHelper::getEditBuffer();
 
-  auto splitI = dynamic_cast<SplitPointParameter*>(group.findParameterByID({ 1, VoiceGroup::I }));
-  auto splitII = dynamic_cast<SplitPointParameter*>(group.findParameterByID({ 1, VoiceGroup::II }));
+  auto splitI = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }));
+  auto splitII = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }));
   g_assert(splitI != nullptr);
+  g_assert(splitII != nullptr);
 
   auto settings = TestHelper::getSettings();
   auto pm = TestHelper::getPresetManager();
@@ -112,15 +110,16 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
   pmUseCases.createBankAndStoreEditBuffer();
   b = pm->getSelectedBank();
+  BankUseCases bankUseCases(b, *TestHelper::getSettings());
   TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
 
   CHECK_FALSE(sI->hasOverlap());
-  pmUseCases.appendEditBufferToBank(b);
-  presetWithoutOverlap = pm->getSelectedPreset();
+  presetWithoutOverlap = bankUseCases.appendEditBuffer();
+  CHECK(presetWithoutOverlap == pm->getSelectedPreset());
 
   createEBWithOverlap();
-  pmUseCases.appendEditBufferToBank(b);
-  presetWithOverlap = pm->getSelectedPreset();
+  presetWithOverlap = bankUseCases.appendEditBuffer();
+  CHECK(presetWithOverlap == pm->getSelectedPreset());
 
   auto syncSetting = Application::get().getSettings()->getSetting<SplitPointSyncParameters>();
 
@@ -149,7 +148,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("gets Stored")
     {
-      pmUseCases.appendEditBufferToBank(b);
+      bankUseCases.appendEditBuffer();
       THEN("Sync Setting stays Enabled")
       {
         CHECK(syncSetting->get());
@@ -182,7 +181,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
 
     WHEN("gets Stored")
     {
-      pmUseCases.appendEditBufferToBank(b);
+      bankUseCases.appendEditBuffer();
       THEN("Sync Setting stays Disabled")
       {
         CHECK(!syncSetting->get());

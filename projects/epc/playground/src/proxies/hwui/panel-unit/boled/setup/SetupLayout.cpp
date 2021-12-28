@@ -68,6 +68,7 @@
 #include "ScreenSaverTimeControls.h"
 #include "RoutingsView.h"
 #include "RoutingsEditor.h"
+#include "OneShotEntryTypes.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -88,6 +89,7 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <device-info/UniqueHardwareID.h>
 
 namespace NavTree
 {
@@ -111,6 +113,11 @@ namespace NavTree
     virtual bool onEditModeEntered()
     {
       return false;
+    }
+
+    virtual Node*getDesiredFocusChangeOnEditModeExited()
+    {
+      return nullptr;
     }
 
     [[nodiscard]] virtual Glib::ustring getName() const
@@ -288,11 +295,10 @@ namespace NavTree
 
   struct OneShotEntry : EditableLeaf
   {
-    using CB = std::function<void()>;
     struct Item : public AnimatedGenericItem
     {
-      Item(const Rect &rect, const CB &cb)
-          : AnimatedGenericItem("", rect, cb)
+      Item(const Rect &rect, OneShotTypes::StartCB startCB, OneShotTypes::FinishCB finishCB)
+          : AnimatedGenericItem("", rect, startCB, finishCB)
       {
       }
 
@@ -303,17 +309,32 @@ namespace NavTree
     };
 
     Item *theItem = nullptr;
-    CB cb;
 
-    OneShotEntry(InnerNode *p, const std::string &name, CB cb)
+    OneShotTypes::StartCB m_startCB;
+    OneShotTypes::FinishCB m_finishedCB;
+
+    OneShotEntry(InnerNode *p, const std::string &name, OneShotTypes::StartCB cb)
         : EditableLeaf(p, name)
-        , cb(std::move(cb))
+        , m_startCB(std::move(cb))
+    {
+    }
+
+    OneShotEntry(InnerNode *p, const std::string &name, OneShotTypes::FinishCB cb)
+        : EditableLeaf(p, name)
+        , m_finishedCB(std::move(cb))
+    {
+    }
+
+    OneShotEntry(InnerNode *p, const std::string &name, OneShotTypes::StartCB sCB, OneShotTypes::FinishCB fCB)
+        : EditableLeaf(p, name)
+        , m_startCB(std::move(sCB))
+        , m_finishedCB(std::move(fCB))
     {
     }
 
     Control *createView() override
     {
-      theItem = new Item(Rect(0, 0, 0, 0), cb);
+      theItem = new Item(Rect(0, 0, 0, 0), m_startCB, m_finishedCB);
       return theItem;
     }
 
@@ -333,11 +354,11 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     explicit StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound", [] {
+        : OneShotEntry(p, "Store Init Sound", OneShotTypes::StartCB([] {
           auto pm = Application::get().getPresetManager();
           SoundUseCases useCases(pm->getEditBuffer(), pm);
           useCases.storeInitSound();
-        })
+        }))
     {
     }
   };
@@ -345,11 +366,11 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     explicit ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound", [] {
+        : OneShotEntry(p, "Reset Init Sound", OneShotTypes::StartCB([] {
           auto pm = Application::get().getPresetManager();
           SoundUseCases useCases(pm->getEditBuffer(), pm);
           useCases.resetInitSound();
-        })
+        }))
     {
     }
   };
@@ -545,6 +566,20 @@ namespace NavTree
     }
   };
 
+  struct UniqueHardwareID : Leaf
+  {
+    explicit UniqueHardwareID(InnerNode *parent)
+        : Leaf(parent, "Device Hardware ID ")
+    {
+    }
+
+    Control *createView() override
+    {
+      auto info = Application::get().getDeviceInformation()->getItem<::UniqueHardwareID>().get();
+      return new DeviceInfoItemView(info);
+    }
+  };
+
   struct DateTime : EditableLeaf
   {
     explicit DateTime(InnerNode *parent)
@@ -658,6 +693,7 @@ namespace NavTree
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
+      children.emplace_back(new UniqueHardwareID(this));
       children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
       children.emplace_back(new BufferUnderrunsNode(this));
@@ -829,10 +865,10 @@ namespace NavTree
     explicit MidiChannels(InnerNode *parent)
         : InnerNode(parent, "Channels")
     {
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
-      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Receive Split Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSetting>(this, "Send Channel"));
       children.emplace_back(new EnumSettingItem<MidiSendChannelSplitSetting>(this, "Send Split Channel"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSetting>(this, "Receive Channel"));
+      children.emplace_back(new EnumSettingItem<MidiReceiveChannelSplitSetting>(this, "Receive Split Channel"));
     }
   };
 
@@ -840,10 +876,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, "Set to High-Res. Defaults", []() {
+        : OneShotEntry(parent, "Set to High-Res. Defaults", OneShotTypes::StartCB([]() {
           SettingsUseCases useCases(*Application::get().getSettings());
           useCases.setMappingsToHighRes();
-        })
+        }))
     {
     }
   };
@@ -852,10 +888,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, "Set to Classic MIDI Defaults", []() {
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults", OneShotTypes::StartCB([]() {
           SettingsUseCases useCases(*Application::get().getSettings());
           useCases.setMappingsToClassicMidi();
-        })
+        }))
     {
     }
   };
@@ -874,9 +910,9 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Bender"));
       children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
       children.emplace_back(new EnumSettingItem<Enable14BitSupport>(this, "High-Res. CCs (use LSB)"));
+      children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res. Velocity (CC 88)"));
       children.emplace_back(new ResetMidiSettingsToClassic(this));
       children.emplace_back(new ResetMidiSettingsToHighRes(this));
-      children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res. Velocity (CC 88)"));
     }
   };
 
@@ -1003,7 +1039,7 @@ namespace NavTree
   struct MidiPanicButton : OneShotEntry
   {
     explicit MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic", []() { SettingsUseCases::panicAudioEngine(); })
+        : OneShotEntry(p, "Panic", OneShotTypes::StartCB([]() { SettingsUseCases::panicAudioEngine(); }))
     {
     }
   };
@@ -1011,9 +1047,10 @@ namespace NavTree
   struct RoutingsEntry : public EditableLeaf
   {
    public:
-    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text)
+    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text, RoutingSettings::tRoutingIndex& parentSelection)
         : EditableLeaf(p, text)
         , m_id { id }
+        , m_parentSelection { parentSelection }
     {
     }
 
@@ -1024,21 +1061,22 @@ namespace NavTree
 
     Control *createEditor() override
     {
-      return new RoutingsEditor(m_id);
+      return new RoutingsEditor(m_id, m_parentSelection);
     }
 
    private:
     const RoutingSettings::tRoutingIndex m_id;
+    RoutingSettings::tRoutingIndex& m_parentSelection;
   };
 
   template <bool value> struct SetRoutingsTo : public OneShotEntry
   {
 
     explicit SetRoutingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(), []() {
+        : OneShotEntry(parent, getName(), OneShotTypes::StartCB([]() {
           SettingsUseCases useCases(*Application::get().getSettings());
           useCases.setAllRoutingEntries(value);
-        })
+        }))
     {
     }
 
@@ -1053,28 +1091,68 @@ namespace NavTree
 
   struct MidiRoutings : InnerNode
   {
+    typedef RoutingSettings::tRoutingIndex tID;
     explicit MidiRoutings(InnerNode *p)
         : InnerNode(p, "Routings")
     {
-      typedef RoutingSettings::tRoutingIndex tID;
-      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes"));
-      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch."));
-      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3"));
-      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4"));
-      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender"));
-      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch"));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1"));
-      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2"));
+      children.emplace_back(new RoutingsEntry(tID::Notes, this, "Notes", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::ProgramChange, this, "Prog. Ch.", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal1, this, "Pedal 1", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal2, this, "Pedal 2", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal3, this, "Pedal 3", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Pedal4, this, "Pedal 4", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Bender, this, "Bender", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2", m_selectedRouting));
       children.emplace_back(new SetRoutingsTo<true>(this));
       children.emplace_back(new SetRoutingsTo<false>(this));
+    }
+
+    Node *getDesiredFocusChangeOnEditModeExited() override
+    {
+      auto at = [](auto& list, auto n)
+      {
+        auto it = list.begin();
+        std::advance(it, n);
+        return it->get();
+      };
+
+      switch(m_selectedRouting)
+      {
+        case tID::Pedal1:
+          return at(children, 2);
+        case tID::Pedal2:
+          return at(children, 3);
+        case tID::Pedal3:
+          return at(children, 4);
+        case tID::Pedal4:
+          return at(children, 5);
+        case tID::Bender:
+          return at(children, 6);
+        case tID::Aftertouch:
+          return at(children, 7);
+        case tID::Ribbon1:
+          return at(children, 8);
+        case tID::Ribbon2:
+          return at(children, 9);
+        case tID::ProgramChange:
+          return at(children, 1);
+        case tID::Notes:
+          return at(children, 0);
+        case tID::LENGTH:
+          break;
+      }
+      return nullptr;
     }
 
     Control *createView() override
     {
       return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
+
+   private:
+    tID m_selectedRouting = tID::Notes;
   };
 
   struct MidiSettings : InnerNode
@@ -1128,6 +1206,26 @@ namespace NavTree
         return true;
       }
       return false;
+    }
+
+    void diveOutOfEditMode()
+    {
+      auto focusNode = (*focus).get();
+
+      if(auto pa = focusNode->parent)
+      {
+        if(auto newFocus = pa->getDesiredFocusChangeOnEditModeExited())
+        {
+          for(auto it = pa->children.begin(); it != pa->children.end(); it++)
+          {
+            if(it->get() == newFocus)
+            {
+              focus = it;
+              return;
+            }
+          }
+        }
+      }
     }
 
     bool diveUp()
@@ -1309,7 +1407,10 @@ bool SetupLayout::addEditor()
 void SetupLayout::diveUp()
 {
   if(m_focusAndMode.mode == UIMode::Edit)
+  {
     m_focusAndMode.mode = UIMode::Select;
+    m_tree->diveOutOfEditMode();
+  }
   else
     m_tree->diveUp();
 

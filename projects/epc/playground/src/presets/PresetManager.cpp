@@ -261,6 +261,7 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::
         DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
         auto bankFolder = pmFolder->get_child(bank->getUuid().raw());
         bank->load(transaction, bankFolder, currentBank++, numBanks);
+        SplashLayout::addStatus("Reading bank " + bank->getName(true));
       });
 }
 

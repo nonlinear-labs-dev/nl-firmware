@@ -34,7 +34,7 @@ void RenameBankLayout::commit(const Glib::ustring &newName)
     }
     else
     {
-      BankUseCases useCase(m_currentBank);
+      BankUseCases useCase(m_currentBank, *Application::get().getSettings());
       useCase.renameBank(newName);
     }
   }

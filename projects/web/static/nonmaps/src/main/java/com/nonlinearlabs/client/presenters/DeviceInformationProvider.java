@@ -73,6 +73,12 @@ public class DeviceInformationProvider {
 			notifyClients();
 			return true;
 		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().uniqueHardwareID.onChange(v -> {
+			info.uniqueHardwareID = v;
+			notifyClients();
+			return true;
+		});
 	}
 
 	protected void notifyClients() {

@@ -82,7 +82,7 @@ class C15Synth : public Synth, public sigc::trackable
   MidiRuntimeOptions m_midiOptions;
 
   //Latch-Filters, Queues
-  std::array<float, 8> m_playgroundHwSourceKnownValues{};
+  std::array<float, 8> m_playgroundHwSourceKnownValues {};
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 

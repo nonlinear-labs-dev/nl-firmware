@@ -84,16 +84,18 @@ TEST_CASE("Store Action do not send EditBuffer")
   CHECK(newNumBanks > oldNumBanks);
 
   auto bank = pm->getSelectedBank();
+  CHECK(bank != nullptr);
+  BankUseCases bankUseCases(bank, *TestHelper::getSettings());
 
   //Append preset into bank
   auto oldNumPresets = bank->getNumPresets();
-  useCases.appendEditBufferToBank(bank);
+  const auto appendedPreset = bankUseCases.appendEditBuffer();
   auto newNumPresets = bank->getNumPresets();
   CHECK(newNumPresets > oldNumPresets);
 
   //Insert preset into bank at pos 0
   oldNumPresets = bank->getNumPresets();
-  useCases.insertEditBufferAsPresetAtPosition(bank, 0);
+  auto insertedPreset = bankUseCases.insertEditBufferAtPosition(0);
   newNumPresets = bank->getNumPresets();
   CHECK(newNumPresets > oldNumPresets);
 

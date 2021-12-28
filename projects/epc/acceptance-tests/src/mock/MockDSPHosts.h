@@ -12,11 +12,12 @@ class MockDSPHost : public DSPInterface
   SoundType getType() override;
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
-  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
-  void unregisterNonLocalSplitKeyAssignment(const int note, VoiceGroup part, InputEventSource from) override;
+  VoiceGroup getNonLocalSplitKeyAssignmentForKeyUp(int key) override;
+  void registerNonLocalKeyAssignment(const int note, VoiceGroup part) override;
+  void unregisterNonLocalKeyAssignment(const int note) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
-  void onMidiSettingsReceived() override;
+  void fadeOutResetVoiceAllocAndEnvelopes() override;
   void setType(SoundType type);
 
  protected:

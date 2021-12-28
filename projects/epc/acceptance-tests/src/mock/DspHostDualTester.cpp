@@ -28,6 +28,8 @@ unsigned int DspHostDualTester::getActiveVoices(const VoiceGroup _group)
       gateSignal = sumUp(m_host->m_poly[0].m_signals.get_poly(gateSignalIndex))
           + sumUp(m_host->m_poly[1].m_signals.get_poly(gateSignalIndex));
       break;
+    case VoiceGroup::Invalid:
+      break;
   }
 
   // having summed up all voices, we obtain the number of "active" Voices (0 ... 24)
@@ -230,10 +232,10 @@ DspHostDualTester::StereoOutput DspHostDualTester::scanOutput(const std::vector<
   return result;
 }
 
-float DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony)
+double DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony)
 {
   nltools_assertAlways(_unison > 0 && _unison <= _polyphony);
-  return static_cast<float>(_unison - 1) / static_cast<float>(_polyphony - 1);
+  return static_cast<double>(_unison - 1) / static_cast<double>(_polyphony - 1);
 }
 
 void DspHostDualTester::setSplit(VoiceGroup vg, float pos)
@@ -248,4 +250,19 @@ void DspHostDualTester::setSplit(VoiceGroup vg, float pos)
   {
     m_host->localParChg(element.m_param.m_index, msg);
   }
+}
+
+void DspHostDualTester::applyMalformedSplitPreset(const DspHostDualTester::MalformedPresetDescriptor& _partI,
+                                                  const DspHostDualTester::MalformedPresetDescriptor& _partII,
+                                                  float split)
+{
+  nltools::msg::SplitPresetMessage msg;
+  msg.mono[0].monoEnable.controlPosition = static_cast<double>(_partI.m_mono);
+  msg.mono[1].monoEnable.controlPosition = static_cast<double>(_partII.m_mono);
+  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
+  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
+  msg.splitpoint[0].controlPosition = static_cast<double>(split);
+  msg.splitpoint[1].controlPosition = static_cast<double>(split) + (1.0 / 61.0);
+  // propagate message
+  m_host->onPresetMessage(msg);
 }

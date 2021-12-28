@@ -127,7 +127,7 @@ void displayCounter(void)
 }
 
 // ==================================================================================, uint16_t const flags
-void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data, uint16_t flags)
+int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data, uint16_t flags)
 {
   int       i;
   uint16_t *p;
@@ -145,12 +145,12 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
   {
     case PLAYCONTROLLER_BB_MSG_TYPE_KEY_EMUL:
       if (flags & NO_KEY_LOG)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 3)
       {
         printf("KEY : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       if ((same = !(flags & NO_OVERLAY) && (lastMessage == (((uint32_t) cmd << 16)) + (uint32_t) data[0])))
         cursorUp(1);
@@ -172,17 +172,17 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         printf(" (%5.1lf%%)", 100.0 * data[1] / 16000.0);
       printf("\n");
       lastMessage = (cmd << 16) + data[0];
-      return;
+      return 1;
 
 #if LPC_KEYBED_DIAG
     case PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA:
       if (flags & NO_KEY_LOG)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 64 + 128)
       {
         printf("KEY_COUNTERS : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       if ((same = !(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16))))
         cursorUp(20);
@@ -210,20 +210,20 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       }
       printf("\n");
       lastMessage = (cmd << 16);
-      return;
+      return 1;
 #endif
 
     case PLAYCONTROLLER_BB_MSG_TYPE_PARAMETER:
       if (flags & NO_PARAMS)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 2)
       {
         printf("PARAM : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       if (data[0] > NUM_HW_SOURCES)
-        return;
+        return 1;
       if (!(flags & NO_OVERLAY) && (lastMessage == (((uint32_t) cmd << 16)) + (uint32_t) data[0]))
         cursorUp(1);
       displayCounter();
@@ -233,16 +233,16 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         printf("PARAM (HWSID %02d) %s : key number=%3d, note number=%3d", data[0], paramNameTable[data[0]], data[1] >> 8, data[1] & 0xFF);
       printf("\n");
       lastMessage = (cmd << 16) + data[0];
-      return;
+      return 1;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION:
       if (flags & NO_NOTIFICATION)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 2)
       {
         printf("NOTIFICATION : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       if (!(flags & NO_OVERLAY) && (lastMessage == (((uint32_t) cmd << 16)) + (uint32_t) data[0]))
         cursorUp(1);
@@ -254,6 +254,9 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           break;
         case PLAYCONTROLLER_NOTIFICATION_ID_STAT_DATA:
           printf("NOTIFICATION : Status Data sent\n");
+          break;
+        case PLAYCONTROLLER_NOTIFICATION_ID_UHID64:
+          printf("NOTIFICATION : UHID64 sent\n");
           break;
         case PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT:
           printf("NOTIFICATION : Status Data cleared\n");
@@ -293,11 +296,11 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           break;
       }
       lastMessage = (cmd << 16) + data[0];
-      return;
+      return 1;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_STAT_DATA:
       if (flags & NO_STATDATA)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
 #if LPC_KEYBED_DIAG
       if (len != 13)
@@ -306,7 +309,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
 #endif
       {
         printf("STATUS : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
 #if LPC_KEYBED_DIAG
@@ -337,16 +340,36 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       printf("  Keybed:        : %5d missed events (TCD)\n", data[12]);
 #endif
       lastMessage = cmd << 16;
-      return;
+      return 1;
+
+    case PLAYCONTROLLER_BB_MSG_TYPE_UHID64:
+      if (flags & NO_UHID)
+        return 0;
+      dump(cmd, len, data, flags);
+      if (len != 4)
+      {
+        printf("STATUS : wrong length of %d\n", len);
+        return 3;
+      }
+      if (flags & NO_REDUCED)
+      {
+        if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+          cursorUp(1);
+        displayCounter();
+        printf("Unique Hardware ID (64bit): ");
+      }
+      printf("%04X-%04X-%04X-%04X\n", data[3], data[2], data[1], data[0]);
+      lastMessage = cmd << 16;
+      return 1;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_HEARTBEAT:
       if (flags & NO_HEARTBEAT)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 4)
       {
         printf("HEARTBEAT : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       uint64_t heartbeat = 0;
       for (int i = 3; i >= 0; i--)
@@ -359,16 +382,16 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       displayCounter();
       printf("HEARTBEAT : %8llu\n", heartbeat);
       lastMessage = cmd << 16;
-      return;
+      return 1;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_SENSORS_RAW:
       if ((flags & NO_SENSORSRAW) && (flags & NO_RIBBONS))
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 13)
       {
         printf("RAW SENSORS : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       if (!(flags & NO_SENSORSRAW))
       {
@@ -421,16 +444,16 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         }
       }
       lastMessage = cmd << 16;
-      return;
+      return 1;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_MUTESTATUS:
       if (flags & NO_MUTESTATUS)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 1)
       {
         printf("MUTESTATUS : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
         cursorUp(1);
@@ -459,16 +482,16 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         printf("-");
       printf("\n");
       lastMessage = cmd << 16;
-      return;
+      return 1;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_EHC_DATA:
       if (flags & NO_EHCDATA)
-        return;
+        return 0;
       dump(cmd, len, data, flags);
       if (len != 8 * 9)
       {
         printf("EHC DATA : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       p = (uint16_t *) data;
       for (i = 0; i < 8; i++)
@@ -724,7 +747,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       setColor(DEFAULT);
 
       lastMessage = cmd << 16;
-      return;
+      return 1;
 
     // --------------------- send data -----------------------------
     // settings
@@ -733,7 +756,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       if (len != 2)
       {
         printf("SETTING : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       displayCounter();
       printf("SETTING(ID=%04X): ", data[0]);
@@ -838,7 +861,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           printf("unknown ID %u, data=0x%04X\n", data[0], data[1]);
           break;
       }
-      return;
+      return 1;
 
     // EHC config
     case PLAYCONTROLLER_BB_MSG_TYPE_EHC_CONFIG:
@@ -846,7 +869,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       if (len != 2)
       {
         printf("EHC COMMAND : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       displayCounter();
       printf("EHC COMMAND: ");
@@ -891,7 +914,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
           printf("unknown EHC command 0x%04X, data=0x%04x\n", data[0], data[1]);
           break;
       }
-      return;
+      return 1;
 
     // Request
     case PLAYCONTROLLER_BB_MSG_TYPE_REQUEST:
@@ -899,7 +922,7 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
       if (len != 1)
       {
         printf("REQUEST : wrong length of %d\n", len);
-        return;
+        return 3;
       }
       displayCounter();
       printf("REQUEST: ");
@@ -920,6 +943,9 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
         case PLAYCONTROLLER_REQUEST_ID_STAT_DATA:
           printf("profiling data\n");
           break;
+        case PLAYCONTROLLER_REQUEST_ID_UHID64:
+          printf("unique hardware ID (64bit)\n");
+          break;
         case PLAYCONTROLLER_REQUEST_ID_EHC_EEPROMSAVE:
           printf("save EHC data to EEPROM\n");
           break;
@@ -931,11 +957,12 @@ void processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const dat
 
     default:
       if (flags & NO_UNKNOWN)
-        return;
+        return 0;
       displayCounter();
       printf("UNKNOWN, ");
       flags &= ~NO_HEXDUMP;
       dump(cmd, len, data, flags);
-      return;
+      return 1;
   }
+  return 0;
 }

@@ -65,7 +65,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
                                           if(auto bank = m_presetManager.findMidiSelectedBank())
                                           {
                                             setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
-                                            BankUseCases useCase(bank);
+                                            BankUseCases useCase(bank, m_settings);
                                             useCase.selectPreset(msg.program);
                                           }
                                       });
@@ -435,21 +435,18 @@ void AudioEngineProxy::sendSelectedMidiPresetAsProgramChange()
 {
   if(auto midiBank = m_presetManager.findMidiSelectedBank())
   {
-    if(m_presetManager.getSelectedBank() == midiBank)
+    if(auto selectedPreset = midiBank->getSelectedPreset())
     {
-      if(auto selectedPreset = midiBank->getSelectedPreset())
+      uint8_t presetPos = midiBank->getPresetPosition(selectedPreset);
+      if(m_lastMIDIKnownProgramNumber != presetPos)
       {
-        uint8_t presetPos = midiBank->getPresetPosition(selectedPreset);
-        if(m_lastMIDIKnownProgramNumber != presetPos)
+        if(presetPos < 128)
         {
-          if(presetPos < 128)
-          {
-            m_lastMIDIKnownProgramNumber = presetPos;
-            nltools::msg::Midi::ProgramChangeMessage msg {};
-            msg.program = presetPos;
-            msg.programType = selectedPreset->getType();
-            nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
-          }
+          m_lastMIDIKnownProgramNumber = presetPos;
+          nltools::msg::Midi::ProgramChangeMessage msg {};
+          msg.program = presetPos;
+          msg.programType = selectedPreset->getType();
+          nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
         }
       }
     }
@@ -484,10 +481,11 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
                           PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
                           RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping,
-                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings>(&m_settings);
+                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(
+      &m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
-      [this](const Setting *s)
+      [](const Setting *s)
       {
         auto as = static_cast<const AutoStartRecorderSetting *>(s);
         const auto shouldAutoStart = as->get();

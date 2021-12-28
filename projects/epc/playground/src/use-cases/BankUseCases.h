@@ -5,11 +5,13 @@
 
 class Bank;
 class Preset;
+class PresetManager;
+class Settings;
 
 class BankUseCases
 {
  public:
-  explicit BankUseCases(Bank* bank);
+  explicit BankUseCases(Bank* bank, Settings& settings);
 
   void selectPreset(int pos);
   void stepPresetSelection(int inc);
@@ -35,10 +37,14 @@ class BankUseCases
   void insertBank(Bank* toInsert, size_t insertPosition);
 
   Preset* insertEditBufferAtPosition(int anchor);
-
   Preset* appendEditBuffer();
+  Preset* appendEditBufferAsPresetWithUUID(Uuid uuid);
+  Preset* insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid);
 
  private:
-  bool isDirectLoadActive() const;
+  [[nodiscard]] bool isDirectLoadActive() const;
+  [[nodiscard]] PresetManager* getPresetManager() const;
+
   Bank* m_bank;
+  Settings& m_settings;
 };

@@ -577,7 +577,6 @@ TEST_CASE("Convert Sound Leads to Converted UUID")
   EditBufferUseCases ebUseCases(*eb);
 
   ebUseCases.convertToSingle(VoiceGroup::I);
-  REQUIRE(eb->getType() == SoundType::Single);
 
   MockPresetStorage presets;
   auto single = presets.getSinglePreset();
@@ -587,6 +586,7 @@ TEST_CASE("Convert Sound Leads to Converted UUID")
   SECTION("Convert from Layer to Single")
   {
     ebUseCases.load(layer);
+    REQUIRE(eb->getType() == SoundType::Layer);
     ebUseCases.convertToSingle(VoiceGroup::I);
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
   }
@@ -594,18 +594,23 @@ TEST_CASE("Convert Sound Leads to Converted UUID")
   SECTION("Convert from Split to Single")
   {
     ebUseCases.load(split);
+    REQUIRE(eb->getType() == SoundType::Split);
     ebUseCases.convertToSingle(VoiceGroup::I);
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
   }
 
   SECTION("Convert from Single to Layer")
   {
+    ebUseCases.load(single);
+    REQUIRE(eb->getType() == SoundType::Single);
     ebUseCases.convertToLayer(VoiceGroup::I);
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
   }
 
   SECTION("Convert from Single to Split")
   {
+    ebUseCases.load(single);
+    REQUIRE(eb->getType() == SoundType::Single);
     ebUseCases.convertToSplit(VoiceGroup::I);
     REQUIRE(eb->getUUIDOfLastLoadedPreset() == Uuid::converted());
   }

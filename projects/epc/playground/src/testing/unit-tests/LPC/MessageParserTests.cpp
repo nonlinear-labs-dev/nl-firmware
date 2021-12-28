@@ -5,7 +5,7 @@ TEST_CASE("Message Parser")
 {
   SECTION("stream")
   {
-    uint16_t data[] = { MessageParser::PRESET_DIRECT, 2, 99, 77 };
+    uint16_t data[] = { MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_PRESET_DIRECT, 2, 99, 77 };
     auto *byteData = reinterpret_cast<uint8_t *>(data);
 
     size_t msgLen = sizeof(data);
@@ -25,7 +25,7 @@ TEST_CASE("Message Parser")
         if(needed == 0)
         {
           const MessageParser::NLMessage &msg = foo.getMessage();
-          CHECK(msg.type == MessageParser::PRESET_DIRECT);
+          CHECK(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_PRESET_DIRECT);
           CHECK(msg.length == 2);
           CHECK(msg.params[0] == 99);
           CHECK(msg.params[1] == 77);

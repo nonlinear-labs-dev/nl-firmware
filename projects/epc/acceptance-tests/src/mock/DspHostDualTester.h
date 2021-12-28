@@ -44,6 +44,7 @@ class DspHostDualTester
 
   void applyMalformedSinglePreset(const MalformedPresetDescriptor& _preset);
   void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII);
+  void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII, float split);
   void applyMalformedLayerPreset(const MalformedPresetDescriptor& _preset);
   void setSplit(VoiceGroup, float position);
 
@@ -65,5 +66,5 @@ class DspHostDualTester
 
  private:
   dsp_host_dual* m_host;
-  float encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony);
+  double encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony);
 };
