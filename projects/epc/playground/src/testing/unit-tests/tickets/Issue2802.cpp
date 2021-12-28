@@ -20,7 +20,7 @@ TEST_CASE("Ticket 2802")
   PresetManagerUseCases pmUseCases(pm, settings);
   auto tmpBank = pmUseCases.createBankAndStoreEditBuffer();
   auto tmpPreset = tmpBank->getPresetAt(0);
-  PresetUseCases presetUseCases(tmpPreset);
+  PresetUseCases presetUseCases(*tmpPreset, settings);
 
   WHEN("Single Editbuffer converted to Layer")
   {

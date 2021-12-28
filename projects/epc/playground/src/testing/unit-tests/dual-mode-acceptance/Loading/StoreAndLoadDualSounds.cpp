@@ -24,7 +24,7 @@ TEST_CASE("Store and Load Preset yields same editbuffer")
 
     THEN("Stored")
     {
-      PresetUseCases presetUseCase(layerPreset);
+      PresetUseCases presetUseCase(*layerPreset, *TestHelper::getSettings());
       presetUseCase.overwriteWithEditBuffer(*eb);
 
       WHEN("Loaded")

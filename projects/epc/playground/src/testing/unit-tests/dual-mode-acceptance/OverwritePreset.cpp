@@ -14,7 +14,7 @@ TEST_CASE("Override Single Preset With new!", "[Preset][Store]")
     auto scope = TestHelper::createTestScope();
     eb->setName(scope->getTransaction(), "Name");
   }
-  PresetUseCases presetUseCases(toOverwrite);
+  PresetUseCases presetUseCases(*toOverwrite, *TestHelper::getSettings());
   presetUseCases.overwriteWithEditBuffer(*eb);
 
   CHECK(toOverwrite->getName() == "Name");
@@ -34,7 +34,7 @@ TEST_CASE("Override Dual Preset With new!", "[Preset][Store]")
     eb->setVoiceGroupName(scope->getTransaction(), "2", VoiceGroup::II);
     eb->setName(scope->getTransaction(), "Name");
   }
-  PresetUseCases presetUseCase(toOverwrite);
+  PresetUseCases presetUseCase(*toOverwrite, *TestHelper::getSettings());
   presetUseCase.overwriteWithEditBuffer(*eb);
 
   CHECK(toOverwrite->getVoiceGroupName(VoiceGroup::I) == "1");
