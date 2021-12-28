@@ -8,7 +8,7 @@
 #include "device-settings/BaseUnitUIMode.h"
 #include <nltools/messaging/Message.h>
 #include <proxies/hwui/HWUI.h>
-#include <device-settings/PanelUnitFocusAndMode.h>
+#include <device-settings/FocusAndModeSetting.h>
 
 BaseUnit::BaseUnit(Settings& settings)
     : super(settings)

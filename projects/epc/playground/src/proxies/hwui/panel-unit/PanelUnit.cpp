@@ -21,7 +21,7 @@
 
 PanelUnit::PanelUnit(Settings &settings)
     : super(settings)
-    , m_panelFocusAndModeSetting{*getSettings().getSetting<PanelUnitFocusAndMode>()}
+    , m_panelFocusAndModeSetting{*getSettings().getSetting<FocusAndModeSetting>()}
 {
   const int numLEDs = 96;
 

@@ -48,7 +48,7 @@
 #include "SyncVoiceGroupsAcrossUIS.h"
 #include "SplitPointSyncParameters.h"
 #include "GlobalLocalEnableSetting.h"
-#include "PanelUnitFocusAndMode.h"
+#include "FocusAndModeSetting.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -76,7 +76,7 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsPlaycontrollerWriteFallback(*this));
   addSetting("PresetStoreModeSetting", new PresetStoreModeSetting(*this));
   addSetting("BaseUnitUIMode", new BaseUnitUIMode(*this));
-  addSetting("PanelUnitFocusAndMode", new PanelUnitFocusAndMode(*this));
+  addSetting("PanelUnitFocusAndMode", new FocusAndModeSetting(*this));
   addSetting("NoteShift", new NoteShift(*this));
   addSetting("ParameterEditModeRibbonBehaviour", new ParameterEditModeRibbonBehaviour(*this));
   addSetting("DebugLevel", new DebugLevel(*this));
@@ -164,6 +164,8 @@ void Settings::init()
   {
     s.second->init();
   }
+
+  getSetting<FocusAndModeSetting>()->setFocusAndModeFreeze(true);
 }
 
 void Settings::reload()

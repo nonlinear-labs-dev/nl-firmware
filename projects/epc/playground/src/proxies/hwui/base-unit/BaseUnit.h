@@ -1,6 +1,6 @@
 #pragma once
 
-#include <device-settings/PanelUnitFocusAndMode.h>
+#include <device-settings/FocusAndModeSetting.h>
 #include "PlayPanel.h"
 #include "UpperRibbon.h"
 #include "LowerRibbon.h"

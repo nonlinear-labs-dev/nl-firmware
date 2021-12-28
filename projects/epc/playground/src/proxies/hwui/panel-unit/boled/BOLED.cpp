@@ -53,7 +53,7 @@ void BOLED::toggleScreenSaver(bool enabled)
 
 void BOLED::bruteForce()
 {
-  setupFocusAndMode(Application::get().getHWUI()->getFocusAndMode());
+  setupFocusAndMode(Application::get().getHWUI()->getFocusAndModeState());
 }
 
 void BOLED::setupFocusAndMode(FocusAndMode focusAndMode)
@@ -139,7 +139,7 @@ void BOLED::setupPresetScreen(FocusAndMode focusAndMode)
       break;
 
     default:
-      reset(new PresetManagerLayout(focusAndMode, Application::get().getHWUI()->getOldFocusAndMode()));
+      reset(new PresetManagerLayout(focusAndMode, Application::get().getHWUI()->getOldFocusAndModeState()));
   }
 }
 
@@ -155,7 +155,7 @@ void BOLED::setupBankScreen(FocusAndMode focusAndMode)
       if(auto e = std::dynamic_pointer_cast<PresetManagerLayout>(getLayout()))
         e->setFocusAndMode(focusAndMode);
       else
-        reset(new PresetManagerLayout(focusAndMode, Application::get().getHWUI()->getFocusAndMode()));
+        reset(new PresetManagerLayout(focusAndMode, Application::get().getHWUI()->getFocusAndModeState()));
   }
 }
 

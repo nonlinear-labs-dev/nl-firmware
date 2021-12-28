@@ -1419,16 +1419,18 @@ void SetupLayout::diveUp()
 
 bool SetupLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  SettingsUseCases useCases(*Application::get().getSettings());
+
   if(down)
   {
     if(i == Buttons::BUTTON_PRESET)
     {
-      Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+      useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
       return true;
     }
     else if(i == Buttons::BUTTON_STORE)
     {
-      Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
+      useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
       return true;
     }
 

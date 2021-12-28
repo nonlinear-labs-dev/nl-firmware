@@ -46,5 +46,5 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   std::shared_ptr<UsageMode> m_overlayUsageMode;
 
   sigc::connection m_signalInitializeInstalledLayoutOnce;
-  PanelUnitFocusAndMode& m_panelFocusAndModeSetting;
+  FocusAndModeSetting & m_panelFocusAndModeSetting;
 };

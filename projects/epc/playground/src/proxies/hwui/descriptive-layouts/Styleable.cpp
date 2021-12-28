@@ -19,7 +19,7 @@ namespace DescriptiveLayouts
   void Styleable::style(LayoutClasses li, ControlClasses cc, ControlInstances ci)
   {
     const auto &s = StyleSheet::get();
-    auto fam = Application::get().getHWUI()->getFocusAndMode();
+    auto fam = Application::get().getHWUI()->getFocusAndModeState();
     const PrimitiveInstance &p = getPrimitive();
     DebugLevel::gassy("Styling primitive ", p.primitiveInstance, "of class ", toString(p.primitveClass));
 

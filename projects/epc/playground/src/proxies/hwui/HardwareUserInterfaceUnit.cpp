@@ -4,7 +4,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/ScreenSaverUsageMode.h>
-#include <device-settings/PanelUnitFocusAndMode.h>
+#include <device-settings/FocusAndModeSetting.h>
 
 HardwareUserInterfaceUnit::HardwareUserInterfaceUnit(Settings& settings)
     : m_settings { settings }
@@ -12,7 +12,7 @@ HardwareUserInterfaceUnit::HardwareUserInterfaceUnit(Settings& settings)
   m_settings.getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
       sigc::mem_fun(this, &HardwareUserInterfaceUnit::onScreenSaverStateChanged));
 
-  m_settings.getSetting<PanelUnitFocusAndMode>()->onChange(
+  m_settings.getSetting<FocusAndModeSetting>()->onChange(
       sigc::mem_fun(this, &HardwareUserInterfaceUnit::onFocusAndModeChanged));
 }
 
@@ -80,7 +80,7 @@ Settings& HardwareUserInterfaceUnit::getSettings() const
 
 void HardwareUserInterfaceUnit::onFocusAndModeChanged(const Setting* s)
 {
-  if(auto famSetting = dynamic_cast<const PanelUnitFocusAndMode*>(s))
+  if(auto famSetting = dynamic_cast<const FocusAndModeSetting*>(s))
   {
     auto state = famSetting->getState();
     setupFocusAndMode(state);

@@ -79,7 +79,7 @@ bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(down)
   {
-    auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+    auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
     auto pm = Application::get().getPresetManager();
     auto settings = Application::get().getSettings();
     PresetManagerUseCases useCase(*pm, *settings);
@@ -107,7 +107,7 @@ bool PresetList::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 
 void PresetList::onRotary(int inc, ButtonModifiers modifiers)
 {
-  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+  auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
   auto pm = Application::get().getPresetManager();
 
   if(focusAndMode.focus == UIFocus::Banks)

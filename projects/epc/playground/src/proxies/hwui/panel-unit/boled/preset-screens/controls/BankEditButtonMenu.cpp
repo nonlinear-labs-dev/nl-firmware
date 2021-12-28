@@ -20,6 +20,7 @@
 #include <tools/TimeTools.h>
 #include <nltools/GenericScopeGuard.h>
 #include <device-settings/Settings.h>
+#include "use-cases/SettingsUseCases.h"
 
 static size_t s_lastSelectedButton = 0;
 
@@ -229,9 +230,8 @@ void BankEditButtonMenu::deleteBank()
     useCase.deleteBank(bank);
   }
 
-  auto hwui = Application::get().getHWUI();
-  hwui->setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Select));
-  hwui->getPanelUnit().getEditPanel().getBoled().invalidate();
+  SettingsUseCases useCases(*Application::get().getSettings());
+  useCases.setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Select));
 }
 
 void BankEditButtonMenu::moveLeft()

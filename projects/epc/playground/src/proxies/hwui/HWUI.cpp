@@ -33,6 +33,7 @@
 #include <presets/PresetPartSelection.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
+#include "use-cases/SettingsUseCases.h"
 
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
@@ -42,12 +43,9 @@ HWUI::HWUI(Settings &settings)
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_blinkCount(0)
-    , m_setupJob(1,
-                 [this]
-                 {
-                   m_signalFocusAndMode.send(getFocusAndModeState());
-                 })
-    , m_famSetting(*settings.getSetting<PanelUnitFocusAndMode>())
+    , m_setupJob(1, [this] { m_signalFocusAndMode.send(getFocusAndModeState()); })
+    , m_settings{ settings }
+    , m_famSetting(*settings.getSetting<FocusAndModeSetting>())
 {
 
   if(isatty(fileno(stdin)))
@@ -96,6 +94,8 @@ void HWUI::init()
 
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
+
+  m_focusAndModeConnection = m_famSetting.onChange(sigc::mem_fun(this, &HWUI::onFocusAndModeChanged));
 
   Oleds::get().syncRedraw();
 }
@@ -350,13 +350,14 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
       {
         if(buttonID == Buttons::BUTTON_SETUP && state)
         {
+          SettingsUseCases useCases(m_settings);
           if(getFocusAndModeState().focus == UIFocus::Setup)
           {
-            undoableSetFocusAndMode(getOldFocusAndModeState());
+            useCases.setFocusAndMode(getOldFocusAndModeState());
           }
           else
           {
-            undoableSetFocusAndMode({ UIFocus::Setup, UIMode::Select });
+            useCases.setFocusAndMode({ UIFocus::Setup, UIMode::Select });
           }
         }
       }
@@ -402,7 +403,7 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
 
 bool HWUI::isFineAllowed()
 {
-  auto uiFocus = getFocusAndMode().focus;
+  auto uiFocus = getFocusAndModeState().focus;
   return uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound;
 }
 
@@ -501,46 +502,6 @@ bool HWUI::onBlinkTimeout()
   return true;
 }
 
-void HWUI::undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode focusAndMode)
-{
-  if(Application::get().getPresetManager()->isLoading())
-    return;
-
-  if(m_focusAndModeFrozen)
-    return;
-
-  if(focusAndMode.focus == UIFocus::Unchanged)
-    focusAndMode.focus = m_focusAndMode.focus;
-
-  if(focusAndMode.mode == UIMode::Unchanged)
-    focusAndMode.mode = m_focusAndMode.mode;
-
-  if(focusAndMode.focus != m_focusAndMode.focus)
-    if(focusAndMode.mode == UIMode::Unchanged)
-      focusAndMode.mode = UIMode::Select;
-
-  auto swapData = UNDO::createSwapData(restrictFocusAndMode(focusAndMode));
-  auto oldSwap = UNDO::createSwapData(m_focusAndMode);
-
-  transaction->addSimpleCommand(
-      [=](UNDO::Command::State)
-      {
-        swapData->swapWith(m_focusAndMode);
-        oldSwap->swapWith(m_oldFocusAndMode);
-        setupFocusAndMode();
-      });
-}
-
-FocusAndMode HWUI::getFocusAndMode() const
-{
-  return m_focusAndMode;
-}
-
-FocusAndMode HWUI::getOldFocusAndMode() const
-{
-  return m_oldFocusAndMode;
-}
-
 VoiceGroup HWUI::getCurrentVoiceGroup() const
 {
   return m_currentVoiceGroup;
@@ -585,7 +546,6 @@ void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
 
 void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection()
 {
-  //TODO examine
   auto currentVG = getCurrentVoiceGroup();
   auto partName = currentVG == VoiceGroup::I ? "II" : "I";
   auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Select Part "
@@ -623,132 +583,9 @@ sigc::connection HWUI::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGr
   return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
 }
 
-void HWUI::setFocusAndMode(FocusAndMode focusAndMode)
-{
-  if(m_focusAndModeFrozen)
-    return;
-
-  focusAndMode.fixUnchanged(m_focusAndMode);
-  m_oldFocusAndMode = m_focusAndMode;
-  m_focusAndMode = restrictFocusAndMode(focusAndMode);
-  setupFocusAndMode();
-}
-
-void HWUI::undoableSetFocusAndMode(FocusAndMode focusAndMode)
-{
-  auto scope = Application::get().getUndoScope()->startCuckooTransaction();
-  undoableSetFocusAndMode(scope->getTransaction(), focusAndMode);
-}
-
-void HWUI::setFocusAndMode(const UIMode &mode)
-{
-  setFocusAndMode(FocusAndMode { mode });
-}
-
-void HWUI::setFocusAndMode(const UIFocus &focus)
-{
-  setFocusAndMode(FocusAndMode { focus });
-}
-
-void HWUI::setFocusAndMode(const UIDetail &detail)
-{
-  setFocusAndMode({ m_focusAndMode.focus, m_focusAndMode.mode, detail });
-}
-
-void HWUI::setUiModeDetail(UIDetail detail)
-{
-  m_focusAndMode.detail = detail;
-
-  if(Application::get().getSettings()->getSetting<LayoutMode>()->get() != LayoutVersionMode::Old)
-  {
-    setupFocusAndMode();
-  }
-}
-
-void HWUI::freezeFocusAndMode()
-{
-  m_focusAndModeFrozen = true;
-}
-
-void HWUI::thawFocusAndMode()
-{
-  m_focusAndModeFrozen = false;
-}
-
-FocusAndMode HWUI::fixFocusAndModeWithAnys(FocusAndMode in)
-{
-  if(in.focus == UIFocus::Any)
-    in.focus = UIFocus::Parameters;
-
-  if(in.mode == UIMode::Any)
-    in.mode = UIMode::Select;
-
-  if(in.detail == UIDetail::Any)
-    in.detail = UIDetail::Init;
-
-  return in;
-}
-
-FocusAndMode HWUI::removeInvalidsFromSound(FocusAndMode in)
-{
-  if(in.focus == UIFocus::Sound)
-  {
-    if(in.mode == UIMode::Store || in.mode == UIMode::Info)
-    {
-      in.mode = UIMode::Select;
-    }
-  }
-
-  return in;
-}
-
-FocusAndMode HWUI::removeEditOnFocusChange(FocusAndMode in) const
-{
-  const bool isDesiredParameter = (in.focus == UIFocus::Parameters);
-  const bool isDesiredPresetManager = (in.focus == UIFocus::Banks) || (in.focus == UIFocus::Presets);
-  const bool isDesiredSound = in.focus == UIFocus::Sound;
-
-  const bool isCurrentPresetManager
-      = (m_focusAndMode.focus == UIFocus::Banks) || (m_focusAndMode.focus == UIFocus::Presets);
-  const bool isCurrentParameter = m_focusAndMode.focus == UIFocus::Parameters;
-  const bool isCurrentSound = m_focusAndMode.focus == UIFocus::Sound;
-
-  const bool switchFromPresetManagerToParameter = (isCurrentPresetManager && isDesiredParameter);
-  const bool switchFromPresetManagerToSound = (isCurrentPresetManager && isDesiredSound);
-
-  const bool switchFromParameterToSound = (isCurrentParameter && isDesiredSound);
-
-  const bool switchFromSoundToPresetManager = (isCurrentSound && isDesiredPresetManager);
-  const bool switchFromSoundToParameter = (isCurrentSound && isDesiredParameter);
-
-  if(switchFromPresetManagerToParameter || switchFromSoundToPresetManager || switchFromSoundToParameter
-     || switchFromPresetManagerToSound || switchFromParameterToSound)
-  {
-    if(m_focusAndMode.mode == UIMode::Edit)
-    {
-      in.mode = UIMode::Select;
-    }
-  }
-
-  return in;
-}
-
-FocusAndMode HWUI::restrictFocusAndMode(FocusAndMode in) const
-{
-  in = fixFocusAndModeWithAnys(in);
-  in = removeEditOnFocusChange(in);
-  in = removeInvalidsFromSound(in);
-  return in;
-}
-
 sigc::connection HWUI::onLoadToPartModeChanged(const sigc::slot<void, bool> &cb)
 {
   return m_loadToPartSignal.connectAndInit(cb, m_loadToPartActive);
-}
-
-sigc::connection HWUI::onHWUIChanged(const sigc::slot<void> &cb)
-{
-  return m_inputSignal.connect(cb);
 }
 
 bool HWUI::isInLoadToPart() const
@@ -835,10 +672,12 @@ void HWUI::exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std:
 
 void HWUI::onParameterReselection(Parameter *parameter)
 {
-  if(getFocusAndMode().mode == UIMode::Info)
-    setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Info));
+  SettingsUseCases useCases(m_settings);
+
+  if(getFocusAndModeState().mode == UIMode::Info)
+    useCases.setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Info));
   else
-    setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+    useCases.setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
 }
 
 void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter)
@@ -847,25 +686,21 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  if(!eb->isParameterFocusLocked())
+  if(!eb->isParameterFocusLocked() && !m_famSetting.isFocusAndModeFrozen())
   {
-    if(getFocusAndMode().focus == UIFocus::Sound)
+    SettingsUseCases useCases(m_settings);
+    if(getFocusAndModeState().focus == UIFocus::Sound)
     {
       if(oldParameter->getID() != newParameter->getID())
       {
-        setFocusAndMode(FocusAndMode { UIFocus::Parameters });
+        useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
       }
     }
     else
     {
-      setFocusAndMode(FocusAndMode { UIFocus::Parameters });
+      useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     }
   }
-}
-
-sigc::connection HWUI::onFocusAndModeInstalled(const sigc::slot<void, FocusAndMode> &cb)
-{
-  return m_signalFocusAndMode.connect(cb);
 }
 
 FocusAndMode HWUI::getFocusAndModeState() const
@@ -876,4 +711,9 @@ FocusAndMode HWUI::getFocusAndModeState() const
 FocusAndMode HWUI::getOldFocusAndModeState() const
 {
   return m_famSetting.getOldState();
+}
+
+void HWUI::onFocusAndModeChanged(const Setting* s)
+{
+  m_setupJob.trigger();
 }

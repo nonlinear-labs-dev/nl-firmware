@@ -41,15 +41,8 @@ class HWUI
 
   void indicateBlockingMainThread();
 
-  void undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode focusAndMode);
-  void setUiModeDetail(UIDetail detail);
-  void undoableSetFocusAndMode(FocusAndMode focusAndMode);
-  void setFocusAndMode(const UIDetail &detail);
-  void setFocusAndMode(const UIMode &mode);
-  void setFocusAndMode(const UIFocus &focus);
-  void setFocusAndMode(FocusAndMode focusAndMode);
-  FocusAndMode getFocusAndMode() const;
-  FocusAndMode getOldFocusAndMode() const;
+  [[nodiscard]] FocusAndMode getFocusAndModeState() const;
+  [[nodiscard]] FocusAndMode getOldFocusAndModeState() const;
 
   VoiceGroup getCurrentVoiceGroup() const;
   bool isInLoadToPart() const;
@@ -65,10 +58,6 @@ class HWUI
 
   sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
   sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
-  sigc::connection onHWUIChanged(const sigc::slot<void> &cb);
-
-  void freezeFocusAndMode();
-  void thawFocusAndMode();
 
   PanelUnit &getPanelUnit();
   const PanelUnit &getPanelUnit() const;
@@ -82,7 +71,6 @@ class HWUI
 
   sigc::connection onModifiersChanged(const sigc::slot<void, ButtonModifiers> &cb);
   sigc::connection connectToBlinkTimer(const sigc::slot<void, int> &cb);
-  sigc::connection onFocusAndModeInstalled(const sigc::slot<void, FocusAndMode> &cb);
   void deInit();
 
   void toggleLoadToPart();
@@ -95,6 +83,7 @@ class HWUI
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
 
+  void onFocusAndModeChanged(const Setting* s);
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
@@ -114,15 +103,10 @@ class HWUI
   bool detectAffengriff(Buttons buttonID, bool state);
   bool isFineAllowed();
 
-  static FocusAndMode fixFocusAndModeWithAnys(FocusAndMode in);
-  static FocusAndMode removeInvalidsFromSound(FocusAndMode in);
-
-  FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
-  FocusAndMode removeEditOnFocusChange(FocusAndMode in) const;
-
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;
   sigc::connection m_rotaryChangedConnection;
+  sigc::connection m_focusAndModeConnection;
 
   void onRotaryChanged();
 
@@ -157,9 +141,6 @@ class HWUI
 
   int m_affengriffState = 0;
 
-  FocusAndMode m_focusAndMode;
-  FocusAndMode m_oldFocusAndMode;
-
   int m_blinkCount;
   Expiration m_switchOffBlockingMainThreadIndicator;
 
@@ -168,7 +149,6 @@ class HWUI
   DelayedJob m_setupJob;
   ScopedGuard m_parameterFocusLock;
 
-  [[nodiscard]] FocusAndMode getFocusAndModeState() const;
-  [[nodiscard]] FocusAndMode getOldFocusAndModeState() const;
-  PanelUnitFocusAndMode& m_famSetting;
+  Settings& m_settings;
+  FocusAndModeSetting & m_famSetting;
 };

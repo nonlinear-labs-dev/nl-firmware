@@ -5,6 +5,7 @@
 #include <proxies/hwui/controls/Button.h>
 #include <sigc++/adaptors/hide.h>
 #include "BankButton.h"
+#include "use-cases/SettingsUseCases.h"
 
 auto getSoundType()
 {
@@ -38,7 +39,7 @@ void BankButton::bruteForce()
 {
   clear();
 
-  auto mode = Application::get().getHWUI()->getFocusAndMode().mode;
+  auto mode = Application::get().getHWUI()->getFocusAndModeState().mode;
 
   switch(getSoundType())
   {
@@ -57,15 +58,17 @@ void BankButton::bruteForce()
 
 void BankButton::installSingle()
 {
-  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+  auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
   auto bankbutton = addControl(new Button("Bank", { 0, 15, 58, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
   auto toggleBankFocus = [this] {
+    SettingsUseCases useCases(*Application::get().getSettings());
+
     if(m_bankFocus)
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
+      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
     else
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
+      useCases.setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(toggleBankFocus, toggleBankFocus);
@@ -73,17 +76,19 @@ void BankButton::installSingle()
 
 void BankButton::installDual()
 {
-  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+  auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
   auto bankbutton = addControl(new Button("Bank", { 4, 0, 50, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
   addControl(new Button("I / II", { 0, 15, 58, 11 }));
 
   auto toggleBankFocus = [this] {
+    SettingsUseCases useCases(*Application::get().getSettings());
+
     if(m_bankFocus)
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
+      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
     else
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
+      useCases.setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(

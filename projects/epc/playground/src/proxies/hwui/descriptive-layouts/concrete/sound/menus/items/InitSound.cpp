@@ -1,5 +1,6 @@
 #include <Application.h>
 #include "InitSound.h"
+#include "use-cases/SettingsUseCases.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
@@ -17,8 +18,8 @@ InitSound::InitSound(const Rect& rect)
                           OneShotTypes::FinishCB(
                               []()
                               {
-                                auto hwui = Application::get().getHWUI();
-                                hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+                                SettingsUseCases useCases(*Application::get().getSettings());
+                                useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
                               }))
 {
 }
@@ -36,8 +37,8 @@ InitPart::InitPart(const Rect& r)
                           OneShotTypes::FinishCB(
                               []()
                               {
-                                auto hwui = Application::get().getHWUI();
-                                hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+                                SettingsUseCases useCases(*Application::get().getSettings());
+                                useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
                               }))
 {
 }

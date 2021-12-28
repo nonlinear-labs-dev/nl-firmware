@@ -26,6 +26,7 @@
 #include <presets/PresetManagerActions.h>
 #include <presets/BankActions.h>
 #include <presets/EditBufferActions.h>
+#include <use-cases/SettingsUseCases.h>
 
 using namespace std::chrono_literals;
 
@@ -104,8 +105,10 @@ Application::Application(int numArgs, char **argv)
   m_presetManager->init(m_audioEngineProxy.get());
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
 
-  auto panelUnitFocusAndModeSetting = m_settings->getSetting<PanelUnitFocusAndMode>();
-  m_hwui->setFocusAndMode(panelUnitFocusAndModeSetting->getState());
+  auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
+  SettingsUseCases useCases(*m_settings);
+  useCases.thawFocusAndMode();
+  useCases.setFocusAndMode(focusAndMode->getState());
 
   runWatchDog();
 

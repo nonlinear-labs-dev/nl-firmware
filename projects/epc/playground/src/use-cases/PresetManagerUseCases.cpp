@@ -22,6 +22,7 @@
 #include "parameters/SplitPointParameter.h"
 #include "PresetUseCases.h"
 #include "StoreUseCaseHelper.h"
+#include "SettingsUseCases.h"
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
 #include <xml/VersionAttribute.h>
@@ -944,11 +945,8 @@ Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y
 
   m_presetManager.ensureBankSelection(transaction);
 
-  //TODO add injection
-  if(Application::exists())
-  {
-    Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
-  }
+  SettingsUseCases useCases(m_settings);
+  useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
   return newBank;
 }
 

@@ -16,6 +16,7 @@
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <proxies/hwui/TwoStateLED.h>
 #include "PanelUnitParameterEditMode.h"
+#include "use-cases/SettingsUseCases.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>
@@ -116,14 +117,15 @@ void PanelUnitParameterEditMode::setup()
   setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     if(state)
     {
-      auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
+      SettingsUseCases useCases(*Application::get().getSettings());
+      auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
       if(focusAndMode.focus == UIFocus::Sound)
         if(focusAndMode.mode == UIMode::Edit)
-          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+          useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
         else
-          Application::get().getHWUI()->setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
+          useCases.setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
       else
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIFocus::Sound });
+        useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
     }
 
     return true;
@@ -139,7 +141,7 @@ void PanelUnitParameterEditMode::setup()
 
     if(panelUnit.getUsageMode().get() == this)
     {
-      panelUnit.getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndMode());
+      panelUnit.getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndModeState());
       bruteForceUpdateLeds();
     }
   });
@@ -157,7 +159,7 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
                                ->getID()
                                .getNumber()
           == mcParamId
-      && Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Parameters;
+      && Application::get().getHWUI()->getFocusAndModeState().focus == UIFocus::Parameters;
 
   if(state)
     if(mcStateMachine.traverse(isAlreadySelected ? MacroControlAssignmentEvents::MCPressedWhileSelected
@@ -188,6 +190,8 @@ void PanelUnitParameterEditMode::onParamSelectionChanged(Parameter *oldParam, Pa
       }
     }
   }
+
+  bruteForceUpdateLeds();
 }
 
 Buttons PanelUnitParameterEditMode::findButtonForParameter(Parameter *param) const
