@@ -118,7 +118,7 @@ void PanelUnitParameterEditMode::setup()
     if(state)
     {
       SettingsUseCases useCases(*Application::get().getSettings());
-      auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
+      auto focusAndMode = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
       if(focusAndMode.focus == UIFocus::Sound)
         if(focusAndMode.mode == UIMode::Edit)
           useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
@@ -138,10 +138,11 @@ void PanelUnitParameterEditMode::setup()
   Glib::MainContext::get_default()->signal_idle().connect_once([=]() {
     auto hwui = Application::get().getHWUI();
     auto &panelUnit = hwui->getPanelUnit();
+    auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
 
     if(panelUnit.getUsageMode().get() == this)
     {
-      panelUnit.getEditPanel().getBoled().setupFocusAndMode(hwui->getFocusAndModeState());
+      panelUnit.getEditPanel().getBoled().setupFocusAndMode(famSetting.getState());
       bruteForceUpdateLeds();
     }
   });
@@ -152,6 +153,8 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
   mcStateMachine.setCurrentMCParameter(mcParamId);
 
+  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+
   bool isAlreadySelected = Application::get()
                                .getPresetManager()
                                ->getEditBuffer()
@@ -159,7 +162,7 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
                                ->getID()
                                .getNumber()
           == mcParamId
-      && Application::get().getHWUI()->getFocusAndModeState().focus == UIFocus::Parameters;
+      && famSetting.getState().focus == UIFocus::Parameters;
 
   if(state)
     if(mcStateMachine.traverse(isAlreadySelected ? MacroControlAssignmentEvents::MCPressedWhileSelected

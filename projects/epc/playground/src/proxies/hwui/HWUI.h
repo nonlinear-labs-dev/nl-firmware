@@ -36,15 +36,11 @@ class HWUI
  public:
   HWUI(Settings &settings);
   virtual ~HWUI();
-
   void init();
-
   void indicateBlockingMainThread();
 
-  [[nodiscard]] FocusAndMode getFocusAndModeState() const;
-  [[nodiscard]] FocusAndMode getOldFocusAndModeState() const;
-
   VoiceGroup getCurrentVoiceGroup() const;
+
   bool isInLoadToPart() const;
 
   //TODO Remove all non HWUI Related things! -> VoiceGroup, LoadToPart etc
@@ -103,20 +99,25 @@ class HWUI
   bool detectAffengriff(Buttons buttonID, bool state);
   bool isFineAllowed();
 
+  void onParameterReselection(Parameter *parameter);
+  void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;
   sigc::connection m_rotaryChangedConnection;
   sigc::connection m_focusAndModeConnection;
+  sigc::connection m_blinkTimerConnection;
+  sigc::connection m_editBufferParameterReselectionConnection;
+  sigc::connection m_editBufferParameterSelectionConnection;
 
   void onRotaryChanged();
-
   Signal<void, VoiceGroup> m_voiceGoupSignal;
   Signal<void, bool> m_loadToPartSignal;
   Signal<void> m_inputSignal;
 
   bool m_loadToPartActive = false;
-  VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
 
+  VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;
 
@@ -126,29 +127,15 @@ class HWUI
   FineButton m_fineButton;
   ButtonModifiers m_modifiers;
 
-  sigc::connection m_blinkTimerConnection;
-  sigc::connection m_editBufferParameterReselectionConnection;
-  sigc::connection m_editBufferParameterSelectionConnection;
-
-  void onParameterReselection(Parameter *parameter);
-  void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
-
   Signal<void, ButtonModifiers> m_modifersChanged;
   Signal<void, int> m_blinkTimer;
   Signal<void, FocusAndMode> m_signalFocusAndMode;
 
   std::array<bool, (size_t) Buttons::NUM_BUTTONS> m_buttonStates;
-
   int m_affengriffState = 0;
-
   int m_blinkCount;
   Expiration m_switchOffBlockingMainThreadIndicator;
-
-  bool m_focusAndModeFrozen = false;
-
-  DelayedJob m_setupJob;
   ScopedGuard m_parameterFocusLock;
-
   Settings& m_settings;
   FocusAndModeSetting & m_famSetting;
 };

@@ -202,14 +202,16 @@ void PanelUnitSoundMode::setup()
     if(state)
     {
       auto hwui = Application::get().getHWUI();
-      SettingsUseCases useCases(*Application::get().getSettings());
+      auto& settings = *Application::get().getSettings();
+      SettingsUseCases useCases(settings);
+      auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
 
-      auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
+      auto focusAndMode = famSetting.getState();
       if(focusAndMode.focus == UIFocus::Sound)
         if(focusAndMode.mode == UIMode::Edit || focusAndMode.detail == UIDetail::Voices)
           useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
         else
-          useCases.setFocusAndMode(hwui->getOldFocusAndModeState());
+          useCases.setFocusAndMode(famSetting.getOldState());
       else
          useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
     }

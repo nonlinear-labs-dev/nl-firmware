@@ -12,12 +12,15 @@
 #include "EventProvider.h"
 #include "ConditionRegistry.h"
 #include "use-cases/SettingsUseCases.h"
+#include <device-settings/Settings.h>
+#include <device-settings/FocusAndModeSetting.h>
 
 namespace DescriptiveLayouts
 {
   GenericLayout::GenericLayout(LayoutClass prototype)
       : Layout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
       , m_prototype(std::move(prototype))
+      , m_famSetting(*Application::get().getSettings()->getSetting<FocusAndModeSetting>())
   {
   }
 
@@ -210,9 +213,9 @@ namespace DescriptiveLayouts
   {
     SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = hwui->getFocusAndModeState();
+    auto current = m_famSetting.getState();
     if(current.focus == UIFocus::Presets)
-      useCases.setFocusAndMode(hwui->getOldFocusAndModeState());
+      useCases.setFocusAndMode(m_famSetting.getOldState());
     else
       useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
   }
@@ -221,7 +224,7 @@ namespace DescriptiveLayouts
   {
     SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = hwui->getFocusAndModeState();
+    auto current = m_famSetting.getState();
     if(current.focus == UIFocus::Sound)
       if(current.detail != UIDetail::Init && current.detail != UIDetail::ButtonA)
       {
@@ -229,7 +232,7 @@ namespace DescriptiveLayouts
       }
       else
       {
-        useCases.setFocusAndMode(hwui->getOldFocusAndModeState());
+        useCases.setFocusAndMode(m_famSetting.getOldState());
       }
     else
       useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
@@ -239,9 +242,9 @@ namespace DescriptiveLayouts
   {
     SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = hwui->getFocusAndModeState();
+    auto current = m_famSetting.getState();
     if(current.focus == UIFocus::Setup)
-      useCases.setFocusAndMode(hwui->getOldFocusAndModeState());
+      useCases.setFocusAndMode(m_famSetting.getOldState());
     else
       useCases.setFocusAndMode({ UIFocus::Setup, UIMode::Select, UIDetail::Init });
   }
@@ -251,7 +254,7 @@ namespace DescriptiveLayouts
     SettingsUseCases useCases(*Application::get().getSettings());
 
     auto *hwui = Application::get().getHWUI();
-    auto current = hwui->getFocusAndModeState();
+    auto current = m_famSetting.getState();
     if(current.focus == UIFocus::Presets && current.mode == UIMode::Store)
       useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     else
@@ -263,7 +266,7 @@ namespace DescriptiveLayouts
     SettingsUseCases useCases(*Application::get().getSettings());
 
     auto *hwui = Application::get().getHWUI();
-    auto current = hwui->getFocusAndModeState();
+    auto current = m_famSetting.getState();
     if(current.mode == UIMode::Info)
       useCases.setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });
     else
@@ -274,7 +277,7 @@ namespace DescriptiveLayouts
   {
     SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = hwui->getFocusAndModeState();
+    auto current = m_famSetting.getState();
 
     if(current.mode == UIMode::Edit)
       useCases.setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });

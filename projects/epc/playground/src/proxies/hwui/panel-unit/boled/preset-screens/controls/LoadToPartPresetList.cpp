@@ -31,7 +31,8 @@ bool LoadToPartPresetList::onButton(Buttons i, bool down, ButtonModifiers modifi
 {
   if(down)
   {
-    auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
+    auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+    auto focusAndMode = famSetting.getState();
     auto pm = Application::get().getPresetManager();
     auto selection = getCurrentSelection();
 
@@ -85,7 +86,8 @@ std::pair<size_t, size_t> LoadToPartPresetList::getSelectedPosition() const
 
 void LoadToPartPresetList::onRotary(int inc, ButtonModifiers modifiers)
 {
-  auto inBankMode = Application::get().getHWUI()->getFocusAndModeState().focus == UIFocus::Banks;
+  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto inBankMode = famSetting.getState().focus == UIFocus::Banks;
   auto pm = Application::get().getPresetManager();
 
   if(inBankMode)

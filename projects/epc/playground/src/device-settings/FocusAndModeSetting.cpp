@@ -47,7 +47,7 @@ void FocusAndModeSetting::set(FocusAndMode fam)
     return;
 
   fam.fixUnchanged(m_focusAndMode);
-  restrictFocusAndMode(fam);
+  fam = restrictFocusAndMode(fam);
 
   if(fam != m_focusAndMode)
   {

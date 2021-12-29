@@ -6,6 +6,8 @@
 #include <sigc++/adaptors/hide.h>
 #include "BankButton.h"
 #include "use-cases/SettingsUseCases.h"
+#include <device-settings/Settings.h>
+#include <device-settings/FocusAndModeSetting.h>
 
 auto getSoundType()
 {
@@ -39,7 +41,8 @@ void BankButton::bruteForce()
 {
   clear();
 
-  auto mode = Application::get().getHWUI()->getFocusAndModeState().mode;
+  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto mode = famSetting.getState().mode;
 
   switch(getSoundType())
   {
@@ -58,7 +61,8 @@ void BankButton::bruteForce()
 
 void BankButton::installSingle()
 {
-  auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
+  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto focusAndMode = famSetting.getState();
   auto bankbutton = addControl(new Button("Bank", { 0, 15, 58, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
@@ -76,7 +80,8 @@ void BankButton::installSingle()
 
 void BankButton::installDual()
 {
-  auto focusAndMode = Application::get().getHWUI()->getFocusAndModeState();
+  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto focusAndMode = famSetting.getState();
   auto bankbutton = addControl(new Button("Bank", { 4, 0, 50, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 

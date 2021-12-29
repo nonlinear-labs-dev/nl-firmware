@@ -43,11 +43,9 @@ HWUI::HWUI(Settings &settings)
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_blinkCount(0)
-    , m_setupJob(1, [this] { m_signalFocusAndMode.send(getFocusAndModeState()); })
     , m_settings{ settings }
     , m_famSetting(*settings.getSetting<FocusAndModeSetting>())
 {
-
   if(isatty(fileno(stdin)))
   {
     m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
@@ -94,9 +92,6 @@ void HWUI::init()
 
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
-
-  m_focusAndModeConnection = m_famSetting.onChange(sigc::mem_fun(this, &HWUI::onFocusAndModeChanged));
-
   Oleds::get().syncRedraw();
 }
 
@@ -111,11 +106,6 @@ void HWUI::indicateBlockingMainThread()
 
   m_switchOffBlockingMainThreadIndicator.refresh(std::chrono::seconds(5));
   m_baseUnit.indicateBlockingMainThread(true);
-}
-
-void HWUI::setupFocusAndMode()
-{
-  m_setupJob.trigger();
 }
 
 void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
@@ -351,9 +341,9 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
         if(buttonID == Buttons::BUTTON_SETUP && state)
         {
           SettingsUseCases useCases(m_settings);
-          if(getFocusAndModeState().focus == UIFocus::Setup)
+          if(m_famSetting.getState().focus == UIFocus::Setup)
           {
-            useCases.setFocusAndMode(getOldFocusAndModeState());
+            useCases.setFocusAndMode(m_famSetting.getOldState());
           }
           else
           {
@@ -403,7 +393,7 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
 
 bool HWUI::isFineAllowed()
 {
-  auto uiFocus = getFocusAndModeState().focus;
+  auto uiFocus = m_famSetting.getState().focus;
   return uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound;
 }
 
@@ -674,7 +664,7 @@ void HWUI::onParameterReselection(Parameter *parameter)
 {
   SettingsUseCases useCases(m_settings);
 
-  if(getFocusAndModeState().mode == UIMode::Info)
+  if(m_famSetting.getState().mode == UIMode::Info)
     useCases.setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Info));
   else
     useCases.setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
@@ -683,13 +673,11 @@ void HWUI::onParameterReselection(Parameter *parameter)
 void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter)
 {
   unsetFineMode();
-
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-
-  if(!eb->isParameterFocusLocked() && !m_famSetting.isFocusAndModeFrozen())
+  if(!eb->isParameterFocusLocked())
   {
     SettingsUseCases useCases(m_settings);
-    if(getFocusAndModeState().focus == UIFocus::Sound)
+    if(m_famSetting.getState().focus == UIFocus::Sound)
     {
       if(oldParameter->getID() != newParameter->getID())
       {
@@ -701,19 +689,4 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
       useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     }
   }
-}
-
-FocusAndMode HWUI::getFocusAndModeState() const
-{
-  return m_famSetting.getState();
-}
-
-FocusAndMode HWUI::getOldFocusAndModeState() const
-{
-  return m_famSetting.getOldState();
-}
-
-void HWUI::onFocusAndModeChanged(const Setting* s)
-{
-  m_setupJob.trigger();
 }
