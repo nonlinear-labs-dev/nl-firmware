@@ -21,7 +21,6 @@
 
 PanelUnit::PanelUnit(Settings &settings)
     : super(settings)
-    , m_panelFocusAndModeSetting{*getSettings().getSetting<FocusAndModeSetting>()}
 {
   const int numLEDs = 96;
 
@@ -135,7 +134,6 @@ void PanelUnit::turnLedsOff()
 void PanelUnit::setupFocusAndMode(FocusAndMode focusAndMode)
 {
   installUsageMode(focusAndMode);
-
   m_editPanel.setupFocusAndMode(focusAndMode);
   getUsageMode()->setupFocusAndMode(focusAndMode);
 }

@@ -13,7 +13,7 @@
 BaseUnit::BaseUnit(Settings& settings)
     : super(settings)
 {
-  Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(mem_fun(this, &BaseUnit::respectUsageMode));
+  settings.getSetting<BaseUnitUIMode>()->onChange(mem_fun(this, &BaseUnit::respectUsageMode));
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::RibbonLed,
                                         sigc::mem_fun(this, &BaseUnit::onBBBBConnected));
 }
@@ -22,7 +22,6 @@ BaseUnit::~BaseUnit() = default;
 
 void BaseUnit::setupFocusAndMode(FocusAndMode focusAndMode)
 {
-  HardwareUserInterfaceUnit::setupFocusAndMode(focusAndMode);
 }
 
 void BaseUnit::init()

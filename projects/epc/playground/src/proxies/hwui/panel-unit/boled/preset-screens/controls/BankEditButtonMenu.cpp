@@ -149,7 +149,8 @@ void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_ent
   }
 
   hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
-  hwui->getPanelUnit().setupFocusAndMode({ UIFocus::Presets, UIMode::Select });
+  SettingsUseCases useCases(*Application::get().getSettings());
+  useCases.setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
 }
 
 void BankEditButtonMenu::importBank()

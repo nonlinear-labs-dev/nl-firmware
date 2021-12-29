@@ -18,7 +18,6 @@ class HardwareUserInterfaceUnit
   HardwareUserInterfaceUnit(const HardwareUserInterfaceUnit& other) = delete;
   HardwareUserInterfaceUnit& operator=(const HardwareUserInterfaceUnit&) = delete;
 
-  virtual void setupFocusAndMode(FocusAndMode focusAndMode);
   virtual bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state);
 
   void setUsageMode(UsageMode* mode);
@@ -28,6 +27,8 @@ class HardwareUserInterfaceUnit
 
  protected:
   [[nodiscard]] Settings& getSettings() const;
+  virtual void setupFocusAndMode(FocusAndMode focusAndMode) = 0;
+
  private:
   void onScreenSaverStateChanged(bool state);
   void onFocusAndModeChanged(const Setting* s);

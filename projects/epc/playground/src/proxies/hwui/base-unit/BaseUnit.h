@@ -24,6 +24,8 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   void init();
 
   PlayPanel &getPlayPanel();
+
+ protected:
   void setupFocusAndMode(FocusAndMode focusAndMode) override;
 
  private:

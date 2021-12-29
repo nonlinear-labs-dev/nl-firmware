@@ -20,10 +20,6 @@ HardwareUserInterfaceUnit::~HardwareUserInterfaceUnit()
 {
 }
 
-void HardwareUserInterfaceUnit::setupFocusAndMode(FocusAndMode focusAndMode)
-{
-}
-
 void HardwareUserInterfaceUnit::setUsageMode(UsageMode* mode)
 {
   if(mode && m_usageMode)

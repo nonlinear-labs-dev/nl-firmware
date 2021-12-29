@@ -19,7 +19,6 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   PanelUnit(Settings& settings);
   ~PanelUnit() override;
 
-  void setupFocusAndMode(FocusAndMode focusAndMode) override;
   bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state) override;
 
   void onTimeout();
@@ -32,6 +31,9 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   const EditPanel &getEditPanel() const;
   EditPanel &getEditPanel();
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
+  
+ protected:
+  void setupFocusAndMode(FocusAndMode focusAndMode) override;
 
  private:
   void installUsageMode(FocusAndMode focusAndMode);
@@ -46,5 +48,4 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   std::shared_ptr<UsageMode> m_overlayUsageMode;
 
   sigc::connection m_signalInitializeInstalledLayoutOnce;
-  FocusAndModeSetting & m_panelFocusAndModeSetting;
 };

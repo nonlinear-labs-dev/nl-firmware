@@ -105,12 +105,12 @@ void PanelUnitParameterEditMode::setup()
   FOR_TESTS(assignedAudioIDs.insert(371));
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    getEditPanel().getUndoStateMachine().traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
+    m_undoStateMachine.traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
     return false;
   });
 
   setupButtonConnection(Buttons::BUTTON_REDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    getEditPanel().getUndoStateMachine().traverse(state ? REDO_PRESSED : REDO_RELEASED);
+    m_undoStateMachine.traverse(state ? REDO_PRESSED : REDO_RELEASED);
     return false;
   });
 
