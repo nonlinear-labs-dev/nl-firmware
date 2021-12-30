@@ -6,8 +6,10 @@ import java.util.function.Consumer;
 
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.Scheduler;
+import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 
 public class AnimationManager {
 
@@ -17,6 +19,11 @@ public class AnimationManager {
         private Consumer<Double> cb;
 
         public ReturnAnimation(PhysicalControlParameterModel p) {
+            start = p.value.getQuantizedAndClipped(true);
+            end = 0.0;
+        }
+
+        public ReturnAnimation(SendParameterModel p) {
             start = p.value.getQuantizedAndClipped(true);
             end = 0.0;
         }
@@ -50,6 +57,10 @@ public class AnimationManager {
         startDelayedAnimation(p, 0);
     }
 
+    public void startReturnAnimation(SendParameterModel p) {
+        startDelayedAnimation(p, 0);
+    }
+
     public void cancelAnimation(PhysicalControlParameterModel m) {
         if (recursionGuard)
             return;
@@ -58,6 +69,25 @@ public class AnimationManager {
     }
 
     public void startDelayedAnimation(PhysicalControlParameterModel p,  int delay) {
+        if (recursionGuard)
+            return;
+
+        runningAnimations.remove(p.id);
+
+        ReturnAnimation animation = new ReturnAnimation(p);
+        animation.startIn(delay, v -> {
+            if (runningAnimations.get(p.id) == animation) {
+                recursionGuard = true;
+
+                EditBufferUseCases.get().setParameterValue(p.id, v, true);
+                recursionGuard = false;
+            }
+        });
+
+        runningAnimations.put(p.id, animation);
+    }
+
+    public void startDelayedAnimation(SendParameterModel p,  int delay) {
         if (recursionGuard)
             return;
 

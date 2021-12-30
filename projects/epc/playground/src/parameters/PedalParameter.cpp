@@ -212,10 +212,8 @@ Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
   {
     case UIMode::Info:
       return new ParameterInfoLayout();
-
     case UIMode::Edit:
       return new PedalParameterEditLayout2();
-
     case UIMode::Select:
     default:
       return new PedalParameterSelectLayout2();

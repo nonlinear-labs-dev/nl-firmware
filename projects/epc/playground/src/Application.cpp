@@ -27,6 +27,7 @@
 #include <presets/BankActions.h>
 #include <presets/EditBufferActions.h>
 #include <use-cases/SettingsUseCases.h>
+#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 using namespace std::chrono_literals;
 
@@ -88,13 +89,16 @@ Application::Application(int numArgs, char **argv)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
-    , m_heartbeatState(false)
-    , m_isQuit(false)
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
     , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui,
-                            *m_settings)
+          *m_settings)
+    , m_heartbeatState(false)
+    , m_isQuit(false)
 {
+  if(Options::s_acceptanceTests)
+    m_options->setPresetManagerPath("/tmp/pg-test-pm/");
+
 #ifdef _PROFILING
   Profiler::get().enable(true);
 #endif
@@ -102,7 +106,7 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get());
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, SplashLayout::addStatus);
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
 
   auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
