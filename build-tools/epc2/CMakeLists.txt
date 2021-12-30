@@ -12,10 +12,10 @@ SET(EPC2_BASE_ADDITIONAL_PACKAGES "alsa-lib alsa-tools alsa-utils base boost cpu
     libpng libsoup linux-firmware linux-rt mc mkinitcpio mkinitcpio-nfs-utils nano networkmanager openssh \
     png++ rsync shared-mime-info sudo sshfs gawk dbus bash")
 
-SET(EPC2_UPDATE_ARCH "2021/11/01")
 SET(EPC2_UPDATE_KERNEL "5.15.3.21.realtime1-1")
-SET(EPC2_UPDATE_PACKAGES "flac lm_sensors dnsmasq arch-install-scripts gawk dbus bash kexec-tools linux-rt linux-firmware kmod glibc")
 SET(EPC2_BUILD_TOOLS "gcc git cmake make mc pkgconf wget unzip ccache")
+SET(EPC2_UPDATE_PACKAGES "flac lm_sensors dnsmasq arch-install-scripts kexec-tools")
+SET(EPC2_VERSIONED_PACKAGES "linux-firmware 20210919.d526e04-1" "kmod 29-1" "glibc 2.33-5")
 
 ADD_SUBDIRECTORY(collect-packages)
 ADD_SUBDIRECTORY(fetch-packages)

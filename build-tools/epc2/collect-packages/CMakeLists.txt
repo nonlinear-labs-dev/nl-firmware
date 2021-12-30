@@ -23,9 +23,14 @@ ADD_CUSTOM_COMMAND(
     DEPENDS collectPackages.sh
     VERBATIM
     COMMAND 
-      cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} ||
-      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
-      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME}
+    cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} ||
+      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
+      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME}
+    COMMAND 
+      cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} ||
+      cp ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} > /dev/null || 
+      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} || 
+      wget --show-progress -q https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} 
     COMMAND docker build -t collect-base-packages-docker-container ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container
     COMMAND touch .collect-base-packages-docker-container
     )
@@ -39,14 +44,9 @@ ADD_CUSTOM_COMMAND(
     DEPENDS collectPackages.sh
     VERBATIM 
     COMMAND 
-      cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} ||
-      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
-      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME}
-    COMMAND 
-      cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} ||
-      cp ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} > /dev/null || 
-      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} || 
-      wget --show-progress -q https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} 
+      cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} ||
+      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
+      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME}
     COMMAND docker build -t collect-update-packages-docker-container ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container
     COMMAND touch .collect-update-packages-docker-container
     )
@@ -81,6 +81,7 @@ ADD_CUSTOM_COMMAND(
     DEPENDS .collect-update-packages-docker-container
     VERBATIM
     COMMAND docker run collect-update-packages-docker-container /collectPackages.sh > update-packages.txt
+    COMMAND echo "${EPC2_VERSIONED_PACKAGES}" | tr ";" "\\n" >> update-packages.txt
     )
   
 ADD_CUSTOM_COMMAND(

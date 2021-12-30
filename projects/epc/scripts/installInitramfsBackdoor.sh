@@ -1,15 +1,28 @@
 #!/bin/sh
 
 set -x
+set -e
 
-if [ -f /lib/initcpio/hooks/nlhook_v2 ]; then
-  if ! cmp /lib/initcpio/hooks/nlhook_v2 /lib/initcpio/hooks/nlhook; then
-    cp /lib/initcpio/hooks/nlhook_v2 /lib/initcpio/hooks/nlhook
-    # removal of nlhook_v2 has to be done in the hook itself: build-tools/epc2/create-update/initramfs-hook.sh
-    # so we olny remove the file if the hook installation did actually work properly
-    mount /dev/sda1 /boot
-    mkinitcpio -p linux-rt
-    reboot
-  fi
+mount /dev/sda2 /mnt
+mount /dev/sda1 /mnt/boot
+
+function unmount_at_exit {
+  umount /mnt/boot
+  umount /mnt
+}
+
+trap unmount_at_exit EXIT
+
+DESIRED_HOOK_CHECKSUM=$(sha256sum /lib/initcpio/hooks/nlhook | cut -f1 -d ' ')
+[ -f /mnt/boot/installed-hook-checksum ] && INSTALLED_HOOK_CHECKSUM=$(cat /mnt/boot/installed-hook-checksum)
+
+if [ "$DESIRED_HOOK_CHECKSUM" = "$INSTALLED_HOOK_CHECKSUM" ]; then
+  echo "desired hook is already installed"
+  exit 0
 fi
 
+cp /lib/initcpio/hooks/nlhook /mnt/lib/initcpio/hooks/
+sed "s/ 'fallback'//" -i /etc/mkinitcpio.d/linux-rt.preset
+arch-chroot /mnt mkinitcpio -p linux-rt
+echo "$DESIRED_HOOK_CHECKSUM" > /mnt/boot/installed-hook-checksum
+reboot  

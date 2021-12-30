@@ -6,9 +6,9 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES ${CMAKE_SOURCE_DIR}/projects/*)
 configure_file(Dockerfile docker/Dockerfile)
 configure_file(backdoor.sh docker/backdoor.sh)
 configure_file(createUpdate.sh docker/createUpdate.sh COPYONLY)
-configure_file(needed-modules.txt docker/needed-modules.txt COPYONLY)
 configure_file(initramfs-hook.sh docker/initramfs-hook.sh)
-configure_file(nlhook_v2 docker/nlhook_v2)
+configure_file(nlhook docker/nlhook)
+configure_file(setup-base-os.sh docker/setup-base-os.sh COPYONLY)
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Creating Docker container holding the update arch"
@@ -16,10 +16,10 @@ ADD_CUSTOM_COMMAND(
     DEPENDS createUpdate.sh
     DEPENDS backdoor.sh
     DEPENDS Dockerfile
-    DEPENDS nlhook_v2
+    DEPENDS nlhook
     DEPENDS initramfs-hook.sh
-    DEPENDS needed-modules.txt
     DEPENDS epc2-download-package-cache
+    DEPENDS setup-base-os.sh
     DEPENDS ../CMakeLists.txt
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../collect-packages/build-packages.txt
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../collect-packages/base-packages.txt
@@ -28,6 +28,7 @@ ADD_CUSTOM_COMMAND(
     COMMAND cp ../collect-packages/build-packages.txt ${CMAKE_CURRENT_BINARY_DIR}/docker
     COMMAND cp ../collect-packages/base-packages.txt ${CMAKE_CURRENT_BINARY_DIR}/docker
     COMMAND cp ../collect-packages/update-packages.txt ${CMAKE_CURRENT_BINARY_DIR}/docker
+    COMMAND rsync -a ${DOWNLOAD_DIR}/epc2/packages ${CMAKE_CURRENT_BINARY_DIR}/docker/
     COMMAND docker build -t epc2-create-update-overlay-docker ${CMAKE_CURRENT_BINARY_DIR}/docker
     COMMAND touch .epc2-create-update-overlay-docker
     )

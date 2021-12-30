@@ -70,10 +70,11 @@ ship_kernel_update() {
 }
 
 install_overlay_backdoor() {
-  cp /nlhook_v2 /lib/initcpio/hooks/nlhook_v2
+  cp /nlhook /lib/initcpio/hooks/nlhook
   mkdir -p /usr/local/lib/systemd/system/multi-user.target.wants
   cat <<- ENDOFHERE > /usr/local/lib/systemd/system/initramfs-backdoor.service
   [Unit]
+  Before=audio-engine.service playground.service
   Description=Nonlinear-Labs initramfs backdoor installer
   
   [Service]
@@ -145,7 +146,7 @@ setup_network_manager() {
   [proxy]
 ENDOFHERE
 
- cat <<- ENDOFHERE > /etc/NetworkManager/system-connections/bbb.nmconnection
+  cat <<- ENDOFHERE > /etc/NetworkManager/system-connections/bbb.nmconnection
   [connection]
   id=bbb
   uuid=bbb79179-6804-4197-b476-eacad1d492e4
@@ -184,6 +185,7 @@ perform_tweaks() {
     echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 }
 
+# UNUSED
 cleanup_modules() {
   mkdir -p /modules-to-keep
   for file in $(cat /needed-modules.txt); do
@@ -219,6 +221,7 @@ cleanup_firmware() {
   mv /firmware-to-keep /usr/lib/firmware
 }
 
+# UNUSED
 cleanup_packages() {
   for package in gcc cmake git make pkgconf ccache guile; do 
     name=$(echo $package | cut -f1 -d " ")
@@ -226,6 +229,7 @@ cleanup_packages() {
   done 
 }
 
+# UNUSED
 install_backdoor() {
   echo "no backdoor installed"
   #cp /backdoor.sh /bindir/update/backdoor.sh
@@ -240,7 +244,7 @@ package_update() {
 
   # remove unneccessary files
   rm -rf /usr/share/licenses
-  cleanup_packages
+  # cleanup_packages
   # cleanup_modules
   cleanup_firmware
 
@@ -261,7 +265,7 @@ package_update() {
 	-czf /bindir/update/NonLinuxOverlay.tar.gz .
   touch /bindir/update/$(sha256sum /bindir/update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
   
-  install_backdoor
+  # install_backdoor
   tar -C /bindir/ -cf /bindir/update.tar update
 }
 

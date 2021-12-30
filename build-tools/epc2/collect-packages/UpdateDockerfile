@@ -2,8 +2,7 @@ FROM archlinux:20200908
 
 RUN echo "Server = https://archive.archlinux.org/repos/2020/09/08/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
 RUN mkdir /packages
-
-COPY linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst /packages/
+COPY linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst /packages/linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst
 RUN repo-add -q /packages/rt.db.tar.gz /packages/linux-rt-@EPC2_UPDATE_KERNEL@-x86_64.pkg.tar.zst
 
 RUN echo "[rt]" >> /etc/pacman.conf
@@ -19,6 +18,3 @@ COPY collectPackages.sh /collectPackages.sh
 RUN pacman --noconfirm -Sy
 RUN pacman --noconfirm -S archlinux-keyring
 RUN pacman --noconfirm -S pacman-contrib
-
-RUN echo "Server = https://archive.archlinux.org/repos/2021/11/01/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
-RUN pacman --noconfirm -Sy
