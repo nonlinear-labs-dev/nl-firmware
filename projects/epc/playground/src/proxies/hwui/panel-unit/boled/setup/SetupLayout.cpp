@@ -537,7 +537,7 @@ namespace NavTree
   struct FreeInternalMemory : Leaf
   {
     explicit FreeInternalMemory(InnerNode *parent)
-        : Leaf(parent, "Free Internal Memory")
+        : Leaf(parent, "Free Disk Space")
     {
     }
 
@@ -690,11 +690,11 @@ namespace NavTree
       children.emplace_back(new SSID(this));
       children.emplace_back(new Passphrase(this));
       children.emplace_back(new WebUIAdress(this));
+      children.emplace_back(new DateTime(this));
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new UniqueHardwareID(this));
-      children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
       children.emplace_back(new BufferUnderrunsNode(this));
     }
