@@ -1,6 +1,7 @@
 #include "ParameterLayout.h"
 #include "StaticKnubbelSlider.h"
 #include "StaticBarSlider.h"
+#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -93,18 +94,20 @@ bool ParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 
   if(down)
   {
+    SettingsUseCases useCases(*Application::get().getSettings());
+
     switch(i)
     {
       case Buttons::BUTTON_PRESET:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
         return true;
 
       case Buttons::BUTTON_STORE:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
+        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
         return true;
 
       case Buttons::BUTTON_INFO:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Info });
+        useCases.setFocusAndMode(FocusAndMode { UIMode::Info });
         return true;
 
       case Buttons::BUTTON_DEFAULT:
@@ -234,8 +237,11 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         return true;
 
       case Buttons::BUTTON_EDIT:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+      {
+        SettingsUseCases useCases(*Application::get().getSettings());
+        useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
         return true;
+      }
     }
   }
 
@@ -288,7 +294,8 @@ bool ParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifi
 
     if(Buttons::BUTTON_EDIT == i)
     {
-      Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Select });
+      SettingsUseCases useCases(*Application::get().getSettings());
+      useCases.setFocusAndMode(FocusAndMode { UIMode::Select });
       return true;
     }
   }
@@ -377,7 +384,10 @@ bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
   if(i == Buttons::BUTTON_PRESET)
   {
     if(down)
-      Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
+    {
+      SettingsUseCases useCases(*Application::get().getSettings());
+      useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
+    }
     return true;
   }
 

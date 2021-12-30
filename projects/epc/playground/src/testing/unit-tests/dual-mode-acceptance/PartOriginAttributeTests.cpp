@@ -7,6 +7,7 @@
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
 #include <use-cases/DirectLoadUseCases.h>
+#include "use-cases/SettingsUseCases.h"
 
 namespace detail
 {
@@ -34,7 +35,8 @@ TEST_CASE("Part Origin Attribute")
 
   DirectLoadUseCases useCase(detail::getDirectLoad().get());
   useCase.disableDirectLoad();
-  hwui->setFocusAndMode(UIDetail::Init);
+  SettingsUseCases useCases(*TestHelper::getSettings());
+  useCases.setFocusAndMode(UIDetail::Init);
 
   SECTION("Load Single Full")
   {
@@ -151,7 +153,8 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
     {
       PresetManagerUseCases useCase(*pm, *settings);
       useCase.selectPreset(bank->getPresetAt(0));
-      Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+      SettingsUseCases useCases(*TestHelper::getSettings());
+      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     }
 
     TestHelper::doMainLoop(min, max, [&]() {

@@ -1,4 +1,5 @@
 #include "PlayControlParameterLayouts.h"
+#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationRoutersCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlBehaviorLabel.h>
@@ -230,7 +231,8 @@ bool PedalParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modif
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
@@ -404,7 +406,8 @@ bool RibbonParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
