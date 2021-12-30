@@ -1,144 +1,172 @@
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/aesni-intel.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/crc32-pclmul.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/crc32c-intel.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/crct10dif-pclmul.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/ghash-clmulni-intel.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/events/intel/intel-cstate.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/events/intel/intel-uncore.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/events/rapl.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/kvm/kvm-intel.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/kvm/kvm.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/ccm.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/crc32c_generic.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/cryptd.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/crypto_simd.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/acpi/acpi_pad.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/acpi/acpi_tad.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/acpi/video.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/agp/intel-gtt.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/hw_random/rng-core.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm_crb.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm_tis.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm_tis_core.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/dma/idma64.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/gpu/drm/i915/i915.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/hid/usbhid/usbhid.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/hwmon/coretemp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/i2c/busses/i2c-i801.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/i2c/i2c-smbus.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/input/joydev.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/input/misc/pcspkr.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/leds/trigger/ledtrig-audio.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/macintosh/mac_hid.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/media/mc/mc.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mfd/intel-lpss-pci.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mfd/intel-lpss.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mfd/intel_pmc_bxt.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/eeprom/ee1004.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/mei/hdcp/mei_hdcp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/mei/mei-me.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/mei/mei.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/mtd.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/spi-nor/controllers/intel-spi-pci.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/spi-nor/controllers/intel-spi.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/spi-nor/spi-nor.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/net/ethernet/intel/e1000e/e1000e.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/net/wireless/intel/iwlwifi/iwlwifi.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/net/wireless/intel/iwlwifi/mvm/iwlmvm.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/platform/x86/intel/wmi/intel-wmi-thunderbolt.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/platform/x86/wmi-bmof.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/platform/x86/wmi.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/powercap/intel_rapl_common.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/powercap/intel_rapl_msr.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-bus.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-cadence.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-generic-allocation.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-intel.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/intel_pch_thermal.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/intel_powerclamp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/intel_tcc_cooling.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/x86_pkg_temp_thermal.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/usb/host/xhci-pci-renesas.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/usb/host/xhci-pci.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/usb/storage/uas.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/usb/storage/usb-storage.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/watchdog/iTCO_vendor_support.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/watchdog/iTCO_wdt.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/ext4/ext4.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/fat/fat.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/fat/vfat.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/fuse/fuse.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/jbd2/jbd2.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/mbcache.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/overlayfs/overlay.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/kernel/bpf/preload/bpf_preload.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/lib/crc16.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/lib/crypto/libarc4.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/lib/libcrc32c.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/ip_tables.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/ipt_REJECT.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/iptable_filter.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/iptable_nat.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_defrag_ipv4.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_nat_h323.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_nat_pptp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_reject_ipv4.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv6/netfilter/nf_defrag_ipv6.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/mac80211/mac80211.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_ftp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_h323.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_irc.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_pptp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_sip.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_tftp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_ftp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_irc.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_sip.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_tftp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/x_tables.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_MASQUERADE.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_comment.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_conntrack.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_state.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_tcpudp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/rfkill/rfkill.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/wireless/cfg80211.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/ac97_bus.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-compress.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-ctl-led.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-hwdep.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-pcm-dmaengine.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-pcm.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-rawmidi.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-seq-device.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-timer.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/ext/snd-hda-ext-core.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/snd-hda-core.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/snd-intel-dspcfg.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/snd-intel-sdw-acpi.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec-generic.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec-hdmi.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec-realtek.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-intel.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/codecs/snd-soc-hdac-hda.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/common/snd-soc-acpi-intel-match.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/common/snd-soc-sst-dsp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/common/snd-soc-sst-ipc.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/skylake/snd-soc-skl.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/snd-soc-acpi.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/snd-soc-core.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/intel/snd-sof-intel-hda-common.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/intel/snd-sof-intel-hda.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/intel/snd-sof-pci-intel-cnl.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/snd-sof-pci.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/snd-sof.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/xtensa/snd-sof-xtensa-dsp.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soundcore.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/usb/snd-usb-audio.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/usb/snd-usbmidi-lib.ko.zst
-/lib/modules/5.15.3.21.realtime1-1-rt/kernel/virt/lib/irqbypass.ko.zst
+# dyndbg="file kernel/module.c +fmp"  
+# dmesg | grep add_module_usage | sed 's/.* for \(.*\)./\1/' | sort -u | xargs -i modinfo {} | grep filename 
+
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/ipt_REJECT.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/iptable_filter.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/iptable_nat.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_ftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_h323.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_irc.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_pptp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_sip.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_tftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_ftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_nat_h323.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_irc.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_nat_pptp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_sip.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_tftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec-hdmi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/intel/snd-sof-pci-intel-cnl.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_MASQUERADE.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_comment.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_conntrack.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_state.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_tcpudp.ko.zst
+
+
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/aesni-intel.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/crc32-pclmul.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/crc32c-intel.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/crct10dif-pclmul.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/crypto/ghash-clmulni-intel.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/events/intel/intel-cstate.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/events/intel/intel-uncore.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/events/rapl.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/kvm/kvm-intel.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/arch/x86/kvm/kvm.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/ccm.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/crc32c_generic.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/cryptd.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/crypto/crypto_simd.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/acpi/acpi_pad.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/acpi/acpi_tad.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/acpi/video.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/agp/intel-gtt.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/hw_random/rng-core.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm_crb.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm_tis.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/char/tpm/tpm_tis_core.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/dma/idma64.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/gpu/drm/i915/i915.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/hid/usbhid/usbhid.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/hwmon/coretemp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/i2c/busses/i2c-i801.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/i2c/i2c-smbus.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/input/joydev.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/input/misc/pcspkr.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/input/mousedev.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/leds/trigger/ledtrig-audio.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/macintosh/mac_hid.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/media/mc/mc.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mfd/intel-lpss-pci.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mfd/intel-lpss.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mfd/intel_pmc_bxt.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/eeprom/ee1004.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/mei/hdcp/mei_hdcp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/mei/mei-me.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/misc/mei/mei.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/mtd.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/spi-nor/controllers/intel-spi-pci.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/spi-nor/controllers/intel-spi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/mtd/spi-nor/spi-nor.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/net/ethernet/intel/e1000e/e1000e.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/net/wireless/intel/iwlwifi/iwlwifi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/net/wireless/intel/iwlwifi/mvm/iwlmvm.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/platform/x86/intel/wmi/intel-wmi-thunderbolt.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/platform/x86/wmi-bmof.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/platform/x86/wmi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/powercap/intel_rapl_common.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/powercap/intel_rapl_msr.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-bus.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-cadence.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-generic-allocation.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/soundwire/soundwire-intel.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/intel_pch_thermal.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/intel_powerclamp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/intel_tcc_cooling.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/thermal/intel/x86_pkg_temp_thermal.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/usb/host/xhci-pci-renesas.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/usb/host/xhci-pci.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/watchdog/iTCO_vendor_support.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/drivers/watchdog/iTCO_wdt.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/ext4/ext4.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/fat/fat.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/fat/vfat.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/fuse/fuse.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/jbd2/jbd2.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/mbcache.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/fs/overlayfs/overlay.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/kernel/bpf/preload/bpf_preload.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/lib/crc16.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/lib/crypto/libarc4.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/lib/libcrc32c.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/ip_tables.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/ipt_REJECT.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/iptable_filter.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/iptable_nat.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_defrag_ipv4.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_nat_h323.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_nat_pptp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv4/netfilter/nf_reject_ipv4.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/ipv6/netfilter/nf_defrag_ipv6.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/mac80211/mac80211.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_ftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_h323.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_irc.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_pptp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_sip.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_conntrack_tftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_ftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_irc.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_sip.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/nf_nat_tftp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/x_tables.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_MASQUERADE.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_comment.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_conntrack.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_state.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/netfilter/xt_tcpudp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/rfkill/rfkill.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/net/wireless/cfg80211.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/ac97_bus.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-compress.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-ctl-led.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-hwdep.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-pcm-dmaengine.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-pcm.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-rawmidi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-seq-device.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd-timer.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/core/snd.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/ext/snd-hda-ext-core.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/snd-hda-core.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/snd-intel-dspcfg.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/hda/snd-intel-sdw-acpi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec-generic.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec-hdmi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec-realtek.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-codec.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/pci/hda/snd-hda-intel.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/codecs/snd-soc-hdac-hda.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/common/snd-soc-acpi-intel-match.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/common/snd-soc-sst-dsp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/common/snd-soc-sst-ipc.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/intel/skylake/snd-soc-skl.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/snd-soc-acpi.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/snd-soc-core.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/intel/snd-sof-intel-hda-common.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/intel/snd-sof-intel-hda.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/intel/snd-sof-pci-intel-cnl.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/snd-sof-pci.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/snd-sof.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soc/sof/xtensa/snd-sof-xtensa-dsp.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/soundcore.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/usb/snd-usb-audio.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/sound/usb/snd-usbmidi-lib.ko.zst
+filename:       /lib/modules/5.15.3.21.realtime1-1-rt/kernel/virt/lib/irqbypass.ko.zst

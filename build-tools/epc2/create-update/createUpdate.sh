@@ -206,26 +206,43 @@ cleanup_modules() {
 }
 
 cleanup_firmware() {
-  mkdir /firmware-to-keep
-  cp /usr/lib/firmware/iwlwifi* /firmware-to-keep
+  # echo 'dyndbg="file drivers/base/firmware_loader/main.c +fmp'
+  # echo 'After booting, run dmesg | grep firmware_class. Of particular interest are lines with firmware_class:fw_get_filesystem_firmware'
+  mkdir -p /firmware-to-keep
+  cp /usr/lib/firmware/iwlwifi-QuZ-a0-hr-b0-63.ucode /firmware-to-keep
+
+  mkdir -p /firmware-to-keep/i915
+  cp /usr/lib/firmware/i915/kbl_dmc_ver1_04.bin /firmware-to-keep/i915
+
+  # add other firmware modules here....
   rm -rf /usr/lib/firmware
   mv /firmware-to-keep /usr/lib/firmware
+}
+
+cleanup_packages() {
+  for package in gcc cmake git make pkgconf ccache guile; do 
+    name=$(echo $package | cut -f1 -d " ")
+    yes | pacman -R "$name" 
+  done 
+}
+
+install_backdoor() {
+  echo "no backdoor installed"
+  #cp /backdoor.sh /bindir/update/backdoor.sh
+  #mv /boot /bindir/update/
+  #BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
+  #touch /bindir/update/$BACKDOOR_CHECKSUM.sign
 }
 
 package_update() {
   OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
   OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
 
-  for package in gcc cmake git make pkgconf ccache ; do 
-    name=$(echo $package | cut -f1 -d " ")
-    yes | pacman -R "$name" 
-  done 
-
   # remove unneccessary files
   rm -rf /usr/share/licenses
-
+  cleanup_packages
   # cleanup_modules
-  # cleanup_firmware
+  cleanup_firmware
 
   rm -rf /bindir/update
   mkdir -p /bindir/update
@@ -239,13 +256,12 @@ package_update() {
 	--exclude='./tmp' \
 	--exclude='./root' \
   --exclude='./boot' \
+  --exclude='./usr/include' \
+  --exclude='./var/lib/pacman' \
 	-czf /bindir/update/NonLinuxOverlay.tar.gz .
   touch /bindir/update/$(sha256sum /bindir/update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
   
-  #cp /backdoor.sh /bindir/update/backdoor.sh
-  #mv /boot /bindir/update/
-  #BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
-  #touch /bindir/update/$BACKDOOR_CHECKSUM.sign
+  install_backdoor
   tar -C /bindir/ -cf /bindir/update.tar update
 }
 
