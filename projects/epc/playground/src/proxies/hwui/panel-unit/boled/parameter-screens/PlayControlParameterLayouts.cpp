@@ -110,6 +110,7 @@ void PlayControlParameterLayout2::setMode(uint8_t desiredMode)
       highlight<ParameterNameLabel>();
       highlight<PhysicalControlSlider>();
       highlight<SelectedParameterValue>();
+      highlight<PhysicalControlValueLabel>();
       break;
 
     case Mode::Select:
@@ -267,8 +268,14 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("HW Amt..", Buttons::BUTTON_C));
   addControl(createParameterValueControl());
+  addControl(new HardwareSourceCCLabel(Rect{10, 22, 45, 10}));
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterValue>();
+}
+
+Control *PlayControlParameterSelectLayout2::createParameterValueControl()
+{
+  return new PhysicalControlValueLabel(Rect(70, 33, 116, 12));
 }
 
 Carousel *PlayControlParameterSelectLayout2::createCarousel(const Rect &rect)
@@ -507,15 +514,22 @@ void RibbonParameterSelectLayout2::setMode(uint8_t desiredMode)
   switch(desiredMode)
   {
     case Behaviour:
+    {
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(false);
+      if(auto l = findControlOfType<PhysicalControlBehaviorLabel>())
+        l->setVisible(true);
+    }
       break;
     default:
-
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+    {
+      if(auto b = findControlOfType<PhysicalControlBehaviorLabel>())
+        b->setVisible(false);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(true);
       super2::setMode(desiredMode);
+    }
   }
 
   setDirty();
@@ -556,17 +570,28 @@ void PedalParameterSelectLayout2::setMode(uint8_t desiredMode)
   noHighlight();
   setDirty();
 
+  auto selParameterValue = findControlOfType<SelectedParameterValue>();
+  auto selPhysControlValue = findControlOfType<PhysicalControlValueLabel>();
+
   switch(desiredMode)
   {
     case Behaviour:
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
+      if(selParameterValue)
+        selParameterValue->setVisible(false);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(false);
+
       findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
       break;
     default:
 
       findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+      if(selParameterValue)
+        selParameterValue->setVisible(true);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(true);
+
       super2::setMode(desiredMode);
   }
 

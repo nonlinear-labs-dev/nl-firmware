@@ -24,6 +24,8 @@ namespace nltools
     }
 
     std::string lowercase(const std::string &in);
+    std::string removeSpaces(const std::string& in);
+    std::string truncateNonSpacesAndNonNumbers(const std::string& in);
   }
 
   void parseURI(

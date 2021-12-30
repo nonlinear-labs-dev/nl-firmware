@@ -33,6 +33,7 @@ class RibbonParameter : public PhysicalControlParameter
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
   void sendModeToPlaycontroller() const;
+  tControlPositionValue getDefValueAccordingToMode() const override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -47,7 +48,6 @@ class RibbonParameter : public PhysicalControlParameter
  private:
   void ensureExclusiveRoutingIfNeeded();
   const ScaleConverter *createScaleConverter() const;
-  tControlPositionValue getDefaultValueAccordingToMode() const;
   void setupScalingAndDefaultValue();
   std::list<ModulationRoutingParameter*> getRoutingParameters() const;
   void undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction, const RibbonReturnMode &mode) const;

@@ -37,12 +37,20 @@ void UpperRibbon::onSettingChanged(const Setting* setting)
   reconnect();
 }
 
+Parameter* getSendParameter()
+{
+  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(HardwareSourcesGroup::getRibbon1SendID());
+}
+
 void UpperRibbon::reconnect()
 {
   m_paramConnection.disconnect();
 
   if(auto p = getResponsibleParameter())
     m_paramConnection = p->onParameterChanged(sigc::mem_fun(this, &UpperRibbon::onParamValueChanged));
+
+  if(auto p = getSendParameter())
+    m_sendConnection = p->onParameterChanged(sigc::mem_fun(this, &UpperRibbon::onSendValueChanged));
 }
 
 Parameter* UpperRibbon::getResponsibleParameter()
@@ -64,22 +72,60 @@ void UpperRibbon::onParamValueChanged(const Parameter* param)
   auto paramVal = param->getControlPositionValue();
   auto s = Application::get().getSettings()->getSetting<BaseUnitUIMode>();
 
+  bool shouldUpdateLeds = false;
+
   if(s->get() == BaseUnitUIModes::ParameterEdit)
   {
     bipol = param->isBiPolar();
+    shouldUpdateLeds = true;
   }
   else  // BASE_UNIT_UI_MODE_PLAY
   {
     if(auto ribbonParameter = dynamic_cast<const RibbonParameter*>(param))
     {
       bipol = ribbonParameter->getRibbonReturnMode() == RibbonReturnMode::RETURN;
+      auto send = ribbonParameter->getSendParameter();
+      shouldUpdateLeds = send->isLocalEnabled();
     }
   }
 
-  if(!bipol)
-    setLEDsForValueUniPolar(paramVal);
-  else
-    setLEDsForValueBiPolar(paramVal);
+  if(shouldUpdateLeds)
+  {
+    if(!bipol)
+      setLEDsForValueUniPolar(paramVal);
+    else
+      setLEDsForValueBiPolar(paramVal);
+  }
+}
+
+void UpperRibbon::onSendValueChanged(const Parameter* param)
+{
+  auto sendParam = dynamic_cast<const HardwareSourceSendParameter*>(param);
+  auto editParam = getResponsibleParameter();
+
+  if(!sendParam->isLocalEnabled())
+  {
+    bool bipol = false;
+
+    tControlPositionValue paramVal = 0;
+    auto s = Application::get().getSettings()->getSetting<BaseUnitUIMode>();
+
+    if(s->get() == BaseUnitUIModes::ParameterEdit)
+    {
+      bipol = editParam->isBiPolar();
+      paramVal = editParam->getControlPositionValue();
+    }
+    else  // BASE_UNIT_UI_MODE_PLAY
+    {
+      bipol = sendParam->getReturnMode() == ReturnMode::Center;
+      paramVal = sendParam->getControlPositionValue();
+    }
+
+    if(!bipol)
+      setLEDsForValueUniPolar(paramVal);
+    else
+      setLEDsForValueBiPolar(paramVal);
+  }
 }
 
 int UpperRibbon::posToLedID(int pos) const
