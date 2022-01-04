@@ -91,7 +91,7 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         if (isVisibleZoomlevel) {
             Rect pixRect = getPixRect();
 
-            double fontHeightInUnits = 6;
+            double fontHeightInUnits = 8;
 			double fontHeightInPixels = toYPixels(fontHeightInUnits);
 
 			ctx.setTextAlign(TextAlign.LEFT);
