@@ -52,9 +52,9 @@ void FocusAndModeSetting::set(FocusAndMode fam)
   if(fam != m_focusAndMode)
   {
     m_oldFocusAndMode = m_focusAndMode;
-    m_focusAndMode = fam;
-    notify();
   }
+  m_focusAndMode = fam;
+  notify();
 }
 
 void FocusAndModeSetting::setUndoable(UNDO::Transaction* transaction, FocusAndMode focusAndMode)
