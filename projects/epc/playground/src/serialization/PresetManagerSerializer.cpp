@@ -23,6 +23,7 @@ void PresetManagerSerializer::writeTagContent(Writer &writer) const
 {
   writer.writeTextElement("serialize-date", TimeTools::getAdjustedIso());
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
+  writer.writeTextElement("selected-midi-bank-uuid", m_pm->getMidiSelectedBank().raw());
 
   addStatus("Writing PresetManager");
 
@@ -38,6 +39,10 @@ void PresetManagerSerializer::readTagContent(Reader &reader) const
 
   reader.onTextElement("selected-bank-uuid", [&](const auto &text, const auto &) {
     m_pm->selectBank(reader.getTransaction(), Uuid { text });
+  });
+
+  reader.onTextElement("selected-midi-bank-uuid", [&](const auto &text, const auto&) {
+    m_pm->selectMidiBank(reader.getTransaction(), Uuid { text });
   });
 
   reader.onTag(PresetBankSerializer::getTagName(), [&](const auto &) mutable {
