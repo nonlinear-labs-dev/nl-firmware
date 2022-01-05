@@ -2,6 +2,7 @@
 
 #include <bitset>
 #include <nltools/enums/EnumTools.h>
+#include <tools/StringTools.h>
 
 ENUM(UIFocus, uint8_t, Any, Sound, Parameters, Presets, Banks, Setup, Unchanged);
 ENUM(UIMode, uint8_t, Any, Select, Store, Edit, Info, Unchanged);
@@ -109,5 +110,24 @@ struct FocusAndMode
   std::string toString()
   {
     return "UIFocus: " + ::toString(focus) + " UIMode: " + ::toString(mode) + " UIDetail: " + ::toString(detail);
+  }
+
+  static FocusAndMode decode(const std::string& s)
+  {
+    FocusAndMode ret{};
+    auto parts = StringTools::splitStringOnAnyDelimiter(s, '-');
+
+    if(!parts.empty())
+      ret.focus = to<UIFocus>(parts[0]);
+    if(parts.size() > 1)
+      ret.mode = to<UIMode>(parts[1]);
+    if(parts.size() > 2)
+      ret.detail = to<UIDetail>(parts[2]);
+
+    return ret;
+  }
+
+  [[nodiscard]] std::string encode() const {
+    return ::toString(focus) + "-" + ::toString(mode) + "-" + ::toString(detail);
   }
 };

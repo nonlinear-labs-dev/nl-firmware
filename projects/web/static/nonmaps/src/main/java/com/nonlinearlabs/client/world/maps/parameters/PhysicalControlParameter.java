@@ -1,9 +1,15 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.nonlinearlabs.client.world.Rect;
+import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.NonDimension;
+import com.nonlinearlabs.client.world.maps.NonRect;
 
 abstract public class PhysicalControlParameter extends Parameter {
+
+
+	private HardwareCCDisplay ccDisplay;
 
 	public PhysicalControlParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
@@ -25,6 +31,26 @@ abstract public class PhysicalControlParameter extends Parameter {
 				return 5;
 			}
 		});
+		ccDisplay = addChild(new HardwareCCDisplay(this, getParameterNumber()));
+	}
+	
+	@Override
+	public boolean skipChildOnLayout(MapsControl c) {
+		return c instanceof HardwareCCDisplay;
+	}
+
+	@Override
+	protected NonDimension layoutChildren(double levelOfDetail) {
+		NonDimension ret = super.layoutChildren(levelOfDetail);
+		layoutCCDisplay(levelOfDetail);
+		return ret;
+	}
+
+	private void layoutCCDisplay(double levelOfDetail) {
+		double totalHeight = getNonPosition().getHeight();
+		double ccDisplayHeight = ccDisplay.getNonPosition().getHeight();
+		ccDisplay.doFirstLayoutPass(levelOfDetail);
+		ccDisplay.moveTo(0, totalHeight - ccDisplayHeight);
 	}
 
 	@Override

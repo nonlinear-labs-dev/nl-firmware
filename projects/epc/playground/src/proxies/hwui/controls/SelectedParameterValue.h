@@ -52,8 +52,8 @@ class PhysicalControlValueLabel : public ControlWithChildren
   LabelStyleable* m_localDisabledLabelSnd = nullptr;
   LabelStyleable* m_localDisabledLabelRcv = nullptr;
 
-  HardwareSourceSendParameter* m_snd;
-  PhysicalControlParameter* m_hw;
+  HardwareSourceSendParameter* m_snd = nullptr;
+  PhysicalControlParameter* m_hw = nullptr;
 
   sigc::connection m_sndChanged;
   sigc::connection m_hwChanged;

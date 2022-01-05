@@ -32,8 +32,6 @@ void PhysicalControlSlider::setParameter(Parameter *param)
 
 void PhysicalControlSlider::onParameterSelectionChanged(Parameter *p)
 {
-  nltools::Log::error("Selected:", p->getID().toString());
-
   auto hwSrc = getPhysicalControlParameter(p);
   auto hwSnd = getSendParameter(p);
 

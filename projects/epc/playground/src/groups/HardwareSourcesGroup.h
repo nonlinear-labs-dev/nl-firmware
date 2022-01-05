@@ -2,12 +2,11 @@
 
 #include "ParameterGroup.h"
 #include <parameter_descriptor.h>
-#include <parameters/ParameterTypes.h>
-#include <parameters/ParameterTypes.h>
 
 class ModulationRoutingParameter;
 class PhysicalControlParameter;
 class MacroControlParameter;
+class Settings;
 
 class HardwareSourcesGroup : public ParameterGroup
 {
@@ -61,42 +60,42 @@ class HardwareSourcesGroup : public ParameterGroup
 
   static ParameterId getPedal1SendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Pedal1_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Pedal_1_Send), VoiceGroup::Global };
   }
 
   static ParameterId getPedal2SendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Pedal2_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Pedal_2_Send), VoiceGroup::Global };
   }
 
   static ParameterId getPedal3SendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Pedal3_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Pedal_3_Send), VoiceGroup::Global };
   }
 
   static ParameterId getPedal4SendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Pedal4_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Pedal_4_Send), VoiceGroup::Global };
   }
 
   static ParameterId getRibbon1SendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Ribbon1_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Ribbon_1_Send), VoiceGroup::Global };
   }
 
   static ParameterId getRibbon2SendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Ribbon2_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Ribbon_2_Send), VoiceGroup::Global };
   }
 
   static ParameterId getAftertouchSendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Aftertouch_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Aftertouch_Send), VoiceGroup::Global };
   }
 
   static ParameterId getBenderSendID()
   {
-    return { static_cast<int>(PlaceholderIDS::Bender_Send), VoiceGroup::Global };
+    return { static_cast<int>(C15::PID::Bender_Send), VoiceGroup::Global };
   }
 
   void init() override;

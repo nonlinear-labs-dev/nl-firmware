@@ -26,6 +26,7 @@
 #include <presets/PresetManagerActions.h>
 #include <presets/BankActions.h>
 #include <presets/EditBufferActions.h>
+#include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 using namespace std::chrono_literals;
@@ -83,7 +84,7 @@ Application::Application(int numArgs, char **argv)
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
-    , m_hwui(new HWUI())
+    , m_hwui(new HWUI(*m_settings.get()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
@@ -107,7 +108,11 @@ Application::Application(int numArgs, char **argv)
   m_http->init();
   m_presetManager->init(m_audioEngineProxy.get(), *m_settings, SplashLayout::addStatus);
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
-  m_hwui->setFocusAndMode(FocusAndMode(UIFocus::Parameters, UIMode::Select));
+
+  auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
+  SettingsUseCases useCases(*m_settings);
+  useCases.thawFocusAndMode();
+  useCases.setFocusAndMode(focusAndMode->getState());
 
   runWatchDog();
 

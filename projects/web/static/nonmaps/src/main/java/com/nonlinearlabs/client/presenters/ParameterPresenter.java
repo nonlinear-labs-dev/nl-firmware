@@ -28,8 +28,6 @@ public class ParameterPresenter {
 	public boolean fillFromRightEnabled = false;
 	public boolean disabled = false;
 	public boolean hidden = false;
-	public boolean enableLocalDisable = false;
-	public boolean isLocalDisabled = false;
 	public boolean isDefault = false;
 
 	public long hash = 0;

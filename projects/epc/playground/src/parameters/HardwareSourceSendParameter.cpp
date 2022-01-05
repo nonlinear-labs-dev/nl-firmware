@@ -3,15 +3,16 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include "HardwareSourceSendParameter.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <xml/Writer.h>
 
-HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter* sibling,
+HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
+                                                         PhysicalControlParameter& sibling,
                                                          const ParameterId& id, const ScaleConverter* converter,
-                                                         double def, int coarseDenominator, int fineDenominator,
-                                                         Settings* settings)
+                                                         double def, int coarseDenominator, int fineDenominator, Settings* settings)
     : Parameter(pGroup, id, converter, def, coarseDenominator, fineDenominator)
     , m_sibling{sibling}
     , m_settings(settings)
@@ -23,21 +24,52 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
     auto routings = settings->getSetting<RoutingSettings>();
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
+
+  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
 
-Glib::ustring HardwareSourceSendParameter::getLongName() const
+void HardwareSourceSendParameter::setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue)
 {
-  return getID().toString();
+  Parameter::setCPFromHwui(transaction, cpValue);
+  m_lastChangedFromHWUI = true;
 }
 
-Glib::ustring HardwareSourceSendParameter::getShortName() const
+void HardwareSourceSendParameter::setCPFromWebUI(UNDO::Transaction* transaction, const tControlPositionValue& cpValue)
 {
-  return getID().toString();
+  Parameter::setCPFromWebUI(transaction, cpValue);
+  m_lastChangedFromHWUI = false;
 }
 
-Glib::ustring HardwareSourceSendParameter::getInfoText() const
+void HardwareSourceSendParameter::onUnselected()
 {
-  return getID().toString();
+  Parameter::onUnselected();
+
+  if(m_lastChangedFromHWUI && getReturnMode() != ReturnMode::None)
+  {
+    m_lastChangedFromHWUI = false;
+    getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
+    sendToPlaycontroller();
+    invalidate();
+  }
+}
+
+void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
+{
+  if(auto physicalSrc = dynamic_cast<const PhysicalControlParameter*>(sibling))
+  {
+    auto newMode = physicalSrc->getReturnMode();
+    if(newMode != m_returnMode)
+    {
+      getValue().setScaleConverter(physicalSrc->getValue().getScaleConverter());
+      getValue().setCoarseDenominator(physicalSrc->getValue().getCoarseDenominator());
+      getValue().setFineDenominator(physicalSrc->getValue().getFineDenominator());
+      getValue().setIsBoolean(physicalSrc->getValue().isBoolean());
+      getValue().setRawValue(Initiator::INDIRECT, physicalSrc->getValue().getRawValue());
+
+      m_returnMode = newMode;
+      invalidate();
+    }
+  }
 }
 
 void HardwareSourceSendParameter::sendParameterMessage() const
@@ -50,11 +82,11 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 {
   if(auto localSetting = dynamic_cast<const GlobalLocalEnableSetting*>(setting))
   {
-    auto local = localSetting->get();
-    if(m_localIsEnabled != local)
+    const auto local = localSetting->get();
+    if(local != m_localIsEnabled)
     {
       m_localIsEnabled = local;
-      invalidate();
+      updateIsEnabledAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -63,11 +95,11 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
 {
   if(auto routings = dynamic_cast<const RoutingSettings*>(setting))
   {
-    auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
+    const auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
     if(state != m_routingIsEnabled)
     {
       m_routingIsEnabled = state;
-      invalidate();
+      updateIsEnabledAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -76,27 +108,23 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
 {
   using tIdx = RoutingSettings::tRoutingIndex;
 
-  constexpr auto to = [](PlaceholderIDS i) {
-    return static_cast<int>(i);
-  };
-
   switch(id.getNumber())
   {
-    case to(PlaceholderIDS::Bender_Send):
+    case C15::PID::Bender_Send:
       return tIdx::Bender;
-    case to(PlaceholderIDS::Aftertouch_Send):
+    case C15::PID::Aftertouch_Send:
       return tIdx::Aftertouch;
-    case to(PlaceholderIDS::Pedal1_Send):
+    case C15::PID::Pedal_1_Send:
       return tIdx::Pedal1;
-    case to(PlaceholderIDS::Pedal2_Send):
+    case C15::PID::Pedal_2_Send:
       return tIdx::Pedal2;
-    case to(PlaceholderIDS::Pedal3_Send):
+    case C15::PID::Pedal_3_Send:
       return tIdx::Pedal3;
-    case to(PlaceholderIDS::Pedal4_Send):
+    case C15::PID::Pedal_4_Send:
       return tIdx::Pedal4;
-    case to(PlaceholderIDS::Ribbon1_Send):
+    case C15::PID::Ribbon_1_Send:
       return tIdx::Ribbon1;
-    case to(PlaceholderIDS::Ribbon2_Send):
+    case C15::PID::Ribbon_2_Send:
       return tIdx::Ribbon2;
   }
   nltools_assertNotReached();
@@ -106,7 +134,13 @@ nlohmann::json HardwareSourceSendParameter::serialize() const
 {
   auto param = Parameter::serialize();
   param.push_back({"is-enabled", isLocalEnabled() });
+  param.push_back({"return-mode", static_cast<int>(m_returnMode) });
   return param;
+}
+
+bool HardwareSourceSendParameter::shouldWriteDocProperties(UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  return knownRevision < getUpdateIDOfLastChange();
 }
 
 void HardwareSourceSendParameter::writeDocProperties(Writer& writer,
@@ -114,24 +148,62 @@ void HardwareSourceSendParameter::writeDocProperties(Writer& writer,
 {
   Parameter::writeDocProperties(writer, knownRevision);
   writer.writeTextElement("local-enabled", std::to_string(isLocalEnabled()));
+  writer.writeTextElement("return-mode", std::to_string(static_cast<int>(m_returnMode)));
+}
+
+size_t HardwareSourceSendParameter::getHash() const
+{
+  auto hash = Parameter::getHash();
+  hash_combine(hash, isLocalEnabled());
+  hash_combine(hash, static_cast<int>(m_returnMode));
+  return hash;
 }
 
 bool HardwareSourceSendParameter::isLocalEnabled() const
 {
-  return m_routingIsEnabled && m_localIsEnabled;
+  return m_isEnabled;
+}
+
+bool HardwareSourceSendParameter::lockingEnabled() const
+{
+  return false;
 }
 
 ReturnMode HardwareSourceSendParameter::getReturnMode() const
 {
-  return m_sibling->getReturnMode();
+  return m_sibling.getReturnMode();
 }
 
 Layout* HardwareSourceSendParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  return m_sibling->createLayout(focusAndMode);
+  return m_sibling.createLayout(focusAndMode);
 }
 
 PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() const
 {
-  return m_sibling;
+  return &m_sibling;
+}
+
+void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfApplicable()
+{
+  auto oldState = m_isEnabled;
+  m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
+
+  if(oldState != m_isEnabled)
+  {
+    if(m_isEnabled)
+    {
+      if(auto eb = getParentEditBuffer())
+      {
+        if(eb->getSelected(VoiceGroup::Global) == this)
+        {
+          EditBufferUseCases useCase(*eb);
+          auto sibling = getSiblingParameter();
+          useCase.selectParameter(sibling, true);
+        }
+      }
+    }
+
+    invalidate();
+  }
 }

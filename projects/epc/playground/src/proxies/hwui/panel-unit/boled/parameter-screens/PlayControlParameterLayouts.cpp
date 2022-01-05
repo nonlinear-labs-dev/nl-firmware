@@ -1,4 +1,5 @@
 #include "PlayControlParameterLayouts.h"
+#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationRoutersCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlBehaviorLabel.h>
@@ -230,7 +231,8 @@ bool PedalParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modif
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
@@ -404,7 +406,8 @@ bool RibbonParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
@@ -514,15 +517,22 @@ void RibbonParameterSelectLayout2::setMode(uint8_t desiredMode)
   switch(desiredMode)
   {
     case Behaviour:
+    {
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(false);
+      if(auto l = findControlOfType<PhysicalControlBehaviorLabel>())
+        l->setVisible(true);
+    }
       break;
     default:
-
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+    {
+      if(auto b = findControlOfType<PhysicalControlBehaviorLabel>())
+        b->setVisible(false);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(true);
       super2::setMode(desiredMode);
+    }
   }
 
   setDirty();

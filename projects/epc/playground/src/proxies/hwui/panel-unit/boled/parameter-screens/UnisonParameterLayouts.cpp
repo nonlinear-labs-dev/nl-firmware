@@ -1,5 +1,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UnisonParameterCarousel.h>
 #include "UnisonParameterLayouts.h"
+#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
@@ -29,7 +30,8 @@ bool UnmodulateableUnisonParameterLayout::onButton(Buttons i, bool down, ButtonM
 {
   if(down && i == Buttons::BUTTON_C)
   {
-    Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
     return true;
   }
 
@@ -47,7 +49,8 @@ bool ModulateableUnisonParameterLayout::onButton(Buttons i, bool down, ButtonMod
   {
     if(!isCurrentParameterModulated())
     {
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
+      SettingsUseCases useCases(*Application::get().getSettings());
+      useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
       return true;
     }
   }

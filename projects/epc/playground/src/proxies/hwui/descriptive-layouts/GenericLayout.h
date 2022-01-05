@@ -3,6 +3,7 @@
 #include <proxies/hwui/Layout.h>
 #include <nltools/threading/Throttler.h>
 #include "LayoutClass.h"
+#include "device-settings/FocusAndModeSetting.h"
 
 namespace DescriptiveLayouts
 {
@@ -38,5 +39,6 @@ namespace DescriptiveLayouts
     LayoutClass m_prototype;
     std::unique_ptr<EventProvider> m_eventProvider;
     sigc::connection m_onConditionsChanged;
+    FocusAndModeSetting& m_famSetting;
   };
 }

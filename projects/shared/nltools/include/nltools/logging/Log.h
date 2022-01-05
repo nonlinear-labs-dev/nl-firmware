@@ -76,8 +76,6 @@ namespace nltools
     {
       if(s_level <= Level::Error)
         output<mode>("Error: ", args...);
-
-      flush();
     }
 
     template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>

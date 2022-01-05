@@ -21,7 +21,7 @@
 #include <presets/PresetParameter.h>
 #include <testing/TestHelper.h>
 
-void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir, const std::string &uuid)
+void XMLPresetLoader::loadTestPreset(C15Synth* synth, const std::string& subDir, const std::string& uuid)
 {
   UNDO::Scope undoScope(&SyncMasterMockRoot::get());
 
@@ -123,4 +123,43 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
   }
 
   opt.setPresetManagerPath(oldPath);
+}
+
+void XMLPresetLoader::convertSoundTo(C15Synth* synth, Settings* settings, SoundType type)
+{
+  Options opt;
+  std::unique_ptr<AudioEngineProxy> proxy;
+  PresetManager pm(&SyncMasterMockRoot::get(), true, opt, *settings, proxy);
+  auto& eb = *pm.getEditBuffer();
+  EditBufferUseCases ebUseCase(eb);
+
+  switch(type)
+  {
+    case SoundType::Single:
+      ebUseCase.convertToSingle(VoiceGroup::I);
+      break;
+    case SoundType::Split:
+      ebUseCase.convertToSplit(VoiceGroup::I);
+      break;
+    case SoundType::Layer:
+      ebUseCase.convertToLayer(VoiceGroup::I);
+      break;
+  }
+
+  switch(eb.getType())
+  {
+    case SoundType::Single:
+      synth->onSinglePresetMessage(AudioEngineProxy::createSingleEditBufferMessage(eb));
+      break;
+
+    case SoundType::Split:
+      synth->onSplitPresetMessage(AudioEngineProxy::createSplitEditBufferMessage(eb));
+      break;
+
+    case SoundType::Layer:
+      synth->onLayerPresetMessage(AudioEngineProxy::createLayerEditBufferMessage(eb));
+      break;
+    default:
+      break;
+  }
 }

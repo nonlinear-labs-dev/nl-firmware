@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources;
 
+import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
@@ -11,7 +12,12 @@ public class HardwareSendSources extends ParameterColumn {
 		super(parent);
         for(int i = 0; i < 8; i++)
         {
-            addChild(params[i] = new PhysicalControlSendParameter(this, 1000 + i) {});
+            addChild(params[i] = new PhysicalControlSendParameter(this, 398 + i) {});
         }
+	}
+
+    @Override
+	public boolean skipChildOnLayout(MapsControl c) {
+		return false;
 	}
 }

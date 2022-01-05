@@ -113,8 +113,22 @@ The "c15-ota-update" target will create a complete c15 update.tar and immediatel
 UNIT_NAME=NL-C15-Unit-xxxxx UNIT_PASSWORD=**** make c15-ota-update
 ```
 
+### Creating an SD-Card installer for the BBB
 
+Since the only thing we are insterested is, is the BBB rootfs we can turn all the options off.
+The only one needed is BUILD_BBB, so
+```
+cmake -DDEV_PC=Off -DBUILD_AUDIOENGINE=Off -DBUILD_BBBB=Off -DBUILD_PLAYGROUND=Off -DBUILD_ONLINEHELP=Off -DBUILD_TEXT2SOLED=Off -DBUILD_TESTING=Off -DBUILD_BBB=On -DBUILD_LPC=Off -DBUILD_EPC=Off -DBUILD_WEB=Off -DCMAKE_BUILD_TYPE=Release ../C15"
+```
 
+Check which device is the SD card (f.e. with lsblk) an run
+```
+BBB_INSTALL_MEDIUM=/dev/sdX make bbb-install-medium
+```
+
+Boot your BBB with the freshly created SD Card, log into you BBB (f.e. with gtkterm), navigate to "/mmc_install" and run "./runme.sh". DONE!
+
+Your BBB should have the latest rootfs installed and running from from eMMC regardless whether you have the SD Card inserted or not.
 
 
    

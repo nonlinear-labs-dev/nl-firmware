@@ -55,6 +55,7 @@ class C15Synth : public Synth, public sigc::trackable
   void onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg);
   void onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg);
   void onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg);
+  void onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg);
 
   void onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg);
   void onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage& msg);
@@ -82,7 +83,7 @@ class C15Synth : public Synth, public sigc::trackable
   MidiRuntimeOptions m_midiOptions;
 
   //Latch-Filters, Queues
-  std::array<float, 8> m_playgroundHwSourceKnownValues{};
+  std::array<float, 8> m_playgroundHwSourceKnownValues {};
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 

@@ -67,7 +67,7 @@ void PresetEditButtonMenu::renamePreset()
     {
       if(auto preset = bank->getSelectedPreset())
       {
-        PresetUseCases useCase(preset, *Application::get().getSettings());
+        PresetUseCases useCase(*preset, *Application::get().getSettings());
         useCase.rename(newName);
       }
     }
