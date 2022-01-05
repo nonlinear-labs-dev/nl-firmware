@@ -324,6 +324,24 @@ public class PresetList extends OverlayLayout {
 		}
 	}
 
+	public BeltPreset findByUuid(String uuid) {
+		Iterator<OverlayControl> start = getChildren().iterator();
+
+		while(start.hasNext()) {
+			OverlayControl ctrl = start.next();
+
+			if(ctrl instanceof BeltPreset)
+			{
+				BeltPreset bp = (BeltPreset)ctrl;
+				if(bp.getUUID().equals(uuid))
+				{
+					return bp;
+				}
+			}
+		} while(start.hasNext());
+		return null;
+	}
+
 	private void removeAllPresets() {
 		removeAll();
 	}
