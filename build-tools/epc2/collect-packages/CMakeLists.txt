@@ -75,7 +75,7 @@ ADD_CUSTOM_COMMAND(
     DEPENDS .collect-update-packages-docker-container
     VERBATIM
     COMMAND docker run collect-update-packages-docker-container /collectPackages.sh > update-packages.txt
-    COMMAND echo "${EPC2_VERSIONED_PACKAGES}" | tr ";" "\\n" >> update-packages.txt
+#    COMMAND echo "${EPC2_VERSIONED_PACKAGES}" | tr ";" "\\n" >> update-packages.txt
     )
   
 ADD_CUSTOM_COMMAND(

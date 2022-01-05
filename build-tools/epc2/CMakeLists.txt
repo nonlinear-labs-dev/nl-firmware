@@ -14,7 +14,7 @@ SET(EPC2_BASE_ADDITIONAL_PACKAGES "alsa-lib alsa-tools alsa-utils base boost cpu
 
 SET(EPC2_BUILD_TOOLS "gcc git cmake make mc pkgconf wget unzip ccache")
 SET(EPC2_UPDATE_PACKAGES "flac lm_sensors dnsmasq arch-install-scripts")
-SET(EPC2_VERSIONED_PACKAGES "networkmanager 1.32.8-1" "glibc 2.33-5" "libnm 1.32.8-1")
+# SET(EPC2_VERSIONED_PACKAGES "networkmanager 1.32.8-1" "glibc 2.33-5" "libnm 1.32.8-1")
 
 ADD_SUBDIRECTORY(collect-packages)
 ADD_SUBDIRECTORY(fetch-packages)

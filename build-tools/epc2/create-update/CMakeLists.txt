@@ -3,18 +3,14 @@ SET(BASE_KERNEL_FILE linux-rt-${EPC2_BASE_KERNEL}-x86_64.pkg.tar.zst)
 file(GLOB_RECURSE PROJECT_SOURCE_FILES ${CMAKE_SOURCE_DIR}/projects/*)
 
 configure_file(Dockerfile docker/Dockerfile)
-configure_file(backdoor.sh docker/backdoor.sh)
 configure_file(createUpdate.sh docker/createUpdate.sh COPYONLY)
-configure_file(nlhook docker/nlhook)
 configure_file(setup-base-os.sh docker/setup-base-os.sh COPYONLY)
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Creating Docker container holding the update arch"
     OUTPUT .epc2-create-update-overlay-docker
     DEPENDS createUpdate.sh
-    DEPENDS backdoor.sh
     DEPENDS Dockerfile
-    DEPENDS nlhook
     DEPENDS epc2-download-package-cache
     DEPENDS setup-base-os.sh
     DEPENDS ../CMakeLists.txt
