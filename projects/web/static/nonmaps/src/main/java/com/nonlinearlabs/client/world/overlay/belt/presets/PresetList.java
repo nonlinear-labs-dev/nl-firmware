@@ -329,16 +329,15 @@ public class PresetList extends OverlayLayout {
 
 		while(start.hasNext()) {
 			OverlayControl ctrl = start.next();
-
-			if(ctrl instanceof BeltPreset)
-			{
+			if(ctrl instanceof BeltPreset) {
 				BeltPreset bp = (BeltPreset)ctrl;
 				if(bp.getUUID().equals(uuid))
 				{
 					return bp;
 				}
 			}
-		} while(start.hasNext());
+		}
+		
 		return null;
 	}
 
