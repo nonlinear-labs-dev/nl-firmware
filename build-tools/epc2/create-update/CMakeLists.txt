@@ -1,5 +1,4 @@
 SET(BASE_KERNEL_FILE linux-rt-${EPC2_BASE_KERNEL}-x86_64.pkg.tar.zst)
-SET(UPDATE_KERNEL_FILE linux-rt-${EPC2_UPDATE_KERNEL}-x86_64.pkg.tar.zst)
 
 file(GLOB_RECURSE PROJECT_SOURCE_FILES ${CMAKE_SOURCE_DIR}/projects/*)
 
@@ -39,7 +38,6 @@ ADD_CUSTOM_COMMAND(
     DEPENDS .epc2-create-update-overlay-docker
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../create-kernel-update/update.tar
     DEPENDS ${CMAKE_SOURCE_DIR}/projects/epc/scripts/installInitramfsBackdoor.sh
     DEPENDS ${PROJECT_SOURCE_FILES}
     VERBATIM
@@ -51,7 +49,6 @@ ADD_CUSTOM_COMMAND(
     -v ${CMAKE_SOURCE_DIR}:/srcdir 
     -v ${CMAKE_CURRENT_BINARY_DIR}/update:/bindir 
     -v ${CMAKE_BINARY_DIR}/projects/web:/web
-    -v ${CMAKE_CURRENT_BINARY_DIR}/../create-kernel-update:/kernel-update-builddir
     --env PACKAGES=${EPC2_UPDATE_PACKAGES}
     epc2-create-update-overlay-docker /createUpdate.sh
     COMMAND cp update/update.tar update.tar
@@ -60,6 +57,5 @@ ADD_CUSTOM_COMMAND(
 ADD_CUSTOM_TARGET(epc2-create-update 
   DEPENDS web 
   DEPENDS epc2-collect-packages 
-  DEPENDS epc2-create-kernel-update
   DEPENDS epc2-download-package-cache 
   DEPENDS update.tar)

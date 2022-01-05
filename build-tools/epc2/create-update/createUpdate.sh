@@ -65,40 +65,6 @@ install_packages() {
     return 0
 }
 
-ship_kernel_update() {
-  cp /kernel-update-builddir/update.tar /kernel-update.tar
-}
-
-install_overlay_backdoor() {
-  cp /nlhook /lib/initcpio/hooks/nlhook
-  mkdir -p /usr/local/lib/systemd/system/multi-user.target.wants
-  cat <<- ENDOFHERE > /usr/local/lib/systemd/system/initramfs-backdoor.service
-  [Unit]
-  Before=audio-engine.service playground.service
-  Description=Nonlinear-Labs initramfs backdoor installer
-  
-  [Service]
-  Type=oneshot
-  ExecStart=/usr/local/C15/scripts/installInitramfsBackdoor.sh
-    
-  [Install]
-  WantedBy=multi-user.target
-ENDOFHERE
-
-# cat <<- ENDOFHERE > /etc/mkinitcpio.d/linux-rt.preset
-#ALL_config="/etc/mkinitcpio.conf"
-#ALL_kver="/boot/vmlinuz-linux-rt"
-#PRESETS=('default')
-#default-image="/boot/initramfs-linux-rt.img"
-#ENDOFHERE
-
-  ln -s ../initramfs-backdoor.service /usr/local/lib/systemd/system/multi-user.target.wants/initramfs-backdoor.service
-  systemctl enable initramfs-backdoor 
-
-  mkdir -p /usr/local/C15/scripts 
-  cp /initramfs-hook.sh /usr/local/C15/scripts/
-}
-
 build_c15() {
   mkdir -p /bindir/build
   cd /bindir/build
@@ -146,25 +112,7 @@ setup_network_manager() {
   [proxy]
 ENDOFHERE
 
-  cat <<- ENDOFHERE > /etc/NetworkManager/system-connections/bbb.nmconnection
-  [connection]
-  id=bbb
-  uuid=bbb79179-6804-4197-b476-eacad1d492e4
-  type=ethernet
-  interface-name=eno1
-  autoconnect=true
-  autoconnect-priority=100
-
-  [ipv4]
-  method=manual
-  address1=192.168.10.10/24
-
-  [ipv6]
-  method=ignore
-ENDOFHERE
-
   chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
-  chmod 600 /etc/NetworkManager/system-connections/bbb.nmconnection
   systemctl enable NetworkManager
 }
 
@@ -185,68 +133,9 @@ perform_tweaks() {
     echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 }
 
-# UNUSED
-cleanup_modules() {
-  mkdir -p /modules-to-keep
-  for file in $(cat /needed-modules.txt); do
-    if [ -f $file ]; then
-      mkdir -p $(dirname /modules-to-keep$file)
-      mv $file /modules-to-keep$file
-    fi
-  done
-
-  rm -rf /lib/modules/5.15.3.21.realtime1-1-rt
-
-  for file in $(cat /needed-modules.txt); do
-    if [ -f /modules-to-keep$file ]; then
-      mkdir -p $(dirname $file)
-      mv /modules-to-keep$file $file
-    fi
-  done
-
-  rm -rf /modules-to-keep
-}
-
-cleanup_firmware() {
-  # echo 'dyndbg="file drivers/base/firmware_loader/main.c +fmp'
-  # echo 'After booting, run dmesg | grep firmware_class. Of particular interest are lines with firmware_class:fw_get_filesystem_firmware'
-  mkdir -p /firmware-to-keep
-  cp /usr/lib/firmware/iwlwifi-QuZ-a0-hr-b0-63.ucode /firmware-to-keep
-
-  mkdir -p /firmware-to-keep/i915
-  cp /usr/lib/firmware/i915/kbl_dmc_ver1_04.bin /firmware-to-keep/i915
-
-  # add other firmware modules here....
-  rm -rf /usr/lib/firmware
-  mv /firmware-to-keep /usr/lib/firmware
-}
-
-# UNUSED
-cleanup_packages() {
-  for package in gcc cmake git make pkgconf ccache guile; do 
-    name=$(echo $package | cut -f1 -d " ")
-    yes | pacman -R "$name" 
-  done 
-}
-
-# UNUSED
-install_backdoor() {
-  echo "no backdoor installed"
-  #cp /backdoor.sh /bindir/update/backdoor.sh
-  #mv /boot /bindir/update/
-  #BACKDOOR_CHECKSUM=$(sha256sum /bindir/update/backdoor.sh | cut -d " " -f 1)
-  #touch /bindir/update/$BACKDOOR_CHECKSUM.sign
-}
-
 package_update() {
   OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
   OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
-
-  # remove unneccessary files
-  rm -rf /usr/share/licenses
-  # cleanup_packages
-  # cleanup_modules
-  cleanup_firmware
 
   rm -rf /bindir/update
   mkdir -p /bindir/update
@@ -269,10 +158,8 @@ package_update() {
   tar -C /bindir/ -cf /bindir/update.tar update
 }
 
-install_overlay_backdoor
 install_packages
 perform_tweaks
-ship_kernel_update
 build_c15
 setup_network_manager
 package_update

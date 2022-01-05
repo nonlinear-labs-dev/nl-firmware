@@ -12,7 +12,6 @@ CONFIGURE_FILE(BuildDockerfile build-packages-docker-container/Dockerfile @ONLY)
 CONFIGURE_FILE(collectPackages.sh build-packages-docker-container/collectPackages.sh @ONLY)
 
 SET(BASE_KERNEL_FILENAME linux-rt-${EPC2_BASE_KERNEL}-x86_64.pkg.tar.zst)
-SET(UPDATE_KERNEL_FILENAME linux-rt-${EPC2_UPDATE_KERNEL}-x86_64.pkg.tar.zst)
 
 ADD_CUSTOM_COMMAND(
     COMMENT "Build 'Collect Base Packages'-Docker Container"
@@ -23,14 +22,9 @@ ADD_CUSTOM_COMMAND(
     DEPENDS collectPackages.sh
     VERBATIM
     COMMAND 
-    cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} ||
-      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
+    cmp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} ||
+      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
       wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME}
-    COMMAND 
-      cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} ||
-      cp ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} > /dev/null || 
-      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} || 
-      wget --show-progress -q https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} 
     COMMAND docker build -t collect-base-packages-docker-container ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container
     COMMAND touch .collect-base-packages-docker-container
     )
@@ -44,9 +38,14 @@ ADD_CUSTOM_COMMAND(
     DEPENDS collectPackages.sh
     VERBATIM 
     COMMAND 
-      cmp --silent ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} ||
+      cmp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} ||
       cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
-      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME}
+      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME}
+#    COMMAND 
+#      cmp ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} ||
+#      cp ${DOWNLOAD_DIR}/epc2/packages/${UPDATE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} > /dev/null || 
+#      wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} || 
+#      wget --show-progress -q https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/${UPDATE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${UPDATE_KERNEL_FILENAME} 
     COMMAND docker build -t collect-update-packages-docker-container ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container
     COMMAND touch .collect-update-packages-docker-container
     )
