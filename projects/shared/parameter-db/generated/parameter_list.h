@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2021-11-10, 18:19
+    @date       2022-01-05, 14:55
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -281,7 +281,7 @@ namespace C15
       PID::Osc_A_Pitch_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Osc_A_Pitch_Env_C, None, Properties::SmootherScale::Linear, 80.0f, 0.0f, true },
-      { 80, 8000, 8000, 8000, "", "Oscillator A", "Oscillator A", "Pitch - Env C", "Env C",
+      { 80, 8000, 0, 0, "", "Oscillator A", "Oscillator A", "Pitch - Env C", "Env C",
         "Amount of pitch modulation by Envelope C [in semitones]." } },
     { Parameters::Local_Modulateables::Osc_A_Fluct,
       PID::Osc_A_Fluct,
@@ -296,7 +296,7 @@ namespace C15
       PID::Osc_A_Fluct_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Osc_A_Fluct_Env_C, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator A", "Oscillator A", "Fluct - Env C", "Env C",
+      { 100, 1000, 0, 0, "", "Oscillator A", "Oscillator A", "Fluct - Env C", "Env C",
         "Amount of modulation of the frequency fluctuation by Envelope C. At zero, the modulation stays constant, at "
         "higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Osc_A_PM_Self,
@@ -310,7 +310,7 @@ namespace C15
       PID::Osc_A_PM_Self_Env_A,
       0.0f,
       { Smoothers::Poly_Slow::Osc_A_PM_Self_Env_A, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator A", "Oscillator A", "PM Self - Env A", "Env A",
+      { 100, 1000, 0, 0, "", "Oscillator A", "Oscillator A", "PM Self - Env A", "Env A",
         "Envelope (A) amount for the phase modulation by Oscillator & Shaper A (local feedback). At zero, the "
         "modulation stays constant, at higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Osc_A_PM_Self_Shp,
@@ -318,7 +318,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::Osc_A_PM_Self_Shp, Signals::Quasipoly_Signals::Osc_A_PM_Self_Shp,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Oscillator A", "Oscillator A", "PM Self - Shaper", "Shaper",
+      { 100, 1000, 0, 0, "", "Oscillator A", "Oscillator A", "PM Self - Shaper", "Shaper",
         "Mix amount of Shaper A in the signal being used for phase modulation (self). At zero, the output signal of "
         "Oscillator A is used. At negative values, the signal from the Shaper is inverted." } },
     { Parameters::Local_Modulateables::Osc_A_PM_B,
@@ -332,7 +332,7 @@ namespace C15
       PID::Osc_A_PM_B_Env_B,
       0.0f,
       { Smoothers::Poly_Slow::Osc_A_PM_B_Env_B, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator A", "Oscillator A", "PM B - Env B", "Env B",
+      { 100, 1000, 0, 0, "", "Oscillator A", "Oscillator A", "PM B - Env B", "Env B",
         "Envelope (B) amount for the pahse modulation by Oscillator & Shaper B (cross feedback). At zero, the "
         "modulation stays constant, at higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Osc_A_PM_B_Shp,
@@ -340,7 +340,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::Osc_A_PM_B_Shp, Signals::Quasipoly_Signals::Osc_A_PM_B_Shp,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Oscillator A", "Oscillator A", "PM B - Shaper", "Shaper",
+      { 100, 1000, 0, 0, "", "Oscillator A", "Oscillator A", "PM B - Shaper", "Shaper",
         "Mix amount of Shaper B in the signal being used for phase modulation (B -> A). At zero, the output signal of "
         "Oscillator B is used. At negative values, the signal from the Shaper is inverted." } },
     { Parameters::Local_Modulateables::Osc_A_PM_FB,
@@ -354,7 +354,7 @@ namespace C15
       PID::Osc_A_PM_FB_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Osc_A_PM_FB_Env_C, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator A", "Oscillator A", "PM FB - Env C", "Env C",
+      { 100, 1000, 0, 0, "", "Oscillator A", "Oscillator A", "PM FB - Env C", "Env C",
         "Envelope (C) amount for the phase modulation by the Feedback signal. At zero, the modulation stays constant, "
         "at higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Shp_A_Drive,
@@ -368,7 +368,7 @@ namespace C15
       PID::Shp_A_Drive_Env_A,
       0.0f,
       { Smoothers::Poly_Slow::Shp_A_Drive_Env_A, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper A", "Shaper A", "Drive - Env A", "Env A",
+      { 100, 1000, 0, 0, "", "Shaper A", "Shaper A", "Drive - Env A", "Env A",
         "Envelope (A) amount for the Drive factor. At zero, the gain stays constant, at higher values, the envelope "
         "applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Shp_A_Fold,
@@ -376,7 +376,7 @@ namespace C15
       0.5f,
       { Smoothers::Poly_Fast::Shp_A_Fold, Signals::Quasipoly_Signals::Shp_A_Fold, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper A", "Shaper A", "Fold", "Fold",
+      { 100, 1000, 0, 0, "", "Shaper A", "Shaper A", "Fold", "Fold",
         "Amount of folding back of the shaper curve for high input amplitudes.\n0.0 %: flat saturation, no "
         "folding\n100.0 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
         "more nasal sound." } },
@@ -385,7 +385,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Shp_A_Asym, Signals::Quasipoly_Signals::Shp_A_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper A", "Shaper A", "Asymmetry", "Asym",
+      { 100, 1000, 0, 0, "", "Shaper A", "Shaper A", "Asymmetry", "Asym",
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Shp_A_Mix,
@@ -409,7 +409,7 @@ namespace C15
       PID::Shp_A_FB_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Shp_A_FB_Env_C, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper A", "Shaper A", "FB - Env C", "Env C",
+      { 100, 1000, 0, 0, "", "Shaper A", "Shaper A", "FB - Env C", "Env C",
         "Envelope (C) amount for the Feedback Mix. At zero, only a Gate signal is applied, at higher values, Envelope "
         "C is faded in." } },
     { Parameters::Local_Modulateables::Shp_A_Ring_Mod,
@@ -442,7 +442,7 @@ namespace C15
       PID::Osc_B_Pitch_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Osc_B_Pitch_Env_C, None, Properties::SmootherScale::Linear, 80.0f, 0.0f, true },
-      { 80, 8000, 8000, 8000, "", "Oscillator B", "Oscillator B", "Pitch - Env C", "Env C",
+      { 80, 8000, 0, 0, "", "Oscillator B", "Oscillator B", "Pitch - Env C", "Env C",
         "Amount of pitch modulation by Envelope C [in semitones]." } },
     { Parameters::Local_Modulateables::Osc_B_Fluct,
       PID::Osc_B_Fluct,
@@ -457,7 +457,7 @@ namespace C15
       PID::Osc_B_Fluct_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Osc_B_Fluct_Env_C, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator B", "Oscillator B", "Fluct - Env C", "Env C",
+      { 100, 1000, 0, 0, "", "Oscillator B", "Oscillator B", "Fluct - Env C", "Env C",
         "Amount of modulation of the frequency fluctuation by Envelope C. At zero, the modulation stays constant, at "
         "higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Osc_B_PM_Self,
@@ -471,7 +471,7 @@ namespace C15
       PID::Osc_B_PM_Self_Env_B,
       0.0f,
       { Smoothers::Poly_Slow::Osc_B_PM_Self_Env_B, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator B", "Oscillator B", "PM Self - Env B", "Env B",
+      { 100, 1000, 0, 0, "", "Oscillator B", "Oscillator B", "PM Self - Env B", "Env B",
         "Envelope (B) amount for the phase modulation by Oscillator & Shaper B (local feedback). At zero, the "
         "modulation stays constant, at higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Osc_B_PM_Self_Shp,
@@ -479,7 +479,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::Osc_B_PM_Self_Shp, Signals::Quasipoly_Signals::Osc_B_PM_Self_Shp,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Oscillator B", "Oscillator B", "PM Self - Shaper", "Shaper",
+      { 100, 1000, 0, 0, "", "Oscillator B", "Oscillator B", "PM Self - Shaper", "Shaper",
         "Mix amount of Shaper B in the signal being used for phase modulation (self). At zero, the output signal of "
         "Oscillator B is used. At negative values, the signal from the Shaper is inverted." } },
     { Parameters::Local_Modulateables::Osc_B_PM_A,
@@ -493,7 +493,7 @@ namespace C15
       PID::Osc_B_PM_A_Env_A,
       0.0f,
       { Smoothers::Poly_Slow::Osc_B_PM_A_Env_A, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator B", "Oscillator B", "PM A - Env A", "Env A",
+      { 100, 1000, 0, 0, "", "Oscillator B", "Oscillator B", "PM A - Env A", "Env A",
         "Envelope (A) amount for the pahse modulation by Oscillator & Shaper A (cross feedback). At zero, the "
         "modulation stays constant, at higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Osc_B_PM_A_Shp,
@@ -501,7 +501,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::Osc_B_PM_A_Shp, Signals::Quasipoly_Signals::Osc_B_PM_A_Shp,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Oscillator B", "Oscillator B", "PM A - Shaper", "Shaper",
+      { 100, 1000, 0, 0, "", "Oscillator B", "Oscillator B", "PM A - Shaper", "Shaper",
         "Mix amount of Shaper A in the signal being used for phase modulation (A -> B). At zero, the output signal of "
         "Oscillator A is used. At negative values, the signal from the Shaper is inverted." } },
     { Parameters::Local_Modulateables::Osc_B_PM_FB,
@@ -515,7 +515,7 @@ namespace C15
       PID::Osc_B_PM_FB_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Osc_B_PM_FB_Env_C, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Oscillator B", "Oscillator B", "PM FB - Env C", "Env C",
+      { 100, 1000, 0, 0, "", "Oscillator B", "Oscillator B", "PM FB - Env C", "Env C",
         "Envelope (C) amount for the phase modulation by the Feedback signal. At zero, the modulation stays constant, "
         "at higher values, the envelope applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Shp_B_Drive,
@@ -529,7 +529,7 @@ namespace C15
       PID::Shp_B_Drive_Env_B,
       0.0f,
       { Smoothers::Poly_Slow::Shp_B_Drive_Env_B, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper B", "Shaper B", "Drive - Env B", "Env B",
+      { 100, 1000, 0, 0, "", "Shaper B", "Shaper B", "Drive - Env B", "Env B",
         "Envelope (B) amount for the Drive factor. At zero, the gain stays constant, at higher values, the envelope "
         "applies a time-variant attenuation." } },
     { Parameters::Local_Modulateables::Shp_B_Fold,
@@ -537,7 +537,7 @@ namespace C15
       0.5f,
       { Smoothers::Poly_Fast::Shp_B_Fold, Signals::Quasipoly_Signals::Shp_B_Fold, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper B", "Shaper B", "Fold", "Fold",
+      { 100, 1000, 0, 0, "", "Shaper B", "Shaper B", "Fold", "Fold",
         "Amount of folding back of the shaper curve for high input amplitudes.\n0.0 %: flat saturation, no "
         "folding\n100.0 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
         "more nasal sound." } },
@@ -546,7 +546,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Shp_B_Asym, Signals::Quasipoly_Signals::Shp_B_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper B", "Shaper B", "Asymmetry", "Asym",
+      { 100, 1000, 0, 0, "", "Shaper B", "Shaper B", "Asymmetry", "Asym",
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Shp_B_Mix,
@@ -570,7 +570,7 @@ namespace C15
       PID::Shp_B_FB_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Shp_B_FB_Env_C, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Shaper B", "Shaper B", "FB - Env C", "Env C",
+      { 100, 1000, 0, 0, "", "Shaper B", "Shaper B", "FB - Env C", "Env C",
         "Envelope (C) amount for the Feedback Mix. At zero, only a Gate signal is applied, at higher values, Envelope "
         "C is faded in." } },
     { Parameters::Local_Modulateables::Shp_B_Ring_Mod,
@@ -608,7 +608,7 @@ namespace C15
       PID::Comb_Flt_Pitch_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Comb_Flt_Pitch_Env_C, None, Properties::SmootherScale::Linear, 80.0f, 0.0f, true },
-      { 80, 8000, 8000, 8000, "", "Comb Filter", "Comb Filter", "Pitch - Env C", "Env C",
+      { 80, 8000, 0, 0, "", "Comb Filter", "Comb Filter", "Pitch - Env C", "Env C",
         "Amount of modulation of the Comb Filter pitch by Envelope C [in semitones]." } },
     { Parameters::Local_Modulateables::Comb_Flt_Decay,
       PID::Comb_Flt_Decay,
@@ -647,7 +647,7 @@ namespace C15
       PID::Comb_Flt_AP_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Comb_Flt_AP_Env_C, None, Properties::SmootherScale::Linear, 80.0f, 0.0f, true },
-      { 80, 800, 800, 800, "", "Comb Filter", "Comb Filter", "Allpass - Env C", "Env C",
+      { 80, 800, 0, 0, "", "Comb Filter", "Comb Filter", "Allpass - Env C", "Env C",
         "Amount of modulation of the allpass center frequency by Envelope C [in semitones]." } },
     { Parameters::Local_Modulateables::Comb_Flt_AP_Res,
       PID::Comb_Flt_AP_Res,
@@ -678,7 +678,7 @@ namespace C15
       PID::Comb_Flt_LP_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::Comb_Flt_LP_Env_C, None, Properties::SmootherScale::Linear, 100.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Comb Filter", "Comb Filter", "Hi Cut - Env C ", "Env C",
+      { 100, 1000, 0, 0, "", "Comb Filter", "Comb Filter", "Hi Cut - Env C ", "Env C",
         "Amount of modulation of the cutoff frequency of the lowpass filter by Envelope C [in semitones]." } },
     { Parameters::Local_Modulateables::Comb_Flt_PM,
       PID::Comb_Flt_PM,
@@ -694,7 +694,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::Comb_Flt_PM_A_B, Signals::Quasipoly_Signals::Comb_Flt_PM_A_B,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Comb Filter", "Comb Filter", "PM - A-B", "A - B",
+      { 100, 1000, 0, 0, "", "Comb Filter", "Comb Filter", "PM - A-B", "A - B",
         "The (phase) modulation signal for the Comb Filter as a crossfade between the outputs of Oscillator & Shaper A "
         "and Oscillator & Shaper B." } },
     { Parameters::Local_Modulateables::SV_Flt_In_A_B,
@@ -734,7 +734,7 @@ namespace C15
       PID::SV_Flt_Cut_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::SV_Flt_Cut_Env_C, None, Properties::SmootherScale::Linear, 100.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "State Variable Filter", "SV Filter", "Cutoff - Env C", "Env C",
+      { 100, 1000, 0, 0, "", "State Variable Filter", "SV Filter", "Cutoff - Env C", "Env C",
         "Amount of cutoff modulation by Envelope C [in semitones]." } },
     { Parameters::Local_Modulateables::SV_Flt_Res,
       PID::SV_Flt_Res,
@@ -754,7 +754,7 @@ namespace C15
       PID::SV_Flt_Res_Env_C,
       0.0f,
       { Smoothers::Poly_Slow::SV_Flt_Res_Env_C, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "State Variable Filter", "SV Filter", "Reson - Env C ", "Env C",
+      { 100, 1000, 0, 0, "", "State Variable Filter", "SV Filter", "Reson - Env C ", "Env C",
         "Amount of resonance modulation by Envelope C." } },
     { Parameters::Local_Modulateables::SV_Flt_Spread,
       PID::SV_Flt_Spread,
@@ -778,7 +778,7 @@ namespace C15
       PID::SV_Flt_Par,
       0.0f,
       { Smoothers::Poly_Fast::SV_Flt_Par, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "State Variable Filter", "SV Filter", "Parallel", "Parallel ",
+      { 100, 1000, 0, 0, "", "State Variable Filter", "SV Filter", "Parallel", "Parallel ",
         "At zero, the two 2-pole filter stages are in series forming a 4-pole filter. Positive values crossfade from "
         "the serial structure to a parallel structure where the filter outputs are added. In bandpass mode (L-B-H = "
         "50.0%), the parallel structure with a negative Spread works as a band-reject filter. Negative values also "
@@ -797,7 +797,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Slow::SV_Flt_FM_A_B, Signals::Quasipoly_Signals::SV_Flt_FM_A_B,
         Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "State Variable Filter", "SV Filter", "FM - A-B", "A - B",
+      { 100, 1000, 0, 0, "", "State Variable Filter", "SV Filter", "FM - A-B", "A - B",
         "The signal for the FM (cutoff frequency modulation) of the State Variable Filter as a crossfade between the "
         "outputs of Oscillator & Shaper A and Oscillator & Shaper B." } },
     { Parameters::Local_Modulateables::FB_Mix_Comb,
@@ -848,7 +848,7 @@ namespace C15
       0.5f,
       { Smoothers::Poly_Fast::FB_Mix_Fold, Signals::Quasipoly_Signals::FB_Mix_Fold, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Feedback Mixer", "FB Mixer", "Fold", "Fold",
+      { 100, 1000, 0, 0, "", "Feedback Mixer", "FB Mixer", "Fold", "Fold",
         "Amount of folding back of the shaper curve for high input amplitudes.\n0.0 %: flat saturation, no "
         "folding\n100.0 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
         "more nasal sound." } },
@@ -857,7 +857,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Asym, Signals::Quasipoly_Signals::FB_Mix_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Feedback Mixer", "FB Mixer", "Asymmetry", "Asym",
+      { 100, 1000, 0, 0, "", "Feedback Mixer", "FB Mixer", "Asymmetry", "Asym",
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values, it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Unmodulateables::FB_Mix_Lvl_KT,
@@ -879,7 +879,7 @@ namespace C15
       PID::Out_Mix_A_Pan,
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_A_Pan, None, Properties::SmootherScale::Linear, 0.5f, 0.5f, true },
-      { 100, 1000, 1000, 1000, "", "Output Mixer", "Output Mixer", "A - Pan", "Pan",
+      { 100, 1000, 0, 0, "", "Output Mixer", "Output Mixer", "A - Pan", "Pan",
         "Pan position of the signal from Oscillator & Shaper A in the output mix." } },
     { Parameters::Local_Modulateables::Out_Mix_B_Lvl,
       PID::Out_Mix_B_Lvl,
@@ -892,7 +892,7 @@ namespace C15
       PID::Out_Mix_B_Pan,
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_B_Pan, None, Properties::SmootherScale::Linear, 0.5f, 0.5f, true },
-      { 100, 1000, 1000, 1000, "", "Output Mixer", "Output Mixer", "B - Pan", "Pan",
+      { 100, 1000, 0, 0, "", "Output Mixer", "Output Mixer", "B - Pan", "Pan",
         "Pan position of the signal from Oscillator & Shaper B in the output mix." } },
     { Parameters::Local_Modulateables::Out_Mix_Comb_Lvl,
       PID::Out_Mix_Comb_Lvl,
@@ -905,7 +905,7 @@ namespace C15
       PID::Out_Mix_Comb_Pan,
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_Comb_Pan, None, Properties::SmootherScale::Linear, 0.5f, 0.5f, true },
-      { 100, 1000, 1000, 1000, "", "Output Mixer", "Output Mixer", "Comb - Pan", "Pan",
+      { 100, 1000, 0, 0, "", "Output Mixer", "Output Mixer", "Comb - Pan", "Pan",
         "Pan position of the signal from the Comb Filter in the output mix." } },
     { Parameters::Local_Modulateables::Out_Mix_SVF_Lvl,
       PID::Out_Mix_SVF_Lvl,
@@ -918,7 +918,7 @@ namespace C15
       PID::Out_Mix_SVF_Pan,
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_SVF_Pan, None, Properties::SmootherScale::Linear, 0.5f, 0.5f, true },
-      { 100, 1000, 1000, 1000, "", "Output Mixer", "Output Mixer", "SV Filter - Pan", "Pan",
+      { 100, 1000, 0, 0, "", "Output Mixer", "Output Mixer", "SV Filter - Pan", "Pan",
         "Pan position of the signal from the State Variable Filter in the output mix." } },
     { Parameters::Local_Modulateables::Out_Mix_Drive,
       PID::Out_Mix_Drive,
@@ -933,7 +933,7 @@ namespace C15
       0.5f,
       { Smoothers::Poly_Fast::Out_Mix_Fold, Signals::Quasipoly_Signals::Out_Mix_Fold, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Output Mixer", "Output Mixer", "Fold", "Fold",
+      { 100, 1000, 0, 0, "", "Output Mixer", "Output Mixer", "Fold", "Fold",
         "Amount of folding back of the shaper curve for high input amplitudes.\n0.0 %: flat saturation, no "
         "folding\n100.0 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
         "more nasal sound." } },
@@ -942,7 +942,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::Out_Mix_Asym, Signals::Quasipoly_Signals::Out_Mix_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Output Mixer", "Output Mixer", "Asymmetry", "Asym",
+      { 100, 1000, 0, 0, "", "Output Mixer", "Output Mixer", "Asymmetry", "Asym",
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values, it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Out_Mix_Lvl,
@@ -975,7 +975,7 @@ namespace C15
       0.25f,
       { Smoothers::Mono_Slow::Cabinet_Fold, Signals::Mono_Signals::Cabinet_Fold, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Cabinet", "Cabinet", "Fold", "Fold",
+      { 100, 1000, 0, 0, "", "Cabinet", "Cabinet", "Fold", "Fold",
         "Amount of folding back of the shaper curve for high input amplitudes.\n0.0 %: flat saturation, no "
         "folding\n100.0 %: fully folded back (periodic sine curve)\nA higher amount of folding leads to a softer but "
         "more nasal sound." } },
@@ -984,7 +984,7 @@ namespace C15
       0.25f,
       { Smoothers::Mono_Slow::Cabinet_Asym, Signals::Mono_Signals::Cabinet_Asym, Properties::SmootherScale::Linear,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Cabinet", "Cabinet", "Asymmetry", "Asym",
+      { 100, 1000, 0, 0, "", "Cabinet", "Cabinet", "Asymmetry", "Asym",
         "Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics. At higher values, it becomes a "
         "parabolic curve that shifts the frequency of the fundamental to its double." } },
     { Parameters::Local_Modulateables::Cabinet_Tilt,
@@ -1006,7 +1006,7 @@ namespace C15
       PID::Cabinet_Lo_Cut,
       10.0f / 80.0f,
       { Smoothers::Mono_Slow::Cabinet_Lo_Cut, None, Properties::SmootherScale::Expon_Lin_Pitch, 80.0f, 20.0f, false },
-      { 80, 800, 800, 800, "", "Cabinet", "Cabinet", "Lo Cut", "Lo Cut",
+      { 80, 800, 0, 0, "", "Cabinet", "Cabinet", "Lo Cut", "Lo Cut",
         "Cutoff frequency [in semitones] of the highpass filter at the input." } },
     { Parameters::Local_Modulateables::Cabinet_Cab_Lvl,
       PID::Cabinet_Cab_Lvl,
@@ -1033,7 +1033,7 @@ namespace C15
       PID::Gap_Flt_Stereo,
       0.0f,
       { Smoothers::Mono_Slow::Gap_Flt_Stereo, None, Properties::SmootherScale::Linear, 36.0f, 0.0f, true },
-      { 72, 720, 720, 720, "", "Gap Filter", "Gap Filter", "Stereo", "Stereo",
+      { 72, 720, 0, 0, "", "Gap Filter", "Gap Filter", "Stereo", "Stereo",
         "Sets the difference between the center frequencies of the left and of the right channel [in semitones]." } },
     { Parameters::Local_Modulateables::Gap_Flt_Gap,
       PID::Gap_Flt_Gap,
@@ -1049,7 +1049,7 @@ namespace C15
       0.5f,
       { Smoothers::Mono_Slow::Gap_Flt_Res, Signals::Mono_Signals::Gap_Flt_Res, Properties::SmootherScale::Linear, 0.9f,
         0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Gap Filter", "Gap Filter", "Resonance", "Reson",
+      { 100, 1000, 0, 0, "", "Gap Filter", "Gap Filter", "Resonance", "Reson",
         "Resonance of both filters. Higher values create two resonance peaks at the upper and lower end of the "
         "gap." } },
     { Parameters::Local_Modulateables::Gap_Flt_Bal,
@@ -1081,7 +1081,7 @@ namespace C15
       PID::Flanger_Phase,
       0.5f,
       { Smoothers::Mono_Slow::Flanger_Phase, None, Properties::SmootherScale::Linear, 180.0f, 0.0f, false },
-      { 180, 1800, 1800, 1800, "", "Flanger", "Flanger", "Phase", "Phase",
+      { 180, 1800, 0, 0, "", "Flanger", "Flanger", "Phase", "Phase",
         "Phase offset between the LFO signals modulating the delay times in the left and the right channel." } },
     { Parameters::Local_Modulateables::Flanger_Rate,
       PID::Flanger_Rate,
@@ -1104,7 +1104,7 @@ namespace C15
       PID::Flanger_Stereo,
       0.0f,
       { Smoothers::Mono_Slow::Flanger_Stereo, None, Properties::SmootherScale::Linear, 50.0f, 0.0f, true },
-      { 50, 500, 500, 500, "", "Flanger", "Flanger", "Stereo", "Stereo",
+      { 50, 500, 0, 0, "", "Flanger", "Flanger", "Stereo", "Stereo",
         "Sets the ratio between the delay times of the left and of the right channel [the value shows the offset to "
         "100.0 %]. In the center position, the offset is zero and both delay times are equal." } },
     { Parameters::Local_Modulateables::Flanger_Feedback,
@@ -1119,7 +1119,7 @@ namespace C15
       PID::Flanger_Cross_FB,
       0.5f,
       { Smoothers::Mono_Fast::Flanger_Cross_FB, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Flanger", "Flanger", "Cross FB", "Cross FB",
+      { 100, 1000, 0, 0, "", "Flanger", "Flanger", "Cross FB", "Cross FB",
         "Amount of the cross feedback between the left and the right channel, increasing the complexity of the "
         "resulting signal. At negative values, the cross feedback is inverted and will emphasize other frequencies "
         "than in the non-inverted mode.\n0.0 %: no cross feedback\n+/- 100.0 %: all feedback is cross feedback" } },
@@ -1127,7 +1127,7 @@ namespace C15
       PID::Flanger_Hi_Cut,
       0.75f,
       { Smoothers::Mono_Slow::Flanger_Hi_Cut, None, Properties::SmootherScale::Expon_Lin_Pitch, 80.0f, 60.0f, false },
-      { 80, 800, 800, 800, "", "Flanger", "Flanger", "Hi Cut", "Hi Cut",
+      { 80, 800, 0, 0, "", "Flanger", "Flanger", "Hi Cut", "Hi Cut",
         "Cutoff frequency [in semitones] of the filter that damps the higher frequencies of the delayed signal." } },
     { Parameters::Local_Modulateables::Flanger_Mix,
       PID::Flanger_Mix,
@@ -1163,14 +1163,14 @@ namespace C15
       PID::Echo_Cross_FB,
       0.5f,
       { Smoothers::Mono_Fast::Echo_Cross_FB, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Echo", "Echo", "Cross FB", "Cross FB",
+      { 100, 1000, 0, 0, "", "Echo", "Echo", "Cross FB", "Cross FB",
         "Amount of the cross feedback between the left and right channel.\n0.0 %: no cross feedback\n100.0 %: all "
         "feedback is cross feedback" } },
     { Parameters::Local_Modulateables::Echo_Hi_Cut,
       PID::Echo_Hi_Cut,
       0.75f,
       { Smoothers::Mono_Slow::Echo_Hi_Cut, None, Properties::SmootherScale::Expon_Lin_Pitch, 80.0f, 60.0f, false },
-      { 80, 800, 800, 800, "", "Echo", "Echo", "Hi Cut", "Hi Cut",
+      { 80, 800, 0, 0, "", "Echo", "Echo", "Hi Cut", "Hi Cut",
         "Cutoff frequency [in semitones] of the filter that damps the higher frequencies of the delayed signal." } },
     { Parameters::Local_Modulateables::Echo_Mix,
       PID::Echo_Mix,
@@ -1189,7 +1189,7 @@ namespace C15
       PID::Reverb_Pre_Dly,
       0.33f,
       { Smoothers::Mono_Slow::Reverb_Pre_Dly, None, Properties::SmootherScale::Cubic, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Reverb", "Reverb", "Pre Delay", "Pre Delay",
+      { 100, 1000, 0, 0, "", "Reverb", "Reverb", "Pre Delay", "Pre Delay",
         "Pre delay time, shifting the late reflections. This has a profound effect on the perceived room size." } },
     { Parameters::Local_Modulateables::Reverb_Color,
       PID::Reverb_Color,
@@ -1203,7 +1203,7 @@ namespace C15
       0.25f,
       { Smoothers::Mono_Slow::Reverb_Chorus, Signals::Mono_Signals::Reverb_Chorus, Properties::SmootherScale::Parabolic,
         1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Reverb", "Reverb", "Chorus", "Chorus",
+      { 100, 1000, 0, 0, "", "Reverb", "Reverb", "Chorus", "Chorus",
         "This controls the internal modulation of the reverberation delays. At higher amounts, there is more movement "
         "and the diffusion is smoother. At lower amounts, the reverb becomes more static and metallic." } },
     { Parameters::Local_Modulateables::Reverb_Mix,
@@ -1264,14 +1264,14 @@ namespace C15
       PID::Unison_Phase,
       0.0f,
       { Smoothers::Poly_Audio::Unison_Phase, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 180, 3600, 3600, 3600, "", "Unison", "Unison", "Phase", "Phase",
+      { 180, 3600, 0, 0, "", "Unison", "Unison", "Phase", "Phase",
         "Spreading the (Oscillators') start phases of the unison voices to get different phase cancellations at the "
         "beginning of a note. The value is the phase range [in degrees] covered by a group of unison voices." } },
     { Parameters::Local_Modulateables::Unison_Pan,
       PID::Unison_Pan,
       0.0f,
       { Smoothers::Poly_Fast::Unison_Pan, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
-      { 100, 1000, 1000, 1000, "", "Unison", "Unison", "Pan", "Pan",
+      { 100, 1000, 0, 0, "", "Unison", "Unison", "Pan", "Pan",
         "Voice panning inside of a group of unison voices. At 100.0 %, the voices are spread over the full stereo "
         "base." } },
     { Parameters::Hardware_Sources::Pedal_1,
@@ -1592,21 +1592,21 @@ namespace C15
       PID::Env_A_Att_Curve,
       0.0f,
       { Smoothers::Poly_Sync::Env_A_Att_Curve, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Envelope A", "Envelope A", "Attack Curve", "Curve",
+      { 100, 1000, 0, 0, "", "Envelope A", "Envelope A", "Attack Curve", "Curve",
         "Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: "
         "accelerating slope)" } },
     { Parameters::Local_Modulateables::Env_B_Att_Curve,
       PID::Env_B_Att_Curve,
       0.0f,
       { Smoothers::Poly_Sync::Env_B_Att_Curve, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Envelope B", "Envelope B", "Attack Curve", "Curve",
+      { 100, 1000, 0, 0, "", "Envelope B", "Envelope B", "Attack Curve", "Curve",
         "Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: "
         "accelerating slope)" } },
     { Parameters::Local_Modulateables::Env_C_Att_Curve,
       PID::Env_C_Att_Curve,
       0.0f,
       { Smoothers::Poly_Sync::Env_C_Att_Curve, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Envelope C", "Envelope C", "Attack Curve", "Curve",
+      { 100, 1000, 0, 0, "", "Envelope C", "Envelope C", "Attack Curve", "Curve",
         "Curvature of the (polynomial) Attack segment. (negative: decelerating slope, zero: linear, positive: "
         "accelerating slope)" } },
     { Parameters::Local_Modulateables::Env_C_Sus,
@@ -1641,7 +1641,7 @@ namespace C15
       PID::Osc_A_Chirp,
       40.0f / 60.0f,
       { Smoothers::Poly_Slow::Osc_A_Chirp, None, Properties::SmootherScale::Expon_Lin_Pitch, 60.0f, 80.0f, false },
-      { 60, 600, 600, 600, "", "Oscillator A", "Oscillator A", "Chirp", "Chirp",
+      { 60, 600, 0, 0, "", "Oscillator A", "Oscillator A", "Chirp", "Chirp",
         "Cutoff [in semitones] of the lowpass in the phase modulation signal path that can be applied to reduce the "
         "level and frequency of \"chirping\" appearing at higher amounts of self modulation, cross-feedback through "
         "the other oscillator, or global feedback." } },
@@ -1649,7 +1649,7 @@ namespace C15
       PID::Osc_B_Chirp,
       40.0f / 60.0f,
       { Smoothers::Poly_Slow::Osc_B_Chirp, None, Properties::SmootherScale::Expon_Lin_Pitch, 60.0f, 80.0f, false },
-      { 60, 600, 600, 600, "", "Oscillator B", "Oscillator B", "Chirp", "Chirp",
+      { 60, 600, 0, 0, "", "Oscillator B", "Oscillator B", "Chirp", "Chirp",
         "Cutoff [in semitones] of the lowpass in the phase modulation signal path that can be applied to reduce the "
         "level and frequency of \"chirping\" appearing at higher amounts of self modulation, cross-feedback through "
         "the other oscillator, or global feedback." } },
@@ -1699,7 +1699,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_1, Signals::Global_Signals::Scale_Offset_1,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +1", "Offset +1",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +1", "Offset +1",
         "Offset of the first key following the base key [in cents]. At zero, the interval to the base key would be the "
         "minor second of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_2,
@@ -1707,7 +1707,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_2, Signals::Global_Signals::Scale_Offset_2,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +2", "Offset +2",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +2", "Offset +2",
         "Offset of the second key following the base key [in cents]. At zero, the interval to the base key would be "
         "the major second of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_3,
@@ -1715,7 +1715,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_3, Signals::Global_Signals::Scale_Offset_3,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +3", "Offset +3",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +3", "Offset +3",
         "Offset of the third key following the base key [in cents]. At zero, the interval to the base key would be the "
         "minor third of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_4,
@@ -1723,7 +1723,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_4, Signals::Global_Signals::Scale_Offset_4,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +4", "Offset +4",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +4", "Offset +4",
         "Offset of the fourth key following the base key [in cents]. At zero, the interval to the base key would be "
         "the major third of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_5,
@@ -1731,7 +1731,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_5, Signals::Global_Signals::Scale_Offset_5,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +5", "Offset +5",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +5", "Offset +5",
         "Offset of the fifth key following the base key [in cents]. At zero, the interval to the base key  would be "
         "the fourth of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_6,
@@ -1739,7 +1739,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_6, Signals::Global_Signals::Scale_Offset_6,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +6", "Offset +6",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +6", "Offset +6",
         "Offset of the sixth key following the base key [in cents]. At zero, the interval to the base key would be the "
         "tritone of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_7,
@@ -1747,7 +1747,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_7, Signals::Global_Signals::Scale_Offset_7,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +7", "Offset +7",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +7", "Offset +7",
         "Offset of the seventh key following the base key [in cents]. At zero,the interval to the base key would be "
         "the fifth of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_8,
@@ -1755,7 +1755,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_8, Signals::Global_Signals::Scale_Offset_8,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +8", "Offset +8",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +8", "Offset +8",
         "Offset of the eighth key following the base key [in cents]. At zero, the interval to the base key would be "
         "the minor sixth of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_9,
@@ -1763,7 +1763,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_9, Signals::Global_Signals::Scale_Offset_9,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +9", "Offset +9",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +9", "Offset +9",
         "Offset of the ninth key following the base key [in cents]. At zero, the interval to the base key would be the "
         "major sixth of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_10,
@@ -1771,7 +1771,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_10, Signals::Global_Signals::Scale_Offset_10,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +10", "Offset +10",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +10", "Offset +10",
         "Offset of the tenth key following the base key [in cents]. At zero, the interval to the base key would be the "
         "minor seventh of the equally tempered scale." } },
     { Parameters::Global_Modulateables::Scale_Offset_11,
@@ -1779,7 +1779,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_11, Signals::Global_Signals::Scale_Offset_11,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +11", "Offset +11",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +11", "Offset +11",
         "Offset of the eleventh key following the base key [in cents]. At zero, the interval to the base key would be "
         "the major seventh of the equally tempered scale." } },
     { Parameters::Macro_Times::MC_Time_A,
@@ -1830,7 +1830,7 @@ namespace C15
       PID::Env_A_Elevate,
       0.0f,
       { Smoothers::Poly_Fast::Env_A_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Envelope A", "Envelope A", "Elevate T - A", "Elevate",
+      { 100, 1000, 0, 0, "", "Envelope A", "Envelope A", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
         "control's edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
@@ -1855,7 +1855,7 @@ namespace C15
       PID::Env_B_Elevate,
       0.0f,
       { Smoothers::Poly_Fast::Env_B_Elevate, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
-      { 100, 1000, 1000, 1000, "", "Envelope B", "Envelope B", "Elevate T - A", "Elevate",
+      { 100, 1000, 0, 0, "", "Envelope B", "Envelope B", "Elevate T - A", "Elevate",
         "Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the "
         "control's edges. At negative values, the Timbre part will be affected, controlling Phase Modulations and "
         "Shaper Drives. At positive values, the Amplitude part will be affected." } },
@@ -2154,7 +2154,7 @@ namespace C15
       0.0f,
       { Smoothers::Global_Slow::Scale_Offset_0, Signals::Global_Signals::Scale_Offset_0,
         Properties::SmootherScale::Linear, 8.0f, 0.0f, true },
-      { 800, 8000, 8000, 8000, "", "Scale", "Scale", "Offset +0", "Offset +0",
+      { 800, 8000, 0, 0, "", "Scale", "Scale", "Offset +0", "Offset +0",
         "Offset of the base key [in cents]. At zero, the interval to the base key would be perfect identity." } },
     { None },
     { Parameters::Local_Unmodulateables::Osc_A_Reset,
@@ -2204,42 +2204,82 @@ namespace C15
       PID::Pedal_1_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 1 Send", "Pedal 1 Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 1 Send", "Pedal 1 Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 1\" "
+        "Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  This parameter "
+        "will be visible next to the internal representation of \"Pedal 1\" (which reflects changes from the User "
+        "Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Pedal 1\" parameter will not be "
+        "reflected." } },
     { Parameters::Display_Parameters::Pedal_2_Send,
       PID::Pedal_2_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 2 Send", "Pedal 2 Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 2 Send", "Pedal 2 Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 2\" "
+        "Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  This parameter "
+        "will be visible next to the internal representation of \"Pedal 2\" (which reflects changes from the User "
+        "Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Pedal 2\" parameter will not be "
+        "reflected." } },
     { Parameters::Display_Parameters::Pedal_3_Send,
       PID::Pedal_3_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 3 Send", "Pedal 3 Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 3 Send", "Pedal 3 Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 3\" "
+        "Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  This parameter "
+        "will be visible next to the internal representation of \"Pedal 3\" (which reflects changes from the User "
+        "Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Pedal 3\" parameter will not be "
+        "reflected." } },
     { Parameters::Display_Parameters::Pedal_4_Send,
       PID::Pedal_4_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 4 Send", "Pedal 4 Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Pedal 4 Send", "Pedal 4 Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 4\" "
+        "Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  This parameter "
+        "will be visible next to the internal representation of \"Pedal 4\" (which reflects changes from the User "
+        "Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Pedal 4\" parameter will not be "
+        "reflected." } },
     { Parameters::Display_Parameters::Bender_Send,
       PID::Bender_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Bender Send", "Bender Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Bender Send", "Bender Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Bender\" "
+        "Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  This parameter "
+        "will be visible next to the internal representation of \"Bender\" (which reflects changes from the User "
+        "Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Bender\" parameter will not be "
+        "reflected." } },
     { Parameters::Display_Parameters::Aftertouch_Send,
       PID::Aftertouch_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Aftertouch Send", "Aftertouch Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Aftertouch Send", "Aftertouch Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the "
+        "\"Aftertouch\" Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  "
+        "This parameter will be visible next to the internal representation of \"Aftertouch\" (which reflects changes "
+        "from the User Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Aftertouch\" "
+        "parameter will not be reflected." } },
     { Parameters::Display_Parameters::Ribbon_1_Send,
       PID::Ribbon_1_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 1 Send", "Ribbon 1 Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 1 Send", "Ribbon 1 Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Ribbon 1\" "
+        "Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  This parameter "
+        "will be visible next to the internal representation of \"Ribbon 1\" (which reflects changes from the User "
+        "Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Ribbon 1\" parameter will not be "
+        "reflected." } },
     { Parameters::Display_Parameters::Ribbon_2_Send,
       PID::Ribbon_2_Send,
       0.0f,
       {},
-      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 2 Send", "Ribbon 2 Snd", "n/a" } },
+      { 100, 1000, None, None, "", "Hardware Source", "HW Source", "Ribbon 2 Send", "Ribbon 2 Snd",
+        "When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Ribbon 2\" "
+        "Hardware Source. It reflects changes that will be sent via MIDI without affecting the Synth.  This parameter "
+        "will be visible next to the internal representation of \"Ribbon 2\" (which reflects changes from the User "
+        "Interface or MIDI Input, only affecting the Synth).  Editing the actual \"Ribbon 2\" parameter will not be "
+        "reflected." } },
   };
 
 }  // namespace C15
