@@ -143,7 +143,6 @@ package_update() {
 	--exclude='./srcdir' \
 	--exclude='./bindir' \
   --exclude='./bindir-root' \
-  --exclude='./kernel-update-builddir' \
   --exclude='./web' \
 	--exclude='./host-docker' \
 	--exclude='./tmp' \

@@ -5,7 +5,6 @@ file(GLOB_RECURSE PROJECT_SOURCE_FILES ${CMAKE_SOURCE_DIR}/projects/*)
 configure_file(Dockerfile docker/Dockerfile)
 configure_file(backdoor.sh docker/backdoor.sh)
 configure_file(createUpdate.sh docker/createUpdate.sh COPYONLY)
-configure_file(initramfs-hook.sh docker/initramfs-hook.sh)
 configure_file(nlhook docker/nlhook)
 configure_file(setup-base-os.sh docker/setup-base-os.sh COPYONLY)
 
@@ -16,7 +15,6 @@ ADD_CUSTOM_COMMAND(
     DEPENDS backdoor.sh
     DEPENDS Dockerfile
     DEPENDS nlhook
-    DEPENDS initramfs-hook.sh
     DEPENDS epc2-download-package-cache
     DEPENDS setup-base-os.sh
     DEPENDS ../CMakeLists.txt
@@ -38,7 +36,6 @@ ADD_CUSTOM_COMMAND(
     DEPENDS .epc2-create-update-overlay-docker
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
-    DEPENDS ${CMAKE_SOURCE_DIR}/projects/epc/scripts/installInitramfsBackdoor.sh
     DEPENDS ${PROJECT_SOURCE_FILES}
     VERBATIM
     COMMAND docker run 

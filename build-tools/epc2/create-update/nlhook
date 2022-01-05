@@ -166,12 +166,6 @@ try_update() {
     return 1
 }
 
-run_overlay_backdoor() {
-    echo "Run overlay backdoor..."
-    [ -f /nloverlay/os-overlay/usr/local/C15/scripts/initramfs-hook.sh ] && /bin/sh /nloverlay/os-overlay/usr/local/C15/scripts/initramfs-hook.sh
-    echo "Finished overlay backdoor"
-}
-
 run_hook() {
     echo "Running hook..."
 
@@ -179,10 +173,8 @@ run_hook() {
     clean_up
 
     if try_update; then
-      run_overlay_backdoor
       return 0
     fi
 
-    run_overlay_backdoor
     return 1
 }
