@@ -42,6 +42,7 @@ class PhysicalControlValueLabel : public ControlWithChildren
  public:
   explicit PhysicalControlValueLabel(const Rect& rect);
   bool redraw(FrameBuffer& fb) override;
+  void setHighlight(bool isHighlight) override;
 
  private:
   void onParameterSelectionHappened(const Parameter* old, Parameter* newP);
@@ -70,4 +71,14 @@ class HardwareSourceCCLabel : public Label
   void onSettingsChanged(const Setting* changed);
  private:
   sigc::connection m_settingConnection;
+};
+
+class SendCCArrow : public Control
+{
+ public:
+  explicit SendCCArrow(const Rect& r);
+  bool redraw(FrameBuffer& fb) override;
+
+ private:
+  void onParameterSelectionHappened(const Parameter* old, const Parameter* newP);
 };
