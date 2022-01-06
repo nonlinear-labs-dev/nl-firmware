@@ -13,9 +13,11 @@ ExecStartPre=/usr/bin/bash -c "while [ ! -f /proc/asound/EMPHASE/id ]; do sleep 
 # WAIT FOR AUDIO DEVICE
 ExecStartPre=/usr/bin/bash -c "while [ ! -f /proc/asound/PCH/id ]; do sleep 0.1; done"
 
+# CONFIGURE AUDIO DEVICE DRIVER
+ExecStartPre=-/usr/bin/bash -c "uname -r | grep -v -F \"4.9.9\" && rmmod snd_hda_intel && modprobe snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"
+
 # SETUP FRAME SIZE DEPENDENT ON CPU
 ExecStartPre=/usr/bin/bash -c "/usr/bin/systemctl set-environment FRAMES_PER_PERIOD=49"
-ExecStartPre=/usr/bin/bash -c "if cat /proc/cpuinfo | grep \"model name\" | grep \"7010\" > /dev/null; then /usr/bin/systemctl set-environment FRAMES_PER_PERIOD=49; fi"
 ExecStartPre=/usr/bin/bash -c "if cat /proc/cpuinfo | grep \"model name\" | grep \"5010\" > /dev/null; then /usr/bin/systemctl set-environment FRAMES_PER_PERIOD=64; fi"
 
 # START THE ENGINE
