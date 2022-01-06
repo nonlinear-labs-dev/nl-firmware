@@ -24,6 +24,8 @@ class PhysicalControlSlider : public SelectedParameterDotSlider
   HardwareSourceSendParameter* m_snd = nullptr;
   PhysicalControlParameter* m_hw = nullptr;
 
+  bool m_shouldHighlightSendParameter = false;
+
   sigc::connection m_sndParamConnection;
   sigc::connection m_hwParamConnection;
 };

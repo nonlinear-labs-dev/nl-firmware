@@ -120,6 +120,10 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
                          VoiceGroup::Global);
 }
 
+void PhysicalControlValueLabel::setHighlight(bool isHighlight)
+{
+}
+
 void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *old, Parameter *newP)
 {
   if(auto hw = dynamic_cast<PhysicalControlParameter *>(newP))
@@ -161,8 +165,7 @@ void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
   {
     m_isLocalEnabled = send->isLocalEnabled();
     auto str = send->getDisplayString();
-    auto display = "S:" + str;
-    auto shorter = nltools::string::removeSpaces(display);
+    auto shorter = nltools::string::removeCharacters(str, {'%', ' '});
     m_localDisabledLabelSnd->setText({ shorter });
     ControlWithChildren::setDirty();
   }
@@ -174,8 +177,7 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
   {
     m_isLocalEnabled = hw->isLocalEnabled();
     auto str = hw->getDisplayString();
-    auto display = "R:" + str;
-    auto shorter = nltools::string::removeSpaces(display);
+    auto shorter = nltools::string::removeCharacters(str, {'%', ' '});
     m_localEnabledLabel->setText({ str });
     m_localDisabledLabelRcv->setText({ shorter });
     ControlWithChildren::setDirty();
@@ -233,36 +235,53 @@ void HardwareSourceCCLabel::onParameterSelectionHappened(const Parameter *old, c
   }
 }
 
-inline std::string truncateNonSpacesAndNonNumbers(const std::string& s)
-{
-  std::string ret{};
-  bool wasNumberLast = false;
-  bool wasDelim = false;
-  for(auto c: s)
-  {
-    if(std::isdigit(c))
-    {
-      wasNumberLast = true;
-      wasDelim = false;
-      ret += c;
-    }
-    else if(wasNumberLast && !wasDelim)
-    {
-      ret += '/';
-      wasNumberLast = false;
-      wasDelim = true;
-    }
-  }
-
-  if(ret.back() == '/')
-    ret.pop_back();
-
-  return ret;
-}
-
 void HardwareSourceCCLabel::onSettingsChanged(const Setting *changed)
 {
   auto str = changed->getDisplayString();
-  auto onlyNumbersAndSpaces = truncateNonSpacesAndNonNumbers(str);
-  setText({"CC:" + onlyNumbersAndSpaces});
+  if(str == "None")
+    setText("");
+  else
+    setText({str});
+}
+
+SendCCArrow::SendCCArrow(const Rect &r)
+    : Control(r)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  eb->onSelectionChanged(sigc::mem_fun(this, &SendCCArrow::onParameterSelectionHappened), VoiceGroup::Global);
+}
+
+bool SendCCArrow::redraw(FrameBuffer &fb)
+{
+  if(isHighlight())
+    fb.setColor(FrameBufferColors::C128);
+  else
+    fb.setColor(FrameBufferColors::C204);
+
+  Rect r = getPosition();
+  Point c = r.getCenter();
+
+  const auto middle = r.getCenter().getY();
+
+  fb.setPixel(r.getLeft() + 1, middle - 1);
+  fb.setPixel(r.getLeft() + 2, middle - 2);
+  fb.setPixel(r.getLeft() + 1, middle + 1);
+  fb.setPixel(r.getLeft() + 2, middle + 2);
+
+  for(int i = r.getLeft(); i <= r.getRight(); i += 2)
+    fb.setPixel(i, middle);
+
+  return true;
+}
+
+void SendCCArrow::onParameterSelectionHappened(const Parameter *old, const Parameter *newP)
+{
+  if(auto sendParameter = dynamic_cast<const HardwareSourceSendParameter*>(newP))
+  {
+    setVisible(sendParameter->isAssigned());
+  }
+  else
+  {
+    setVisible(false);
+  }
 }
