@@ -120,6 +120,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	private OverlayControl dottedLine;
 	private OverlayControl infoButton;
 	private OverlayControl contextMenu;
+	private OverlayControl ccDisplay;
 
 	private MCRadioButton mcPositionRadioButton;
 	private MCRadioButton mcAmountRadioButton;
@@ -157,6 +158,8 @@ public class BeltParameterLayout extends OverlayLayout {
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
 		addChild(currentRecall = new ParameterRecallArea(this));
 		addChild(syncSplitParameter = new SyncParameterButton(this));
+
+		addChild(ccDisplay = new SendCCDisplay(this));
 
 		EditBufferPresenterProvider.get().onChange(p -> {
 			if (p.selectedParameter.id.getNumber() != lastSelectedParameterNumber) {

@@ -187,6 +187,9 @@ public class HardwareCCDisplay extends ZoomReactingControl {
                 break;
         }
 
+        if(displayString == "None")
+            displayString = "";
+
         if(!oldString.equals(displayString))
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
     }
