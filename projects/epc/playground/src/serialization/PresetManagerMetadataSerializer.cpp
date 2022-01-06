@@ -22,6 +22,7 @@ void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
   eb.write(writer);
 
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
+  writer.writeTextElement("selected-midi-bank-uuid", m_pm->getMidiSelectedBank().raw());
 
   PresetBankOrderSerializer bankOrder(m_pm);
   bankOrder.write(writer);
