@@ -103,7 +103,7 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         }
     }
 
-    String getPedalString(PedalCCMapping setting) {
+    static public String getPedalString(PedalCCMapping setting) {
         SystemSettings settings = SetupModel.get().systemSettings;
         boolean is14BitSupport = settings.enable14BitSupport.getBool();
         int idx = setting.ordinal();
@@ -114,7 +114,7 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         }
     }
     
-    String getRibbonString(RibbonCCMapping setting) {
+    static public String getRibbonString(RibbonCCMapping setting) {
         SystemSettings settings = SetupModel.get().systemSettings;
         boolean is14BitSupport = settings.enable14BitSupport.getBool();
         int idx = setting.ordinal();
@@ -125,7 +125,7 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         }
     }
 
-    String getBenderString(BenderCCMapping setting) {
+    static public String getBenderString(BenderCCMapping setting) {
         SystemSettings settings = SetupModel.get().systemSettings;
         boolean is14BitSupport = settings.enable14BitSupport.getBool();
         int idx = setting.ordinal();
@@ -136,7 +136,7 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         }
     }
 
-    String getAftertouchString(AftertouchCCMapping setting) {
+    static public String getAftertouchString(AftertouchCCMapping setting) {
         SystemSettings settings = SetupModel.get().systemSettings;
         boolean is14BitSupport = settings.enable14BitSupport.getBool();
         int idx = setting.ordinal();

@@ -271,6 +271,7 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		layouter.push(null, margin, margin, 0, 0);
 		layouter.push(null, 0, sliderWidth, 0, 2);
+		layouter.push(ccDisplay, modulationButtonWidth, modulationButtonWidth * 2, 1, 2);
 		layouter.push(mcPositionRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
