@@ -1,9 +1,11 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
+import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.maps.parameters.HardwareCCDisplay;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -55,6 +57,9 @@ public class SendCCDisplay extends Label {
             mappingUpdated();
             return true;
         });
+
+        setFontHeightInMM(5);
+        setFontColor(new Gray(155));
     }
 
     private String displayString = "";
@@ -65,20 +70,22 @@ public class SendCCDisplay extends Label {
         return displayString;
     }
 
+    @Override
+    protected TextAlign getAlignment() {
+        return TextAlign.LEFT;
+    }
+
     private void onParameterSelectionChanged(int i) {
-        if(selectedParameter != i) {
+        if (selectedParameter != i) {
             selectedParameter = i;
             mappingUpdated();
         }
-        
     }
 
     private void mappingUpdated() {
         SystemSettings settings = SetupModel.get().systemSettings;
 
-        String oldString = displayString;
-
-        switch(selectedParameter) {
+        switch (selectedParameter) {
             case 398:
             case 254:
                 displayString = HardwareCCDisplay.getPedalString(settings.pedal1Mapping.getValue());
@@ -116,7 +123,7 @@ public class SendCCDisplay extends Label {
                 break;
         }
 
-        if(displayString == "None")
+        if (displayString == "None")
             displayString = "";
 
         invalidate(INVALIDATION_FLAG_UI_CHANGED);

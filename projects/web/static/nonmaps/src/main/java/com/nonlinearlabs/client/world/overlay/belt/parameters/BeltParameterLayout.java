@@ -261,6 +261,10 @@ public class BeltParameterLayout extends OverlayLayout {
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
 
+		double ccW = 120;
+		double ccHeight = third / 2;
+		ccDisplay.doLayout(sliderLeft, third - ccHeight, ccW, ccHeight);
+
 		final double upperElementsY = Millimeter.toPixels(0.5);
 
 		final double sliderWidth = slider.getRelativePosition().getWidth();
@@ -271,7 +275,6 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		layouter.push(null, margin, margin, 0, 0);
 		layouter.push(null, 0, sliderWidth, 0, 2);
-		layouter.push(ccDisplay, modulationButtonWidth, modulationButtonWidth * 2, 1, 2);
 		layouter.push(mcPositionRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, margin, margin, 0, 2);
 		layouter.push(mcAmountRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
