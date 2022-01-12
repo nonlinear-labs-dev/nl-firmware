@@ -19,7 +19,7 @@ class Settings : public UpdateDocumentContributor
   typedef std::shared_ptr<Setting> tSettingPtr;
   typedef std::map<Glib::ustring, tSettingPtr> tMap;
 
-  explicit Settings(UpdateDocumentMaster *master);
+  explicit Settings(const Glib::ustring &file, UpdateDocumentMaster *master);
   ~Settings() override;
 
   void init();
@@ -49,14 +49,12 @@ class Settings : public UpdateDocumentContributor
   bool isLoading() const;
   void writeDocument(Writer &writer, tUpdateID knownRevision) const;
 
- protected:
-  virtual const Glib::ustring &getSettingFileNameToLoadFrom() const;
-
  private:
   void save();
   void load();
   void sanitize();
 
+  Glib::ustring m_file;
   tMap m_settings;
   DelayedJob m_saveJob;
   ScopedGuard m_isLoading;
