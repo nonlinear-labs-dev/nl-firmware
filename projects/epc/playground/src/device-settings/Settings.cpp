@@ -238,12 +238,12 @@ const Settings::tMap &Settings::getSettings() const
   return m_settings;
 }
 
-Settings::tSettingPtr Settings::getSetting(const Glib::ustring &key)
+Setting *Settings::getSetting(const Glib::ustring &key)
 {
   auto it = m_settings.find(key);
 
   if(it != m_settings.end())
-    return it->second;
+    return it->second.get();
 
   return nullptr;
 }

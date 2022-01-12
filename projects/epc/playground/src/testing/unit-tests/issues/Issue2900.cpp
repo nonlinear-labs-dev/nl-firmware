@@ -15,7 +15,15 @@ TEST_CASE("Issue 2900")
   auto oldConfig = nltools::msg::getConfig();
   GenericScopeGuard restoreMsg([&] {}, [&] { nltools::msg::init(oldConfig); });
 
-  init({ .offerEndpoints = { EndPoint::Playground },
+  init({ .offerEndpoints = { { EndPoint::Playcontroller },
+                             { EndPoint::Playground },
+                             { EndPoint::Oled },
+                             { EndPoint::ExternalMidiOverIPBridge },
+                             { EndPoint::TestEndPoint },
+                             { EndPoint::PanelLed },
+                             { EndPoint::RibbonLed },
+                             { EndPoint::AudioEngine },
+                             { EndPoint::BeagleBone } },
          .useEndpoints = { { EndPoint::Playcontroller },
                            { EndPoint::Playground },
                            { EndPoint::Oled },

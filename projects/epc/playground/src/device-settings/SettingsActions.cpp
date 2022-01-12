@@ -16,7 +16,7 @@
 
 SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& settings, PresetManager& pm)
     : SectionAndActionManager(parent, "/settings/")
-    , m_settings{settings}
+    , m_settings { settings }
 {
   addAction("set-setting", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring key = request->get("key");
@@ -32,25 +32,35 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
     auto fromIfInLoadToPart = request->get("from");
     auto totIfInLoadToPart = request->get("to");
 
-    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>().get());
+    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>());
 
-    try {
-      if(state == "on") {
-        if(auto preset = pm->findPreset(Uuid{presetIfInLoadToPart})) {
-          useCase.enableDirectLoadFromWebUI(preset, to<VoiceGroup>(fromIfInLoadToPart), to<VoiceGroup>(totIfInLoadToPart));
-        } else {
+    try
+    {
+      if(state == "on")
+      {
+        if(auto preset = pm->findPreset(Uuid { presetIfInLoadToPart }))
+        {
+          useCase.enableDirectLoadFromWebUI(preset, to<VoiceGroup>(fromIfInLoadToPart),
+                                            to<VoiceGroup>(totIfInLoadToPart));
+        }
+        else
+        {
           useCase.enableDirectLoadWithoutPreset();
         }
-      } else if(state == "off") {
+      }
+      else if(state == "off")
+      {
         useCase.disableDirectLoad();
       }
-    } catch(const std::runtime_error& e) {
+    }
+    catch(const std::runtime_error& e)
+    {
       nltools::Log::error("Catched Error in \"set-direct-load-with-load-to-part\":", e.what());
     }
   });
 
   addAction("set-direct-load-without-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
-    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>().get());
+    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>());
     auto state = request->get("state") == "on";
     useCase.setDirectLoad(state);
   });
@@ -79,11 +89,9 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
     {
       ExceptionTools::errorLogCurrentException();
     }
-   });
-
-  addAction("panic-audio-engine", [](auto request) {
-    SettingsUseCases::panicAudioEngine();
   });
+
+  addAction("panic-audio-engine", [](auto request) { SettingsUseCases::panicAudioEngine(); });
 
   addAction("set-all-routings-to-value", [&](auto request) {
     auto requestedState = request->get("state") == "1";
@@ -93,7 +101,7 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
   });
 
   addAction("enable-bbb-wifi-for-epc2", [](auto) {
-    nltools::msg::Setting::EnableBBBWifiFromDevSettings msg{};
+    nltools::msg::Setting::EnableBBBWifiFromDevSettings msg {};
     nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
   });
 
