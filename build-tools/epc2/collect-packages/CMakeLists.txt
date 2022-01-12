@@ -38,8 +38,8 @@ ADD_CUSTOM_COMMAND(
     DEPENDS collectPackages.sh
     VERBATIM 
     COMMAND 
-      cmp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} ||
-      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/base-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
+      cmp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} ||
+      cp ${DOWNLOAD_DIR}/epc2/packages/${BASE_KERNEL_FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME} > /dev/null || 
       wget --show-progress -q http://h2949050.stratoserver.net/build-tools2/${BASE_KERNEL_FILENAME} -O ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container/${BASE_KERNEL_FILENAME}
     COMMAND docker build -t collect-update-packages-docker-container ${CMAKE_CURRENT_BINARY_DIR}/update-packages-docker-container
     COMMAND touch .collect-update-packages-docker-container
