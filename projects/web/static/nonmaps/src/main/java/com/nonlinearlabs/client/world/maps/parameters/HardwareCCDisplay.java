@@ -3,13 +3,7 @@ package com.nonlinearlabs.client.world.maps.parameters;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.BenderCCMapping;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalCCMapping;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.RibbonCCMapping;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
-import com.nonlinearlabs.client.presenters.MidiSettings;
+import com.nonlinearlabs.client.presenters.MidiSettingsPresenter;
 import com.nonlinearlabs.client.presenters.MidiSettingsProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.RGB;
@@ -27,8 +21,8 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         super(parent);
         paramerNumber = parameterId;
 
-        MidiSettingsProvider.get().register(e -> {
-            update();
+        MidiSettingsProvider.get().onChange(e -> {
+            update(e);
             return true;
         });
     }
@@ -103,93 +97,9 @@ public class HardwareCCDisplay extends ZoomReactingControl {
         }
     }
 
-    static public String getPedalString(PedalCCMapping setting) {
-        SystemSettings settings = SetupModel.get().systemSettings;
-        boolean is14BitSupport = settings.enable14BitSupport.getBool();
-        int idx = setting.ordinal();
-        if(is14BitSupport) {
-            return MidiSettings.PedalMapping.options[idx];
-        } else {
-            return MidiSettings.PedalMapping.optionsWithoutLSB[idx];
-        }
-    }
-    
-    static public String getRibbonString(RibbonCCMapping setting) {
-        SystemSettings settings = SetupModel.get().systemSettings;
-        boolean is14BitSupport = settings.enable14BitSupport.getBool();
-        int idx = setting.ordinal();
-        if(is14BitSupport) {
-            return MidiSettings.RibbonMapping.options[idx];
-        } else {
-            return MidiSettings.RibbonMapping.optionsWithoutLSB[idx];
-        }
-    }
-
-    static public String getBenderString(BenderCCMapping setting) {
-        SystemSettings settings = SetupModel.get().systemSettings;
-        boolean is14BitSupport = settings.enable14BitSupport.getBool();
-        int idx = setting.ordinal();
-        if(is14BitSupport) {
-            return MidiSettings.BenderMapping.options[idx];
-        } else {
-            return MidiSettings.BenderMapping.optionsWithoutLSB[idx];
-        }
-    }
-
-    static public String getAftertouchString(AftertouchCCMapping setting) {
-        SystemSettings settings = SetupModel.get().systemSettings;
-        boolean is14BitSupport = settings.enable14BitSupport.getBool();
-        int idx = setting.ordinal();
-        if(is14BitSupport) {
-            return MidiSettings.AftertouchMapping.options[idx];
-        } else {
-            return MidiSettings.AftertouchMapping.optionsWithoutLSB[idx];
-        }
-    }
-
-    void update() {
-        SystemSettings settings = SetupModel.get().systemSettings;
-
+    void update(MidiSettingsPresenter presenter) {
         String oldString = displayString;
-
-        switch(paramerNumber) {
-            case 398:
-            case 254:
-                displayString = getPedalString(settings.pedal1Mapping.getValue());
-                break;
-            case 399:
-            case 259:
-                displayString = getPedalString(settings.pedal2Mapping.getValue());
-                break;
-            case 400:
-            case 264:
-                displayString = getPedalString(settings.pedal3Mapping.getValue());
-                break;
-            case 401:
-            case 269:
-                displayString = getPedalString(settings.pedal4Mapping.getValue());
-                break;
-            case 402:
-            case 274:
-                displayString = getBenderString(settings.benderMapping.getValue());
-                break;
-            case 403:
-            case 279:
-                displayString = getAftertouchString(settings.aftertouchMapping.getValue());
-                break;
-            case 404:
-            case 284:
-                displayString = getRibbonString(settings.ribbon1Mapping.getValue());
-                break;
-            case 405:
-            case 289:
-                displayString = getRibbonString(settings.ribbon2Mapping.getValue());
-                break;
-        }
-
-        if(displayString == "None")
-            displayString = "";
-
+        displayString = presenter.getCCStringFor(paramerNumber);
         if(!oldString.equals(displayString))
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
     }

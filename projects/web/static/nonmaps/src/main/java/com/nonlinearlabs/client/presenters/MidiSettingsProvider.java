@@ -3,12 +3,20 @@ package com.nonlinearlabs.client.presenters;
 import java.util.LinkedList;
 import java.util.function.Function;
 
+import com.nonlinearlabs.client.dataModel.Notifier;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.SystemSettings;
+import com.nonlinearlabs.client.presenters.MidiSettings.AftertouchMapping;
+import com.nonlinearlabs.client.presenters.MidiSettings.BenderMapping;
+import com.nonlinearlabs.client.presenters.MidiSettings.PedalMapping;
+import com.nonlinearlabs.client.presenters.MidiSettings.RibbonMapping;
 import com.nonlinearlabs.client.presenters.MidiSettings.RoutingSetting;
+import com.nonlinearlabs.client.world.maps.parameters.HardwareCCDisplay;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.AftertouchCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
-public class MidiSettingsProvider {
+public class MidiSettingsProvider extends Notifier<MidiSettingsPresenter> {
 	public static MidiSettingsProvider theInstance = new MidiSettingsProvider();
 
 	public static MidiSettingsProvider get() {
@@ -17,6 +25,7 @@ public class MidiSettingsProvider {
 
 	private LinkedList<Function<MidiSettings, Boolean>> clients = new LinkedList<Function<MidiSettings, Boolean>>();
 	private MidiSettings settings = new MidiSettings();
+    private MidiSettingsPresenter presenter = new MidiSettingsPresenter();
 
 	private MidiSettingsProvider() {
 		SystemSettings s = SetupModel.get().systemSettings;
@@ -193,13 +202,56 @@ public class MidiSettingsProvider {
             }
             return true;
         });
+
+        EditBufferModel.get().selectedParameter.onChange(i -> {
+            String oldStr = presenter.selectedParameterCCString;
+            String newStr = presenter.getCCStringFor(i);
+            if(!oldStr.equals(newStr)) {
+                presenter.selectedParameterCCString = newStr;
+                notifyClients();
+            }
+            return true;
+        });
     }
 
 	protected void notifyClients() {
+        updatePresenter();
+        notifyChanges();
 		clients.removeIf(listener -> !listener.apply(settings));
 	}
 
-	public void register(Function<MidiSettings, Boolean> cb) {
+    private String cleanUpNoneStrings(String n)
+    {
+        if(n.equals("None"))
+            return "";
+        return n;
+    }
+
+    private void updatePresenter() {
+        if(settings.enable14BitCC.value) 
+        {
+            presenter.pedal1CCString = cleanUpNoneStrings(PedalMapping.options[settings.pedalMapping1.selected]);
+            presenter.pedal2CCString = cleanUpNoneStrings(PedalMapping.options[settings.pedalMapping2.selected]);
+            presenter.pedal3CCString = cleanUpNoneStrings(PedalMapping.options[settings.pedalMapping3.selected]);
+            presenter.pedal4CCString = cleanUpNoneStrings(PedalMapping.options[settings.pedalMapping4.selected]);
+            presenter.ribbon1CCString = cleanUpNoneStrings(RibbonMapping.options[settings.ribbonMapping1.selected]);
+            presenter.ribbon2CCString = cleanUpNoneStrings(RibbonMapping.options[settings.ribbonMapping2.selected]);
+            presenter.benderCCString = cleanUpNoneStrings(BenderMapping.options[settings.benderMapping.selected]);
+            presenter.aftertouchCCString = cleanUpNoneStrings(AftertouchMapping.options[settings.aftertouchMapping.selected]);
+        }
+        else {
+            presenter.pedal1CCString = cleanUpNoneStrings(PedalMapping.optionsWithoutLSB[settings.pedalMapping1.selected]);
+            presenter.pedal2CCString = cleanUpNoneStrings(PedalMapping.optionsWithoutLSB[settings.pedalMapping2.selected]);
+            presenter.pedal3CCString = cleanUpNoneStrings(PedalMapping.optionsWithoutLSB[settings.pedalMapping3.selected]);
+            presenter.pedal4CCString = cleanUpNoneStrings(PedalMapping.optionsWithoutLSB[settings.pedalMapping4.selected]);
+            presenter.ribbon1CCString = cleanUpNoneStrings(RibbonMapping.optionsWithoutLSB[settings.ribbonMapping1.selected]);
+            presenter.ribbon2CCString = cleanUpNoneStrings(RibbonMapping.optionsWithoutLSB[settings.ribbonMapping2.selected]);
+            presenter.benderCCString = cleanUpNoneStrings(BenderMapping.optionsWithoutLSB[settings.benderMapping.selected]);
+            presenter.aftertouchCCString = cleanUpNoneStrings(AftertouchMapping.optionsWithoutLSB[settings.aftertouchMapping.selected]);
+        }
+    }
+
+    public void register(Function<MidiSettings, Boolean> cb) {
 		clients.add(cb);
 		cb.apply(settings);
 	}
@@ -207,4 +259,9 @@ public class MidiSettingsProvider {
 	public MidiSettings getSettings() {
 		return settings;
 	}
+
+    @Override
+    public MidiSettingsPresenter getValue() {
+        return presenter;
+    }
 }
