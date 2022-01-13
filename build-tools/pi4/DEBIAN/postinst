@@ -1,0 +1,3 @@
+#!/bin/sh 
+
+ln -s /usr/local/C15/nltools/libnltools.so /usr/lib/libnltools.so || true
