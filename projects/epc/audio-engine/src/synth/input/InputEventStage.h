@@ -133,7 +133,6 @@ class InputEventStage
   static bool ccIsMappedToChannelModeMessage(int cc);
   void queueChannelModeMessage(int cc, uint8_t msbCCvalue);
 
-  void doSendCCOutOnExplicitChannel(uint16_t value, int msbCC, int lsbCC, HardwareSource hwID, int channel);
   RoutingIndex toRoutingIndex(HardwareSource source);
   bool didRelevantSectionsChange(const tMSG& message, const tMSG& message1);
   void doInternalReset();
