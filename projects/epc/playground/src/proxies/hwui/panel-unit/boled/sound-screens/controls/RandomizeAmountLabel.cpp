@@ -41,5 +41,5 @@ void RandomizeAmountLabel::setSuffixFontColor(FrameBuffer &fb) const
 
 void RandomizeAmountLabel::onModifiersChanged()
 {
-  onSettingChanged(Application::get().getSettings()->getSetting<RandomizeAmount>().get());
+  onSettingChanged(Application::get().getSettings()->getSetting<RandomizeAmount>());
 }

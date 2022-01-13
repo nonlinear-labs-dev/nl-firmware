@@ -19,7 +19,7 @@ template <class tSetting> class ChangeSettingOverlay : public ArrowIncrementDecr
 
   tSetting* getSetting()
   {
-    return Application::get().getSettings()->getSetting<tSetting>().get();
+    return Application::get().getSettings()->getSetting<tSetting>();
   }
 
   void setLabelHighlight(bool h)

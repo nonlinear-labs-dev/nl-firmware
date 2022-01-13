@@ -1,5 +1,6 @@
 #pragma once
 #include "DeviceInformationItem.h"
+#include <limits>
 
 class UniqueHardwareID : public DeviceInformationItem
 {

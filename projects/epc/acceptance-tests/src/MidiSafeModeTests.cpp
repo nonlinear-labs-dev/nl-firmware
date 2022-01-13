@@ -23,8 +23,8 @@ TEST_CASE("Midi Safe Mode disabled")
   auto synth = std::make_unique<C15Synth>(options.get());
 
   //Prepare Midi Settings
-  DspHostDualTester tester{ synth->getDsp() };
-  MockSettingsObject settings(&SyncMasterMockRoot::get());
+  DspHostDualTester tester { synth->getDsp() };
+  MockSettingsObject settings("", &SyncMasterMockRoot::get());
 
   // prepare Scenario
   constexpr int MeasureTimeMs = 100;

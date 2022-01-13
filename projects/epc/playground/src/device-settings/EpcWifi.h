@@ -1,9 +1,8 @@
 #pragma once
 
-#include <nltools/system/SpawnAsyncCommandLine.h>
-#include <nltools/logging/Log.h>
-#include <nltools/Types.h>
-#include <glibmm.h>
+#include <sigc++/sigc++.h>
+#include <glibmm/ustring.h>
+#include <optional>
 
 class EpcWifi : public sigc::trackable
 {
@@ -28,7 +27,7 @@ class EpcWifi : public sigc::trackable
 
   void updateWifiSwitch();
   void updateCredentials(bool _reload);
-  
+
   Glib::ustring m_currentPassphrase, m_newPassphrase;
   Glib::ustring m_currentSSID, m_newSSID;
   std::optional<bool> m_currentEpcWifiState;

@@ -2,6 +2,11 @@ class UI {
     constructor(private c15: C15ProxyIface) {
         this.waveform = new Waveform(c15);
         document.getElementById("toggle-recording")!.onclick = (e) => c15.toggleRecording();
+        
+        c15.showRecorderAutoStartMessage((v) => {
+          if(v)
+            alert("To start the recording please use the Record button. You can enable Auto-Start in the Recorder Settings in the Setup.");  
+        });
 
         var pb = document.getElementById("toggle-playback")!;
         pb.onclick = (e) => {

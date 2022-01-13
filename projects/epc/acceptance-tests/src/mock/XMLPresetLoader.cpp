@@ -35,7 +35,7 @@ void XMLPresetLoader::loadTestPreset(C15Synth* synth, const std::string& subDir,
   auto transaction = transactionScope->getTransaction();
 
   Options opt;
-  MockSettingsObject settings(&SyncMasterMockRoot::get());
+  MockSettingsObject settings("", &SyncMasterMockRoot::get());
   std::unique_ptr<AudioEngineProxy> proxy;
   PresetManager pm(&SyncMasterMockRoot::get(), true, opt, settings, proxy);
   auto& editBuffer = *pm.getEditBuffer();
