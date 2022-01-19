@@ -2,6 +2,7 @@ configure_file(Dockerfile docker/Dockerfile)
 configure_file(DEBIAN/control docker/DEBIAN/control)
 configure_file(DEBIAN/postinst docker/DEBIAN/postinst)
 configure_file(DEBIAN/postrm docker/DEBIAN/postrm)
+configure_file(build.sh docker/build.sh)
 
 EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
 STRING(STRIP ${USER_ID} USER_ID)
@@ -13,6 +14,7 @@ ADD_CUSTOM_COMMAND(
     DEPENDS DEBIAN/control
     DEPENDS DEBIAN/postinst
     DEPENDS DEBIAN/postrm
+    DEPENDS build.sh
     COMMAND docker build --build-arg BOB_ID=${USER_ID} -t nl-pi4-crossbuild-environment ${CMAKE_CURRENT_BINARY_DIR}/docker
     COMMAND touch .pi4-docker-container
 )

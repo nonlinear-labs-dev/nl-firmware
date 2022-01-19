@@ -41,20 +41,9 @@ RUN apt -y install debhelper dh-make quilt fakeroot lintian
 ARG BOB_ID
 RUN useradd -m -u $BOB_ID bob-the-builder
 COPY DEBIAN/* /DEBIAN/
+COPY build.sh /build.sh
+RUN chmod +x /build.sh
 USER bob-the-builder
 ENV PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/pkgconfig
 
-CMD cmake \
-        -DCMAKE_PREFIX_PATH=/build/NL-1.0/usr/local \
-        -DCMAKE_INSTALL_PREFIX=/build/NL-1.0/usr/local \
-        -DCMAKE_TOOLCHAIN_FILE=/src/build-tools/pi4/pi4.cmake \
-        -DBUILD_AUDIOENGINE=On \
-        -DBUILD_PLAYGROUND=Off \
-        -S /src \
-        -B /build && \
-    make -C /build -j12 install && \
-    mkdir -p /build/NL-1.0/DEBIAN && \
-    cp /DEBIAN/* /build/NL-1.0/DEBIAN/ && \
-    chmod 775 /build/NL-1.0/DEBIAN/postinst && \
-    chmod 775 /build/NL-1.0/DEBIAN/postrm && \
-    dpkg-deb -b /build/NL-1.0
+CMD /build.sh
