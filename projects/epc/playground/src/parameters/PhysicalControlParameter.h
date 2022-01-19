@@ -13,7 +13,9 @@ class PhysicalControlParameter : public Parameter
   PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
 
-  virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source);
+  bool isChangedFromLoaded() const override;
+  virtual void onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source);
+
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;

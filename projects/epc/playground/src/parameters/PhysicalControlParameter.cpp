@@ -23,7 +23,12 @@ PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, Parame
 {
 }
 
-void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source)
+bool PhysicalControlParameter::isChangedFromLoaded() const
+{
+  return false;
+}
+
+void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
   if(source == HWChangeSource::MIDI)
     getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));

@@ -39,6 +39,11 @@ namespace nltools
       return s_level;
     }
 
+    static void flushAfterEveryLog(bool f)
+    {
+      s_flush = f;
+    }
+
     enum class LogMode
     {
       Plain,
@@ -102,6 +107,9 @@ namespace nltools
 
       if(addNewLine)
         printNewLine();
+
+      if(s_flush)
+        flush();
     }
 
     template <typename... tArgs> static void throwException(const tArgs &... args)
@@ -113,5 +121,6 @@ namespace nltools
 
    private:
     static Level s_level;
+    static bool s_flush;
   };
 }
