@@ -43,5 +43,5 @@ int ScreenSaverTimeEditor::getSelectedIndex() const
 
 ScreenSaverTimeoutSetting* ScreenSaverTimeEditor::getSetting()
 {
-  return Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>().get();
+  return Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
 }
