@@ -12,7 +12,7 @@ class PedalEditor : public MenuEditor
   typedef MenuEditor super;
 
  public:
-  explicit PedalEditor(std::shared_ptr<PedalType> m);
+  explicit PedalEditor(PedalType* m);
   ~PedalEditor() override;
   void setPosition(const Rect& r) override;
   void incSetting(int inc) override;

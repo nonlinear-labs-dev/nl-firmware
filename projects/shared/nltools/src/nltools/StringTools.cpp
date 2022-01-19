@@ -58,13 +58,27 @@ namespace nltools
 
   namespace string
   {
-    std::string removeSpaces(const std::string& in)
+    std::string removeCharacters(const std::string& in, std::vector<char> c)
     {
       std::string out;
-      std::copy_if(in.begin(), in.end(), std::back_inserter(out), [](auto x) {
-        return x != ' ';
+      std::copy_if(in.begin(), in.end(), std::back_inserter(out), [c](auto x) {
+                     return std::find(c.begin(), c.end(), x) == c.end();
+                   });
+      return out;
+    }
+
+    std::string removeCharacter(const std::string& in, char c)
+    {
+      std::string out;
+      std::copy_if(in.begin(), in.end(), std::back_inserter(out), [c](auto x) {
+          return x != c;
       });
       return out;
+    }
+
+    std::string removeSpaces(const std::string& in)
+    {
+      return removeCharacter(in, ' ');
     }
   }
 }
