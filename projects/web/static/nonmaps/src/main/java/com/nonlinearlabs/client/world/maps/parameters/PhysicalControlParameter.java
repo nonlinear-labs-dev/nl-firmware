@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
+import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
@@ -13,7 +14,12 @@ abstract public class PhysicalControlParameter extends Parameter {
 
 	public PhysicalControlParameter(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		addChild(new UnModulateableParameterName(this));
+		addChild(new UnModulateableParameterName(this) {
+			@Override
+			public double getBasicWidth() {
+				return 90;
+			}
+		});
 		addChild(new SliderHorizontalWithHandle(this, getParameterNumber()));
 		addChild(new ValueDisplaySmall(this, getParameterNumber()) {
 			@Override
@@ -50,7 +56,7 @@ abstract public class PhysicalControlParameter extends Parameter {
 		double totalHeight = getNonPosition().getHeight();
 		double ccDisplayHeight = ccDisplay.getNonPosition().getHeight();
 		ccDisplay.doFirstLayoutPass(levelOfDetail);
-		ccDisplay.moveTo(0, totalHeight - ccDisplayHeight);
+		ccDisplay.moveTo(1, totalHeight - ccDisplayHeight - 1);
 	}
 
 	@Override

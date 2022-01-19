@@ -15,6 +15,7 @@ class PhysicalControlParameter : public Parameter
 
   bool isChangedFromLoaded() const override;
   virtual void onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source);
+
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
