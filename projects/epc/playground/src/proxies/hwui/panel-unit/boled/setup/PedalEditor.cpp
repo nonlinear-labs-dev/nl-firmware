@@ -6,7 +6,7 @@
 #include <utility>
 
 PedalEditor::PedalEditor(PedalType *m)
-    : m_mode(std::move(m))
+    : m_mode(m)
 {
   m_mode->onChange(mem_fun(this, &PedalEditor::onSettingChanged));
 }

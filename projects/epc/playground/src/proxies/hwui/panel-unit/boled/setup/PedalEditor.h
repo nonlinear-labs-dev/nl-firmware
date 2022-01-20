@@ -20,5 +20,5 @@ class PedalEditor : public MenuEditor
   int getSelectedIndex() const override;
 
  private:
-  std::shared_ptr<PedalType> m_mode;
+  PedalType* m_mode;
 };
