@@ -7,22 +7,6 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-struct ScopedMessagingConfiguration
-{
-  explicit ScopedMessagingConfiguration(const nltools::msg::Configuration &config)
-  {
-    m_oldConfig = nltools::msg::getConfig();
-    nltools::msg::init(config);
-  }
-
-  ~ScopedMessagingConfiguration()
-  {
-    nltools::msg::init(m_oldConfig);
-  }
-
-  nltools::msg::Configuration m_oldConfig;
-};
-
 TEST_CASE("Preset Load sends EditBuffer")
 {
 
@@ -33,7 +17,7 @@ TEST_CASE("Preset Load sends EditBuffer")
   configuration.useEndpoints = { EndPoint::AudioEngine };
   configuration.offerEndpoints = { EndPoint::Playground, EndPoint::AudioEngine };
 
-  ScopedMessagingConfiguration scopeEndPoint { configuration };
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { configuration };
 
   bool singleMessageRecieved = false;
 
@@ -62,7 +46,7 @@ TEST_CASE("Store Action do not send EditBuffer")
   configuration.useEndpoints = { EndPoint::AudioEngine };
   configuration.offerEndpoints = { EndPoint::Playground, EndPoint::AudioEngine };
 
-  ScopedMessagingConfiguration scopeEndPoint { configuration };
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { configuration };
 
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
