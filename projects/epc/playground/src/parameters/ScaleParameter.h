@@ -1,14 +1,14 @@
 #pragma once
 
-#include <parameters/Parameter.h>
+#include <parameters/ModulateableParameter.h>
 #include <nltools/threading/Throttler.h>
 
-class ScaleParameter : public Parameter
+class ScaleParameter : public ModulateableParameter
 {
-  typedef Parameter super;
+  typedef ModulateableParameter super;
 
  public:
-  ScaleParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
+  ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling, tControlPositionValue def,
                  tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
