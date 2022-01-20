@@ -11,10 +11,7 @@ using namespace std::chrono_literals;
 
 TEST_CASE("Notify on discovery", "[Messaging][nltools]")
 {
-  nltools::msg::Configuration cfg = {};
-  cfg.offerEndpoints = {EndPoint::TestEndPoint};
-  cfg.useEndpoints = {EndPoint::TestEndPoint};
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { cfg };
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
 
   bool received = false;
   auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
@@ -24,10 +21,7 @@ TEST_CASE("Notify on discovery", "[Messaging][nltools]")
 
 TEST_CASE("Send Receive", "[Messaging][nltools]")
 {
-  nltools::msg::Configuration cfg = {};
-  cfg.offerEndpoints = {EndPoint::TestEndPoint};
-  cfg.useEndpoints = {EndPoint::TestEndPoint};
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { cfg };
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
 
   int numMessages = 0;
   UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, VoiceGroup::I };
@@ -41,10 +35,7 @@ TEST_CASE("Send Receive", "[Messaging][nltools]")
 
 TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
 {
-  nltools::msg::Configuration cfg = {};
-  cfg.offerEndpoints = {EndPoint::TestEndPoint};
-  cfg.useEndpoints = {EndPoint::TestEndPoint};
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { cfg };
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
 
   int numRecMessages = 0;
   int numSendMessages = 1000;
@@ -63,10 +54,7 @@ TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
 
 TEST_CASE("No packet doubles", "[Messaging][nltools]")
 {
-  nltools::msg::Configuration cfg = {};
-  cfg.offerEndpoints = {EndPoint::TestEndPoint};
-  cfg.useEndpoints = {EndPoint::TestEndPoint};
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { cfg };
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
 
   int numRecMessages = 0;
   int numSendMessages = 100;

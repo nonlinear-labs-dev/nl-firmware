@@ -35,8 +35,7 @@ PlayControlParameterLayout2::PlayControlParameterLayout2()
     s_mode = Mode::ValueEdit;
   }
 
-  auto selectButton = addControl(new Button("", Buttons::BUTTON_A));
-  selectButton->setText("Select");
+  auto selectButton = addControl(new Button("Select", Buttons::BUTTON_A));
   selectButton->setHighlight(s_mode == Mode::Select);
   s_instanceCount++;
 }
