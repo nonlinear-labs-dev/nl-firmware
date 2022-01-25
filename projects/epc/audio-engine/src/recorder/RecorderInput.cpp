@@ -41,6 +41,11 @@ void RecorderInput::setPaused(bool p)
   }
 }
 
+bool RecorderInput::isRecording() const
+{
+  return !m_paused;
+}
+
 nlohmann::json RecorderInput::generateInfo()
 {
   return { { "paused", m_paused } };

@@ -6,6 +6,7 @@
 class ModulationRoutingParameter;
 class PhysicalControlParameter;
 class MacroControlParameter;
+class HardwareSourceSendParameter;
 class Settings;
 
 class HardwareSourcesGroup : public ParameterGroup
@@ -17,6 +18,10 @@ class HardwareSourcesGroup : public ParameterGroup
   typedef PhysicalControlParameter* tPhysicalControlParameter;
   typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;
   tPhysicalControlParameters getPhysicalControlParameters();
+
+  typedef HardwareSourceSendParameter* tSendParameter;
+  typedef std::list<tSendParameter> tSendParameters;
+  tSendParameters getSendParameters();
 
   static ParameterId getUpperRibbonParameterID()
   {

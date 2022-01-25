@@ -33,6 +33,10 @@ public class EditBufferUseCases {
 		setParameterValue(id, newValue, oracle, true);
 	}
 
+	public AnimationManager getAnimationManager() {
+		return animationManager;
+	}
+
 	private void setParameterValue(ParameterId id, double newValue, boolean oracle, boolean setAnimationTimeout) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
 		double oldQ = p.value.getQuantizedAndClipped(true);

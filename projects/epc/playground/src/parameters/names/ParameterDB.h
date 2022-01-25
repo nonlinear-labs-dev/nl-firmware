@@ -3,6 +3,7 @@
 #include <nltools/Types.h>
 #include <ParameterId.h>
 #include "playground.h"
+#include <optional>
 
 class Parameter;
 

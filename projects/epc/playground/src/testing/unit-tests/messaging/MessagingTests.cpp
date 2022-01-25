@@ -11,6 +11,8 @@ using namespace std::chrono_literals;
 
 TEST_CASE("Notify on discovery", "[Messaging][nltools]")
 {
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+
   bool received = false;
   auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
   TestHelper::doMainLoop(1s, 1s, [&] { return received; });
@@ -19,6 +21,8 @@ TEST_CASE("Notify on discovery", "[Messaging][nltools]")
 
 TEST_CASE("Send Receive", "[Messaging][nltools]")
 {
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+
   int numMessages = 0;
   UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, VoiceGroup::I };
   CHECK(waitForConnection(EndPoint::TestEndPoint));
@@ -31,6 +35,8 @@ TEST_CASE("Send Receive", "[Messaging][nltools]")
 
 TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
 {
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+
   int numRecMessages = 0;
   int numSendMessages = 1000;
 
@@ -48,6 +54,8 @@ TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
 
 TEST_CASE("No packet doubles", "[Messaging][nltools]")
 {
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+
   int numRecMessages = 0;
   int numSendMessages = 100;
 

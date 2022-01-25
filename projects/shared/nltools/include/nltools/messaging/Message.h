@@ -209,6 +209,19 @@ namespace nltools
 
     }
 
+    namespace Recorder
+    {
+      struct State
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::FlacRecorderStateChanged;
+        }
+
+        bool recording = false;
+      };
+    }
+
     struct PanicAudioEngine
     {
       constexpr static MessageType getType()

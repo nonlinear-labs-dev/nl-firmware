@@ -1,7 +1,6 @@
 #pragma once
 
 #include <parameters/ModulateableParameter.h>
-#include <nltools/threading/Throttler.h>
 
 class ScaleParameter : public ModulateableParameter
 {
