@@ -66,8 +66,8 @@ ENDOFHERE
 setup_audio() {
 
     cat <<- ENDOFHERE > /overlay-fs/etc/modprobe.d/snd_hda_intel.conf
-    # Set Soundcard Parameters
-    options snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+# set soundcard parameters
+options snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 ENDOFHERE
 
     /bin/arch-chroot /overlay-fs chmod 600 /etc/modprobe.d/snd_hda_intel.conf
