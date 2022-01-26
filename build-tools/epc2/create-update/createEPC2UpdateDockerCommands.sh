@@ -63,6 +63,16 @@ ENDOFHERE
     /bin/arch-chroot /overlay-fs systemctl enable NetworkManager
 }
 
+setup_audio() {
+
+    cat <<- ENDOFHERE > /overlay-fs/etc/modprobe.d/snd_hda_intel.conf
+    # Set Soundcard Parameters
+    options snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+ENDOFHERE
+
+    /bin/arch-chroot /overlay-fs chmod 600 /etc/modprobe.d/snd_hda_intel.conf
+}
+
 build_binaries() {
     DESTDIR=/overlay-fs cmake -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release ${BUILD_SWITCHES} -S /source -B /build
     make -j8 -C /build
@@ -81,5 +91,6 @@ create_update() {
 setup_overlay
 install_packages
 setup_wifi
+setup_audio
 build_binaries
 create_update
