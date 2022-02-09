@@ -238,6 +238,11 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         }
         Application::get().runWatchDog();
       }
+      else if(line == "mod-all")
+      {
+        EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
+        ebUseCases.setModulationSourceOfAll(MacroControls::MC1);
+      }
       else if(line == "inc-all-fine")
       {
         Application::get().getPresetManager()->incAllParamsFine();

@@ -70,6 +70,8 @@ class EditBufferUseCases
   void randomize(double amount);
   void randomizePart(VoiceGroup part, double amount);
 
+  void setModulationSourceOfAll(MacroControls controls);
+
  private:
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;
