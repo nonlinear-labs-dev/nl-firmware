@@ -29,7 +29,7 @@ tweak_boot_partition() {
 
   mount -o loop -o offset=4194304 -o sizelimit=268435456 -t vfat /raspios.img /mnt
     
-  [[ "$PI4_Model" =~ "CM4" ]] && mv /boot-files/* /mnt  
+  [[ "$PI4_Model" =~ "CM4" ]] && mv /boot-files/touch* /mnt  
   
   echo -n "console=serial0,115200 "                         > /mnt/cmdline.txt
   echo -n "console=tty1 "                                   >> /mnt/cmdline.txt
