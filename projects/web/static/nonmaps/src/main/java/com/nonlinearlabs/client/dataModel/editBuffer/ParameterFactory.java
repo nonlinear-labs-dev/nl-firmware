@@ -226,9 +226,4 @@ public class ParameterFactory {
 		assert (isSorted(parameterGroups));
 		assert (isSorted(globalParameterGroups));
 	}
-
-    public static boolean isModulateableParameter(int parameterID) {
-		return Arrays.binarySearch(modulateableParameters, parameterID) >= 0;
-    }
-
 }

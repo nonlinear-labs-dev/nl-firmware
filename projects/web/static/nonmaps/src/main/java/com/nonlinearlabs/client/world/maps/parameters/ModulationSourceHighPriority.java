@@ -12,7 +12,7 @@ public abstract class ModulationSourceHighPriority extends ModulationSource {
 	public ModulationSourceHighPriority(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
 
-		if(ParameterFactory.isModulateableParameter(parameterID))
+		if(presenter.modulation.isModulateable)
 		{
 			modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()) {
 				@Override

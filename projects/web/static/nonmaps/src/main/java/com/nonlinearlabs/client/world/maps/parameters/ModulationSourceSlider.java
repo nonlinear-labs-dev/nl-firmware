@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
@@ -11,7 +10,7 @@ public class ModulationSourceSlider extends ModulationSourceHighPriority {
 
 	public ModulationSourceSlider(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		if(ParameterFactory.isModulateableParameter(parameterID))
+		if(presenter.modulation.isModulateable)
 		{
 			modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()) {
 				@Override
