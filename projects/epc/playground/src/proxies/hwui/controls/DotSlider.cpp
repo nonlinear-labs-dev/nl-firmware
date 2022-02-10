@@ -30,7 +30,7 @@ bool DotSlider::redraw(FrameBuffer &fb)
 void DotSlider::drawSliderBackground(FrameBuffer &fb)
 {
   const Rect &r = getPosition();
-  fb.setColor(isHighlight() ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  fb.setColor(FrameBufferColors::C128);
   fb.drawRect(r.getLeft(), r.getTop(), r.getWidth(), r.getHeight());
 }
 
