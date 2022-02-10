@@ -32,6 +32,10 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
   m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
 
+void HardwareSourceSendParameter::loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value)
+{
+}
+
 void HardwareSourceSendParameter::setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue)
 {
   Parameter::setCPFromHwui(transaction, cpValue);
@@ -55,6 +59,15 @@ void HardwareSourceSendParameter::onUnselected()
     sendToPlaycontroller();
     invalidate();
   }
+}
+bool HardwareSourceSendParameter::isChangedFromLoaded() const
+{
+  return false;
+}
+
+bool HardwareSourceSendParameter::isValueChangedFromLoaded() const
+{
+  return false;
 }
 
 void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)

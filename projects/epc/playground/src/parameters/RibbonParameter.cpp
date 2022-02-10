@@ -28,11 +28,6 @@ void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContribut
   writer.writeTextElement("ribbon-return-mode", to_string(m_returnMode));
 }
 
-void RibbonParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  Parameter::loadFromPreset(transaction, value);
-}
-
 void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode)
 {
   if(m_touchBehaviour != mode)

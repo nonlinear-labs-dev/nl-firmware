@@ -28,6 +28,11 @@ bool PhysicalControlParameter::isChangedFromLoaded() const
   return false;
 }
 
+bool PhysicalControlParameter::isValueChangedFromLoaded() const
+{
+  return false;
+}
+
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
   if(source == HWChangeSource::MIDI)

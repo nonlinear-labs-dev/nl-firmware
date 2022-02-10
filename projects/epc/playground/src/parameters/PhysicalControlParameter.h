@@ -48,6 +48,7 @@ class PhysicalControlParameter : public Parameter
   HardwareSourceSendParameter *getSendParameter() const;
 
   virtual tControlPositionValue getDefValueAccordingToMode() const = 0;
+  bool isValueChangedFromLoaded() const override;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;

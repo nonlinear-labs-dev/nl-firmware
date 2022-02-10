@@ -30,7 +30,6 @@ class RibbonParameter : public PhysicalControlParameter
   void boundToMacroControl(tControlPositionValue v);
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
-  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
   void sendModeToPlaycontroller() const;
   tControlPositionValue getDefValueAccordingToMode() const override;

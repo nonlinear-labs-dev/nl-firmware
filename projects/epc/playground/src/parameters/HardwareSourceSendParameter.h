@@ -22,7 +22,9 @@ class HardwareSourceSendParameter : public Parameter
   void setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
   void setCPFromWebUI(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
   size_t getHash() const override;
-
+  void loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value) override;
+  bool isChangedFromLoaded() const override;
+  bool isValueChangedFromLoaded() const override;
 
  protected:
   nlohmann::json serialize() const override;
