@@ -8,7 +8,8 @@ SET(NL_SERVER h2949050.stratoserver.net)
 include(CTest)
 include(cmake/NL.cmake)
 
-#set(TARGET_PLATFORM "devpc" CACHE STRING "Which target to build for: devpc | epc | epc2 | bbb | playcontroller | pi4")
+set(TARGET_PLATFORM "devpc" CACHE STRING "Which target to build for: devpc | epc | epc2 | bbb | playcontroller | pi4")
+SET(NL_SERVER h2949050.stratoserver.net)
 
 message("Target platform is: ${TARGET_PLATFORM}")
 add_definitions(-DTARGET_PLATFORM="${TARGET_PLATFORM}")
@@ -26,4 +27,5 @@ string(REPLACE ";" " " NPM_PACKAGES "${NPM_PACKAGES}")
 add_subdirectory(os)
 add_subdirectory(projects)
 add_subdirectory(build-tools)
+add_subdirectory(os)
 
