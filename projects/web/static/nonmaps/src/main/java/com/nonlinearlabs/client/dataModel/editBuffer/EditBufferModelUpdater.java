@@ -101,6 +101,10 @@ public class EditBufferModelUpdater extends Updater {
 
 			if (!id.isEmpty()) {
 				BasicParameterModel bpm = EditBufferModel.get().getParameter(new ParameterId(id));
+
+				if(bpm == null)
+					return;
+					
 				if (!val.isEmpty())
 					bpm.originalValue.setValue(Double.valueOf(val));
 

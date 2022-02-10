@@ -16,13 +16,11 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
  public:
   typedef std::shared_ptr<TwoStateLED> tLed;
 
-  PanelUnit();
+  PanelUnit(Settings& settings);
   ~PanelUnit() override;
 
-  void setupFocusAndMode(FocusAndMode focusAndMode) override;
   bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state) override;
 
-  void setupFocusAndMode();
   void onTimeout();
   tLed getLED(Buttons id);
 
@@ -33,6 +31,9 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   const EditPanel &getEditPanel() const;
   EditPanel &getEditPanel();
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
+  
+ protected:
+  void setupFocusAndMode(FocusAndMode focusAndMode) override;
 
  private:
   void installUsageMode(FocusAndMode focusAndMode);

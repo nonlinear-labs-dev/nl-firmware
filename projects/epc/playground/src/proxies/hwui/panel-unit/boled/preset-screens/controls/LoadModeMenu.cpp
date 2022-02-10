@@ -26,12 +26,11 @@ bool LoadModeMenu::redraw(FrameBuffer& fb)
 
 LoadModeMenu::LoadModeMenu(const Rect& rect)
     : ControlWithChildren(rect)
-    , m_toggleDirectLoadAction { [this]
-                  {
-                    DirectLoadUseCases useCase(getDirectLoadSetting().get());
-                    auto hwui = Application::get().getHWUI();
-                    useCase.toggleDirectLoadFromHWUI(hwui);
-                  } }
+    , m_toggleDirectLoadAction { [this] {
+      DirectLoadUseCases useCase(getDirectLoadSetting());
+      auto hwui = Application::get().getHWUI();
+      useCase.toggleDirectLoadFromHWUI(hwui);
+    } }
 {
   m_soundTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));

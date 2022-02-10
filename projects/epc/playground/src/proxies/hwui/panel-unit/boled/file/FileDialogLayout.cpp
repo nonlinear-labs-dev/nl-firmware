@@ -13,6 +13,7 @@
 #include <proxies/hwui/panel-unit/PanelUnitPresetMode.h>
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/controls/Button.h>
+#include "use-cases/SettingsUseCases.h"
 
 FileDialogLayout::FileDialogLayout(tFilterFunction filter, tCallBackFunction cb, const std::string& header)
     : Layout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -61,8 +62,11 @@ bool FileDialogLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
         }
         return true;
       case Buttons::BUTTON_PRESET:
-        hwui->undoableSetFocusAndMode({ UIFocus::Banks, UIMode::Select });
+      {
+        SettingsUseCases useCases(*Application::get().getSettings());
+        useCases.setFocusAndMode({ UIFocus::Banks, UIMode::Select });
         return true;
+      }
       case Buttons::BUTTON_INC:
         fileList->changeSelection(1);
         updateLabels();

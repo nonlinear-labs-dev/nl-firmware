@@ -71,6 +71,7 @@ class PanelUnitParameterEditMode : public UsageMode
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
 
   ButtonParameterMapping m_mappings;
+  UndoButtonStateMachine m_undoStateMachine;
 
   sigc::connection m_connectionToMacroControl;
 };

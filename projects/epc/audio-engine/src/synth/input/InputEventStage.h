@@ -43,6 +43,8 @@ class InputEventStage
   static HardwareSource parameterIDToHWID(int id);
   bool getAndResetKeyBedStatus();
 
+  void onSendParameterReceived(const nltools::msg::HWSourceSendChangedMessage& message);
+
  private:
   void setAndScheduleKeybedNotify();
 

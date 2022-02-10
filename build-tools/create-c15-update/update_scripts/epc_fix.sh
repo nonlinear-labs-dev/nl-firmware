@@ -21,7 +21,7 @@ epc_fix() {
                printf "E48 ePC update: fixing Overlay order failed" >> /tmp/fix_error.log && ((fix_errors++))
         fi
     fi
-
+    
     if ! cat /etc/default/grub | grep "isolcpus" > /dev/null; then
         if ! cat /etc/default/grub | grep "mitigations" > /dev/null; then
             if ! (mkdir -p /mnt/sda2 \
@@ -38,7 +38,7 @@ epc_fix() {
             fi
         fi
     fi
-
+    
     if ! fsck /dev/sda4 -n; then
         umount /dev/sda4
         if ! mkfs.ext4 /dev/sda4; then

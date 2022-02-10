@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parameter.h"
+#include "HardwareSourceSendParameter.h"
 
 class ModulationRoutingParameter;
 
@@ -12,7 +13,6 @@ class PhysicalControlParameter : public Parameter
   PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
 
-  bool isChangedFromLoaded() const override;
   virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source);
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
@@ -42,13 +42,16 @@ class PhysicalControlParameter : public Parameter
 
   size_t getHash() const override;
   bool isLocked() const override;
+  virtual bool isLocalEnabled() const = 0;
+  HardwareSourceSendParameter *getSendParameter() const;
+
+  virtual tControlPositionValue getDefValueAccordingToMode() const = 0;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
  private:
   void sendParameterMessage() const override;
-  virtual bool isLocalEnabled() const = 0;
 
  private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
