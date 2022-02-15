@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nltools/Uncopyable.h>
+#include <cstddef>
 
 template <typename TItemPtr> class IntrusiveList;
 template <typename TSelfPtr> class IntrusiveListItem;
@@ -131,6 +132,15 @@ template <typename TItemPtr> class IntrusiveList
   void deleteItems()
   {
     forEach([](tItemPtr p) { delete p; });
+  }
+
+  [[nodiscard]] size_t count() const
+  {
+    int ret = 0;
+    forEach([&](auto p) {
+      ret++;
+    });
+    return ret;
   }
 
   class Iterator

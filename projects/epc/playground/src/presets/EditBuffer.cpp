@@ -1634,3 +1634,34 @@ Settings &EditBuffer::getSettings() const
 {
   return m_settings;
 }
+
+std::vector<double> EditBuffer::setHWSourcesToTargetPostion(UNDO::Transaction *pTransaction)
+{
+  std::vector<double> ret;
+  for(auto& hw: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
+  {
+    if(auto hwParam = dynamic_cast<PhysicalControlParameter*>(hw))
+    {
+      ret.emplace_back(hwParam->getControlPositionValue());
+      if(hwParam->getReturnMode() != ReturnMode::None)
+      {
+        hwParam->setIndirect(pTransaction, hwParam->getDefValueAccordingToMode());
+      }
+    }
+  }
+  return ret;
+}
+
+void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, const std::vector<double>& oldPositions)
+{
+  auto group = getParameterGroupByID({"CS", VoiceGroup::Global});
+  int idx = 0;
+  for(auto& hw: group->getParameters())
+  {
+    if(auto hwParam = dynamic_cast<PhysicalControlParameter*>(hw))
+    {
+        hwParam->setIndirect(transaction, oldPositions[idx]);
+        idx++;
+    }
+  }
+}
