@@ -185,7 +185,11 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
 }
 
 HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)
-    : Label(e)
+    : LabelStyleable(e,
+                     { .size = FontSize::Size8,
+                       .decoration = FontDecoration::Regular,
+                       .justification = Font::Justification::Left,
+                       .backgroundColor = FrameBufferColors::Transparent })
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->onSelectionChanged(sigc::mem_fun(this, &HardwareSourceCCLabel::onParameterSelectionHappened), VoiceGroup::Global);
@@ -240,48 +244,8 @@ void HardwareSourceCCLabel::onSettingsChanged(const Setting *changed)
   auto str = changed->getDisplayString();
   if(str == "None")
     setText("");
+  else if(str == "Ch. Pressure")
+    setText("Ch. Press.");
   else
     setText({ str });
-}
-
-SendCCArrow::SendCCArrow(const Rect &r)
-    : Control(r)
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->onSelectionChanged(sigc::mem_fun(this, &SendCCArrow::onParameterSelectionHappened), VoiceGroup::Global);
-}
-
-bool SendCCArrow::redraw(FrameBuffer &fb)
-{
-  if(isHighlight())
-    fb.setColor(FrameBufferColors::C128);
-  else
-    fb.setColor(FrameBufferColors::C204);
-
-  Rect r = getPosition();
-  Point c = r.getCenter();
-
-  const auto middle = r.getCenter().getY();
-
-  fb.setPixel(r.getLeft() + 1, middle - 1);
-  fb.setPixel(r.getLeft() + 2, middle - 2);
-  fb.setPixel(r.getLeft() + 1, middle + 1);
-  fb.setPixel(r.getLeft() + 2, middle + 2);
-
-  for(int i = r.getLeft(); i <= r.getRight(); i += 2)
-    fb.setPixel(i, middle);
-
-  return true;
-}
-
-void SendCCArrow::onParameterSelectionHappened(const Parameter *old, const Parameter *newP)
-{
-  if(auto sendParameter = dynamic_cast<const HardwareSourceSendParameter *>(newP))
-  {
-    setVisible(sendParameter->isAssigned());
-  }
-  else
-  {
-    setVisible(false);
-  }
 }
