@@ -488,6 +488,7 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
+  setReturningHWSourcesToCurrentPositionAndModulate(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -1662,6 +1663,20 @@ void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, cons
     {
         hwParam->setIndirect(transaction, oldPositions[idx]);
         idx++;
+    }
+  }
+}
+
+void EditBuffer::setReturningHWSourcesToCurrentPositionAndModulate(UNDO::Transaction *transaction)
+{
+  for(auto& p: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
+  {
+    if(auto hw = dynamic_cast<PhysicalControlParameter*>(p))
+    {
+      if(hw->hasBehavior() && hw->getReturnMode() != ReturnMode::None)
+      {
+        hw->setCPFromHwui(transaction, hw->getControlPositionValue());
+      }
     }
   }
 }
