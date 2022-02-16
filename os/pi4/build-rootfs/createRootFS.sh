@@ -20,6 +20,8 @@ set -e
 
 # ../../raspi4/Klaus/config/backlight.sh
 
+# TODO: init_resize entfernen und wenn noetig waehrend des build prozess resizen
+
 
 unpack_image() {
   cp /current-binary-dir/raspios-original.img /raspios.img
@@ -29,7 +31,7 @@ tweak_boot_partition() {
 
   mount -o loop -o offset=4194304 -o sizelimit=268435456 -t vfat /raspios.img /mnt
     
-  [[ "$PI4_Model" =~ "CM4" ]] && mv /boot-files/touch* /mnt  
+  [[ "$PI4_Model" =~ "CM4" ]] && mv /boot-files/* /mnt  
   
   echo -n "console=serial0,115200 "                         > /mnt/cmdline.txt
   echo -n "console=tty1 "                                   >> /mnt/cmdline.txt
@@ -38,19 +40,19 @@ tweak_boot_partition() {
   echo -n "fsck.repair=yes "                                >> /mnt/cmdline.txt
   echo -n "rootwait "                                       >> /mnt/cmdline.txt
   echo -n "quiet "                                          >> /mnt/cmdline.txt
-  echo -n "init=/usr/lib/raspi-config/init_resize.sh "      >> /mnt/cmdline.txt
+  # echo -n "init=/usr/lib/raspi-config/init_resize.sh "      >> /mnt/cmdline.txt
   echo -n "splash "                                         >> /mnt/cmdline.txt
-  echo -n "plymouth.ignore-serial-consoles "                >> /mnt/cmdline.txt
+  # echo -n "plymouth.ignore-serial-consoles "                >> /mnt/cmdline.txt
   echo -n "fsck.mode=skip "                                 >> /mnt/cmdline.txt
   echo -n "noswap "                                         >> /mnt/cmdline.txt
   echo -n "systemd.restore_state=0 rfkill.default_state=1 " >> /mnt/cmdline.txt
   
   echo -n "elevator=deadline "                              >> /mnt/cmdline.txt
-  echo -n "fastboot "                                       >> /mnt/cmdline.txt
-  echo -n "logo.nologo "                                    >> /mnt/cmdline.txt
+  # echo -n "fastboot "                                       >> /mnt/cmdline.txt
+  # echo -n "logo.nologo "                                    >> /mnt/cmdline.txt
     
-  [[ "$PI4_FEATURES" =~ "NO_CURSOR" ]] && echo -n "vt.global_cursor_default=0 " >> /mnt/cmdline.txt
-  [[ "$PI4_FEATURES" =~ "NO_X" ]] && echo -n "start_x=0 " >> /mnt/config.txt
+  # [[ "$PI4_FEATURES" =~ "NO_CURSOR" ]] && echo -n "vt.global_cursor_default=0 " >> /mnt/cmdline.txt
+  # [[ "$PI4_FEATURES" =~ "NO_X" ]] && echo -n "start_x=0 " >> /mnt/config.txt
   
   touch /mnt/ssh
   umount /mnt

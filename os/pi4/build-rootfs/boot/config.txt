@@ -107,8 +107,8 @@ gpu_mem=76
 
 # Misc
 force_eeprom_read=0
-disable_splash=1
-enable_uart=0
+disable_splash=0
+enable_uart=1
 # start_x=0
 ignore_lcd=1
 disable_audio_dither=1
