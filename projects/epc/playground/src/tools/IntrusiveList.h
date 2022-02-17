@@ -134,15 +134,6 @@ template <typename TItemPtr> class IntrusiveList
     forEach([](tItemPtr p) { delete p; });
   }
 
-  [[nodiscard]] size_t count() const
-  {
-    int ret = 0;
-    forEach([&](auto p) {
-      ret++;
-    });
-    return ret;
-  }
-
   class Iterator
   {
    public:

@@ -33,6 +33,12 @@ bool PhysicalControlParameter::isValueChangedFromLoaded() const
   return false;
 }
 
+double PhysicalControlParameter::getLastControlPositionValueBeforePresetLoad() const
+{
+  return m_valueBeforeLastLoad;
+}
+
+
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
   if(source == HWChangeSource::MIDI)
@@ -87,6 +93,8 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
 
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
+  m_valueBeforeLastLoad = getControlPositionValue();
+  setIndirect(transaction, value);
 }
 
 void PhysicalControlParameter::registerTarget(ModulationRoutingParameter *target)

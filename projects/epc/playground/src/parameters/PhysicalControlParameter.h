@@ -49,6 +49,7 @@ class PhysicalControlParameter : public Parameter
 
   virtual tControlPositionValue getDefValueAccordingToMode() const = 0;
   bool isValueChangedFromLoaded() const override;
+  [[nodiscard]] double getLastControlPositionValueBeforePresetLoad() const;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
@@ -58,6 +59,8 @@ class PhysicalControlParameter : public Parameter
 
  private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
+
+  tControlPositionValue m_valueBeforeLastLoad = 0;
 
   bool m_changingFromHWUI = false;
   bool m_lastChangedFromHWUI = false;

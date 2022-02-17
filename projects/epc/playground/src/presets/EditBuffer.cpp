@@ -1636,7 +1636,7 @@ Settings &EditBuffer::getSettings() const
   return m_settings;
 }
 
-std::vector<double> EditBuffer::setHWSourcesToTargetPostion(UNDO::Transaction *pTransaction)
+std::vector<double> EditBuffer::setHWSourcesToTargetPostion(UNDO::Transaction *transaction)
 {
   std::vector<double> ret;
   for(auto& hw: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
@@ -1646,7 +1646,7 @@ std::vector<double> EditBuffer::setHWSourcesToTargetPostion(UNDO::Transaction *p
       ret.emplace_back(hwParam->getControlPositionValue());
       if(hwParam->getReturnMode() != ReturnMode::None)
       {
-        hwParam->setIndirect(pTransaction, hwParam->getDefValueAccordingToMode());
+        hwParam->setCPFromHwui(transaction, hwParam->getDefValueAccordingToMode());
       }
     }
   }
@@ -1661,7 +1661,7 @@ void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, cons
   {
     if(auto hwParam = dynamic_cast<PhysicalControlParameter*>(hw))
     {
-        hwParam->setIndirect(transaction, oldPositions[idx]);
+        hwParam->setCPFromHwui(transaction, oldPositions[idx]);
         idx++;
     }
   }
@@ -1673,10 +1673,15 @@ void EditBuffer::setReturningHWSourcesToCurrentPositionAndModulate(UNDO::Transac
   {
     if(auto hw = dynamic_cast<PhysicalControlParameter*>(p))
     {
-      if(hw->hasBehavior() && hw->getReturnMode() != ReturnMode::None)
+      if(hw->getReturnMode() != ReturnMode::None)
       {
-        hw->setCPFromHwui(transaction, hw->getControlPositionValue());
+        if(Application::exists())
+        {
+          hw->setCPFromHwui(transaction, hw->getLastControlPositionValueBeforePresetLoad());
+        }
       }
     }
   }
+
+  g_main_context_iteration(nullptr, TRUE);
 }
