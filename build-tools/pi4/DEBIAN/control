@@ -1,6 +1,0 @@
-Package: NL
-Version: 1.0
-Architecture: armhf
-Description: Nonlinear Labs Userland Binaries
-Maintainer: Henry Hoegelow <henry@quelltextlabor.de>
-Depends: libsoup2.4-1, libflac8, libglibmm-2.4-1v5, libasound2, libfreetype6

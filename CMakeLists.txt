@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(C15)
+project(C15 VERSION 2.0.1)
 
 SET(DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/../nonlinear-labs-downloads" CACHE STRING "Where to store downloads needed for NonlinearLabs-Builds")
 SET(NL_SERVER h2949050.stratoserver.net)
@@ -8,7 +8,13 @@ SET(NL_SERVER h2949050.stratoserver.net)
 include(CTest)
 include(cmake/NL.cmake)
 
-set(TARGET_PLATFORM "devpc" CACHE STRING "Which target to build for: devpc | epc | epc2 | bbb | playcontroller | pi4")
+
+if(NOT TARGET_PLATFORM)
+  set(TARGET_PLATFORM "devpc" CACHE STRING "Which target to build for: devpc | epc | epc2 | bbb | playcontroller | pi4")
+endif()
+
+message("Target platform is: ${TARGET_PLATFORM}")
+
 SET(NL_SERVER h2949050.stratoserver.net)
 
 message("Target platform is: ${TARGET_PLATFORM}")
@@ -29,3 +35,18 @@ add_subdirectory(projects)
 add_subdirectory(build-tools)
 add_subdirectory(os)
 
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsoup2.4-1, libflac8, libglibmm-2.4-1v5, libasound2, libfreetype6")
+
+
+IF (${TARGET_PLATFORM} STREQUAL "pi4")
+  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "armhf")
+ENDIF ()
+
+SET(CPACK_GENERATOR "DEB")
+set(CPACK_PACKAGE_CONTACT "info@nonlinear-labs.de")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Nonlinear Labs GmbH")
+SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Userland binaries for Nonlinear Labs synthesizers")
+INCLUDE(CPack)
