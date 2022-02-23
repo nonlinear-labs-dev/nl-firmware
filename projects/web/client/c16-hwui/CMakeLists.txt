@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(c16-hwui)
 
-file(GLOB_RECURSE ALL_FILES *)
+file(GLOB_RECURSE ALL_FILES *) 
 
 add_custom_command(
     COMMENT "C16 HWUI"
@@ -13,3 +13,6 @@ add_custom_command(
     )
 
 add_custom_target(c16-hwui ALL SOURCES bundle.tar.gz)
+
+
+ 

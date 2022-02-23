@@ -56,7 +56,12 @@ add_subdirectory(tests)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${C15_INSTALL_PATH}/${PROJECT_NAME})
 
-configure_file(${PROJECT_SOURCE_DIR}/system/${PROJECT_NAME}.service.in ${PROJECT_BINARY_DIR}/system/${PROJECT_NAME}.service @ONLY)
+IF (${TARGET_PLATFORM} STREQUAL "pi4")
+  configure_file(${PROJECT_SOURCE_DIR}/system/${PROJECT_NAME}.service.pi4.in ${PROJECT_BINARY_DIR}/system/${PROJECT_NAME}.service @ONLY)
+ELSE()
+  configure_file(${PROJECT_SOURCE_DIR}/system/${PROJECT_NAME}.service.epc.in ${PROJECT_BINARY_DIR}/system/${PROJECT_NAME}.service @ONLY)
+ENDIF()
+
 configure_file(${PROJECT_SOURCE_DIR}/system/fixCpuBindings.service.in ${PROJECT_BINARY_DIR}/system/fixCpuBindings.service @ONLY)
 
 install(FILES ${PROJECT_SOURCE_DIR}/system/asound.state DESTINATION ${C15_ROOT_PATH}/var/lib/alsa/)

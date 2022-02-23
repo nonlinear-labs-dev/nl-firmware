@@ -2,7 +2,6 @@
 
 set -e
 
-
 # wenn CM4, nach /boot/overlays
 # ../../raspi4/Klaus/config/touch.dts
 # ../../raspi4/Klaus/config/touch.dtbo
@@ -31,7 +30,7 @@ tweak_boot_partition() {
 
   mount -o loop -o offset=4194304 -o sizelimit=268435456 -t vfat /raspios.img /mnt
     
-  [[ "$PI4_Model" =~ "CM4" ]] && mv /boot-files/* /mnt  
+  [[ "$PI4_Model" =~ "CM4" ]] && mv /boot-files/* /mnt
   
   echo -n "console=serial0,115200 "                         > /mnt/cmdline.txt
   echo -n "console=tty1 "                                   >> /mnt/cmdline.txt
@@ -48,7 +47,9 @@ tweak_boot_partition() {
   echo -n "elevator=deadline "                              >> /mnt/cmdline.txt
   echo -n "fastboot "                                       >> /mnt/cmdline.txt
   echo -n "logo.nologo "                                    >> /mnt/cmdline.txt
-    
+  
+  echo -n "isolcpus=0,2 "                                   >> /mnt/cmdline.txt
+      
   [[ "$PI4_FEATURES" =~ "NO_CURSOR" ]] && echo -n "vt.global_cursor_default=0 " >> /mnt/cmdline.txt
   [[ "$PI4_FEATURES" =~ "NO_X" ]] && echo -n "start_x=0 " >> /mnt/config.txt
   
@@ -200,6 +201,20 @@ tweak_root_partition() {
   #/boot aus /etc/fstab rausnehmen
  
   rm -rf /mnt/packages
+  
+  chroot /mnt bash -c "useradd -m sscl"
+  chroot /mnt bash -c "echo 'sscl:sscl' | chpasswd"
+  echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /mnt/etc/sudoers
+  
+  echo "xserver-command=X -s 0 -p 0 -dpms" >> /mnt/etc/lightdm/lightdm.conf
+  
+  chroot /mnt /bin/sh -c "DEBIAN_FRONTEND=noninteractive apt -y remove build-essential g++ g++-10 gcc emacsen-common gdb vlc sound-theme-freedesktop pulseaudio"
+  chroot /mnt /bin/sh -c "DEBIAN_FRONTEND=noninteractive apt -y autoremove"
+  
+  rm /mnt/etc/xdg/autostart/piwiz.desktop
+  rm /mnt/etc/xdg/autostart/pulseaudio.desktop
+  rm /mnt/etc/xdg/autostart/pprompt.desktop
+  rm /mnt/etc/xdg/autostart/print-applet.desktop
   
   umount /mnt
 }

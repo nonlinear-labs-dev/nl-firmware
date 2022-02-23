@@ -81,7 +81,7 @@ otg_mode=1
 dtoverlay=touch
 
 # IQAudio DAC Plus/Pro HAT
-#dtoverlay=iqaudio-dacplus
+dtoverlay=iqaudio-dacplus
 
 # Real-Time Clock
 #dtoverlay=i2c-rtc,pcf85063a,i2c_csi_dsi

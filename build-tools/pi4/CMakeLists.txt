@@ -1,6 +1,8 @@
 configure_file(Dockerfile docker/Dockerfile)
 configure_file(build.sh docker/build.sh)
 
+file(GLOB_RECURSE ALL_FILES ${CMAKE_SOURCE_DIR}/*)
+
 EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
 STRING(STRIP ${USER_ID} USER_ID)
 
@@ -24,8 +26,10 @@ ADD_CUSTOM_COMMAND(
     COMMENT "Create Userland Packages for Raspberry Pi 4" 
     OUTPUT C15-${CMAKE_PROJECT_VERSION}-Linux.deb
     DEPENDS .pi4-docker-container
-    COMMAND docker run --privileged -ti -v ${CMAKE_SOURCE_DIR}:/src -v ${CMAKE_CURRENT_BINARY_DIR}:/build nl-pi4-crossbuild-environment
+    DEPENDS ${ALL_FILES}
+    DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
+    COMMAND docker run --privileged -ti -v ${CMAKE_SOURCE_DIR}:/src -v ${CMAKE_CURRENT_BINARY_DIR}:/build -v ${CMAKE_BINARY_DIR}/projects/web:/web nl-pi4-crossbuild-environment
 )
 
-ADD_CUSTOM_TARGET(pi4-package DEPENDS C15-${CMAKE_PROJECT_VERSION}-Linux.deb)
+ADD_CUSTOM_TARGET(pi4-package DEPENDS web C15-${CMAKE_PROJECT_VERSION}-Linux.deb)
 ADD_CUSTOM_TARGET(pi4-crossbuild-console DEPENDS .pi4-docker-console)

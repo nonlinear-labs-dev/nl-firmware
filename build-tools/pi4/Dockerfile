@@ -18,7 +18,6 @@ ARG BOB_ID
 RUN useradd -m -u $BOB_ID bob-the-builder
 RUN usermod -aG sudo bob-the-builder
 RUN echo "bob-the-builder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-COPY DEBIAN/* /DEBIAN/
 COPY build.sh /build.sh
 RUN chmod +x /build.sh
 USER bob-the-builder

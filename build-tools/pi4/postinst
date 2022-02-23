@@ -1,0 +1,12 @@
+systemctl enable audio-engine 
+systemctl start audio-engine 
+systemctl enable playground 
+systemctl start playground
+
+cat <<- ENDOFHERE > /etc/xdg/autostart/hwui.desktop
+[Desktop Entry]
+Type=Application
+Name=Nonlinear Labs C16 Hardware UI
+Exec=/usr/bin/chromium-browser --incognito --kiosk http://localhost/index.html?page=C16PresetManager
+StartupNotify=true
+ENDOFHERE
