@@ -411,6 +411,13 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       }
+      case PLAYCONTROLLER_REQUEST_ID_POLLHWS:
+      {
+        ADC_WORK_PollRequestHWValues();
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS, 1);
+        BB_MSG_SendTheBuffer();
+        break;
+      }
       case PLAYCONTROLLER_REQUEST_ID_CLEAR_STAT:
         NL_STAT_ClearData();
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT, 1);

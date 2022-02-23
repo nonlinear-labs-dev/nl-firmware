@@ -30,6 +30,7 @@
 
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
+static uint16_t validAeSendValue[NUM_HW_REAL_SOURCES];
 
 static int32_t lastPitchbend;
 static int32_t pitchbendZero;
@@ -230,8 +231,8 @@ void ClearHWValuesForUI(void)
 
 void ClearHWValuesForAE(void)
 {
-  for (int i = 0; i < NUM_HW_SOURCES; i++)
-    uiSendValue[i] = 0;
+  for (int i = 0; i < NUM_HW_REAL_SOURCES; i++)
+    validAeSendValue[i] = aeSendValue[i] = 0;
 }
 
 /*****************************************************************************
@@ -335,7 +336,7 @@ void ADC_WORK_WriteHWValueForUI(uint16_t const hwSourceId, uint16_t const value)
 
 void ADC_WORK_WriteHWValueForAE(uint16_t const hwSourceId, uint16_t const value)
 {
-  aeSendValue[hwSourceId] = value + 1;  // makes sure it isn't zero (assumes that 0xFFFF is never used as input)
+  validAeSendValue[hwSourceId] = aeSendValue[hwSourceId] = value + 1;  // makes sure it isn't zero (assumes that 0xFFFF is never used as input)
 }
 
 void ADC_WORK_SendUIMessages(void)  // is called as a regular COOS task
@@ -351,12 +352,14 @@ void ADC_WORK_SendUIMessages(void)  // is called as a regular COOS task
       {                      //
         uiSendValue[i] = 0;  // clear value, including update flag
         send           = 1;
-      }  // else: sending failed, try agai later
+      }  // else: sending failed, try again later
     }
   }
   if (send)
     BB_MSG_SendTheBuffer();
 }
+
+static int pollRequestHWValues = 0;
 
 static void SendAEMessages(void)
 {
@@ -379,12 +382,23 @@ static void SendAEMessages(void)
   for (j = 0; j < NUM_HW_REAL_SOURCES; j++)
   {
     i = PRIORITY_TABLE[j];  // sort update by priority
+
+    // use last valid value, if present, in case of a poll request and no current data
+    if (pollRequestHWValues && (aeSendValue[i] == 0) && (validAeSendValue[i] != 0))
+      aeSendValue[i] = validAeSendValue[i];
+
     if (aeSendValue[i])
     {
       MSG_HWSourceUpdate(i, aeSendValue[i] - 1);
       aeSendValue[i] = 0;  // clear value, including update flag
     }
   }
+  pollRequestHWValues = 0;
+}
+
+void ADC_WORK_PollRequestHWValues(void)
+{
+  pollRequestHWValues = 1;
 }
 
 /*****************************************************************************
