@@ -1682,6 +1682,4 @@ void EditBuffer::setReturningHWSourcesToCurrentPositionAndModulate(UNDO::Transac
       }
     }
   }
-
-  g_main_context_iteration(nullptr, TRUE);
 }

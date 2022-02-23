@@ -15,3 +15,9 @@ void PedalParameterUseCases::setPedalMode(const Glib::ustring& mode)
   auto scope = m_param->getUndoScope().startTransaction("Set pedal mode");
   m_param->undoableSetPedalMode(scope->getTransaction(), mode);
 }
+
+void PedalParameterUseCases::setPedalMode(PedalModes mode)
+{
+  auto scope = m_param->getUndoScope().startTransaction("Set pedal mode");
+  m_param->undoableSetPedalMode(scope->getTransaction(), mode);
+}

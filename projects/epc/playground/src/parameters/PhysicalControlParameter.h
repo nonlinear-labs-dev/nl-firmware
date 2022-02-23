@@ -64,4 +64,5 @@ class PhysicalControlParameter : public Parameter
 
   bool m_changingFromHWUI = false;
   bool m_lastChangedFromHWUI = false;
+  ReturnMode m_oldReturnMode;
 };

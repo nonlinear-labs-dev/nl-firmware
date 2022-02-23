@@ -12,7 +12,7 @@ TEST_CASE("Issue 2926")
   PresetManagerUseCases pmUseCase(*pm, settings);
 
   auto bank = pmUseCase.createBankAndStoreEditBuffer();
-  REQUIRE(bank);
+  REQUIRE(bank != nullptr);
   BankUseCases bankUseCase(bank, settings);
   auto firstPreset = bankUseCase.appendEditBuffer();
   bankUseCase.appendEditBuffer();
@@ -21,7 +21,6 @@ TEST_CASE("Issue 2926")
 
   pmUseCase.selectPreset(firstPreset);
   auto baseName = firstPreset->getName();
-
 
   CHECK(bank->getSelectedPreset() == firstPreset);
 

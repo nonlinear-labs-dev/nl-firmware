@@ -236,9 +236,18 @@ void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParam
 {
   if(!isLocked())
   {
+    const auto oldMode = getReturnMode();
+    const auto oldPosition = getControlPositionValue();
     super::copyFrom(transaction, other);
     undoableSetRibbonReturnMode(transaction, other->getRibbonReturnMode());
     undoableSetRibbonTouchBehaviour(transaction, other->getRibbonTouchBehaviour());
+    if(oldMode != getReturnMode())
+    {
+      if(getReturnMode() != ReturnMode::None)
+      {
+        setCpValue(transaction, Initiator::EXPLICIT_PLAYCONTROLLER, oldPosition, false);
+      }
+    }
   }
 }
 
