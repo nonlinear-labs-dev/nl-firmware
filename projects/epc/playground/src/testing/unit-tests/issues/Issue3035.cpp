@@ -6,6 +6,7 @@
 #include "parameters/RibbonParameter.h"
 #include "use-cases/RibbonParameterUseCases.h"
 #include "device-settings/GlobalLocalEnableSetting.h"
+#include "use-cases/SettingsUseCases.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
@@ -139,6 +140,11 @@ TEST_CASE("Issue 3035, Loading Presets with differing ReturnTypes leads to corre
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
+  auto settings = TestHelper::getSettings();
+
+  SettingsUseCases settingsUseCase(*settings);
+  settingsUseCase.setAllRoutingEntries(true);
+  settingsUseCase.setGlobalLocal(true);
 
   ParameterId srcID = { C15::PID::Pedal_4, VoiceGroup::Global };
   auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
@@ -193,9 +199,11 @@ TEST_CASE("Issue 3035, Loading Presets with differing ReturnTypes leads to corre
 
     WHEN("Preset 2 is loaded")
     {
+      auto cpPosPedal1 = pedal1->getControlPositionValue();
       ebUseCase.load(preset2);
+      //pedalUseCase.setControlPosition(cpPosPedal1);
       CHECK(pedal1->getDisplayString() == "0.0 %");
-      CHECK(modTarget->getDisplayString() == "0.0 %");
+      CHECK(modTarget->getDisplayString() == "-100.0 %");
     }
   }
 }

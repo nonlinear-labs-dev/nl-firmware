@@ -12,6 +12,11 @@ class PedalParameter : public PhysicalControlParameter
  public:
   using super::super;
 
+ protected:
+  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                  bool dosendToPlaycontroller) override;
+
+ public:
   void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode);
   void undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
   void undoableIncPedalMode(UNDO::Transaction *transaction);

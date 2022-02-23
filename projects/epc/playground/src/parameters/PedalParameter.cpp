@@ -160,8 +160,32 @@ void PedalParameter::copyFrom(UNDO::Transaction *transaction, const PresetParame
 {
   if(!isLocked())
   {
+    auto oldMode = getReturnMode();
+    auto oldPosition = getControlPositionValue();
+    auto wasBipolar = getValue().isBiPolar();
     super::copyFrom(transaction, other);
     undoableSetPedalMode(transaction, other->getPedalMode());
+
+    auto isBipolar = getValue().isBiPolar();
+
+    if(wasBipolar && !isBipolar)
+    {
+      //-1 .. 1 -> 0 .. 1
+      oldPosition = (oldPosition + 1) / 2;
+    }
+    else if(!wasBipolar && isBipolar)
+    {
+      //0..1 -> -1 .. 1
+      oldPosition = (oldPosition - 1) * 2;
+    }
+
+    if(oldMode != getReturnMode())
+    {
+      if(getReturnMode() != ReturnMode::None)
+      {
+        setCpValue(transaction, Initiator::EXPLICIT_PLAYCONTROLLER, oldPosition, false);
+      }
+    }
   }
 }
 
@@ -285,4 +309,10 @@ bool PedalParameter::isLocalEnabled() const
     }
   }
   return false;
+}
+
+void PedalParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                                bool dosendToPlaycontroller)
+{
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 }
