@@ -169,12 +169,25 @@ tweak_root_partition() {
     echo "wpa_key_mgmt=WPA-PSK"   >> /mnt/etc/hostapd/hostapd.conf
     echo "wpa_pairwise=TKIP"      >> /mnt/etc/hostapd/hostapd.conf
     echo "rsn_pairwise=CCMP"      >> /mnt/etc/hostapd/hostapd.conf 
+
+    sed -i '13iExecStartPost=/bin/sh -c "systemctl restart udhcpd"' /mnt/etc/systemd/system/hostapd.service
+
+    echo "auto wlan0"                   > /mnt/etc/network/interfaces
+    echo "iface wlan0 inet static"      >> /mnt/etc/network/interfaces
+    echo "  address 192.168.8.2"        >> /mnt/etc/network/interfaces
+    echo "  netmask 255.255.255.0"      >> /mnt/etc/network/interfaces
     
-    echo "interface wlan0"              >> /mnt/etc/dhcpcd.conf
-    echo "ip_address=192.168.8.2/24"    >> /mnt/etc/dhcpcd.conf
-    echo "nohook wpa_supplicant"        >> /mnt/etc/dhcpcd.conf
-    
+    echo "start 192.168.8.20"                       > /mnt/etc/udhcpd.conf
+    echo "end   192.168.8.200"                      >> /mnt/etc/udhcpd.conf
+    echo "interface wlan0"                          >> /mnt/etc/udhcpd.conf
+    echo "option    domain  local"                  >> /mnt/etc/udhcpd.conf
+    echo "option    lease   864000"                 >> /mnt/etc/udhcpd.conf
+    echo "option    dns     192.168.8.4 8.8.8.8"    >> /mnt/etc/udhcpd.conf
+    echo "option    router  192.168.8.4"            >> /mnt/etc/udhcpd.conf
+    echo "option    subnet  255.255.255.0"          >> /mnt/etc/udhcpd.conf
+
     enable_service hostapd.service
+    enable_service udhcpd.service
         
     sed "s/eth0/wlan0/g" -i /mnt/etc/udhcpd.conf
   fi
