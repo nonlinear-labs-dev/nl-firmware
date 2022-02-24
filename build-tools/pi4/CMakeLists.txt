@@ -1,7 +1,7 @@
 configure_file(Dockerfile docker/Dockerfile)
 configure_file(build.sh docker/build.sh)
 
-file(GLOB_RECURSE ALL_FILES ${CMAKE_SOURCE_DIR}/*)
+file(GLOB_RECURSE ALL_FILES ${CMAKE_SOURCE_DIR}/projects/* ${CMAKE_SOURCE_DIR}/build-tools/* ${CMAKE_SOURCE_DIR}/os/* ${CMAKE_SOURCE_DIR}/cmake/*)
 
 EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
 STRING(STRIP ${USER_ID} USER_ID)
