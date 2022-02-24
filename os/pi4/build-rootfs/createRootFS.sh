@@ -91,10 +91,21 @@ tweak_root_partition() {
     F3=$(printf "/packages/%s_%s[^ ]*_%s.deb" $P $V2 $A)
     PACKAGEFILES=$(echo $PACKAGEFILES | sed "s|$F1||g" | sed "s|$F2||g" | sed "s|$F3||g")
   done <<< $(chroot /mnt dpkg -l | grep "^ii" | sed 's/[ ]* / /g')
-  
+
   echo "Now installing packages: $PACKAGEFILES"
-  
-  chroot /mnt dpkg -i $PACKAGEFILES
+
+  FIXED_PACKAGFILES="";
+
+  for p in $PACKAGEFILES; do
+    if [ ! -f $p ]; then
+        c=$(echo $p | sed 's/%25/%/g')
+        FIXED_PACKAGFILES="$FIXED_PACKAGFILES $c"
+    else
+        FIXED_PACKAGFILES="$FIXED_PACKAGFILES $p"
+    fi
+  done
+
+  chroot /mnt dpkg -i $FIXED_PACKAGFILES
   
   echo "hostname"                       > /mnt/etc/dhcpcd.conf
   echo "clientid"                       >> /mnt/etc/dhcpcd.conf
