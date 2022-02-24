@@ -170,8 +170,6 @@ tweak_root_partition() {
     echo "wpa_pairwise=TKIP"      >> /mnt/etc/hostapd/hostapd.conf
     echo "rsn_pairwise=CCMP"      >> /mnt/etc/hostapd/hostapd.conf 
 
-    sed -i '13iExecStartPost=/bin/sh -c "systemctl restart udhcpd"' /mnt/etc/systemd/system/hostapd.service
-
     echo "auto wlan0"                   > /mnt/etc/network/interfaces
     echo "iface wlan0 inet static"      >> /mnt/etc/network/interfaces
     echo "  address 192.168.8.2"        >> /mnt/etc/network/interfaces
@@ -186,9 +184,13 @@ tweak_root_partition() {
     echo "option    router  192.168.8.4"            >> /mnt/etc/udhcpd.conf
     echo "option    subnet  255.255.255.0"          >> /mnt/etc/udhcpd.conf
 
+    echo "DHCPD_ENABLED=\"yes\""    > /etc/default/udhcpd
+    echo "DHCPD_OPTS=\"-S\""    >> /etc/default/udhcpd
+
     enable_service hostapd.service
     enable_service udhcpd.service
-        
+
+    sed -i '13iExecStartPost=/bin/sh -c "systemctl restart udhcpd"' /mnt/usr/lib/systemd/system/hostapd.service
     sed "s/eth0/wlan0/g" -i /mnt/etc/udhcpd.conf
   fi
   

@@ -25,10 +25,10 @@
 
 <template name="C16PresetManager">
     <div class="preset-manager">
-      Preset Banks:
-        {{#each getBanks}}
+      Selected Bank:
+        {{#with selectedBank}}
         {{ > C16Bank }}
-        {{/each}}
+        {{/with}}
     </div>
 </template>
 

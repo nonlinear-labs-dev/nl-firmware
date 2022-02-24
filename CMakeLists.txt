@@ -13,8 +13,6 @@ if(NOT TARGET_PLATFORM)
   set(TARGET_PLATFORM "devpc" CACHE STRING "Which target to build for: devpc | epc | epc2 | bbb | playcontroller | pi4")
 endif()
 
-MESSAGE("Target platform is: ${TARGET_PLATFORM}")
-
 SET(NL_SERVER h2949050.stratoserver.net)
 
 MESSAGE("Target platform is: ${TARGET_PLATFORM}")
