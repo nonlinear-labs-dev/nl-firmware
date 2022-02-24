@@ -2,9 +2,11 @@
 
 # version :     1.0
 #
-# ----------- fix CPU Bindings and Overlay Order ---------
+# ----------- EPC1 (NUC5i3 & NUC7i3) Fixes  ---------
+# - CPU Bindings
+# - Overlay Order
 #
-# will be copied to the ePC und /tmp after update and executed
+# Procedure: will be copied to the ePC und /tmp after update and executed
 
 
 epc_fix() {
@@ -18,7 +20,7 @@ epc_fix() {
             && umount /tmp/sda2 \
             && mkinitcpio -p linux \
             && mkinitcpio -p linux-rt); then
-               printf "E48 ePC update: fixing Overlay order failed" >> /tmp/fix_error.log && ((fix_errors++))
+               printf "E48 ePC1 update: fixing Overlay order failed" >> /tmp/fix_error.log && ((fix_errors++))
         fi
     fi
     
@@ -34,7 +36,7 @@ epc_fix() {
                 && arch-chroot /mnt/sda2 /bin/bash -c "cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI" \
                 && umount /mnt/sda2/boot \
                 && umount /mnt/sda2); then
-                   printf "E48 ePC update: setting Kernel Params failed" >> /tmp/fix_error.log && ((fix_errors++))
+                   printf "E48 ePC1 update: setting Kernel Params failed" >> /tmp/fix_error.log && ((fix_errors++))
             fi
         fi
     fi
@@ -42,7 +44,7 @@ epc_fix() {
     if ! fsck /dev/sda4 -n; then
         umount /dev/sda4
         if ! mkfs.ext4 /dev/sda4; then
-            printf "E48 ePC update: fixing sda4 failed" >> /tmp/fix_error.log && ((fix_errors++))
+            printf "E48 ePC1 update: fixing sda4 failed" >> /tmp/fix_error.log && ((fix_errors++))
         fi
     fi
 
