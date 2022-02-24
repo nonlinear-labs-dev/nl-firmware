@@ -3,6 +3,9 @@ Description=Nonlinear-Labs Playground
 After=network.target systemd-modules-load.service persistent.mount fix-overlay-order.service
 
 [Service]
+# Restart iwlwifi driver on 11i3 NUCs
+ExecStartPre=-/usr/bin/bash -c "lscpu | grep -F \"i3-11\" && rmmod iwlwifi && modprobe iwlwifi"
+
 ExecStart=@C15_INSTALL_PATH@/playground/playground --bbbb-host=192.168.10.11 --midi-bridge=192.168.10.11 --layouts=@C15_INSTALL_PATH@/playground/resources/templates
 Restart=on-failure
 RestartSec=1
