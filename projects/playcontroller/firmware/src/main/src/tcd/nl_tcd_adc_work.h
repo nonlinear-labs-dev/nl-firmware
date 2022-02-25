@@ -27,6 +27,7 @@ void ADC_WORK_Process4(void);
 void ADC_WORK_WriteHWValueForUI(uint16_t const hwSourceId, uint16_t const value);
 void ADC_WORK_WriteHWValueForAE(uint16_t const hwSourceId, uint16_t const value);
 void ADC_WORK_SendUIMessages(void);
+void ADC_WORK_EnableSendUIMessages(uint16_t const flag);
 void ADC_WORK_PollRequestHWValues(void);
 
 void ADC_WORK_SetRibbon1EditMode(uint16_t const mode);

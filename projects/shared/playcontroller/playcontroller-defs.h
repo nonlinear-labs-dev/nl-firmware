@@ -60,6 +60,7 @@ enum PLAYCONTROLLER_SETTING_IDS
   PLAYCONTROLLER_SETTING_ID_AUDIO_ENGINE_CMD                 = 0xFF05,  // direction: input; arguments(uint16): 1, command (1:testtone OFF; 2:testtone ON; 3:default sound)
   PLAYCONTROLLER_SETTING_ID_SYSTEM_SPECIAL                   = 0xFF06,  // direction: input; arguments(uint16): 1, command (1:reset heartbeat: 2: system reset: 3:Enable MIDI)
   PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_MAPPING               = 0xFF07,  // direction: input; arguments(uint16): 1, flag (!= 0)
+  PLAYCONTROLLER_SETTING_ID_ENABLE_UI_PARAMETER_MSGS         = 0xFF08,  // direction: input; arguments(uint16): 1, flag (!= 0)
 };
 
 enum PLAYCONTROLLER_REQUEST_IDS

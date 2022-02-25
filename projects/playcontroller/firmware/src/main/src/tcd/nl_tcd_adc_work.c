@@ -28,6 +28,7 @@
 #define AT_DEADRANGE 30    // 0.73 % of 0 ... 4095
 #define AT_FACTOR    5080  // 5080 / 4096 for saturation = 100 % at 81 % of the input range
 
+static int      sendUiValues;
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
 
@@ -349,15 +350,25 @@ void ADC_WORK_SendUIMessages(void)  // is called as a regular COOS task
   {
     if (uiSendValue[i])
     {
-      if (BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_PARAMETER, i, uiSendValue[i] - 1) > -1)
-      {                      //
+      if (sendUiValues)
+      {
+        if (BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_PARAMETER, i, uiSendValue[i] - 1) > -1)
+        {                      //
+          uiSendValue[i] = 0;  // clear value, including update flag
+          send           = 1;
+        }  // else: sending failed, try again later
+      }
+      else
         uiSendValue[i] = 0;  // clear value, including update flag
-        send           = 1;
-      }  // else: sending failed, try again later
     }
   }
   if (send)
     BB_MSG_SendTheBuffer();
+}
+
+void ADC_WORK_EnableSendUIMessages(uint16_t const flag)
+{
+  sendUiValues = (flag != 0);
 }
 
 static void SendAEMessages(void)

@@ -353,6 +353,9 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       case PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_MAPPING:
         POLY_EnableKeyMapping(data[1]);
         break;
+      case PLAYCONTROLLER_SETTING_ID_ENABLE_UI_PARAMETER_MSGS:
+        ADC_WORK_EnableSendUIMessages(data[1]);
+        break;
       case PLAYCONTROLLER_SETTING_ID_AUDIO_ENGINE_CMD:
         MSG_SendAEDevelopperCmd(data[1]);
         break;
