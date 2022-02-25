@@ -874,7 +874,7 @@ void setDeadZones(uint8_t which, uint16_t ranges)
 }
 
 // ----------------------------
-void forceOutput(uint8_t which)
+static void forceOutput(uint8_t which)
 {
   if (which >= NUMBER_OF_CONTROLLERS)
     return;
@@ -883,6 +883,12 @@ void forceOutput(uint8_t which)
   {
     ctrl[which].lastFinal = 0xFFFF;
   }
+}
+
+void NL_EHC_PollValues(void)
+{
+  for (uint8_t i = 0; i < NUMBER_OF_CONTROLLERS; i++)
+    forceOutput(i);
 }
 
 /*************************************************************************/ /**

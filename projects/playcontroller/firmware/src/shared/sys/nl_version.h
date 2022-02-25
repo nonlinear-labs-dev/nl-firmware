@@ -23,7 +23,10 @@
 
 // ==== V 207 ====
 // added "recall Unique Hardware ID" feature
-#define SW_VERSION 207
+
+// ==== V 208 ====
+// added "Poll Hardware Sources" feature
+#define SW_VERSION 208
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros

@@ -30,8 +30,8 @@
 
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
-static uint16_t validAeSendValue[NUM_HW_REAL_SOURCES];
 
+static int32_t lastPitchbendRaw;
 static int32_t lastPitchbend;
 static int32_t pitchbendZero;
 
@@ -232,7 +232,7 @@ void ClearHWValuesForUI(void)
 void ClearHWValuesForAE(void)
 {
   for (int i = 0; i < NUM_HW_REAL_SOURCES; i++)
-    validAeSendValue[i] = aeSendValue[i] = 0;
+    aeSendValue[i] = 0;
 }
 
 /*****************************************************************************
@@ -240,8 +240,9 @@ void ClearHWValuesForAE(void)
 ******************************************************************************/
 void ADC_WORK_Init1(void)
 {
-  lastPitchbend = 0;
-  pitchbendZero = 2048;
+  lastPitchbendRaw = 0;
+  lastPitchbend    = 0x7FFFFFFF;
+  pitchbendZero    = 2048;
 
   pbSignalIsSmall = 0;
   pbTestTime      = 0;
@@ -336,7 +337,7 @@ void ADC_WORK_WriteHWValueForUI(uint16_t const hwSourceId, uint16_t const value)
 
 void ADC_WORK_WriteHWValueForAE(uint16_t const hwSourceId, uint16_t const value)
 {
-  validAeSendValue[hwSourceId] = aeSendValue[hwSourceId] = value + 1;  // makes sure it isn't zero (assumes that 0xFFFF is never used as input)
+  aeSendValue[hwSourceId] = value + 1;  // makes sure it isn't zero (assumes that 0xFFFF is never used as input)
 }
 
 void ADC_WORK_SendUIMessages(void)  // is called as a regular COOS task
@@ -359,8 +360,6 @@ void ADC_WORK_SendUIMessages(void)  // is called as a regular COOS task
     BB_MSG_SendTheBuffer();
 }
 
-static int pollRequestHWValues = 0;
-
 static void SendAEMessages(void)
 {
   static const enum HW_SOURCE_IDS PRIORITY_TABLE[NUM_HW_REAL_SOURCES] = {
@@ -382,23 +381,23 @@ static void SendAEMessages(void)
   for (j = 0; j < NUM_HW_REAL_SOURCES; j++)
   {
     i = PRIORITY_TABLE[j];  // sort update by priority
-
-    // use last valid value, if present, in case of a poll request and no current data
-    if (pollRequestHWValues && (aeSendValue[i] == 0) && (validAeSendValue[i] != 0))
-      aeSendValue[i] = validAeSendValue[i];
-
     if (aeSendValue[i])
     {
       MSG_HWSourceUpdate(i, aeSendValue[i] - 1);
       aeSendValue[i] = 0;  // clear value, including update flag
     }
   }
-  pollRequestHWValues = 0;
 }
 
 void ADC_WORK_PollRequestHWValues(void)
 {
-  pollRequestHWValues = 1;
+  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
+  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
+
+  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
+  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
+
+  NL_EHC_PollValues();
 }
 
 /*****************************************************************************
@@ -689,12 +688,11 @@ void ADC_WORK_Resume(void)
 ******************************************************************************/
 static void SendBenderIfChanged(int32_t value)
 {
-  static int32_t oldValue = 0x7FFFFFFF;
-  if (value != oldValue)
+  if (value != lastPitchbend)
   {
     ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, value);
     ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, value);
-    oldValue = value;
+    lastPitchbend = value;
   }
 }
 static void ProcessAtfertouchAndBender(void)
@@ -766,7 +764,7 @@ static void ProcessAtfertouchAndBender(void)
     }
   }
 
-  if (value != lastPitchbend)
+  if (value != lastPitchbendRaw)
   {
     if (value > BENDER_DEADRANGE)  // is in the positive work range
     {
@@ -816,11 +814,11 @@ static void ProcessAtfertouchAndBender(void)
     }
     else  // is in the dead range
     {
-      if ((lastPitchbend > BENDER_DEADRANGE) || (lastPitchbend < -BENDER_DEADRANGE))  // was outside of the dead range before
+      if ((lastPitchbendRaw > BENDER_DEADRANGE) || (lastPitchbendRaw < -BENDER_DEADRANGE))  // was outside of the dead range before
         SendBenderIfChanged(8000);
     }
 
-    lastPitchbend = value;
+    lastPitchbendRaw = value;
   }
 
   //==================== Aftertouch

@@ -170,7 +170,6 @@ void Usage(char const *const string, int const exitCode)
   puts("            by either a + or -, turning the display on or off");
   puts("  default is +a -d -i -q -r");
   puts(" a   All options");
-  puts(" r   oveRlay messages of same type");
   puts(" c   diagnostiC status data");
   puts(" d   additional hex Dump, forces -r");
   puts(" e   EHC data");
@@ -182,6 +181,7 @@ void Usage(char const *const string, int const exitCode)
   puts(" o   reduced Output (entity value only)");
   puts(" p   Parameter");
   puts(" q   print single message, then Quit");
+  puts(" r   oveRlay messages of same type");
   puts(" s   Sensors raw data");
   puts(" u   hexdump of Unknown messages");
   puts(" 6   64bit unique hardware ID");

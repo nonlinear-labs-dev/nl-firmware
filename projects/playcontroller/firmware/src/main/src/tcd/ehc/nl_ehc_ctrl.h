@@ -19,3 +19,4 @@ void NL_EHC_SetEHCconfig(const uint16_t cmd, uint16_t data);
 void NL_EHC_RequestToSendEHCdata(void);
 void NL_EHC_Enable(uint16_t flag);
 void NL_EHC_ForceEepromUpdate(void);
+void NL_EHC_PollValues(void);
