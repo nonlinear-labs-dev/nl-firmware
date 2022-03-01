@@ -169,6 +169,7 @@ void PlaycontrollerProxy::onPlaycontrollerConnected()
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
+  requestHWPositions();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -399,6 +400,12 @@ void PlaycontrollerProxy::requestPlaycontrollerUHID()
 {
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_UHID64);
   nltools::Log::info("sending request UHID64 to LPC");
+}
+
+void PlaycontrollerProxy::requestHWPositions()
+{
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_POLLHWS);
+  nltools::Log::info("sending request POLLHWS to LPC");
 }
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const
