@@ -28,9 +28,11 @@
 #define AT_DEADRANGE 30    // 0.73 % of 0 ... 4095
 #define AT_FACTOR    5080  // 5080 / 4096 for saturation = 100 % at 81 % of the input range
 
+static int      sendUiValues;
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
 
+static int32_t lastPitchbendRaw;
 static int32_t lastPitchbend;
 static int32_t pitchbendZero;
 
@@ -230,8 +232,8 @@ void ClearHWValuesForUI(void)
 
 void ClearHWValuesForAE(void)
 {
-  for (int i = 0; i < NUM_HW_SOURCES; i++)
-    uiSendValue[i] = 0;
+  for (int i = 0; i < NUM_HW_REAL_SOURCES; i++)
+    aeSendValue[i] = 0;
 }
 
 /*****************************************************************************
@@ -239,8 +241,9 @@ void ClearHWValuesForAE(void)
 ******************************************************************************/
 void ADC_WORK_Init1(void)
 {
-  lastPitchbend = 0;
-  pitchbendZero = 2048;
+  lastPitchbendRaw = 0;
+  lastPitchbend    = 0x7FFFFFFF;
+  pitchbendZero    = 2048;
 
   pbSignalIsSmall = 0;
   pbTestTime      = 0;
@@ -347,15 +350,25 @@ void ADC_WORK_SendUIMessages(void)  // is called as a regular COOS task
   {
     if (uiSendValue[i])
     {
-      if (BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_PARAMETER, i, uiSendValue[i] - 1) > -1)
-      {                      //
+      if (sendUiValues)
+      {
+        if (BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_PARAMETER, i, uiSendValue[i] - 1) > -1)
+        {                      //
+          uiSendValue[i] = 0;  // clear value, including update flag
+          send           = 1;
+        }  // else: sending failed, try again later
+      }
+      else
         uiSendValue[i] = 0;  // clear value, including update flag
-        send           = 1;
-      }  // else: sending failed, try agai later
     }
   }
   if (send)
     BB_MSG_SendTheBuffer();
+}
+
+void ADC_WORK_EnableSendUIMessages(uint16_t const flag)
+{
+  sendUiValues = (flag != 0);
 }
 
 static void SendAEMessages(void)
@@ -385,6 +398,17 @@ static void SendAEMessages(void)
       aeSendValue[i] = 0;  // clear value, including update flag
     }
   }
+}
+
+void ADC_WORK_PollRequestHWValues(void)
+{
+  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
+  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
+
+  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
+  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
+
+  NL_EHC_PollValues();
 }
 
 /*****************************************************************************
@@ -675,12 +699,11 @@ void ADC_WORK_Resume(void)
 ******************************************************************************/
 static void SendBenderIfChanged(int32_t value)
 {
-  static int32_t oldValue = 0x7FFFFFFF;
-  if (value != oldValue)
+  if (value != lastPitchbend)
   {
     ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, value);
     ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, value);
-    oldValue = value;
+    lastPitchbend = value;
   }
 }
 static void ProcessAtfertouchAndBender(void)
@@ -752,7 +775,7 @@ static void ProcessAtfertouchAndBender(void)
     }
   }
 
-  if (value != lastPitchbend)
+  if (value != lastPitchbendRaw)
   {
     if (value > BENDER_DEADRANGE)  // is in the positive work range
     {
@@ -802,11 +825,11 @@ static void ProcessAtfertouchAndBender(void)
     }
     else  // is in the dead range
     {
-      if ((lastPitchbend > BENDER_DEADRANGE) || (lastPitchbend < -BENDER_DEADRANGE))  // was outside of the dead range before
+      if ((lastPitchbendRaw > BENDER_DEADRANGE) || (lastPitchbendRaw < -BENDER_DEADRANGE))  // was outside of the dead range before
         SendBenderIfChanged(8000);
     }
 
-    lastPitchbend = value;
+    lastPitchbendRaw = value;
   }
 
   //==================== Aftertouch

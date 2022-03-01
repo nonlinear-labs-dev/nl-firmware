@@ -258,6 +258,9 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         case PLAYCONTROLLER_NOTIFICATION_ID_UHID64:
           printf("NOTIFICATION : UHID64 sent\n");
           break;
+        case PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS:
+          printf("NOTIFICATION : Initiated Poll of Hardware-Sources\n");
+          break;
         case PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT:
           printf("NOTIFICATION : Status Data cleared\n");
           break;

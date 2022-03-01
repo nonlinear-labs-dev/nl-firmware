@@ -1,6 +1,7 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
+#include "proxies/hwui/controls/labels/LabelStyleable.h"
 #include "parameters/Parameter.h"
 #include "ControlWithChildren.h"
 
@@ -33,7 +34,6 @@ class SelectedParameterValue : public Label
   sigc::connection m_paramValueConnection;
 };
 
-class LabelStyleable;
 class HardwareSourceSendParameter;
 class PhysicalControlParameter;
 
@@ -62,23 +62,14 @@ class PhysicalControlValueLabel : public ControlWithChildren
   bool m_isLocalEnabled = true;
 };
 
-class HardwareSourceCCLabel : public Label
+class HardwareSourceCCLabel : public LabelStyleable
 {
  public:
   explicit HardwareSourceCCLabel(const Rect& e);
 
   void onParameterSelectionHappened(const Parameter* old, const Parameter* newP);
   void onSettingsChanged(const Setting* changed);
+
  private:
   sigc::connection m_settingConnection;
-};
-
-class SendCCArrow : public Control
-{
- public:
-  explicit SendCCArrow(const Rect& r);
-  bool redraw(FrameBuffer& fb) override;
-
- private:
-  void onParameterSelectionHappened(const Parameter* old, const Parameter* newP);
 };
