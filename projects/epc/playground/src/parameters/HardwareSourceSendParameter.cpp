@@ -221,6 +221,7 @@ void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfAppl
       }
     }
 
+    m_sibling.onLocalEnableChanged(m_isEnabled);
     invalidate();
   }
 }

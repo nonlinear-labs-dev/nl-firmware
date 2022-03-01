@@ -34,6 +34,7 @@ class RibbonParameter : public PhysicalControlParameter
   void sendModeToPlaycontroller() const;
   tControlPositionValue getDefValueAccordingToMode() const override;
   bool isLocalEnabled() const override;
+  void onLocalEnableChanged(bool localEnableState) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;

@@ -13,6 +13,10 @@ class PedalParameter : public PhysicalControlParameter
   using super::super;
 
  protected:
+ public:
+  void onLocalEnableChanged(bool localEnableState) override;
+
+ protected:
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;
 

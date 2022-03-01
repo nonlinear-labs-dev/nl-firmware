@@ -46,7 +46,7 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
       getValue().setScaleConverter(createScaleConverter());
       auto defValue = getDefValueAccordingToMode();
       getValue().setDefaultValue(defValue);
-      getValue().setToDefault(Initiator::INDIRECT);
+      //getValue().setToDefault(Initiator::INDIRECT);
 
       setRoutersModeAccordingToReturnMode();
 
@@ -315,4 +315,19 @@ void PedalParameter::setCpValue(UNDO::Transaction *transaction, Initiator initia
                                 bool dosendToPlaycontroller)
 {
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+}
+
+void PedalParameter::onLocalEnableChanged(bool localEnableState)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+
+  if(localEnableState)
+  {
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+  }
+  else
+  {
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+  }
 }

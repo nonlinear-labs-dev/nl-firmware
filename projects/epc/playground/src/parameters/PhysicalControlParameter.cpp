@@ -16,6 +16,7 @@
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
+#include <libundo/undo/Scope.h>
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                                    tDisplayValue def, int coarseDenominator, int fineDenominator)
@@ -288,4 +289,25 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
   };
 
   return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
+}
+
+void PhysicalControlParameter::onLocalEnableChanged(bool localEnableState)
+{
+  if(localEnableState)
+  {
+    auto scope = UNDO::Scope::startTrashTransaction();
+
+    if(hasBehavior())
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    }
+    else
+    {
+
+    }
+  }
+  else
+  {
+
+  }
 }

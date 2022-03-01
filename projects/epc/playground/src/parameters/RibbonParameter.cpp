@@ -20,6 +20,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <libundo/undo/Scope.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
@@ -359,4 +360,19 @@ void RibbonParameter::sendToPlaycontroller() const
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
   Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
+}
+
+void RibbonParameter::onLocalEnableChanged(bool localEnableState)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+
+  if(localEnableState)
+  {
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+  }
+  else
+  {
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+  }
 }

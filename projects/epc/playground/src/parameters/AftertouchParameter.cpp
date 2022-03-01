@@ -5,6 +5,7 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <presets/EditBuffer.h>
+#include <libundo/undo/Scope.h>
 
 ReturnMode AftertouchParameter::getReturnMode() const
 {
@@ -45,4 +46,19 @@ bool AftertouchParameter::isLocalEnabled() const
 tControlPositionValue AftertouchParameter::getDefValueAccordingToMode() const
 {
   return 0;
+}
+
+void AftertouchParameter::onLocalEnableChanged(bool localEnableState)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+
+  if(localEnableState)
+  {
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+  }
+  else
+  {
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+  }
 }
