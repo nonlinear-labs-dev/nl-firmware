@@ -18,7 +18,8 @@ C15Synth::C15Synth(AudioEngineOptions* options)
                           [this](auto msg) { queueExternalMidiOut(msg); },
                           [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
 {
-  m_playgroundHwSourceKnownValues.fill({0, 0, 0});
+  constexpr auto maxV = std::numeric_limits<float>::max();
+  m_playgroundHwSourceKnownValues.fill({maxV, maxV, maxV});
 
   m_dsp->init(options->getSampleRate(), options->getPolyphony());
 

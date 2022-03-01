@@ -378,6 +378,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
+  requestHWPositions();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
