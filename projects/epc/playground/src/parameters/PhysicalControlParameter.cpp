@@ -290,24 +290,3 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
 
   return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
 }
-
-void PhysicalControlParameter::onLocalEnableChanged(bool localEnableState)
-{
-  if(localEnableState)
-  {
-    auto scope = UNDO::Scope::startTrashTransaction();
-
-    if(hasBehavior())
-    {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
-    }
-    else
-    {
-
-    }
-  }
-  else
-  {
-
-  }
-}

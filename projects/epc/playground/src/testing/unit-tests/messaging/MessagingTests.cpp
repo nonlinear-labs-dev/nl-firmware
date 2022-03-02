@@ -10,15 +10,15 @@ using namespace nltools::msg;
 using namespace std::chrono_literals;
 
 #warning "This Test is unreliable and leads to hung playground-test process if unlucky"
-//TEST_CASE("Notify on discovery", "[Messaging][nltools]")
-//{
-//  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
-//
-//  bool received = false;
-//  auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
-//  TestHelper::doMainLoop(1s, 1s, [&] { return received; });
-//  c.disconnect();
-//}
+TEST_CASE("Notify on discovery", "[Messaging][nltools]")
+{
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+
+  bool received = false;
+  auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
+  TestHelper::doMainLoop(1s, 1s, [&] { return received; });
+  c.disconnect();
+}
 
 TEST_CASE("Send Receive", "[Messaging][nltools]")
 {

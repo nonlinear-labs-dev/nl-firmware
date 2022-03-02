@@ -46,7 +46,6 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
       getValue().setScaleConverter(createScaleConverter());
       auto defValue = getDefValueAccordingToMode();
       getValue().setDefaultValue(defValue);
-      //getValue().setToDefault(Initiator::INDIRECT);
 
       setRoutersModeAccordingToReturnMode();
 
@@ -115,17 +114,6 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const 
     undoableSetPedalMode(transaction, PedalModes::RETURN_TO_CENTER);
 }
 
-void PedalParameter::undoableIncPedalMode(UNDO::Transaction *transaction)
-{
-  int e = (int) m_mode;
-  e++;
-
-  if(e >= static_cast<int>(PedalModes::NUM_PEDAL_MODES))
-    e = 0;
-
-  undoableSetPedalMode(transaction, static_cast<PedalModes>(e));
-}
-
 void PedalParameter::sendModeToPlaycontroller() const
 {
   if(Application::exists())
@@ -146,9 +134,11 @@ ReturnMode PedalParameter::getReturnMode() const
 
     case PedalModes::RETURN_TO_ZERO:
       return ReturnMode::Zero;
-  }
 
-  return ReturnMode::None;
+    case PedalModes::NUM_PEDAL_MODES:
+    default:
+      return ReturnMode::None;
+  }
 }
 
 PedalModes PedalParameter::getPedalMode() const

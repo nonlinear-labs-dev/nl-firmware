@@ -51,7 +51,7 @@ class PhysicalControlParameter : public Parameter
   bool isValueChangedFromLoaded() const override;
   [[nodiscard]] double getLastControlPositionValueBeforePresetLoad() const;
 
-  virtual void onLocalEnableChanged(bool b);
+  virtual void onLocalEnableChanged(bool b) = 0;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;

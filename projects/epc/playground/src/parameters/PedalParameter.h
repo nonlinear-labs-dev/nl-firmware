@@ -23,7 +23,6 @@ class PedalParameter : public PhysicalControlParameter
  public:
   void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode);
   void undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
-  void undoableIncPedalMode(UNDO::Transaction *transaction);
   PedalModes getPedalMode() const;
   ReturnMode getReturnMode() const override;
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;

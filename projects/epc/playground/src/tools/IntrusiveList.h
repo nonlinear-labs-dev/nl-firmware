@@ -1,7 +1,6 @@
 #pragma once
 
 #include <nltools/Uncopyable.h>
-#include <cstddef>
 
 template <typename TItemPtr> class IntrusiveList;
 template <typename TSelfPtr> class IntrusiveListItem;
