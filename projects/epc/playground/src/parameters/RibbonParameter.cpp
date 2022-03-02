@@ -391,6 +391,13 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
   }
 }
 
+void RibbonParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+{
+  nltools::Log::error(__PRETTY_FUNCTION__, "id", getID().toString(), "value:", cpValue);
+  Environment::printbacktrace(nltools::Log::Level::Error);
+  Parameter::setCPFromHwui(transaction, cpValue);  PhysicalControlParameter::setCPFromHwui(transaction, cpValue);
+}
+
 void RibbonParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   nltools::Log::error(__PRETTY_FUNCTION__, "id", getID().toString(), "value", value);

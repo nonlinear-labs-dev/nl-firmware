@@ -78,6 +78,13 @@ void MacroControlParameter::setCpValue(UNDO::Transaction *transaction, Initiator
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 }
 
+void MacroControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+{
+  nltools::Log::error(__PRETTY_FUNCTION__, "value:", cpValue);
+  Environment::printbacktrace(nltools::Log::Level::Error);
+  Parameter::setCPFromHwui(transaction, cpValue);
+}
+
 void MacroControlParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   nltools::Log::error(__PRETTY_FUNCTION__, "value:", value);

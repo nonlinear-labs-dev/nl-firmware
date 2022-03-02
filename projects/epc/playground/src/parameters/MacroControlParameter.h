@@ -68,6 +68,7 @@ class MacroControlParameter : public Parameter
   void updateMCViewsFromMCChange(const Initiator &initiator);
   bool isChangedFromLoaded() const override;
   void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
+  void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
 
  private:
   friend class MacroControlParameterUseCases;

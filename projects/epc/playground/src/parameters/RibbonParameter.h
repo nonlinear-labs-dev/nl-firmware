@@ -44,6 +44,7 @@ class RibbonParameter : public PhysicalControlParameter
 
  public:
   void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
+  void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
 
  protected:
   Glib::ustring getCurrentBehavior() const override;

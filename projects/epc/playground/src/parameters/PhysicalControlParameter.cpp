@@ -42,6 +42,7 @@ double PhysicalControlParameter::getLastControlPositionValueBeforePresetLoad() c
 
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
+  nltools::Log::error("onChangeFromExternalSource", getID().toString(), newValue, toString(source));
   if(source == HWChangeSource::MIDI)
     getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));
   else
