@@ -69,6 +69,13 @@ void RibbonParameter::setupScalingAndDefaultValue()
   m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
 }
 
+void RibbonParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                                 bool dosendToPlaycontroller)
+{
+  nltools::Log::error("setCpValue for Ribbon", toString(initiator), "value:", value, "dosendToPlayvontroller", dosendToPlaycontroller);
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+}
+
 std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() const
 {
   if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
