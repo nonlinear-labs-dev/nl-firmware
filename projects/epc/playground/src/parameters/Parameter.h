@@ -76,7 +76,7 @@ class Parameter : public UpdateDocumentContributor,
   void stepCP(UNDO::Transaction *transaction, int incs, bool fine, bool shift);
   void stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers);
   void stepCPFromWebUI(UNDO::Transaction *transaction, Step step, ButtonModifiers modifiers);
-  void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value);
+  virtual void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value);
 
   virtual void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value);
 

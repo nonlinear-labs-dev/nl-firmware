@@ -15,7 +15,7 @@ class RibbonParameter : public PhysicalControlParameter
   void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode);
   void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, const Glib::ustring &mode);
   void undoableIncRibbonTouchBehaviour(UNDO::Transaction *transaction);
-
+  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
   void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode);
   void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
 
@@ -41,6 +41,11 @@ class RibbonParameter : public PhysicalControlParameter
 
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
   bool hasBehavior() const override;
+
+ public:
+  void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
+
+ protected:
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;

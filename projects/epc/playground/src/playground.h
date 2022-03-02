@@ -110,6 +110,8 @@ inline std::string toString(Initiator initiator)
       return "EXPLICIT_TCD";
     case Initiator::EXPLICIT_MIDI:
       return "EXPLICIT_MIDI";
+    default:
+      return "";
   }
 }
 

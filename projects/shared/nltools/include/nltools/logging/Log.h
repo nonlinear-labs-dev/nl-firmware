@@ -90,6 +90,36 @@ namespace nltools
         output<mode>("Notify: ", args...);
     }
 
+    template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
+    static void printWithLevel(Level l, const Args &... args)
+    {
+      switch(l)
+      {
+        case Debug:
+          if(s_level <= Level::Debug)
+            output<mode>("Debug: ", args...);
+          return;
+        case Info:
+          if(s_level <= Level::Info)
+            output<mode>("Info: ", args...);
+          break;
+        case Warning:
+          if(s_level <= Level::Warning)
+            output<mode>("Warning: ", args...);
+          break;
+        case Error:
+          if(s_level <= Level::Error)
+            output<mode>("Error: ", args...);
+          break;
+        case Notify:
+          if(s_level <= Level::Notify)
+            output<mode>("Notify: ", args...);
+          break;
+        case Silent:
+          break;
+      }
+    }
+
     static void flush();
     static void print(const std::string &str);
     static void printNewLine();
@@ -118,6 +148,8 @@ namespace nltools
       error(str);
       throw std::runtime_error(str);
     }
+
+    static void printbacktrace(Level level, int maxFrames = 500);
 
    private:
     static Level s_level;
