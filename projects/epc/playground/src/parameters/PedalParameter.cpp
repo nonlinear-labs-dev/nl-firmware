@@ -323,7 +323,14 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
 
   if(localEnableState)
   {
-    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    if(getReturnMode() == ReturnMode::None)
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    }
+    else
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    }
   }
   else
   {

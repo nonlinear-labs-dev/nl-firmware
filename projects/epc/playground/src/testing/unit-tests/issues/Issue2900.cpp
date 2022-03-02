@@ -7,6 +7,7 @@
 #include <thread>
 #include <nltools/GenericScopeGuard.h>
 
+#warning "This test can stall the whole unit-test-suite"
 TEST_CASE("Issue 2900")
 {
   using namespace std::chrono_literals;

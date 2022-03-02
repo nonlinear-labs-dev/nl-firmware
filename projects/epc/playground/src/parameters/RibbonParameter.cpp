@@ -368,7 +368,14 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
 
   if(localEnableState)
   {
-    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    if(getRibbonReturnMode() == RibbonReturnMode::STAY)
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    }
+    else
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    }
   }
   else
   {

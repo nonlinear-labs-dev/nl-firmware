@@ -347,8 +347,8 @@ TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On")
 
     THEN("Ribbon Parameter RVC -> current pos, send to returnPos")
     {
-      CHECK(ribbon1->getDisplayString() == "0.0 %");
-      CHECK(ribbon1Send->getDisplayString() == "100.0 %");
+      CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+      CHECK(ribbon1Send->getDisplayString() == "0.0 %");
     }
   }
 }
