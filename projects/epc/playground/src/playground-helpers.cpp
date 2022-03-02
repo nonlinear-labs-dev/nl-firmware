@@ -82,7 +82,7 @@ namespace Environment
       {
         if(g_strcmp0(ret, desiredLocale))
         {
-          DebugLevel::warning("Desired locale was", desiredLocale, ", but current locale is:", ret);
+          DebugLevel::throwException("Desired locale was", desiredLocale, ", but current locale is:", ret);
         }
         else
         {
