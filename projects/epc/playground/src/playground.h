@@ -106,6 +106,10 @@ inline std::string toString(Initiator initiator)
       return "INDIRECT_SPLIT_SYNC";
     case Initiator::INDIRECT:
       return "INDIRECT";
+    case Initiator::EXPLICIT_TCD:
+      return "EXPLICIT_TCD";
+    case Initiator::EXPLICIT_MIDI:
+      return "EXPLICIT_MIDI";
   }
 }
 

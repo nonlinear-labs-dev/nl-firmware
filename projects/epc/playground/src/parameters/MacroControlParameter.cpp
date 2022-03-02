@@ -70,6 +70,13 @@ void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) c
   }
 }
 
+void MacroControlParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                                       bool dosendToPlaycontroller)
+{
+  nltools::Log::error("MacroControl setCpValue:", toString(initiator), "value:", value, "sendToPlayController", dosendToPlaycontroller);
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+}
+
 void MacroControlParameter::registerTarget(ModulateableParameter *target)
 {
   m_targets.insert(target);

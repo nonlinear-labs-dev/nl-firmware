@@ -85,6 +85,11 @@ class MacroControlParameter : public Parameter
 
   void sendParameterMessage() const override;
 
+ protected:
+  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                  bool dosendToPlaycontroller) override;
+
+ private:
   tControlPositionValue lastBroadcastedControlPosition = std::numeric_limits<tControlPositionValue>::max();
 
   Throttler mcviewThrottler;
