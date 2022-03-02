@@ -170,6 +170,7 @@ void InputEventStage::onTCDEvent()
 
     case DecoderEventType::HardwareChange:
     {
+      nltools::Log::error("Got TCD HW-Change:",decoder->getKeyOrController(), decoder->getValue());
       onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
                   false, false, false);
     }
