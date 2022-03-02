@@ -39,7 +39,6 @@ double PhysicalControlParameter::getLastControlPositionValueBeforePresetLoad() c
   return m_valueBeforeLastLoad;
 }
 
-
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
   nltools::Log::error("onChangeFromExternalSource", getID().toString(), newValue, toString(source));

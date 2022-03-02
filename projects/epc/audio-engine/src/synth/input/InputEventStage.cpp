@@ -15,6 +15,9 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
             std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+
+  for(auto& hw: m_localDisabledPositions)
+    std::get<0>(hw) = std::numeric_limits<float>::max();
 }
 
 template <>
