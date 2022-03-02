@@ -3,7 +3,7 @@
 
 TEST_CASE("Backtrace does not exit process")
 {
-  nltools::Log::printbacktrace(nltools::Log::Level::Error);
+  Environment::printStackTrace(nltools::Log::Level::Error);
 
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);

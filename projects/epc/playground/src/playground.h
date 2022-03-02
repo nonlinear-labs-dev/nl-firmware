@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include "playground-helpers.h"
+#include "nltools/logging/Log.h"
 #include <glibmm/ustring.h>
 
 void printLastFunctions();
@@ -130,6 +131,7 @@ enum class SaveResult : uint8_t
 };
 
 std::string getStackTrace(const std::string& prefix);
+void printbacktrace(nltools::Log::Level level, int maxFrames = 500);
 
 #ifdef _TESTS
 #define FOR_TESTS(expression) expression

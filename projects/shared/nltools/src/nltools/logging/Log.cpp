@@ -57,26 +57,6 @@ void nltools::Log::printNewLine()
   std::cout << std::endl;
 }
 
-void nltools::Log::printbacktrace(nltools::Log::Level level, int maxFrames)
-{
-  std::vector<void*> stack;
-  stack.reserve(maxFrames);
-  auto numFrames = backtrace(stack.data(), maxFrames);
-  if(numFrames == maxFrames)
-  {
-    nltools::Log::error("You could be missing some frames from your backtrace. Try to increase your maxFrames");
-  }
-
-  auto symbols = backtrace_symbols(stack.data(), numFrames); //symbols is mallocced here
-
-  for(auto i = 0; i < numFrames; i++)
-  {
-    nltools::Log::printWithLevel(level, i, symbols[i]);
-  }
-
-  free(symbols);
-}
-
 static uint32_t s_indent = 0;
 
 nltools::Log::MemUsageLogger::MemUsageLogger(Level l, const char *loc)

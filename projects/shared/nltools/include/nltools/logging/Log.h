@@ -149,8 +149,6 @@ namespace nltools
       throw std::runtime_error(str);
     }
 
-    static void printbacktrace(Level level, int maxFrames = 500);
-
    private:
     static Level s_level;
     static bool s_flush;

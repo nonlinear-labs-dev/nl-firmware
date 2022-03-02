@@ -74,14 +74,14 @@ void MacroControlParameter::setCpValue(UNDO::Transaction *transaction, Initiator
                                        bool dosendToPlaycontroller)
 {
   nltools::Log::error(__PRETTY_FUNCTION__, toString(initiator), "value:", value, "sendToPlayController", dosendToPlaycontroller);
-  nltools::Log::printbacktrace(nltools::Log::Level::Error);
+  Environment::printbacktrace(nltools::Log::Level::Error);
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 }
 
 void MacroControlParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   nltools::Log::error(__PRETTY_FUNCTION__, "value:", value);
-  nltools::Log::printbacktrace(nltools::Log::Level::Error);
+  Environment::printbacktrace(nltools::Log::Level::Error);
   Parameter::setIndirect(transaction, value);
 }
 
