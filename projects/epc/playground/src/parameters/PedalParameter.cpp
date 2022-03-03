@@ -316,8 +316,8 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
     if(getReturnMode() != ReturnMode::None)
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
-      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
     }
     else
     {
@@ -328,12 +328,12 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
   {
     if(getReturnMode() != ReturnMode::None)
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
-      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
     }
     else
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
     }
   }
 }

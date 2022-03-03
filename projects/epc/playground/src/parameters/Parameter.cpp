@@ -139,6 +139,11 @@ void Parameter::setCPFromWebUI(UNDO::Transaction *transaction, const tControlPos
   setCpValue(transaction, Initiator::EXPLICIT_WEBUI, cpValue, true);
 }
 
+void Parameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+{
+  setCpValue(transaction, Initiator::INDIRECT_SETTING_CHANGED, cpValue, true);
+}
+
 void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   auto q = getValue().getQuantizedValue(value, true);

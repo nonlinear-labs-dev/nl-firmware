@@ -82,7 +82,8 @@ enum class Initiator
   INDIRECT_SPLIT_SYNC,
   INDIRECT,
   EXPLICIT_TCD,
-  EXPLICIT_MIDI
+  EXPLICIT_MIDI,
+  INDIRECT_SETTING_CHANGED
 };
 
 inline std::string toString(Initiator initiator)
@@ -111,6 +112,8 @@ inline std::string toString(Initiator initiator)
       return "EXPLICIT_TCD";
     case Initiator::EXPLICIT_MIDI:
       return "EXPLICIT_MIDI";
+    case Initiator::INDIRECT_SETTING_CHANGED:
+      return "INDIRECT_SETTING_CHANGED";
     default:
       return "";
   }

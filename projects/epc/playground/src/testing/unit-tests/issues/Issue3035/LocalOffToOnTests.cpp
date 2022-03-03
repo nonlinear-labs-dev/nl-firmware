@@ -52,7 +52,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Zero] Local Off to Local On")
 
     THEN("Pedal Parameter RVC -> current pos, send to returnPos")
     {
-      CHECK(pedal1->getDisplayString() == "! 50.0 %");
+      CHECK(pedal1->getDisplayString() == "50.0 %");
       CHECK(pedal1Send->getDisplayString() == "0.0 %");
     }
   }
@@ -96,7 +96,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Center] Local Off to Local On")
 
     THEN("Pedal Parameter RVC -> current pos, send to returnPos")
     {
-      CHECK(pedal1->getDisplayString() == "! 50.0 %");
+      CHECK(pedal1->getDisplayString() == "50.0 %");
       CHECK(pedal1Send->getDisplayString() == "0.0 %");
     }
   }
@@ -182,7 +182,7 @@ TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On")
 
     THEN("Ribbon Parameter RVC -> current pos, send to returnPos")
     {
-      CHECK(ribbon1->getDisplayString() == "! 50.0 %");
+      CHECK(ribbon1->getDisplayString() == "50.0 %");
       CHECK(ribbon1Send->getDisplayString() == "0.0 %");
     }
   }
@@ -294,7 +294,7 @@ TEST_CASE("Issue 3035, Bender Local Off to Local On")
 
     THEN("Bender has current position and send is reset to return value")
     {
-      CHECK(bender->getDisplayString() == "! 50.0 %");
+      CHECK(bender->getDisplayString() == "50.0 %");
       CHECK(benderSend->getDisplayString() == "0.0 %");
     }
   }
