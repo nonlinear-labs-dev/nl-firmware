@@ -34,7 +34,6 @@ class RibbonParameter : public PhysicalControlParameter
   tControlPositionValue getDefValueAccordingToMode() const override;
   bool isLocalEnabled() const override;
   void onLocalEnableChanged(bool localEnableState) override;
-  void onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;

@@ -55,7 +55,9 @@ void PitchbendParameter::onLocalEnableChanged(bool localEnableState)
 
   if(localEnableState)
   {
+    auto oldSendPos = getSendParameter()->getControlPositionValue();
     getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
   }
   else
   {

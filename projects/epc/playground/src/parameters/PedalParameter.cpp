@@ -311,20 +311,29 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
 {
   auto scope = UNDO::Scope::startTrashTransaction();
 
-  if(localEnableState)
+  if(localEnableState) //Off -> On
   {
-    if(getReturnMode() == ReturnMode::None)
+    if(getReturnMode() != ReturnMode::None)
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+      auto oldSendPos = getSendParameter()->getControlPositionValue();
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
     }
     else
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+      //TODO whats the rule here?
     }
   }
-  else
+  else // On -> Off
   {
-    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
-    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    if(getReturnMode() != ReturnMode::None)
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    }
+    else
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    }
   }
 }

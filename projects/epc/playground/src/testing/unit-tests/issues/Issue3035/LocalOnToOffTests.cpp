@@ -47,7 +47,7 @@ TEST_CASE("Issue 3035, Pedal [Stay] Local On to Local Off")
 
     THEN("Pedal Parameter RVC -> return position, send to oldCP")
     {
-      CHECK(pedal1->getDisplayString() == "50.0 %");
+      CHECK(pedal1->getDisplayString() == "100.0 %");
       CHECK(pedal1Send->getDisplayString() == "100.0 %");
     }
   }
@@ -213,7 +213,7 @@ TEST_CASE("Issue 3035, Ribbon [Stay] Local On to Local Off")
 
     THEN("Ribbon Parameter is set to return position, Send Parameter is set to oldCP")
     {
-      CHECK(ribbon1->getDisplayString() == "50.0 %");
+      CHECK(ribbon1->getDisplayString() == "100.0 %");
       CHECK(ribbon1Send->getDisplayString() == "100.0 %");
     }
   }

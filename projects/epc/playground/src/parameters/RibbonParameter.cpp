@@ -67,12 +67,6 @@ void RibbonParameter::setupScalingAndDefaultValue()
   m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
 }
 
-void RibbonParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
-{
-  PhysicalControlParameter::onChangeFromExternalSource(newValue, source);
-  sendToPlaycontroller();
-}
-
 std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() const
 {
   if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
@@ -370,20 +364,29 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
 {
   auto scope = UNDO::Scope::startTrashTransaction();
 
-  if(localEnableState)
+  if(localEnableState) //Off -> On
   {
-    if(getRibbonReturnMode() == RibbonReturnMode::STAY)
+    if(getReturnMode() != ReturnMode::None)
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+      auto oldSendPos = getSendParameter()->getControlPositionValue();
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
     }
     else
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+      //TODO whats the rule here?
     }
   }
-  else
+  else // On -> Off
   {
-    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
-    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    if(getReturnMode() != ReturnMode::None)
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    }
+    else
+    {
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    }
   }
 }
