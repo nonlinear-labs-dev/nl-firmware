@@ -66,54 +66,62 @@ install_packages() {
 }
 
 build_c15() {
-  mkdir -p /bindir/build
-  cd /bindir/build
+    mkdir -p /bindir/build
+    cd /bindir/build
 
-  cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
-  make -j8
-  make install 
+    cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
+    make -j8
+    make install
 
-  mkdir -p /usr/local/C15/web
-  tar -xzf /web/web.tar.gz -C /usr/local/C15/web
+    mkdir -p /usr/local/C15/web
+    tar -xzf /web/web.tar.gz -C /usr/local/C15/web
 }
 
 setup_network_manager() {
+    cat <<- ENDOFHERE > /etc/wpa_supplicant/wpa_supplicant.conf
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+wps_disabled=1
+update_config=1
+ENDOFHERE
+  chmod 600 /etc/wpa_supplicant/wpa_supplicant.conf
+
   cat <<- ENDOFHERE > /etc/NetworkManager/system-connections/C15.nmconnection
-  [connection]
-  id=C15
-  uuid=61679179-6804-4197-b476-eacad1d492e4
-  type=wifi
-  interface-name=wlan0
-  permissions=
+[connection]
+id=C15
+uuid=61679179-6804-4197-b476-eacad1d492e4
+type=wifi
+interface-name=wlan0
+permissions=
 
-  [wifi]
-  band=bg
-  channel=7
-  mac-address-blacklist=
-  mode=ap
-  ssid=NL-C15-Unit-00000
+[wifi]
+band=bg
+channel=7
+mac-address-blacklist=
+mode=ap
+ssid=NL-C15-Unit-00000
 
-  [wifi-security]
-  key-mgmt=wpa-psk
-  pairwise=ccmp;
-  proto=rsn;
-  psk=88888888
+[wifi-security]
+key-mgmt=wpa-psk
+pairwise=ccmp
+proto=rsn
+psk=88888888
+wps-method=1
 
-  [ipv4]
-  address1=192.168.8.2/24,192.168.8.1
-  dns-search=
-  method=shared
+[ipv4]
+address1=192.168.8.2/24,192.168.8.1
+dns-search=
+method=shared
 
-  [ipv6]
-  addr-gen-mode=stable-privacy
-  dns-search=
-  method=auto
+[ipv6]
+addr-gen-mode=stable-privacy
+dns-search=
+method=auto
 
-  [proxy]
+[proxy]
 ENDOFHERE
 
-  chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
-  systemctl enable NetworkManager
+    chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
+    systemctl enable NetworkManager
 }
 
 setup_audio() {
