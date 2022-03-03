@@ -86,7 +86,7 @@ namespace Environment
         }
         else
         {
-          DebugLevel::info("Successfully set locale to", desiredLocale);
+          DebugLevel::error("Successfully set locale to", desiredLocale);
           return;
         }
       }
