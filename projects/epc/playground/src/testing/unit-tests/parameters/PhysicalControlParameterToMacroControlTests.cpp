@@ -24,6 +24,8 @@ TEST_CASE("100% HW-Amount of Bipolar Source on MC used to lead to 2x the modulat
   routings->setAllValues(true);
   RibbonParameterUseCases ribbonUseCase(ribbon1);
   ribbonUseCase.setReturnMode(RibbonReturnMode::RETURN);
+  ribbonUseCase.setControlPosition(0);
+  CHECK(ribbon1->getDisplayString() == "0.0 %");
 
   MacroControlParameterUseCases mcUseCase(mcA);
   mcUseCase.setControlPosition(0.5);
@@ -31,8 +33,12 @@ TEST_CASE("100% HW-Amount of Bipolar Source on MC used to lead to 2x the modulat
   ParameterUseCases routeUseCase(connectionParam);
   routeUseCase.setControlPosition(1);
 
-  WHEN("Ribbon untouched")
+  TestHelper::doMainLoopIteration();
+  CHECK(ribbon1->getDisplayString() == "0.0 %");
+
+  WHEN("Ribbon is 0")
   {
+    ribbonUseCase.setControlPosition(0);
 
     THEN("Mod Checks out")
     {

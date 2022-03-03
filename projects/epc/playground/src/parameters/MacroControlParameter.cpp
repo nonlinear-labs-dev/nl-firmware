@@ -70,28 +70,6 @@ void MacroControlParameter::writeDifferences(Writer &writer, Parameter *other) c
   }
 }
 
-void MacroControlParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                                       bool dosendToPlaycontroller)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, toString(initiator), "value:", value, "sendToPlayController", dosendToPlaycontroller);
-  Environment::printbacktrace(nltools::Log::Level::Error);
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-}
-
-void MacroControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, "value:", cpValue);
-  Environment::printbacktrace(nltools::Log::Level::Error);
-  Parameter::setCPFromHwui(transaction, cpValue);
-}
-
-void MacroControlParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, "value:", value);
-  Environment::printbacktrace(nltools::Log::Level::Error);
-  Parameter::setIndirect(transaction, value);
-}
-
 void MacroControlParameter::registerTarget(ModulateableParameter *target)
 {
   m_targets.insert(target);

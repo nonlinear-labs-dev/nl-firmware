@@ -1,10 +1,9 @@
 #include <execinfo.h>
 #include <testing/TestHelper.h>
 
-TEST_CASE("Backtrace does not exit process")
+TEST_CASE("print backtrace does not exit process")
 {
-  Environment::printStackTrace(nltools::Log::Level::Error);
-
+  Environment::printbacktrace(nltools::Log::Level::Silent);
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
 

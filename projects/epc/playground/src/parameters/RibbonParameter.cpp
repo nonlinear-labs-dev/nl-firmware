@@ -52,8 +52,6 @@ void RibbonParameter::setupScalingAndDefaultValue()
 {
   getValue().setScaleConverter(createScaleConverter());
   getValue().setDefaultValue(getDefValueAccordingToMode());
-  if(getReturnMode() != ReturnMode::None)
-    getValue().setToDefault(Initiator::INDIRECT);
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
@@ -69,11 +67,10 @@ void RibbonParameter::setupScalingAndDefaultValue()
   m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
 }
 
-void RibbonParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                                 bool dosendToPlaycontroller)
+void RibbonParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
-  nltools::Log::error("setCpValue for Ribbon", toString(initiator), "value:", value, "dosendToPlayvontroller", dosendToPlaycontroller);
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+  PhysicalControlParameter::onChangeFromExternalSource(newValue, source);
+  sendToPlaycontroller();
 }
 
 std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() const
@@ -389,25 +386,4 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
     PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
   }
-}
-
-void RibbonParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, "id", getID().toString(), "value:", cpValue);
-  Environment::printbacktrace(nltools::Log::Level::Error);
-  Parameter::setCPFromHwui(transaction, cpValue);  PhysicalControlParameter::setCPFromHwui(transaction, cpValue);
-}
-
-void RibbonParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, "id", getID().toString(), "value", value);
-  Environment::printbacktrace(nltools::Log::Level::Error);
-  Parameter::setIndirect(transaction, value);
-}
-
-void RibbonParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, "id", getID().toString(), "value", value);
-  Environment::printbacktrace(nltools::Log::Level::Error);
-  PhysicalControlParameter::loadFromPreset(transaction, value);
 }

@@ -15,7 +15,6 @@ class RibbonParameter : public PhysicalControlParameter
   void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode);
   void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, const Glib::ustring &mode);
   void undoableIncRibbonTouchBehaviour(UNDO::Transaction *transaction);
-  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
   void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode);
   void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
 
@@ -35,6 +34,7 @@ class RibbonParameter : public PhysicalControlParameter
   tControlPositionValue getDefValueAccordingToMode() const override;
   bool isLocalEnabled() const override;
   void onLocalEnableChanged(bool localEnableState) override;
+  void onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -42,17 +42,11 @@ class RibbonParameter : public PhysicalControlParameter
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
   bool hasBehavior() const override;
 
- public:
-  void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
-  void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
-
  protected:
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;
   void sendToPlaycontroller() const override;
-  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                  bool dosendToPlaycontroller) override;
 
  private:
   void ensureExclusiveRoutingIfNeeded();

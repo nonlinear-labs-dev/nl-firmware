@@ -2,7 +2,6 @@
 #include <nltools/threading/Throttler.h>
 #include <thread>
 
-#warning "I dont believe in this setup yet"
 TEST_CASE("Throttler does not do callback if Object is already destroyed")
 {
   int passes = 0;
