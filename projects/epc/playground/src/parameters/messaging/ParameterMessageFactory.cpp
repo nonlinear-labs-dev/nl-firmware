@@ -37,7 +37,7 @@ namespace ParameterMessageFactory
     nltools::msg::HWSourceChangedMessage createMessage(const PhysicalControlParameter *param)
     {
       return nltools::msg::HWSourceChangedMessage { param->getID().getNumber(), param->getControlPositionValue(),
-                                                    param->getReturnMode() };
+                                                    param->getReturnMode(), param->isLocalEnabled() };
     }
 
     nltools::msg::HWSourceSendChangedMessage createMessage(const HardwareSourceSendParameter* param)
