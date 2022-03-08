@@ -53,7 +53,7 @@ void PitchbendParameter::onLocalEnableChanged(bool localEnableState)
 {
   auto scope = UNDO::Scope::startTrashTransaction();
 
-  if(localEnableState)
+  if(localEnableState) // Off -> On
   {
     auto oldSendPos = getSendParameter()->getControlPositionValue();
     getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());

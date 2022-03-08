@@ -230,8 +230,6 @@ TEST_CASE("Issue 3035, Bender Local On to Local Off")
   auto benderSend
       = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Bender_Send, VoiceGroup::Global});
 
-  ParameterUseCases benderUseCases(bender);
-
   TestHelper::initSingleEditBuffer();
 
   auto settings = TestHelper::getSettings();
@@ -242,9 +240,9 @@ TEST_CASE("Issue 3035, Bender Local On to Local Off")
   ParameterUseCases sendUseCase(benderSend);
 
   sendUseCase.setControlPosition(0.5);
-  benderUseCases.setControlPosition(1);
+  bender->onChangeFromExternalSource(1, HWChangeSource::TCD);
 
-  CHECK(bender->getDisplayString() == "! 100.0 %");
+  CHECK(bender->getDisplayString() == "100.0 %");
   CHECK(benderSend->getDisplayString() == "50.0 %");
 
   WHEN("Local is set to Off")
