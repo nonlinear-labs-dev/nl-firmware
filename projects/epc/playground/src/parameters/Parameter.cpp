@@ -132,6 +132,7 @@ void Parameter::stepCPFromWebUI(UNDO::Transaction *transaction, Step step, Butto
 void Parameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   nltools::Log::error("setCPFromHwui", getID().toString(), cpValue);
+  Environment::printbacktrace(nltools::Log::Level::Error);
   setCpValue(transaction, Initiator::EXPLICIT_HWUI, cpValue, true);
 }
 
