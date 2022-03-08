@@ -55,6 +55,7 @@ class PhysicalControlParameter : public Parameter
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
+  void sendToPlaycontroller() const override;
 
  private:
   void sendParameterMessage() const override;

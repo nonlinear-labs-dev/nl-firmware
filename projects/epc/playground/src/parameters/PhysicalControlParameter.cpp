@@ -48,6 +48,12 @@ void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue 
     getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newValue));
 }
 
+void PhysicalControlParameter::sendToPlaycontroller() const
+{
+  nltools::Log::error("sendToPlaycontroller", getID().toString(), "value", getControlPositionValue());
+  Parameter::sendToPlaycontroller();
+}
+
 void PhysicalControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   m_changingFromHWUI = true;

@@ -30,7 +30,7 @@ class HardwareSourceSendParameter : public Parameter
   nlohmann::json serialize() const override;
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
-
+  void sendToPlaycontroller() const override;
 
  private:
   void sendParameterMessage() const override;
