@@ -200,6 +200,7 @@ void C15Synth::doSyncExternalMidiBridge()
 
 void C15Synth::doSyncPlayground()
 {
+  nltools::Log::error(__PRETTY_FUNCTION__);
   using namespace nltools::msg;
 
   if(m_inputEventStage.getAndResetKeyBedStatus())
@@ -217,14 +218,11 @@ void C15Synth::doSyncPlayground()
     auto sendParameterValue = m_inputEventStage.getHWSourcePositionIfLocalDisabled(hw);
     auto audioParameterValue = engineHWSourceValues[idx];
     const auto currentValue = isLocalEnabled ? audioParameterValue : sendParameterValue;
-    //we kinda have a bug here lul just like we expected
     const auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
-
 
     auto sourceIndex = static_cast<int>(valueSource);
     if(std::exchange(m_playgroundHwSourceKnownValues[idx][sourceIndex], currentValue) != currentValue)
     {
-      nltools::Log::error("doSyncPlayground", toString(hw), toString(valueSource), "isLocalEnabled:", isLocalEnabled, "value:", currentValue);
       HardwareSourceChangedNotification msg;
       msg.hwSource = idx;
       msg.source = valueSource;
@@ -420,7 +418,6 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
-    nltools::Log::error("onHWSourceMessage:", toString(static_cast<HardwareSource>(latchIndex)), "pos", msg.controlPosition, "local enabled", msg.isLocalEnabled, "behaviour changed", didBehaviourChange);
     m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
@@ -483,7 +480,6 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
-  nltools::Log::error("onMidiSettingsMessage", "4:4", msg.routings[4][4]);
   auto oldMsg = m_midiOptions.getLastReceivedMessage();
   m_midiOptions.update(msg);
   m_inputEventStage.onMidiSettingsMessageWasReceived(msg, oldMsg);
@@ -511,6 +507,5 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
 
 void C15Synth::onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg)
 {
-  nltools::Log::error("onHWSourceSendMessage:", msg.siblingId, "pos", msg.controlPosition, "local enabled", msg.localEnabled);
   m_inputEventStage.onSendParameterReceived(msg);
 }

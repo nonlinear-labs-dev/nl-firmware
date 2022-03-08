@@ -49,10 +49,8 @@ OPTION(DSL_LAYOUTS "Enable experimental and not yet working DSL for HWUI layouts
 
 IF(DEV_PC)
   ADD_DEFINITIONS(-D_DEVELOPMENT_PC -D_TESTS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type -rdynamic")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type")
 ENDIF(DEV_PC)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wmaybe-uninitialized -Wuninitialized -Wdouble-promotion -Wreturn-type -rdynamic")
 
 IF(PROFILING)
   ADD_DEFINITIONS(-D_PROFILING)

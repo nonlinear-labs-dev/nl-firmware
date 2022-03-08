@@ -11,6 +11,7 @@
 #include "mock/TCDHelpers.h"
 #include "AudioEngineOptions.h"
 
+//Cant get this test to work even though the bug is apparently fixed
 //Bender
 TEST_CASE("Real Synth, Issue 3035, Bender Local On to Local Off")
 {
@@ -45,6 +46,16 @@ TEST_CASE("Real Synth, Issue 3035, Bender Local On to Local Off")
   AudioEngineOptions options(argc, argv);
   C15Synth synth(&options);
 
+  using nltools::msg::EndPoint;
+  auto config = nltools::msg::getConfig();
+  config.useEndpoints
+      = { EndPoint::Playcontroller, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed, EndPoint::AudioEngine,
+          EndPoint::Playground, EndPoint::BeagleBone, EndPoint::ExternalMidiOverIPBridge, EndPoint::ExternalMidiOverIPClient, EndPoint::TestEndPoint  };
+  config.offerEndpoints
+      = { EndPoint::Playcontroller, EndPoint::Oled, EndPoint::PanelLed, EndPoint::RibbonLed, EndPoint::AudioEngine,
+          EndPoint::Playground, EndPoint::BeagleBone, EndPoint::ExternalMidiOverIPBridge, EndPoint::ExternalMidiOverIPClient, EndPoint::TestEndPoint  };
+  nltools::msg::init(config);
+
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
 
@@ -65,7 +76,9 @@ TEST_CASE("Real Synth, Issue 3035, Bender Local On to Local Off")
   ParameterUseCases sendUseCase(benderSend);
   sendUseCase.setControlPosition(0.5);
   synth.doTcd(TCD_HELPER::createFullPressureHWEvent(TCD_HELPER::TCD_HW_IDS::Bender));
-  std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+  TestHelper::doMainLoopIteration();
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
   TestHelper::doMainLoopIteration();
 
   CHECK(bender->getDisplayString() == "100.0 %");
@@ -84,5 +97,5 @@ TEST_CASE("Real Synth, Issue 3035, Bender Local On to Local Off")
     }
   }
 
-//  nltools::msg::init(oldConfig);
+  nltools::msg::init(config);
 }

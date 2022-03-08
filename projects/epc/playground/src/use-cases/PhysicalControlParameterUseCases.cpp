@@ -15,7 +15,6 @@ void PhysicalControlParameterUseCases::changeFromAudioEngine(double value, HWCha
   }
   else if(auto send = m_physicalParam->getSendParameter())
   {
-    nltools::Log::error(__PRETTY_FUNCTION__, m_physicalParam->getID().toString(), "src:", toString(src), "val", value);
     auto scope = UNDO::Scope::startTrashTransaction();
     auto trans = scope->getTransaction();
     send->setCPFromHwui(trans, value);

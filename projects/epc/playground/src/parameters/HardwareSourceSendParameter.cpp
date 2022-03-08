@@ -61,12 +61,6 @@ void HardwareSourceSendParameter::onUnselected()
   }
 }
 
-void HardwareSourceSendParameter::sendToPlaycontroller() const
-{
-  nltools::Log::error("sendToPlaycontroller", getID().toString(), "value", getControlPositionValue());
-  Parameter::sendToPlaycontroller();
-}
-
 bool HardwareSourceSendParameter::isChangedFromLoaded() const
 {
   return false;

@@ -173,7 +173,6 @@ void InputEventStage::onTCDEvent()
 
     case DecoderEventType::HardwareChange:
     {
-      nltools::Log::error("Got TCD HW-Change:",decoder->getKeyOrController(), decoder->getValue());
       onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
                   false, false, false);
     }
@@ -791,14 +790,12 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
 
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
-    nltools::Log::error(__PRETTY_FUNCTION__, __LINE__, toString(hwID), toString(source), "val", pos);
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }
   else if(source != HWChangeSource::MIDI)
   {
-    nltools::Log::error(__PRETTY_FUNCTION__, __LINE__, toString(hwID), toString(source), "val", pos);
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }

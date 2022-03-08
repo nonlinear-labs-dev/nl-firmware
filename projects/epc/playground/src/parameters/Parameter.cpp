@@ -131,26 +131,21 @@ void Parameter::stepCPFromWebUI(UNDO::Transaction *transaction, Step step, Butto
 
 void Parameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
-  nltools::Log::error("setCPFromHwui", getID().toString(), cpValue);
-  Environment::printbacktrace(nltools::Log::Level::Error);
   setCpValue(transaction, Initiator::EXPLICIT_HWUI, cpValue, true);
 }
 
 void Parameter::setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
-  nltools::Log::error("setCPFromWebUI", getID().toString(), cpValue);
   setCpValue(transaction, Initiator::EXPLICIT_WEBUI, cpValue, true);
 }
 
 void Parameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
-  nltools::Log::error("setCPFromSetting", getID().toString(), cpValue);
   setCpValue(transaction, Initiator::INDIRECT_SETTING_CHANGED, cpValue, false);
 }
 
 void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
-  nltools::Log::error("loadFromPreset", getID().toString(), value);
   auto q = getValue().getQuantizedValue(value, true);
   setIndirect(transaction, q);
   m_lastSnapshotedValue = q;
@@ -160,8 +155,6 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
 {
   if(differs(value, m_value.getRawValue()))
   {
-    nltools::Log::error("setIndirect", getID().toString(), value);
-
     auto swapData = UNDO::createSwapData(value);
 
     transaction->addSimpleCommand(
