@@ -220,9 +220,11 @@ void C15Synth::doSyncPlayground()
     //we kinda have a bug here lul just like we expected
     const auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
 
+
     auto sourceIndex = static_cast<int>(valueSource);
     if(std::exchange(m_playgroundHwSourceKnownValues[idx][sourceIndex], currentValue) != currentValue)
     {
+      nltools::Log::error("doSyncPlayground", toString(hw), toString(valueSource), "isLocalEnabled:", isLocalEnabled, "value:", currentValue);
       HardwareSourceChangedNotification msg;
       msg.hwSource = idx;
       msg.source = valueSource;
