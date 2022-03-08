@@ -483,6 +483,7 @@ void C15Synth::onTuneReferenceMessage(const nltools::msg::Setting::TuneReference
 
 void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg)
 {
+  nltools::Log::error("onMidiSettingsMessage", "4:4", msg.routings[4][4]);
   auto oldMsg = m_midiOptions.getLastReceivedMessage();
   m_midiOptions.update(msg);
   m_inputEventStage.onMidiSettingsMessageWasReceived(msg, oldMsg);

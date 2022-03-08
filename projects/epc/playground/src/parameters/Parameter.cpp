@@ -145,7 +145,7 @@ void Parameter::setCPFromWebUI(UNDO::Transaction *transaction, const tControlPos
 void Parameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   nltools::Log::error("setCPFromSetting", getID().toString(), cpValue);
-  setCpValue(transaction, Initiator::INDIRECT_SETTING_CHANGED, cpValue, true);
+  setCpValue(transaction, Initiator::INDIRECT_SETTING_CHANGED, cpValue, false);
 }
 
 void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
