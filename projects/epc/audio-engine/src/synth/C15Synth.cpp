@@ -507,6 +507,6 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
 
 void C15Synth::onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg)
 {
-  nltools::Log::error("onHWSourceSendMessage:", msg.siblingId, "pos", msg.controlPosition, "local enabled", msg.localEnabled, "behaviour changed", didBehaviourChange);
+  nltools::Log::error("onHWSourceSendMessage:", msg.siblingId, "pos", msg.controlPosition, "local enabled", msg.localEnabled);
   m_inputEventStage.onSendParameterReceived(msg);
 }
