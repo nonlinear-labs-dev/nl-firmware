@@ -30,6 +30,7 @@ install_packages() {
     done < /epc2-binary-dir/collect-packages/base-packages.txt
     PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
     pacstrap -U /rootfs $PACKAGES_COLLECTION
+    arch-chroot /rootfs ssh-keygen -A
     return $?
 }
 
