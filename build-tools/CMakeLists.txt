@@ -31,6 +31,11 @@ add_custom_command(
     DEPENDS epc2-create-update
     DEPENDS bbb-rootfs
     DEPENDS playcontroller-blobs
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/playcontroller/projects/playcontroller/firmware/src/main/main.bin
     DEPENDS ${SOURCE_FILES}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
