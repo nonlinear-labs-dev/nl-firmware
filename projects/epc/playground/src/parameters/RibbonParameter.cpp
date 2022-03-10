@@ -390,3 +390,11 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     }
   }
 }
+
+void RibbonParameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+{
+  Parameter::setCPFromSetting(transaction, cpValue);
+    auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
+                                                                           : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
+    Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
+}

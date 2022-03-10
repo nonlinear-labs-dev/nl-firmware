@@ -34,6 +34,7 @@ class RibbonParameter : public PhysicalControlParameter
   tControlPositionValue getDefValueAccordingToMode() const override;
   bool isLocalEnabled() const override;
   void onLocalEnableChanged(bool localEnableState) override;
+  void setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
