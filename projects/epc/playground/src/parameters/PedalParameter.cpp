@@ -76,7 +76,12 @@ void PedalParameter::setRoutersModeAccordingToReturnMode()
         router->onChange();
 
       if(routersAreBoolean && router->getControlPositionValue() != 0)
-        router->getValue().setRawValue(Initiator::INDIRECT, 1);
+      {
+        if(isBiPolar())
+          router->getValue().setRawValue(Initiator::INDIRECT, 0.5);
+        else
+          router->getValue().setRawValue(Initiator::INDIRECT, 1);
+      }
     }
   }
 }
