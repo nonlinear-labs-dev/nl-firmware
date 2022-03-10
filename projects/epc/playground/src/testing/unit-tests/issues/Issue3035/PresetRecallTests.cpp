@@ -9,7 +9,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("Issue 3035, Loading Preset with held bender leads to wrong values")
+TEST_CASE("Issue 3035, Loading Preset with held bender leads to wrong values", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -133,7 +133,7 @@ TEST_CASE("Issue 3035, Loading Preset with held bender leads to wrong values")
   }
 }
 
-TEST_CASE("Issue 3035, Loading Presets with differing ReturnTypes leads to correct loaded values")
+TEST_CASE("Issue 3035, Loading Presets with differing ReturnTypes leads to correct loaded values", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();

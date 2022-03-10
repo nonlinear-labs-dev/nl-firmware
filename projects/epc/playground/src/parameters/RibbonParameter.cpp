@@ -39,19 +39,21 @@ void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transac
         [=](UNDO::Command::State) mutable
         {
           swapData->swapWith(m_touchBehaviour);
-          setupScalingAndDefaultValue();
+          setupScalingAndDefaultValue(false);
         });
   }
   else
   {
-    setupScalingAndDefaultValue();
+    setupScalingAndDefaultValue(false);
   }
 }
 
-void RibbonParameter::setupScalingAndDefaultValue()
+void RibbonParameter::setupScalingAndDefaultValue(bool defaultValue)
 {
   getValue().setScaleConverter(createScaleConverter());
   getValue().setDefaultValue(getDefValueAccordingToMode());
+  if(defaultValue)
+    getValue().setToDefault(Initiator::INDIRECT);
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
@@ -134,13 +136,13 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
         [=](UNDO::Command::State) mutable
         {
           swapData->swapWith(m_returnMode);
-          setupScalingAndDefaultValue();
+          setupScalingAndDefaultValue(getRibbonReturnMode() == RibbonReturnMode::RETURN);
           onChange();
         });
   }
   else
   {
-    setupScalingAndDefaultValue();
+    setupScalingAndDefaultValue(false);
     onChange();
   }
 }
@@ -154,7 +156,7 @@ void RibbonParameter::undoableSetHWAmountsForReturnToCenterMode(UNDO::Transactio
     {
       if(p->getControlPositionValue() > 0)
       {
-        p->setCPFromHwui(transaction, 0.5);
+        p->setCPFromHwui(transaction, 1);
       }
     }
   }

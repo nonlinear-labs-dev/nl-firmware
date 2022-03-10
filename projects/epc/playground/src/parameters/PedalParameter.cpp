@@ -46,6 +46,8 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
       getValue().setScaleConverter(createScaleConverter());
       auto defValue = getDefValueAccordingToMode();
       getValue().setDefaultValue(defValue);
+      if(getReturnMode() != ReturnMode::None)
+        getValue().setToDefault(Initiator::INDIRECT);
 
       setRoutersModeAccordingToReturnMode();
 
@@ -72,6 +74,9 @@ void PedalParameter::setRoutersModeAccordingToReturnMode()
     {
       if(router->getValue().setIsBoolean(routersAreBoolean))
         router->onChange();
+
+      if(routersAreBoolean && router->getControlPositionValue() != 0)
+        router->getValue().setRawValue(Initiator::INDIRECT, 1);
     }
   }
 }

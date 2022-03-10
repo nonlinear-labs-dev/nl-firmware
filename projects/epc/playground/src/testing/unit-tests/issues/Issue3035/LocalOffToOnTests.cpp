@@ -11,7 +11,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("Issue 3035, Pedal [Returning Zero] Local Off to Local On")
+TEST_CASE("Issue 3035, Pedal [Returning Zero] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -58,7 +58,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Zero] Local Off to Local On")
   }
 }
 
-TEST_CASE("Issue 3035, Pedal [Returning Center] Local Off to Local On")
+TEST_CASE("Issue 3035, Pedal [Returning Center] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -102,7 +102,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Center] Local Off to Local On")
   }
 }
 
-TEST_CASE("Issue 3035, Pedal [Nonreturn] Local Off to Local On")
+TEST_CASE("Issue 3035, Pedal [Nonreturn] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -146,7 +146,7 @@ TEST_CASE("Issue 3035, Pedal [Nonreturn] Local Off to Local On")
   }
 }
 
-TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On")
+TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -167,12 +167,16 @@ TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On")
   //Send Parameter useCase
   ParameterUseCases sendUseCase(ribbon1Send);
   sendUseCase.setControlPosition(0.5);
+  CHECK(ribbon1Send->getControlPositionValue() == 0.5);
   CHECK(ribbon1Send->getDisplayString() == "50.0 %");
 
   //Ribbon Initial
   ribbonUseCase.setReturnMode(RibbonReturnMode::RETURN);
   ribbonUseCase.setControlPosition(1);
   CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+
+  CHECK(ribbon1Send->getControlPositionValue() == 0.5);
+  CHECK(ribbon1Send->getDisplayString() == "50.0 %");
 
   WHEN("Local is set to On")
   {
@@ -188,7 +192,7 @@ TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On")
   }
 }
 
-TEST_CASE("Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to mapped MC position")
+TEST_CASE("Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to mapped MC position", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -259,7 +263,7 @@ TEST_CASE("Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to 
   }
 }
 
-TEST_CASE("Issue 3035, Bender Local Off to Local On")
+TEST_CASE("Issue 3035, Bender Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();

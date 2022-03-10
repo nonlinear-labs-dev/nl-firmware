@@ -200,7 +200,6 @@ void C15Synth::doSyncExternalMidiBridge()
 
 void C15Synth::doSyncPlayground()
 {
-  nltools::Log::error(__PRETTY_FUNCTION__);
   using namespace nltools::msg;
 
   if(m_inputEventStage.getAndResetKeyBedStatus())

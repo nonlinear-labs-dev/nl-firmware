@@ -51,7 +51,7 @@ class RibbonParameter : public PhysicalControlParameter
  private:
   void ensureExclusiveRoutingIfNeeded();
   const ScaleConverter *createScaleConverter() const;
-  void setupScalingAndDefaultValue();
+  void setupScalingAndDefaultValue(bool defaultValue);
   std::list<ModulationRoutingParameter*> getRoutingParameters() const;
   void undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction, const RibbonReturnMode &mode) const;
 

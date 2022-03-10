@@ -82,7 +82,6 @@ void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
       getValue().setCoarseDenominator(physicalSrc->getValue().getCoarseDenominator());
       getValue().setFineDenominator(physicalSrc->getValue().getFineDenominator());
       getValue().setIsBoolean(physicalSrc->getValue().isBoolean());
-      getValue().setRawValue(Initiator::INDIRECT, physicalSrc->getValue().getRawValue());
 
       m_returnMode = newMode;
       invalidate();
