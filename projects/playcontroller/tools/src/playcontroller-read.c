@@ -183,6 +183,7 @@ void Usage(char const *const string, int const exitCode)
   puts(" q   print single message, then Quit");
   puts(" r   oveRlay messages of same type");
   puts(" s   Sensors raw data");
+  puts(" t   afterTouch min. Ohms data");
   puts(" u   hexdump of Unknown messages");
   puts(" 6   64bit unique hardware ID");
   exit(exitCode);
@@ -233,7 +234,7 @@ int main(int argc, char *argv[])
     if (strncmp(argv[1], "-a", 2) == 0)
       displayFlags |= NO_ALL;
     else if (strncmp(argv[1], "+a", 2) == 0)
-      displayFlags &= ~NO_ALL;
+      displayFlags &= (uint16_t) ~NO_ALL;
 
     else if (strncmp(argv[1], "-r", 2) == 0)
       displayFlags |= NO_OVERLAY;
@@ -299,6 +300,11 @@ int main(int argc, char *argv[])
       displayFlags |= NO_SENSORSRAW;
     else if (strncmp(argv[1], "+s", 2) == 0)
       displayFlags &= ~NO_SENSORSRAW;
+
+    else if (strncmp(argv[1], "-t", 2) == 0)
+      displayFlags |= NO_AT_DATA;
+    else if (strncmp(argv[1], "+t", 2) == 0)
+      displayFlags &= ~NO_AT_DATA;
 
     else if (strncmp(argv[1], "-u", 2) == 0)
       displayFlags |= NO_UNKNOWN;

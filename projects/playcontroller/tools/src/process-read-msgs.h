@@ -18,6 +18,7 @@
 #define NO_UHID         (0x1000)
 #define NO_REDUCED      (0x2000)
 #define NO_QUIT         (0x4000)
-#define NO_ALL          (0x7FFF)
+#define NO_AT_DATA      (0x8000)
+#define NO_ALL          (0xFFFF)
 
 int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t* const data, uint16_t flags);

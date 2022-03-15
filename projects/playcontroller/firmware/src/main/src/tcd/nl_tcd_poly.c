@@ -130,6 +130,41 @@ void POLY_Select_VelTable(uint32_t const curve)
 }
 
 /******************************************************************************
+	@brief		Return highest physical key currently pressed (0..60),
+	            or -1 otherwise
+*******************************************************************************/
+static uint8_t keysPressed[61];
+
+int POLY_GetHighestKey(void)
+{
+  for (int i = 60; i >= 0; i--)
+    if (keysPressed[i])
+      return i;
+  return -1;
+}
+
+
+/******************************************************************************
+	@brief		Return a singe physical key currently pressed (0..60),
+	            or -1 otherwise
+*******************************************************************************/
+int POLY_GetSingleKey(void)
+{
+  int key = -1;
+  for (int i = 60; i >= 0; i--)
+  {
+    if (keysPressed[i])
+    {
+      if (key != -1)
+        return -1;
+      else
+        key = i;
+    }
+  }
+  return key;
+}
+
+/******************************************************************************
 	@brief		ProcessKeyEvent : convert key event to MIDI event.
 	            Also emits the key message back to BBB, and log the full
 	            key event if requested
@@ -163,16 +198,19 @@ static void ProcessKeyEvent(uint32_t const keyEvent, enum KeyLog_T const logFlag
     uint32_t index = (time - KEY_MIN_TIME) >> 13;
     vel            = (velTable[index] * (8192 - fract) + velTable[index + 1] * fract) >> 13;  // ((0...16393) * 8192) / 8192
   }
-  if (!(keyEvent & IPC_KEYBUFFER_NOTEON))  //--- releasing a key
-  {
-    MSG_KeyUp(vel);
-    time = -time;  // negate time for key logging
-  }
-  else  //--- pressing a key
+
+  keysPressed[physicalKey] = (uint8_t) keyEvent & IPC_KEYBUFFER_NOTEON;
+  if (keysPressed[physicalKey])
   {
     MSG_KeyDown(vel);
     ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_LAST_KEY, (physicalKey << 8) | logicalKey);
   }
+  else
+  {
+    MSG_KeyUp(vel);
+    time = -time;  // negate time for key logging
+  }
+
   if (logFlag)
   {
     uint16_t buffer[3];

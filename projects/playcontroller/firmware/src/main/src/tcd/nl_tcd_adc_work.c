@@ -18,6 +18,7 @@
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
 #include "playcontroller/playcontroller-defs.h"
+#include "tcd/nl_tcd_poly.h"
 #include "io/pins.h"
 
 #define BENDER_DEADRANGE    20    // +/-1 % of +/-2047
@@ -29,7 +30,7 @@
 #define AT_DEADRANGE 30    // 0.73 % of 0 ... 4095
 #define AT_FACTOR    5080  // 5080 / 4096 for saturation = 100 % at 81 % of the input range
 
-static int      sendUiValues;
+static int      sendUiValues = 0;
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
 
@@ -701,6 +702,17 @@ void ADC_WORK_Resume(void)
 static int16_t             AT_xValues[12]   = { 1229, 1672, 2185, 2754, 3062, 3251, 3323, 3399, 3464, 3508, 3551, 3686 };
 static int16_t             AT_yValues[12]   = { 0, 1455, 2909, 4364, 5818, 7273, 8727, 10182, 11636, 13091, 14545, 16000 };
 static LIB_interpol_data_T AT_linearisation = { 12, AT_xValues, AT_yValues };
+static uint16_t            AT_ADCMaxValues[62];
+
+uint16_t ADC_WORK_GetATAdcDataSize(void)
+{
+  return sizeof(AT_ADCMaxValues) / sizeof(uint16_t);
+}
+
+uint16_t *ADC_WORK_GetATAdcData(void)
+{
+  return AT_ADCMaxValues;
+}
 
 static void ProcessAftertouch(void)
 {
@@ -711,8 +723,19 @@ static void ProcessAftertouch(void)
 
   value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
 
+  int key             = POLY_GetSingleKey();
+  AT_ADCMaxValues[61] = key;
   if (value != 0)
+  {
+    if (key != -1)
+    {
+      if (value > AT_ADCMaxValues[key])
+      {
+        AT_ADCMaxValues[key] = value;
+      }
+    }
     valueToSend = (LIB_InterpolateValue(&AT_linearisation, value) * scaleFactor) / 2048;
+  }
   else
     valueToSend = 0;
 
@@ -723,9 +746,7 @@ static void ProcessAftertouch(void)
   else
   {
     if (scaleFactor < AT_SCALE_FACTOR)
-      scaleFactor += 1, ledError = 1;
-    else
-      ledError = 0;
+      scaleFactor += 1;
   }
 
   if (valueToSend > 16000)
