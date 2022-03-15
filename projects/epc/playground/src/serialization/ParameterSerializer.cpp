@@ -157,7 +157,7 @@ void ParameterSerializer::tryLoadHardwareSourceParameter(Reader &reader) const
     {
       reader.onTextElement("pedalMode", [=, &reader](const Glib::ustring &text, const Attributes &) {
         int mode = std::stoi(text);
-        pedal->undoableSetPedalMode(reader.getTransaction(), static_cast<PedalModes>(mode));
+        pedal->undoableSetPedalMode(reader.getTransaction(), static_cast<PedalModes>(mode), Initiator::EXPLICIT_LOAD);
       });
     }
   }

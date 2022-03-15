@@ -67,6 +67,8 @@ class MacroControlParameter : public Parameter
 
   void updateMCViewsFromMCChange(const Initiator &initiator);
   bool isChangedFromLoaded() const override;
+  void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
+  QuantizedValue &getValue() override;
 
  private:
   friend class MacroControlParameterUseCases;
@@ -84,6 +86,10 @@ class MacroControlParameter : public Parameter
   void propagateMCChangeToMCViews(const Initiator &initiatior);
 
   void sendParameterMessage() const override;
+
+ protected:
+  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                  bool dosendToPlaycontroller) override;
 
  private:
   tControlPositionValue lastBroadcastedControlPosition = std::numeric_limits<tControlPositionValue>::max();

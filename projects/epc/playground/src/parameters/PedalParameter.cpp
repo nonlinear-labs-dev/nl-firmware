@@ -32,7 +32,7 @@ void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributo
   writer.writeTextElement("pedal-mode", to_string(m_mode));
 }
 
-void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode)
+void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode, Initiator initiator)
 {
   if(mode != PedalModes::STAY && mode != PedalModes::RETURN_TO_ZERO && mode != PedalModes::RETURN_TO_CENTER)
     mode = PedalModes::STAY;
@@ -42,11 +42,14 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
     auto swapData = UNDO::createSwapData(mode);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+       auto oldMode = m_mode;
       swapData->swapWith(m_mode);
+      auto newMode = m_mode;
+
       getValue().setScaleConverter(createScaleConverter());
       auto defValue = getDefValueAccordingToMode();
       getValue().setDefaultValue(defValue);
-      if(getReturnMode() != ReturnMode::None)
+      if(oldMode != newMode && newMode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
         getValue().setToDefault(Initiator::INDIRECT);
 
       setRoutersModeAccordingToReturnMode();
@@ -86,6 +89,40 @@ void PedalParameter::setRoutersModeAccordingToReturnMode()
   }
 }
 
+void PedalParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                                bool dosendToPlaycontroller)
+{
+  if(getID().getNumber() == C15::PID::Pedal_1)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "value", value);
+  }
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+}
+
+void PedalParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
+{
+  PhysicalControlParameter::loadFromPreset(transaction, value);
+}
+
+void PedalParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
+{
+  if(getID().getNumber() == C15::PID::Pedal_1)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "value", value);
+  }
+
+  Parameter::setIndirect(transaction, value);
+}
+
+QuantizedValue &PedalParameter::getValue()
+{
+  if(getID().getNumber() == C15::PID::Pedal_1)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__);
+  }
+  return Parameter::getValue();
+}
+
 tControlPositionValue PedalParameter::getDefValueAccordingToMode() const
 {
   switch(getReturnMode())
@@ -114,14 +151,14 @@ const ScaleConverter *PedalParameter::createScaleConverter() const
   return ScaleConverter::get<Linear100PercentScaleConverter>();
 }
 
-void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode)
+void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode, Initiator initiator)
 {
   if(mode == "stay")
-    undoableSetPedalMode(transaction, PedalModes::STAY);
+    undoableSetPedalMode(transaction, PedalModes::STAY, initiator);
   else if(mode == "return-to-zero")
-    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_ZERO);
+    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_ZERO, initiator);
   else if(mode == "return-to-center")
-    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_CENTER);
+    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_CENTER, initiator);
 }
 
 void PedalParameter::sendModeToPlaycontroller() const
@@ -160,32 +197,8 @@ void PedalParameter::copyFrom(UNDO::Transaction *transaction, const PresetParame
 {
   if(!isLocked())
   {
-    auto oldMode = getReturnMode();
-    auto oldPosition = getControlPositionValue();
-    auto wasBipolar = getValue().isBiPolar();
-    super::copyFrom(transaction, other);
-    undoableSetPedalMode(transaction, other->getPedalMode());
-
-    auto isBipolar = getValue().isBiPolar();
-
-    if(wasBipolar && !isBipolar)
-    {
-      //-1 .. 1 -> 0 .. 1
-      oldPosition = (oldPosition + 1) / 2;
-    }
-    else if(!wasBipolar && isBipolar)
-    {
-      //0..1 -> -1 .. 1
-      oldPosition = (oldPosition - 1) * 2;
-    }
-
-    if(oldMode != getReturnMode())
-    {
-      if(getReturnMode() != ReturnMode::None)
-      {
-        setCpValue(transaction, Initiator::EXPLICIT_PLAYCONTROLLER, oldPosition, false);
-      }
-    }
+    resetWasDefaulted(transaction);
+    undoableSetPedalMode(transaction, other->getPedalMode(), Initiator::EXPLICIT_LOAD);
   }
 }
 
@@ -227,7 +240,7 @@ void PedalParameter::undoableStepBehavior(UNDO::Transaction *transaction, int di
   else if(e < 0)
     e = static_cast<int>(PedalModes::RETURN_TO_CENTER);
 
-  undoableSetPedalMode(transaction, static_cast<PedalModes>(e));
+  undoableSetPedalMode(transaction, static_cast<PedalModes>(e), Initiator::EXPLICIT_USECASE);
 }
 
 Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
@@ -264,7 +277,7 @@ PedalType *PedalParameter::getAssociatedPedalTypeSetting() const
 void PedalParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   super::loadDefault(transaction, mode);
-  undoableSetPedalMode(transaction, PedalModes::STAY);
+  undoableSetPedalMode(transaction, PedalModes::STAY, Initiator::EXPLICIT_USECASE);
 }
 
 size_t PedalParameter::getHash() const
@@ -309,12 +322,6 @@ bool PedalParameter::isLocalEnabled() const
     }
   }
   return false;
-}
-
-void PedalParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                                bool dosendToPlaycontroller)
-{
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 }
 
 void PedalParameter::onLocalEnableChanged(bool localEnableState)

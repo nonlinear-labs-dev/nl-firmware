@@ -81,7 +81,7 @@ SCENARIO("Local Enable - Disable BiDi Modulation")
       auto scope = TestHelper::createTestScope();
       auto transaction = scope->getTransaction();
       ribbon->undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
-      pedal1->undoableSetPedalMode(transaction, PedalModes::STAY);
+      pedal1->undoableSetPedalMode(transaction, PedalModes::STAY, Initiator::EXPLICIT_USECASE);
       pedalA->getValue().setIsBoolean(true);
       ribbonA->getValue().setIsBoolean(true);
       pedalA->setCPFromHwui(transaction, 1);
