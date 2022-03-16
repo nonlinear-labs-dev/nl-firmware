@@ -22,13 +22,11 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.ReturnModes;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.tools.NLMath;
 import com.nonlinearlabs.client.world.Range;
-import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter.ReturnMode;
 
 public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private ParameterPresenter presenter = new ParameterPresenter();
@@ -120,10 +118,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		return containsElement(num, ParameterFactory.hiddenParametersBySoundType.get(type));
 	}
 
-	private boolean isLocalDisabled(SendParameterModel m) {
-		return !m.enabled.getBool();
-	}
-
 	private boolean isParameterDisabled(int num) {
 		SoundType type = EditBufferModel.get().soundType.getValue();
 		return containsElement(num, ParameterFactory.disabledParametersBySoundType.get(type));
@@ -172,9 +166,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		if (e instanceof PhysicalControlParameterModel)
 			updatePresenter((PhysicalControlParameterModel) e);
 
-		if (e instanceof SendParameterModel)
-			updatePresenter((SendParameterModel) e);
-
 		boolean McMetaChanged = false;
 
 		if (e instanceof MacroControlParameterModel) {
@@ -207,6 +198,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		if (presenter.updateHash()) {
 			notifyChanges();
+			if(presenter.id.getNumber() == 396) {
+				Tracer.log("ParameterPresenterProvider notifyChanges() was called because hash has changed!");
+			}
 		}
 	}
 
@@ -234,42 +228,6 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		PhysicalControlParameterModel m = (PhysicalControlParameterModel) EditBufferModel.get()
 				.getParameter(p.getAssociatedPhysicalControlID());
 		presenter.isBoolean = !m.isReturning();
-	}
-
-	private void updatePresenter(SendParameterModel p) {
-		presenter.hidden = !isLocalDisabled(p);
-
-        PhysicalControlParameterModel sibling = p.getSibling();
-
-		if (sibling instanceof RibbonParameterModel) {
-			RibbonParameterModel r = (RibbonParameterModel) sibling;
-			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;
-			presenter.drawZeroReturnIndicator = false;
-			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;
-		}
-
-		if (sibling instanceof PedalParameterModel) {
-			PedalParameterModel r = (PedalParameterModel) sibling;
-			presenter.drawCenterReturnIndicator = r.mode.getValue() == Modes.returnToCenter;
-			presenter.drawZeroReturnIndicator = r.mode.getValue() == Modes.returnToZero;
-			presenter.isReturning = r.mode.getValue() != Modes.stay;
-		}
-
-		if (sibling instanceof BenderParameterModel) {
-			presenter.drawCenterReturnIndicator = true;
-			presenter.drawZeroReturnIndicator = false;
-			presenter.isReturning = true;
-		}
-
-		if (sibling instanceof AftertouchParameterModel) {
-			presenter.drawCenterReturnIndicator = false;
-			presenter.drawZeroReturnIndicator = true;
-			presenter.isReturning = true;
-		}
-
-		presenter.drawCenterReturnIndicator = p.mode.getValue() == ReturnMode.Center;
-		presenter.drawZeroReturnIndicator = p.mode.getValue() == ReturnMode.Zero;
-		presenter.isReturning = p.mode.getValue() != ReturnMode.None;
 	}
 
 	private void updatePresenter(ModulateableParameterModel p) {

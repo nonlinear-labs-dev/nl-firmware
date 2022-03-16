@@ -132,7 +132,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   std::shared_ptr<ScopedGuard::Lock> getParameterFocusLockGuard();
   bool isParameterFocusLocked() const;
-  void init(Settings* settings) override;
 
  private:
   friend class PresetManager;
@@ -208,7 +207,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
                                             VoiceGroup copyTo);
   void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
                                              VoiceGroup copyTo);
-  void cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
+  void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
   bool isMonoEnabled(const VoiceGroup &vg) const;
   bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 

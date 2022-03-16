@@ -30,8 +30,6 @@
 #include <use-cases/EditBufferUseCases.h>
 #include <sync/JsonAdlSerializers.h>
 
-#include <Application.h>
-
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
 
 PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, const Options &options,
@@ -45,7 +43,6 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, c
     , m_readOnly(readOnly)
     , m_options { options }
 {
-  m_editBuffer->init(&settings);
   onRestoreHappened([&]() { invalidate(); });
 }
 
@@ -62,8 +59,10 @@ PresetManager::~PresetManager()
   }
 }
 
-void PresetManager::init(AudioEngineProxy *aeProxy, Settings &settings, Serializer::Progress progress)
+void PresetManager::init(AudioEngineProxy *aeProxy)
 {
+  PerformanceTimer timer(__PRETTY_FUNCTION__);
+
   auto loadingLock = m_isLoading.lock();
 
   auto scope = UNDO::Scope::startTrashTransaction();
@@ -76,9 +75,9 @@ void PresetManager::init(AudioEngineProxy *aeProxy, Settings &settings, Serializ
   if(file->query_exists())
   {
     nltools::Log::notify("Loading presetmanager at", path);
-    loadMetadataAndSendEditBufferToPlaycontroller(transaction, file, aeProxy, progress);
-    loadInitSound(transaction, file, progress);
-    loadBanks(transaction, file, progress);
+    loadMetadataAndSendEditBufferToPlaycontroller(transaction, file, aeProxy);
+    loadInitSound(transaction, file);
+    loadBanks(transaction, file);
     fixMissingPresetSelections(transaction);
   }
 
@@ -116,7 +115,7 @@ SaveResult PresetManager::saveMetadata(Glib::RefPtr<Gio::File> pmFolder)
   if(m_lastSavedMetaDataUpdateID != getUpdateIDOfLastChange())
   {
     PerformanceTimer timer(__PRETTY_FUNCTION__);
-    PresetManagerMetadataSerializer serializer(this, getProgressDecorator());
+    PresetManagerMetadataSerializer serializer(this, SplashLayout::addStatus);
     serializer.write(pmFolder, ".metadata");
     m_lastSavedMetaDataUpdateID = getUpdateIDOfLastChange();
     return SaveResult::Finished;
@@ -230,21 +229,18 @@ std::shared_ptr<ScopedGuard::Lock> PresetManager::getLoadingLock()
 
 void PresetManager::loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
                                                                   const Glib::RefPtr<Gio::File> &pmFolder,
-                                                                  AudioEngineProxy *aeProxy,
-                                                                  Serializer::Progress progress)
+                                                                  AudioEngineProxy *aeProxy)
 {
-  auto folder = std::filesystem::path(pmFolder->get_uri());
   DebugLevel::gassy("loadMetadata", pmFolder->get_uri());
-  progress("Loading Edit Buffer");
-  Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, progress);
+  SplashLayout::addStatus("Loading Edit Buffer");
+  Serializer::read<PresetManagerMetadataSerializer>(transaction, pmFolder, ".metadata", this, SplashLayout::addStatus);
   aeProxy->sendEditBuffer();
 }
 
-void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder,
-                                  Serializer::Progress progress)
+void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder)
 {
   DebugLevel::gassy("loadInitSound", pmFolder->get_uri());
-  progress("Loading Init Sound");
+  SplashLayout::addStatus("Loading Init Sound");
 
   Serializer::read<PresetSerializer>(transaction, pmFolder, ".initSound", m_initSound.get(), true);
 
@@ -252,11 +248,10 @@ void PresetManager::loadInitSound(UNDO::Transaction *transaction, const Glib::Re
   m_lastSavedInitSoundUpdateID = getUpdateIDOfLastChange();
 }
 
-void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder,
-                              Serializer::Progress progress)
+void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder)
 {
   DebugLevel::gassy("loadBanks", pmFolder->get_uri());
-  progress("Loading Banks");
+  SplashLayout::addStatus("Loading Banks");
 
   int numBanks = static_cast<int>(m_banks.size());
 
@@ -266,7 +261,7 @@ void PresetManager::loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::
         DebugLevel::gassy("loadBanks, bank:", bank->getUuid().raw());
         auto bankFolder = pmFolder->get_child(bank->getUuid().raw());
         bank->load(transaction, bankFolder, currentBank++, numBanks);
-        progress("Reading bank " + bank->getName(true));
+        SplashLayout::addStatus("Reading bank " + bank->getName(true));
       });
 }
 
@@ -954,13 +949,4 @@ Bank *PresetManager::findMidiSelectedBank() const
 sigc::connection PresetManager::onLoadHappened(const sigc::slot<void> &cb)
 {
   return m_sigLoadHappened.connect(cb);
-}
-
-PresetManagerMetadataSerializer::Progress PresetManager::getProgressDecorator()
-{
-  if(Application::exists())
-  {
-    return SplashLayout::addStatus;
-  }
-  return Serializer::MockProgress;
 }

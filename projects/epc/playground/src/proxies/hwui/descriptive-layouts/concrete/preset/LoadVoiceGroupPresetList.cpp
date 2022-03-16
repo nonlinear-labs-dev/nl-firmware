@@ -3,7 +3,6 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "proxies/hwui/HWUI.h"
-#include "use-cases/SettingsUseCases.h"
 
 LoadVoiceGroupPresetList::LoadVoiceGroupPresetList(const Point &p)
     : GenericPresetList(p)
@@ -16,8 +15,7 @@ void LoadVoiceGroupPresetList::action()
   if(auto preset = getPresetAtSelected())
   {
     EditBufferUseCases useCase(*Application::get().getPresetManager()->getEditBuffer());
-    SettingsUseCases useCases(*Application::get().getSettings());
     useCase.loadToPart(preset, VoiceGroup::I, Application::get().getHWUI()->getCurrentVoiceGroup());
-    useCases.setFocusAndMode(UIDetail::Init);
+    Application::get().getHWUI()->setFocusAndMode(UIDetail::Init);
   }
 }

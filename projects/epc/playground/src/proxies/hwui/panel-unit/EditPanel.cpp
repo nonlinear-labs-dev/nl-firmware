@@ -44,3 +44,8 @@ bool EditPanel::onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, boo
 {
   return m_oled.onButtonPressed(buttonID, modifiers, state);
 }
+
+UndoButtonStateMachine &EditPanel::getUndoStateMachine()
+{
+  return m_statemachine;
+}

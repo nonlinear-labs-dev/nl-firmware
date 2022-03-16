@@ -5,8 +5,6 @@ CMakeLists.txt.user
 *.war
 .idea
 .project
-projects/web/c16/src/.meteor
-projects/web/c16/src/node_modules
 .meteor 
 node_modules
 projects/web/static/nonmaps/target

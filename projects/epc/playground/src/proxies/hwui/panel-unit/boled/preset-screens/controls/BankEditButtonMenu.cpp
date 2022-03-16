@@ -20,7 +20,6 @@
 #include <tools/TimeTools.h>
 #include <nltools/GenericScopeGuard.h>
 #include <device-settings/Settings.h>
-#include "use-cases/SettingsUseCases.h"
 
 static size_t s_lastSelectedButton = 0;
 
@@ -149,8 +148,7 @@ void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_ent
   }
 
   hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
-  SettingsUseCases useCases(*Application::get().getSettings());
-  useCases.setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
+  hwui->getPanelUnit().setupFocusAndMode({ UIFocus::Presets, UIMode::Select });
 }
 
 void BankEditButtonMenu::importBank()
@@ -231,8 +229,9 @@ void BankEditButtonMenu::deleteBank()
     useCase.deleteBank(bank);
   }
 
-  SettingsUseCases useCases(*Application::get().getSettings());
-  useCases.setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Select));
+  auto hwui = Application::get().getHWUI();
+  hwui->setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Select));
+  hwui->getPanelUnit().getEditPanel().getBoled().invalidate();
 }
 
 void BankEditButtonMenu::moveLeft()

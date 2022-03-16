@@ -1,9 +1,6 @@
 #pragma once
 
 #include "ParameterLayout.h"
-
-class PhysicalControlSlider;
-
 class PlayControlParameterLayout2 : public virtual ParameterLayout2
 {
  public:
@@ -37,7 +34,6 @@ class PlayControlParameterLayout2 : public virtual ParameterLayout2
  protected:
   static uint8_t s_mode;
   static int s_instanceCount;
-  PhysicalControlSlider* m_hwSourceSlider = nullptr;
 };
 
 class RibbonParameterLayout2 : public virtual PlayControlParameterLayout2
@@ -90,7 +86,6 @@ class PlayControlParameterSelectLayout2 : public ParameterSelectLayout2
 
  protected:
   ModuleCaption *createModuleCaption() const override;
-  Control *createParameterValueControl() override;
 
  public:
   Carousel *createCarousel(const Rect &rect) override;

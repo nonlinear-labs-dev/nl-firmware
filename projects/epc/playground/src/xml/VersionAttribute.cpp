@@ -24,9 +24,8 @@ int VersionAttribute::getCurrentFileVersion()
     NAMM_2020 = 7,
     FIX_UNISON_VOICES = 8,
     DUAL_SPLIT_POINT = 9,
-    DUAL_SPLIT_POINT_PRESETS = 10,
-    HW_SEND_PARAMETERS = 11
+    DUAL_SPLIT_POINT_PRESETS = 10
   };
 
-  return static_cast<int>(History::HW_SEND_PARAMETERS);
+  return static_cast<int>(History::DUAL_SPLIT_POINT_PRESETS);
 }

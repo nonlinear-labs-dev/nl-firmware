@@ -6,7 +6,6 @@
 #include <nltools/Types.h>
 #include <libundo/undo/Scope.h>
 #include "ConvertToSoundTypeItem.h"
-#include "use-cases/SettingsUseCases.h"
 
 ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toType)
     : AnimatedGenericItem(
@@ -40,8 +39,7 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
             }),
         OneShotTypes::FinishCB(
             []() {
-              SettingsUseCases useCases(*Application::get().getSettings());
-              useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+              Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
             }))
 {
 }

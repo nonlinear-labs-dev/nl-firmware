@@ -24,7 +24,7 @@ Oleds::~Oleds()
 void Oleds::setDirty()
 {
   if(!m_throttler.isPending())
-    m_throttler.doTask([this] { syncRedraw(false); });
+    m_throttler.doTask(std::bind(&Oleds::syncRedraw, this, false));
 }
 
 bool Oleds::isDirty() const

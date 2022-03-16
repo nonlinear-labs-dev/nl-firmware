@@ -29,7 +29,7 @@ namespace nltools
          ButtonChanged, Playcontroller, Ping,
 
          SinglePreset, LayerPreset, SplitPreset, UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
-         HWAmountParameter, HWSourceParameter, HWSourceSendParameter, UpdateLocalDisabledRibbon,
+         HWAmountParameter, HWSourceParameter, UpdateLocalDisabledRibbon,
 
          NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,
 

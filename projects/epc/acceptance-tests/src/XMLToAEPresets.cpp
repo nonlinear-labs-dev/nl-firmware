@@ -11,10 +11,8 @@
 TEST_CASE("Load XML Preset into AE")
 {
   auto config = nltools::msg::getConfig();
-  config.useEndpoints = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine,
-                          nltools::msg::EndPoint::BeagleBone, nltools::msg::EndPoint::Playcontroller };
-  config.offerEndpoints = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine,
-                            nltools::msg::EndPoint::BeagleBone, nltools::msg::EndPoint::Playcontroller };
+  config.useEndpoints = {nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone};
+  config.offerEndpoints = {nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine, nltools::msg::EndPoint::BeagleBone};
   nltools::msg::init(config);
 
   auto options = Tests::createEmptyAudioEngineOptions();
@@ -27,20 +25,22 @@ TEST_CASE("Load XML Preset into AE")
     using tMSG = nltools::msg::Setting::MidiSettingsMessage;
     tMSG msg;
     msg.receiveChannel = MidiReceiveChannel::CH_1;
-    TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::RECEIVE_PRIMARY, true);
+    TestHelper::updateMappingForHW(msg.routings,
+                                   tMSG::RoutingIndex::Notes,
+                                   tMSG::RoutingAspect::RECEIVE_PRIMARY,
+                                   true);
 
     synth->onMidiSettingsMessage(msg);
   }
 
-  auto settingBasePtr = dynamic_cast<Settings*>(&settings);
-  REQUIRE(settingBasePtr);
+  auto settingBasePtr = static_cast<Settings*>(&settings);
 
   WHEN("Init Preset is Loaded")
   {
-    CHECK_NOTHROW(XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "Init", *settingBasePtr));
+    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "Init", *settingBasePtr);
     THEN("Note Played produces no Sound")
     {
-      synth->doMidi({ { 0x90, 127, 127 } });
+      synth->doMidi({ 0x90, 127, 127 });
       auto res = synth->measurePerformance(std::chrono::milliseconds(250));
       CHECK(Tests::getMaxLevel(std::get<0>(res)) == 0);
     }
@@ -48,10 +48,10 @@ TEST_CASE("Load XML Preset into AE")
 
   WHEN("Init Preset with Mixer A up, is Loaded")
   {
-    CHECK_NOTHROW(XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr));
+    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr);
     THEN("Note Played produces Sound")
     {
-      synth->doMidi({ { 0x90, 127, 127 } });
+      synth->doMidi({ 0x90, 127, 127 });
       auto res = synth->measurePerformance(std::chrono::milliseconds(250));
       CHECK(Tests::getMaxLevel(std::get<0>(res)) > 0.2f);
     }

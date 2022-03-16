@@ -20,6 +20,8 @@ class RibbonLabel : public Label
   RibbonLabel(const RibbonLabel &other) = delete;
   RibbonLabel &operator=(const RibbonLabel &) = delete;
 
+  static Glib::ustring cropMidiCC(const Glib::ustring &text);
+
  protected:
   int getXOffset() const override;
 

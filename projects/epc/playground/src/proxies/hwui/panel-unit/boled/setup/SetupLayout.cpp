@@ -537,7 +537,7 @@ namespace NavTree
   struct FreeInternalMemory : Leaf
   {
     explicit FreeInternalMemory(InnerNode *parent)
-        : Leaf(parent, "Free Disk Space")
+        : Leaf(parent, "Free Internal Memory")
     {
     }
 
@@ -690,11 +690,11 @@ namespace NavTree
       children.emplace_back(new SSID(this));
       children.emplace_back(new Passphrase(this));
       children.emplace_back(new WebUIAdress(this));
-      children.emplace_back(new DateTime(this));
       children.emplace_back(new FreeInternalMemory(this));
       children.emplace_back(new RamUsage(this));
       children.emplace_back(new UISoftwareVersion(this));
       children.emplace_back(new UniqueHardwareID(this));
+      children.emplace_back(new DateTime(this));
       children.emplace_back(new UpdateAvailable(this));
       children.emplace_back(new BufferUnderrunsNode(this));
     }
@@ -1419,18 +1419,16 @@ void SetupLayout::diveUp()
 
 bool SetupLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  SettingsUseCases useCases(*Application::get().getSettings());
-
   if(down)
   {
     if(i == Buttons::BUTTON_PRESET)
     {
-      useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+      Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
       return true;
     }
     else if(i == Buttons::BUTTON_STORE)
     {
-      useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
+      Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
       return true;
     }
 

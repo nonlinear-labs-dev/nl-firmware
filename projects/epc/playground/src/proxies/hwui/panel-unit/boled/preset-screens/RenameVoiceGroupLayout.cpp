@@ -3,7 +3,6 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/HWUI.h>
 #include "RenameVoiceGroupLayout.h"
-#include "use-cases/SettingsUseCases.h"
 #include <libundo/undo/Scope.h>
 
 inline EditBuffer* getEditBuffer()
@@ -18,8 +17,7 @@ RenameVoiceGroupLayout::RenameVoiceGroupLayout(VoiceGroup vg)
 
 void RenameVoiceGroupLayout::cancel()
 {
-  SettingsUseCases useCases(*Application::get().getSettings());
-  useCases.setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
+  Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
 }
 
 void RenameVoiceGroupLayout::commit(const Glib::ustring& newName)
@@ -27,8 +25,8 @@ void RenameVoiceGroupLayout::commit(const Glib::ustring& newName)
   auto eb = getEditBuffer();
   EditBufferUseCases useCase(*eb);
   useCase.renamePart(m_targetGroup, newName);
-  SettingsUseCases useCases(*Application::get().getSettings());
-  useCases.setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
+
+  Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
 }
 
 Glib::ustring RenameVoiceGroupLayout::getInitialText() const

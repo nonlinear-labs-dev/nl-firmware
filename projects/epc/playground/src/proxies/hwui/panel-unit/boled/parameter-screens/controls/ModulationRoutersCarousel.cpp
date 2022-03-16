@@ -22,9 +22,6 @@ ModulationRoutersCarousel::~ModulationRoutersCarousel() = default;
 
 void ModulationRoutersCarousel::setup(Parameter *newOne)
 {
-  if(auto sendParameter = dynamic_cast<HardwareSourceSendParameter*>(newOne))
-    newOne = sendParameter->getSiblingParameter();
-
   clear();
 
   const int ySpaceing = 0;

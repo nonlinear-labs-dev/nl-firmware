@@ -14,7 +14,6 @@
 #include "parameters/Parameter.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
-#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
@@ -118,72 +117,35 @@ namespace DescriptiveLayouts
     /*
        * UIFocus
        */
-    registerEvent(EventSinks::SwitchToParameterFocus, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
+    registerEvent(EventSinks::SwitchToParameterFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Parameters }); });
+    registerEvent(EventSinks::SwitchToSoundFocus, [hwui] {
+      hwui->undoableSetFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
-    
-    registerEvent(EventSinks::SwitchToSoundFocus, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-    });
-
-    registerEvent(EventSinks::SwitchToPresetFocus, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets }); 
-                  });
-    
-    registerEvent(EventSinks::SwitchToBankFocus, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(FocusAndMode { UIFocus::Banks }); 
-                  });
-    
-    registerEvent(EventSinks::SwitchToSetupFocus, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(FocusAndMode { UIFocus::Setup }); 
-                  });
+    registerEvent(EventSinks::SwitchToPresetFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Presets }); });
+    registerEvent(EventSinks::SwitchToBankFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Banks }); });
+    registerEvent(EventSinks::SwitchToSetupFocus,
+                  [hwui] { hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Setup }); });
 
     /*
        * UIMode
        */
-    registerEvent(EventSinks::SwitchToEditMode, [] {
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit }); 
-                  });
-    
-    registerEvent(EventSinks::SwitchToSelectMode, [] {
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(FocusAndMode { UIMode::Select }); 
-                  });
+    registerEvent(EventSinks::SwitchToEditMode,
+                  [hwui]() { hwui->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit }); });
+    registerEvent(EventSinks::SwitchToSelectMode,
+                  [hwui]() { hwui->undoableSetFocusAndMode(FocusAndMode { UIMode::Select }); });
 
     /*
        * UIDetail
        */
-    registerEvent(EventSinks::SwitchToInitDetail, [] {
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(UIDetail::Init); 
-                  });
-    registerEvent(EventSinks::SwitchToButtonADetail, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(UIDetail::ButtonA); 
-                  });
-    registerEvent(EventSinks::SwitchToButtonBDetail, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(UIDetail::ButtonB); 
-                  });
-    registerEvent(EventSinks::SwitchToButtonCDetail, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(UIDetail::ButtonC); 
-                  });
-    registerEvent(EventSinks::SwitchToButtonDDetail, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(UIDetail::ButtonD); 
-                  });
-    
-    registerEvent(EventSinks::SwitchToVoicesDetail, [] { 
-                    SettingsUseCases useCases(*Application::get().getSettings());
-                    useCases.setFocusAndMode(UIDetail::Voices); 
-                  });
+    registerEvent(EventSinks::SwitchToInitDetail, [hwui]() { hwui->setUiModeDetail(UIDetail::Init); });
+    registerEvent(EventSinks::SwitchToButtonADetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonA); });
+    registerEvent(EventSinks::SwitchToButtonBDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonB); });
+    registerEvent(EventSinks::SwitchToButtonCDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonC); });
+    registerEvent(EventSinks::SwitchToButtonDDetail, [hwui] { hwui->setUiModeDetail(UIDetail::ButtonD); });
+    registerEvent(EventSinks::SwitchToVoicesDetail, [hwui] { hwui->setUiModeDetail(UIDetail::Voices); });
 
     registerEvent(EventSinks::ToggleDirectLoad, [hwui] {
       DirectLoadUseCases useCase(Application::get().getSettings()->getSetting<DirectLoadSetting>().get());
@@ -195,8 +157,7 @@ namespace DescriptiveLayouts
       {
         if(modParam->getModulationSource() != MacroControls::NONE)
         {
-          SettingsUseCases useCases(*Application::get().getSettings());
-          useCases.setFocusAndMode(UIDetail::MCAmount);
+          hwui->setUiModeDetail(UIDetail::MCAmount);
         }
       }
     });
@@ -206,8 +167,7 @@ namespace DescriptiveLayouts
       {
         if(modParam->getModulationSource() != MacroControls::NONE)
         {
-          SettingsUseCases useCases(*Application::get().getSettings());
-          useCases.setFocusAndMode(UIDetail::MCModRange);
+          hwui->setUiModeDetail(UIDetail::MCModRange);
         }
       }
     });
@@ -215,8 +175,7 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::SwitchToMCSelectDetail, [hwui, eb]() {
       if(dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())) != nullptr)
       {
-        SettingsUseCases useCases(*Application::get().getSettings());
-        useCases.setFocusAndMode(UIDetail::MCSelect);
+        hwui->setUiModeDetail(UIDetail::MCSelect);
       }
     });
 
@@ -319,8 +278,7 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::InitSound, [eb] {
       EditBufferUseCases useCases { *eb };
       useCases.initSound(Defaults::UserDefault);
-      SettingsUseCases useCase(*Application::get().getSettings());
-      useCase.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
 
     registerEvent(EventSinks::OpenUnisonParameter, [eb]() {

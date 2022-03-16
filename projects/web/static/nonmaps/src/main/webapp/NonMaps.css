@@ -48,12 +48,6 @@ h1 {
   margin: 5px;
 }
 
-.w95-text-input {
-  width: 97%;
-  margin-left: 2px !important;
-  margin-top: 1px !important;
-  display: flex;
-}
 
 body,table td,select,button {
 /*
@@ -110,20 +104,16 @@ select {
   zoom: 1;
 }
 
-/* ab hier Änderungen */
-
 .gwt-Button {
   margin: 3px;
   padding: 4px 7px;
   text-decoration: none;
   cursor: pointer;
-  background: #9aa5ce;
-  border: 0.25mm solid #000;
+  cursor: hand;
+  background: #4e4e4e;
+  border: 0.25mm solid #666;
   border-radius: 1mm;
-  color: #080c1a;
-  font-family: "SSP-LW25";
-  font-size: 15px;
-  font-weight: 600;
+  color: #ccc;
 }
 
 .save-commands {
@@ -134,20 +124,14 @@ select {
   min-width: 6em;
 }
 
-.gwt-Button:hover {
-  background: #becbff;
-}
-
 .gwt-Button:active {
-  border: 0.25mm solid #080c1a;
-  color: #080c1a;
-  background:  #3f4a77;
+  border: 0.25mm solid rgb(107, 115, 153);
+  color: #141414;
 }
 
 .gwt-Button[disabled] {
   cursor: default;
-  color: #000;
-  background: #4c4f62;
+  color: #888;
 }
 
 .gwt-CheckBox-disabled {
@@ -1531,12 +1515,10 @@ select[disabled='disabled'] {
   margin-right: 1em;
 }
 
-/* --- auskommentiert für MIDI-Table (th, td "border") --- */
-
-/* .dialogContent tr td:nth-child(2) {
+.dialogContent tr td:nth-child(2) {
   display: flex;
   justify-content: stretch;
-} */
+}
 
 .dialogContent tr td:nth-child(2)>* {
   flex-grow: 2;
@@ -1544,6 +1526,11 @@ select[disabled='disabled'] {
 
 .dialogContent tr td:nth-child(1) {
   min-width: 8 em;
+}
+
+.dialogContent table.midi-table tr td {
+    display: table-cell; 
+    width:10%
 }
 
 .dialogContent .compare-tree tr td {
@@ -1576,18 +1563,10 @@ select[disabled='disabled'] {
 
 .modal-button-button {
 	display: inline-block;
-  width: 5em;
 }
 
 .modal-button-div {
 	text-align: center;
-}
-
-.model-button-center-div {
-  justify-content: space-around;
-  padding-left: 4em;
-  padding-right: 4em;
-  margin: auto;
 }
 
 input.param-name-edit {

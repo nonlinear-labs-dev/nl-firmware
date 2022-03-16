@@ -55,24 +55,7 @@ void ParameterEditButtonMenu::addActions()
   if(eb->hasLocks(vg))
     addButton("Unlock all", std::bind(&ParameterEditButtonMenu::unlockAll, this));
 
-  if(auto selectedParameter = eb->getSelected(vg))
-  {
-    if(auto sendParameter = dynamic_cast<const HardwareSourceSendParameter*>(selectedParameter))
-      addButton("Select RCV", std::bind(&ParameterEditButtonMenu::selectParameter, this, sendParameter->getSiblingParameter()->getID()));
-
-    if(auto hardwareParameter = dynamic_cast<const PhysicalControlParameter*>(selectedParameter))
-      if(!hardwareParameter->isLocalEnabled())
-        addButton("Select SND", std::bind(&ParameterEditButtonMenu::selectParameter, this, hardwareParameter->getSendParameter()->getID()));
-  }
-
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged), vg);
-}
-
-void ParameterEditButtonMenu::selectParameter(ParameterId id)
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  EditBufferUseCases useCase(*eb);
-  useCase.selectParameter(id);
 }
 
 void ParameterEditButtonMenu::onParameterSelectionChanged(Parameter *oldParameter, Parameter *newParameter)

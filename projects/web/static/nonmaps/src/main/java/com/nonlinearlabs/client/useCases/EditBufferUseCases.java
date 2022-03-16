@@ -15,10 +15,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.tools.NLMath;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.PhysicalControlSendParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 
 public class EditBufferUseCases {
@@ -42,7 +40,9 @@ public class EditBufferUseCases {
 
 		if (p instanceof PhysicalControlParameterModel) {
 			PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
-			applyPhysicalControlModulation(m, diff);
+			if(m.isLocalEnabled()) {
+				applyPhysicalControlModulation(m, diff);
+			}
 
 			if (m.isReturning()) {
 				if (setAnimationTimeout)
@@ -112,10 +112,6 @@ public class EditBufferUseCases {
 		animationManager.startReturnAnimation(m);
 	}
 
-	private void startReturningAnimation(SendParameterModel m) {
-		animationManager.startReturnAnimation(m);
-	}
-
 	private void handleBidirectionalRibbonBinding(MacroControlParameterModel m) {
 		for (ParameterId routerId : m.getRouterIDs()) {
 			ModulationRouterParameterModel r = this.<ModulationRouterParameterModel>findParameter(routerId);
@@ -128,8 +124,9 @@ public class EditBufferUseCases {
 
 				if (physicalControlID.getNumber() == ribbon1 || physicalControlID.getNumber() == ribbon2) {
 					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
-					if (!ribbon.isReturning()) {
-							ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
+					
+					if (!ribbon.isReturning() && ribbon.isLocalEnabled()) {
+						ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
 					}
 				}
 			}
@@ -382,12 +379,6 @@ public class EditBufferUseCases {
 			if (p instanceof PhysicalControlParameterModel) {
 				PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
 				if (m.isReturning())
-					startReturningAnimation(m);
-			}
-
-			if(p instanceof SendParameterModel) {
-				SendParameterModel m = (SendParameterModel)p;
-				if(m.isReturning())
 					startReturningAnimation(m);
 			}
 		});

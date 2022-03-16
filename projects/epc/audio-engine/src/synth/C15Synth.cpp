@@ -36,7 +36,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
                                       sigc::mem_fun(this, &C15Synth::onMacroControlParameterMessage));
   receive<HWSourceChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWSourceMessage));
   receive<HWAmountChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWAmountMessage));
-  receive<HWSourceSendChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this,&C15Synth::onHWSourceSendMessageReceived));
+
   //Settings
   receive<Setting::NoteShiftMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onNoteShiftMessage));
   receive<Setting::PresetGlitchMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPresetGlitchMessage));
@@ -495,9 +495,4 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
   sendNotesOffOnChannel(m_midiOptions.getMIDIPrimarySendChannel());
   if(m_dsp->getType() == SoundType::Split)
     sendNotesOffOnChannel(m_midiOptions.getMIDISplitSendChannel());
-}
-
-void C15Synth::onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg)
-{
-  m_inputEventStage.onSendParameterReceived(msg);
 }

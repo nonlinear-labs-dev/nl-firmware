@@ -2,17 +2,13 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
-#include "use-cases/SettingsUseCases.h"
-#include <device-settings/Settings.h>
-#include <device-settings/FocusAndModeSetting.h>
 
 TEST_CASE("Test Previous Boled Focus on Button")
 {
   auto hwui = Application::get().getHWUI();
   auto& editPanel = hwui->getPanelUnit().getEditPanel();
-  SettingsUseCases useCases(*TestHelper::getSettings());
 
-  useCases.setFocusAndMode({ UIFocus::Parameters, UIMode::Select, UIDetail::Init });
+  hwui->setFocusAndMode({ UIFocus::Parameters, UIMode::Select, UIDetail::Init });
 
   {
     auto scope = TestHelper::createTestScope();
@@ -32,10 +28,7 @@ TEST_CASE("Test Previous Boled Focus on Button")
     editPanel.onButtonPressed(button, {}, false);
   };
 
-  auto getFocusAndMode = [] {
-    auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
-    return famSetting.getState();
-  };
+  auto getFocusAndMode = [&hwui] { return hwui->getFocusAndMode(); };
 
   const auto min = std::chrono::milliseconds(20);
   const auto max = std::chrono::milliseconds(500);

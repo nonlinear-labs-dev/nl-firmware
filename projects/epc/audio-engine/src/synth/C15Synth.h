@@ -55,7 +55,6 @@ class C15Synth : public Synth, public sigc::trackable
   void onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg);
   void onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg);
   void onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg);
-  void onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg);
 
   void onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg);
   void onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage& msg);

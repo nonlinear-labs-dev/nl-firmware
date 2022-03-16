@@ -31,17 +31,17 @@ TEST_CASE("Midi Safe Mode disabled")
   constexpr int NumberOfNotes = 3;
   constexpr int Notes[NumberOfNotes] = { 48, 52, 55 };
 
-  //load preset
-  auto settingBasePtr = static_cast<Settings*>(&settings);
-  XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
-  synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
-
   // prepare Midi Settings
   using tMSG = nltools::msg::Setting::MidiSettingsMessage;
   tMSG msg;
-  msg.routings = TestHelper::createFullMappings(true);
+  TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::LOCAL, true);
   msg.localEnable = false;
   synth->onMidiSettingsMessage(msg);
+
+  // Prepare Preset
+  auto settingBasePtr = static_cast<Settings*>(&settings);
+  XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
+  synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
 
   // play TCD Notes
   for(auto note : Notes)

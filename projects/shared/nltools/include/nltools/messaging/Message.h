@@ -388,20 +388,6 @@ namespace nltools
       ReturnMode returnMode;
     };
 
-    struct HWSourceSendChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::HWSourceSendParameter;
-      }
-
-      tID parameterId;
-      tID siblingId;
-      tControlPosition controlPosition;
-      ReturnMode returnMode;
-      bool localEnabled;
-    };
-
     struct HWAmountChangedMessage
     {
       constexpr static MessageType getType()

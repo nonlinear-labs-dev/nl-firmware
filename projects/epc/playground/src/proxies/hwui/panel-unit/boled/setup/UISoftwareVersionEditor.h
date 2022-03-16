@@ -11,11 +11,4 @@ class UISoftwareVersionEditor : public DisplayEditor
   static const char* getHead();
   static const char* getCommitCount();
   static const char* getCommitDate();
-  bool onRotary(int inc, ButtonModifiers modifiers) override;
-
- private:
-  std::vector<Glib::ustring> m_ogOrder;
-  bool m_showLast = false;
-
-  void sortOrder();
 };

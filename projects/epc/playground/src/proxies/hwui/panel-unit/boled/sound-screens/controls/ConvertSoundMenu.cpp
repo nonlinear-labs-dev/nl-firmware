@@ -5,7 +5,6 @@
 #include "ConvertSoundMenu.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
-#include "use-cases/SettingsUseCases.h"
 #include <libundo/undo/Scope.h>
 
 ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
@@ -34,9 +33,7 @@ void ConvertSoundMenu::convertSoundTo(SoundType newType)
       useCases.convertToSplit(currentVG);
       break;
   }
-
-  SettingsUseCases useCase(*Application::get().getSettings());
-  useCase.setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
+  Application::get().getHWUI()->setFocusAndMode(FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init });
 }
 
 void ConvertSoundMenu::setup()

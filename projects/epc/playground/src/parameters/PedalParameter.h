@@ -33,11 +33,11 @@ class PedalParameter : public PhysicalControlParameter
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   size_t getHash() const override;
-  tControlPositionValue getDefValueAccordingToMode() const override;
 
  private:
   const ScaleConverter *createScaleConverter() const;
   void sendModeToPlaycontroller() const;
+  tControlPositionValue getDefValueAccordingToMode() const;
   void setRoutersModeAccordingToReturnMode();
   bool isLocalEnabled() const override;
 

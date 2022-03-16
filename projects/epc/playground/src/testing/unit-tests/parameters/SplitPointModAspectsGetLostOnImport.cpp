@@ -22,7 +22,7 @@ TEST_CASE("Import Preset with ModAspects on Split")
 
   PresetManagerUseCases uc(*pm, *settings);
   FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/Fuxi_Split.xml", false);
-  uc.importBankFromStream(stream, 0, 0, "Fuxi-Split", Serializer::MockProgress);
+  uc.importBankFromStream(stream, 0, 0, "Fuxi-Split", Serializer::Progress{});
 
   auto fuxiesSplit = pm->getSelectedBank();
   CHECK(fuxiesSplit != nullptr);
@@ -79,7 +79,7 @@ TEST_CASE("Import Conversion for Bank with Version 7 Checks out")
   auto settings = TestHelper::getSettings();
   PresetManagerUseCases uc(*pm, *settings);
   FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/Version7Split.xml", false);
-  uc.importBankFromStream(stream, 0, 0, "Split7", Serializer::MockProgress);
+  uc.importBankFromStream(stream, 0, 0, "Split7", Serializer::Progress{});
 
   auto newBank = pm->getSelectedBank();
   CHECK(newBank != nullptr);

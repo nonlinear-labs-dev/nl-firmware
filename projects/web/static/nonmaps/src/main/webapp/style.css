@@ -344,7 +344,7 @@ caption {
 	border-bottom: 1px solid #000;
 	border-top-right-radius: 5px;
 	border-top-left-radius: 5px;
-	color: #919191;
+	color: #eee;
 }
 
 .bb-tab button {
@@ -404,7 +404,6 @@ caption {
 	background-color: #1f253e;
 	border: 1px solid #1f253e;
 	border-bottom: 1px solid #1d233b;
-	color: #eee;
 }
 
 .tabcontainer h1, .dialogcontainer h1, .bankcontainer h1 {
@@ -441,26 +440,18 @@ caption {
 	margin: 0.2em auto;
 	padding: 0.2em 0.6em;
 	font-weight: 600;
-	font-size: 100%;
+	font-size: 95%;
 	text-align: center;
 	border-radius: 5px;
 }
 
-/* --- ab hier Änderungen --- */
-
 .tabcontainer h3, .dialogcontainer h3 {
-	padding: 0.3em 0.6em;
+	padding: 0.2em 0.6em;
 	font-weight: 600;
 	font-size: 95%;
 	text-align: center;
-	/* border-radius: 5px; */
-	background-color: #373d57;
-	color: #d1d9fd;
-	width: 100%;
+	border-radius: 5px;
 }
-
-/* --- bis hier Änderungen --- */
-
 
 /*****************************/
 /* !Context Menu CSS */
@@ -782,11 +773,33 @@ textarea+button.reset:active {
 	background:	url(images/erasetoleft.svg);
 }
 
+/*****************************/
+/* !submit */
+/*****************************/
+.dialogcontainer button {
+	color: #ddd;
+	background-color: #414965;
+	padding: 0.3em 0.8em;
+	margin: 0.1em 0em;
+	min-width: 5.6em;
+	font-family: 'SSP-LW25';
+	font-size: 95%;
+	font-weight: 400;
+	border: 1px solid #525975;
+	border-radius: 5px;
+}
+
+.dialogcontainer  button:active {
+	background-color: #2c3047;
+	border: 1px solid #000;
+	color: #7d829c;
+}
+
 .prev-next-buttons {
 	justify-content: space-around;
 	padding-left: 4em;
 	padding-right: 4em;
- }
+}
 
 .prev-next-buttons>button {
 	width: 5em;
@@ -1156,13 +1169,6 @@ input[type="range"]::-moz-range-track {
 	height: auto;
 	flex-grow: 1;
 	background-color: #ff0;
-}
-
-.viertel-he {
-	height: 0.7em;
-	/* 	min-width: 20em; */
-	margin: 0.3em 1em;
-	display: flex;
 }
 
 .halb-he {
@@ -1760,42 +1766,25 @@ input[type="range"]::-moz-range-track {
     min-height: 281px;
 }
 
-/* --- ab hier Änderungen --- */
-
 .midi-table {
     height: 100%;
     width: 100%;
     display: table;
-	border-collapse: collapse;
-	border: 2px solid #000;
 }
 
 .midi-table th {
-    background-color: #14192d;
-	padding: 8px 0px;
+    border: 1px solid black;
 }
 
-.midi-table tbody tr:first-child {
-	color: #a0acda;
-}
-
-.midi-table tr {
-	background-color: #394060;
-}
-
-.midi-table tr:nth-child(2n+1) {
-	background-color: #2c3353;
-}
-
-.midi-table td, th {
-    /* border: 1px solid black; */
+.midi-table td {
+    border: 1px solid black;
     vertical-align: middle;
     text-align: center;
-	padding: 4px;
-	border: 1px solid #000;
 }
 
-/* --- bis hier Änderungen --- */
+.midi-table th.no-table-border {
+    border: none;
+}
 
 .midi-table td > div {
     display: flex;
@@ -1810,4 +1799,19 @@ input[type="range"]::-moz-range-track {
 .midi-table .gwt-CheckBox>label {
     width: 0;
     height: unset;
+}
+
+.midi-tab .gwt-Button {
+  min-width: 2cm;
+}
+
+.midi-tab .button-row td {
+    border:  none;
+    display: flex;
+}
+
+.midi-tab .button-row td button{
+    margin-left: 2em;
+    margin-right: 2em;
+    
 }
