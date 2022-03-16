@@ -68,13 +68,18 @@ install_packages() {
 build_c15() {
   mkdir -p /bindir/build
   cd /bindir/build
+  
+  echo "en_US@nonlinear.UTF-8 UTF-8" >> /etc/locale.gen
+  echo "LANG=en_US@nonlinear.UTF-8" > /etc/locale.conf
+  touch /usr/share/locale/locale.alias
 
-    cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
-    make -j8
-    make install
+  cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
+  make -j8
+  make install
+  make install-nl-locale
 
-    mkdir -p /usr/local/C15/web
-    tar -xzf /web/web.tar.gz -C /usr/local/C15/web
+  mkdir -p /usr/local/C15/web
+  tar -xzf /web/web.tar.gz -C /usr/local/C15/web
 }
 
 setup_network_manager() {

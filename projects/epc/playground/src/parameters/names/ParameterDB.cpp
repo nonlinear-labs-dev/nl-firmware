@@ -47,7 +47,7 @@ Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long, id.getVoiceGroup());
+  return sanitize(replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long, id.getVoiceGroup()));
 }
 
 Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
