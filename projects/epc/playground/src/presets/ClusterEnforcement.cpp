@@ -34,19 +34,14 @@ void ClusterEnforcement::buildClusterStructure()
 
     for(auto bank : waitingList)
     {
-      const auto bankMasterUUID = bank->getAttachedToBankUuid();
-      const auto bankHasMaster = !bankMasterUUID.empty();
-      auto masterBank = m_presetManager.findBank(bankMasterUUID);
-      auto masterNode = findTreeNode(bankMasterUUID);
-
-      if(!bankHasMaster || masterBank == nullptr)
+      if(bank->getAttachedToBankUuid().empty())
       {
         auto clusterRoot = std::make_shared<TreeNode>();
         clusterRoot->bank = bank;
         clusterRoot->master = nullptr;
         addCluster(clusterRoot);
       }
-      else if(masterNode)
+      else if(auto masterNode = findTreeNode(bank->getAttachedToBankUuid()))
       {
         auto myNode = std::make_shared<TreeNode>();
         myNode->bank = bank;
@@ -163,15 +158,11 @@ void ClusterEnforcement::connectToClusterStructure(tTreeNodePtr masterNode, tTre
   switch(toAttachDirection(myNode->bank->getAttachDirection()))
   {
     case Bank::AttachmentDirection::left:
-      nltools_assertOnDevPC(myNode->left == nullptr);
-      nltools_assertOnDevPC(masterNode->right == nullptr);
       myNode->left = masterNode;
       masterNode->right = myNode;
       break;
 
     case Bank::AttachmentDirection::top:
-      nltools_assertOnDevPC(myNode->top == nullptr);
-      nltools_assertOnDevPC(masterNode->bottom == nullptr);
       myNode->top = masterNode;
       masterNode->bottom = myNode;
       break;
@@ -185,7 +176,7 @@ void ClusterEnforcement::connectToClusterStructure(tTreeNodePtr masterNode, tTre
 
 bool inCluster(const ClusterEnforcement::tTreeNodePtr& node)
 {
-  return node->master.get();
+  return node->top || node->bottom || node->left || node->right;
 }
 
 std::vector<ClusterEnforcement::tTreeNodePtr>
