@@ -83,7 +83,7 @@ setup_network_manager() {
   id=C15
   uuid=61679179-6804-4197-b476-eacad1d492e4
   type=wifi
-  interface-name=wlp0s20f3
+  interface-name=wlan0
   permissions=
 
   [wifi]
@@ -114,6 +114,16 @@ ENDOFHERE
 
   chmod 600 /etc/NetworkManager/system-connections/C15.nmconnection
   systemctl enable NetworkManager
+}
+
+setup_audio() {
+
+    cat <<- ENDOFHERE > /etc/modprobe.d/snd_hda_intel.conf
+# Set Soundcard Parameters
+options snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+ENDOFHERE
+
+    chmod 600 /etc/modprobe.d/snd_hda_intel.conf
 }
 
 perform_tweaks() {
@@ -150,4 +160,5 @@ install_packages
 perform_tweaks
 build_c15
 setup_network_manager
+setup_audio
 package_update
