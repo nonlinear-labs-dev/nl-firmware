@@ -26,7 +26,7 @@ uint16_t id;
 uint16_t len;
 uint16_t data[MAX_DATA_SIZE];
 int      dataIndex;
-uint16_t displayFlags;
+uint32_t displayFlags;
 FILE *   driver;
 
 void Error(const char *msg)
@@ -183,7 +183,8 @@ void Usage(char const *const string, int const exitCode)
   puts(" q   print single message, then Quit");
   puts(" r   oveRlay messages of same type");
   puts(" s   Sensors raw data");
-  puts(" t   afterTouch min. Ohms data");
+  puts(" to  afterTouch min. Ohms value data");
+  puts(" ta  afterTouch max. ADC value data");
   puts(" u   hexdump of Unknown messages");
   puts(" 6   64bit unique hardware ID");
   exit(exitCode);
@@ -234,7 +235,7 @@ int main(int argc, char *argv[])
     if (strncmp(argv[1], "-a", 2) == 0)
       displayFlags |= NO_ALL;
     else if (strncmp(argv[1], "+a", 2) == 0)
-      displayFlags &= (uint16_t) ~NO_ALL;
+      displayFlags &= ~NO_ALL;
 
     else if (strncmp(argv[1], "-r", 2) == 0)
       displayFlags |= NO_OVERLAY;
@@ -301,10 +302,15 @@ int main(int argc, char *argv[])
     else if (strncmp(argv[1], "+s", 2) == 0)
       displayFlags &= ~NO_SENSORSRAW;
 
-    else if (strncmp(argv[1], "-t", 2) == 0)
+    else if (strncmp(argv[1], "-to", 3) == 0)
+      displayFlags |= NO_AT_DATA_OHMS;
+    else if (strncmp(argv[1], "+to", 3) == 0)
+      displayFlags &= ~NO_AT_DATA_OHMS, displayFlags |= NO_AT_DATA;
+
+    else if (strncmp(argv[1], "-ta", 3) == 0)
       displayFlags |= NO_AT_DATA;
-    else if (strncmp(argv[1], "+t", 2) == 0)
-      displayFlags &= ~NO_AT_DATA;
+    else if (strncmp(argv[1], "+ta", 3) == 0)
+      displayFlags &= ~NO_AT_DATA, displayFlags |= NO_AT_DATA_OHMS;
 
     else if (strncmp(argv[1], "-u", 2) == 0)
       displayFlags |= NO_UNKNOWN;
@@ -327,6 +333,28 @@ int main(int argc, char *argv[])
 
   if (displayFlags & NO_REDUCED)
     printf("\nOutput from '%s' :\n", path);
+
+#if 0
+  printf("flags: ");  
+  printf("%s ", (displayFlags & NO_HEARTBEAT) ? "-h" : "+h");
+  printf("%s ", (displayFlags & NO_MUTESTATUS) ? "-m" : "+m");
+  printf("%s ", (displayFlags & NO_PARAMS) ? "-p" : "+p");
+  printf("%s ", (displayFlags & NO_NOTIFICATION) ? "-n" : "+n");
+  printf("%s ", (displayFlags & NO_EHCDATA) ? "-e" : "+e");
+  printf("%s ", (displayFlags & NO_SENSORSRAW) ? "-s" : "+s");
+  printf("%s ", (displayFlags & NO_HEXDUMP) ? "-d" : "+d");
+  printf("%s ", (displayFlags & NO_UNKNOWN) ? "-u" : "+u");
+  printf("%s ", (displayFlags & NO_STATDATA) ? "-c" : "+c");
+  printf("%s ", (displayFlags & NO_OVERLAY) ? "-r" : "+r");
+  printf("%s ", (displayFlags & NO_KEY_LOG) ? "-k" : "+k");
+  printf("%s ", (displayFlags & NO_RIBBONS) ? "-i" : "+i");
+  printf("%s ", (displayFlags & NO_UHID) ? "-6" : "+6");
+  printf("%s ", (displayFlags & NO_REDUCED) ? "-o" : "+o");
+  printf("%s ", (displayFlags & NO_QUIT) ? "-q" : "+q");
+  printf("%s ", (displayFlags & NO_AT_DATA) ? "-ta" : "+ta");
+  printf("%s ", (displayFlags & NO_AT_DATA_OHMS) ? "-to" : "+to");
+  printf("\n");
+#endif
 
   while (1)
   {

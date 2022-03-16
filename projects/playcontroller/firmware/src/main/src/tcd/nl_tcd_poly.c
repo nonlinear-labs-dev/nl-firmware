@@ -143,7 +143,6 @@ int POLY_GetHighestKey(void)
   return -1;
 }
 
-
 /******************************************************************************
 	@brief		Return a singe physical key currently pressed (0..60),
 	            or -1 otherwise
