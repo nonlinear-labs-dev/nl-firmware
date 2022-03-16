@@ -72,7 +72,7 @@ build_c15() {
   cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
   make -j8
   make install 
-
+   
   mkdir -p /usr/local/C15/web
   tar -xzf /web/web.tar.gz -C /usr/local/C15/web
 }
@@ -127,9 +127,13 @@ ENDOFHERE
 }
 
 perform_tweaks() {
-    useradd -m sscl
-    echo 'sscl:sscl' | chpasswd
-    echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+  useradd -m sscl
+  echo 'sscl:sscl' | chpasswd
+  echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    
+  echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+  locale-gen
+  echo "LANG=en_US.UTF-8" > /etc/locale.conf
 }
 
 package_update() {
