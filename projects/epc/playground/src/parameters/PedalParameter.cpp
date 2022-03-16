@@ -198,6 +198,7 @@ void PedalParameter::copyFrom(UNDO::Transaction *transaction, const PresetParame
   if(!isLocked())
   {
     resetWasDefaulted(transaction);
+    loadFromPreset(transaction, other->getValue());
     undoableSetPedalMode(transaction, other->getPedalMode(), Initiator::EXPLICIT_LOAD);
   }
 }

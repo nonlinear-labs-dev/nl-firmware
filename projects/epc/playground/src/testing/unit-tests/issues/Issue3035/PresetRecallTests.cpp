@@ -149,6 +149,8 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
   auto MC_ID = ParameterId{C15::PID::MC_A, VoiceGroup::Global};
   auto mc1 = pm->getEditBuffer()->findAndCastParameterByID<MacroControlParameter>(MC_ID);
   auto ribbon1 = pm->getEditBuffer()->findAndCastParameterByID<RibbonParameter>({C15::PID::Ribbon_1, VoiceGroup::Global});
+  auto pedal1 = pm->getEditBuffer()->findAndCastParameterByID<PedalParameter>({C15::PID::Pedal_1, VoiceGroup::Global});
+  PedalParameterUseCases pedalUseCase(pedal1);
 
   auto bank = uc.importBankFromPath(std::filesystem::directory_entry{getSourceDir() + "/projects/epc/playground/test-resources/3035-5.xml"}, [](auto){});
   auto init = bank->getPresetAt(0);
@@ -166,6 +168,26 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
   auto rib1_retcenter_2 = bank->getPresetAt(13);
 
   EditBufferUseCases ebUseCases(*pm->getEditBuffer());
+
+  WHEN("Pedal Load Init -> Move -> Load Ped 1")
+  {
+    ebUseCases.load(init);
+    TestHelper::doMainLoopIteration();
+    pedalUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
+    ebUseCases.load(ped1_0);
+    TestHelper::doMainLoopIteration();
+    CHECK(pedal1->getDisplayString() == "100.0 %");
+  }
+
+  WHEN("Pedal Load Non Ret -> Move -> Ret Zero")
+  {
+    ebUseCases.load(ped1_nonret);
+    TestHelper::doMainLoopIteration();
+    pedalUseCase.changeFromAudioEngine(0.25, HWChangeSource::TCD);
+    ebUseCases.load(ped1_retzero);
+    TestHelper::doMainLoopIteration();
+    CHECK(pedal1->getDisplayString() == "25.0 %");
+  }
 
   WHEN("Pedal Load Return to Zero after Stay")
   {

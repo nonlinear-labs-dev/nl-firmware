@@ -488,7 +488,7 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
-  setReturningHWSourcesToCurrentPositionAndModulate(transaction);
+  setHWSourcesToLoadRulePostionsAndModulate(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -1667,7 +1667,7 @@ void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, cons
   }
 }
 
-void EditBuffer::setReturningHWSourcesToCurrentPositionAndModulate(UNDO::Transaction *transaction)
+void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction)
 {
   if(!Application::exists())
   {

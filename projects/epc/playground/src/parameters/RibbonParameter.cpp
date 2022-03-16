@@ -242,6 +242,7 @@ void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParam
     super::copyFrom(transaction, other);
     undoableSetRibbonReturnMode(transaction, other->getRibbonReturnMode());
     undoableSetRibbonTouchBehaviour(transaction, other->getRibbonTouchBehaviour());
+
     if(oldMode != getReturnMode())
     {
       if(getReturnMode() != ReturnMode::None)
