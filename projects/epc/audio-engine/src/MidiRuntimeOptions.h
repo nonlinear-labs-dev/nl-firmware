@@ -6,7 +6,6 @@
 #include <synth/c15-audio-engine/midi_handle.h>
 #include <synth/input/MidiChannelModeMessages.h>
 #include <Types.h>
-#include <optional>
 
 class MidiRuntimeOptions
 {

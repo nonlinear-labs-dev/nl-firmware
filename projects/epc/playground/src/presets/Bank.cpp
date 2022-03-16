@@ -45,7 +45,10 @@ Bank::Bank(UpdateDocumentContributor *parent, const Bank &other)
   m_presets = other.m_presets;
 }
 
-Bank::~Bank() = default;
+Bank::~Bank()
+{
+  nltools::Log::warning(__PRETTY_FUNCTION__, __LINE__);
+}
 
 SaveResult Bank::save(Glib::RefPtr<Gio::File> bankFolder)
 {

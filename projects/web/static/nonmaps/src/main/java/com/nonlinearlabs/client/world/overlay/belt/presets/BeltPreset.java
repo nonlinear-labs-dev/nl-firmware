@@ -1,13 +1,10 @@
 package com.nonlinearlabs.client.world.overlay.belt.presets;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.CustomPresetSelector;
 import com.nonlinearlabs.client.LoadToPartMode;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.useCases.AnimationManager;
-import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.IBank;
 import com.nonlinearlabs.client.world.IPreset;
@@ -141,30 +138,6 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 		getPixRect().fill(ctx, colorFill);
 
 		super.draw(ctx, invalidationMask);
-
-		if(overwriteAnimationProgress != 0 || overwriteAnimationProgress != 2)
-		{
-			Rect pos = getPixRect().copy();
-			if(overwriteAnimationProgress > 0 && overwriteAnimationProgress < 1)
-			{
-				double right = pos.getRight();
-				double left = pos.getLeft();
-				double width = right - left;
-				double newRight = left + (width * overwriteAnimationProgress);
-				pos.setRight(newRight);
-				pos.fill(ctx, RGB.white());
-			}
-			else if(overwriteAnimationProgress > 1 && overwriteAnimationProgress < 2)
-			{
-				double progess = overwriteAnimationProgress - 1;
-				double right = pos.getRight();
-				double left = pos.getLeft();
-				double width = right - left;
-				double newLeft = left + (width * progess);
-				pos.setLeft(newLeft);
-				pos.fill(ctx, RGB.white());
-			}
-		}
 	}
 
 	@Override
@@ -271,7 +244,6 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 			case MIDDLE:
 				getNonMaps().getServerProxy().overwritePresetWithBank(bank, p);
-				EditBufferUseCases.get().getAnimationManager().startOverwriteAnimation(this);
 				break;
 
 			case BOTTOM:
@@ -293,7 +265,6 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 			case MIDDLE:
 				getNonMaps().getServerProxy().overwritePresetWithEditBuffer(p);
-				EditBufferUseCases.get().getAnimationManager().startOverwriteAnimation(this);
 				break;
 
 			case BOTTOM:
@@ -313,7 +284,6 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 
 			case MIDDLE:
 				getNonMaps().getServerProxy().overwritePresetWith(newPreset, p);
-				EditBufferUseCases.get().getAnimationManager().startOverwriteAnimation(this);
 				break;
 
 			case BOTTOM:
@@ -366,12 +336,5 @@ public class BeltPreset extends OverlayLayout implements IPreset {
 			mapsPreset.rename();
 
 	}
-
-	private double overwriteAnimationProgress = 0;
-
-    public void setAnimationProgess(Double v) {
-		overwriteAnimationProgress = v.doubleValue();
-		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
-    }
 
 }

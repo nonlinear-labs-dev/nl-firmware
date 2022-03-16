@@ -5,7 +5,7 @@
 
 class Preset;
 
-class SplitPointSyncParameters : public Setting, public sigc::trackable
+class SplitPointSyncParameters : public Setting
 {
  public:
   using tSlot = sigc::slot<void, const Setting*, UNDO::Transaction*>;

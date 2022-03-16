@@ -32,9 +32,7 @@ class Recorder
 
   nlohmann::json api(const nlohmann::json& msg);
 
-  void notifyStateChange();
-  
-private:
+ private:
   nlohmann::json generateInfo() const;
   nlohmann::json prepareDownload(FrameId begin, FrameId end) const;
   nlohmann::json queryFrames(FrameId begin, FrameId end) const;

@@ -2,5 +2,5 @@
 Description=Copy Update From EPC and Execute
 
 [Service]
-Type=simple
+Type=oneshot
 ExecStart=@C15_INSTALL_PATH@/scripts/install-update-from-epc.sh

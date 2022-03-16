@@ -14,7 +14,6 @@ class HardwareSourceSendParameter : public Parameter
   Layout* createLayout(FocusAndMode focusAndMode) const override;
 
   [[nodiscard]] bool isLocalEnabled() const;
-  [[nodiscard]] bool isAssigned() const;
   [[nodiscard]] ReturnMode getReturnMode() const;
   [[nodiscard]] PhysicalControlParameter* getSiblingParameter() const;
   bool lockingEnabled() const override;
@@ -22,7 +21,6 @@ class HardwareSourceSendParameter : public Parameter
   void setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
   void setCPFromWebUI(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
   size_t getHash() const override;
-
 
  protected:
   nlohmann::json serialize() const override;

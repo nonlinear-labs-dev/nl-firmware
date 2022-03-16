@@ -34,7 +34,7 @@ void SOLED::init()
 
 void SOLED::resetSplash()
 {
-  onBaseUnitUIModeChange(Application::get().getSettings()->getSetting<BaseUnitUIMode>());
+  onBaseUnitUIModeChange(Application::get().getSettings()->getSetting<BaseUnitUIMode>().get());
 }
 
 void SOLED::onBaseUnitUIModeChange(const Setting *s)

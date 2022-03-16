@@ -1,6 +1,7 @@
 #pragma once
 
 #include <parameters/Parameter.h>
+#include <nltools/threading/Throttler.h>
 
 class ScaleParameter : public Parameter
 {

@@ -18,8 +18,6 @@ MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
 MSG_CHECK_LOG="Please check update log!"
 MSG_RESTART_MAN="Please restart!"
 MSG_RESTART_AUT="Will restart now!"
-MSG_UPDATE_PREVENTED_1="Update aborted! E89"
-MSG_UPDATE_PREVENTED_2="Please use USB update!"
 
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
@@ -242,44 +240,7 @@ stop_services() {
     return 0
 }
 
-does_update_exist_on_epc_tmp() {
-  executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
-  return $?
-}
-
-is_any_install_from_epc_service_oneshot() {
-  serviceFile='/usr/lib/systemd/system/install-update-from-epc.service'
-  serviceFileOneshot='/usr/lib/systemd/system/install-update-from-epc-oneshot.service'
-
-  if [[ -f $serviceFile ]]; then
-    cat $serviceFile | grep oneshot
-    ret=$?
-    if ret -eq 0; then
-      return ret
-    fi
-  fi
-
-  if [[ -f $serviceFileOneshot ]]; then
-      cat $serviceFileOneshot | grep oneshot
-      return $?
-  fi
-
-  return 1
-}
-
-abort_if_started_from_dangerous_webui_service() {
-  if does_update_exist_on_epc_tmp -eq 0; then
-    if is_any_install_from_epc_service_oneshot -eq 0; then
-      pretty "" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2"
-      sleep 5
-      determine_termination
-    fi
-  fi
-}
-
 main() {
-    abort_if_started_from_dangerous_webui_service
-
     rm -f /mnt/usb-stick/nonlinear-c15-update.log.txt
     rm -f /update/errors.log
     touch /update/errors.log

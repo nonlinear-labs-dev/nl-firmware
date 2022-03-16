@@ -56,11 +56,6 @@ FlacFrameStorage *Recorder::getStorage() const
   return m_storage.get();
 }
 
-void Recorder::notifyStateChange()
-{
-  nltools::msg::send(nltools::msg::EndPoint::Playground, nltools::msg::Recorder::State { m_in->isRecording() });
-}
-
 nlohmann::json Recorder::api(const nlohmann::json &msg)
 {
   if(msg.is_object())
@@ -73,7 +68,6 @@ nlohmann::json Recorder::api(const nlohmann::json &msg)
     if(name == "toggle-recording")
     {
       m_in->togglePause();
-      notifyStateChange();
     }
     else if(name == "set-playback-position")
     {

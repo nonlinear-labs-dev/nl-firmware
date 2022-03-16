@@ -1,11 +1,11 @@
 package com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 import com.nonlinearlabs.client.world.maps.NonRect;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
 
 public class PhysicalControlSendParameter extends PhysicalControlParameter {
@@ -53,9 +53,7 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		if (presenter.hidden) {
-            Parameter sibling = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().findParameter(getSibling());
-            sibling.doFirstLayoutPass(levelOfDetail);
-            NonRect dim = sibling.getNonPosition();
+            NonRect dim = NonMaps.theMaps.getNonLinearWorld().getParameterEditor().findParameter(getSibling()).getNonPosition();
             setNonSize(new NonDimension(0, dim.getHeight()));
 		} else {
 			super.doFirstLayoutPass(levelOfDetail);

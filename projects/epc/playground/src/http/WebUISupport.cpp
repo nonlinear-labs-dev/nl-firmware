@@ -6,8 +6,6 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <proxies/hwui/HWUI.h>
-#include <device-settings/flac/AutoStartRecorderSetting.h>
-#include <device-settings/flac/FlacRecorderVirgin.h>
 
 namespace
 {
@@ -23,7 +21,7 @@ namespace
   }
 }
 
-WebUISupport::WebUISupport(UpdateDocumentContributor* master)
+WebUISupport::WebUISupport(UpdateDocumentContributor *master)
     : SectionAndActionManager(master, "/webui-support/")
 {
   addAction("enum-get-strings", [&](const std::shared_ptr<NetworkRequest>& request) {
@@ -37,22 +35,9 @@ WebUISupport::WebUISupport(UpdateDocumentContributor* master)
       h->okAndComplete();
     }
   });
-
-  addAction("show-recorder-autostart-message", [&](const std::shared_ptr<NetworkRequest>& request) {
-    if(auto h = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      auto autoStartEnabled = Application::get().getSettings()->getSetting<AutoStartRecorderSetting>()->get();
-      auto recorderIsVirgin = Application::get().getSettings()->getSetting<FlacRecorderVirgin>()->get();
-      auto showMessage = recorderIsVirgin and not autoStartEnabled;
-
-      h->setStatusOK();
-      h->respond(std::to_string(showMessage));
-      h->okAndComplete();
-    }
-  });
 }
 
-void WebUISupport::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID) const
+void WebUISupport::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID) const
 {
   writer.writeTag("webui-helper", [&]() {
     auto selectedVG = Application::get().getHWUI()->getCurrentVoiceGroup();

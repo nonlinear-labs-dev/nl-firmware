@@ -13,6 +13,7 @@ class PhysicalControlParameter : public Parameter
   PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
 
+  bool isChangedFromLoaded() const override;
   virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source);
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;

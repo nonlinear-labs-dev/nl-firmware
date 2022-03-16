@@ -20,7 +20,7 @@ TEST_CASE("Load XML Preset into AE")
   auto options = Tests::createEmptyAudioEngineOptions();
   auto synth = std::make_unique<C15Synth>(options.get());
 
-  MockSettingsObject settings("", &SyncMasterMockRoot::get());
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
 
   //Prepare Midi Settings
   {

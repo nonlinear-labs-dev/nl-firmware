@@ -36,16 +36,10 @@ void PhysicalControlSlider::onParameterSelectionChanged(Parameter *p)
   auto hwSnd = getSendParameter(p);
 
   if(hwSrc != nullptr && hwSnd == nullptr)
-  {
     hwSnd = hwSrc->getSendParameter();
-    m_shouldHighlightSendParameter = false;
-  }
 
   if(hwSnd != nullptr && hwSrc == nullptr)
-  {
     hwSrc = hwSnd->getSiblingParameter();
-    m_shouldHighlightSendParameter = true;
-  }
 
   if(hwSnd && hwSrc)
   {
@@ -86,17 +80,14 @@ bool PhysicalControlSlider::redrawLocalDisabled(FrameBuffer &buffer)
     return false;
 
   const auto pos = getPosition();
-  const auto w = (pos.getWidth() / 2) - 2;
-  const auto left = Rect{pos.getLeft(), pos.getTop(), w, pos.getHeight()};
-  const auto right = Rect{pos.getCenter().getX() + 2, pos.getTop(), w, pos.getHeight()};
+  const auto left = Rect{pos.getLeft(), pos.getTop(), pos.getWidth() / 2, pos.getHeight()};
+  const auto right = Rect{pos.getCenter().getX(), pos.getTop(), pos.getWidth() / 2, pos.getHeight()};
 
   DotSlider sliderSend(hwSnd, left);
   sliderSend.setValue(hwSnd->getValue().getQuantizedClipped(), hwSnd->isBiPolar());
-  sliderSend.setHighlight(m_shouldHighlightSendParameter);
   sliderSend.redraw(buffer);
   DotSlider sliderHW(hwSrc, right);
   sliderHW.setValue(hwSrc->getValue().getQuantizedClipped(), hwSrc->isBiPolar());
-  sliderHW.setHighlight(!m_shouldHighlightSendParameter);
   sliderHW.redraw(buffer);
   return true;
 }

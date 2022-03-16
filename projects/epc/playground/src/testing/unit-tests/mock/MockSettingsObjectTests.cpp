@@ -6,15 +6,17 @@
 
 TEST_CASE("MockSettingsObject onChange is called when Setting calls notify")
 {
-  MockSettingsObject settings("", &SyncMasterMockRoot::get());
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
   auto setting = settings.getSetting<RoutingSettings>();
 
   bool parentSubRecChanges = false;
   bool childPubsChanges = false;
-  settings.setOnChangeCB([&](auto) {
-    parentSubRecChanges = true;
-    return 0;
-  });
+  settings.setOnChangeCB(
+      [&](auto)
+      {
+        parentSubRecChanges = true;
+        return 0;
+      });
 
   auto connection = setting->onChange([&](const Setting* s) { childPubsChanges = true; });
 

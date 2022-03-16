@@ -8,10 +8,6 @@
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <xml/Writer.h>
-#include <device-settings/midi/mappings/AftertouchCCMapping.h>
-#include <device-settings/midi/mappings/BenderCCMapping.h>
-#include <device-settings/midi/mappings/PedalCCMapping.h>
-#include <device-settings/midi/mappings/RibbonCCMapping.h>
 
 HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
                                                          PhysicalControlParameter& sibling,
@@ -210,28 +206,4 @@ void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfAppl
 
     invalidate();
   }
-}
-
-bool HardwareSourceSendParameter::isAssigned() const
-{
-  switch(getID().getNumber())
-  {
-    case C15::PID::Aftertouch_Send:
-      return m_settings->getSetting<AftertouchCCMapping>()->get() != AftertouchCC::None;
-    case C15::PID::Bender_Send:
-      return m_settings->getSetting<BenderCCMapping>()->get() != BenderCC::None;
-    case C15::PID::Ribbon_1_Send:
-      return m_settings->getSetting<RibbonCCMapping<1>>()->get() != RibbonCC::None;
-    case C15::PID::Ribbon_2_Send:
-      return m_settings->getSetting<RibbonCCMapping<2>>()->get() != RibbonCC::None;
-    case C15::PID::Pedal_1_Send:
-      return m_settings->getSetting<PedalCCMapping<1>>()->get() != PedalCC::None;
-    case C15::PID::Pedal_2_Send:
-      return m_settings->getSetting<PedalCCMapping<2>>()->get() != PedalCC::None;
-    case C15::PID::Pedal_3_Send:
-      return m_settings->getSetting<PedalCCMapping<3>>()->get() != PedalCC::None;
-    case C15::PID::Pedal_4_Send:
-      return m_settings->getSetting<PedalCCMapping<4>>()->get() != PedalCC::None;
-  }
-  return false;
 }

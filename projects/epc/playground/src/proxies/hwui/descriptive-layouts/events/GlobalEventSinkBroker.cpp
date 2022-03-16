@@ -122,71 +122,71 @@ namespace DescriptiveLayouts
       SettingsUseCases useCases(*Application::get().getSettings());
       useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     });
-
+    
     registerEvent(EventSinks::SwitchToSoundFocus, [] {
       SettingsUseCases useCases(*Application::get().getSettings());
       useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
 
-    registerEvent(EventSinks::SwitchToPresetFocus, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets });
-    });
-
-    registerEvent(EventSinks::SwitchToBankFocus, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(FocusAndMode { UIFocus::Banks });
-    });
-
-    registerEvent(EventSinks::SwitchToSetupFocus, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(FocusAndMode { UIFocus::Setup });
-    });
+    registerEvent(EventSinks::SwitchToPresetFocus, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets }); 
+                  });
+    
+    registerEvent(EventSinks::SwitchToBankFocus, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(FocusAndMode { UIFocus::Banks }); 
+                  });
+    
+    registerEvent(EventSinks::SwitchToSetupFocus, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(FocusAndMode { UIFocus::Setup }); 
+                  });
 
     /*
        * UIMode
        */
     registerEvent(EventSinks::SwitchToEditMode, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
-    });
-
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit }); 
+                  });
+    
     registerEvent(EventSinks::SwitchToSelectMode, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(FocusAndMode { UIMode::Select });
-    });
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(FocusAndMode { UIMode::Select }); 
+                  });
 
     /*
        * UIDetail
        */
     registerEvent(EventSinks::SwitchToInitDetail, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(UIDetail::Init);
-    });
-    registerEvent(EventSinks::SwitchToButtonADetail, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(UIDetail::ButtonA);
-    });
-    registerEvent(EventSinks::SwitchToButtonBDetail, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(UIDetail::ButtonB);
-    });
-    registerEvent(EventSinks::SwitchToButtonCDetail, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(UIDetail::ButtonC);
-    });
-    registerEvent(EventSinks::SwitchToButtonDDetail, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(UIDetail::ButtonD);
-    });
-
-    registerEvent(EventSinks::SwitchToVoicesDetail, [] {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      useCases.setFocusAndMode(UIDetail::Voices);
-    });
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(UIDetail::Init); 
+                  });
+    registerEvent(EventSinks::SwitchToButtonADetail, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(UIDetail::ButtonA); 
+                  });
+    registerEvent(EventSinks::SwitchToButtonBDetail, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(UIDetail::ButtonB); 
+                  });
+    registerEvent(EventSinks::SwitchToButtonCDetail, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(UIDetail::ButtonC); 
+                  });
+    registerEvent(EventSinks::SwitchToButtonDDetail, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(UIDetail::ButtonD); 
+                  });
+    
+    registerEvent(EventSinks::SwitchToVoicesDetail, [] { 
+                    SettingsUseCases useCases(*Application::get().getSettings());
+                    useCases.setFocusAndMode(UIDetail::Voices); 
+                  });
 
     registerEvent(EventSinks::ToggleDirectLoad, [hwui] {
-      DirectLoadUseCases useCase(Application::get().getSettings()->getSetting<DirectLoadSetting>());
+      DirectLoadUseCases useCase(Application::get().getSettings()->getSetting<DirectLoadSetting>().get());
       useCase.toggleDirectLoadFromHWUI(hwui);
     });
 

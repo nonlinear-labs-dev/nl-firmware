@@ -5,7 +5,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/PedalEditor.h>
 #include <utility>
 
-PedalEditor::PedalEditor(PedalType *m)
+PedalEditor::PedalEditor(std::shared_ptr<PedalType> m)
     : m_mode(std::move(m))
 {
   m_mode->onChange(mem_fun(this, &PedalEditor::onSettingChanged));
