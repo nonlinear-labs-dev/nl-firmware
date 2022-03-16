@@ -1669,16 +1669,22 @@ void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, cons
 
 void EditBuffer::setReturningHWSourcesToCurrentPositionAndModulate(UNDO::Transaction *transaction)
 {
+  if(!Application::exists())
+  {
+    return;
+  }
+
   for(auto& p: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
   {
     if(auto hw = dynamic_cast<PhysicalControlParameter*>(p))
     {
-      if(hw->getReturnMode() != ReturnMode::None)
+      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2)
       {
-        if(Application::exists())
-        {
-          hw->setCPFromHwui(transaction, hw->getLastControlPositionValueBeforePresetLoad());
-        }
+        hw->setIndirect(transaction, hw->getDefValueAccordingToMode());
+      }
+      else
+      {
+        hw->setCPFromHwui(transaction, hw->getLastControlPositionValueBeforePresetLoad());
       }
     }
   }

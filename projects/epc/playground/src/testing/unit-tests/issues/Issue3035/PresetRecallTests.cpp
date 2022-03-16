@@ -6,6 +6,7 @@
 #include "parameters/PedalParameter.h"
 #include "use-cases/PedalParameterUseCases.h"
 #include "CompileTimeOptions.h"
+#include "parameters/RibbonParameter.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
@@ -134,166 +135,6 @@ TEST_CASE("Issue 3035, Loading Preset with held bender leads to wrong values", "
   }
 }
 
-TEST_CASE("Issue 3035, Loading Presets with differing ReturnTypes leads to correct loaded values Pedal Return to Zero", "[3035]")
-{
-  auto eb = TestHelper::getEditBuffer();
-  TestHelper::initSingleEditBuffer();
-  auto settings = TestHelper::getSettings();
-
-  SettingsUseCases settingsUseCase(*settings);
-  settingsUseCase.setAllRoutingEntries(true);
-  settingsUseCase.setGlobalLocal(true);
-
-  ParameterId srcID = { C15::PID::Pedal_4, VoiceGroup::Global };
-  auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
-  auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
-  auto connectionParam
-      = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Pedal_4_to_MC_A, VoiceGroup::Global });
-
-  PedalParameterUseCases pedalUseCase(pedal1);
-  EditBufferUseCases ebUseCase(*eb);
-  PresetManagerUseCases pmUseCases(*TestHelper::getPresetManager(), *TestHelper::getSettings());
-
-  const auto modTargetId = ParameterId({ C15::PID::Shp_A_Mix, VoiceGroup::I });
-  auto modTarget = eb->findParameterByID(modTargetId);
-
-  //Preset 1 mit Pedal 4 NonReturn auf 0% (standard)
-  TestHelper::initSingleEditBuffer();
-  //Macro Initial
-  MacroControlParameterUseCases mcUseCase(mcA);
-  mcUseCase.setControlPosition(0.5);
-
-  //Pedal Initial
-  pedalUseCase.setPedalMode(PedalModes::STAY);
-  pedalUseCase.setControlPosition(0.5);
-  CHECK(pedal1->getDisplayString() == "50.0 %");
-
-  //Set Modulation Target
-  ebUseCase.setParameter(modTargetId, 0);
-  ebUseCase.setModulationSource(MacroControls::MC1, modTargetId);
-  ebUseCase.setModulationAmount(1, modTargetId);
-
-  //Setup Mod routing
-  ParameterUseCases routeUseCase(connectionParam);
-  routeUseCase.setControlPosition(1);
-
-  REQUIRE(pedal1->getDisplayString() == "50.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-
-  auto mcAPreset1Pos = mcA->getDisplayString();
-  auto preset1 = pmUseCases.createBankAndStoreEditBuffer()->getPresetAt(0);
-
-  REQUIRE(pedal1->getDisplayString() == "50.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-
-  pedalUseCase.setPedalMode(PedalModes::RETURN_TO_ZERO);
-  REQUIRE(pedal1->getDisplayString() == "0.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-
-  auto mcAPreset2Pos = mcA->getDisplayString();
-  auto preset2 = pmUseCases.createBankAndStoreEditBuffer()->getPresetAt(0);
-
-  REQUIRE(pedal1->getDisplayString() == "0.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-  REQUIRE(pedal1->getControlPositionValue() == 0);
-
-  ebUseCase.load(preset1);
-  REQUIRE(pedal1->getControlPositionValue() == 0);
-  REQUIRE(pedal1->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == mcAPreset1Pos);
-
-  ebUseCase.load(preset2);
-  REQUIRE(pedal1->getDisplayString() == "0.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == mcAPreset2Pos);
-}
-
-
-TEST_CASE("Issue 3035, Loading Presets with differing ReturnTypes leads to correct loaded values Pedal Return to Center", "[3035]")
-{
-  auto eb = TestHelper::getEditBuffer();
-  TestHelper::initSingleEditBuffer();
-  auto settings = TestHelper::getSettings();
-
-  SettingsUseCases settingsUseCase(*settings);
-  settingsUseCase.setAllRoutingEntries(true);
-  settingsUseCase.setGlobalLocal(true);
-
-  ParameterId srcID = { C15::PID::Pedal_4, VoiceGroup::Global };
-  auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
-  auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
-  auto connectionParam
-      = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Pedal_4_to_MC_A, VoiceGroup::Global });
-
-  PedalParameterUseCases pedalUseCase(pedal1);
-  EditBufferUseCases ebUseCase(*eb);
-  PresetManagerUseCases pmUseCases(*TestHelper::getPresetManager(), *TestHelper::getSettings());
-
-  const auto modTargetId = ParameterId({ C15::PID::Shp_A_Mix, VoiceGroup::I });
-  auto modTarget = eb->findParameterByID(modTargetId);
-
-  //Preset 1 mit Pedal 4 NonReturn auf 0% (standard)
-  TestHelper::initSingleEditBuffer();
-  //Macro Initial
-  MacroControlParameterUseCases mcUseCase(mcA);
-  mcUseCase.setControlPosition(0.5);
-
-  //Pedal Initial
-  pedalUseCase.setPedalMode(PedalModes::STAY);
-  pedalUseCase.setControlPosition(0.5);
-  CHECK(pedal1->getDisplayString() == "50.0 %");
-
-  //Set Modulation Target
-  ebUseCase.setParameter(modTargetId, 0);
-  ebUseCase.setModulationSource(MacroControls::MC1, modTargetId);
-  ebUseCase.setModulationAmount(1, modTargetId);
-
-  //Setup Mod routing
-  ParameterUseCases routeUseCase(connectionParam);
-  routeUseCase.setControlPosition(1);
-
-  REQUIRE(pedal1->getDisplayString() == "50.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-
-  auto mcAPreset1Pos = mcA->getDisplayString();
-  auto preset1 = pmUseCases.createBankAndStoreEditBuffer()->getPresetAt(0);
-
-  REQUIRE(pedal1->getDisplayString() == "50.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-
-  pedalUseCase.setPedalMode(PedalModes::RETURN_TO_CENTER);
-  REQUIRE(pedal1->getDisplayString() == "0.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-
-  auto mcAPreset2Pos = mcA->getDisplayString();
-  auto preset2ReturnToCenter = pmUseCases.createBankAndStoreEditBuffer()->getPresetAt(0);
-
-  REQUIRE(pedal1->getDisplayString() == "0.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == "50.0 %");
-  REQUIRE(pedal1->getControlPositionValue() == 0);
-
-  ebUseCase.load(preset1);
-  REQUIRE(pedal1->getControlPositionValue() == 0);
-  REQUIRE(pedal1->getDisplayString() == "0.0 %");
-  REQUIRE(mcA->getDisplayString() == mcAPreset1Pos);
-
-  pedalUseCase.changeFromAudioEngine(0.5, HWChangeSource::TCD);
-
-  ebUseCase.load(preset2ReturnToCenter);
-  REQUIRE(pedal1->getControlPositionValue() == 0.5);
-  REQUIRE(pedal1->getDisplayString() == "! 50.0 %");
-  REQUIRE(mcAPreset2Pos == "100.0 %");
-  REQUIRE(modTarget->getDisplayString() == "0.0 %");
-}
-
 TEST_CASE("Load Preset with differing Return Types", "[3035]")
 {
   auto pm = TestHelper::getPresetManager();
@@ -304,6 +145,10 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
 
   auto settings = TestHelper::getSettings();
   PresetManagerUseCases uc(*pm, *settings);
+
+  auto MC_ID = ParameterId{C15::PID::MC_A, VoiceGroup::Global};
+  auto mc1 = pm->getEditBuffer()->findAndCastParameterByID<MacroControlParameter>(MC_ID);
+  auto ribbon1 = pm->getEditBuffer()->findAndCastParameterByID<RibbonParameter>({C15::PID::Ribbon_1, VoiceGroup::Global});
 
   auto bank = uc.importBankFromPath(std::filesystem::directory_entry{getSourceDir() + "/projects/epc/playground/test-resources/3035-5.xml"}, [](auto){});
   auto init = bank->getPresetAt(0);
@@ -319,4 +164,68 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
   auto rib1_stay = bank->getPresetAt(10);
   auto rib1_retcenter = bank->getPresetAt(12);
   auto rib1_retcenter_2 = bank->getPresetAt(13);
+
+  EditBufferUseCases ebUseCases(*pm->getEditBuffer());
+
+  WHEN("Pedal Load Return to Zero after Stay")
+  {
+    ebUseCases.load(ped1_nonret);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_nonret->findParameterByID(MC_ID, true)->getValue());
+    ebUseCases.load(ped1_retzero);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_retzero->findParameterByID(MC_ID, true)->getValue());
+  }
+
+  WHEN("Pedal Load Return to Center after Stay")
+  {
+    ebUseCases.load(ped1_nonret);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_nonret->findParameterByID(MC_ID, true)->getValue());
+    ebUseCases.load(ped1_retcenter);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_retcenter->findParameterByID(MC_ID, true)->getValue());
+  }
+
+  WHEN("Pedal Load Stay after Return to Zero")
+  {
+    ebUseCases.load(ped1_retzero);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_retzero->findParameterByID(MC_ID, true)->getValue());
+    ebUseCases.load(ped1_nonret);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_nonret->findParameterByID(MC_ID, true)->getValue());
+  }
+
+  WHEN("Pedal Load Stay after Return to Center")
+  {
+    ebUseCases.load(ped1_retcenter);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_retcenter->findParameterByID(MC_ID, true)->getValue());
+    ebUseCases.load(ped1_nonret);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == ped1_nonret->findParameterByID(MC_ID, true)->getValue());
+  }
+
+  WHEN("Ribbon Load Stay after Return to Center")
+  {
+    ebUseCases.load(rib1_retcenter);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == rib1_retcenter->findParameterByID(MC_ID, true)->getValue());
+    CHECK(Approx(ribbon1->getControlPositionValue()) == 0);
+    ebUseCases.load(rib1_stay);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
+    CHECK(Approx(ribbon1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
+  }
+
+  WHEN("Ribbon Load Return to Center after Stay")
+  {
+    ebUseCases.load(rib1_stay);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
+    ebUseCases.load(rib1_retcenter);
+    TestHelper::doMainLoopIteration();
+    CHECK(Approx(mc1->getControlPositionValue()) == rib1_retcenter->findParameterByID(MC_ID, true)->getValue());
+  }
 }
