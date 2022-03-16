@@ -1684,7 +1684,7 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
       }
       else
       {
-        hw->setCPFromHwui(transaction, hw->getLastControlPositionValueBeforePresetLoad());
+        hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad());
       }
     }
   }

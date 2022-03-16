@@ -80,7 +80,7 @@ void PhysicalControlParameter::onValueChanged(Initiator initiator, tControlPosit
       for(ModulationRoutingParameter *target : m_targets)
         target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
     }
-    else
+    else if(initiator != Initiator::EXPLICIT_LOAD)
     {
       for(ModulationRoutingParameter *target : m_targets)
         target->applyAbsolutePlaycontrollerPhysicalControl(newValue);

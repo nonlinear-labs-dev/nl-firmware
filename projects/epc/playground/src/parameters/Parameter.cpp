@@ -144,6 +144,11 @@ void Parameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlP
   setCpValue(transaction, Initiator::INDIRECT_SETTING_CHANGED, cpValue, false);
 }
 
+void Parameter::setCPFromLoad(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+{
+  setCpValue(transaction, Initiator::EXPLICIT_LOAD, cpValue, false);
+}
+
 void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   auto q = getValue().getQuantizedValue(value, true);
