@@ -1682,7 +1682,7 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
       {
         if(hw->getReturnMode() == ReturnMode::Center && hw->getLastReturnModeBeforePresetLoad() == ReturnMode::Center)
         {
-          hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad());
+          hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad(), true);
         }
         else
         {
@@ -1691,7 +1691,7 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
       }
       else
       {
-        hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad());
+        hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad(), false);
       }
     }
   }

@@ -144,9 +144,9 @@ void Parameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlP
   setCpValue(transaction, Initiator::INDIRECT_SETTING_CHANGED, cpValue, false);
 }
 
-void Parameter::setCPFromLoad(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+void Parameter::setCPFromLoad(UNDO::Transaction *transaction, const tControlPositionValue &cpValue, bool sendToEngine)
 {
-  setCpValue(transaction, Initiator::EXPLICIT_LOAD, cpValue, false);
+  setCpValue(transaction, Initiator::EXPLICIT_LOAD, cpValue, sendToEngine);
 }
 
 void Parameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)

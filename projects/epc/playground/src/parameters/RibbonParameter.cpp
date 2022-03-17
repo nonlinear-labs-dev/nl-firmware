@@ -347,7 +347,7 @@ size_t RibbonParameter::getHash() const
 
 void RibbonParameter::sendToPlaycontroller() const
 {
-  Parameter::sendToPlaycontroller();
+  PhysicalControlParameter::sendToPlaycontroller();
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
   Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
