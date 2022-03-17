@@ -9,7 +9,7 @@ declare -A versions
 collect_package() {
     name="$1"
     version="$2"
-    
+
     for ENDING in "pkg.tar.xz" "pkg.tar.zst"; do
         for PLATFORM in "x86_64" "any"; do
             fileName="$name-$version-$PLATFORM.$ENDING"
@@ -19,7 +19,7 @@ collect_package() {
             fi
         done
     done
-        
+
     echo "Could not install package $name in version $version."
     return 1
 }
@@ -27,7 +27,7 @@ collect_package() {
 collect_packages() {
   for name in "${!versions[@]}"; do
     version="${versions[$name]}"
-      
+
     EXISTING=$(pacman -Qi $name 2> /dev/null | grep Version | sed 's/Version\s*: //g')
     if [ ! "$EXISTING" = "$version" ]; then
       echo "Installing $name in version $version."
@@ -41,7 +41,7 @@ get_package_with_highest_version() {
   if [ ! -z "$package" ]; then
     name=$(echo $package | cut -f1 -d " ")
     version=$(echo $package | cut -f2 -d " ")
-  
+
     if [ -z ${versions[$name]} ]; then
       versions[$name]=$version
     elif [[ ${versions[$name]} < $version ]]; then
@@ -52,34 +52,34 @@ get_package_with_highest_version() {
 
 install_packages() {
     echo "Installing packages"
-    
+
     while read -r package; do get_package_with_highest_version "$package"; done < /build-packages.txt
     while read -r package; do get_package_with_highest_version "$package"; done < /update-packages.txt
-    
+
     collect_packages
-    
+
     PACKAGES_COLLECTION=$(echo $PACKAGES_COLLECTION | tr ' ' '\n' | sort -u | tr '\n' ' ')
     pacman --noconfirm -Sy
-    echo "Packages $PACKAGES_COLLECTION" 
+    echo "Packages $PACKAGES_COLLECTION"
     yes | pacman -U $PACKAGES_COLLECTION
     return 0
 }
 
 build_c15() {
-  mkdir -p /bindir/build
-  cd /bindir/build
-  
-  echo "en_US@nonlinear.UTF-8 UTF-8" >> /etc/locale.gen
-  echo "LANG=en_US@nonlinear.UTF-8" > /etc/locale.conf
-  touch /usr/share/locale/locale.alias
+    mkdir -p /bindir/build
+    cd /bindir/build
 
-  cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
-  make -j8
-  make install
-  make install-nl-locale
+    echo "en_US@nonlinear.UTF-8 UTF-8" >> /etc/locale.gen
+    echo "LANG=en_US@nonlinear.UTF-8" > /etc/locale.conf
+    touch /usr/share/locale/locale.alias
 
-  mkdir -p /usr/local/C15/web
-  tar -xzf /web/web.tar.gz -C /usr/local/C15/web
+    cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
+    make -j8
+    make install
+    make install-nl-locale
+
+    mkdir -p /usr/local/C15/web
+    tar -xzf /web/web.tar.gz -C /usr/local/C15/web
 }
 
 setup_network_manager() {
@@ -140,37 +140,37 @@ ENDOFHERE
 }
 
 perform_tweaks() {
-  useradd -m sscl
-  echo 'sscl:sscl' | chpasswd
-  echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-    
-  echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-  locale-gen
-  echo "LANG=en_US.UTF-8" > /etc/locale.conf
+    useradd -m sscl
+    echo 'sscl:sscl' | chpasswd
+    echo "sscl ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+    locale-gen
+    echo "LANG=en_US.UTF-8" > /etc/locale.conf
 }
 
 package_update() {
-  OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
-  OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
+    OUTPUT_OVERLAY_HASH=$(mount | grep -o "upperdir=.*diff," | sed 's/.*overlay2//' | sed 's/diff,/diff/' | head -n1)
+    OUTPUT_OVERLAY="/host-docker$OUTPUT_OVERLAY_HASH"
 
-  rm -rf /bindir/update
-  mkdir -p /bindir/update
-  tar -C $OUTPUT_OVERLAY \
-	--exclude='./srcdir' \
-	--exclude='./bindir' \
-  --exclude='./bindir-root' \
-  --exclude='./web' \
-	--exclude='./host-docker' \
-	--exclude='./tmp' \
-	--exclude='./root' \
-  --exclude='./boot' \
-  --exclude='./usr/include' \
-  --exclude='./var/lib/pacman' \
-	-czf /bindir/update/NonLinuxOverlay.tar.gz .
-  touch /bindir/update/$(sha256sum /bindir/update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
-  
-  # install_backdoor
-  tar -C /bindir/ -cf /bindir/update.tar update
+    rm -rf /bindir/update
+    mkdir -p /bindir/update
+    tar -C $OUTPUT_OVERLAY \
+        --exclude='./srcdir' \
+        --exclude='./bindir' \
+        --exclude='./bindir-root' \
+        --exclude='./web' \
+        --exclude='./host-docker' \
+        --exclude='./tmp' \
+        --exclude='./root' \
+        --exclude='./boot' \
+        --exclude='./usr/include' \
+        --exclude='./var/lib/pacman' \
+        -czf /bindir/update/NonLinuxOverlay.tar.gz .
+    touch /bindir/update/$(sha256sum /bindir/update/NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign
+
+    # install_backdoor
+    tar -C /bindir/ -cf /bindir/update.tar update
 }
 
 install_packages
