@@ -383,6 +383,11 @@ void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::Unmodulateab
 
 void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg)
 {
+  if(msg.parameterId == C15::PID::MC_A)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "mc A:", msg.controlPosition);
+  }
+
   // (fail-safe) dispatch by ParameterList
   auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
@@ -411,7 +416,11 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, msg.parameterId, msg.controlPosition, toString(msg.returnMode));
+  if(msg.parameterId == C15::PID::Ribbon_1)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, msg.parameterId, msg.controlPosition, toString(msg.returnMode));
+  }
+
   auto element = m_dsp->getParameter(msg.parameterId);
   auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
 
@@ -444,7 +453,7 @@ void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg)
 
 void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage& msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__);
+  nltools::Log::error(__PRETTY_FUNCTION__, "mc A", msg.macros[0].controlPosition);
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
