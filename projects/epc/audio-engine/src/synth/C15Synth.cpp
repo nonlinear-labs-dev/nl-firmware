@@ -411,6 +411,7 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, msg.parameterId, msg.controlPosition, toString(msg.returnMode));
   auto element = m_dsp->getParameter(msg.parameterId);
   auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
 
@@ -436,18 +437,21 @@ void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m
 
 void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__);
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
 
 void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__);
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
 
 void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__);
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
@@ -506,5 +510,6 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
 
 void C15Synth::onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, msg.parameterId, msg.controlPosition, toString(msg.returnMode));
   m_inputEventStage.onSendParameterReceived(msg);
 }

@@ -239,10 +239,6 @@ bool MacroControlParameter::isChangedFromLoaded() const
   return Parameter::isChangedFromLoaded();
 }
 
-void MacroControlParameter::undoableResetConnectionsToTargets()
-{
-}
-
 void MacroControlParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   super::loadDefault(transaction, mode);

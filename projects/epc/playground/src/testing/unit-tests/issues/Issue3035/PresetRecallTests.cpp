@@ -7,6 +7,7 @@
 #include "use-cases/PedalParameterUseCases.h"
 #include "CompileTimeOptions.h"
 #include "parameters/RibbonParameter.h"
+#include "use-cases/RibbonParameterUseCases.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
@@ -155,6 +156,7 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
   auto pedal4 = pm->getEditBuffer()->findAndCastParameterByID<PedalParameter>({C15::PID::Pedal_4, VoiceGroup::Global});
   PedalParameterUseCases pedalUseCase(pedal1);
   PedalParameterUseCases pedal4UseCase(pedal4);
+  RibbonParameterUseCases ribbonUseCase(ribbon1);
 
   auto bank = uc.importBankFromPath(std::filesystem::directory_entry{getSourceDir() + "/projects/epc/playground/test-resources/3035-5.xml"}, [](auto){});
   auto init = bank->getPresetAt(0);
@@ -173,11 +175,18 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
 
   EditBufferUseCases ebUseCases(*pm->getEditBuffer());
 
+  auto globalLocalEnable = settings->getSetting<GlobalLocalEnableSetting>();
+  auto routings = settings->getSetting<RoutingSettings>();
+
+  globalLocalEnable->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
+  routings->setAllValues(true);
+
   WHEN("Pedal Load Init -> Move -> Load Ped 1")
   {
     ebUseCases.load(init);
     TestHelper::doMainLoopIteration();
     pedalUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
+    CHECK(pedal1->getDisplayString() == "100.0 %");
     ebUseCases.load(ped1_0);
     TestHelper::doMainLoopIteration();
     CHECK(pedal1->getDisplayString() == "100.0 %");
@@ -188,6 +197,7 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
     ebUseCases.load(ped1_nonret);
     TestHelper::doMainLoopIteration();
     pedalUseCase.changeFromAudioEngine(0.25, HWChangeSource::TCD);
+    CHECK(pedal1->getDisplayString() == "25.0 %");
     ebUseCases.load(ped1_retzero);
     TestHelper::doMainLoopIteration();
     CHECK(pedal1->getDisplayString() == "25.0 %");
@@ -198,11 +208,51 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
     ebUseCases.load(init);
     TestHelper::doMainLoopIteration();
     pedal4UseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
+    TestHelper::doMainLoopIteration();
+    CHECK(pedal4->getDisplayString() == "100.0 %");
+
     ebUseCases.load(ped4_nonret);
     TestHelper::doMainLoopIteration();
 
     CHECK(pedal4->getDisplayString() == "100.0 %");
     CHECK(mc4->getDisplayString() == "0.0 %");
+  }
+
+  WHEN("Ribbon Return to Center -> Stay")
+  {
+    ebUseCases.load(rib1_retcenter);
+    TestHelper::doMainLoopIteration();
+    ribbonUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
+    TestHelper::doMainLoopIteration();
+
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
+    CHECK(mc1->getDisplayString() == "100.0 %");
+
+    ebUseCases.load(rib1_stay);
+    TestHelper::doMainLoopIteration();
+
+    CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
+    CHECK(mc1->getDisplayString() == "50.0 %");
+    CHECK(ribbon1->getDisplayString() == "50.0 %");
+  }
+
+  WHEN("Ribbon Return to Center -> Return to Center")
+  {
+    ribbonUseCase.changeFromAudioEngine(0, HWChangeSource::TCD);
+
+    ebUseCases.load(rib1_retcenter);
+    TestHelper::doMainLoopIteration();
+    ribbonUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
+    TestHelper::doMainLoopIteration();
+
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
+    CHECK(mc1->getDisplayString() == "100.0 %");
+
+    ebUseCases.load(rib1_retcenter_2);
+    TestHelper::doMainLoopIteration();
+
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
+    CHECK(mc1->getDisplayString() == "100.0 %");
   }
 
   WHEN("Pedal Load Return to Zero after Stay")
@@ -247,6 +297,8 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
 
   WHEN("Ribbon Load Stay after Return to Center")
   {
+    ribbonUseCase.changeFromAudioEngine(0, HWChangeSource::TCD);
+
     ebUseCases.load(rib1_retcenter);
     TestHelper::doMainLoopIteration();
     CHECK(Approx(mc1->getControlPositionValue()) == rib1_retcenter->findParameterByID(MC_ID, true)->getValue());

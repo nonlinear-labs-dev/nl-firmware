@@ -50,12 +50,14 @@ class PhysicalControlParameter : public Parameter
   virtual tControlPositionValue getDefValueAccordingToMode() const = 0;
   bool isValueChangedFromLoaded() const override;
   [[nodiscard]] double getLastControlPositionValueBeforePresetLoad() const;
+  [[nodiscard]] ReturnMode getLastReturnModeBeforePresetLoad() const;
 
   virtual void onLocalEnableChanged(bool b) = 0;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
   void sendToPlaycontroller() const override;
+  IntrusiveList<ModulationRoutingParameter *>& getTargets();
 
  private:
   void sendParameterMessage() const override;
@@ -64,6 +66,7 @@ class PhysicalControlParameter : public Parameter
   IntrusiveList<ModulationRoutingParameter *> m_targets;
 
   tControlPositionValue m_valueBeforeLastLoad = 0;
+  ReturnMode m_returnModeBeforeLastLoad = ReturnMode::None;
 
   bool m_changingFromHWUI = false;
   bool m_lastChangedFromHWUI = false;

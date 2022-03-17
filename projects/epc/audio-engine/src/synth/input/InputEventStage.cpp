@@ -173,6 +173,7 @@ void InputEventStage::onTCDEvent()
 
     case DecoderEventType::HardwareChange:
     {
+      nltools::Log::error(__PRETTY_FUNCTION__, decoder->getKeyOrController(), decoder->getValue(), "TCD");
       onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
                   false, false, false);
     }

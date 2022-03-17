@@ -389,6 +389,7 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
 
 void AudioEngineProxy::sendEditBuffer()
 {
+  nltools::Log::error(__PRETTY_FUNCTION__);
   auto eb = m_presetManager.getEditBuffer();
 
   switch(eb->getType())

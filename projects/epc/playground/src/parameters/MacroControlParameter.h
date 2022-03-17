@@ -28,7 +28,6 @@ class MacroControlParameter : public Parameter
   void undoableSetInfo(UNDO::Transaction *transaction, const Glib::ustring &newName);
 
   void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount) override;
-  void undoableResetConnectionsToTargets();
   const Glib::ustring &getGivenName() const;
   const Glib::ustring &getInfo() const;
 

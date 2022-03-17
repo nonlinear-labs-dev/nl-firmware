@@ -405,8 +405,8 @@ void PlaycontrollerProxy::requestPlaycontrollerUHID()
 
 void PlaycontrollerProxy::requestHWPositions()
 {
+  nltools::Log::error("sending request POLLHWS to LPC");
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_POLLHWS);
-  nltools::Log::info("sending request POLLHWS to LPC");
 }
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const

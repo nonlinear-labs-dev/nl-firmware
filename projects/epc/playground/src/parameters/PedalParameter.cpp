@@ -114,6 +114,11 @@ void PedalParameter::setIndirect(UNDO::Transaction *transaction, const tControlP
   Parameter::setIndirect(transaction, value);
 }
 
+void PedalParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue)
+{
+  PhysicalControlParameter::onValueChanged(initiator, oldValue, newValue);
+}
+
 QuantizedValue &PedalParameter::getValue()
 {
   if(getID().getNumber() == C15::PID::Pedal_1)

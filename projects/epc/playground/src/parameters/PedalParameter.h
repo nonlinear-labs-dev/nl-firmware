@@ -40,6 +40,7 @@ class PedalParameter : public PhysicalControlParameter
   tControlPositionValue getDefValueAccordingToMode() const override;
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
                   bool dosendToPlaycontroller) override;
+  void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
  private:
   const ScaleConverter *createScaleConverter() const;

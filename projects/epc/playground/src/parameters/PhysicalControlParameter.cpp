@@ -39,6 +39,11 @@ double PhysicalControlParameter::getLastControlPositionValueBeforePresetLoad() c
   return m_valueBeforeLastLoad;
 }
 
+ReturnMode PhysicalControlParameter::getLastReturnModeBeforePresetLoad() const
+{
+  return m_returnModeBeforeLastLoad;
+}
+
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
   nltools::Log::error("onChangeFromExternalSource", getID().toString(), newValue, toString(source));
@@ -100,6 +105,7 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
 
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
+  m_returnModeBeforeLastLoad = getReturnMode();
   m_valueBeforeLastLoad = getControlPositionValue();
   setIndirect(transaction, value);
 }
@@ -295,4 +301,9 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
   };
 
   return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
+}
+
+IntrusiveList<ModulationRoutingParameter *> &PhysicalControlParameter::getTargets()
+{
+  return m_targets;
 }
