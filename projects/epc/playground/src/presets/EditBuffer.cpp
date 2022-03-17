@@ -1682,7 +1682,7 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
       {
         if(hw->getReturnMode() == ReturnMode::Center && hw->getLastReturnModeBeforePresetLoad() == ReturnMode::Center)
         {
-          hw->onChangeFromExternalSource(hw->getLastControlPositionValueBeforePresetLoad(), HWChangeSource::UI);
+          hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad());
         }
         else
         {
