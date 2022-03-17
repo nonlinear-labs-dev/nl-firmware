@@ -9,6 +9,21 @@ set -x
 # and update the BBB excluding the /update directory
 #
 
+t2s() {
+    /update/utilities/text2soled multitext "$1" "$2" "$3" "$4" "$5" "$6"
+}
+
+pretty() {
+    echo "$*"
+    HEADLINE="$1"
+    BOLED_LINE_1="$2"
+    BOLED_LINE_2="$3"
+    SOLED_LINE_2="$4"
+    SOLED_LINE_3="$5"
+
+    t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
+}
+
 EPC_IP=$1
 BBB_IP=$2
 OLD_MACHINE_ID=$(cat /etc/machine-id)
@@ -73,7 +88,7 @@ update_rootfs(){
 
     mkdir /update/BBB/rootfs \
     && gzip -dc /update/BBB/rootfs.tar.gz | tar -C /update/BBB/rootfs -xf - \
-    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' --exclude '/usr/C15/scripts/calibration' --delete /update/BBB/rootfs/ / \
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -caxv --exclude '/etc/hostapd.conf' --exclude '/var/log/journal' --exclude '/update' --exclude '/usr/C15/scripts/calibration' --delete /update/BBB/rootfs/ / \
     && chown -R root.root /update
 
     UPDATE_RESULT=$?
@@ -134,13 +149,14 @@ sync_emmc() {
     [ "$(mount | grep " / " | cut -d' ' -f1)" == "$EMMC_DEVICE_P1" ] \
     && { printf "root mounted on $EMMC_DEVICE_P1, will not sync emmc!"; return 1; }
 
+    pretty "" "This might take a while..." "Get a snack!" "This might take a while..." "Get a snack!"
     umount ${EMMC_DEVICE_P1}
     dd if=/dev/zero of=${EMMC_DEVICE_P1} bs=1024 count=1024 \
     && echo 'yes' | mkfs.ext4 ${EMMC_DEVICE_P1} && hdparm -z "${EMMC_DEVICE}" && sync
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to clean part. ..." "60"; fi
 
     mkdir ${EMMC_MOUNTPOINT} && mount ${EMMC_DEVICE_P1} ${EMMC_MOUNTPOINT} \
-    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -cax --exclude '${EMMC_MOUNTPOINT}' / ${EMMC_MOUNTPOINT} \
+    && LD_LIBRARY_PATH=/update/utilities /update/utilities/rsync -caxv --exclude '${EMMC_MOUNTPOINT}' / ${EMMC_MOUNTPOINT} \
     && umount ${EMMC_DEVICE_P1}
     if [ $? -ne 0 ]; then report_and_quit "E60 BBB update: Failed to sync part. ..." "60"; fi
 

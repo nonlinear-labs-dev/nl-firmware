@@ -12,5 +12,5 @@ UpdateService::UpdateService()
 void UpdateService::onUpdateNotificationReceived()
 {
   nltools::Log::error("onUpdateNotificationReceived");
-  SpawnCommandLine cmd("systemctl start install-update-from-epc-oneshot.service");
+  SpawnCommandLine cmd("systemctl start install-update-from-epc.service");
 }
