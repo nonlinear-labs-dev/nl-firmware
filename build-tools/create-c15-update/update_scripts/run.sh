@@ -245,6 +245,11 @@ stop_services() {
     return 0
 }
 
+does_update_exist_on_epc_tmp() {
+  executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
+  return $?
+}
+
 is_any_install_from_epc_service_oneshot() {
   serviceFile='/usr/lib/systemd/system/install-update-from-epc.service'
   serviceFileOneshot='/usr/lib/systemd/system/install-update-from-epc-oneshot.service'
