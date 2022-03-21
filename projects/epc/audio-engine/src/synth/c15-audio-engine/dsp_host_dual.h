@@ -44,7 +44,7 @@ inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
-inline constexpr bool LOG_SETTINGS = false;
+inline constexpr bool LOG_SETTINGS = true;
 inline constexpr bool LOG_RECALL = false;
 inline constexpr bool LOG_RECALL_DETAILS = false;
 inline constexpr bool LOG_RECALL_LEVELS = false;
@@ -106,6 +106,15 @@ class DSPInterface
   {
     return true;
   }
+  // ...
+  virtual void onSettingToneToggle(const uint16_t _setting)
+  {
+  }
+  virtual OutputResetEventSource onSettingInitialSinglePreset()
+  {
+    return OutputResetEventSource::None;
+  }
+  //
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
     // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
@@ -177,8 +186,8 @@ class dsp_host_dual : public DSPInterface
   void onSettingTransitionTime(const float _position);
   void onSettingGlitchSuppr(const bool _enabled);
   void onSettingTuneReference(const float _position);
-  void onSettingInitialSinglePreset();
-  uint32_t onSettingToneToggle();
+  OutputResetEventSource onSettingInitialSinglePreset() override;
+  void onSettingToneToggle(const uint16_t _setting) override;
 
   // dsp-related
   void render();
