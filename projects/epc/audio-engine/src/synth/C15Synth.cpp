@@ -279,29 +279,9 @@ void C15Synth::toggleTestTone()
   m_dsp->onSettingToneToggle(0);  // 0 - switches modes
 }
 
-void C15Synth::selectTestToneFrequency()
+void C15Synth::onSettingInitialSinglePreset()
 {
-  nltools::Log::info("currently disabled");
-}
-
-void C15Synth::selectTestToneAmplitude()
-{
-  nltools::Log::info("currently disabled");
-}
-
-void C15Synth::increase()
-{
-  changeSelectedValueBy(1);
-}
-
-void C15Synth::decrease()
-{
-  changeSelectedValueBy(-1);
-}
-
-void C15Synth::changeSelectedValueBy(int i)
-{
-  nltools::Log::info("currently disabled");
+  m_dsp->onSettingInitialSinglePreset();  // initial sound, out a mix: 100%
 }
 
 void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg)
