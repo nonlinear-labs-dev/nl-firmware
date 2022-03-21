@@ -16,7 +16,7 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
             std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 
-  for(auto& hw: m_localDisabledPositions)
+  for(auto &hw : m_localDisabledPositions)
     std::get<0>(hw) = std::numeric_limits<float>::max();
 }
 
@@ -173,15 +173,26 @@ void InputEventStage::onTCDEvent()
 
     case DecoderEventType::HardwareChange:
     {
-      if(decoder->getKeyOrController() == (int)HardwareSource::RIBBON1)
+      if(decoder->getKeyOrController() == (int) HardwareSource::RIBBON1)
       {
         nltools::Log::error(__PRETTY_FUNCTION__, "Ribbon1 value:", decoder->getValue(), "source: TCD");
       }
       onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
                   false, false, false);
-    }
-
       break;
+    }
+    case DecoderEventType::PollStart:
+    {
+      // todo: disable midi send?
+      // todo: notify playground (hw poll ack/start)?
+      break;
+    }
+    case DecoderEventType::PollStop:
+    {
+      // todo: re-enable midi send?
+      // todo: notify playground (all hw sources were polled, initial sound can be loaded)
+      break;
+    }
     case DecoderEventType::UNKNOWN:
       nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
   }

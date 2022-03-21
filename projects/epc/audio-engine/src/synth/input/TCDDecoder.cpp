@@ -2,9 +2,9 @@
 #include "TCDDecoder.h"
 
 TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options, KeyShift *keyShift)
-    : m_dsp { dsp }
-    , m_options { options }
-    , m_keyShift { keyShift }
+    : m_dsp{ dsp }
+    , m_options{ options }
+    , m_keyShift{ keyShift }
 {
   reset();
 }
@@ -19,6 +19,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
 
   if(st == 6)
   {
+    // todo: use shared/playcontroller/playcontroller-defs.h HW_SOURCE_IDS protocol enum for channel numbers
     if(channel >= 0 && channel <= 7)
     {
       uint32_t arg = _data1 + (_data0 << 7);
@@ -40,6 +41,28 @@ bool TCDDecoder::decode(const MidiEvent &event)
 
       keyOrController = channel;
       m_type = DecoderEventType::HardwareChange;
+    }
+    else if(channel == 12)  // PlayController Command
+    {
+      // todo: use shared/playcontroller/playcontroller-defs.h AE_DEVELOPPER_CMDS enum for command ids
+      switch(_data1)
+      {
+        case 1:  // developer: test tone off
+          m_dsp->onSettingToneToggle(1);
+          break;
+        case 2:  // developer: test tone on (and synth)
+          m_dsp->onSettingToneToggle(3);
+          break;
+        case 3:  // developer: default sound (single initial, out mix a: 100%)
+          m_dsp->onSettingInitialSinglePreset();
+          break;
+        case 4:  // hw poll start
+          m_type = DecoderEventType::PollStart;
+          break;
+        case 5:  // hw poll stop
+          m_type = DecoderEventType::PollStop;
+          break;
+      }
     }
     else if(channel == 13)  //Key Pos
     {
