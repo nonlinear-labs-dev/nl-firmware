@@ -1032,6 +1032,24 @@ void NL_EHC_SetLegacyPedalType(uint16_t const controller, uint16_t type)
   initController(tmp, 0);
 }
 
+void NL_EHC_PollControllers(void)
+{
+  if (enableEHC == 0)
+    return;
+  for (int i = NUMBER_OF_CONTROLLERS - 1; i >= 0; i--)
+  {  // process controllers #7 down to #0
+    Controller_T *const this = &ctrl[i];
+    if (this->status.initialized && this->status.pluggedIn
+        && this->status.isAutoRanged && this->status.outputIsValid
+        && this->config.hwId != 15)
+    {
+      if (!this->config.silent)
+        ADC_WORK_WriteHWValueForAE(this->config.hwId, this->final);
+      ADC_WORK_WriteHWValueForUI(this->config.hwId, this->final);
+    }
+  }
+}
+
 /*************************************************************************/ /**
 * @brief	NL_EHC_ProcessControllers
 * main repetitive process called from ADC_Work_Process every 12.5ms

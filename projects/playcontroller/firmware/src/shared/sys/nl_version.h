@@ -27,7 +27,14 @@
 // ==== V 208 ====
 // added "Poll Hardware Sources" feature
 // added "Enable HW Source messages to UI" feature (default: disabled)
+
+// ==== V 208 ====
+// added "Poll Hardware Sources" feature
+// added "Enable HW Source messages to UI" feature (default: disabled)
 #define SW_VERSION 208
+
+// ==== V 209 ====
+// new/better ranging for Aftertouch
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros

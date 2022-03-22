@@ -45,3 +45,6 @@ uint32_t ADC_WORK_GetRibbon2Behaviour(void);
 
 void ADC_WORK_Select_BenderTable(uint16_t const curve);
 void ADC_WORK_Select_AftertouchTable(uint16_t const curve);
+
+uint16_t  ADC_WORK_GetATAdcDataSize(void);
+uint16_t* ADC_WORK_GetATAdcData(void);
