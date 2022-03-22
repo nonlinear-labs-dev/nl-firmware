@@ -733,7 +733,7 @@ static void ProcessAftertouch(void)
 
   value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
 
-#if NEW_AT_RANGING == 1
+#if 1
   static int32_t scaleFactor = AT_SCALE_FACTOR;
 
   int key             = POLY_GetSingleKey();
