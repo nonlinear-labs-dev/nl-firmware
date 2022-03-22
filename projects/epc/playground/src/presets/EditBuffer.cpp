@@ -464,7 +464,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *pres
   setAttribute(transaction, "origin-II-vg", toString(VoiceGroup::II));
 
   copyFrom(transaction, preset);
-  undoableSetLoadedPresetInfo(transaction, preset);
+  undoableSetLoadedPresetInfo(transaction, preset, false);
 
   if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
@@ -488,11 +488,12 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
+  initRecallValues(transaction);
   setHWSourcesToLoadRulePostionsAndModulate(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 
-void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset)
+void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset, bool resetRecall)
 {
   Uuid newId = Uuid::none();
   std::string presetOriginDescription = "Init";
@@ -536,7 +537,8 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
     onChange();
   });
 
-  initRecallValues(transaction);
+  if(resetRecall)
+    initRecallValues(transaction);
 }
 
 void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
