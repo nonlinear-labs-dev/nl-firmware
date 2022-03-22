@@ -126,7 +126,7 @@ enum HW_SOURCE_IDS
 #define NUM_HW_REAL_SOURCES (HW_SOURCE_ID_PEDAL_8 + 1)  // all but LAST_KEY
 #define NUM_HW_SOURCES      (HW_SOURCE_ID_LAST_KEY + 1)
 
-enum AE_TCD_OVER_MIDI_IDS
+enum AE_PROTOCOL_MSG_IDS
 {
   AE_PROTOCOL_WRAPPER  = 0x0E,       // USB MIDI packet header "Cable #0, packet type:PitchBend"
   AE_PROTOCOL_HW_POS   = 0xE0,       // MIDI command "Pitch Bender" + MIDI channel=HW_SOURCE_ID
