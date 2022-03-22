@@ -12,6 +12,14 @@ C15_CLI::C15_CLI(C15Synth *synth, AudioOutput *audioOut)
   m_commands['e'] = [=] { synth->resetDSP(); };
   m_commands['t'] = [=] { synth->toggleTestTone(); };
   m_commands['i'] = [=] { synth->onSettingInitialSinglePreset(); };
+  m_commands['a'] = [=] {
+    synth->doTcd({ 0xED, 0, 60 });     // key pos 60
+    synth->doTcd({ 0xEE, 127, 127 });  // key down 100% vel
+  };
+  m_commands['s'] = [=] {
+    synth->doTcd({ 0xED, 0, 60 });     // key pos 60
+    synth->doTcd({ 0xEF, 127, 127 });  // key up 100% vel
+  };
 
   m_commands['r'] = [=] {
     if(audioOut)
