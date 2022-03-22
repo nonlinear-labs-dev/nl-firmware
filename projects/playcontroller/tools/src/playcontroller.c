@@ -418,19 +418,19 @@ int main(int argc, char const *argv[])
       SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_AUDIO_ENGINE_CMD;
       if (strncmp(argv[3], AE_CMD_TTOFF, sizeof AE_CMD_TTOFF) == 0)
       {
-        SET_DATA[3] = AE_CMD_TONE_OFF;
+        SET_DATA[3] = AE_PROTOCOL_CMD_TONE_OFF;
         writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
         return 0;
       }
       if (strncmp(argv[3], AE_CMD_TTON, sizeof AE_CMD_TTON) == 0)
       {
-        SET_DATA[3] = AE_CMD_TONE_ON;
+        SET_DATA[3] = AE_PROTOCOL_CMD_TONE_ON;
         writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
         return 0;
       }
       if (strncmp(argv[3], AE_CMD_DEFSND, sizeof AE_CMD_DEFSND) == 0)
       {
-        SET_DATA[3] = AE_CMD_DEFAULT_SOUND;
+        SET_DATA[3] = AE_PROTOCOL_CMD_DEFAULT_SOUND;
         writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
         return 0;
       }

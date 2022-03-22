@@ -33,6 +33,7 @@
 static int      sendUiValues = 0;
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
+static int      pollDataRequest = 0;
 
 static int32_t lastPitchbendRaw;
 static int32_t lastPitchbend;
@@ -404,13 +405,23 @@ static void SendAEMessages(void)
 
 void ADC_WORK_PollRequestHWValues(void)
 {
+  pollDataRequest = 1;
+}
+
+static void PollHWValues(void)
+{
+  MSG_SendAEDevelopperCmd(AE_PROTOCOL_CMD_POLL_DATA_START);
+
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
   ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
 
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
   ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
 
-  NL_EHC_PollValues();
+  NL_EHC_PollControllers();
+
+  SendAEMessages();
+  MSG_SendAEDevelopperCmd(AE_PROTOCOL_CMD_POLL_DATA_STOP);
 }
 
 /*****************************************************************************
@@ -422,7 +433,7 @@ void ADC_WORK_SetRibbon1Behaviour(uint16_t const behaviour)
   ribbon[RIB1].behavior = behaviour;
   if (ribbon[RIB1].isEditControl == 0)  // initialization if working as a HW source
   {
-    if ((ribbon[RIB1].behavior == 1) || (ribbon[RIB1].behavior == 3))  // "return" behaviour
+    if ((ribbon[RIB1].behavior == 1) || (ribbon[RIB1].behavior == 3))  // "return" behavior
     {
       ribbon[RIB1].output = 8000;
       ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_RIBBON_1, 8000);
@@ -717,11 +728,13 @@ uint16_t *ADC_WORK_GetATAdcData(void)
 static void ProcessAftertouch(void)
 {
 #define AT_SCALE_FACTOR (3000)
-  int32_t        value;
-  int32_t        valueToSend;
-  static int32_t scaleFactor = AT_SCALE_FACTOR;
+  int32_t value;
+  int32_t valueToSend;
 
   value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+
+#if NEW_AT_RANGING == 1
+  static int32_t scaleFactor = AT_SCALE_FACTOR;
 
   int key             = POLY_GetSingleKey();
   AT_ADCMaxValues[61] = key;
@@ -759,7 +772,9 @@ static void ProcessAftertouch(void)
     lastAftertouch = valueToSend;
   }
 
-#if 0  // previous code
+#else  // previous code
+
+  value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
   if (value > AT_DEADRANGE)  // outside of the dead range
   {
     valueToSend = value - AT_DEADRANGE;
@@ -806,6 +821,7 @@ static void SendBenderIfChanged(int32_t value)
     lastPitchbend = value;
   }
 }
+
 static void ProcessBender(void)
 {
   int32_t value;
@@ -999,6 +1015,12 @@ void ADC_WORK_Process4(void)
   ProcessBender();
   ProcessRibbons();
 
-  SendAEMessages();  // send all AE messages in one go, to preserve priorities, like ribbons updating last etc
+  if (pollDataRequest)
+  {
+    pollDataRequest = 0;
+    PollHWValues();
+  }
+  else
+    SendAEMessages();  // send all AE messages in one go, to preserve priorities, like ribbons updating last etc
   //  DBG_GPIO3_1_Off();
 }

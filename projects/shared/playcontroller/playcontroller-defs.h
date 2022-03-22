@@ -128,19 +128,22 @@ enum HW_SOURCE_IDS
 
 enum AE_TCD_OVER_MIDI_IDS
 {
-  AE_TCD_WRAPPER        = 0x0E,       // USB MIDI packet header "Cable #0, packet type:PitchBend"
-  AE_TCD_HW_POS         = 0xE0,       // MIDI command "Pitch Bender" + MIDI channel=HW_SOURCE_ID
-  AE_TCD_DEVELOPPER_CMD = 0xE0 + 12,  // MIDI command "Pitch Bender", MIDI channel 12
-  AE_TCD_KEY_POS        = 0xE0 + 13,  // MIDI command "Pitch Bender", MIDI channel 13
-  AE_TCD_KEY_DOWN       = 0xE0 + 14,  // MIDI command "Pitch Bender", MIDI channel 14
-  AE_TCD_KEY_UP         = 0xE0 + 15,  // MIDI command "Pitch Bender", MIDI channel 15
+  AE_PROTOCOL_WRAPPER  = 0x0E,       // USB MIDI packet header "Cable #0, packet type:PitchBend"
+  AE_PROTOCOL_HW_POS   = 0xE0,       // MIDI command "Pitch Bender" + MIDI channel=HW_SOURCE_ID
+  AE_PROTOCOL_CMD      = 0xE0 + 12,  // MIDI command "Pitch Bender", MIDI channel 12
+  AE_PROTOCOL_KEY_POS  = 0xE0 + 13,  // MIDI command "Pitch Bender", MIDI channel 13
+  AE_PROTOCOL_KEY_DOWN = 0xE0 + 14,  // MIDI command "Pitch Bender", MIDI channel 14
+  AE_PROTOCOL_KEY_UP   = 0xE0 + 15,  // MIDI command "Pitch Bender", MIDI channel 15
 };
 
-enum AE_DEVELOPPER_CMDS
+enum AE_PROTOCOL_CMD_IDS
 {
-  AE_CMD_TONE_OFF      = 1,  // turn off the test tone
-  AE_CMD_TONE_ON       = 2,  // turn on the test tone
-  AE_CMD_DEFAULT_SOUND = 3,  // set up a simple default sound that is guaranteed to give output
+  AE_PROTOCOL_CMD_TONE_OFF        = 1,  // turn off the test tone
+  AE_PROTOCOL_CMD_TONE_ON         = 2,  // turn on the test tone (synth remains active)
+  AE_PROTOCOL_CMD_DEFAULT_SOUND   = 3,  // set up a simple default sound that is guaranteed to give output
+  AE_PROTOCOL_CMD_TONE_ONLY       = 4,  // turn on the test tone (synth disabled)
+  AE_PROTOCOL_CMD_POLL_DATA_START = 5,  // start of polled data
+  AE_PROTOCOL_CMD_POLL_DATA_STOP  = 6,  // end of polled data
 };
 
 enum PLAYCONTROLLER_SYSTEM_SPECIAL_COMMANDS
