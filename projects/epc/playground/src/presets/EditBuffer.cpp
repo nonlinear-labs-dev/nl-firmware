@@ -1692,7 +1692,7 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
         {
           hw->setCPFromLoad(transaction, oldPos, false);
         }
-        else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None && oldPos != 0)
+        else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None && oldPos != 0.5)
         {
           hw->setIndirect(transaction, oldPos);
         }
