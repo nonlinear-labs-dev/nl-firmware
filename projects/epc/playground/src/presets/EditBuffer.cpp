@@ -1694,7 +1694,7 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
         }
         else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None && oldPos != 0.5)
         {
-          hw->setIndirect(transaction, oldPos);
+          hw->setCPFromLoad(transaction, oldPos, false);
         }
         else
         {

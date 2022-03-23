@@ -324,7 +324,7 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
       ebUseCases.load(rib1_retcenter);
       TestHelper::doMainLoopIteration();
       CHECK(Approx(mc1->getControlPositionValue()) == oldRibPos);
-      CHECK(Approx(ribbon1->getControlPositionValue()) == oldRibPos);
+      CHECK(Approx(ribbon1->getControlPositionValue()) == 0);
     }
 
     WHEN("100%")
