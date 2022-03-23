@@ -303,12 +303,43 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
 
   WHEN("Ribbon Load Return to Center after Stay")
   {
-    ebUseCases.load(rib1_stay);
-    TestHelper::doMainLoopIteration();
-    CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
-    ebUseCases.load(rib1_retcenter);
-    TestHelper::doMainLoopIteration();
-    CHECK(Approx(mc1->getControlPositionValue()) == rib1_retcenter->findParameterByID(MC_ID, true)->getValue());
+    TestHelper::initSingleEditBuffer();
+
+    WHEN("initial")
+    {
+      CHECK(ribbon1->getDisplayString() == "50.0 %");
+      ribbonUseCase.changeFromAudioEngine(0, HWChangeSource::TCD);
+      TestHelper::doMainLoopIteration();
+      CHECK(ribbon1->getDisplayString() == "0.0 %");
+      CHECK(ribbon1->getReturnMode() == ReturnMode::None);
+
+      ebUseCases.load(rib1_stay);
+      TestHelper::doMainLoopIteration();
+      CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
+      CHECK(Approx(ribbon1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
+
+      CHECK(ribbon1->getDisplayString() == "50.0 %");
+      auto oldRibPos = ribbon1->getControlPositionValue();
+
+      ebUseCases.load(rib1_retcenter);
+      TestHelper::doMainLoopIteration();
+      CHECK(Approx(mc1->getControlPositionValue()) == oldRibPos);
+      CHECK(Approx(ribbon1->getControlPositionValue()) == oldRibPos);
+    }
+
+    WHEN("100%")
+    {
+      ebUseCases.load(rib1_stay);
+      TestHelper::doMainLoopIteration();
+      CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
+      ribbonUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
+      TestHelper::doMainLoopIteration();
+      CHECK(ribbon1->getControlPositionValue() == 1);
+
+      ebUseCases.load(rib1_retcenter);
+      TestHelper::doMainLoopIteration();
+      CHECK(ribbon1->getDisplayString() == "100.0 %");
+    }
   }
 
   //Nonret auf Return To Center

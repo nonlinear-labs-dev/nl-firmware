@@ -1684,9 +1684,17 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
     {
       if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2)
       {
-        if(hw->getReturnMode() == ReturnMode::Center && hw->getLastReturnModeBeforePresetLoad() == ReturnMode::Center)
+        auto oldMode = hw->getLastReturnModeBeforePresetLoad();
+        auto newMode = hw->getReturnMode();
+        auto oldPos = hw->getLastControlPositionValueBeforePresetLoad();
+
+        if(newMode == ReturnMode::Center && oldMode == ReturnMode::Center)
         {
-          hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad(), false);
+          hw->setCPFromLoad(transaction, oldPos, false);
+        }
+        else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None && oldPos != 0)
+        {
+          hw->setIndirect(transaction, oldPos);
         }
         else
         {
