@@ -385,7 +385,7 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     if(getReturnMode() != ReturnMode::None)
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-      getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
       PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
     }
     else
@@ -397,7 +397,7 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
   {
     if(getReturnMode() != ReturnMode::None)
     {
-      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
       PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
     }
     else
