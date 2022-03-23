@@ -345,7 +345,7 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
     else
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
     }
   }
   else // On -> Off

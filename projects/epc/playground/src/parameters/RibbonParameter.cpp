@@ -390,7 +390,7 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     }
     else
     {
-      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getSendParameter()->getControlPositionValue());
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getSendParameter()->getControlPositionValue());
     }
   }
   else // On -> Off
