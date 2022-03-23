@@ -398,11 +398,11 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     if(getReturnMode() != ReturnMode::None)
     {
       getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
-      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
     }
     else
     {
-      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
     }
   }
 }
