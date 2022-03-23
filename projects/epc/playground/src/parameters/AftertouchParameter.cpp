@@ -55,12 +55,12 @@ void AftertouchParameter::onLocalEnableChanged(bool localEnableState)
   if(localEnableState)
   {
     auto oldSendPos = getSendParameter()->getControlPositionValue();
-    getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
-    PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
   }
   else
   {
-    getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
-    PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+    getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+    PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
   }
 }
