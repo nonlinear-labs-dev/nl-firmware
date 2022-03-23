@@ -50,27 +50,19 @@ TEST_CASE("Issue 3035, Loading Preset with held bender leads to wrong values", "
   WHEN("Bender is -1")
   {
     benderUseCase.setControlPosition(-1.);
-
-    THEN("Mod Checks out")
-    {
-      TestHelper::doMainLoopIteration();
-      CHECK(bender->getControlPositionValue() == -1);
-      CHECK(mcA->getControlPositionValue() == 0);
-      CHECK(modTarget->getControlPositionValue() == -1);
-    }
+    TestHelper::doMainLoopIteration();
+    CHECK(bender->getControlPositionValue() == -1);
+    CHECK(mcA->getControlPositionValue() == 0);
+    CHECK(modTarget->getControlPositionValue() == -1);
   }
 
   WHEN("Bender is 1")
   {
     benderUseCase.setControlPosition(1.);
-
-    THEN("Mod Checks out")
-    {
-      TestHelper::doMainLoopIteration();
-      CHECK(bender->getControlPositionValue() == 1);
-      CHECK(mcA->getControlPositionValue() == 1);
-      CHECK(modTarget->getControlPositionValue() == 1);
-    }
+    TestHelper::doMainLoopIteration();
+    CHECK(bender->getControlPositionValue() == 1);
+    CHECK(mcA->getControlPositionValue() == 1);
+    CHECK(modTarget->getControlPositionValue() == 1);
   }
 
   PresetManagerUseCases pmUseCases(*TestHelper::getPresetManager(), *TestHelper::getSettings());
@@ -318,4 +310,6 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
     TestHelper::doMainLoopIteration();
     CHECK(Approx(mc1->getControlPositionValue()) == rib1_retcenter->findParameterByID(MC_ID, true)->getValue());
   }
+
+  //Nonret auf Return To Center
 }

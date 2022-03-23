@@ -121,7 +121,9 @@ RibbonTouchBehaviour RibbonParameter::getRibbonTouchBehaviour() const
   return m_touchBehaviour;
 }
 
-void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode)
+//update this method to take Initiator -> and only reset if Initiator::EXPLICIT_USECASE
+void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode,
+                                                  Initiator initiator)
 {
   if(mode != RibbonReturnMode::STAY && mode != RibbonReturnMode::RETURN)
     mode = RibbonReturnMode::STAY;
@@ -136,7 +138,7 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
         [=](UNDO::Command::State) mutable
         {
           swapData->swapWith(m_returnMode);
-          setupScalingAndDefaultValue(getRibbonReturnMode() == RibbonReturnMode::RETURN);
+          setupScalingAndDefaultValue(initiator == Initiator::EXPLICIT_USECASE && getRibbonReturnMode() == RibbonReturnMode::RETURN);
           onChange();
         });
   }
@@ -162,12 +164,13 @@ void RibbonParameter::undoableSetHWAmountsForReturnToCenterMode(UNDO::Transactio
   }
 }
 
-void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode)
+void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode,
+                                                  Initiator initiator)
 {
   if(mode == "stay")
-    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
+    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY, initiator);
   else if(mode == "return")
-    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::RETURN);
+    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::RETURN, initiator);
 }
 
 RibbonReturnMode RibbonParameter::getRibbonReturnMode() const
@@ -238,7 +241,7 @@ void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParam
   if(!isLocked())
   {
     super::copyFrom(transaction, other);
-    undoableSetRibbonReturnMode(transaction, other->getRibbonReturnMode());
+    undoableSetRibbonReturnMode(transaction, other->getRibbonReturnMode(), Initiator::EXPLICIT_LOAD);
     undoableSetRibbonTouchBehaviour(transaction, other->getRibbonTouchBehaviour());
   }
 }
@@ -309,7 +312,7 @@ void RibbonParameter::undoableStepBehavior(UNDO::Transaction *transaction, int d
   while(v >= numModes)
     v -= numModes;
 
-  undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(v));
+  undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(v), Initiator::EXPLICIT_USECASE);
 }
 
 Layout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
@@ -352,7 +355,7 @@ void RibbonParameter::setCpValue(UNDO::Transaction *transaction, Initiator initi
 void RibbonParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   super::loadDefault(transaction, mode);
-  undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
+  undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY, Initiator::EXPLICIT_USECASE);
   undoableSetRibbonTouchBehaviour(transaction, RibbonTouchBehaviour::ABSOLUTE);
 }
 

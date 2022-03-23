@@ -149,7 +149,8 @@ void ParameterSerializer::tryLoadHardwareSourceParameter(Reader &reader) const
 
       reader.onTextElement("ribbon-return-mode", [=, &reader](const Glib::ustring &text, const Attributes &) {
         int mode = std::stoi(text);
-        ribbon->undoableSetRibbonReturnMode(reader.getTransaction(), static_cast<RibbonReturnMode>(mode));
+        ribbon->undoableSetRibbonReturnMode(reader.getTransaction(), static_cast<RibbonReturnMode>(mode),
+                                            Initiator::EXPLICIT_LOAD);
       });
     }
 
