@@ -390,7 +390,7 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     }
     else
     {
-      //TODO whats the rule here?
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getSendParameter()->getControlPositionValue());
     }
   }
   else // On -> Off

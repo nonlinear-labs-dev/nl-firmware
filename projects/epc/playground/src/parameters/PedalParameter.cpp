@@ -345,8 +345,7 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
     else
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-
-      //TODO whats the rule here?
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
     }
   }
   else // On -> Off
