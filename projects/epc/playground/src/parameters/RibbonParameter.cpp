@@ -386,7 +386,7 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
       getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
-      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
+      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
     }
     else
     {
