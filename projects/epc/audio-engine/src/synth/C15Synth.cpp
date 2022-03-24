@@ -220,11 +220,10 @@ void C15Synth::doSyncPlayground()
     const auto currentValue = isLocalEnabled ? audioParameterValue : sendParameterValue;
     const auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
 
-    auto sourceIndex = static_cast<int>(valueSource);
-    if(std::exchange(m_playgroundHwSourceKnownValues[idx][sourceIndex], currentValue) != currentValue)
-    {
-      nltools::Log::error("sending hw pos to PG:", toString(hw), "sourceIndex", toString(valueSource), "currentValue", currentValue);
+    nltools::Log::error("checking hw pos has diff to PG:", toString(hw), "localEnabled (as of MidiSettings)", isLocalEnabled, "sourceIndex", toString(valueSource), "currentValue", currentValue);
 
+    if(std::exchange(m_playgroundHwSourceKnownValues[idx][static_cast<int>(valueSource)], currentValue) != currentValue)
+    {
       HardwareSourceChangedNotification msg;
       msg.hwSource = idx;
       msg.source = valueSource;
@@ -430,11 +429,8 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
-    nltools::Log::error("setting known pgHWSourceValue", msg.parameterId, "value", msg.controlPosition, "retmode", toString(msg.returnMode), "localEnable", msg.isLocalEnabled, "did behaviour change", didBehaviourChange);
-    if(msg.isLocalEnabled)
-    {
-      m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
-    }
+    nltools::Log::error("try setting known pgHWSourceValue", msg.parameterId, "value", msg.controlPosition, "retmode", toString(msg.returnMode), "localEnable", msg.isLocalEnabled, "did behaviour change", didBehaviourChange);
+    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
 }

@@ -783,7 +783,6 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
           return m_options->shouldReceiveMidiOnPrimary(routingIndex);
         else if(wasSplit)
           return m_options->shouldReceiveMidiOnSplit(routingIndex);
-
         return true;
       }
       case HWChangeSource::TCD:
