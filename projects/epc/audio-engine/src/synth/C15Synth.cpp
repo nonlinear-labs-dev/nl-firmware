@@ -430,8 +430,11 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
-    nltools::Log::error("setting known pgHWSourceValue", msg.parameterId, "value", msg.controlPosition, "retmode", toString(msg.returnMode), "localEnable", msg.isLocalEnabled);
-    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
+    nltools::Log::error("setting known pgHWSourceValue", msg.parameterId, "value", msg.controlPosition, "retmode", toString(msg.returnMode), "localEnable", msg.isLocalEnabled, "did behaviour change", didBehaviourChange);
+    if(msg.isLocalEnabled)
+    {
+      m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
+    }
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
 }

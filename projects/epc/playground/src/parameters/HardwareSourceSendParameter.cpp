@@ -111,7 +111,7 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 void HardwareSourceSendParameter::setCpValue(UNDO::Transaction* transaction, Initiator initiator,
                                              tControlPositionValue value, bool dosendToPlaycontroller)
 {
-  nltools::Log::error("setCPValue:", toString(initiator), "cp", value, "sendToAE", dosendToPlaycontroller, "localEnabled", isLocalEnabled());
+  nltools::Log::error("setCPValue id", getID().getNumber(), toString(initiator), "cp", value, "sendToAE", dosendToPlaycontroller, "localEnabled", isLocalEnabled());
   Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 }
 
