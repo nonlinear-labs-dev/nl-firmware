@@ -722,6 +722,7 @@ void InputEventStage::doSendBenderOut(float value)
 
 void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage &message, bool didBehaviourChange)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, "id", message.parameterId, "cp", message.controlPosition, "localEnabled", message.isLocalEnabled, "behaviourChanged", didBehaviourChange);
   auto hwID = InputEventStage::parameterIDToHWID(message.parameterId);
 
   if(hwID != HardwareSource::NONE)
@@ -733,6 +734,8 @@ void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMes
 
 void InputEventStage::onSendParameterReceived(const nltools::msg::HWSourceSendChangedMessage &message)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, "id", message.parameterId, "cp", message.controlPosition, "localEnabled", message.localEnabled);
+
   auto hwID = InputEventStage::parameterIDToHWID(message.siblingId);
   if(!message.localEnabled)
   {
