@@ -200,6 +200,7 @@ void C15Synth::doSyncExternalMidiBridge()
 
 void C15Synth::doSyncPlayground()
 {
+  nltools::Log::error(__PRETTY_FUNCTION__);
   using namespace nltools::msg;
 
   if(m_inputEventStage.getAndResetKeyBedStatus())
@@ -222,6 +223,8 @@ void C15Synth::doSyncPlayground()
     auto sourceIndex = static_cast<int>(valueSource);
     if(std::exchange(m_playgroundHwSourceKnownValues[idx][sourceIndex], currentValue) != currentValue)
     {
+      nltools::Log::error("sending hw pos to PG:", toString(hw), "sourceIndex", toString(valueSource), "currentValue", currentValue);
+
       HardwareSourceChangedNotification msg;
       msg.hwSource = idx;
       msg.source = valueSource;
@@ -427,6 +430,7 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
+    nltools::Log::error("setting known pgHWSourceValue", msg.parameterId, "value", msg.controlPosition, "retmode", toString(msg.returnMode), "localEnable", msg.isLocalEnabled);
     m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
