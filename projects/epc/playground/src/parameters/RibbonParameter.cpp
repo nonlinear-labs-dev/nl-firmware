@@ -121,7 +121,6 @@ RibbonTouchBehaviour RibbonParameter::getRibbonTouchBehaviour() const
   return m_touchBehaviour;
 }
 
-//update this method to take Initiator -> and only reset if Initiator::EXPLICIT_USECASE
 void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode,
                                                   Initiator initiator)
 {
@@ -333,25 +332,6 @@ Layout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
   g_return_val_if_reached(nullptr);
 }
 
-void RibbonParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, getID().getNumber(), value);
-  PhysicalControlParameter::loadFromPreset(transaction, value);
-}
-
-void RibbonParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, getID().getNumber(), value);
-  Parameter::setIndirect(transaction, value);
-}
-
-void RibbonParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                                 bool dosendToPlaycontroller)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, getID().getNumber(), value, toString(initiator), dosendToPlaycontroller);
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-}
-
 void RibbonParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   super::loadDefault(transaction, mode);
@@ -369,7 +349,6 @@ size_t RibbonParameter::getHash() const
 
 void RibbonParameter::sendToPlaycontroller() const
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, getID().getNumber());
   PhysicalControlParameter::sendToPlaycontroller();
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;

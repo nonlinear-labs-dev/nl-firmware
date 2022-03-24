@@ -448,8 +448,6 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, preset->getName());
-
   if(auto p = dynamic_cast<UNDO::ContinuousTransaction *>(transaction))
     p->stopContinuation();  // if transaction was created for a select operation, direct-load has to stop replacing the transaction
 

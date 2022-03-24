@@ -23,9 +23,6 @@ class PedalParameter : public PhysicalControlParameter
   void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
 
   PedalType *getAssociatedPedalTypeSetting() const;
-  QuantizedValue &getValue() override;
-  void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
-  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -38,9 +35,6 @@ class PedalParameter : public PhysicalControlParameter
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   size_t getHash() const override;
   tControlPositionValue getDefValueAccordingToMode() const override;
-  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                  bool dosendToPlaycontroller) override;
-  void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
  private:
   const ScaleConverter *createScaleConverter() const;

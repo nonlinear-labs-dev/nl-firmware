@@ -89,45 +89,6 @@ void PedalParameter::setRoutersModeAccordingToReturnMode()
   }
 }
 
-void PedalParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                                bool dosendToPlaycontroller)
-{
-  if(getID().getNumber() == C15::PID::Pedal_1)
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__, "value", value);
-  }
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-}
-
-void PedalParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  PhysicalControlParameter::loadFromPreset(transaction, value);
-}
-
-void PedalParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  if(getID().getNumber() == C15::PID::Pedal_1)
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__, "value", value);
-  }
-
-  Parameter::setIndirect(transaction, value);
-}
-
-void PedalParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue)
-{
-  PhysicalControlParameter::onValueChanged(initiator, oldValue, newValue);
-}
-
-QuantizedValue &PedalParameter::getValue()
-{
-  if(getID().getNumber() == C15::PID::Pedal_1)
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__);
-  }
-  return Parameter::getValue();
-}
-
 tControlPositionValue PedalParameter::getDefValueAccordingToMode() const
 {
   switch(getReturnMode())

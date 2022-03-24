@@ -56,13 +56,11 @@ class PhysicalControlParameter : public Parameter
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
-  void sendToPlaycontroller() const override;
   IntrusiveList<ModulationRoutingParameter *>& getTargets();
 
  private:
   void sendParameterMessage() const override;
 
- private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
 
   tControlPositionValue m_valueBeforeLastLoad = 0;

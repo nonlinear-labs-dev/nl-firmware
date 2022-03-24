@@ -201,7 +201,6 @@ void C15Synth::doSyncExternalMidiBridge()
 
 void C15Synth::doSyncPlayground()
 {
-  nltools::Log::error(__PRETTY_FUNCTION__);
   using namespace nltools::msg;
 
   if(m_inputEventStage.getAndResetKeyBedStatus())
@@ -221,8 +220,6 @@ void C15Synth::doSyncPlayground()
     auto audioParameterSource = m_dsp->getValueSourceSource(hw);
     const auto currentValue = isLocalEnabled ? audioParameterValue : sendParameterValue;
     const auto valueSource = isLocalEnabled ? audioParameterSource : m_inputEventStage.getHWSourcePositionSource(hw);
-
-    nltools::Log::error("checking hw pos has diff to PG:", toString(hw), "localEnabled (as of MidiSettings)", isLocalEnabled, "sourceIndex", toString(valueSource), "currentValue", currentValue);
 
     if(std::exchange(m_playgroundHwSourceKnownValues[idx][static_cast<int>(valueSource)], currentValue) != currentValue)
     {
