@@ -124,6 +124,28 @@ class DSPInterface
     nltools_assertAlways(false);
     return std::numeric_limits<uint32_t>::max();
   }
+
+  void setValueSourceSource(HardwareSource hw, HWChangeSource source)
+  {
+    if(hw != HardwareSource::NONE)
+    {
+      m_hwChangeSourceSources[static_cast<int>(hw)] = source;
+    }
+  }
+
+  HWChangeSource getValueSourceSource(HardwareSource hw)
+  {
+    if(hw != HardwareSource::NONE)
+    {
+      return m_hwChangeSourceSources[static_cast<int>(hw)];
+    }
+
+    nltools_assertNotReached();
+    return HWChangeSource::TCD;
+  }
+
+ private:
+  std::array<HWChangeSource, 8> m_hwChangeSourceSources;
 };
 
 class dsp_host_dual : public DSPInterface

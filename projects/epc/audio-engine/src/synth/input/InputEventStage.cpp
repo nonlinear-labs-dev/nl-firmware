@@ -797,6 +797,7 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
+    m_dspHost->setValueSourceSource(hwID, source);
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }
