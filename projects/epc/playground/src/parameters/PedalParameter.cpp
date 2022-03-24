@@ -333,31 +333,31 @@ bool PedalParameter::isLocalEnabled() const
 void PedalParameter::onLocalEnableChanged(bool localEnableState)
 {
   auto scope = UNDO::Scope::startTrashTransaction();
+  const auto isReturning = getReturnMode() != ReturnMode::None;
 
   if(localEnableState) //Off -> On
   {
-    if(getReturnMode() != ReturnMode::None)
+    if(isReturning)
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
-      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
     }
     else
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), oldSendPos);
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
     }
   }
   else // On -> Off
   {
-    if(getReturnMode() != ReturnMode::None)
+    if(isReturning)
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
-      PhysicalControlParameter::setCPFromHwui(scope->getTransaction(), getDefValueAccordingToMode());
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
     }
     else
     {
-      getSendParameter()->setCPFromHwui(scope->getTransaction(), getControlPositionValue());
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
     }
   }
 }
