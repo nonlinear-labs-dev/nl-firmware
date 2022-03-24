@@ -1,11 +1,11 @@
 #include <synth/C15Synth.h>
 #include "TCDDecoder.h"
-#include "../../../shared/playcontroller/playcontroller-defs.h"  // no better way?
+#include <playcontroller/playcontroller-defs.h>
 
 TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options, KeyShift *keyShift)
     : m_dsp{ dsp }
-    , m_options{ options }
     , m_keyShift{ keyShift }
+    , m_options{ options }
 {
   reset();
 }
@@ -43,7 +43,6 @@ bool TCDDecoder::decode(const MidiEvent &event)
     }
     else if(_status == AE_PROTOCOL_CMD)  // PlayController Command
     {
-      // todo: use shared/playcontroller/playcontroller-defs.h AE_DEVELOPPER_CMDS enum for command ids
       switch(_data1)
       {
         case AE_PROTOCOL_CMD_TONE_OFF:  // developer: test tone off

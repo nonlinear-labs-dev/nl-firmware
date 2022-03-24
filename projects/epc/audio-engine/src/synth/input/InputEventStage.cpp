@@ -173,10 +173,6 @@ void InputEventStage::onTCDEvent()
 
     case DecoderEventType::HardwareChange:
     {
-      if(decoder->getKeyOrController() == (int) HardwareSource::RIBBON1)
-      {
-        nltools::Log::error(__PRETTY_FUNCTION__, "Ribbon1 value:", decoder->getValue(), "source: TCD");
-      }
       onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
                   false, false, false);
       break;
@@ -791,7 +787,6 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
           return m_options->shouldReceiveMidiOnPrimary(routingIndex);
         else if(wasSplit)
           return m_options->shouldReceiveMidiOnSplit(routingIndex);
-
         return true;
       }
       case HWChangeSource::TCD:
@@ -806,6 +801,7 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
+    m_dspHost->setValueSourceSource(hwID, source);
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }

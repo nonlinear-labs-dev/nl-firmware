@@ -10,7 +10,9 @@ import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ScaleOffsetParameterModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
@@ -292,6 +294,9 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
                     if (ParameterPresenterProvider.isMCMetaChanged(mc))
                         return true;
                 }
+
+                if (param instanceof SendParameterModel || param instanceof PhysicalControlParameterModel)
+                    continue;
 
                 if (ParameterPresenterProvider.isValueChanged(param))
                     return true;

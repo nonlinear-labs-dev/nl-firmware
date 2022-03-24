@@ -448,6 +448,8 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
 
 void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *preset, bool sendToAudioEngine)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, preset->getName());
+
   if(auto p = dynamic_cast<UNDO::ContinuousTransaction *>(transaction))
     p->stopContinuation();  // if transaction was created for a select operation, direct-load has to stop replacing the transaction
 
@@ -464,7 +466,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *pres
   setAttribute(transaction, "origin-II-vg", toString(VoiceGroup::II));
 
   copyFrom(transaction, preset);
-  undoableSetLoadedPresetInfo(transaction, preset);
+  undoableSetLoadedPresetInfo(transaction, preset, false);
 
   if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
@@ -488,11 +490,12 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
+  initRecallValues(transaction);
   setHWSourcesToLoadRulePostionsAndModulate(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 
-void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset)
+void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset, bool resetRecall)
 {
   Uuid newId = Uuid::none();
   std::string presetOriginDescription = "Init";
@@ -536,7 +539,8 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
     onChange();
   });
 
-  initRecallValues(transaction);
+  if(resetRecall)
+    initRecallValues(transaction);
 }
 
 void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
@@ -1680,13 +1684,17 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
     {
       if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2)
       {
-        if(hw->getReturnMode() == ReturnMode::Center && hw->getLastReturnModeBeforePresetLoad() == ReturnMode::Center)
+        auto oldMode = hw->getLastReturnModeBeforePresetLoad();
+        auto newMode = hw->getReturnMode();
+        auto oldPos = hw->getLastControlPositionValueBeforePresetLoad();
+
+        if(newMode == ReturnMode::Center && oldMode == ReturnMode::Center)
         {
-          hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad(), false);
+          hw->setCPFromLoad(transaction, oldPos, false);
         }
-        else
+        else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None && oldPos != 0.5)
         {
-          hw->setIndirect(transaction, hw->getDefValueAccordingToMode());
+          hw->setCPFromLoad(transaction, oldPos, false);
         }
       }
       else

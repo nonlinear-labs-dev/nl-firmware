@@ -201,6 +201,7 @@ void C15Synth::doSyncExternalMidiBridge()
 
 void C15Synth::doSyncPlayground()
 {
+  nltools::Log::error(__PRETTY_FUNCTION__);
   using namespace nltools::msg;
 
   if(m_inputEventStage.getAndResetKeyBedStatus())
@@ -217,11 +218,13 @@ void C15Synth::doSyncPlayground()
 
     auto sendParameterValue = m_inputEventStage.getHWSourcePositionIfLocalDisabled(hw);
     auto audioParameterValue = engineHWSourceValues[idx];
+    auto audioParameterSource = m_dsp->getValueSourceSource(hw);
     const auto currentValue = isLocalEnabled ? audioParameterValue : sendParameterValue;
-    const auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
+    const auto valueSource = isLocalEnabled ? audioParameterSource : m_inputEventStage.getHWSourcePositionSource(hw);
 
-    auto sourceIndex = static_cast<int>(valueSource);
-    if(std::exchange(m_playgroundHwSourceKnownValues[idx][sourceIndex], currentValue) != currentValue)
+    nltools::Log::error("checking hw pos has diff to PG:", toString(hw), "localEnabled (as of MidiSettings)", isLocalEnabled, "sourceIndex", toString(valueSource), "currentValue", currentValue);
+
+    if(std::exchange(m_playgroundHwSourceKnownValues[idx][static_cast<int>(valueSource)], currentValue) != currentValue)
     {
       HardwareSourceChangedNotification msg;
       msg.hwSource = idx;
@@ -352,11 +355,6 @@ void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::Unmodulateab
 
 void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg)
 {
-  if(msg.parameterId == C15::PID::MC_A)
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__, "mc A:", msg.controlPosition);
-  }
-
   // (fail-safe) dispatch by ParameterList
   auto element = m_dsp->getParameter(msg.parameterId);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
@@ -385,19 +383,13 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
-  if(msg.parameterId == C15::PID::Ribbon_1)
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__, msg.parameterId, msg.controlPosition, toString(msg.returnMode));
-  }
-
   auto element = m_dsp->getParameter(msg.parameterId);
   auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
 
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
-    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)]
-        = static_cast<float>(msg.controlPosition);
+    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
 }
@@ -416,21 +408,18 @@ void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m
 
 void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__);
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
 
 void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage& msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, "mc A", msg.macros[0].controlPosition);
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
 
 void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__);
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
@@ -489,6 +478,5 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
 
 void C15Synth::onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, msg.parameterId, msg.controlPosition, toString(msg.returnMode));
   m_inputEventStage.onSendParameterReceived(msg);
 }

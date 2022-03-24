@@ -333,25 +333,24 @@ bool PedalParameter::isLocalEnabled() const
 void PedalParameter::onLocalEnableChanged(bool localEnableState)
 {
   auto scope = UNDO::Scope::startTrashTransaction();
+  const auto isReturning = getReturnMode() != ReturnMode::None;
 
   if(localEnableState) //Off -> On
   {
-    if(getReturnMode() != ReturnMode::None)
+    if(isReturning)
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-      getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
       PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
     }
     else
     {
       auto oldSendPos = getSendParameter()->getControlPositionValue();
-
-      //TODO whats the rule here?
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
     }
   }
   else // On -> Off
   {
-    if(getReturnMode() != ReturnMode::None)
+    if(isReturning)
     {
       getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
       PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());

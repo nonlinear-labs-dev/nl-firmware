@@ -50,10 +50,10 @@ TEST_CASE("Issue 3035, Pedal [Returning Zero] Local Off to Local On", "[3035]")
     settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, true);
     TestHelper::doMainLoopIteration();
 
-    THEN("Pedal Parameter RVC -> current pos, send to returnPos")
+    THEN("Pedal Parameter RVC -> current pos, send stays")
     {
       CHECK(pedal1->getDisplayString() == "50.0 %");
-      CHECK(pedal1Send->getDisplayString() == "0.0 %");
+      CHECK(pedal1Send->getDisplayString() == "50.0 %");
     }
   }
 }
@@ -94,10 +94,10 @@ TEST_CASE("Issue 3035, Pedal [Returning Center] Local Off to Local On", "[3035]"
     settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, true);
     TestHelper::doMainLoopIteration();
 
-    THEN("Pedal Parameter RVC -> current pos, send to returnPos")
+    THEN("Pedal Parameter RVC -> current pos, send stays")
     {
       CHECK(pedal1->getDisplayString() == "50.0 %");
-      CHECK(pedal1Send->getDisplayString() == "0.0 %");
+      CHECK(pedal1Send->getDisplayString() == "50.0 %");
     }
   }
 }
@@ -140,7 +140,7 @@ TEST_CASE("Issue 3035, Pedal [Nonreturn] Local Off to Local On", "[3035]")
 
     THEN("Pedal Parameter RVC -> current pos, send to returnPos")
     {
-      CHECK(pedal1->getDisplayString() == "100.0 %");
+      CHECK(pedal1->getDisplayString() == "50.0 %");
       CHECK(pedal1Send->getDisplayString() == "50.0 %");
     }
   }

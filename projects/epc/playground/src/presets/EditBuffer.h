@@ -52,7 +52,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
 
   void fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group);
-  void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset);
+  void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset, bool resetRecall = true);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
 
   void undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *values);
