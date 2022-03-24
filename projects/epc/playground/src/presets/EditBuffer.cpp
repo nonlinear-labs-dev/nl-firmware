@@ -1696,10 +1696,6 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
         {
           hw->setCPFromLoad(transaction, oldPos, false);
         }
-        else
-        {
-          hw->setIndirect(transaction, hw->getDefValueAccordingToMode());
-        }
       }
       else
       {
