@@ -48,9 +48,7 @@ static int32_t   pbRampInc;
 static uint32_t  allBenderTables[3][33] = {};  // contains the bender curves
 static uint32_t *benderTable;
 
-static uint32_t  lastAftertouch;
-static uint32_t  allAftertouchTables[3][33] = {};  // contains the chosen aftertouch curve
-static uint32_t *aftertouchTable;
+static uint32_t lastAftertouch;
 
 //========= ribbons ========
 static uint16_t rib_eepromHandle = 0;  // EEPROM access handle
@@ -183,50 +181,6 @@ void Generate_BenderTable(uint16_t const curve)
   }
 }
 
-/*****************************************************************************
-* @brief	ADC_WORK_Select_AftertouchTable -
-* @param	0: soft, 1: normal, 2: hard
-******************************************************************************/
-void ADC_WORK_Select_AftertouchTable(uint16_t const curve)
-{
-  if (curve > 2)
-    return;
-  aftertouchTable = allAftertouchTables[curve];
-}
-
-void Generate_AftertouchTable(uint16_t const curve)
-{
-  float_t range = 16000.0;  // full TCD range
-
-  float_t s;
-
-  switch (curve)  // s defines the curve shape
-  {
-    case 0:     // soft
-      s = 0.0;  // y = x
-      break;
-    case 1:     // normal
-      s = 0.7;  // y = 0.3 * x + 0.7 * x^6
-      break;
-    case 2:      // hard
-      s = 0.95;  // y = 0.05 * x + 0.95 * x^6
-      break;
-    default:
-      return;
-  }
-
-  uint32_t i_max = 32;
-  uint32_t i;
-  float    x;
-
-  for (i = 0; i <= i_max; i++)
-  {
-    x = (float) i / (float) i_max;
-
-    allAftertouchTables[curve][i] = (uint32_t)(range * x * ((1.0 - s) + s * x * x * x * x * x));
-  }
-}
-
 void ClearHWValuesForUI(void)
 {
   for (int i = 0; i < NUM_HW_SOURCES; i++)
@@ -261,9 +215,6 @@ void ADC_WORK_Init1(void)
   ADC_WORK_Select_BenderTable(1);
 
   lastAftertouch = 0;
-  Generate_AftertouchTable(0);
-  Generate_AftertouchTable(1);
-  Generate_AftertouchTable(2);
   ADC_WORK_Select_AftertouchTable(1);
 
   // initialize ribbon data
@@ -710,10 +661,8 @@ void ADC_WORK_Resume(void)
 /*****************************************************************************
 * @brief  Process Aftertouch
 ******************************************************************************/
-static int16_t             AT_xValues[12]   = { 1229, 1672, 2185, 2754, 3062, 3251, 3323, 3399, 3464, 3508, 3551, 3686 };
-static int16_t             AT_yValues[12]   = { 0, 1455, 2909, 4364, 5818, 7273, 8727, 10182, 11636, 13091, 14545, 16000 };
-static LIB_interpol_data_T AT_linearisation = { 12, AT_xValues, AT_yValues };
-static uint16_t            AT_ADCMaxValues[62];
+
+static uint16_t AT_ADCMaxValues[62];  // volatile ADC max values ([61] is current single key #)
 
 uint16_t ADC_WORK_GetATAdcDataSize(void)
 {
@@ -725,85 +674,149 @@ uint16_t *ADC_WORK_GetATAdcData(void)
   return AT_ADCMaxValues;
 }
 
+// --- ADC value to Force conversion ---
+// ADC values (input, 0...4096)
+static int16_t AT_adcToForceTableX[16] = { 0, 1196, 1992, 2530, 2816, 3002, 3202, 3301, 3368, 3412, 3474, 3512, 3541, 3557, 3570, 3600 };
+// Force values (output, 1/100 Newton units)
+static int16_t AT_adcToForceTableY[16] = { 5300, 6000, 6500, 7000, 7500, 8000, 9000, 10000, 11000, 12000, 14000, 16000, 18000, 20000, 22000, 26000 };
+
+static LIB_interpol_data_T AT_adcToForce = { 16, AT_adcToForceTableX, AT_adcToForceTableY };
+
+// --- Key Calibration ---
+// ADC max value calibration data
+static int16_t AT_adcMaxCalib[61] = { 3506, 3573, 3491, 3536, 3455, 3536, 3574, 3538, 3553, 3511, 3588, 3553, 3569, 3560, 3476, 3512, 3464, 3451,
+                                      3473, 3426, 3479, 3422, 3461, 3489, 3498, 3549, 3543, 3556, 3542, 3497, 3526, 3515, 3532, 3522, 3536, 3525, 3482, 3496, 3467, 3469, 3444,
+                                      2084, 3168, 3338, 3398, 3394, 3396, 3367, 3335, 3353, 3253, 3282, 3266, 3272, 3307, 3276, 3282, 3188, 3290, 3260, 3237 };
+
+static int16_t AT_adcMaxAvg  = 3420;  // average of the above
+static int16_t AT_CalibPivot = 3360;
+
+// --- Force to TDC range conversion tables ---
+// 5.3N...19N is about the largest reasonable span. 19N is quite a lot,
+// 12N is probably a more realistic saturation point, still comfortable with pinkie finger on black keys
+
+// Logarithmic
+static int16_t             AT_forceToTcdX_Logarithmic[2] = { 5300, 7500 };  // forces
+static int16_t             AT_forceToTcdY_Logarithmic[2] = { 0, 16000 };    // TCD output
+static LIB_interpol_data_T AT_forceToTcd_Logarithmic     = { 2, AT_forceToTcdX_Logarithmic, AT_forceToTcdY_Logarithmic };
+
+// Linear
+static int16_t             AT_forceToTcdX_Linear[2] = { 6000, 9000 };  // forces
+static int16_t             AT_forceToTcdY_Linear[2] = { 0, 16000 };    // TCD output
+static LIB_interpol_data_T AT_forceToTcd_Linear     = { 2, AT_forceToTcdX_Linear, AT_forceToTcdY_Linear };
+
+// Exponential
+static int16_t             AT_forceToTcdX_Exponential[2] = { 6700, 11000 };  // forces
+static int16_t             AT_forceToTcdY_Exponential[2] = { 0, 16000 };     // TCD output
+static LIB_interpol_data_T AT_forceToTcd_Exponential     = { 2, AT_forceToTcdX_Exponential, AT_forceToTcdY_Exponential };
+
+static LIB_interpol_data_T *AT_forceToTcd = &AT_forceToTcd_Linear;
+
+/*****************************************************************************
+* @brief	ADC_WORK_Select_AftertouchTable -
+* @param	0: soft, 1: normal, 2: hard
+******************************************************************************/
+void ADC_WORK_Select_AftertouchTable(uint16_t const curve)
+{
+  switch (curve)
+  {
+    case 0:  // soft
+      AT_forceToTcd = &AT_forceToTcd_Logarithmic;
+      break;
+    case 1:  // normal
+      AT_forceToTcd = &AT_forceToTcd_Linear;
+      break;
+    case 2:  // hard
+      AT_forceToTcd = &AT_forceToTcd_Exponential;
+      break;
+    default:
+      break;
+  }
+}
+
+//
+// -----------------
 static void ProcessAftertouch(void)
 {
-#define AT_SCALE_FACTOR (3000)
+#if 1
+  int16_t adcValue;
+  int16_t tcdOutput;
+
+  adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+  if (adcValue == 0)
+    tcdOutput = 0;
+  else
+  {
+    int singleKey       = POLY_GetSingleKey();  // -1 means : not a single key (none or more than one singleKey)
+    AT_ADCMaxValues[61] = singleKey;
+
+    // save current ADC adcValue in volatile table
+    if ((adcValue != 0) && (singleKey != -1) && (adcValue > AT_ADCMaxValues[singleKey]))
+      AT_ADCMaxValues[singleKey] = adcValue;
+
+    // apply calibration
+    int16_t calibrationPoint;
+    if (singleKey != -1)
+      calibrationPoint = AT_adcMaxCalib[singleKey];
+    else  // use average adcValue
+      calibrationPoint = AT_adcMaxAvg;
+
+    int16_t calibrationOffset = AT_CalibPivot - calibrationPoint;
+    int16_t adcToForceInput   = adcValue + calibrationOffset;
+
+    // convert to force and then to TCD
+    int16_t force = LIB_InterpolateValue(&AT_adcToForce, adcToForceInput);
+    tcdOutput     = LIB_InterpolateValue(AT_forceToTcd, force);
+  }
+
+  if (tcdOutput != lastAftertouch)
+  {
+    ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
+    ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
+    lastAftertouch = tcdOutput;
+  }
+
+#else  // previous code
+
   int32_t value;
   int32_t valueToSend;
 
   value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
 
-#if 1
-  static int32_t scaleFactor = AT_SCALE_FACTOR;
-
-  int key             = POLY_GetSingleKey();
-  AT_ADCMaxValues[61] = key;
-  if (value != 0)
+  if (value != lastAftertouch)
   {
-    if (key != -1)
+    if (value > AT_DEADRANGE)  // outside of the dead range
     {
-      if (value > AT_ADCMaxValues[key])
+      valueToSend = value - AT_DEADRANGE;
+
+      valueToSend = value * AT_FACTOR;  // saturation factor
+
+      if (valueToSend > 4095 * 4096)
       {
-        AT_ADCMaxValues[key] = value;
+        valueToSend = 16000;
+      }
+      else
+      {
+        valueToSend = valueToSend >> 12;  // 0 ... 4095
+
+        uint32_t fract = valueToSend & 0x7F;                                                                  // lower 7 bits used for interpolation
+        uint32_t index = valueToSend >> 7;                                                                    // upper 5 bits (0...31) used as index in the table
+        valueToSend    = (aftertouchTable[index] * (128 - fract) + aftertouchTable[index + 1] * fract) >> 7;  // (0...16000) * 128 / 128
+      }
+
+      ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
+      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
+    }
+    else  // inside of the dead range
+    {
+      if (lastAftertouch > AT_DEADRANGE)  // was outside of the dead range before   /// define
+      {
+        ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, 0);
+        ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, 0);
       }
     }
-    valueToSend = (LIB_InterpolateValue(&AT_linearisation, value) * scaleFactor) / 2048;
-  }
-  else
-    valueToSend = 0;
 
-  if (valueToSend > 16000 + 240)
-  {
-    scaleFactor -= 40;
-  }
-  else
-  {
-    if (scaleFactor < AT_SCALE_FACTOR)
-      scaleFactor += 1;
-  }
-
-  if (valueToSend > 16000)
-    valueToSend = 16000;
-
-  if (valueToSend != lastAftertouch)
-  {
-    ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-    ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-    lastAftertouch = valueToSend;
-  }
-
-#else  // previous code
-
-  value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
-  if (value > AT_DEADRANGE)  // outside of the dead range
-  {
-    valueToSend = value - AT_DEADRANGE;
-
-    valueToSend = value * AT_FACTOR;  // saturation factor
-
-    if (valueToSend > 4095 * 4096)
-    {
-      valueToSend = 16000;
-    }
-    else
-    {
-      valueToSend = valueToSend >> 12;  // 0 ... 4095
-
-      uint32_t fract = valueToSend & 0x7F;                                                                  // lower 7 bits used for interpolation
-      uint32_t index = valueToSend >> 7;                                                                    // upper 5 bits (0...31) used as index in the table
-      valueToSend    = (aftertouchTable[index] * (128 - fract) + aftertouchTable[index + 1] * fract) >> 7;  // (0...16000) * 128 / 128
-    }
-
-    ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-    ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-  }
-  else  // inside of the dead range
-  {
-    if (lastAftertouch > AT_DEADRANGE)  // was outside of the dead range before   /// define
-    {
-      ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, 0);
-      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, 0);
-    }
+    lastAftertouch = value;
   }
 
 #endif
