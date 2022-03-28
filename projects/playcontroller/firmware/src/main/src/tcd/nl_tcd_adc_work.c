@@ -21,6 +21,7 @@
 #include "tcd/nl_tcd_poly.h"
 #include "io/pins.h"
 
+#define BIPOLAR_CENTER      8000  // bipolar "0" in unsigned 0...16000 notation
 #define BENDER_DEADRANGE    20    // +/-1 % of +/-2047
 #define BENDER_SMALL_THRESH 200   // +/-10 % of +/-2047, test range
 #define BENDER_TEST_PERIOD  80    // 1 s = 80 * 12.5 ms
@@ -35,8 +36,8 @@ static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
 static int      pollDataRequest = 0;
 
-static int32_t lastPitchbendRaw;
-static int32_t lastPitchbend;
+static int32_t lastPitchbend = BIPOLAR_CENTER;
+static int32_t lastRawPitchbend;
 static int32_t pitchbendZero;
 
 static uint16_t  pbSignalIsSmall;
@@ -49,6 +50,7 @@ static uint32_t  allBenderTables[3][33] = {};  // contains the bender curves
 static uint32_t *benderTable;
 
 static uint32_t  lastAftertouch;
+static uint32_t  lastRawAftertouch;
 static uint32_t  allAftertouchTables[3][33] = {};  // contains the chosen aftertouch curve
 static uint32_t *aftertouchTable;
 
@@ -152,7 +154,7 @@ void ADC_WORK_Select_BenderTable(uint16_t const curve)
 
 void Generate_BenderTable(uint16_t const curve)
 {
-  float_t range = 8000.0;  // separate processing of absolute values for positive and negative range
+  float_t range = BIPOLAR_CENTER;  // separate processing of absolute values for positive and negative range
 
   float_t s;
 
@@ -244,8 +246,8 @@ void ClearHWValuesForAE(void)
 ******************************************************************************/
 void ADC_WORK_Init1(void)
 {
-  lastPitchbendRaw = 0;
-  lastPitchbend    = 0x7FFFFFFF;
+  lastRawPitchbend = 0;
+  lastPitchbend    = 0;
   pitchbendZero    = 2048;
 
   pbSignalIsSmall = 0;
@@ -260,7 +262,8 @@ void ADC_WORK_Init1(void)
   Generate_BenderTable(2);
   ADC_WORK_Select_BenderTable(1);
 
-  lastAftertouch = 0;
+  lastAftertouch    = 0;
+  lastRawAftertouch = 0;
   Generate_AftertouchTable(0);
   Generate_AftertouchTable(1);
   Generate_AftertouchTable(2);
@@ -435,8 +438,8 @@ void ADC_WORK_SetRibbon1Behaviour(uint16_t const behaviour)
   {
     if ((ribbon[RIB1].behavior == 1) || (ribbon[RIB1].behavior == 3))  // "return" behavior
     {
-      ribbon[RIB1].output = 8000;
-      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_RIBBON_1, 8000);
+      ribbon[RIB1].output = BIPOLAR_CENTER;
+      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_RIBBON_1, BIPOLAR_CENTER);
     }
   }
 }
@@ -470,8 +473,8 @@ void ADC_WORK_SetRibbon2Behaviour(uint16_t const behaviour)
   {
     if ((ribbon[RIB2].behavior == 1) || (ribbon[RIB2].behavior == 3))  // "return" behaviour
     {
-      ribbon[RIB2].output = 8000;
-      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_RIBBON_2, 8000);
+      ribbon[RIB2].output = BIPOLAR_CENTER;
+      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_RIBBON_2, BIPOLAR_CENTER);
     }
   }
 }
@@ -636,8 +639,8 @@ static void ProcessRibbons(void)
       {
         ribbon[i].touch = 0;  // wait for new touch
         if (!ribbon[i].isEditControl && (ribbon[i].behavior & 0b01))
-        {                   // play control with "return" behavior
-          position = 8000;  // center (zero) value
+        {                             // play control with "return" behavior
+          position = BIPOLAR_CENTER;  // center (zero) value
           goto Output;
         }
         continue;  // quit and process next ribbon
@@ -710,10 +713,7 @@ void ADC_WORK_Resume(void)
 /*****************************************************************************
 * @brief  Process Aftertouch
 ******************************************************************************/
-static int16_t             AT_xValues[12]   = { 1229, 1672, 2185, 2754, 3062, 3251, 3323, 3399, 3464, 3508, 3551, 3686 };
-static int16_t             AT_yValues[12]   = { 0, 1455, 2909, 4364, 5818, 7273, 8727, 10182, 11636, 13091, 14545, 16000 };
-static LIB_interpol_data_T AT_linearisation = { 12, AT_xValues, AT_yValues };
-static uint16_t            AT_ADCMaxValues[62];
+static uint16_t AT_ADCMaxValues[62];
 
 uint16_t ADC_WORK_GetATAdcDataSize(void)
 {
@@ -727,86 +727,48 @@ uint16_t *ADC_WORK_GetATAdcData(void)
 
 static void ProcessAftertouch(void)
 {
-#define AT_SCALE_FACTOR (3000)
   int32_t value;
   int32_t valueToSend;
 
   value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
 
-#if NEW_AT_RANGING == 1
-  static int32_t scaleFactor = AT_SCALE_FACTOR;
-
-  int key             = POLY_GetSingleKey();
-  AT_ADCMaxValues[61] = key;
-  if (value != 0)
+  if (value != lastRawAftertouch)
   {
-    if (key != -1)
+    if (value > AT_DEADRANGE)  // outside of the dead range
     {
-      if (value > AT_ADCMaxValues[key])
+      valueToSend = value - AT_DEADRANGE;
+
+      valueToSend = value * AT_FACTOR;  // saturation factor
+
+      if (valueToSend > 4095 * 4096)
       {
-        AT_ADCMaxValues[key] = value;
+        valueToSend = 16000;
+      }
+      else
+      {
+        valueToSend = valueToSend >> 12;  // 0 ... 4095
+
+        uint32_t fract = valueToSend & 0x7F;                                                                  // lower 7 bits used for interpolation
+        uint32_t index = valueToSend >> 7;                                                                    // upper 5 bits (0...31) used as index in the table
+        valueToSend    = (aftertouchTable[index] * (128 - fract) + aftertouchTable[index + 1] * fract) >> 7;  // (0...16000) * 128 / 128
+      }
+
+      ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
+      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
+      lastAftertouch = valueToSend;
+    }
+    else  // inside of the dead range
+    {
+      if (lastRawAftertouch > AT_DEADRANGE)  // was outside of the dead range before   /// define
+      {
+        ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, 0);
+        ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, 0);
+        lastAftertouch = 0;
       }
     }
-    valueToSend = (LIB_InterpolateValue(&AT_linearisation, value) * scaleFactor) / 2048;
+
+    lastRawAftertouch = value;
   }
-  else
-    valueToSend = 0;
-
-  if (valueToSend > 16000 + 240)
-  {
-    scaleFactor -= 40;
-  }
-  else
-  {
-    if (scaleFactor < AT_SCALE_FACTOR)
-      scaleFactor += 1;
-  }
-
-  if (valueToSend > 16000)
-    valueToSend = 16000;
-
-  if (valueToSend != lastAftertouch)
-  {
-    ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-    ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-    lastAftertouch = valueToSend;
-  }
-
-#else  // previous code
-
-  value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
-  if (value > AT_DEADRANGE)  // outside of the dead range
-  {
-    valueToSend = value - AT_DEADRANGE;
-
-    valueToSend = value * AT_FACTOR;  // saturation factor
-
-    if (valueToSend > 4095 * 4096)
-    {
-      valueToSend = 16000;
-    }
-    else
-    {
-      valueToSend = valueToSend >> 12;  // 0 ... 4095
-
-      uint32_t fract = valueToSend & 0x7F;                                                                  // lower 7 bits used for interpolation
-      uint32_t index = valueToSend >> 7;                                                                    // upper 5 bits (0...31) used as index in the table
-      valueToSend    = (aftertouchTable[index] * (128 - fract) + aftertouchTable[index + 1] * fract) >> 7;  // (0...16000) * 128 / 128
-    }
-
-    ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-    ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
-  }
-  else  // inside of the dead range
-  {
-    if (lastAftertouch > AT_DEADRANGE)  // was outside of the dead range before   /// define
-    {
-      ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, 0);
-      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, 0);
-    }
-  }
-
-#endif
 }
 
 /*****************************************************************************
@@ -889,7 +851,7 @@ static void ProcessBender(void)
     }
   }
 
-  if (value != lastPitchbendRaw)
+  if (value != lastRawPitchbend)
   {
     if (value > BENDER_DEADRANGE)  // is in the positive work range
     {
@@ -899,7 +861,7 @@ static void ProcessBender(void)
 
       if (valueToSend > 2047 * 4096)
       {
-        valueToSend = 8000;  // clipping
+        valueToSend = BIPOLAR_CENTER;  // clipping
       }
       else
       {
@@ -910,7 +872,7 @@ static void ProcessBender(void)
         valueToSend    = (benderTable[index] * (64 - fract) + benderTable[index + 1] * fract) >> 6;  // (0...8000) * 64 / 64
       }
 
-      valueToSend = 8000 + valueToSend;  // 8001 ... 16000
+      valueToSend = BIPOLAR_CENTER + valueToSend;  // 8001 ... 16000
 
       SendBenderIfChanged(valueToSend);
     }
@@ -922,7 +884,7 @@ static void ProcessBender(void)
 
       if (valueToSend > 2047 * 4096)
       {
-        valueToSend = 8000;  // clipping
+        valueToSend = BIPOLAR_CENTER;  // clipping
       }
       else
       {
@@ -933,17 +895,17 @@ static void ProcessBender(void)
         valueToSend    = (benderTable[index] * (64 - fract) + benderTable[index + 1] * fract) >> 6;  // (0...8000) * 64 / 64
       }
 
-      valueToSend = 8000 - valueToSend;  // 7999 ... 0
+      valueToSend = BIPOLAR_CENTER - valueToSend;  // 7999 ... 0
 
       SendBenderIfChanged(valueToSend);
     }
     else  // is in the dead range
     {
-      if ((lastPitchbendRaw > BENDER_DEADRANGE) || (lastPitchbendRaw < -BENDER_DEADRANGE))  // was outside of the dead range before
-        SendBenderIfChanged(8000);
+      if ((lastRawPitchbend > BENDER_DEADRANGE) || (lastRawPitchbend < -BENDER_DEADRANGE))  // was outside of the dead range before
+        SendBenderIfChanged(BIPOLAR_CENTER);
     }
 
-    lastPitchbendRaw = value;
+    lastRawPitchbend = value;
   }
 }
 
