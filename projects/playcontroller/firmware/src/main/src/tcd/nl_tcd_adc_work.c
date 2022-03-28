@@ -50,7 +50,6 @@ static uint32_t  allBenderTables[3][33] = {};  // contains the bender curves
 static uint32_t *benderTable;
 
 static uint32_t lastAftertouch;
-static uint32_t lastRawAftertouch;
 
 //========= ribbons ========
 static uint16_t rib_eepromHandle = 0;  // EEPROM access handle
@@ -217,7 +216,6 @@ void ADC_WORK_Init1(void)
   ADC_WORK_Select_BenderTable(1);
 
   lastAftertouch    = 0;
-  lastRawAftertouch = 0;
   ADC_WORK_Select_AftertouchTable(1);
 
   // initialize ribbon data
