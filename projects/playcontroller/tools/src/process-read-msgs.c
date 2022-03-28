@@ -68,6 +68,12 @@ int greenNotRed(int condition)
   return condition;
 }
 
+void setSettledColor(uint16_t const index, uint16_t const settled)
+{
+  if (index == (settled & 0x7FFF))
+    greenNotRed((settled & 0x8000) != 0);
+}
+
 void cursorUp(uint8_t lines)
 {
   char buffer[12];
@@ -428,8 +434,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
               double ohms = 0;
               if (*p)
                 ohms = 1000.0 / (*p / 4095.0) - 1000.0;
-              if (i == data[61])
-                setColor(GREEN);
+              setSettledColor(i, data[61]);
               printf("%5.0lf", ohms);
               setColor(DEFAULT);
               p++;
@@ -441,8 +446,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
           double ohms = 0;
           if (*p)
             ohms = 1000.0 / (*p / 4095.0) - 1000.0;
-          if (i == data[61])
-            setColor(GREEN);
+          setSettledColor(i, data[61]);
           printf("%5.0lf\n", ohms);
           setColor(DEFAULT);
         }
@@ -493,8 +497,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
             printf("%2d ", octave);
             for (int note = 0; note < 12; note++)
             {
-              if (i == data[61])
-                setColor(GREEN);
+              setSettledColor(i, data[61]);
               printf("%5d", *p);
               setColor(DEFAULT);
               p++;
@@ -503,8 +506,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
             printf("\n");
           }
           printf("%2d ", 6);
-          if (i == data[61])
-            setColor(GREEN);
+          setSettledColor(i, data[61]);
           printf("%5d\n", *p);
           setColor(DEFAULT);
         }

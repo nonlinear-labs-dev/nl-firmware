@@ -215,7 +215,7 @@ void ADC_WORK_Init1(void)
   Generate_BenderTable(2);
   ADC_WORK_Select_BenderTable(1);
 
-  lastAftertouch    = 0;
+  lastAftertouch = 0;
   ADC_WORK_Select_AftertouchTable(1);
 
   // initialize ribbon data
@@ -684,12 +684,17 @@ static LIB_interpol_data_T AT_adcToForce = { 16, AT_adcToForceTableX, AT_adcToFo
 
 // --- Key Calibration ---
 // ADC max value calibration data
-static int16_t AT_adcMaxCalib[61] = { 3506, 3573, 3491, 3536, 3455, 3536, 3574, 3538, 3553, 3511, 3588, 3553, 3569, 3560, 3476, 3512, 3464, 3451,
-                                      3473, 3426, 3479, 3422, 3461, 3489, 3498, 3549, 3543, 3556, 3542, 3497, 3526, 3515, 3532, 3522, 3536, 3525, 3482, 3496, 3467, 3469, 3444,
-                                      2084, 3168, 3338, 3398, 3394, 3396, 3367, 3335, 3353, 3253, 3282, 3266, 3272, 3307, 3276, 3282, 3188, 3290, 3260, 3237 };
+static int16_t AT_adcMaxCalib[61] = { 3530, 3624, 3576, 3563, 3545, 3581, 3614, 3595, 3589, 3577, 3633, 3586, 3609, 3592, 3541, 3529, 3546,
+                                      3493, 3485, 3507, 3510, 3463, 3490, 3525, 3558, 3564, 3569, 3553, 3588, 3546, 3530, 3549, 3541, 3559, 3539, 3543, 3519, 3513, 3506,
+                                      3491, 3491, 2850, 3189, 3392, 3420, 3430, 3428, 3415, 3388, 3367, 3327, 3330, 3324, 3338, 3350, 3347, 3333, 3259, 3336, 3343, 3316 };
+/*
+ { 3506, 3573, 3491, 3536, 3455, 3536, 3574, 3538, 3553, 3511, 3588, 3553, 3569, 3560, 3476, 3512, 3464, 3451,
+  3473, 3426, 3479, 3422, 3461, 3489, 3498, 3549, 3543, 3556, 3542, 3497, 3526, 3515, 3532, 3522, 3536, 3525, 3482, 3496, 3467, 3469, 3444,
+  2084, 3168, 3338, 3398, 3394, 3396, 3367, 3335, 3353, 3253, 3282, 3266, 3272, 3307, 3276, 3282, 3188, 3290, 3260, 3237 };
+*/
 
-static int16_t AT_adcMaxAvg  = 3420;  // average of the above
-static int16_t AT_CalibPivot = 3360;
+static int16_t AT_adcMaxAvg  = 3474;  // 3420;  // average of the above
+static int16_t AT_CalibPivot = 3412;  // 3360;
 
 // --- Force to TDC range conversion tables ---
 // 5.3N...19N is about the largest reasonable span. 19N is quite a lot,
@@ -741,17 +746,55 @@ static void ProcessAftertouch(void)
   int16_t adcValue;
   int16_t tcdOutput;
 
+  static int      state = 0;
+  static int16_t  timer;
+  static uint16_t savedAdcValue;
+
   adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
   if (adcValue == 0)
+  {
     tcdOutput = 0;
+    state     = 0;
+  }
   else
   {
     int singleKey       = POLY_GetSingleKey();  // -1 means : not a single key (none or more than one singleKey)
-    AT_ADCMaxValues[61] = singleKey;
+    AT_ADCMaxValues[61] = (AT_ADCMaxValues[61] & 0x8000) | singleKey;
 
-    // save current ADC adcValue in volatile table
-    if ((adcValue != 0) && (singleKey != -1) && (adcValue > AT_ADCMaxValues[singleKey]))
-      AT_ADCMaxValues[singleKey] = adcValue;
+    // save current ADC adcValue in volatile table once it has settled
+    if (singleKey != -1)
+    {
+      switch (state)
+      {
+        case 0:  // key newly pressed
+          state         = 1;
+          savedAdcValue = adcValue;
+          timer         = 0;
+          break;
+        case 1:                                   // wait until values settles around [-1; +2]
+          AT_ADCMaxValues[singleKey] = adcValue;  // for monitoring
+          AT_ADCMaxValues[61] &= 0x7FFF;
+          if ((adcValue >= savedAdcValue - 1) && (adcValue <= savedAdcValue + 2))
+          {  // still within range
+            timer++;
+            if (timer > 240)  // stable for 3 seconds
+            {
+              AT_ADCMaxValues[singleKey] = savedAdcValue;  // that's our max
+              AT_ADCMaxValues[61] |= 0x8000;
+              state = 99;
+              break;
+            }
+          }
+          else
+          {  // outside limits
+            timer         = 0;
+            savedAdcValue = adcValue;  // new range
+          }
+          break;
+        case 99:  // wait until key is released
+          break;
+      }
+    }
 
     // apply calibration
     int16_t calibrationPoint;
