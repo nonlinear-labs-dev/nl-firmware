@@ -1690,9 +1690,9 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
         {
           hw->setCPFromLoad(transaction, oldPos, false);
         }
-        else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None && oldPos != 0.5)
+        else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None)
         {
-          hw->setCPFromLoad(transaction, oldPos, false);
+          //unchanged -> should be updated from MC -> updateBoundRibbon
         }
       }
       else

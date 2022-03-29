@@ -338,7 +338,7 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
 
       ebUseCases.load(rib1_retcenter);
       TestHelper::doMainLoopIteration();
-      CHECK(ribbon1->getDisplayString() == "100.0 %");
+      CHECK(ribbon1->getDisplayString() == "0.0 %");
     }
   }
 
