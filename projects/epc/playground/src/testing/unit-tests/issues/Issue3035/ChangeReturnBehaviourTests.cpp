@@ -214,20 +214,42 @@ TEST_CASE("Issue 3035, [Ribbon] Set Return-Behaviour does lead to jump of value 
     routeUseCase.setControlPosition(1);
 
     ribbonUseCases.setReturnMode(RibbonReturnMode::RETURN);
-    ribbonUseCases.setControlPosition(1);
-    auto oldMCPos = mcA->getDisplayString();
-    auto oldModPos = modTarget->getDisplayString();
-
-    CHECK(ribbon1->getDisplayString() == "! 100.0 %");
-    CHECK(oldMCPos == "100.0 %");
-    CHECK(oldModPos == "100.0 %");
-
-    WHEN("Ribbon is set to Stay")
+    WHEN("pos is 1")
     {
-      ribbonUseCases.setReturnMode(RibbonReturnMode::STAY);
-      CHECK(ribbon1->getDisplayString() == "100.0 %");
-      CHECK(mcA->getDisplayString() == oldMCPos);
-      CHECK(modTarget->getDisplayString() == oldModPos);
+      ribbonUseCases.setControlPosition(1);
+      auto oldMCPos = mcA->getDisplayString();
+      auto oldModPos = modTarget->getDisplayString();
+
+      CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+      CHECK(oldMCPos == "100.0 %");
+      CHECK(oldModPos == "100.0 %");
+
+      WHEN("Ribbon is set to Stay")
+      {
+        ribbonUseCases.setReturnMode(RibbonReturnMode::STAY);
+        CHECK(ribbon1->getDisplayString() == "100.0 %");
+        CHECK(mcA->getDisplayString() == oldMCPos);
+        CHECK(modTarget->getDisplayString() == oldModPos);
+      }
+    }
+
+    WHEN("pos is -1")
+    {
+      ribbonUseCases.setControlPosition(-1);
+      auto oldMCPos = mcA->getDisplayString();
+      auto oldModPos = modTarget->getDisplayString();
+
+      CHECK(ribbon1->getDisplayString() == "! -100.0 %");
+      CHECK(oldMCPos == "0.0 %");
+      CHECK(oldModPos == "-100.0 %");
+
+      WHEN("Ribbon is set to Stay")
+      {
+        ribbonUseCases.setReturnMode(RibbonReturnMode::STAY);
+        CHECK(ribbon1->getDisplayString() == "0.0 %");
+        CHECK(mcA->getDisplayString() == oldMCPos);
+        CHECK(modTarget->getDisplayString() == oldModPos);
+      }
     }
   }
 }
