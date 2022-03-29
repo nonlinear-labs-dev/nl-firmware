@@ -54,6 +54,9 @@ void RibbonParameter::setupScalingAndDefaultValue(bool defaultValue)
   getValue().setDefaultValue(getDefValueAccordingToMode());
   if(defaultValue)
     getValue().setToDefault(Initiator::INDIRECT);
+  else
+  {
+  }
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
 
@@ -136,8 +139,19 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
     transaction->addSimpleCommand(
         [=](UNDO::Command::State) mutable
         {
+          auto oldMode = m_returnMode;
           swapData->swapWith(m_returnMode);
           setupScalingAndDefaultValue(initiator == Initiator::EXPLICIT_USECASE && getRibbonReturnMode() == RibbonReturnMode::RETURN);
+          if(initiator == Initiator::EXPLICIT_USECASE && oldMode == RibbonReturnMode::RETURN && getRibbonReturnMode() == RibbonReturnMode::STAY)
+          {
+            auto oldPos = getControlPositionValue();
+            auto newPos = (oldPos * 0.5) + 0.5;
+            getValue().setRawValue(initiator, newPos);
+          }
+          else if(initiator == Initiator::EXPLICIT_LOAD && oldMode == RibbonReturnMode::STAY && getRibbonReturnMode() == RibbonReturnMode::RETURN)
+          {
+            setupScalingAndDefaultValue(true);
+          }
           onChange();
         });
   }
