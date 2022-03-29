@@ -400,7 +400,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
       if ((flags & NO_AT_DATA_OHMS) == 0)
       {
         dump(cmd, len, data, flags);
-        if (len != 62)
+        if (len != 63)
         {
           printf("AT-DATA : wrong length of %d\n", len);
           return 3;
@@ -410,7 +410,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
           if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
             cursorUp(8);
           displayCounter();
-          printf("Aftertouch Sensor Minimum Ohms per Key\n");
+          printf("Aftertouch Sensor Ohms per Key\n");
           printf(" Oct  C   "
                  " C#  "
                  " D   "
@@ -466,7 +466,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
       else if ((flags & NO_AT_DATA) == 0)
       {
         dump(cmd, len, data, flags);
-        if (len != 62)
+        if (len != 63)
         {
           printf("AT-DATA : wrong length of %d\n", len);
           return 3;
@@ -476,7 +476,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
           if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
             cursorUp(8);
           displayCounter();
-          printf("Aftertouch Sensor Maximum ADC value per Key\n");
+          printf("Aftertouch Sensor ADC value per Key. Current Force [mN]: %5d\n", data[62]);
           printf(" Oct  C   "
                  " C#  "
                  " D   "

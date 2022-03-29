@@ -50,6 +50,9 @@ static uint32_t  allBenderTables[3][33] = {};  // contains the bender curves
 static uint32_t *benderTable;
 
 static uint32_t lastAftertouch;
+static int      AT_calibrationRun = 1;  // 0:off; 1:calibrate; 2:store
+//static uint16_t AT_eepromHandle   = 0;  // EEPROM access handle
+//static int      AT_updateEeprom   = 0;  // flag / step chain variable
 
 //========= ribbons ========
 static uint16_t rib_eepromHandle = 0;  // EEPROM access handle
@@ -241,6 +244,7 @@ void ADC_WORK_Init1(void)
   NL_EHC_InitControllers();
 
   rib_eepromHandle = NL_EEPROM_RegisterBlock(sizeof ribbonCalibrationData, EEPROM_BLOCK_ALIGN_TO_PAGE);
+  // AT_eepromHandle  = NL_EEPROM_RegisterBlock(sizeof ribbonCalibrationData, EEPROM_BLOCK_ALIGN_TO_PAGE);
 
   RibbonCalibrationData_T tmp[2];
   if (NL_EEPROM_ReadBlock(rib_eepromHandle, tmp, EEPROM_READ_BOTH))
@@ -662,16 +666,19 @@ void ADC_WORK_Resume(void)
 /*****************************************************************************
 * @brief  Process Aftertouch
 ******************************************************************************/
-static uint16_t AT_ADCMaxValues[62];  // volatile ADC max values ([61] is current single key #)
+// volatile ADC max values [61] is current single key #
+// [61] is current single key #
+// [62] is current force
+static uint16_t AT_adcPerKey[63];
 
 uint16_t ADC_WORK_GetATAdcDataSize(void)
 {
-  return sizeof(AT_ADCMaxValues) / sizeof(uint16_t);
+  return sizeof(AT_adcPerKey) / sizeof(uint16_t);
 }
 
 uint16_t *ADC_WORK_GetATAdcData(void)
 {
-  return AT_ADCMaxValues;
+  return AT_adcPerKey;
 }
 
 // --- ADC value to Force conversion ---
@@ -682,40 +689,43 @@ static int16_t AT_adcToForceTableY[16] = { 5300, 6000, 6500, 7000, 7500, 8000, 9
 
 static LIB_interpol_data_T AT_adcToForce = { 16, AT_adcToForceTableX, AT_adcToForceTableY };
 
+// clang-format off
 // --- Key Calibration ---
-// ADC max value calibration data
-static int16_t AT_adcMaxCalib[61] = { 3530, 3624, 3576, 3563, 3545, 3581, 3614, 3595, 3589, 3577, 3633, 3586, 3609, 3592, 3541, 3529, 3546,
-                                      3493, 3485, 3507, 3510, 3463, 3490, 3525, 3558, 3564, 3569, 3553, 3588, 3546, 3530, 3549, 3541, 3559, 3539, 3543, 3519, 3513, 3506,
-                                      3491, 3491, 2850, 3189, 3392, 3420, 3430, 3428, 3415, 3388, 3367, 3327, 3330, 3324, 3338, 3350, 3347, 3333, 3259, 3336, 3343, 3316 };
-/*
- { 3506, 3573, 3491, 3536, 3455, 3536, 3574, 3538, 3553, 3511, 3588, 3553, 3569, 3560, 3476, 3512, 3464, 3451,
-  3473, 3426, 3479, 3422, 3461, 3489, 3498, 3549, 3543, 3556, 3542, 3497, 3526, 3515, 3532, 3522, 3536, 3525, 3482, 3496, 3467, 3469, 3444,
-  2084, 3168, 3338, 3398, 3394, 3396, 3367, 3335, 3353, 3253, 3282, 3266, 3272, 3307, 3276, 3282, 3188, 3290, 3260, 3237 };
-*/
+// ADC value calibration data
+// [0..60] : per key raw adc reading value for test force
+// [61]    : average of these values (can be computed, of course, unless there were some discarded values)
+// [62]    : target adc input value for the averaged characteristic for the used test force (10N)
 
-static int16_t AT_adcMaxAvg  = 3474;  // 3420;  // average of the above
-static int16_t AT_CalibPivot = 3412;  // 3360;
+/* uneven keybed */
+static int16_t AT_adcCalibration[63] =
+{
+  2995, 3018, 3141, 3028, 3191, 3204, 3124, 3224, 3128, 3216, 3150, 3275,
+  3271, 3199, 3381, 3371, 3496, 3481, 3489, 3610, 3585, 3663, 3626, 3666,
+  3659, 3601, 3659, 3646, 3683, 3662, 3595, 3578, 3539, 3621, 3570, 3567,
+  3541, 3498, 3552, 3519, 3576, 3522, 3471, 3514, 3481, 3533, 3469, 3545,
+  3547, 3528, 3575, 3554, 3596, 3591, 3535, 3498, 3581, 3587, 3534, 3564, 3531,
+  3465, 3290
+};
+// clang-format off
 
 // --- Force to TDC range conversion tables ---
-// 5.3N...19N is about the largest reasonable span. 19N is quite a lot,
-// 12N is probably a more realistic saturation point, still comfortable with pinkie finger on black keys
 
-// Logarithmic
-static int16_t             AT_forceToTcdX_Logarithmic[2] = { 5300, 7500 };  // forces
-static int16_t             AT_forceToTcdY_Logarithmic[2] = { 0, 16000 };    // TCD output
-static LIB_interpol_data_T AT_forceToTcd_Logarithmic     = { 2, AT_forceToTcdX_Logarithmic, AT_forceToTcdY_Logarithmic };
+// Soft
+static int16_t             AT_forceToTcdX_Soft[3] = { 5300, 6300, 7500 };  // forces
+static int16_t             AT_forceToTcdY_Soft[3] = { 0, 3000, 16000 };    // TCD output
+static LIB_interpol_data_T AT_forceToTcd_Soft     = { 3, AT_forceToTcdX_Soft, AT_forceToTcdY_Soft };
 
-// Linear
-static int16_t             AT_forceToTcdX_Linear[2] = { 6000, 9000 };  // forces
-static int16_t             AT_forceToTcdY_Linear[2] = { 0, 16000 };    // TCD output
-static LIB_interpol_data_T AT_forceToTcd_Linear     = { 2, AT_forceToTcdX_Linear, AT_forceToTcdY_Linear };
+// Normal
+static int16_t             AT_forceToTcdX_Normal[3] = { 6000, 7100, 9000 };  // forces
+static int16_t             AT_forceToTcdY_Normal[3] = { 0, 4000, 16000 };    // TCD output
+static LIB_interpol_data_T AT_forceToTcd_Normal     = { 3, AT_forceToTcdX_Normal, AT_forceToTcdY_Normal };
 
-// Exponential
-static int16_t             AT_forceToTcdX_Exponential[2] = { 6700, 11000 };  // forces
-static int16_t             AT_forceToTcdY_Exponential[2] = { 0, 16000 };     // TCD output
-static LIB_interpol_data_T AT_forceToTcd_Exponential     = { 2, AT_forceToTcdX_Exponential, AT_forceToTcdY_Exponential };
+// Hard
+static int16_t             AT_forceToTcdX_Hard[2] = { 6700, 11000 };  // forces
+static int16_t             AT_forceToTcdY_Hard[2] = { 0, 16000 };     // TCD output
+static LIB_interpol_data_T AT_forceToTcd_Hard     = { 2, AT_forceToTcdX_Hard, AT_forceToTcdY_Hard };
 
-static LIB_interpol_data_T *AT_forceToTcd = &AT_forceToTcd_Linear;
+static LIB_interpol_data_T *AT_forceToTcd = &AT_forceToTcd_Normal;
 
 /*****************************************************************************
 * @brief	ADC_WORK_Select_AftertouchTable -
@@ -726,13 +736,13 @@ void ADC_WORK_Select_AftertouchTable(uint16_t const curve)
   switch (curve)
   {
     case 0:  // soft
-      AT_forceToTcd = &AT_forceToTcd_Logarithmic;
+      AT_forceToTcd = &AT_forceToTcd_Soft;
       break;
     case 1:  // normal
-      AT_forceToTcd = &AT_forceToTcd_Linear;
+      AT_forceToTcd = &AT_forceToTcd_Normal;
       break;
     case 2:  // hard
-      AT_forceToTcd = &AT_forceToTcd_Exponential;
+      AT_forceToTcd = &AT_forceToTcd_Hard;
       break;
     default:
       break;
@@ -745,12 +755,18 @@ static void ProcessAftertouch(void)
 {
   int16_t adcValue;
   int16_t tcdOutput;
+  int16_t adcToForceInput = 0;
+  int16_t force           = 0;
 
   static int      state = 0;
   static int16_t  timer;
   static uint16_t savedAdcValue;
 
+  static LIB_lowpass_data_T lpFilter = { .filtered = 0, .beta = 6, .fpShift = 7 };
+  int16_t                   adcFiltered;
+
   adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+
   if (adcValue == 0)
   {
     tcdOutput = 0;
@@ -758,64 +774,68 @@ static void ProcessAftertouch(void)
   }
   else
   {
-    int singleKey       = POLY_GetSingleKey();  // -1 means : not a single key (none or more than one singleKey)
-    AT_ADCMaxValues[61] = (AT_ADCMaxValues[61] & 0x8000) | singleKey;
+    int singleKey    = POLY_GetSingleKey();  // -1 means : not a single key (none or more than one singleKey)
+    AT_adcPerKey[61] = (AT_adcPerKey[61] & 0x8000) | singleKey;
 
     // save current ADC adcValue in volatile table once it has settled
-    if (singleKey != -1)
+    if (AT_calibrationRun == 1)
     {
-      switch (state)
+      if (singleKey != -1)
       {
-        case 0:  // key newly pressed
-          state         = 1;
-          savedAdcValue = adcValue;
-          timer         = 0;
-          break;
-        case 1:                                   // wait until values settles around [-1; +2]
-          AT_ADCMaxValues[singleKey] = adcValue;  // for monitoring
-          AT_ADCMaxValues[61] &= 0x7FFF;
-          if ((adcValue >= savedAdcValue - 1) && (adcValue <= savedAdcValue + 2))
-          {  // still within range
-            timer++;
-            if (timer > 240)  // stable for 3 seconds
-            {
-              AT_ADCMaxValues[singleKey] = savedAdcValue;  // that's our max
-              AT_ADCMaxValues[61] |= 0x8000;
-              state = 99;
-              break;
+        switch (state)
+        {
+          case 0:  // key newly pressed
+            state         = 1;
+            savedAdcValue = lpFilter.filtered = adcValue;
+            timer                             = 0;
+            break;
+          case 1:  // wait until values settles around [-1; +2]
+            adcFiltered             = LIB_LowPass(&lpFilter, adcValue);
+            AT_adcPerKey[singleKey] = adcFiltered;  // for monitoring
+            AT_adcPerKey[61] &= 0x7FFF;
+            if ((adcFiltered >= savedAdcValue - 1) && (adcFiltered <= savedAdcValue + 2))
+            {  // still within range
+              timer++;
+              if (timer > 80)  // stable for 1 seconds
+              {
+                AT_adcPerKey[singleKey] = savedAdcValue;  // that's our max
+                AT_adcPerKey[61] |= 0x8000;
+                state = 99;
+                break;
+              }
             }
-          }
-          else
-          {  // outside limits
-            timer         = 0;
-            savedAdcValue = adcValue;  // new range
-          }
-          break;
-        case 99:  // wait until key is released
-          break;
+            else
+            {  // outside limits
+              timer         = 0;
+              savedAdcValue = adcFiltered;  // new range
+            }
+            break;
+          case 99:  // wait until key is released
+            break;
+        }
       }
     }
 
     // apply calibration
     int16_t calibrationPoint;
     if (singleKey != -1)
-      calibrationPoint = AT_adcMaxCalib[singleKey];
+      calibrationPoint = AT_adcCalibration[singleKey];
     else  // use average adcValue
-      calibrationPoint = AT_adcMaxAvg;
+      calibrationPoint = AT_adcCalibration[61];
 
-    int16_t calibrationOffset = AT_CalibPivot - calibrationPoint;
-    int16_t adcToForceInput   = adcValue + calibrationOffset;
+    adcToForceInput = adcValue + (AT_adcCalibration[62] - calibrationPoint);
 
     // convert to force and then to TCD
-    int16_t force = LIB_InterpolateValue(&AT_adcToForce, adcToForceInput);
-    tcdOutput     = LIB_InterpolateValue(AT_forceToTcd, force);
+    force     = LIB_InterpolateValue(&AT_adcToForce, adcToForceInput);
+    tcdOutput = LIB_InterpolateValue(AT_forceToTcd, force);
   }
+  AT_adcPerKey[62] = force;
 
   if (tcdOutput != lastAftertouch)
   {
+    lastAftertouch = tcdOutput;
     ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
     ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
-    lastAftertouch = tcdOutput;
   }
 }
 

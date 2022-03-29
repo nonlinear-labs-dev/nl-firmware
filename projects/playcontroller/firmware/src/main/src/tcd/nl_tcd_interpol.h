@@ -20,3 +20,18 @@ typedef struct
 
 // Table lookup with interpolation
 int16_t LIB_InterpolateValue(LIB_interpol_data_T *table, int16_t x);
+
+// ------------- LowPass Filter ------
+// see https://kiritchatterjee.wordpress.com/2014/11/10/a-simple-digital-low-pass-filter-in-c/
+typedef struct
+{
+  int32_t  filtered;
+  uint16_t beta;
+  uint16_t fpShift;
+} LIB_lowpass_data_T;
+
+inline int16_t LIB_LowPass(LIB_lowpass_data_T *data, int16_t const x)
+{
+  data->filtered = ((data->filtered << data->beta) - data->filtered + (x << data->fpShift)) >> data->beta;
+  return data->filtered >> data->fpShift;
+}
