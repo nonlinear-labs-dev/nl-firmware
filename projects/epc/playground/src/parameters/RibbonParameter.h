@@ -35,8 +35,6 @@ class RibbonParameter : public PhysicalControlParameter
   bool isLocalEnabled() const override;
   void onLocalEnableChanged(bool localEnableState) override;
   void setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
-  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
-  void setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -44,13 +42,10 @@ class RibbonParameter : public PhysicalControlParameter
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
   bool hasBehavior() const override;
 
- protected:
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;
   void sendToPlaycontroller() const override;
-  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                  bool dosendToPlaycontroller) override;
 
  private:
   void ensureExclusiveRoutingIfNeeded();

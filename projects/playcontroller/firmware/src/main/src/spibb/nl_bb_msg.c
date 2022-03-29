@@ -407,6 +407,15 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       }
+      case PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA:
+      {
+        uint16_t  words  = ADC_WORK_GetATAdcDataSize();
+        uint16_t* buffer = ADC_WORK_GetATAdcData();
+        BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA, words, buffer);
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA, 1);
+        BB_MSG_SendTheBuffer();
+        break;
+      }
       case PLAYCONTROLLER_REQUEST_ID_UHID64:
       {
         BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_UHID64, 4, (uint16_t*) &NL_uhid64);

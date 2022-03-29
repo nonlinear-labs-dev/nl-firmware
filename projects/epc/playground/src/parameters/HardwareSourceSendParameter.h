@@ -30,8 +30,6 @@ class HardwareSourceSendParameter : public Parameter
   nlohmann::json serialize() const override;
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
-  void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
-                  bool dosendToPlaycontroller) override;
 
  private:
   void sendParameterMessage() const override;

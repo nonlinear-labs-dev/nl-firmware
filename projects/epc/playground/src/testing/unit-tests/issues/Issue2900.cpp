@@ -8,7 +8,6 @@
 #include <nltools/GenericScopeGuard.h>
 
 #warning "This test can stall or crash the whole unit-test-suite"
-#warning "/home/justus/Development/nl/C15/projects/epc/playground/src/testing/unit-tests/issues/Issue2900.cpp:11: Failure:fatal error"
 TEST_CASE("Issue 2900")
 {
   using namespace std::chrono_literals;

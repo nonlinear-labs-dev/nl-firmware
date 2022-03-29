@@ -83,6 +83,7 @@ Retry:
 #define EHC_SAVE_EEPROM "save-ehc"
 #define UHID64          "uhid64"
 #define POLLHWS         "pollhws"
+#define AT_MAX_DATA     "at-max-data"
 #if LPC_KEYBED_DIAG
 #define KEY_CNTRS "key-counters"
 #endif
@@ -128,7 +129,7 @@ void Usage(void)
 #if LPC_KEYBED_DIAG
   puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|key-counters");
 #else
-  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws");
+  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws|at-max-data");
 #endif
   puts("     sw-version   : get LPC firware version");
   puts("     muting       : get software&hardware muting status");
@@ -138,6 +139,7 @@ void Usage(void)
   puts("     save-ehc     : save current EHC config data to EEPROM");
   puts("     uhid64       : get unique hardware ID (64bit)");
   puts("     pollhws      : poll hardware sources");
+  puts("     at-max-data  : get AT raw ADC max values for all keys");
 #if LPC_KEYBED_DIAG
   puts("     key-counters : get diagnostic key error counters");
 #endif
@@ -298,6 +300,12 @@ int main(int argc, char const *argv[])
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
+    if (strncmp(argv[2], AT_MAX_DATA, sizeof AT_MAX_DATA) == 0)
+    {
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
 #if LPC_KEYBED_DIAG
     if (strncmp(argv[2], KEY_CNTRS, sizeof KEY_CNTRS) == 0)
     {
@@ -410,19 +418,19 @@ int main(int argc, char const *argv[])
       SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_AUDIO_ENGINE_CMD;
       if (strncmp(argv[3], AE_CMD_TTOFF, sizeof AE_CMD_TTOFF) == 0)
       {
-        SET_DATA[3] = AE_CMD_TONE_OFF;
+        SET_DATA[3] = AE_PROTOCOL_CMD_TONE_OFF;
         writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
         return 0;
       }
       if (strncmp(argv[3], AE_CMD_TTON, sizeof AE_CMD_TTON) == 0)
       {
-        SET_DATA[3] = AE_CMD_TONE_ON;
+        SET_DATA[3] = AE_PROTOCOL_CMD_TONE_ON;
         writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
         return 0;
       }
       if (strncmp(argv[3], AE_CMD_DEFSND, sizeof AE_CMD_DEFSND) == 0)
       {
-        SET_DATA[3] = AE_CMD_DEFAULT_SOUND;
+        SET_DATA[3] = AE_PROTOCOL_CMD_DEFAULT_SOUND;
         writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
         return 0;
       }

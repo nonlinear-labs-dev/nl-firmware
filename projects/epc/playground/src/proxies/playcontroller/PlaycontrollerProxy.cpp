@@ -279,8 +279,6 @@ void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gin
       {
         ParameterUseCases useCase(p);
 
-        nltools::Log::error("onAbsoluteEditControlMessageReceived", p->getID(), m_throttledAbsoluteParameterValue);
-
         if(p->isBiPolar())
         {
           useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
@@ -407,7 +405,7 @@ void PlaycontrollerProxy::requestPlaycontrollerUHID()
 
 void PlaycontrollerProxy::requestHWPositions()
 {
-  nltools::Log::error("sending request POLLHWS to LPC");
+  nltools::Log::info("sending request POLLHWS to LPC");
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_POLLHWS);
 }
 

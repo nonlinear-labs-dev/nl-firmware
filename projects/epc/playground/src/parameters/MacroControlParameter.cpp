@@ -202,7 +202,7 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   {
     auto swapData = UNDO::createSwapData(newName);
 
-    DebugLevel::info("Set given name of MC to", newName);
+    nltools::Log::info("Set given name of MC to", newName);
 
     transaction->addSimpleCommand(
         [=](UNDO::Command::State) mutable
@@ -392,24 +392,6 @@ void MacroControlParameter::undoableRandomize(UNDO::Transaction *, Initiator, do
 void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
-}
-
-void MacroControlParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                                       bool dosendToPlaycontroller)
-{
-//  Environment::printbacktrace(nltools::Log::Level::Error);
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-}
-
-QuantizedValue &MacroControlParameter::getValue()
-{
-  return Parameter::getValue();
-}
-
-void MacroControlParameter::setIndirect(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-//  Environment::printbacktrace(nltools::Log::Level::Error);
-  Parameter::setIndirect(transaction, value);
 }
 
 void MacroControlParameter::sendParameterMessage() const
