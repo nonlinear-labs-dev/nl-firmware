@@ -201,9 +201,6 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   if(m_givenName != newName)
   {
     auto swapData = UNDO::createSwapData(newName);
-
-    nltools::Log::info("Set given name of MC to", newName);
-
     transaction->addSimpleCommand(
         [=](UNDO::Command::State) mutable
         {

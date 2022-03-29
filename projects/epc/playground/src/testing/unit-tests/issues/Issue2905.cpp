@@ -1,10 +1,7 @@
 #include <testing/TestHelper.h>
-#include <presets/PresetManager.h>
-#include <presets/EditBuffer.h>
 #include <presets/Bank.h>
 #include "CompileTimeOptions.h"
 
-#warning "This Test is super slow: 31 seconds consistently"
 TEST_CASE("Sort Bank Numbers deletes Banks!")
 {
   auto pm = TestHelper::getPresetManager();

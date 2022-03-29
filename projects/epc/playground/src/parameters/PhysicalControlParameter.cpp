@@ -295,8 +295,3 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
 
   return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
 }
-
-IntrusiveList<ModulationRoutingParameter *> &PhysicalControlParameter::getTargets()
-{
-  return m_targets;
-}
