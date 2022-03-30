@@ -20,9 +20,7 @@ run_hook() {
       echo "Entering custom mount handler oroot_mount"
       mkdir -p /nloverlay
       mount /dev/sda3 /nloverlay
-      
       mount -t overlay -o lowerdir=/nloverlay/os-overlay:/lroot,upperdir=/nloverlay/runtime-overlay,workdir=/nloverlay/work overlay "$1"
-      mv /overlay_flush /new_root/usr/bin/
    }
 
    mount_handler=oroot_mount
