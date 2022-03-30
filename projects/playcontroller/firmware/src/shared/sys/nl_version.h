@@ -27,7 +27,6 @@
 // ==== V 208 ====
 // added "Poll Hardware Sources" feature
 // added "Enable HW Source messages to UI" feature (default: disabled)
-#define SW_VERSION 208
 
 // ==== V 209 ====
 // new/better ranging for Aftertouch

@@ -9,9 +9,9 @@
 
 #include "nl_bb_msg.h"
 #include "nl_spi_bb.h"
-
 #include "tcd/nl_tcd_adc_work.h"
 #include "tcd/nl_tcd_poly.h"
+#include "tcd/nl_tcd_aftertouch.h"
 #include "tcd/nl_tcd_msg.h"
 #include "drv/nl_dbg.h"
 #include "sup/nl_sup.h"
@@ -327,7 +327,7 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         POLY_Select_VelTable(data[1]);                // Parameter: 0 = very soft ... 4 = very hard
         break;
       case PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE:  // Aftertouch Curve
-        ADC_WORK_Select_AftertouchTable(data[1]);       // 0: soft, 1: normal, 2: hard
+        AT_Select_AftertouchTable(data[1]);             // 0: soft, 1: normal, 2: hard
         break;
       case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:  // Bender Curve
         ADC_WORK_Select_BenderTable(data[1]);       // 0: soft, 1: normal, 2: hard
@@ -409,8 +409,8 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       }
       case PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA:
       {
-        uint16_t  words  = ADC_WORK_GetATAdcDataSize();
-        uint16_t* buffer = ADC_WORK_GetATAdcData();
+        uint16_t  words  = AT_GetATAdcDataSize();
+        uint16_t* buffer = AT_GetATAdcData();
         BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA, words, buffer);
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA, 1);
         BB_MSG_SendTheBuffer();

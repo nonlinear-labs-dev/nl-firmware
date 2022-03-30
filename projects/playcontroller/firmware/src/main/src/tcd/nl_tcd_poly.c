@@ -163,6 +163,10 @@ int POLY_GetSingleKey(void)
   return key;
 }
 
+uint8_t  POLY_keyQueue[64];
+unsigned POLY_queueHead;
+unsigned POLY_queueTail;
+
 /******************************************************************************
 	@brief		ProcessKeyEvent : convert key event to MIDI event.
 	            Also emits the key message back to BBB, and log the full

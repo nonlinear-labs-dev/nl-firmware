@@ -10,15 +10,15 @@
 #include "nl_tcd_adc_work.h"
 #include "nl_tcd_msg.h"
 #include "ipc/emphase_ipc.h"
-#include "ipc/emphase_ipc.h"
 #include "spibb/nl_bb_msg.h"
-#include "nl_tcd_interpol.h"
+#include "tcd/nl_tcd_interpol.h"
+#include "tcd/nl_tcd_aftertouch.h"
+#include "tcd/nl_tcd_poly.h"
 #include "ehc/nl_ehc_ctrl.h"
 #include "drv/nl_dbg.h"
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
 #include "playcontroller/playcontroller-defs.h"
-#include "tcd/nl_tcd_poly.h"
 #include "io/pins.h"
 
 #define BIPOLAR_CENTER      8000  // bipolar "0" in unsigned 0...16000 notation
@@ -27,9 +27,6 @@
 #define BENDER_TEST_PERIOD  80    // 1 s = 80 * 12.5 ms
 #define BENDER_RAMP_INC     8     // 400 / 8 = 50 steps from the threshold to zero (50 * 12.5 ms = 625 ms)
 #define BENDER_FACTOR       4540  // 4540 / 4096 = 2047 / 1847 for saturation = 100 % at 90 % of the input range
-
-#define AT_DEADRANGE 30    // 0.73 % of 0 ... 4095
-#define AT_FACTOR    5080  // 5080 / 4096 for saturation = 100 % at 81 % of the input range
 
 static int      sendUiValues = 0;
 static uint16_t uiSendValue[NUM_HW_SOURCES];
@@ -48,11 +45,6 @@ static int32_t   pbRamp;
 static int32_t   pbRampInc;
 static uint32_t  allBenderTables[3][33] = {};  // contains the bender curves
 static uint32_t *benderTable;
-
-static uint32_t lastAftertouch;
-static int      AT_calibrationRun = 1;  // 0:off; 1:calibrate; 2:store
-//static uint16_t AT_eepromHandle   = 0;  // EEPROM access handle
-//static int      AT_updateEeprom   = 0;  // flag / step chain variable
 
 //========= ribbons ========
 static uint16_t rib_eepromHandle = 0;  // EEPROM access handle
@@ -127,18 +119,6 @@ static int16_t SetThreshold(int32_t val)
   val *= 8;
   val /= 10;
   return val;
-}
-
-// helper functions
-int memcmp32(void *data1, void *data2, uint16_t count)
-{
-  while (count--)
-  {
-    if (*(int32_t *) (data1++) == *(int32_t *) (data2++))
-      continue;
-    return (*(int32_t *) (data1++) < *(int32_t *) (data2++) ? -1 : 1);
-  }
-  return 0;
 }
 
 /*****************************************************************************
@@ -218,9 +198,6 @@ void ADC_WORK_Init1(void)
   Generate_BenderTable(2);
   ADC_WORK_Select_BenderTable(1);
 
-  lastAftertouch = 0;
-  ADC_WORK_Select_AftertouchTable(1);
-
   // initialize ribbon data
   for (int i = 0; i <= 1; i++)
   {
@@ -244,11 +221,12 @@ void ADC_WORK_Init1(void)
   NL_EHC_InitControllers();
 
   rib_eepromHandle = NL_EEPROM_RegisterBlock(sizeof ribbonCalibrationData, EEPROM_BLOCK_ALIGN_TO_PAGE);
-  // AT_eepromHandle  = NL_EEPROM_RegisterBlock(sizeof ribbonCalibrationData, EEPROM_BLOCK_ALIGN_TO_PAGE);
 
   RibbonCalibrationData_T tmp[2];
   if (NL_EEPROM_ReadBlock(rib_eepromHandle, tmp, EEPROM_READ_BOTH))
-    memcpy(ribbonCalibrationData, tmp, sizeof(ribbonCalibrationData));
+    memcpy(&ribbonCalibrationData, tmp, sizeof(ribbonCalibrationData));
+
+  AT_Init();
 
   ClearHWValuesForUI();
   ClearHWValuesForAE();
@@ -371,8 +349,8 @@ static void PollHWValues(void)
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
   ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
 
-  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
-  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, lastAftertouch);
+  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, AT_lastAftertouch);
+  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, AT_lastAftertouch);
 
   NL_EHC_PollControllers();
 
@@ -664,182 +642,6 @@ void ADC_WORK_Resume(void)
 }
 
 /*****************************************************************************
-* @brief  Process Aftertouch
-******************************************************************************/
-// volatile ADC max values [61] is current single key #
-// [61] is current single key #
-// [62] is current force
-static uint16_t AT_adcPerKey[63];
-
-uint16_t ADC_WORK_GetATAdcDataSize(void)
-{
-  return sizeof(AT_adcPerKey) / sizeof(uint16_t);
-}
-
-uint16_t *ADC_WORK_GetATAdcData(void)
-{
-  return AT_adcPerKey;
-}
-
-// --- ADC value to Force conversion ---
-// ADC values (input, 0...4096)
-static int16_t AT_adcToForceTableX[16] = { 0, 1196, 1992, 2530, 2816, 3002, 3202, 3301, 3368, 3412, 3474, 3512, 3541, 3557, 3570, 3600 };
-// Force values (output, 1/100 Newton units)
-static int16_t AT_adcToForceTableY[16] = { 5300, 6000, 6500, 7000, 7500, 8000, 9000, 10000, 11000, 12000, 14000, 16000, 18000, 20000, 22000, 26000 };
-
-static LIB_interpol_data_T AT_adcToForce = { 16, AT_adcToForceTableX, AT_adcToForceTableY };
-
-// clang-format off
-// --- Key Calibration ---
-// ADC value calibration data
-// [0..60] : per key raw adc reading value for test force
-// [61]    : average of these values (can be computed, of course, unless there were some discarded values)
-// [62]    : target adc input value for the averaged characteristic for the used test force (10N)
-
-/* uneven keybed */
-static int16_t AT_adcCalibration[63] =
-{
-  2995, 3018, 3141, 3028, 3191, 3204, 3124, 3224, 3128, 3216, 3150, 3275,
-  3271, 3199, 3381, 3371, 3496, 3481, 3489, 3610, 3585, 3663, 3626, 3666,
-  3659, 3601, 3659, 3646, 3683, 3662, 3595, 3578, 3539, 3621, 3570, 3567,
-  3541, 3498, 3552, 3519, 3576, 3522, 3471, 3514, 3481, 3533, 3469, 3545,
-  3547, 3528, 3575, 3554, 3596, 3591, 3535, 3498, 3581, 3587, 3534, 3564, 3531,
-  3465, 3290
-};
-// clang-format off
-
-// --- Force to TDC range conversion tables ---
-
-// Soft
-static int16_t             AT_forceToTcdX_Soft[3] = { 5300, 6300, 7500 };  // forces
-static int16_t             AT_forceToTcdY_Soft[3] = { 0, 3000, 16000 };    // TCD output
-static LIB_interpol_data_T AT_forceToTcd_Soft     = { 3, AT_forceToTcdX_Soft, AT_forceToTcdY_Soft };
-
-// Normal
-static int16_t             AT_forceToTcdX_Normal[3] = { 6000, 7100, 9000 };  // forces
-static int16_t             AT_forceToTcdY_Normal[3] = { 0, 4000, 16000 };    // TCD output
-static LIB_interpol_data_T AT_forceToTcd_Normal     = { 3, AT_forceToTcdX_Normal, AT_forceToTcdY_Normal };
-
-// Hard
-static int16_t             AT_forceToTcdX_Hard[2] = { 6700, 11000 };  // forces
-static int16_t             AT_forceToTcdY_Hard[2] = { 0, 16000 };     // TCD output
-static LIB_interpol_data_T AT_forceToTcd_Hard     = { 2, AT_forceToTcdX_Hard, AT_forceToTcdY_Hard };
-
-static LIB_interpol_data_T *AT_forceToTcd = &AT_forceToTcd_Normal;
-
-/*****************************************************************************
-* @brief	ADC_WORK_Select_AftertouchTable -
-* @param	0: soft, 1: normal, 2: hard
-******************************************************************************/
-void ADC_WORK_Select_AftertouchTable(uint16_t const curve)
-{
-  switch (curve)
-  {
-    case 0:  // soft
-      AT_forceToTcd = &AT_forceToTcd_Soft;
-      break;
-    case 1:  // normal
-      AT_forceToTcd = &AT_forceToTcd_Normal;
-      break;
-    case 2:  // hard
-      AT_forceToTcd = &AT_forceToTcd_Hard;
-      break;
-    default:
-      break;
-  }
-}
-
-//
-// -----------------
-static void ProcessAftertouch(void)
-{
-  int16_t adcValue;
-  int16_t tcdOutput;
-  int16_t adcToForceInput = 0;
-  int16_t force           = 0;
-
-  static int      state = 0;
-  static int16_t  timer;
-  static uint16_t savedAdcValue;
-
-  static LIB_lowpass_data_T lpFilter = { .filtered = 0, .beta = 6, .fpShift = 7 };
-  int16_t                   adcFiltered;
-
-  adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
-
-  if (adcValue == 0)
-  {
-    tcdOutput = 0;
-    state     = 0;
-  }
-  else
-  {
-    int singleKey    = POLY_GetSingleKey();  // -1 means : not a single key (none or more than one singleKey)
-    AT_adcPerKey[61] = (AT_adcPerKey[61] & 0x8000) | singleKey;
-
-    // save current ADC adcValue in volatile table once it has settled
-    if (AT_calibrationRun == 1)
-    {
-      if (singleKey != -1)
-      {
-        switch (state)
-        {
-          case 0:  // key newly pressed
-            state         = 1;
-            savedAdcValue = lpFilter.filtered = adcValue;
-            timer                             = 0;
-            break;
-          case 1:  // wait until values settles around [-1; +2]
-            adcFiltered             = LIB_LowPass(&lpFilter, adcValue);
-            AT_adcPerKey[singleKey] = adcFiltered;  // for monitoring
-            AT_adcPerKey[61] &= 0x7FFF;
-            if ((adcFiltered >= savedAdcValue - 1) && (adcFiltered <= savedAdcValue + 2))
-            {  // still within range
-              timer++;
-              if (timer > 80)  // stable for 1 seconds
-              {
-                AT_adcPerKey[singleKey] = savedAdcValue;  // that's our max
-                AT_adcPerKey[61] |= 0x8000;
-                state = 99;
-                break;
-              }
-            }
-            else
-            {  // outside limits
-              timer         = 0;
-              savedAdcValue = adcFiltered;  // new range
-            }
-            break;
-          case 99:  // wait until key is released
-            break;
-        }
-      }
-    }
-
-    // apply calibration
-    int16_t calibrationPoint;
-    if (singleKey != -1)
-      calibrationPoint = AT_adcCalibration[singleKey];
-    else  // use average adcValue
-      calibrationPoint = AT_adcCalibration[61];
-
-    adcToForceInput = adcValue + (AT_adcCalibration[62] - calibrationPoint);
-
-    // convert to force and then to TCD
-    force     = LIB_InterpolateValue(&AT_adcToForce, adcToForceInput);
-    tcdOutput = LIB_InterpolateValue(AT_forceToTcd, force);
-  }
-  AT_adcPerKey[62] = force;
-
-  if (tcdOutput != lastAftertouch)
-  {
-    lastAftertouch = tcdOutput;
-    ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
-    ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
-  }
-}
-
-/*****************************************************************************
 * @brief  Process Bender
 ******************************************************************************/
 static void SendBenderIfChanged(int32_t value)
@@ -1041,7 +843,7 @@ void ADC_WORK_Process4(void)
 {
   if (suspend)
     return;
-  ProcessAftertouch();
+  AT_ProcessAftertouch();
   ProcessBender();
   ProcessRibbons();
 
