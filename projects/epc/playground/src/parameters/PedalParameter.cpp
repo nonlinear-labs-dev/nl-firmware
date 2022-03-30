@@ -42,14 +42,13 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
     auto swapData = UNDO::createSwapData(mode);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-       auto oldMode = m_mode;
+      auto oldMode = m_mode;
       swapData->swapWith(m_mode);
-      auto newMode = m_mode;
 
       getValue().setScaleConverter(createScaleConverter());
       auto defValue = getDefValueAccordingToMode();
       getValue().setDefaultValue(defValue);
-      if(oldMode != newMode && newMode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
+      if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
         getValue().setToDefault(Initiator::INDIRECT);
 
       setRoutersModeAccordingToReturnMode();
@@ -77,14 +76,6 @@ void PedalParameter::setRoutersModeAccordingToReturnMode()
     {
       if(router->getValue().setIsBoolean(routersAreBoolean))
         router->onChange();
-
-      if(routersAreBoolean && router->getControlPositionValue() != 0)
-      {
-        if(isBiPolar())
-          router->getValue().setRawValue(Initiator::INDIRECT, 0.5);
-        else
-          router->getValue().setRawValue(Initiator::INDIRECT, 1);
-      }
     }
   }
 }
@@ -296,29 +287,15 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
   auto scope = UNDO::Scope::startTrashTransaction();
   const auto isReturning = getReturnMode() != ReturnMode::None;
 
-  if(localEnableState) //Off -> On
+  if(localEnableState)
   {
-    if(isReturning)
-    {
-      auto oldSendPos = getSendParameter()->getControlPositionValue();
-      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
-    }
-    else
-    {
-      auto oldSendPos = getSendParameter()->getControlPositionValue();
-      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
-    }
+    auto oldSendPos = getSendParameter()->getControlPositionValue();
+    PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
   }
-  else // On -> Off
+  else
   {
+    getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
     if(isReturning)
-    {
-      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
       PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
-    }
-    else
-    {
-      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
-    }
   }
 }

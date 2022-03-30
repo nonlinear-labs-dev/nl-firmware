@@ -103,7 +103,7 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
     if(local != m_localIsEnabled)
     {
       m_localIsEnabled = local;
-      updateIsEnabledAndSelectSiblingParameterIfApplicable();
+      updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -116,7 +116,7 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
     if(state != m_routingIsEnabled)
     {
       m_routingIsEnabled = state;
-      updateIsEnabledAndSelectSiblingParameterIfApplicable();
+      updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -201,7 +201,7 @@ PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() con
   return &m_sibling;
 }
 
-void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfApplicable()
+void HardwareSourceSendParameter::updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable()
 {
   auto oldState = m_isEnabled;
   m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
@@ -215,8 +215,7 @@ void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfAppl
         if(eb->getSelected(VoiceGroup::Global) == this)
         {
           EditBufferUseCases useCase(*eb);
-          auto sibling = getSiblingParameter();
-          useCase.selectParameter(sibling, true);
+          useCase.selectParameter(&m_sibling, true);
         }
       }
     }

@@ -134,19 +134,19 @@ class DSPInterface
     return std::numeric_limits<uint32_t>::max();
   }
 
-  void setValueSourceSource(HardwareSource hw, HWChangeSource source)
+  void setHardwareSourceLastChangeSource(HardwareSource hw, HWChangeSource source)
   {
     if(hw != HardwareSource::NONE)
     {
-      m_hwChangeSourceSources[static_cast<int>(hw)] = source;
+      m_hwSourceLastChangeSources[static_cast<int>(hw)] = source;
     }
   }
 
-  HWChangeSource getValueSourceSource(HardwareSource hw)
+  HWChangeSource getHardwareSourceLastChangeSource(HardwareSource hw)
   {
     if(hw != HardwareSource::NONE)
     {
-      return m_hwChangeSourceSources[static_cast<int>(hw)];
+      return m_hwSourceLastChangeSources[static_cast<int>(hw)];
     }
 
     nltools_assertNotReached();
@@ -154,7 +154,7 @@ class DSPInterface
   }
 
  private:
-  std::array<HWChangeSource, 8> m_hwChangeSourceSources;
+  std::array<HWChangeSource, 8> m_hwSourceLastChangeSources;
 };
 
 class dsp_host_dual : public DSPInterface

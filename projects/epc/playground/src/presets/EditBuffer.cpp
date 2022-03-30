@@ -1638,7 +1638,7 @@ Settings &EditBuffer::getSettings() const
   return m_settings;
 }
 
-std::vector<double> EditBuffer::setHWSourcesToTargetPostion(UNDO::Transaction *transaction)
+std::vector<double> EditBuffer::setHWSourcesToDefaultValues(UNDO::Transaction *transaction)
 {
   std::vector<double> ret;
   for(auto& hw: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
@@ -1671,11 +1671,6 @@ void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, cons
 
 void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction)
 {
-  if(!Application::exists())
-  {
-    return;
-  }
-
   for(auto& p: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
   {
     if(auto hw = dynamic_cast<PhysicalControlParameter*>(p))
@@ -1689,10 +1684,6 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
         if(newMode == ReturnMode::Center && oldMode == ReturnMode::Center)
         {
           hw->setCPFromLoad(transaction, oldPos, false);
-        }
-        else if(newMode == ReturnMode::Center && oldMode == ReturnMode::None)
-        {
-          //unchanged -> should be updated from MC -> updateBoundRibbon
         }
       }
       else

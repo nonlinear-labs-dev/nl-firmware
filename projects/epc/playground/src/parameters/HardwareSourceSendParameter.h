@@ -38,7 +38,7 @@ class HardwareSourceSendParameter : public Parameter
   void onRoutingsChanged(const Setting* setting);
   void onSiblingChanged(const Parameter* sibling);
   static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
-  void updateIsEnabledAndSelectSiblingParameterIfApplicable();
+  void updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable();
 
   PhysicalControlParameter& m_sibling;
   Settings* m_settings = nullptr;

@@ -78,7 +78,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
 
-  std::vector<double> setHWSourcesToTargetPostion(UNDO::Transaction *transaction);
+  std::vector<double> setHWSourcesToDefaultValues(UNDO::Transaction *transaction);
   void setHWSourcesToOldPositions(UNDO::Transaction *transaction, const std::vector<double>& oldPositions);
 
   bool hasLocks(VoiceGroup vg) const;

@@ -141,7 +141,7 @@ void Parameter::setCPFromWebUI(UNDO::Transaction *transaction, const tControlPos
 
 void Parameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
-  setCpValue(transaction, Initiator::INDIRECT_SETTING_CHANGED, cpValue, true);
+  setCpValue(transaction, Initiator::EXPLICIT_OTHER, cpValue, true);
 }
 
 void Parameter::setCPFromLoad(UNDO::Transaction *transaction, const tControlPositionValue &cpValue, bool sendToEngine)

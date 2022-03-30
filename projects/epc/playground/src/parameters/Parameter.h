@@ -108,8 +108,8 @@ class Parameter : public UpdateDocumentContributor,
   virtual Glib::ustring getDisplayString() const;
   virtual Glib::ustring getDisplayString(tControlPositionValue cp) const;
 
-  virtual QuantizedValue &getValue();
-  virtual const QuantizedValue &getValue() const;
+  QuantizedValue &getValue();
+  const QuantizedValue &getValue() const;
   virtual size_t getHash() const;
 
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;

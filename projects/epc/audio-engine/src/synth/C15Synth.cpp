@@ -217,7 +217,7 @@ void C15Synth::doSyncPlayground()
 
     auto sendParameterValue = m_inputEventStage.getHWSourcePositionIfLocalDisabled(hw);
     auto audioParameterValue = engineHWSourceValues[idx];
-    auto audioParameterSource = m_dsp->getValueSourceSource(hw);
+    auto audioParameterSource = m_dsp->getHardwareSourceLastChangeSource(hw);
     const auto currentValue = isLocalEnabled ? audioParameterValue : sendParameterValue;
     const auto valueSource = isLocalEnabled ? audioParameterSource : m_inputEventStage.getHWSourcePositionSource(hw);
 

@@ -302,7 +302,7 @@ TEST_CASE("Issue 3035, [Pedal] Set Return-Behaviour (non-ret to ret) leads to HW
   pedalUseCase.setPedalMode(PedalModes::RETURN_TO_CENTER);
   pedalUseCase.changeFromAudioEngine(0.2, HWChangeSource::TCD);
 
-  constexpr auto modRoutingValue = 0.75;
+  constexpr auto modRoutingValue = 1;
   routeUseCase.setControlPosition(modRoutingValue);
 
   WHEN("Pedal [STAY] Initial")
