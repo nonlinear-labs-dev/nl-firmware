@@ -1,6 +1,6 @@
 [Unit]
 Description=Nonlinear-Labs Playground
-After=network.target systemd-modules-load.service persistent.mount fix-overlay-order.service
+After=network.target systemd-modules-load.service persistent.mount fix-overlay-order.service wait-for-bbb-ssh.service
 
 [Service]
 ExecStart=@C15_INSTALL_PATH@/playground/playground --bbbb-host=192.168.10.11 --midi-bridge=192.168.10.11 --layouts=@C15_INSTALL_PATH@/playground/resources/templates
