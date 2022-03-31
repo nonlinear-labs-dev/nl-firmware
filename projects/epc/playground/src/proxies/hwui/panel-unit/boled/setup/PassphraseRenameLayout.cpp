@@ -29,7 +29,7 @@ Passphrase* PassphraseRenameLayout::getSetting()
 {
   if(Application::exists())
   {
-    static auto s = Application::get().getSettings()->getSetting<Passphrase>().get();
+    static auto s = Application::get().getSettings()->getSetting<Passphrase>();
     return s;
   }
   return nullptr;

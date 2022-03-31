@@ -65,11 +65,13 @@
 #include <device-settings/midi/mappings/EnableHighVelocityCC.h>
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
+#include <device-settings/flac/FlacRecorderVirgin.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/AlsaFramesPerPeriod.h>
 
-Settings::Settings(UpdateDocumentMaster *master)
+Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
     : UpdateDocumentContributor(master)
+    , m_file(file)
     , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
@@ -142,6 +144,8 @@ Settings::Settings(UpdateDocumentMaster *master)
   addSetting("GlobalLocalEnable", new GlobalLocalEnableSetting(*this));
 
   addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
+
+  addSetting("FlacRecorderVirgin", new FlacRecorderVirgin(*this));
 }
 
 Settings::~Settings()
@@ -173,11 +177,6 @@ void Settings::reload()
   load();
 }
 
-const Glib::ustring &Settings::getSettingFileNameToLoadFrom() const
-{
-  return Application::get().getOptions()->getSettingsFile();
-}
-
 void Settings::load()
 {
   auto lock = m_isLoading.lock();
@@ -187,7 +186,7 @@ void Settings::load()
   try
   {
     DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
-    FileInStream in(getSettingFileNameToLoadFrom(), false);
+    FileInStream in(m_file, false);
     XmlReader reader(in, nullptr);
     reader.read<SettingsSerializer>(std::ref(*this));
   }
@@ -213,17 +212,14 @@ void Settings::save()
 {
   try
   {
-    if(Application::exists())
-    {
-      SettingsSerializer serializer(*this);
-      FileOutStream stream(Application::get().getOptions()->getSettingsFile(), false);
-      XmlWriter writer(stream);
-      serializer.write(writer, VersionAttribute::get());
-    }
+    SettingsSerializer serializer(*this);
+    FileOutStream stream(m_file, false);
+    XmlWriter writer(stream);
+    serializer.write(writer, VersionAttribute::get());
   }
   catch(...)
   {
-    nltools::Log::error("Could not save Settings to", Application::get().getOptions()->getSettingsFile());
+    nltools::Log::error("Could not save Settings to", m_file);
   }
 }
 
@@ -242,12 +238,12 @@ const Settings::tMap &Settings::getSettings() const
   return m_settings;
 }
 
-Settings::tSettingPtr Settings::getSetting(const Glib::ustring &key)
+Setting *Settings::getSetting(const Glib::ustring &key)
 {
   auto it = m_settings.find(key);
 
   if(it != m_settings.end())
-    return it->second;
+    return it->second.get();
 
   return nullptr;
 }

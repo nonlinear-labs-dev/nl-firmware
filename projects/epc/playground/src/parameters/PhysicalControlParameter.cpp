@@ -23,11 +23,6 @@ PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, Parame
 {
 }
 
-bool PhysicalControlParameter::isChangedFromLoaded() const
-{
-  return false;
-}
-
 void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source)
 {
   if(source == HWChangeSource::MIDI)

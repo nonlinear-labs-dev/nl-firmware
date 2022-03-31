@@ -23,7 +23,7 @@ TEST_CASE("Reset on convert")
 
   //Prepare Midi Settings
   DspHostDualTester tester { synth->getDsp() };
-  MockSettingsObject settings(&SyncMasterMockRoot::get());
+  MockSettingsObject settings("", &SyncMasterMockRoot::get());
 
   // prepare Scenario
   constexpr int NumberOfNotes = 3;
