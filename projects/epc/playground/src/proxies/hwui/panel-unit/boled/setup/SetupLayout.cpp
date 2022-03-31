@@ -68,6 +68,7 @@
 #include "ScreenSaverTimeControls.h"
 #include "RoutingsView.h"
 #include "RoutingsEditor.h"
+#include "OneShotEntryTypes.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -294,11 +295,10 @@ namespace NavTree
 
   struct OneShotEntry : EditableLeaf
   {
-    using CB = std::function<void()>;
     struct Item : public AnimatedGenericItem
     {
-      Item(const Rect &rect, const CB &cb)
-          : AnimatedGenericItem("", rect, cb)
+      Item(const Rect &rect, OneShotTypes::StartCB startCB, OneShotTypes::FinishCB finishCB)
+          : AnimatedGenericItem("", rect, startCB, finishCB)
       {
       }
 
@@ -309,17 +309,32 @@ namespace NavTree
     };
 
     Item *theItem = nullptr;
-    CB cb;
 
-    OneShotEntry(InnerNode *p, const std::string &name, CB cb)
+    OneShotTypes::StartCB m_startCB;
+    OneShotTypes::FinishCB m_finishedCB;
+
+    OneShotEntry(InnerNode *p, const std::string &name, OneShotTypes::StartCB cb)
         : EditableLeaf(p, name)
-        , cb(std::move(cb))
+        , m_startCB(std::move(cb))
+    {
+    }
+
+    OneShotEntry(InnerNode *p, const std::string &name, OneShotTypes::FinishCB cb)
+        : EditableLeaf(p, name)
+        , m_finishedCB(std::move(cb))
+    {
+    }
+
+    OneShotEntry(InnerNode *p, const std::string &name, OneShotTypes::StartCB sCB, OneShotTypes::FinishCB fCB)
+        : EditableLeaf(p, name)
+        , m_startCB(std::move(sCB))
+        , m_finishedCB(std::move(fCB))
     {
     }
 
     Control *createView() override
     {
-      theItem = new Item(Rect(0, 0, 0, 0), cb);
+      theItem = new Item(Rect(0, 0, 0, 0), m_startCB, m_finishedCB);
       return theItem;
     }
 
@@ -339,11 +354,11 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     explicit StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound", [] {
+        : OneShotEntry(p, "Store Init Sound", OneShotTypes::StartCB([] {
           auto pm = Application::get().getPresetManager();
           SoundUseCases useCases(pm->getEditBuffer(), pm);
           useCases.storeInitSound();
-        })
+        }))
     {
     }
   };
@@ -351,11 +366,11 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     explicit ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound", [] {
+        : OneShotEntry(p, "Reset Init Sound", OneShotTypes::StartCB([] {
           auto pm = Application::get().getPresetManager();
           SoundUseCases useCases(pm->getEditBuffer(), pm);
           useCases.resetInitSound();
-        })
+        }))
     {
     }
   };
@@ -861,10 +876,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, "Set to High-Res. Defaults", []() {
+        : OneShotEntry(parent, "Set to High-Res. Defaults", OneShotTypes::StartCB([]() {
           SettingsUseCases useCases(*Application::get().getSettings());
           useCases.setMappingsToHighRes();
-        })
+        }))
     {
     }
   };
@@ -873,10 +888,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, "Set to Classic MIDI Defaults", []() {
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults", OneShotTypes::StartCB([]() {
           SettingsUseCases useCases(*Application::get().getSettings());
           useCases.setMappingsToClassicMidi();
-        })
+        }))
     {
     }
   };
@@ -1024,7 +1039,7 @@ namespace NavTree
   struct MidiPanicButton : OneShotEntry
   {
     explicit MidiPanicButton(InnerNode *p)
-        : OneShotEntry(p, "Panic", []() { SettingsUseCases::panicAudioEngine(); })
+        : OneShotEntry(p, "Panic", OneShotTypes::StartCB([]() { SettingsUseCases::panicAudioEngine(); }))
     {
     }
   };
@@ -1058,10 +1073,10 @@ namespace NavTree
   {
 
     explicit SetRoutingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(), []() {
+        : OneShotEntry(parent, getName(), OneShotTypes::StartCB([]() {
           SettingsUseCases useCases(*Application::get().getSettings());
           useCases.setAllRoutingEntries(value);
-        })
+        }))
     {
     }
 
