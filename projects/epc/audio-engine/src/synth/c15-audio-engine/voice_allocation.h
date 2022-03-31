@@ -581,7 +581,7 @@ class VoiceAllocation
     }
     return validity;
   }
-  inline bool registerNonLocalSplitKeyAssignment(const uint32_t _keyPos, const AllocatorId _determinedPart)
+  inline bool registerNonLocalKeyAssignment(const uint32_t _keyPos, const AllocatorId _determinedPart)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
@@ -608,7 +608,6 @@ class VoiceAllocation
             m_internal_and_external_keys.m_local[1]++;
             break;
           case AllocatorId::Global:
-          case AllocatorId::Dual:
             m_internal_and_external_keys.m_global++;
             break;
         }
@@ -616,7 +615,7 @@ class VoiceAllocation
     }
     return validity;
   }
-  inline bool unregisterNonLocalSplitKeyAssignment(const uint32_t _keyPos)
+  inline bool unregisterNonLocalKeyAssignment(const uint32_t _keyPos)
   {
     // validation 1 - keyPos_in_range ?
     bool validity = _keyPos < Keys;
@@ -654,7 +653,6 @@ class VoiceAllocation
             }
             break;
           case AllocatorId::Global:
-          case AllocatorId::Dual:
             if(m_internal_and_external_keys.m_global > 0)
             {
               m_internal_and_external_keys.m_global--;

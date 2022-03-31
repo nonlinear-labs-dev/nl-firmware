@@ -13,8 +13,8 @@ class MockDSPHost : public DSPInterface
   VoiceGroup getSplitPartForKeyDown(int key) override;
   VoiceGroup getSplitPartForKeyUp(int key, InputEventSource from) override;
   VoiceGroup getNonLocalSplitKeyAssignmentForKeyUp(int key) override;
-  void registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part) override;
-  void unregisterNonLocalSplitKeyAssignment(const int note) override;
+  void registerNonLocalKeyAssignment(const int note, VoiceGroup part) override;
+  void unregisterNonLocalKeyAssignment(const int note) override;
   void onKeyDownSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void onKeyUpSplit(const int note, float velocity, VoiceGroup part, InputEventSource from) override;
   void fadeOutResetVoiceAllocAndEnvelopes() override;

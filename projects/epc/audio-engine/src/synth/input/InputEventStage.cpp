@@ -118,9 +118,9 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      else if(isSplitSound)
+      else
       {
-        m_dspHost->registerNonLocalSplitKeyAssignment(decoder->getKeyOrController(), determinedPart);
+        m_dspHost->registerNonLocalKeyAssignment(decoder->getKeyOrController(), determinedPart);
       }
 
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
@@ -155,9 +155,9 @@ void InputEventStage::onTCDEvent()
 
         setAndScheduleKeybedNotify();
       }
-      else if(isSplitSound)
+      else
       {
-        m_dspHost->unregisterNonLocalSplitKeyAssignment(key);
+        m_dspHost->unregisterNonLocalKeyAssignment(key);
       }
 
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
