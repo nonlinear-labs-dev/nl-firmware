@@ -55,4 +55,16 @@ namespace nltools
       return {};
     }
   }
+
+  namespace string
+  {
+    std::string removeSpaces(const std::string& in)
+    {
+      std::string out;
+      std::copy_if(in.begin(), in.end(), std::back_inserter(out), [](auto x) {
+        return x != ' ';
+      });
+      return out;
+    }
+  }
 }

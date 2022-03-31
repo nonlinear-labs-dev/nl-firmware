@@ -1,4 +1,5 @@
 #include "PlayControlParameterLayouts.h"
+#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationRoutersCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlBehaviorLabel.h>
@@ -110,6 +111,7 @@ void PlayControlParameterLayout2::setMode(uint8_t desiredMode)
       highlight<ParameterNameLabel>();
       highlight<PhysicalControlSlider>();
       highlight<SelectedParameterValue>();
+      highlight<PhysicalControlValueLabel>();
       break;
 
     case Mode::Select:
@@ -229,7 +231,8 @@ bool PedalParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modif
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
@@ -267,8 +270,14 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("HW Amt..", Buttons::BUTTON_C));
   addControl(createParameterValueControl());
+  addControl(new HardwareSourceCCLabel(Rect{10, 22, 45, 10}));
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterValue>();
+}
+
+Control *PlayControlParameterSelectLayout2::createParameterValueControl()
+{
+  return new PhysicalControlValueLabel(Rect(70, 33, 116, 12));
 }
 
 Carousel *PlayControlParameterSelectLayout2::createCarousel(const Rect &rect)
@@ -397,7 +406,8 @@ bool RibbonParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
@@ -507,15 +517,22 @@ void RibbonParameterSelectLayout2::setMode(uint8_t desiredMode)
   switch(desiredMode)
   {
     case Behaviour:
+    {
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(false);
+      if(auto l = findControlOfType<PhysicalControlBehaviorLabel>())
+        l->setVisible(true);
+    }
       break;
     default:
-
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+    {
+      if(auto b = findControlOfType<PhysicalControlBehaviorLabel>())
+        b->setVisible(false);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(true);
       super2::setMode(desiredMode);
+    }
   }
 
   setDirty();
@@ -556,17 +573,28 @@ void PedalParameterSelectLayout2::setMode(uint8_t desiredMode)
   noHighlight();
   setDirty();
 
+  auto selParameterValue = findControlOfType<SelectedParameterValue>();
+  auto selPhysControlValue = findControlOfType<PhysicalControlValueLabel>();
+
   switch(desiredMode)
   {
     case Behaviour:
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
+      if(selParameterValue)
+        selParameterValue->setVisible(false);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(false);
+
       findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
       break;
     default:
 
       findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+      if(selParameterValue)
+        selParameterValue->setVisible(true);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(true);
+
       super2::setMode(desiredMode);
   }
 

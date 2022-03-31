@@ -73,7 +73,9 @@ TEST_CASE("Store Action do not send EditBuffer")
 
   CHECK(waitForConnection(EndPoint::AudioEngine));
   auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,
-                                        [&](const auto &singleEditMessage) { singleMessageReceived = true; });
+                                        [&](const auto &singleEditMessage) {
+                                          singleMessageReceived = true;
+                                        });
   PresetManagerUseCases useCases(*pm, *settings);
 
   //Store EditBuffer as new Bank
@@ -82,6 +84,7 @@ TEST_CASE("Store Action do not send EditBuffer")
   auto newNumBanks = pm->getNumBanks();
   TestHelper::doMainLoopIteration();
   CHECK(newNumBanks > oldNumBanks);
+  CHECK(!singleMessageReceived);
 
   auto bank = pm->getSelectedBank();
   CHECK(bank != nullptr);
@@ -91,16 +94,17 @@ TEST_CASE("Store Action do not send EditBuffer")
   auto oldNumPresets = bank->getNumPresets();
   const auto appendedPreset = bankUseCases.appendEditBuffer();
   auto newNumPresets = bank->getNumPresets();
+  TestHelper::doMainLoopIteration();
   CHECK(newNumPresets > oldNumPresets);
+  CHECK(!singleMessageReceived);
 
   //Insert preset into bank at pos 0
   oldNumPresets = bank->getNumPresets();
   auto insertedPreset = bankUseCases.insertEditBufferAtPosition(0);
   newNumPresets = bank->getNumPresets();
-  CHECK(newNumPresets > oldNumPresets);
-
   TestHelper::doMainLoopIteration();
-  //No preset message was send!
+  CHECK(newNumPresets > oldNumPresets);
   CHECK(!singleMessageReceived);
+
   c.disconnect();
 }
