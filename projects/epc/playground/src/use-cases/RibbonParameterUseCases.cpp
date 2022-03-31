@@ -13,13 +13,13 @@ RibbonParameterUseCases::RibbonParameterUseCases(RibbonParameter* p)
 void RibbonParameterUseCases::setReturnMode(const Glib::ustring& mode)
 {
   auto scope = m_param->getUndoScope().startTransaction("Set ribbon return mode");
-  m_param->undoableSetRibbonReturnMode(scope->getTransaction(), mode);
+  m_param->undoableSetRibbonReturnMode(scope->getTransaction(), mode, Initiator::EXPLICIT_USECASE);
 }
 
 void RibbonParameterUseCases::setReturnMode(const RibbonReturnMode& mode)
 {
   auto scope = m_param->getUndoScope().startTransaction("Set ribbon return mode");
-  m_param->undoableSetRibbonReturnMode(scope->getTransaction(), mode);
+  m_param->undoableSetRibbonReturnMode(scope->getTransaction(), mode, Initiator::EXPLICIT_USECASE);
 }
 
 void RibbonParameterUseCases::setTouchBehaviour(const Glib::ustring& mode)

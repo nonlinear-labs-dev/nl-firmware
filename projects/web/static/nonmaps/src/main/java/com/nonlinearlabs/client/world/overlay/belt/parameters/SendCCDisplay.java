@@ -37,9 +37,9 @@ public class SendCCDisplay extends Label {
         String oldDisplay = displayString;
         displayString = presenter.selectedParameterCCString;
 
-        if(!oldDisplay.equals(displayString))
-        {
+        if (!oldDisplay.equals(displayString)) {
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
         }
     }
+
 }

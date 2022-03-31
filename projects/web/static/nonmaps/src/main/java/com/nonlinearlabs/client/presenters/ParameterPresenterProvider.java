@@ -239,6 +239,9 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 	private void updatePresenter(SendParameterModel p) {
 		presenter.hidden = !isLocalDisabled(p);
 
+		presenter.changed = false;
+		presenter.valueChanged = false;
+
         PhysicalControlParameterModel sibling = p.getSibling();
 
 		if (sibling instanceof RibbonParameterModel) {
@@ -434,6 +437,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 	private void updatePresenter(PhysicalControlParameterModel p) {
 		presenter.changed = false;
+		presenter.valueChanged = false;
 		presenter.showContextMenu = p.id.getNumber() != 274 && p.id.getNumber() != 279;
 
 		if (p instanceof RibbonParameterModel) {

@@ -184,12 +184,13 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
   addAction("insert-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto selUuid = request->get("seluuid");
+    auto newUuid = request->get("uuid");
 
     if(auto bank = m_presetManager.findBankWithPreset(Uuid { selUuid }))
     {
       BankUseCases bankUseCases(bank, m_settings);
       auto desiredPresetPos = bank->getPresetPosition(Uuid { selUuid }) + 1;
-      bankUseCases.insertEditBufferAtPosition(desiredPresetPos);
+      bankUseCases.insertEditBufferAsPresetWithUUID(desiredPresetPos, Uuid { newUuid });
     }
   });
 

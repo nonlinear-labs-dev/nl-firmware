@@ -88,3 +88,14 @@ HardwareSourcesGroup::tPhysicalControlParameters HardwareSourcesGroup::getPhysic
 
   return ret;
 }
+
+HardwareSourcesGroup::tSendParameters HardwareSourcesGroup::getSendParameters()
+{
+  tSendParameters ret;
+
+  for(auto param : getParameters())
+    if(auto sendParam = dynamic_cast<HardwareSourceSendParameter*>(param))
+      ret.push_back(sendParam);
+
+  return ret;
+}

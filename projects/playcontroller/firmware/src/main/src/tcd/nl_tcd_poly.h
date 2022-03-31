@@ -26,5 +26,6 @@ void POLY_SetKeyRemapTable(uint16_t const length, uint16_t *data);
 
 void POLY_ForceKey(uint16_t const midiKeyNumber, uint16_t const timeLow, uint16_t const timeHigh);
 void POLY_KeyLogging(uint16_t const on);
-
+int  POLY_GetHighestKey(void);
+int  POLY_GetSingleKey(void);
 void POLY_Select_VelTable(uint32_t const curve);

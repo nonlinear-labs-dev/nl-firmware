@@ -32,6 +32,10 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
   m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
 
+void HardwareSourceSendParameter::loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value)
+{
+}
+
 void HardwareSourceSendParameter::setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue)
 {
   Parameter::setCPFromHwui(transaction, cpValue);
@@ -57,6 +61,16 @@ void HardwareSourceSendParameter::onUnselected()
   }
 }
 
+bool HardwareSourceSendParameter::isChangedFromLoaded() const
+{
+  return false;
+}
+
+bool HardwareSourceSendParameter::isValueChangedFromLoaded() const
+{
+  return false;
+}
+
 void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
 {
   if(auto physicalSrc = dynamic_cast<const PhysicalControlParameter*>(sibling))
@@ -68,7 +82,6 @@ void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
       getValue().setCoarseDenominator(physicalSrc->getValue().getCoarseDenominator());
       getValue().setFineDenominator(physicalSrc->getValue().getFineDenominator());
       getValue().setIsBoolean(physicalSrc->getValue().isBoolean());
-      getValue().setRawValue(Initiator::INDIRECT, physicalSrc->getValue().getRawValue());
 
       m_returnMode = newMode;
       invalidate();
@@ -90,7 +103,7 @@ void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
     if(local != m_localIsEnabled)
     {
       m_localIsEnabled = local;
-      updateIsEnabledAndSelectSiblingParameterIfApplicable();
+      updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -103,7 +116,7 @@ void HardwareSourceSendParameter::onRoutingsChanged(const Setting* setting)
     if(state != m_routingIsEnabled)
     {
       m_routingIsEnabled = state;
-      updateIsEnabledAndSelectSiblingParameterIfApplicable();
+      updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable();
     }
   }
 }
@@ -188,7 +201,7 @@ PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() con
   return &m_sibling;
 }
 
-void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfApplicable()
+void HardwareSourceSendParameter::updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable()
 {
   auto oldState = m_isEnabled;
   m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
@@ -202,12 +215,12 @@ void HardwareSourceSendParameter::updateIsEnabledAndSelectSiblingParameterIfAppl
         if(eb->getSelected(VoiceGroup::Global) == this)
         {
           EditBufferUseCases useCase(*eb);
-          auto sibling = getSiblingParameter();
-          useCase.selectParameter(sibling, true);
+          useCase.selectParameter(&m_sibling, true);
         }
       }
     }
 
+    m_sibling.onLocalEnableChanged(m_isEnabled);
     invalidate();
   }
 }

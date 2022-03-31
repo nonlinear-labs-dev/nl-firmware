@@ -11,15 +11,6 @@ class MidiRuntimeOptions;
 class MIDIDecoder
 {
  public:
-  enum class MidiHWChangeSpecialCases
-  {
-    ChannelPitchbend,
-    Aftertouch,
-    PitchbendUp,
-    PitchbendDown,
-    CC
-  };
-
   struct ReceivedHWMidiEvent
   {
     int receivedCC = -1;  //MSB - ControlID

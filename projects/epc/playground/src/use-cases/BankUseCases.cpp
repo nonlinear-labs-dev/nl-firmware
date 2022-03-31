@@ -7,6 +7,7 @@
 #include "presets/Preset.h"
 #include "presets/EditBuffer.h"
 #include "StoreUseCaseHelper.h"
+#include "EditBufferStorePreparation.h"
 #include <device-settings/Settings.h>
 #include <device-settings/DirectLoadSetting.h>
 #include <Application.h>
@@ -264,6 +265,8 @@ Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
   auto pm = getPresetManager();
   auto eb = pm->getEditBuffer();
   const auto ebWasModified = eb->isModified();
+  EditBufferStorePreparation ebsp(*eb);
+
   auto scope = pm->getUndoScope().startTransaction("Insert Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->insertPreset(transaction, anchor, std::make_unique<Preset>(m_bank, *eb));
@@ -280,6 +283,8 @@ Preset* BankUseCases::appendEditBuffer()
   auto pm = getPresetManager();
   auto eb = pm->getEditBuffer();
   const auto ebWasModified = eb->isModified();
+  EditBufferStorePreparation ebsp(*eb);
+
   auto scope = pm->getUndoScope().startTransaction("Append Editbuffer into Bank '%0'", m_bank->getName(true));
   auto transaction = scope->getTransaction();
   auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *eb));
@@ -303,6 +308,8 @@ Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
 
   if(uuid.empty())
     uuid.generate();
+
+  EditBufferStorePreparation ebsp(*eb);
 
   auto scope = pm->getUndoScope().startTransaction("Insert preset at position %0", pos + 1);
   auto transaction = scope->getTransaction();

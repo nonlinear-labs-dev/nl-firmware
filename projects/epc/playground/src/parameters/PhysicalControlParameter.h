@@ -13,7 +13,9 @@ class PhysicalControlParameter : public Parameter
   PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
                            int coarseDenominator, int fineDenominator);
 
-  virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source);
+  bool isChangedFromLoaded() const override;
+  virtual void onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source);
+
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
@@ -46,6 +48,11 @@ class PhysicalControlParameter : public Parameter
   HardwareSourceSendParameter *getSendParameter() const;
 
   virtual tControlPositionValue getDefValueAccordingToMode() const = 0;
+  bool isValueChangedFromLoaded() const override;
+  [[nodiscard]] double getLastControlPositionValueBeforePresetLoad() const;
+  [[nodiscard]] ReturnMode getLastReturnModeBeforePresetLoad() const;
+
+  virtual void onLocalEnableChanged(bool b) = 0;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
@@ -53,9 +60,12 @@ class PhysicalControlParameter : public Parameter
  private:
   void sendParameterMessage() const override;
 
- private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
+
+  tControlPositionValue m_valueBeforeLastLoad = 0;
+  ReturnMode m_returnModeBeforeLastLoad = ReturnMode::None;
 
   bool m_changingFromHWUI = false;
   bool m_lastChangedFromHWUI = false;
+  ReturnMode m_oldReturnMode;
 };
