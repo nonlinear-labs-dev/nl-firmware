@@ -39,8 +39,6 @@ class BankUseCases
   Preset* insertEditBufferAtPosition(int anchor);
   Preset* appendEditBuffer();
   Preset* appendEditBufferAsPresetWithUUID(Uuid uuid);
-
-
   Preset* insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid);
 
  private:
