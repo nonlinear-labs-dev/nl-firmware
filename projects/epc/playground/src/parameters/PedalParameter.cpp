@@ -42,12 +42,9 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
     auto swapData = UNDO::createSwapData(mode);
 
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      auto oldMode = m_mode;
       swapData->swapWith(m_mode);
-
       getValue().setScaleConverter(createScaleConverter());
-      auto defValue = getDefValueAccordingToMode();
-      getValue().setDefaultValue(defValue);
+      getValue().setDefaultValue(getDefValueAccordingToMode());
       if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
         getValue().setToDefault(Initiator::INDIRECT);
 
