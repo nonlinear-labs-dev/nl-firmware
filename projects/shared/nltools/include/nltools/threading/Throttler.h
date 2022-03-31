@@ -7,12 +7,11 @@ class Throttler
  public:
   using Task = std::function<void()>;
 
-  Throttler(Expiration::Duration maxDelay);
+  explicit Throttler(Expiration::Duration maxDelay);
+  ~Throttler();
 
   void doTask(Task&& task);
   bool isPending() const;
-
-  void doActionSync();
 
  private:
   void delayedCallback();

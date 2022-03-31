@@ -1,6 +1,7 @@
 #include "playground-helpers.h"
 #include <device-settings/DebugLevel.h>
 #include <execinfo.h>
+#include <nltools/logging/Log.h>
 
 #include <glib.h>
 #include <iomanip>
@@ -70,6 +71,28 @@ namespace Environment
 
     DebugLevel::error("Collected StackTrace: ", str.str());
     return str.str();
+  }
+
+  using nlLevel = nltools::Log::Level;
+
+  void printbacktrace(nlLevel level, int maxFrames)
+  {
+    std::vector<void*> stack;
+    stack.reserve(maxFrames);
+    auto numFrames = backtrace(stack.data(), maxFrames);
+    if(numFrames == maxFrames)
+    {
+      nltools::Log::error("You could be missing some frames from your backtrace. Try to increase your maxFrames");
+    }
+
+    auto symbols = backtrace_symbols(stack.data(), numFrames); //symbols is mallocced here
+
+    for(auto i = 0; i < numFrames; i++)
+    {
+      nltools::Log::printWithLevel(level, i, symbols[i]);
+    }
+
+    free(symbols);
   }
 
   void setupLocale()

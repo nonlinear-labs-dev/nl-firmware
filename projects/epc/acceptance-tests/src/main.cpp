@@ -2,6 +2,7 @@
 #include <catch.hpp>
 #include <nltools/logging/Log.h>
 #include <giomm.h>
+#include "Options.h"
 
 int main(int numArgs, char **argv)
 {

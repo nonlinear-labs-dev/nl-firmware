@@ -464,7 +464,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *pres
   setAttribute(transaction, "origin-II-vg", toString(VoiceGroup::II));
 
   copyFrom(transaction, preset);
-  undoableSetLoadedPresetInfo(transaction, preset);
+  undoableSetLoadedPresetInfo(transaction, preset, false);
 
   if(auto bank = dynamic_cast<Bank *>(preset->getParent()))
   {
@@ -488,10 +488,12 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
+  initRecallValues(transaction);
+  setHWSourcesToLoadRulePostionsAndModulate(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 
-void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset)
+void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset, bool resetRecall)
 {
   Uuid newId = Uuid::none();
   std::string presetOriginDescription = "Init";
@@ -535,7 +537,8 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
     onChange();
   });
 
-  initRecallValues(transaction);
+  if(resetRecall)
+    initRecallValues(transaction);
 }
 
 void EditBuffer::undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction)
@@ -1633,4 +1636,60 @@ AudioEngineProxy &EditBuffer::getAudioEngineProxy() const
 Settings &EditBuffer::getSettings() const
 {
   return m_settings;
+}
+
+std::vector<double> EditBuffer::setHWSourcesToDefaultValues(UNDO::Transaction *transaction)
+{
+  std::vector<double> ret;
+  for(auto& hw: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
+  {
+    if(auto hwParam = dynamic_cast<PhysicalControlParameter*>(hw))
+    {
+      ret.emplace_back(hwParam->getControlPositionValue());
+      if(hwParam->getReturnMode() != ReturnMode::None)
+      {
+        hwParam->setCPFromHwui(transaction, hwParam->getDefValueAccordingToMode());
+      }
+    }
+  }
+  return ret;
+}
+
+void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, const std::vector<double>& oldPositions)
+{
+  auto group = getParameterGroupByID({"CS", VoiceGroup::Global});
+  int idx = 0;
+  for(auto& hw: group->getParameters())
+  {
+    if(auto hwParam = dynamic_cast<PhysicalControlParameter*>(hw))
+    {
+        hwParam->setCPFromHwui(transaction, oldPositions[idx]);
+        idx++;
+    }
+  }
+}
+
+void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction)
+{
+  for(auto& p: getParameterGroupByID({"CS", VoiceGroup::Global})->getParameters())
+  {
+    if(auto hw = dynamic_cast<PhysicalControlParameter*>(p))
+    {
+      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2)
+      {
+        auto oldMode = hw->getLastReturnModeBeforePresetLoad();
+        auto newMode = hw->getReturnMode();
+        auto oldPos = hw->getLastControlPositionValueBeforePresetLoad();
+
+        if(newMode == ReturnMode::Center && oldMode == ReturnMode::Center)
+        {
+          hw->setCPFromLoad(transaction, oldPos, false);
+        }
+      }
+      else
+      {
+        hw->setCPFromLoad(transaction, hw->getLastControlPositionValueBeforePresetLoad(), false);
+      }
+    }
+  }
 }

@@ -11,6 +11,7 @@ class PedalParameterUseCases : public PhysicalControlParameterUseCases
   explicit PedalParameterUseCases(PedalParameter* p);
 
   void setPedalMode(const Glib::ustring& mode);
+  void setPedalMode(PedalModes mode);
 
  private:
   PedalParameter* m_param;

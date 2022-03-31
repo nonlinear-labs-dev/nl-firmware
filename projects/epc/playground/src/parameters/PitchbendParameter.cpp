@@ -6,6 +6,7 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <presets/EditBuffer.h>
+#include <libundo/undo/Scope.h>
 
 ReturnMode PitchbendParameter::getReturnMode() const
 {
@@ -46,4 +47,21 @@ Layout *PitchbendParameter::createLayout(FocusAndMode focusAndMode) const
 tControlPositionValue PitchbendParameter::getDefValueAccordingToMode() const
 {
   return 0;
+}
+
+void PitchbendParameter::onLocalEnableChanged(bool localEnableState)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+
+  if(localEnableState) // Off -> On
+  {
+    auto oldSendPos = getSendParameter()->getControlPositionValue();
+    getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+    PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
+  }
+  else //On -> Off
+  {
+    getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+    PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+  }
 }

@@ -37,10 +37,12 @@ TEST_CASE("Preset Load sends EditBuffer")
   CHECK(eb->getUUIDOfLastLoadedPreset() == presets.getSinglePreset()->getUuid());
 }
 
-TEST_CASE("Store Action do not send EditBuffer")
+TEST_CASE("Store Action does not send EditBuffer")
 {
   using namespace nltools::msg;
   using namespace std::chrono;
+
+  TestHelper::initSingleEditBuffer();
 
   Configuration configuration;
   configuration.useEndpoints = { EndPoint::AudioEngine };
@@ -53,7 +55,6 @@ TEST_CASE("Store Action do not send EditBuffer")
 
   bool singleMessageReceived = false;
 
-  TestHelper::initSingleEditBuffer();
 
   CHECK(waitForConnection(EndPoint::AudioEngine));
   auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,

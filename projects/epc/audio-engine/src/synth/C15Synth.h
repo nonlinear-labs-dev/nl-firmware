@@ -40,12 +40,7 @@ class C15Synth : public Synth, public sigc::trackable
   void resetDSP() override;
   void logStatus();
   void toggleTestTone();
-  void selectTestToneFrequency();
-  void selectTestToneAmplitude();
-  void increase();
-  void decrease();
-
-  void changeSelectedValueBy(int i);
+  void onSettingInitialSinglePreset();
   void onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg);
   void onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg);
   void onSinglePresetMessage(const nltools::msg::SinglePresetMessage& msg);
@@ -83,7 +78,7 @@ class C15Synth : public Synth, public sigc::trackable
   MidiRuntimeOptions m_midiOptions;
 
   //Latch-Filters, Queues
-  std::array<std::array<float, 3>, 8> m_playgroundHwSourceKnownValues {};
+  std::array<std::array<float, 3>, 8> m_playgroundHwSourceKnownValues{};
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 
@@ -91,7 +86,7 @@ class C15Synth : public Synth, public sigc::trackable
   std::future<void> m_syncExternalsTask;
   std::condition_variable m_syncExternalsWaiter;
   std::mutex m_syncExternalsMutex;
-  std::atomic<bool> m_quit { false };
+  std::atomic<bool> m_quit{ false };
 
   InputEventStage m_inputEventStage;
 };

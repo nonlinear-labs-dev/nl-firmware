@@ -138,7 +138,7 @@ void MSG_KeyPosition(uint32_t key)
 {
   if ((key < 36) || (key > 96))
     return;  /// assertion
-  FillBuffer(AE_TCD_WRAPPER, AE_TCD_KEY_POS, key);
+  FillBuffer(AE_PROTOCOL_WRAPPER, AE_PROTOCOL_KEY_POS, key);
 #if LPC_KEYBED_DIAG
   keyOnOffIndex = key;
 #endif
@@ -151,7 +151,7 @@ void MSG_KeyPosition(uint32_t key)
 ******************************************************************************/
 void MSG_KeyDown(uint32_t vel)
 {
-  FillBuffer(AE_TCD_WRAPPER, AE_TCD_KEY_DOWN, vel);
+  FillBuffer(AE_PROTOCOL_WRAPPER, AE_PROTOCOL_KEY_DOWN, vel);
 #if LPC_KEYBED_DIAG
   TCD_keyOnOffCntr[keyOnOffIndex]++;
 #endif
@@ -164,7 +164,7 @@ void MSG_KeyDown(uint32_t vel)
 ******************************************************************************/
 void MSG_KeyUp(uint32_t vel)
 {
-  FillBuffer(AE_TCD_WRAPPER, AE_TCD_KEY_UP, vel);
+  FillBuffer(AE_PROTOCOL_WRAPPER, AE_PROTOCOL_KEY_UP, vel);
 #if LPC_KEYBED_DIAG
   TCD_keyOnOffCntr[keyOnOffIndex]--;
 #endif
@@ -180,17 +180,18 @@ void MSG_HWSourceUpdate(uint32_t source, uint32_t position)
 {
   if ((source >= NUM_HW_REAL_SOURCES) || (position > 16000))
     return;  /// assertion
-  FillBuffer(AE_TCD_WRAPPER, AE_TCD_HW_POS | source, position);
+  FillBuffer(AE_PROTOCOL_WRAPPER, AE_PROTOCOL_HW_POS | source, position);
 }
 
 /*****************************************************************************
 *   @brief	MSG_SendAEDeveloperCmd
 *   Sends a special command to audio engine
-*   @param  cmd : command, 14bit (1:testtone OFF; 2:testtone ON; 3:default sound)
+*   @param  cmd : command, 14bit (1:testtone OFF; 2:testtone ON; 3:default sound,
+*                                 4:testtone ON(no-synth), 5:poll start, 6:poll stop)
 ******************************************************************************/
 void MSG_SendAEDevelopperCmd(uint32_t cmd)
 {
-  FillBuffer(AE_TCD_WRAPPER, AE_TCD_DEVELOPPER_CMD, cmd);
+  FillBuffer(AE_PROTOCOL_WRAPPER, AE_PROTOCOL_CMD, cmd);
 }
 
 /*****************************************************************************

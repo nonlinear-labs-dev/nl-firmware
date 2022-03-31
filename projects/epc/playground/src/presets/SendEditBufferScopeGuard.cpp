@@ -4,8 +4,8 @@
 #include <libundo/undo/Transaction.h>
 
 SendEditBufferScopeGuard::SendEditBufferScopeGuard(UNDO::Transaction* transaction, bool sendToAE)
-    : m_transaction { transaction }
-    , sendToAudioEngine { sendToAE }
+    : sendToAudioEngine { sendToAE }
+    , m_transaction { transaction }
 {
   m_transaction->addSimpleCommand(
       [send = sendToAudioEngine](auto s)

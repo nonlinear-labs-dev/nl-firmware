@@ -22,13 +22,14 @@ class HardwareSourceSendParameter : public Parameter
   void setCPFromHwui(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
   void setCPFromWebUI(UNDO::Transaction* transaction, const tControlPositionValue& cpValue) override;
   size_t getHash() const override;
-
+  void loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value) override;
+  bool isChangedFromLoaded() const override;
+  bool isValueChangedFromLoaded() const override;
 
  protected:
   nlohmann::json serialize() const override;
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
-
 
  private:
   void sendParameterMessage() const override;
@@ -37,7 +38,7 @@ class HardwareSourceSendParameter : public Parameter
   void onRoutingsChanged(const Setting* setting);
   void onSiblingChanged(const Parameter* sibling);
   static RoutingSettings::tRoutingIndex getIndex(const ParameterId& id);
-  void updateIsEnabledAndSelectSiblingParameterIfApplicable();
+  void updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable();
 
   PhysicalControlParameter& m_sibling;
   Settings* m_settings = nullptr;

@@ -15,9 +15,8 @@ class RibbonParameter : public PhysicalControlParameter
   void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode);
   void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, const Glib::ustring &mode);
   void undoableIncRibbonTouchBehaviour(UNDO::Transaction *transaction);
-
-  void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode);
-  void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
+  void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode, Initiator initiator);
+  void undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode, Initiator initiator);
 
   RibbonTouchBehaviour getRibbonTouchBehaviour() const;
   RibbonReturnMode getRibbonReturnMode() const;
@@ -30,16 +29,19 @@ class RibbonParameter : public PhysicalControlParameter
   void boundToMacroControl(tControlPositionValue v);
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
-  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
   void sendModeToPlaycontroller() const;
   tControlPositionValue getDefValueAccordingToMode() const override;
+  bool isLocalEnabled() const override;
+  void onLocalEnableChanged(bool localEnableState) override;
+  void setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
   bool hasBehavior() const override;
+
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;
@@ -48,10 +50,9 @@ class RibbonParameter : public PhysicalControlParameter
  private:
   void ensureExclusiveRoutingIfNeeded();
   const ScaleConverter *createScaleConverter() const;
-  void setupScalingAndDefaultValue();
+  void setupScalingAndDefaultValue(bool defaultValue);
   std::list<ModulationRoutingParameter*> getRoutingParameters() const;
   void undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction, const RibbonReturnMode &mode) const;
-  bool isLocalEnabled() const override;
 
   RibbonTouchBehaviour m_touchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
   RibbonReturnMode m_returnMode = RibbonReturnMode::STAY;

@@ -48,6 +48,7 @@ ENDIF(DEV_PC)
 
 target_link_libraries(${AE_LIB_NAME} PUBLIC pthread)
 target_include_directories(${AE_LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/parameter-db/generated)
+target_include_directories(${AE_LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared)
 
 add_subdirectory(tests)
 
