@@ -1,7 +1,6 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include "testing/TestHelper.h"
 #include <presets/Preset.h>
-#include <use-cases/PresetUseCases.h>
 
 TEST_CASE("Override Single Preset With new!", "[Preset][Store]")
 {
@@ -13,11 +12,9 @@ TEST_CASE("Override Single Preset With new!", "[Preset][Store]")
   {
     auto scope = TestHelper::createTestScope();
     eb->setName(scope->getTransaction(), "Name");
+    toOverwrite->copyFrom(scope->getTransaction(), eb);
+    CHECK(toOverwrite->getName() == "Name");
   }
-  PresetUseCases presetUseCases(*toOverwrite, *TestHelper::getSettings());
-  presetUseCases.overwriteWithEditBuffer(*eb);
-
-  CHECK(toOverwrite->getName() == "Name");
 }
 
 TEST_CASE("Override Dual Preset With new!", "[Preset][Store]")
@@ -33,11 +30,11 @@ TEST_CASE("Override Dual Preset With new!", "[Preset][Store]")
     eb->setVoiceGroupName(scope->getTransaction(), "1", VoiceGroup::I);
     eb->setVoiceGroupName(scope->getTransaction(), "2", VoiceGroup::II);
     eb->setName(scope->getTransaction(), "Name");
-  }
-  PresetUseCases presetUseCase(*toOverwrite, *TestHelper::getSettings());
-  presetUseCase.overwriteWithEditBuffer(*eb);
 
-  CHECK(toOverwrite->getVoiceGroupName(VoiceGroup::I) == "1");
-  CHECK(toOverwrite->getVoiceGroupName(VoiceGroup::II) == "2");
-  CHECK(toOverwrite->getName() == "Name");
+    toOverwrite->copyFrom(scope->getTransaction(), eb);
+
+    CHECK(toOverwrite->getVoiceGroupName(VoiceGroup::I) == "1");
+    CHECK(toOverwrite->getVoiceGroupName(VoiceGroup::II) == "2");
+    CHECK(toOverwrite->getName() == "Name");
+  }
 }

@@ -9,8 +9,6 @@
 #include <presets/StoreModeData.h>
 #include <presets/Preset.h>
 #include <algorithm>
-#include <device-settings/Settings.h>
-#include <device-settings/FocusAndModeSetting.h>
 
 PresetListSelectStorePosition::PresetListSelectStorePosition(const Rect &pos, bool showBankArrows, StoreModeData *pod)
     : super(pos, showBankArrows)
@@ -63,8 +61,7 @@ std::pair<size_t, size_t> PresetListSelectStorePosition::getSelectedPosition() c
 
 bool PresetListSelectStorePosition::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
-  auto focusAndMode = famSetting.getState();
+  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
 
   if(down)
   {
@@ -98,8 +95,7 @@ bool PresetListSelectStorePosition::onButton(Buttons i, bool down, ButtonModifie
 
 void PresetListSelectStorePosition::onRotary(int inc, ButtonModifiers modifiers)
 {
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
-  auto focusAndMode = famSetting.getState();
+  auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
 
   if(focusAndMode.focus == UIFocus::Presets)
     movePresetSelection(inc);

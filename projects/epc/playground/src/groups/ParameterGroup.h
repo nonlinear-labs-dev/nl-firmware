@@ -83,13 +83,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);
 
  protected:
-  template<typename T>
-  T* appendParameter(T *p)
-  {
-    m_parameters.append(p);
-    return p;
-  }
-
+  tParameterPtr appendParameter(Parameter *p);
   nlohmann::json serialize() const override;
 
  private:

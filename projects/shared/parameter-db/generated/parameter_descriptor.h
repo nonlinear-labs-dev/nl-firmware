@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /** @file       parameter_descriptor.h
-    @date       2021-11-10, 16:47
-    @version    1.7B-9
+    @date       2020-12-05, 14:53
+    @version    1.7B-8
     @author     M. Seeber
     @brief      provide a flexible descriptor structure
     @todo
@@ -72,11 +72,6 @@ namespace C15
       }
       inline TypeDescriptor(const Parameters::Local_Unmodulateables _param)
           : m_type(ParameterType::Local_Unmodulateable)
-          , m_index(static_cast<uint32_t>(_param))
-      {
-      }
-      inline TypeDescriptor(const Parameters::Display_Parameters _param)
-          : m_type(ParameterType::Display_Parameter)
           , m_index(static_cast<uint32_t>(_param))
       {
       }

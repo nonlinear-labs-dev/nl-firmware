@@ -3,7 +3,7 @@
 #include "Setting.h"
 #include <nltools/threading/Throttler.h>
 
-class UsedRAM : public Setting, public sigc::trackable
+class UsedRAM : public Setting
 {
  public:
   explicit UsedRAM(UpdateDocumentContributor& parent);

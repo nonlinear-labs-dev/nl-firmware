@@ -12,7 +12,6 @@
 class Parameter;
 class Preset;
 class ParameterGroup;
-class Settings;
 
 class ParameterGroupSet : public AttributesOwner
 {
@@ -23,7 +22,6 @@ class ParameterGroupSet : public AttributesOwner
   explicit ParameterGroupSet(UpdateDocumentContributor *parent);
   ~ParameterGroupSet() override;
 
-  virtual void init(Settings* settings);
   typedef ParameterGroup *tParameterGroupPtr;
   typedef IntrusiveList<tParameterGroupPtr> tParamGroups;
   typedef std::map<int, Parameter *> tParamMap;

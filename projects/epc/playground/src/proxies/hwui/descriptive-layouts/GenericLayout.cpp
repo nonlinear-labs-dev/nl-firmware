@@ -11,16 +11,12 @@
 #include "proxies/hwui/controls/ControlAdapters.h"
 #include "EventProvider.h"
 #include "ConditionRegistry.h"
-#include "use-cases/SettingsUseCases.h"
-#include <device-settings/Settings.h>
-#include <device-settings/FocusAndModeSetting.h>
 
 namespace DescriptiveLayouts
 {
   GenericLayout::GenericLayout(LayoutClass prototype)
       : Layout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
       , m_prototype(std::move(prototype))
-      , m_famSetting(*Application::get().getSettings()->getSetting<FocusAndModeSetting>())
   {
   }
 
@@ -211,78 +207,70 @@ namespace DescriptiveLayouts
 
   void GenericLayout::togglePresetMode()
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = m_famSetting.getState();
+    auto current = hwui->getFocusAndMode();
     if(current.focus == UIFocus::Presets)
-      useCases.setFocusAndMode(m_famSetting.getOldState());
+      hwui->setFocusAndMode(hwui->getOldFocusAndMode());
     else
-      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
   }
 
   void GenericLayout::toggleSoundMode()
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = m_famSetting.getState();
+    auto current = hwui->getFocusAndMode();
     if(current.focus == UIFocus::Sound)
       if(current.detail != UIDetail::Init && current.detail != UIDetail::ButtonA)
       {
-        useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+        hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
       }
       else
       {
-        useCases.setFocusAndMode(m_famSetting.getOldState());
+        hwui->setFocusAndMode(hwui->getOldFocusAndMode());
       }
     else
-      useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
   }
 
   void GenericLayout::toggleSetupMode()
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = m_famSetting.getState();
+    auto current = hwui->getFocusAndMode();
     if(current.focus == UIFocus::Setup)
-      useCases.setFocusAndMode(m_famSetting.getOldState());
+      hwui->setFocusAndMode(hwui->getOldFocusAndMode());
     else
-      useCases.setFocusAndMode({ UIFocus::Setup, UIMode::Select, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Setup, UIMode::Select, UIDetail::Init });
   }
 
   void GenericLayout::toggleStoreMode()
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
-
     auto *hwui = Application::get().getHWUI();
-    auto current = m_famSetting.getState();
+    auto current = hwui->getFocusAndMode();
     if(current.focus == UIFocus::Presets && current.mode == UIMode::Store)
-      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     else
-      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Store, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Store, UIDetail::Init });
   }
 
   void GenericLayout::toggleInfo()
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
-
     auto *hwui = Application::get().getHWUI();
-    auto current = m_famSetting.getState();
+    auto current = hwui->getFocusAndMode();
     if(current.mode == UIMode::Info)
-      useCases.setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });
     else
-      useCases.setFocusAndMode({ UIFocus::Unchanged, UIMode::Info, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Info, UIDetail::Init });
   }
 
   void GenericLayout::toggleEdit()
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
     auto *hwui = Application::get().getHWUI();
-    auto current = m_famSetting.getState();
+    auto current = hwui->getFocusAndMode();
 
     if(current.mode == UIMode::Edit)
-      useCases.setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Select, UIDetail::Init });
     else
-      useCases.setFocusAndMode({ UIFocus::Unchanged, UIMode::Edit, UIDetail::Init });
+      hwui->setFocusAndMode({ UIFocus::Unchanged, UIMode::Edit, UIDetail::Init });
   }
 
   bool GenericLayout::redraw(FrameBuffer &fb)

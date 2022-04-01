@@ -21,13 +21,13 @@ public class ParameterFactory {
 			307, 308, 310, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 330,
 			332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 364, 365, 366, 367, 369,
 			370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 391,
-			393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405 };
+			393, 394, 395, 396, 397 };
 
 	static private int[] globalParameters = { 243, 244, 245, 246, 247, 248, 254, 255, 256, 257, 258, 259, 260, 261, 262,
 			263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283,
 			284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322,
 			323, 324, 325, 326, 327, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383,	384, 
-			385, 386, 387, 388, 391, 398, 399, 400, 401, 402, 403, 404, 405 };
+			385, 386, 387, 388, 391 };
 
 	static private int[] modulateableParameters = { 0, 2, 4, 6, 8, 10, 12, 19, 21, 23, 25, 27, 29, 31, 38, 40, 42, 44,
 			46, 53, 57, 60, 64, 68, 71, 76, 78, 81, 83, 87, 90, 94, 98, 101, 106, 108, 111, 113, 115, 119, 123, 127,
@@ -38,9 +38,7 @@ public class ParameterFactory {
 
 	static private int[] pedals = { 254, 259, 264, 269 };
 	static private int[] ribbons = { 284, 289 };
-	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 }; //
-
-	static private int[] sendParams = { 398, 399, 400, 401, 402, 403, 404, 405 };
+	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 };
 
 	static private int[] macroControls = { 243, 244, 245, 246, 369, 371 };
 	static private int[] modulationRouters = { 255, 256, 257, 258, 260, 261, 262, 263, 265, 266, 267, 268, 270, 271,
@@ -92,9 +90,6 @@ public class ParameterFactory {
 		if (Arrays.binarySearch(ribbons, id.getNumber()) >= 0)
 			return new RibbonParameterModel(id);
 
-		if (Arrays.binarySearch(sendParams, id.getNumber()) >= 0)
-			return new SendParameterModel(id);
-
 		if (id.getNumber() == 274)
 			return new BenderParameterModel(id);
 
@@ -131,10 +126,6 @@ public class ParameterFactory {
 
 	public static String[] getParameterGroups() {
 		return parameterGroups;
-	}
-
-	public static int[] getSends() {
-		return sendParams;
 	}
 
 	public static boolean isGlobalParameterGroup(String id) {

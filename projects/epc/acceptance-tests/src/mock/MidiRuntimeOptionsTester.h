@@ -1,8 +1,5 @@
 #pragma once
-
 #include <nltools/Types.h>
-#include <optional>
-
 class MidiRuntimeOptions;
 
 class MidiRuntimeOptionsTester

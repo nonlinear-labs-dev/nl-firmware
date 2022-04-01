@@ -6,7 +6,7 @@
 
 TEST_CASE("setAllValues will not notify if no values Changed")
 {
-  MockSettingsObject settings("", &SyncMasterMockRoot::get());
+  MockSettingsObject settings(&SyncMasterMockRoot::get());
 
   auto setting = settings.getSetting<RoutingSettings>();
 
@@ -14,9 +14,9 @@ TEST_CASE("setAllValues will not notify if no values Changed")
 
   WHEN("All Values are initialy true")
   {
-    auto allValuesAreTrue = std::all_of(data.begin(), data.end(), [](const auto& row) {
-      return std::all_of(row.begin(), row.end(), [](auto b) { return b == true; });
-    });
+    auto allValuesAreTrue = std::all_of(
+        data.begin(), data.end(),
+        [](const auto& row) { return std::all_of(row.begin(), row.end(), [](auto b) { return b == true; }); });
 
     CHECK(allValuesAreTrue);
 

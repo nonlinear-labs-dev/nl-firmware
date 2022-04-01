@@ -5,7 +5,6 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.dataModel.presetManager.Preset;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.IBank;
@@ -57,10 +56,6 @@ public class BankControl extends OverlayLayout implements IBank {
 		addChild(header = new BankHeader(this));
 		addChild(presets = new PresetList(this));
 		addChild(selRectangle = new PresetSelectionRectangle(this));
-	}
-
-	public BeltPreset findBeltPresetFromPreset(com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset p) {
-		return presets.findByUuid(p.getUUID());
 	}
 
 	@Override

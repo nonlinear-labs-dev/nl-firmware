@@ -1,11 +1,14 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
+import com.gargoylesoftware.htmlunit.svg.SvgImage;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.FadeEditorPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.IncrementalChanger;
@@ -22,6 +25,7 @@ import com.nonlinearlabs.client.world.overlay.belt.parameters.recall.ParameterRe
 import com.nonlinearlabs.client.world.overlay.belt.parameters.recall.RecallArea;
 import com.nonlinearlabs.client.world.overlay.layouter.HarmonicLayouter;
 import com.nonlinearlabs.client.world.pointer.TouchPinch;
+import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public class BeltParameterLayout extends OverlayLayout {
 
@@ -116,7 +120,6 @@ public class BeltParameterLayout extends OverlayLayout {
 	private OverlayControl dottedLine;
 	private OverlayControl infoButton;
 	private OverlayControl contextMenu;
-	private OverlayControl ccDisplay;
 
 	private MCRadioButton mcPositionRadioButton;
 	private MCRadioButton mcAmountRadioButton;
@@ -154,8 +157,6 @@ public class BeltParameterLayout extends OverlayLayout {
 		addChild(mcLowerClip = new ParameterClippingLabel(this, Mode.mcLower));
 		addChild(currentRecall = new ParameterRecallArea(this));
 		addChild(syncSplitParameter = new SyncParameterButton(this));
-
-		addChild(ccDisplay = new SendCCDisplay(this));
 
 		EditBufferPresenterProvider.get().onChange(p -> {
 			if (p.selectedParameter.id.getNumber() != lastSelectedParameterNumber) {
@@ -257,10 +258,6 @@ public class BeltParameterLayout extends OverlayLayout {
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
 
-		double ccW = Millimeter.toPixels(25);
-		double ccHeight = third / 2;
-		ccDisplay.doLayout(sliderLeft, third - ccHeight, ccW, ccHeight);
-
 		final double upperElementsY = Millimeter.toPixels(0.5);
 
 		final double sliderWidth = slider.getRelativePosition().getWidth();
@@ -295,9 +292,7 @@ public class BeltParameterLayout extends OverlayLayout {
 				c.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
 				if (c == valueDisplay) {
 					splitValueDisplay.doLayout(walkerX, 0, r.width, modAndParamValueYValue);
-					syncSplitParameter.doLayout(walkerX + r.width,
-							splitValueDisplay.getRelativePosition().getCenterPoint().getY() - (buttonDim / 1.8),
-							buttonDim, buttonDim);
+					syncSplitParameter.doLayout(walkerX + r.width, splitValueDisplay.getRelativePosition().getCenterPoint().getY() - (buttonDim / 1.8), buttonDim, buttonDim);
 				}
 			}
 			walkerX += r.width;
@@ -316,8 +311,6 @@ public class BeltParameterLayout extends OverlayLayout {
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
 		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
-
-		ccDisplay.setVisible(!ccDisplay.getPixRect().intersects(valueDisplay.getPixRect()));
 	}
 
 	protected void showAndHideChildren() {

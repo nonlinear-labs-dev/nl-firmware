@@ -2,7 +2,6 @@
 #include <proxies/hwui/debug-oled/DebugLayout.h>
 #include "testing/TestHelper.h"
 #include "proxies/hwui/HWUI.h"
-#include "use-cases/SettingsUseCases.h"
 #include <device-settings/LayoutMode.h>
 
 inline bool currentLayoutNotExceptionLayout()
@@ -16,8 +15,7 @@ inline void traverseFocusAndMode()
   forEachValue<UIFocus>([](auto focus) {
     forEachValue<UIMode>([=](auto mode) {
       forEachValue<UIDetail>([=](auto detail) {
-        SettingsUseCases useCases(*TestHelper::getSettings());
-        useCases.setFocusAndMode({ focus, mode, detail });
+        Application::get().getHWUI()->setFocusAndMode({ focus, mode, detail });
         REQUIRE(currentLayoutNotExceptionLayout());
       });
     });

@@ -44,7 +44,6 @@ Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer)
 Preset::Preset(UpdateDocumentContributor *parent, const EditBuffer &editBuffer, Uuid uuid)
     : super(parent, editBuffer)
     , SyncedItem(parent->getRoot()->getSyncMaster(), "/preset/" + uuid.raw())
-    , m_uuid{uuid}
 {
   setTopic("/preset/" + m_uuid.raw());
 

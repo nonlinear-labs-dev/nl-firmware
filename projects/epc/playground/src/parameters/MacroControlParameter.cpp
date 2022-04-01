@@ -367,18 +367,18 @@ ParameterId MacroControlParameter::getMCSmoothingParameterForMC(const ParameterI
 {
   switch(mcId.getNumber())
   {
-    case C15::PID::MC_A:
-      return { C15::PID::MC_Time_A, VoiceGroup::Global };
-    case C15::PID::MC_B:
-      return { C15::PID::MC_Time_B, VoiceGroup::Global };
-    case C15::PID::MC_C:
-      return { C15::PID::MC_Time_C, VoiceGroup::Global };
-    case C15::PID::MC_D:
-      return { C15::PID::MC_Time_D, VoiceGroup::Global };
-    case C15::PID::MC_E:
-      return { C15::PID::MC_Time_E, VoiceGroup::Global };
-    case C15::PID::MC_F:
-      return { C15::PID::MC_Time_F, VoiceGroup::Global };
+    case 243:
+      return { 324, VoiceGroup::Global };
+    case 244:
+      return { 325, VoiceGroup::Global };
+    case 245:
+      return { 326, VoiceGroup::Global };
+    case 246:
+      return { 327, VoiceGroup::Global };
+    case 369:
+      return { 370, VoiceGroup::Global };
+    case 371:
+      return { 372, VoiceGroup::Global };
     default:
       return ParameterId::invalid();
   }

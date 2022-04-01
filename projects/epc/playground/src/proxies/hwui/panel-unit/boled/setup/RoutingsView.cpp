@@ -8,8 +8,7 @@ RoutingsView::RoutingsView(tID id)
     , m_id(id)
     , m_aspectList(getAspectsForIndex(id))
 {
-  if(auto s = getSetting())
-    s->onChange(sigc::mem_fun(this, &RoutingsView::onSettingChanged));
+  getSetting()->onChange(sigc::mem_fun(this, &RoutingsView::onSettingChanged));
 }
 
 inline auto getShortName(RoutingsView::tAspect a)
@@ -44,7 +43,7 @@ bool RoutingsView::redraw(FrameBuffer& fb)
   int x = pos.getLeft();
 
   LabelStyleable text(pos);
-  text.setLabelStyle({ .size = FontSize::Size8, .decoration = FontDecoration::Regular });
+  text.setLabelStyle({.size = FontSize::Size8, .decoration = FontDecoration::Regular});
 
   int idx = 0;
   for(auto& a : m_aspectList)

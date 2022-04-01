@@ -10,7 +10,6 @@
 #include <proxies/hwui/TwoStateLED.h>
 #include <memory>
 #include "PanelUnitPresetMode.h"
-#include "use-cases/SettingsUseCases.h"
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <sigc++/sigc++.h>
 #include <device-settings/Settings.h>
@@ -202,18 +201,15 @@ void PanelUnitSoundMode::setup()
     if(state)
     {
       auto hwui = Application::get().getHWUI();
-      auto& settings = *Application::get().getSettings();
-      SettingsUseCases useCases(settings);
-      auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
 
-      auto focusAndMode = famSetting.getState();
+      auto focusAndMode = Application::get().getHWUI()->getFocusAndMode();
       if(focusAndMode.focus == UIFocus::Sound)
         if(focusAndMode.mode == UIMode::Edit || focusAndMode.detail == UIDetail::Voices)
-          useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+          hwui->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
         else
-          useCases.setFocusAndMode(famSetting.getOldState());
+          hwui->setFocusAndMode(hwui->getOldFocusAndMode());
       else
-         useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
+        hwui->undoableSetFocusAndMode(FocusAndMode { UIFocus::Sound });
     }
 
     return true;

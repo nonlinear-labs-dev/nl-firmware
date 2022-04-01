@@ -212,8 +212,10 @@ Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
   {
     case UIMode::Info:
       return new ParameterInfoLayout();
+
     case UIMode::Edit:
       return new PedalParameterEditLayout2();
+
     case UIMode::Select:
     default:
       return new PedalParameterSelectLayout2();
@@ -222,7 +224,7 @@ Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
   return super::createLayout(focusAndMode);
 }
 
-PedalType *PedalParameter::getAssociatedPedalTypeSetting() const
+std::shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
 {
   int key = 1;
 
@@ -234,7 +236,7 @@ PedalType *PedalParameter::getAssociatedPedalTypeSetting() const
     key = 4;
 
   auto str = Glib::ustring::format("Pedal", key, "Type");
-  return static_cast<PedalType *>(Application::get().getSettings()->getSetting(str));
+  return std::dynamic_pointer_cast<PedalType>(Application::get().getSettings()->getSetting(str));
 }
 
 void PedalParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)

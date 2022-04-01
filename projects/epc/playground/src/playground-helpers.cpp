@@ -74,24 +74,21 @@ namespace Environment
 
   void setupLocale()
   {
-    const char* desiredLocales[] = { "en_US.utf8@nonlinear", "en_US.utf8" };
+    constexpr auto preferedLocale = "en_US.utf8@nonlinear.UTF-8";
+    constexpr auto fallbackLocale = "en_US.utf8";
 
-    for(const auto desiredLocale : desiredLocales)
+    if(auto ret = setlocale(LC_ALL, preferedLocale); ret && !g_strcmp0(ret, preferedLocale))
     {
-      if(auto ret = setlocale(LC_ALL, desiredLocale))
-      {
-        if(g_strcmp0(ret, desiredLocale))
-        {
-          DebugLevel::warning("Desired locale was", desiredLocale, ", but current locale is:", ret);
-        }
-        else
-        {
-          DebugLevel::info("Successfully set locale to", desiredLocale);
-          return;
-        }
-      }
+      DebugLevel::warning("Successfully set locale to", preferedLocale);
     }
-
-    DebugLevel::error("Could not set locale to any desired");
+    else if(auto ret = setlocale(LC_ALL, fallbackLocale); ret && !g_strcmp0(ret, fallbackLocale))
+    {
+      DebugLevel::error("Could not set locale to", preferedLocale, "but installed fallback", fallbackLocale,
+                        "- strings containing NL special chars will not be sortable, some tests will fail!");
+    }
+    else
+    {
+      DebugLevel::throwException("Could not set locale to", preferedLocale, "or at least", fallbackLocale);
+    }
   }
 }

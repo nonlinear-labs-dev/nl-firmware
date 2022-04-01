@@ -22,9 +22,6 @@ ModulationRoutersCarousel::~ModulationRoutersCarousel() = default;
 
 void ModulationRoutersCarousel::setup(Parameter *newOne)
 {
-  if(auto sendParameter = dynamic_cast<HardwareSourceSendParameter*>(newOne))
-    newOne = sendParameter->getSiblingParameter();
-
   clear();
 
   const int ySpaceing = 0;
@@ -68,30 +65,19 @@ void ModulationRoutersCarousel::setup(Parameter *newOne)
 
 void ModulationRoutersCarousel::turn()
 {
-  turnInDirection(1);
+  if(auto p = dynamic_cast<PhysicalControlParameter *>(
+         Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
+    p->toggleUiSelectedModulationRouter(1);
 }
 
 void ModulationRoutersCarousel::antiTurn()
 {
-  turnInDirection(-1);
+  if(auto p = dynamic_cast<PhysicalControlParameter *>(
+         Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
+    p->toggleUiSelectedModulationRouter(-1);
 }
 
 void ModulationRoutersCarousel::setHighlight(bool isHighlight)
 {
   Control::setHighlight(isHighlight);
-}
-
-void ModulationRoutersCarousel::turnInDirection(int inc)
-{
-  auto vg = getHWUI()->getCurrentVoiceGroup();
-  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
-  if(auto s = dynamic_cast<HardwareSourceSendParameter*>(selected))
-  {
-    if(auto sibling = s->getSiblingParameter())
-      sibling->toggleUiSelectedModulationRouter(inc);
-  }
-  else if(auto p = dynamic_cast<PhysicalControlParameter *>(selected))
-  {
-    p->toggleUiSelectedModulationRouter(inc);
-  }
 }

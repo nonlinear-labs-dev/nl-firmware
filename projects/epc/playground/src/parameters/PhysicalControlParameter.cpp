@@ -28,7 +28,7 @@ bool PhysicalControlParameter::isChangedFromLoaded() const
   return false;
 }
 
-void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
+void PhysicalControlParameter::onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source)
 {
   if(source == HWChangeSource::MIDI)
     getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));
@@ -57,15 +57,18 @@ void PhysicalControlParameter::onValueChanged(Initiator initiator, tControlPosit
 
   if(initiator != Initiator::INDIRECT)
   {
-    if(getReturnMode() != ReturnMode::None)
+    if(isLocalEnabled() || initiator == Initiator::EXPLICIT_MIDI)
     {
-      for(ModulationRoutingParameter *target : m_targets)
-        target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
-    }
-    else
-    {
-      for(ModulationRoutingParameter *target : m_targets)
-        target->applyAbsolutePlaycontrollerPhysicalControl(newValue);
+      if(getReturnMode() != ReturnMode::None)
+      {
+        for(ModulationRoutingParameter *target : m_targets)
+          target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
+      }
+      else
+      {
+        for(ModulationRoutingParameter *target : m_targets)
+          target->applyAbsolutePlaycontrollerPhysicalControl(newValue);
+      }
     }
   }
 
@@ -99,8 +102,7 @@ size_t PhysicalControlParameter::getHash() const
 Glib::ustring PhysicalControlParameter::generateName() const
 {
   auto it = std::max_element(m_targets.begin(), m_targets.end(),
-                             [](const ModulationRoutingParameter *a, const ModulationRoutingParameter *b)
-                             {
+                             [](const ModulationRoutingParameter *a, const ModulationRoutingParameter *b) {
                                auto fa = fabs(a->getControlPositionValue());
                                auto fb = fabs(b->getControlPositionValue());
 
@@ -246,33 +248,4 @@ void PhysicalControlParameter::sendParameterMessage() const
 bool PhysicalControlParameter::lockingEnabled() const
 {
   return false;
-}
-
-HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
-{
-  auto idToSendID = [](auto id)
-  {
-    switch(id.getNumber())
-    {
-      case C15::PID::Pedal_1:
-        return HardwareSourcesGroup::getPedal1SendID();
-      case C15::PID::Pedal_2:
-        return HardwareSourcesGroup::getPedal2SendID();
-      case C15::PID::Pedal_3:
-        return HardwareSourcesGroup::getPedal3SendID();
-      case C15::PID::Pedal_4:
-        return HardwareSourcesGroup::getPedal4SendID();
-      case C15::PID::Ribbon_1:
-        return HardwareSourcesGroup::getRibbon1SendID();
-      case C15::PID::Ribbon_2:
-        return HardwareSourcesGroup::getRibbon2SendID();
-      case C15::PID::Aftertouch:
-        return HardwareSourcesGroup::getAftertouchSendID();
-      case C15::PID::Bender:
-        return HardwareSourcesGroup::getBenderSendID();
-    }
-    return ParameterId::invalid();
-  };
-
-  return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
 }

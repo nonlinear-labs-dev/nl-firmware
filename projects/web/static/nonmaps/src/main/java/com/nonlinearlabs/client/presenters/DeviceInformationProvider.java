@@ -79,12 +79,6 @@ public class DeviceInformationProvider {
 			notifyClients();
 			return true;
 		});
-
-		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().uiRTVersion.onChange(v -> {
-			info.rtVersion = v;
-			notifyClients();
-			return true;
-		});
 	}
 
 	protected void notifyClients() {

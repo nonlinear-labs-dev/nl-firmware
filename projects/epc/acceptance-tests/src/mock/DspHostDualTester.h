@@ -66,5 +66,5 @@ class DspHostDualTester
 
  private:
   dsp_host_dual* m_host;
-  double encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony);
+  float encodeUnisonVoice(const unsigned int _unison, const unsigned int _polyphony);
 };

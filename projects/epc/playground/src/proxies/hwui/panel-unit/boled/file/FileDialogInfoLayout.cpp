@@ -10,7 +10,6 @@
 #include <Application.h>
 #include "FileNameHeadlineLabel.h"
 #include "FileInfoCaption.h"
-#include "use-cases/SettingsUseCases.h"
 
 FileDialogInfoLayout::FileDialogInfoLayout(std::filesystem::directory_entry file, std::string header)
     : InfoLayout()
@@ -46,11 +45,8 @@ bool FileDialogInfoLayout::onButton(Buttons i, bool down, ButtonModifiers modifi
     switch(i)
     {
       case Buttons::BUTTON_PRESET:
-      {
-        SettingsUseCases useCases(*Application::get().getSettings());
-        useCases.setFocusAndMode({UIFocus::Presets, UIMode::Select});
+        Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Select });
         return true;
-      }
 
       case Buttons::BUTTON_STORE:
       case Buttons::BUTTON_EDIT:

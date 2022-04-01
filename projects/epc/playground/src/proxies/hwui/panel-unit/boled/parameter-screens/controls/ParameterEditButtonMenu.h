@@ -1,7 +1,6 @@
 #pragma once
 
 #include "proxies/hwui/controls/ButtonMenu.h"
-#include <ParameterId.h>
 
 class PresetBank;
 class Parameter;
@@ -28,7 +27,6 @@ class ParameterEditButtonMenu : public ButtonMenu
   void onParameterSelectionChanged(Parameter *oldParameter, Parameter *newParameter);
   void onGroupChanged();
   void sanitizeLastAction();
-  void selectParameter(ParameterId id);
 
   ParameterGroup *m_currentGroup = nullptr;
   bool m_allParametersLocked = false;

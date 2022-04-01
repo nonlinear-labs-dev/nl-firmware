@@ -232,8 +232,6 @@ TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
     msg.highVeloCCEnabled = false;
     msg.highResCCEnabled = false;
 
-    msg.localEnable = true;
-
     msg.routings = TestHelper::createFullMappings(false);
 
     for(auto i : idx)

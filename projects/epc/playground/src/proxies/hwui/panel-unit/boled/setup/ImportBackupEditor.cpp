@@ -30,7 +30,6 @@
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
-#include <use-cases/SettingsUseCases.h>
 
 static const Rect c_fullRightSidePosition(129, 16, 126, 48);
 
@@ -131,8 +130,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     }
   }
 
-  SettingsUseCases useCases(*Application::get().getSettings());
-  useCases.setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
+  Application::get().getHWUI()->getPanelUnit().setupFocusAndMode({ UIFocus::Presets, UIMode::Select });
 }
 
 void ImportBackupEditor::importBackup()

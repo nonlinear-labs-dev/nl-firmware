@@ -40,11 +40,7 @@
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
     : super(parent)
 {
-}
-
-void ParameterGroupSet::init(Settings* settings)
-{
-  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, settings));
+  auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this));
   auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
   appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
 
@@ -99,8 +95,7 @@ ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::getParameterGroupByID(c
 ParameterGroupSet::tParameterGroupPtr ParameterGroupSet::appendParameterGroup(ParameterGroup *p)
 {
   p->init();
-  auto id = p->getID();
-  nltools_assertAlways(getParameterGroupByID(id) == nullptr);
+  g_assert(getParameterGroupByID(p->getID()) == nullptr);
   auto wrapped = tParameterGroupPtr(p);
   m_parameterGroups[static_cast<size_t>(p->getID().getVoiceGroup())].append(wrapped);
   return wrapped;

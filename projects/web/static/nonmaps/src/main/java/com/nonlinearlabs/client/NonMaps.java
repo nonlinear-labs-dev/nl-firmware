@@ -108,21 +108,21 @@ public class NonMaps extends Mouseing implements EntryPoint {
 
 	private boolean setScaling(DisplayScaling s) {
 		switch (s) {
-			case percent_100:
-				setPixelFactor(1.0);
-				break;
-			case percent_125:
-				setPixelFactor(1.25);
-				break;
-			case percent_150:
-				setPixelFactor(1.5);
-				break;
-			case percent_50:
-				setPixelFactor(0.5);
-				break;
-			case percent_75:
-				setPixelFactor(0.75);
-				break;
+		case percent_100:
+			setPixelFactor(1.0);
+			break;
+		case percent_125:
+			setPixelFactor(1.25);
+			break;
+		case percent_150:
+			setPixelFactor(1.5);
+			break;
+		case percent_50:
+			setPixelFactor(0.5);
+			break;
+		case percent_75:
+			setPixelFactor(0.75);
+			break;
 		}
 
 		return true;

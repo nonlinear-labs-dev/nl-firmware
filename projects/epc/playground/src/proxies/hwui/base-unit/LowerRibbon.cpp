@@ -16,17 +16,10 @@ static Parameter *getParameter()
       HardwareSourcesGroup::getLowerRibbonParameterID());
 }
 
-static Parameter* getSendParameter()
-{
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          HardwareSourcesGroup::getRibbon2SendID());
-}
-
 LowerRibbon::LowerRibbon()
 {
   initLEDs();
   getParameter()->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onParamValueChanged));
-  getSendParameter()->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onSendValueChanged));
 }
 
 int LowerRibbon::posToLedID(int pos) const
@@ -37,45 +30,19 @@ int LowerRibbon::posToLedID(int pos) const
 void LowerRibbon::onParamValueChanged(const Parameter *param)
 {
   auto ribbonParameter = dynamic_cast<const RibbonParameter *>(param);
-  auto sendParameter = ribbonParameter->getSendParameter();
   auto ribbonMode = ribbonParameter->getRibbonReturnMode();
 
   bool bipol = ribbonMode == RibbonReturnMode::RETURN;
 
   auto paramVal = param->getControlPositionValue();
 
-  if(sendParameter->isLocalEnabled())
+  if(!bipol)
   {
-    if(!bipol)
-    {
-      setLEDsForValueUniPolar(paramVal);
-    }
-    else
-    {
-      setLEDsForValueBiPolar(paramVal);
-    }
+    setLEDsForValueUniPolar(paramVal);
   }
-}
-
-void LowerRibbon::onSendValueChanged(const Parameter *param)
-{
-  auto sendParameter = dynamic_cast<const HardwareSourceSendParameter*>(param);
-  auto mode = sendParameter->getReturnMode();
-
-  bool bipol = mode == ReturnMode::Center;
-
-  auto paramVal = param->getControlPositionValue();
-
-  if(!sendParameter->isLocalEnabled())
+  else
   {
-    if(!bipol)
-    {
-      setLEDsForValueUniPolar(paramVal);
-    }
-    else
-    {
-      setLEDsForValueBiPolar(paramVal);
-    }
+    setLEDsForValueBiPolar(paramVal);
   }
 }
 

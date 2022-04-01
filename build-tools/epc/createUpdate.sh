@@ -131,7 +131,12 @@ setup_install_overlay() {
 
 install_update() {
 	cp /workdir/update-packages/* /internal/epc-update-partition/update-packages
-	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install"
+
+  echo "en_US@nonlinear.UTF-8 UTF-8" >> /internal/epc-update-partition/etc/locale.gen
+  echo "LANG=en_US@nonlinear.UTF-8" > /internal/epc-update-partition/etc/locale.conf
+  touch /internal/epc-update-partition/usr/share/locale/locale.alias
+
+	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install && make install-nl-locale"
     mkdir -p /internal/epc-update-partition/usr/local/C15/web
     tar -xzf /bindir/projects/web/web.tar.gz -C /internal/epc-update-partition/usr/local/C15/web
 	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\

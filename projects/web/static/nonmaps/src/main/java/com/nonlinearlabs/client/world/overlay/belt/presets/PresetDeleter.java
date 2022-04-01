@@ -30,20 +30,10 @@ public class PresetDeleter extends GWTDialog {
 		setText("Delete Presets");
 		HTMLPanel x = new HTMLPanel("");
 		x.add(new Label("Do you also want to delete the Bank?"));
-		HTMLPanel buttons = new HTMLPanel("");
-		buttons.add(m_no = new Button("No"));
+		x.add(m_no = new Button("No"));
 		m_no.setFocus(true);
-		buttons.add(m_yes = new Button("Yes"));
-		buttons.add(m_cancel = new Button("Cancel"));
-		buttons.getElement().addClassName("modal-button-center-div");
-		HTMLPanel buttonDiv = new HTMLPanel("");
-		buttonDiv.add(buttons);
-		buttonDiv.getElement().addClassName("modal-button-div");
-		m_yes.getElement().addClassName("modal-button-button");
-		m_no.getElement().addClassName("modal-button-button");
-		m_cancel.getElement().addClassName("modal-button-button");
-
-		x.add(buttonDiv);
+		x.add(m_yes = new Button("Yes"));
+		x.add(m_cancel = new Button("Cancel"));
 		add(x);
 
 		m_no.addClickHandler(event -> delete(false));

@@ -7,7 +7,6 @@
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
 #include <use-cases/DirectLoadUseCases.h>
-#include "use-cases/SettingsUseCases.h"
 
 namespace detail
 {
@@ -33,10 +32,9 @@ TEST_CASE("Part Origin Attribute")
 
   MockPresetStorage presets;
 
-  DirectLoadUseCases useCase(detail::getDirectLoad());
+  DirectLoadUseCases useCase(detail::getDirectLoad().get());
   useCase.disableDirectLoad();
-  SettingsUseCases useCases(*TestHelper::getSettings());
-  useCases.setFocusAndMode(UIDetail::Init);
+  hwui->setFocusAndMode(UIDetail::Init);
 
   SECTION("Load Single Full")
   {
@@ -147,14 +145,13 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   SECTION("Select First Preset in Bank")
   {
 
-    DirectLoadUseCases dlUseCase(detail::getDirectLoad());
+    DirectLoadUseCases dlUseCase(detail::getDirectLoad().get());
     dlUseCase.enableDirectLoadFromWebUI(nullptr, VoiceGroup::Global, VoiceGroup::Global);
 
     {
       PresetManagerUseCases useCase(*pm, *settings);
       useCase.selectPreset(bank->getPresetAt(0));
-      SettingsUseCases useCases(*TestHelper::getSettings());
-      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+      Application::get().getHWUI()->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
     }
 
     TestHelper::doMainLoop(min, max, [&]() {

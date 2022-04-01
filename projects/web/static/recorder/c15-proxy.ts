@@ -36,8 +36,6 @@ abstract class C15ProxyIface {
         if (this.ui)
             this.ui.update();
     }
-    
-    abstract showRecorderAutoStartMessage(c: (v: boolean) => void) : void;
 
     togglePlayback(): void {
         if (this.getPlaybackState() == TransportState.Playing)
@@ -112,10 +110,6 @@ class C15ProxyMock extends C15ProxyIface {
         }
 
         setInterval(() => this.playProgress(), 85);
-    }
-    
-    showRecorderAutoStartMessage(c: (v: boolean) => void) : void{
-      c(true);
     }
 
     getBars(): Bars {
@@ -196,19 +190,6 @@ class C15Proxy extends C15ProxyIface {
         var t = serverTime - this.updateStream.timingInfo.serverTime + this.updateStream.timingInfo.localTime;
         var d = new Date(t / 1000 / 1000);
         return d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0') + ":" + d.getSeconds().toString().padStart(2, '0');
-    }
-    
-    showRecorderAutoStartMessage(c: (v: boolean) => void) : void
-    {
-      var r = new XMLHttpRequest();
-      var url = "http://" + hostName + playgroundHttpPort + "/webui-support/show-recorder-autostart-message";
-      r.onreadystatechange = function() {
-          if (r.readyState === 4) {
-            c(r.response == "1");
-          }
-        }
-      r.open("GET", url, true);
-      r.send(); 
     }
 
     getBars(): Bars {

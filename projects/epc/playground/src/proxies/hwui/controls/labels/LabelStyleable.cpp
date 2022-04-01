@@ -1,5 +1,4 @@
 #include "LabelStyleable.h"
-#include <proxies/hwui/FrameBuffer.h>
 
 LabelStyleable::LabelStyleable(const Rect& pos)
     : Label { pos }
@@ -37,11 +36,6 @@ void LabelStyleable::setLabelStyle(LabelStyle style)
 Font::Justification LabelStyleable::getJustification() const
 {
   return m_styleSheet.justification;
-}
-
-void LabelStyleable::setBackgroundColor(FrameBuffer& fb) const
-{
-  fb.setColor(m_styleSheet.backgroundColor);
 }
 
 std::shared_ptr<Font> LabelStyleable::getFont() const

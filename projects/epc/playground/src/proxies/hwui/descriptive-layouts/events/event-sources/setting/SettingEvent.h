@@ -12,7 +12,7 @@ namespace DescriptiveLayouts
     SettingEvent()
     {
       auto setting = Application::get().getSettings()->getSetting<tSetting>();
-      assert(setting != nullptr);
+      assert(setting.get() != nullptr);
       m_settingConnection = setting->onChange(sigc::mem_fun(this, &SettingEvent<T, tSetting>::onSettingChanged));
     }
 
@@ -39,7 +39,7 @@ namespace DescriptiveLayouts
     ReverseSettingEvent()
     {
       auto setting = Application::get().getSettings()->getSetting<tSetting>();
-      assert(setting != nullptr);
+      assert(setting.get() != nullptr);
       m_settingConnection = setting->onChange(sigc::mem_fun(this, &ReverseSettingEvent<T, tSetting>::onSettingChanged));
     }
 

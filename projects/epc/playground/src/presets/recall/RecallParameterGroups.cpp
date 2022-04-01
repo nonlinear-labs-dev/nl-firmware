@@ -14,10 +14,6 @@ RecallParameterGroups::RecallParameterGroups(EditBuffer *editBuffer)
     : UpdateDocumentContributor(editBuffer)
     , m_editBuffer { editBuffer }
 {
-}
-
-void RecallParameterGroups::init()
-{
   for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
     for(auto &g : m_editBuffer->getParameterGroups(vg))

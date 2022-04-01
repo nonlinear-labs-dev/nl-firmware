@@ -17,7 +17,6 @@
 
 class Application;
 class UsageMode;
-class Settings;
 
 namespace UNDO
 {
@@ -34,13 +33,24 @@ class PresetPartSelection;
 class HWUI
 {
  public:
-  HWUI(Settings &settings);
+  HWUI();
   virtual ~HWUI();
+
   void init();
+
   void indicateBlockingMainThread();
 
-  VoiceGroup getCurrentVoiceGroup() const;
+  void undoableSetFocusAndMode(UNDO::Transaction *transaction, FocusAndMode focusAndMode);
+  void setUiModeDetail(UIDetail detail);
+  void undoableSetFocusAndMode(FocusAndMode focusAndMode);
+  void setFocusAndMode(const UIDetail &detail);
+  void setFocusAndMode(const UIMode &mode);
+  void setFocusAndMode(const UIFocus &focus);
+  void setFocusAndMode(FocusAndMode focusAndMode);
+  FocusAndMode getFocusAndMode() const;
+  FocusAndMode getOldFocusAndMode() const;
 
+  VoiceGroup getCurrentVoiceGroup() const;
   bool isInLoadToPart() const;
 
   //TODO Remove all non HWUI Related things! -> VoiceGroup, LoadToPart etc
@@ -54,6 +64,10 @@ class HWUI
 
   sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
   sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
+  sigc::connection onHWUIChanged(const sigc::slot<void> &cb);
+
+  void freezeFocusAndMode();
+  void thawFocusAndMode();
 
   PanelUnit &getPanelUnit();
   const PanelUnit &getPanelUnit() const;
@@ -79,7 +93,6 @@ class HWUI
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
 
-  void onFocusAndModeChanged(const Setting* s);
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
@@ -99,25 +112,25 @@ class HWUI
   bool detectAffengriff(Buttons buttonID, bool state);
   bool isFineAllowed();
 
-  void onParameterReselection(Parameter *parameter);
-  void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+  static FocusAndMode fixFocusAndModeWithAnys(FocusAndMode in);
+  static FocusAndMode removeInvalidsFromSound(FocusAndMode in);
+
+  FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
+  FocusAndMode removeEditOnFocusChange(FocusAndMode in) const;
 
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;
   sigc::connection m_rotaryChangedConnection;
-  sigc::connection m_focusAndModeConnection;
-  sigc::connection m_blinkTimerConnection;
-  sigc::connection m_editBufferParameterReselectionConnection;
-  sigc::connection m_editBufferParameterSelectionConnection;
 
   void onRotaryChanged();
+
   Signal<void, VoiceGroup> m_voiceGoupSignal;
   Signal<void, bool> m_loadToPartSignal;
   Signal<void> m_inputSignal;
 
   bool m_loadToPartActive = false;
-
   VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
+
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;
 
@@ -127,15 +140,28 @@ class HWUI
   FineButton m_fineButton;
   ButtonModifiers m_modifiers;
 
+  sigc::connection m_blinkTimerConnection;
+  sigc::connection m_editBufferParameterReselectionConnection;
+  sigc::connection m_editBufferParameterSelectionConnection;
+
+  void onParameterReselection(Parameter *parameter);
+  void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+
   Signal<void, ButtonModifiers> m_modifersChanged;
   Signal<void, int> m_blinkTimer;
-  Signal<void, FocusAndMode> m_signalFocusAndMode;
 
   std::array<bool, (size_t) Buttons::NUM_BUTTONS> m_buttonStates;
+
   int m_affengriffState = 0;
+
+  FocusAndMode m_focusAndMode;
+  FocusAndMode m_oldFocusAndMode;
+
   int m_blinkCount;
   Expiration m_switchOffBlockingMainThreadIndicator;
+
+  bool m_focusAndModeFrozen = false;
+
+  DelayedJob m_setupJob;
   ScopedGuard m_parameterFocusLock;
-  Settings& m_settings;
-  FocusAndModeSetting & m_famSetting;
 };

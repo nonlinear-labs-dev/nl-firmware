@@ -71,12 +71,29 @@ StringAndSuffix RibbonLabel::getText() const
   else
   {
     if(isRibbon1)
-      return settings->getSetting<RibbonCCMapping<1>>()->getDisplayString();
+      return cropMidiCC(settings->getSetting<RibbonCCMapping<1>>()->getDisplayString());
     else if(isRibbon2)
-      return settings->getSetting<RibbonCCMapping<2>>()->getDisplayString();
+      return cropMidiCC(settings->getSetting<RibbonCCMapping<2>>()->getDisplayString());
   }
 
   return "";
+}
+
+Glib::ustring RibbonLabel::cropMidiCC(const Glib::ustring &text)
+{
+  //CC XX (LSB: CC YY)
+  //CC XX
+
+  if(text.find('(') != Glib::ustring::npos)
+  {
+    auto start = text.find(':') + 2;
+    auto end = text.find(')');
+    auto lsbText = text.substr(start, end - start);
+    auto msbEnd = text.find('(') - 1;
+    auto msbText = text.substr(0, msbEnd);
+    return msbText + " (" + lsbText + ")";
+  }
+  return text;
 }
 
 Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const

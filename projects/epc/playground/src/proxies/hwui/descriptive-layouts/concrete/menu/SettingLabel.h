@@ -32,6 +32,6 @@ template <class tSetting> class SettingLabel : public Label
   }
 
  private:
-  tSetting* m_setting;
+  std::shared_ptr<tSetting> m_setting;
   sigc::connection m_connection;
 };

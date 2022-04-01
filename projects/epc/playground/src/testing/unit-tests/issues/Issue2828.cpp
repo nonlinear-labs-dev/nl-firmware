@@ -63,7 +63,7 @@ TEST_CASE("Store Preset will change EditBuffer Origin and 'mark saved Preset as 
 
           THEN("Preset is overwritten with changed EB")
           {
-            PresetUseCases presetUseCase(*preset, *TestHelper::getSettings());
+            PresetUseCases presetUseCase(preset, *TestHelper::getSettings());
             presetUseCase.overwriteWithEditBuffer(*eb);
             TestHelper::doMainLoopFor(150ms);
             CHECK(eb->getOrigin() == preset);

@@ -4,7 +4,6 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 #include <parameter_declarations.h>
-#include <use-cases/PresetUseCases.h>
 
 TEST_CASE("Store and Load Preset yields same editbuffer")
 {
@@ -24,8 +23,10 @@ TEST_CASE("Store and Load Preset yields same editbuffer")
 
     THEN("Stored")
     {
-      PresetUseCases presetUseCase(*layerPreset, *TestHelper::getSettings());
-      presetUseCase.overwriteWithEditBuffer(*eb);
+      {
+        auto scope = TestHelper::createTestScope();
+        layerPreset->copyFrom(scope->getTransaction(), eb);
+      }
 
       WHEN("Loaded")
       {
