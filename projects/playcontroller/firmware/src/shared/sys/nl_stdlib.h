@@ -37,6 +37,11 @@ static inline int memcmp32(void *data1, void *data2, uint16_t count)
   return 0;
 }
 
+static inline int16_t abs(int16_t const x)
+{
+  return (x >= 0) ? x : -x;
+}
+
 #pragma GCC diagnostic error "-Wdiv-by-zero"
 #define SIZECHECK(item, size)         \
   {                                   \

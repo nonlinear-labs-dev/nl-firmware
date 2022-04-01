@@ -177,12 +177,8 @@ void AT_Select_AftertouchTable(uint16_t const curve)
 
 //
 // -----------------
-void AT_ProcessAftertouch(void)
+static void collectCalibrationData(int16_t const adcValue)
 {
-  int16_t adcValue;
-  int16_t tcdOutput;
-  int16_t adcToForceInput = 0;
-  int16_t force           = 0;
 
   static int      state = 0;
   static int16_t  timer;
@@ -191,67 +187,136 @@ void AT_ProcessAftertouch(void)
   static LIB_lowpass_data_T lpFilter = { .filtered = 0, .beta = 6, .fpShift = 7 };
   int16_t                   adcFiltered;
 
-  adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+  if (AT_calibrationRun == 0)
+    return;
+
+  int singleKey = POLY_getSingleKey();  // one and only one single key
+  if (singleKey != -1)
+    AT_adcPerKey[61] = (AT_adcPerKey[61] & 0x8000) | singleKey;
+  else
+    AT_adcPerKey[61] = -1;
 
   if (adcValue == 0)
   {
-    tcdOutput        = 0;
-    state            = 0;
-    AT_adcPerKey[61] = -1;
+    state = 0;
+    return;
+  }
+
+  // save current ADC adcValue in volatile table once it has settled
+  if (singleKey != -1)
+  {
+    switch (state)
+    {
+      case 0:  // key newly pressed
+        state         = 1;
+        savedAdcValue = lpFilter.filtered = adcValue;
+        timer                             = 0;
+        break;
+      case 1:  // wait until values settles around [-1; +2]
+        adcFiltered             = LIB_LowPass(&lpFilter, adcValue);
+        AT_adcPerKey[singleKey] = adcFiltered;  // for monitoring
+        AT_adcPerKey[61] &= 0x7FFF;
+        if ((adcFiltered >= savedAdcValue - 1) && (adcFiltered <= savedAdcValue + 2))
+        {  // still within range
+          timer++;
+          if (timer > 80)  // stable for 1 seconds
+          {
+            AT_adcPerKey[singleKey] = savedAdcValue;  // that's our max
+            AT_adcPerKey[61] |= 0x8000;
+            state = 99;
+            break;
+          }
+        }
+        else
+        {  // outside limits
+          timer         = 0;
+          savedAdcValue = adcFiltered;  // new range
+        }
+        break;
+      case 99:  // wait until key is released
+        break;
+    }
+  }
+}
+
+// -------------
+void AT_ProcessAftertouch(void)
+{
+  int16_t adcValue;
+  int16_t tcdOutput;
+  int16_t adcToForceInput;
+  int16_t force;
+
+  int            focussedKey;
+  static int     lastFocussedKey = -1;
+  static int16_t calibrationTarget;
+  static int16_t calibrationPoint;
+  static int     dynamicOffset = 0;
+
+  adcValue    = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+  focussedKey = POLY_getNewestKey();  // -1 means : no key pressed
+  do
+  {
+    if (focussedKey != lastFocussedKey)
+    {
+      if (focussedKey == -1)
+      {  // no key pressed at all
+        calibrationTarget = calibrationPoint = AT_adcCalibration.adcDefault;
+        break;
+      }
+
+      if (lastFocussedKey == -1)
+      {  // newly pressed single key, so start right from there
+        calibrationTarget = calibrationPoint = AT_adcCalibration.adcValues[focussedKey];
+        break;
+      }
+
+      // focussed key has changed
+      calibrationTarget = AT_adcCalibration.adcValues[focussedKey];
+      if (adcValue == 0)  // if AT is not active then no need to ramp to new target
+        calibrationPoint = calibrationTarget;
+      else
+      {
+        dynamicOffset = abs(calibrationTarget - calibrationPoint) / 8;  // ramp in 8..9 steps a 12.5ms = ~100ms
+        if (dynamicOffset == 0)
+          dynamicOffset = 1;
+      }
+    }
+  } while (0);
+  lastFocussedKey = focussedKey;
+
+  // ramp to new calibration point if required
+  if (dynamicOffset)
+  {
+    if (calibrationPoint < calibrationTarget)
+    {
+      calibrationPoint += dynamicOffset;
+      if (calibrationPoint >= calibrationTarget)
+      {
+        calibrationPoint = calibrationTarget;
+        dynamicOffset    = 0;
+      }
+    }
+    else if (calibrationPoint > calibrationTarget)
+    {
+      calibrationPoint -= dynamicOffset;
+      if (calibrationPoint <= calibrationTarget)
+      {
+        calibrationPoint = calibrationTarget;
+        dynamicOffset    = 0;
+      }
+    }
+  }
+
+  collectCalibrationData(adcValue);
+  if (adcValue == 0)
+  {
+    tcdOutput = 0;
+    force     = 0;
   }
   else
   {
-    int singleKey = POLY_GetSingleKey();  // -1 means : not a single key (none or more than one singleKey)
-    if (singleKey != -1)
-      AT_adcPerKey[61] = (AT_adcPerKey[61] & 0x8000) | singleKey;
-    else
-      AT_adcPerKey[61] = -1;
-
-    // save current ADC adcValue in volatile table once it has settled
-    if (AT_calibrationRun == 1)
-    {
-      if (singleKey != -1)
-      {
-        switch (state)
-        {
-          case 0:  // key newly pressed
-            state         = 1;
-            savedAdcValue = lpFilter.filtered = adcValue;
-            timer                             = 0;
-            break;
-          case 1:  // wait until values settles around [-1; +2]
-            adcFiltered             = LIB_LowPass(&lpFilter, adcValue);
-            AT_adcPerKey[singleKey] = adcFiltered;  // for monitoring
-            AT_adcPerKey[61] &= 0x7FFF;
-            if ((adcFiltered >= savedAdcValue - 1) && (adcFiltered <= savedAdcValue + 2))
-            {  // still within range
-              timer++;
-              if (timer > 80)  // stable for 1 seconds
-              {
-                AT_adcPerKey[singleKey] = savedAdcValue;  // that's our max
-                AT_adcPerKey[61] |= 0x8000;
-                state = 99;
-                break;
-              }
-            }
-            else
-            {  // outside limits
-              timer         = 0;
-              savedAdcValue = adcFiltered;  // new range
-            }
-            break;
-          case 99:  // wait until key is released
-            break;
-        }
-      }
-    }
-
     // apply calibration
-    int16_t calibrationPoint;
-    if (singleKey != -1)
-      calibrationPoint = AT_adcCalibration.adcValues[singleKey];
-    else  // use average adcValue
-      calibrationPoint = AT_adcCalibration.adcDefault;
 
     adcToForceInput = adcValue + (AT_adcCalibration.adcTarget - calibrationPoint);
 
@@ -259,6 +324,7 @@ void AT_ProcessAftertouch(void)
     force     = LIB_InterpolateValue(&AT_adcToForce, adcToForceInput);
     tcdOutput = LIB_InterpolateValue(AT_forceToTcd, force);
   }
+
   AT_adcPerKey[62] = force;
 
   if (tcdOutput != AT_lastAftertouch)

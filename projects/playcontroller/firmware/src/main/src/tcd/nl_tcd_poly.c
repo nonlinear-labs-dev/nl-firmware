@@ -17,6 +17,128 @@
 
 #define KEY_MIN_TIME (2000)  // in us, shorter attack/release times than this will be clipped
 
+//  key queue, needed to find the newest of all currently pressed keys
+
+// ---------------------
+/*
+
+	--- Finding the newest of all currently pressed keys ---
+
+	Maintain a queue of currently pressed keys, identified by their number (0...60, thus a uint8_t):
+	| key-X | key-Y | key-Z | free
+	    2       1       0     <--- queue index
+	    ^                       ^
+	queue tail              queue head
+
+	A newly pressed key-T is attached to the head:
+	| key-X | key-Y | key-Z | key-T | free
+	    3       2       1       0     <--- queue index
+	    ^                               ^
+	queue tail                      queue head
+	Queue head is incremented by one and the new key is placed there
+
+
+	Handling released key:
+	When a key is released, locate in the queue and delete it.
+	If the position is the queue head, simple decrease the head.
+	If the position is the queue tail, simply increase the tail.
+	If the position is in-between, move the shorter section remaining,
+	either from the head or from the tail
+
+	1. Delete key-Y:
+	| key-X || key-Z | key-T |
+	    2        1       0     <--- queue index
+	key-X must move on position to the right and the queue tail must be incremented by one.
+
+	2. Delete key-Z:
+	| key-X | key-Y || key-T |
+	    2       1        0     <--- queue index
+	key-T must move on position to the left and the queue head must be decremented by one.
+
+	In Add and Remove operations, the queue is never extended to the left and thus will
+	slowly rotate through the allocated memory.
+
+	--- Obtaining the newest of all currently pressed keys ---
+	>> The key at the queue head is the newest active key <<
+	If the queue is empty (head == tail) then there is no key at all
+
+	-----------
+
+	The queue can never hold any more than 61 keys so it can actually be placed
+	in a ring buffer of size 256 (for easy index modulo management).
+
+	Because of the small data size memory searches and moves look like being tolerable.
+
+*/
+
+keyQueue_T POLY_keyQueue;
+
+static inline void addKeyToQueue(uint8_t const key)
+{
+  POLY_keyQueue.pressed[POLY_keyQueue.head++] = key;
+}
+
+static inline void removeKeyFromQueue(uint8_t const key)
+{
+  if (POLY_keyQueue.head == POLY_keyQueue.tail)
+    return;
+
+  uint8_t index = POLY_keyQueue.head;
+  do
+  {
+    index--;
+    if (POLY_keyQueue.pressed[index] == key)
+    {
+      if (index == POLY_keyQueue.tail)
+      {  // key found at tail
+        POLY_keyQueue.tail++;
+        return;
+      }
+      if (index == POLY_keyQueue.head - 1)
+      {  // key found at head
+        POLY_keyQueue.head--;
+        return;
+      }
+      // key is in between
+      if ((POLY_keyQueue.head - 1 - index) <= (index - POLY_keyQueue.tail))
+      {  // move head end down
+        do
+        {
+          POLY_keyQueue.pressed[index] = POLY_keyQueue.pressed[index + 1];
+          index++;
+        } while (index != POLY_keyQueue.head - 1);
+        POLY_keyQueue.head--;
+      }
+      else
+      {  // move tail end up
+        do
+        {
+          POLY_keyQueue.pressed[index] = POLY_keyQueue.pressed[index - 1];
+          index--;
+        } while (index != POLY_keyQueue.tail);
+        POLY_keyQueue.tail++;
+      }
+      return;
+    }
+  } while (index != POLY_keyQueue.tail);
+}
+
+/*
+void printQueue(void)
+{
+  printf("Queue ");
+  uint8_t index = POLY_keyQueue.tail;
+  printf("(tail = %d, head = %d) ", index, POLY_keyQueue.head);
+  while (index != POLY_keyQueue.head)
+  {
+    printf("%d ", POLY_keyQueue.pressed[index]);
+    index++;
+  }
+  printf("\n");
+
+}
+*/
+
 //------- module local variables
 
 static uint32_t keyEvent[32];  // array for new events read from the ring buffer for keybed events
@@ -130,44 +252,6 @@ void POLY_Select_VelTable(uint32_t const curve)
 }
 
 /******************************************************************************
-	@brief		Return highest physical key currently pressed (0..60),
-	            or -1 otherwise
-*******************************************************************************/
-static uint8_t keysPressed[61];
-
-int POLY_GetHighestKey(void)
-{
-  for (int i = 60; i >= 0; i--)
-    if (keysPressed[i])
-      return i;
-  return -1;
-}
-
-/******************************************************************************
-	@brief		Return a singe physical key currently pressed (0..60),
-	            or -1 otherwise
-*******************************************************************************/
-int POLY_GetSingleKey(void)
-{
-  int key = -1;
-  for (int i = 60; i >= 0; i--)
-  {
-    if (keysPressed[i])
-    {
-      if (key != -1)
-        return -1;
-      else
-        key = i;
-    }
-  }
-  return key;
-}
-
-uint8_t  POLY_keyQueue[64];
-unsigned POLY_queueHead;
-unsigned POLY_queueTail;
-
-/******************************************************************************
 	@brief		ProcessKeyEvent : convert key event to MIDI event.
 	            Also emits the key message back to BBB, and log the full
 	            key event if requested
@@ -202,16 +286,18 @@ static void ProcessKeyEvent(uint32_t const keyEvent, enum KeyLog_T const logFlag
     vel            = (velTable[index] * (8192 - fract) + velTable[index + 1] * fract) >> 13;  // ((0...16393) * 8192) / 8192
   }
 
-  keysPressed[physicalKey] = (uint8_t) keyEvent & IPC_KEYBUFFER_NOTEON;
-  if (keysPressed[physicalKey])
+  uint8_t keyPressed = (uint8_t) keyEvent & IPC_KEYBUFFER_NOTEON;
+  if (keyPressed)
   {
     MSG_KeyDown(vel);
+    addKeyToQueue(physicalKey);
     ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_LAST_KEY, (physicalKey << 8) | logicalKey);
   }
   else
   {
     MSG_KeyUp(vel);
     time = -time;  // negate time for key logging
+    removeKeyFromQueue(physicalKey);
   }
 
   if (logFlag)
