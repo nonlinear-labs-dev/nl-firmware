@@ -42,9 +42,16 @@ void DotSlider::drawHandle(FrameBuffer &fb)
 
   int x = getHandlePixelPosition();
 
-  fb.setColor(FrameBufferColors::C103);
-  fb.fillRect(x - halfHandle, r.getTop(), c_handleWidth, handleHeight);
-  fb.setColor(isHighlight() ? FrameBufferColors::C255 : FrameBufferColors::C179);
+  if(!isHighlight())
+  {
+    fb.setColor(FrameBufferColors::C103);
+    fb.fillRect(x - halfHandle, r.getTop(), c_handleWidth, handleHeight);
+    fb.setColor(FrameBufferColors::C179);
+  }
+  else
+  {
+    fb.setColor(FrameBufferColors::C255);
+  }
 
   if(hasBorder())
   {

@@ -16,7 +16,6 @@
 
 SettingsUseCases::SettingsUseCases(Settings &s)
     : m_settings { s }
-    , m_focusAndModeSetting{ *s.getSetting<FocusAndModeSetting>() }
 {
 }
 
@@ -143,36 +142,4 @@ void SettingsUseCases::setSettingFromWebUI(const Glib::ustring& key, const Glib:
   {
     s->setSetting(Initiator::EXPLICIT_WEBUI, value);
   }
-}
-
-void SettingsUseCases::setFocusAndMode(const FocusAndMode& focusAndMode)
-{
-  m_focusAndModeSetting.set(focusAndMode);
-}
-
-void SettingsUseCases::setUIFocus(const UIFocus &focus)
-{
-  m_focusAndModeSetting.set(focus);
-}
-
-void SettingsUseCases::setUIMode(const UIMode &mode)
-{
-  m_focusAndModeSetting.set(mode);
-}
-
-void SettingsUseCases::setUIDetail(const UIDetail &detail)
-{
-  auto focusAndMode = m_focusAndModeSetting.getState();
-  focusAndMode.detail = detail;
-  m_focusAndModeSetting.set(focusAndMode);
-}
-
-void SettingsUseCases::freezeFocusAndMode()
-{
-  m_focusAndModeSetting.setFocusAndModeFreeze(true);
-}
-
-void SettingsUseCases::thawFocusAndMode()
-{
-  m_focusAndModeSetting.setFocusAndModeFreeze(false);
 }

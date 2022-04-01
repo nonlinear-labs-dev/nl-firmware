@@ -42,8 +42,3 @@ Layout *PitchbendParameter::createLayout(FocusAndMode focusAndMode) const
 
   g_return_val_if_reached(nullptr);
 }
-
-tControlPositionValue PitchbendParameter::getDefValueAccordingToMode() const
-{
-  return 0;
-}

@@ -1,8 +1,14 @@
 #include "MockSettingsObject.h"
 
-MockSettingsObject::MockSettingsObject(const Glib::ustring& file, UpdateDocumentMaster* m)
-    : Settings(file, m)
+MockSettingsObject::MockSettingsObject(UpdateDocumentMaster* m)
+    : Settings(m)
 {
+}
+
+const Glib::ustring& MockSettingsObject::getSettingFileNameToLoadFrom() const
+{
+  static Glib::ustring emptyXMLPath = "";
+  return emptyXMLPath;
 }
 
 UpdateDocumentContributor::tUpdateID MockSettingsObject::onChange(uint64_t flags)

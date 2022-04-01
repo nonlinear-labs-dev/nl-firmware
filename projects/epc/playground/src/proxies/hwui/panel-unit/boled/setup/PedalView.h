@@ -10,7 +10,7 @@ class PedalView : public SetupLabel
   typedef SetupLabel base_type;
 
  public:
-  explicit PedalView(PedalType* s);
+  explicit PedalView(std::shared_ptr<PedalType> s);
   ~PedalView() override;
   bool redraw(FrameBuffer& fb) override;
 

@@ -24,12 +24,11 @@ public class ModalDialog extends GWTDialog {
 
 		HTMLPanel panel = new HTMLPanel("");
 		HTMLPanel buttons = new HTMLPanel("");
-		HTMLPanel alignmentDiv = new HTMLPanel("");
 		panel.add(new Label(message, true));
 
 		Button okButton, cancelButton;
 
-		alignmentDiv.add(okButton = new Button("OK", new ClickHandler() {
+		buttons.add(okButton = new Button("OK", new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent arg0) {
@@ -38,7 +37,7 @@ public class ModalDialog extends GWTDialog {
 				commit();
 			}
 		}));
-		alignmentDiv.add(cancelButton = new Button("Cancel", new ClickHandler() {
+		buttons.add(cancelButton = new Button("Cancel", new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent arg0) {
@@ -50,8 +49,6 @@ public class ModalDialog extends GWTDialog {
 		okButton.getElement().addClassName("modal-button-button");
 		cancelButton.getElement().addClassName("modal-button-button");
 		buttons.getElement().addClassName("modal-button-div");
-		alignmentDiv.getElement().addClassName("model-button-center-div");
-		buttons.add(alignmentDiv);
 		panel.add(buttons);
 		add(panel);
 	}

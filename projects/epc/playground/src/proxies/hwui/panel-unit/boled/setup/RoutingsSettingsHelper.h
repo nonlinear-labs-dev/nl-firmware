@@ -3,13 +3,14 @@
 #include <device-settings/Settings.h>
 #include <device-settings/midi/RoutingSettings.h>
 
-inline RoutingSettings* getSetting()
+inline auto getSetting()
 {
   if(Application::exists())
   {
-    return Application::get().getSettings()->getSetting<RoutingSettings>();
+    static auto ret = Application::get().getSettings()->getSetting<RoutingSettings>();
+    return ret;
   }
-  return nullptr;
+  return std::shared_ptr<RoutingSettings>(nullptr);
 }
 
 inline std::initializer_list<RoutingSettings::tAspectIndex> getAspectsForIndex(RoutingSettings::tRoutingIndex id)

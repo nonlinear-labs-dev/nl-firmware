@@ -2,29 +2,16 @@
 #include <glibmm/ustring.h>
 #include <presets/PresetManager.h>
 #include <nltools/messaging/Message.h>
-#include "proxies/hwui/HWUIEnums.h"
-#include "device-settings/FocusAndModeSetting.h"
 class Settings;
 
 class SettingsUseCases
 {
  public:
   explicit SettingsUseCases(Settings& s);
-
-  //Focus And Mode
-  void setFocusAndMode(const FocusAndMode& focusAndMode);
-  void setUIFocus(const UIFocus &focus);
-  void setUIMode(const UIMode &mode);
-  void setUIDetail(const UIDetail &detail);
-  void freezeFocusAndMode();
-  void thawFocusAndMode();
-
-  //AE
-  static void panicAudioEngine();
-
-  //MIDI
   void setMappingsToHighRes();
   void setMappingsToClassicMidi();
+
+  static void panicAudioEngine();
 
   void updateRoutingAspect(int entry, int aspect, bool value);
   void setAllRoutingEntries(bool state);
@@ -32,15 +19,11 @@ class SettingsUseCases
 
   void setGlobalLocal(bool state);
 
-  //Device Settings
   void dicePassphrase();
   void defaultPassphrase();
-
-  //General
   void setSettingFromWebUI(const Glib::ustring& key, const Glib::ustring& value, PresetManager& pm);
 
 
  private:
   Settings& m_settings;
-  FocusAndModeSetting& m_focusAndModeSetting;
 };

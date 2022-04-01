@@ -4,8 +4,6 @@
 #include <proxies/hwui/HWUI.h>
 #include <device-settings/DebugLevel.h>
 #include <proxies/hwui/debug-oled/DebugLayout.h>
-#include <device-settings/Settings.h>
-#include <device-settings/FocusAndModeSetting.h>
 
 namespace DescriptiveLayouts
 {
@@ -21,7 +19,7 @@ namespace DescriptiveLayouts
   void Styleable::style(LayoutClasses li, ControlClasses cc, ControlInstances ci)
   {
     const auto &s = StyleSheet::get();
-    auto fam = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
+    auto fam = Application::get().getHWUI()->getFocusAndMode();
     const PrimitiveInstance &p = getPrimitive();
     DebugLevel::gassy("Styling primitive ", p.primitiveInstance, "of class ", toString(p.primitveClass));
 

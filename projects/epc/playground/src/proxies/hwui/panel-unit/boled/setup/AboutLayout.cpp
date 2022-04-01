@@ -5,7 +5,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/AboutText.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
-#include "use-cases/SettingsUseCases.h"
 
 AboutLayout::AboutLayout()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -30,15 +29,14 @@ bool AboutLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
     if(down)
     {
       Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().resetOverlay();
-      SettingsUseCases useCases(*Application::get().getSettings());
 
       if(i == Buttons::BUTTON_PRESET)
       {
-        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
       }
       else if(i == Buttons::BUTTON_STORE)
       {
-        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
+        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
       }
     }
   }

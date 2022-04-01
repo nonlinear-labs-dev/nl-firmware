@@ -52,12 +52,6 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_pt
   m_hashOnStore = getHash();
 }
 
-void EditBuffer::init(Settings* settings)
-{
-  ParameterGroupSet::init(settings);
-  m_recallSet.init();
-}
-
 EditBuffer::~EditBuffer()
 {
   m_voiceGroupConnection.disconnect();
@@ -474,7 +468,7 @@ void EditBuffer::undoableLoad(UNDO::Transaction *transaction, const Preset *pres
   }
 
   setSyncSplitSettingAccordingToLoadedPreset(transaction);
-  cleanupParameterSelectionOnSoundTypeChange(transaction, oldType, preset->getType());
+  cleanupParameterSelection(transaction, oldType, preset->getType());
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -859,7 +853,7 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
   {
     auto swap = UNDO::createSwapData(type);
 
-    cleanupParameterSelectionOnSoundTypeChange(transaction, m_type, type);
+    cleanupParameterSelection(transaction, m_type, type);
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);
@@ -1469,7 +1463,7 @@ void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
   }
 }
 
-void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
+void EditBuffer::cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType)
 {
   using ParameterNumberMap = std::unordered_map<int, int>;
   using From = SoundType;
@@ -1600,7 +1594,7 @@ void EditBuffer::undoableSetTypeFromConvert(UNDO::Transaction *transaction, Soun
   {
     auto swap = UNDO::createSwapData(type);
 
-    cleanupParameterSelectionOnSoundTypeChange(transaction, m_type, type);
+    cleanupParameterSelection(transaction, m_type, type);
 
     transaction->addSimpleCommand([=](auto state) {
       swap->swapWith(m_type);

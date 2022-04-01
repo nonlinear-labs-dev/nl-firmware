@@ -55,7 +55,7 @@ void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transac
 void RibbonParameter::setupScalingAndDefaultValue()
 {
   getValue().setScaleConverter(createScaleConverter());
-  getValue().setDefaultValue(getDefValueAccordingToMode());
+  getValue().setDefaultValue(getDefaultValueAccordingToMode());
   if(getReturnMode() != ReturnMode::None)
     getValue().setToDefault(Initiator::INDIRECT);
 
@@ -86,7 +86,7 @@ std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() 
   return {};
 }
 
-tControlPositionValue RibbonParameter::getDefValueAccordingToMode() const
+tControlPositionValue RibbonParameter::getDefaultValueAccordingToMode() const
 {
   switch(getReturnMode())
   {
@@ -256,9 +256,12 @@ void RibbonParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *ot
 
 void RibbonParameter::boundToMacroControl(tControlPositionValue v)
 {
-  getValue().setRawValue(Initiator::INDIRECT, v);
-  onChange();
-  invalidate();
+  if(isLocalEnabled())
+  {
+    getValue().setRawValue(Initiator::INDIRECT, v);
+    onChange();
+    invalidate();
+  }
 }
 
 bool RibbonParameter::isLocalEnabled() const

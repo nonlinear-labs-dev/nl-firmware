@@ -11,20 +11,17 @@ import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmo
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol4;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol5;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Amounts.AmountsCol6;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.HardwareSendSources;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.HardwareSourcesCol1;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.Pedal;
 
 class SourcesAndAmountsControls extends ParameterGroupControls {
 
-	private HardwareSendSources sends;
 	private HardwareSourcesCol1 sources;
 	private AmountsCol1 mappingCol1;
 
 	SourcesAndAmountsControls(MapsLayout parent) {
 		super(parent);
 
-		addChild(sends = new HardwareSendSources(this));
 		addChild(sources = new HardwareSourcesCol1(this));
 		addChild(mappingCol1 = new AmountsCol1(this));
 		addChild(new AmountsCol2(this));

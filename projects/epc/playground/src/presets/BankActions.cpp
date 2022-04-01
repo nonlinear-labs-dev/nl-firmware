@@ -55,7 +55,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto p = m_presetManager.findPreset(Uuid { uuid }))
     {
-      PresetUseCases useCase(*p, m_settings);
+      PresetUseCases useCase(p, m_settings);
       useCase.rename(newName);
     }
   });
@@ -94,7 +94,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(targetPreset)
     {
-      PresetUseCases targetUseCases(*targetPreset, m_settings);
+      PresetUseCases targetUseCases(targetPreset, m_settings);
       if(sourcePreset)
       {
         targetUseCases.overwriteWithPreset(sourcePreset);
@@ -140,7 +140,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
   addAction("overwrite-preset-with-editbuffer", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToOverwrite = request->get("presetToOverwrite");
-    PresetUseCases useCase(*m_presetManager.findPreset(Uuid{ presetToOverwrite }), m_settings);
+    PresetUseCases useCase(m_presetManager.findPreset(Uuid{ presetToOverwrite }), m_settings);
     useCase.overwriteWithEditBuffer(*m_presetManager.getEditBuffer());
   });
 
@@ -153,7 +153,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
     if(auto bank = m_presetManager.findBank(Uuid { bankToAppendTo }))
     {
       BankUseCases bankUseCases(bank, m_settings);
-      bankUseCases.appendEditBufferAsPresetWithUUID(Uuid { uuid });
+      bankUseCases.appendEditBufferAsPresetWithUUID(Uuid{uuid});
     }
   });
 
@@ -184,13 +184,12 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
   addAction("insert-preset", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto selUuid = request->get("seluuid");
-    auto newUuid = request->get("uuid");
 
     if(auto bank = m_presetManager.findBankWithPreset(Uuid { selUuid }))
     {
       BankUseCases bankUseCases(bank, m_settings);
       auto desiredPresetPos = bank->getPresetPosition(Uuid { selUuid }) + 1;
-      bankUseCases.insertEditBufferAsPresetWithUUID(desiredPresetPos, Uuid { newUuid });
+      bankUseCases.insertEditBufferAtPosition(desiredPresetPos);
     }
   });
 
@@ -325,7 +324,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     if(auto preset = m_presetManager.findPreset(Uuid { presetUUID }))
     {
-      PresetUseCases useCase(*preset, m_settings);
+      PresetUseCases useCase(preset, m_settings);
       useCase.setAttribute(key, value);
     }
   });

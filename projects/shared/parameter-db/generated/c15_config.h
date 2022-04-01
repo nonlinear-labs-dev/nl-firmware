@@ -2,8 +2,8 @@
 
 /******************************************************************************/
 /**	@file       c15_config.h
-    @date       2021-11-10, 16:47
-    @version    1.7B-9
+    @date       2020-12-05, 14:53
+    @version    1.7B-8
     @author     M. Seeber
     @brief      crucial information about the audio engine
     @todo
@@ -17,10 +17,10 @@ namespace C15
   namespace Config
   {
 
-    const char milestone[7] = "1.7B-9";
+    const char milestone[7] = "1.7B-8";
     constexpr uint32_t total_polyphony = 24;
     constexpr uint32_t local_polyphony = total_polyphony >> 1;
-    constexpr uint32_t tcd_elements = 410;
+    constexpr uint32_t tcd_elements = 400;
     const uint32_t clock_rates[2][3] = { { 48000, 9600, 400 }, { 96000, 9600, 400 } };
     constexpr float fade_time_ms = 3.0f;
     // C15 physical key range: lowest, highest, count

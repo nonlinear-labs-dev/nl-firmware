@@ -24,7 +24,7 @@ public class OnOffContextMenu extends ContextMenu {
 			}
 		}
 
-		static public Items fromStream(String str) {
+		static public Items fromString(String str) {
 			if (str != null) {
 				if (str.toLowerCase().equals("on"))
 					return ON;

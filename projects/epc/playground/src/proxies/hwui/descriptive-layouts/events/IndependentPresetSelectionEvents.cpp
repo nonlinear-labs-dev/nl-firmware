@@ -8,7 +8,6 @@
 #include "event-sources/base/EventSource.h"
 #include "GlobalEventSinkBroker.h"
 #include "GlobalEventSourceBroker.h"
-#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/HWUI.h>
 
 namespace DescriptiveLayouts
@@ -63,8 +62,7 @@ namespace DescriptiveLayouts
           EditBufferUseCases useCase(*eb);
           auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
           useCase.loadToPart(preset, VoiceGroup::I, currentVG);
-          SettingsUseCases useCases(*Application::get().getSettings());
-          useCases.setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
+          Application::get().getHWUI()->setFocusAndMode(FocusAndMode(UIFocus::Sound, UIMode::Select, UIDetail::Init));
         }
         break;
 

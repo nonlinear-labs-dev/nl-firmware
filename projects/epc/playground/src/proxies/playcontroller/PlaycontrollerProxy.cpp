@@ -32,18 +32,15 @@ PlaycontrollerProxy::PlaycontrollerProxy()
 {
   m_msgParser.reset(new MessageParser());
 
-  if(Application::exists())
-  {
-      nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
-                                            sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
+  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
+                                        sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
 
-      nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
-              nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
+  nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
+      nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
 
-      nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
-              nltools::msg::EndPoint::Playground,
-              sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
-  }
+  nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
+      nltools::msg::EndPoint::Playground,
+      sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
 }
 
 PlaycontrollerProxy::~PlaycontrollerProxy()

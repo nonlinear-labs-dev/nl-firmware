@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
@@ -41,7 +42,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 		ParameterPresenterProviders.get().registerForCurrentVoiceGroup(number, p -> onPresenterUpdated(p));
 	}
 
-	protected boolean onPresenterUpdated(ParameterPresenter p) {
+	private boolean onPresenterUpdated(ParameterPresenter p) {
 		presenter = p;
 		invalidate(INVALIDATION_FLAG_UI_CHANGED);
 		return true;
@@ -134,6 +135,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	@Override
 	public Control doubleClick(Position pos) {
+		GWT.log("doubleClick: " + getParameterNumber());
 		if (!presenter.disabled && !presenter.hidden)
 			setDefault();
 		return this;

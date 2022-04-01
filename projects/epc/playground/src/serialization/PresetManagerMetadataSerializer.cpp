@@ -18,11 +18,11 @@ Glib::ustring PresetManagerMetadataSerializer::getTagName()
 
 void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
 {
-  EditBufferSerializer eb(m_pm->getEditBuffer(), getProgressCB());
-  eb.write(writer);
-
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
   writer.writeTextElement("selected-midi-bank-uuid", m_pm->getMidiSelectedBank().raw());
+
+  EditBufferSerializer eb(m_pm->getEditBuffer(), getProgressCB());
+  eb.write(writer);
 
   PresetBankOrderSerializer bankOrder(m_pm);
   bankOrder.write(writer);
@@ -30,13 +30,13 @@ void PresetManagerMetadataSerializer::writeTagContent(Writer &writer) const
 
 void PresetManagerMetadataSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("selected-bank-uuid",
-                       [&](const auto &text, const auto &)
-                       { m_pm->selectBank(reader.getTransaction(), Uuid { text }); });
+  reader.onTextElement("selected-bank-uuid", [&](const auto &text, const auto &) {
+    m_pm->selectBank(reader.getTransaction(), Uuid { text });
+  });
 
-  reader.onTextElement("selected-midi-bank-uuid",
-                       [&](const auto &text, const auto &)
-                       { m_pm->selectMidiBank(reader.getTransaction(), Uuid { text }); });
+  reader.onTextElement("selected-midi-bank-uuid", [&](const auto &text, const auto &) {
+    m_pm->selectMidiBank(reader.getTransaction(), Uuid { text });
+  });
 
   reader.onTag(EditBufferSerializer::getTagName(),
                [&](const auto &) mutable { return new EditBufferSerializer(m_pm->getEditBuffer(), getProgressCB()); });

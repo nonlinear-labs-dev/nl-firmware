@@ -5,7 +5,6 @@
 #include <parameters/MacroControlParameter.h>
 #include <parameters/ModulationRoutingParameter.h>
 #include <parameters/PhysicalControlParameter.h>
-#include <parameters/HardwareSourceSendParameter.h>
 
 namespace ParameterMessageFactory
 {
@@ -16,7 +15,6 @@ namespace ParameterMessageFactory
     nltools::msg::MacroControlChangedMessage createMessage(const MacroControlParameter *param);
     nltools::msg::HWAmountChangedMessage createMessage(const ModulationRoutingParameter *param);
     nltools::msg::HWSourceChangedMessage createMessage(const PhysicalControlParameter *param);
-    nltools::msg::HWSourceSendChangedMessage createMessage(const HardwareSourceSendParameter* param);
   };
 
   template <typename tParameter> auto createMessage(const tParameter *parameter)

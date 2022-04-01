@@ -5,14 +5,14 @@
 
 TEST_CASE("Edit Smoothing Time - Scales")
 {
-  Settings settings("", nullptr);
+  Settings settings(nullptr);
   EditSmoothingTime time(settings);
   REQUIRE(time.getParent() != nullptr);
 }
 
 TEST_CASE("Edit Smoothing Time - To String")
 {
-  Settings settings("", nullptr);
+  Settings settings(nullptr);
   EditSmoothingTime time(settings);
 
   SECTION("0.000 ms")

@@ -21,7 +21,6 @@ class RecallParameterGroups : public UpdateDocumentContributor
   using tParameterMap = std::unordered_map<ParameterId, std::unique_ptr<RecallParameter>>;
 
   explicit RecallParameterGroups(EditBuffer *editBuffer);
-  void init();
 
   RecallParameter *findParameterByID(const ParameterId &id) const;
   RecallParameterGroups::tParameterMap &getParameters();

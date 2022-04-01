@@ -52,7 +52,7 @@ namespace EditBufferHelper
     auto eb = TestHelper::getEditBuffer();
     auto ebType = eb->getType();
 
-    PresetUseCases useCase(*p, *TestHelper::getSettings());
+    PresetUseCases useCase(p, *TestHelper::getSettings());
     useCase.overwriteWithEditBuffer(*eb);
 
     REQUIRE(p->getType() == ebType);

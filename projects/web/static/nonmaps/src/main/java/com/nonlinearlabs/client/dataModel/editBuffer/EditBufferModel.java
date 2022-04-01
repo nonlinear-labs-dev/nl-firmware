@@ -95,8 +95,10 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 
 	public BasicParameterModel getParameter(ParameterId id) {
 		BasicParameterModel r = byVoiceGroup[id.getVoiceGroup().ordinal()].parameters.get(id.getNumber());
+
 		if (r == null)
 			throw new IllegalArgumentException();
+
 		return r;
 	}
 

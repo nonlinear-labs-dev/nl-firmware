@@ -310,6 +310,7 @@ Preset* BankUseCases::insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid)
 
   auto preset = m_bank->insertPreset(transaction, pos, std::make_unique<Preset>(m_bank, *eb, uuid));
 
+  preset->guessName(transaction);
   eb->undoableSetLoadedPresetInfo(transaction, preset);
   pm->selectBank(transaction, m_bank->getUuid());
   m_bank->selectPreset(transaction, preset->getUuid());

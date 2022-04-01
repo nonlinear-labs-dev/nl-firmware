@@ -14,7 +14,6 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/BankInfoLayout.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
-#include "use-cases/SettingsUseCases.h"
 
 BankInfoLayout::BankInfoLayout()
     : super()
@@ -55,8 +54,7 @@ bool BankInfoLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
   }
   else if(i == Buttons::BUTTON_PRESET && down)
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
-    useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
   }
 
   return super::onButton(i, down, modifiers);

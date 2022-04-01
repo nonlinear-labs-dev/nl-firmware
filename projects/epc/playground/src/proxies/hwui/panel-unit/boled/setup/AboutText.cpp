@@ -5,13 +5,10 @@ class Rect;
 AboutText::AboutText()
     : super("")
 {
-  setText("Development and Design:\n"
-          "Stephan Schmitt, Henry Högelow, Matthias Seeber, "
-          "Jan Justus Scheil, Klaus Strohhäcker, Anton Schmied, "
-          "Tino Meinert, Daniel Tzschentke, Simone Fabbri, "
-          "Christian Radtke, Pascal Hürst, Nemanja Nikodijevic, "
-          "Gabriel Mulzer, Mike Daliot, Paul Schulz, "
-          "Thomas Jaufmann, David Johannes Meyer, Ulrich Wappler",
+  setText("Development:\nStephan Schmitt, Daniel Tzschentke, Simone Fabbri, "
+          "Henry Högelow, Matthias Seeber, Tino Meinert, Justus Scheil, "
+          "Klaus Strohhäcker, Anton Schmied, Pascal Hürst, Nemanja Nikodijevic, "
+          "Gabriel Mulzer, Mike Daliot, Paul Schulz, Ulrich Wappler",
           FrameBufferColors::C255);
 }
 

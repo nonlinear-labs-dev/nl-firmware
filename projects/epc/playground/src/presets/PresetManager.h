@@ -16,7 +16,6 @@
 #include <nltools/Types.h>
 
 #include <sync/SyncedItem.h>
-#include <serialization/Serializer.h>
 
 class Bank;
 class Preset;
@@ -38,7 +37,7 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
                          std::unique_ptr<AudioEngineProxy> &aeProxyContainer);
   ~PresetManager() override;
 
-  void init(AudioEngineProxy *aeProxy, Settings &settings, Serializer::Progress progress);
+  void init(AudioEngineProxy *aeProxy);
   void invalidate();
 
   // debug
@@ -119,11 +118,10 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
  private:
   nlohmann::json serialize() const override;
   void loadMetadataAndSendEditBufferToPlaycontroller(UNDO::Transaction *transaction,
-                                                     const Glib::RefPtr<Gio::File> &pmFolder, AudioEngineProxy *aeProxy,
-                                                     Serializer::Progress progress);
-  void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder,
-                     Serializer::Progress progress);
-  void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder, Serializer::Progress progress);
+                                                     const Glib::RefPtr<Gio::File> &pmFolder,
+                                                     AudioEngineProxy *aeProxy);
+  void loadInitSound(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> &pmFolder);
+  void loadBanks(UNDO::Transaction *transaction, Glib::RefPtr<Gio::File> pmFolder);
   void fixMissingPresetSelections(UNDO::Transaction *transaction);
   Glib::ustring getBaseName(const Glib::ustring &basedOn) const;
 
@@ -168,5 +166,4 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
   friend class PresetManagerUseCases;
 
   const Options& m_options;
-  std::function<void(const std::string &)> getProgressDecorator();
 };
