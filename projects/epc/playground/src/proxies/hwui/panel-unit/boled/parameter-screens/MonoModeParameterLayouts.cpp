@@ -1,4 +1,5 @@
 #include "MonoModeParameterLayouts.h"
+#include "use-cases/SettingsUseCases.h"
 #include <Application.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MonoParameterCarousel.h>
 #include <proxies/hwui/controls/Button.h>
@@ -40,7 +41,8 @@ bool MonoModeParameterLayout::onButton(Buttons i, bool down, ButtonModifiers mod
 {
   if(down && i == Buttons::BUTTON_C)
   {
-    Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
     return true;
   }
 
@@ -71,7 +73,8 @@ bool MonoModeModulateableParameterLayout::onButton(Buttons i, bool down, ButtonM
         Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
     if(current && current->getModulationSource() == MacroControls::NONE)
     {
-      Application::get().getHWUI()->setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
+      SettingsUseCases useCases(*Application::get().getSettings());
+      useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Voices });
       return true;
     }
   }

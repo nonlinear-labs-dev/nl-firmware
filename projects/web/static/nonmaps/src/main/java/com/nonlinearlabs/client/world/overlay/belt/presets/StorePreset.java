@@ -6,6 +6,7 @@ import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ServerProxy;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Position;
@@ -131,12 +132,16 @@ class StorePreset extends SVGImage {
 				break;
 
 			case OVERWRITE:
+
+
 				if (getPresetManager().isInStoreSelectMode()
 						&& getPresetManager().getStoreSelectMode().getSelectedPreset() != null) {
 					getNonMaps().getServerProxy()
 							.overwritePresetWithEditBuffer(getPresetManager().getStoreSelectMode().getSelectedPreset());
+					EditBufferUseCases.get().getAnimationManager().startOverwriteAnimation(getPresetManager().getStoreSelectMode().getSelectedPreset());
 				} else if (getPresetManager().getSelectedPreset() != null) {
 					getNonMaps().getServerProxy().overwritePresetWithEditBuffer(getPresetManager().getSelectedPreset());
+					EditBufferUseCases.get().getAnimationManager().startOverwriteAnimation(getPresetManager().getSelectedPreset());
 				} else {
 					getNonMaps().getServerProxy().overwritePreset();
 				}

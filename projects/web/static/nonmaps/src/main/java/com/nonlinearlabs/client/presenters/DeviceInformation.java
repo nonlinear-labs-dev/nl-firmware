@@ -12,4 +12,5 @@ public class DeviceInformation {
 	public String usedRam = "---";
 	public String bufferUnderruns = "0";
 	public String uniqueHardwareID = "0";
+	public String rtVersion = "-";
 }

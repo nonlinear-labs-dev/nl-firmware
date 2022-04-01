@@ -1,5 +1,4 @@
 #pragma once
-
 #include "DeviceInformationItem.h"
 #include <limits>
 

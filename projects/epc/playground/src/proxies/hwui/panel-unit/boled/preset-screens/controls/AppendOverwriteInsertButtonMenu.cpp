@@ -6,6 +6,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include "Application.h"
 #include "device-settings/Settings.h"
+#include "use-cases/SettingsUseCases.h"
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
 #include <presets/Preset.h>
@@ -67,10 +68,13 @@ bool AppendOverwriteInsertButtonMenu::animateSelectedPreset()
 bool AppendOverwriteInsertButtonMenu::animatePreset(Preset* target)
 {
   auto hwuiPtr = Application::get().getHWUI();
-  return m_parent.animateSomePreset(target,
-                             [hwuiPtr] {
-                               hwuiPtr->undoableSetFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
-                             });
+  return m_parent.animateSomePreset(
+      target,
+      []
+      {
+        SettingsUseCases useCases(*Application::get().getSettings());
+        useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
+      });
 }
 
 void AppendOverwriteInsertButtonMenu::executeAction()
@@ -86,7 +90,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
     BankUseCases bankUseCases(selectedBank, *settings);
     if(auto selectedPreset = selectedBank->getPresetAt(actionPosition.second))
     {
-      PresetUseCases presetUseCases(selectedPreset, *settings);
+      PresetUseCases presetUseCases(*selectedPreset, *settings);
 
       Application::get().getUndoScope()->resetCukooTransaction();
 
@@ -141,7 +145,7 @@ void AppendOverwriteInsertButtonMenu::pushRenameScreen(Preset* target)
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new RenamePresetLayout(
       [=](const Glib::ustring& newName)
       {
-        PresetUseCases useCases(target, *Application::get().getSettings());
+        PresetUseCases useCases(*target, *Application::get().getSettings());
         useCases.rename(newName);
         animatePreset(target);
       },

@@ -7,6 +7,7 @@
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include "PresetManagerLayout.h"
+#include "use-cases/SettingsUseCases.h"
 
 SelectVoiceGroupLayout::SelectVoiceGroupLayout(PresetManagerLayout *parent)
     : Layout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -64,7 +65,8 @@ void SelectVoiceGroupLayout::load()
   eb->undoableLoadSelectedToPart(from, currentVG);
 
   m_parent->animateSelectedPresetIfInLoadPartMode([hwui]() {
-    hwui->setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
   });
 
   cancel();

@@ -1,4 +1,5 @@
 #include "PlayControlParameterLayouts.h"
+#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationRoutersCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlBehaviorLabel.h>
@@ -67,9 +68,18 @@ bool PlayControlParameterLayout2::onRotary(int i, ButtonModifiers modifiers)
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     EditBufferUseCases ebUseCases(*editBuffer);
     auto hw = dynamic_cast<HardwareSourcesGroup *>(editBuffer->getParameterGroupByID({ "CS", VoiceGroup::Global }));
-    auto currentID = getCurrentParameter()->getID();
-    auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID, i);
-    ebUseCases.selectParameter(newParamID, true);
+    if(isSendParameter())
+    {
+      auto sendParam = dynamic_cast<const HardwareSourceSendParameter*>(getCurrentParameter());
+      auto newParamID = getIdOfAdvancedParameter(hw->getSendParameters(), sendParam->getID(), i);
+      ebUseCases.selectParameter(newParamID, true);
+    }
+    else
+    {
+      auto currentID = getCurrentParameter()->getID();
+      auto newParamID = getIdOfAdvancedParameter(hw->getPhysicalControlParameters(), currentID, i);
+      ebUseCases.selectParameter(newParamID, true);
+    }
     return true;
   }
 
@@ -110,6 +120,7 @@ void PlayControlParameterLayout2::setMode(uint8_t desiredMode)
       highlight<ParameterNameLabel>();
       highlight<PhysicalControlSlider>();
       highlight<SelectedParameterValue>();
+      highlight<PhysicalControlValueLabel>();
       break;
 
     case Mode::Select:
@@ -229,11 +240,17 @@ bool PedalParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modif
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
   return super::onButton(i, down, modifiers);
+}
+
+bool PlayControlParameterLayout2::isSendParameter() const
+{
+  return dynamic_cast<const HardwareSourceSendParameter*>(getCurrentParameter());
 }
 
 PedalParameterEditLayout2::PedalParameterEditLayout2()
@@ -265,11 +282,27 @@ PlayControlParameterSelectLayout2::PlayControlParameterSelectLayout2()
     , super()
 {
   addControl(new Button("", Buttons::BUTTON_B));
-  addControl(new Button("HW Amt..", Buttons::BUTTON_C));
+  auto hwAmtButton = addControl(new Button("", Buttons::BUTTON_C));
+  if(!isSendParameter())
+  {
+    hwAmtButton->setText("HW Amt..");
+  }
   addControl(createParameterValueControl());
+  addControl(new HardwareSourceCCLabel(Rect{10, 33, 45, 12}));
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterValue>();
 }
+
+Control *PlayControlParameterSelectLayout2::createParameterValueControl()
+{
+  return new PhysicalControlValueLabel(Rect(70, 33, 116, 12));
+}
+
+bool PlayControlParameterSelectLayout2::isSendParameter() const
+{
+  return dynamic_cast<const HardwareSourceSendParameter*>(getCurrentParameter());
+}
+
 
 Carousel *PlayControlParameterSelectLayout2::createCarousel(const Rect &rect)
 {
@@ -363,16 +396,22 @@ PedalParameterSelectLayout2::PedalParameterSelectLayout2()
     , super1()
     , super2()
 {
-  addControl(new Button("Behaviour", Buttons::BUTTON_B));
-  addControl(new PhysicalControlBehaviorLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)))->setVisible(false);
+  if(!super1::isSendParameter())
+  {
+    addControl(new Button("Behaviour", Buttons::BUTTON_B));
+    addControl(new PhysicalControlBehaviorLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)))->setVisible(false);
+  }
 }
 
 bool PedalParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  if(down && i == Buttons::BUTTON_B)
+  if(!super1::isSendParameter())
   {
-    toggleMode(Behaviour);
-    return true;
+    if(down && i == Buttons::BUTTON_B)
+    {
+      toggleMode(Behaviour);
+      return true;
+    }
   }
 
   if(down && i == Buttons::BUTTON_A)
@@ -397,7 +436,8 @@ bool RibbonParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
 {
   if(down && Buttons::BUTTON_EDIT == i)
   {
-    Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
     return true;
   }
 
@@ -450,16 +490,22 @@ RibbonParameterSelectLayout2::RibbonParameterSelectLayout2()
     , super1()
     , super2()
 {
-  addControl(new Button("Behaviour", Buttons::BUTTON_B));
-  addControl(new PhysicalControlBehaviorLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)))->setVisible(false);
+  if(!super1::isSendParameter())
+  {
+    addControl(new Button("Behaviour", Buttons::BUTTON_B));
+    addControl(new PhysicalControlBehaviorLabel(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)))->setVisible(false);
+  }
 }
 
 bool RibbonParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  if(down && i == Buttons::BUTTON_B)
+  if(!super1::isSendParameter())
   {
-    toggleMode(Behaviour);
-    return true;
+    if(down && i == Buttons::BUTTON_B)
+    {
+      toggleMode(Behaviour);
+      return true;
+    }
   }
 
   if(down && i == Buttons::BUTTON_A)
@@ -507,15 +553,22 @@ void RibbonParameterSelectLayout2::setMode(uint8_t desiredMode)
   switch(desiredMode)
   {
     case Behaviour:
+    {
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(false);
+      if(auto l = findControlOfType<PhysicalControlBehaviorLabel>())
+        l->setVisible(true);
+    }
       break;
     default:
-
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+    {
+      if(auto b = findControlOfType<PhysicalControlBehaviorLabel>())
+        b->setVisible(false);
+      if(auto s = findControlOfType<SelectedParameterValue>())
+        s->setVisible(true);
       super2::setMode(desiredMode);
+    }
   }
 
   setDirty();
@@ -523,7 +576,14 @@ void RibbonParameterSelectLayout2::setMode(uint8_t desiredMode)
 
 bool RibbonParameterSelectLayout2::isModeSupported(uint8_t desiredMode) const
 {
-  return desiredMode == Behaviour || PlayControlParameterLayout2::isModeSupported(desiredMode);
+  if(!super1::isSendParameter())
+  {
+    return desiredMode == Behaviour || PlayControlParameterLayout2::isModeSupported(desiredMode);
+  }
+  else
+  {
+    return PlayControlParameterLayout2::isModeSupported(desiredMode);
+  }
 }
 
 bool PedalParameterSelectLayout2::onRotary(int inc, ButtonModifiers modifiers)
@@ -556,18 +616,37 @@ void PedalParameterSelectLayout2::setMode(uint8_t desiredMode)
   noHighlight();
   setDirty();
 
+  auto selParameterValue = findControlOfType<SelectedParameterValue>();
+  auto selPhysControlValue = findControlOfType<PhysicalControlValueLabel>();
+
   switch(desiredMode)
   {
     case Behaviour:
+    {
       highlightButtonWithCaption("Behaviour");
-      findControlOfType<SelectedParameterValue>()->setVisible(false);
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(true);
-      break;
-    default:
+      if(selParameterValue)
+        selParameterValue->setVisible(false);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(false);
 
-      findControlOfType<PhysicalControlBehaviorLabel>()->setVisible(false);
-      findControlOfType<SelectedParameterValue>()->setVisible(true);
+      if(auto c = findControlOfType<PhysicalControlBehaviorLabel>())
+        c->setVisible(true);
+
+      break;
+    }
+    default:
+    {
+      if(auto c = findControlOfType<PhysicalControlBehaviorLabel>())
+        c->setVisible(false);
+
+      if(selParameterValue)
+        selParameterValue->setVisible(true);
+      if(selPhysControlValue)
+        selPhysControlValue->setVisible(true);
+
       super2::setMode(desiredMode);
+    }
+
   }
 
   setDirty();
@@ -575,5 +654,12 @@ void PedalParameterSelectLayout2::setMode(uint8_t desiredMode)
 
 bool PedalParameterSelectLayout2::isModeSupported(uint8_t desiredMode) const
 {
-  return desiredMode == Behaviour || PlayControlParameterLayout2::isModeSupported(desiredMode);
+  if(!super1::isSendParameter())
+  {
+    return desiredMode == Behaviour || PlayControlParameterLayout2::isModeSupported(desiredMode);
+  }
+  else
+  {
+    return PlayControlParameterLayout2::isModeSupported(desiredMode);
+  }
 }

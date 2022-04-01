@@ -12,6 +12,22 @@
 
 namespace TestHelper
 {
+  struct ScopedMessagingConfiguration
+  {
+    explicit ScopedMessagingConfiguration(const nltools::msg::Configuration &config)
+    {
+      m_oldConfig = nltools::msg::getConfig();
+      nltools::msg::init(config);
+    }
+
+    ~ScopedMessagingConfiguration()
+    {
+      nltools::msg::init(m_oldConfig);
+    }
+
+    nltools::msg::Configuration m_oldConfig;
+  };
+
   inline nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings createFullMappings(bool state)
   {
     typedef nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings tHW;

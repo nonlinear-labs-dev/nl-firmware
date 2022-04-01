@@ -3,9 +3,6 @@ Description=Nonlinear-Labs Playground
 After=network.target systemd-modules-load.service persistent.mount fix-overlay-order.service
 
 [Service]
-# Restart iwlwifi driver, necessary for ePC2 NUCs
-ExecStartPre=-/usr/bin/bash -c "rmmod iwlwifi && modprobe iwlwifi"
-
 ExecStart=@C15_INSTALL_PATH@/playground/playground --bbbb-host=192.168.10.11 --midi-bridge=192.168.10.11 --layouts=@C15_INSTALL_PATH@/playground/resources/templates
 Restart=on-failure
 RestartSec=1

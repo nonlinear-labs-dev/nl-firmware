@@ -707,7 +707,7 @@ DSPInterface::OutputResetEventSource
       m_poly[layerId].m_key_active = 0;
       if(m_layer_mode != LayerMode::Split)
       {
-        m_alloc.m_internal_and_external_keys.m_global = 0;
+        m_alloc.m_local_and_nonlocal_keys.m_global = 0;
         // apply reset to other poly components (when not in split mode)
         const uint32_t lId = 1 - layerId;
         m_poly[lId].resetEnvelopes();
@@ -716,7 +716,7 @@ DSPInterface::OutputResetEventSource
       }
       else
       {
-        m_alloc.m_internal_and_external_keys.m_local[layerId] = 0;
+        m_alloc.m_local_and_nonlocal_keys.m_local[layerId] = 0;
       }
     });
     // return detected reset event
@@ -764,7 +764,7 @@ DSPInterface::OutputResetEventSource
       m_poly[layerId].m_key_active = 0;
       if(m_layer_mode != LayerMode::Split)
       {
-        m_alloc.m_internal_and_external_keys.m_global = 0;
+        m_alloc.m_local_and_nonlocal_keys.m_global = 0;
         // apply reset to other poly components (when not in split mode)
         const uint32_t lId = 1 - layerId;
         m_poly[lId].resetEnvelopes();
@@ -772,7 +772,7 @@ DSPInterface::OutputResetEventSource
       }
       else
       {
-        m_alloc.m_internal_and_external_keys.m_local[layerId] = 0;
+        m_alloc.m_local_and_nonlocal_keys.m_local[layerId] = 0;
       }
     });
     // return detected reset event
@@ -1702,7 +1702,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::determineOutputEventSource(c
     return OutputResetEventSource::None;
   if(_type != LayerMode::Split)
     return OutputResetEventSource::Global;
-  switch(m_alloc.m_internal_and_external_keys.pressedLocalKeys())
+  switch(m_alloc.m_local_and_nonlocal_keys.pressedLocalKeys())
   {
     case AllocatorId::Local_I:
       return OutputResetEventSource::Local_I;
@@ -1736,7 +1736,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
     {
       nltools::Log::info("recall single voice reset");
     }
-    m_alloc.m_internal_and_external_keys.init();  // reset all pressed keys
+    m_alloc.m_local_and_nonlocal_keys.init();  // reset all pressed keys
     m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
                       m_layer_mode);
     m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
@@ -1897,7 +1897,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
       {
         nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
       }
-      m_alloc.m_internal_and_external_keys.m_local[layerId] = 0;  // reset all pressed keys in part
+      m_alloc.m_local_and_nonlocal_keys.m_local[layerId] = 0;  // reset all pressed keys in part
       m_alloc.setUnison(layerId, m_params.get_local_unison_voices(layer)->m_position, oldLayerMode, m_layer_mode);
       m_alloc.setMonoEnable(layerId, m_params.get_local_mono_enable(layer)->m_position, m_layer_mode);
       const uint32_t uVoice = m_alloc.m_unison - 1;
@@ -2029,7 +2029,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   }
   if(layerChanged)
   {
-    m_alloc.m_internal_and_external_keys.m_global = 0;  // reset all pressed global keys
+    m_alloc.m_local_and_nonlocal_keys.m_global = 0;  // reset all pressed global keys
     // non-split -> split: (global or none)
     return outputEvent;
   }
@@ -2046,7 +2046,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
         return resetDetected[1] ? outputEvent : OutputResetEventSource::None;
       case OutputResetEventSource::Local_Both:
         // keys pressed in both - reset detected in both?
-        switch(m_alloc.m_internal_and_external_keys.pressedLocalKeys(resetDetected[0], resetDetected[1]))
+        switch(m_alloc.m_local_and_nonlocal_keys.pressedLocalKeys(resetDetected[0], resetDetected[1]))
         {
           case AllocatorId::Local_I:
             return OutputResetEventSource::Local_I;
@@ -2082,7 +2082,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
     {
       nltools::Log::info("recall layer voice reset");
     }
-    m_alloc.m_internal_and_external_keys.init();  // reset all pressed keys
+    m_alloc.m_local_and_nonlocal_keys.init();  // reset all pressed keys
     m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
                       m_layer_mode);
     m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
@@ -2514,21 +2514,21 @@ VoiceGroup dsp_host_dual::getNonLocalSplitKeyAssignmentForKeyUp(int key)
   return getVoiceGroupFromAllocatorId(allocID);
 }
 
-void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGroup part)
+void dsp_host_dual::registerNonLocalKeyAssignment(const int note, VoiceGroup part)
 {
-  // register key assignment despite local off (similar to splitKeyDown, but not quite)
+  // register key assignment despite local off (similar to keyDown/splitKeyDown, but not quite)
   if(m_layer_mode == LayerMode::Split)
   {
     switch(part)
     {
       case VoiceGroup::I:  // applies to Part I only
-        m_alloc.registerNonLocalSplitKeyAssignment(note, AllocatorId::Local_I);
+        m_alloc.registerNonLocalKeyAssignment(note, AllocatorId::Local_I);
         break;
       case VoiceGroup::II:  // applies to Part II only
-        m_alloc.registerNonLocalSplitKeyAssignment(note, AllocatorId::Local_II);
+        m_alloc.registerNonLocalKeyAssignment(note, AllocatorId::Local_II);
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
-        m_alloc.registerNonLocalSplitKeyAssignment(note, AllocatorId::Local_Both);
+        m_alloc.registerNonLocalKeyAssignment(note, AllocatorId::Local_Both);
         break;
       default:
       case VoiceGroup::NumGroups:
@@ -2536,12 +2536,16 @@ void dsp_host_dual::registerNonLocalSplitKeyAssignment(const int note, VoiceGrou
         break;
     }
   }
+  else
+  {
+    m_alloc.registerNonLocalKeyAssignment(note, AllocatorId::Global);
+  }
 }
 
-void dsp_host_dual::unregisterNonLocalSplitKeyAssignment(const int note)
+void dsp_host_dual::unregisterNonLocalKeyAssignment(const int note)
 {
-  // unregister key assignment despite local off (similar to splitKeyUp, but not quite)
-  m_alloc.unregisterNonLocalSplitKeyAssignment(note);
+  // unregister key assignment despite local off (similar to keyUp/splitKeyUp, but not quite)
+  m_alloc.unregisterNonLocalKeyAssignment(note);
 }
 
 void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource from)
@@ -2700,9 +2704,9 @@ bool dsp_host_dual::areKeysPressed(SoundType _current)
   {
     case SoundType::Layer:
     case SoundType::Single:
-      return m_alloc.m_internal_and_external_keys.m_global > 0;
+      return m_alloc.m_local_and_nonlocal_keys.m_global > 0;
     case SoundType::Split:
-      return (m_alloc.m_internal_and_external_keys.m_local[0] + m_alloc.m_internal_and_external_keys.m_local[1]) > 0;
+      return (m_alloc.m_local_and_nonlocal_keys.m_local[0] + m_alloc.m_local_and_nonlocal_keys.m_local[1]) > 0;
   }
   return false;
 }

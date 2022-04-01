@@ -69,12 +69,6 @@ ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(const ParameterI
   return getParameterByID(id);
 }
 
-ParameterGroup::tParameterPtr ParameterGroup::appendParameter(Parameter *p)
-{
-  m_parameters.append(p);
-  return p;
-}
-
 sigc::connection ParameterGroup::onGroupChanged(const sigc::slot<void> &slot)
 {
   return m_signalGroupChanged.connectAndInit(slot);

@@ -4,6 +4,8 @@ import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 
 public class HardwareSourcesCol1 extends ParameterColumn {
 
@@ -28,6 +30,7 @@ public class HardwareSourcesCol1 extends ParameterColumn {
 		addChild(pedal[0] = new Pedal(this, 254) {
 			@Override
 			protected int getBackgroundRoundings() {
+				//TODO change to Rounding none if local disabled
 				return Rect.ROUNDING_LEFT_TOP;
 			}
 		});
@@ -40,6 +43,7 @@ public class HardwareSourcesCol1 extends ParameterColumn {
 		addChild(new Ribbon(this, 289) {
 			@Override
 			protected int getBackgroundRoundings() {
+				//TODO change to Rounding none if local disabled
 				return Rect.ROUNDING_LEFT_BOTTOM;
 			}
 		});

@@ -6,7 +6,7 @@ class PhysicalControlParameterUseCases : public ParameterUseCases
 {
  public:
   explicit PhysicalControlParameterUseCases(PhysicalControlParameter* p);
-  void changeFromPlaycontroller(double value, HWChangeSource src);
+  void changeFromAudioEngine(double value, HWChangeSource src);
 
  private:
   PhysicalControlParameter* m_physicalParam;

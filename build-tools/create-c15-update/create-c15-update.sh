@@ -78,7 +78,7 @@ deploy_updates() {
     if [ $UPDATE_EPC == 1 ]; then
         echo "Will deploy ePC updates."
         cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update_5-7i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_5-7i3.tar || fail_and_exit;
-        cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update_10-11i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_10-11i3.tar || fail_and_exit;
+        cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update_10i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_10i3.tar || fail_and_exit;
     fi
 
     if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
@@ -107,10 +107,8 @@ deploy_scripts() {
             chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh && \
             cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh && \
-            cp $SOURCE_DIR/update_scripts/epc_1_fix.sh $OUT_DIRECTORY/EPC/ && \
-            chmod 777 $OUT_DIRECTORY/EPC/epc_1_fix.sh && \
-            cp $SOURCE_DIR/update_scripts/epc_2_fix.sh $OUT_DIRECTORY/EPC/ && \
-            chmod 777 $OUT_DIRECTORY/EPC/epc_2_fix.sh || \
+            cp $SOURCE_DIR/update_scripts/epc_fix.sh $OUT_DIRECTORY/EPC/ && \
+            chmod 777 $OUT_DIRECTORY/EPC/epc_fix.sh || \
             fail_and_exit;
     fi
 

@@ -18,7 +18,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
                           [this](auto msg) { queueExternalMidiOut(msg); },
                           [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
 {
-  m_playgroundHwSourceKnownValues.fill(0);
+  m_playgroundHwSourceKnownValues.fill({0, 0, 0});
 
   m_dsp->init(options->getSampleRate(), options->getPolyphony());
 
@@ -36,7 +36,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
                                       sigc::mem_fun(this, &C15Synth::onMacroControlParameterMessage));
   receive<HWSourceChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWSourceMessage));
   receive<HWAmountChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWAmountMessage));
-
+  receive<HWSourceSendChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this,&C15Synth::onHWSourceSendMessageReceived));
   //Settings
   receive<Setting::NoteShiftMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onNoteShiftMessage));
   receive<Setting::PresetGlitchMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPresetGlitchMessage));
@@ -212,14 +212,20 @@ void C15Synth::doSyncPlayground()
   {
     const auto idx = static_cast<unsigned int>(hw);
     const auto isLocalEnabled = m_midiOptions.isLocalEnabled(hw);
-    auto currentValue
-        = isLocalEnabled ? engineHWSourceValues[idx] : m_inputEventStage.getHWSourcePositionIfLocalDisabled(hw);
-    auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
 
-    if(std::exchange(m_playgroundHwSourceKnownValues[idx], currentValue) != currentValue)
+    auto sendParameterValue = m_inputEventStage.getHWSourcePositionIfLocalDisabled(hw);
+    auto audioParameterValue = engineHWSourceValues[idx];
+    const auto currentValue = isLocalEnabled ? audioParameterValue : sendParameterValue;
+    const auto valueSource = isLocalEnabled ? HWChangeSource::TCD : m_inputEventStage.getHWSourcePositionSource(hw);
+
+    auto sourceIndex = static_cast<int>(valueSource);
+    if(std::exchange(m_playgroundHwSourceKnownValues[idx][sourceIndex], currentValue) != currentValue)
     {
-      send(EndPoint::Playground,
-           HardwareSourceChangedNotification { idx, static_cast<double>(currentValue), valueSource });
+      HardwareSourceChangedNotification msg;
+      msg.hwSource = idx;
+      msg.source = valueSource;
+      msg.position = static_cast<double>(currentValue);
+      send(EndPoint::Playground, msg);
     }
   }
 }
@@ -410,7 +416,7 @@ void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
     auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
-    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)] = static_cast<float>(msg.controlPosition);
+    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)] = static_cast<float>(msg.controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
 }
@@ -495,4 +501,9 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
   sendNotesOffOnChannel(m_midiOptions.getMIDIPrimarySendChannel());
   if(m_dsp->getType() == SoundType::Split)
     sendNotesOffOnChannel(m_midiOptions.getMIDISplitSendChannel());
+}
+
+void C15Synth::onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg)
+{
+  m_inputEventStage.onSendParameterReceived(msg);
 }
