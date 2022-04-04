@@ -8,8 +8,20 @@
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
 
-uint32_t AT_lastAftertouch;
+// --------------
+static uint32_t AT_lastAftertouch;
+uint32_t        AT_GetLastAftertouch()
+{
+  return AT_lastAftertouch;
+}
 
+static int legacyMode;
+void       AT_SetLegacyMode(int const on)
+{
+  legacyMode = (on != 0);
+}
+
+// --------------
 static int      AT_calibrationRun = 1;  // 0:off; 1:calibrate; 2:store
 static uint16_t AT_eepromHandle   = 0;  // EEPROM access handle
 static int      AT_updateEeprom   = 0;  // flag / step chain variable
@@ -27,21 +39,12 @@ static int16_t AT_adcToForceTableY[16] = { 5300, 6000, 6500, 7000, 7500, 8000, 9
 
 static LIB_interpol_data_T AT_adcToForce = { 16, AT_adcToForceTableX, AT_adcToForceTableY };
 
-// --- Key Calibration ---
-typedef struct
-{
-  uint16_t keybedId;       // keybed serial #
-  uint16_t adcTarget;      // adc target value for the test force
-  uint16_t adcDefault;     // default when AT is active without any key pressed (typically the average of all the following values)
-  uint16_t adcValues[61];  // adc values obtained for test force for all 61 keys
-} AT_calibration_T;
-
 // --- Default Calibration (based on many keybeds) ---
 // clang-format off
 static AT_calibration_T NL_EEPROM_ALIGN AT_adcCalibration =
 {
   .keybedId   = 00001,
-  .adcTarget  = 3290,  // input into adc-to-force charactestic to achieve 10N
+  .adcTarget  = 3290,  // input into adc-to-force characteristic to achieve 10N
   .adcDefault = 3465,
   {
     3019, 2980, 3200, 2999, 3256, 3231, 3087, 3275, 3119, 3263, 3133, 3295,
@@ -82,19 +85,6 @@ uint16_t AT_GetATAdcDataSize(void)
 uint16_t *AT_GetATAdcData(void)
 {
   return AT_adcPerKey;
-}
-
-void AT_Init(void)
-{
-  SIZECHECK(AT_calibration_T, 32 * sizeof(uint32_t))
-
-  AT_lastAftertouch = 0;
-  AT_Select_AftertouchTable(1);
-
-  AT_eepromHandle = NL_EEPROM_RegisterBlock(sizeof AT_adcCalibration, EEPROM_BLOCK_ALIGN_TO_PAGE);
-  AT_calibration_T tmp;
-  if (NL_EEPROM_ReadBlock(AT_eepromHandle, &tmp, EEPROM_READ_BOTH))
-    memcpy(&AT_adcCalibration, &tmp, sizeof(AT_adcCalibration));
 }
 
 /*****************************************************************************
@@ -150,28 +140,6 @@ static void checkCalibrationEepromUpdate(void)
         AT_updateEeprom = 0;  // done
         break;
     }
-  }
-}
-
-/*****************************************************************************
-* @brief	ADC_WORK_Select_AftertouchTable -
-* @param	0: soft, 1: normal, 2: hard
-******************************************************************************/
-void AT_Select_AftertouchTable(uint16_t const curve)
-{
-  switch (curve)
-  {
-    case 0:  // soft
-      AT_forceToTcd = &AT_forceToTcd_Soft;
-      break;
-    case 1:  // normal
-      AT_forceToTcd = &AT_forceToTcd_Normal;
-      break;
-    case 2:  // hard
-      AT_forceToTcd = &AT_forceToTcd_Hard;
-      break;
-    default:
-      break;
   }
 }
 
@@ -240,7 +208,7 @@ static void collectCalibrationData(int16_t const adcValue)
 }
 
 // -------------
-void AT_ProcessAftertouch(void)
+static void ProcessAftertouch(void)
 {
   int16_t adcValue;
   int16_t tcdOutput;
@@ -335,4 +303,145 @@ void AT_ProcessAftertouch(void)
   }
 
   checkCalibrationEepromUpdate();
+}
+
+// -------------
+
+/*****************************************************************************
+* @brief	ADC_WORK_Select_AftertouchTable -
+* @param	0: soft, 1: normal, 2: hard
+******************************************************************************/
+static uint32_t  allAftertouchTables[3][33] = {};  // contains the chosen aftertouch curve
+static uint32_t *aftertouchTable;
+void             AT_Select_AftertouchTable(uint16_t const curve)
+{
+  switch (curve)
+  {
+    case 0:  // soft
+      AT_forceToTcd = &AT_forceToTcd_Soft;
+      break;
+    case 1:  // normal
+      AT_forceToTcd = &AT_forceToTcd_Normal;
+      break;
+    case 2:  // hard
+      AT_forceToTcd = &AT_forceToTcd_Hard;
+      break;
+    default:
+      return;
+  }
+
+  // Legacy
+  aftertouchTable = allAftertouchTables[curve];
+}
+
+// Legacy
+static void Generate_AftertouchTable(uint16_t const curve)
+{
+  float range = 16000.0;  // full TCD range
+
+  float s;
+
+  switch (curve)  // s defines the curve shape
+  {
+    case 0:     // soft
+      s = 0.0;  // y = x
+      break;
+    case 1:     // normal
+      s = 0.7;  // y = 0.3 * x + 0.7 * x^6
+      break;
+    case 2:      // hard
+      s = 0.95;  // y = 0.05 * x + 0.95 * x^6
+      break;
+    default:
+      return;
+  }
+
+  uint32_t i_max = 32;
+  uint32_t i;
+  float    x;
+
+  for (i = 0; i <= i_max; i++)
+  {
+    x = (float) i / (float) i_max;
+
+    allAftertouchTables[curve][i] = (uint32_t)(range * x * ((1.0 - s) + s * x * x * x * x * x));
+  }
+}
+
+void AT_Init(void)
+{
+  SIZECHECK(AT_calibration_T, 32 * sizeof(uint32_t))
+
+  AT_lastAftertouch = 0;
+  // Legacy
+  Generate_AftertouchTable(0);
+  Generate_AftertouchTable(1);
+  Generate_AftertouchTable(2);
+
+  AT_Select_AftertouchTable(1);
+
+  AT_eepromHandle = NL_EEPROM_RegisterBlock(sizeof AT_adcCalibration, EEPROM_BLOCK_ALIGN_TO_PAGE);
+  AT_calibration_T tmp;
+  if (NL_EEPROM_ReadBlock(AT_eepromHandle, &tmp, EEPROM_READ_BOTH))
+    memcpy(&AT_adcCalibration, &tmp, sizeof(AT_adcCalibration));
+}
+
+// --------------------------------------------------------
+#define AT_DEADRANGE 30    // 0.73 % of 0 ... 4095
+#define AT_FACTOR    5080  // 5080 / 4096 for saturation = 100 % at 81 % of the input range
+static void ProcessLegacyAftertouch(void)
+{
+  int32_t value;
+  int32_t valueToSend;
+
+  static int32_t lastAftertouch;
+
+  value = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+
+  if (value != lastAftertouch)
+  {
+    if (value > AT_DEADRANGE)  // outside of the dead range
+    {
+      valueToSend = value - AT_DEADRANGE;
+
+      valueToSend = value * AT_FACTOR;  // saturation factor
+
+      if (valueToSend > 4095 * 4096)
+      {
+        valueToSend = 16000;
+      }
+      else
+      {
+        valueToSend = valueToSend >> 12;  // 0 ... 4095
+
+        uint32_t fract = valueToSend & 0x7F;                                                                  // lower 7 bits used for interpolation
+        uint32_t index = valueToSend >> 7;                                                                    // upper 5 bits (0...31) used as index in the table
+        valueToSend    = (aftertouchTable[index] * (128 - fract) + aftertouchTable[index + 1] * fract) >> 7;  // (0...16000) * 128 / 128
+      }
+
+      ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
+      ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, valueToSend);
+      AT_lastAftertouch = valueToSend;
+    }
+    else  // inside of the dead range
+    {
+      if (lastAftertouch > AT_DEADRANGE)  // was outside of the dead range before   /// define
+      {
+        ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, 0);
+        ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, 0);
+        AT_lastAftertouch = 0;
+      }
+    }
+
+    lastAftertouch = value;
+  }
+}
+
+// -------------
+void AT_ProcessAftertouch(void)
+{
+  if (legacyMode)
+    ProcessLegacyAftertouch();
+  else
+    ProcessAftertouch();
 }

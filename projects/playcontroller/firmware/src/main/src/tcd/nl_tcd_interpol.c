@@ -26,7 +26,7 @@ static inline int16_t InterpolateSegment(int16_t const x0, int16_t const y0,
 *   @param  x value for which to calculate
 *   @return interpolated y value
 ******************************************************************************/
-int16_t LIB_InterpolateValue(LIB_interpol_data_T *table, int16_t x)
+int16_t LIB_InterpolateValue(LIB_interpol_data_T* const table, int16_t const x)
 {
   // Sanity checks
   if (!table)  // no table supplied ?

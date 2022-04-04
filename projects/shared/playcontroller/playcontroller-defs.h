@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 enum PLAYCONTROLLER_BB_MESSAGE_TYPES
 {
   PLAYCONTROLLER_BB_MSG_TYPE_PRESET_DIRECT = 0x0100,  // not used, direction: input; arguments(uint16): N, Nx data
@@ -196,3 +198,13 @@ typedef struct
   unsigned isRestored : 1;     // controller state has been restored from EEPROM
 
 } EHC_ControllerStatus_T;
+
+// --- Aftertoucn per Key Calibration ---
+typedef struct
+{
+  uint16_t keybedId;       // keybed serial #
+  uint16_t adcTarget;      // adc target value for the test force (typically for 10N)
+  uint16_t adcDefault;     // default when AT is active without any key pressed (typically the average of all the following values)
+  uint16_t adcValues[61];  // adc values obtained for test force for all 61 keys
+} AT_calibration_T;
+

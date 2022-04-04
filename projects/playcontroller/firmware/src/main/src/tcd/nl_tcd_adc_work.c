@@ -130,6 +130,9 @@ void ADC_WORK_Select_BenderTable(uint16_t const curve)
   if (curve > 2)
     return;
   benderTable = allBenderTables[curve];
+
+#warning TEST CODE !!! Bender-Curve HARD selects LegacyAftertouch mode
+  AT_SetLegacyMode(curve == 2);
 }
 
 void Generate_BenderTable(uint16_t const curve)
@@ -349,8 +352,8 @@ static void PollHWValues(void)
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
   ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
 
-  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, AT_lastAftertouch);
-  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, AT_lastAftertouch);
+  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, AT_GetLastAftertouch());
+  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, AT_GetLastAftertouch());
 
   NL_EHC_PollControllers();
 

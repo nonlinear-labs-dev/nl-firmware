@@ -510,12 +510,13 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
           printf("%5d\n", *p);
           setColor(DEFAULT);
         }
-        else
+        else  // reduced
         {
           if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
             cursorUp(61);
           for (int i = 0; i < 61; i++)
-            printf("%d\n", data[i]);
+            printf("%d, ", data[i]);
+          printf("\n");
         }
         lastMessage = cmd << 16;
         return 1;
