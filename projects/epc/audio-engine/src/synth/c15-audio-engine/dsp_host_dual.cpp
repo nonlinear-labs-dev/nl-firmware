@@ -988,20 +988,18 @@ void dsp_host_dual::onSettingToneToggle(const uint16_t _setting)
 {
   m_tone_state = (_setting == 0 ? m_tone_state + 1 : _setting - 1) % 3;
   m_fade.muteAndDo([&] { m_global.update_tone_mode(m_tone_state); });
-  if(LOG_SETTINGS)
+  // this is a crucial developer tool that should always produce logs!
+  switch(m_tone_state)
   {
-    switch(m_tone_state)
-    {
-      case 0:
-        nltools::Log::info("test tone - off (synth only)");
-        break;
-      case 1:
-        nltools::Log::info("test tone - only (synth off)");
-        break;
-      case 2:
-        nltools::Log::info("test tone - on (synth on)");
-        break;
-    }
+    case 0:
+      nltools::Log::info("test tone - off (synth only)");
+      break;
+    case 1:
+      nltools::Log::info("test tone - only (synth off)");
+      break;
+    case 2:
+      nltools::Log::info("test tone - on (synth on)");
+      break;
   }
 }
 
