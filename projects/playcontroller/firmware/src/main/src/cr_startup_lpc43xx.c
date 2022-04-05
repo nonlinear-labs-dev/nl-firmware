@@ -308,6 +308,20 @@ extern unsigned int __bss_section_table_end;
 // library.
 //
 //*****************************************************************************
+inline void allLedsOn(void)
+{
+  LED_A_init();
+  LED_B_init();
+  LED_C_init();
+  LED_D_init();
+  LED_E_init();
+  ledM0heartbeat = 1;
+  ledM4heartbeat = 1;
+  ledAudioOk     = 1;
+  ledWarning     = 1;
+  ledError       = 1;
+}
+
 void ResetISR(void)
 {
   debugPinsInit();
@@ -462,54 +476,63 @@ __attribute__((section(".after_vectors"))) void NMI_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void HardFault_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void MemManage_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void BusFault_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void UsageFault_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void SVC_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void DebugMon_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void PendSV_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void SysTick_Handler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
 
@@ -523,5 +546,6 @@ __attribute__((section(".after_vectors"))) void IntDefaultHandler(void)
 {
   while (1)
   {
+	allLedsOn();
   }
 }
