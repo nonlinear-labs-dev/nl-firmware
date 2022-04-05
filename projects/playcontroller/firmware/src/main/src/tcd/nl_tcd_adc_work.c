@@ -186,7 +186,7 @@ void ClearHWValuesForAE(void)
 void ADC_WORK_Init1(void)
 {
   lastRawPitchbend = 0;
-  lastPitchbend    = 0;
+  lastPitchbend    = BIPOLAR_CENTER;
   pitchbendZero    = 2048;
 
   pbSignalIsSmall = 0;
