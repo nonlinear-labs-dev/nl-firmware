@@ -476,63 +476,63 @@ __attribute__((section(".after_vectors"))) void NMI_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void HardFault_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void MemManage_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void BusFault_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void UsageFault_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void SVC_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void DebugMon_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void PendSV_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 __attribute__((section(".after_vectors"))) void SysTick_Handler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }
 
@@ -546,6 +546,6 @@ __attribute__((section(".after_vectors"))) void IntDefaultHandler(void)
 {
   while (1)
   {
-	allLedsOn();
+    allLedsOn();
   }
 }

@@ -8,6 +8,9 @@
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
 
+#define AT_RAMP_TIME  (3000ul)                 // ramp time in ms (maximum)
+#define AT_RAMP_COUNT (2 * AT_RAMP_TIME / 25)  // ramp count, based on a 12.5ms time-slice, make sure it is not zero
+
 // --------------
 static uint32_t AT_lastAftertouch;
 uint32_t        AT_GetLastAftertouch()
@@ -245,7 +248,7 @@ static void ProcessAftertouch(void)
         calibrationPoint = calibrationTarget;
       else
       {
-        dynamicOffset = abs(calibrationTarget - calibrationPoint) / 8;  // ramp in 8..9 steps a 12.5ms = ~100ms
+        dynamicOffset = abs(calibrationTarget - calibrationPoint) / AT_RAMP_COUNT;  // ramp to new target
         if (dynamicOffset == 0)
           dynamicOffset = 1;
       }
