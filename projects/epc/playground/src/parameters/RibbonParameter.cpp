@@ -20,17 +20,13 @@
 #include <device-settings/Settings.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <libundo/undo/Scope.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
   writer.writeTextElement("ribbon-touch-behaviour", to_string(m_touchBehaviour));
   writer.writeTextElement("ribbon-return-mode", to_string(m_returnMode));
-}
-
-void RibbonParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
-{
-  Parameter::loadFromPreset(transaction, value);
 }
 
 void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode)
@@ -43,20 +39,20 @@ void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transac
         [=](UNDO::Command::State) mutable
         {
           swapData->swapWith(m_touchBehaviour);
-          setupScalingAndDefaultValue();
+          setupScalingAndDefaultValue(false);
         });
   }
   else
   {
-    setupScalingAndDefaultValue();
+    setupScalingAndDefaultValue(false);
   }
 }
 
-void RibbonParameter::setupScalingAndDefaultValue()
+void RibbonParameter::setupScalingAndDefaultValue(bool defaultValue)
 {
   getValue().setScaleConverter(createScaleConverter());
   getValue().setDefaultValue(getDefValueAccordingToMode());
-  if(getReturnMode() != ReturnMode::None)
+  if(defaultValue)
     getValue().setToDefault(Initiator::INDIRECT);
 
   bool routersAreBoolean = getReturnMode() == ReturnMode::None;
@@ -125,7 +121,8 @@ RibbonTouchBehaviour RibbonParameter::getRibbonTouchBehaviour() const
   return m_touchBehaviour;
 }
 
-void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode)
+void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, RibbonReturnMode mode,
+                                                  Initiator initiator)
 {
   if(mode != RibbonReturnMode::STAY && mode != RibbonReturnMode::RETURN)
     mode = RibbonReturnMode::STAY;
@@ -139,14 +136,25 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
     transaction->addSimpleCommand(
         [=](UNDO::Command::State) mutable
         {
+          auto oldMode = m_returnMode;
           swapData->swapWith(m_returnMode);
-          setupScalingAndDefaultValue();
+          auto oldPos = getControlPositionValue();
+          setupScalingAndDefaultValue(initiator == Initiator::EXPLICIT_USECASE && getRibbonReturnMode() == RibbonReturnMode::RETURN);
+          if(initiator == Initiator::EXPLICIT_USECASE && oldMode == RibbonReturnMode::RETURN && getRibbonReturnMode() == RibbonReturnMode::STAY)
+          {
+            auto newPos = (oldPos * 0.5) + 0.5;
+            getValue().setRawValue(initiator, newPos);
+          }
+          else if(initiator == Initiator::EXPLICIT_LOAD && oldMode == RibbonReturnMode::STAY && getRibbonReturnMode() == RibbonReturnMode::RETURN)
+          {
+            setupScalingAndDefaultValue(true);
+          }
           onChange();
         });
   }
   else
   {
-    setupScalingAndDefaultValue();
+    setupScalingAndDefaultValue(false);
     onChange();
   }
 }
@@ -160,18 +168,19 @@ void RibbonParameter::undoableSetHWAmountsForReturnToCenterMode(UNDO::Transactio
     {
       if(p->getControlPositionValue() > 0)
       {
-        p->setCPFromHwui(transaction, 0.5);
+        p->setCPFromHwui(transaction, 1);
       }
     }
   }
 }
 
-void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode)
+void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction, const Glib::ustring &mode,
+                                                  Initiator initiator)
 {
   if(mode == "stay")
-    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
+    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY, initiator);
   else if(mode == "return")
-    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::RETURN);
+    undoableSetRibbonReturnMode(transaction, RibbonReturnMode::RETURN, initiator);
 }
 
 RibbonReturnMode RibbonParameter::getRibbonReturnMode() const
@@ -242,7 +251,7 @@ void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParam
   if(!isLocked())
   {
     super::copyFrom(transaction, other);
-    undoableSetRibbonReturnMode(transaction, other->getRibbonReturnMode());
+    undoableSetRibbonReturnMode(transaction, other->getRibbonReturnMode(), Initiator::EXPLICIT_LOAD);
     undoableSetRibbonTouchBehaviour(transaction, other->getRibbonTouchBehaviour());
   }
 }
@@ -313,7 +322,7 @@ void RibbonParameter::undoableStepBehavior(UNDO::Transaction *transaction, int d
   while(v >= numModes)
     v -= numModes;
 
-  undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(v));
+  undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(v), Initiator::EXPLICIT_USECASE);
 }
 
 Layout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
@@ -337,7 +346,7 @@ Layout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
 void RibbonParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   super::loadDefault(transaction, mode);
-  undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
+  undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY, Initiator::EXPLICIT_USECASE);
   undoableSetRibbonTouchBehaviour(transaction, RibbonTouchBehaviour::ABSOLUTE);
 }
 
@@ -351,7 +360,46 @@ size_t RibbonParameter::getHash() const
 
 void RibbonParameter::sendToPlaycontroller() const
 {
-  Parameter::sendToPlaycontroller();
+  PhysicalControlParameter::sendToPlaycontroller();
+  auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
+                                                                         : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
+  Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
+}
+
+void RibbonParameter::onLocalEnableChanged(bool localEnableState)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+
+  if(localEnableState) //Off -> On
+  {
+    if(getReturnMode() != ReturnMode::None)
+    {
+      auto oldSendPos = getSendParameter()->getControlPositionValue();
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
+    }
+    else
+    {
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getSendParameter()->getControlPositionValue());
+    }
+  }
+  else // On -> Off
+  {
+    if(getReturnMode() != ReturnMode::None)
+    {
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+    }
+    else
+    {
+      getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+    }
+  }
+}
+
+void RibbonParameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
+{
+  Parameter::setCPFromSetting(transaction, cpValue);
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
   Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());

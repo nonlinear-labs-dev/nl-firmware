@@ -106,6 +106,15 @@ class DSPInterface
   {
     return true;
   }
+  // ...
+  virtual void onSettingToneToggle(const uint16_t _setting)
+  {
+  }
+  virtual OutputResetEventSource onSettingInitialSinglePreset()
+  {
+    return OutputResetEventSource::None;
+  }
+  //
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
   {
     // InputEvent can be singular (TCD or Primary) or separate (Primary or Secondary or Both)
@@ -124,6 +133,28 @@ class DSPInterface
     nltools_assertAlways(false);
     return std::numeric_limits<uint32_t>::max();
   }
+
+  void setHardwareSourceLastChangeSource(HardwareSource hw, HWChangeSource source)
+  {
+    if(hw != HardwareSource::NONE)
+    {
+      m_hwSourceLastChangeSources[static_cast<int>(hw)] = source;
+    }
+  }
+
+  HWChangeSource getHardwareSourceLastChangeSource(HardwareSource hw)
+  {
+    if(hw != HardwareSource::NONE)
+    {
+      return m_hwSourceLastChangeSources[static_cast<int>(hw)];
+    }
+
+    nltools_assertNotReached();
+    return HWChangeSource::TCD;
+  }
+
+ private:
+  std::array<HWChangeSource, 8> m_hwSourceLastChangeSources;
 };
 
 class dsp_host_dual : public DSPInterface
@@ -177,8 +208,8 @@ class dsp_host_dual : public DSPInterface
   void onSettingTransitionTime(const float _position);
   void onSettingGlitchSuppr(const bool _enabled);
   void onSettingTuneReference(const float _position);
-  void onSettingInitialSinglePreset();
-  uint32_t onSettingToneToggle();
+  OutputResetEventSource onSettingInitialSinglePreset() override;
+  void onSettingToneToggle(const uint16_t _setting) override;
 
   // dsp-related
   void render();

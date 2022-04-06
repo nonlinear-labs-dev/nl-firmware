@@ -43,12 +43,19 @@ void UsedRAM::scheduleReload()
   m_scheduleThrottler.doTask([&] {
     SpawnAsyncCommandLine::spawn(
         std::vector<std::string> { "free", "--mega" },
-        [&](const std::string& s) {
-          auto lines = StringTools::splitStringOnAnyDelimiter(s, '\n');
-          auto memory = lines[1];
-          auto memoryStats = StringTools::splitStringAtSpacesAndTrimSpaces(memory);
-          auto used = memoryStats[2];
-          load(used, Initiator::EXPLICIT_LOAD);
+        [](const std::string& s) {
+          if(Application::exists())
+          {
+            auto lines = StringTools::splitStringOnAnyDelimiter(s, '\n');
+            auto memory = lines[1];
+            auto memoryStats = StringTools::splitStringAtSpacesAndTrimSpaces(memory);
+            auto used = memoryStats[2];
+            if(auto setting = Application::get().getSettings()->getSetting<UsedRAM>())
+              setting->load(used, Initiator::EXPLICIT_LOAD);
+          }
+          else {
+            nltools::Log::error("Nasty Async Bug Happened!");
+          }
         },
         [&](const std::string& e) { nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e); });
   });

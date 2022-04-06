@@ -52,7 +52,7 @@ void EditSmoothingTime::setDefault()
 
 void EditSmoothingTime::syncExternals(SendReason reason) const
 {
-  nltools::msg::Setting::EditSmoothingTimeMessage msg { static_cast<float>(m_time.getRawValue()) };
+  nltools::msg::Setting::EditSmoothingTimeMessage msg { static_cast<float>(m_time.getQuantizedClipped()) };
   Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::EditSmoothingTimeMessage>(msg);
 }
 

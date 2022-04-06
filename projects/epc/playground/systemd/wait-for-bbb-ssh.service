@@ -1,0 +1,11 @@
+[Unit]
+Description=Wait up to 30s for BeagleBone sshd
+After=network.target systemd-modules-load.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "for i in {1..30}; do ssh -o StrictHostKeyChecking=no -o ConnectTimeout=1 root@192.168.10.11 exit && exit || sleep 1; done"
+ExecStart=-mount /mnt/usb-stick
+
+[Install]
+WantedBy=multi-user.target

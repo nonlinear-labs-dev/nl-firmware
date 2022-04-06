@@ -141,7 +141,9 @@ install(TARGETS ${BINARY_NAME} DESTINATION ${C15_INSTALL_PATH}/${BINARY_NAME})
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_SOURCE_DIR}/systemd/persistent.mount DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_SOURCE_DIR}/systemd/wait-for-bbb-ssh.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ../${BINARY_NAME}.service $ENV{DESTDIR}/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${BINARY_NAME}.service)")
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ../persistent.mount $ENV{DESTDIR}/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/persistent.mount)")
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ../wait-for-bbb-ssh.service $ENV{DESTDIR}/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/wait-for-bbb-ssh.service)")

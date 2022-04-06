@@ -15,6 +15,9 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
             std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+
+  for(auto &hw : m_localDisabledPositions)
+    std::get<0>(hw) = std::numeric_limits<float>::max();
 }
 
 template <>
@@ -169,10 +172,23 @@ void InputEventStage::onTCDEvent()
     }
 
     case DecoderEventType::HardwareChange:
+    {
       onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
                   false, false, false);
-
       break;
+    }
+    case DecoderEventType::PollStart:
+    {
+      // todo: disable midi send?
+      // todo: notify playground (hw poll ack/start)?
+      break;
+    }
+    case DecoderEventType::PollStop:
+    {
+      // todo: re-enable midi send?
+      // todo: notify playground (all hw sources were polled, initial sound can be loaded)
+      break;
+    }
     case DecoderEventType::UNKNOWN:
       nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
   }
@@ -771,7 +787,6 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
           return m_options->shouldReceiveMidiOnPrimary(routingIndex);
         else if(wasSplit)
           return m_options->shouldReceiveMidiOnSplit(routingIndex);
-
         return true;
       }
       case HWChangeSource::TCD:
@@ -786,6 +801,7 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
   if(sendToDSP(source, hwID, wasMIDIPrimary, wasMIDISplit))
   {
     m_dspHost->onHWChanged(hwID, pos, didBehaviourChange);
+    m_dspHost->setHardwareSourceLastChangeSource(hwID, source);
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }

@@ -399,6 +399,7 @@ namespace nltools
       tID parameterId;
       tControlPosition controlPosition;
       ReturnMode returnMode;
+      bool isLocalEnabled;
     };
 
     struct HWSourceSendChangedMessage
