@@ -20,7 +20,8 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
     {
         super.onPresenterUpdated(p);
         if(wasLastReceivedVisible != p.hidden) {
-            requestLayout();
+            getParent().invalidate(INVALIDATION_FLAG_SCROLLED);
+            getParent().requestLayout();
         }
         wasLastReceivedVisible = p.hidden;
         return true;
