@@ -96,6 +96,10 @@ struct AssignedKeyCount  // tracking active keys
     }
     return AllocatorId::None;
   }
+  bool pressedLocalKeys(const bool _index)
+  {
+    return m_local[_index] > 0;
+  }
 };
 
 struct VoiceAssignment

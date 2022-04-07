@@ -1894,16 +1894,17 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   }
 
   auto msg = &_msg;
-  bool resetDetected[2] = { false, false };
+  // #3009: prepare reset detection with pressed local keys
+  bool internalReset[2] = { m_alloc.m_local_and_nonlocal_keys.pressedLocalKeys(0),
+                            m_alloc.m_local_and_nonlocal_keys.pressedLocalKeys(1) };
   const bool externalReset = layerChanged && areKeysPressed(fromType(oldLayerMode));
-  const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
 
     // update unison and mono groups
     auto polyChanged = evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
-    resetDetected[layerId] = polyChanged;
+    internalReset[layerId] &= polyChanged;
     // reset detection
     if((layerChanged || polyChanged))
     {
@@ -2043,35 +2044,13 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   }
   if(layerChanged)
   {
-    m_alloc.m_local_and_nonlocal_keys.m_global = 0;  // reset all pressed global keys
     // non-split -> split: (global or none)
-    return outputEvent;
+    m_alloc.m_local_and_nonlocal_keys.m_global = 0;  // reset all pressed global keys
+    return determineOutputEventSource(externalReset, oldLayerMode);
+    ;
   }
-  else
-  {
-    // split -> split:
-    switch(outputEvent)
-    {
-      case OutputResetEventSource::Local_I:
-        // keys pressed in I - reset detected in I?
-        return resetDetected[0] ? outputEvent : OutputResetEventSource::None;
-      case OutputResetEventSource::Local_II:
-        // keys pressed in II - reset detected in II?
-        return resetDetected[1] ? outputEvent : OutputResetEventSource::None;
-      case OutputResetEventSource::Local_Both:
-        // keys pressed in both - reset detected in both?
-        switch(m_alloc.m_local_and_nonlocal_keys.pressedLocalKeys(resetDetected[0], resetDetected[1]))
-        {
-          case AllocatorId::Local_I:
-            return OutputResetEventSource::Local_I;
-          case AllocatorId::Local_II:
-            return OutputResetEventSource::Local_II;
-          case AllocatorId::Local_Both:
-            return OutputResetEventSource::Local_Both;
-        }
-    }
-  }
-  return OutputResetEventSource::None;
+  // split -> split: determine actual outputEvent (I, II: pressed keys && poly change)
+  return m_alloc.m_local_and_nonlocal_keys.pressedLocalKeys(internalReset[0], internalReset[1]);
 }
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage& _msg)
