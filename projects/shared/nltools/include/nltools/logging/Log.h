@@ -39,6 +39,11 @@ namespace nltools
       return s_level;
     }
 
+    static void flushAfterEveryLog(bool f)
+    {
+      s_flush = f;
+    }
+
     enum class LogMode
     {
       Plain,
@@ -85,6 +90,36 @@ namespace nltools
         output<mode>("Notify: ", args...);
     }
 
+    template <LogMode mode = LogMode::InsertSpacesAndAppendNewLine, typename... Args>
+    static void printWithLevel(Level l, const Args &... args)
+    {
+      switch(l)
+      {
+        case Debug:
+          if(s_level <= Level::Debug)
+            output<mode>("Debug: ", args...);
+          return;
+        case Info:
+          if(s_level <= Level::Info)
+            output<mode>("Info: ", args...);
+          break;
+        case Warning:
+          if(s_level <= Level::Warning)
+            output<mode>("Warning: ", args...);
+          break;
+        case Error:
+          if(s_level <= Level::Error)
+            output<mode>("Error: ", args...);
+          break;
+        case Notify:
+          if(s_level <= Level::Notify)
+            output<mode>("Notify: ", args...);
+          break;
+        case Silent:
+          break;
+      }
+    }
+
     static void flush();
     static void print(const std::string &str);
     static void printNewLine();
@@ -102,6 +137,9 @@ namespace nltools
 
       if(addNewLine)
         printNewLine();
+
+      if(s_flush)
+        flush();
     }
 
     template <typename... tArgs> static void throwException(const tArgs &... args)
@@ -113,5 +151,6 @@ namespace nltools
 
    private:
     static Level s_level;
+    static bool s_flush;
   };
 }

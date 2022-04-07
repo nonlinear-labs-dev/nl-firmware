@@ -11,16 +11,20 @@ C15_CLI::C15_CLI(C15Synth *synth, AudioOutput *audioOut)
   m_commands['c'] = [=] { synth->logStatus(); };
   m_commands['e'] = [=] { synth->resetDSP(); };
   m_commands['t'] = [=] { synth->toggleTestTone(); };
-  m_commands['z'] = [=] { synth->selectTestToneFrequency(); };
-  m_commands['u'] = [=] { synth->selectTestToneAmplitude(); };
+  m_commands['i'] = [=] { synth->onSettingInitialSinglePreset(); };
+  m_commands['a'] = [=] {
+    synth->doTcd({ 0xED, 0, 60 });     // key pos 60
+    synth->doTcd({ 0xEE, 127, 127 });  // key down 100% vel
+  };
+  m_commands['s'] = [=] {
+    synth->doTcd({ 0xED, 0, 60 });     // key pos 60
+    synth->doTcd({ 0xEF, 127, 127 });  // key up 100% vel
+  };
 
   m_commands['r'] = [=] {
     if(audioOut)
       audioOut->resetPerformance();
   };
-
-  m_commands['+'] = [=] { synth->increase(); };
-  m_commands['-'] = [=] { synth->decrease(); };
 
   m_commands['q'] = [=] {
     nltools::Log::info("Quitting application...");

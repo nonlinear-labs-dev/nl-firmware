@@ -874,7 +874,7 @@ void setDeadZones(uint8_t which, uint16_t ranges)
 }
 
 // ----------------------------
-void forceOutput(uint8_t which)
+static void forceOutput(uint8_t which)
 {
   if (which >= NUMBER_OF_CONTROLLERS)
     return;
@@ -883,6 +883,12 @@ void forceOutput(uint8_t which)
   {
     ctrl[which].lastFinal = 0xFFFF;
   }
+}
+
+void NL_EHC_PollValues(void)
+{
+  for (uint8_t i = 0; i < NUMBER_OF_CONTROLLERS; i++)
+    forceOutput(i);
 }
 
 /*************************************************************************/ /**
@@ -1024,6 +1030,24 @@ void NL_EHC_SetLegacyPedalType(uint16_t const controller, uint16_t type)
       return;
   }
   initController(tmp, 0);
+}
+
+void NL_EHC_PollControllers(void)
+{
+  if (enableEHC == 0)
+    return;
+  for (int i = NUMBER_OF_CONTROLLERS - 1; i >= 0; i--)
+  {  // process controllers #7 down to #0
+    Controller_T *const this = &ctrl[i];
+    if (this->status.initialized && this->status.pluggedIn
+        && this->status.isAutoRanged && this->status.outputIsValid
+        && this->config.hwId != 15)
+    {
+      if (!this->config.silent)
+        ADC_WORK_WriteHWValueForAE(this->config.hwId, this->final);
+      ADC_WORK_WriteHWValueForUI(this->config.hwId, this->final);
+    }
+  }
 }
 
 /*************************************************************************/ /**

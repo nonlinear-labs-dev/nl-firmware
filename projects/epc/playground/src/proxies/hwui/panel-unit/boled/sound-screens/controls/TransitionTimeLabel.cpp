@@ -36,5 +36,5 @@ void TransitionTimeLabel::setSuffixFontColor(FrameBuffer &fb) const
 
 void TransitionTimeLabel::onModifiersChanged()
 {
-  onSettingChanged(Application::get().getSettings()->getSetting<TransitionTime>().get());
+  onSettingChanged(Application::get().getSettings()->getSetting<TransitionTime>());
 }

@@ -13,6 +13,7 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetInfoLayout.h>
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
+#include "use-cases/SettingsUseCases.h"
 
 PresetInfoLayout::PresetInfoLayout()
     : super()
@@ -56,7 +57,10 @@ bool PresetInfoLayout::onButton(Buttons button, bool down, ButtonModifiers modif
         Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(l);
         return true;
       case Buttons::BUTTON_PRESET:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+      {
+        SettingsUseCases useCases(*Application::get().getSettings());
+        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+      }
         return true;
     }
   }

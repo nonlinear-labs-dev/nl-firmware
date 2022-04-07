@@ -57,6 +57,13 @@ void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter)
   setText({ name, changed ? 1u : 0u });
 }
 
+void ParameterNameLabel::handleSendParameterName(const Parameter* p)
+{
+  const auto changed = p->isChangedFromLoaded();
+  auto name = p->getShortName();
+  setText({name + (changed ? "*" : ""), changed ? 1u : 0u });
+}
+
 Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
 {
   Glib::ustring ret = name;
@@ -91,9 +98,16 @@ void ParameterNameLabel::onParameterChanged(const Parameter *param)
 {
   auto id = param->getID().getNumber();
 
-  if(id == 243 || id == 244 || id == 245 || id == 246 || id == 369 || id == 371)
+  if(id == C15::PID::MC_A || id == C15::PID::MC_B || id == C15::PID::MC_C || id == C15::PID::MC_D
+     || id == C15::PID::MC_E || id == C15::PID::MC_F)
   {
     handleMCParameterName(param);
+  }
+  else if(id == C15::PID::Pedal_1_Send || id == C15::PID::Pedal_2_Send || id == C15::PID::Pedal_3_Send
+          || id == C15::PID::Pedal_4_Send || id == C15::PID::Ribbon_1_Send || id == C15::PID::Ribbon_2_Send
+          || id == C15::PID::Aftertouch_Send || id == C15::PID::Bender_Send)
+  {
+    handleSendParameterName(param);
   }
   else
   {

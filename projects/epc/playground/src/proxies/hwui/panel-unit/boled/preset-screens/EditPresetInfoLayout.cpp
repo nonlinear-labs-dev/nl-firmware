@@ -21,7 +21,7 @@ void EditPresetInfoLayout::commit(const Glib::ustring &comment)
 {
   if(m_currentPreset)
   {
-    PresetUseCases useCase(m_currentPreset, *Application::get().getSettings());
+    PresetUseCases useCase(*m_currentPreset, *Application::get().getSettings());
     useCase.setComment(comment);
   }
 }

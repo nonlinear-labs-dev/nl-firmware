@@ -3,6 +3,7 @@
 #include "GenericItem.h"
 #include <sigc++/connection.h>
 #include <chrono>
+#include <proxies/hwui/panel-unit/boled/setup/OneShotEntryTypes.h>
 
 class Animator
 {
@@ -29,11 +30,12 @@ class Animator
 class AnimatedGenericItem : public GenericItem
 {
  public:
-  template <class tCap, class tCB>
-  AnimatedGenericItem(tCap caption, const Rect &r, tCB cb)
+  template <class tCap>
+  AnimatedGenericItem(tCap caption, const Rect &r, OneShotTypes::StartCB start, OneShotTypes::FinishCB finish)
       : GenericItem(caption, r, [] {})
   {
-    m_animationFinishedCB = cb;
+    m_start = start;
+    m_finish = finish;
   }
 
   void startAnimation();
@@ -42,6 +44,8 @@ class AnimatedGenericItem : public GenericItem
   void doAction() override;
 
  private:
+  void doStartCB();
   std::unique_ptr<Animator> m_animator;
-  std::function<void(void)> m_animationFinishedCB;
+  OneShotTypes::StartCB m_start;
+  OneShotTypes::FinishCB m_finish;
 };

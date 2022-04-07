@@ -1,4 +1,8 @@
 #include <playground-helpers.h>
+#include <nltools/system/SpawnAsyncCommandLine.h>
+#include <nltools/logging/Log.h>
+#include <nltools/Types.h>
+#include <glibmm.h>
 #include "EpcWifi.h"
 
 EpcWifi::EpcWifi()
@@ -8,8 +12,10 @@ EpcWifi::EpcWifi()
 {
   static auto isEpc2 = !strcmp(TARGET_PLATFORM, "epc2");
 
-  if(isEpc2) {
-    Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EpcWifi::syncCredentials), 2);
+  if(isEpc2)
+  {
+    Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EpcWifi::syncCredentials),
+                                                                       2);
   }
 }
 
@@ -41,21 +47,25 @@ bool EpcWifi::syncCredentials()
 
 void EpcWifi::updateCredentials(bool _reload)
 {
-    m_busy = true;
-    if (m_currentPassphrase != m_newPassphrase){
-        updatePassphrase();
-    }
-    else if (m_currentSSID != m_newSSID){
-        updateSSID();
-    }
-    else if (!m_currentEpcWifiState.has_value() || m_currentEpcWifiState != m_newEpcWifiState ){
-        updateWifiSwitch();
-    }
-    else if (_reload){
-        reloadConnection();
-    }
-    else
-        m_busy = false;
+  m_busy = true;
+  if(m_currentPassphrase != m_newPassphrase)
+  {
+    updatePassphrase();
+  }
+  else if(m_currentSSID != m_newSSID)
+  {
+    updateSSID();
+  }
+  else if(!m_currentEpcWifiState.has_value() || m_currentEpcWifiState != m_newEpcWifiState)
+  {
+    updateWifiSwitch();
+  }
+  else if(_reload)
+  {
+    reloadConnection();
+  }
+  else
+    m_busy = false;
 }
 
 void EpcWifi::updateWifiSwitch()

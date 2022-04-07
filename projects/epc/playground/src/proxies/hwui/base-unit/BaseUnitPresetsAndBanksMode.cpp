@@ -13,10 +13,10 @@
 #include <use-cases/SettingsUseCases.h>
 
 BaseUnitPresetsAndBanksMode::BaseUnitPresetsAndBanksMode()
-    : m_modeButtonHandler([this] { modeButtonShortPress(); },
-                          [this] { modeButtonLongPress(); })
-    , m_funcButtonHandler([] {}, [] {
-                            auto setting = Application::get().getSettings()->getSetting<DirectLoadSetting>().get();
+    : m_modeButtonHandler([this] { modeButtonShortPress(); }, [this] { modeButtonLongPress(); })
+    , m_funcButtonHandler([] {},
+                          [] {
+                            auto setting = Application::get().getSettings()->getSetting<DirectLoadSetting>();
                             DirectLoadUseCases useCase(setting);
                             useCase.toggleDirectLoadFromBaseUnit();
                           })
@@ -78,11 +78,11 @@ void BaseUnitPresetsAndBanksMode::removeButtonRepeat()
 
 bool BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons b, bool state)
 {
-    m_buttonStates[b] = state;
-    if(std::all_of(m_buttonStates.cbegin(), m_buttonStates.cend(), [](auto x) { return x.second == true; }))
-    {
-        SettingsUseCases::panicAudioEngine();
-        return true;
-    }
-    return false;
+  m_buttonStates[b] = state;
+  if(std::all_of(m_buttonStates.cbegin(), m_buttonStates.cend(), [](auto x) { return x.second == true; }))
+  {
+    SettingsUseCases::panicAudioEngine();
+    return true;
+  }
+  return false;
 }

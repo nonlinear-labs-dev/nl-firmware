@@ -34,6 +34,7 @@
 #include "SelectVoiceGroupLayout.h"
 #include "RenameBankLayout.h"
 #include "clipboard/Clipboard.h"
+#include "use-cases/SettingsUseCases.h"
 
 PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode oldFocusAndMode)
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -266,15 +267,15 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
   if(down)
   {
     auto &app = Application::get();
-    auto hwui = app.getHWUI();
+    SettingsUseCases useCases(*Application::get().getSettings());
 
     switch(i)
     {
       case Buttons::BUTTON_A:
         if(m_focusAndMode.focus == UIFocus::Banks)
-          hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets));
+          useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets));
         else
-          hwui->undoableSetFocusAndMode(FocusAndMode(UIFocus::Banks));
+          useCases.setFocusAndMode(FocusAndMode(UIFocus::Banks));
         break;
 
       case Buttons::BUTTON_B:
@@ -300,27 +301,27 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
 
       case Buttons::BUTTON_STORE:
         if(m_focusAndMode.mode == UIMode::Store)
-          hwui->undoableSetFocusAndMode(m_oldFocusAndMode);
+          useCases.setFocusAndMode(m_oldFocusAndMode);
         else
-          hwui->undoableSetFocusAndMode({ UIFocus::Presets, UIMode::Store, UIDetail::Init });
+          useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Store, UIDetail::Init });
         break;
 
       case Buttons::BUTTON_EDIT:
         if(m_focusAndMode.mode == UIMode::Edit)
-          hwui->undoableSetFocusAndMode(UIMode::Select);
+          useCases.setFocusAndMode(UIMode::Select);
         else
-          hwui->undoableSetFocusAndMode(UIMode::Edit);
+          useCases.setFocusAndMode(UIMode::Edit);
         break;
 
       case Buttons::BUTTON_PRESET:
         if(m_focusAndMode.mode == UIMode::Store)
-          hwui->undoableSetFocusAndMode({ UIMode::Select });
+          useCases.setFocusAndMode({ UIMode::Select });
         else
-          hwui->undoableSetFocusAndMode(m_oldFocusAndMode);
+          useCases.setFocusAndMode(m_oldFocusAndMode);
         break;
 
       case Buttons::BUTTON_INFO:
-        hwui->undoableSetFocusAndMode(UIMode::Info);
+        useCases.setFocusAndMode(UIMode::Info);
         break;
 
       case Buttons::BUTTON_ENTER:

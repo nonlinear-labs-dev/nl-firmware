@@ -1,12 +1,15 @@
 #include "InfoLayout.h"
 #include "controls/MultiLineLabel.h"
 #include "controls/ScrollArea.h"
+#include "use-cases/SettingsUseCases.h"
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
+#include <device-settings/Settings.h>
+#include <device-settings/FocusAndModeSetting.h>
 
 InfoLayout::InfoLayout()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -42,46 +45,49 @@ void InfoLayout::scrollToMax()
 
 bool InfoLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  const auto focusAndMode = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
+  SettingsUseCases useCases(*Application::get().getSettings());
+
   if(down)
   {
     switch(i)
     {
       case Buttons::BUTTON_A:
-        if(Application::get().getHWUI()->getFocusAndMode().mode == UIMode::Info)
+        if(focusAndMode.mode == UIMode::Info)
         {
-          if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Presets)
+          if(focusAndMode.focus == UIFocus::Presets)
           {
-            Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Info));
+            useCases.setFocusAndMode(FocusAndMode(UIFocus::Banks, UIMode::Info));
           }
-          else if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Banks)
+          else if(focusAndMode.focus == UIFocus::Banks)
           {
-            Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Info));
+            useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Info));
           }
           return true;
         }
         break;
       case Buttons::BUTTON_PRESET:
-        if(Application::get().getHWUI()->getFocusAndMode().focus == UIFocus::Presets)
+        if(focusAndMode.focus == UIFocus::Presets)
         {
-          Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Select });
+          useCases.setFocusAndMode(FocusAndMode { UIMode::Select });
         }
         else
         {
-          Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIFocus::Presets });
+          useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets });
         }
         return true;
 
       case Buttons::BUTTON_STORE:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
+        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
         return true;
 
       case Buttons::BUTTON_EDIT:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Edit });
+        useCases.setFocusAndMode(FocusAndMode { UIMode::Edit });
         return true;
 
       case Buttons::BUTTON_INFO:
       case Buttons::BUTTON_ENTER:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode { UIMode::Select });
+        useCases.setFocusAndMode(FocusAndMode { UIMode::Select });
         return true;
     }
   }

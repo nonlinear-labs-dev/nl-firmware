@@ -24,4 +24,7 @@ class ModulationRoutersCarousel : public Carousel
 
  protected:
   void setup(Parameter *selectedParameter) override;
+
+ private:
+  void turnInDirection(int inc);
 };

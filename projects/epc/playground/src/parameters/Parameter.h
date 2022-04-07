@@ -72,6 +72,8 @@ class Parameter : public UpdateDocumentContributor,
 
   virtual void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
   virtual void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
+  virtual void setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue);
+  virtual void setCPFromLoad(UNDO::Transaction *transaction, const tControlPositionValue &cpValue, bool sendToEngine);
 
   void stepCP(UNDO::Transaction *transaction, int incs, bool fine, bool shift);
   void stepCPFromHwui(UNDO::Transaction *transaction, int incs, ButtonModifiers modifiers);
@@ -118,7 +120,7 @@ class Parameter : public UpdateDocumentContributor,
 
   virtual Glib::ustring getLongName() const;
   virtual Glib::ustring getShortName() const;
-  Glib::ustring getInfoText() const;
+  virtual Glib::ustring getInfoText() const;
 
   virtual Glib::ustring getMiniParameterEditorName() const;
   virtual Glib::ustring getGroupAndParameterName() const;
