@@ -4,7 +4,7 @@
 #include <parameter_declarations.h>
 #include <use-cases/RibbonParameterUseCases.h>
 
-TEST_CASE("Setting Ribbon to Return to center leads to HW-Amt to be 50% if boolean was on")
+TEST_CASE("Setting Ribbon to Return to center leads to HW-Amt to be 100% if boolean was on")
 {
   TestHelper::initSingleEditBuffer();
 
@@ -31,7 +31,7 @@ TEST_CASE("Setting Ribbon to Return to center leads to HW-Amt to be 50% if boole
       THEN("HW-Amt is 50% and Mode is correct")
       {
         CHECK_FALSE(router->getValue().isBoolean());
-        CHECK(router->getValue().getRawValue() == 0.5);
+        CHECK(router->getValue().getRawValue() == 1);
         CHECK(ribbonParam->getRibbonReturnMode() == RibbonReturnMode::RETURN);
 
         WHEN("UNDO")
@@ -50,7 +50,7 @@ TEST_CASE("Setting Ribbon to Return to center leads to HW-Amt to be 50% if boole
               undoScope.redo();
 
               CHECK_FALSE(router->getValue().isBoolean());
-              CHECK(router->getValue().getRawValue() == 0.5);
+              CHECK(router->getValue().getRawValue() == 1);
               CHECK(ribbonParam->getRibbonReturnMode() == RibbonReturnMode::RETURN);
             }
           }

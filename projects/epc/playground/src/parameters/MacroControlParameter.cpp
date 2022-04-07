@@ -201,9 +201,6 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   if(m_givenName != newName)
   {
     auto swapData = UNDO::createSwapData(newName);
-
-    DebugLevel::info("Set given name of MC to", newName);
-
     transaction->addSimpleCommand(
         [=](UNDO::Command::State) mutable
         {
@@ -237,10 +234,6 @@ bool MacroControlParameter::isChangedFromLoaded() const
     return !nameSame || !infoSame || Parameter::isChangedFromLoaded();
   }
   return Parameter::isChangedFromLoaded();
-}
-
-void MacroControlParameter::undoableResetConnectionsToTargets()
-{
 }
 
 void MacroControlParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)

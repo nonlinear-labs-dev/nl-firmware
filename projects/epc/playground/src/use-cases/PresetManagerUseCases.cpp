@@ -23,6 +23,7 @@
 #include "PresetUseCases.h"
 #include "StoreUseCaseHelper.h"
 #include "SettingsUseCases.h"
+#include "EditBufferStorePreparation.h"
 #include <serialization/PresetManagerSerializer.h>
 #include <serialization/PresetSerializer.h>
 #include <xml/VersionAttribute.h>
@@ -40,6 +41,7 @@ PresetManagerUseCases::PresetManagerUseCases(PresetManager& pm, Settings& settin
 
 void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
 {
+  EditBufferStorePreparation ebsp(*m_presetManager.getEditBuffer());
   auto scope = m_presetManager.getUndoScope().startTransaction("Append preset to Bank %0", bank->getName(true));
   auto transaction = scope->getTransaction();
   auto ebIsModified = m_presetManager.getEditBuffer()->isModified();
@@ -57,6 +59,7 @@ void PresetManagerUseCases::appendPreset(Bank* bank, Preset* preset)
 
 Bank* PresetManagerUseCases::createBankAndStoreEditBuffer()
 {
+  EditBufferStorePreparation ebsp(*m_presetManager.getEditBuffer());
   auto& scope = m_presetManager.getUndoScope();
   auto transactionScope = scope.startTransaction("Create Bank and Store Preset");
   auto transaction = transactionScope->getTransaction();

@@ -1,6 +1,7 @@
 #include "playground-helpers.h"
 #include <device-settings/DebugLevel.h>
 #include <execinfo.h>
+#include <nltools/logging/Log.h>
 
 #include <glib.h>
 #include <iomanip>
@@ -72,26 +73,45 @@ namespace Environment
     return str.str();
   }
 
-  void setupLocale()
-  {
-    const char* desiredLocales[] = { "en_US.utf8@nonlinear", "en_US.utf8" };
+  using nlLevel = nltools::Log::Level;
 
-    for(const auto desiredLocale : desiredLocales)
+  void printbacktrace(nlLevel level, int maxFrames)
+  {
+    std::vector<void*> stack;
+    stack.reserve(maxFrames);
+    auto numFrames = backtrace(stack.data(), maxFrames);
+    if(numFrames == maxFrames)
     {
-      if(auto ret = setlocale(LC_ALL, desiredLocale))
-      {
-        if(g_strcmp0(ret, desiredLocale))
-        {
-          DebugLevel::warning("Desired locale was", desiredLocale, ", but current locale is:", ret);
-        }
-        else
-        {
-          DebugLevel::info("Successfully set locale to", desiredLocale);
-          return;
-        }
-      }
+      nltools::Log::error("You could be missing some frames from your backtrace. Try to increase your maxFrames");
     }
 
-    DebugLevel::error("Could not set locale to any desired");
+    auto symbols = backtrace_symbols(stack.data(), numFrames); //symbols is mallocced here
+
+    for(auto i = 0; i < numFrames; i++)
+    {
+      nltools::Log::printWithLevel(level, i, symbols[i]);
+    }
+
+    free(symbols);
+  }
+
+  void setupLocale()
+  {
+    constexpr auto preferedLocale = "en_US.utf8@nonlinear.UTF-8";
+    constexpr auto fallbackLocale = "en_US.utf8";
+
+    if(auto ret = setlocale(LC_ALL, preferedLocale); ret && !g_strcmp0(ret, preferedLocale))
+    {
+      DebugLevel::warning("Successfully set locale to", preferedLocale);
+    }
+    else if(auto ret = setlocale(LC_ALL, fallbackLocale); ret && !g_strcmp0(ret, fallbackLocale))
+    {
+      DebugLevel::error("Could not set locale to", preferedLocale, "but installed fallback", fallbackLocale,
+                        "- strings containing NL special chars will not be sortable, some tests will fail!");
+    }
+    else
+    {
+      DebugLevel::throwException("Could not set locale to", preferedLocale, "or at least", fallbackLocale);
+    }
   }
 }

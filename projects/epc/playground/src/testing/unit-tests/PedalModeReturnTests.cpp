@@ -3,6 +3,7 @@
 #include "mock/MockPresetStorage.h"
 #include "parameters/PedalParameter.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/RibbonParameterUseCases.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>
@@ -17,14 +18,13 @@ SCENARIO("Ribbon Return Mode")
   auto ribbon
       = dynamic_cast<RibbonParameter*>(eb->findParameterByID(HardwareSourcesGroup::getUpperRibbonParameterID()));
 
+  RibbonParameterUseCases useCase(ribbon);
+
   REQUIRE(ribbon);
 
   WHEN("Set Return Mode to center")
   {
-    {
-      auto scope = TestHelper::createTestScope();
-      ribbon->undoableSetRibbonReturnMode(scope->getTransaction(), RibbonReturnMode::RETURN);
-    }
+    useCase.setReturnMode(RibbonReturnMode::RETURN);
 
     CHECK(ribbon->getRibbonReturnMode() == RibbonReturnMode::RETURN);
 
@@ -44,10 +44,7 @@ SCENARIO("Ribbon Return Mode")
 
       WHEN("Set Return Mode to None")
       {
-        {
-          auto scope = TestHelper::createTestScope();
-          ribbon->undoableSetRibbonReturnMode(scope->getTransaction(), RibbonReturnMode::STAY);
-        }
+        useCase.setReturnMode(RibbonReturnMode::STAY);
 
         CHECK(rToA->getValue().isBoolean());
         CHECK(rToB->getValue().isBoolean());
@@ -80,8 +77,8 @@ SCENARIO("Local Enable - Disable BiDi Modulation")
     {
       auto scope = TestHelper::createTestScope();
       auto transaction = scope->getTransaction();
-      ribbon->undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY);
-      pedal1->undoableSetPedalMode(transaction, PedalModes::STAY);
+      ribbon->undoableSetRibbonReturnMode(transaction, RibbonReturnMode::STAY, Initiator::EXPLICIT_USECASE);
+      pedal1->undoableSetPedalMode(transaction, PedalModes::STAY, Initiator::EXPLICIT_USECASE);
       pedalA->getValue().setIsBoolean(true);
       ribbonA->getValue().setIsBoolean(true);
       pedalA->setCPFromHwui(transaction, 1);

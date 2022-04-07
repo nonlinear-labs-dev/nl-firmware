@@ -1,10 +1,11 @@
 #include <synth/C15Synth.h>
 #include "TCDDecoder.h"
+#include <playcontroller/playcontroller-defs.h>
 
 TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options, KeyShift *keyShift)
-    : m_dsp { dsp }
-    , m_options { options }
-    , m_keyShift { keyShift }
+    : m_dsp{ dsp }
+    , m_keyShift{ keyShift }
+    , m_options{ options }
 {
   reset();
 }
@@ -16,10 +17,9 @@ bool TCDDecoder::decode(const MidiEvent &event)
   const auto _data1 = event.raw[2];
   const uint32_t channel = _status & 0b00001111;
   const uint32_t st = (_status & 0b01111111) >> 4;
-
   if(st == 6)
   {
-    if(channel >= 0 && channel <= 7)
+    if(channel >= HW_SOURCE_ID_PEDAL_1 && channel <= HW_SOURCE_ID_RIBBON_2)
     {
       uint32_t arg = _data1 + (_data0 << 7);
       value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
@@ -41,11 +41,35 @@ bool TCDDecoder::decode(const MidiEvent &event)
       keyOrController = channel;
       m_type = DecoderEventType::HardwareChange;
     }
-    else if(channel == 13)  //Key Pos
+    else if(_status == AE_PROTOCOL_CMD)  // PlayController Command
+    {
+      switch(_data1)
+      {
+        case AE_PROTOCOL_CMD_TONE_OFF:  // developer: test tone off
+          m_dsp->onSettingToneToggle(1);
+          break;
+        case AE_PROTOCOL_CMD_TONE_ONLY:  // developer: test tone only (no synth)
+          m_dsp->onSettingToneToggle(2);
+          break;
+        case AE_PROTOCOL_CMD_TONE_ON:  // developer: test tone on (and synth)
+          m_dsp->onSettingToneToggle(3);
+          break;
+        case AE_PROTOCOL_CMD_DEFAULT_SOUND:  // developer: default sound (single initial, out mix a: 100%)
+          m_dsp->onSettingInitialSinglePreset();
+          break;
+        case AE_PROTOCOL_CMD_POLL_DATA_START:  // hw poll start
+          m_type = DecoderEventType::PollStart;
+          break;
+        case AE_PROTOCOL_CMD_POLL_DATA_STOP:  // hw poll stop
+          m_type = DecoderEventType::PollStop;
+          break;
+      }
+    }
+    else if(_status == AE_PROTOCOL_KEY_POS)  //Key Pos
     {
       keyOrController = _data1;
     }
-    else if(channel == 14)  //Key Down
+    else if(_status == AE_PROTOCOL_KEY_DOWN)  //Key Down
     {
       uint32_t arg = _data1 + (_data0 << 7);
       keyOrController = m_keyShift->keyDown(keyOrController);
@@ -56,7 +80,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
         m_type = DecoderEventType::KeyDown;
       }
     }
-    else if(channel == 15)  //Key Up
+    else if(_status == AE_PROTOCOL_KEY_UP)  //Key Up
     {
       uint32_t arg = _data1 + (_data0 << 7);
       keyOrController = m_keyShift->keyUp(keyOrController);

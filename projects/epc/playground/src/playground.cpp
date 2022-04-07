@@ -3,7 +3,6 @@
 #include "Options.h"
 #include "playground-helpers.h"
 #include <giomm.h>
-#include <nltools/messaging/Messaging.h>
 
 int main(int numArgs, char **argv)
 {

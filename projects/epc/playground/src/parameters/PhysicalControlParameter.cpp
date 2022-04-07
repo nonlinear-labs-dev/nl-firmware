@@ -16,6 +16,7 @@
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
+#include <libundo/undo/Scope.h>
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                                    tDisplayValue def, int coarseDenominator, int fineDenominator)
@@ -26,6 +27,21 @@ PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, Parame
 bool PhysicalControlParameter::isChangedFromLoaded() const
 {
   return false;
+}
+
+bool PhysicalControlParameter::isValueChangedFromLoaded() const
+{
+  return false;
+}
+
+double PhysicalControlParameter::getLastControlPositionValueBeforePresetLoad() const
+{
+  return m_valueBeforeLastLoad;
+}
+
+ReturnMode PhysicalControlParameter::getLastReturnModeBeforePresetLoad() const
+{
+  return m_returnModeBeforeLastLoad;
 }
 
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
@@ -62,7 +78,7 @@ void PhysicalControlParameter::onValueChanged(Initiator initiator, tControlPosit
       for(ModulationRoutingParameter *target : m_targets)
         target->applyPlaycontrollerPhysicalControl(newValue - oldValue);
     }
-    else
+    else if(initiator != Initiator::EXPLICIT_LOAD)
     {
       for(ModulationRoutingParameter *target : m_targets)
         target->applyAbsolutePlaycontrollerPhysicalControl(newValue);
@@ -82,6 +98,9 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
 
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
+  m_returnModeBeforeLastLoad = getReturnMode();
+  m_valueBeforeLastLoad = getControlPositionValue();
+  setIndirect(transaction, value);
 }
 
 void PhysicalControlParameter::registerTarget(ModulationRoutingParameter *target)

@@ -875,8 +875,9 @@ void dsp_host_dual::onSettingTuneReference(const float _position)
   }
 }
 
-void dsp_host_dual::onSettingInitialSinglePreset()
+DSPInterface::OutputResetEventSource dsp_host_dual::onSettingInitialSinglePreset()
 {
+  // todo: rework process
   if(LOG_RECALL)
   {
     nltools::Log::info("recallInitialSinglePreset(@", m_clock.m_index, ")");
@@ -980,13 +981,26 @@ void dsp_host_dual::onSettingInitialSinglePreset()
       localTransition(layerId, param, m_transition_time.m_dx);
     }
   }
+  return OutputResetEventSource::None;  // todo
 }
 
-uint32_t dsp_host_dual::onSettingToneToggle()
+void dsp_host_dual::onSettingToneToggle(const uint16_t _setting)
 {
-  m_tone_state = (m_tone_state + 1) % 3;
+  m_tone_state = (_setting == 0 ? m_tone_state + 1 : _setting - 1) % 3;
   m_fade.muteAndDo([&] { m_global.update_tone_mode(m_tone_state); });
-  return m_tone_state;
+  // this is a crucial developer tool that should always produce logs!
+  switch(m_tone_state)
+  {
+    case 0:
+      nltools::Log::info("test tone - off (synth only)");
+      break;
+    case 1:
+      nltools::Log::info("test tone - only (synth off)");
+      break;
+    case 2:
+      nltools::Log::info("test tone - on (synth on)");
+      break;
+  }
 }
 
 void dsp_host_dual::render()

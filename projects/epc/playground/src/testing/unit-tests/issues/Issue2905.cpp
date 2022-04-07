@@ -1,6 +1,4 @@
 #include <testing/TestHelper.h>
-#include <presets/PresetManager.h>
-#include <presets/EditBuffer.h>
 #include <presets/Bank.h>
 #include "CompileTimeOptions.h"
 

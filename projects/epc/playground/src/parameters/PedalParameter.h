@@ -11,10 +11,11 @@ class PedalParameter : public PhysicalControlParameter
 
  public:
   using super::super;
+  void onLocalEnableChanged(bool localEnableState) override;
 
-  void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode);
-  void undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
-  void undoableIncPedalMode(UNDO::Transaction *transaction);
+ public:
+  void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode, Initiator initiator);
+  void undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode, Initiator initiator);
   PedalModes getPedalMode() const;
   ReturnMode getReturnMode() const override;
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
