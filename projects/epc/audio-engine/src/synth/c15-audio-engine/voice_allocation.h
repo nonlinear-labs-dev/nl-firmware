@@ -338,6 +338,7 @@ class VoiceAllocation
     bool validity = _keyPos < Keys;
     if(validity)
     {
+      const bool isInternalKey = _inputSourceId == 0;
       KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_released ?
       validity = !keyState->m_active;
@@ -356,7 +357,7 @@ class VoiceAllocation
         keyDown_unisonLoop(keyState->m_position[0], firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
-        m_local_and_nonlocal_keys.m_global++;
+        m_local_and_nonlocal_keys.m_global += isInternalKey;
       }
     }
     return validity;
@@ -370,6 +371,7 @@ class VoiceAllocation
     //    bool innerValidity = false;
     if(validity)
     {
+      const bool isInternalKey = _inputSourceId == 0;
       KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_released ?
       validity = !keyState->m_active;
@@ -384,7 +386,7 @@ class VoiceAllocation
         {
           case AllocatorId::Local_I:
             unisonVoices = m_local[0].getUnison();
-            m_local_and_nonlocal_keys.m_local[0]++;
+            m_local_and_nonlocal_keys.m_local[0] += isInternalKey;
             // mono/poly process
             firstVoice = keyDown_process_split(keyState, unisonVoices, 0, true);
             if(firstVoice != -1)
@@ -396,7 +398,7 @@ class VoiceAllocation
             break;
           case AllocatorId::Local_II:
             unisonVoices = m_local[1].getUnison();
-            m_local_and_nonlocal_keys.m_local[1]++;
+            m_local_and_nonlocal_keys.m_local[1] += isInternalKey;
             // mono/poly process
             firstVoice = keyDown_process_split(keyState, unisonVoices, 1, true);
             if(firstVoice != -1)
@@ -408,8 +410,8 @@ class VoiceAllocation
             break;
           case AllocatorId::Local_Both:
             unisonVoices = m_local[0].getUnison();
-            m_local_and_nonlocal_keys.m_local[0]++;
-            m_local_and_nonlocal_keys.m_local[1]++;
+            m_local_and_nonlocal_keys.m_local[0] += isInternalKey;
+            m_local_and_nonlocal_keys.m_local[1] += isInternalKey;
             // mono/poly process
             firstVoice = keyDown_process_split(keyState, unisonVoices, 0, true);
             if(firstVoice != -1)
@@ -444,6 +446,7 @@ class VoiceAllocation
     bool validity = _keyPos < Keys;
     if(validity)
     {
+      const bool isInternalKey = _inputSourceId == 0;
       KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_released ?
       validity = !keyState->m_active;
@@ -463,7 +466,7 @@ class VoiceAllocation
         keyDown_unisonLoop(keyState->m_position[0], LocalVoices + firstVoice, unisonVoices, _inputSourceId);
         // confirm
         keyDown_confirm(keyState);
-        m_local_and_nonlocal_keys.m_global++;
+        m_local_and_nonlocal_keys.m_global += isInternalKey;
       }
     }
     return validity;
@@ -474,6 +477,7 @@ class VoiceAllocation
     bool validity = _keyPos < Keys;
     if(validity)
     {
+      const bool isInternalKey = _inputSourceId == 0;
       KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_pressed ?
       validity = keyState->m_active;
@@ -490,7 +494,7 @@ class VoiceAllocation
       keyUp_confirm(keyState);
       if(m_local_and_nonlocal_keys.m_global > 0)
       {
-        m_local_and_nonlocal_keys.m_global--;
+        m_local_and_nonlocal_keys.m_global -= isInternalKey;
       }
     }
     return validity;
@@ -502,6 +506,7 @@ class VoiceAllocation
     bool validity = _keyPos < Keys;
     if(validity)
     {
+      const bool isInternalKey = _inputSourceId == 0;
       KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_pressed ?
       validity = keyState->m_active && (keyState->m_origin == _determinedPart);
@@ -517,7 +522,7 @@ class VoiceAllocation
             unisonVoices = m_local[0].getUnison();
             if(m_local_and_nonlocal_keys.m_local[0] > 0)
             {
-              m_local_and_nonlocal_keys.m_local[0]--;
+              m_local_and_nonlocal_keys.m_local[0] -= isInternalKey;
             }
             firstVoice = keyUp_process_part(keyState, 0, true) * unisonVoices;
             // unison loop
@@ -527,7 +532,7 @@ class VoiceAllocation
             unisonVoices = m_local[1].getUnison();
             if(m_local_and_nonlocal_keys.m_local[1] > 0)
             {
-              m_local_and_nonlocal_keys.m_local[1]--;
+              m_local_and_nonlocal_keys.m_local[1] -= isInternalKey;
             }
             firstVoice = keyUp_process_part(keyState, 1, true) * unisonVoices;
             // unison loop
@@ -538,7 +543,7 @@ class VoiceAllocation
             unisonVoices = m_local[0].getUnison();
             if(m_local_and_nonlocal_keys.m_local[0] > 0)
             {
-              m_local_and_nonlocal_keys.m_local[0]--;
+              m_local_and_nonlocal_keys.m_local[0] -= isInternalKey;
             }
             firstVoice = keyUp_process_part(keyState, 0, true) * unisonVoices;
             keyUp_unisonLoop(firstVoice, unisonVoices);
@@ -546,7 +551,7 @@ class VoiceAllocation
             unisonVoices = m_local[1].getUnison();
             if(m_local_and_nonlocal_keys.m_local[1] > 0)
             {
-              m_local_and_nonlocal_keys.m_local[1]--;
+              m_local_and_nonlocal_keys.m_local[1] -= isInternalKey;
             }
             firstVoice = keyUp_process_part(keyState, 1, false) * unisonVoices;
             keyUp_unisonLoop(LocalVoices + firstVoice, unisonVoices);
@@ -563,6 +568,7 @@ class VoiceAllocation
     bool validity = _keyPos < Keys;
     if(validity)
     {
+      const bool isInternalKey = _inputSourceId == 0;
       KeyAssignment* keyState = &m_keyState[_inputSourceId][_keyPos];
       // validation 2 - key_pressed ?
       validity = keyState->m_active;
@@ -580,7 +586,7 @@ class VoiceAllocation
       keyUp_confirm(keyState);
       if(m_local_and_nonlocal_keys.m_global > 0)
       {
-        m_local_and_nonlocal_keys.m_global--;
+        m_local_and_nonlocal_keys.m_global -= isInternalKey;
       }
     }
     return validity;
