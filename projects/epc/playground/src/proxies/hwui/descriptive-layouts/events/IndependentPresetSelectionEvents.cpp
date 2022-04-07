@@ -9,6 +9,7 @@
 #include "GlobalEventSinkBroker.h"
 #include "GlobalEventSourceBroker.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <proxies/hwui/HWUI.h>
 
 namespace DescriptiveLayouts

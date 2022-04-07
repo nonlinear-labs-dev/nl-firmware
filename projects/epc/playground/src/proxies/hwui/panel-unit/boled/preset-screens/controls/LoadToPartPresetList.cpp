@@ -1,4 +1,5 @@
 #include "LoadToPartPresetList.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <libundo/undo/Scope.h>

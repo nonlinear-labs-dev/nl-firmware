@@ -26,8 +26,8 @@ void UnisonGroup::init()
   appendParameter(new UnisonVoicesParameter(this, getVoiceGroup()));
 
   appendParameter(new ModulateableUnisonParameterWithUnusualModUnit(
-      this, ParameterId { C15::PID::Unison_Detune, getVoiceGroup() }, ScaleConverter::get<Fine12STScaleConverter>(),
-      ScaleConverter::get<FineBipolar12STScaleConverter>(), 0, 120, 12000));
+      this, ParameterId { C15::PID::Unison_Detune, getVoiceGroup() }, ScaleConverter::get<Fine24STScaleConverter>(),
+      ScaleConverter::get<FineBipolar24STScaleConverter>(), 0, 240, 24000));
 
   appendParameter(new ModulateableUnisonParameter(
       this, ParameterId { C15::PID::Unison_Phase, getVoiceGroup() }, ScaleConverter::get<Linear360DegreeScaleConverter>(), 0, 360, 3600));

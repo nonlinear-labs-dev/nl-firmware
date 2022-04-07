@@ -41,7 +41,7 @@ void ShaperAGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::Shp_A_FB_Mix, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Shp_A_FB_Env_C, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(), 0,
+  appendParameter(new ModulateableParameter(this, { C15::PID::Shp_A_FB_Env_C, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0,
                                 100, 1000));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Shp_A_Ring_Mod, getVoiceGroup() },

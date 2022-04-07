@@ -10,6 +10,7 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/HWUI.h>
+#include "use-cases/ModParameterUseCases.h"
 
 UpperModulationBoundControl::UpperModulationBoundControl(const Rect &r)
     : super(r)

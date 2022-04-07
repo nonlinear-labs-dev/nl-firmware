@@ -32,7 +32,7 @@ int ScaleGroup::getScaleBaseParameterNumber()
 
 void ScaleGroup::init()
 {
-  auto baseKeyParam = new ScaleParameter(this, { getScaleBaseParameterNumber(), VoiceGroup::Global },
+  auto baseKeyParam = new BaseScaleParameter(this, { getScaleBaseParameterNumber(), VoiceGroup::Global },
                                          ScaleConverter::get<BaseKeyScaleConverter>(), 0, 11, 11);
   baseKeyParam->onParameterChanged(sigc::mem_fun(this, &ScaleGroup::onBaseKeyParameterChanged), false);
   appendParameter(baseKeyParam);

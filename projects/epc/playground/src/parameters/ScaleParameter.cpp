@@ -18,20 +18,7 @@ ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, con
 
 Layout *ScaleParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  switch(focusAndMode.mode)
-  {
-    case UIMode::Info:
-      return new ParameterInfoLayout();
-
-    case UIMode::Edit:
-      return new ScaleParameterEditLayout(); //TODO fix UI after design-doc is done
-
-    case UIMode::Select:
-    default:
-      return new ScaleParameterSelectLayout();
-  }
-
-  g_return_val_if_reached(nullptr);
+  return m_scaleImpl.createLayout(focusAndMode);
 }
 
 Glib::ustring ScaleParameter::getMiniParameterEditorName() const
@@ -72,4 +59,49 @@ Glib::ustring ScaleParameter::getLongName() const
     return UNDO::StringTools::buildString(super::getLongName(), " (", stringizedKey, ")");
   }
   return super::getLongName();
+}
+
+BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling,
+                                       tControlPositionValue def, tControlPositionValue coarseDenom,
+                                       tControlPositionValue fineDenom)
+: super(group, id, scaling, def, coarseDenom, fineDenom)
+{
+}
+
+Layout *BaseScaleParameter::createLayout(FocusAndMode fam) const
+{
+  return m_scaleImpl.createLayout(fam);
+}
+
+Glib::ustring BaseScaleParameter::getMiniParameterEditorName() const
+{
+  return "Scale...";
+}
+
+void BaseScaleParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  super::writeDocProperties(writer, knownRevision);
+
+  if(!shouldWriteDocProperties(knownRevision))
+  {
+    writer.writeTextElement("long-name", getLongName());
+  }
+}
+
+Layout *ScaleParameterIMPL::createLayout(FocusAndMode fam) const
+{
+  switch(fam.mode)
+  {
+    case UIMode::Info:
+      return new ParameterInfoLayout();
+
+    case UIMode::Edit:
+      return new ScaleParameterEditLayout(); //TODO fix UI after design-doc is done
+
+    case UIMode::Select:
+    default:
+      return new ScaleParameterSelectLayout();
+  }
+
+  g_return_val_if_reached(nullptr);
 }

@@ -39,7 +39,7 @@ void CombFilterGroup::init()
       ScaleConverter::get<PitchCombLinearStModulationScaleConverter>(), 0.5, 120, 12000));
 
   appendParameter(new Parameter(this, { C15::PID::Comb_Flt_Pitch_KT, getVoiceGroup() },
-                                ScaleConverter::get<Fine105PercentScaleConverter>(), 100.0 / 105.0, 105, 10500));
+                                ScaleConverter::get<Fine200PercentScaleConverter>(), 0.5, 200, 20000));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Comb_Flt_Pitch_Env_C, getVoiceGroup() },
                                 ScaleConverter::get<FineBipolar80StScaleConverter>(), 0, 80, 8000));
@@ -58,7 +58,7 @@ void CombFilterGroup::init()
       ScaleConverter::get<LinearBipolar140StScaleConverter>(), 1.0, 140, 1400));
 
   appendParameter(new Parameter(this, { C15::PID::Comb_Flt_AP_KT, getVoiceGroup() },
-                                ScaleConverter::get<Linear100PercentScaleConverter>(), 1.0, 100, 1000));
+                                ScaleConverter::get<Linear200PercentScaleConverter>(), 0.5, 200, 2000));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Comb_Flt_AP_Env_C, getVoiceGroup() },
                                 ScaleConverter::get<FineBipolar80StScaleConverter>(), 0, 80, 800));
@@ -71,7 +71,7 @@ void CombFilterGroup::init()
       ScaleConverter::get<LinearBipolar100StScaleConverter>(), 1.0, 100, 1000));
 
   appendParameter(new Parameter(this, { C15::PID::Comb_Flt_LP_KT, getVoiceGroup() },
-                                ScaleConverter::get<Linear100PercentScaleConverter>(), 1.0, 100, 1000));
+                                ScaleConverter::get<Linear200PercentScaleConverter>(), 0.5, 200, 2000));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Comb_Flt_LP_Env_C, getVoiceGroup() },
                                 ScaleConverter::get<LinearBipolar100StScaleConverter>(), 0, 100, 1000));

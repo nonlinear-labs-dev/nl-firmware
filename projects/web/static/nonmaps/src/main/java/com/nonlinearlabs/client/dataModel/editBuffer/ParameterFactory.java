@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -31,7 +32,7 @@ public class ParameterFactory {
 
 	static private int[] modulateableParameters = { 0, 2, 4, 6, 8, 10, 12, 19, 21, 23, 25, 27, 29, 31, 38, 40, 42, 44,
 			46, 53, 56, 57, 59, 60, 62, 63, 64, 66, 67, 68, 70, 71, 73, 74, 75, 76, 78, 80, 81, 83, 86, 87, 89, 90, 92,
-			93, 94, 96, 97, 98, 100, 101, 103, 104, 105, 106, 108, 110, 111, 113, 115, 119, 119, 123, 126, 127,	129, 132, 
+			93, 94, 96, 97, 98, 100, 101, 103, 104, 105, 106, 108, 110, 111, 113, 115, 118, 119, 123, 126, 127,	129, 132, 
 			133, 135, 136, 138, 140, 143, 144, 147, 148, 150, 152, 153, 155, 156, 158, 160, 162, 164, 166, 167, 169, 171,
 			172, 174, 175, 177, 178, 180, 181, 183, 184, 185, 188, 190, 191, 192, 194, 196, 197, 199, 201, 203, 204, 206,
 			207, 209, 211, 213, 214, 216, 218, 219, 221, 222, 223, 225, 227, 229, 231, 232, 233, 235, 237, 238, 240, 241,
@@ -212,6 +213,18 @@ public class ParameterFactory {
 		return true;
 	}
 
+
+	private static boolean noDouble(int[] a) {
+		HashSet<Integer> h = new HashSet<Integer>();
+		for (int i = 0; i < a.length; i++)
+		{
+			if (h.contains(a[i]))
+				return false;
+			h.add(a[i]);
+		}
+		return true;
+	}
+
 	public static void assertSorted() {
 		assert (isSorted(parameters));
 		assert (isSorted(globalParameters));
@@ -225,5 +238,17 @@ public class ParameterFactory {
 
 		assert (isSorted(parameterGroups));
 		assert (isSorted(globalParameterGroups));
+	}
+
+	public static void assertNoDouble() {
+		assert (noDouble(parameters));
+		assert (noDouble(globalParameters));
+		assert (noDouble(modulateableParameters));
+		assert (noDouble(pedals));
+		assert (noDouble(ribbons));
+		assert (noDouble(macroControls));
+		assert (noDouble(modulationRouters));
+		assert (noDouble(scaleOffsetParameters));
+		assert (noDouble(voicesParameters));
 	}
 }

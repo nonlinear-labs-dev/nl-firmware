@@ -7,6 +7,7 @@
 #include <presets/PresetManager.h>
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ScaleParameterLayout.h>
+#include "use-cases/EditBufferUseCases.h"
 
 void toggleHightlight(Control* c);
 

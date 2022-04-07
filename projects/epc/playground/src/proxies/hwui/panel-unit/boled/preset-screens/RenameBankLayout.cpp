@@ -1,6 +1,7 @@
 #include "RenameBankLayout.h"
 #include "controls/PresetNameLabel.h"
 #include "Application.h"
+#include "use-cases/BankUseCases.h"
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/controls/Button.h>
 #include <presets/PresetManager.h>

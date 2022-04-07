@@ -69,6 +69,7 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 
 	private EditBufferModel() {
 		ParameterFactory.assertSorted();
+		ParameterFactory.assertNoDouble();
 
 		for (String groupdId : ParameterFactory.getParameterGroups()) {
 			if (ParameterFactory.isGlobalParameterGroup(groupdId)) {

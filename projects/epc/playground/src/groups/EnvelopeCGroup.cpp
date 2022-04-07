@@ -13,6 +13,7 @@
 #include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 #include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 #include <parameter_declarations.h>
+#include "parameters/scale-converters/LinearBipolar60DBTScaleConverter.h"
 
 EnvelopeCGroup::EnvelopeCGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Env C", vg }, "Envelope C", "Envelope C", "Envelope C")
@@ -53,7 +54,7 @@ void EnvelopeCGroup::init()
                                 0.5, 60, 600));
 
   appendParameter(
-      new Parameter(this, { C15::PID::Env_C_Att_Vel, getVoiceGroup() }, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
+      new Parameter(this, { C15::PID::Env_C_Att_Vel, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60DbtScaleConverter>(), 0.5, 60, 600));
 
   appendParameter(
       new Parameter(this, { C15::PID::Env_C_Rel_Vel, getVoiceGroup() }, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
@@ -61,8 +62,8 @@ void EnvelopeCGroup::init()
   appendParameter(new Parameter(this, { C15::PID::Env_C_Lvl_KT, getVoiceGroup() }, ScaleConverter::get<LinearBipolar1DbstScaleConverter>(),
                                 0, 100, 1000));
 
-  appendParameter(new Parameter(this, { C15::PID::Env_C_Time_KT, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
-                                0.05, 100, 1000));
+  appendParameter(new Parameter(this, { C15::PID::Env_C_Time_KT, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+                                0.55, 100, 1000));
 
   appendParameter(new Parameter(this, { C15::PID::ParameterID::Env_C_Retr_H, getVoiceGroup() },
                                 ScaleConverter::get<Linear100PercentScaleConverter>(), 0.0, 100, 1000));

@@ -15,6 +15,7 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <clipboard/Clipboard.h>
 #include <use-cases/PresetUseCases.h>
+#include "use-cases/BankUseCases.h"
 
 int PresetEditButtonMenu::s_lastSelection = PresetEditButtonMenu::Actions::Rename;
 

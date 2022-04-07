@@ -41,6 +41,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include "ModulateableParameterLayouts.h"
 #include "ModAspectRecallOverlay.h"
+#include "use-cases/ModParameterUseCases.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {

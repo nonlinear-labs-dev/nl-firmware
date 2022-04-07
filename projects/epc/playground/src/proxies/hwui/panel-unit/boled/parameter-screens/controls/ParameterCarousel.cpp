@@ -11,6 +11,7 @@
 #include "presets/EditBuffer.h"
 #include "proxies/hwui/controls/Button.h"
 #include "NeverHighlitButton.h"
+#include "use-cases/EditBufferUseCases.h"
 
 ParameterCarousel::ParameterCarousel(const Rect& pos)
     : super(pos)

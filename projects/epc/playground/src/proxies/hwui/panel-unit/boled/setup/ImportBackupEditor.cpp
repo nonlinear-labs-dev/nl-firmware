@@ -26,6 +26,7 @@
 #include <thread>
 #include "USBStickAvailableView.h"
 #include "device-settings/DebugLevel.h"
+#include "use-cases/PresetManagerUseCases.h"
 #include <tools/FileSystem.h>
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>

@@ -4,6 +4,7 @@
 #include <proxies/hwui/HWUI.h>
 #include "RenameVoiceGroupLayout.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <libundo/undo/Scope.h>
 
 inline EditBuffer* getEditBuffer()

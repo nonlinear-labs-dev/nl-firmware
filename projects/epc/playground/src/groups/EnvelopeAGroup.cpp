@@ -56,7 +56,7 @@ void EnvelopeAGroup::init()
                                 0.5, 60, 600));
 
   appendParameter(
-      new Parameter(this, { C15::PID::Env_A_Att_Vel, getVoiceGroup() }, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
+      new Parameter(this, { C15::PID::Env_A_Att_Vel, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60DbtScaleConverter>(), 0.5, 60, 600));
 
   appendParameter(
       new Parameter(this, { C15::PID::Env_A_Rel_Vel, getVoiceGroup() }, ScaleConverter::get<Linear60DbtScaleConverter>(), 0, 60, 600));
@@ -64,8 +64,8 @@ void EnvelopeAGroup::init()
   appendParameter(new Parameter(this, { C15::PID::Env_A_Lvl_KT, getVoiceGroup() }, ScaleConverter::get<LinearBipolar1DbstScaleConverter>(),
                                 0, 100, 1000));
 
-  appendParameter(new Parameter(this, { C15::PID::Env_A_Time_KT, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
-                                0.05, 100, 1000));
+  appendParameter(new Parameter(this, { C15::PID::Env_A_Time_KT, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+                                0.55, 100, 1000));
 
   appendParameter(new Parameter(this, { C15::PID::Env_A_Dec_1_Vel, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60DbtScaleConverter>(),
                                 0.0, 60, 600));

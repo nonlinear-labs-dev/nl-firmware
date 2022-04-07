@@ -12,6 +12,9 @@
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <parameters/PhysicalControlParameter.h>
+#include <parameters/HardwareSourceSendParameter.h>
+#include "parameter_declarations.h"
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)

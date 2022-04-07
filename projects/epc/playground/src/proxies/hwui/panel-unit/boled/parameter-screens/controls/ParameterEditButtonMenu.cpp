@@ -11,6 +11,9 @@
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <http/UndoScope.h>
 #include <groups/ParameterGroup.h>
+#include "parameters/HardwareSourceSendParameter.h"
+#include "parameters/PhysicalControlParameter.h"
+#include "use-cases/EditBufferUseCases.h"
 
 int ParameterEditButtonMenu::s_lastAction = 0;
 

@@ -36,7 +36,7 @@ void OscillatorBGroup::init()
       ScaleConverter::get<PitchOscLinearStScaleModulationConverter>(), 80.0 / 150.0, 150, 15000));
 
   appendParameter(new Parameter(this, { C15::PID::Osc_B_Pitch_KT, getVoiceGroup() },
-                                ScaleConverter::get<Fine105PercentScaleConverter>(), 100.0 / 105.0, 105, 10500));
+                                ScaleConverter::get<Fine200PercentScaleConverter>(), 0.5, 200, 20000));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_Pitch_Env_C, getVoiceGroup() },
                                 ScaleConverter::get<FineBipolar80StScaleConverter>(), 0, 80, 8000));
