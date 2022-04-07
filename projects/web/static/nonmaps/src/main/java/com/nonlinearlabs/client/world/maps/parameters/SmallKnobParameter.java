@@ -4,7 +4,7 @@ import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
 
-public class SmallKnobParameter extends Parameter {
+public class SmallKnobParameter extends ModulatableParameter {
 
     private ModulationSourceLabel modSrcLabel;
 

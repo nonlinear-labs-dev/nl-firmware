@@ -51,11 +51,10 @@ public class ScaleParameter extends ModulationSourceHighPriority {
 			if(c instanceof ModulationSourceLabel)
 			{
 				double centeredX = (ret.getWidth() - c.getNonPosition().getWidth()) / 2.0;
-				double height = c.getNonPosition().getHeight();
-				c.moveTo(centeredX + getXMargin(), c.getNonPosition().getBottom() - height);	
+				double centeredY = (ret.getHeight() - c.getNonPosition().getHeight()) / 2.0;
+				c.moveTo(centeredX + getXMargin(), centeredY + getYMargin());
 			}
 		}
         return ret;
     }
-
 }

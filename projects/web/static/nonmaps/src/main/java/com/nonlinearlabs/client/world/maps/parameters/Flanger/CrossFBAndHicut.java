@@ -3,11 +3,12 @@ package com.nonlinearlabs.client.world.maps.parameters.Flanger;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
+import com.nonlinearlabs.client.world.maps.parameters.ModulateableSmallKnobParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class CrossFBAndHicut extends ParameterColumn {
 
-    private class CrossFB extends ModulateableKnob {
+    private class CrossFB extends ModulateableSmallKnobParameter {
 
         private CrossFB(MapsLayout parent) {
             super(parent, 221);
@@ -19,7 +20,7 @@ class CrossFBAndHicut extends ParameterColumn {
         }
     }
 
-    private class HiCut extends ModulateableKnob {
+    private class HiCut extends ModulateableSmallKnobParameter {
 
         private HiCut(MapsLayout parent) {
             super(parent, 222);

@@ -23,4 +23,9 @@ class StereoColumn extends ParameterColumn {
 			}
 		});
 	}
+
+	@Override
+	protected boolean shouldDisplayHeaderOnFirstParameter() {
+		return false;
+	}
 }
