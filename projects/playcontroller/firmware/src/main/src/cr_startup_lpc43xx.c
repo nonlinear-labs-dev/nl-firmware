@@ -308,7 +308,7 @@ extern unsigned int __bss_section_table_end;
 // library.
 //
 //*****************************************************************************
-inline void allLedsOn(void)
+static inline void allLedsOn(void)
 {
   LED_A_init();
   LED_B_init();

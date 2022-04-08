@@ -72,14 +72,27 @@
 */
 
 keyQueue_T POLY_keyQueue;
+uint64_t   POLY_pressedKeyBF = 0;
+uint64_t   POLY_maskedKeyBF  = 0;
+
+void POLY_SetATMasking(uint16_t const length, uint16_t const *const data)
+{
+  if (length != 4)
+    return;
+
+  POLY_maskedKeyBF = *((uint64_t *) data);
+}
 
 static inline void addKeyToQueue(uint8_t const key)
 {
   POLY_keyQueue.pressed[POLY_keyQueue.head++] = key;
+  POLY_pressedKeyBF |= (uint64_t) 1 << key;
 }
 
 static inline void removeKeyFromQueue(uint8_t const key)
 {
+  POLY_pressedKeyBF &= ~((uint64_t) 1 << key);
+
   if (POLY_keyQueue.head == POLY_keyQueue.tail)
     return;
 
@@ -172,7 +185,7 @@ void POLY_EnableKeyMapping(uint16_t const on)
   remapKeys = (on != 0);
 }
 
-void POLY_SetKeyRemapTable(uint16_t const length, uint16_t *data)
+void POLY_SetKeyRemapTable(uint16_t const length, uint16_t const *data)
 {
   if (length != KEYMAP_SIZE / 2)
     return;
@@ -239,6 +252,10 @@ void POLY_Init(void)
   // init a "reverse" keymap, in case key mapping is activated without sending a table first
   for (int8_t i = 0; i < KEYMAP_SIZE; i++)
     keyRemapTable[i] = 64 - i;  // center is physical key #32
+
+  POLY_keyQueue.head = POLY_keyQueue.tail = 0;
+  POLY_pressedKeyBF                       = 0;
+  POLY_maskedKeyBF                        = 0;
 }
 
 /******************************************************************************

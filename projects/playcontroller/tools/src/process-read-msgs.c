@@ -514,9 +514,9 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         {
           if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
             cursorUp(61);
-          for (int i = 0; i < 61; i++)
-            printf("%d, ", data[i]);
-          printf("\n");
+          for (int i = 0; i < 60; i++)
+            printf("%d,", data[i]);
+          printf("%d\n", data[60]);
         }
         lastMessage = cmd << 16;
         return 1;

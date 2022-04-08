@@ -1,10 +1,11 @@
 #include <stdint.h>
 #include "tcd/nl_tcd_aftertouch.h"
-#include "tcd/nl_tcd_interpol.h"
+#include "playcontroller/lpc_lib.h"
 #include "tcd/nl_tcd_adc_work.h"
 #include "tcd/nl_tcd_poly.h"
 #include "ipc/emphase_ipc.h"
 #include "playcontroller/playcontroller-defs.h"
+#include "playcontroller/playcontroller-data.h"
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
 
@@ -34,16 +35,28 @@ static int      AT_updateEeprom   = 0;  // flag / step chain variable
 // [62] is current force
 static uint16_t AT_adcPerKey[63];
 
-// --- ADC value to Force conversion --- this is the general characteristic curve
-// ADC values (input, 0...4096)
-static int16_t AT_adcToForceTableX[16] = { 0, 1196, 1992, 2530, 2816, 3002, 3202, 3301, 3368, 3412, 3474, 3512, 3541, 3557, 3570, 3600 };
-// Force values (output, Milli-Newton units)
-static int16_t AT_adcToForceTableY[16] = { 5300, 6000, 6500, 7000, 7500, 8000, 9000, 10000, 11000, 12000, 14000, 16000, 18000, 20000, 22000, 26000 };
-
+// --- Aftertouch: ADC value to Force conversion (this is the general characteristic curve)
+// X and Y data is global (defined in playcontroller-defs.h)
 static LIB_interpol_data_T AT_adcToForce = { 16, AT_adcToForceTableX, AT_adcToForceTableY };
 
 // --- Default Calibration (based on many keybeds) ---
 // clang-format off
+#warning ToDo: insert useful default aftertouch calibration data
+#define ATCAL (3300)
+static AT_calibration_T NL_EEPROM_ALIGN AT_adcCalibration =
+{
+  .keybedId   = 0000,
+  .adcTarget  = ATCAL,  // input into adc-to-force characteristic to achieve 10N
+  .adcDefault = ATCAL,
+  {
+	ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL,
+	ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL,
+	ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL,
+	ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL,
+	ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL,
+  }
+};
+/* TEST CODE
 static AT_calibration_T NL_EEPROM_ALIGN AT_adcCalibration =
 {
   .keybedId   = 00001,
@@ -57,6 +70,7 @@ static AT_calibration_T NL_EEPROM_ALIGN AT_adcCalibration =
 	3567, 3517, 3610, 3558, 3618, 3609, 3530, 3542, 3576, 3621, 3533, 3593, 3570
   }
 };
+*/
 // clang-format on
 
 // --- Force to TDC range conversion tables ---
@@ -100,9 +114,7 @@ void AT_SetAftertouchCalibration(uint16_t const length, uint16_t *data)
   if (length != (sizeof(AT_calibration_T) / sizeof(uint16_t)))
     return;
 
-  AT_calibration_T tmp;
-
-  memcpy(&AT_adcCalibration, &tmp, sizeof(AT_adcCalibration));
+  memcpy(&AT_adcCalibration, data, sizeof(AT_adcCalibration));
   if (AT_updateEeprom == 0)  // already updating ?
     AT_updateEeprom = 1;     // no, start step chain
 }
@@ -224,14 +236,21 @@ static void ProcessAftertouch(void)
   static int16_t calibrationPoint;
   static int     dynamicOffset = 0;
 
-  adcValue    = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
-  focussedKey = POLY_getNewestKey();  // -1 means : no key pressed
+  adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+
   do
   {
+    if (POLY_OnlyMaskedKeysPressed())
+    {
+      adcValue    = 0;
+      focussedKey = lastFocussedKey;
+      break;
+    }
+    focussedKey = POLY_getNewestKey();  // -1 means : no key pressed
     if (focussedKey != lastFocussedKey)
     {
       if (focussedKey == -1)
-      {  // no key pressed at all
+      {
         calibrationTarget = calibrationPoint = AT_adcCalibration.adcDefault;
         break;
       }

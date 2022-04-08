@@ -298,6 +298,10 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
     POLY_ForceKey(data[0], data[1], data[2]);
   else if (type == PLAYCONTROLLER_BB_MSG_TYPE_KEYMAP_DATA)
     POLY_SetKeyRemapTable(length, data);
+  else if (type == PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING)
+    POLY_SetATMasking(length, data);
+  else if (type == PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL)
+    AT_SetAftertouchCalibration(length, data);
   else if (type == PLAYCONTROLLER_BB_MSG_TYPE_SETTING)
   {
     switch (data[0])

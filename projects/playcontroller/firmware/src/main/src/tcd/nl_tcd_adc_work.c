@@ -11,7 +11,7 @@
 #include "nl_tcd_msg.h"
 #include "ipc/emphase_ipc.h"
 #include "spibb/nl_bb_msg.h"
-#include "tcd/nl_tcd_interpol.h"
+#include "playcontroller/lpc_lib.h"
 #include "tcd/nl_tcd_aftertouch.h"
 #include "tcd/nl_tcd_poly.h"
 #include "ehc/nl_ehc_ctrl.h"

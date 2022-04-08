@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 
+//
+// ---------- ENUMS ----------------
+//
+
 enum PLAYCONTROLLER_BB_MESSAGE_TYPES
 {
   PLAYCONTROLLER_BB_MSG_TYPE_PRESET_DIRECT = 0x0100,  // not used, direction: input; arguments(uint16): N, Nx data
@@ -26,6 +30,8 @@ enum PLAYCONTROLLER_BB_MESSAGE_TYPES
   PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA  = 0x1400,  // direction: output; arguments  (uint16): 64+128 key counters (64 low-level, 128 midi-level)
   PLAYCONTROLLER_BB_MSG_TYPE_UHID64        = 0x1500,  // direction: output; arguments  (uint16): 4 words, comprising an uint64_t;
   PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA   = 0x1600,  // direction: output; arguments  (uint16): 61 uint16, max aftertouch values for all 61 keys
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING    = 0x1700,  // direction: input;  arguments  (uint16): 1 uint64 (bit 0 = leftmost key)
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL        = 0x1800,  // direction: input;  arguments  (uint16): 64 (see typedef AT_calibration_T)
   PLAYCONTROLLER_BB_MSG_TYPE_TEST_MSG      = 0xFFFF,  // direction in/out
 };
 
@@ -172,6 +178,10 @@ enum SUP_MUTING_BITS
   SUP_UNMUTE_STATUS_HARDWARE_VALUE     = 0b0000000000000001,  // ... with this value (1:unmuted)
 };
 
+//
+// ---------- TYPEDEFS ----------------
+//
+
 typedef struct
 {
   unsigned ctrlId : 3;            // controller number 0...7, aka input (main) ADC channel 0...7, 0/1=J1T/R, 2/3=J2T/R, etc,
@@ -199,7 +209,7 @@ typedef struct
 
 } EHC_ControllerStatus_T;
 
-// --- Aftertoucn per Key Calibration ---
+// --- Aftertouch per Key Calibration data structure ---
 typedef struct
 {
   uint16_t keybedId;       // keybed serial #
@@ -207,4 +217,3 @@ typedef struct
   uint16_t adcDefault;     // default when AT is active without any key pressed (typically the average of all the following values)
   uint16_t adcValues[61];  // adc values obtained for test force for all 61 keys
 } AT_calibration_T;
-

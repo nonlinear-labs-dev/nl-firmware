@@ -41,10 +41,3 @@ static inline int16_t abs(int16_t const x)
 {
   return (x >= 0) ? x : -x;
 }
-
-#pragma GCC diagnostic error "-Wdiv-by-zero"
-#define SIZECHECK(item, size)         \
-  {                                   \
-    if (1 / (sizeof(item) == (size))) \
-      ;                               \
-  }

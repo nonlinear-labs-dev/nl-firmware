@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -113,9 +114,12 @@ Retry:
 
 #define RESET "reset"
 
+#define AT_MASK "at-mask"
+
 uint16_t REQ_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_REQUEST, 0x0001, 0x0000 };
 uint16_t SET_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_SETTING, 0x0002, 0x0000, 0x0000 };
 uint16_t KEY_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_KEY_EMUL, 0x0003, 0x0000, 0x0000, 0x0000 };
+uint16_t ATM_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING, 0x0004, 0x0000, 0x0000, 0x0000, 0x0000 };
 
 // ===================
 void Usage(void)
@@ -154,6 +158,8 @@ void Usage(void)
   puts("  key <note-nr> <time>      : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
   puts("     <time>                 : key time (~1/velocity) in us (1000...525000), negative means key release");
+  puts("  at-mask <bitmask64> : mask keys for aftertouch");
+  puts("      <bitmask64>           : 16-digit hex value representing a 64bit bit mask, bit 0 is leftmost key");
   puts("  test <size> <count> <delay>   : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
   puts("     <count>                    : # of times the message is send (1..65535)");
@@ -580,9 +586,27 @@ int main(int argc, char const *argv[])
         return 0;
       }
     }
+  }
 
-    printf(">>> LPC reset failed after %u retries\n", savedRetries);
-    return 1;  // reset failed
+  // at-mask
+  if (strncmp(argv[1], AT_MASK, sizeof AT_MASK) == 0)
+  {
+    if (argc != 3)
+    {
+      puts("at-mask: wrong number of arguments");
+      Usage();
+    }
+
+    uint64_t mask = 0;
+    if (sscanf(argv[2], "%" SCNx64, &mask) != 1)
+    {
+      puts("at-mask: mask argument error (hex uint64 expected)");
+      Usage();
+    }
+    uint64_t *p = (uint64_t *) (&ATM_DATA[2]);
+    *p          = mask;
+    writeData(driver, sizeof ATM_DATA, &ATM_DATA[0]);
+    return 0;
   }
 
   // unknown

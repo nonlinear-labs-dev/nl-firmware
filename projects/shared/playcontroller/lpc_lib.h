@@ -1,14 +1,22 @@
 /******************************************************************************/
-/** @file		nl_tcd_interpol.h
+/** @file		lpc_lib.h
     @date		2019-12-02
     @version	0
     @author		KSTR
-    @brief		lookup table with piece-wise linear interpolation
+    @brief		lookup table with piece-wise linear interpolation, lowpass filter
     @ingroup	nl_tcd_modules
 *******************************************************************************/
 #pragma once
 
 #include "stdint.h"
+
+#pragma GCC diagnostic error "-Wdiv-by-zero"
+#define SIZECHECK(item, size)         \
+  {                                   \
+    if (1 / (sizeof(item) == (size))) \
+    {                                 \
+    };                                \
+  }
 
 // Data structure containing the lookup and interpolation info
 typedef struct
