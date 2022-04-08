@@ -1,9 +1,10 @@
 #include <nltools/threading/Expiration.h>
 #include <glibmm/main.h>
+#include <utility>
 
 Expiration::Expiration(Expiration::Callback cb, Expiration::Duration d, int priority)
 {
-  setCallback(cb);
+  setCallback(std::move(cb));
 
   if(d > Duration::zero())
     refresh(d, priority);
@@ -11,12 +12,12 @@ Expiration::Expiration(Expiration::Callback cb, Expiration::Duration d, int prio
 
 Expiration::~Expiration()
 {
-  m_timeout.disconnect();
+  cancel();
 }
 
 void Expiration::setCallback(Expiration::Callback cb)
 {
-  m_cb = cb;
+  m_cb = std::move(cb);
 
   if(isPending() && !m_cb)
     cancel();

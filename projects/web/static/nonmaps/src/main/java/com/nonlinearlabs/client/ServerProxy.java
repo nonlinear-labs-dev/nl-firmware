@@ -528,8 +528,7 @@ public class ServerProxy {
 	}
 
 	public void setSetting(final String key, final String value) {
-		boolean oracle = false;
-		setSetting(key, value, oracle);
+		setSetting(key, value, false);
 	}
 
 	public void setSetting(final String key, final String value, boolean isOracle) {

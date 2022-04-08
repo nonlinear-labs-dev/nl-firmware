@@ -7,6 +7,7 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/InvertedLabel.h>
 #include "UndoMenu.h"
 #include "PositionInTreeLabel.h"
+#include "use-cases/SettingsUseCases.h"
 #include <libundo/undo/Transaction.h>
 #include <proxies/hwui/controls/RamUsageLabel.h>
 
@@ -27,6 +28,8 @@ UndoLayout::~UndoLayout()
 
 bool UndoLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  SettingsUseCases useCases(*Application::get().getSettings());
+
   if(down)
   {
     switch(i)
@@ -53,11 +56,11 @@ bool UndoLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
         return true;
 
       case Buttons::BUTTON_PRESET:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
+        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Select));
         return true;
 
       case Buttons::BUTTON_STORE:
-        Application::get().getHWUI()->undoableSetFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
+        useCases.setFocusAndMode(FocusAndMode(UIFocus::Presets, UIMode::Store));
         return true;
     }
   }
@@ -197,11 +200,13 @@ UNDO::Transaction *UndoLayout::jumpBackward(UNDO::Transaction *tip, int inc)
 
 void UndoLayout::jumpToTip()
 {
+  SettingsUseCases useCases(*Application::get().getSettings());
+
   if(auto tip = getTip())
   {
-    Application::get().getHWUI()->freezeFocusAndMode();
+    useCases.freezeFocusAndMode();
     Application::get().getUndoScope()->undoJump(tip);
-    Application::get().getHWUI()->thawFocusAndMode();
+    useCases.thawFocusAndMode();
   }
 }
 

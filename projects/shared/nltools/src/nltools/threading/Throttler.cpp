@@ -1,7 +1,7 @@
 #include <nltools/threading/Throttler.h>
 
 Throttler::Throttler(Expiration::Duration maxDelay)
-    : m_expiration(std::bind(&Throttler::delayedCallback, this))
+    : m_expiration([this] { delayedCallback(); })
     , m_maxDelay(maxDelay)
 {
 }
@@ -13,6 +13,11 @@ void Throttler::doTask(Throttler::Task&& task)
 
   if(!m_expiration.isPending())
     m_expiration.refresh(std::chrono::milliseconds(1));
+}
+
+Throttler::~Throttler()
+{
+  m_expiration.cancel();
 }
 
 bool Throttler::isPending() const
@@ -29,9 +34,4 @@ void Throttler::delayedCallback()
     task();
     m_expiration.refresh(m_maxDelay);
   }
-}
-
-void Throttler::doActionSync()
-{
-  delayedCallback();
 }

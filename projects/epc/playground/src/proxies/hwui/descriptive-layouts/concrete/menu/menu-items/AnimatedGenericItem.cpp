@@ -57,8 +57,8 @@ void AnimatedGenericItem::startAnimation()
 
           m_animator.reset();
 
-          if(m_animationFinishedCB)
-            m_animationFinishedCB();
+          if(m_finish.cb.has_value())
+            m_finish.cb.value()();
         });
 }
 
@@ -88,4 +88,13 @@ bool AnimatedGenericItem::redraw(FrameBuffer &fb)
 void AnimatedGenericItem::doAction()
 {
   startAnimation();
+  doStartCB();
+}
+
+void AnimatedGenericItem::doStartCB()
+{
+  if(m_start.cb.has_value())
+  {
+    m_start.cb.value()();
+  }
 }

@@ -11,17 +11,18 @@ class PedalParameter : public PhysicalControlParameter
 
  public:
   using super::super;
+  void onLocalEnableChanged(bool localEnableState) override;
 
-  void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode);
-  void undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode);
-  void undoableIncPedalMode(UNDO::Transaction *transaction);
+ public:
+  void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode, Initiator initiator);
+  void undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode, Initiator initiator);
   PedalModes getPedalMode() const;
   ReturnMode getReturnMode() const override;
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
   void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
   void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
 
-  std::shared_ptr<PedalType> getAssociatedPedalTypeSetting() const;
+  PedalType *getAssociatedPedalTypeSetting() const;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -33,11 +34,11 @@ class PedalParameter : public PhysicalControlParameter
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   size_t getHash() const override;
+  tControlPositionValue getDefValueAccordingToMode() const override;
 
  private:
   const ScaleConverter *createScaleConverter() const;
   void sendModeToPlaycontroller() const;
-  tControlPositionValue getDefValueAccordingToMode() const;
   void setRoutersModeAccordingToReturnMode();
   bool isLocalEnabled() const override;
 

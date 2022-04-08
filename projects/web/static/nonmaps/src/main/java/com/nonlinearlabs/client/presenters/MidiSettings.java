@@ -42,14 +42,14 @@ public class MidiSettings {
 
     static public class PedalMapping {
         static public String[] options = { 
-            "None", "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)", "CC 05 (LSB: CC 37)",
-            "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)", "CC 10 (LSB: CC 42)",
-            "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)", "CC 15 (LSB: CC 47)",
-            "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)", "CC 20 (LSB: CC 52)",
-            "CC 21 (LSB: CC 53)", "CC 22 (LSB: CC 54)", "CC 23 (LSB: CC 55)", "CC 24 (LSB: CC 56)", "CC 25 (LSB: CC 57)",
-            "CC 26 (LSB: CC 58)", "CC 27 (LSB: CC 59)", "CC 28 (LSB: CC 60)", "CC 29 (LSB: CC 61)", "CC 30 (LSB: CC 62)",
-            "CC 31 (LSB: CC 63)", "CC 64 (switching)",  "CC 65 (switching)",  "CC 66 (switching)",  "CC 67 (switching)",
-            "CC 68 (switching)",  "CC 69 (switching)"
+            "None", "CC 01/33", "CC 02/34", "CC 03/35", "CC 04/36", "CC 05/37",
+            "CC 06/38", "CC 07/39", "CC 08/40", "CC 09/41", "CC 10/42",
+            "CC 11/43", "CC 12/44", "CC 13/45", "CC 14/46", "CC 15/47",
+            "CC 16/48", "CC 17/49", "CC 18/50", "CC 19/51", "CC 20/52",
+            "CC 21/53", "CC 22/54", "CC 23/55", "CC 24/56", "CC 25/57",
+            "CC 26/58", "CC 27/59", "CC 28/60", "CC 29/61", "CC 30/62",
+            "CC 31/63", "CC 64 (sw.)",  "CC 65 (sw.)",  "CC 66 (sw.)",  "CC 67 (sw.)",
+            "CC 68 (sw.)",  "CC 69 (sw.)"
         };
 
         static public String[] optionsWithoutLSB = { 
@@ -59,8 +59,8 @@ public class MidiSettings {
             "CC 16", "CC 17", "CC 18", "CC 19", "CC 20",
             "CC 21", "CC 22", "CC 23", "CC 24", "CC 25",
             "CC 26", "CC 27", "CC 28", "CC 29", "CC 30",
-            "CC 31", "CC 64 (switching)",  "CC 65 (switching)",  "CC 66 (switching)",  "CC 67 (switching)",
-            "CC 68 (switching)",  "CC 69 (switching)"
+            "CC 31", "CC 64 (sw.)",  "CC 65 (sw.)",  "CC 66 (sw.)",  "CC 67 (sw.)",
+            "CC 68 (sw.)",  "CC 69 (sw.)"
         };
 
         public int selected = 0;
@@ -68,13 +68,13 @@ public class MidiSettings {
 
     static public class RibbonMapping {
         static public String[] options = {
-            "None", "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)", "CC 05 (LSB: CC 37)",
-            "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)", "CC 10 (LSB: CC 42)",
-            "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)", "CC 15 (LSB: CC 47)",
-            "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)", "CC 20 (LSB: CC 52)",
-            "CC 21 (LSB: CC 53)", "CC 22 (LSB: CC 54)", "CC 23 (LSB: CC 55)", "CC 24 (LSB: CC 56)", "CC 25 (LSB: CC 57)",
-            "CC 26 (LSB: CC 58)", "CC 27 (LSB: CC 59)", "CC 28 (LSB: CC 60)", "CC 29 (LSB: CC 61)", "CC 30 (LSB: CC 62)",
-            "CC 31 (LSB: CC 63)" 
+            "None", "CC 01/33", "CC 02/34", "CC 03/35", "CC 04/36", "CC 05/37",
+            "CC 06/38", "CC 07/39", "CC 08/40", "CC 09/41", "CC 10/42",
+            "CC 11/43", "CC 12/44", "CC 13/45", "CC 14/46", "CC 15/47",
+            "CC 16/48", "CC 17/49", "CC 18/50", "CC 19/51", "CC 20/52",
+            "CC 21/53", "CC 22/54", "CC 23/55", "CC 24/56", "CC 25/57",
+            "CC 26/58", "CC 27/59", "CC 28/60", "CC 29/61", "CC 30/62",
+            "CC 31/63" 
         };
 
         static public String[] optionsWithoutLSB = {
@@ -92,13 +92,13 @@ public class MidiSettings {
 
     static public class BenderMapping {
         static public String[] options = {
-            "None", "Pitchbend", "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)",
-            "CC 05 (LSB: CC 37)", "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)",
-            "CC 10 (LSB: CC 42)", "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)",
-            "CC 15 (LSB: CC 47)", "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)",
-            "CC 20 (LSB: CC 52)", "CC 21 (LSB: CC 53)", "CC 22 (LSB: CC 54)", "CC 23 (LSB: CC 55)", "CC 24 (LSB: CC 56)",
-            "CC 25 (LSB: CC 57)", "CC 26 (LSB: CC 58)", "CC 27 (LSB: CC 59)", "CC 28 (LSB: CC 60)", "CC 29 (LSB: CC 61)",
-            "CC 30 (LSB: CC 62)", "CC 31 (LSB: CC 63)"
+            "None", "Pitchbend", "CC 01/33", "CC 02/34", "CC 03/35", "CC 04/36",
+            "CC 05/37", "CC 06/38", "CC 07/39", "CC 08/40", "CC 09/41",
+            "CC 10/42", "CC 11/43", "CC 12/44", "CC 13/45", "CC 14/46",
+            "CC 15/47", "CC 16/48", "CC 17/49", "CC 18/50", "CC 19/51",
+            "CC 20/52", "CC 21/53", "CC 22/54", "CC 23/55", "CC 24/56",
+            "CC 25/57", "CC 26/58", "CC 27/59", "CC 28/60", "CC 29/61",
+            "CC 30/62", "CC 31/63"
         };
 
         static public String[] optionsWithoutLSB = {
@@ -116,17 +116,17 @@ public class MidiSettings {
 
     static public class AftertouchMapping {
         static public String[] options = {
-            "None", "Channel Pressure",   "CC 01 (LSB: CC 33)", "CC 02 (LSB: CC 34)", "CC 03 (LSB: CC 35)", "CC 04 (LSB: CC 36)",
-            "CC 05 (LSB: CC 37)", "CC 06 (LSB: CC 38)", "CC 07 (LSB: CC 39)", "CC 08 (LSB: CC 40)", "CC 09 (LSB: CC 41)",
-            "CC 10 (LSB: CC 42)", "CC 11 (LSB: CC 43)", "CC 12 (LSB: CC 44)", "CC 13 (LSB: CC 45)", "CC 14 (LSB: CC 46)",
-            "CC 15 (LSB: CC 47)", "CC 16 (LSB: CC 48)", "CC 17 (LSB: CC 49)", "CC 18 (LSB: CC 50)", "CC 19 (LSB: CC 51)",
-            "CC 20 (LSB: CC 52)", "CC 21 (LSB: CC 53)", "CC 22 (LSB: CC 54)", "CC 23 (LSB: CC 55)", "CC 24 (LSB: CC 56)",
-            "CC 25 (LSB: CC 57)", "CC 26 (LSB: CC 58)", "CC 27 (LSB: CC 59)", "CC 28 (LSB: CC 60)", "CC 29 (LSB: CC 61)",
-            "CC 30 (LSB: CC 62)", "CC 31 (LSB: CC 63)", "Pitchbend up", "Pitchbend down"
+            "None", "Ch. Pressure",   "CC 01/33", "CC 02/34", "CC 03/35", "CC 04/36",
+            "CC 05/37", "CC 06/38", "CC 07/39", "CC 08/40", "CC 09/41",
+            "CC 10/42", "CC 11/43", "CC 12/44", "CC 13/45", "CC 14/46",
+            "CC 15/47", "CC 16/48", "CC 17/49", "CC 18/50", "CC 19/51",
+            "CC 20/52", "CC 21/53", "CC 22/54", "CC 23/55", "CC 24/56",
+            "CC 25/57", "CC 26/58", "CC 27/59", "CC 28/60", "CC 29/61",
+            "CC 30/62", "CC 31/63", "Pitchbend up", "Pitchbend down"
         };
 
         static public String[] optionsWithoutLSB = {
-            "None", "Channel Pressure",   "CC 01", "CC 02", "CC 03", "CC 04",
+            "None", "Ch. Pressure",   "CC 01", "CC 02", "CC 03", "CC 04",
             "CC 05", "CC 06", "CC 07", "CC 08", "CC 09",
             "CC 10", "CC 11", "CC 12", "CC 13", "CC 14",
             "CC 15", "CC 16", "CC 17", "CC 18", "CC 19",

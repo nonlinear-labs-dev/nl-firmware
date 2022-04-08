@@ -4,22 +4,23 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/ScreenSaverUsageMode.h>
+#include <device-settings/FocusAndModeSetting.h>
 
-HardwareUserInterfaceUnit::HardwareUserInterfaceUnit()
+HardwareUserInterfaceUnit::HardwareUserInterfaceUnit(Settings& settings)
+    : m_settings { settings }
 {
-  Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
+  m_settings.getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
       sigc::mem_fun(this, &HardwareUserInterfaceUnit::onScreenSaverStateChanged));
+
+  m_settings.getSetting<FocusAndModeSetting>()->onChange(
+      sigc::mem_fun(this, &HardwareUserInterfaceUnit::onFocusAndModeChanged));
 }
 
 HardwareUserInterfaceUnit::~HardwareUserInterfaceUnit()
 {
 }
 
-void HardwareUserInterfaceUnit::setupFocusAndMode(FocusAndMode focusAndMode)
-{
-}
-
-void HardwareUserInterfaceUnit::setUsageMode(UsageMode *mode)
+void HardwareUserInterfaceUnit::setUsageMode(UsageMode* mode)
 {
   if(mode && m_usageMode)
   {
@@ -66,4 +67,18 @@ std::shared_ptr<UsageMode> HardwareUserInterfaceUnit::getScreenSaverUsageMode() 
 {
   static auto sScreenSaver = std::make_shared<ScreenSaverUsageMode>();
   return sScreenSaver;
+}
+
+Settings& HardwareUserInterfaceUnit::getSettings() const
+{
+  return m_settings;
+}
+
+void HardwareUserInterfaceUnit::onFocusAndModeChanged(const Setting* s)
+{
+  if(auto famSetting = dynamic_cast<const FocusAndModeSetting*>(s))
+  {
+    auto state = famSetting->getState();
+    setupFocusAndMode(state);
+  }
 }

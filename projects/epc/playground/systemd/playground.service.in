@@ -1,6 +1,6 @@
 [Unit]
 Description=Nonlinear-Labs Playground
-After=network.target systemd-modules-load.service persistent.mount fix-overlay-order.service
+After=network.target systemd-modules-load.service persistent.mount fix-overlay-order.service wait-for-bbb-ssh.service
 
 [Service]
 # Restart iwlwifi driver, necessary for ePC2 NUCs

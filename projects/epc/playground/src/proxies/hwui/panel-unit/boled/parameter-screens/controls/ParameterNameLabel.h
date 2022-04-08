@@ -33,6 +33,7 @@ class ParameterNameLabel : public Label
 
   void handleMCParameterName(const Parameter *pParameter);
   void handleParameterName(const Parameter *pParameter);
+  void handleSendParameterName(const Parameter *pParameter);
   Glib::ustring truncateMCName(bool changed, const Glib::ustring &name) const;
   void onPresetLoaded();
 };

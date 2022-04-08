@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parameter.h"
+#include "HardwareSourceSendParameter.h"
 
 class ModulationRoutingParameter;
 
@@ -13,7 +14,8 @@ class PhysicalControlParameter : public Parameter
                            int coarseDenominator, int fineDenominator);
 
   bool isChangedFromLoaded() const override;
-  virtual void onChangeFromPlaycontroller(tControlPositionValue newValue, HWChangeSource source);
+  virtual void onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source);
+
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
@@ -42,17 +44,28 @@ class PhysicalControlParameter : public Parameter
 
   size_t getHash() const override;
   bool isLocked() const override;
+  virtual bool isLocalEnabled() const = 0;
+  HardwareSourceSendParameter *getSendParameter() const;
+
+  virtual tControlPositionValue getDefValueAccordingToMode() const = 0;
+  bool isValueChangedFromLoaded() const override;
+  [[nodiscard]] double getLastControlPositionValueBeforePresetLoad() const;
+  [[nodiscard]] ReturnMode getLastReturnModeBeforePresetLoad() const;
+
+  virtual void onLocalEnableChanged(bool b) = 0;
 
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
  private:
   void sendParameterMessage() const override;
-  virtual bool isLocalEnabled() const = 0;
 
- private:
   IntrusiveList<ModulationRoutingParameter *> m_targets;
+
+  tControlPositionValue m_valueBeforeLastLoad = 0;
+  ReturnMode m_returnModeBeforeLastLoad = ReturnMode::None;
 
   bool m_changingFromHWUI = false;
   bool m_lastChangedFromHWUI = false;
+  ReturnMode m_oldReturnMode;
 };
