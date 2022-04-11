@@ -9,7 +9,7 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-print-memory-usage")
 
 add_compile_options("-DCORE_M4")
 
-file(GLOB_RECURSE SOURCES ./src/*.c ../shared/*.c)
+file(GLOB_RECURSE SOURCES ./src/*.c ../shared/*.c ${CMAKE_SOURCE_DIR}/projects/shared/playcontroller/lpc_lib.c)
 
 add_executable(${BLOBNAME} ${SOURCES} ../co-proc/co-proc.o)
 add_dependencies(${BLOBNAME} co-proc.o)

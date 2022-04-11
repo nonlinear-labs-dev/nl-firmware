@@ -139,7 +139,7 @@ int main(int const argc, char const* const argv[])
 
               if (ATData.adcTarget < 8000 || ATData.adcTarget > 20000)
               {
-                printf("FATAL: aftertouch test force must be within 8000 and 20000 [mN]\n", ATData.adcTarget);
+                printf("FATAL: aftertouch test force must be within 8000 and 20000 [mN]\n");
                 return 3;  // --> exit
               }
               ATData.adcTarget = LIB_InterpolateValue(&AT_forceToAdc, ATData.adcTarget);
