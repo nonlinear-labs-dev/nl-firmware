@@ -218,6 +218,7 @@ int main(int const argc, char const* const argv[])
                   printf("FATAL: Cannot read 34 X values ribbon file\n");
                   return 3;  // --> exit
                 }
+#warning : ToDo check monotony of X values                
                 while (*buf != ' ' && *buf != 0)
                   buf++;
                 if (*buf == ' ')
@@ -244,6 +245,7 @@ int main(int const argc, char const* const argv[])
                   printf("FATAL: Cannot read 33 Y values ribbon file\n");
                   return 3;  // --> exit
                 }
+#warning : ToDo check monotony of Y values                
                 while (*buf != ' ' && *buf != 0)
                   buf++;
                 if (*buf == ' ')
