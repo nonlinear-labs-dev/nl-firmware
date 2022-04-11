@@ -30,7 +30,7 @@
 
 // ==== V 209 ====
 // new/better ranging for Aftertouch
-#define SW_VERSION 33209
+#define SW_VERSION 209
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros
