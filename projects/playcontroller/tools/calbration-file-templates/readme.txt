@@ -3,6 +3,9 @@
 calibration.ini points to the two individual ribbon calibration files Rxxxx.cal and Ryyyy.cal
 and to the Aftertouch calibration file Azzzz.cal
 
+Rdefault.cal is the default ribbon calibration.
+Adefault.cal will soon be the default aftertouch calibration.
+
 Replace xxxx and yyyy with ribbon serial numbers and check for proper content in those files.
 Replace zzzz with ribbon serial number and check for proper content in this file.
 (see projects/playcontroller/tools/calbration-file-templates).

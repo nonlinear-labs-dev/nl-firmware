@@ -50,7 +50,7 @@ int main(int const argc, char const* const argv[])
   FILE* outfile;
   if (!(outfile = fopen(argv[2], "wb")))
   {
-    printf("FATAL: Cannot open output file \"%s\"\n", argv[2]);
+    printf("FATAL: Cannot create output file \"%s\"\n", argv[2]);
     return 3;  // --> exit
   }
 
@@ -263,71 +263,76 @@ int main(int const argc, char const* const argv[])
 
   if (ribbon[0].valid < 2 || ribbon[1].valid < 2)
   {
-    printf("FATAL: failed to find/analyse two complete ribbon calibration sets\n");
-    return 3;  // --> exit
+    printf("WARNING: failed to find/analyse two complete ribbon calibration sets\n");
+  }
+  else
+  {
+    printf("Ribbon calibration data found...\n");
+    // write ribbon cal
+    uint16_t rbcal_header[] = { PLAYCONTROLLER_BB_MSG_TYPE_RIBBON_CAL, 2 * 33 + 2 * 34 };
+
+    if (fwrite(rbcal_header, 2, 2, outfile) != 2)
+    {
+      printf("FATAL: Error writing binary file\n");
+      return 3;  // --> exit
+    }
+    if (fwrite(ribbon[0].X, 2, 34, outfile) != 34)
+    {
+      printf("FATAL: Error writing binary file\n");
+      return 3;  // --> exit
+    }
+    if (fwrite(ribbon[0].Y, 2, 33, outfile) != 33)
+    {
+      printf("FATAL: Error writing binary file\n");
+      return 3;  // --> exit
+    }
+    if (fwrite(ribbon[1].X, 2, 34, outfile) != 34)
+    {
+      printf("FATAL: Error writing binary file\n");
+      return 3;  // --> exit
+    }
+    if (fwrite(ribbon[1].Y, 2, 33, outfile) != 33)
+    {
+      printf("FATAL: Error writing binary file\n");
+      return 3;  // --> exit
+    }
   }
 
   if (ATData.keybedId == 0 || ATData.adcValues[0] == 0)
   {
-    printf("FATAL: failed to find/analyse aftertouch calibration data\n");
-    return 3;  // --> exit
+    printf("WARNING: failed to find/analyse aftertouch calibration data\n");
   }
-
-  // generate average for AT default
-  uint32_t sum = 0;
-  for (int i = 0; i < 61; i++)
-    sum += ATData.adcValues[i];
-  ATData.adcDefault = sum / 61;
-
-  // write ribbon cal
-  uint16_t rbcal_header[] = { PLAYCONTROLLER_BB_MSG_TYPE_RIBBON_CAL, 2 * 33 + 2 * 34 };
-
-  if (fwrite(rbcal_header, 2, 2, outfile) != 2)
+  else
   {
-    printf("FATAL: Error writing binary file\n");
-    return 3;  // --> exit
-  }
-  if (fwrite(ribbon[0].X, 2, 34, outfile) != 34)
-  {
-    printf("FATAL: Error writing binary file\n");
-    return 3;  // --> exit
-  }
-  if (fwrite(ribbon[0].Y, 2, 33, outfile) != 33)
-  {
-    printf("FATAL: Error writing binary file\n");
-    return 3;  // --> exit
-  }
-  if (fwrite(ribbon[1].X, 2, 34, outfile) != 34)
-  {
-    printf("FATAL: Error writing binary file\n");
-    return 3;  // --> exit
-  }
-  if (fwrite(ribbon[1].Y, 2, 33, outfile) != 33)
-  {
-    printf("FATAL: Error writing binary file\n");
-    return 3;  // --> exit
-  }
+    printf("Aftertouch calibration data found...\n");
+    // generate average for AT default
+    uint32_t sum = 0;
+    for (int i = 0; i < 61; i++)
+      sum += ATData.adcValues[i];
+    ATData.adcDefault = sum / 61;
 
-  // write AT cal
-  uint16_t atcal_header[] = {
-    PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL, 64
-  };
 
-  if (fwrite(atcal_header, 2, 2, outfile) != 2)
-  {
-    printf("FATAL: Error writing binary file\n");
-    return 3;  // --> exit
+    // write AT cal
+    uint16_t atcal_header[] = {
+      PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL, 64
+    };
+
+    if (fwrite(atcal_header, 2, 2, outfile) != 2)
+    {
+      printf("FATAL: Error writing binary file\n");
+      return 3;  // --> exit
+    }
+
+    if (fwrite(&ATData, 64 * 2, 1, outfile) != 1)
+    {
+      printf("FATAL: Error writing binary file\n");
+      return 3;  // --> exit
+    }
   }
-
-  if (fwrite(&ATData, 64 * 2, 1, outfile) != 1)
-  {
-    printf("FATAL: Error writing binary file\n");
-    return 3;  // --> exit
-  }
-
+  
   fclose(outfile);
 
-  printf("Success!\n");
+  printf("Done (binary calibration file created).\n");
   return 0;
 }
 
