@@ -523,7 +523,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
             cursorUp(61);
           for (int i = 0; i < 60; i++)
             printf("%d,", data[i]);
-          printf("%d\n", data[60]);
+          printf("%d,\n", data[60]);
         }
         lastMessage = cmd << 16;
         return 1;
