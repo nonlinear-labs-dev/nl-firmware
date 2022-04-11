@@ -5,6 +5,7 @@
 #include "tcd/nl_tcd_poly.h"
 #include "ipc/emphase_ipc.h"
 #include "playcontroller/playcontroller-defs.h"
+#include "playcontroller/playcontroller-converters.h"
 #include "playcontroller/playcontroller-data.h"
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
@@ -33,7 +34,8 @@ static int      AT_updateEeprom   = 0;  // flag / step chain variable
 // volatile ADC max values [61] is current single key #
 // [61] is current single key #
 // [62] is current force
-static uint16_t AT_adcPerKey[63];
+// [63] is current calibration point
+static uint16_t AT_adcPerKey[64];
 
 // --- Aftertouch: ADC value to Force conversion (this is the general characteristic curve)
 // X and Y data is global (defined in playcontroller-defs.h)
@@ -45,7 +47,7 @@ static LIB_interpol_data_T AT_adcToForce = { 16, AT_adcToForceTableX, AT_adcToFo
 #define ATCAL (3300)
 static AT_calibration_T NL_EEPROM_ALIGN AT_adcCalibration =
 {
-  .keybedId   = 0000,
+  .keybedId   = 0000,   // =0 --> turn on legacy mode, do not apply any calibration
   .adcTarget  = ATCAL,  // input into adc-to-force characteristic to achieve 10N
   .adcDefault = ATCAL,
   {
@@ -240,13 +242,13 @@ static void ProcessAftertouch(void)
 
   do
   {
-    if (POLY_OnlyMaskedKeysPressed())
-    {
+    if (POLY_SilentMaskedKeys() && POLY_OnlyMaskedKeysPressed())
+    {  // mute AT output for masked keys
       adcValue    = 0;
       focussedKey = lastFocussedKey;
       break;
     }
-    focussedKey = POLY_getNewestKey();  // -1 means : no key pressed
+    focussedKey = POLY_getNewestKey();  // -1 means : no (unmasked) key pressed
     if (focussedKey != lastFocussedKey)
     {
       if (focussedKey == -1)
@@ -316,6 +318,7 @@ static void ProcessAftertouch(void)
   }
 
   AT_adcPerKey[62] = force;
+  AT_adcPerKey[63] = calibrationPoint;
 
   if (tcdOutput != AT_lastAftertouch)
   {
@@ -462,8 +465,19 @@ static void ProcessLegacyAftertouch(void)
 // -------------
 void AT_ProcessAftertouch(void)
 {
-  if (legacyMode)
+  if (legacyMode || (AT_adcCalibration.keybedId == 0))
     ProcessLegacyAftertouch();
   else
     ProcessAftertouch();
+}
+
+// -------------
+uint16_t AT_GetStatus(void)
+{
+  AT_status_T status;
+  status.legacyMode = legacyMode != 0;
+  status.calibrated = AT_adcCalibration.keybedId != 0;
+  status.maskedKeys = POLY_maskedKeyBF != 0;
+  status.silentKeys = POLY_SilentMaskedKeys() != 0;
+  return AT_statusToUint16(status);
 }

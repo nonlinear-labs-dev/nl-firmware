@@ -62,3 +62,24 @@ static inline EHC_ControllerStatus_T EHC_uint16ToStatus(const uint16_t s)
   ret.isRestored    = (s & 0b0000000100000000) >> 8;
   return ret;
 }
+
+// ----------------
+static inline uint16_t AT_statusToUint16(const AT_status_T s)
+{
+  uint16_t ret = 0;
+  ret |= s.legacyMode << 0;
+  ret |= s.calibrated << 1;
+  ret |= s.maskedKeys << 2;
+  ret |= s.silentKeys << 3;
+  return ret;
+}
+
+static inline AT_status_T AT_uint16ToStatus(const uint16_t s)
+{
+  AT_status_T ret;
+  ret.legacyMode = (s & 0b0000000000000001) >> 0;
+  ret.calibrated = (s & 0b0000000000000010) >> 1;
+  ret.maskedKeys = (s & 0b0000000000000100) >> 2;
+  ret.silentKeys = (s & 0b0000000000001000) >> 3;
+  return ret;
+}

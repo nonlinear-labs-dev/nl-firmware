@@ -29,8 +29,8 @@ enum PLAYCONTROLLER_BB_MESSAGE_TYPES
   PLAYCONTROLLER_BB_MSG_TYPE_KEYMAP_DATA   = 0x1300,  // direction: input; arguments  (uint16): 32 (for 61 keys)
   PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA  = 0x1400,  // direction: output; arguments  (uint16): 64+128 key counters (64 low-level, 128 midi-level)
   PLAYCONTROLLER_BB_MSG_TYPE_UHID64        = 0x1500,  // direction: output; arguments  (uint16): 4 words, comprising an uint64_t;
-  PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA   = 0x1600,  // direction: output; arguments  (uint16): 61 uint16, max aftertouch values for all 61 keys
-  PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING    = 0x1700,  // direction: input;  arguments  (uint16): 1 uint64 (bit 0 = leftmost key)
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_TEST_DATA  = 0x1600,  // direction: output; arguments  (uint16): 61 uint16, aftertouch test values (raw ADC) for all 61 keys
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING    = 0x1700,  // direction: input;  arguments  (uint16): 1 uint64 (bit 0..60 = key left to right, bit 64 = enable "silent" mode)
   PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL        = 0x1800,  // direction: input;  arguments  (uint16): 64 (see typedef AT_calibration_T)
   PLAYCONTROLLER_BB_MSG_TYPE_TEST_MSG      = 0xFFFF,  // direction in/out
 };
@@ -84,7 +84,8 @@ enum PLAYCONTROLLER_REQUEST_IDS
   PLAYCONTROLLER_REQUEST_ID_CLEAR_STAT     = 0x0007,
   PLAYCONTROLLER_REQUEST_ID_UHID64         = 0x0008,
   PLAYCONTROLLER_REQUEST_ID_POLLHWS        = 0x0009,
-  PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA    = 0x000A,
+  PLAYCONTROLLER_REQUEST_ID_AT_TEST_DATA   = 0x000A,
+  PLAYCONTROLLER_REQUEST_ID_AT_STATUS      = 0x000B,
 };
 
 enum PLAYCONTROLLER_NOTIFICATION_IDS
@@ -99,7 +100,8 @@ enum PLAYCONTROLLER_NOTIFICATION_IDS
   PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT     = 0x0007,
   PLAYCONTROLLER_NOTIFICATION_ID_UHID64         = 0x0008,
   PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS        = 0x0009,
-  PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA    = 0x000A,
+  PLAYCONTROLLER_NOTIFICATION_ID_AT_TEST_DATA   = 0x000A,
+  PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS      = 0x000B,
   PLAYCONTROLLER_NOTIFICATION_ID_TEST_MSG       = 0xFFFF,
 };
 
@@ -212,8 +214,16 @@ typedef struct
 // --- Aftertouch per Key Calibration data structure ---
 typedef struct
 {
-  uint16_t keybedId;       // keybed serial #
+  uint16_t keybedId;       // keybed serial # (id = 0 forces legacy AT mode)
   uint16_t adcTarget;      // adc target value for the test force (typically for 10N)
   uint16_t adcDefault;     // default when AT is active without any key pressed (typically the average of all the following values)
   uint16_t adcValues[61];  // adc values obtained for test force for all 61 keys
 } AT_calibration_T;
+
+typedef struct
+{
+  unsigned legacyMode : 1;  // lecacy AT mode currently in use
+  unsigned calibrated : 1;  // calibration in use
+  unsigned maskedKeys : 1;  // some key are masked
+  unsigned silentKeys : 1;  // masked key only will silence the AT output
+} AT_status_T;

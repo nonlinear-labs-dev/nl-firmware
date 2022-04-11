@@ -40,6 +40,7 @@ typedef struct
 extern keyQueue_T POLY_keyQueue;
 extern uint64_t   POLY_pressedKeyBF;  // bit field for currently pressed keys
 extern uint64_t   POLY_maskedKeyBF;   // bit field for masked keys
+extern int        POLY_silent;
 
 static inline int POLY_AnyKeysPressed(void)
 {
@@ -59,6 +60,11 @@ static inline int POLY_AnyMaskedKeysPressed(void)
 static inline int POLY_OnlyMaskedKeysPressed(void)
 {
   return POLY_AnyKeysPressed() && !POLY_AnyUmmaskedKeysPressed();
+}
+
+static inline int POLY_SilentMaskedKeys(void)
+{
+  return POLY_silent;
 }
 
 static inline int8_t POLY_getNewestKey(void)

@@ -84,7 +84,8 @@ Retry:
 #define EHC_SAVE_EEPROM "save-ehc"
 #define UHID64          "uhid64"
 #define POLLHWS         "pollhws"
-#define AT_MAX_DATA     "at-max-data"
+#define AT_TEST_DATA    "at-test-data"
+#define AT_STATUS       "at-status"
 #if LPC_KEYBED_DIAG
 #define KEY_CNTRS "key-counters"
 #endif
@@ -133,7 +134,7 @@ void Usage(void)
 #if LPC_KEYBED_DIAG
   puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|key-counters");
 #else
-  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws|at-max-data");
+  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws|at-test-data|at-status");
 #endif
   puts("     sw-version   : get LPC firware version");
   puts("     muting       : get software&hardware muting status");
@@ -143,7 +144,8 @@ void Usage(void)
   puts("     save-ehc     : save current EHC config data to EEPROM");
   puts("     uhid64       : get unique hardware ID (64bit)");
   puts("     pollhws      : poll hardware sources");
-  puts("     at-max-data  : get AT raw ADC max values for all keys");
+  puts("     at-test-data : get aftertouch raw ADC (or Ohms) values for all keys");
+  puts("     at-status    : get aftertouch status");
 #if LPC_KEYBED_DIAG
   puts("     key-counters : get diagnostic key error counters");
 #endif
@@ -158,8 +160,9 @@ void Usage(void)
   puts("  key <note-nr> <time>      : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
   puts("     <time>                 : key time (~1/velocity) in us (1000...525000), negative means key release");
-  puts("  at-mask <bitmask64> : mask keys for aftertouch");
+  puts("  at-mask <bitmask64> : mask keys for aftertouch focus tracking");
   puts("      <bitmask64>           : 16-digit hex value representing a 64bit bit mask, bit 0 is leftmost key");
+  puts("                              Bit 63 causes AT also to be silent when only masked keys are pressed");
   puts("  test <size> <count> <delay>   : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
   puts("     <count>                    : # of times the message is send (1..65535)");
@@ -219,7 +222,6 @@ int lpcReset(int driver)
   usleep(POLL_DELAY_US);
   if (purgeBuffer(driver))
     return 1;
-  puts("LPC is down");
   return 0;
 }
 
@@ -306,9 +308,15 @@ int main(int argc, char const *argv[])
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
-    if (strncmp(argv[2], AT_MAX_DATA, sizeof AT_MAX_DATA) == 0)
+    if (strncmp(argv[2], AT_TEST_DATA, sizeof AT_TEST_DATA) == 0)
     {
-      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_AT_TEST_DATA;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], AT_STATUS, sizeof AT_STATUS) == 0)
+    {
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_AT_STATUS;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
@@ -586,6 +594,8 @@ int main(int argc, char const *argv[])
         return 0;
       }
     }
+    puts("LPC appears to be down (Note: bbbb.service must be stopped for proper response)");
+    return 1;
   }
 
   // at-mask

@@ -130,9 +130,8 @@ void ADC_WORK_Select_BenderTable(uint16_t const curve)
   if (curve > 2)
     return;
   benderTable = allBenderTables[curve];
-
-#warning TEST CODE !!! Bender-Curve HARD selects LegacyAftertouch mode
-  AT_SetLegacyMode(curve == 2);
+  //  #warning TEST CODE !!! Bender-Curve HARD selects LegacyAftertouch mode
+  //  AT_SetLegacyMode(curve == 2);
 }
 
 void Generate_BenderTable(uint16_t const curve)

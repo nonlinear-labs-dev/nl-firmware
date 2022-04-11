@@ -74,6 +74,7 @@
 keyQueue_T POLY_keyQueue;
 uint64_t   POLY_pressedKeyBF = 0;
 uint64_t   POLY_maskedKeyBF  = 0;
+int        POLY_silent       = 0;
 
 void POLY_SetATMasking(uint16_t const length, uint16_t const *const data)
 {
@@ -81,6 +82,8 @@ void POLY_SetATMasking(uint16_t const length, uint16_t const *const data)
     return;
 
   POLY_maskedKeyBF = *((uint64_t *) data);
+  POLY_silent      = (POLY_maskedKeyBF & ((uint64_t) 1 << 63)) != 0;
+  POLY_maskedKeyBF &= ~((uint64_t) 1 << 63);
 }
 
 static inline void addKeyToQueue(uint8_t const key)
@@ -256,6 +259,7 @@ void POLY_Init(void)
   POLY_keyQueue.head = POLY_keyQueue.tail = 0;
   POLY_pressedKeyBF                       = 0;
   POLY_maskedKeyBF                        = 0;
+  POLY_silent                             = 0;
 }
 
 /******************************************************************************
@@ -275,9 +279,12 @@ void POLY_Select_VelTable(uint32_t const curve)
 *******************************************************************************/
 static void ProcessKeyEvent(uint32_t const keyEvent, enum KeyLog_T const logFlag)
 {
-  uint32_t logicalKey;
-  int8_t   physicalKey = (keyEvent & IPC_KEYBUFFER_KEYMASK);
+  uint8_t physicalKey = (keyEvent & IPC_KEYBUFFER_KEYMASK);
+  if (physicalKey > 60)  // > beyond keybed size of 61 keys
+    return;
+
   // TODO : "AE currently doesn't support remappings outside a logical note range of 36...96"
+  uint32_t logicalKey;
   if (remapKeys)
     logicalKey = 36 + keyRemapTable[physicalKey];  // table might produce "negative" key base values
   else

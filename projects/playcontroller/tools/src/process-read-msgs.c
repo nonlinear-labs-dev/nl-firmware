@@ -267,7 +267,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         case PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS:
           printf("NOTIFICATION : Initiated Poll of Hardware-Sources\n");
           break;
-        case PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA:
+        case PLAYCONTROLLER_NOTIFICATION_ID_AT_TEST_DATA:
           printf("NOTIFICATION : Aftertouch Data sent\n");
           break;
         case PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT:
@@ -303,6 +303,13 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
             printf("               ");
           printf("\n");
           break;
+        case PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS:
+        {
+          AT_status_T s = AT_uint16ToStatus(data[1]);
+          printf("NOTIFICATION : AT status: legacyMode=%u, calibrated=%u, maskedKeys=%u, silentKeys=%u\n",
+                 s.legacyMode, s.calibrated, s.maskedKeys, s.silentKeys);
+          break;
+        }
         default:
           printf("NOTIFICATION : unknown ID=%d, data=%d     \n", data[0], data[1]);
           break;
@@ -396,11 +403,11 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
       lastMessage = cmd << 16;
       return 1;
 
-    case PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA:
+    case PLAYCONTROLLER_BB_MSG_TYPE_AT_TEST_DATA:
       if ((flags & NO_AT_DATA_OHMS) == 0)
       {
         dump(cmd, len, data, flags);
-        if (len != 63)
+        if (len != 64)
         {
           printf("AT-DATA : wrong length of %d\n", len);
           return 3;
@@ -466,7 +473,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
       else if ((flags & NO_AT_DATA) == 0)
       {
         dump(cmd, len, data, flags);
-        if (len != 63)
+        if (len != 64)
         {
           printf("AT-DATA : wrong length of %d\n", len);
           return 3;
@@ -476,7 +483,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
           if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
             cursorUp(8);
           displayCounter();
-          printf("Aftertouch Sensor ADC value per Key. Current Force [mN]: %5d\n", data[62]);
+          printf("Aftertouch Sensor ADC value per Key. Force [mN]: %5d, CalibPoint %5d \n", data[62], data[63]);
           printf(" Oct  C   "
                  " C#  "
                  " D   "
