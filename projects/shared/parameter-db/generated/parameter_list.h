@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-01-10, 15:17
+    @date       2022-04-11, 10:07
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -641,7 +641,7 @@ namespace C15
     { Parameters::Local_Unmodulateables::Comb_Flt_AP_KT,
       PID::Comb_Flt_AP_KT,
       0.5f,
-      { Smoothers::Poly_Slow::Comb_Flt_AP_KT, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { Smoothers::Poly_Slow::Comb_Flt_AP_KT, None, Properties::SmootherScale::Linear, 2.0f, 0.0f, false },
       { 200, 2000, None, None, "", "Comb Filter", "Comb Filter", "Allpass - Key Trk", "Key Trk",
         "Key scaling of the allpass filter frequency.\n0.0 %: same tuning for all keys\n100.0 %: full tracking with "
         "the keys, origin at C3 = 60 semitones" } },
@@ -672,7 +672,7 @@ namespace C15
     { Parameters::Local_Unmodulateables::Comb_Flt_LP_KT,
       PID::Comb_Flt_LP_KT,
       0.5f,
-      { Smoothers::Poly_Slow::Comb_Flt_LP_KT, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, false },
+      { Smoothers::Poly_Slow::Comb_Flt_LP_KT, None, Properties::SmootherScale::Linear, 2.0f, 0.0f, false },
       { 200, 2000, None, None, "", "Comb Filter", "Comb Filter", "Hi Cut - Key Trk", "Key Trk",
         "Key scaling of the lowpass cutoff frequency.\n0.0 %: same cutoff for all keys\n100.0 %: full tracking with "
         "the keys, origin at C3 = 60 semitones" } },
