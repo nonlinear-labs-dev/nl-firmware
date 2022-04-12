@@ -377,6 +377,9 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
             break;
         }
         break;
+      case PLAYCONTROLLER_SETTING_ID_ENABLE_AT_DATA_COLLECT:
+        AT_SetCollectTestData(data[1]);
+        break;
       default:
         // do nothing
         type = 0;  // to set a breakpoint only

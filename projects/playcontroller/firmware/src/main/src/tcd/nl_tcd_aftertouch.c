@@ -27,7 +27,7 @@ void       AT_SetLegacyMode(int const on)
 }
 
 // --------------
-static int      AT_calibrationRun = 1;  // 0:off; 1:calibrate; 2:store
+static int      collectATtestData = 0;  // 0:off; 1:on
 static uint16_t AT_eepromHandle   = 0;  // EEPROM access handle
 static int      AT_updateEeprom   = 0;  // flag / step chain variable
 
@@ -105,6 +105,10 @@ uint16_t *AT_GetATAdcData(void)
 {
   return AT_adcPerKey;
 }
+void AT_SetCollectTestData(uint16_t const flag)
+{
+  collectATtestData = (flag != 0);
+}
 
 /*****************************************************************************
 * @brief	AT_SetAftertouchCalibration -
@@ -172,7 +176,7 @@ static void collectCalibrationData(int16_t const adcValue)
   static LIB_lowpass_data_T lpFilter = { .filtered = 0, .beta = 6, .fpShift = 7 };
   int16_t                   adcFiltered;
 
-  if (AT_calibrationRun == 0)
+  if (collectATtestData == 0)
     return;
 
   int singleKey = POLY_getSingleKey();  // one and only one single key
@@ -225,9 +229,8 @@ static void collectCalibrationData(int16_t const adcValue)
 }
 
 // -------------
-static void ProcessAftertouch(void)
+static void ProcessAftertouch(int16_t adcValue)
 {
-  int16_t adcValue;
   int16_t tcdOutput;
   int16_t adcToForceInput;
   int16_t force;
@@ -237,8 +240,6 @@ static void ProcessAftertouch(void)
   static int16_t calibrationTarget;
   static int16_t calibrationPoint;
   static int     dynamicOffset = 0;
-
-  adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
 
   do
   {
@@ -300,7 +301,6 @@ static void ProcessAftertouch(void)
     }
   }
 
-  collectCalibrationData(adcValue);
   if (adcValue == 0)
   {
     tcdOutput = 0;
@@ -414,9 +414,9 @@ void AT_Init(void)
 // --------------------------------------------------------
 #define AT_DEADRANGE 30    // 0.73 % of 0 ... 4095
 #define AT_FACTOR    5080  // 5080 / 4096 for saturation = 100 % at 81 % of the input range
-static void ProcessLegacyAftertouch(void)
+static void ProcessLegacyAftertouch(int16_t const adcValue)
 {
-  int32_t value;
+  int32_t value = adcValue;
   int32_t valueToSend;
 
   static int32_t lastAftertouch;
@@ -465,10 +465,14 @@ static void ProcessLegacyAftertouch(void)
 // -------------
 void AT_ProcessAftertouch(void)
 {
+  int16_t adcValue = IPC_ReadAdcBufferAveraged(IPC_ADC_AFTERTOUCH);
+
+  collectCalibrationData(adcValue);
+
   if (legacyMode || (AT_adcCalibration.keybedId == 0))
-    ProcessLegacyAftertouch();
+    ProcessLegacyAftertouch(adcValue);
   else
-    ProcessAftertouch();
+    ProcessAftertouch(adcValue);
 }
 
 // -------------

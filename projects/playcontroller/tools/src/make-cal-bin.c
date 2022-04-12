@@ -218,7 +218,7 @@ int main(int const argc, char const* const argv[])
                   printf("FATAL: Cannot read 34 X values ribbon file\n");
                   return 3;  // --> exit
                 }
-#warning : ToDo check monotony of X values                
+#warning : ToDo check monotony of X values
                 while (*buf != ' ' && *buf != 0)
                   buf++;
                 if (*buf == ' ')
@@ -245,7 +245,7 @@ int main(int const argc, char const* const argv[])
                   printf("FATAL: Cannot read 33 Y values ribbon file\n");
                   return 3;  // --> exit
                 }
-#warning : ToDo check monotony of Y values                
+#warning : ToDo check monotony of Y values
                 while (*buf != ' ' && *buf != 0)
                   buf++;
                 if (*buf == ' ')
@@ -313,7 +313,6 @@ int main(int const argc, char const* const argv[])
       sum += ATData.adcValues[i];
     ATData.adcDefault = sum / 61;
 
-
     // write AT cal
     uint16_t atcal_header[] = {
       PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL, 64
@@ -331,7 +330,7 @@ int main(int const argc, char const* const argv[])
       return 3;  // --> exit
     }
   }
-  
+
   fclose(outfile);
 
   printf("Done (binary calibration file created).\n");
