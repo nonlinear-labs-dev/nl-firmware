@@ -12,13 +12,13 @@
 ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling,
                                tControlPositionValue def, tControlPositionValue coarseDenominator,
                                tControlPositionValue fineDenominator)
-    : super(group, id, scaling, def, coarseDenominator, fineDenominator)
+    : super(group, id, scaling, scaling, def, coarseDenominator, fineDenominator)
 {
 }
 
 Layout *ScaleParameter::createLayout(FocusAndMode focusAndMode) const
 {
-  return m_scaleImpl.createLayout(focusAndMode);
+  return ScaleParameterIMPL::createLayout(focusAndMode);
 }
 
 Glib::ustring ScaleParameter::getMiniParameterEditorName() const
@@ -28,7 +28,7 @@ Glib::ustring ScaleParameter::getMiniParameterEditorName() const
 
 void ScaleParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
-  ModulateableParameter::writeDocProperties(writer, knownRevision);
+  ModulateableParameterWithUnusualModUnit::writeDocProperties(writer, knownRevision);
 
   if(!shouldWriteDocProperties(knownRevision))
   {
@@ -70,7 +70,7 @@ BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId 
 
 Layout *BaseScaleParameter::createLayout(FocusAndMode fam) const
 {
-  return m_scaleImpl.createLayout(fam);
+  return ScaleParameterIMPL::createLayout(fam);
 }
 
 Glib::ustring BaseScaleParameter::getMiniParameterEditorName() const
@@ -88,7 +88,7 @@ void BaseScaleParameter::writeDocProperties(Writer &writer, UpdateDocumentContri
   }
 }
 
-Layout *ScaleParameterIMPL::createLayout(FocusAndMode fam) const
+Layout *ScaleParameterIMPL::createLayout(FocusAndMode fam)
 {
   switch(fam.mode)
   {

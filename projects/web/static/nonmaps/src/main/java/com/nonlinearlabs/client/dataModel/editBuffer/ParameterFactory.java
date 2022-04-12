@@ -36,13 +36,13 @@ public class ParameterFactory {
 			133, 135, 136, 138, 140, 143, 144, 147, 148, 150, 152, 153, 155, 156, 158, 160, 162, 164, 166, 167, 169, 171,
 			172, 174, 175, 177, 178, 180, 181, 183, 184, 185, 188, 190, 191, 192, 194, 196, 197, 199, 201, 203, 204, 206,
 			207, 209, 211, 213, 214, 216, 218, 219, 221, 222, 223, 225, 227, 229, 231, 232, 233, 235, 237, 238, 240, 241,
-			247, 248, 250, 252, 253, 294, 295, 296, 297, 299, 301, 302, 303, 304, 305, 307, 308, 310, 312, 313, 314, 315, 
-			316, 317, 318, 319, 320, 321, 322, 323, 332, 338, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 367, 
-			389, 391 };
+			247, 248, 250, 252, 253, 294, 295, 296, 297, 299, 301, 302, 303, 304, 305, 307, 308, 310, 313, 314, 315, 316,
+			317, 318, 319, 320, 321, 322, 323, 332, 338, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 367, 389,
+			391 };
 
 	static private int[] pedals = { 254, 259, 264, 269 };
 	static private int[] ribbons = { 284, 289 };
-	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 }; //
+	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 };
 
 	static private int[] sendParams = { 398, 399, 400, 401, 402, 403, 404, 405 };
 
@@ -87,6 +87,9 @@ public class ParameterFactory {
 		if (Arrays.binarySearch(parameters, id.getNumber()) < 0)
 			throw new NoSuchElementException();
 
+		if (Arrays.binarySearch(scaleOffsetParameters, id.getNumber()) >= 0)
+			return new ScaleOffsetParameterModel(id);
+
 		if (Arrays.binarySearch(modulateableParameters, id.getNumber()) >= 0)
 			return new ModulateableParameterModel(id);
 
@@ -110,9 +113,6 @@ public class ParameterFactory {
 
 		if (Arrays.binarySearch(modulationRouters, id.getNumber()) >= 0)
 			return new ModulationRouterParameterModel(id);
-
-		if (Arrays.binarySearch(scaleOffsetParameters, id.getNumber()) >= 0)
-			return new ScaleOffsetParameterModel(id);
 
 		return new BasicParameterModel(id);
 	}

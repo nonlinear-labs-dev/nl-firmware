@@ -44,8 +44,8 @@ void CabinetGroup::init()
       this, { C15::PID::Cabinet_Hi_Cut, getVoiceGroup() }, ScaleConverter::get<Linear60To140StScaleConverter>(),
       ScaleConverter::get<LinearBipolar80StScaleConverter>(), 50.0 / 80.0, 80, 800));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Lo_Cut, getVoiceGroup() },
-                                            ScaleConverter::get<Linear20To100StScaleConverter>(), 10.0 / 80.0, 80,
+  appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Cabinet_Lo_Cut, getVoiceGroup() },
+                                            ScaleConverter::get<Linear20To100StScaleConverter>(), ScaleConverter::get<LinearBipolar80StScaleConverter>(), 10.0 / 80.0, 80,
                                             800));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(

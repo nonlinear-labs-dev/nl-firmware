@@ -1,17 +1,16 @@
 #pragma once
 
 #include <parameters/ModulateableParameter.h>
+#include "ModulateableParameterWithUnusualModUnit.h"
 
-class ScaleParameterIMPL
+namespace ScaleParameterIMPL
 {
- public:
-  Layout* createLayout(FocusAndMode fam) const;
-
+  Layout* createLayout(FocusAndMode fam) ;
 };
 
-class ScaleParameter : public ModulateableParameter
+class ScaleParameter : public ModulateableParameterWithUnusualModUnit
 {
-  typedef ModulateableParameter super;
+  typedef ModulateableParameterWithUnusualModUnit super;
 
  public:
   ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling, tControlPositionValue def,
@@ -22,9 +21,6 @@ class ScaleParameter : public ModulateableParameter
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
   Glib::ustring getLongName() const override;
   size_t getHash() const override;
-
- private:
-  ScaleParameterIMPL m_scaleImpl;
 };
 
 class BaseScaleParameter : public Parameter
@@ -37,7 +33,4 @@ class BaseScaleParameter : public Parameter
   Layout* createLayout(FocusAndMode fam) const override;
   Glib::ustring getMiniParameterEditorName() const override;
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
-
- private:
-  ScaleParameterIMPL m_scaleImpl;
 };

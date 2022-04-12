@@ -63,7 +63,7 @@ void EnvelopeCGroup::init()
                                 0, 100, 1000));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Time_KT, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-                                0.55, 100, 1000));
+                                0.05, 100, 1000));
 
   appendParameter(new Parameter(this, { C15::PID::ParameterID::Env_C_Retr_H, getVoiceGroup() },
                                 ScaleConverter::get<Linear100PercentScaleConverter>(), 0.0, 100, 1000));
