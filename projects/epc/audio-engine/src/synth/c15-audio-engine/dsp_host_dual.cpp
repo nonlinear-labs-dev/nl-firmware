@@ -1895,8 +1895,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
 
   auto msg = &_msg;
   // #3009: prepare reset detection with pressed local keys
-  bool internalReset[2] = { m_alloc.m_internal_keys.pressedLocalKeys(0),
-                            m_alloc.m_internal_keys.pressedLocalKeys(1) };
+  bool internalReset[2] = { m_alloc.m_internal_keys.pressedLocalKeys(0), m_alloc.m_internal_keys.pressedLocalKeys(1) };
   const bool externalReset = layerChanged && areKeysPressed(fromType(oldLayerMode));
   for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
   {
@@ -2047,7 +2046,6 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
     // non-split -> split: (global or none)
     m_alloc.m_internal_keys.m_global = 0;  // reset all pressed global keys
     return determineOutputEventSource(externalReset, oldLayerMode);
-    ;
   }
   // split -> split: determine actual outputEvent (I, II: pressed keys && poly change)
   return m_alloc.m_internal_keys.pressedLocalKeys(internalReset[0], internalReset[1]);
