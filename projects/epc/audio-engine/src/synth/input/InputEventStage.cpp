@@ -198,6 +198,7 @@ void InputEventStage::onTCDEvent()
     case DecoderEventType::PollStop:
     {
       nltools::Log::error("got PollStop!");
+      m_isPolling = false;
       m_channelModeMessageCB(MidiChannelModeMessages::PollEnd);
       break;
     }
