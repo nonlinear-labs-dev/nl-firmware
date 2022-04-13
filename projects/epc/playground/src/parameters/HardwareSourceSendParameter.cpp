@@ -55,6 +55,7 @@ void HardwareSourceSendParameter::onUnselected()
   if(m_lastChangedFromHWUI && getReturnMode() != ReturnMode::None)
   {
     m_lastChangedFromHWUI = false;
+    nltools::Log::error(__PRETTY_FUNCTION__, getLongName());
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
     sendToPlaycontroller();
     invalidate();

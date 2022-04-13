@@ -375,6 +375,7 @@ void RibbonParameter::sendToPlaycontroller() const
 
 void RibbonParameter::onLocalEnableChanged(bool localEnableState)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, localEnableState);
   auto scope = UNDO::Scope::startTrashTransaction();
 
   if(localEnableState) //Off -> On
